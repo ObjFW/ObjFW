@@ -764,7 +764,7 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 /**
- * @brief Removes the extended attribute for the specified name wof the item at
+ * @brief Removes the extended attribute for the specified name of the item at
  *	  the specified path.
  *
  * This method is not available on some systems.
@@ -781,7 +781,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 /**
- * @brief Removes the extended attribute for the specified name wof the item at
+ * @brief Removes the extended attribute for the specified name of the item at
  *	  the specified IRI.
  *
  * This method is not available for all IRIs.

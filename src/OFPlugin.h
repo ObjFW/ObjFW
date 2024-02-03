@@ -75,7 +75,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the address for the specified symbol, or `nil` if not found.
  *
  * @param symbol The symbol to return the address for
- * @return The address for the speccified symbol, or `nil` if not found
+ * @return The address for the specified symbol, or `nil` if not found
  */
 - (nullable void *)addressForSymbol: (OFString *)symbol;
 @end

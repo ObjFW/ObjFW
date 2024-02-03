@@ -154,7 +154,7 @@ OF_SUBCLASSING_RESTRICTED
  * @class OFAAAADNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
- * @brief A class represenging a DNS resource record.
+ * @brief A class representing a DNS resource record.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord
@@ -392,7 +392,7 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 /**
- * @class OFRPNSResourceRecord \
+ * @class OFRPDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
  * @brief A class representing an RP DNS resource record.

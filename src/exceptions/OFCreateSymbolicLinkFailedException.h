@@ -35,12 +35,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The IRI at which the symlink should have been created.
+ * @brief The IRI at which the symbolic link should have been created.
  */
 @property (readonly, nonatomic) OFIRI *IRI;
 
 /**
- * @brief The target for the symlink.
+ * @brief The target for the symbolic link.
  */
 @property (readonly, nonatomic) OFString *target;
 
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
- * @param IRI The IRI where the symlink should have been created
+ * @param IRI The IRI where the symbolic link should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated create symbolic link failed
  *	  exception.
  *
- * @param IRI The IRI where the symlink should have been created
+ * @param IRI The IRI where the symbolic link should have been created
  * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return An initialized create symbolic link failed exception

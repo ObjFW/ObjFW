@@ -83,7 +83,7 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**
- * @brief An enum for representing endianess.
+ * @brief An enum for representing endianness.
  */
 typedef enum {
 	/** Most significant byte first (big endian) */
@@ -115,7 +115,7 @@ typedef struct OF_BOXABLE OFRange {
  *
  * @param start The starting index of the range
  * @param length The length of the range
- * @return An OFRangeith the specified start and length
+ * @return An OFRange with the specified start and length
  */
 static OF_INLINE OFRange OF_CONST_FUNC
 OFMakeRange(size_t start, size_t length)
@@ -1377,7 +1377,8 @@ OF_ROOT_CLASS
  *
  * @brief A protocol for comparing objects.
  *
- * This protocol is implemented by objects that can be compared. Its only method, @ref compare:, should be overridden with a stronger type.
+ * This protocol is implemented by objects that can be compared. Its only
+ * method, @ref compare:, should be overridden with a stronger type.
  */
 @protocol OFComparing
 /**
@@ -1450,7 +1451,7 @@ extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
  * @brief Frees memory allocated by @ref OFAllocMemory, @ref OFAllocZeroedMemory
  *	  or @ref OFResizeMemory.
  *
- * @param pointer A pointer to the memory to free or nil (passing nil ooes
+ * @param pointer A pointer to the memory to free or nil (passing nil does
  *		  nothing)
  */
 extern void OFFreeMemory(void *_Nullable pointer);

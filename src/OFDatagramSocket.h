@@ -263,7 +263,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param data The data to send as a datagram
- * @param receiver A pointer to an @ref OFSocketAddress to which the datgram
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
  *		   should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  */

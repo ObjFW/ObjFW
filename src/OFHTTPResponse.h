@@ -74,7 +74,7 @@ OF_SUBCLASSING_RESTRICTED
 - (OFString *)readString;
 
 /**
- * @brief Rread the response as a string, trying to detect the encoding and
+ * @brief Read the response as a string, trying to detect the encoding and
  *	  falling back to the specified encoding if not detectable.
  *
  * @return The response as a string

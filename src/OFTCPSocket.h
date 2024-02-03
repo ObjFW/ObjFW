@@ -80,7 +80,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /**
- * @brief Whether the socket sends keep alives for the connection.
+ * @brief Whether the socket sends keep-alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  *

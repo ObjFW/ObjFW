@@ -332,7 +332,7 @@ OF_ASSUME_NONNULL_BEGIN
 		     ofItemAtIRI: (OFIRI *)IRI;
 
 /**
- * @brief Removes the extended attribute for the specified name wof the item at
+ * @brief Removes the extended attribute for the specified name of the item at
  *	  the specified IRI.
  *
  * This method is not available for all IRIs.

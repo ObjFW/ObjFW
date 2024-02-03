@@ -189,7 +189,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns a date in the distant future.
  *
- * The date is system-dependant.
+ * The date is system-dependent.
  *
  * @return A date in the distant future
  */
@@ -198,7 +198,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns a date in the distant past.
  *
- * The date is system-dependant.
+ * The date is system-dependent.
  *
  * @return A date in the distant past
  */
