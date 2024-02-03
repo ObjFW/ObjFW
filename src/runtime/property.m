@@ -30,9 +30,7 @@ spinlockSlot(const void *ptr)
 {
 	return ((size_t)((uintptr_t)ptr >> 4) & (numSpinlocks - 1));
 }
-#endif
 
-#ifdef OF_HAVE_THREADS
 OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < numSpinlocks; i++)

@@ -18,6 +18,7 @@
 #import "TestsAppDelegate.h"
 
 static OFString *const module = @"Runtime";
+static void *testKey = &testKey;
 
 @interface OFObject (SuperTest)
 - (id)superTest;
@@ -87,6 +88,21 @@ static OFString *const module = @"Runtime";
 	test.bar = string;
 	TEST(@"retain, atomic properties",
 	    test.bar == string && string.retainCount == 3)
+
+	TEST(@"Associated objects",
+	    R(objc_setAssociatedObject(self, testKey, test,
+	    OBJC_ASSOCIATION_ASSIGN)) && test.retainCount == 2 &&
+	    R(objc_setAssociatedObject(self, testKey, test,
+	    OBJC_ASSOCIATION_RETAIN)) && test.retainCount == 3 &&
+	    objc_getAssociatedObject(self, testKey) == test &&
+	    test.retainCount == 4 &&
+	    R(objc_setAssociatedObject(self, testKey, test,
+	    OBJC_ASSOCIATION_ASSIGN)) && test.retainCount == 3 &&
+	    R(objc_setAssociatedObject(self, testKey, test,
+	    OBJC_ASSOCIATION_RETAIN_NONATOMIC)) && test.retainCount == 4 &&
+	    objc_getAssociatedObject(self, testKey) == test &&
+	    test.retainCount == 4 &&
+	    R(objc_removeAssociatedObjects(self)) && test.retainCount == 3)
 
 #ifdef OF_OBJFW_RUNTIME
 	if (sizeof(uintptr_t) == 8)
