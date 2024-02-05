@@ -34,7 +34,10 @@ src/libobjfw.*
 src/objfw-defs.h
 src/runtime/Info.plist
 src/runtime/libobjfwrt.*
+src/test/Info.plist
+src/test/libobjfwtest.*
 src/tls/Info.plist
+src/tls/libobjfwtls.*
 tests/DerivedData
 tests/EBOOT.PBP
 tests/Info.plist
