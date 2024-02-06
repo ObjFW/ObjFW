@@ -25,7 +25,11 @@ CPPFLAGS += -I. 			\
 	    -I../runtime		\
 	    -DOBJFWTEST_LOCAL_INCLUDES
 LD = ${OBJC}
-FRAMEWORK_LIBS := -F.. -framework ObjFW ${LIBS}
+FRAMEWORK_LIBS := -F..				\
+		  -framework ObjFW		\
+		  -F../runtime			\
+		  ${RUNTIME_FRAMEWORK_LIBS}	\
+		  ${LIBS}
 LIBS := -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}
 
 install-extra:
