@@ -13,17 +13,9 @@
  * file.
  */
 
-#ifdef OBJFWTEST_LOCAL_INCLUDES
-# import "OFObject.h"
-#else
-# import <ObjFW/OFObject.h>
-#endif
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OTAssertionFailedException.h"
 
-@interface OTTestCase: OFObject
-- (void)setUp;
-- (void)tearDown;
+@implementation OTAssertionFailedException
 @end
-
-OF_ASSUME_NONNULL_END

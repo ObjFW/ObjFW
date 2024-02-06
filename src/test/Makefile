@@ -9,10 +9,12 @@ LIB_MAJOR = ${OBJFWTEST_LIB_MAJOR}
 LIB_MINOR = ${OBJFWTEST_LIB_MINOR}
 LIB_PATCH = ${OBJFWTEST_LIB_PATCH}
 
-SRCS = OTTestCase.m
+SRCS = OTAssert.m	\
+       OTTestCase.m
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWTest.h
-SRCS += OTAppDelegate.m
+SRCS += OTAppDelegate.m			\
+	OTAssertionFailedException.m
 
 includesubdir = ObjFWTest
 

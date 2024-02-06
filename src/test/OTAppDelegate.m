@@ -22,6 +22,8 @@
 
 #import "OTTestCase.h"
 
+#import "OTAssertionFailedException.h"
+
 OF_APPLICATION_DELEGATE(OTAppDelegate)
 
 @implementation OTAppDelegate
@@ -88,9 +90,25 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 			OTTestCase *instance =
 			    [[[class alloc] init] autorelease];
 
-			[instance setUp];
-			[instance performSelector: test.pointerValue];
-			[instance tearDown];
+			@try {
+				[instance setUp];
+				[instance performSelector: test.pointerValue];
+			} @catch (OTAssertionFailedException *e) {
+				/*
+				 * If an assertion during -[setUp], don't run
+				 * the test.
+				 * If an assertion fails during a test, abort
+				 * the test.
+				 */
+			}
+			@try {
+				[instance tearDown];
+			} @catch (OTAssertionFailedException *e) {
+				/*
+				 * If an assertion fails during -[tearDown],
+				 * abort the tear down.
+				 */
+			}
 
 			objc_autoreleasePoolPop(pool);
 		}

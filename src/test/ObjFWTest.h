@@ -14,3 +14,4 @@
  */
 
 #import "OTTestCase.h"
+#import "OTAssert.h"
