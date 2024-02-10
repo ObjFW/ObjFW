@@ -26,6 +26,14 @@ docs
 extra.mk
 generators/library/gen_libraries
 generators/unicode/gen_tables
+new_tests/EBOOT.PBP
+new_tests/PARAM.SFO
+new_tests/tests
+new_tests/tests.3dsx
+new_tests/tests.arm9
+new_tests/tests.nds
+new_tests/tests.nro
+new_tests/tests.rpx
 src/Info.plist
 src/bridge/Info.plist
 src/libobjfw.*

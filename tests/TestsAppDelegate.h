@@ -175,10 +175,6 @@
 - (void)objectTests;
 @end
 
-@interface TestsAppDelegate (OFPBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
 @interface TestsAppDelegate (OFPropertyListTests)
 - (void)propertyListTests;
 @end
