@@ -28,6 +28,16 @@
 
 OF_APPLICATION_DELEGATE(OTAppDelegate)
 
+static bool
+isSubclassOfClass(Class class, Class superclass)
+{
+	for (Class iter = class; iter != Nil; iter = class_getSuperclass(iter))
+		if (iter == superclass)
+			return true;
+
+	return false;
+}
+
 @implementation OTAppDelegate
 - (OFSet OF_GENERIC(Class) *)testClasses
 {
@@ -41,7 +51,7 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 		testClasses = [OFMutableSet set];
 
 		for (Class *iter = classes; *iter != Nil; iter++)
-			if ([*iter isSubclassOfClass: [OTTestCase class]])
+			if (isSubclassOfClass(*iter, [OTTestCase class]))
 				[testClasses addObject: *iter];
 	} @finally {
 		OFFreeMemory(classes);
