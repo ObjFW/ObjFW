@@ -390,7 +390,6 @@ main(int argc, char *argv[])
 	[self setTests];
 	[self dateTests];
 	[self valueTests];
-	[self numberTests];
 	[self colorTests];
 	[self streamTests];
 	[self memoryStreamTests];

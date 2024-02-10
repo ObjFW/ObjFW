@@ -37,7 +37,6 @@ SRCS = ForwardingTests.m		\
        OFMemoryStreamTests.m		\
        OFMethodSignatureTests.m		\
        OFNotificationCenterTests.m	\
-       OFNumberTests.m			\
        OFObjectTests.m			\
        OFPropertyListTests.m		\
        OFRIPEMD160HashTests.m		\

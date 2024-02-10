@@ -167,10 +167,6 @@
 - (void)notificationCenterTests;
 @end
 
-@interface TestsAppDelegate (OFNumberTests)
-- (void)numberTests;
-@end
-
 @interface TestsAppDelegate (OFObjectTests)
 - (void)objectTests;
 @end
