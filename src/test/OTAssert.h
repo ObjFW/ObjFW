@@ -13,11 +13,12 @@
  * file.
  */
 
-#ifdef __clang__
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wunknown-pragmas"
-# pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-#endif
+/*
+ * Unfortunately, that's the only way to make all compilers happy with the GNU
+ * extensions for variadic macros that are being used here.
+ */
+#pragma GCC system_header
+
 #define OTAssert(cond, ...) \
 	OTAssertImpl(self, _cmd, cond, @#cond, @__FILE__, __LINE__,	\
 	    ## __VA_ARGS__, nil)
@@ -28,9 +29,6 @@
 #define OTAssertEqualObjects(a, b, ...) OTAssert([a isEqual: b], ## __VA_ARGS__)
 #define OTAssertNotEqualObjects(a, b, ...) \
 	OTAssert(![a isEqual: b], ## __VA_ARGS__)
-#ifdef __clang__
-# pragma clang diagnostic pop
-#endif
 
 #ifdef __cplusplus
 extern "C" {
