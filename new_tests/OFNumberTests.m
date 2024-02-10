@@ -21,7 +21,7 @@
 @interface OFNumberTests: OTTestCase
 @end
 
-extern unsigned long OFHashSeed;
+extern unsigned long long OFHashSeed;
 
 @implementation OFNumberTests
 - (void)testIsEqual
