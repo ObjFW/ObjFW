@@ -50,9 +50,22 @@ isSubclassOfClass(Class class, Class superclass)
 	@try {
 		testClasses = [OFMutableSet set];
 
-		for (Class *iter = classes; *iter != Nil; iter++)
+		for (Class *iter = classes; *iter != Nil; iter++) {
+			/*
+			 * Make sure the class is initialized.
+			 * Required for the ObjFW runtime, as otherwise
+			 * class_getSuperclass() crashes.
+			 */
+			[*iter class];
+
+			/*
+			 * Don't use +[isSubclassOfClass:], as the Apple runtime
+			 * can return (presumably internal?) classes that don't
+			 * implement it, resulting in a crash.
+			 */
 			if (isSubclassOfClass(*iter, [OTTestCase class]))
 				[testClasses addObject: *iter];
+		}
 	} @finally {
 		OFFreeMemory(classes);
 	}
