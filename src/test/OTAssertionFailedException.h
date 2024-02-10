@@ -14,6 +14,25 @@
  */
 
 #import "OFException.h"
+#import "OFString.h"
+
+OF_ASSUME_NONNULL_BEGIN
 
 @interface OTAssertionFailedException: OFException
+{
+	OFString *_condition;
+	OFString *_Nullable _message;
+}
+
+@property (readonly, nonatomic) OFString *condition;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *message;
+
++ (instancetype)exceptionWithCondition: (OFString *)condition
+			       message: (nullable OFString *)message;
++ (instancetype)exception OF_UNAVAILABLE;
+- (instancetype)initWithCondition: (OFString *)condition
+			  message: (nullable OFString *)message;
+- (instancetype)init OF_UNAVAILABLE;
 @end
+
+OF_ASSUME_NONNULL_END

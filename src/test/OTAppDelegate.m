@@ -17,7 +17,9 @@
 
 #import "OTAppDelegate.h"
 
+#import "OFColor.h"
 #import "OFSet.h"
+#import "OFStdIOStream.h"
 #import "OFValue.h"
 
 #import "OTTestCase.h"
@@ -83,12 +85,25 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
+	size_t numSucceeded = 0, numFailed = 0;
+
+	[OFStdOut writeFormat: @"Running %zu test case(s)\n",
+			       testClasses.count];
 
 	for (Class class in testClasses) {
+		[OFStdOut writeFormat: @"Running tests in %@\n", class];
+
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
-			OTTestCase *instance =
-			    [[[class alloc] init] autorelease];
+			bool failed = false;
+			OTTestCase *instance;
+
+			[OFStdOut setForegroundColor: [OFColor yellow]];
+			[OFStdOut writeFormat:
+			    @"-[%@ %s]: ",
+			    class, sel_getName(test.pointerValue)];
+
+			instance = [[[class alloc] init] autorelease];
 
 			@try {
 				[instance setUp];
@@ -100,6 +115,13 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 				 * If an assertion fails during a test, abort
 				 * the test.
 				 */
+				[OFStdOut setForegroundColor: [OFColor red]];
+				[OFStdOut writeFormat:
+				    @"\r-[%@ %s]: failed\n",
+				    class, sel_getName(test.pointerValue)];
+				[OFStdOut writeLine: e.description];
+
+				failed = true;
 			}
 			@try {
 				[instance tearDown];
@@ -108,11 +130,37 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 				 * If an assertion fails during -[tearDown],
 				 * abort the tear down.
 				 */
+				if (!failed) {
+					[OFStdOut setForegroundColor:
+					    [OFColor red]];
+					[OFStdOut writeFormat:
+					    @"\r-[%@ %s]: failed\n",
+					    class,
+					    sel_getName(test.pointerValue)];
+					[OFStdOut writeLine: e.description];
+
+					failed = true;
+				}
 			}
+
+			if (!failed) {
+				[OFStdOut setForegroundColor: [OFColor green]];
+				[OFStdOut writeFormat:
+				    @"\r-[%@ %s]: ok\n",
+				    class, sel_getName(test.pointerValue)];
+
+				numSucceeded++;
+			} else
+				numFailed++;
+
+			[OFStdOut reset];
 
 			objc_autoreleasePoolPop(pool);
 		}
 	}
+
+	[OFStdOut writeFormat: @"%zu test(s) succeeded, %zu test(s) failed.\n",
+			       numSucceeded, numFailed];
 
 	[OFApplication terminate];
 }

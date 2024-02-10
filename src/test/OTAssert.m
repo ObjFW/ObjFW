@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-#import "OFColor.h"
-#import "OFStdIOStream.h"
 #import "OFString.h"
 
 #import "OTAssertionFailedException.h"
@@ -25,15 +23,12 @@ void
 OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
     OFString *file, size_t line, ...)
 {
-	void *pool;
 	va_list arguments;
 	OFConstantString *format;
 	OFString *message = nil;
 
 	if (condition)
 		return;
-
-	pool = objc_autoreleasePoolPush();
 
 	va_start(arguments, line);
 	format = va_arg(arguments, OFConstantString *);
@@ -45,14 +40,6 @@ OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
 
 	va_end(arguments);
 
-	[OFStdErr setForegroundColor: [OFColor red]];
-	[OFStdErr writeFormat: @"-[%@ %s]: Condition failed: %@%@%@\n",
-			       [testCase className], sel_getName(test),
-			       check, (message != nil ? @": " : @""),
-			       (message != nil ? message : @"")];
-	[OFStdErr reset];
-
-	objc_autoreleasePoolPop(pool);
-
-	@throw [OTAssertionFailedException exception];
+	@throw [OTAssertionFailedException exceptionWithCondition: check
+							  message: message];
 }
