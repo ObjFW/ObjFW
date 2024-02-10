@@ -439,7 +439,6 @@ main(int argc, char *argv[])
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
 	[self JSONTests];
-	[self propertyListTests];
 	[self matrix4x4Tests];
 
 #ifdef OF_HAVE_PLUGINS

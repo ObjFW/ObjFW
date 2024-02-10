@@ -1,6 +1,7 @@
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFNumberTests.m	\
-       OFPBKDF2Tests.m
+SRCS = OFNumberTests.m		\
+       OFPBKDF2Tests.m		\
+       OFPropertyListTests.m
 
 include ../buildsys.mk
 include ../extra.mk

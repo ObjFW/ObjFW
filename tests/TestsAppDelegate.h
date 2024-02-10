@@ -171,10 +171,6 @@
 - (void)objectTests;
 @end
 
-@interface TestsAppDelegate (OFPropertyListTests)
-- (void)propertyListTests;
-@end
-
 @interface TestsAppDelegate (OFPluginTests)
 - (void)pluginTests;
 @end
