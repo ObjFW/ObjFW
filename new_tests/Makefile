@@ -89,7 +89,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ${LIBOBJFWTEST_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
