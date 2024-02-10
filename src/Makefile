@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE} ${TLS}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
