@@ -2376,7 +2376,6 @@ AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
 	src/Info.plist
-	src/test/Info.plist
 	tests/Info.plist
 	utils/objfw-config
 ])
