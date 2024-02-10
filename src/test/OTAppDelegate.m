@@ -110,8 +110,8 @@ OF_APPLICATION_DELEGATE(OTAppDelegate)
 				[instance performSelector: test.pointerValue];
 			} @catch (OTAssertionFailedException *e) {
 				/*
-				 * If an assertion during -[setUp], don't run
-				 * the test.
+				 * If an assertion fails during -[setUp], don't
+				 * run the test.
 				 * If an assertion fails during a test, abort
 				 * the test.
 				 */
