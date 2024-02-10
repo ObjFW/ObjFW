@@ -402,14 +402,12 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_PLUGIN
 
 	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
-	AC_SUBST(OBJFWTEST_SHARED_LIB, '${LIB_PREFIX}objfwtest${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
-		AC_SUBST(OBJFWTEST_FRAMEWORK, "ObjFWTest.framework")
 		build_framework="yes"
 	])
 ], [
@@ -433,7 +431,6 @@ AS_IF([test x"$enable_shared" = x"no"], [
 ])
 AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
-	AC_SUBST(OBJFWTEST_STATIC_LIB, "libobjfwtest.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
