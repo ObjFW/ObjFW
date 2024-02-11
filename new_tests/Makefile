@@ -12,7 +12,8 @@ CLEAN = EBOOT.PBP		\
 	testfile_ini.m
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFArrayTests.m			\
+SRCS = OFASN1DERParsingTests.m		\
+       OFArrayTests.m			\
        OFCharacterSetTests.m		\
        OFColorTests.m			\
        OFConcreteArrayTests.m		\

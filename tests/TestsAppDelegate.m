@@ -415,7 +415,6 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-	[self ASN1DERParsingTests];
 	[self ASN1DERRepresentationTests];
 
 #ifdef OF_WINDOWS
