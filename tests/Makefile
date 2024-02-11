@@ -37,7 +37,6 @@ SRCS = ForwardingTests.m		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
        testfile_ini.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
@@ -56,7 +55,6 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
-SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 IOS_USER ?= mobile

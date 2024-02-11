@@ -15,9 +15,11 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFThread";
+@interface OFThreadTests: OTTestCase
+@end
 
 @interface TestThread: OFThread
 @end
@@ -33,21 +35,14 @@ static OFString *const module = @"OFThread";
 }
 @end
 
-@implementation TestsAppDelegate (OFThreadTests)
-- (void)threadTests
+@implementation OFThreadTests
+- (void)testThread
 {
-	void *pool = objc_autoreleasePoolPush();
-	TestThread *thread;
+	TestThread *thread = [TestThread thread];
 
-	TEST(@"+[thread]", (thread = [TestThread thread]))
+	[thread start];
 
-	TEST(@"-[start]", R([thread start]))
-
-	TEST(@"-[join]", [[thread join] isEqual: @"success"])
-
-	TEST(@"-[threadDictionary]",
-	    [[OFThread threadDictionary] objectForKey: @"foo"] == nil)
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqualObjects([thread join], @"success");
+	OTAssertNil([[OFThread threadDictionary] objectForKey: @"foo"]);
 }
 @end

@@ -163,10 +163,6 @@
 - (void)TCPSocketTests;
 @end
 
-@interface TestsAppDelegate (OFThreadTests)
-- (void)threadTests;
-@end
-
 @interface TestsAppDelegate (OFUDPSocketTests)
 - (void)UDPSocketTests;
 @end

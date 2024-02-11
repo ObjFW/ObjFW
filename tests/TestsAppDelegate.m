@@ -408,9 +408,6 @@ main(int argc, char *argv[])
 # endif
 	[self kernelEventObserverTests];
 #endif
-#ifdef OF_HAVE_THREADS
-	[self threadTests];
-#endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif

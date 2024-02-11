@@ -26,10 +26,12 @@ SRCS = OFArrayTests.m			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
+       ${USE_SRCS_THREADS}		\
        testfile_bin.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
+SRCS_THREADS = OFThreadTests.m
 
 include ../buildsys.mk
 
