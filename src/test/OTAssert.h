@@ -31,6 +31,26 @@
 	OTAssert(![a isEqual: b], ## __VA_ARGS__)
 #define OTAssertNil(object, ...) OTAssert(object == nil, ## __VA_ARGS__)
 #define OTAssertNotNil(object, ...) OTAssert(object != nil, ## __VA_ARGS__)
+#define OTAssertThrows(expression, ...)				\
+	{							\
+		bool OTThrown = false;				\
+		@try {						\
+			expression;				\
+		} @catch (id e) {				\
+			OTThrown = true;			\
+		}						\
+		OTAssert(OTThrown, ## __VA_ARGS__);		\
+	}
+#define OTAssertThrowsSpecific(expression, exception, ...)	\
+	{							\
+		bool OTThrown = false;				\
+		@try {						\
+			expression;				\
+		} @catch (exception *e) {			\
+			OTThrown = true;			\
+		}						\
+		OTAssert(OTThrown, ## __VA_ARGS__);		\
+	}
 
 #ifdef __cplusplus
 extern "C" {
