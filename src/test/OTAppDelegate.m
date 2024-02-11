@@ -105,6 +105,42 @@ isSubclassOfClass(Class class, Class superclass)
 	return tests;
 }
 
+- (void)printStatusForTest: (SEL)test
+		   inClass: (Class)class
+		    status: (int)status
+	       description: (OFString *)description
+{
+	switch (status) {
+	case 0:
+		[OFStdOut setForegroundColor: [OFColor olive]];
+		[OFStdOut writeFormat: @"-[%@ ", class];
+		[OFStdOut setForegroundColor: [OFColor yellow]];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		[OFStdOut setForegroundColor: [OFColor olive]];
+		[OFStdOut writeString: @"]: "];
+		break;
+	case 1:
+		[OFStdOut setForegroundColor: [OFColor green]];
+		[OFStdOut writeFormat: @"\r-[%@ ", class];
+		[OFStdOut setForegroundColor: [OFColor lime]];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		[OFStdOut setForegroundColor: [OFColor green]];
+		[OFStdOut writeLine: @"]: ok"];
+		break;
+	case 2:
+		[OFStdOut setForegroundColor: [OFColor maroon]];
+		[OFStdOut writeFormat: @"\r-[%@ ", class];
+		[OFStdOut setForegroundColor: [OFColor red]];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		[OFStdOut setForegroundColor: [OFColor maroon]];
+		[OFStdOut writeLine: @"]: failed"];
+		[OFStdOut writeLine: description];
+		break;
+	}
+
+	[OFStdOut reset];
+}
+
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
@@ -114,17 +150,19 @@ isSubclassOfClass(Class class, Class superclass)
 			       testClasses.count];
 
 	for (Class class in testClasses) {
+		[OFStdOut setForegroundColor: [OFColor teal]];
 		[OFStdOut writeFormat: @"Running tests in %@\n", class];
+		[OFStdOut reset];
 
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
 			bool failed = false;
 			OTTestCase *instance;
 
-			[OFStdOut setForegroundColor: [OFColor yellow]];
-			[OFStdOut writeFormat:
-			    @"-[%@ %s]: ",
-			    class, sel_getName(test.pointerValue)];
+			[self printStatusForTest: test.pointerValue
+					 inClass: class
+					  status: 0
+				     description: nil];
 
 			instance = [[[class alloc] init] autorelease];
 
@@ -138,12 +176,10 @@ isSubclassOfClass(Class class, Class superclass)
 				 * If an assertion fails during a test, abort
 				 * the test.
 				 */
-				[OFStdOut setForegroundColor: [OFColor red]];
-				[OFStdOut writeFormat:
-				    @"\r-[%@ %s]: failed\n",
-				    class, sel_getName(test.pointerValue)];
-				[OFStdOut writeLine: e.description];
-
+				[self printStatusForTest: test.pointerValue
+						 inClass: class
+						  status: 2
+					     description: e.description];
 				failed = true;
 			}
 			@try {
@@ -154,36 +190,34 @@ isSubclassOfClass(Class class, Class superclass)
 				 * abort the tear down.
 				 */
 				if (!failed) {
-					[OFStdOut setForegroundColor:
-					    [OFColor red]];
-					[OFStdOut writeFormat:
-					    @"\r-[%@ %s]: failed\n",
-					    class,
-					    sel_getName(test.pointerValue)];
-					[OFStdOut writeLine: e.description];
+					SEL selector = test.pointerValue;
+					OFString *description = e.description;
 
+					[self printStatusForTest: selector
+							 inClass: class
+							  status: 2
+						     description: description];
 					failed = true;
 				}
 			}
 
 			if (!failed) {
-				[OFStdOut setForegroundColor: [OFColor green]];
-				[OFStdOut writeFormat:
-				    @"\r-[%@ %s]: ok\n",
-				    class, sel_getName(test.pointerValue)];
-
+				[self printStatusForTest: test.pointerValue
+						 inClass: class
+						  status: 1
+					     description: nil];
 				numSucceeded++;
 			} else
 				numFailed++;
-
-			[OFStdOut reset];
 
 			objc_autoreleasePoolPop(pool);
 		}
 	}
 
+	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @"%zu test(s) succeeded, %zu test(s) failed.\n",
 			       numSucceeded, numFailed];
+	[OFStdOut reset];
 
 	[OFApplication terminateWithStatus: (int)numFailed];
 }
