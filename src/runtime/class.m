@@ -603,7 +603,8 @@ objc_getClassList(Class *buffer, unsigned int count)
 			return j;
 		}
 
-		if (classes->data[i] == NULL)
+		if (classes->data[i] == NULL ||
+		    classes->data[i] == &objc_deletedBucket)
 			continue;
 
 		if (strcmp(classes->data[i]->key, "Protocol") == 0)

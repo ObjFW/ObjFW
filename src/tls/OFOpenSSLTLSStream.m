@@ -214,6 +214,7 @@ static SSL_CTX *clientContext;
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	int status;
 
@@ -287,11 +288,13 @@ static SSL_CTX *clientContext;
 							length: bufferSize
 						   runLoopMode: runLoopMode];
 			[_delegate retain];
+			objc_autoreleasePoolPop(pool);
 			return;
 		case SSL_ERROR_WANT_WRITE:
 			[_underlyingStream asyncWriteData: [OFData data]
 					      runLoopMode: runLoopMode];
 			[_delegate retain];
+			objc_autoreleasePoolPop(pool);
 			return;
 		default:
 			/* FIXME: Map to better errors */
@@ -308,6 +311,8 @@ static SSL_CTX *clientContext;
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream

@@ -379,6 +379,33 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
+	} else if (recordType == OFDNSRecordTypeLOC) {
+		uint8_t size, horizontalPrecision, verticalPrecision;
+		uint32_t latitude, longitude, altitude;
+
+		if (dataLength < 16 || buffer[i] != 0)
+			@throw [OFInvalidServerResponseException exception];
+
+		size = buffer[i + 1];
+		horizontalPrecision = buffer[i + 2];
+		verticalPrecision = buffer[i + 3];
+		latitude = (buffer[i + 4] << 24) | (buffer[i + 5] << 16) |
+		    (buffer[i + 6] << 8) | buffer[i + 7];
+		longitude = (buffer[i + 8] << 24) | (buffer[i + 9] << 16) |
+		    (buffer[i + 10] << 8) | buffer[i + 11];
+		altitude = (buffer[i + 12] << 24) | (buffer[i + 13] << 16) |
+		    (buffer[i + 14] << 8) | buffer[i + 15];
+
+		return [[[OFLOCDNSResourceRecord alloc]
+			   initWithName: name
+			       DNSClass: DNSClass
+				   size: size
+		    horizontalPrecision: horizontalPrecision
+		      verticalPrecision: verticalPrecision
+			       latitude: latitude
+			      longitude: longitude
+			       altitude: altitude
+				    TTL: TTL] autorelease];
 	} else if (recordType == OFDNSRecordTypeSRV &&
 	    DNSClass == OFDNSClassIN) {
 		uint16_t priority, weight, port;
@@ -404,6 +431,26 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 			  weight: weight
 			  target: target
 			    port: port
+			     TTL: TTL] autorelease];
+	} else if (recordType == OFDNSRecordTypeURI) {
+		uint16_t priority, weight;
+		OFString *target;
+
+		if (dataLength < 4)
+			@throw [OFInvalidServerResponseException exception];
+
+		priority = (buffer[i] << 8) | buffer[i + 1];
+		weight = (buffer[i + 2] << 8) | buffer[i + 3];
+
+		target = [OFString stringWithUTF8String: (char *)buffer + i + 4
+						 length: dataLength - 4];
+
+		return [[[OFURIDNSResourceRecord alloc]
+		    initWithName: name
+			DNSClass: DNSClass
+			priority: priority
+			  weight: weight
+			  target: target
 			     TTL: TTL] autorelease];
 	} else
 		return [[[OFDNSResourceRecord alloc]
@@ -433,11 +480,11 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		if (*i + 10 > length)
 			@throw [OFTruncatedDataException exception];
 
-		recordType = (buffer[*i] << 16) | buffer[*i + 1];
-		DNSClass = (buffer[*i + 2] << 16) | buffer[*i + 3];
+		recordType = (buffer[*i] << 8) | buffer[*i + 1];
+		DNSClass = (buffer[*i + 2] << 8) | buffer[*i + 3];
 		TTL = (buffer[*i + 4] << 24) | (buffer[*i + 5] << 16) |
 		    (buffer[*i + 6] << 8) | buffer[*i + 7];
-		dataLength = (buffer[*i + 8] << 16) | buffer[*i + 9];
+		dataLength = (buffer[*i + 8] << 8) | buffer[*i + 9];
 
 		*i += 10;
 

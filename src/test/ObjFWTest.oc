@@ -1,0 +1,3 @@
+package_format 1
+LIBS="-lobjfwtest $LIBS"
+FRAMEWORK_LIBS="-lobjfwtest $FRAMEWORK_LIBS"

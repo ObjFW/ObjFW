@@ -42,7 +42,6 @@ init(void)
 		GetAdaptersAddressesFuncPtr = (WINAPI ULONG (*)(ULONG, ULONG,
 		    PVOID, PIP_ADAPTER_ADDRESSES, PULONG))
 		    GetProcAddress(module, "GetAdaptersAddresses");
-
 }
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFNetworkInterface) *
@@ -56,6 +55,7 @@ networkInterfacesFromGetAdaptersAddresses(void)
 		return nil;
 
 	@try {
+		OFStringEncoding encoding = [OFLocale encoding];
 		ULONG error = GetAdaptersAddressesFuncPtr(AF_UNSPEC, 0, NULL,
 		    adapterAddresses, &adapterAddressesSize);
 
@@ -80,8 +80,8 @@ networkInterfacesFromGetAdaptersAddresses(void)
 			OFMutableDictionary *interface;
 			OFNumber *index;
 
-			name = [OFString stringWithFormat: @"%lu",
-							   iter->IfIndex];
+			name = [OFString stringWithCString: iter->AdapterName
+						  encoding: encoding];
 
 			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
@@ -101,7 +101,7 @@ networkInterfacesFromGetAdaptersAddresses(void)
 				[interface setObject: address forKey: key];
 			}
 
-			for (PIP_ADAPTER_UNICAST_ADDRESS_LH addrIter =
+			for (__typeof__(iter->FirstUnicastAddress) addrIter =
 			    iter->FirstUnicastAddress; addrIter != NULL;
 			    addrIter = addrIter->Next) {
 				OFSocketAddress address;

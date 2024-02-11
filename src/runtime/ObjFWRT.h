@@ -134,7 +134,7 @@ typedef bool BOOL;
 #endif
 
 /**
- * @brief A method implemenation.
+ * @brief A method implementation.
  *
  * @param object The messaged object
  * @param selector The selector sent
@@ -172,6 +172,22 @@ struct objc_super {
 	Class _Nonnull class;
 #endif
 };
+
+/**
+ * @brief A policy for object association, see @ref objc_setAssociatedObject.
+ */
+typedef enum objc_associationPolicy {
+	/** @brief Associate the object like an assigned property. */
+	OBJC_ASSOCIATION_ASSIGN	= 0,
+	/** @brief Associate the object like a retained, nonatomic property. */
+	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+	/** @brief Associate the object like a retained property. */
+	OBJC_ASSOCIATION_RETAIN = OBJC_ASSOCIATION_RETAIN_NONATOMIC | 0x300,
+	/** @brief Associate the object like a copied, nonatomic property. */
+	OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+	/** @brief Associate the object like a copied property. */
+	OBJC_ASSOCIATION_COPY = OBJC_ASSOCIATION_COPY_NONATOMIC | 0x300
+} objc_associationPolicy;
 
 #ifdef __cplusplus
 extern "C" {
@@ -312,7 +328,7 @@ extern bool class_conformsToProtocol(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
@@ -327,7 +343,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
@@ -645,6 +661,37 @@ extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
  * @return A tagged pointer, or `nil` if it could not be created
  */
 extern id _Nullable objc_createTaggedPointer(int class_, uintptr_t value);
+
+/**
+ * @brief Sets an associated object on the specified object for the specified
+ *	  key.
+ *
+ * @param object The object on which to set an associated object
+ * @param key A unique pointer to use as the key for the association
+ * @param value The object to associate with the specified object
+ * @param policy The association policy, see @ref objc_associationPolicy
+ */
+extern void objc_setAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key, id _Nullable value,
+    objc_associationPolicy policy);
+
+/**
+ * @brief Returns the associated object on the specified object for the
+ *	  specified key.
+ *
+ * @param object The object on which to get the associated object
+ * @param key The key of the association
+ * @return The associated object on the specified object for the specified key
+ */
+extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key);
+
+/**
+ * @brief Removes all associated objects for the specified object.
+ *
+ * @param object The object on which to remove all associated objects
+ */
+extern void objc_removeAssociatedObjects(id _Nonnull object);
 
 /*
  * Used by the compiler, but can also be called manually.

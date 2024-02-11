@@ -18,7 +18,10 @@
 #include <errno.h>
 
 #import "OFMbedTLSTLSStream.h"
+#import "OFApplication.h"
 #import "OFData.h"
+#import "OFDictionary.h"
+#import "OFLocale.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -34,7 +37,6 @@
 int _ObjFWTLS_reference;
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
-static mbedtls_x509_crt CAChain;
 
 @implementation OFMbedTLSTLSStream
 static int
@@ -101,11 +103,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	    NULL, 0) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-
-	mbedtls_x509_crt_init(&CAChain);
-	if (mbedtls_x509_crt_parse_file(&CAChain, OF_MBEDTLS_CA_PATH) != 0)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
 }
 
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
@@ -115,6 +112,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	@try {
 		_underlyingStream.delegate = self;
+
+		mbedtls_x509_crt_init(&_CAChain);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -129,6 +128,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		[self close];
 
 	[_host release];
+
+	mbedtls_x509_crt_free(&_CAChain);
 
 	[super dealloc];
 }
@@ -214,6 +215,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *CAFilePath;
 	id exception = nil;
 	int status;
 
@@ -230,7 +233,20 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
 	mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
 	    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
-	mbedtls_ssl_conf_ca_chain(&_config, &CAChain, NULL);
+
+	/* TODO: Add other ways to add a CA chain */
+	CAFilePath = [[OFApplication environment]
+	    objectForKey: @"OBJFW_MBEDTLS_CA_PATH"];
+	if (CAFilePath != nil) {
+		if (mbedtls_x509_crt_parse_file(&_CAChain,
+		    [CAFilePath cStringWithEncoding: [OFLocale encoding]]) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
+
+	mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
 
 	mbedtls_ssl_init(&_SSL);
 	if (mbedtls_ssl_setup(&_SSL, &_config) != 0)
@@ -256,11 +272,13 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						length: 0
 					   runLoopMode: runLoopMode];
 		[_delegate retain];
+		objc_autoreleasePoolPop(pool);
 		return;
 	} else if (status == MBEDTLS_ERR_SSL_WANT_WRITE) {
 		[_underlyingStream asyncWriteData: [OFData data]
 				      runLoopMode: runLoopMode];
 		[_delegate retain];
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -278,6 +296,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream

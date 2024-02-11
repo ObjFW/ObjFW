@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE} ${TLS}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -98,7 +98,6 @@ SRCS = OFASN1BitString.m		\
        OFString+PropertyListParsing.m	\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       ${OF_SUBPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -121,29 +120,43 @@ SRCS = OFASN1BitString.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
+       ${USE_SRCS_SUBPROCESSES}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFDNSQuery.m			\
+SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
+	       OFADNSResourceRecord.m		\
+	       OFCNAMEDNSResourceRecord.m	\
+	       OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
+	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       OFLOCDNSResourceRecord.m		\
+	       OFMXDNSResourceRecord.m		\
+	       OFNSDNSResourceRecord.m		\
+	       OFPTRDNSResourceRecord.m		\
+	       OFRPDNSResourceRecord.m		\
+	       OFSOADNSResourceRecord.m		\
+	       OFSRVDNSResourceRecord.m		\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
+	       OFTXTDNSResourceRecord.m		\
 	       OFUDPSocket.m			\
+	       OFURIDNSResourceRecord.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
@@ -153,6 +166,7 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
 		    OFUNIXStreamSocket.m
+SRCS_SUBPROCESSES = OFSubprocess.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\

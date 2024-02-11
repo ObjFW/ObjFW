@@ -67,20 +67,8 @@
 - (void)ASN1DERRepresentationTests;
 @end
 
-@interface TestsAppDelegate (OFArrayTests)
-- (void)arrayTests;
-@end
-
 @interface TestsAppDelegate (OFBlockTests)
 - (void)blockTests;
-@end
-
-@interface TestsAppDelegate (OFCharacterSetTests)
-- (void)characterSetTests;
-@end
-
-@interface TestsAppDelegate (OFColorTests)
-- (void)colorTests;
 @end
 
 @interface TestsAppDelegate (OFDDPSocketTests)
@@ -93,10 +81,6 @@
 
 @interface TestsAppDelegate (OFDataTests)
 - (void)dataTests;
-@end
-
-@interface TestsAppDelegate (OFDateTests)
-- (void)dateTests;
 @end
 
 @interface TestsAppDelegate (OFDictionaryTests)
@@ -119,28 +103,8 @@
 - (void)HTTPCookieManagerTests;
 @end
 
-@interface TestsAppDelegate (OFINIFileTests)
-- (void)INIFileTests;
-@end
-
-@interface TestsAppDelegate (OFIRITests)
-- (void)IRITests;
-@end
-
 @interface TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests;
-@end
-
-@interface TestsAppDelegate (OFInvocationTests)
-- (void)invocationTests;
-@end
-
-@interface TestsAppDelegate (OFJSONTests)
-- (void)JSONTests;
-@end
-
-@interface TestsAppDelegate (OFHMACTests)
-- (void)HMACTests;
 @end
 
 @interface TestsAppDelegate (OFKernelEventObserverTests)
@@ -155,44 +119,16 @@
 - (void)localeTests;
 @end
 
-@interface TestsAppDelegate (OFMD5HashTests)
-- (void)MD5HashTests;
-@end
-
-@interface TestsAppDelegate (OFMatrix4x4Tests)
-- (void)matrix4x4Tests;
-@end
-
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
-@end
-
-@interface TestsAppDelegate (OFMethodSignatureTests)
-- (void)methodSignatureTests;
 @end
 
 @interface TestsAppDelegate (OFNotificationCenterTests)
 - (void)notificationCenterTests;
 @end
 
-@interface TestsAppDelegate (OFNumberTests)
-- (void)numberTests;
-@end
-
 @interface TestsAppDelegate (OFObjectTests)
 - (void)objectTests;
-@end
-
-@interface TestsAppDelegate (OFPBKDF2Tests)
-- (void)PBKDF2Tests;
-@end
-
-@interface TestsAppDelegate (OFPropertyListTests)
-- (void)propertyListTests;
-@end
-
-@interface TestsAppDelegate (OFPluginTests)
-- (void)pluginTests;
 @end
 
 @interface TestsAppDelegate (RuntimeTests)
@@ -201,34 +137,6 @@
 
 @interface TestsAppDelegate (RuntimeARCTests)
 - (void)runtimeARCTests;
-@end
-
-@interface TestsAppDelegate (OFRIPEMD160HashTests)
-- (void)RIPEMD160HashTests;
-@end
-
-@interface TestsAppDelegate (OFScryptTests)
-- (void)scryptTests;
-@end
-
-@interface TestsAppDelegate (OFSHA1HashTests)
-- (void)SHA1HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA224HashTests)
-- (void)SHA224HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA256HashTests)
-- (void)SHA256HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA384HashTests)
-- (void)SHA384HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA512HashTests)
-- (void)SHA512HashTests;
 @end
 
 @interface TestsAppDelegate (OFSPXSocketTests)
@@ -247,10 +155,6 @@
 - (void)systemInfoTests;
 @end
 
-@interface TestsAppDelegate (OFSocketTests)
-- (void)socketTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
@@ -261,10 +165,6 @@
 
 @interface TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests;
-@end
-
-@interface TestsAppDelegate (OFThreadTests)
-- (void)threadTests;
 @end
 
 @interface TestsAppDelegate (OFUDPSocketTests)

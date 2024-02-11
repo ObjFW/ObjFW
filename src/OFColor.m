@@ -111,7 +111,7 @@ OF_SINGLETON_METHODS
 
 PREDEFINED_COLOR(black,   0.00f, 0.00f, 0.00f)
 PREDEFINED_COLOR(silver,  0.75f, 0.75f, 0.75f)
-PREDEFINED_COLOR(grey,    0.50f, 0.50f, 0.50f)
+PREDEFINED_COLOR(gray,    0.50f, 0.50f, 0.50f)
 PREDEFINED_COLOR(white,   1.00f, 1.00f, 1.00f)
 PREDEFINED_COLOR(maroon,  0.50f, 0.00f, 0.00f)
 PREDEFINED_COLOR(red,     1.00f, 0.00f, 0.00f)
@@ -125,6 +125,11 @@ PREDEFINED_COLOR(navy,    0.00f, 0.00f, 0.50f)
 PREDEFINED_COLOR(blue,    0.00f, 0.00f, 1.00f)
 PREDEFINED_COLOR(teal,    0.00f, 0.50f, 0.50f)
 PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
+
++ (OFColor *)grey
+{
+	return [self gray];
+}
 
 + (instancetype)colorWithRed: (float)red
 		       green: (float)green

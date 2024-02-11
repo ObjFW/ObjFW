@@ -375,41 +375,20 @@ main(int argc, char *argv[])
 	[self runtimeARCTests];
 #endif
 	[self objectTests];
-	[self methodSignatureTests];
-	[self invocationTests];
 	[self forwardingTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif
 	[self stringTests];
-	[self characterSetTests];
 	[self dataTests];
-	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];
 	[self setTests];
-	[self dateTests];
 	[self valueTests];
-	[self numberTests];
-	[self colorTests];
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
-	[self MD5HashTests];
-	[self RIPEMD160HashTests];
-	[self SHA1HashTests];
-	[self SHA224HashTests];
-	[self SHA256HashTests];
-	[self SHA384HashTests];
-	[self SHA512HashTests];
-	[self HMACTests];
-	[self PBKDF2Tests];
-	[self scryptTests];
-#ifdef HAVE_CODEPAGE_437
-	[self INIFileTests];
-#endif
 #ifdef OF_HAVE_SOCKETS
-	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
 # ifdef OF_HAVE_UNIX_SOCKETS
@@ -426,10 +405,6 @@ main(int argc, char *argv[])
 # endif
 	[self kernelEventObserverTests];
 #endif
-#ifdef OF_HAVE_THREADS
-	[self threadTests];
-#endif
-	[self IRITests];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif
@@ -440,16 +415,8 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-	[self JSONTests];
-	[self propertyListTests];
 	[self ASN1DERParsingTests];
 	[self ASN1DERRepresentationTests];
-
-	[self matrix4x4Tests];
-
-#if defined(OF_HAVE_PLUGINS)
-	[self pluginTests];
-#endif
 
 #ifdef OF_WINDOWS
 	[self windowsRegistryKeyTests];

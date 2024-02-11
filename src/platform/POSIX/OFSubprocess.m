@@ -41,8 +41,11 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#if !defined(HAVE_POSIX_SPAWNP) || !defined(HAVE_SPAWN_H)
+#ifndef OF_MACOS
 extern char **environ;
+#else
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 #endif
 
 @interface OFSubprocess ()
@@ -178,7 +181,7 @@ extern char **environ;
 # endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
-				    argv, env) != 0)
+				    argv, (env != NULL ? env : environ)) != 0)
 					@throw [OFInitializationFailedException
 					    exceptionWithClass: self.class];
 			} @finally {
@@ -187,7 +190,8 @@ extern char **environ;
 			}
 #else
 			if ((_pid = vfork()) == 0) {
-				environ = env;
+				if (env != NULL)
+					environ = env;
 
 				close(_readPipe[0]);
 				close(_writePipe[1]);
@@ -376,7 +380,9 @@ extern char **environ;
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self closeForWriting];
+	if (_writePipe[1] != -1)
+		[self closeForWriting];
+
 	close(_readPipe[0]);
 
 	if (_pid != -1) {

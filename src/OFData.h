@@ -125,7 +125,7 @@ typedef enum {
  *	  taking over ownership of the specified items pointer.
  *
  * If initialization fails for whatever reason, the passed memory is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -142,7 +142,7 @@ typedef enum {
  *	  specified size by taking ownership of the specified items pointer.
  *
  * If initialization fails for whatever reason, the passed memory is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -244,7 +244,7 @@ typedef enum {
  *	  pointer.
  *
  * If initialization fails for whatever reason, the passed memory is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -262,7 +262,7 @@ typedef enum {
  *	  items pointer.
  *
  * If initialization fails for whatever reason, the passed memory is *not*
- * free'd if `freeWhenDone` is true.
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items

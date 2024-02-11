@@ -102,5 +102,7 @@ objc_destructInstance(id object)
 			break;
 	}
 
+	objc_removeAssociatedObjects(object);
+
 	return object;
 }

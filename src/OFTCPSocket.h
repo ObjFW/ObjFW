@@ -80,7 +80,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /**
- * @brief Whether the socket sends keep alives for the connection.
+ * @brief Whether the socket sends keep-alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  *
@@ -174,7 +174,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
@@ -197,7 +198,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToHost: (OFString *)host

@@ -4,6 +4,23 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.7 -> ObjFW 1.0.8, 2024-01-21
+ * Fixes compilation on NetBSD, OpenBSD, OpenIndiana etc. which was broken by
+   1.0.7.
+
+ObjFW 1.0.6 -> ObjFW 1.0.7, 2024-01-21
+ * Fixes inheriting the environment in OFSubprocess.
+ * Fixes dealloc in OFSubprocess when -[closeForWriting] was called.
+ + Adds tests for OFSubprocess.
+ * Changes the key for +[OFSystemInfo networkInterfaces] to the adapter name
+   on Windows XP and newer to avoid a possible collission on the adapter index.
+ * Fixes compilation with old MinGW versions.
+ * Fixes the documentation for OFSRVDNSResourceRecord.
+
+ObjFW 1.0.5 -> ObjFW 1.0.6, 2024-01-15
+ * Fixes compatibility with autoconf 2.72.
+ * Fixes OFDNSResolver's handling of types, classes and lengths > 255.
+
 ObjFW 1.0.4 -> ObjFW 1.0.5, 2023-11-05
  * Fixes the calculation of the extra alignment in OFAllocObject()
  * Fixes +[OFSystemInfo networkInterfaces] on OpenBSD and Windows 98

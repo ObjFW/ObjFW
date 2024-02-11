@@ -30,7 +30,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFArray *colors = [OFArray arrayWithObjects:
-	    [OFColor black], [OFColor silver], [OFColor grey], [OFColor white],
+	    [OFColor black], [OFColor silver], [OFColor gray], [OFColor white],
 	    [OFColor maroon], [OFColor red], [OFColor purple],
 	    [OFColor fuchsia], [OFColor green], [OFColor lime], [OFColor olive],
 	    [OFColor yellow], [OFColor navy], [OFColor blue], [OFColor teal],

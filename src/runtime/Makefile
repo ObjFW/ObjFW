@@ -11,6 +11,7 @@ LIB_MINOR = ${OBJFWRT_LIB_MINOR}
 LIB_PATCH = ${OBJFWRT_LIB_PATCH}
 
 SRCS = arc.m			\
+       association.m		\
        autorelease.m		\
        category.m		\
        class.m			\

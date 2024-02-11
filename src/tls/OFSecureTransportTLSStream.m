@@ -182,6 +182,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	OSStatus status;
 
@@ -231,6 +232,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 						length: 0
 					   runLoopMode: runLoopMode];
 		[_delegate retain];
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -246,6 +248,8 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: _host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream

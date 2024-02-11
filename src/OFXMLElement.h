@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /**
- * @brief An array of OFXMLNodes with all children of the element.
+ * @brief An array of @ref OFXMLNode with all children of the element.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFXMLNode *) *children;
@@ -321,7 +321,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Inserts the specified children at the specified index.
  *
- * @param children An array of OFXMLNodes which are added as children
+ * @param children An array of @ref OFXMLNode which are added as children
  * @param index The index where the child is added
  */
 - (void)insertChildren: (OFArray OF_GENERIC(OFXMLNode *) *)children

@@ -1,7 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}	\
-	  ${OBJC_SYNC}	\
+SUBDIRS = ${OBJC_SYNC}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
@@ -9,9 +8,7 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx	\
-	testfile_bin.m		\
-	testfile_ini.m
+	${PROG_NOINST}.rpx
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -19,36 +16,14 @@ STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
        OFASN1DERParsingTests.m		\
        OFASN1DERRepresentationTests.m	\
-       OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
-       OFCharacterSetTests.m		\
-       OFColorTests.m			\
        OFDataTests.m			\
-       OFDateTests.m			\
        OFDictionaryTests.m		\
-       OFHMACTests.m			\
-       OFINIFileTests.m			\
-       OFIRITests.m			\
-       OFInvocationTests.m		\
-       OFJSONTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
-       OFMD5HashTests.m			\
-       OFMatrix4x4Tests.m		\
        OFMemoryStreamTests.m		\
-       OFMethodSignatureTests.m		\
        OFNotificationCenterTests.m	\
-       OFNumberTests.m			\
        OFObjectTests.m			\
-       OFPBKDF2Tests.m			\
-       OFPropertyListTests.m		\
-       OFRIPEMD160HashTests.m		\
-       OFSHA1HashTests.m		\
-       OFSHA224HashTests.m		\
-       OFSHA256HashTests.m		\
-       OFSHA384HashTests.m		\
-       OFSHA512HashTests.m		\
-       OFScryptTests.m			\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
@@ -61,19 +36,13 @@ SRCS = ForwardingTests.m		\
        ${RUNTIME_ARC_TESTS_M}		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_THREADS}		\
-       ${USE_SRCS_WINDOWS}		\
-       testfile_bin.m			\
-       testfile_ini.m
-SRCS_PLUGINS = OFPluginTests.m
+       ${USE_SRCS_WINDOWS}
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
-	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
@@ -85,18 +54,12 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
-SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
-
-testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
-testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -155,24 +118,6 @@ run:
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
-run-on-ios: all
-	if [ -z "${IOS_HOST}" ]; then \
-		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
-		exit 1; \
-	fi
-	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
-	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
-	scp -q ../src/libobjfw.dylib \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
-	scp -q plugin/TestPlugin.bundle \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
-	echo "Running tests binary on iOS device ${IOS_HOST}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${WRAPPER} ./tests'
-
 run-on-android: all
 	echo "Uploading files to Android device..."
 	if test -f ../src/libobjfw.so; then \
@@ -185,10 +130,6 @@ run-on-android: all
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
-	if test -f plugin/TestPlugin.so; then \
-		adb push plugin/TestPlugin.so \
-		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
-	fi
 	echo "Running tests binary on Android device..."
 	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ${WRAPPER} ./tests'
 
@@ -228,7 +169,11 @@ ${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
 ${PROG_NOINST}.rpx: ${PROG_NOINST}
 	elf2rpl $< $@
 
-CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
+CPPFLAGS += -I../src				\
+	    -I../src/exceptions			\
+	    -I../src/runtime			\
+	    -I..				\
+	    -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}

@@ -209,7 +209,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
- * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
@@ -242,7 +243,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
- * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
  * @param block The block to call when the packet has been received. If the
  *		block returns true, it will be called again with the same
  *		buffer and maximum length when more packets have been received.
@@ -276,7 +278,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
- * @param runLoopMode The run loop mode in which to perform the async send
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
  */
 - (void)asyncSendData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode;
 
@@ -296,7 +299,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
- * @param runLoopMode The run loop mode in which to perform the async send
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
@@ -340,7 +344,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously accept an incoming connection.
  *
- * @param runLoopMode The run loop mode in which to perform the async accept
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      accept
  */
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
@@ -357,7 +362,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously accept an incoming connection.
  *
- * @param runLoopMode The run loop mode in which to perform the async accept
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      accept
  * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.

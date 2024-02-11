@@ -62,7 +62,7 @@ extern "C" {
 /**
  * @brief Derives a key from a password and a salt using PBKDF2.
  *
- * @note This will call @ref OFHMAC::reset on the `HMAC` first, making it
+ * @note This will call @ref OFHMAC#reset on the `HMAC` first, making it
  *	 possible to reuse the `HMAC`, but also meaning all previous results
  *	 from the `HMAC` get invalidated if they have not been copied.
  *

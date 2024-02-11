@@ -13,7 +13,7 @@
  * file.
  */
 
-#ifdef OF_BRIDGE_LOCAL_INCLUDES
+#ifdef OBJFWBRIDGE_LOCAL_INCLUDES
 # import "OFSet.h"
 #else
 # if defined(__has_feature) && __has_feature(modules)

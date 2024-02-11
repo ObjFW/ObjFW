@@ -198,7 +198,7 @@ extern "C" {
 extern OFString *OFZIPArchiveEntryVersionToString(uint16_t version);
 
 /**
- * @brief Convers the ZIP entry compression method to a string.
+ * @brief Converts the ZIP entry compression method to a string.
  *
  * @param compressionMethod The ZIP entry compression method to convert to a
  *			    string

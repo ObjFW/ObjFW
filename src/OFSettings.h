@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Paths are delimited by dots, for example `category.subcategory.key`.
  *
- * @note The behaviour when accessing a path with a different type than it has
+ * @note The behavior when accessing a path with a different type than it has
  *	 been accessed with before is undefined! If you want to change the type
  *	 for a path, remove it and then set it with the new type.
  *
