@@ -67,10 +67,6 @@
 - (void)blockTests;
 @end
 
-@interface TestsAppDelegate (OFCharacterSetTests)
-- (void)characterSetTests;
-@end
-
 @interface TestsAppDelegate (OFDDPSocketTests)
 - (void)DDPSocketTests;
 @end

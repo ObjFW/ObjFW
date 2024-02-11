@@ -382,7 +382,6 @@ main(int argc, char *argv[])
 	[self blockTests];
 #endif
 	[self stringTests];
-	[self characterSetTests];
 	[self dataTests];
 	[self arrayTests];
 	[self dictionaryTests];
