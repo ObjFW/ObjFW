@@ -3,7 +3,8 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFNumberTests.m		\
+SRCS = OFColorTests.m		\
+       OFNumberTests.m		\
        OFPBKDF2Tests.m		\
        OFPropertyListTests.m	\
        ${USE_SRCS_PLUGINS}
