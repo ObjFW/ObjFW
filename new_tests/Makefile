@@ -2,7 +2,14 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS}
 
-CLEAN = testfile_bin.m
+CLEAN = EBOOT.PBP		\
+	boot.dol		\
+	${PROG_NOINST}.arm9	\
+	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.nro	\
+	${PROG_NOINST}.rpx	\
+	testfile_bin.m		\
+	testfile_ini.m
 
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFArrayTests.m			\
@@ -13,6 +20,7 @@ SRCS = OFArrayTests.m			\
        OFCryptographicHashTests.m	\
        OFDateTests.m			\
        OFHMACTests.m			\
+       OFINIFileTests.m			\
        OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
@@ -27,7 +35,8 @@ SRCS = OFArrayTests.m			\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
        ${USE_SRCS_THREADS}		\
-       testfile_bin.m
+       testfile_bin.m			\
+       testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
@@ -37,6 +46,8 @@ include ../buildsys.mk
 
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
+testfile_ini.m: testfile.ini
+	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:

@@ -8,8 +8,7 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx	\
-	testfile_ini.m
+	${PROG_NOINST}.rpx
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -18,7 +17,6 @@ SRCS = ForwardingTests.m		\
        ${OF_BLOCK_TESTS_M}		\
        OFDataTests.m			\
        OFDictionaryTests.m		\
-       OFINIFileTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
        OFMemoryStreamTests.m		\
@@ -37,8 +35,7 @@ SRCS = ForwardingTests.m		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_WINDOWS}		\
-       testfile_ini.m
+       ${USE_SRCS_WINDOWS}
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
@@ -61,9 +58,6 @@ IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
-
-testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:

@@ -95,10 +95,6 @@
 - (void)HTTPCookieManagerTests;
 @end
 
-@interface TestsAppDelegate (OFINIFileTests)
-- (void)INIFileTests;
-@end
-
 @interface TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests;
 @end
