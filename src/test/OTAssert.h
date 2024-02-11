@@ -29,6 +29,8 @@
 #define OTAssertEqualObjects(a, b, ...) OTAssert([a isEqual: b], ## __VA_ARGS__)
 #define OTAssertNotEqualObjects(a, b, ...) \
 	OTAssert(![a isEqual: b], ## __VA_ARGS__)
+#define OTAssertNil(object, ...) OTAssert(object == nil, ## __VA_ARGS__)
+#define OTAssertNotNil(object, ...) OTAssert(object != nil, ## __VA_ARGS__)
 
 #ifdef __cplusplus
 extern "C" {
