@@ -151,7 +151,9 @@ isSubclassOfClass(Class class, Class superclass)
 
 	for (Class class in testClasses) {
 		[OFStdOut setForegroundColor: [OFColor teal]];
-		[OFStdOut writeFormat: @"Running tests in %@\n", class];
+		[OFStdOut writeFormat: @"Running ", class];
+		[OFStdOut setForegroundColor: [OFColor aqua]];
+		[OFStdOut writeFormat: @"%@\n", class];
 		[OFStdOut reset];
 
 		for (OFValue *test in [self testsInClass: class]) {
@@ -214,9 +216,14 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
+	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	[OFStdOut writeFormat: @"%zu", numSucceeded];
 	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeFormat: @"%zu test(s) succeeded, %zu test(s) failed.\n",
-			       numSucceeded, numFailed];
+	[OFStdOut writeString: @" test(s) succeeded, "];
+	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	[OFStdOut writeFormat: @"%zu", numFailed];
+	[OFStdOut setForegroundColor: [OFColor purple]];
+	[OFStdOut writeLine: @" test(s) failed."];
 	[OFStdOut reset];
 
 	[OFApplication terminateWithStatus: (int)numFailed];
