@@ -79,62 +79,36 @@
 
 - (void)testDetectUnsupportedVersion
 {
-	bool caught = false;
-	@try {
-		[[PLIST(@"<string/>")
-		    stringByReplacingOccurrencesOfString: @"1.0"
-					      withString: @"1.1"]
-		objectByParsingPropertyList];
-	} @catch (OFUnsupportedVersionException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
+	OTAssertThrowsSpecific(
+	    [[PLIST(@"<string/>")
+	    stringByReplacingOccurrencesOfString: @"1.0"
+				      withString: @"1.1"]
+	    objectByParsingPropertyList],
+	    OFUnsupportedVersionException);
 }
 
 - (void)testDetectInvalidFormat
 {
-	bool caught;
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<string x='b'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	caught = false;
-	@try {
-		[PLIST(@"<string x='b'/>") objectByParsingPropertyList];
-	} @catch (OFInvalidFormatException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<string xmlns='foo'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	caught = false;
-	@try {
-		[PLIST(@"<string xmlns='foo'/>") objectByParsingPropertyList];
-	} @catch (OFInvalidFormatException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<dict count='0'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	caught = false;
-	@try {
-		[PLIST(@"<dict count='0'/>") objectByParsingPropertyList];
-	} @catch (OFInvalidFormatException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<dict><key/><string/><key/></dict>")
+	    objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	caught = false;
-	@try {
-		[PLIST(@"<dict><key/><string/><key/></dict>")
-		    objectByParsingPropertyList];
-	} @catch (OFInvalidFormatException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
-
-	caught = false;
-	@try {
-		[PLIST(@"<dict><key x='x'/><string/></dict>")
-		    objectByParsingPropertyList];
-	} @catch (OFInvalidFormatException *e) {
-		caught = true;
-	}
-	OTAssertTrue(caught);
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<dict><key x='x'/><string/></dict>")
+	    objectByParsingPropertyList],
+	    OFInvalidFormatException);
 }
 @end
