@@ -28,6 +28,7 @@ generators/library/gen_libraries
 generators/unicode/gen_tables
 new_tests/EBOOT.PBP
 new_tests/PARAM.SFO
+new_tests/plugin/Info.plist
 new_tests/tests
 new_tests/tests.3dsx
 new_tests/tests.arm9
@@ -48,7 +49,6 @@ tests/EBOOT.PBP
 tests/Info.plist
 tests/PARAM.SFO
 tests/objc_sync/objc_sync
-tests/plugin/Info.plist
 tests/subprocess/subprocess
 tests/terminal/terminal_tests
 tests/testfile_bin.m

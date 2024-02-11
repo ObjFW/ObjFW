@@ -390,7 +390,6 @@ main(int argc, char *argv[])
 	[self setTests];
 	[self dateTests];
 	[self valueTests];
-	[self colorTests];
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
@@ -440,9 +439,6 @@ main(int argc, char *argv[])
 	[self JSONTests];
 	[self matrix4x4Tests];
 
-#ifdef OF_HAVE_PLUGINS
-	[self pluginTests];
-#endif
 #ifdef OF_HAVE_SUBPROCESSES
 	[self subprocessTests];
 #endif

@@ -26,10 +26,10 @@
 @implementation OFPluginTests
 - (void)testPlugin
 {
+	TestPlugin *test = nil;
 	OFString *path;
 	OFPlugin *plugin;
 	Class (*class)(void);
-	TestPlugin *test;
 
 #ifndef OF_IOS
 	path = [OFPlugin pathForName: @"plugin/TestPlugin"];

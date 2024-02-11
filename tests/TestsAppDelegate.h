@@ -71,10 +71,6 @@
 - (void)characterSetTests;
 @end
 
-@interface TestsAppDelegate (OFColorTests)
-- (void)colorTests;
-@end
-
 @interface TestsAppDelegate (OFDDPSocketTests)
 - (void)DDPSocketTests;
 @end
@@ -165,10 +161,6 @@
 
 @interface TestsAppDelegate (OFObjectTests)
 - (void)objectTests;
-@end
-
-@interface TestsAppDelegate (OFPluginTests)
-- (void)pluginTests;
 @end
 
 @interface TestsAppDelegate (RuntimeTests)
