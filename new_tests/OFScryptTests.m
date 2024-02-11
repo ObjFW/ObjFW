@@ -17,9 +17,12 @@
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFScrypt";
+@interface OFScryptTests: OTTestCase
+@end
+
 /* Test vectors form RFC 7914 */
 static const unsigned char salsa20Input[64] = {
 	0x7E, 0x87, 0x9A, 0x21, 0x4F, 0x3E, 0xC9, 0x86, 0x7C, 0xA9, 0x40, 0xE6,
@@ -133,31 +136,38 @@ static const unsigned char testVector4[64] = {
 };
 #endif
 
-@implementation TestsAppDelegate (OFScryptTests)
-- (void)scryptTests
+@implementation OFScryptTests
+- (void)testSalsa20_8Core
 {
-	void *pool = objc_autoreleasePoolPush();
 	uint32_t salsa20Buffer[16];
+
+	memcpy(salsa20Buffer, salsa20Input, 64);
+	OFSalsa20_8Core(salsa20Buffer);
+	OTAssertEqual(memcmp(salsa20Buffer, salsa20Output, 64), 0);
+}
+
+- (void)testBlockMix
+{
 	uint32_t blockMixBuffer[32];
+
+	OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1);
+	OTAssertEqual(memcmp(blockMixBuffer, blockMixOutput, 128), 0);
+}
+
+- (void)testROMix
+{
 	uint32_t ROMixBuffer[32], ROMixTmp[17 * 32];
+
+	memcpy(ROMixBuffer, ROMixInput, 128);
+	OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp);
+	OTAssertEqual(memcmp(ROMixBuffer, ROMixOutput, 128), 0);
+}
+
+- (void)testRFC7941TestVector1
+{
 	unsigned char output[64];
 
-	TEST(@"Salsa20/8 Core",
-	    R(memcpy(salsa20Buffer, salsa20Input, 64)) &&
-	    R(OFSalsa20_8Core(salsa20Buffer)) &&
-	    memcmp(salsa20Buffer, salsa20Output, 64) == 0)
-
-	TEST(@"Block mix",
-	    R(OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1)) &&
-	    memcmp(blockMixBuffer, blockMixOutput, 128) == 0)
-
-	TEST(@"ROMix",
-	    R(memcpy(ROMixBuffer, ROMixInput, 128)) &&
-	    R(OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp)) &&
-	    memcmp(ROMixBuffer, ROMixOutput, 128) == 0)
-
-	TEST(@"scrypt test vector #1",
-	    R(OFScrypt((OFScryptParameters){
+	OFScrypt((OFScryptParameters){
 		.blockSize             = 1,
 		.costFactor            = 16,
 		.parallelization       = 1,
@@ -168,10 +178,16 @@ static const unsigned char testVector4[64] = {
 		.key                   = output,
 		.keyLength             = 64,
 		.allowsSwappableMemory = true
-	    })) && memcmp(output, testVector1, 64) == 0)
+	});
 
-	TEST(@"scrypt test vector #2",
-	    R(OFScrypt((OFScryptParameters){
+	OTAssertEqual(memcmp(output, testVector1, 64), 0);
+}
+
+- (void)testRFC7941TestVector2
+{
+	unsigned char output[64];
+
+	OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 1024,
 		.parallelization       = 16,
@@ -182,12 +198,18 @@ static const unsigned char testVector4[64] = {
 		.key                   = output,
 		.keyLength             = 64,
 		.allowsSwappableMemory = true
-	    })) && memcmp(output, testVector2, 64) == 0)
+	});
 
-	/* The third test vector is too expensive for m68k. */
+	OTAssertEqual(memcmp(output, testVector2, 64), 0);
+}
+
+/* The third test vector is too expensive for m68k. */
 #ifndef OF_M68K
-	TEST(@"scrypt test vector #3",
-	    R(OFScrypt((OFScryptParameters){
+- (void)testRFC7941TestVector3
+{
+	unsigned char output[64];
+
+	OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 16384,
 		.parallelization       = 1,
@@ -198,13 +220,19 @@ static const unsigned char testVector4[64] = {
 		.key                   = output,
 		.keyLength             = 64,
 		.allowsSwappableMemory = true
-	    })) && memcmp(output, testVector3, 64) == 0)
+	});
+
+	OTAssertEqual(memcmp(output, testVector3, 64), 0);
+}
 #endif
 
-	/* The forth test vector is too expensive to include it in the tests. */
+/* The forth test vector is too expensive to include it in the tests. */
 #if 0
-	TEST(@"scrypt test vector #4",
-	    R(OFScrypt((OFScryptParameters){
+- (void)testRFC7941TestVector4
+{
+	unsigned char output[64];
+
+	OFScrypt((OFScryptParameters){
 		.blockSize             = 8,
 		.costFactor            = 1048576,
 		.parallelization       = 1,
@@ -215,9 +243,9 @@ static const unsigned char testVector4[64] = {
 		.key                   = output,
 		.keyLength             = 64,
 		.allowsSwappableMemory = true
-	    })) && memcmp(output, testVector4, 64) == 0)
-#endif
+	});
 
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqual(memcmp(output, testVector4, 64), 0);
 }
+#endif
 @end

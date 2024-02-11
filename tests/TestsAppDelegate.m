@@ -401,7 +401,6 @@ main(int argc, char *argv[])
 	[self SHA384HashTests];
 	[self SHA512HashTests];
 	[self HMACTests];
-	[self scryptTests];
 #ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];
 #endif

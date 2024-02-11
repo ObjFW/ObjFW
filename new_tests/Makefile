@@ -8,6 +8,7 @@ SRCS = OFColorTests.m		\
        OFNumberTests.m		\
        OFPBKDF2Tests.m		\
        OFPropertyListTests.m	\
+       OFScryptTests.m		\
        ${USE_SRCS_PLUGINS}
 SRCS_PLUGINS = OFPluginTests.m
 

@@ -175,10 +175,6 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (OFScryptTests)
-- (void)scryptTests;
-@end
-
 @interface TestsAppDelegate (OFSHA1HashTests)
 - (void)SHA1HashTests;
 @end

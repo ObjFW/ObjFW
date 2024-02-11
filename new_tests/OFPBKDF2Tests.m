@@ -47,15 +47,15 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 1,
-	    .salt                  = (unsigned char *)"salt",
-	    .saltLength            = 4,
-	    .password              = "password",
-	    .passwordLength        = 8,
-	    .key                   = key,
-	    .keyLength             = 20,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 1,
+		.salt                  = (unsigned char *)"salt",
+		.saltLength            = 4,
+		.password              = "password",
+		.passwordLength        = 8,
+		.key                   = key,
+		.keyLength             = 20,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\x0C\x60\xC8\x0F\x96\x1F\x0E\x71\xF3\xA9\xB5"
@@ -67,15 +67,15 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 2,
-	    .salt                  = (unsigned char *)"salt",
-	    .saltLength            = 4,
-	    .password              = "password",
-	    .passwordLength        = 8,
-	    .key                   = key,
-	    .keyLength             = 20,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 2,
+		.salt                  = (unsigned char *)"salt",
+		.saltLength            = 4,
+		.password              = "password",
+		.passwordLength        = 8,
+		.key                   = key,
+		.keyLength             = 20,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\xEA\x6C\x01\x4D\xC7\x2D\x6F\x8C\xCD\x1E\xD9"
@@ -87,15 +87,15 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 4096,
-	    .salt                  = (unsigned char *)"salt",
-	    .saltLength            = 4,
-	    .password              = "password",
-	    .passwordLength        = 8,
-	    .key                   = key,
-	    .keyLength             = 20,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 4096,
+		.salt                  = (unsigned char *)"salt",
+		.saltLength            = 4,
+		.password              = "password",
+		.passwordLength        = 8,
+		.key                   = key,
+		.keyLength             = 20,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\x4B\x00\x79\x01\xB7\x65\x48\x9A\xBE\xAD\x49"
@@ -109,15 +109,15 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 16777216,
-	    .salt                  = (unsigned char *)"salt",
-	    .saltLength            = 4,
-	    .password              = "password",
-	    .passwordLength        = 8,
-	    .key                   = key,
-	    .keyLength             = 20,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 16777216,
+		.salt                  = (unsigned char *)"salt",
+		.saltLength            = 4,
+		.password              = "password",
+		.passwordLength        = 8,
+		.key                   = key,
+		.keyLength             = 20,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\xEE\xFE\x3D\x61\xCD\x4D\xA4\xE4\xE9\x94\x5B"
@@ -130,16 +130,16 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 4096,
-	    .salt                  = (unsigned char *)"saltSALTsaltSALTsalt"
-				     "SALTsaltSALTsalt",
-	    .saltLength            = 36,
-	    .password              = "passwordPASSWORDpassword",
-	    .passwordLength        = 24,
-	    .key                   = key,
-	    .keyLength             = 25,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 4096,
+		.salt                  = (unsigned char *)"saltSALTsaltSALTsalt"
+					 "SALTsaltSALTsalt",
+		.saltLength            = 36,
+		.password              = "passwordPASSWORDpassword",
+		.passwordLength        = 24,
+		.key                   = key,
+		.keyLength             = 25,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\x3D\x2E\xEC\x4F\xE4\x1C\x84\x9B\x80\xC8\xD8"
@@ -151,15 +151,15 @@
 	unsigned char key[25];
 
 	OFPBKDF2((OFPBKDF2Parameters){
-	    .HMAC                  = _HMAC,
-	    .iterations            = 4096,
-	    .salt                  = (unsigned char *)"sa\0lt",
-	    .saltLength            = 5,
-	    .password              = "pass\0word",
-	    .passwordLength        = 9,
-	    .key                   = key,
-	    .keyLength             = 16,
-	    .allowsSwappableMemory = true
+		.HMAC                  = _HMAC,
+		.iterations            = 4096,
+		.salt                  = (unsigned char *)"sa\0lt",
+		.saltLength            = 5,
+		.password              = "pass\0word",
+		.passwordLength        = 9,
+		.key                   = key,
+		.keyLength             = 16,
+		.allowsSwappableMemory = true
 	});
 
 	OTAssertEqual(memcmp(key, "\x56\xFA\x6A\xA7\x55\x48\x09\x9D\xCC\x37\xD7"

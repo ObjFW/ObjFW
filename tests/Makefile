@@ -41,7 +41,6 @@ SRCS = ForwardingTests.m		\
        OFSHA256HashTests.m		\
        OFSHA384HashTests.m		\
        OFSHA512HashTests.m		\
-       OFScryptTests.m			\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
