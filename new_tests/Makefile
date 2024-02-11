@@ -6,6 +6,7 @@ PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFCharacterSetTests.m	\
        OFColorTests.m		\
        OFIRITests.m		\
+       OFMethodSignatureTests.m	\
        OFNumberTests.m		\
        OFPBKDF2Tests.m		\
        OFPropertyListTests.m	\

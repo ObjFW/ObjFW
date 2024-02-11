@@ -147,10 +147,6 @@
 - (void)memoryStreamTests;
 @end
 
-@interface TestsAppDelegate (OFMethodSignatureTests)
-- (void)methodSignatureTests;
-@end
-
 @interface TestsAppDelegate (OFNotificationCenterTests)
 - (void)notificationCenterTests;
 @end
