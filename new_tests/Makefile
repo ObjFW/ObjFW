@@ -3,19 +3,23 @@ include ../extra.mk
 SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = OFCharacterSetTests.m	\
-       OFColorTests.m		\
-       OFDateTests.m		\
-       OFIRITests.m		\
-       OFInvocationTests.m	\
-       OFJSONTests.m		\
-       OFMatrix4x4Tests.m	\
-       OFMethodSignatureTests.m	\
-       OFNumberTests.m		\
-       OFPBKDF2Tests.m		\
-       OFPropertyListTests.m	\
-       OFScryptTests.m		\
-       ${USE_SRCS_PLUGINS}	\
+SRCS = OFArrayTests.m			\
+       OFCharacterSetTests.m		\
+       OFColorTests.m			\
+       OFConcreteArrayTests.m		\
+       OFConcreteMutableArrayTests.m	\
+       OFDateTests.m			\
+       OFIRITests.m			\
+       OFInvocationTests.m		\
+       OFJSONTests.m			\
+       OFMatrix4x4Tests.m		\
+       OFMethodSignatureTests.m		\
+       OFMutableArrayTests.m		\
+       OFNumberTests.m			\
+       OFPBKDF2Tests.m			\
+       OFPropertyListTests.m		\
+       OFScryptTests.m			\
+       ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFSocketTests.m

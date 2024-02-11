@@ -59,10 +59,6 @@
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
-@interface TestsAppDelegate (OFArrayTests)
-- (void)arrayTests;
-@end
-
 @interface TestsAppDelegate (OFBlockTests)
 - (void)blockTests;
 @end

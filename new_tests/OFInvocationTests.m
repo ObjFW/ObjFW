@@ -46,6 +46,8 @@ struct TestStruct {
 
 - (void)setUp
 {
+	[super setUp];
+
 	SEL selector = @selector(invocationTestMethod1::::);
 	OFMethodSignature *signature =
 	    [self methodSignatureForSelector: selector];

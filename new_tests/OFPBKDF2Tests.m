@@ -29,6 +29,8 @@
 @implementation OFPBKDF2Tests
 - (void)setUp
 {
+	[super setUp];
+
 	_HMAC = [[OFHMAC alloc] initWithHashClass: [OFSHA1Hash class]
 			    allowsSwappableMemory: true];
 }

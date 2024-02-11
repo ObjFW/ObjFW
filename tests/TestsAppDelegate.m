@@ -381,7 +381,6 @@ main(int argc, char *argv[])
 #endif
 	[self stringTests];
 	[self dataTests];
-	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];
 	[self setTests];

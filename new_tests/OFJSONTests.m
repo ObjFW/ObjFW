@@ -33,6 +33,8 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 @implementation OFJSONTests
 - (void)setUp
 {
+	[super setUp];
+
 	_hashSeed = OFHashSeed;
 	OFHashSeed = 0;
 
@@ -51,6 +53,8 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 - (void)tearDown
 {
 	OFHashSeed = _hashSeed;
+
+	[super tearDown];
 }
 
 - (void)dealloc

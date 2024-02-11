@@ -27,6 +27,8 @@
 @implementation OFMatrix4x4Tests
 - (void)setUp
 {
+	[super setUp];
+
 	_matrix = [[OFMatrix4x4 alloc] initWithValues: (const float [4][4]){
 		{  1,  2,  3,  4 },
 		{  5,  6,  7,  8 },

@@ -101,6 +101,10 @@ isSubclassOfClass(Class class, Class superclass)
 		OFFreeMemory(methods);
 	}
 
+	if (class_getSuperclass(class) != Nil)
+		[tests unionSet:
+		    [self testsInClass: class_getSuperclass(class)]];
+
 	[tests makeImmutable];
 	return tests;
 }

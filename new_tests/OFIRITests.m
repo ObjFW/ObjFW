@@ -31,6 +31,8 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 @implementation OFIRITests
 - (void)setUp
 {
+	[super setUp];
+
 	_IRI[0] = [[OFIRI alloc] initWithString: IRI0String];
 	_IRI[1] = [[OFIRI alloc] initWithString: @"http://foo:80"];
 	_IRI[2] = [[OFIRI alloc] initWithString: @"http://bar/"];

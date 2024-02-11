@@ -27,6 +27,8 @@
 @implementation OFColorTests
 - (void)setUp
 {
+	[super setUp];
+
 	_color = [[OFColor alloc] initWithRed: 63.f / 255
 					green: 127.f / 255
 					 blue: 1

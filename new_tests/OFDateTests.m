@@ -31,6 +31,8 @@
 @implementation OFDateTests
 - (void)setUp
 {
+	[super setUp];
+
 	_date[0] = [[OFDate alloc] initWithTimeIntervalSince1970: 0];
 	_date[1] = [[OFDate alloc]
 	    initWithTimeIntervalSince1970: 3600 * 25 + 5.000002];
