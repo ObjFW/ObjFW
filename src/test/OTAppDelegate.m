@@ -185,6 +185,6 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdOut writeFormat: @"%zu test(s) succeeded, %zu test(s) failed.\n",
 			       numSucceeded, numFailed];
 
-	[OFApplication terminate];
+	[OFApplication terminateWithStatus: (int)numFailed];
 }
 @end
