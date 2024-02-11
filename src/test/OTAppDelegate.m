@@ -18,6 +18,7 @@
 #import "OTAppDelegate.h"
 
 #import "OFColor.h"
+#import "OFMethodSignature.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFValue.h"
@@ -89,13 +90,27 @@ isSubclassOfClass(Class class, Class superclass)
 
 		for (Method *iter = methods; *iter != NULL; iter++) {
 			SEL selector = method_getName(*iter);
+			void *pool;
+			OFMethodSignature *sig;
 
 			if (selector == NULL)
 				continue;
 
-			if (strncmp(sel_getName(selector), "test", 4) == 0)
+			if (strncmp(sel_getName(selector), "test", 4) != 0)
+				continue;
+
+			pool = objc_autoreleasePoolPush();
+			sig = [OFMethodSignature signatureWithObjCTypes:
+			    method_getTypeEncoding(*iter)];
+
+			if (strcmp(sig.methodReturnType, "v") == 0 &&
+			    sig.numberOfArguments == 2 &&
+			    strcmp([sig argumentTypeAtIndex: 0], "@") == 0 &&
+			    strcmp([sig argumentTypeAtIndex: 1], ":") == 0)
 				[tests addObject:
 				    [OFValue valueWithPointer: selector]];
+
+			objc_autoreleasePoolPop(pool);
 		}
 	} @finally {
 		OFFreeMemory(methods);

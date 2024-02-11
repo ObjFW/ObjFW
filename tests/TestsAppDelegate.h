@@ -119,10 +119,6 @@
 - (void)localeTests;
 @end
 
-@interface TestsAppDelegate (OFMD5HashTests)
-- (void)MD5HashTests;
-@end
-
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
 @end
@@ -141,30 +137,6 @@
 
 @interface TestsAppDelegate (RuntimeARCTests)
 - (void)runtimeARCTests;
-@end
-
-@interface TestsAppDelegate (OFRIPEMD160HashTests)
-- (void)RIPEMD160HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA1HashTests)
-- (void)SHA1HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA224HashTests)
-- (void)SHA224HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA256HashTests)
-- (void)SHA256HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA384HashTests)
-- (void)SHA384HashTests;
-@end
-
-@interface TestsAppDelegate (OFSHA512HashTests)
-- (void)SHA512HashTests;
 @end
 
 @interface TestsAppDelegate (OFSPXSocketTests)

@@ -31,6 +31,7 @@ generators/unicode/gen_tables
 new_tests/EBOOT.PBP
 new_tests/PARAM.SFO
 new_tests/plugin/Info.plist
+new_tests/testfile_bin.m
 new_tests/tests
 new_tests/tests.3dsx
 new_tests/tests.arm9
@@ -56,6 +57,7 @@ tests/iOS.xcodeproj/xcuserdata
 tests/objc_sync/objc_sync
 tests/subprocess/subprocess
 tests/terminal/terminal_tests
+tests/testfile_bin.m
 tests/testfile_bin.m
 tests/testfile_ini.m
 tests/tests

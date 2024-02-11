@@ -388,13 +388,6 @@ main(int argc, char *argv[])
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
-	[self MD5HashTests];
-	[self RIPEMD160HashTests];
-	[self SHA1HashTests];
-	[self SHA224HashTests];
-	[self SHA256HashTests];
-	[self SHA384HashTests];
-	[self SHA512HashTests];
 	[self HMACTests];
 #ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];

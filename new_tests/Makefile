@@ -2,12 +2,15 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}
 
+CLEAN = testfile_bin.m
+
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFArrayTests.m			\
        OFCharacterSetTests.m		\
        OFColorTests.m			\
        OFConcreteArrayTests.m		\
        OFConcreteMutableArrayTests.m	\
+       OFCryptographicHashTests.m	\
        OFDateTests.m			\
        OFIRITests.m			\
        OFInvocationTests.m		\
@@ -20,11 +23,15 @@ SRCS = OFArrayTests.m			\
        OFPropertyListTests.m		\
        OFScryptTests.m			\
        ${USE_SRCS_PLUGINS}		\
-       ${USE_SRCS_SOCKETS}
+       ${USE_SRCS_SOCKETS}		\
+       testfile_bin.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFSocketTests.m
 
 include ../buildsys.mk
+
+testfile_bin.m: testfile.bin
+	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 
 .PHONY: run run-on-ios run-on-android
 run:

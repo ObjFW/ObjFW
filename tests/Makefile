@@ -24,16 +24,9 @@ SRCS = ForwardingTests.m		\
        OFINIFileTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
-       OFMD5HashTests.m			\
        OFMemoryStreamTests.m		\
        OFNotificationCenterTests.m	\
        OFObjectTests.m			\
-       OFRIPEMD160HashTests.m		\
-       OFSHA1HashTests.m		\
-       OFSHA224HashTests.m		\
-       OFSHA256HashTests.m		\
-       OFSHA384HashTests.m		\
-       OFSHA512HashTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
