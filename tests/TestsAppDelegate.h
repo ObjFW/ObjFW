@@ -103,10 +103,6 @@
 - (void)IPXSocketTests;
 @end
 
-@interface TestsAppDelegate (OFHMACTests)
-- (void)HMACTests;
-@end
-
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end

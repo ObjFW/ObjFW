@@ -12,6 +12,7 @@ SRCS = OFArrayTests.m			\
        OFConcreteMutableArrayTests.m	\
        OFCryptographicHashTests.m	\
        OFDateTests.m			\
+       OFHMACTests.m			\
        OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\

@@ -52,7 +52,6 @@ tests/Info.plist
 tests/PARAM.SFO
 tests/objc_sync/objc_sync
 tests/terminal/terminal_tests
-tests/testfile_bin.m
 tests/testfile_ini.m
 tests/tests
 tests/tests.3dsx

@@ -388,7 +388,6 @@ main(int argc, char *argv[])
 	[self streamTests];
 	[self memoryStreamTests];
 	[self notificationCenterTests];
-	[self HMACTests];
 #ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];
 #endif

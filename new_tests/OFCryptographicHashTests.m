@@ -22,7 +22,7 @@
 
 @interface OFCryptographicHashTests: OTTestCase
 {
-	OFStream *_file;
+	OFStream *_stream;
 }
 @end
 
@@ -58,17 +58,19 @@ const unsigned char testFileSHA512[64] =
 	[super setUp];
 
 	IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
-	_file = [[OFIRIHandler openItemAtIRI: IRI mode: @"r"] retain];
+	_stream = [[OFIRIHandler openItemAtIRI: IRI mode: @"r"] retain];
 }
 
 - (void)tearDown
 {
-	[_file close];
+	[_stream close];
+
+	[super tearDown];
 }
 
 - (void)dealloc
 {
-	[_file release];
+	[_stream release];
 
 	[super dealloc];
 }
@@ -82,9 +84,9 @@ const unsigned char testFileSHA512[64] =
 
 	OTAssertNotNil(hash);
 
-	while (!_file.atEndOfStream) {
+	while (!_stream.atEndOfStream) {
 		char buffer[64];
-		size_t length = [_file readIntoBuffer: buffer length: 64];
+		size_t length = [_stream readIntoBuffer: buffer length: 64];
 		[hash updateWithBuffer: buffer length: length];
 	}
 

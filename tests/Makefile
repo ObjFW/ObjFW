@@ -9,7 +9,6 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
 	${PROG_NOINST}.rpx	\
-	testfile_bin.m		\
 	testfile_ini.m
 DISTCLEAN = Info.plist
 
@@ -19,7 +18,6 @@ SRCS = ForwardingTests.m		\
        ${OF_BLOCK_TESTS_M}		\
        OFDataTests.m			\
        OFDictionaryTests.m		\
-       OFHMACTests.m			\
        OFINIFileTests.m			\
        OFListTests.m			\
        OFLocaleTests.m			\
@@ -41,7 +39,6 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
-       testfile_bin.m			\
        testfile_ini.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
@@ -67,8 +64,6 @@ IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
-testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini
 	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
