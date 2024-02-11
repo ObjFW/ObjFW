@@ -124,6 +124,15 @@ CPPFLAGS += -I../src				\
 	    -I../src/test			\
 	    -I..				\
 	    -DOBJFWTEST_LOCAL_INCLUDES
-LIBS := -L../src/test -lobjfwtest ${TESTS_LIBS} ${LIBS}
+# Repetition is required for Wii U, as otherwise it cannot find main. Just
+# moving -lobjfwtest later doesn't work either, as then the linker cannot find
+# ObjFW symbols. So the only solution is to list everything twice.
+LIBS := -L../src/test	\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}		\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}
