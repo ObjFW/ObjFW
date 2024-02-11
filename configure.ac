@@ -441,7 +441,7 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
-	AC_CONFIG_FILES(tests/plugin/Info.plist)
+	AC_CONFIG_FILES(new_tests/plugin/Info.plist)
 
 	AS_IF([test x"$build_framework" = x"yes"], [
 		TESTPLUGIN_LIBS="-F../../src -F../../src/runtime"

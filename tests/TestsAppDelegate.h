@@ -115,10 +115,6 @@
 - (void)INIFileTests;
 @end
 
-@interface TestsAppDelegate (OFIRITests)
-- (void)IRITests;
-@end
-
 @interface TestsAppDelegate (OFIPXSocketTests)
 - (void)IPXSocketTests;
 @end

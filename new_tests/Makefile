@@ -4,6 +4,7 @@ SUBDIRS = ${TESTPLUGIN}
 
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFColorTests.m		\
+       OFIRITests.m		\
        OFNumberTests.m		\
        OFPBKDF2Tests.m		\
        OFPropertyListTests.m	\
