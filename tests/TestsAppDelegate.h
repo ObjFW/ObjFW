@@ -111,10 +111,6 @@
 - (void)IPXSocketTests;
 @end
 
-@interface TestsAppDelegate (OFJSONTests)
-- (void)JSONTests;
-@end
-
 @interface TestsAppDelegate (OFHMACTests)
 - (void)HMACTests;
 @end

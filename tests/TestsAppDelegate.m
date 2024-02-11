@@ -431,7 +431,6 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
-	[self JSONTests];
 
 #ifdef OF_HAVE_SUBPROCESSES
 	[self subprocessTests];
