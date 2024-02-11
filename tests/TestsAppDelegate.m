@@ -423,9 +423,6 @@ main(int argc, char *argv[])
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
 
-#ifdef OF_HAVE_SUBPROCESSES
-	[self subprocessTests];
-#endif
 #ifdef OF_WINDOWS
 	[self windowsRegistryKeyTests];
 #endif

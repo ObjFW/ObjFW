@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}
+SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS}
 
 CLEAN = testfile_bin.m
 
@@ -24,9 +24,11 @@ SRCS = OFArrayTests.m			\
        OFScryptTests.m			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
+       ${USE_SRCS_SUBPROCESSES}		\
        testfile_bin.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFSocketTests.m
+SRCS_SUBPROCESSES = OFSubprocessTests.m
 
 include ../buildsys.mk
 
@@ -150,7 +152,8 @@ CPPFLAGS += -I../src				\
 	    -I../src/runtime			\
 	    -I../src/test			\
 	    -I..				\
-	    -DOBJFWTEST_LOCAL_INCLUDES
+	    -DOBJFWTEST_LOCAL_INCLUDES		\
+	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 # Repetition is required for Wii U, as otherwise it cannot find main. Just
 # moving -lobjfwtest later doesn't work either, as then the linker cannot find
 # ObjFW symbols. So the only solution is to list everything twice.

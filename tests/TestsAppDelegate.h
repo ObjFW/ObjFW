@@ -163,10 +163,6 @@
 - (void)stringTests;
 @end
 
-@interface TestsAppDelegate (OFSubprocessTests)
-- (void)subprocessTests;
-@end
-
 @interface TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests;
 @end

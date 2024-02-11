@@ -1981,7 +1981,7 @@ AS_IF([test x"$have_subprocesses" = x""], [
 	])
 ])
 AS_IF([test x"$have_subprocesses" = x"yes"], [
-	AC_SUBST(USE_SRCS_SUBPROCESS, '${SRCS_SUBPROCESS}')
+	AC_SUBST(USE_SRCS_SUBPROCESSES, '${SRCS_SUBPROCESSES}')
 	AC_SUBST(SUBPROCESS, "subprocess")
 	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])

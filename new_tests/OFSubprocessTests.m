@@ -15,14 +15,15 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFSubprocess";
+@interface OFSubprocessTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFSubprocessTests)
-- (void)subprocessTests
+@implementation OFSubprocessTests
+- (void)testSubprocess
 {
-	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_HAVE_FILES
 	OFString *program = [@"subprocess" stringByAppendingPathComponent:
 	    @"subprocess" @PROG_SUFFIX];
@@ -36,22 +37,16 @@ static OFString *const module = @"OFSubprocess";
 
 	[environment setObject: @"yés" forKey: @"tëst"];
 
-	TEST(@"+[subprocessWithProgram:programName:arguments:environment]",
-	    (subprocess =
-	    [OFSubprocess subprocessWithProgram: program
-				    programName: program
-				      arguments: arguments
-				    environment: environment]))
+	subprocess = [OFSubprocess subprocessWithProgram: program
+					     programName: program
+					       arguments: arguments
+					     environment: environment];
 
-	TEST(@"Standard input", R([subprocess writeLine: @"Hellö world!"]))
+	[subprocess writeLine: @"Hellö world!"];
+	OTAssertEqualObjects([subprocess readLine], @"HELLÖ WORLD!");
 
-	TEST(@"Standard output",
-	    [[subprocess readLine] isEqual: @"HELLÖ WORLD!"])
+	[subprocess closeForWriting];
 
-	TEST(@"-[closeForWriting]", R([subprocess closeForWriting]))
-
-	TEST(@"-[waitForTermination]", [subprocess waitForTermination] == 0)
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqual([subprocess waitForTermination], 0);
 }
 @end

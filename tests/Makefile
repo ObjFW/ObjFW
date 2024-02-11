@@ -1,7 +1,6 @@
 include ../extra.mk
 
 SUBDIRS = ${OBJC_SYNC}	\
-	  ${SUBPROCESS}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
@@ -40,7 +39,6 @@ SRCS = ForwardingTests.m		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_SUBPROCESS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
        testfile_bin.m			\
@@ -61,7 +59,6 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
-SRCS_SUBPROCESS = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
@@ -187,8 +184,7 @@ CPPFLAGS += -I../src				\
 	    -I../src/exceptions			\
 	    -I../src/runtime			\
 	    -I..				\
-	    -DSTDOUT				\
-	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
+	    -DSTDOUT
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
