@@ -195,10 +195,6 @@
 - (void)systemInfoTests;
 @end
 
-@interface TestsAppDelegate (OFSocketTests)
-- (void)socketTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

@@ -402,7 +402,6 @@ main(int argc, char *argv[])
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS
-	[self socketTests];
 	[self TCPSocketTests];
 	[self UDPSocketTests];
 # ifdef OF_HAVE_UNIX_SOCKETS

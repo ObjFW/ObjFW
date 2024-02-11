@@ -13,8 +13,10 @@ SRCS = OFCharacterSetTests.m	\
        OFPBKDF2Tests.m		\
        OFPropertyListTests.m	\
        OFScryptTests.m		\
-       ${USE_SRCS_PLUGINS}
+       ${USE_SRCS_PLUGINS}	\
+       ${USE_SRCS_SOCKETS}
 SRCS_PLUGINS = OFPluginTests.m
+SRCS_SOCKETS = OFSocketTests.m
 
 include ../buildsys.mk
 

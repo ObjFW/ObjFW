@@ -60,7 +60,6 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
-	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
