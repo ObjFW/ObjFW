@@ -1,10 +1,15 @@
+include ../extra.mk
+
+SUBDIRS = ${TESTPLUGIN}
+
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFNumberTests.m		\
        OFPBKDF2Tests.m		\
-       OFPropertyListTests.m
+       OFPropertyListTests.m	\
+       ${USE_SRCS_PLUGINS}
+SRCS_PLUGINS = OFPluginTests.m
 
 include ../buildsys.mk
-include ../extra.mk
 
 .PHONY: run run-on-ios run-on-android
 run:

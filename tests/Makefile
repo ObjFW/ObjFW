@@ -1,7 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}	\
-	  ${OBJC_SYNC}	\
+SUBDIRS = ${OBJC_SYNC}	\
 	  ${SUBPROCESS}	\
 	  terminal
 
@@ -57,14 +56,12 @@ SRCS = ForwardingTests.m		\
        ${RUNTIME_ARC_TESTS_M}		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESS}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}		\
        testfile_bin.m			\
        testfile_ini.m
-SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
@@ -153,24 +150,6 @@ run:
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
-run-on-ios: all
-	if [ -z "${IOS_HOST}" ]; then \
-		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
-		exit 1; \
-	fi
-	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
-	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
-	scp -q ../src/libobjfw.dylib \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
-	scp -q plugin/TestPlugin.bundle \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
-	echo "Running tests binary on iOS device ${IOS_HOST}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${WRAPPER} ./tests'
-
 run-on-android: all
 	echo "Uploading files to Android device..."
 	if test -f ../src/libobjfw.so; then \
@@ -183,10 +162,6 @@ run-on-android: all
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
-	if test -f plugin/TestPlugin.so; then \
-		adb push plugin/TestPlugin.so \
-		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
-	fi
 	echo "Running tests binary on Android device..."
 	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ${WRAPPER} ./tests'
 
