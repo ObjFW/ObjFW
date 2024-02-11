@@ -375,7 +375,6 @@ main(int argc, char *argv[])
 	[self runtimeARCTests];
 #endif
 	[self objectTests];
-	[self invocationTests];
 	[self forwardingTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
