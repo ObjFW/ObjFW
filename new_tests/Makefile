@@ -13,6 +13,7 @@ CLEAN = EBOOT.PBP		\
 
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFASN1DERParsingTests.m		\
+       OFASN1DERRepresentationTests.m	\
        OFArrayTests.m			\
        OFCharacterSetTests.m		\
        OFColorTests.m			\
