@@ -20,7 +20,6 @@ SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
        ${OF_BLOCK_TESTS_M}		\
        OFDataTests.m			\
-       OFDateTests.m			\
        OFDictionaryTests.m		\
        OFHMACTests.m			\
        OFINIFileTests.m			\

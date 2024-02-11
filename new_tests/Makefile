@@ -5,6 +5,7 @@ SUBDIRS = ${TESTPLUGIN}
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = OFCharacterSetTests.m	\
        OFColorTests.m		\
+       OFDateTests.m		\
        OFIRITests.m		\
        OFInvocationTests.m	\
        OFJSONTests.m		\

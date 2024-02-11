@@ -385,7 +385,6 @@ main(int argc, char *argv[])
 	[self dictionaryTests];
 	[self listTests];
 	[self setTests];
-	[self dateTests];
 	[self valueTests];
 	[self streamTests];
 	[self memoryStreamTests];
