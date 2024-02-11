@@ -7,6 +7,7 @@ SRCS = OFCharacterSetTests.m	\
        OFColorTests.m		\
        OFIRITests.m		\
        OFInvocationTests.m	\
+       OFMatrix4x4Tests.m	\
        OFMethodSignatureTests.m	\
        OFNumberTests.m		\
        OFPBKDF2Tests.m		\

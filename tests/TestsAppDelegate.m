@@ -433,7 +433,6 @@ main(int argc, char *argv[])
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
 	[self JSONTests];
-	[self matrix4x4Tests];
 
 #ifdef OF_HAVE_SUBPROCESSES
 	[self subprocessTests];
