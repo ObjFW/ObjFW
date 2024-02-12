@@ -21,5 +21,5 @@
 	OFArray *_array;
 }
 
-- (Class)arrayClass;
+@property (readonly, nonatomic) Class arrayClass;
 @end
