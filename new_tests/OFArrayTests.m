@@ -160,7 +160,7 @@ static OFString *const cArray[] = {
 	size_t i = 0;
 
 	for (OFString *object in _array) {
-		OTAssert(i < 3);
+		OTAssertLessThan(i, 3);
 		OTAssertEqualObjects(object, cArray[i++]);
 	}
 }
