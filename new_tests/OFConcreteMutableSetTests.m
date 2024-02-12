@@ -41,12 +41,14 @@
 - (void)testDetectMutationDuringFastEnumeration
 {
 	bool detected = false;
+
 	@try {
 		for (OFString *object in _mutableSet)
 			[_mutableSet removeObject: object];
 	} @catch (OFEnumerationMutationException *e) {
 		detected = true;
 	}
+
 	OTAssertTrue(detected);
 }
 

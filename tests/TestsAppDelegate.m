@@ -422,7 +422,6 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_SOCKETS
 	[self DNSResolverTests];
 #endif
-	[self systemInfoTests];
 	[self localeTests];
 
 	[OFStdOut reset];

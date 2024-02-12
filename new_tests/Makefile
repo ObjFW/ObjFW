@@ -35,6 +35,7 @@ SRCS = OFArrayTests.m			\
        OFPropertyListTests.m		\
        OFScryptTests.m			\
        OFSetTests.m			\
+       OFSystemInfoTests.m		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\

@@ -15,9 +15,9 @@
 
 #include "config.h"
 
-#import "OTAppDelegate.h"
-
+#import "OFApplication.h"
 #import "OFColor.h"
+#import "OFDictionary.h"
 #import "OFMethodSignature.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
@@ -26,6 +26,9 @@
 #import "OTTestCase.h"
 
 #import "OTAssertionFailedException.h"
+
+@interface OTAppDelegate: OFObject <OFApplicationDelegate>
+@end
 
 OF_APPLICATION_DELEGATE(OTAppDelegate)
 
@@ -164,11 +167,14 @@ isSubclassOfClass(Class class, Class superclass)
 {
 	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
 	size_t numSucceeded = 0, numFailed = 0;
+	OFMutableDictionary *summaries = [OFMutableDictionary dictionary];
 
 	[OFStdOut writeFormat: @"Running %zu test case(s)\n",
 			       testClasses.count];
 
 	for (Class class in testClasses) {
+		OFArray *summary;
+
 		[OFStdOut setForegroundColor: [OFColor teal]];
 		[OFStdOut writeFormat: @"Running ", class];
 		[OFStdOut setForegroundColor: [OFColor aqua]];
@@ -232,6 +238,26 @@ isSubclassOfClass(Class class, Class superclass)
 				numFailed++;
 
 			objc_autoreleasePoolPop(pool);
+		}
+
+		summary = [class summary];
+		if (summary != nil)
+			[summaries setObject: summary forKey: class];
+	}
+
+	for (Class class in summaries) {
+		OFArray *summary = [summaries objectForKey: class];
+
+		[OFStdOut setForegroundColor: [OFColor teal]];
+		[OFStdOut writeString: @"Summary for "];
+		[OFStdOut setForegroundColor: [OFColor aqua]];
+		[OFStdOut writeFormat: @"%@\n", class];
+
+		for (OFPair *line in summary) {
+			[OFStdOut setForegroundColor: [OFColor navy]];
+			[OFStdOut writeFormat: @"%@: ", line.firstObject];
+			[OFStdOut setForegroundColor: [OFColor blue]];
+			[OFStdOut writeFormat: @"%@\n", line.secondObject];
 		}
 	}
 
