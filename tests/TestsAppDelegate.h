@@ -139,10 +139,6 @@
 - (void)SPXStreamSocketTests;
 @end
 
-@interface TestsAppDelegate (OFSetTests)
-- (void)setTests;
-@end
-
 @interface TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests;
 @end

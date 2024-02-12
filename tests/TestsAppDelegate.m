@@ -383,7 +383,6 @@ main(int argc, char *argv[])
 	[self dataTests];
 	[self dictionaryTests];
 	[self listTests];
-	[self setTests];
 	[self valueTests];
 	[self streamTests];
 	[self memoryStreamTests];

@@ -17,6 +17,8 @@ SRCS = OFArrayTests.m			\
        OFColorTests.m			\
        OFConcreteArrayTests.m		\
        OFConcreteMutableArrayTests.m	\
+       OFConcreteMutableSetTests.m	\
+       OFConcreteSetTests.m		\
        OFCryptographicHashTests.m	\
        OFDateTests.m			\
        OFHMACTests.m			\
@@ -27,10 +29,12 @@ SRCS = OFArrayTests.m			\
        OFMatrix4x4Tests.m		\
        OFMethodSignatureTests.m		\
        OFMutableArrayTests.m		\
+       OFMutableSetTests.m		\
        OFNumberTests.m			\
        OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
        OFScryptTests.m			\
+       OFSetTests.m			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
