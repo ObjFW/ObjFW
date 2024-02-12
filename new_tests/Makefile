@@ -26,6 +26,7 @@ SRCS = OFArrayTests.m			\
        OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
+       OFLocaleTests.m			\
        OFMatrix4x4Tests.m		\
        OFMethodSignatureTests.m		\
        OFMutableArrayTests.m		\

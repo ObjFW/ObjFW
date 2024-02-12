@@ -103,10 +103,6 @@
 - (void)listTests;
 @end
 
-@interface TestsAppDelegate (OFLocaleTests)
-- (void)localeTests;
-@end
-
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
 @end

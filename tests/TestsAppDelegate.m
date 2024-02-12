@@ -419,8 +419,6 @@ main(int argc, char *argv[])
 	[self windowsRegistryKeyTests];
 #endif
 
-	[self localeTests];
-
 	[OFStdOut reset];
 
 #if defined(OF_IOS)
