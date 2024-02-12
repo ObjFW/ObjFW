@@ -43,7 +43,8 @@ SRCS = OFArrayTests.m			\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = OFSocketTests.m
+SRCS_SOCKETS = OFDNSResolverTests.m	\
+	       OFSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 

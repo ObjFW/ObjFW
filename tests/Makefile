@@ -34,8 +34,7 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_WINDOWS}
-SRCS_SOCKETS = OFDNSResolverTests.m		\
-	       ${OF_HTTP_CLIENT_TESTS_M}	\
+SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\

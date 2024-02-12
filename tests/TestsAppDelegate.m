@@ -419,9 +419,6 @@ main(int argc, char *argv[])
 	[self windowsRegistryKeyTests];
 #endif
 
-#ifdef OF_HAVE_SOCKETS
-	[self DNSResolverTests];
-#endif
 	[self localeTests];
 
 	[OFStdOut reset];
