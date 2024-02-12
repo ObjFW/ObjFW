@@ -28,7 +28,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-extern uint32_t OFHashSeed;
+extern unsigned long OFHashSeed;
 
 static const uint32_t minCapacity = 16;
 
