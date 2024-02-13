@@ -159,8 +159,6 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut writeLine: description];
 		break;
 	}
-
-	[OFStdOut reset];
 }
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
@@ -169,8 +167,13 @@ isSubclassOfClass(Class class, Class superclass)
 	size_t numSucceeded = 0, numFailed = 0;
 	OFMutableDictionary *summaries = [OFMutableDictionary dictionary];
 
-	[OFStdOut writeFormat: @"Running %zu test case(s)\n",
-			       testClasses.count];
+	[OFStdOut setForegroundColor: [OFColor purple]];
+	[OFStdOut writeString: @"Found "];
+	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	[OFStdOut writeFormat: @"%zu", testClasses.count];
+	[OFStdOut setForegroundColor: [OFColor purple]];
+	[OFStdOut writeFormat: @" test case%s\n",
+			       (testClasses.count != 1 ? "s" : "")];
 
 	for (Class class in testClasses) {
 		OFArray *summary;
@@ -179,7 +182,6 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut writeFormat: @"Running ", class];
 		[OFStdOut setForegroundColor: [OFColor aqua]];
 		[OFStdOut writeFormat: @"%@\n", class];
-		[OFStdOut reset];
 
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
@@ -264,11 +266,13 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
 	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeString: @" test(s) succeeded, "];
+	[OFStdOut writeFormat: @" test%s succeeded, ",
+			       (numSucceeded != 1 ? "s" : "")];
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeLine: @" test(s) failed."];
+	[OFStdOut writeFormat: @" test%s failed\n",
+			       (numFailed != 1 ? "s" : "")];
 	[OFStdOut reset];
 
 	[OFApplication terminateWithStatus: (int)numFailed];
