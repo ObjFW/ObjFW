@@ -25,7 +25,7 @@
 @end
 
 @implementation OFUNIXDatagramSocketTests
-- (void)testUNIXDatagramSockets
+- (void)testUNIXDatagramSocket
 {
 	OFUNIXDatagramSocket *sock = [OFUNIXDatagramSocket socket];
 	OFString *path;
@@ -55,7 +55,6 @@
 		case EAFNOSUPPORT:
 		case EPERM:
 			OTSkip(@"UNIX datagram sockets unsupported");
-			return;
 		default:
 			@throw e;
 		}

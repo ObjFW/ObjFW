@@ -127,10 +127,6 @@
 - (void)stringTests;
 @end
 
-@interface TestsAppDelegate (OFUNIXStreamSocketTests)
-- (void)UNIXStreamSocketTests;
-@end
-
 @interface TestsAppDelegate (OFValueTests)
 - (void)valueTests;
 @end
