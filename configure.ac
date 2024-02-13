@@ -790,9 +790,6 @@ AC_CHECK_HEADER(inttypes.h,
 AC_CHECK_HEADER(sys/types.h,
 	[AC_DEFINE(OF_HAVE_SYS_TYPES_H, 1, [Whether we have sys/types.h])])
 
-AC_CHECK_TYPE(max_align_t,
-	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
-
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
