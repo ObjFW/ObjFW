@@ -50,7 +50,9 @@ SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m	\
 	       OFSocketTests.m		\
 	       OFTCPSocketTests.m	\
-	       OFUDPSocketTests.m
+	       OFUDPSocketTests.m	\
+	       ${USE_SRCS_UNIX_SOCKETS}
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 

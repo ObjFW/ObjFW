@@ -41,8 +41,7 @@ SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
-		    OFUNIXStreamSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXStreamSocketTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 IOS_USER ?= mobile
