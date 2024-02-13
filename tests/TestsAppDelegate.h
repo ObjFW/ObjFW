@@ -111,10 +111,6 @@
 - (void)notificationCenterTests;
 @end
 
-@interface TestsAppDelegate (OFObjectTests)
-- (void)objectTests;
-@end
-
 @interface TestsAppDelegate (RuntimeTests)
 - (void)runtimeTests;
 @end

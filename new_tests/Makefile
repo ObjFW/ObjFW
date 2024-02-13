@@ -32,6 +32,7 @@ SRCS = OFArrayTests.m			\
        OFMutableArrayTests.m		\
        OFMutableSetTests.m		\
        OFNumberTests.m			\
+       OFObjectTests.m			\
        OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
        OFScryptTests.m			\

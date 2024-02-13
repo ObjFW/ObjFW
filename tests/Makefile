@@ -20,7 +20,6 @@ SRCS = ForwardingTests.m		\
        OFListTests.m			\
        OFMemoryStreamTests.m		\
        OFNotificationCenterTests.m	\
-       OFObjectTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFValueTests.m			\
