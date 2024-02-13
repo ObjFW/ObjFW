@@ -35,7 +35,6 @@
 		_objects = mutableObjects;
 
 		for (size_t i = 0; i < count; i++) {
-			OFLog(@"key=%@, value=%@", keys[i], objects[i]);
 			[mutableKeys addObject: keys[i]];
 			[mutableObjects addObject: objects[i]];
 		}
