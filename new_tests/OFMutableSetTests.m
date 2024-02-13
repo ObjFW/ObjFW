@@ -93,55 +93,13 @@
 @end
 
 @implementation CustomMutableSet
-- (instancetype)init
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [super init];
 
 	@try {
-		_set = [[OFMutableSet alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSet: (OFSet *)set
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithSet: set];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithArray: (OFArray *)array
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithArray: array];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithObject: firstObject
-						  arguments: arguments];
+		_set = [[OFMutableSet alloc] initWithObjects: objects
+						       count: count];
 	} @catch (id e) {
 		[self release];
 		@throw e;

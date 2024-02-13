@@ -174,35 +174,6 @@ static OFString *const cArray[] = {
 @end
 
 @implementation CustomMutableArray
-- (instancetype)init
-{
-	self = [super init];
-
-	@try {
-		_array = [[OFMutableArray alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithObject: (id)object arguments: (va_list)arguments
-{
-	self = [super init];
-
-	@try {
-		_array = [[OFMutableArray alloc] initWithObject: object
-						      arguments: arguments];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [super init];
