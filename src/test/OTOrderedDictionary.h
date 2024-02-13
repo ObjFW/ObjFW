@@ -13,6 +13,19 @@
  * file.
  */
 
-#import "OTTestCase.h"
-#import "OTAssert.h"
-#import "OTOrderedDictionary.h"
+#ifdef OBJFWTEST_LOCAL_INCLUDES
+# import "ObjFW.h"
+#else
+# import <ObjFW/ObjFW.h>
+#endif
+
+OF_ASSUME_NONNULL_BEGIN
+
+@interface OTOrderedDictionary: OFDictionary
+{
+	OFArray *_keys;
+	OFArray *_objects;
+}
+@end
+
+OF_ASSUME_NONNULL_END

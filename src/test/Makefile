@@ -4,7 +4,8 @@ DISTCLEAN = Info.plist
 
 STATIC_LIB = libobjfwtest.a
 
-SRCS = OTAssert.m	\
+SRCS = OTAssert.m		\
+       OTOrderedDictionary.m	\
        OTTestCase.m
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWTest.h

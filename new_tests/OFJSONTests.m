@@ -32,7 +32,7 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 {
 	[super setUp];
 
-	_dictionary = [[OFDictionary alloc] initWithKeysAndObjects:
+	_dictionary = [[OTOrderedDictionary alloc] initWithKeysAndObjects:
 	    @"foo", @"b\na\r",
 	    @"x", [OFArray arrayWithObjects:
 		[OFNumber numberWithFloat: .5f],
@@ -58,39 +58,23 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 
 - (void)testJSONRepresentation
 {
-	OFString *representation = _dictionary.JSONRepresentation;
-
-	OTAssert(
-	    [representation isEqual:
-	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"b\\na\\r\"}"] ||
-	    [representation isEqual:
-	    @"{\"foo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"foo\",false]}"]);
+	OTAssert(_dictionary.JSONRepresentation,
+	    @"{\"foo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"foo\",false]}");
 }
 
 - (void)testPrettyJSONRepresentation
 {
-	OFString *representation = [_dictionary JSONRepresentationWithOptions:
-	    OFJSONRepresentationOptionPretty];
-
-	OTAssert(
-	    [representation isEqual:
-	    @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
-	    @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"b\\na\\r\"\n}"] ||
-	    [representation isEqual:
+	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
+	    OFJSONRepresentationOptionPretty],
 	    @"{\n\t\"foo\": \"b\\na\\r\",\n\t\"x\": [\n\t\t0.5,\n\t\t15,"
-	    @"\n\t\tnull,\n\t\t\"foo\",\n\t\tfalse\n\t]\n}"]);
+	    @"\n\t\tnull,\n\t\t\"foo\",\n\t\tfalse\n\t]\n}");
 }
 
 - (void)testJSON5Representation
 {
-	OFString *representation = [_dictionary JSONRepresentationWithOptions:
-	    OFJSONRepresentationOptionJSON5];
-
-	OTAssert(
-	    [representation isEqual:
-	    @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}"] ||
-	    [representation isEqual:
-	    @"{foo:\"b\\\na\\r\",x:[0.5,15,null,\"foo\",false]}"]);
+	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
+	    OFJSONRepresentationOptionJSON5],
+	    @"{foo:\"b\\\na\\r\",x:[0.5,15,null,\"foo\",false]}");
 }
 
 - (void)testObjectByParsingJSONFailsWithInvalidJSON
