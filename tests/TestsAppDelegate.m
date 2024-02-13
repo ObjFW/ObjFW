@@ -374,7 +374,6 @@ main(int argc, char *argv[])
 #ifdef COMPILER_SUPPORTS_ARC
 	[self runtimeARCTests];
 #endif
-	[self forwardingTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif

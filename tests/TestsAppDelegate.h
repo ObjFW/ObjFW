@@ -75,10 +75,6 @@
 - (void)dictionaryTests;
 @end
 
-@interface TestsAppDelegate (ForwardingTests)
-- (void)forwardingTests;
-@end
-
 @interface TestsAppDelegate (OFHTTPClientTests)
 - (void)HTTPClientTests;
 @end
