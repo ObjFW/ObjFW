@@ -228,4 +228,25 @@
 	OTAssertEqualObjects(OFSocketAddressString(&address),
 	    @"::5566:7788:99aa:bbcc:0:0%123");
 }
+
+- (void)testAddressEqual
+{
+	OFSocketAddress addr1 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr2 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr3 = OFSocketAddressParseIP(@"127.0.0.1", 1235);
+
+	OTAssertTrue(OFSocketAddressEqual(&addr1, &addr2));
+	OTAssertFalse(OFSocketAddressEqual(&addr1, &addr3));
+}
+
+- (void)testAddressHash
+{
+	OFSocketAddress addr1 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr2 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr3 = OFSocketAddressParseIP(@"127.0.0.1", 1235);
+
+	OTAssertEqual(OFSocketAddressHash(&addr1), OFSocketAddressHash(&addr2));
+	OTAssertNotEqual(OFSocketAddressHash(&addr1),
+	    OFSocketAddressHash(&addr3));
+}
 @end

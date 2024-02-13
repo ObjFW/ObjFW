@@ -127,10 +127,6 @@
 - (void)stringTests;
 @end
 
-@interface TestsAppDelegate (OFUDPSocketTests)
-- (void)UDPSocketTests;
-@end
-
 @interface TestsAppDelegate (OFUNIXDatagramSocketTests)
 - (void)UNIXDatagramSocketTests;
 @end
