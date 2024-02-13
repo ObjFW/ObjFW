@@ -34,7 +34,6 @@ SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
-	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
