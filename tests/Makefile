@@ -13,8 +13,7 @@ DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = ${OF_BLOCK_TESTS_M}		\
-       OFDataTests.m			\
+SRCS = OFDataTests.m			\
        OFDictionaryTests.m		\
        OFListTests.m			\
        OFMemoryStreamTests.m		\

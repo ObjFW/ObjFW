@@ -12,7 +12,8 @@ CLEAN = EBOOT.PBP		\
 	testfile_ini.m
 
 PROG_NOINST = tests${PROG_SUFFIX}
-SRCS = ForwardingTests.m		\
+SRCS = ${OF_BLOCK_TESTS_M}		\
+       ForwardingTests.m		\
        OFArrayTests.m			\
        OFCharacterSetTests.m		\
        OFColorTests.m			\
