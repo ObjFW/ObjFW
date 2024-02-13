@@ -114,15 +114,19 @@
 # define OF_ALIGNAS(type) OF_ALIGN(OF_ALIGNOF(type))
 #endif
 
-#if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
-# define OF_BIGGEST_ALIGNMENT _Alignof(max_align_t)
+#ifdef __BIGGEST_ALIGNMENT__
+# define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
 #else
-# ifdef __BIGGEST_ALIGNMENT__
-#  define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
-# else
-#  /* Hopefully no arch needs more than 16 byte alignment */
-#  define OF_BIGGEST_ALIGNMENT 16
-# endif
+/* Hopefully no arch needs more than 16 byte alignment */
+# define OF_BIGGEST_ALIGNMENT 16
+#endif
+/*
+ * We use SSE inline assembly on AMD64 and x86, so it must never be smaller
+ * than 16.
+ */
+#if (defined(OF_AMD64) || defined(OF_X86)) && OF_BIGGEST_ALIGNMENT < 16
+# undef OF_BIGGEST_ALIGNMENT
+# define OF_BIGGEST_ALIGNMENT 16
 #endif
 
 #define OF_PREPROCESSOR_CONCAT2(a, b) a##b
