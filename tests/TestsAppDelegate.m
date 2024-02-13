@@ -384,7 +384,6 @@ main(int argc, char *argv[])
 	[self notificationCenterTests];
 #ifdef OF_HAVE_SOCKETS
 # ifdef OF_HAVE_IPX
-	[self IPXSocketTests];
 	[self SPXSocketTests];
 	[self SPXStreamSocketTests];
 # endif

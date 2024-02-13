@@ -83,10 +83,6 @@
 - (void)HTTPCookieManagerTests;
 @end
 
-@interface TestsAppDelegate (OFIPXSocketTests)
-- (void)IPXSocketTests;
-@end
-
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end

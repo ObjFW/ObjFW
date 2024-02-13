@@ -37,8 +37,7 @@ SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}
 SRCS_APPLETALK = OFDDPSocketTests.m
-SRCS_IPX = OFIPXSocketTests.m		\
-	   OFSPXSocketTests.m		\
+SRCS_IPX = OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
