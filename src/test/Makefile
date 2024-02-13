@@ -10,7 +10,8 @@ SRCS = OTAssert.m		\
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWTest.h
 SRCS += OTAppDelegate.m			\
-	OTAssertionFailedException.m
+	OTAssertionFailedException.m	\
+	OTTestSkippedException.m
 
 includesubdir = ObjFWTest
 

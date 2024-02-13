@@ -26,9 +26,17 @@
 #import "OTTestCase.h"
 
 #import "OTAssertionFailedException.h"
+#import "OTTestSkippedException.h"
 
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
 @end
+
+enum Status {
+	StatusRunning,
+	StatusOk,
+	StatusFailed,
+	StatusSkipped
+};
 
 OF_APPLICATION_DELEGATE(OTAppDelegate)
 
@@ -129,11 +137,11 @@ isSubclassOfClass(Class class, Class superclass)
 
 - (void)printStatusForTest: (SEL)test
 		   inClass: (Class)class
-		    status: (int)status
+		    status: (enum Status)status
 	       description: (OFString *)description
 {
 	switch (status) {
-	case 0:
+	case StatusRunning:
 		[OFStdOut setForegroundColor: [OFColor olive]];
 		[OFStdOut writeFormat: @"-[%@ ", class];
 		[OFStdOut setForegroundColor: [OFColor yellow]];
@@ -141,7 +149,7 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut setForegroundColor: [OFColor olive]];
 		[OFStdOut writeString: @"]: "];
 		break;
-	case 1:
+	case StatusOk:
 		[OFStdOut setForegroundColor: [OFColor green]];
 		[OFStdOut writeFormat: @"\r-[%@ ", class];
 		[OFStdOut setForegroundColor: [OFColor lime]];
@@ -149,7 +157,7 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut setForegroundColor: [OFColor green]];
 		[OFStdOut writeLine: @"]: ok"];
 		break;
-	case 2:
+	case StatusFailed:
 		[OFStdOut setForegroundColor: [OFColor maroon]];
 		[OFStdOut writeFormat: @"\r-[%@ ", class];
 		[OFStdOut setForegroundColor: [OFColor red]];
@@ -158,13 +166,23 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut writeLine: @"]: failed"];
 		[OFStdOut writeLine: description];
 		break;
+	case StatusSkipped:
+		[OFStdOut setForegroundColor: [OFColor gray]];
+		[OFStdOut writeFormat: @"\r-[%@ ", class];
+		[OFStdOut setForegroundColor: [OFColor silver]];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		[OFStdOut setForegroundColor: [OFColor gray]];
+		[OFStdOut writeLine: @"]: skipped"];
+		if (description != nil)
+			[OFStdOut writeLine: description];
+		break;
 	}
 }
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
-	size_t numSucceeded = 0, numFailed = 0;
+	size_t numSucceeded = 0, numFailed = 0, numSkipped = 0;
 	OFMutableDictionary *summaries = [OFMutableDictionary dictionary];
 
 	[OFStdOut setForegroundColor: [OFColor purple]];
@@ -185,12 +203,12 @@ isSubclassOfClass(Class class, Class superclass)
 
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
-			bool failed = false;
+			bool failed = false, skipped = false;
 			OTTestCase *instance;
 
 			[self printStatusForTest: test.pointerValue
 					 inClass: class
-					  status: 0
+					  status: StatusRunning
 				     description: nil];
 
 			instance = [[[class alloc] init] autorelease];
@@ -207,9 +225,15 @@ isSubclassOfClass(Class class, Class superclass)
 				 */
 				[self printStatusForTest: test.pointerValue
 						 inClass: class
-						  status: 2
+						  status: StatusFailed
 					     description: e.description];
 				failed = true;
+			} @catch (OTTestSkippedException *e) {
+				[self printStatusForTest: test.pointerValue
+						 inClass: class
+						  status: StatusSkipped
+					     description: e.description];
+				skipped = true;
 			}
 			@try {
 				[instance tearDown];
@@ -224,20 +248,22 @@ isSubclassOfClass(Class class, Class superclass)
 
 					[self printStatusForTest: selector
 							 inClass: class
-							  status: 2
+							  status: StatusFailed
 						     description: description];
 					failed = true;
 				}
 			}
 
-			if (!failed) {
+			if (!failed && !skipped) {
 				[self printStatusForTest: test.pointerValue
 						 inClass: class
-						  status: 1
+						  status: StatusOk
 					     description: nil];
 				numSucceeded++;
-			} else
+			} else if (failed)
 				numFailed++;
+			else if (skipped)
+				numSkipped++;
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -271,8 +297,13 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeFormat: @" test%s failed\n",
+	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
+	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	[OFStdOut writeFormat: @"%zu", numSkipped];
+	[OFStdOut setForegroundColor: [OFColor purple]];
+	[OFStdOut writeFormat: @" test%s skipped\n",
+			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
 	[OFApplication terminateWithStatus: (int)numFailed];
