@@ -87,8 +87,8 @@ struct PreIvars {
 #endif
 };
 
-#define PRE_IVARS_ALIGN ((sizeof(struct PreIvars) + \
-    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
+#define PRE_IVARS_ALIGN \
+	OFRoundUpToPowerOf2(sizeof(struct PreIvars), OF_BIGGEST_ALIGNMENT)
 #define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
@@ -340,8 +340,15 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		    PRE_IVARS_ALIGN + instanceSize) -
 		    PRE_IVARS_ALIGN - instanceSize;
 
+#ifndef OF_WINDOWS
 	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
+#else
+	instance = _aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
+	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
+	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
+	    extraSize);
+#endif
 
 	if OF_UNLIKELY (instance == nil) {
 		object_setClass((id)&allocFailedException,
@@ -354,7 +361,11 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
+# ifndef OF_WINDOWS
 		free(instance);
+# else
+		_aligned_free(instance);
+# endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
@@ -367,7 +378,11 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		OFSpinlockFree(&((struct PreIvars *)(void *)
 		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
 #endif
+#ifndef OF_WINDOWS
 		free((char *)instance - PRE_IVARS_ALIGN);
+#else
+		_aligned_free((char *)instance - PRE_IVARS_ALIGN);
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
@@ -1234,7 +1249,11 @@ _references_to_categories_of_OFObject(void)
 	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
 #endif
 
+#ifndef OF_WINDOWS
 	free((char *)self - PRE_IVARS_ALIGN);
+#else
+	_aligned_free((char *)self - PRE_IVARS_ALIGN);
+#endif
 }
 
 /* Required to use properties with the Apple runtime */
