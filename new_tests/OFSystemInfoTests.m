@@ -126,8 +126,7 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 #endif
 
 #ifdef OF_POWERPC
-	ADD_BOOL(@"[OFSystemInfo] Supports AltiVec",
-	    [OFSystemInfo supportsAltiVec]);
+	ADD_BOOL(@"Supports AltiVec", [OFSystemInfo supportsAltiVec]);
 #endif
 
 #undef ADD

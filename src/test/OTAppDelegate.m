@@ -28,6 +28,13 @@
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
 
+#ifdef OF_WII
+# define asm __asm__
+# include <gccore.h>
+# include <wiiuse/wpad.h>
+# undef asm
+#endif
+
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
 @end
 
@@ -51,6 +58,31 @@ isSubclassOfClass(Class class, Class superclass)
 }
 
 @implementation OTAppDelegate
+#ifdef OF_WII
++ (void)initialize
+{
+	GXRModeObj *mode;
+	void *nextFB;
+
+	VIDEO_Init();
+	WPAD_Init();
+
+	mode = VIDEO_GetPreferredMode(NULL);
+	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
+	VIDEO_Configure(mode);
+	VIDEO_SetNextFramebuffer(nextFB);
+	VIDEO_SetBlack(FALSE);
+	VIDEO_Flush();
+
+	VIDEO_WaitVSync();
+	if (mode->viTVMode & VI_NON_INTERLACE)
+		VIDEO_WaitVSync();
+
+	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
+	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
+}
+#endif
+
 - (OFSet OF_GENERIC(Class) *)testClasses
 {
 	Class *classes = objc_copyClassList(NULL);
@@ -177,6 +209,22 @@ isSubclassOfClass(Class class, Class superclass)
 			[OFStdOut writeLine: description];
 		break;
 	}
+
+#ifdef OF_WII
+	if (status == StatusFailed) {
+		[OFStdOut setForegroundColor: [OFColor silver]];
+		[OFStdOut writeLine: @"Press A to continue"];
+
+		for (;;) {
+			WPAD_ScanPads();
+
+			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+				return;
+
+			VIDEO_WaitVSync();
+		}
+	}
+#endif
 }
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
@@ -187,7 +235,9 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeString: @"Found "];
+#ifndef OF_WII
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+#endif
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test case%s\n",
@@ -289,23 +339,45 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
+#ifndef OF_WII
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+#else
+	[OFStdOut setForegroundColor: [OFColor purple]];
+#endif
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
+#ifndef OF_WII
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+#endif
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
+#ifndef OF_WII
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+#endif
 	[OFStdOut writeFormat: @"%zu", numSkipped];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s skipped\n",
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
+#ifdef OF_WII
+	[OFStdOut setForegroundColor: [OFColor silver]];
+	[OFStdOut writeLine: @"Press home button to exit"];
+
+	for (;;) {
+		WPAD_ScanPads();
+
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+			[OFApplication terminateWithStatus: (int)numFailed];
+
+		VIDEO_WaitVSync();
+	}
+#else
 	[OFApplication terminateWithStatus: (int)numFailed];
+#endif
 }
 @end

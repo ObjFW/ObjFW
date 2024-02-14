@@ -119,7 +119,6 @@ OFLogV(OFConstantString *format, va_list arguments)
 	objc_autoreleasePoolPop(pool);
 }
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 static int
 colorToANSI(OFColor *color)
 {
@@ -158,7 +157,6 @@ colorToANSI(OFColor *color)
 
 	return -1;
 }
-#endif
 
 @implementation OFStdIOStream
 #ifndef OF_WINDOWS
@@ -432,7 +430,9 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
+#if defined(OF_WII)
+	return true;
+#elif defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);
 #else
 	return false;
@@ -471,72 +471,60 @@ colorToANSI(OFColor *color)
 
 - (void)setForegroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
 	[self writeFormat: @"\033[%um", code];
-#endif
 }
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
 	[self writeFormat: @"\033[%um", code + 10];
-#endif
 }
 
 - (void)reset
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	[self writeString: @"\033[0m"];
-#endif
 }
 
 - (void)clear
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	[self writeString: @"\033[2J"];
-#endif
 }
 
 - (void)eraseLine
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	[self writeString: @"\033[2K"];
-#endif
 }
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	[self writeFormat: @"\033[%uG", column + 1];
-#endif
 }
 
 - (void)setCursorPosition: (OFPoint)position
@@ -544,19 +532,16 @@ colorToANSI(OFColor *color)
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	[self writeFormat: @"\033[%u;%uH",
 			   (unsigned)position.y + 1, (unsigned)position.x + 1];
-#endif
 }
 
 - (void)setRelativeCursorPosition: (OFPoint)position
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
 	if (position.x > 0)
@@ -568,6 +553,5 @@ colorToANSI(OFColor *color)
 		[self writeFormat: @"\033[%uB", (unsigned)position.y];
 	else if (position.y < 0)
 		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
-#endif
 }
 @end
