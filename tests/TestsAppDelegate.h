@@ -59,10 +59,6 @@
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
-@interface TestsAppDelegate (OFDDPSocketTests)
-- (void)DDPSocketTests;
-@end
-
 @interface TestsAppDelegate (OFDataTests)
 - (void)dataTests;
 @end

@@ -52,7 +52,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m	\
 	       OFTCPSocketTests.m	\
 	       OFUDPSocketTests.m	\
 	       ${USE_SRCS_IPX}		\
-	       ${USE_SRCS_UNIX_SOCKETS}
+	       ${USE_SRCS_UNIX_SOCKETS}	\
+	       ${USE_SRCS_APPLETALK}
+SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m

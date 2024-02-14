@@ -383,9 +383,6 @@ main(int argc, char *argv[])
 	[self memoryStreamTests];
 	[self notificationCenterTests];
 #ifdef OF_HAVE_SOCKETS
-# ifdef OF_HAVE_APPLETALK
-	[self DDPSocketTests];
-# endif
 	[self kernelEventObserverTests];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
