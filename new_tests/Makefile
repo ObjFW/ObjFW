@@ -53,8 +53,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m	\
 	       OFUDPSocketTests.m	\
 	       ${USE_SRCS_IPX}		\
 	       ${USE_SRCS_UNIX_SOCKETS}
-SRCS_IPX = OFIPXSocketTests.m	\
-	   OFSPXSocketTests.m
+SRCS_IPX = OFIPXSocketTests.m		\
+	   OFSPXSocketTests.m		\
+	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m

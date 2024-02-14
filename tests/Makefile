@@ -34,10 +34,8 @@ SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m	\
-	       ${USE_SRCS_APPLETALK}		\
-	       ${USE_SRCS_IPX}
+	       ${USE_SRCS_APPLETALK}
 SRCS_APPLETALK = OFDDPSocketTests.m
-SRCS_IPX = OFSPXStreamSocketTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 IOS_USER ?= mobile
