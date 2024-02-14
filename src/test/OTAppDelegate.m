@@ -35,6 +35,13 @@
 # undef asm
 #endif
 
+#ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
+#endif
+
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
 @end
 
@@ -58,9 +65,12 @@ isSubclassOfClass(Class class, Class superclass)
 }
 
 @implementation OTAppDelegate
-#ifdef OF_WII
 + (void)initialize
 {
+	if (self != [OTAppDelegate class])
+		return;
+
+#if defined(OF_WII)
 	GXRModeObj *mode;
 	void *nextFB;
 
@@ -80,8 +90,13 @@ isSubclassOfClass(Class class, Class superclass)
 
 	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
 	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
-}
+#elif defined(OF_NINTENDO_3DS)
+	gfxInitDefault();
+	atexit(gfxExit);
+
+	consoleInit(GFX_TOP, NULL);
 #endif
+}
 
 - (OFSet OF_GENERIC(Class) *)testClasses
 {
@@ -210,8 +225,8 @@ isSubclassOfClass(Class class, Class superclass)
 		break;
 	}
 
-#ifdef OF_WII
 	if (status == StatusFailed) {
+#if defined(OF_WII)
 		[OFStdOut setForegroundColor: [OFColor silver]];
 		[OFStdOut writeLine: @"Press A to continue"];
 
@@ -219,12 +234,24 @@ isSubclassOfClass(Class class, Class superclass)
 			WPAD_ScanPads();
 
 			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
-				return;
+				break;
 
 			VIDEO_WaitVSync();
 		}
-	}
+#elif defined(OF_NINTENDO_3DS)
+		[OFStdOut setForegroundColor: [OFColor silver]];
+		[OFStdOut writeLine: @"Press A to continue"];
+
+		for (;;) {
+			hidScanInput();
+
+			if (hidKeysDown() & KEY_A)
+				break;
+
+			gspWaitForVBlank();
+		}
 #endif
+	}
 }
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
@@ -235,7 +262,7 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeString: @"Found "];
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
@@ -339,7 +366,7 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #else
 	[OFStdOut setForegroundColor: [OFColor purple]];
@@ -348,14 +375,14 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", numSkipped];
@@ -364,7 +391,7 @@ isSubclassOfClass(Class class, Class superclass)
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
-#ifdef OF_WII
+#if defined(OF_WII)
 	[OFStdOut setForegroundColor: [OFColor silver]];
 	[OFStdOut writeLine: @"Press home button to exit"];
 
@@ -372,12 +399,24 @@ isSubclassOfClass(Class class, Class superclass)
 		WPAD_ScanPads();
 
 		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
-			[OFApplication terminateWithStatus: (int)numFailed];
+			break;
 
 		VIDEO_WaitVSync();
 	}
-#else
-	[OFApplication terminateWithStatus: (int)numFailed];
+#elif defined(OF_NINTENDO_3DS)
+	[OFStdOut setForegroundColor: [OFColor silver]];
+	[OFStdOut writeLine: @"Press start button to exit"];
+
+	for (;;) {
+		hidScanInput();
+
+		if (hidKeysDown() & KEY_START)
+			break;
+
+		gspWaitForVBlank();
+	}
 #endif
+
+	[OFApplication terminateWithStatus: (int)numFailed];
 }
 @end
