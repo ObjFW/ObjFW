@@ -17,8 +17,8 @@ include buildsys.mk
 utils tests new_tests: src
 
 check: tests new_tests
-	cd tests && ${MAKE} -s run
-	cd new_tests && ${MAKE} -s run
+	${MAKE} -C tests -s run
+	${MAKE} -C new_tests -s run
 
 docs:
 	rm -fr docs
