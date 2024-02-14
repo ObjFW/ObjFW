@@ -107,10 +107,6 @@
 - (void)runtimeARCTests;
 @end
 
-@interface TestsAppDelegate (OFSPXSocketTests)
-- (void)SPXSocketTests;
-@end
-
 @interface TestsAppDelegate (OFSPXStreamSocketTests)
 - (void)SPXStreamSocketTests;
 @end
