@@ -254,6 +254,56 @@ isSubclassOfClass(Class class, Class superclass)
 	}
 }
 
+- (OFString *)descriptionForException: (id)exception
+{
+	OFMutableString *description = [OFMutableString
+	    stringWithFormat: @"Unhandled exception: %@",
+			      exception];
+	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
+	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
+		stackTraceAddresses = [exception stackTraceAddresses];
+
+	if (stackTraceAddresses != nil) {
+		size_t count = stackTraceAddresses.count;
+
+		if ([exception respondsToSelector:
+		    @selector(stackTraceSymbols)])
+			stackTraceSymbols = [exception stackTraceSymbols];
+
+		if (stackTraceSymbols.count != count)
+			stackTraceSymbols = nil;
+
+		[description appendString: @"\n\nStack trace:"];
+
+		if (stackTraceSymbols != nil) {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+				const char *symbol = [[stackTraceSymbols
+				    objectAtIndex: i]
+				    cStringWithEncoding: encoding];
+
+				[description appendFormat: @"\n  %p  %s",
+							   address, symbol];
+			}
+		} else {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+
+				[description appendFormat: @"\n  %p", address];
+			}
+		}
+	}
+
+	[description makeImmutable];
+
+	return description;
+}
+
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
@@ -304,13 +354,25 @@ isSubclassOfClass(Class class, Class superclass)
 						 inClass: class
 						  status: StatusFailed
 					     description: e.description];
+
 				failed = true;
 			} @catch (OTTestSkippedException *e) {
 				[self printStatusForTest: test.pointerValue
 						 inClass: class
 						  status: StatusSkipped
 					     description: e.description];
+
 				skipped = true;
+			} @catch (id e) {
+				OFString *description =
+				    [self descriptionForException: e];
+
+				[self printStatusForTest: test.pointerValue
+						 inClass: class
+						  status: StatusFailed
+					     description: description];
+
+				failed = true;
 			}
 			@try {
 				[instance tearDown];
@@ -327,8 +389,19 @@ isSubclassOfClass(Class class, Class superclass)
 							 inClass: class
 							  status: StatusFailed
 						     description: description];
+
 					failed = true;
 				}
+			} @catch (id e) {
+				OFString *description =
+				    [self descriptionForException: e];
+
+				[self printStatusForTest: test.pointerValue
+						 inClass: class
+						  status: StatusFailed
+					     description: description];
+
+				failed = true;
 			}
 
 			if (!failed && !skipped) {
@@ -336,6 +409,7 @@ isSubclassOfClass(Class class, Class superclass)
 						 inClass: class
 						  status: StatusOk
 					     description: nil];
+
 				numSucceeded++;
 			} else if (failed)
 				numFailed++;
