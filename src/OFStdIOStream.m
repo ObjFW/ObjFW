@@ -430,7 +430,8 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 	return true;
 #elif defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);

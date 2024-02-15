@@ -48,6 +48,24 @@
 # undef id
 #endif
 
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
+
+static OFDate *lastConsoleUpdate;
+
+static void
+updateConsole(bool force)
+{
+	if (force || lastConsoleUpdate.timeIntervalSinceNow <= -1.0 / 60) {
+		consoleUpdate(NULL);
+		[lastConsoleUpdate release];
+		lastConsoleUpdate = [[OFDate alloc] init];
+	}
+}
+#endif
+
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
 @end
 
@@ -103,6 +121,10 @@ isSubclassOfClass(Class class, Class superclass)
 	atexit(gfxExit);
 
 	consoleInit(GFX_TOP, NULL);
+#elif defined(OF_NINTENDO_SWITCH)
+	consoleInit(NULL);
+	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+	updateConsole(true);
 #endif
 }
 
@@ -269,6 +291,19 @@ isSubclassOfClass(Class class, Class superclass)
 
 			gspWaitForVBlank();
 		}
+#elif defined(OF_NINTENDO_SWITCH)
+		[OFStdOut setForegroundColor: [OFColor silver]];
+		[OFStdOut writeLine: @"Press A to continue"];
+
+		while (appletMainLoop()) {
+			PadState pad;
+
+			padUpdate(&pad);
+			updateConsole(true);
+
+			if (padGetButtonsDown(&pad) & HidNpadButton_A)
+				break;
+		}
 #endif
 	}
 }
@@ -331,7 +366,8 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeString: @"Found "];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
+    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
@@ -459,7 +495,8 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
+    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #else
 	[OFStdOut setForegroundColor: [OFColor purple]];
@@ -468,14 +505,16 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
+    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
+    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
 #endif
 	[OFStdOut writeFormat: @"%zu", numSkipped];
@@ -519,6 +558,11 @@ isSubclassOfClass(Class class, Class superclass)
 
 		gspWaitForVBlank();
 	}
+#elif defined(OF_NINTENDO_SWITCH)
+	while (appletMainLoop())
+		updateConsole(true);
+
+	consoleExit(NULL);
 #endif
 
 	[OFApplication terminateWithStatus: (int)numFailed];
