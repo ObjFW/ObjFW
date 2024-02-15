@@ -35,6 +35,12 @@
 # undef asm
 #endif
 
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
 #ifdef OF_NINTENDO_3DS
 /* Newer versions of libctru started using id as a parameter name. */
 # define id id_3ds
@@ -90,6 +96,8 @@ isSubclassOfClass(Class class, Class superclass)
 
 	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
 	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
+#elif defined(OF_NINTENDO_DS)
+	consoleDemoInit();
 #elif defined(OF_NINTENDO_3DS)
 	gfxInitDefault();
 	atexit(gfxExit);
@@ -237,6 +245,17 @@ isSubclassOfClass(Class class, Class superclass)
 				break;
 
 			VIDEO_WaitVSync();
+		}
+#elif defined(OF_NINTENDO_DS)
+		[OFStdOut setForegroundColor: [OFColor silver]];
+		[OFStdOut writeLine: @"Press A to continue"];
+
+		for (;;) {
+			swiWaitForVBlank();
+			scanKeys();
+
+			if (keysDown() & KEY_A)
+				break;
 		}
 #elif defined(OF_NINTENDO_3DS)
 		[OFStdOut setForegroundColor: [OFColor silver]];
@@ -476,6 +495,17 @@ isSubclassOfClass(Class class, Class superclass)
 			break;
 
 		VIDEO_WaitVSync();
+	}
+#elif defined(OF_NINTENDO_DS)
+	[OFStdOut setForegroundColor: [OFColor silver]];
+	[OFStdOut writeLine: @"Press start button to exit"];
+
+	for (;;) {
+		swiWaitForVBlank();
+		scanKeys();
+
+		if (keysDown() & KEY_START)
+			break;
 	}
 #elif defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor silver]];
