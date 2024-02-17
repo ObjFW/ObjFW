@@ -99,10 +99,6 @@
 - (void)runtimeTests;
 @end
 
-@interface TestsAppDelegate (RuntimeARCTests)
-- (void)runtimeARCTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

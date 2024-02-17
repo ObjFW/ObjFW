@@ -371,9 +371,6 @@ main(int argc, char *argv[])
 #endif
 
 	[self runtimeTests];
-#ifdef COMPILER_SUPPORTS_ARC
-	[self runtimeARCTests];
-#endif
 	[self dataTests];
 	[self dictionaryTests];
 	[self listTests];

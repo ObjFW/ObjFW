@@ -24,7 +24,6 @@ SRCS = OFDataTests.m			\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
        RuntimeTests.m			\
-       ${RUNTIME_ARC_TESTS_M}		\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
@@ -153,7 +152,6 @@ CPPFLAGS += -I../src				\
 	    -I../src/runtime			\
 	    -I..				\
 	    -DSTDOUT
-OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

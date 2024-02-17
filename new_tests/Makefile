@@ -44,6 +44,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFStringTests.m			\
        OFSystemInfoTests.m		\
        OFUTF8StringTests.m		\
+       ${RUNTIME_ARC_TESTS_M}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
@@ -193,6 +194,7 @@ CPPFLAGS += -I../src				\
 	    -I..				\
 	    -DOBJFWTEST_LOCAL_INCLUDES		\
 	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
+OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 # Repetition is required for Wii U, as otherwise it cannot find main. Just
 # moving -lobjfwtest later doesn't work either, as then the linker cannot find
 # ObjFW symbols. So the only solution is to list everything twice.

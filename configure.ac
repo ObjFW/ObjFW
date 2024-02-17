@@ -739,7 +739,6 @@ AC_COMPILE_IFELSE([
 	]])
 ], [
 	AC_MSG_RESULT(yes)
-	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
 	AC_SUBST(RUNTIME_ARC_TESTS_M, RuntimeARCTests.m)
 ], [
 	AC_MSG_RESULT(no)

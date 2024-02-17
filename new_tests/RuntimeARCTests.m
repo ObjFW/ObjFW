@@ -15,14 +15,34 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"Runtime (ARC)";
-
-@interface RuntimeARCTest: OFObject
+@interface RuntimeARCTests: OTTestCase
 @end
 
-@implementation RuntimeARCTest
+@interface RuntimeARCTestClass: OFObject
+@end
+
+@implementation RuntimeARCTests
+- (void)testExceptionsDuringInit
+{
+	OTAssertThrows((void)[[RuntimeARCTestClass alloc] init]);
+}
+
+- (void)testWeakReferences
+{
+	id object = [[OFObject alloc] init];
+	__weak id weak = object;
+
+	OTAssertEqual(weak, object);
+
+	object = nil;
+	OTAssertNil(weak);
+}
+@end
+
+@implementation RuntimeARCTestClass
 - (instancetype)init
 {
 	self = [super init];
@@ -39,23 +59,5 @@ static OFString *const module = @"Runtime (ARC)";
 #endif
 
 	return self;
-}
-@end
-
-@implementation TestsAppDelegate (RuntimeARCTests)
-- (void)runtimeARCTests
-{
-	id object;
-	__weak id weak;
-
-	EXPECT_EXCEPTION(@"Exceptions in init", OFException,
-	    object = [[RuntimeARCTest alloc] init])
-
-	object = [[OFObject alloc] init];
-	weak = object;
-	TEST(@"weakly referencing an object", weak == object)
-
-	object = nil;
-	TEST(@"weak references becoming nil", weak == nil)
 }
 @end
