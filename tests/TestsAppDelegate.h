@@ -107,10 +107,6 @@
 - (void)streamTests;
 @end
 
-@interface TestsAppDelegate (OFStringTests)
-- (void)stringTests;
-@end
-
 @interface TestsAppDelegate (OFValueTests)
 - (void)valueTests;
 @end

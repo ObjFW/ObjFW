@@ -33,13 +33,17 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFMethodSignatureTests.m		\
        OFMutableArrayTests.m		\
        OFMutableSetTests.m		\
+       OFMutableStringTests.m		\
+       OFMutableUTF8StringTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
        OFPBKDF2Tests.m			\
        OFPropertyListTests.m		\
        OFScryptTests.m			\
        OFSetTests.m			\
+       OFStringTests.m			\
        OFSystemInfoTests.m		\
+       OFUTF8StringTests.m		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
