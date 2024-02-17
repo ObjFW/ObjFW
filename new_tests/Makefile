@@ -35,6 +35,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFMutableSetTests.m		\
        OFMutableStringTests.m		\
        OFMutableUTF8StringTests.m	\
+       OFNotificationCenterTests.m	\
        OFNumberTests.m			\
        OFObjectTests.m			\
        OFPBKDF2Tests.m			\

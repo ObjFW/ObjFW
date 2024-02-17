@@ -17,7 +17,6 @@ SRCS = OFDataTests.m			\
        OFDictionaryTests.m		\
        OFListTests.m			\
        OFMemoryStreamTests.m		\
-       OFNotificationCenterTests.m	\
        OFStreamTests.m			\
        OFValueTests.m			\
        OFXMLNodeTests.m			\

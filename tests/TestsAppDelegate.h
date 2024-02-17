@@ -91,10 +91,6 @@
 - (void)memoryStreamTests;
 @end
 
-@interface TestsAppDelegate (OFNotificationCenterTests)
-- (void)notificationCenterTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
