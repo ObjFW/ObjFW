@@ -723,9 +723,9 @@ static const OFChar16 swappedChar16String[] = {
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"\r -INFINITY\n"] doubleValue], -INFINITY);
 
-	OTAssertTrue(isnan([[self.stringClass stringWithString:
+	OTAssert(isnan([[self.stringClass stringWithString:
 	    @"   NAN\t\t"] doubleValue]));
-	OTAssertTrue(isnan([[self.stringClass stringWithString:
+	OTAssert(isnan([[self.stringClass stringWithString:
 	    @"   -NaN\t\t"] doubleValue]));
 }
 
@@ -1166,7 +1166,7 @@ static const OFChar16 swappedChar16String[] = {
 {
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"c:/tmp"].pathComponents],
+	    @"c:/tmp"] pathComponents],
 	    ([OFArray arrayWithObjects: @"c:/", @"tmp", nil]));
 
 	OTAssertEqualObjects([[self.stringClass stringWithString:
