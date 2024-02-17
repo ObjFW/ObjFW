@@ -383,7 +383,6 @@ main(int argc, char *argv[])
 	[self HTTPClientTests];
 #endif
 #ifdef OF_HAVE_SOCKETS
-	[self HTTPCookieTests];
 	[self HTTPCookieManagerTests];
 #endif
 	[self XMLParserTests];
