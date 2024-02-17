@@ -219,39 +219,54 @@ isSubclassOfClass(Class class, Class superclass)
 {
 	switch (status) {
 	case StatusRunning:
-		[OFStdOut setForegroundColor: [OFColor olive]];
-		[OFStdOut writeFormat: @"-[%@ ", class];
-		[OFStdOut setForegroundColor: [OFColor yellow]];
-		[OFStdOut writeFormat: @"%s", sel_getName(test)];
-		[OFStdOut setForegroundColor: [OFColor olive]];
-		[OFStdOut writeString: @"]: "];
+		if (OFStdOut.hasTerminal) {
+			[OFStdOut setForegroundColor: [OFColor olive]];
+			[OFStdOut writeFormat: @"-[%@ ", class];
+			[OFStdOut setForegroundColor: [OFColor yellow]];
+			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			[OFStdOut setForegroundColor: [OFColor olive]];
+			[OFStdOut writeString: @"]: "];
+		} else
+			[OFStdOut writeFormat: @"-[%@ %s]: ",
+					       class, sel_getName(test)];
 		break;
 	case StatusOk:
-		[OFStdOut setForegroundColor: [OFColor green]];
-		[OFStdOut writeFormat: @"\r-[%@ ", class];
-		[OFStdOut setForegroundColor: [OFColor lime]];
-		[OFStdOut writeFormat: @"%s", sel_getName(test)];
-		[OFStdOut setForegroundColor: [OFColor green]];
-		[OFStdOut writeLine: @"]: ok"];
+		if (OFStdOut.hasTerminal) {
+			[OFStdOut setForegroundColor: [OFColor green]];
+			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			[OFStdOut setForegroundColor: [OFColor green]];
+			[OFStdOut writeLine: @"]: ok"];
+		} else
+			[OFStdOut writeLine: @"ok"];
 		break;
 	case StatusFailed:
-		[OFStdOut setForegroundColor: [OFColor maroon]];
-		[OFStdOut writeFormat: @"\r-[%@ ", class];
-		[OFStdOut setForegroundColor: [OFColor red]];
-		[OFStdOut writeFormat: @"%s", sel_getName(test)];
-		[OFStdOut setForegroundColor: [OFColor maroon]];
-		[OFStdOut writeLine: @"]: failed"];
-		[OFStdOut writeLine: description];
+		if (OFStdOut.hasTerminal) {
+			[OFStdOut setForegroundColor: [OFColor maroon]];
+			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut setForegroundColor: [OFColor red]];
+			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			[OFStdOut setForegroundColor: [OFColor maroon]];
+			[OFStdOut writeLine: @"]: failed"];
+			[OFStdOut writeLine: description];
+		} else
+			[OFStdOut writeLine: @"failed"];
 		break;
 	case StatusSkipped:
-		[OFStdOut setForegroundColor: [OFColor gray]];
-		[OFStdOut writeFormat: @"\r-[%@ ", class];
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeFormat: @"%s", sel_getName(test)];
-		[OFStdOut setForegroundColor: [OFColor gray]];
-		[OFStdOut writeLine: @"]: skipped"];
+		if (OFStdOut.hasTerminal) {
+			[OFStdOut setForegroundColor: [OFColor gray]];
+			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut setForegroundColor: [OFColor silver]];
+			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			[OFStdOut setForegroundColor: [OFColor gray]];
+			[OFStdOut writeLine: @"]: skipped"];
+		} else
+			[OFStdOut writeLine: @"skipped"];
+
 		if (description != nil)
 			[OFStdOut writeLine: description];
+
 		break;
 	}
 
