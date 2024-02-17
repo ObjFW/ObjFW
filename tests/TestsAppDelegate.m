@@ -370,7 +370,6 @@ main(int argc, char *argv[])
 	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
-	[self runtimeTests];
 	[self dataTests];
 	[self dictionaryTests];
 	[self listTests];

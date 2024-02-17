@@ -95,10 +95,6 @@
 - (void)notificationCenterTests;
 @end
 
-@interface TestsAppDelegate (RuntimeTests)
-- (void)runtimeTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

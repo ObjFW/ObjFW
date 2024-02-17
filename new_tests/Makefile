@@ -45,6 +45,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFSystemInfoTests.m		\
        OFUTF8StringTests.m		\
        ${RUNTIME_ARC_TESTS_M}		\
+       RuntimeTests.m			\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\

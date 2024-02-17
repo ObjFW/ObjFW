@@ -23,7 +23,6 @@ SRCS = OFDataTests.m			\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
-       RuntimeTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}		\
