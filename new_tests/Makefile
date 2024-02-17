@@ -56,13 +56,14 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = OFHTTPCookieTests.m	\
-	       OFDNSResolverTests.m	\
-	       OFSocketTests.m		\
-	       OFTCPSocketTests.m	\
-	       OFUDPSocketTests.m	\
-	       ${USE_SRCS_IPX}		\
-	       ${USE_SRCS_UNIX_SOCKETS}	\
+SRCS_SOCKETS = OFHTTPCookieManagerTests.m	\
+	       OFHTTPCookieTests.m		\
+	       OFDNSResolverTests.m		\
+	       OFSocketTests.m			\
+	       OFTCPSocketTests.m		\
+	       OFUDPSocketTests.m		\
+	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_UNIX_SOCKETS}		\
 	       ${USE_SRCS_APPLETALK}
 SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\

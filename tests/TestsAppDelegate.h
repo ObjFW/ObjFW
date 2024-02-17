@@ -71,10 +71,6 @@
 - (void)HTTPClientTests;
 @end
 
-@interface TestsAppDelegate (OFHTTPCookieManagerTests)
-- (void)HTTPCookieManagerTests;
-@end
-
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end

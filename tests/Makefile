@@ -25,7 +25,6 @@ SRCS = OFDataTests.m			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}
 SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
-	       OFHTTPCookieManagerTests.m	\
 	       OFKernelEventObserverTests.m
 
 IOS_USER ?= mobile
