@@ -99,10 +99,6 @@
 - (void)valueTests;
 @end
 
-@interface TestsAppDelegate (OFWindowsRegistryKeyTests)
-- (void)windowsRegistryKeyTests;
-@end
-
 @interface TestsAppDelegate (OFXMLNodeTests)
 - (void)XMLNodeTests;
 @end

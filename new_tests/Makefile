@@ -52,6 +52,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
        ${USE_SRCS_THREADS}		\
+       ${USE_SRCS_WINDOWS}		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
@@ -70,6 +71,7 @@ SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
+SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 include ../buildsys.mk
 

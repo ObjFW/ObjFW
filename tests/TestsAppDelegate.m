@@ -389,10 +389,6 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 
-#ifdef OF_WINDOWS
-	[self windowsRegistryKeyTests];
-#endif
-
 	[OFStdOut reset];
 
 #if defined(OF_IOS)
