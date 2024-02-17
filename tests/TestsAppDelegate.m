@@ -389,7 +389,6 @@ main(int argc, char *argv[])
 #endif
 	[self XMLParserTests];
 	[self XMLNodeTests];
-	[self XMLElementBuilderTests];
 
 #ifdef OF_WINDOWS
 	[self windowsRegistryKeyTests];

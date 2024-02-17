@@ -107,10 +107,6 @@
 - (void)windowsRegistryKeyTests;
 @end
 
-@interface TestsAppDelegate (OFXMLElementBuilderTests)
-- (void)XMLElementBuilderTests;
-@end
-
 @interface TestsAppDelegate (OFXMLNodeTests)
 - (void)XMLNodeTests;
 @end

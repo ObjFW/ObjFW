@@ -44,6 +44,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFStringTests.m			\
        OFSystemInfoTests.m		\
        OFUTF8StringTests.m		\
+       OFXMLElementBuilderTests.m	\
        ${RUNTIME_ARC_TESTS_M}		\
        RuntimeTests.m			\
        ${USE_SRCS_PLUGINS}		\
