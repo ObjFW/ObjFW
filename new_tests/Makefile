@@ -24,6 +24,7 @@ SRCS = ${OF_BLOCK_TESTS_M}			\
        OFConcreteMutableSetTests.m		\
        OFConcreteSetTests.m			\
        OFCryptographicHashTests.m		\
+       OFDataTests.m				\
        OFDateTests.m				\
        OFDictionaryTests.m			\
        OFHMACTests.m				\
@@ -36,6 +37,7 @@ SRCS = ${OF_BLOCK_TESTS_M}			\
        OFMatrix4x4Tests.m			\
        OFMethodSignatureTests.m			\
        OFMutableArrayTests.m			\
+       OFMutableDataTests.m			\
        OFMutableDictionaryTests.m		\
        OFMutableSetTests.m			\
        OFMutableStringTests.m			\
