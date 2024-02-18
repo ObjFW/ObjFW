@@ -28,6 +28,7 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        OFIRITests.m			\
        OFInvocationTests.m		\
        OFJSONTests.m			\
+       OFListTests.m			\
        OFLocaleTests.m			\
        OFMatrix4x4Tests.m		\
        OFMethodSignatureTests.m		\

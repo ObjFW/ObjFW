@@ -67,10 +67,6 @@
 - (void)dictionaryTests;
 @end
 
-@interface TestsAppDelegate (OFListTests)
-- (void)listTests;
-@end
-
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
 @end
