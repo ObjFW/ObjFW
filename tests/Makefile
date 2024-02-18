@@ -15,7 +15,6 @@ PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = OFStreamTests.m			\
        OFValueTests.m			\
-       OFXMLNodeTests.m			\
        TestsAppDelegate.m
 
 IOS_USER ?= mobile

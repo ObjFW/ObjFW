@@ -372,7 +372,6 @@ main(int argc, char *argv[])
 
 	[self valueTests];
 	[self streamTests];
-	[self XMLNodeTests];
 
 	[OFStdOut reset];
 

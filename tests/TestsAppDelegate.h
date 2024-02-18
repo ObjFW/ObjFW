@@ -66,7 +66,3 @@
 @interface TestsAppDelegate (OFValueTests)
 - (void)valueTests;
 @end
-
-@interface TestsAppDelegate (OFXMLNodeTests)
-- (void)XMLNodeTests;
-@end
