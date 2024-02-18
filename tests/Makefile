@@ -1,6 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS}
+SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS} ${OBJC_SYNC} terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -10,8 +10,10 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.rpx	\
 	testfile_bin.m		\
 	testfile_ini.m
+DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
+STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ${OF_BLOCK_TESTS_M}			\
        ForwardingTests.m			\
        OFArrayTests.m				\
