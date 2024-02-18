@@ -147,7 +147,7 @@ isSubclassOfClass(Class class, Class superclass)
 #endif
 }
 
-- (OFSet OF_GENERIC(Class) *)testClasses
+- (OFMutableSet OF_GENERIC(Class) *)testClasses
 {
 	Class *classes = objc_copyClassList(NULL);
 	OFMutableSet *testClasses;
@@ -182,7 +182,6 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[testClasses removeObject: [OTTestCase class]];
 
-	[testClasses makeImmutable];
 	return testClasses;
 }
 
@@ -402,12 +401,32 @@ isSubclassOfClass(Class class, Class superclass)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
+	OFMutableSet OF_GENERIC(Class) *testClasses;
 	size_t numSucceeded = 0, numFailed = 0, numSkipped = 0;
 	OFMutableDictionary *summaries = [OFMutableDictionary dictionary];
 
+	if ([OFApplication arguments].count > 0) {
+		testClasses = [OFMutableSet set];
+
+		for (OFString *className in [OFApplication arguments]) {
+			Class class = objc_lookUpClass([className
+			    cStringWithEncoding: OFStringEncodingASCII]);
+
+			if (class == Nil ||
+			    !isSubclassOfClass(class, [OTTestCase class])) {
+				[OFStdErr writeFormat: @"%@ is not a valid "
+						       @"test case!\n",
+						       className];
+				[OFApplication terminateWithStatus: 1];
+			}
+
+			[testClasses addObject: class];
+		}
+	} else
+		testClasses = [self testClasses];
+
 	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeString: @"Found "];
+	[OFStdOut writeString: @"Running "];
 #if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
     !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];

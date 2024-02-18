@@ -147,7 +147,7 @@ run:
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
-	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
+	${WRAPPER} ./${PROG_NOINST} ${TESTCASES}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
