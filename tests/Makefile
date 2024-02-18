@@ -24,8 +24,7 @@ SRCS = OFDataTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_SOCKETS}
-SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
-	       OFKernelEventObserverTests.m
+SRCS_SOCKETS = OFKernelEventObserverTests.m
 
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test

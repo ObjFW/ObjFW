@@ -67,10 +67,6 @@
 - (void)dictionaryTests;
 @end
 
-@interface TestsAppDelegate (OFHTTPClientTests)
-- (void)HTTPClientTests;
-@end
-
 @interface TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTests;
 @end

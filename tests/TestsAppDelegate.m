@@ -379,9 +379,6 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_SOCKETS
 	[self kernelEventObserverTests];
 #endif
-#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
-	[self HTTPClientTests];
-#endif
 	[self XMLParserTests];
 	[self XMLNodeTests];
 
