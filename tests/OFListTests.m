@@ -15,138 +15,263 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFList";
-static OFString *strings[] = {
-	@"Foo",
-	@"Bar",
-	@"Baz"
-};
-
-@implementation TestsAppDelegate (OFListTests)
-- (void)listTests
+@interface OFListTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFList *list;
-	OFEnumerator *enumerator;
-	OFListItem iter;
-	OFString *object;
-	size_t i;
-	bool ok;
+	OFList *_list;
+}
+@end
 
-	TEST(@"+[list]", (list = [OFList list]))
+@implementation OFListTests
+- (void)setUp
+{
+	[super setUp];
 
-	TEST(@"-[appendObject:]", [list appendObject: strings[0]] &&
-	    [list appendObject: strings[1]] && [list appendObject: strings[2]])
+	_list = [[OFList alloc] init];
+	[_list appendObject: @"Foo"];
+	[_list appendObject: @"Bar"];
+	[_list appendObject: @"Baz"];
+}
 
-	TEST(@"-[firstListItem]",
-	    [OFListItemObject(list.firstListItem) isEqual: strings[0]])
+- (void)dealloc
+{
+	[_list release];
 
-	TEST(@"OFListItemNext()",
-	    [OFListItemObject(OFListItemNext(list.firstListItem))
-	    isEqual: strings[1]])
+	[super dealloc];
+}
 
-	TEST(@"-[lastListItem]",
-	    [OFListItemObject(list.lastListItem) isEqual: strings[2]])
+- (void)testCount
+{
+	OTAssertEqual(_list.count, 3);
+}
 
-	TEST(@"OFListItemPrevious()",
-	    [OFListItemObject(OFListItemPrevious(list.lastListItem))
-	    isEqual: strings[1]])
+- (void)testAppendObject
+{
+	OFListItem item;
 
-	TEST(@"-[removeListItem:]",
-	    R([list removeListItem: list.lastListItem]) &&
-	    [list.lastObject isEqual: strings[1]] &&
-	    R([list removeListItem: list.firstListItem]) &&
-	    [list.firstObject isEqual: list.lastObject])
+	[_list appendObject: @"Qux"];
 
-	TEST(@"-[insertObject:beforeListItem:]",
-	    [list insertObject: strings[0] beforeListItem: list.lastListItem] &&
-	    [OFListItemObject(OFListItemPrevious(list.lastListItem))
-	    isEqual: strings[0]])
+	item = _list.firstListItem;
+	OTAssertEqualObjects(OFListItemObject(item), @"Foo");
 
-	TEST(@"-[insertObject:afterListItem:]",
-	    [list insertObject: strings[2]
-		 afterListItem: OFListItemNext(list.firstListItem)] &&
-	    [list.lastObject isEqual: strings[2]])
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Bar");
 
-	TEST(@"-[count]", list.count == 3)
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Baz");
 
-	TEST(@"-[containsObject:]",
-	    [list containsObject: strings[1]] &&
-	    ![list containsObject: @"nonexistent"])
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Qux");
 
-	TEST(@"-[containsObjectIdenticalTo:]",
-	    [list containsObjectIdenticalTo: strings[1]] &&
-	    ![list containsObjectIdenticalTo:
-	    [OFString stringWithString: strings[1]]])
+	item = OFListItemNext(item);
+	OTAssertEqual(item, NULL);
+}
 
-	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
-	    [list.firstObject isEqual: strings[0]] &&
-	    [OFListItemObject(OFListItemNext(list.firstListItem))
-	    isEqual: strings[1]] &&
-	    [list.lastObject isEqual: strings[2]])
+- (void)testFirstListItem
+{
+	OTAssertEqualObjects(OFListItemObject(_list.firstListItem), @"Foo");
+}
 
-	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
+- (void)testFirstObject
+{
+	OTAssertEqualObjects(_list.firstObject, @"Foo");
+}
 
-	TEST(@"-[description]",
-	    [list.description isEqual: @"[\n\tFoo,\n\tBar,\n\tBaz\n]"])
+- (void)testLastListItem
+{
+	OTAssertEqualObjects(OFListItemObject(_list.lastListItem), @"Baz");
+}
 
-	TEST(@"-[objectEnumerator]", (enumerator = [list objectEnumerator]))
+- (void)testLastObject
+{
+	OTAssertEqualObjects(_list.lastObject, @"Baz");
+}
 
-	iter = list.firstListItem;
-	i = 0;
-	ok = true;
-	while ((object = [enumerator nextObject]) != nil) {
-		if (![object isEqual: OFListItemObject(iter)])
-			ok = false;
+- (void)testListItemNext
+{
+	OTAssertEqualObjects(
+	    OFListItemObject(OFListItemNext(_list.firstListItem)), @"Bar");
+}
 
-		iter = OFListItemNext(iter);
-		i++;
+- (void)testListItemPrevious
+{
+	OTAssertEqualObjects(
+	    OFListItemObject(OFListItemPrevious(_list.lastListItem)), @"Bar");
+}
+
+- (void)testRemoveListItem
+{
+	OFListItem item;
+
+	[_list removeListItem: OFListItemNext(_list.firstListItem)];
+
+	item = _list.firstListItem;
+	OTAssertEqualObjects(OFListItemObject(item), @"Foo");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Baz");
+
+	item = OFListItemNext(item);
+	OTAssertEqual(item, NULL);
+}
+
+- (void)testInsertObjectBeforeListItem
+{
+	OFListItem item;
+
+	[_list insertObject: @"Qux" beforeListItem: _list.lastListItem];
+
+	item = _list.firstListItem;
+	OTAssertEqualObjects(OFListItemObject(item), @"Foo");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Bar");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Qux");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Baz");
+
+	item = OFListItemNext(item);
+	OTAssertEqual(item, NULL);
+}
+
+- (void)testInsertObjectAfterListItem
+{
+	OFListItem item;
+
+	[_list insertObject: @"Qux" afterListItem: _list.firstListItem];
+
+	item = _list.firstListItem;
+	OTAssertEqualObjects(OFListItemObject(item), @"Foo");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Qux");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Bar");
+
+	item = OFListItemNext(item);
+	OTAssertEqualObjects(OFListItemObject(item), @"Baz");
+
+	item = OFListItemNext(item);
+	OTAssertEqual(item, NULL);
+}
+
+- (void)testContainsObject
+{
+	OTAssertTrue([_list containsObject: @"Foo"]);
+	OTAssertFalse([_list containsObject: @"Qux"]);
+}
+
+- (void)testContainsObjectIdenticalTo
+{
+	OFString *foo = _list.firstObject;
+
+	OTAssertTrue([_list containsObjectIdenticalTo: foo]);
+	OTAssertFalse(
+	    [_list containsObjectIdenticalTo: [[foo mutableCopy] autorelease]]);
+}
+
+- (void)testIsEqual
+{
+	OFList *list = [OFList list];
+
+	[list appendObject: @"Foo"];
+	[list appendObject: @"Bar"];
+	[list appendObject: @"Baz"];
+
+	OTAssertEqualObjects(list, _list);
+
+	[list appendObject: @"Qux"];
+
+	OTAssertNotEqualObjects(list, _list);
+}
+
+- (void)testHash
+{
+	OFList *list = [OFList list];
+
+	[list appendObject: @"Foo"];
+	[list appendObject: @"Bar"];
+	[list appendObject: @"Baz"];
+
+	OTAssertEqual(list.hash, _list.hash);
+
+	[list appendObject: @"Qux"];
+
+	OTAssertNotEqual(list.hash, _list.hash);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects([[_list copy] autorelease], _list);
+}
+
+- (void)testDescription
+{
+	OTAssertEqualObjects(_list.description, @"[\n\tFoo,\n\tBar,\n\tBaz\n]");
+}
+
+- (void)testEnumerator
+{
+	OFEnumerator *enumerator = [_list objectEnumerator];
+
+	OTAssertEqualObjects([enumerator nextObject], @"Foo");
+	OTAssertEqualObjects([enumerator nextObject], @"Bar");
+	OTAssertEqualObjects([enumerator nextObject], @"Baz");
+	OTAssertNil([enumerator nextObject]);
+}
+
+- (void)testDetectMutationDuringEnumeration
+{
+	OFEnumerator *enumerator = [_list objectEnumerator];
+
+	[_list removeListItem: _list.firstListItem];
+
+	OTAssertThrowsSpecific([enumerator nextObject],
+	    OFEnumerationMutationException);
+}
+
+- (void)testFastEnumeration
+{
+	size_t i = 0;
+
+	for (OFString *object in _list) {
+		OTAssertLessThan(i, 3);
+
+		switch (i++) {
+		case 0:
+			OTAssertEqualObjects(object, @"Foo");
+			break;
+		case 1:
+			OTAssertEqualObjects(object, @"Bar");
+			break;
+		case 2:
+			OTAssertEqualObjects(object, @"Baz");
+			break;
+		}
 	}
 
-	if (list.count != i)
-		ok = false;
+	OTAssertEqual(i, 3);
+}
 
-	TEST(@"OFEnumerator's -[nextObject]", ok);
+- (void)testDetectMutationDuringFastEnumeration
+{
+	bool detected = false;
 
-	[list removeListItem: list.firstListItem];
-
-	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
-	    OFEnumerationMutationException, [enumerator nextObject])
-
-	[list prependObject: strings[0]];
-
-	iter = list.firstListItem;
-	i = 0;
-	ok = true;
-
-	for (OFString *object_ in list) {
-		if (![object_ isEqual: OFListItemObject(iter)])
-			ok = false;
-
-		iter = OFListItemNext(iter);
-		i++;
-	}
-
-	if (list.count != i)
-		ok = false;
-
-	TEST(@"Fast Enumeration", ok)
-
-	ok = false;
 	@try {
-		for (OFString *object_ in list) {
-			(void)object_;
-
-			[list removeListItem: list.lastListItem];
+		for (OFString *object in _list) {
+			(void)object;
+			[_list removeListItem: _list.firstListItem];
 		}
 	} @catch (OFEnumerationMutationException *e) {
-		ok = true;
+		detected = true;
 	}
 
-	TEST(@"Detection of mutation during Fast Enumeration", ok)
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertTrue(detected);
 }
 @end

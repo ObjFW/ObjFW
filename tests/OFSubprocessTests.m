@@ -43,7 +43,11 @@
 					     environment: environment];
 
 	[subprocess writeLine: @"Hellö world!"];
+#ifdef OF_HAVE_UNICODE_TABLES
 	OTAssertEqualObjects([subprocess readLine], @"HELLÖ WORLD!");
+#else
+	OTAssertEqualObjects([subprocess readLine], @"HELLö WORLD!");
+#endif
 
 	[subprocess closeForWriting];
 

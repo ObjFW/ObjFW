@@ -4,6 +4,17 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.8 -> ObjFW 1.0.9, 2024-02-18
+ * Fixes OFGZIPStream reading the size and CRC32 incorrectly when either spans
+   multiple reads.
+ * Fixes a type mismatch in OFMapTable that could cause problems on big endian
+   systems when uint32_t and unsigned long have a different size.
+ * Fixes the default implementation of -[initWithKeys:arguments:] for custom
+   dictionaries.
+ * Improves detection of mutation during enumeration in
+   -[enumerateKeysAndObjectsUsingBlock:].
+ * Minor documentation fixes.
+
 ObjFW 1.0.7 -> ObjFW 1.0.8, 2024-01-21
  * Fixes compilation on NetBSD, OpenBSD, OpenIndiana etc. which was broken by
    1.0.7.

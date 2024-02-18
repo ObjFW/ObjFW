@@ -1,6 +1,8 @@
 include ../extra.mk
 
-SUBDIRS = ${OBJC_SYNC}	\
+SUBDIRS = ${TESTPLUGIN}	\
+	  ${SUBPROCESS}	\
+	  ${OBJC_SYNC}	\
 	  terminal
 
 CLEAN = EBOOT.PBP		\
@@ -8,39 +10,77 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.nds	\
 	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx
+	${PROG_NOINST}.rpx	\
+	testfile_bin.m		\
+	testfile_ini.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = ForwardingTests.m		\
-       ${OF_BLOCK_TESTS_M}		\
-       OFDataTests.m			\
-       OFDictionaryTests.m		\
-       OFListTests.m			\
-       OFLocaleTests.m			\
-       OFMemoryStreamTests.m		\
-       OFNotificationCenterTests.m	\
-       OFObjectTests.m			\
-       OFSetTests.m			\
-       OFStreamTests.m			\
-       OFStringTests.m			\
-       OFSystemInfoTests.m		\
-       OFValueTests.m			\
-       OFXMLElementBuilderTests.m	\
-       OFXMLNodeTests.m			\
-       OFXMLParserTests.m		\
-       RuntimeTests.m			\
-       ${RUNTIME_ARC_TESTS_M}		\
-       TestsAppDelegate.m		\
-       ${USE_SRCS_FILES}		\
-       ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_WINDOWS}
+SRCS = ForwardingTests.m			\
+       OFASN1DERParsingTests.m			\
+       OFASN1DERRepresentationTests.m		\
+       OFArrayTests.m				\
+       ${OF_BLOCK_TESTS_M}			\
+       OFCharacterSetTests.m			\
+       OFColorTests.m				\
+       OFConcreteArrayTests.m			\
+       OFConcreteDictionaryTests.m		\
+       OFConcreteMutableArrayTests.m		\
+       OFConcreteMutableDictionaryTests.m	\
+       OFConcreteMutableSetTests.m		\
+       OFConcreteSetTests.m			\
+       OFCryptographicHashTests.m		\
+       OFDataTests.m				\
+       OFDateTests.m				\
+       OFDictionaryTests.m			\
+       OFHMACTests.m				\
+       OFINIFileTests.m				\
+       OFIRITests.m				\
+       OFInvocationTests.m			\
+       OFJSONTests.m				\
+       OFListTests.m				\
+       OFLocaleTests.m				\
+       OFMatrix4x4Tests.m			\
+       OFMemoryStreamTests.m			\
+       OFMethodSignatureTests.m			\
+       OFMutableArrayTests.m			\
+       OFMutableDataTests.m			\
+       OFMutableDictionaryTests.m		\
+       OFMutableSetTests.m			\
+       OFMutableStringTests.m			\
+       OFMutableUTF8StringTests.m		\
+       OFNotificationCenterTests.m		\
+       OFNumberTests.m				\
+       OFObjectTests.m				\
+       OFPBKDF2Tests.m				\
+       OFPropertyListTests.m			\
+       OFScryptTests.m				\
+       OFSetTests.m				\
+       OFStreamTests.m				\
+       OFStringTests.m				\
+       OFSystemInfoTests.m			\
+       OFUTF8StringTests.m			\
+       OFValueTests.m				\
+       OFXMLElementBuilderTests.m		\
+       OFXMLNodeTests.m				\
+       OFXMLParserTests.m			\
+       ${RUNTIME_ARC_TESTS_M}			\
+       RuntimeTests.m				\
+       ${USE_SRCS_PLUGINS}			\
+       ${USE_SRCS_SOCKETS}			\
+       ${USE_SRCS_SUBPROCESSES}			\
+       ${USE_SRCS_THREADS}			\
+       ${USE_SRCS_WINDOWS}			\
+       testfile_bin.m				\
+       testfile_ini.m
+SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
-	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
+	       OFHTTPCookieTests.m		\
 	       OFKernelEventObserverTests.m	\
+	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
@@ -52,12 +92,16 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
+SRCS_SUBPROCESSES = OFSubprocessTests.m
+SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
-IOS_USER ?= mobile
-IOS_TMP ?= /tmp/objfw-test
-
 include ../buildsys.mk
+
+testfile_bin.m: testfile.bin
+	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
+testfile_ini.m: testfile.ini
+	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -128,6 +172,10 @@ run-on-android: all
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
+	if test -f plugin/TestPlugin.so; then \
+		adb push plugin/TestPlugin.so \
+		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
+	fi
 	echo "Running tests binary on Android device..."
 	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ${WRAPPER} ./tests'
 
@@ -140,7 +188,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
@@ -170,9 +218,20 @@ ${PROG_NOINST}.rpx: ${PROG_NOINST}
 CPPFLAGS += -I../src				\
 	    -I../src/exceptions			\
 	    -I../src/runtime			\
+	    -I../src/test			\
 	    -I..				\
-	    -DSTDOUT
+	    -DOBJFWTEST_LOCAL_INCLUDES		\
+	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
-LIBS := ${TESTS_LIBS} ${LIBS}
+# Repetition is required for Wii U, as otherwise it cannot find main. Just
+# moving -lobjfwtest later doesn't work either, as then the linker cannot find
+# ObjFW symbols. So the only solution is to list everything twice.
+LIBS := -L../src/test	\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}		\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

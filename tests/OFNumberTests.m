@@ -19,39 +19,45 @@
 #import "ObjFWTest.h"
 
 @interface OFNumberTests: OTTestCase
+{
+	OFNumber *_number;
+}
 @end
 
-extern unsigned long long OFHashSeed;
-
 @implementation OFNumberTests
+- (void)setUp
+{
+	[super setUp];
+
+	_number = [[OFNumber alloc] initWithLongLong: 123456789];
+}
+
+- (void)dealloc
+{
+	[_number release];
+
+	[super dealloc];
+}
+
 - (void)testIsEqual
 {
-	OFNumber *number = [OFNumber numberWithLongLong: 123456789];
-	OTAssertEqualObjects(number, [OFNumber numberWithLong: 123456789]);
+	OTAssertEqualObjects(_number, [OFNumber numberWithLong: 123456789]);
 }
 
 - (void)testHash
 {
-	unsigned long long hashSeed = OFHashSeed;
-	OFHashSeed = 0;
-	@try {
-		OFNumber *number = [OFNumber numberWithLongLong: 123456789];
-		OTAssertEqual(number.hash, 0x82D8BC42);
-	} @finally {
-		OFHashSeed = hashSeed;
-	};
+	OTAssertEqual(_number.hash,
+	    [[OFNumber numberWithLong: 123456789] hash]);
 }
 
 - (void)testCharValue
 {
-	OFNumber *number = [OFNumber numberWithLongLong: 123456789];
-	OTAssertEqual(number.charValue, 21);
+	OTAssertEqual(_number.charValue, 21);
 }
 
 - (void)testDoubleValue
 {
-	OFNumber *number = [OFNumber numberWithLongLong: 123456789];
-	OTAssertEqual(number.doubleValue, 123456789.L);
+	OTAssertEqual(_number.doubleValue, 123456789.L);
 }
 
 - (void)testSignedCharMinAndMaxUnmodified

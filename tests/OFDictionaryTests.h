@@ -16,10 +16,10 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
-@interface OFArrayTests: OTTestCase
+@interface OFDictionaryTests: OTTestCase
 {
-	OFArray *_array;
+	OFDictionary *_dictionary;
 }
 
-- (Class)arrayClass;
+@property (readonly, nonatomic) Class dictionaryClass;
 @end

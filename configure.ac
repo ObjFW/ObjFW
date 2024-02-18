@@ -441,7 +441,7 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
-	AC_CONFIG_FILES(new_tests/plugin/Info.plist)
+	AC_CONFIG_FILES(tests/plugin/Info.plist)
 
 	AS_IF([test x"$build_framework" = x"yes"], [
 		TESTPLUGIN_LIBS="-F../../src -F../../src/runtime"
@@ -739,7 +739,6 @@ AC_COMPILE_IFELSE([
 	]])
 ], [
 	AC_MSG_RESULT(yes)
-	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
 	AC_SUBST(RUNTIME_ARC_TESTS_M, RuntimeARCTests.m)
 ], [
 	AC_MSG_RESULT(no)
@@ -789,9 +788,6 @@ AC_CHECK_HEADER(inttypes.h,
 
 AC_CHECK_HEADER(sys/types.h,
 	[AC_DEFINE(OF_HAVE_SYS_TYPES_H, 1, [Whether we have sys/types.h])])
-
-AC_CHECK_TYPE(max_align_t,
-	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
 
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])

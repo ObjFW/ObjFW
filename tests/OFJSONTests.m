@@ -20,12 +20,9 @@
 
 @interface OFJSONTests: OTTestCase
 {
-	unsigned long long _hashSeed;
 	OFDictionary *_dictionary;
 }
 @end
-
-extern unsigned long long OFHashSeed;
 
 static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
     @"null//bar\n,\"foo\",false]}";
@@ -35,10 +32,7 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 {
 	[super setUp];
 
-	_hashSeed = OFHashSeed;
-	OFHashSeed = 0;
-
-	_dictionary = [[OFDictionary alloc] initWithKeysAndObjects:
+	_dictionary = [[OTOrderedDictionary alloc] initWithKeysAndObjects:
 	    @"foo", @"b\na\r",
 	    @"x", [OFArray arrayWithObjects:
 		[OFNumber numberWithFloat: .5f],
@@ -48,13 +42,6 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 		[OFNumber numberWithBool: false],
 		nil],
 	    nil];
-}
-
-- (void)tearDown
-{
-	OFHashSeed = _hashSeed;
-
-	[super tearDown];
 }
 
 - (void)dealloc
@@ -71,23 +58,23 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 
 - (void)testJSONRepresentation
 {
-	OTAssertEqualObjects(_dictionary.JSONRepresentation,
-	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"b\\na\\r\"}");
+	OTAssert(_dictionary.JSONRepresentation,
+	    @"{\"foo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"foo\",false]}");
 }
 
 - (void)testPrettyJSONRepresentation
 {
 	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
 	    OFJSONRepresentationOptionPretty],
-	    @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
-	    @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"b\\na\\r\"\n}");
+	    @"{\n\t\"foo\": \"b\\na\\r\",\n\t\"x\": [\n\t\t0.5,\n\t\t15,"
+	    @"\n\t\tnull,\n\t\t\"foo\",\n\t\tfalse\n\t]\n}");
 }
 
 - (void)testJSON5Representation
 {
 	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
 	    OFJSONRepresentationOptionJSON5],
-	    @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}");
+	    @"{foo:\"b\\\na\\r\",x:[0.5,15,null,\"foo\",false]}");
 }
 
 - (void)testObjectByParsingJSONFailsWithInvalidJSON

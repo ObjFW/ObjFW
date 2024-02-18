@@ -320,6 +320,14 @@ OF_SINGLETON_METHODS
 		objects = OFAllocMemory(count, sizeof(id));
 		keys = OFAllocMemory(count, sizeof(id));
 
+		keys[i] = firstKey;
+		objects[i] = va_arg(arguments, id);
+
+		if (objects[i] == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		i++;
+
 		while ((key = va_arg(arguments, id)) != nil &&
 		    (object = va_arg(arguments, id)) != nil) {
 			OFEnsure(i < count);

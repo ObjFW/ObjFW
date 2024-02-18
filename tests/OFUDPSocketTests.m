@@ -17,43 +17,30 @@
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFUDPSocket";
+@interface OFUDPSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFUDPSocketTests)
-- (void)UDPSocketTests
+@implementation OFUDPSocketTests
+- (void)testUDPSocket
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFUDPSocket *sock;
-	OFSocketAddress addr1, addr2, addr3;
-	char buf[6];
+	OFUDPSocket *sock = [OFUDPSocket socket];
+	OFSocketAddress addr1, addr2;
+	char buffer[6];
 
-	TEST(@"+[socket]", (sock = [OFUDPSocket socket]))
+	sock = [OFUDPSocket socket];
 
-	TEST(@"-[bindToHost:port:]",
-	    R(addr1 = [sock bindToHost: @"127.0.0.1" port: 0]))
+	addr1 = [sock bindToHost: @"127.0.0.1" port: 0];
+	OTAssertEqualObjects(OFSocketAddressString(&addr1), @"127.0.0.1");
 
-	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello" length: 6 receiver: &addr1]))
+	[sock sendBuffer: "Hello" length: 6 receiver: &addr1];
 
-	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buf length: 6 sender: &addr2] == 6 &&
-	    !memcmp(buf, "Hello", 6) &&
-	    [OFSocketAddressString(&addr2) isEqual: @"127.0.0.1"] &&
-	    OFSocketAddressIPPort(&addr2) == OFSocketAddressIPPort(&addr1))
-
-	addr3 = OFSocketAddressParseIP(@"127.0.0.1",
-	    OFSocketAddressIPPort(&addr1) + 1);
-
-	TEST(@"OFSocketAddressEqual()",
-	    OFSocketAddressEqual(&addr1, &addr2) &&
-	    !OFSocketAddressEqual(&addr1, &addr3))
-
-	TEST(@"OFSocketAddressHash()",
-	    OFSocketAddressHash(&addr1) == OFSocketAddressHash(&addr2) &&
-	    OFSocketAddressHash(&addr1) != OFSocketAddressHash(&addr3))
-
-	objc_autoreleasePoolPop(pool);
+	[sock receiveIntoBuffer: buffer length: 6 sender: &addr2];
+	OTAssertEqual(memcmp(buffer, "Hello", 6), 0);
+	OTAssertEqualObjects(OFSocketAddressString(&addr2), @"127.0.0.1");
+	OTAssertEqual(OFSocketAddressIPPort(&addr2),
+	    OFSocketAddressIPPort(&addr1));
 }
 @end

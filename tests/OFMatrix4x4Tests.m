@@ -78,11 +78,20 @@
 	    }]));
 }
 
-/* TODO: testHash */
+- (void)testHash
+{
+	OTAssertEqual([[OFMatrix4x4 identityMatrix] hash],
+	    [([OFMatrix4x4 matrixWithValues: (const float [4][4]){
+		{ 1, 0, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 1 }
+	    }]) hash]);
+}
 
 - (void)testCopy
 {
-	OTAssertEqualObjects(_matrix, [[_matrix copy] autorelease]);
+	OTAssertEqualObjects([[_matrix copy] autorelease], _matrix);
 }
 
 - (void)testMultiplyWithMatrix

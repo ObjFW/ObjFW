@@ -15,35 +15,35 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFHTTPCookie";
+@interface OFHTTPCookieTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFHTTPCookieTests)
-- (void)HTTPCookieTests
+@implementation OFHTTPCookieTests
+- (void)testCookiesWithResponseHeaderFieldsForIRI
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFIRI *IRI = [OFIRI IRIWithString: @"http://nil.im"];
-	OFHTTPCookie *cookie1, *cookie2;
-	OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
+	OFHTTPCookie *cookie1 = [OFHTTPCookie cookieWithName: @"foo"
+						       value: @"bar"
+						      domain: @"nil.im"];
+	OFHTTPCookie *cookie2 = [OFHTTPCookie cookieWithName: @"qux"
+						       value: @"cookie"
+						      domain: @"nil.im"];
+	OFDictionary *headers;
 
-	cookie1 = [OFHTTPCookie cookieWithName: @"foo"
-					 value: @"bar"
-					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #1",
-	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
-	    dictionaryWithObject: @"foo=bar"
-	    forKey: @"Set-Cookie"] forIRI: IRI]
-	    isEqual: [OFArray arrayWithObject: cookie1]])
+	headers = [OFDictionary dictionaryWithObject: @"foo=bar"
+					      forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    [OFArray arrayWithObject: cookie1]);
 
-	cookie2 = [OFHTTPCookie cookieWithName: @"qux"
-					 value: @"cookie"
-					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #2",
-	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
-	    dictionaryWithObject: @"foo=bar,qux=cookie"
-	    forKey: @"Set-Cookie"] forIRI: IRI]
-	    isEqual: [OFArray arrayWithObjects: cookie1, cookie2, nil]])
+	headers = [OFDictionary dictionaryWithObject: @"foo=bar,qux=cookie"
+					      forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));
 
 	cookie1.expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
 	cookie2.expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
@@ -54,20 +54,37 @@ static OFString *const module = @"OFHTTPCookie";
 	cookie2.HTTPOnly = true;
 	[cookie2.extensions addObject: @"foo"];
 	[cookie2.extensions addObject: @"bar"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forIRI:] #3",
-	    [(cookies = [OFHTTPCookie cookiesWithResponseHeaderFields:
-	    [OFDictionary dictionaryWithObject:
-	    @"foo=bar; Expires=Fri, 13 Feb 2009 23:31:30 GMT; Path=/x,"
-	    @"qux=cookie; Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
-	    @"Domain=webkeks.org; Path=/objfw; Secure; HTTPOnly; foo; bar"
-	    forKey: @"Set-Cookie"] forIRI: IRI]) isEqual:
-	    [OFArray arrayWithObjects: cookie1, cookie2, nil]])
 
-	TEST(@"+[requestHeaderFieldsWithCookies:]",
-	    [[OFHTTPCookie requestHeaderFieldsWithCookies: cookies] isEqual:
+	headers = [OFDictionary
+	    dictionaryWithObject: @"foo=bar; "
+				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
+				  @"Path=/x,"
+				  @"qux=cookie; "
+				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
+				  @"Domain=webkeks.org; "
+				  @"Path=/objfw; "
+				  @"Secure; "
+				  @"HTTPOnly; "
+				  @"foo; "
+				  @"bar"
+			  forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));
+}
+
+- (void)testRequestHeaderFieldsWithCookies
+{
+	OFHTTPCookie *cookie1 = [OFHTTPCookie cookieWithName: @"foo"
+						       value: @"bar"
+						      domain: @"nil.im"];
+	OFHTTPCookie *cookie2 = [OFHTTPCookie cookieWithName: @"qux"
+						       value: @"cookie"
+						      domain: @"nil.im"];
+
+	OTAssertEqualObjects([OFHTTPCookie requestHeaderFieldsWithCookies:
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil])],
 	    [OFDictionary dictionaryWithObject: @"foo=bar; qux=cookie"
-					forKey: @"Cookie"]])
-
-	objc_autoreleasePoolPop(pool);
+					forKey: @"Cookie"]);
 }
 @end

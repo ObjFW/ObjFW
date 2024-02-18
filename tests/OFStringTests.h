@@ -13,11 +13,13 @@
  * file.
  */
 
-#import "OFApplication.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-OF_ASSUME_NONNULL_BEGIN
+@interface OFStringTests: OTTestCase
+{
+	OFString *_string;
+}
 
-@interface OTAppDelegate: OFObject <OFApplicationDelegate>
+@property (readonly, nonatomic) Class stringClass;
 @end
-
-OF_ASSUME_NONNULL_END

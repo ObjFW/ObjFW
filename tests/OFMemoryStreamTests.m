@@ -15,73 +15,71 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFMemoryStream";
+@interface OFMemoryStreamTests: OTTestCase
+@end
+
 static const char string[] = "abcdefghijkl";
 
-@implementation TestsAppDelegate (OFMemoryStreamTests)
-- (void)memoryStreamTests
+@implementation OFMemoryStreamTests
+- (void)testReadOnlyMemoryStream
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMemoryStream *stream;
+	OFMemoryStream *stream = [OFMemoryStream
+	    streamWithMemoryAddress: (char *)string
+			       size: sizeof(string)
+			   writable: false];
 	char buffer[10];
-	OFMutableData *data;
-
-	TEST(@"+[streamWithMemoryAddress:size:writable:]",
-	    (stream = [OFMemoryStream streamWithMemoryAddress: (char *)string
-							 size: sizeof(string)
-						     writable: false]));
 
 	/*
 	 * Test the lowlevel methods, as otherwise OFStream will do one big
 	 * read and we will not test OFMemoryStream.
 	 */
 
-	TEST(@"-[lowlevelReadIntoBuffer:length:]",
-	    [stream lowlevelReadIntoBuffer: buffer length: 5] == 5 &&
-	    memcmp(buffer, "abcde", 5) == 0 &&
-	    [stream lowlevelReadIntoBuffer: buffer length: 3] == 3 &&
-	    memcmp(buffer, "fgh", 3) == 0 &&
-	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 5 &&
-	    memcmp(buffer, "ijkl", 5) == 0)
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 5], 5);
+	OTAssertEqual(memcmp(buffer, "abcde", 5), 0);
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 3], 3);
+	OTAssertEqual(memcmp(buffer, "fgh", 3), 0);
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 5);
+	OTAssertEqual(memcmp(buffer, "ijkl", 5), 0);
+	OTAssertTrue([stream lowlevelIsAtEndOfStream]);
 
-	TEST(@"-[lowlevelIsAtEndOfStream]", [stream lowlevelIsAtEndOfStream])
+	OTAssertEqual([stream lowlevelSeekToOffset: 0 whence: OFSeekCurrent],
+	    sizeof(string));
+	OTAssertTrue([stream lowlevelIsAtEndOfStream]);
 
-	TEST(@"-[lowlevelSeekToOffset:whence:]",
-	    [stream lowlevelSeekToOffset: 0 whence: OFSeekCurrent] ==
-	    sizeof(string) && [stream lowlevelIsAtEndOfStream] &&
-	    [stream lowlevelSeekToOffset: 4 whence: OFSeekSet] == 4 &&
-	    ![stream lowlevelIsAtEndOfStream] &&
-	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 9 &&
-	    memcmp(buffer, "efghijkl", 9) == 0 &&
-	    [stream lowlevelSeekToOffset: -2 whence: OFSeekEnd] == 11 &&
-	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 2 &&
-	    memcmp(buffer, "l", 2) == 0 &&
-	    [stream lowlevelReadIntoBuffer: buffer length: 10] == 0)
+	OTAssertEqual([stream lowlevelSeekToOffset: 4 whence: OFSeekSet], 4);
+	OTAssertFalse([stream lowlevelIsAtEndOfStream]);
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 9);
+	OTAssertEqual(memcmp(buffer, "efghijkl", 9), 0);
 
-	EXPECT_EXCEPTION(@"Writes rejected on read-only stream",
-	    OFWriteFailedException, [stream lowlevelWriteBuffer: "" length: 1])
+	OTAssertEqual([stream lowlevelSeekToOffset: -2 whence: OFSeekEnd], 11);
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 2);
+	OTAssertEqual(memcmp(buffer, "l", 2), 0);
+	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 0);
 
-	data = [OFMutableData dataWithCapacity: 13];
+	OTAssertThrowsSpecific([stream lowlevelWriteBuffer: "" length: 1],
+	    OFWriteFailedException);
+}
+
+- (void)testReadWriteMemoryStream
+{
+	OFMutableData *data = [OFMutableData dataWithCapacity: 13];
+	OFMemoryStream *stream;
+
 	[data increaseCountBy: 13];
 	stream = [OFMemoryStream streamWithMemoryAddress: data.mutableItems
 						    size: data.count
 						writable: true];
-	TEST(@"-[lowlevelWriteBuffer:length:]",
-	    [stream lowlevelWriteBuffer: "abcde" length: 5] == 5 &&
-	    [stream lowlevelWriteBuffer: "fgh" length: 3] == 3 &&
-	    [stream lowlevelWriteBuffer: "ijkl" length: 5] == 5 &&
-	    memcmp(data.items, string, data.count) == 0 &&
-	    [stream lowlevelSeekToOffset: -3 whence: OFSeekEnd] == 10)
 
-	EXPECT_EXCEPTION(@"Out of bound writes rejected",
-	    OFWriteFailedException,
-	    [stream lowlevelWriteBuffer: "xyz" length: 4])
+	OTAssertEqual([stream lowlevelWriteBuffer: "abcde" length: 5], 5);
+	OTAssertEqual([stream lowlevelWriteBuffer: "fgh" length: 3], 3);
+	OTAssertEqual([stream lowlevelWriteBuffer: "ijkl" length: 5], 5);
+	OTAssertEqual(memcmp(data.items, string, data.count), 0);
+	OTAssertEqual([stream lowlevelSeekToOffset: -3 whence: OFSeekEnd], 10);
 
-	TEST(@"Partial write for too long write",
-	    memcmp(data.items, "abcdefghijxyz", 13) == 0)
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertThrowsSpecific([stream lowlevelWriteBuffer: "xyz" length: 4],
+	    OFWriteFailedException);
 }
 @end

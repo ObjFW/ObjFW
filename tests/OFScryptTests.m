@@ -105,6 +105,8 @@ static const unsigned char testVector1[64] = {
 	0xE8, 0xD3, 0xE0, 0xFB, 0x2E, 0x0D, 0x36, 0x28, 0xCF, 0x35, 0xE2, 0x0C,
 	0x38, 0xD1, 0x89, 0x06
 };
+/* Nintendo DS does not have enough RAM for the second test vector. */
+#ifndef OF_NINTENDO_DS
 static const unsigned char testVector2[64] = {
 	0xFD, 0xBA, 0xBE, 0x1C, 0x9D, 0x34, 0x72, 0x00, 0x78, 0x56, 0xE7, 0x19,
 	0x0D, 0x01, 0xE9, 0xFE, 0x7C, 0x6A, 0xD7, 0xCB, 0xC8, 0x23, 0x78, 0x30,
@@ -113,8 +115,12 @@ static const unsigned char testVector2[64] = {
 	0xC7, 0x27, 0xAF, 0xB9, 0x4A, 0x83, 0xEE, 0x6D, 0x83, 0x60, 0xCB, 0xDF,
 	0xA2, 0xCC, 0x06, 0x40
 };
-/* The third test vector is too expensive for m68k. */
-#ifndef OF_M68K
+#endif
+/*
+ * The third test vector is too expensive for m68k.
+ * Nintendo DS does not have enough RAM for the third test vector.
+ */
+#if !defined(OF_M68K) && !defined(OF_NINTENDO_DS)
 static const unsigned char testVector3[64] = {
 	0x70, 0x23, 0xBD, 0xCB, 0x3A, 0xFD, 0x73, 0x48, 0x46, 0x1C, 0x06, 0xCD,
 	0x81, 0xFD, 0x38, 0xEB, 0xFD, 0xA8, 0xFB, 0xBA, 0x90, 0x4F, 0x8E, 0x3E,
@@ -183,6 +189,8 @@ static const unsigned char testVector4[64] = {
 	OTAssertEqual(memcmp(output, testVector1, 64), 0);
 }
 
+/* Nintendo DS does not have enough RAM for the second test vector. */
+#ifndef OF_NINTENDO_DS
 - (void)testRFC7941TestVector2
 {
 	unsigned char output[64];
@@ -202,9 +210,13 @@ static const unsigned char testVector4[64] = {
 
 	OTAssertEqual(memcmp(output, testVector2, 64), 0);
 }
+#endif
 
-/* The third test vector is too expensive for m68k. */
-#ifndef OF_M68K
+/*
+ * The third test vector is too expensive for m68k.
+ * Nintendo DS does not have enough RAM for the third test vector.
+ */
+#if !defined(OF_M68K) && !defined(OF_NINTENDO_DS)
 - (void)testRFC7941TestVector3
 {
 	unsigned char output[64];

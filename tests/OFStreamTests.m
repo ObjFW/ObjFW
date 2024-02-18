@@ -15,34 +15,61 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFStream";
+@interface OFStreamTests: OTTestCase
+@end
 
-@interface StreamTest: OFStream
+@interface OFTestStream: OFStream
 {
-	int state;
+	int _state;
 }
 @end
 
-@implementation StreamTest
+@implementation OFStreamTests
+- (void)testStream
+{
+	size_t pageSize = [OFSystemInfo pageSize];
+	OFTestStream *stream = [[[OFTestStream alloc] init] autorelease];
+	char *cString = OFAllocMemory(pageSize - 2, 1);
+
+	@try {
+		OFString *string;
+
+		memset(cString, 'X', pageSize - 3);
+		cString[pageSize - 3] = '\0';
+
+		OTAssertEqualObjects([stream readLine], @"foo");
+
+		string = [stream readLine];
+		OTAssertNotNil(string);
+		OTAssertEqual(string.length, pageSize - 3);
+		OTAssertEqual(strcmp(string.UTF8String, cString), 0);
+	} @finally {
+		OFFreeMemory(cString);
+	}
+}
+@end
+
+@implementation OFTestStream
 - (bool)lowlevelIsAtEndOfStream
 {
-	return (state > 1);
+	return (_state > 1);
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)size
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 
-	switch (state) {
+	switch (_state) {
 	case 0:
 		if (size < 1)
 			return 0;
 
 		memcpy(buffer, "f", 1);
 
-		state++;
+		_state++;
 		return 1;
 	case 1:
 		if (size < pageSize)
@@ -51,36 +78,10 @@ static OFString *const module = @"OFStream";
 		memcpy(buffer, "oo\n", 3);
 		memset((char *)buffer + 3, 'X', pageSize - 3);
 
-		state++;
+		_state++;
 		return pageSize;
 	}
 
 	return 0;
-}
-@end
-
-@implementation TestsAppDelegate (OFStreamTests)
-- (void)streamTests
-{
-	void *pool = objc_autoreleasePoolPush();
-	size_t pageSize = [OFSystemInfo pageSize];
-	StreamTest *test = [[[StreamTest alloc] init] autorelease];
-	OFString *string;
-	char *cString;
-
-	cString = OFAllocMemory(pageSize - 2, 1);
-	memset(cString, 'X', pageSize - 3);
-	cString[pageSize - 3] = '\0';
-
-	TEST(@"-[readLine] #1", [[test readLine] isEqual: @"foo"])
-
-	string = [test readLine];
-	TEST(@"-[readLine] #2", string != nil &&
-	    string.length == pageSize - 3 &&
-	    !strcmp(string.UTF8String, cString))
-
-	OFFreeMemory(cString);
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

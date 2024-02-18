@@ -28,7 +28,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-extern uint32_t OFHashSeed;
+extern unsigned long OFHashSeed;
 
 static const uint32_t minCapacity = 16;
 
@@ -472,8 +472,6 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key)) {
-			_mutations++;
-
 			_keyFunctions.release(_buckets[i]->key);
 			_objectFunctions.release(_buckets[i]->object);
 
@@ -481,6 +479,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 			_buckets[i] = &deletedBucket;
 
 			_count--;
+			_mutations++;
 			resizeForCount(self, _count);
 
 			return;
@@ -618,12 +617,12 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 	unsigned long mutations = _mutations;
 
 	for (size_t i = 0; i < _capacity && !stop; i++) {
+		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
+			block(_buckets[i]->key, _buckets[i]->object, &stop);
+
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
-
-		if (_buckets[i] != NULL && _buckets[i] != &deletedBucket)
-			block(_buckets[i]->key, _buckets[i]->object, &stop);
 	}
 }
 

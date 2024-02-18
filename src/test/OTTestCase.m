@@ -18,6 +18,11 @@
 #import "OTTestCase.h"
 
 @implementation OTTestCase: OFObject
++ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
+{
+	return nil;
+}
+
 - (void)setUp
 {
 }

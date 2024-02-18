@@ -317,7 +317,7 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 - (void)testCopy
 {
-	OTAssertEqualObjects(_IRI[0], [[_IRI[0] copy] autorelease]);
+	OTAssertEqualObjects([[_IRI[0] copy] autorelease], _IRI[0]);
 }
 
 - (void)testIsEqual

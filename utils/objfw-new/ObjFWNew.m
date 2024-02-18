@@ -27,6 +27,7 @@
 
 extern void newApp(OFString *);
 extern void newClass(OFString *, OFString *, OFMutableArray *);
+extern void newTest(OFString *);
 
 OF_APPLICATION_DELEGATE(ObjFWNew)
 
@@ -34,7 +35,8 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ --app|--class [--superclass=] [--property=] name\n",
+	    @"Usage: %@ --app|--class|--test [--superclass=] [--property=] name"
+	    @"\n",
 	    [OFApplication programName]];
 
 	if (full) {
@@ -44,11 +46,12 @@ help(OFStream *stream, bool full, int status)
 		    @"    -a  --app          Create a new app\n"
 		    @"    -c  --class        Create a new class\n"
 		    @"    -h  --help         Show this help\n"
-		    @"    -s  --superclass=  Specify the superclass for the "
-		    @"class\n"
 		    @"    -p  --property=    Add a property to the class.\n"
 		    @"                       E.g.: --property='(readonly, "
-		    @"nonatomic) id foo'"];
+		    @"nonatomic) id foo'\n"
+		    @"    -s  --superclass=  Specify the superclass for the "
+		    @"class\n"
+		    @"    -t  --test         Create a new test\n"];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -57,15 +60,16 @@ help(OFStream *stream, bool full, int status)
 @implementation ObjFWNew
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	bool app, class;
+	bool app, class, test;
 	OFString *superclass = nil, *name;
 	OFMutableArray OF_GENERIC(OFString *) *properties = nil;
 	const OFOptionsParserOption options[] = {
 		{ 'a', @"app", 0, &app, NULL },
 		{ 'c', @"class", 0, &class, NULL },
 		{ 'h', @"help", 0, NULL, NULL },
-		{ 's', @"superclass", 1, NULL, &superclass },
 		{ 'p', @"property", 1, NULL, NULL },
+		{ 's', @"superclass", 1, NULL, &superclass },
+		{ 't', @"test", 0, &test, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -94,7 +98,8 @@ help(OFStream *stream, bool full, int status)
 		}
 	}
 
-	if ((app ^ class) != 1 || optionsParser.remainingArguments.count != 1)
+	if (app + class + test != 1 ||
+	    optionsParser.remainingArguments.count != 1)
 		help(OFStdErr, false, 1);
 
 	if ((superclass && !class)  || (properties != nil && !class))
@@ -110,6 +115,8 @@ help(OFStream *stream, bool full, int status)
 		newApp(name);
 	else if (class)
 		newClass(name, superclass, properties);
+	else if (test)
+		newTest(name);
 	else
 		help(OFStdErr, false, 1);
 

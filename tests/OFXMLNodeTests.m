@@ -15,123 +15,192 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module;
+@interface OFXMLNodeTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFXMLNodeTests)
-- (void)XMLNodeTests
+@implementation OFXMLNodeTests
+- (void)testElementWithName
 {
-	void *pool = objc_autoreleasePoolPush();
-	id node1, node2, node3, node4;
-	OFArray *array;
+	OTAssertEqualObjects(
+	    [[OFXMLElement elementWithName: @"foo"] XMLString],
+	    @"<foo/>");
+}
 
-	module = @"OFXMLNode";
+- (void)testElementWithNameStringValue
+{
+	OTAssertEqualObjects(
+	    [[OFXMLElement elementWithName: @"foo"
+			       stringValue: @"b&ar"] XMLString],
+	    @"<foo>b&amp;ar</foo>");
+}
 
-	TEST(@"+[elementWithName:]",
-	    (node1 = [OFXMLElement elementWithName: @"foo"]) &&
-	    [[node1 XMLString] isEqual: @"<foo/>"])
+- (void)testElementWithNameNamespace
+{
+	OFXMLElement *element;
 
-	TEST(@"+[elementWithName:stringValue:]",
-	    (node2 = [OFXMLElement elementWithName: @"foo"
-				       stringValue: @"b&ar"]) &&
-	    [[node2 XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
+	element = [OFXMLElement elementWithName: @"foo"
+				      namespace: @"urn:objfw:test"];
+	[element addAttributeWithName: @"test" stringValue: @"test"];
+	[element setPrefix: @"objfw-test" forNamespace: @"urn:objfw:test"];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<objfw-test:foo test='test'/>");
 
-	TEST(@"+[elementWithName:namespace:]",
-	    (node3 = [OFXMLElement elementWithName: @"foo"
-					 namespace: @"urn:objfw:test"]) &&
-	    R([node3 addAttributeWithName: @"test" stringValue: @"test"]) &&
-	    R([node3 setPrefix: @"objfw-test"
-		  forNamespace: @"urn:objfw:test"]) &&
-	    [[node3 XMLString] isEqual: @"<objfw-test:foo test='test'/>"] &&
-	    (node4 = [OFXMLElement elementWithName: @"foo"
-					 namespace: @"urn:objfw:test"]) &&
-	    R([node4 addAttributeWithName: @"test" stringValue: @"test"]) &&
-	    [[node4 XMLString] isEqual:
-	    @"<foo xmlns='urn:objfw:test' test='test'/>"])
+	element = [OFXMLElement elementWithName: @"foo"
+				      namespace: @"urn:objfw:test"];
+	[element addAttributeWithName: @"test" stringValue: @"test"];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<foo xmlns='urn:objfw:test' test='test'/>");
+}
 
-	TEST(@"+[elementWithName:namespace:stringValue:]",
-	    (node4 = [OFXMLElement elementWithName: @"foo"
-					 namespace: @"urn:objfw:test"
-				       stringValue: @"x"]) &&
-	    R([node4 setPrefix: @"objfw-test"
-		  forNamespace: @"urn:objfw:test"]) &&
-	    [[node4 XMLString] isEqual: @"<objfw-test:foo>x</objfw-test:foo>"])
+- (void)testElementWithNameNamespaceStringValue
+{
+	OFXMLElement *element = [OFXMLElement elementWithName: @"foo"
+						    namespace: @"urn:objfw:test"
+						  stringValue: @"x"];
+	[element setPrefix: @"objfw-test" forNamespace: @"urn:objfw:test"];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<objfw-test:foo>x</objfw-test:foo>");
+}
 
-	TEST(@"+[charactersWithString:]",
-	    (node4 = [OFXMLCharacters charactersWithString: @"<foo>"]) &&
-	    [[node4 XMLString] isEqual: @"&lt;foo&gt;"])
-
-	TEST(@"+[CDATAWithString:]",
-	    (node4 = [OFXMLCDATA CDATAWithString: @"<foo>"]) &&
-	    [[node4 XMLString] isEqual: @"<![CDATA[<foo>]]>"]);
-
-	TEST(@"+[commentWithText:]",
-	    (node4 = [OFXMLComment commentWithText: @" comment "]) &&
-	    [[node4 XMLString] isEqual: @"<!-- comment -->"])
-
-	module = @"OFXMLElement";
-
-	TEST(@"-[addAttributeWithName:stringValue:]",
-	    R([node1 addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
-	    [[node1 XMLString] isEqual: @"<foo foo='b&amp;ar'/>"] &&
-	    R([node2 addAttributeWithName: @"foo" stringValue: @"b&ar"]) &&
-	    [[node2 XMLString] isEqual: @"<foo foo='b&amp;ar'>b&amp;ar</foo>"])
-
-	TEST(@"-[setPrefix:forNamespace:]",
-	    R([node2 setPrefix: @"objfw-test"
-		  forNamespace: @"urn:objfw:test"]))
-
-	TEST(@"-[addAttributeWithName:namespace:stringValue:]",
-	    R([node2 addAttributeWithName: @"foo"
-				namespace: @"urn:objfw:test"
-			      stringValue: @"bar"]) &&
-	    R([node2 addAttributeWithName: @"foo"
-				namespace: @"urn:objfw:test"
-			      stringValue: @"ignored"]) &&
-	    [[node2 XMLString] isEqual:
-	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>"])
-
-	TEST(@"-[removeAttributeForName:namespace:]",
-	    R([node2 removeAttributeForName: @"foo"]) &&
-	    [[node2 XMLString] isEqual:
-	    @"<foo objfw-test:foo='bar'>b&amp;ar</foo>"] &&
-	    R([node2 removeAttributeForName: @"foo"
-				  namespace: @"urn:objfw:test"]) &&
-	    [[node2 XMLString] isEqual: @"<foo>b&amp;ar</foo>"])
-
-	TEST(@"-[addChild:]",
-	    R([node1 addChild: [OFXMLElement elementWithName: @"bar"]]) &&
-	    [[node1 XMLString] isEqual:
-	    @"<foo foo='b&amp;ar'><bar/></foo>"] &&
-	    R([node3 addChild: [OFXMLElement elementWithName: @"bar"
-		    namespace: @"urn:objfw:test"]]) &&
-	    [[node3 XMLString] isEqual:
-	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>"])
-
-	TEST(@"+[elementWithXMLString:] and -[stringValue]",
-	    [[[OFXMLElement elementWithXMLString:
+- (void)testElementWithXMLStringAndStringValue
+{
+	OTAssertEqualObjects([[OFXMLElement elementWithXMLString:
 	    @"<?xml version='1.0' encoding='UTF-8'?>\r\n<x>foo<![CDATA[bar]]>"
-	    @"<y>b<!-- fooo -->az</y>qux</x>"] stringValue]
-	    isEqual: @"foobarbazqux"])
+	    @"<y>b<!-- fooo -->az</y>qux</x>"] stringValue],
+	    @"foobarbazqux");
+}
 
-	TEST(@"-[elementsForName:namespace:]",
-	    (array = [node3 elementsForName: @"bar"
-				  namespace: @"urn:objfw:test"]) &&
-	    array.count == 1 && [[array.firstObject XMLString] isEqual:
-	    @"<bar xmlns='urn:objfw:test'/>"])
+- (void)testCharactersWithString
+{
+	OTAssertEqualObjects(
+	    [[OFXMLCharacters charactersWithString: @"<foo>"] XMLString],
+	    @"&lt;foo&gt;");
+}
 
-	TEST(@"-[isEqual:]",
-	    [[OFXMLElement elementWithXMLString: @"<foo bar='asd'/>"] isEqual:
-	    [OFXMLElement elementWithXMLString: @"<foo bar='asd'></foo>"]] &&
-	    [[OFXMLElement elementWithXMLString: @"<x><y/></x>"] isEqual:
-	    [OFXMLElement elementWithXMLString: @"<x><y></y></x>"]])
+- (void)testCDATAWithString
+{
+	OTAssertEqualObjects(
+	    [[OFXMLCDATA CDATAWithString: @"<foo>"] XMLString],
+	    @"<![CDATA[<foo>]]>");
+}
 
-	TEST(@"-[XMLStringWithIndentation:]",
-	    [[[OFXMLElement elementWithXMLString: @"<x><y><z>a\nb</z>"
-	    @"<!-- foo --></y></x>"] XMLStringWithIndentation: 2] isEqual:
-	    @"<x>\n  <y>\n    <z>a\nb</z>\n    <!-- foo -->\n  </y>\n</x>"])
+- (void)testCommentWithText
+{
+	OTAssertEqualObjects(
+	    [[OFXMLComment commentWithText: @" comment "] XMLString],
+	    @"<!-- comment -->");
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(
+	    [OFXMLElement elementWithXMLString: @"<foo bar='asd'/>"],
+	    [OFXMLElement elementWithXMLString: @"<foo bar='asd'></foo>"]);
+
+	OTAssertEqualObjects(
+	    [OFXMLElement elementWithXMLString: @"<x><y/></x>"],
+	    [OFXMLElement elementWithXMLString: @"<x><y></y></x>"]);
+
+	OTAssertNotEqualObjects(
+	    [OFXMLElement elementWithXMLString: @"<x><Y/></x>"],
+	    [OFXMLElement elementWithXMLString: @"<x><y></y></x>"]);
+}
+
+- (void)testHash
+{
+	OTAssertEqual(
+	    [[OFXMLElement elementWithXMLString: @"<foo bar='asd'/>"] hash],
+	    [[OFXMLElement elementWithXMLString: @"<foo bar='asd'></foo>"]
+	    hash]);
+
+	OTAssertEqual(
+	    [[OFXMLElement elementWithXMLString: @"<x><y/></x>"] hash],
+	    [[OFXMLElement elementWithXMLString: @"<x><y></y></x>"] hash]);
+
+	OTAssertNotEqual(
+	    [[OFXMLElement elementWithXMLString: @"<x><Y/></x>"] hash],
+	    [[OFXMLElement elementWithXMLString: @"<x><y></y></x>"] hash]);
+}
+
+- (void)testAddAttributeWithNameStringValue
+{
+	OFXMLElement *element = [OFXMLElement elementWithName: @"foo"
+						  stringValue: @"b&ar"];
+
+	[element setPrefix: @"objfw-test" forNamespace: @"urn:objfw:test"];
+	[element addAttributeWithName: @"foo"
+			  stringValue: @"b&ar"];
+	[element addAttributeWithName: @"foo"
+			    namespace: @"urn:objfw:test"
+			  stringValue: @"bar"];
+
+	OTAssertEqualObjects(element.XMLString,
+	    @"<foo foo='b&amp;ar' objfw-test:foo='bar'>b&amp;ar</foo>");
+}
+
+- (void)testRemoveAttributeForNameNamespace
+{
+	OFXMLElement *element = [OFXMLElement elementWithName: @"foo"
+						  stringValue: @"b&ar"];
+
+	[element setPrefix: @"objfw-test" forNamespace: @"urn:objfw:test"];
+	[element addAttributeWithName: @"foo"
+			  stringValue: @"b&ar"];
+	[element addAttributeWithName: @"foo"
+			    namespace: @"urn:objfw:test"
+			  stringValue: @"bar"];
+
+	[element removeAttributeForName: @"foo"];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<foo objfw-test:foo='bar'>b&amp;ar</foo>");
+
+	[element removeAttributeForName: @"foo" namespace: @"urn:objfw:test"];
+	OTAssertEqualObjects(element.XMLString, @"<foo>b&amp;ar</foo>");
+}
+
+- (void)testAddChild
+{
+	OFXMLElement *element;
+
+	element = [OFXMLElement elementWithName: @"foo"];
+	[element addAttributeWithName: @"foo" stringValue: @"b&ar"];
+	[element addChild: [OFXMLElement elementWithName: @"bar"]];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<foo foo='b&amp;ar'><bar/></foo>");
+
+	element = [OFXMLElement elementWithName: @"foo"
+				      namespace: @"urn:objfw:test"];
+	[element setPrefix: @"objfw-test" forNamespace: @"urn:objfw:test"];
+	[element addAttributeWithName: @"test" stringValue: @"test"];
+	[element addChild: [OFXMLElement elementWithName: @"bar"
+					       namespace: @"urn:objfw:test"]];
+	OTAssertEqualObjects(element.XMLString,
+	    @"<objfw-test:foo test='test'><objfw-test:bar/></objfw-test:foo>");
+}
+
+- (void)testElementsForNameNamespace
+{
+	OFXMLElement *element = [OFXMLElement elementWithName: @"foo"];
+	OFXMLElement *bar;
+
+	[element addChild: [OFXMLElement elementWithName: @"foo"]];
+	bar = [OFXMLElement elementWithName: @"bar"
+				  namespace: @"urn:objfw:test"];
+	[element addChild: bar];
+
+	OTAssertEqualObjects([element elementsForName: @"bar"
+					    namespace: @"urn:objfw:test"],
+	    [OFArray arrayWithObject: bar]);
+}
+
+- (void)testXMLStringWithIndentation
+{
+	OTAssertEqualObjects([[OFXMLElement
+	    elementWithXMLString: @"<x><y><z>a\nb</z><!-- foo --></y></x>"]
+	    XMLStringWithIndentation: 2],
+	    @"<x>\n  <y>\n    <z>a\nb</z>\n    <!-- foo -->\n  </y>\n</x>");
 }
 @end

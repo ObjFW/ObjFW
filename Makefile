@@ -1,6 +1,6 @@
 include extra.mk
 
-SUBDIRS = src utils tests new_tests
+SUBDIRS = src utils tests
 DISTCLEAN = Info.plist		\
 	    aclocal.m4		\
 	    autom4te.cache	\
@@ -14,11 +14,10 @@ include buildsys.mk
 
 .PHONY: check docs release
 
-utils tests new_tests: src
+utils tests: src
 
-check: tests new_tests
-	cd tests && ${MAKE} -s run
-	cd new_tests && ${MAKE} -s run
+check: tests
+	${MAKE} -C tests -s run
 
 docs:
 	rm -fr docs
