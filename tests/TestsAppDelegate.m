@@ -371,7 +371,6 @@ main(int argc, char *argv[])
 #endif
 
 	[self dataTests];
-	[self dictionaryTests];
 	[self valueTests];
 	[self streamTests];
 	[self memoryStreamTests];

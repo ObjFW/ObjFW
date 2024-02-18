@@ -63,10 +63,6 @@
 - (void)dataTests;
 @end
 
-@interface TestsAppDelegate (OFDictionaryTests)
-- (void)dictionaryTests;
-@end
-
 @interface TestsAppDelegate  (OFMemoryStreamTests)
 - (void)memoryStreamTests;
 @end
