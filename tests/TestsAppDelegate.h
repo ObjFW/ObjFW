@@ -62,7 +62,3 @@
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
-
-@interface TestsAppDelegate (OFValueTests)
-- (void)valueTests;
-@end

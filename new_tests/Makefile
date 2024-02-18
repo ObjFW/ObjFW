@@ -53,6 +53,7 @@ SRCS = ${OF_BLOCK_TESTS_M}			\
        OFStringTests.m				\
        OFSystemInfoTests.m			\
        OFUTF8StringTests.m			\
+       OFValueTests.m				\
        OFXMLElementBuilderTests.m		\
        OFXMLNodeTests.m				\
        OFXMLParserTests.m			\

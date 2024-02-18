@@ -370,7 +370,6 @@ main(int argc, char *argv[])
 	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
-	[self valueTests];
 	[self streamTests];
 
 	[OFStdOut reset];
