@@ -70,8 +70,3 @@
 @interface TestsAppDelegate (OFXMLNodeTests)
 - (void)XMLNodeTests;
 @end
-
-@interface TestsAppDelegate (OFXMLParserTests)
-    <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
-- (void)XMLParserTests;
-@end
