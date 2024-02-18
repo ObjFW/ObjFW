@@ -178,7 +178,7 @@ static OFString *objects[] = {
 - (void)testFastEnumeration
 {
 	size_t i = 0;
-	OFString *first, *second;
+	OFString *first = nil, *second = nil;
 
 	for (OFString *key in _dictionary) {
 		OTAssertLessThan(i, 2);
@@ -203,7 +203,7 @@ static OFString *objects[] = {
 - (void)testEnumerateKeysAndObjectsUsingBlock
 {
 	__block size_t i = 0;
-	__block OFString *first, *second;
+	__block OFString *first = nil, *second = nil;
 
 	[_dictionary enumerateKeysAndObjectsUsingBlock:
 	    ^ (id key, id object, bool *stop) {
