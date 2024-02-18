@@ -253,8 +253,10 @@ isSubclassOfClass(Class class, Class superclass)
 		break;
 	case StatusOk:
 		if (OFStdOut.hasTerminal) {
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut writeFormat: @"-[%@ ", class];
 			[OFStdOut setForegroundColor: [OFColor lime]];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
 			[OFStdOut setForegroundColor: [OFColor green]];
@@ -264,8 +266,10 @@ isSubclassOfClass(Class class, Class superclass)
 		break;
 	case StatusFailed:
 		if (OFStdOut.hasTerminal) {
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
 			[OFStdOut setForegroundColor: [OFColor maroon]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut writeFormat: @"-[%@ ", class];
 			[OFStdOut setForegroundColor: [OFColor red]];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
 			[OFStdOut setForegroundColor: [OFColor maroon]];
@@ -276,8 +280,10 @@ isSubclassOfClass(Class class, Class superclass)
 		break;
 	case StatusSkipped:
 		if (OFStdOut.hasTerminal) {
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
 			[OFStdOut setForegroundColor: [OFColor gray]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
+			[OFStdOut writeFormat: @"-[%@ ", class];
 			[OFStdOut setForegroundColor: [OFColor silver]];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
 			[OFStdOut setForegroundColor: [OFColor gray]];
