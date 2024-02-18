@@ -56,10 +56,11 @@ SRCS = ${OF_BLOCK_TESTS_M}		\
        testfile_bin.m			\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = ${OF_HTTP_CLIENT_TESTS_M}	\
+SRCS_SOCKETS = OFDNSResolverTests.m		\
+	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieManagerTests.m	\
 	       OFHTTPCookieTests.m		\
-	       OFDNSResolverTests.m		\
+	       OFKernelEventObserverTests.m	\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\

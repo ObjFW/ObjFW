@@ -376,9 +376,6 @@ main(int argc, char *argv[])
 	[self valueTests];
 	[self streamTests];
 	[self memoryStreamTests];
-#ifdef OF_HAVE_SOCKETS
-	[self kernelEventObserverTests];
-#endif
 	[self XMLParserTests];
 	[self XMLNodeTests];
 
