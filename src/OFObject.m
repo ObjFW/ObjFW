@@ -344,7 +344,7 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 #else
-	instance = _aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
+	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
 	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
 	    extraSize);
@@ -364,7 +364,7 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 # ifndef OF_WINDOWS
 		free(instance);
 # else
-		_aligned_free(instance);
+		__mingw_aligned_free(instance);
 # endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -381,7 +381,7 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 #ifndef OF_WINDOWS
 		free((char *)instance - PRE_IVARS_ALIGN);
 #else
-		_aligned_free((char *)instance - PRE_IVARS_ALIGN);
+		__mingw_aligned_free((char *)instance - PRE_IVARS_ALIGN);
 #endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -1252,7 +1252,7 @@ _references_to_categories_of_OFObject(void)
 #ifndef OF_WINDOWS
 	free((char *)self - PRE_IVARS_ALIGN);
 #else
-	_aligned_free((char *)self - PRE_IVARS_ALIGN);
+	__mingw_aligned_free((char *)self - PRE_IVARS_ALIGN);
 #endif
 }
 
