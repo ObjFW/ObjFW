@@ -28,6 +28,10 @@
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
 
+#ifdef OF_IOS
+# include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #ifdef OF_WII
 # define asm __asm__
 # include <gccore.h>
@@ -94,7 +98,22 @@ isSubclassOfClass(Class class, Class superclass)
 	if (self != [OTAppDelegate class])
 		return;
 
-#if defined(OF_WII)
+#if defined(OF_IOS)
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	UInt8 resourcesPath[PATH_MAX];
+
+	if (!CFURLGetFileSystemRepresentation(resourcesURL, true, resourcesPath,
+	    PATH_MAX)) {
+		[OFStdErr writeLine: @"Failed to locate resources!"];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	[[OFFileManager defaultManager] changeCurrentDirectoryPath:
+	    [OFString stringWithUTF8String: (const char *)resourcesPath]];
+
+	CFRelease(resourcesURL);
+#elif defined(OF_WII)
 	GXRModeObj *mode;
 	void *nextFB;
 
@@ -145,7 +164,9 @@ isSubclassOfClass(Class class, Class superclass)
 			 * Required for the ObjFW runtime, as otherwise
 			 * class_getSuperclass() crashes.
 			 */
+#ifdef OF_OBJFW_RUNTIME
 			[*iter class];
+#endif
 
 			/*
 			 * Don't use +[isSubclassOfClass:], as the Apple runtime

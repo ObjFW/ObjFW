@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B1E2CEF2B8294F200BB28B6 /* libobjfwtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */; };
 		4B6AB9CD202BA431007BAC7D /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD06201394F300280496 /* ObjFW.framework */; };
 		4BC7FD092013954B00280496 /* tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD082013954B00280496 /* tests.a */; };
@@ -41,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libobjfwtest.a; path = ../src/test/libobjfwtest.a; sourceTree = "<group>"; };
 		4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = TestPlugin.bundle; path = plugin/TestPlugin.bundle; sourceTree = "<group>"; };
 		4BC7FD06201394F300280496 /* ObjFW.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjFW.framework; path = ../src/ObjFW.framework; sourceTree = "<group>"; };
 		4BC7FD082013954B00280496 /* tests.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = tests.a; sourceTree = "<group>"; };
@@ -57,8 +59,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */,
 				4BC7FD092013954B00280496 /* tests.a in Frameworks */,
+				4B1E2CEF2B8294F200BB28B6 /* libobjfwtest.a in Frameworks */,
+				4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +73,7 @@
 			children = (
 				4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */,
 				4BC7FD082013954B00280496 /* tests.a */,
+				4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */,
 				4BC7FD06201394F300280496 /* ObjFW.framework */,
 			);
 			name = Frameworks;
@@ -304,6 +308,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../src/test",
 				);
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = im.nil.objfw.tests;
@@ -324,6 +329,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../src/test",
 				);
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = im.nil.objfw.tests;
