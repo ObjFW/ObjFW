@@ -16,17 +16,19 @@
 #include "config.h"
 
 #include <errno.h>
+#include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFUNIXDatagramSocket";
+@interface OFUNIXDatagramSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFUNIXDatagramSocketTests)
-- (void)UNIXDatagramSocketTests
+@implementation OFUNIXDatagramSocketTests
+- (void)testUNIXDatagramSocket
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFUNIXDatagramSocket *sock = [OFUNIXDatagramSocket socket];
 	OFString *path;
-	OFUNIXDatagramSocket *sock;
 	OFSocketAddress address1, address2;
 	char buffer[5];
 
@@ -46,45 +48,32 @@ static OFString *const module = @"OFUNIXDatagramSocket";
 					   [[OFUUID UUID] UUIDString]];
 #endif
 
-	TEST(@"+[socket]", (sock = [OFUNIXDatagramSocket socket]))
-
 	@try {
-		TEST(@"-[bindToPath:]", R(address1 = [sock bindToPath: path]))
+		address1 = [sock bindToPath: path];
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:
-			[OFStdOut setForegroundColor: [OFColor lime]];
-			[OFStdOut writeLine:
-			    @"\r[OFUNIXDatagramSocket] -[bindToPath:]: "
-			    @"UNIX datagram sockets unsupported, skipping "
-			    @"tests"];
-
-			objc_autoreleasePoolPop(pool);
-			return;
+			OTSkip(@"UNIX datagram sockets unsupported");
 		default:
 			@throw e;
 		}
 	}
 
 	@try {
-		TEST(@"-[sendBuffer:length:receiver:]",
-		    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
+		[sock sendBuffer: "Hello" length: 5 receiver: &address1];
 
-		TEST(@"-[receiveIntoBuffer:length:sender:]",
-		    [sock receiveIntoBuffer: buffer
-				     length: 5
-				     sender: &address2] == 5 &&
-		    memcmp(buffer, "Hello", 5) == 0 &&
-		    OFSocketAddressEqual(&address1, &address2) &&
-		    OFSocketAddressHash(&address1) ==
-		    OFSocketAddressHash(&address2))
+		OTAssertEqual([sock receiveIntoBuffer: buffer
+					       length: 5
+					       sender: &address2], 5);
+		OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+		OTAssertTrue(OFSocketAddressEqual(&address1, &address2));
+		OTAssertEqual(OFSocketAddressHash(&address1),
+		    OFSocketAddressHash(&address2));
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

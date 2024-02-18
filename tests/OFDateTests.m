@@ -17,96 +17,182 @@
 
 #include <time.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
+
 #import "OFStrPTime.h"
 
-static OFString *const module = @"OFDate";
-
-@implementation TestsAppDelegate (OFDateTests)
-- (void)dateTests
+@interface OFDateTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFDate *date1, *date2;
+	OFDate *_date[2];
+}
+@end
 
+@implementation OFDateTests
+- (void)setUp
+{
+	[super setUp];
+
+	_date[0] = [[OFDate alloc] initWithTimeIntervalSince1970: 0];
+	_date[1] = [[OFDate alloc]
+	    initWithTimeIntervalSince1970: 3600 * 25 + 5.000002];
+}
+
+- (void)dealloc
+{
+	[_date[0] release];
+	[_date[1] release];
+
+	[super dealloc];
+}
+
+- (void)testStrPTime
+{
 	struct tm tm;
-	int16_t tz;
-	const char *dstr = "Wed, 09 Jun 2021 +0200x";
-	TEST(@"OFStrPTime()",
-	    OFStrPTime(dstr, "%a, %d %b %Y %z", &tm, &tz) == dstr + 22 &&
-	    tm.tm_wday == 3 && tm.tm_mday == 9 && tm.tm_mon == 5 &&
-	    tm.tm_year == 2021 - 1900 && tz == 2 * 60)
+	int16_t timeZone;
+	const char *dateString = "Wed, 09 Jun 2021 +0200x";
 
-	TEST(@"+[dateWithTimeIntervalSince1970:]",
-	    (date1 = [OFDate dateWithTimeIntervalSince1970: 0]))
+	OTAssertEqual(OFStrPTime(dateString, "%a, %d %b %Y %z", &tm, &timeZone),
+	    dateString + 22);
+	OTAssertEqual(tm.tm_wday, 3);
+	OTAssertEqual(tm.tm_mday, 9);
+	OTAssertEqual(tm.tm_mon, 5);
+	OTAssertEqual(tm.tm_year, 2021 - 1900);
+	OTAssertEqual(timeZone, 2 * 60);
+}
 
-	TEST(@"-[dateByAddingTimeInterval:]",
-	    (date2 = [date1 dateByAddingTimeInterval: 3600 * 25 + 5.000002]))
+- (void)testDateByAddingTimeInterval
+{
+	OTAssertEqualObjects(
+	    [_date[0] dateByAddingTimeInterval: 3600 * 25 + 5.000002],
+	    _date[1]);
+}
 
-	TEST(@"-[description]",
-	    [date1.description isEqual: @"1970-01-01T00:00:00Z"] &&
-	    [date2.description isEqual: @"1970-01-02T01:00:05Z"])
+- (void)testDescription
+{
+	OTAssertEqualObjects(_date[0].description, @"1970-01-01T00:00:00Z");
+	OTAssertEqualObjects(_date[1].description, @"1970-01-02T01:00:05Z");
+}
 
-	TEST(@"+[dateWithDateString:format:]",
-	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56+0200"
-				  format: @"%Y-%m-%dT%H:%M:%S%z"] description]
-	    isEqual: @"2000-06-20T10:34:56Z"]);
+- (void)testDateWithDateStringFormat
+{
+	OTAssertEqualObjects(
+	    [[OFDate dateWithDateString: @"2000-06-20T12:34:56+0200"
+				 format: @"%Y-%m-%dT%H:%M:%S%z"] description],
+	    @"2000-06-20T10:34:56Z");
+}
 
-	EXPECT_EXCEPTION(@"Detection of unparsed in "
-	    @"+[dateWithDateString:format:]", OFInvalidFormatException,
+- (void)testDateWithDateStringFormatFailsWithTrailingCharacters
+{
+	OTAssertThrowsSpecific(
 	    [OFDate dateWithDateString: @"2000-06-20T12:34:56+0200x"
-				format: @"%Y-%m-%dT%H:%M:%S%z"])
+				format: @"%Y-%m-%dT%H:%M:%S%z"],
+	    OFInvalidFormatException);
+}
 
-	TEST(@"+[dateWithLocalDateString:format:]",
-	    [[[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56"
-				       format: @"%Y-%m-%dT%H:%M:%S"]
-	    localDateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"]
-	    isEqual: @"2000-06-20T12:34:56"]);
+- (void)testDateWithLocalDateStringFormatFormat
+{
+	OTAssertEqualObjects(
+	    [[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56"
+				      format: @"%Y-%m-%dT%H:%M:%S"]
+	    localDateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"],
+	    @"2000-06-20T12:34:56");
 
-	TEST(@"+[dateWithLocalDateString:format:]",
-	    [[[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56-0200"
-				       format: @"%Y-%m-%dT%H:%M:%S%z"]
-	    description] isEqual: @"2000-06-20T14:34:56Z"]);
+	OTAssertEqualObjects(
+	    [[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56-0200"
+				      format: @"%Y-%m-%dT%H:%M:%S%z"]
+	    description],
+	    @"2000-06-20T14:34:56Z");
+}
 
-	EXPECT_EXCEPTION(@"Detection of unparsed in "
-	    @"+[dateWithLocalDateString:format:] #1", OFInvalidFormatException,
+- (void)testDateWithLocalDateStringFormatFailsWithTrailingCharacters
+{
+	OTAssertThrowsSpecific(
 	    [OFDate dateWithLocalDateString: @"2000-06-20T12:34:56x"
-				     format: @"%Y-%m-%dT%H:%M:%S"])
+				     format: @"%Y-%m-%dT%H:%M:%S"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Detection of unparsed in "
-	    @"+[dateWithLocalDateString:format:] #2", OFInvalidFormatException,
+	OTAssertThrowsSpecific(
 	    [OFDate dateWithLocalDateString: @"2000-06-20T12:34:56+0200x"
-				     format: @"%Y-%m-%dT%H:%M:%S%z"])
+				     format: @"%Y-%m-%dT%H:%M:%S%z"],
+	    OFInvalidFormatException);
+}
 
-	TEST(@"-[isEqual:]",
-	    [date1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&
-	    ![date1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0.0000001]])
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(_date[0],
+	    [OFDate dateWithTimeIntervalSince1970: 0]);
 
-	TEST(@"-[compare:]", [date1 compare: date2] == OFOrderedAscending)
+	OTAssertNotEqualObjects(_date[0],
+	    [OFDate dateWithTimeIntervalSince1970: 0.0000001]);
+}
 
-	TEST(@"-[second]", date1.second == 0 && date2.second == 5)
+- (void)testCompare
+{
+	OTAssertEqual([_date[0] compare: _date[1]], OFOrderedAscending);
+}
 
-	TEST(@"-[microsecond]",
-	    date1.microsecond == 0 && date2.microsecond == 2)
+- (void)testSecond
+{
+	OTAssertEqual(_date[0].second, 0);
+	OTAssertEqual(_date[1].second, 5);
+}
 
-	TEST(@"-[minute]", date1.minute == 0 && date2.minute == 0)
+- (void)testMicrosecond
+{
+	OTAssertEqual(_date[0].microsecond, 0);
+	OTAssertEqual(_date[1].microsecond, 2);
+}
 
-	TEST(@"-[hour]", date1.hour == 0 && date2.hour == 1)
+- (void)testMinute
+{
+	OTAssertEqual(_date[0].minute, 0);
+	OTAssertEqual(_date[1].minute, 0);
+}
 
-	TEST(@"-[dayOfMonth]", date1.dayOfMonth == 1 && date2.dayOfMonth == 2)
+- (void)testHour
+{
+	OTAssertEqual(_date[0].hour, 0);
+	OTAssertEqual(_date[1].hour, 1);
+}
 
-	TEST(@"-[monthOfYear]",
-	    date1.monthOfYear == 1 && date2.monthOfYear == 1)
+- (void)testDayOfMonth
+{
+	OTAssertEqual(_date[0].dayOfMonth, 1);
+	OTAssertEqual(_date[1].dayOfMonth, 2);
+}
 
-	TEST(@"-[year]", date1.year == 1970 && date2.year == 1970)
+- (void)testMonthOfYear
+{
+	OTAssertEqual(_date[0].monthOfYear, 1);
+	OTAssertEqual(_date[1].monthOfYear, 1);
+}
 
-	TEST(@"-[dayOfWeek]", date1.dayOfWeek == 4 && date2.dayOfWeek == 5)
+- (void)testYear
+{
+	OTAssertEqual(_date[0].year, 1970);
+	OTAssertEqual(_date[1].year, 1970);
+}
 
-	TEST(@"-[dayOfYear]", date1.dayOfYear == 1 && date2.dayOfYear == 2)
+- (void)testDayOfWeek
+{
+	OTAssertEqual(_date[0].dayOfWeek, 4);
+	OTAssertEqual(_date[1].dayOfWeek, 5);
+}
 
-	TEST(@"-[earlierDate:]", [[date1 earlierDate: date2] isEqual: date1])
+- (void)testDayOfYear
+{
+	OTAssertEqual(_date[0].dayOfYear, 1);
+	OTAssertEqual(_date[1].dayOfYear, 2);
+}
 
-	TEST(@"-[laterDate:]", [[date1 laterDate: date2] isEqual: date2])
+- (void)testEarlierDate
+{
+	OTAssertEqualObjects([_date[0] earlierDate: _date[1]], _date[0]);
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)testLaterDate
+{
+	OTAssertEqualObjects([_date[0] laterDate: _date[1]], _date[1]);
 }
 @end

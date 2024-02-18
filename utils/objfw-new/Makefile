@@ -3,6 +3,7 @@ include ../../extra.mk
 PROG = objfw-new${PROG_SUFFIX}
 SRCS = NewApp.m		\
        NewClass.m	\
+       NewTest.m	\
        ObjFWNew.m	\
        Property.m
 

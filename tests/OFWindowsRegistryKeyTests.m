@@ -15,78 +15,113 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFWindowsRegistryKey";
-
-@implementation TestsAppDelegate (OFWindowsRegistryKeyTests)
-- (void)windowsRegistryKeyTests
+@interface OFWindowsRegistryKeyTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFWindowsRegistryKey *_softwareKey, *_objFWKey;
+}
+@end
+
+@implementation OFWindowsRegistryKeyTests
+- (void)setUp
+{
+	[super setUp];
+
+	_softwareKey = [[[OFWindowsRegistryKey currentUserKey]
+	    openSubkeyAtPath: @"Software"
+		accessRights: KEY_ALL_ACCESS
+		     options: 0] retain];
+	_objFWKey = [[_softwareKey createSubkeyAtPath: @"ObjFW"
+					 accessRights: KEY_ALL_ACCESS
+				   securityAttributes: NULL
+					      options: 0
+					  disposition: NULL] retain];
+}
+
+- (void)tearDown
+{
+	[_softwareKey deleteSubkeyAtPath: @"ObjFW"];
+
+	[super tearDown];
+}
+
+- (void)dealloc
+{
+	[_softwareKey release];
+	[_objFWKey release];
+
+	[super dealloc];
+}
+
+- (void)testClassesRootKey
+{
+	OTAssertEqual([[OFWindowsRegistryKey classesRootKey] class],
+	    [OFWindowsRegistryKey class]);
+}
+
+- (void)testCurrentConfigKey
+{
+	OTAssertEqual([[OFWindowsRegistryKey currentConfigKey] class],
+	    [OFWindowsRegistryKey class]);
+}
+
+- (void)testCurrentUserKey
+{
+	OTAssertEqual([[OFWindowsRegistryKey currentUserKey] class],
+	    [OFWindowsRegistryKey class]);
+}
+
+- (void)testLocalMachineKey
+{
+	OTAssertEqual([[OFWindowsRegistryKey localMachineKey] class],
+	    [OFWindowsRegistryKey class]);
+}
+
+- (void)testOpenSubkeyAtPathAccessRightsOptionsThrowsForNonExistentKey
+{
+	OTAssertThrowsSpecific([[OFWindowsRegistryKey currentUserKey]
+	    openSubkeyAtPath: @"nonexistent"
+		accessRights: KEY_ALL_ACCESS
+		     options: 0], OFOpenWindowsRegistryKeyFailedException);
+}
+
+- (void)testSetAndGetData
+{
 	OFData *data = [OFData dataWithItems: "abcdef" count: 6];
-	OFWindowsRegistryKey *softwareKey, *objFWKey;
 	DWORD type;
 
-	TEST(@"+[OFWindowsRegistryKey classesRootKey]",
-	    [OFWindowsRegistryKey classesRootKey])
+	[_objFWKey setData: data forValueNamed: @"data" type: REG_BINARY];
+	OTAssertEqualObjects([_objFWKey dataForValueNamed: @"data" type: &type],
+	    data);
+	OTAssertEqual(type, REG_BINARY);
+}
 
-	TEST(@"+[OFWindowsRegistryKey currentConfigKey]",
-	    [OFWindowsRegistryKey currentConfigKey])
+- (void)testSetAndGetString
+{
+	DWORD type;
 
-	TEST(@"+[OFWindowsRegistryKey currentUserKey]",
-	    [OFWindowsRegistryKey currentUserKey])
+	[_objFWKey setString: @"foobar" forValueNamed: @"string"];
+	OTAssertEqualObjects([_objFWKey stringForValueNamed: @"string"],
+	    @"foobar");
 
-	TEST(@"+[OFWindowsRegistryKey localMachineKey]",
-	    [OFWindowsRegistryKey localMachineKey])
+	[_objFWKey setString: @"%PATH%;foo"
+	       forValueNamed: @"expand"
+			type: REG_EXPAND_SZ];
+	OTAssertEqualObjects([_objFWKey stringForValueNamed: @"expand"
+						       type: &type],
+	    @"%PATH%;foo");
+	OTAssertEqual(type, REG_EXPAND_SZ);
+}
 
-	TEST(@"+[OFWindowsRegistryKey usersKey]",
-	    [OFWindowsRegistryKey usersKey])
+- (void)testDeleteValue
+{
+	[_objFWKey setString: @"foobar" forValueNamed: @"deleteme"];
+	OTAssertEqualObjects([_objFWKey stringForValueNamed: @"deleteme"],
+	    @"foobar");
 
-	    TEST(@"-[openSubkeyAtPath:accessRights:options:] #1",
-	    (softwareKey = [[OFWindowsRegistryKey currentUserKey]
-		openSubkeyAtPath: @"Software"
-		    accessRights: KEY_ALL_ACCESS
-			 options: 0]))
-
-	EXPECT_EXCEPTION(@"-[openSubkeyAtPath:accessRights:options:] #2",
-	    OFOpenWindowsRegistryKeyFailedException,
-	    [[OFWindowsRegistryKey currentUserKey]
-		openSubkeyAtPath: @"nonexistent"
-		    accessRights: KEY_ALL_ACCESS
-			 options: 0])
-
-	TEST(@"-[createSubkeyAtPath:accessRights:securityAttributes:options:"
-	    @"disposition:]",
-	    (objFWKey = [softwareKey createSubkeyAtPath: @"ObjFW"
-					   accessRights: KEY_ALL_ACCESS
-				     securityAttributes: NULL
-						options: 0
-					    disposition: NULL]))
-
-	TEST(@"-[setData:forValueNamed:type:]",
-	    R([objFWKey setData: data forValueNamed: @"data" type: REG_BINARY]))
-
-	TEST(@"-[dataForValueNamed:subkeyPath:flags:type:]",
-	    [[objFWKey dataForValueNamed: @"data" type: &type] isEqual: data] &&
-	    type == REG_BINARY)
-
-	TEST(@"-[setString:forValueNamed:type:]",
-	    R([objFWKey setString: @"foobar" forValueNamed: @"string"]) &&
-	    R([objFWKey setString: @"%PATH%;foo"
-		    forValueNamed: @"expand"
-			     type: REG_EXPAND_SZ]))
-
-	TEST(@"-[stringForValue:subkeyPath:]",
-	    [[objFWKey stringForValueNamed: @"string"] isEqual: @"foobar"] &&
-	    [[objFWKey stringForValueNamed: @"expand" type: &type]
-	    isEqual: @"%PATH%;foo"] &&
-	    type == REG_EXPAND_SZ)
-
-	TEST(@"-[deleteValueNamed:]", R([objFWKey deleteValueNamed: @"data"]))
-
-	TEST(@"-[deleteSubkeyAtPath:]",
-	    R([softwareKey deleteSubkeyAtPath: @"ObjFW"]))
-
-	objc_autoreleasePoolPop(pool);
+	[_objFWKey deleteValueNamed: @"deleteme"];
+	OTAssertNil([_objFWKey stringForValueNamed: @"deleteme"]);
 }
 @end

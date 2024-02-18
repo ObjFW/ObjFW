@@ -14,14 +14,20 @@
  */
 
 #ifdef OBJFWTEST_LOCAL_INCLUDES
-# import "OFObject.h"
+# import "ObjFW.h"
 #else
-# import <ObjFW/OFObject.h>
+# import <ObjFW/ObjFW.h>
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OTTestCase: OFObject
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nullable, nonatomic)
+    OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *summary;
+#endif
+
++ (nullable OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary;
 - (void)setUp;
 - (void)tearDown;
 @end

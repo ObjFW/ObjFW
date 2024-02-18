@@ -16,15 +16,17 @@
 #include "config.h"
 
 #include <errno.h>
+#include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFUNIXStreamSocket";
+@interface OFUNIXStreamSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFUNIXStreamSocketTests)
-- (void)UNIXStreamSocketTests
+@implementation OFUNIXStreamSocketTests
+- (void)testUNIXStreamSocket
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
@@ -45,50 +47,38 @@ static OFString *const module = @"OFUNIXStreamSocket";
 					   [[OFUUID UUID] UUIDString]];
 #endif
 
-	TEST(@"+[socket]", (sockClient = [OFUNIXStreamSocket socket]) &&
-	    (sockServer = [OFUNIXStreamSocket socket]))
+	sockClient = [OFUNIXStreamSocket socket];
+	sockServer = [OFUNIXStreamSocket socket];
 
 	@try {
-		TEST(@"-[bindToPath:]", R([sockServer bindToPath: path]))
+		[sockServer bindToPath: path];
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:
-			[OFStdOut setForegroundColor: [OFColor lime]];
-			[OFStdOut writeLine:
-			    @"\r[OFUNIXStreamSocket] -[bindToPath:]: "
-			    @"UNIX stream sockets unsupported, skipping tests"];
-
-			objc_autoreleasePoolPop(pool);
-			return;
+			OTSkip(@"UNIX stream sockets unsupported");
 		default:
 			@throw e;
 		}
 	}
 
 	@try {
-		TEST(@"-[listen]", R([sockServer listen]))
+		[sockServer listen];
 
-		TEST(@"-[connectToPath:]",
-		    R([sockClient connectToPath: path]))
+		[sockClient connectToPath: path];
 
-		TEST(@"-[accept]", (sockAccepted = [sockServer accept]))
+		sockAccepted = [sockServer accept];
+		[sockAccepted writeBuffer: "Hello" length: 5];
 
-		TEST(@"-[writeBuffer:length:]",
-		    R([sockAccepted writeBuffer: "Hello" length: 5]))
+		OTAssertEqual([sockClient readIntoBuffer: buffer length: 5], 5);
+		OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
 
-		TEST(@"-[readIntoBuffer:length:]",
-		    [sockClient readIntoBuffer: buffer length: 5] == 5 &&
-		    memcmp(buffer, "Hello", 5) == 0)
-
-		TEST(@"-[remoteAddress]", OFSocketAddressUNIXPath(
-		    sockAccepted.remoteAddress).length == 0)
+		OTAssertEqual(OFSocketAddressUNIXPath(
+		    sockAccepted.remoteAddress).length, 0);
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -15,42 +15,40 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 #import "plugin/TestPlugin.h"
 
-#ifndef OF_IOS
-static OFString *const pluginName = @"plugin/TestPlugin";
-#else
-static OFString *const pluginName = @"PlugIns/TestPlugin";
-#endif
+@interface OFPluginTests: OTTestCase
+@end
 
-static OFString *const module = @"OFPlugin";
-
-@implementation TestsAppDelegate (OFPluginTests)
-- (void)pluginTests
+@implementation OFPluginTests
+- (void)testPlugin
 {
-	void *pool = objc_autoreleasePoolPush();
+	TestPlugin *test = nil;
 	OFString *path;
 	OFPlugin *plugin;
 	Class (*class)(void);
-	TestPlugin *test;
 
-	TEST(@"+[pathForName:]", (path = [OFPlugin pathForName: pluginName]))
+#ifndef OF_IOS
+	path = [OFPlugin pathForName: @"plugin/TestPlugin"];
+#else
+	path = [OFPlugin pathForName: @"PlugIns/TestPlugin"];
+#endif
+	OTAssertNotNil(path);
 
-	TEST(@"+[pluginWithPath:]", (plugin = [OFPlugin pluginWithPath: path]))
+	plugin = [OFPlugin pluginWithPath: path];
+	OTAssertNotNil(plugin);
 
-	TEST(@"-[addressForSymbol:]",
-	    (class = (Class (*)(void))(uintptr_t)
-	    [plugin addressForSymbol: @"class"]))
+	class = (Class (*)(void))(uintptr_t)[plugin addressForSymbol: @"class"];
+	OTAssert(class != NULL);
 
-	test = [[class() alloc] init];
 	@try {
-		TEST(@"TestPlugin's -[test:]", [test test: 1234] == 2468)
+		test = [[class() alloc] init];
+		OTAssertEqual([test test: 1234], 2468);
 	} @finally {
 		[test release];
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -15,7 +15,11 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
+
+@interface OFPropertyListTests: OTTestCase
+@end
 
 #define PLIST(x)							\
 	@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"			\
@@ -25,38 +29,9 @@
 	x @"\n"								\
 	@"</plist>"
 
-static OFString *const module = @"OFPropertyList";
-static OFString *const PLIST1 = PLIST(@"<string>Hello</string>");
-static OFString *const PLIST2 = PLIST(
-    @"<array>"
-    @" <string>Hello</string>"
-    @" <data>V29ybGQh</data>"
-    @" <date>2018-03-14T12:34:56Z</date>"
-    @" <true/>"
-    @" <false/>"
-    @" <real>12.25</real>"
-    @" <integer>-10</integer>"
-    @"</array>");
-static OFString *const PLIST3 = PLIST(
-    @"<dict>"
-    @" <key>array</key>"
-    @" <array>"
-    @"  <string>Hello</string>"
-    @"  <data>V29ybGQh</data>"
-    @"  <date>2018-03-14T12:34:56Z</date>"
-    @"  <true/>"
-    @"  <false/>"
-    @"  <real>12.25</real>"
-    @"  <integer>-10</integer>"
-    @" </array>"
-    @" <key>foo</key>"
-    @" <string>bar</string>"
-    @"</dict>");
-
-@implementation TestsAppDelegate (OFPLISTParser)
-- (void)propertyListTests
+@implementation OFPropertyListTests
+- (void)testObjectByParsingPropertyList
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFArray *array = [OFArray arrayWithObjects:
 	    @"Hello",
 	    [OFData dataWithItems: "World!" count: 6],
@@ -67,52 +42,73 @@ static OFString *const PLIST3 = PLIST(
 	    [OFNumber numberWithInt: -10],
 	    nil];
 
-	TEST(@"-[objectByParsingPropertyList:] #1",
-	    [PLIST1.objectByParsingPropertyList isEqual: @"Hello"])
-
-	TEST(@"-[objectByParsingPropertyList:] #2",
-	    [PLIST2.objectByParsingPropertyList isEqual: array])
-
-	TEST(@"-[objectByParsingPropertyList:] #3",
-	    [PLIST3.objectByParsingPropertyList isEqual:
-	    [OFDictionary dictionaryWithKeysAndObjects:
+	OTAssertEqualObjects([PLIST(
+	    @"<string>Hello</string>") objectByParsingPropertyList],
+	    @"Hello");
+	OTAssertEqualObjects([PLIST(
+	    @"<array>"
+	    @" <string>Hello</string>"
+	    @" <data>V29ybGQh</data>"
+	    @" <date>2018-03-14T12:34:56Z</date>"
+	    @" <true/>"
+	    @" <false/>"
+	    @" <real>12.25</real>"
+	    @" <integer>-10</integer>"
+	    @"</array>") objectByParsingPropertyList],
+	    array);
+	OTAssertEqualObjects([PLIST(
+	    @"<dict>"
+	    @" <key>array</key>"
+	    @" <array>"
+	    @"  <string>Hello</string>"
+	    @"  <data>V29ybGQh</data>"
+	    @"  <date>2018-03-14T12:34:56Z</date>"
+	    @"  <true/>"
+	    @"  <false/>"
+	    @"  <real>12.25</real>"
+	    @"  <integer>-10</integer>"
+	    @" </array>"
+	    @" <key>foo</key>"
+	    @" <string>bar</string>"
+	    @"</dict>") objectByParsingPropertyList],
+	    ([OFDictionary dictionaryWithKeysAndObjects:
 	    @"array", array,
 	    @"foo", @"bar",
-	    nil]])
+	    nil]));
+}
 
-	EXPECT_EXCEPTION(@"Detecting unsupported version",
-	    OFUnsupportedVersionException,
-	    [[PLIST(@"<string/>") stringByReplacingOccurrencesOfString: @"1.0"
-							    withString: @"1.1"]
-	    objectByParsingPropertyList])
+- (void)testDetectUnsupportedVersion
+{
+	OTAssertThrowsSpecific(
+	    [[PLIST(@"<string/>")
+	    stringByReplacingOccurrencesOfString: @"1.0"
+				      withString: @"1.1"]
+	    objectByParsingPropertyList],
+	    OFUnsupportedVersionException);
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[objectByParsingPropertyList] detecting invalid format #1",
-	    OFInvalidFormatException,
-	    [PLIST(@"<string x='b'/>") objectByParsingPropertyList])
+- (void)testDetectInvalidFormat
+{
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<string x='b'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"-[objectByParsingPropertyList] detecting invalid format #2",
-	    OFInvalidFormatException,
-	    [PLIST(@"<string xmlns='foo'/>") objectByParsingPropertyList])
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<string xmlns='foo'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"-[objectByParsingPropertyList] detecting invalid format #3",
-	    OFInvalidFormatException,
-	    [PLIST(@"<dict count='0'/>") objectByParsingPropertyList])
+	OTAssertThrowsSpecific(
+	    [PLIST(@"<dict count='0'/>") objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"-[objectByParsingPropertyList] detecting invalid format #4",
-	    OFInvalidFormatException,
+	OTAssertThrowsSpecific(
 	    [PLIST(@"<dict><key/><string/><key/></dict>")
-	    objectByParsingPropertyList])
+	    objectByParsingPropertyList],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"-[objectByParsingPropertyList] detecting invalid format #5",
-	    OFInvalidFormatException,
+	OTAssertThrowsSpecific(
 	    [PLIST(@"<dict><key x='x'/><string/></dict>")
-	    objectByParsingPropertyList])
-
-	objc_autoreleasePoolPop(pool);
+	    objectByParsingPropertyList],
+	    OFInvalidFormatException);
 }
 @end

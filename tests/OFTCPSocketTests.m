@@ -17,42 +17,35 @@
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFTCPSocket";
+@interface OFTCPSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFTCPSocketTests)
-- (void)TCPSocketTests
+@implementation OFTCPSocketTests
+- (void)testTCPSocket
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFTCPSocket *server, *client = nil, *accepted;
+	OFTCPSocket *server, *client, *accepted;
 	OFSocketAddress address;
 	char buffer[6];
 
-	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
-	    (client = [OFTCPSocket socket]))
+	server = [OFTCPSocket socket];
+	client = [OFTCPSocket socket];
 
-	TEST(@"-[bindToHost:port:]",
-	    R(address = [server bindToHost: @"127.0.0.1" port: 0]))
+	address = [server bindToHost: @"127.0.0.1" port: 0];
+	[server listen];
 
-	TEST(@"-[listen]", R([server listen]))
+	[client connectToHost: @"127.0.0.1"
+			 port: OFSocketAddressIPPort(&address)];
 
-	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1"
-			       port: OFSocketAddressIPPort(&address)]))
+	accepted = [server accept];
+	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
+	    @"127.0.0.1");
 
-	TEST(@"-[accept]", (accepted = [server accept]))
+	[client writeString: @"Hello!"];
 
-	TEST(@"-[remoteAddress]",
-	    [OFSocketAddressString(accepted.remoteAddress)
-	    isEqual: @"127.0.0.1"])
-
-	TEST(@"-[writeString:]", R([client writeString: @"Hello!"]))
-
-	TEST(@"-[readIntoBuffer:length:]",
-	    [accepted readIntoBuffer: buffer length: 6] &&
-	    !memcmp(buffer, "Hello!", 6))
-
-	objc_autoreleasePoolPop(pool);
+	[accepted readIntoBuffer: buffer exactLength: 6];
+	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
 }
 @end

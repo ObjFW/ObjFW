@@ -1,9 +1,6 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}	\
-	  ${OBJC_SYNC}	\
-	  ${SUBPROCESS}	\
-	  terminal
+SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS} ${OBJC_SYNC} terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -17,80 +14,82 @@ DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = ForwardingTests.m		\
-       OFArrayTests.m			\
-       ${OF_BLOCK_TESTS_M}		\
-       OFCharacterSetTests.m		\
-       OFColorTests.m			\
-       OFDataTests.m			\
-       OFDateTests.m			\
-       OFDictionaryTests.m		\
-       OFHMACTests.m			\
-       OFINIFileTests.m			\
-       OFIRITests.m			\
-       OFInvocationTests.m		\
-       OFJSONTests.m			\
-       OFListTests.m			\
-       OFLocaleTests.m			\
-       OFMD5HashTests.m			\
-       OFMatrix4x4Tests.m		\
-       OFMemoryStreamTests.m		\
-       OFMethodSignatureTests.m		\
-       OFNotificationCenterTests.m	\
-       OFNumberTests.m			\
-       OFObjectTests.m			\
-       OFPBKDF2Tests.m			\
-       OFPropertyListTests.m		\
-       OFRIPEMD160HashTests.m		\
-       OFSHA1HashTests.m		\
-       OFSHA224HashTests.m		\
-       OFSHA256HashTests.m		\
-       OFSHA384HashTests.m		\
-       OFSHA512HashTests.m		\
-       OFScryptTests.m			\
-       OFSetTests.m			\
-       OFStreamTests.m			\
-       OFStringTests.m			\
-       OFSystemInfoTests.m		\
-       OFValueTests.m			\
-       OFXMLElementBuilderTests.m	\
-       OFXMLNodeTests.m			\
-       OFXMLParserTests.m		\
-       RuntimeTests.m			\
-       ${RUNTIME_ARC_TESTS_M}		\
-       TestsAppDelegate.m		\
-       ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
-       ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_SUBPROCESS}		\
-       ${USE_SRCS_THREADS}		\
-       ${USE_SRCS_WINDOWS}		\
-       testfile_bin.m			\
+SRCS = ${OF_BLOCK_TESTS_M}			\
+       ForwardingTests.m			\
+       OFArrayTests.m				\
+       OFCharacterSetTests.m			\
+       OFColorTests.m				\
+       OFConcreteArrayTests.m			\
+       OFConcreteDictionaryTests.m		\
+       OFConcreteMutableArrayTests.m		\
+       OFConcreteMutableDictionaryTests.m	\
+       OFConcreteMutableSetTests.m		\
+       OFConcreteSetTests.m			\
+       OFCryptographicHashTests.m		\
+       OFDataTests.m				\
+       OFDateTests.m				\
+       OFDictionaryTests.m			\
+       OFHMACTests.m				\
+       OFINIFileTests.m				\
+       OFIRITests.m				\
+       OFInvocationTests.m			\
+       OFJSONTests.m				\
+       OFListTests.m				\
+       OFLocaleTests.m				\
+       OFMatrix4x4Tests.m			\
+       OFMemoryStreamTests.m			\
+       OFMethodSignatureTests.m			\
+       OFMutableArrayTests.m			\
+       OFMutableDataTests.m			\
+       OFMutableDictionaryTests.m		\
+       OFMutableSetTests.m			\
+       OFMutableStringTests.m			\
+       OFMutableUTF8StringTests.m		\
+       OFNotificationCenterTests.m		\
+       OFNumberTests.m				\
+       OFObjectTests.m				\
+       OFPBKDF2Tests.m				\
+       OFPropertyListTests.m			\
+       OFScryptTests.m				\
+       OFSetTests.m				\
+       OFStreamTests.m				\
+       OFStringTests.m				\
+       OFSystemInfoTests.m			\
+       OFUTF8StringTests.m			\
+       OFValueTests.m				\
+       OFXMLElementBuilderTests.m		\
+       OFXMLNodeTests.m				\
+       OFXMLParserTests.m			\
+       ${RUNTIME_ARC_TESTS_M}			\
+       RuntimeTests.m				\
+       ${USE_SRCS_PLUGINS}			\
+       ${USE_SRCS_SOCKETS}			\
+       ${USE_SRCS_SUBPROCESSES}			\
+       ${USE_SRCS_THREADS}			\
+       ${USE_SRCS_WINDOWS}			\
+       testfile_bin.m				\
        testfile_ini.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
-	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
+	       OFHTTPCookieTests.m		\
 	       OFKernelEventObserverTests.m	\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
-	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_UNIX_SOCKETS}
+	       ${USE_SRCS_UNIX_SOCKETS}		\
+	       ${USE_SRCS_APPLETALK}
 SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
-SRCS_SUBPROCESS = OFSubprocessTests.m
+SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
-
-IOS_USER ?= mobile
-IOS_TMP ?= /tmp/objfw-test
 
 include ../buildsys.mk
 
@@ -156,24 +155,6 @@ run:
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
-run-on-ios: all
-	if [ -z "${IOS_HOST}" ]; then \
-		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
-		exit 1; \
-	fi
-	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
-	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
-	scp -q ../src/libobjfw.dylib \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
-	scp -q plugin/TestPlugin.bundle \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
-	echo "Running tests binary on iOS device ${IOS_HOST}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${WRAPPER} ./tests'
-
 run-on-android: all
 	echo "Uploading files to Android device..."
 	if test -f ../src/libobjfw.so; then \
@@ -202,7 +183,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
@@ -232,10 +213,20 @@ ${PROG_NOINST}.rpx: ${PROG_NOINST}
 CPPFLAGS += -I../src				\
 	    -I../src/exceptions			\
 	    -I../src/runtime			\
+	    -I../src/test			\
 	    -I..				\
-	    -DSTDOUT				\
+	    -DOBJFWTEST_LOCAL_INCLUDES		\
 	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
-LIBS := ${TESTS_LIBS} ${LIBS}
+# Repetition is required for Wii U, as otherwise it cannot find main. Just
+# moving -lobjfwtest later doesn't work either, as then the linker cannot find
+# ObjFW symbols. So the only solution is to list everything twice.
+LIBS := -L../src/test	\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}		\
+	-lobjfwtest	\
+	${TESTS_LIBS}	\
+	${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

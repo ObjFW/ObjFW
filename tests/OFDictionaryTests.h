@@ -13,11 +13,13 @@
  * file.
  */
 
-#import "OFApplication.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-OF_ASSUME_NONNULL_BEGIN
+@interface OFDictionaryTests: OTTestCase
+{
+	OFDictionary *_dictionary;
+}
 
-@interface OTAppDelegate: OFObject <OFApplicationDelegate>
+@property (readonly, nonatomic) Class dictionaryClass;
 @end
-
-OF_ASSUME_NONNULL_END

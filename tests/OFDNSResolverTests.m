@@ -15,16 +15,28 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-@implementation TestsAppDelegate (OFDNSResolverTests)
-- (void)DNSResolverTests
+@interface OFDNSResolverTests: OTTestCase
+@end
+
+@implementation OFDNSResolverTests
++ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *summary = [OFMutableArray array];
 	OFDNSResolver *resolver = [OFDNSResolver resolver];
 	OFMutableString *staticHosts = [OFMutableString string];
 
-	[OFStdOut setForegroundColor: [OFColor lime]];
+#define ADD(name, value)						\
+	[summary addObject: [OFPair pairWithFirstObject: name		\
+					   secondObject: value]];
+#define ADD_DOUBLE(name, value)						\
+	ADD(name, [OFNumber numberWithDouble: value])
+#define ADD_UINT(name, value)						\
+	ADD(name, [OFNumber numberWithUnsignedInt: value]);
+#define ADD_BOOL(name, value)						\
+	ADD(name, [OFNumber numberWithBool: value]);
 
 	for (OFString *host in resolver.staticHosts) {
 		OFString *IPs;
@@ -37,35 +49,26 @@
 
 		[staticHosts appendFormat: @"%@=(%@)", host, IPs];
 	}
-	[OFStdOut writeFormat: @"[OFDNSResolver] Static hosts: %@\n",
-	    staticHosts];
+	ADD(@"Static hosts", staticHosts)
 
-	[OFStdOut writeFormat: @"[OFDNSResolver] Name servers: %@\n",
-	    [resolver.nameServers componentsJoinedByString: @", "]];
+	ADD(@"Name servers",
+	    [resolver.nameServers componentsJoinedByString: @", "]);
+	ADD(@"Local domain", resolver.localDomain);
+	ADD(@"Search domains",
+	    [resolver.searchDomains componentsJoinedByString: @", "]);
 
-	[OFStdOut writeFormat: @"[OFDNSResolver] Local domain: %@\n",
-	    resolver.localDomain];
+	ADD_DOUBLE(@"Timeout", resolver.timeout);
+	ADD_UINT(@"Max attempts", resolver.maxAttempts);
+	ADD_UINT(@"Min number of dots in absolute name",
+	    resolver.minNumberOfDotsInAbsoluteName);
+	ADD_BOOL(@"Forces TCP", resolver.forcesTCP);
+	ADD_DOUBLE(@"Config reload interval", resolver.configReloadInterval);
 
-	[OFStdOut writeFormat: @"[OFDNSResolver] Search domains: %@\n",
-	    [resolver.searchDomains componentsJoinedByString: @", "]];
+#undef ADD
+#undef ADD_DOUBLE
+#undef ADD_UINT
+#undef ADD_BOOL
 
-	[OFStdOut writeFormat: @"[OFDNSResolver] Timeout: %lf\n",
-	    resolver.timeout];
-
-	[OFStdOut writeFormat: @"[OFDNSResolver] Max attempts: %u\n",
-	    resolver.maxAttempts];
-
-	[OFStdOut writeFormat:
-	    @"[OFDNSResolver] Min number of dots in absolute name: %u\n",
-	    resolver.minNumberOfDotsInAbsoluteName];
-
-	[OFStdOut writeFormat: @"[OFDNSResolver] Forces TCP: %u\n",
-	    resolver.forcesTCP];
-
-	[OFStdOut writeFormat:
-	    @"[OFDNSResolver] Config reload interval: %lf\n",
-	    resolver.configReloadInterval];
-
-	objc_autoreleasePoolPop(pool);
+	return summary;
 }
 @end

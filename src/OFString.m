@@ -2341,11 +2341,14 @@ OF_SINGLETON_METHODS
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
-	 * If we have no strtof_l, we have no other choice but to replace "."
-	 * with the locale's decimal point.
+	 * If we have no strtof_l, we have no other choice than to replace the
+	 * locale's decimal point with something that will be rejected and
+	 * replacing "." with the locale's decimal point.
 	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [self
+	const char *UTF8String = [[self
+	    stringByReplacingOccurrencesOfString: decimalSeparator
+				      withString: @"!"]
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalSeparator].UTF8String;
 #endif
@@ -2398,11 +2401,14 @@ OF_SINGLETON_METHODS
 	const char *UTF8String = self.UTF8String;
 #else
 	/*
-	 * If we have no strtod_l, we have no other choice but to replace "."
-	 * with the locale's decimal point.
+	 * If we have no strtod_l, we have no other choice than to replace the
+	 * locale's decimal point with something that will be rejected and
+	 * replacing "." with the locale's decimal point.
 	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [self
+	const char *UTF8String = [[self
+	    stringByReplacingOccurrencesOfString: decimalSeparator
+				      withString: @"!"]
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalSeparator].UTF8String;
 #endif

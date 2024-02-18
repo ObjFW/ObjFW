@@ -15,93 +15,86 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 #import "OFCharacterSet.h"
 #import "OFBitSetCharacterSet.h"
 #import "OFRangeCharacterSet.h"
 
-static OFString *module;
-
-@interface SimpleCharacterSet: OFCharacterSet
+@interface OFCharacterSetTests: OTTestCase
 @end
 
-@implementation SimpleCharacterSet
+@interface CustomCharacterSet: OFCharacterSet
+@end
+
+@implementation CustomCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
 	return (character % 2 == 0);
 }
 @end
 
-@implementation TestsAppDelegate (OFCharacterSetTests)
-- (void)characterSetTests
+@implementation OFCharacterSetTests
+- (void)testCustomCharacterSet
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFCharacterSet *characterSet, *invertedCharacterSet;
-	bool ok;
+	OFCharacterSet *characterSet =
+	    [[[CustomCharacterSet alloc] init] autorelease];
 
-	module = @"OFCharacterSet";
+	for (OFUnichar c = 0; c < 65536; c++)
+		if (c % 2 == 0)
+			OTAssertTrue([characterSet characterIsMember: c]);
+		else
+			OTAssertFalse([characterSet characterIsMember: c]);
+}
 
-	characterSet = [[[SimpleCharacterSet alloc] init] autorelease];
+- (void)testBitSetCharacterSet
+{
+	OFCharacterSet *characterSet =
+	    [OFCharacterSet characterSetWithCharactersInString: @"0123456789"];
 
-	ok = true;
-	for (OFUnichar c = 0; c < 65536; c++) {
-		if (c % 2 == 0) {
-			if (![characterSet characterIsMember: c])
-				ok = false;
-		} else if ([characterSet characterIsMember: c])
-			ok = false;
-	}
-	TEST(@"-[characterIsMember:]", ok);
+	OTAssertTrue(
+	    [characterSet isKindOfClass: [OFBitSetCharacterSet class]]);
 
-	module = @"OFBitSetCharacterSet";
+	for (OFUnichar c = 0; c < 65536; c++)
+		if (c >= '0' && c <= '9')
+			OTAssertTrue([characterSet characterIsMember: c]);
+		else if ([characterSet characterIsMember: c])
+			OTAssertFalse([characterSet characterIsMember: c]);
+}
 
-	TEST(@"+[characterSetWithCharactersInString:]",
-	    (characterSet = [OFCharacterSet characterSetWithCharactersInString:
-	    @"0123456789"]) &&
-	    [characterSet isKindOfClass: [OFBitSetCharacterSet class]])
+- (void)testRangeCharacterSet
+{
+	OFCharacterSet *characterSet =
+	    [OFCharacterSet characterSetWithRange: OFMakeRange('0', 10)];
 
-	ok = true;
-	for (OFUnichar c = 0; c < 65536; c++) {
-		if (c >= '0' && c <= '9') {
-			if (![characterSet characterIsMember: c])
-				ok = false;
-		} else if ([characterSet characterIsMember: c])
-			ok = false;
-	}
-	TEST(@"-[characterIsMember:]", ok);
+	OTAssertTrue(
+	    [characterSet isKindOfClass: [OFRangeCharacterSet class]]);
 
-	module = @"OFRangeCharacterSet";
+	for (OFUnichar c = 0; c < 65536; c++)
+		if (c >= '0' && c <= '9')
+			OTAssertTrue([characterSet characterIsMember: c]);
+		else
+			OTAssertFalse([characterSet characterIsMember: c]);
+}
 
-	TEST(@"+[characterSetWithRange:]",
-	    (characterSet = [OFCharacterSet
-	    characterSetWithRange: OFMakeRange('0', 10)]) &&
-	    [characterSet isKindOfClass: [OFRangeCharacterSet class]])
+- (void)testInvertedCharacterSet
+{
+	OFCharacterSet *characterSet = [[OFCharacterSet
+	    characterSetWithRange: OFMakeRange('0', 10)] invertedSet];
 
-	ok = true;
-	for (OFUnichar c = 0; c < 65536; c++) {
-		if (c >= '0' && c <= '9') {
-			if (![characterSet characterIsMember: c])
-				ok = false;
-		} else if ([characterSet characterIsMember: c])
-			ok = false;
-	}
-	TEST(@"-[characterIsMember:]", ok);
+	for (OFUnichar c = 0; c < 65536; c++)
+		if (c >= '0' && c <= '9')
+			OTAssertFalse([characterSet characterIsMember: c]);
+		else
+			OTAssertTrue([characterSet characterIsMember: c]);
+}
 
-	ok = true;
-	invertedCharacterSet = characterSet.invertedSet;
-	for (OFUnichar c = 0; c < 65536; c++) {
-		if (c >= '0' && c <= '9') {
-			if ([invertedCharacterSet characterIsMember: c])
-				ok = false;
-		} else if (![invertedCharacterSet characterIsMember: c])
-			ok = false;
-	}
-	TEST(@"-[invertedSet]", ok);
+- (void)testInvertingInvertedSetReturnsOriginal
+{
+	OFCharacterSet *characterSet =
+	    [OFCharacterSet characterSetWithRange: OFMakeRange('0', 10)];
 
-	TEST(@"Inverting -[invertedSet] returns original set",
-	    invertedCharacterSet.invertedSet == characterSet)
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqual(characterSet, characterSet.invertedSet.invertedSet);
 }
 @end

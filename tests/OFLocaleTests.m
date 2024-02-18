@@ -15,27 +15,28 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-@implementation TestsAppDelegate (OFLocaleTests)
-- (void)localeTests
+@interface OFLocaleTests: OTTestCase
+@end
+
+@implementation OFLocaleTests
++ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *summary = [OFMutableArray array];
 
-	[OFStdOut setForegroundColor: [OFColor lime]];
+#define ADD(name, value)						\
+	[summary addObject: [OFPair pairWithFirstObject: name		\
+					   secondObject: value]];
 
-	[OFStdOut writeFormat: @"[OFLocale] Language code: %@\n",
-	    [OFLocale languageCode]];
+	ADD(@"Language code", [OFLocale languageCode])
+	ADD(@"Country code", [OFLocale countryCode])
+	ADD(@"Encoding", OFStringEncodingName([OFLocale encoding]))
+	ADD(@"Decimal separator", [OFLocale decimalSeparator])
 
-	[OFStdOut writeFormat: @"[OFLocale] Country code: %@\n",
-	    [OFLocale countryCode]];
+#undef ADD
 
-	[OFStdOut writeFormat: @"[OFLocale] Encoding: %@\n",
-	    OFStringEncodingName([OFLocale encoding])];
-
-	[OFStdOut writeFormat: @"[OFLocale] Decimal separator: %@\n",
-	    [OFLocale decimalSeparator]];
-
-	objc_autoreleasePoolPop(pool);
+	return summary;
 }
 @end

@@ -17,9 +17,15 @@
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFHMAC";
+@interface OFHMACTests: OTTestCase
+{
+	OFStream *_stream;
+}
+@end
+
 static const uint8_t key[] =
     "yM9h8K6IWnJRvxC/0F8XRWG7RnACDBz8wqK2tbXrYVLoKC3vPLeJikyJSM47tVHc"
     "DlXHww9zULAC2sJUlm2Kg1z4oz2aXY3Y1PQSB4VkC/m0DQ7hCI6cAg4TWnKdzWTy"
@@ -47,84 +53,86 @@ static const uint8_t SHA512Digest[] =
     "\x61\xB3\xF9\x1A\xE3\x09\x43\xA6\x5B\x85\xB1\x50\x5B\xCB\x1A\x2E"
     "\xB7\xE8\x87\xC1\x73\x19\x63\xF6\xA2\x91\x8D\x7E\x2E\xCC\xEC\x99";
 
-@implementation TestsAppDelegate (OFHMACTests)
-- (void)HMACTests
+@implementation OFHMACTests
+- (void)setUp
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
-	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
-	OFHMAC *HMACMD5, *HMACSHA1, *HMACRMD160;
-	OFHMAC *HMACSHA256, *HMACSHA384, *HMACSHA512;
+	OFIRI *IRI;
 
-	TEST(@"+[HMACWithHashClass:] with MD5",
-	    (HMACMD5 = [OFHMAC HMACWithHashClass: [OFMD5Hash class]
-			   allowsSwappableMemory: true]))
-	TEST(@"+[HMACWithHashClass:] with SHA-1",
-	    (HMACSHA1 = [OFHMAC HMACWithHashClass: [OFSHA1Hash class]
-			    allowsSwappableMemory: true]))
-	TEST(@"+[HMACWithHashClass:] with RIPEMD-160",
-	    (HMACRMD160 = [OFHMAC HMACWithHashClass: [OFRIPEMD160Hash class]
-			      allowsSwappableMemory: true]))
-	TEST(@"+[HMACWithHashClass:] with SHA-256",
-	    (HMACSHA256 = [OFHMAC HMACWithHashClass: [OFSHA256Hash class]
-			      allowsSwappableMemory: true]))
-	TEST(@"+[HMACWithHashClass:] with SHA-384",
-	    (HMACSHA384 = [OFHMAC HMACWithHashClass: [OFSHA384Hash class]
-			      allowsSwappableMemory: true]))
-	TEST(@"+[HMACWithHashClass:] with SHA-512",
-	    (HMACSHA512 = [OFHMAC HMACWithHashClass: [OFSHA512Hash class]
-			      allowsSwappableMemory: true]))
+	[super setUp];
 
-	EXPECT_EXCEPTION(@"Detection of missing key",
-	    OFInvalidArgumentException,
-	    [HMACMD5 updateWithBuffer: "" length: 0])
+	IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
+	_stream = [[OFIRIHandler openItemAtIRI: IRI mode: @"r"] retain];
+}
 
-	TEST(@"-[setKey:length:] with MD5",
-	    R([HMACMD5 setKey: key length: keyLength]))
-	TEST(@"-[setKey:length:] with SHA-1",
-	    R([HMACSHA1 setKey: key length: keyLength]))
-	TEST(@"-[setKey:length:] with RIPEMD-160",
-	    R([HMACRMD160 setKey: key length: keyLength]))
-	TEST(@"-[setKey:length:] with SHA-256",
-	    R([HMACSHA256 setKey: key length: keyLength]))
-	TEST(@"-[setKey:length:] with SHA-384",
-	    R([HMACSHA384 setKey: key length: keyLength]))
-	TEST(@"-[setKey:length:] with SHA-512",
-	    R([HMACSHA512 setKey: key length: keyLength]))
+- (void)tearDown
+{
+	[_stream close];
 
-	while (!file.atEndOfStream) {
+	[super tearDown];
+}
+
+- (void)dealloc
+{
+	[_stream release];
+
+	[super dealloc];
+}
+
+- (void)testWithHashClass: (Class)hashClass
+	   expectedDigest: (const unsigned char *)expectedDigest
+{
+	OFHMAC *HMAC = [OFHMAC HMACWithHashClass: hashClass
+			   allowsSwappableMemory: true];
+
+	OTAssertNotNil(HMAC);
+
+	OTAssertThrowsSpecific([HMAC updateWithBuffer: "" length: 0],
+	    OFInvalidArgumentException);
+
+	[HMAC setKey: key length: keyLength];
+
+	while (!_stream.atEndOfStream) {
 		char buffer[64];
-		size_t length = [file readIntoBuffer: buffer length: 64];
-		[HMACMD5 updateWithBuffer: buffer length: length];
-		[HMACSHA1 updateWithBuffer: buffer length: length];
-		[HMACRMD160 updateWithBuffer: buffer length: length];
-		[HMACSHA256 updateWithBuffer: buffer length: length];
-		[HMACSHA384 updateWithBuffer: buffer length: length];
-		[HMACSHA512 updateWithBuffer: buffer length: length];
+		size_t length = [_stream readIntoBuffer: buffer length: 64];
+		[HMAC updateWithBuffer: buffer length: length];
 	}
-	[file close];
 
-	TEST(@"-[calculate] with MD5", R([HMACMD5 calculate]))
-	TEST(@"-[calculate] with SHA-1", R([HMACSHA1 calculate]))
-	TEST(@"-[calculate] with RIPEMD-160", R([HMACRMD160 calculate]))
-	TEST(@"-[calculate] with SHA-256", R([HMACSHA256 calculate]))
-	TEST(@"-[calculate] with SHA-384", R([HMACSHA384 calculate]))
-	TEST(@"-[calculate] with SHA-512", R([HMACSHA512 calculate]))
+	[HMAC calculate];
 
-	TEST(@"-[digest] with MD5",
-	    memcmp(HMACMD5.digest, MD5Digest, HMACMD5.digestSize) == 0)
-	TEST(@"-[digest] with SHA-1",
-	    memcmp(HMACSHA1.digest, SHA1Digest, HMACSHA1.digestSize) == 0)
-	TEST(@"-[digest] with RIPEMD-160",
-	    memcmp(HMACRMD160.digest, RIPEMD160Digest,
-	    HMACRMD160.digestSize) == 0)
-	TEST(@"-[digest] with SHA-256",
-	    memcmp(HMACSHA256.digest, SHA256Digest, HMACSHA256.digestSize) == 0)
-	TEST(@"-[digest] with SHA-384",
-	    memcmp(HMACSHA384.digest, SHA384Digest, HMACSHA384.digestSize) == 0)
-	TEST(@"-[digest] with SHA-512",
-	    memcmp(HMACSHA512.digest, SHA512Digest, HMACSHA512.digestSize) == 0)
+	OTAssertEqual(memcmp(HMAC.digest, expectedDigest, HMAC.digestSize), 0);
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)testHMACWithMD5
+{
+	[self testWithHashClass: [OFMD5Hash class] expectedDigest: MD5Digest];
+}
+
+- (void)testHMACWithRIPEMD160
+{
+	[self testWithHashClass: [OFRIPEMD160Hash class]
+		 expectedDigest: RIPEMD160Digest];
+}
+
+- (void)testHMACWithSHA1
+{
+	[self testWithHashClass: [OFSHA1Hash class] expectedDigest: SHA1Digest];
+}
+
+- (void)testHMACWithSHA256
+{
+	[self testWithHashClass: [OFSHA256Hash class]
+		 expectedDigest: SHA256Digest];
+}
+
+- (void)testHMACWithSHA384
+{
+	[self testWithHashClass: [OFSHA384Hash class]
+		 expectedDigest: SHA384Digest];
+}
+
+- (void)testHMACWithSHA512
+{
+	[self testWithHashClass: [OFSHA512Hash class]
+		 expectedDigest: SHA512Digest];
 }
 @end

@@ -15,9 +15,11 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFBlock";
+@interface OFBlockTests: OTTestCase
+@end
 
 #if defined(OF_OBJFW_RUNTIME)
 extern struct objc_class _NSConcreteStackBlock;
@@ -56,64 +58,81 @@ forwardTest(void)
 	return d;
 }
 
-@implementation TestsAppDelegate (OFBlockTests)
-- (void)blockTests
+@implementation OFBlockTests
+- (void)testClassOfStackBlock
 {
-	void *pool = objc_autoreleasePoolPush();
+	__block int x;
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
+
+	OTAssertEqual((Class)&_NSConcreteStackBlock,
+	    objc_getClass("OFStackBlock"));
+	OTAssertTrue([stackBlock isKindOfClass: [OFBlock class]]);
+}
+
+#if !defined(OF_WINDOWS) || !defined(__clang__)
+- (void)testClassOfGlobalBlock
+{
+	OTAssertEqual((Class)&_NSConcreteGlobalBlock,
+	    objc_getClass("OFGlobalBlock"));
+	OTAssertTrue([globalBlock isKindOfClass: [OFBlock class]]);
+}
+#endif
+
+- (void)testClassOfMallocBlock
+{
+	OTAssertEqual((Class)&_NSConcreteMallocBlock,
+	    objc_getClass("OFMallocBlock"));
+}
+
+- (void)testCopyStackBlock
+{
 	__block int x;
 	void (^stackBlock)(void) = ^ {
 		x = 0;
 		(void)x;
 	};
 	void (^mallocBlock)(void);
-	int (^voidBlock)(void);
 
-	TEST(@"Class of stack block",
-	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
-	    [stackBlock isKindOfClass: [OFBlock class]])
+	mallocBlock = [[stackBlock copy] autorelease];
+	OTAssertEqual([mallocBlock class], objc_getClass("OFMallocBlock"));
+	OTAssertTrue([mallocBlock isKindOfClass: [OFBlock class]]);
+}
 
-#if !defined(OF_WINDOWS) || !defined(__clang__)
-	TEST(@"Class of global block",
-	    (Class)&_NSConcreteGlobalBlock == objc_getClass("OFGlobalBlock") &&
-	    [globalBlock isKindOfClass: [OFBlock class]])
-#endif
+- (void)testCopyStackBlockAndReferenceVariable
+{
+	OTAssertEqual(forwardTest(), 5);
+}
 
-	TEST(@"Class of a malloc block",
-	    (Class)&_NSConcreteMallocBlock == objc_getClass("OFMallocBlock"))
+- (void)testCopyStackBlockAndReferenceCopiedVariable
+{
+	int (^voidBlock)(void) = returnStackBlock();
 
-	TEST(@"Copying a stack block",
-	    (mallocBlock = [[stackBlock copy] autorelease]) &&
-	    [mallocBlock class] == objc_getClass("OFMallocBlock") &&
-	    [mallocBlock isKindOfClass: [OFBlock class]])
-
-	TEST(@"Copying a stack block and referencing its variable",
-	    forwardTest() == 5)
-
-	TEST(@"Copying a stack block and using its copied variable",
-	    (voidBlock = returnStackBlock()) && voidBlock() == 43 &&
-	    voidBlock() == 44 && voidBlock() == 45)
+	OTAssertEqual(voidBlock(), 43);
+	OTAssertEqual(voidBlock(), 44);
+	OTAssertEqual(voidBlock(), 45);
+}
 
 #if !defined(OF_WINDOWS) || !defined(__clang__)
-	TEST(@"Copying a global block",
-	    (id)globalBlock == [[globalBlock copy] autorelease])
+- (void)testCopyGlobalBlock
+{
+	OTAssertEqual([[globalBlock copy] autorelease], (id)globalBlock);
+}
 #endif
 
-#ifndef __clang_analyzer__
-	TEST(@"Copying a malloc block",
-	    (id)mallocBlock == [mallocBlock copy] &&
-	    [mallocBlock retainCount] == 2)
-#endif
+- (void)testCopyMallocBlock
+{
+	__block int x;
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
+	void (^mallocBlock)(void);
 
-	TEST(@"Autorelease a stack block", R([stackBlock autorelease]))
-
-#if !defined(OF_WINDOWS) || !defined(__clang__)
-	TEST(@"Autorelease a global block", R([globalBlock autorelease]))
-#endif
-
-#ifndef __clang_analyzer__
-	TEST(@"Autorelease a malloc block", R([mallocBlock autorelease]))
-#endif
-
-	objc_autoreleasePoolPop(pool);
+	mallocBlock = [[stackBlock copy] autorelease];
+	OTAssertEqual([[mallocBlock copy] autorelease], (id)mallocBlock);
+	OTAssertEqual([mallocBlock retainCount], 2);
 }
 @end

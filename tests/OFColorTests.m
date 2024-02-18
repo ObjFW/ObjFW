@@ -15,33 +15,48 @@
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFColor";
-
-@implementation TestsAppDelegate (OFColorTests)
-- (void)colorTests
+@interface OFColorTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFColor *color;
-	float red, green, blue, alpha;
+	OFColor *_color;
+}
+@end
 
-	TEST(@"+[colorWithRed:green:blue:alpha:]",
-	    (color = [OFColor colorWithRed: 63.f / 255
-				     green: 127.f / 255
-				      blue: 1
-				     alpha: 1]))
+@implementation OFColorTests
+- (void)setUp
+{
+	[super setUp];
+
+	_color = [[OFColor alloc] initWithRed: 63.f / 255
+					green: 127.f / 255
+					 blue: 1
+					alpha: 1];
+}
+
+- (void)dealloc
+{
+	[_color release];
+
+	[super dealloc];
+}
 
 #ifdef OF_OBJFW_RUNTIME
-	TEST(@"+[colorWithRed:green:blue:alpha:] returns tagged pointer",
-	    object_isTaggedPointer(color))
+- (void)testReturnsTaggedPointer
+{
+	OTAssertTrue(object_isTaggedPointer(_color));
+}
 #endif
 
-	TEST(@"-[getRed:green:blue:alpha:]",
-	    R([color getRed: &red green: &green blue: &blue alpha: &alpha]) &&
-	    red == 63.f / 255 && green == 127.f / 255 && blue == 1 &&
-	    alpha == 1)
+- (void)testGetRedGreenBlueAlpha
+{
+	float red, green, blue, alpha;
 
-	objc_autoreleasePoolPop(pool);
+	[_color getRed: &red green: &green blue: &blue alpha: &alpha];
+	OTAssertEqual(red, 63.f / 255);
+	OTAssertEqual(green, 127.f / 255);
+	OTAssertEqual(blue, 1);
+	OTAssertEqual(alpha, 1);
 }
 @end
