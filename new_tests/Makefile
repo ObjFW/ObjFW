@@ -50,6 +50,7 @@ SRCS = ${OF_BLOCK_TESTS_M}			\
        OFPropertyListTests.m			\
        OFScryptTests.m				\
        OFSetTests.m				\
+       OFStreamTests.m				\
        OFStringTests.m				\
        OFSystemInfoTests.m			\
        OFUTF8StringTests.m			\

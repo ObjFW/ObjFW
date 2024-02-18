@@ -58,7 +58,3 @@
 - (void)outputSuccess: (OFString *)test inModule: (OFString *)module;
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
-
-@interface TestsAppDelegate (OFStreamTests)
-- (void)streamTests;
-@end

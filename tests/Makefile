@@ -13,8 +13,7 @@ DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = OFStreamTests.m			\
-       TestsAppDelegate.m
+SRCS = TestsAppDelegate.m
 
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
