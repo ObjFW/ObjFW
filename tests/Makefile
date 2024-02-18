@@ -13,8 +13,7 @@ DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = OFMemoryStreamTests.m		\
-       OFStreamTests.m			\
+SRCS = OFStreamTests.m			\
        OFValueTests.m			\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\

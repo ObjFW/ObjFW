@@ -35,6 +35,7 @@ SRCS = ${OF_BLOCK_TESTS_M}			\
        OFListTests.m				\
        OFLocaleTests.m				\
        OFMatrix4x4Tests.m			\
+       OFMemoryStreamTests.m			\
        OFMethodSignatureTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\

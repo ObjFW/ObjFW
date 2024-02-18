@@ -59,14 +59,6 @@
 - (void)outputFailure: (OFString *)test inModule: (OFString *)module;
 @end
 
-@interface TestsAppDelegate (OFDataTests)
-- (void)dataTests;
-@end
-
-@interface TestsAppDelegate  (OFMemoryStreamTests)
-- (void)memoryStreamTests;
-@end
-
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end
