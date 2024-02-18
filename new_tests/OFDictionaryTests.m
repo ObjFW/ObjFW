@@ -77,8 +77,6 @@ static OFString *objects[] = {
 					  count: 2]);
 }
 
-/* FIXME: Hash is currently not stable. Enable test as soon as this is fixed. */
-#if 0
 - (void)testHash
 {
 	OTAssertEqual(_dictionary.hash,
@@ -86,11 +84,9 @@ static OFString *objects[] = {
 					 forKeys: keys
 					   count: 2] hash]);
 	OTAssertNotEqual(_dictionary.hash,
-	    [[OFDictionary dictionaryWithObjects: keys
-					 forKeys: objects
-					   count: 2] hash]);
+	    [[OFDictionary dictionaryWithObject: objects[0]
+					 forKey: keys[0]] hash]);
 }
-#endif
 
 - (void)testCopy
 {
