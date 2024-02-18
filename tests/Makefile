@@ -1,6 +1,9 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN} ${SUBPROCESS} ${OBJC_SYNC} terminal
+SUBDIRS = ${TESTPLUGIN}	\
+	  ${SUBPROCESS}	\
+	  ${OBJC_SYNC}	\
+	  terminal
 
 CLEAN = EBOOT.PBP		\
 	boot.dol		\
@@ -14,9 +17,9 @@ DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = ${OF_BLOCK_TESTS_M}			\
-       ForwardingTests.m			\
+SRCS = ForwardingTests.m			\
        OFArrayTests.m				\
+       ${OF_BLOCK_TESTS_M}			\
        OFCharacterSetTests.m			\
        OFColorTests.m				\
        OFConcreteArrayTests.m			\
@@ -78,9 +81,9 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m		\
+	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
-	       ${USE_SRCS_UNIX_SOCKETS}		\
-	       ${USE_SRCS_APPLETALK}
+	       ${USE_SRCS_UNIX_SOCKETS}
 SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\

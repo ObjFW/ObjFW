@@ -46,7 +46,7 @@
 
 - (void)testRFC6070TestVector1
 {
-	unsigned char key[25];
+	unsigned char key[20];
 
 	OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = _HMAC,
@@ -66,7 +66,7 @@
 
 - (void)testRFC6070TestVector2
 {
-	unsigned char key[25];
+	unsigned char key[20];
 
 	OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = _HMAC,
@@ -86,7 +86,7 @@
 
 - (void)testRFC6070TestVector3
 {
-	unsigned char key[25];
+	unsigned char key[20];
 
 	OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = _HMAC,
@@ -108,7 +108,7 @@
 /* This test takes too long, even on a fast machine. */
 - (void)testRFC6070TestVector4
 {
-	unsigned char key[25];
+	unsigned char key[20];
 
 	OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = _HMAC,
@@ -150,7 +150,7 @@
 
 - (void)testRFC6070TestVector6
 {
-	unsigned char key[25];
+	unsigned char key[16];
 
 	OFPBKDF2((OFPBKDF2Parameters){
 		.HMAC                  = _HMAC,

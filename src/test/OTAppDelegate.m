@@ -495,17 +495,18 @@ isSubclassOfClass(Class class, Class superclass)
 				failed = true;
 			}
 
-			if (!failed && !skipped) {
+			if (failed)
+				numFailed++;
+			else if (skipped)
+				numSkipped++;
+			else {
 				[self printStatusForTest: test.pointerValue
 						 inClass: class
 						  status: StatusOk
 					     description: nil];
 
 				numSucceeded++;
-			} else if (failed)
-				numFailed++;
-			else if (skipped)
-				numSkipped++;
+			}
 
 			objc_autoreleasePoolPop(pool);
 		}
