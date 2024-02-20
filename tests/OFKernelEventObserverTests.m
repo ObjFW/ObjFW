@@ -64,6 +64,7 @@ static const size_t numExpectedEvents = 3;
 	[_client release];
 	[_server release];
 	[_accepted release];
+	[_observer release];
 
 	[super dealloc];
 }
