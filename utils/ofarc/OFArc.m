@@ -62,7 +62,7 @@ help(OFStream *stream, bool full, int status)
 		    @"    -C  --directory   Extract into the specified "
 		    @"directory\n"
 		    @"    -E  --encoding    The encoding used by the archive "
-		    "(only tar files)\n"
+		    "(only tar and lha files)\n"
 		    @"    -f  --force       Force / overwrite files\n"
 		    @"    -h  --help        Show this help\n"
 		    @"    -l  --list        List all files in the archive\n"
