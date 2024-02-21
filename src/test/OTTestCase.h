@@ -21,14 +21,36 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @brief A class meant for subclassing to create a test case, consisting of
+ *	  one or more tests.
+ *
+ * All methods with the prefix `test` that take no arguments of all classes
+ * that subclass this class are automatically executed by ObjFWTest.
+ */
 @interface OTTestCase: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nullable, nonatomic)
     OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *summary;
 #endif
 
+/**
+ * @brief Returns a summary for the test case that should be printed once all
+ *	  tests in all test cases were run.
+ *
+ * This is mostly useful to print something at the end of all tests that needs
+ * manual verification.
+ */
 + (nullable OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary;
+
+/**
+ * @brief Set up method that is run before every test in the test case.
+ */
 - (void)setUp;
+
+/**
+ * @brief Tear down method that is run after every test in the test case.
+ */
 - (void)tearDown;
 @end
 

@@ -21,6 +21,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @brief A dictionary that enumerates keys and objects in the same order they
+ *	  were specified during initialization.
+ *
+ * @warning This class is only for testing! It is slow and only to be used to
+ *	    test extensions of OFDictionary, for example serializations such as
+ *	    JSON, where it is desirable to compare to an expected output.
+ */
 @interface OTOrderedDictionary: OFDictionary
 {
 	OFArray *_keys;

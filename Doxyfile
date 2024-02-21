@@ -1,6 +1,6 @@
 PROJECT_NAME = "ObjFW"
 OUTPUT_DIRECTORY = docs/
-INPUT = src src/exceptions src/runtime
+INPUT = src src/exceptions src/runtime src/test
 FILE_PATTERNS = *.h *.m
 HTML_OUTPUT = .
 HAVE_DOT = NO
@@ -48,4 +48,4 @@ PREDEFINED = _Nonnull=						\
 	     SIGUSR2
 MACRO_EXPANSION = YES
 EXPAND_ONLY_PREDEF = YES
-IGNORE_PREFIX = OF of_
+IGNORE_PREFIX = OF OF_ OT OT_
