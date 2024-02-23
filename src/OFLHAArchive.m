@@ -320,6 +320,11 @@ OF_DIRECT_MEMBERS
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
+		else if ([compressionMethod isEqual: @"-lhx-"])
+			_decompressedStream = [[OFLHADecompressingStream alloc]
+			    of_initWithStream: stream
+				 distanceBits: 5
+			       dictionaryBits: 20];
 		else if ([compressionMethod isEqual: @"-lh0-"] ||
 		    [compressionMethod isEqual: @"-lhd-"])
 			_decompressedStream = [stream retain];
