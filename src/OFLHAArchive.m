@@ -37,6 +37,7 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
 enum {
@@ -319,8 +320,11 @@ OF_DIRECT_MEMBERS
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
-		else
+		else if ([compressionMethod isEqual: @"-lh0-"])
 			_decompressedStream = [stream retain];
+		else
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: compressionMethod];
 
 		_entry = [entry copy];
 		_toRead = entry.uncompressedSize;
@@ -334,7 +338,7 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	if (_stream != nil || _decompressedStream != nil)
+	if (_stream != nil && _decompressedStream != nil)
 		[self close];
 
 	[_entry release];
