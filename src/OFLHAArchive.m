@@ -326,7 +326,8 @@ OF_DIRECT_MEMBERS
 				 distanceBits: 5
 			       dictionaryBits: 20];
 		else if ([compressionMethod isEqual: @"-lh0-"] ||
-		    [compressionMethod isEqual: @"-lhd-"])
+		    [compressionMethod isEqual: @"-lhd-"] ||
+		    [compressionMethod isEqual: @"-lz4-"])
 			_decompressedStream = [stream retain];
 		else
 			@throw [OFUnsupportedVersionException
