@@ -34,7 +34,7 @@ Lsel_forwardingTargetForSelector_:
 _OFForward:
 _OFForward_stret:
 #ifdef HAVE_BTI
-	bti	jc
+	bti	c
 #endif
 
 	stp	fp, lr, [sp, #-208]!

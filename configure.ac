@@ -851,7 +851,7 @@ aarch64* | arm64*)
 	AC_MSG_CHECKING(for bti)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([], [
-			__asm__ __volatile__ ("bti jc");
+			__asm__ __volatile__ ("bti c");
 		])
 	], [
 		AC_DEFINE(HAVE_BTI, 1, [Whether we have bti])
