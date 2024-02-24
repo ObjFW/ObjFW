@@ -33,6 +33,10 @@ sel_forwardingTargetForSelector_:
 .align 2
 _OFForward:
 _OFForward_stret:
+#ifdef HAVE_BTI
+	bti	jc
+#endif
+
 	stp	fp, lr, [sp, #-208]!
 	mov	fp, sp
 	sub	sp, sp, #208

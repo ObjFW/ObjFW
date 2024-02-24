@@ -844,6 +844,19 @@ arm* | earm*)
 		AC_MSG_RESULT(no)
 	])
 	;;
+aarch64* | arm64*)
+	AC_MSG_CHECKING(for bti)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			__asm__ __volatile__ ("bti jc");
+		])
+	], [
+		AC_DEFINE(HAVE_BTI, 1, [Whether we have bti])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
 i?86)
 	AC_MSG_CHECKING(for endbr32)
 	AC_COMPILE_IFELSE([
