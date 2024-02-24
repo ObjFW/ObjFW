@@ -358,6 +358,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			uint8_t fileNameLength;
 			OFString *tmp;
 
+			if (header[0] < (21 - 2) + 1 + 2)
+				@throw [OFInvalidFormatException exception];
+
 			_modificationDate = [parseMSDOSDate(date) retain];
 
 			fileNameLength = [stream readInt8];
@@ -373,6 +376,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
 
 			if (_headerLevel == 1) {
+				if (extendedAreaSize < 3)
+					@throw [OFInvalidFormatException
+					    exception];
+
 				_operatingSystemIdentifier = [stream readInt8];
 
 				/*
