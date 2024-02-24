@@ -4,6 +4,12 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.9 -> ObjFW 1.0.10, 2024-02-24
+ * Fixes objc_getClassList() not releasing the global runtime mutex.
+ * Improves OFLHAArchive's compatibility with non-standard archives.
+ + Adds endbr32 / endbr64 / bti instructions for compatibility with Control
+   Flow Integrity.
+
 ObjFW 1.0.8 -> ObjFW 1.0.9, 2024-02-18
  * Fixes OFGZIPStream reading the size and CRC32 incorrectly when either spans
    multiple reads.
