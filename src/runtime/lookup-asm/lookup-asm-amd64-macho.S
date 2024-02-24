@@ -23,6 +23,10 @@
 .section __TEXT, __text, regular, pure_instructions
 .macro GENERATE_LOOKUP
 $0:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	testq	%rdi, %rdi
 	jz	LreturnNilMethod
 
@@ -64,6 +68,10 @@ LtaggedPointer_$0:
 
 .macro GENERATE_LOOKUP_SUPER
 $0:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	movq	%rdi, %r8
 	movq	(%rdi), %rdi
 	testq	%rdi, %rdi

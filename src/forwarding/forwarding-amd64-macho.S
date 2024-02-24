@@ -22,6 +22,10 @@
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -105,6 +109,10 @@ _OFForward:
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -190,6 +198,10 @@ _OFForward_stret:
 	jmp	_OFMethodNotFound_stret
 
 Linit:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	leaq	Lmodule(%rip), %rdi
 	jmp	___objc_exec_class
 

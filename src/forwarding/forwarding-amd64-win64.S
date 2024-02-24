@@ -20,6 +20,10 @@
 
 .section .text
 OFForward:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -95,6 +99,10 @@ OFForward:
 .endef
 
 OFForward_stret:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -172,6 +180,10 @@ OFForward_stret:
 .endef
 
 .Linit:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	leaq	.Lmodule(%rip), %rcx
 	jmp	__objc_exec_class
 

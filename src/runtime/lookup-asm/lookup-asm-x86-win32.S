@@ -23,6 +23,10 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	movl	4(%esp), %edx
 	testl	%edx, %edx
 	jz	.LreturnNilMethod
@@ -67,6 +71,10 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
 	test	%eax, %eax
