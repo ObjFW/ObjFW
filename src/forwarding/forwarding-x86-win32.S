@@ -20,6 +20,10 @@
 
 .section .text
 _OFForward:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -81,6 +85,10 @@ _OFForward:
 .endef
 
 _OFForward_stret:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -142,6 +150,10 @@ _OFForward_stret:
 .endef
 
 init:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 

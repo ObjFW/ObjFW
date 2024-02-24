@@ -31,6 +31,10 @@ sel_forwardingTargetForSelector_:
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -81,6 +85,10 @@ _OFForward:
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 

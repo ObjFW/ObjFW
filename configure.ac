@@ -844,6 +844,32 @@ arm* | earm*)
 		AC_MSG_RESULT(no)
 	])
 	;;
+i?86)
+	AC_MSG_CHECKING(for endbr32)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			__asm__ __volatile__ ("endbr32");
+		])
+	], [
+		AC_DEFINE(HAVE_ENDBR32, 1, [Whether we have endbr32])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
+x86_64)
+	AC_MSG_CHECKING(for endbr64)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			__asm__ __volatile__ ("endbr64");
+		])
+	], [
+		AC_DEFINE(HAVE_ENDBR64, 1, [Whether we have endbr64])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
 esac
 
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")

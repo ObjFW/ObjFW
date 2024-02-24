@@ -22,6 +22,10 @@
 
 .section .text
 OFForward:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -107,6 +111,10 @@ OFForward:
 .size OFForward, .-OFForward
 
 OFForward_stret:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -194,6 +202,10 @@ OFForward_stret:
 .size OFForward_stret, .-OFForward_stret
 
 init:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	leaq	module(%rip), %rdi
 	jmp	__objc_exec_class@PLT
 

@@ -22,6 +22,10 @@
 
 .section .text
 OFForward:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -86,6 +90,10 @@ OFForward:
 .size OFForward, .-OFForward
 
 OFForward_stret:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
@@ -150,6 +158,10 @@ OFForward_stret:
 .size OFForward_stret, .-OFForward_stret
 
 init:
+#ifdef HAVE_ENDBR32
+	endbr32
+#endif
+
 	pushl	%ebp
 	movl	%esp, %ebp
 

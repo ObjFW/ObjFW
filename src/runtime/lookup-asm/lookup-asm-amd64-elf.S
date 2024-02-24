@@ -25,6 +25,10 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	testq	%rdi, %rdi
 	jz	returnNilMethod
 
@@ -68,6 +72,10 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
+#ifdef HAVE_ENDBR64
+	endbr64
+#endif
+
 	movq	%rdi, %r8
 	movq	(%rdi), %rdi
 	testq	%rdi, %rdi
