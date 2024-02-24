@@ -563,7 +563,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
 			type = @"gz";
 		else if ([path hasSuffix: @".lha"] ||
-		    [path hasSuffix: @".lzh"] || [path hasSuffix: @".lzs"])
+		    [path hasSuffix: @".lzh"] || [path hasSuffix: @".lzs"] ||
+		    [path hasSuffix: @".pma"])
 			type = @"lha";
 		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
 			type = @"tar";
