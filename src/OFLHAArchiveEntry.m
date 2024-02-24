@@ -336,11 +336,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	@try {
 		uint32_t date;
 
-		_compressionMethod = [[OFString alloc]
-		    initWithCString: header + 2
-			   encoding: OFStringEncodingASCII
-			     length: 5];
-
 		memcpy(&_compressedSize, header + 7, 4);
 		_compressedSize =
 		    OFFromLittleEndian32((uint32_t)_compressedSize);
@@ -427,6 +422,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 		if (_fileName == nil)
 			@throw [OFInvalidFormatException exception];
+
+		_compressionMethod = [[OFString alloc]
+		    initWithCString: header + 2
+			   encoding: OFStringEncodingASCII
+			     length: 5];
 
 		[_extensions makeImmutable];
 	} @catch (id e) {
