@@ -349,10 +349,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			   encoding: OFStringEncodingASCII
 			     length: 5];
 
-		if (_compressedSize > UINT32_MAX ||
-		    _uncompressedSize > UINT32_MAX)
-			@throw [OFOutOfRangeException exception];
-
 		memcpy(&_compressedSize, header + 7, 4);
 		_compressedSize =
 		    OFFromLittleEndian32((uint32_t)_compressedSize);
