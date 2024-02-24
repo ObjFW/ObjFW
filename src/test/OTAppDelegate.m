@@ -149,23 +149,30 @@ isSubclassOfClass(Class class, Class superclass)
 
 - (OFMutableSet OF_GENERIC(Class) *)testClasses
 {
-	Class *classes = objc_copyClassList(NULL);
+	Class *classes;
+	int classesCount;
 	OFMutableSet *testClasses;
 
-	if (classes == NULL)
+	classesCount = objc_getClassList(NULL, 0);
+	if (classesCount < 1)
 		return nil;
 
+	classes = OFAllocMemory(classesCount, sizeof(Class));
 	@try {
+		if ((int)objc_getClassList(classes, classesCount) !=
+		    classesCount)
+			return nil;
+
 		testClasses = [OFMutableSet set];
 
-		for (Class *iter = classes; *iter != Nil; iter++) {
+		for (int i = 0; i < classesCount; i++) {
 			/*
 			 * Make sure the class is initialized.
 			 * Required for the ObjFW runtime, as otherwise
 			 * class_getSuperclass() crashes.
 			 */
 #ifdef OF_OBJFW_RUNTIME
-			[*iter class];
+			[classes[i] class];
 #endif
 
 			/*
@@ -173,8 +180,8 @@ isSubclassOfClass(Class class, Class superclass)
 			 * can return (presumably internal?) classes that don't
 			 * implement it, resulting in a crash.
 			 */
-			if (isSubclassOfClass(*iter, [OTTestCase class]))
-				[testClasses addObject: *iter];
+			if (isSubclassOfClass(classes[i], [OTTestCase class]))
+				[testClasses addObject: classes[i]];
 		}
 	} @finally {
 		OFFreeMemory(classes);

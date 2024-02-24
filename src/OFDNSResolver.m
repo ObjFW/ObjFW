@@ -878,8 +878,8 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	for (OFDNSQuery *query in _cache) {
 		OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *entry =
 		    [_cache objectForKey: query];
-		uint32_t age =
-		    (uint32_t)now - [entry.firstObject timeIntervalSince1970];
+		uint32_t age = (uint32_t)now -
+		    (uint32_t)[entry.firstObject timeIntervalSince1970];
 		OFDNSResponse *response = entry.secondObject;
 
 		if (containsExpiredRecord(response.answerRecords, age) ||

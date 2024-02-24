@@ -102,7 +102,9 @@ objc_destructInstance(id object)
 			break;
 	}
 
+#if defined(OF_OBJFW_RUNTIME) || defined(HAVE_OBJC_SETASSOCIATEDOBJECT)
 	objc_removeAssociatedObjects(object);
+#endif
 
 	return object;
 }
