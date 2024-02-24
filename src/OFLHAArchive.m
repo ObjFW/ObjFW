@@ -216,6 +216,16 @@ OF_DIRECT_MEMBERS
 					      length: 21 - headerLen];
 	}
 
+	/*
+	 * Some archives have trailing garbage after the single byte 0
+	 * termination. However, a level 2 header uses 2 bytes for the size, so
+	 * could just have a header size that is a multiple of 256. Therefore,
+	 * consider it only the end of the archive if what follows would not be
+	 * a level 2 header.
+	 */
+	if (header[0] == 0 && header[20] != 2)
+		return nil;
+
 	_currentEntry = [[OFLHAArchiveEntry alloc]
 	    of_initWithHeader: header
 		       stream: _stream
