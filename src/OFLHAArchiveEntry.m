@@ -246,15 +246,23 @@ static void
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
     OFStringEncoding encoding, bool allowFileName)
 {
-	uint16_t size;
-
-	while ((size = [stream readLittleEndianInt16]) > 0) {
+	for (;;) {
+		uint32_t size;
 		OFData *extension;
 
-		if (size < 2)
+		if (entry->_headerLevel == 3)
+			size = [stream readLittleEndianInt32];
+		else
+			size = [stream readLittleEndianInt16];
+
+		if (size == 0)
+			break;
+
+		if (size < 2 || (entry->_headerLevel == 3 && size < 4))
 			@throw [OFInvalidFormatException exception];
 
-		extension = [stream readDataWithCount: size - 2];
+		extension = [stream readDataWithCount:
+		    size - (entry->_headerLevel == 3 ? 4 : 2)];
 
 		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
@@ -385,11 +393,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			objc_autoreleasePoolPop(pool);
 			break;
 		case 2:
+		case 3:
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];
 
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
+
+			if (_headerLevel == 3)
+				/* Size of header. Ignored. */
+				[stream readLittleEndianInt32];
 
 			readExtensions(self, stream, encoding, true);
 
