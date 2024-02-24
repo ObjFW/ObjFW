@@ -588,8 +588,13 @@ objc_getClassList(Class *buffer, unsigned int count)
 	unsigned int j;
 	objc_globalMutex_lock();
 
-	if (buffer == NULL)
-		return classesCount;
+	if (buffer == NULL) {
+		count = classesCount;
+
+		objc_globalMutex_unlock();
+
+		return count;
+	}
 
 	if (classesCount < count)
 		count = classesCount;
