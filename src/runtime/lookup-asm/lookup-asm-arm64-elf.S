@@ -26,7 +26,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 #ifdef HAVE_BTI
-	bti	jc
+	bti	c
 #endif
 
 	cbz	x0, returnNilMethod
@@ -73,7 +73,7 @@
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 #ifdef HAVE_BTI
-	bti	jc
+	bti	c
 #endif
 
 	mov	x2, x0
