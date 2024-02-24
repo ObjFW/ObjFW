@@ -24,6 +24,7 @@
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFNumber.h"
+#import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -370,6 +371,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		case 0:
 		case 1:;
 			void *pool = objc_autoreleasePoolPush();
+			uint8_t extendedAreaSize;
 			uint8_t fileNameLength;
 			OFString *tmp;
 
@@ -384,11 +386,36 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 			_CRC16 = [stream readLittleEndianInt16];
 
+			extendedAreaSize =
+			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
+
 			if (_headerLevel == 1) {
 				_operatingSystemIdentifier = [stream readInt8];
 
-				readExtensions(self, stream, encoding, false);
+				/*
+				 * 1 for the operating system identifier, 2
+				 * because we don't want to skip the size of
+				 * the next extended header.
+				 */
+				extendedAreaSize -= 1 + 2;
 			}
+
+			/* Skip extended area. */
+			if ([stream isKindOfClass: [OFSeekableStream class]])
+				[(OFSeekableStream *)stream
+				    seekToOffset: extendedAreaSize
+					  whence: OFSeekCurrent];
+			else {
+				char buffer[256];
+
+				while (extendedAreaSize > 0)
+					extendedAreaSize -= [stream
+					    readIntoBuffer: buffer
+						    length: extendedAreaSize];
+			}
+
+			if (_headerLevel == 1)
+				readExtensions(self, stream, encoding, false);
 
 			objc_autoreleasePoolPop(pool);
 			break;
