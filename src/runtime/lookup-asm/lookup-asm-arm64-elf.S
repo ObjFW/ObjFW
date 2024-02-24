@@ -25,6 +25,10 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
+#ifdef HAVE_BTI
+	bti	jc
+#endif
+
 	cbz	x0, .LreturnNilMethod
 
 	tst	x0, #1
@@ -68,6 +72,10 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
+#ifdef HAVE_BTI
+	bti	jc
+#endif
+
 	mov	x2, x0
 	ldr	x0, [x0]
 	cbz	x0, .LreturnNilMethod

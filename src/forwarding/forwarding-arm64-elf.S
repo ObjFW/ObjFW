@@ -23,6 +23,10 @@
 .section .text
 OFForward:
 OFForward_stret:
+#ifdef HAVE_BTI
+	bti	jc
+#endif
+
 	stp	fp, lr, [sp, #-208]!
 	mov	fp, sp
 	sub	sp, sp, #208
@@ -103,6 +107,10 @@ OFForward_stret:
 .size OFForward_stret, .-OFForward_stret
 
 .Linit:
+#ifdef HAVE_BTI
+	bti	c
+#endif
+
 	adrp	x0, .Lmodule
 	add	x0, x0, :lo12:.Lmodule
 	b	__objc_exec_class
