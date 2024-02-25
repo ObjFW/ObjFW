@@ -750,6 +750,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	/* Zero-length extension to terminate */
 	[data increaseCountBy: 2];
 
+	/*
+	 * Some implementations only check the first byte to see if the end of
+	 * the archive has been reached, which is 0 for every multiple of 256.
+	 * Add one byte of padding to avoid this.
+	 */
+	if ((data.count & 0xFF) == 0)
+		[data increaseCountBy: 1];
+
 	headerSize = data.count;
 
 	if (headerSize > UINT16_MAX)
