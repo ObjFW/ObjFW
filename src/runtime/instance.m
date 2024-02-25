@@ -24,6 +24,10 @@
 # import <objc/runtime.h>
 #endif
 
+#ifndef OF_OBJFW_RUNTIME
+extern void objc_removeAssociatedObjects(id object);
+#endif
+
 static SEL constructSelector = NULL;
 static SEL destructSelector = NULL;
 
@@ -102,9 +106,7 @@ objc_destructInstance(id object)
 			break;
 	}
 
-#if defined(OF_OBJFW_RUNTIME) || defined(HAVE_OBJC_SETASSOCIATEDOBJECT)
 	objc_removeAssociatedObjects(object);
-#endif
 
 	return object;
 }

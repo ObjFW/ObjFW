@@ -86,7 +86,6 @@ static void *testKey = &testKey;
 	OTAssertEqual(string.retainCount, 3);
 }
 
-#if defined(OF_OBJFW_RUNTIME) || defined(HAVE_OBJC_SETASSOCIATEDOBJECT)
 - (void)testAssociatedObjects
 {
 	objc_setAssociatedObject(self, testKey, _test, OBJC_ASSOCIATION_ASSIGN);
@@ -111,7 +110,6 @@ static void *testKey = &testKey;
 	objc_removeAssociatedObjects(self);
 	OTAssertEqual(_test.retainCount, 2);
 }
-#endif
 
 #ifdef OF_OBJFW_RUNTIME
 - (void)testTaggedPointers

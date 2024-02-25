@@ -1463,6 +1463,19 @@ extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+typedef enum objc_associationPolicy {
+	OBJC_ASSOCIATION_ASSIGN	= 0,
+	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+	OBJC_ASSOCIATION_RETAIN = OBJC_ASSOCIATION_RETAIN_NONATOMIC | 0x300,
+	OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+	OBJC_ASSOCIATION_COPY = OBJC_ASSOCIATION_COPY_NONATOMIC | 0x300
+} objc_associationPolicy;
+extern void objc_setAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key, id _Nullable value,
+    objc_associationPolicy policy);
+extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key);
+extern void objc_removeAssociatedObjects(id _Nonnull object);
 # endif
 #endif
 extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,

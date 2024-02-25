@@ -15,13 +15,60 @@
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
+#ifdef OF_OBJFW_RUNTIME
+# import "ObjFWRT.h"
+# import "private.h"
+#else
+# import "OFObject.h"
+# import "OFMapTable.h"
+#endif
 
 struct Association {
 	id object;
 	objc_associationPolicy policy;
 };
+
+#ifdef OF_OBJFW_RUNTIME
+typedef struct objc_hashtable objc_hashtable;
+#else
+typedef OFMapTable objc_hashtable;
+static const OFMapTableFunctions defaultFunctions = { NULL };
+
+static objc_hashtable *
+objc_hashtable_new(uint32_t (*hash)(const void *key),
+    bool (*equal)(const void *key1, const void *key2), uint32_t size)
+{
+	return [[OFMapTable alloc] initWithKeyFunctions: defaultFunctions
+					objectFunctions: defaultFunctions];
+}
+
+static void
+objc_hashtable_set(objc_hashtable *hashtable, const void *key,
+    const void *object)
+{
+	return [hashtable setObject: (void *)object forKey: (void *)key];
+}
+
+static void *
+objc_hashtable_get(objc_hashtable *hashtable, const void *key)
+{
+	return [hashtable objectForKey: (void *)key];
+}
+
+static void
+objc_hashtable_delete(objc_hashtable *hashtable, const void *key)
+{
+	[hashtable removeObjectForKey: (void *)key];
+}
+
+static void
+objc_hashtable_free(objc_hashtable *hashtable)
+{
+	[hashtable release];
+}
+
+# define OBJC_ERROR(...) abort()
+#endif
 
 #ifdef OF_HAVE_THREADS
 # define numSlots 8	/* needs to be a power of 2 */
@@ -30,7 +77,7 @@ static OFSpinlock spinlocks[numSlots];
 #else
 # define numSlots 1
 #endif
-static struct objc_hashtable *hashtables[numSlots];
+static objc_hashtable *hashtables[numSlots];
 
 static OF_INLINE size_t
 slotForObject(id object)
@@ -91,7 +138,7 @@ objc_setAssociatedObject(id object, const void *key, id value,
 
 	@try {
 #endif
-		struct objc_hashtable *objectHashtable;
+		objc_hashtable *objectHashtable;
 		struct Association *association;
 
 		objectHashtable = objc_hashtable_get(hashtables[slot], object);
@@ -135,6 +182,7 @@ id
 objc_getAssociatedObject(id object, const void *key)
 {
 	size_t slot = slotForObject(object);
+	id ret;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)
@@ -142,7 +190,7 @@ objc_getAssociatedObject(id object, const void *key)
 
 	@try {
 #endif
-		struct objc_hashtable *objectHashtable;
+		objc_hashtable *objectHashtable;
 		struct Association *association;
 
 		objectHashtable = objc_hashtable_get(hashtables[slot], object);
@@ -156,9 +204,11 @@ objc_getAssociatedObject(id object, const void *key)
 		switch (association->policy) {
 		case OBJC_ASSOCIATION_RETAIN:
 		case OBJC_ASSOCIATION_COPY:
-			return [[association->object retain] autorelease];
+			ret = [[association->object retain] autorelease];
+			break;
 		default:
-			return association->object;
+			ret = association->object;
+			break;
 		}
 #ifdef OF_HAVE_THREADS
 	} @finally {
@@ -166,6 +216,8 @@ objc_getAssociatedObject(id object, const void *key)
 			OBJC_ERROR("Failed to unlock spinlock!");
 	}
 #endif
+
+	return ret;
 }
 
 void
@@ -179,12 +231,13 @@ objc_removeAssociatedObjects(id object)
 
 	@try {
 #endif
-		struct objc_hashtable *objectHashtable;
+		objc_hashtable *objectHashtable;
 
 		objectHashtable = objc_hashtable_get(hashtables[slot], object);
 		if (objectHashtable == NULL)
 			return;
 
+#ifdef OF_OBJFW_RUNTIME
 		for (uint32_t i = 0; i < objectHashtable->size; i++) {
 			struct Association *association;
 
@@ -194,6 +247,13 @@ objc_removeAssociatedObjects(id object)
 
 			association = (struct Association *)
 			    objectHashtable->data[i]->object;
+#else
+		OFMapTableEnumerator *enumerator =
+		    [objectHashtable objectEnumerator];
+		void **iter;
+		while ((iter = [enumerator nextObject]) != NULL) {
+			struct Association *association = *iter;
+#endif
 
 			switch (association->policy) {
 			case OBJC_ASSOCIATION_RETAIN:
