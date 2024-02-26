@@ -39,6 +39,8 @@ OF_SUBCLASSING_RESTRICTED
 @public
 #endif
 	OFStream *_Nullable _lastReturnedStream;
+@protected
+	bool _hasWritten;
 }
 
 /**
