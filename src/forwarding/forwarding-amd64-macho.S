@@ -17,14 +17,18 @@
 
 #include "platform.h"
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .globl _OFForward
 .globl _OFForward_stret
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -109,9 +113,7 @@ _OFForward:
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -198,9 +200,7 @@ _OFForward_stret:
 	jmp	_OFMethodNotFound_stret
 
 init:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	leaq	module(%rip), %rdi
 	jmp	___objc_exec_class

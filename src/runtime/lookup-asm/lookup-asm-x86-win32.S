@@ -15,6 +15,12 @@
 
 #include "config.h"
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
@@ -23,9 +29,7 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-#ifdef HAVE_ENDBR32
-	endbr32
-#endif
+	_CET_ENDBR
 
 	movl	4(%esp), %edx
 	testl	%edx, %edx
@@ -71,9 +75,7 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-#ifdef HAVE_ENDBR32
-	endbr32
-#endif
+	_CET_ENDBR
 
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
