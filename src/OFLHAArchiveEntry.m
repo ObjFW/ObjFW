@@ -201,6 +201,22 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	    initWithTimeIntervalSince1970: modificationDate];
 }
 
+static void
+parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	uint64_t tmp;
+
+	if (extension.count != 17)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&tmp, (char *)extension.items + 1, 8);
+	entry->_compressedSize = OFFromLittleEndian64(tmp);
+
+	memcpy(&tmp, (char *)extension.items + 9, 8);
+	entry->_uncompressedSize = OFFromLittleEndian64(tmp);
+}
+
 static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding, bool allowFileName)
@@ -218,6 +234,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		break;
 	case 0x3F:
 		function = parseCommentExtension;
+		break;
+	case 0x42:
+		function = parseFileSizeExtension;
 		break;
 	case 0x50:
 		function = parsePermissionsExtension;
@@ -601,6 +620,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	size_t fileNameLength, directoryNameLength;
 	uint16_t tmp16;
 	uint32_t tmp32;
+	uint64_t tmp64;
 	size_t headerSize;
 
 	if ([_compressionMethod cStringLengthWithEncoding:
@@ -612,7 +632,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	if (fileNameLength > UINT16_MAX - 3 ||
 	    directoryNameLength > UINT16_MAX - 3 ||
-	    _compressedSize > UINT32_MAX || _uncompressedSize > UINT32_MAX)
+	    _compressedSize > UINT64_MAX || _uncompressedSize > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
@@ -676,6 +696,20 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		[data addItems: [_fileComment cStringWithEncoding: encoding]
 			 count: fileCommentLength];
 	}
+
+	/*
+	 * Always include the file size extension, as the header can be written
+	 * with size 0 initially and then rewritten with the actual size in
+	 * case the data to be archived is being streamed - but for that we
+	 * need to make sure we always have the space.
+	 */
+	tmp16 = OFToLittleEndian16(19);
+	[data addItems: &tmp16 count: sizeof(tmp16)];
+	[data addItem: "\x42"];
+	tmp64 = OFToLittleEndian64(_compressedSize);
+	[data addItems: &tmp64 count: sizeof(tmp64)];
+	tmp64 = OFToLittleEndian64(_uncompressedSize);
+	[data addItems: &tmp64 count: sizeof(tmp64)];
 
 	if (_POSIXPermissions != nil) {
 		tmp16 = OFToLittleEndian16(5);

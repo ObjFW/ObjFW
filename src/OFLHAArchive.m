@@ -71,7 +71,7 @@ OF_DIRECT_MEMBERS
 	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
 	OFStreamOffset _headerOffset;
-	uint32_t _bytesWritten;
+	uint64_t _bytesWritten;
 	uint16_t _CRC16;
 }
 
@@ -554,7 +554,7 @@ OF_DIRECT_MEMBERS
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (UINT32_MAX - _bytesWritten < length)
+	if (UINT64_MAX - _bytesWritten < length)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
@@ -562,7 +562,7 @@ OF_DIRECT_MEMBERS
 	} @catch (OFWriteFailedException *e) {
 		OFEnsure(e.bytesWritten <= length);
 
-		_bytesWritten += (uint32_t)e.bytesWritten;
+		_bytesWritten += (uint64_t)e.bytesWritten;
 		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
@@ -571,7 +571,7 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	_bytesWritten += (uint32_t)length;
+	_bytesWritten += (uint64_t)length;
 	_CRC16 = OFCRC16(_CRC16, buffer, length);
 
 	return length;
