@@ -18,11 +18,15 @@
 .globl _OFForward
 .globl _OFForward_stret
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .section .text
 _OFForward:
-#ifdef HAVE_ENDBR32
-	endbr32
-#endif
+	_CET_ENDBR
 
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -85,9 +89,7 @@ _OFForward:
 .endef
 
 _OFForward_stret:
-#ifdef HAVE_ENDBR32
-	endbr32
-#endif
+	_CET_ENDBR
 
 	pushl	%ebp
 	movl	%esp, %ebp
@@ -150,9 +152,7 @@ _OFForward_stret:
 .endef
 
 .Linit:
-#ifdef HAVE_ENDBR32
-	endbr32
-#endif
+	_CET_ENDBR
 
 	pushl	%ebp
 	movl	%esp, %ebp

@@ -15,6 +15,12 @@
 
 #include "config.h"
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
 .globl _objc_msg_lookup_super
@@ -23,9 +29,7 @@
 .section __TEXT, __text, regular, pure_instructions
 .macro GENERATE_LOOKUP
 $0:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	testq	%rdi, %rdi
 	jz	LreturnNilMethod
@@ -68,9 +72,7 @@ LtaggedPointer_$0:
 
 .macro GENERATE_LOOKUP_SUPER
 $0:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	movq	%rdi, %r8
 	movq	(%rdi), %rdi

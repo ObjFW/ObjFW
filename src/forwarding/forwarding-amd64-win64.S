@@ -15,14 +15,18 @@
 
 #include "config.h"
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .globl OFForward
 .globl OFForward_stret
 
 .section .text
 OFForward:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -99,9 +103,7 @@ OFForward:
 .endef
 
 OFForward_stret:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -180,9 +182,7 @@ OFForward_stret:
 .endef
 
 .Linit:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	leaq	.Lmodule(%rip), %rcx
 	jmp	__objc_exec_class

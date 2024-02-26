@@ -17,14 +17,18 @@
 
 #include "platform.h"
 
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
 .globl OFForward
 .globl OFForward_stret
 
 .section .text
 OFForward:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -111,9 +115,7 @@ OFForward:
 .size OFForward, .-OFForward
 
 OFForward_stret:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	pushq	%rbp
 	movq	%rsp, %rbp
@@ -202,9 +204,7 @@ OFForward_stret:
 .size OFForward_stret, .-OFForward_stret
 
 .Linit:
-#ifdef HAVE_ENDBR64
-	endbr64
-#endif
+	_CET_ENDBR
 
 	leaq	.Lmodule(%rip), %rdi
 	jmp	__objc_exec_class@PLT
