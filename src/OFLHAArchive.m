@@ -125,7 +125,13 @@ OF_DIRECT_MEMBERS
 			@throw [OFInvalidArgumentException exception];
 
 		if (_mode == modeAppend)
-			[(OFSeekableStream *)_stream seekToOffset: 0
+			/*
+			 * Only works with properly zero-terminated files that
+			 * have no trailing garbage. Unfortunately there is no
+			 * good way to check for this other than reading the
+			 * entire archive.
+			 */
+			[(OFSeekableStream *)_stream seekToOffset: -1
 							   whence: OFSeekEnd];
 
 		_encoding = OFStringEncodingISO8859_1;
@@ -278,6 +284,7 @@ OF_DIRECT_MEMBERS
 			stream: (OFSeekableStream *)_stream
 			 entry: entry
 		      encoding: _encoding] autorelease];
+	_hasWritten = true;
 
 	return _lastReturnedStream;
 }
@@ -290,8 +297,13 @@ OF_DIRECT_MEMBERS
 	@try {
 		[_lastReturnedStream close];
 	} @catch (OFNotOpenException *e) {
-		/* Might have already been closed by the user - that's fine. */
+		/* Might have already been closed by the user - that's fine */
 	}
+
+	/* LHA archives should be terminated with a header of size 0 */
+	if (_hasWritten)
+		[_stream writeBuffer: "" length: 1];
+
 	_lastReturnedStream = nil;
 
 	[_stream release];
