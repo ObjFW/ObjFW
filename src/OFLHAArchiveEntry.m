@@ -243,19 +243,27 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	return true;
 }
 
-static void
+static size_t
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
     OFStringEncoding encoding, bool allowFileName)
 {
-	uint16_t size;
+	size_t consumed = 0;
 
-	while ((size = [stream readLittleEndianInt16]) > 0) {
+	for (;;) {
+		uint16_t size;
 		OFData *extension;
+
+		size = [stream readLittleEndianInt16];
+		consumed += 2;
+
+		if (size == 0)
+			break;
 
 		if (size < 2)
 			@throw [OFInvalidFormatException exception];
 
 		extension = [stream readDataWithCount: size - 2];
+		consumed += extension.count;
 
 		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
@@ -267,6 +275,8 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			entry->_compressedSize -= size;
 		}
 	}
+
+	return consumed;
 }
 
 static void
@@ -390,7 +400,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 				extendedAreaSize -= 1 + 2;
 			}
 
-			/* Skip extended area. */
+			/* Skip extended area */
 			if ([stream isKindOfClass: [OFSeekableStream class]])
 				[(OFSeekableStream *)stream
 				    seekToOffset: extendedAreaSize
@@ -409,14 +419,41 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 			objc_autoreleasePoolPop(pool);
 			break;
-		case 2:
+		case 2:;
+			uint32_t padding = 0;
+
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];
 
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
 
-			readExtensions(self, stream, encoding, true);
+			/*
+			 * 21 for header, 2 for CRC16, 1 for operating system
+			 * identifier.
+			 */
+			padding = ((header[1] << 8) | header[0]) - 21 - 2 - 1;
+
+			padding -= readExtensions(self, stream, encoding, true);
+
+			/* Skip padding */
+			if ([stream isKindOfClass: [OFSeekableStream class]])
+				[(OFSeekableStream *)stream
+				    seekToOffset: padding
+					  whence: OFSeekCurrent];
+			else {
+				while (padding > 0) {
+					char buffer[512];
+					size_t min = padding;
+
+					if (min > 512)
+						min = 512;
+
+					padding -= [stream
+					    readIntoBuffer: buffer
+						    length: min];
+				}
+			}
 
 			break;
 		default:;
