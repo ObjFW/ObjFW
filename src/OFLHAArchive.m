@@ -26,6 +26,7 @@
 #import "OFCRC16.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
+#import "OFKernelEventObserver.h"
 #import "OFLHADecompressingStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"

@@ -26,6 +26,7 @@
 #import "OFDate.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
+#import "OFKernelEventObserver.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
 
