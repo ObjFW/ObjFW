@@ -865,7 +865,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  stream occurs.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -880,7 +880,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -896,7 +896,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -912,7 +912,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
