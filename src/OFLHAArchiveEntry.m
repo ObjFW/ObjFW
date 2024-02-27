@@ -262,18 +262,23 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	return true;
 }
 
-static void
+static size_t
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
     OFStringEncoding encoding, bool allowFileName)
 {
+	size_t consumed = 0;
+
 	for (;;) {
 		uint32_t size;
 		OFData *extension;
 
-		if (entry->_headerLevel == 3)
+		if (entry->_headerLevel == 3) {
 			size = [stream readLittleEndianInt32];
-		else
+			consumed += 4;
+		} else {
 			size = [stream readLittleEndianInt16];
+			consumed += 2;
+		}
 
 		if (size == 0)
 			break;
@@ -283,6 +288,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 
 		extension = [stream readDataWithCount:
 		    size - (entry->_headerLevel == 3 ? 4 : 2)];
+		consumed += extension.count;
 
 		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
@@ -294,6 +300,8 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			entry->_compressedSize -= size;
 		}
 	}
+
+	return consumed;
 }
 
 static void
@@ -417,7 +425,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 				extendedAreaSize -= 1 + 2;
 			}
 
-			/* Skip extended area. */
+			/* Skip extended area */
 			if ([stream isKindOfClass: [OFSeekableStream class]])
 				[(OFSeekableStream *)stream
 				    seekToOffset: extendedAreaSize
@@ -437,7 +445,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			objc_autoreleasePoolPop(pool);
 			break;
 		case 2:
-		case 3:
+		case 3:;
+			uint32_t padding = 0;
+
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];
 
@@ -445,10 +455,37 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_operatingSystemIdentifier = [stream readInt8];
 
 			if (_headerLevel == 3)
-				/* Size of header. Ignored. */
-				[stream readLittleEndianInt32];
+				/* Size of entire header */
+				padding = [stream readLittleEndianInt32];
+			else
+				padding = (header[1] << 8) | header[0];
 
-			readExtensions(self, stream, encoding, true);
+			/*
+			 * 21 for header, 2 for CRC16, 1 for operating system
+			 * identifier.
+			 */
+			padding -= 21 + 2 + 1;
+
+			padding -= readExtensions(self, stream, encoding, true);
+
+			/* Skip padding */
+			if ([stream isKindOfClass: [OFSeekableStream class]])
+				[(OFSeekableStream *)stream
+				    seekToOffset: padding
+					  whence: OFSeekCurrent];
+			else {
+				while (padding > 0) {
+					char buffer[512];
+					size_t min = padding;
+
+					if (min > 512)
+						min = 512;
+
+					padding -= [stream
+					    readIntoBuffer: buffer
+						    length: min];
+				}
+			}
 
 			break;
 		default:;
