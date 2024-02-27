@@ -14,7 +14,6 @@
  */
 
 #import "OFObject.h"
-#import "OFKernelEventObserver.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFString.h"
 
@@ -72,8 +71,8 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates an IRI for accessing a the specified file within the
- *	  specified LHA archive.
+ * @brief Creates an IRI for accessing the specified file within the specified
+ *	  LHA archive.
  *
  * @param path The path of the file within the archive
  * @param IRI The IRI of the archive

@@ -14,7 +14,6 @@
  */
 
 #import "OFObject.h"
-#import "OFKernelEventObserver.h"
 #import "OFString.h"
 #import "OFTarArchiveEntry.h"
 
@@ -76,8 +75,8 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates an IRI for accessing a the specified file within the
- *	  specified tar archive.
+ * @brief Creates an IRI for accessing the specified file within the specified
+ *	  tar archive.
  *
  * @param path The path of the file within the archive
  * @param IRI The IRI of the archive
