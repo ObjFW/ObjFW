@@ -32,6 +32,7 @@
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
@@ -87,6 +88,10 @@ OF_DIRECT_MEMBERS
 	@try {
 		if ([mode isEqual: @"r"])
 			_mode = modeRead;
+		else if ([mode isEqual: @"w"] || [mode isEqual: @"a"])
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: nil];
 		else
 			@throw [OFInvalidArgumentException exception];
 
