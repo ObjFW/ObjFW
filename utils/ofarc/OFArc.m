@@ -32,6 +32,7 @@
 #import "LHAArchive.h"
 #import "TarArchive.h"
 #import "ZIPArchive.h"
+#import "ZooArchive.h"
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -61,8 +62,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -c  --create      Create archive\n"
 		    @"    -C  --directory=  Extract into the specified "
 		    @"directory\n"
-		    @"    -E  --encoding=   The encoding used by the archive "
-		    "(only tar and lha files)\n"
+		    @"    -E  --encoding=   The encoding used by the archive\n"
+		    @"                      (only tar, lha and zoo files)\n"
 		    @"    -f  --force       Force / overwrite files\n"
 		    @"    -h  --help        Show this help\n"
 		    @"    -l  --list        List all files in the archive\n"
@@ -72,7 +73,7 @@ help(OFStream *stream, bool full, int status)
 		    @"    -q  --quiet       Quiet mode (no output, except "
 		    @"errors)\n"
 		    @"    -t  --type=       Archive type (gz, lha, tar, tgz, "
-		    @"zip)\n"
+		    @"zip, zoo)\n"
 		    @"    -v  --verbose     Verbose output for file list\n"
 		    @"    -x  --extract     Extract files")];
 	}
@@ -556,18 +557,23 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	}
 
 	if (type == nil || [type isEqual: @"auto"]) {
+		OFString *lowercasePath = path.lowercaseString;
+
 		/* This one has to be first for obvious reasons */
-		if ([path hasSuffix: @".tar.gz"] || [path hasSuffix: @".tgz"] ||
-		    [path hasSuffix: @".TAR.GZ"] || [path hasSuffix: @".TGZ"])
+		if ([lowercasePath hasSuffix: @".tar.gz"] ||
+		    [lowercasePath hasSuffix: @".tgz"])
 			type = @"tgz";
-		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
+		else if ([lowercasePath hasSuffix: @".gz"])
 			type = @"gz";
-		else if ([path hasSuffix: @".lha"] ||
-		    [path hasSuffix: @".lzh"] || [path hasSuffix: @".lzs"] ||
-		    [path hasSuffix: @".pma"])
+		else if ([lowercasePath hasSuffix: @".lha"] ||
+		    [lowercasePath hasSuffix: @".lzh"] ||
+		    [lowercasePath hasSuffix: @".lzs"] ||
+		    [lowercasePath hasSuffix: @".pma"])
 			type = @"lha";
-		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
+		else if ([lowercasePath hasSuffix: @".tar"])
 			type = @"tar";
+		else if ([lowercasePath hasSuffix: @".zoo"])
+			type = @"zoo";
 		else
 			type = @"zip";
 	}
@@ -598,6 +604,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 						     encoding: encoding];
 		} else if ([type isEqual: @"zip"])
 			archive = [ZIPArchive archiveWithPath: path
+						       stream: file
+							 mode: modeString
+						     encoding: encoding];
+		else if ([type isEqual: @"zoo"])
+			archive = [ZooArchive archiveWithPath: path
 						       stream: file
 							 mode: modeString
 						     encoding: encoding];

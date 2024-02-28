@@ -5,7 +5,8 @@ SRCS = GZIPArchive.m	\
        LHAArchive.m	\
        OFArc.m		\
        TarArchive.m	\
-       ZIPArchive.m
+       ZIPArchive.m	\
+       ZooArchive.m
 DATA = localization/de.json		\
        localization/localizations.json
 

@@ -18,8 +18,8 @@
         "    -a  --append      Zu Archiv hinzufügen\n",
         "    -c  --create      Archiv erstellen\n",
         "    -C  --directory=  In angegebenes Verzeichnis entpacken\n",
-        "    -E  --encoding=   Das Encoding des Archivs (nur tar- und ",
-        "lha-Dateien)\n",
+        "    -E  --encoding=   Das Encoding des Archivs (nur tar-, ",
+        "lha- und zoo-Dateien)\n",
         "    -f  --force       Existierende Dateien überschreiben\n",
         "    -h  --help        Diese Hilfe anzeigen\n",
         "    -l  --list        Alle Dateien im Archiv auflisten\n",
@@ -27,7 +27,7 @@
         "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",
         "\n",
         "    -q  --quiet       Ruhiger Modus (keine Ausgabe außer Fehler)\n",
-        "    -t  --type=       Archiv-Typ (gz, lha, tar, tgz, zip)\n",
+        "    -t  --type=       Archiv-Typ (gz, lha, tar, tgz, zip, zoo)\n",
         "    -v  --verbose     Ausführlicher Modus für Datei-Liste\n",
         "    -x  --extract     Dateien entpacken"
     ],
@@ -128,6 +128,13 @@
     list_general_purpose_bit_flag: "General Purpose Bit Flag: %[gpbf]",
     list_extra_field: "Extra-Feld: %[extra]",
     list_comment: "Kommentar: %[comment]",
+    list_deleted: [
+        "Gelöscht: ",
+        [
+            {"deleted == 0": "Nein"},
+            {"": "Ja"}
+        ]
+    ],
     refusing_to_extract_file: "Verweigere Entpacken von %[file]!",
     file_not_in_archive: "Datei %[file] ist nicht im Archiv!",
     print_no_file_specified: [
