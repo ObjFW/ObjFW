@@ -117,6 +117,7 @@ OF_SUBCLASSING_RESTRICTED
  *	 underlying stream does so, too.
  *
  * @return A stream for reading the current entry
+ * @throw OFSeekFailedException Seeking to the data in the archive failed
  */
 - (OFStream *)streamForReadingCurrentEntry;
 
