@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned long long _uncompressedSize, _compressedSize;
 	bool _deleted;
 	OFString *_Nullable _fileComment;
-	OFString *_fileName;
+	OFString *_fileName, *_Nullable _directoryName;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
 

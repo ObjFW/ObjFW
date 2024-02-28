@@ -28,7 +28,7 @@
 @synthesize compressionMethod = _compressionMethod, CRC16 = _CRC16;
 @synthesize uncompressedSize = _uncompressedSize;
 @synthesize compressedSize = _compressedSize, deleted = _deleted;
-@synthesize fileComment = _fileComment, fileName = _fileName;
+@synthesize fileComment = _fileComment;
 
 - (instancetype)init
 {
@@ -42,6 +42,8 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		uint8_t majorVersion;
+		char fileNameBuffer[13];
 		uint32_t commentOffset;
 		uint16_t commentLength;
 
@@ -60,15 +62,63 @@
 		_CRC16 = [stream readLittleEndianInt16];
 		_uncompressedSize = [stream readLittleEndianInt32];
 		_compressedSize = [stream readLittleEndianInt32];
-		/* Version */
-		[stream readBigEndianInt16];
+		majorVersion = [stream readInt8];
+		/* Minor version */
+		[stream readInt8];
 		_deleted = [stream readInt8];
 		/* Unknown. Most likely padding to get to 2 byte alignment? */
 		[stream readInt8];
 		commentOffset = [stream readLittleEndianInt32];
 		commentLength = [stream readLittleEndianInt16];
 
-		_fileName = [[stream readLineWithEncoding: encoding] retain];
+		[stream readIntoBuffer: fileNameBuffer exactLength: 13];
+		if (fileNameBuffer[12] != '\0')
+			fileNameBuffer[12] = '\0';
+
+		if (majorVersion == 2) {
+			uint16_t extraLength = [stream readLittleEndianInt16];
+			uint8_t fileNameLength, directoryNameLength;
+
+			if (extraLength < 10)
+				@throw [OFInvalidFormatException exception];
+
+			/* Time zone */
+			[stream readInt8];
+			/* CRC16 of the header */
+			[stream readLittleEndianInt16];
+
+			fileNameLength = [stream readInt8];
+			directoryNameLength = [stream readInt8];
+			extraLength -= 2;
+
+			if (fileNameLength > 0) {
+				if (extraLength < fileNameLength)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				_fileName = [[stream
+				    readStringWithLength: fileNameLength
+						encoding: encoding] copy];
+				extraLength -= fileNameLength;
+			} else
+				_fileName = [[OFString alloc]
+				    initWithCString: fileNameBuffer
+					   encoding: encoding];
+
+			if (directoryNameLength > 0) {
+				if (extraLength < directoryNameLength)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				_directoryName = [[stream
+				    readStringWithLength: directoryNameLength
+						encoding: encoding] copy];
+				extraLength -= directoryNameLength;
+			}
+		} else
+			_fileName = [[OFString alloc]
+			    initWithCString: fileNameBuffer
+				   encoding: encoding];
 
 		if (commentOffset != 0) {
 			[stream seekToOffset: commentOffset whence: OFSeekSet];
@@ -90,6 +140,7 @@
 {
 	[_fileComment release];
 	[_fileName release];
+	[_directoryName release];
 
 	[super dealloc];
 }
@@ -97,6 +148,14 @@
 - (id)copy
 {
 	return [self retain];
+}
+
+- (OFString *)fileName
+{
+	if (_directoryName == nil)
+		return _fileName;
+
+	return [OFString stringWithFormat: @"%@/%@", _directoryName, _fileName];
 }
 
 - (OFDate *)modificationDate
