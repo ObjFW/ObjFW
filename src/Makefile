@@ -108,6 +108,8 @@ SRCS = OFApplication.m			\
        OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
+       OFZooArchive.m			\
+       OFZooArchiveEntry.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\

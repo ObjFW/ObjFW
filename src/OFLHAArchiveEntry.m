@@ -33,7 +33,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
-@implementation OFLHAArchiveEntry
 static OFDate *
 parseMSDOSDate(uint32_t MSDOSDate)
 {
@@ -53,6 +52,7 @@ parseMSDOSDate(uint32_t MSDOSDate)
 					format: @"%Y-%m-%d %H:%M:%S"];
 }
 
+@implementation OFLHAArchiveEntry
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
