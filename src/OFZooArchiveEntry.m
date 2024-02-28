@@ -18,6 +18,7 @@
 #import "OFZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFNumber.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
@@ -28,7 +29,7 @@
 @synthesize compressionMethod = _compressionMethod, CRC16 = _CRC16;
 @synthesize uncompressedSize = _uncompressedSize;
 @synthesize compressedSize = _compressedSize, deleted = _deleted;
-@synthesize fileComment = _fileComment;
+@synthesize fileComment = _fileComment, POSIXPermissions = _POSIXPermissions;
 
 - (instancetype)init
 {
@@ -115,6 +116,29 @@
 						encoding: encoding] copy];
 				extraLength -= directoryNameLength;
 			}
+
+			if (extraLength >= 2) {
+				/* System ID */
+				[stream readLittleEndianInt16];
+				extraLength -= 2;
+			}
+
+			if (extraLength >= 3) {
+				uint8_t attributes[3];
+
+				[stream readIntoBuffer: attributes
+					   exactLength: 3];
+
+				if (attributes[2] & (1 << 6)) {
+					uint16_t mode = (attributes[0] |
+					    (attributes[1] << 8)) & 0777;
+
+					_POSIXPermissions = [[OFNumber alloc]
+					    initWithUnsignedShort: mode];
+				}
+
+				extraLength -= 3;
+			}
 		} else
 			_fileName = [[OFString alloc]
 			    initWithCString: fileNameBuffer
@@ -141,6 +165,7 @@
 	[_fileComment release];
 	[_fileName release];
 	[_directoryName release];
+	[_POSIXPermissions release];
 
 	[super dealloc];
 }

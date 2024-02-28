@@ -19,6 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFDate;
+@class OFNumber;
 @class OFString;
 
 /**
@@ -40,6 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 	bool _deleted;
 	OFString *_Nullable _fileComment;
 	OFString *_fileName, *_Nullable _directoryName;
+	OFNumber *_Nullable _POSIXPermissions;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
 

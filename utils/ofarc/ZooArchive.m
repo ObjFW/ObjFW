@@ -34,6 +34,27 @@
 static OFArc *app;
 
 static void
+setPermissions(OFString *path, OFZooArchiveEntry *entry)
+{
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+	OFNumber *POSIXPermissions = entry.POSIXPermissions;
+
+	if (POSIXPermissions == nil)
+		return;
+
+	POSIXPermissions = [OFNumber numberWithUnsignedShort:
+	    POSIXPermissions.unsignedShortValue & 0777];
+
+	OFFileAttributes attributes = [OFDictionary
+	    dictionaryWithObject: POSIXPermissions
+			  forKey: OFFilePOSIXPermissions];
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
+#endif
+}
+
+static void
 setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 {
 	OFFileAttributes attributes = [OFDictionary
@@ -153,6 +174,20 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 			    @"list_modification_date",
 			    @"Modification date: %[date]",
 			    @"date", modificationDate)];
+
+			if (entry.POSIXPermissions != nil) {
+				OFString *permissionsString = [OFString
+				    stringWithFormat: @"%llo",
+				    entry.POSIXPermissions
+				    .unsignedLongLongValue];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_posix_permissions",
+				    @"POSIX permissions: %[perm]",
+				    @"perm", permissionsString)];
+			}
+
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_deleted",
@@ -226,6 +261,7 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
