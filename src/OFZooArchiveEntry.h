@@ -42,6 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _fileComment;
 	OFString *_fileName, *_Nullable _directoryName;
 	OFNumber *_Nullable _POSIXPermissions;
+	uint8_t _timeZone;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
 

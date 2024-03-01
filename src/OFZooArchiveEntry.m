@@ -83,8 +83,7 @@
 			if (extraLength < 10)
 				@throw [OFInvalidFormatException exception];
 
-			/* Time zone */
-			[stream readInt8];
+			_timeZone = [stream readInt8];
 			/* CRC16 of the header */
 			[stream readLittleEndianInt16];
 
@@ -139,10 +138,12 @@
 
 				extraLength -= 3;
 			}
-		} else
+		} else {
 			_fileName = [[OFString alloc]
 			    initWithCString: fileNameBuffer
 				   encoding: encoding];
+			_timeZone = 0x7F;
+		}
 
 		if (commentOffset != 0) {
 			[stream seekToOffset: commentOffset whence: OFSeekSet];
@@ -199,8 +200,16 @@
 	    stringWithFormat: @"%04u-%02u-%02u %02u:%02u:%02u",
 			      year, month, day, hour, minute, second];
 
-	date = [[OFDate alloc] initWithLocalDateString: dateString
-						format: @"%Y-%m-%d %H:%M:%S"];
+	if (_timeZone == 0x7F)
+		date = [[OFDate alloc]
+		    initWithLocalDateString: dateString
+				     format: @"%Y-%m-%d %H:%M:%S"];
+	else {
+		date = [OFDate dateWithDateString: dateString
+					   format: @"%Y-%m-%d %H:%M:%S"];
+		date = [[date dateByAddingTimeInterval:
+		    -(OFTimeInterval)_timeZone * 900] retain];
+	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -211,7 +220,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret = [OFString stringWithFormat:
-	    @"<%@: \n"
+	    @"<%@:\n"
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
 	    @"\tCompressed size = %llu\n"
