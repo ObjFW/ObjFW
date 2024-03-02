@@ -18,7 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
+ * @class OFMutableData OFData.h ObjFW/OFData.h
  *
  * @brief A class for storing and manipulating arbitrary data in an array.
  */

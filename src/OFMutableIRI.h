@@ -18,7 +18,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableIRI OFMutableIRI.h ObjFW/OFMutableIRI.h
+ * @class OFMutableIRI OFIRI.h ObjFW/OFIRI.h
  *
  * @brief A class for representing IRIs, URIs, URLs and URNs, for parsing them,
  *	  accessing parts of them as well as modifying them.
