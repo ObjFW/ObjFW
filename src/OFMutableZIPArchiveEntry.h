@@ -19,8 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableZIPArchiveEntry \
- *	  OFMutableZIPArchiveEntry.h ObjFW/OFMutableZIPArchiveEntry.h
+ * @class OFMutableZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/OFZIPArchiveEntry.h
  *
  * @brief A class which represents a mutable entry in the central directory of
  *	  a ZIP archive.

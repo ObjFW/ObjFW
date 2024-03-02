@@ -19,8 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableLHAArchiveEntry \
- *	  OFMutableLHAArchiveEntry.h ObjFW/OFMutableLHAArchiveEntry.h
+ * @class OFMutableLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/OFHAArchiveEntry.h
  *
  * @brief A class which represents a mutable entry in an LHA archive.
  */
