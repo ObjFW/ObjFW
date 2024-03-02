@@ -206,7 +206,7 @@
 		date = [OFDate dateWithDateString: dateString
 					   format: @"%Y-%m-%d %H:%M:%S"];
 		date = [[date dateByAddingTimeInterval:
-		    -(OFTimeInterval)_timeZone * 900] retain];
+		    (OFTimeInterval)_timeZone * 900] retain];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -219,7 +219,7 @@
 	if (_timeZone == 0x7F)
 		return nil;
 
-	return [OFNumber numberWithFloat: (float)_timeZone / 4];
+	return [OFNumber numberWithFloat: -(float)_timeZone / 4];
 }
 
 - (OFString *)description
