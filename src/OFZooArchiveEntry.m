@@ -28,7 +28,8 @@
 @implementation OFZooArchiveEntry
 @synthesize compressionMethod = _compressionMethod, CRC16 = _CRC16;
 @synthesize uncompressedSize = _uncompressedSize;
-@synthesize compressedSize = _compressedSize, deleted = _deleted;
+@synthesize compressedSize = _compressedSize;
+@synthesize minVersionNeeded = _minVersionNeeded, deleted = _deleted;
 @synthesize fileComment = _fileComment, POSIXPermissions = _POSIXPermissions;
 
 - (instancetype)init
@@ -43,7 +44,6 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		uint8_t majorVersion;
 		char fileNameBuffer[13];
 		uint32_t commentOffset;
 		uint16_t commentLength;
@@ -63,9 +63,7 @@
 		_CRC16 = [stream readLittleEndianInt16];
 		_uncompressedSize = [stream readLittleEndianInt32];
 		_compressedSize = [stream readLittleEndianInt32];
-		majorVersion = [stream readInt8];
-		/* Minor version */
-		[stream readInt8];
+		_minVersionNeeded = [stream readBigEndianInt16];
 		_deleted = [stream readInt8];
 		/* Unknown. Most likely padding to get to 2 byte alignment? */
 		[stream readInt8];
@@ -76,7 +74,7 @@
 		if (fileNameBuffer[12] != '\0')
 			fileNameBuffer[12] = '\0';
 
-		if (majorVersion == 2) {
+		if ((_minVersionNeeded >> 8) == 2) {
 			uint16_t extraLength = [stream readLittleEndianInt16];
 			uint8_t fileNameLength, directoryNameLength;
 

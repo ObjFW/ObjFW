@@ -38,6 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _lastModifiedFileDate, _lastModifiedFileTime;
 	uint16_t _CRC16;
 	unsigned long long _uncompressedSize, _compressedSize;
+	uint16_t _minVersionNeeded;
 	bool _deleted;
 	OFString *_Nullable _fileComment;
 	OFString *_fileName, *_Nullable _directoryName;
@@ -55,6 +56,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The CRC16 of the file.
  */
 @property (readonly, nonatomic) uint16_t CRC16;
+
+/**
+ * @brief The minimum version required to extract the file.
+ *
+ * The upper 8 bits are the major version and the lower 8 bits the minor
+ * version.
+ */
+@property (readonly, nonatomic) uint16_t minVersionNeeded;
 
 /**
  * @brief Whether the file was deleted.

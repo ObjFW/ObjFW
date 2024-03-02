@@ -202,19 +202,6 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 				    @"timezone", timeZoneString)];
 			}
 
-			if (entry.POSIXPermissions != nil) {
-				OFString *permissionsString = [OFString
-				    stringWithFormat: @"%llo",
-				    entry.POSIXPermissions
-				    .unsignedLongLongValue];
-
-				[OFStdOut writeString: @"\t"];
-				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_posix_permissions",
-				    @"POSIX permissions: %[perm]",
-				    @"perm", permissionsString)];
-			}
-
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_deleted",
@@ -233,6 +220,33 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 				    @"list_comment",
 				    @"Comment: %[comment]",
 				    @"comment", entry.fileComment)];
+			}
+		}
+
+		if (app->_outputLevel >= 2) {
+			uint16_t minVersionNeeded = entry.minVersionNeeded;
+			OFString *minVersionNeededString = [OFString
+			    stringWithFormat: @"%u.%u",
+					      minVersionNeeded >> 8,
+					      minVersionNeeded & 0xFF];
+
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_min_version_needed",
+			    @"Minimum version needed: %[version]",
+			    @"version", minVersionNeededString)];
+
+			if (entry.POSIXPermissions != nil) {
+				OFString *permissionsString = [OFString
+				    stringWithFormat: @"%llo",
+				    entry.POSIXPermissions
+				    .unsignedLongLongValue];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_posix_permissions",
+				    @"POSIX permissions: %[perm]",
+				    @"perm", permissionsString)];
 			}
 		}
 
