@@ -91,7 +91,7 @@
     list_owner_account_id: "Besitzerkontennummer: %[id]",
     list_group_owner_account_id: "Gruppenbesitzerkontennummer: %[id]",
     list_owner_account_name: "Besitzerkontenname: %[name]",
-    list_group_owner_account_name: "Gruppebesitzerkontenname: %[name]",
+    list_group_owner_account_name: "Gruppenbesitzerkontenname: %[name]",
     list_header_level: "Header-Level: %[level]",
     list_modification_date: "Änderungsdatum: %[date]",
     list_type_normal: "Typ: Normale Datei",
