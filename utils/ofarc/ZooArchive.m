@@ -122,6 +122,11 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
+		if (app->_outputLevel < 1 && entry.deleted) {
+			objc_autoreleasePoolPop(pool);
+			continue;
+		}
+
 		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
@@ -231,6 +236,9 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])
+			continue;
+
+		if (all && entry.deleted)
 			continue;
 
 		[missing removeObject: fileName];
