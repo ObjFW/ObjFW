@@ -24,13 +24,16 @@
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFUnsupportedVersionException.h"
 
 @implementation OFZooArchiveEntry
-@synthesize compressionMethod = _compressionMethod, CRC16 = _CRC16;
-@synthesize uncompressedSize = _uncompressedSize;
+@synthesize headerType = _headerType, compressionMethod = _compressionMethod;
+@synthesize CRC16 = _CRC16, uncompressedSize = _uncompressedSize;
 @synthesize compressedSize = _compressedSize;
 @synthesize minVersionNeeded = _minVersionNeeded, deleted = _deleted;
-@synthesize fileComment = _fileComment, POSIXPermissions = _POSIXPermissions;
+@synthesize fileComment = _fileComment;
+@synthesize operatingSystemIdentifier = _operatingSystemIdentifier;
+@synthesize POSIXPermissions = _POSIXPermissions;
 
 - (instancetype)init
 {
@@ -51,12 +54,19 @@
 		if ([stream readLittleEndianInt32] != 0xFDC4A7DC)
 			@throw [OFInvalidFormatException exception];
 
-		/* Type seems to be always 2 */
-		if ([stream readInt8] != 2)
-			@throw [OFInvalidFormatException exception];
+		if ((_headerType = [stream readInt8]) > 2)
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: [OFString
+			    stringWithFormat: @"%u", _headerType]];
 
 		_compressionMethod = [stream readInt8];
 		_nextHeaderOffset = [stream readLittleEndianInt32];
+
+		if (_nextHeaderOffset == 0) {
+			[self release];
+			return nil;
+		}
+
 		_dataOffset = [stream readLittleEndianInt32];
 		_lastModifiedFileDate = [stream readLittleEndianInt16];
 		_lastModifiedFileTime = [stream readLittleEndianInt16];
@@ -65,7 +75,10 @@
 		_compressedSize = [stream readLittleEndianInt32];
 		_minVersionNeeded = [stream readBigEndianInt16];
 		_deleted = [stream readInt8];
-		/* Unknown. Most likely padding to get to 2 byte alignment? */
+		/*
+		 * File structure, whatever that is meant to be. Seems to
+		 * always be 0.
+		 */
 		[stream readInt8];
 		commentOffset = [stream readLittleEndianInt32];
 		commentLength = [stream readLittleEndianInt16];
@@ -74,7 +87,7 @@
 		if (fileNameBuffer[12] != '\0')
 			fileNameBuffer[12] = '\0';
 
-		if ((_minVersionNeeded >> 8) == 2) {
+		if (_headerType >= 2) {
 			uint16_t extraLength = [stream readLittleEndianInt16];
 			uint8_t fileNameLength, directoryNameLength;
 
@@ -115,8 +128,8 @@
 			}
 
 			if (extraLength >= 2) {
-				/* System ID */
-				[stream readLittleEndianInt16];
+				_operatingSystemIdentifier =
+				    [stream readLittleEndianInt16];
 				extraLength -= 2;
 			}
 

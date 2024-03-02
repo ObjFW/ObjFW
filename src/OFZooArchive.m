@@ -188,15 +188,6 @@ OF_DIRECT_MEMBERS
 	    of_initWithStream: _stream
 		     encoding: _encoding];
 
-	if (_currentEntry->_nextHeaderOffset == 0) {
-		/*
-		 * End of archive is marked by a header that has the next
-		 * header's offset set to 0.
-		 */
-		[_currentEntry release];
-		_currentEntry = nil;
-	}
-
 	return _currentEntry;
 }
 

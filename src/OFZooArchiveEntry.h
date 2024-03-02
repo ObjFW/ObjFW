@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFZooArchiveEntry: OFObject <OFArchiveEntry, OFCopying>
 {
-	uint8_t _compressionMethod;
+	uint8_t _headerType, _compressionMethod;
 #ifdef OF_ZOO_ARCHIVE_M
 @public
 #endif
@@ -44,8 +44,14 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_fileName, *_Nullable _directoryName;
 	OFNumber *_Nullable _POSIXPermissions;
 	int8_t _timeZone;
+	uint16_t _operatingSystemIdentifier;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
+
+/**
+ * @brief The header type of the entry.
+ */
+@property (readonly, nonatomic) uint8_t headerType;
 
 /**
  * @brief The compression method of the entry.
@@ -69,6 +75,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Whether the file was deleted.
  */
 @property (readonly, nonatomic, getter=isDeleted) bool deleted;
+
+/**
+ * @brief The operating system identifier of the file.
+ */
+@property (readonly, nonatomic) uint16_t operatingSystemIdentifier;
 
 /**
  * @brief The time zone in which the file was stored, as an offset in hours

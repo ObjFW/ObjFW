@@ -18,8 +18,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFZooArchiveEntry ()
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
-			 encoding: (OFStringEncoding)encoding
+- (nullable instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+				  encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init) OF_DIRECT;
 @end
 

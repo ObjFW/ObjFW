@@ -240,7 +240,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_osid",
 					    @"Operating system identifier: "
-					    "%[osid]",
+					    @"%[osid]",
 					    @"osid", OSID)];
 				}
 			}

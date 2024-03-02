@@ -137,11 +137,12 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 			OFString *uncompressedSize = [OFString stringWithFormat:
 			    @"%llu", entry.uncompressedSize];
 			OFString *compressionMethod = [OFString
-			    stringWithFormat: @"%u", entry.compressionMethod];
+			    stringWithFormat: @"%" PRIu8,
+			    entry.compressionMethod];
 			OFString *CRC16 = [OFString stringWithFormat:
 			    @"%04" PRIX16, entry.CRC16];
 			OFString *deleted = [OFString stringWithFormat:
-			    @"%u", entry.deleted];
+			    @"%" PRIu8, entry.deleted];
 
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(
@@ -226,15 +227,37 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 		if (app->_outputLevel >= 2) {
 			uint16_t minVersionNeeded = entry.minVersionNeeded;
 			OFString *minVersionNeededString = [OFString
-			    stringWithFormat: @"%u.%u",
+			    stringWithFormat: @"%" PRIu8 @".%" PRIu8,
 					      minVersionNeeded >> 8,
 					      minVersionNeeded & 0xFF];
+			OFString *headerType = [OFString
+			    stringWithFormat: @"%" PRIu8,
+					      entry.headerType];
 
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(
 			    @"list_min_version_needed",
 			    @"Minimum version needed: %[version]",
 			    @"version", minVersionNeededString)];
+
+			[OFStdOut writeString: @"\t"];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_header_type",
+			    @"Header type: %[type]",
+			    @"type", headerType)];
+
+			if (entry.headerType >= 2) {
+				OFString *OSID =
+				    [OFString stringWithFormat: @"%u",
+				    entry.operatingSystemIdentifier];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_osid",
+				    @"Operating system identifier: "
+				    @"%[osid]",
+				    @"osid", OSID)];
+			}
 
 			if (entry.POSIXPermissions != nil) {
 				OFString *permissionsString = [OFString

@@ -93,6 +93,7 @@
     list_owner_account_name: "Besitzerkontenname: %[name]",
     list_group_owner_account_name: "Gruppenbesitzerkontenname: %[name]",
     list_header_level: "Header-Level: %[level]",
+    list_header_type: "Header-Typ: %[type]",
     list_modification_date: "Änderungsdatum: %[date]",
     list_type_normal: "Typ: Normale Datei",
     list_type_hardlink: "Typ: Harter Link",
