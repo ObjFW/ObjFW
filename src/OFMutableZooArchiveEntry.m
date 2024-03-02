@@ -74,14 +74,23 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (_timeZone != 0x7F)
+	if (_timeZone == 0x7F) {
+		_lastModifiedFileDate =
+		    (((date.localYear - 1980) & 0xFF) << 9) |
+		    ((date.localMonthOfYear & 0x0F) << 5) |
+		    (date.localDayOfMonth & 0x1F);
+		_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
+		    ((date.localMinute & 0x3F) << 5) |
+		    ((date.second >> 1) & 0x0F);
+	} else {
 		date = [date dateByAddingTimeInterval:
 		    -(OFTimeInterval)_timeZone * 900];
 
-	_lastModifiedFileDate = (((date.year - 1980) & 0xFF) << 9) |
-	    ((date.monthOfYear & 0x0F) << 5) | (date.dayOfMonth & 0x1F);
-	_lastModifiedFileTime = ((date.hour & 0x1F) << 11) |
-	    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+		_lastModifiedFileDate = (((date.year - 1980) & 0xFF) << 9) |
+		    ((date.monthOfYear & 0x0F) << 5) | (date.dayOfMonth & 0x1F);
+		_lastModifiedFileTime = ((date.hour & 0x1F) << 11) |
+		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
