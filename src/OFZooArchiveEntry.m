@@ -216,6 +216,14 @@
 	return [date autorelease];
 }
 
+- (OFNumber *)timeZone
+{
+	if (_timeZone == 0x7F)
+		return nil;
+
+	return [OFNumber numberWithFloat: (float)_timeZone / 4];
+}
+
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();

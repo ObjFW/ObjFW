@@ -180,6 +180,28 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 			    @"Modification date: %[date]",
 			    @"date", modificationDate)];
 
+			if (entry.timeZone != nil) {
+				float timeZone = entry.timeZone.floatValue;
+				int hours = (int)timeZone;
+				unsigned char minutes = (timeZone - hours) * 60;
+				OFString *timeZoneString;
+
+				if (hours > 0)
+					timeZoneString = [OFString
+					    stringWithFormat: @"UTC+%02d:%02u",
+							      hours, minutes];
+				else
+					timeZoneString = [OFString
+					    stringWithFormat: @"UTC-%02d:%02u",
+							      -hours, minutes];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_timezone",
+				    @"Time zone: %[timezone]",
+				    @"timezone", timeZoneString)];
+			}
+
 			if (entry.POSIXPermissions != nil) {
 				OFString *permissionsString = [OFString
 				    stringWithFormat: @"%llo",

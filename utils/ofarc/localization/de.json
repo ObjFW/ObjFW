@@ -128,6 +128,7 @@
     list_general_purpose_bit_flag: "General Purpose Bit Flag: %[gpbf]",
     list_extra_field: "Extra-Feld: %[extra]",
     list_comment: "Kommentar: %[comment]",
+    list_timezone: "Zeitzone: %[timezone]",
     list_deleted: [
         "Gelöscht: ",
         [

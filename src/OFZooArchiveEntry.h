@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _fileComment;
 	OFString *_fileName, *_Nullable _directoryName;
 	OFNumber *_Nullable _POSIXPermissions;
-	uint8_t _timeZone;
+	int8_t _timeZone;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
 
@@ -60,6 +60,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Whether the file was deleted.
  */
 @property (readonly, nonatomic, getter=isDeleted) bool deleted;
+
+/**
+ * @brief The time zone in which the file was stored, as an offset in hours
+ *	  from UTC (as a float).
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *timeZone;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
