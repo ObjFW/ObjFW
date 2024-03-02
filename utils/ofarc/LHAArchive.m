@@ -18,10 +18,12 @@
 #include <errno.h>
 
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFDate.h"
 #import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -263,6 +265,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
+	OFMutableArray *delayedModificationDates = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFLHAArchiveEntry *entry;
@@ -301,7 +304,14 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
-			setModificationDate(outFileName, entry);
+			/*
+			 * As creating a new file in a directory changes its
+			 * modification date, we can only set it once all files
+			 * have been created.
+			 */
+			[delayedModificationDates addObject:
+			    [OFPair pairWithFirstObject: outFileName
+					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
 				[OFStdOut writeString: @"\r"];
@@ -370,6 +380,9 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
+
+	for (OFPair *pair in delayedModificationDates)
+		setModificationDate(pair.firstObject, pair.secondObject);
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
