@@ -17,7 +17,6 @@
 
 #import "OFMutableLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
-
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"

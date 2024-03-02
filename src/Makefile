@@ -55,6 +55,7 @@ SRCS = OFApplication.m			\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
        OFMutableZIPArchiveEntry.m	\
+       OFMutableZooArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
        OFNull.m				\

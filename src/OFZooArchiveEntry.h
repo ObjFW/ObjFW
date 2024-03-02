@@ -25,9 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFZooArchiveEntry OFZooArchiveEntry.h ObjFW/OFZooArchiveEntry.h
  *
- * @brief A class which represents an entry in an Zoo archive.
+ * @brief A class which represents an entry in a Zoo archive.
  */
-@interface OFZooArchiveEntry: OFObject <OFArchiveEntry, OFCopying>
+@interface OFZooArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	uint8_t _headerType, _compressionMethod;
 #ifdef OF_ZOO_ARCHIVE_M
@@ -42,9 +43,9 @@ OF_ASSUME_NONNULL_BEGIN
 	bool _deleted;
 	OFString *_Nullable _fileComment;
 	OFString *_fileName, *_Nullable _directoryName;
+	uint16_t _operatingSystemIdentifier;
 	OFNumber *_Nullable _POSIXPermissions;
 	int8_t _timeZone;
-	uint16_t _operatingSystemIdentifier;
 	OF_RESERVE_IVARS(OFZooArchiveEntry, 4)
 }
 
@@ -85,9 +86,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The time zone in which the file was stored, as an offset in hours
  *	  from UTC (as a float).
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *timeZone;
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *timeZone;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableZooArchiveEntry.h"

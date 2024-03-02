@@ -27,17 +27,24 @@
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFZooArchiveEntry
-@synthesize headerType = _headerType, compressionMethod = _compressionMethod;
-@synthesize CRC16 = _CRC16, uncompressedSize = _uncompressedSize;
-@synthesize compressedSize = _compressedSize;
-@synthesize minVersionNeeded = _minVersionNeeded, deleted = _deleted;
-@synthesize fileComment = _fileComment;
-@synthesize operatingSystemIdentifier = _operatingSystemIdentifier;
-@synthesize POSIXPermissions = _POSIXPermissions;
-
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	self = [super init];
+
+	@try {
+		_headerType = 2;
+		_minVersionNeeded = 0x100;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
@@ -187,12 +194,44 @@
 	return [self retain];
 }
 
-- (OFString *)fileName
+- (id)mutableCopy
 {
-	if (_directoryName == nil)
-		return _fileName;
+	OFZooArchiveEntry *copy = [[OFMutableZooArchiveEntry alloc]
+	    initWithFileName: _fileName];
 
-	return [OFString stringWithFormat: @"%@/%@", _directoryName, _fileName];
+	@try {
+		copy->_headerType = _headerType;
+		copy->_compressionMethod = _compressionMethod;
+		copy->_nextHeaderOffset = _nextHeaderOffset;
+		copy->_dataOffset = _dataOffset;
+		copy->_lastModifiedFileDate = _lastModifiedFileDate;
+		copy->_lastModifiedFileTime = _lastModifiedFileTime;
+		copy->_CRC16 = _CRC16;
+		copy->_uncompressedSize = _uncompressedSize;
+		copy->_compressedSize = _compressedSize;
+		copy->_minVersionNeeded = _minVersionNeeded;
+		copy->_deleted = _deleted;
+		copy->_fileComment = [_fileComment copy];
+		copy->_directoryName = [_directoryName copy];
+		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
+		copy->_POSIXPermissions = [_POSIXPermissions retain];
+		copy->_timeZone = _timeZone;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (uint8_t)headerType
+{
+	return _headerType;
+}
+
+- (uint8_t)compressionMethod
+{
+	return _compressionMethod;
 }
 
 - (OFDate *)modificationDate
@@ -225,6 +264,54 @@
 	objc_autoreleasePoolPop(pool);
 
 	return [date autorelease];
+}
+
+- (uint16_t)CRC16
+{
+	return _CRC16;
+}
+
+- (unsigned long long)uncompressedSize
+{
+	return _uncompressedSize;
+}
+
+- (unsigned long long)compressedSize
+{
+	return _compressedSize;
+}
+
+- (uint16_t)minVersionNeeded
+{
+	return _minVersionNeeded;
+}
+
+- (bool)isDeleted
+{
+	return _deleted;
+}
+
+- (OFString *)fileComment
+{
+	return _fileComment;
+}
+
+- (OFString *)fileName
+{
+	if (_directoryName == nil)
+		return _fileName;
+
+	return [OFString stringWithFormat: @"%@/%@", _directoryName, _fileName];
+}
+
+- (uint16_t)operatingSystemIdentifier
+{
+	return _operatingSystemIdentifier;
+}
+
+- (OFNumber *)POSIXPermissions
+{
+	return _POSIXPermissions;
 }
 
 - (OFNumber *)timeZone

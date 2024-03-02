@@ -14,7 +14,6 @@
  */
 
 #import "OFTarArchiveEntry.h"
-#import "OFMutableArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

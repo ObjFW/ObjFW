@@ -17,9 +17,9 @@
 
 #import "OFMutableZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
-#import "OFString.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
