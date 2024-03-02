@@ -153,8 +153,8 @@ OF_SUBCLASSING_RESTRICTED
  * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
  *	 underlying stream does so, too.
  *
- * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry or
+ * @warning Calling @ref streamForWritingEntry: will invalidate all streams
+ *	    returned by @ref streamForReadingCurrentEntry or
  *	    @ref streamForWritingEntry:! Reading from or writing to an
  *	    invalidated stream will throw an @ref OFReadFailedException or
  *	    @ref OFWriteFailedException!
