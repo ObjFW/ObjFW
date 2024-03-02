@@ -27,7 +27,7 @@ Lsel_forwardingTargetForSelector_:
 	.quad Lstr_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
-	.long 0, 0
+	.long 0, 0x40
 
 .section __TEXT, __text, regular, pure_instructions
 .align 2
