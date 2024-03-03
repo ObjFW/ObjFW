@@ -74,8 +74,8 @@ initPathAllowedCharacters(void)
 	if ([scheme isEqual: @"gzip"]) {
 		stream = [OFIRIHandler openItemAtIRI: [OFIRI IRIWithString:
 							  IRI.path]
-						mode: @"r"];
-		stream = [OFGZIPStream streamWithStream: stream mode: @"r"];
+						mode: mode];
+		stream = [OFGZIPStream streamWithStream: stream mode: mode];
 		goto end;
 	}
 
@@ -94,7 +94,7 @@ initPathAllowedCharacters(void)
 
 	if ([scheme isEqual: @"lha"]) {
 		OFLHAArchive *archive = [OFLHAArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 		OFLHAArchiveEntry *entry;
 
 		while ((entry = [archive nextEntry]) != nil) {
@@ -109,7 +109,7 @@ initPathAllowedCharacters(void)
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"tar"]) {
 		OFTarArchive *archive = [OFTarArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 		OFTarArchiveEntry *entry;
 
 		while ((entry = [archive nextEntry]) != nil) {
@@ -124,7 +124,7 @@ initPathAllowedCharacters(void)
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"zip"]) {
 		OFZIPArchive *archive = [OFZIPArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 
 		stream = [archive streamForReadingFile: path];
 	} else
