@@ -73,6 +73,7 @@ releaseMutex(void)
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"lha"];
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"tar"];
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zip"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zoo"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme

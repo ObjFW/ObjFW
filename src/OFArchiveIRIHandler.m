@@ -25,6 +25,7 @@
 #import "OFStream.h"
 #import "OFTarArchive.h"
 #import "OFZIPArchive.h"
+#import "OFZooArchive.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
@@ -127,6 +128,21 @@ initPathAllowedCharacters(void)
 								mode: @"r"];
 
 		stream = [archive streamForReadingFile: path];
+	} else if ([scheme isEqual: @"zoo"]) {
+		OFZooArchive *archive = [OFZooArchive archiveWithIRI: archiveIRI
+								mode: @"r"];
+		OFZooArchiveEntry *entry;
+
+		while ((entry = [archive nextEntry]) != nil) {
+			if ([entry.fileName isEqual: path]) {
+				stream = [archive streamForReadingCurrentEntry];
+				goto end;
+			}
+		}
+
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: ENOENT];
 	} else
 		@throw [OFInvalidArgumentException exception];
 

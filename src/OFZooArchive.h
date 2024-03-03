@@ -69,6 +69,17 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
+/**
+ * @brief Creates an IRI for accessing the specified file within the specified
+ *	  Zoo archive.
+ *
+ * @param path The path of the file within the archive
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified Zoo
+ *	   archive
+ */
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**

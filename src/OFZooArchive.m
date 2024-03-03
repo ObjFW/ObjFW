@@ -22,6 +22,7 @@
 #import "OFZooArchive.h"
 #import "OFZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFCRC16.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
@@ -100,6 +101,11 @@ OF_DIRECT_MEMBERS
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
+}
+
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
+{
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"zoo", path, IRI);
 }
 
 - (instancetype)init
