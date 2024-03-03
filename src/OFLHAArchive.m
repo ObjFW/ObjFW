@@ -97,7 +97,8 @@ OF_DIRECT_MEMBERS
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(
+	    @"lha-archive", path, IRI);
 }
 
 - (instancetype)init

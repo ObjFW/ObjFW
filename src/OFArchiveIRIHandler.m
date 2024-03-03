@@ -93,7 +93,7 @@ initPathAllowedCharacters(void)
 	    OFMakeRange(pos + 1, percentEncodedPath.length - pos - 1)]
 	    .stringByRemovingPercentEncoding;
 
-	if ([scheme isEqual: @"lha"]) {
+	if ([scheme isEqual: @"lha-archive"]) {
 		OFLHAArchive *archive = [OFLHAArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 		OFLHAArchiveEntry *entry;
@@ -108,7 +108,7 @@ initPathAllowedCharacters(void)
 		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: ENOENT];
-	} else if ([scheme isEqual: @"tar"]) {
+	} else if ([scheme isEqual: @"tar-archive"]) {
 		OFTarArchive *archive = [OFTarArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 		OFTarArchiveEntry *entry;
@@ -123,12 +123,12 @@ initPathAllowedCharacters(void)
 		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: ENOENT];
-	} else if ([scheme isEqual: @"zip"]) {
+	} else if ([scheme isEqual: @"zip-archive"]) {
 		OFZIPArchive *archive = [OFZIPArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 
 		stream = [archive streamForReadingFile: path];
-	} else if ([scheme isEqual: @"zoo"]) {
+	} else if ([scheme isEqual: @"zoo-archive"]) {
 		OFZooArchive *archive = [OFZooArchive archiveWithIRI: archiveIRI
 								mode: @"r"];
 		OFZooArchiveEntry *entry;

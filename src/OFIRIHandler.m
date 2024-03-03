@@ -70,10 +70,14 @@ releaseMutex(void)
 	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"https"];
 #endif
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"gzip"];
-	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"lha"];
-	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"tar"];
-	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zip"];
-	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zoo"];
+	[self registerClass: [OFArchiveIRIHandler class]
+		  forScheme: @"lha-archive"];
+	[self registerClass: [OFArchiveIRIHandler class]
+		  forScheme: @"tar-archive"];
+	[self registerClass: [OFArchiveIRIHandler class]
+		  forScheme: @"zip-archive"];
+	[self registerClass: [OFArchiveIRIHandler class]
+		  forScheme: @"zoo-archive"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme
