@@ -39,7 +39,7 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		_fileName = [fileName copy];
+		self.fileName = fileName;
 		self.modificationDate = [OFDate date];
 
 		objc_autoreleasePoolPop(pool);
@@ -129,12 +129,29 @@
 
 - (void)setFileName: (OFString *)fileName
 {
-	OFString *old = _fileName;
-	_fileName = [fileName copy];
-	[old release];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *oldFileName = _fileName, *oldDirectoryName = _directoryName;
+	size_t lastSlash;
 
-	[_directoryName release];
-	_directoryName = nil;
+	lastSlash = [fileName rangeOfString: @"/"
+				    options: OFStringSearchBackwards].location;
+	if (lastSlash != OFNotFound) {
+		_fileName = [[fileName substringWithRange: OFMakeRange(
+		    lastSlash + 1, fileName.length - lastSlash - 1)] copy];
+		[oldFileName release];
+
+		_directoryName = [[fileName substringWithRange:
+		    OFMakeRange(0, lastSlash)] copy];
+		[oldDirectoryName release];
+	} else {
+		_fileName = [fileName copy];
+		[oldFileName release];
+
+		[_directoryName release];
+		_directoryName = nil;
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setOperatingSystemIdentifier: (uint16_t)operatingSystemIdentifier

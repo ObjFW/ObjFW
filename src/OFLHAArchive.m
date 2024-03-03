@@ -298,7 +298,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		[_lastReturnedStream close];
 	} @catch (OFNotOpenException *e) {
-		/* Might have already been closed by the user - that's fine */
+		/* Might have already been closed by the user - that's fine. */
 	}
 
 	/* LHA archives should be terminated with a header of size 0 */

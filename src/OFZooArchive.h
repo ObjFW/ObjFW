@@ -14,12 +14,11 @@
  */
 
 #import "OFObject.h"
+#import "OFSeekableStream.h"
 #import "OFString.h"
 #import "OFZooArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
-
-@class OFStream;
 
 /**
  * @class OFZooArchive OFZooArchive.h ObjFW/OFZooArchive.h
@@ -32,11 +31,16 @@ OF_SUBCLASSING_RESTRICTED
 	OF_KINDOF(OFStream *) _stream;
 	uint_least8_t _mode;
 	OFStringEncoding _encoding;
+	uint16_t _minVersionNeeded;
+	uint8_t _headerType;
 	OFZooArchiveEntry *_Nullable _currentEntry;
 #ifdef OF_ZOO_ARCHIVE_M
 @public
 #endif
 	OFStream *_Nullable _lastReturnedStream;
+@protected
+	OFStreamOffset _lastHeaderOffset;
+	size_t _lastHeaderLength;
 }
 
 /**
@@ -49,8 +53,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param stream A stream from which the Zoo archive will be read.
  *		 For read mode, this needs to be an OFSeekableStream.
- * @param mode The mode for the Zoo file. The only valid mode is "r" for
- *	       reading.
+ * @param mode The mode for the Zoo file. Valid modes are "r" for reading and
+ *	       "w" for creating a new file.
  * @return A new, autoreleased OFZooArchive
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
@@ -59,8 +63,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFZooArchive object with the specified file.
  *
  * @param IRI The IRI to the Zoo file
- * @param mode The mode for the Zoo file. The only valid mode is "r" for
- *	       reading.
+ * @param mode The mode for the Zoo file. Valid modes are "r" for reading and
+ *	       "w" for creating a new file.
  * @return A new, autoreleased OFZooArchive
  */
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
@@ -73,8 +77,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param stream A stream from which the Zoo archive will be read.
  *		 For read mode, this needs to be an OFSeekableStream.
- * @param mode The mode for the Zoo file. The only valid mode is "r" for
- *	       reading.
+ * @param mode The mode for the Zoo file. Valid modes are "r" for reading and
+ *	       "w" for creating a new file.
  * @return An initialized OFZooArchive
  */
 - (instancetype)initWithStream: (OFStream *)stream
@@ -85,8 +89,8 @@ OF_SUBCLASSING_RESTRICTED
  *	  specified file.
  *
  * @param IRI The IRI to the Zoo file
- * @param mode The mode for the Zoo file. The only valid mode is "r" for
- *	       reading.
+ * @param mode The mode for the Zoo file. Valid modes is "r" for reading and
+ *	       "w" for creating a new file.
  * @return An initialized OFZooArchive
  */
 - (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
@@ -98,12 +102,16 @@ OF_SUBCLASSING_RESTRICTED
  * @note This is only available in read mode.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry! Reading from an invalidated
- *	    stream will throw an @ref OFReadFailedException!
+ *	    @ref streamForReadingCurrentEntry or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
  *
  * @return The next entry from the Zoo archive or `nil` if all entries have
  *	   been read
  * @throw OFInvalidFormatException The archive's format is invalid
+ * @throw OFUnsupportedVersionException The archive's format is of an
+ *					unsupported version
  * @throw OFTruncatedDataException The archive was truncated
  */
 - (nullable OFZooArchiveEntry *)nextEntry;
@@ -120,6 +128,31 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFSeekFailedException Seeking to the data in the archive failed
  */
 - (OFStream *)streamForReadingCurrentEntry;
+
+/**
+ * @brief Returns a stream for writing the specified entry.
+ *
+ * @note This is only available in write and append mode.
+ *
+ * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
+ *	 underlying stream does so, too.
+ *
+ * @warning Calling @ref streamForWritingEntry: will invalidate all streams
+ *	    returned by @ref streamForReadingCurrentEntry or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
+ *
+ * @param entry The entry for which a stream for writing should be returned.@n
+ *	        The following parts of the specified entry will be ignored:
+ *	          * The header type.
+ *	          * The minimum version needed.
+ *	          * The compressed size.
+ *	          * The uncompressed size.
+ *	          * The CRC16.
+ * @return A stream for writing the specified entry
+ */
+- (OFStream *)streamForWritingEntry: (OFZooArchiveEntry *)entry;
 
 /**
  * @brief Closes the OFZooArchive.

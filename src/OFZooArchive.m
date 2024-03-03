@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFZooArchive.h"
 #import "OFZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
@@ -34,11 +36,14 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+#import "OFWriteFailedException.h"
 
 enum {
-	modeRead
+	modeRead,
+	modeWrite
 };
 
 OF_DIRECT_MEMBERS
@@ -61,6 +66,27 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_initWithArchive: (OFZooArchive *)archive
 			    stream: (OFStream *)stream
 			     entry: (OFZooArchiveEntry *)entry;
+@end
+
+OF_DIRECT_MEMBERS
+@interface OFZooArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
+{
+	OFZooArchive *_archive;
+	OFMutableZooArchiveEntry *_entry;
+	OFStringEncoding _encoding;
+	OFSeekableStream *_stream;
+	OFStreamOffset *_lastHeaderOffset;
+	size_t *_lastHeaderLength;
+	uint32_t _bytesWritten;
+	uint16_t _CRC16;
+}
+
+- (instancetype)of_initWithArchive: (OFZooArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFZooArchiveEntry *)entry
+			  encoding: (OFStringEncoding)encoding
+		  lastHeaderOffset: (OFStreamOffset *)lastHeaderOffset
+		  lastHeaderLength: (size_t *)lastHeaderLength;
 @end
 
 @implementation OFZooArchive
@@ -88,22 +114,23 @@ OF_DIRECT_MEMBERS
 	@try {
 		if ([mode isEqual: @"r"])
 			_mode = modeRead;
-		else if ([mode isEqual: @"w"] || [mode isEqual: @"a"])
+		else if ([mode isEqual: @"w"])
+			_mode = modeWrite;
+		else if ([mode isEqual: @"a"])
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: nil];
 		else
 			@throw [OFInvalidArgumentException exception];
 
+		if (![stream isKindOfClass: [OFSeekableStream class]])
+			@throw [OFInvalidArgumentException exception];
+
 		_stream = [stream retain];
 		_encoding = OFStringEncodingUTF8;
 
-		if (_mode == modeRead) {
-			if (![stream isKindOfClass: [OFSeekableStream class]])
-				@throw [OFInvalidArgumentException exception];
-
+		if (_mode == modeRead)
 			[self of_readArchiveHeader];
-		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -118,8 +145,8 @@ OF_DIRECT_MEMBERS
 	OFStream *stream;
 
 	@try {
-		if ([mode isEqual: @"a"])
-			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
+		if ([mode isEqual: @"w"])
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"w+"];
 		else
 			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
@@ -159,8 +186,15 @@ OF_DIRECT_MEMBERS
 	if ([_stream readLittleEndianInt32] != ~(uint32_t)(firstFileOffset - 1))
 		@throw [OFInvalidFormatException exception];
 
-	/* Version */
-	[_stream readBigEndianInt16];
+	if ((_minVersionNeeded = [_stream readBigEndianInt16]) > 0x201)
+		@throw [OFUnsupportedVersionException exceptionWithVersion:
+		    [OFString stringWithFormat: @"%" PRIu8 @".%" PRIu8,
+						_minVersionNeeded >> 8,
+						_minVersionNeeded & 0xFF]];
+
+	if ((_headerType = [_stream readInt8]) > 1)
+		@throw [OFUnsupportedVersionException exceptionWithVersion:
+		    [OFString stringWithFormat: @"%" PRIu8, _headerType]];
 
 	[_stream seekToOffset: firstFileOffset whence: OFSeekSet];
 }
@@ -207,6 +241,89 @@ OF_DIRECT_MEMBERS
 	return _lastReturnedStream;
 }
 
+- (void)of_fixUpLastHeader
+{
+	OFStreamOffset offset;
+	unsigned char *buffer;
+
+	if (_lastHeaderOffset == 0)
+		return;
+
+	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
+
+	if (offset < 0 || offset > UINT32_MAX || _lastHeaderLength < 56)
+		@throw [OFOutOfRangeException exception];
+
+	[_stream seekToOffset: _lastHeaderOffset whence: OFSeekSet];
+	buffer = OFAllocMemory(1, _lastHeaderLength);
+	@try {
+		uint16_t tmp16;
+		uint32_t tmp32;
+
+		[_stream readIntoBuffer: buffer exactLength: _lastHeaderLength];
+
+		tmp32 = OFToLittleEndian32((uint32_t)offset);
+		memcpy(buffer + 6, &tmp32, 4);
+
+		tmp16 = OFToLittleEndian16(
+		    OFCRC16(0, buffer, _lastHeaderLength));
+		memcpy(buffer + 54, &tmp16, 2);
+
+		[_stream seekToOffset: _lastHeaderOffset whence: OFSeekSet];
+		[_stream writeBuffer: buffer length: _lastHeaderLength];
+
+		[_stream seekToOffset: offset whence: OFSeekSet];
+	} @finally {
+		OFFreeMemory(buffer);
+	}
+}
+
+- (OFStream *)streamForWritingEntry: (OFZooArchiveEntry *)entry
+{
+	if (_mode != modeWrite)
+		@throw [OFInvalidArgumentException exception];
+
+	if (entry.compressionMethod != 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	if (_lastHeaderOffset == 0) {
+		/* First file - write header. */
+		[_stream writeBuffer: "ObjFW Zoo Archive.\x1F" length: 20];
+		[_stream writeLittleEndianInt32: 0xFDC4A7DC];
+		[_stream writeLittleEndianInt32: 42];
+		[_stream writeLittleEndianInt32: -42];
+		/* TODO: Increase to 0x201 once we add compressed files. */
+		[_stream writeBigEndianInt16: 0x200];
+		/* Header type */
+		[_stream writeInt8: 1];
+		/* Archive comment offset */
+		[_stream writeLittleEndianInt32: 0];
+		/* Archive comment length */
+		[_stream writeLittleEndianInt16: 0];
+		/* Version flag */
+		[_stream writeInt8: 0];
+	} else
+		[self of_fixUpLastHeader];
+
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
+	_lastReturnedStream = nil;
+
+	_lastReturnedStream = [[[OFZooArchiveFileWriteStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: entry
+		      encoding: _encoding
+	      lastHeaderOffset: &_lastHeaderOffset
+	      lastHeaderLength: &_lastHeaderLength] autorelease];
+
+	return  _lastReturnedStream;
+}
+
 - (void)close
 {
 	if (_stream == nil)
@@ -217,8 +334,24 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-
 	_lastReturnedStream = nil;
+
+	/*
+	 * Zoo archives should be terminated with an entry that has a next
+	 * header offset of 0.
+	 */
+	if (_mode == modeWrite) {
+		static const unsigned char header[56] = {
+			0xDC, 0xA7, 0xC4, 0xFD, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0xFC, 0x83
+		};
+
+		[self of_fixUpLastHeader];
+
+		[_stream writeBuffer: header length: sizeof(header)];
+	}
 
 	[_stream release];
 	_stream = nil;
@@ -349,6 +482,128 @@ OF_DIRECT_MEMBERS
 
 	[_decompressedStream release];
 	_decompressedStream = nil;
+
+	[super close];
+}
+@end
+
+@implementation OFZooArchiveFileWriteStream
+- (instancetype)of_initWithArchive: (OFZooArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFZooArchiveEntry *)entry
+			  encoding: (OFStringEncoding)encoding
+		  lastHeaderOffset: (OFStreamOffset *)lastHeaderOffset
+		  lastHeaderLength: (size_t *)lastHeaderLength
+{
+	self = [super init];
+
+	@try {
+		_archive = [archive retain];
+		_entry = [entry mutableCopy];
+		_encoding = encoding;
+		_lastHeaderOffset = lastHeaderOffset;
+		_lastHeaderLength = lastHeaderLength;
+
+		*_lastHeaderOffset = [stream seekToOffset: 0
+						   whence: OFSeekCurrent];
+		*_lastHeaderLength = [_entry of_writeToStream: stream
+						     encoding: _encoding];
+
+		/*
+		 * Retain stream last, so that -[close] called by -[dealloc]
+		 * doesn't write in case of error.
+		 */
+		_stream = [stream retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	if (_stream != nil)
+		[self close];
+
+	[_entry release];
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
+
+	[super dealloc];
+}
+
+- (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
+{
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (UINT32_MAX - _bytesWritten < length)
+		@throw [OFOutOfRangeException exception];
+
+	@try {
+		[_stream writeBuffer: buffer length: length];
+	} @catch (OFWriteFailedException *e) {
+		OFEnsure(e.bytesWritten <= length);
+
+		_bytesWritten += (uint32_t)e.bytesWritten;
+		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return e.bytesWritten;
+
+		@throw e;
+	}
+
+	_bytesWritten += (uint32_t)length;
+	_CRC16 = OFCRC16(_CRC16, buffer, length);
+
+	return length;
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	return _stream.atEndOfStream;
+}
+
+- (int)fileDescriptorForWriting
+{
+	return ((id <OFReadyForWritingObserving>)_stream)
+	    .fileDescriptorForWriting;
+}
+
+- (void)close
+{
+	OFStreamOffset offset;
+
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	_entry.uncompressedSize = _bytesWritten;
+	_entry.compressedSize = _bytesWritten;
+	_entry.CRC16 = _CRC16;
+
+	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
+
+	if (offset > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	[_stream seekToOffset: *_lastHeaderOffset whence: OFSeekSet];
+	_entry->_dataOffset = (uint32_t)offset;
+
+	OFEnsure([_entry of_writeToStream: _stream
+				 encoding: _encoding] == *_lastHeaderLength);
+	[_stream seekToOffset: offset whence: OFSeekSet];
+
+	[_stream release];
+	_stream = nil;
 
 	[super close];
 }

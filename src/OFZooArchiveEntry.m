@@ -17,13 +17,14 @@
 
 #import "OFZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFNumber.h"
 #import "OFSeekableStream.h"
-#import "OFStream.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFZooArchiveEntry
@@ -47,7 +48,7 @@
 	return self;
 }
 
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
@@ -64,7 +65,7 @@
 		if ((_headerType = [stream readInt8]) > 2)
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: [OFString
-			    stringWithFormat: @"%u", _headerType]];
+			    stringWithFormat: @"%" PRIu8, _headerType]];
 
 		_compressionMethod = [stream readInt8];
 		_nextHeaderOffset = [stream readLittleEndianInt32];
@@ -80,7 +81,13 @@
 		_CRC16 = [stream readLittleEndianInt16];
 		_uncompressedSize = [stream readLittleEndianInt32];
 		_compressedSize = [stream readLittleEndianInt32];
-		_minVersionNeeded = [stream readBigEndianInt16];
+
+		if ((_minVersionNeeded = [stream readBigEndianInt16]) > 0x201)
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: [OFString stringWithFormat:
+			    @"%" PRIu8 @".%" PRIu8,
+			    _minVersionNeeded >> 8, _minVersionNeeded & 0xFF]];
+
 		_deleted = [stream readInt8];
 		/*
 		 * File structure, whatever that is meant to be. Seems to
@@ -96,18 +103,17 @@
 
 		if (_headerType >= 2) {
 			uint16_t extraLength = [stream readLittleEndianInt16];
-			uint8_t fileNameLength, directoryNameLength;
-
-			if (extraLength < 10)
-				@throw [OFInvalidFormatException exception];
+			uint8_t fileNameLength = 0, directoryNameLength = 0;
 
 			_timeZone = [stream readInt8];
 			/* CRC16 of the header */
 			[stream readLittleEndianInt16];
 
-			fileNameLength = [stream readInt8];
-			directoryNameLength = [stream readInt8];
-			extraLength -= 2;
+			if (extraLength >= 2) {
+				fileNameLength = [stream readInt8];
+				directoryNameLength = [stream readInt8];
+				extraLength -= 2;
+			}
 
 			if (fileNameLength > 0) {
 				if (extraLength < fileNameLength)
@@ -197,7 +203,7 @@
 - (id)mutableCopy
 {
 	OFZooArchiveEntry *copy = [[OFMutableZooArchiveEntry alloc]
-	    initWithFileName: _fileName];
+	    initWithFileName: self.fileName];
 
 	@try {
 		copy->_headerType = _headerType;
@@ -212,7 +218,6 @@
 		copy->_minVersionNeeded = _minVersionNeeded;
 		copy->_deleted = _deleted;
 		copy->_fileComment = [_fileComment copy];
-		copy->_directoryName = [_directoryName copy];
 		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
 		copy->_POSIXPermissions = [_POSIXPermissions retain];
 		copy->_timeZone = _timeZone;
@@ -221,7 +226,7 @@
 		@throw e;
 	}
 
-	return self;
+	return copy;
 }
 
 - (uint8_t)headerType
@@ -320,6 +325,142 @@
 		return nil;
 
 	return [OFNumber numberWithFloat: -(float)_timeZone / 4];
+}
+
+- (size_t)of_writeToStream: (OFSeekableStream *)stream
+		  encoding: (OFStringEncoding)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableData *data = [OFMutableData dataWithCapacity: 56];
+	OFStreamOffset offset = [stream seekToOffset: 0 whence: OFSeekCurrent];
+	size_t dataOffsetIndex, commentOffsetIndex;
+	char fileNameBuffer[13] = { 0 };
+	uint8_t tmp8;
+	uint16_t tmp16;
+	uint32_t tmp32;
+	size_t commentLength, fileNameLength, directoryNameLength, length;
+
+	if (_uncompressedSize > UINT32_MAX || _compressedSize > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	commentLength = [_fileComment cStringLengthWithEncoding: encoding];
+	if (commentLength > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	fileNameLength = [_fileName cStringLengthWithEncoding: encoding];
+	if (fileNameLength > UINT8_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	directoryNameLength =
+	    [_directoryName cStringLengthWithEncoding: encoding];
+	if (directoryNameLength > UINT8_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	[data addItems: "\xDC\xA7\xC4\xFD" count: 4];
+	/* Header type */
+	[data addItem: "\x02"];
+	[data addItem: &_compressionMethod];
+
+	/* Next header offset filled when writing the next header */
+	[data increaseCountBy: 4];
+	/* Data offset is filled after generating the header */
+	dataOffsetIndex = data.count;
+	[data increaseCountBy: 4];
+
+	tmp16 = OFToLittleEndian16(_lastModifiedFileDate);
+	[data addItems: &tmp16 count: 2];
+	tmp16 = OFToLittleEndian16(_lastModifiedFileTime);
+	[data addItems: &tmp16 count: 2];
+	tmp16 = OFToLittleEndian16(_CRC16);
+	[data addItems: &tmp16 count: 2];
+
+	tmp32 = OFToLittleEndian32((uint32_t)_uncompressedSize);
+	[data addItems: &tmp32 count: 4];
+	tmp32 = OFToLittleEndian32((uint32_t)_compressedSize);
+	[data addItems: &tmp32 count: 4];
+
+	/* Min version needed */
+	/* TODO: Increase to 2.1 once we add compression. */
+	[data addItems: "\x02\x00" count: 2];
+
+	[data addItem: (_deleted ? "\x01" : "")];
+
+	/*
+	 * File structure, whatever that is meant to be.
+	 * Seems to always be 0.
+	 */
+	[data addItem: ""];
+
+	/* Comment offset is filled after generating the header */
+	commentOffsetIndex = data.count;
+	[data increaseCountBy: 4];
+	tmp16 = OFToLittleEndian16((uint16_t)commentLength);
+	[data addItems: &tmp16 count: 2];
+
+	strncpy(fileNameBuffer, [_fileName cStringWithEncoding: encoding], 12);
+	[data addItems: fileNameBuffer count: 13];
+
+	/* Variable length. */
+	tmp16 = OFToLittleEndian16(fileNameLength + directoryNameLength + 4 +
+	    (_POSIXPermissions != nil ? 3 : 0));
+	[data addItems: &tmp16 count: 2];
+
+	[data addItem: &_timeZone];
+
+	/*
+	 * CRC16 is filled when writing the next header, as the CRC needs to
+	 * include the next header offset.
+	 */
+	[data increaseCountBy: 2];
+
+	tmp8 = (uint8_t)fileNameLength;
+	[data addItem: &tmp8];
+	tmp8 = (uint8_t)directoryNameLength;
+	[data addItem: &tmp8];
+
+	[data addItems: [_fileName cStringWithEncoding: encoding]
+		 count: fileNameLength];
+	[data addItems: [_directoryName cStringWithEncoding: encoding]
+		 count: directoryNameLength];
+
+	tmp16 = OFToLittleEndian16((uint16_t)_operatingSystemIdentifier);
+	[data addItems: &tmp16 count: 2];
+
+	if (_POSIXPermissions != nil) {
+		unsigned short mode = _POSIXPermissions.unsignedShortValue;
+		uint8_t attributes[3];
+
+		attributes[0] = mode & 0xFF;
+		attributes[1] = mode >> 8;
+		attributes[2] = (1 << 6);
+
+		[data addItems: attributes count: sizeof(attributes)];
+	}
+
+	/* Now that we have the entire header, we know where the data starts. */
+	if (SIZE_MAX - data.count < commentLength)
+		@throw [OFOutOfRangeException exception];
+
+	if (offset < 0 || UINT32_MAX - (unsigned long long)offset <
+	    data.count + commentLength)
+		@throw [OFOutOfRangeException exception];
+
+	tmp32 = OFToLittleEndian32(
+	    (uint32_t)offset + (uint32_t)data.count + (uint32_t)commentLength);
+	memcpy([data mutableItemAtIndex: dataOffsetIndex], &tmp32, 4);
+
+	tmp32 = OFToLittleEndian32((uint32_t)offset + (uint32_t)data.count);
+	memcpy([data mutableItemAtIndex: commentOffsetIndex], &tmp32, 4);
+
+	[stream writeData: data];
+	length = data.count;
+
+	if (commentLength > 0)
+		[stream writeString: _fileComment encoding: encoding];
+
+	objc_autoreleasePoolPop(pool);
+
+	return length;
 }
 
 - (OFString *)description

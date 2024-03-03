@@ -14,14 +14,17 @@
  */
 
 #import "OFZooArchive.h"
+#import "OFSeekableStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFZooArchiveEntry ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (nullable instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (nullable instancetype)of_initWithStream: (OFSeekableStream *)stream
 				  encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init) OF_DIRECT;
+- (size_t)of_writeToStream: (OFSeekableStream *)stream
+		  encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END
