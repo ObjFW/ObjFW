@@ -20,5 +20,6 @@
 @interface GZIPArchive: OFObject <Archive>
 {
 	OFGZIPStream *_stream;
+	OFIRI *_archiveIRI;
 }
 @end

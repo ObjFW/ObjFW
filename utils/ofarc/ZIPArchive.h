@@ -19,7 +19,7 @@
 
 @interface ZIPArchive: OFObject <OFZIPArchiveDelegate, Archive>
 {
-	OFString *_path;
+	OFIRI *_archiveIRI;
 	OFZIPArchive *_archive;
 }
 @end

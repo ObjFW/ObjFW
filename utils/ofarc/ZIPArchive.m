@@ -21,7 +21,10 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFPair.h"
@@ -85,26 +88,26 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithPath: (OFString *)path
-			 stream: (OF_KINDOF(OFStream *))stream
-			   mode: (OFString *)mode
-		       encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
+		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				    stream: stream
-				      mode: mode
-				  encoding: encoding] autorelease];
+	return [[[self alloc] initWithIRI: IRI
+				   stream: stream
+				     mode: mode
+				 encoding: encoding] autorelease];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      stream: (OF_KINDOF(OFStream *))stream
-			mode: (OFString *)mode
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
-		_path = [path copy];
+		_archiveIRI = [IRI copy];
 		_archive = [[OFZIPArchive alloc] initWithStream: stream
 							   mode: mode];
 		_archive.delegate = self;
@@ -118,7 +121,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_path release];
+	[_archiveIRI release];
 	[_archive release];
 
 	[super dealloc];
@@ -128,9 +131,9 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	    wantsPartNumbered: (unsigned int)partNumber
 	       lastPartNumber: (unsigned int)lastPartNumber
 {
-	OFString *path;
+	OFIRI *IRI;
 
-	if ([_path.pathExtension caseInsensitiveCompare: @"zip"] !=
+	if ([_archiveIRI.path.pathExtension caseInsensitiveCompare: @"zip"] !=
 	    OFOrderedSame)
 		return nil;
 
@@ -138,12 +141,16 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		return nil;
 
 	if (partNumber == lastPartNumber)
-		path = _path;
-	else
-		path = [_path.stringByDeletingPathExtension
+		IRI = _archiveIRI;
+	else {
+		OFMutableIRI *copy = [[_archiveIRI mutableCopy] autorelease];
+		copy.path = [_archiveIRI.path.stringByDeletingPathExtension
 		    stringByAppendingFormat: @".z%02u", partNumber + 1];
+		[copy makeImmutable];
+		IRI = copy;
+	}
 
-	return [OFFile fileWithPath: path mode: @"r"];
+	return (OFSeekableStream *)[OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 }
 
 - (void)listFiles

@@ -22,6 +22,8 @@
         "lha- und zoo-Dateien)\n",
         "    -f  --force       Existierende Dateien überschreiben\n",
         "    -h  --help        Diese Hilfe anzeigen\n",
+        "        --iri         Eine IRI benutzen um auf das Archiv zuzugreifen",
+        "\n",
         "    -l  --list        Alle Dateien im Archiv auflisten\n",
         "    -n  --no-clobber  Dateien niemals überschreiben\n",
         "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",

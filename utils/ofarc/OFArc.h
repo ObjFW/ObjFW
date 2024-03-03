@@ -20,6 +20,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
+
 #ifndef S_IRWXG
 # define S_IRWXG 0
 #endif
@@ -32,14 +34,13 @@ OF_ASSUME_NONNULL_BEGIN
 	int8_t _overwrite;
 @public
 	int8_t _outputLevel;
-	OFString *_archivePath;
 	int _exitStatus;
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString *)path
-			       type: (OFString *)type
-			       mode: (char)mode
-			   encoding: (OFStringEncoding)encoding;
+- (id <Archive>)openArchiveWithIRI: (nullable OFIRI *)IRI
+			      type: (OFString *)type
+			      mode: (char)mode
+			  encoding: (OFStringEncoding)encoding;
 - (bool)shouldExtractFile: (OFString *)fileName
 	      outFileName: (OFString *)outFileName;
 - (ssize_t)copyBlockFromStream: (OFStream *)input

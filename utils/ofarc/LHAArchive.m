@@ -20,7 +20,9 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFPair.h"
@@ -85,21 +87,21 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithPath: (OFString *)path
-			 stream: (OF_KINDOF(OFStream *))stream
-			   mode: (OFString *)mode
-		       encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
+		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				    stream: stream
-				      mode: mode
-				  encoding: encoding] autorelease];
+	return [[[self alloc] initWithIRI: IRI
+				   stream: stream
+				     mode: mode
+				 encoding: encoding] autorelease];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      stream: (OF_KINDOF(OFStream *))stream
-			mode: (OFString *)mode
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 

@@ -16,9 +16,12 @@
 #include "config.h"
 
 #import "OFApplication.h"
+#import "OFArray.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFStdIOStream.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFStdIOStream.h"
 
 #import "GZIPArchive.h"
 #import "OFArc.h"
@@ -26,12 +29,12 @@
 static OFArc *app;
 
 static void
-setPermissions(OFString *destination, OFString *source)
+setPermissions(OFString *destination, OFIRI *source)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFFileAttributes attributes = [fileManager
-	    attributesOfItemAtPath: source];
+	    attributesOfItemAtIRI: source];
 	OFFileAttributeKey key = OFFilePOSIXPermissions;
 	OFFileAttributes destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
@@ -65,27 +68,28 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithPath: (OFString *)path
-			 stream: (OF_KINDOF(OFStream *))stream
-			   mode: (OFString *)mode
-		       encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
+		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				    stream: stream
-				      mode: mode
-				  encoding: encoding] autorelease];
+	return [[[self alloc] initWithIRI: IRI
+				   stream: stream
+				     mode: mode
+				 encoding: encoding] autorelease];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      stream: (OF_KINDOF(OFStream *))stream
-			mode: (OFString *)mode
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_stream = [[OFGZIPStream alloc] initWithStream: stream
 							  mode: mode];
+		_archiveIRI = [IRI copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -97,6 +101,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 - (void)dealloc
 {
 	[_stream release];
+	[_archiveIRI release];
 
 	[super dealloc];
 }
@@ -121,8 +126,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		return;
 	}
 
-	fileName = app->_archivePath.lastPathComponent
-	    .stringByDeletingPathExtension;
+	/* FIXME: Should use IRI-specific path extension deletion. */
+	fileName = _archiveIRI.lastPathComponent.stringByDeletingPathExtension;
 
 	if (app->_outputLevel >= 0)
 		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
@@ -133,7 +138,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		return;
 
 	output = [OFFile fileWithPath: fileName mode: @"w"];
-	setPermissions(fileName, app->_archivePath);
+	setPermissions(fileName, _archiveIRI);
 
 	while (!_stream.atEndOfStream) {
 		ssize_t length = [app copyBlockFromStream: _stream
@@ -159,7 +164,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
-	OFString *fileName = app->_archivePath.lastPathComponent
+	/* FIXME: Should use IRI-specific path extension deletion. */
+	OFString *fileName = _archiveIRI.lastPathComponent
 	    .stringByDeletingPathExtension;
 
 	if (files.count > 0) {
