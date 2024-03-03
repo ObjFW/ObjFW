@@ -1890,6 +1890,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have an implementation for TLS])
 		AC_CONFIG_FILES(src/tls/Info.plist)
 
+		OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
 		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
 
 		AS_IF([test x"$enable_shared" != x"no"], [
