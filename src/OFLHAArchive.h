@@ -43,7 +43,7 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief The encoding to use for the archive. Defaults to ISO 8859-1.
+ * @brief The encoding to use for the archive. Defaults to UTF-8.
  */
 @property (nonatomic) OFStringEncoding encoding;
 

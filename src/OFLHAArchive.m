@@ -135,8 +135,6 @@ OF_DIRECT_MEMBERS
 			 */
 			[(OFSeekableStream *)_stream seekToOffset: -1
 							   whence: OFSeekEnd];
-
-		_encoding = OFStringEncodingISO8859_1;
 	} @catch (id e) {
 		[self release];
 		@throw e;
