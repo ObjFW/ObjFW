@@ -362,7 +362,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 #ifdef OF_HAVE_SANDBOX
 		if ([IRI.scheme isEqual: @"file"])
-			[sandbox unveilPath: IRI.path
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
@@ -387,7 +387,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 #ifdef OF_HAVE_SANDBOX
 		if ([IRI.scheme isEqual: @"file"])
-			[sandbox unveilPath: IRI.path
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
@@ -411,7 +411,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 #ifdef OF_HAVE_SANDBOX
 		if ([IRI.scheme isEqual: @"file"])
-			[sandbox unveilPath: IRI.path
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
@@ -435,7 +435,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 #ifdef OF_HAVE_SANDBOX
 		if ([IRI.scheme isEqual: @"file"])
-			[sandbox unveilPath: IRI.path
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		if (files.count > 0)
