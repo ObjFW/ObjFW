@@ -679,9 +679,19 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [[OFFile alloc]
-	    initWithPath: IRI.fileSystemRepresentation
-		    mode: mode];
+	OFFile *file;
+
+	@try {
+		file = [OFFile fileWithPath: IRI.fileSystemRepresentation
+				       mode: mode];
+	} @catch (OFOpenItemFailedException *e) {
+		/* The thrown one has a path instead of an IRI set. */
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: e.errNo];
+	}
+
+	[file retain];
 
 	objc_autoreleasePoolPop(pool);
 
