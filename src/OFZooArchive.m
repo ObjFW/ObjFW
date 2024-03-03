@@ -258,8 +258,10 @@ OF_DIRECT_MEMBERS
 
 	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 
-	if (offset < 0 || offset > UINT32_MAX || _lastHeaderLength < 56)
+	if (offset < 0 || (unsigned long long)offset > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
+
+	OFEnsure(_lastHeaderLength >= 56);
 
 	[_stream seekToOffset: _lastHeaderOffset whence: OFSeekSet];
 	buffer = OFAllocMemory(1, _lastHeaderLength);
@@ -599,7 +601,7 @@ OF_DIRECT_MEMBERS
 
 	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 
-	if (offset > UINT32_MAX)
+	if ((unsigned long long)offset > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	[_stream seekToOffset: *_lastHeaderOffset whence: OFSeekSet];
