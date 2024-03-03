@@ -512,7 +512,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		fileModeString = @"r+";
 		break;
 	case 'c':
-		modeString = fileModeString = @"w";
+		modeString = @"w";
+		fileModeString = @"w+";
 		break;
 	case 'l':
 	case 'p':

@@ -52,7 +52,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFZooArchive object with the specified stream.
  *
  * @param stream A stream from which the Zoo archive will be read.
- *		 For read mode, this needs to be an OFSeekableStream.
+ *		 This needs to be an OFSeekableStream. For writing, the stream
+ *		 needs to support both reading and writing at the same time.
  * @param mode The mode for the Zoo file. Valid modes are "r" for reading and
  *	       "w" for creating a new file.
  * @return A new, autoreleased OFZooArchive
@@ -87,7 +88,8 @@ OF_SUBCLASSING_RESTRICTED
  *	  specified stream.
  *
  * @param stream A stream from which the Zoo archive will be read.
- *		 For read mode, this needs to be an OFSeekableStream.
+ *		 This needs to be an OFSeekableStream. For writing, the stream
+ *		 needs to support both reading and writing at the same time.
  * @param mode The mode for the Zoo file. Valid modes are "r" for reading and
  *	       "w" for creating a new file.
  * @return An initialized OFZooArchive

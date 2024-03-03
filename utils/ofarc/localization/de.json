@@ -148,4 +148,5 @@
     adding_file: "Füge %[file] hinzu...",
     adding_file_percent: "Füge %[file] hinzu... %[percent]%",
     adding_file_done: "Füge %[file] hinzu... fertig",
+    adding_file_skipped: "Füge %[file] hinzu... übersprungen",
 }
