@@ -81,7 +81,9 @@ initPathAllowedCharacters(void)
 	}
 
 	percentEncodedPath = IRI.percentEncodedPath;
-	pos = [percentEncodedPath rangeOfString: @"!"].location;
+	pos = [percentEncodedPath
+	    rangeOfString: @"!"
+		  options: OFStringSearchBackwards].location;
 
 	if (pos == OFNotFound)
 		@throw [OFInvalidArgumentException exception];
@@ -195,19 +197,15 @@ OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFMutableIRI *ret = [OFMutableIRI IRIWithScheme: scheme];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *archiveIRIString;
 
 	OFOnce(&onceControl, initPathAllowedCharacters);
 
 	pathInArchive = [pathInArchive
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    pathAllowedCharacters];
-	archiveIRIString = [archiveIRI.string
-	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    pathAllowedCharacters];
 
 	ret.percentEncodedPath = [OFString
-	    stringWithFormat: @"%@!%@", archiveIRIString, pathInArchive];
+	    stringWithFormat: @"%@!%@", archiveIRI.string, pathInArchive];
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
