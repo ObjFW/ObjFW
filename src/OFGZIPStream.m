@@ -81,7 +81,13 @@
 		uint8_t byte;
 		uint32_t CRC32, uncompressedSize;
 
-		if (_stream.atEndOfStream) {
+		/*
+		 * The inflate stream might have overread, causing _stream to
+		 * be at the end, but the inflate stream will unread it once it
+		 * has reached the end. Hence only check it if the state is not
+		 * OFGZIPStreamStateData.
+		 */
+		if (_state != OFGZIPStreamStateData && _stream.atEndOfStream) {
 			if (_state != OFGZIPStreamStateID1)
 				@throw [OFTruncatedDataException exception];
 
@@ -307,6 +313,14 @@
 {
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
+
+	/*
+	 * The inflate stream might have overread, causing _stream to be at the
+	 * end, but the inflate stream will unread it once it has reached the
+	 * end.
+	 */
+	if (_state == OFGZIPStreamStateData && !_inflateStream.atEndOfStream)
+		return false;
 
 	return _stream.atEndOfStream;
 }
