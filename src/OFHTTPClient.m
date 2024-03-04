@@ -918,11 +918,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_atEndOfStream)
-		return 0;
-
 	if (!_hasContentLength && !_chunked)
 		return [_stream readIntoBuffer: buffer length: length];
+
+	if (_atEndOfStream)
+		return 0;
 
 	if (_stream.atEndOfStream)
 		@throw [OFTruncatedDataException exception];
@@ -1047,9 +1047,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_atEndOfStream)
-		return true;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
