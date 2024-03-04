@@ -105,8 +105,7 @@ OF_DIRECT_MEMBERS
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(
-	    @"zoo-archive", path, IRI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"zoo", path, IRI);
 }
 
 - (instancetype)init

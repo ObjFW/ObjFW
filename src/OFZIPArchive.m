@@ -199,8 +199,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(
-	    @"zip-archive", path, IRI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"zip", path, IRI);
 }
 
 - (instancetype)init

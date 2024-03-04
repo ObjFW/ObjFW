@@ -88,8 +88,7 @@ OF_DIRECT_MEMBERS
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(
-	    @"tar-archive", path, IRI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"tar", path, IRI);
 }
 
 - (instancetype)init
