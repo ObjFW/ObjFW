@@ -104,6 +104,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * A CPU with multiple cores counts as multiple CPUs.
  *
+ * If the system has no CPU, the return value is undefined.
+ *
  * @return The number of CPUs installed in the system
  */
 + (size_t)numberOfCPUs;
