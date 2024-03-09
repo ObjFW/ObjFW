@@ -30,6 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 @interface OFMutableZIPArchiveEntry ()
+@property (readwrite, nonatomic, setter=of_setStartDiskNumber:)
+    uint32_t of_startDiskNumber;
 @property (readwrite, nonatomic, setter=of_setLocalFileHeaderOffset:)
     int64_t of_localFileHeaderOffset;
 @end

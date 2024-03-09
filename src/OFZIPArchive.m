@@ -154,25 +154,34 @@ OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 @synthesize delegate = _delegate, archiveComment = _archiveComment;
 
 static void
-seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
+seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumberPtr,
     OFStreamOffset offset, OFSeekWhence whence)
 {
-	if (diskNumber != NULL && *diskNumber != archive->_diskNumber) {
+	uint32_t diskNumber = 1;
+
+	if (diskNumberPtr != NULL) {
+		diskNumber = *diskNumberPtr;
+
+		if (diskNumber == 0)
+			diskNumber = 1;
+	}
+
+	if (diskNumberPtr != NULL && diskNumber != archive->_diskNumber) {
 		OFStream *oldStream = archive->_stream;
 		OFSeekableStream *stream;
 
 		if (archive->_mode != modeRead ||
-		    *diskNumber > archive->_lastDiskNumber)
+		    diskNumber > archive->_lastDiskNumber)
 			@throw [OFInvalidFormatException exception];
 
 		stream = [archive->_delegate archive: archive
-				   wantsPartNumbered: *diskNumber
+				   wantsPartNumbered: diskNumber
 				      lastPartNumber: archive->_lastDiskNumber];
 
 		if (stream == nil)
 			@throw [OFInvalidFormatException exception];
 
-		archive->_diskNumber = *diskNumber;
+		archive->_diskNumber = diskNumber;
 		archive->_stream = [stream retain];
 		[oldStream release];
 	}
@@ -231,6 +240,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 			[self of_readZIPInfo];
 			[self of_readEntries];
+		} else if (_mode == modeWrite) {
+			_diskNumber = 1;
+			_lastDiskNumber = 1;
+			_centralDirectoryDisk = 1;
 		}
 
 		if (_mode == modeAppend) {
@@ -343,10 +356,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		 */
 		diskNumber = [_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
-		_lastDiskNumber = [_stream readLittleEndianInt32];
+		_diskNumber = _lastDiskNumber = [_stream readLittleEndianInt32];
+
 		if (_lastDiskNumber == 0)
 			@throw [OFInvalidFormatException exception];
-		_lastDiskNumber--;
 
 		if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
@@ -366,7 +379,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		/* version needed to extract */
 		[_stream readLittleEndianInt16];
 
-		if ([_stream readLittleEndianInt32] != _diskNumber)
+		diskNumber = [_stream readLittleEndianInt32];
+		if (diskNumber == 0)
+			diskNumber = 1;
+		if (diskNumber != _diskNumber)
 			@throw [OFInvalidFormatException exception];
 
 		_centralDirectoryDisk = [_stream readLittleEndianInt32];
@@ -579,6 +595,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	entry.uncompressedSize = 0;
 	entry.CRC32 = 0;
 	entry.generalPurposeBitFlag |= (seekable ? 0 : (1u << 3)) | (1u << 11);
+	entry.of_startDiskNumber = _diskNumber;
 	entry.of_localFileHeaderOffset = _offset;
 
 	[_stream writeLittleEndianInt32: 0x04034B50];

@@ -28,7 +28,7 @@
 @dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
 @dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
-@dynamic of_localFileHeaderOffset;
+@dynamic of_startDiskNumber, of_localFileHeaderOffset;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -171,6 +171,11 @@
 - (void)setGeneralPurposeBitFlag: (uint16_t)generalPurposeBitFlag
 {
 	_generalPurposeBitFlag = generalPurposeBitFlag;
+}
+
+- (void)of_setStartDiskNumber: (uint32_t)startDiskNumber
+{
+	_startDiskNumber = startDiskNumber;
 }
 
 - (void)of_setLocalFileHeaderOffset: (int64_t)localFileHeaderOffset
