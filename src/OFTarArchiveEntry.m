@@ -94,6 +94,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		_type = OFTarArchiveEntryTypeFile;
 		_POSIXPermissions =
 		    [[OFNumber alloc] initWithUnsignedShort: 0644];
+		_modificationDate = [[OFDate alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
