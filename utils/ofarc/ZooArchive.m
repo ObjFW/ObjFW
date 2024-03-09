@@ -449,15 +449,11 @@ outer_loop_end:
 }
 
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (OFString *)archiveComment
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
-	if (files.count < 1) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
-		    @"Need one or more files to add!")];
-		app->_exitStatus = 1;
-		return;
-	}
+	_archive.archiveComment = archiveComment;
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();

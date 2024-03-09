@@ -35,7 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;
 @optional
-- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files;
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (nullable OFString *)archiveComment;
 @end
 
 OF_ASSUME_NONNULL_END

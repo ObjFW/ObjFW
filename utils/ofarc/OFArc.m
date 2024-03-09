@@ -59,25 +59,32 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n"
-		    @"    -a  --append      Append to archive\n"
-		    @"    -c  --create      Create archive\n"
-		    @"    -C  --directory=  Extract into the specified "
+		    @"    -a  --append            Append to archive\n"
+		    @"        --archive-comment=  Archive comment to use when "
+		    @"creating or appending\n"
+		    @"    -c  --create            Create archive\n"
+		    @"    -C  --directory=        Extract into the specified "
 		    @"directory\n"
-		    @"    -E  --encoding=   The encoding used by the archive\n"
-		    @"                      (only tar, lha and zoo files)\n"
-		    @"    -f  --force       Force / overwrite files\n"
-		    @"    -h  --help        Show this help\n"
-		    @"        --iri         Use an IRI to access the archive\n"
-		    @"    -l  --list        List all files in the archive\n"
-		    @"    -n  --no-clobber  Never overwrite files\n"
-		    @"    -p  --print       Print one or more files from the "
+		    @"    -E  --encoding=         The encoding used by the "
 		    @"archive\n"
-		    @"    -q  --quiet       Quiet mode (no output, except "
-		    @"errors)\n"
-		    @"    -t  --type=       Archive type (gz, lha, tar, tgz, "
-		    @"zip, zoo)\n"
-		    @"    -v  --verbose     Verbose output for file list\n"
-		    @"    -x  --extract     Extract files")];
+		    @"                            (only tar, lha and zoo files)"
+		    @"\n"
+		    @"    -f  --force             Force / overwrite files\n"
+		    @"    -h  --help              Show this help\n"
+		    @"        --iri               Use an IRI to access the "
+		    @"archive\n"
+		    @"    -l  --list              List all files in the archive"
+		    @"\n"
+		    @"    -n  --no-clobber        Never overwrite files\n"
+		    @"    -p  --print             Print one or more files from "
+		    @"the archive\n"
+		    @"    -q  --quiet             Quiet mode (no output, "
+		    @"except errors)\n"
+		    @"    -t  --type=             Archive type (gz, lha, tar, "
+		    @"tgz, zip, zoo)\n"
+		    @"    -v  --verbose           Verbose output for file list"
+		    @"\n"
+		    @"    -x  --extract           Extract files")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -161,7 +168,8 @@ writingNotSupported(OFString *type)
 }
 
 static void
-addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
+addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
+    OFString *archiveComment)
 {
 	OFMutableArray *expandedFiles =
 	    [OFMutableArray arrayWithCapacity: files.count];
@@ -178,16 +186,23 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			[expandedFiles addObject: file];
 	}
 
-	[archive addFiles: expandedFiles];
+	if (expandedFiles.count < 1) {
+		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		    @"Need one or more files to add!")];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	[archive addFiles: expandedFiles archiveComment: archiveComment];
 }
 
 @implementation OFArc
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFString *outputDir, *encodingString, *type;
+	OFString *archiveComment, *outputDir, *encodingString, *type;
 	bool isIRI;
 	const OFOptionsParserOption options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
+		{ 0,   @"archive-comment", 1, NULL, &archiveComment },
 		{ 'c', @"create", 0, NULL, NULL },
 		{ 'C', @"directory", 1, NULL, &outputDir },
 		{ 'E', @"encoding", 1, NULL, &encodingString },
@@ -377,7 +392,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 					      mode: mode
 					  encoding: encoding];
 
-		addFiles(archive, files);
+		addFiles(archive, files, archiveComment);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
@@ -649,8 +664,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		goto error;
 	}
 
-	if ((mode == 'a' || mode == 'c') &&
-	    ![archive respondsToSelector: @selector(addFiles:)]) {
+	if ((mode == 'a' || mode == 'c') && ![archive respondsToSelector:
+	    @selector(addFiles:archiveComment:)]) {
 		writingNotSupported(type);
 		goto error;
 	}
