@@ -82,4 +82,16 @@ static const char string[] = "abcdefghijkl";
 	OTAssertThrowsSpecific([stream lowlevelWriteBuffer: "xyz" length: 4],
 	    OFWriteFailedException);
 }
+
+- (void)testWritingTooMuchThrows
+{
+	char buffer;
+	OFMemoryStream *stream = [OFMemoryStream
+	    streamWithMemoryAddress: &buffer
+			       size: 1
+			   writable: true];
+
+	OTAssertThrowsSpecific([stream writeBuffer: "ab" length: 2],
+	    OFWriteFailedException);
+}
 @end
