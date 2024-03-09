@@ -172,6 +172,7 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil)
 		[self close];
 
+	[_archiveComment release];
 	[_currentEntry release];
 
 	[super dealloc];
@@ -180,7 +181,8 @@ OF_DIRECT_MEMBERS
 - (void)of_readArchiveHeader
 {
 	char headerText[20];
-	uint32_t firstFileOffset;
+	uint32_t firstFileOffset, commentOffset;
+	uint16_t commentLength;
 
 	[_stream readIntoBuffer: headerText exactLength: 20];
 
@@ -202,7 +204,36 @@ OF_DIRECT_MEMBERS
 		@throw [OFUnsupportedVersionException exceptionWithVersion:
 		    [OFString stringWithFormat: @"%" PRIu8, _headerType]];
 
+	commentOffset = [_stream readLittleEndianInt32];
+	commentLength = [_stream readLittleEndianInt16];
+
+	if (commentOffset > 0) {
+		[_stream seekToOffset: commentOffset whence: OFSeekSet];
+		_archiveComment = [_stream readStringWithLength: commentLength
+						       encoding: _encoding];
+	}
+
 	[_stream seekToOffset: firstFileOffset whence: OFSeekSet];
+}
+
+- (OFString *)archiveComment
+{
+	return _archiveComment;
+}
+
+- (void)setArchiveComment: (OFString *)comment
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old;
+
+	if ([comment cStringLengthWithEncoding: _encoding] > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	old = _archiveComment;
+	_archiveComment = [comment copy];
+	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFZooArchiveEntry *)nextEntry
@@ -296,21 +327,33 @@ OF_DIRECT_MEMBERS
 								 object: self];
 
 	if (_lastHeaderOffset == 0) {
+		uint16_t commentLength =
+		    [_archiveComment cStringLengthWithEncoding: _encoding];
+
 		/* First file - write header. */
 		[_stream writeBuffer: "ObjFW Zoo Archive.\x1F" length: 20];
 		[_stream writeLittleEndianInt32: 0xFDC4A7DC];
-		[_stream writeLittleEndianInt32: 42];
-		[_stream writeLittleEndianInt32: -42];
+		[_stream writeLittleEndianInt32: 42 + commentLength];
+		[_stream writeLittleEndianInt32: -(42 + commentLength)];
 		/* TODO: Increase to 0x201 once we add compressed files. */
 		[_stream writeBigEndianInt16: 0x200];
 		/* Header type */
 		[_stream writeInt8: 1];
-		/* Archive comment offset */
-		[_stream writeLittleEndianInt32: 0];
-		/* Archive comment length */
-		[_stream writeLittleEndianInt16: 0];
+
+		if (_archiveComment != nil) {
+			[_stream writeLittleEndianInt32: 42];
+			[_stream writeLittleEndianInt16: commentLength];
+		} else {
+			[_stream writeLittleEndianInt32: 0];
+			[_stream writeLittleEndianInt16: 0];
+		}
+
 		/* Version flag */
 		[_stream writeInt8: 0];
+
+		if (_archiveComment != nil)
+			[_stream writeString: _archiveComment
+				    encoding: _encoding];
 	} else
 		[self of_fixUpLastHeader];
 

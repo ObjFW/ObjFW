@@ -33,6 +33,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFStringEncoding _encoding;
 	uint16_t _minVersionNeeded;
 	uint8_t _headerType;
+	OFString *_Nullable _archiveComment;
 	OFZooArchiveEntry *_Nullable _currentEntry;
 #ifdef OF_ZOO_ARCHIVE_M
 @public
@@ -47,6 +48,11 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The encoding to use for the archive. Defaults to UTF-8.
  */
 @property (nonatomic) OFStringEncoding encoding;
+
+/**
+ * @brief The archive comment.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *archiveComment;
 
 /**
  * @brief Creates a new OFZooArchive object with the specified stream.
