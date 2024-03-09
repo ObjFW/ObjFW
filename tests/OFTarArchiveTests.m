@@ -48,7 +48,7 @@
 
 	[archive close];
 
-	size = [stream seekToOffset: 0 whence: OFSeekCurrent];
+	size = (size_t)[stream seekToOffset: 0 whence: OFSeekCurrent];
 	OTAssertLessThanOrEqual(size, bufferSize);
 
 	stream = [OFMemoryStream streamWithMemoryAddress: _buffer
