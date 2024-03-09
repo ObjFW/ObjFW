@@ -155,6 +155,17 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)listFiles
 {
+	if (app->_outputLevel >= 1 && _archive.archiveComment != nil) {
+		[OFStdOut writeLine: OF_LOCALIZED(
+		    @"list_archive_comment",
+		    @"Archive comment:")];
+		[OFStdOut writeString: @"\t"];
+		[OFStdOut writeLine: [_archive.archiveComment
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"]];
+		[OFStdOut writeLine: @""];
+	}
+
 	for (OFZIPArchiveEntry *entry in _archive.entries) {
 		void *pool = objc_autoreleasePoolPush();
 

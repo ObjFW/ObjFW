@@ -82,6 +82,7 @@
     cannot_print_specific_file_from_gz: [
         "Kann keine spezifische Datei aus einem .gz-Archiv ausgeben!"
     ],
+    list_archive_comment: "Archivkommentar:",
     list_size: [
         "Größe: ",
         [

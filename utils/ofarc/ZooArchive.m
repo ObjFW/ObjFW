@@ -121,6 +121,17 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 {
 	OFZooArchiveEntry *entry;
 
+	if (app->_outputLevel >= 1 && _archive.archiveComment != nil) {
+		[OFStdOut writeLine: OF_LOCALIZED(
+		    @"list_archive_comment",
+		    @"Archive comment:")];
+		[OFStdOut writeString: @"\t"];
+		[OFStdOut writeLine: [_archive.archiveComment
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"]];
+		[OFStdOut writeLine: @""];
+	}
+
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
