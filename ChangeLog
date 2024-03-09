@@ -4,6 +4,19 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.10 -> ObjFW 1.0.11, 2024-03-09
+ * Fixes -[OFHTTPClientResponse isAtEndOfStream] and
+   -[OFGZIPStream isAtEndOfStream].
+ * Fixes how OFZIPArchive handles disk 0 vs. disk 1.
+ * OFLHAArchive and OFZIPArchive create more compatible archives now.
+ * OFLHAArchive ignores padding in level 2 headers now.
+ * ofarc correctly sets modification dates of directories now by delaying
+   setting those until after all files have been extracted.
+ * Fixes a linker warning on macOS/iOS.
+ * Several minor documentation fixes.
+ * OFFileIRIHandler correctly transforms exceptions now so that they use an IRI
+   and not a path.
+
 ObjFW 1.0.9 -> ObjFW 1.0.10, 2024-02-24
  * Fixes objc_getClassList() not releasing the global runtime mutex.
  * Improves OFLHAArchive's compatibility with non-standard archives.
