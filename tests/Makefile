@@ -59,6 +59,7 @@ SRCS = ForwardingTests.m			\
        OFStreamTests.m				\
        OFStringTests.m				\
        OFSystemInfoTests.m			\
+       OFTarArchiveTests.m			\
        OFUTF8StringTests.m			\
        OFValueTests.m				\
        OFXMLElementBuilderTests.m		\
