@@ -63,6 +63,7 @@ SRCS = ForwardingTests.m			\
        OFXMLElementBuilderTests.m		\
        OFXMLNodeTests.m				\
        OFXMLParserTests.m			\
+       OFZIPArchiveTests.m			\
        ${RUNTIME_ARC_TESTS_M}			\
        RuntimeTests.m				\
        ${USE_SRCS_PLUGINS}			\
