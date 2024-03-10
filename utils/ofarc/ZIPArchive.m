@@ -133,7 +133,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFIRI *IRI;
 
-	if ([_archiveIRI.path.pathExtension caseInsensitiveCompare: @"zip"] !=
+	if ([_archiveIRI.pathExtension caseInsensitiveCompare: @"zip"] !=
 	    OFOrderedSame)
 		return nil;
 
@@ -146,7 +146,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		OFMutableIRI *copy = [[_archiveIRI mutableCopy] autorelease];
 		[copy deletePathExtension];
 		[copy appendPathExtension: [OFString
-		    stringWithFormat: @".z%02u", partNumber + 1]];
+		    stringWithFormat: @"z%02u", partNumber + 1]];
 		[copy makeImmutable];
 		IRI = copy;
 	}
