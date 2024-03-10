@@ -998,7 +998,7 @@ OF_SINGLETON_METHODS
 	OFIRI *IRI;
 
 	@try {
-		IRI = [OFIRI fileIRIWithPath: path];
+		IRI = [OFIRI fileIRIWithPath: path isDirectory: false];
 	} @catch (id e) {
 		[self release];
 		@throw e;
