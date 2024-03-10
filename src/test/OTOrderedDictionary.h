@@ -28,6 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @warning This class is only for testing! It is slow and only to be used to
  *	    test extensions of OFDictionary, for example serializations such as
  *	    JSON, where it is desirable to compare to an expected output.
+ *
+ * @note ABI stability for this and all other classes in ObjFWTest is not
+ *	 guaranteed! The assumption is that you recompile your tests after
+ *	 updating ObjFWTest.
  */
 @interface OTOrderedDictionary: OFDictionary
 {

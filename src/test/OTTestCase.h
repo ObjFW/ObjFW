@@ -27,6 +27,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * All methods with the prefix `test` that take no arguments of all classes
  * that subclass this class are automatically executed by ObjFWTest.
+ *
+ * @note ABI stability for this and all other classes in ObjFWTest is not
+ *	 guaranteed! The assumption is that you recompile your tests after
+ *	 updating ObjFWTest.
  */
 @interface OTTestCase: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES
