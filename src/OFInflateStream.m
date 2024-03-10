@@ -328,6 +328,9 @@ start:
 		tmp = (uint16_t)[_stream readIntoBuffer: buffer + bytesWritten
 						 length: tmp];
 
+		if OF_UNLIKELY (tmp == 0)
+			return bytesWritten;
+
 		slidingWindow = _slidingWindow;
 		slidingWindowIndex = _slidingWindowIndex;
 		for (uint_fast16_t i = 0; i < tmp; i++) {
