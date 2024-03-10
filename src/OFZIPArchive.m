@@ -322,6 +322,9 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumberPtr,
 		@throw [OFInvalidFormatException exception];
 
 	_diskNumber = _lastDiskNumber = [_stream readLittleEndianInt16];
+	if (_diskNumber == 0)
+		_diskNumber = _lastDiskNumber = 1;
+
 	_centralDirectoryDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntriesInDisk = [_stream readLittleEndianInt16];
 	_centralDirectoryEntries = [_stream readLittleEndianInt16];
