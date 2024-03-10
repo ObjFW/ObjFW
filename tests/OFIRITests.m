@@ -339,6 +339,25 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    OFInvalidFormatException);
 }
 
+- (void)testIRIByAppendingPathComponent
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component"]
+	    IRIByAppendingPathComponent: @"foo/bar"] path],
+	    @"/path/component/foo/bar");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component/"]
+	    IRIByAppendingPathComponent: @"foo/bar"] path],
+	    @"/path/component/foo/bar");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component/"]
+	    IRIByAppendingPathComponent: @"foo/bar"
+			    isDirectory: true] path],
+	    @"/path/component/foo/bar/");
+}
+
 - (void)testIRIByAddingPercentEncodingForUnicodeCharacters
 {
 	OTAssertEqualObjects(
