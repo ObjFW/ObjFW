@@ -1313,6 +1313,14 @@ merge(OFString *base, OFString *path)
 	return IRI;
 }
 
+- (OFIRI *)IRIByDeletingLastPathComponent
+{
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI deleteLastPathComponent];
+	[IRI makeImmutable];
+	return IRI;
+}
+
 - (OFIRI *)IRIByStandardizingPath
 {
 	OFMutableIRI *IRI = [[self mutableCopy] autorelease];

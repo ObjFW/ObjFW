@@ -358,6 +358,29 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    @"/path/component/foo/bar/");
 }
 
+- (void)testIRIByDeletingLastPathComponent
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component"]
+	    IRIByDeletingLastPathComponent] path], @"/path/");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/directory/"]
+	    IRIByDeletingLastPathComponent] path], @"/path/");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path"]
+	    IRIByDeletingLastPathComponent] path], @"/");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/"]
+	    IRIByDeletingLastPathComponent] path], @"/");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host"]
+	    IRIByDeletingLastPathComponent] path], @"");
+}
+
 - (void)testIRIByAddingPercentEncodingForUnicodeCharacters
 {
 	OTAssertEqualObjects(

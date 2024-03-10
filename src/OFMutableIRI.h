@@ -209,6 +209,11 @@ OF_ASSUME_NONNULL_BEGIN
 		isDirectory: (bool)isDirectory;
 
 /**
+ * @brief Deletes the last path component.
+ */
+- (void)deleteLastPathComponent;
+
+/**
  * @brief Resolves relative subpaths.
  */
 - (void)standardizePath;

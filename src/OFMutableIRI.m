@@ -377,6 +377,34 @@
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)deleteLastPathComponent
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path = _percentEncodedPath;
+	size_t pos;
+
+	if (path.length == 0 || [path isEqual: @"/"]) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	if ([path hasSuffix: @"/"])
+		 path = [path substringToIndex: path.length - 1];
+
+	pos = [path rangeOfString: @"/"
+			  options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	path = [path substringToIndex: pos + 1];
+	[_percentEncodedPath release];
+	_percentEncodedPath = [path retain];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)standardizePath
 {
 	void *pool = objc_autoreleasePoolPush();

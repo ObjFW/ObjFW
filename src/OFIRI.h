@@ -162,6 +162,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFIRI *IRIByStandardizingPath;
 
 /**
+ * @brief The IRI with the last path component deleted.
+ */
+@property (readonly, nonatomic) OFIRI *IRIByDeletingLastPathComponent;
+
+/**
  * @brief The IRI with percent-encoding added for all Unicode characters.
  */
 @property (readonly, nonatomic)
