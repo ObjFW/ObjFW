@@ -348,12 +348,12 @@
 		@throw [OFOutOfRangeException exception];
 
 	fileNameLength = [_fileName cStringLengthWithEncoding: encoding];
-	if (fileNameLength > UINT8_MAX)
+	if (fileNameLength > UINT8_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 	directoryNameLength =
 	    [_directoryName cStringLengthWithEncoding: encoding];
-	if (directoryNameLength > UINT8_MAX)
+	if (directoryNameLength > UINT8_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 	[data addItems: "\xDC\xA7\xC4\xFD" count: 4];
@@ -412,6 +412,12 @@
 	 * include the next header offset.
 	 */
 	[data increaseCountBy: 2];
+
+	/* Include \0 */
+	if (fileNameLength > 0)
+		fileNameLength++;
+	if (directoryNameLength > 0)
+		directoryNameLength++;
 
 	tmp8 = (uint8_t)fileNameLength;
 	[data addItem: &tmp8];
