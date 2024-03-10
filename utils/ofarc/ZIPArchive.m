@@ -144,8 +144,9 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		IRI = _archiveIRI;
 	else {
 		OFMutableIRI *copy = [[_archiveIRI mutableCopy] autorelease];
-		copy.path = [_archiveIRI.path.stringByDeletingPathExtension
-		    stringByAppendingFormat: @".z%02u", partNumber + 1];
+		[copy deletePathExtension];
+		[copy appendPathExtension: [OFString
+		    stringWithFormat: @".z%02u", partNumber + 1]];
 		[copy makeImmutable];
 		IRI = copy;
 	}

@@ -1155,6 +1155,27 @@ merge(OFString *base, OFString *path)
 	return [ret autorelease];
 }
 
+- (OFString *)pathExtension
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret, *fileName;
+	size_t pos;
+
+	fileName = self.lastPathComponent;
+	pos = [fileName rangeOfString: @"."
+			      options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound || pos == 0) {
+		objc_autoreleasePoolPop(pool);
+		return @"";
+	}
+
+	ret = [fileName substringFromIndex: pos + 1];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+	return [ret autorelease];
+}
+
 - (OFString *)query
 {
 	return _percentEncodedQuery.stringByRemovingPercentEncoding;
@@ -1317,6 +1338,22 @@ merge(OFString *base, OFString *path)
 {
 	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
 	[IRI deleteLastPathComponent];
+	[IRI makeImmutable];
+	return IRI;
+}
+
+- (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension
+{
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI appendPathExtension: extension];
+	[IRI makeImmutable];
+	return IRI;
+}
+
+- (OFIRI *)IRIByDeletingPathExtension
+{
+	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	[IRI deletePathExtension];
 	[IRI makeImmutable];
 	return IRI;
 }

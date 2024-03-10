@@ -114,6 +114,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, copy, nonatomic) OFString *lastPathComponent;
 
 /**
+ * @brief The path extension of the IRI.
+ */
+@property (readonly, copy, nonatomic) OFString *pathExtension;
+
+/**
  * @brief The query part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
@@ -165,6 +170,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The IRI with the last path component deleted.
  */
 @property (readonly, nonatomic) OFIRI *IRIByDeletingLastPathComponent;
+
+/**
+ * @brief The IRI with the path extension deleted.
+ */
+@property (readonly, nonatomic) OFIRI *IRIByDeletingPathExtension;
 
 /**
  * @brief The IRI with percent-encoding added for all Unicode characters.
@@ -306,6 +316,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory;
+
+/**
+ * @brief Returns a new IRI with the specified path extension appended.
+ *
+ * @param extension The path extension to append
+ * @return A new IRI with the specified path extension appended.
+ */
+- (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension;
 @end
 
 @interface OFCharacterSet (IRICharacterSets)

@@ -126,8 +126,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		return;
 	}
 
-	/* FIXME: Should use IRI-specific path extension deletion. */
-	fileName = _archiveIRI.lastPathComponent.stringByDeletingPathExtension;
+	fileName = _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (app->_outputLevel >= 0)
 		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
@@ -164,9 +163,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
-	/* FIXME: Should use IRI-specific path extension deletion. */
-	OFString *fileName = _archiveIRI.lastPathComponent
-	    .stringByDeletingPathExtension;
+	OFString *fileName =
+	    _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (files.count > 0) {
 		[OFStdErr writeLine: OF_LOCALIZED(

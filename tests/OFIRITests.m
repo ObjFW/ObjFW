@@ -290,6 +290,17 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	OTAssertEqualObjects(_IRI[4].lastPathComponent, @"foo/bar");
 }
 
+- (void)testPathExtension
+{
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://host/path.dir/path.file"]
+	    pathExtension], @"file");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://host/path/path.dir/"]
+	    pathExtension], @"dir");
+}
+
 - (void)testQuery
 {
 	OTAssertEqualObjects(_IRI[0].query, @"que#ry=1&f&oo=b=ar");
@@ -379,6 +390,32 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	OTAssertEqualObjects(
 	    [[[OFIRI IRIWithString: @"http://host"]
 	    IRIByDeletingLastPathComponent] path], @"");
+}
+
+- (void)testIRIByAppendingPathExtension
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path.dir/path"]
+	    IRIByAppendingPathExtension: @"file"] path],
+	    @"/path.dir/path.file");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/path/"]
+	    IRIByAppendingPathExtension: @"dir"] path],
+	    @"/path/path.dir/");
+}
+
+- (void)testIRIByDeletingPathExtension
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path.dir/path.file"]
+	    IRIByDeletingPathExtension] path],
+	    @"/path.dir/path");
+
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/path.dir/"]
+	    IRIByDeletingPathExtension] path],
+	    @"/path/path/");
 }
 
 - (void)testIRIByAddingPercentEncodingForUnicodeCharacters

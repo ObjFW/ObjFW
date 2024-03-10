@@ -324,22 +324,15 @@
 
 - (void)appendPathComponent: (OFString *)component
 {
-	[self appendPathComponent: component isDirectory: false];
+	bool isDirectory = false;
 
 #ifdef OF_HAVE_FILES
 	if ([_scheme isEqual: @"file"] &&
-	    ![_percentEncodedPath hasSuffix: @"/"] &&
-	    [[OFFileManager defaultManager] directoryExistsAtIRI: self]) {
-		void *pool = objc_autoreleasePoolPush();
-		OFString *path = [_percentEncodedPath
-		    stringByAppendingString: @"/"];
-
-		[_percentEncodedPath release];
-		_percentEncodedPath = [path retain];
-
-		objc_autoreleasePoolPop(pool);
-	}
+	    [[OFFileManager defaultManager] directoryExistsAtIRI: self])
+		isDirectory = true;
 #endif
+
+	[self appendPathComponent: component isDirectory: isDirectory];
 }
 
 - (void)appendPathComponent: (OFString *)component
@@ -377,6 +370,39 @@
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)appendPathExtension: (OFString *)extension
+{
+	void *pool;
+	OFMutableString *path;
+	bool isDirectory = false;
+
+	if (_percentEncodedPath.length == 0)
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	path = [[_percentEncodedPath mutableCopy] autorelease];
+
+	extension = [extension
+	    stringByAddingPercentEncodingWithAllowedCharacters:
+	    [OFCharacterSet IRIPathAllowedCharacterSet]];
+
+	if ([path hasSuffix: @"/"]) {
+		[path deleteCharactersInRange: OFMakeRange(path.length - 1, 1)];
+		isDirectory = true;
+	}
+
+	[path appendFormat: @".%@", extension];
+
+	if (isDirectory)
+		[path appendString: @"/"];
+
+	[path makeImmutable];
+	[_percentEncodedPath release];
+	_percentEncodedPath = [path retain];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)deleteLastPathComponent
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -389,7 +415,7 @@
 	}
 
 	if ([path hasSuffix: @"/"])
-		 path = [path substringToIndex: path.length - 1];
+		path = [path substringToIndex: path.length - 1];
 
 	pos = [path rangeOfString: @"/"
 			  options: OFStringSearchBackwards].location;
@@ -399,6 +425,37 @@
 	}
 
 	path = [path substringToIndex: pos + 1];
+	[_percentEncodedPath release];
+	_percentEncodedPath = [path retain];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)deletePathExtension
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableString *path = [[_percentEncodedPath mutableCopy] autorelease];
+	bool isDirectory = false;
+	size_t pos;
+
+	if ([path hasSuffix: @"/"]) {
+		[path deleteCharactersInRange: OFMakeRange(path.length - 1, 1)];
+		isDirectory = true;
+	}
+
+	pos = [path rangeOfString: @"."
+			  options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	[path deleteCharactersInRange: OFMakeRange(pos, path.length - pos)];
+
+	if (isDirectory)
+		[path appendString: @"/"];
+
+	[path makeImmutable];
 	[_percentEncodedPath release];
 	_percentEncodedPath = [path retain];
 

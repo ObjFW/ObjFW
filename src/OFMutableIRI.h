@@ -209,9 +209,21 @@ OF_ASSUME_NONNULL_BEGIN
 		isDirectory: (bool)isDirectory;
 
 /**
+ * @brief Appends the specified path extension
+ *
+ * @param extension The path extension to append
+ */
+- (void)appendPathExtension: (OFString *)extension;
+
+/**
  * @brief Deletes the last path component.
  */
 - (void)deleteLastPathComponent;
+
+/**
+ * @brief Deletes the path extension.
+ */
+- (void)deletePathExtension;
 
 /**
  * @brief Resolves relative subpaths.
