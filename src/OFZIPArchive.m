@@ -662,7 +662,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_stream writeLittleEndianInt32: _diskNumber];
 	[_stream writeLittleEndianInt64:
 	    _centralDirectoryOffset + _centralDirectorySize];
-	[_stream writeLittleEndianInt32: 1];	/* Total number of disks */
+	[_stream writeLittleEndianInt32: 0];	/* Total number of disks */
 
 	/* End of central directory */
 	[_stream writeLittleEndianInt32: 0x06054B50];
