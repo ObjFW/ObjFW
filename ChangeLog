@@ -4,6 +4,15 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.11 -> ObjFW 1.0.12, 2024-03-11
+ * Fixes a regression in OFZIPArchive that was introduced in 1.0.11 that
+   resulted in failing to extract archives and creating broken archives.
+ * Fixes a rare condition where OFInflateStream could end up in an endless
+   loop.
+ * Fixes OFTarArchiveEntry not having a default date, which could result in
+   messaging nil on a FP return, which yielded invalid results on 32-bit x86
+   with GCC.
+
 ObjFW 1.0.10 -> ObjFW 1.0.11, 2024-03-09
  * Fixes -[OFHTTPClientResponse isAtEndOfStream] and
    -[OFGZIPStream isAtEndOfStream].
