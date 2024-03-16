@@ -168,11 +168,20 @@
 {
 	OFString *oldDirectoryPath = _fileManager.currentDirectoryPath;
 
+	OTAssertFalse([_fileManager fileExistsAtPath: @"test.txt"]);
+
 	[_fileManager changeCurrentDirectoryPath:
 	    _testsDirectoryIRI.fileSystemRepresentation];
-	OTAssertEqualObjects(_fileManager.currentDirectoryPath,
-	    _testsDirectoryIRI.fileSystemRepresentation);
-
-	[_fileManager changeCurrentDirectoryPath: oldDirectoryPath];
+	@try {
+		/*
+		 * We can't check whether currentDirectoryPath is
+		 * _testsDirectoryIRI.fileSystemRepresentation because they
+		 * could be different due to symlinks. Therefore check for
+		 * presence of test.txt instead.
+		 */
+		OTAssertTrue([_fileManager fileExistsAtPath: @"test.txt"]);
+	} @finally {
+		[_fileManager changeCurrentDirectoryPath: oldDirectoryPath];
+	}
 }
 @end
