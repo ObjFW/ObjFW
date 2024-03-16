@@ -69,6 +69,7 @@ SRCS = ForwardingTests.m			\
        OFZooArchiveTests.m			\
        ${RUNTIME_ARC_TESTS_M}			\
        RuntimeTests.m				\
+       ${USE_SRCS_FILES}			\
        ${USE_SRCS_PLUGINS}			\
        ${USE_SRCS_SOCKETS}			\
        ${USE_SRCS_SUBPROCESSES}			\
@@ -76,6 +77,7 @@ SRCS = ForwardingTests.m			\
        ${USE_SRCS_WINDOWS}			\
        testfile_bin.m				\
        testfile_ini.m
+SRCS_FILES = OFFileManagerTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
