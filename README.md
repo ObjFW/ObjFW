@@ -94,9 +94,10 @@ other place, you are most likely using a mirror.
   NetBSD                     | `cd /usr/pkgsrc/devel/objfw && make install`
   OpenBSD                    | `doas pkg_add objfw`
   OpenIndiana                | `sudo pkg install developer/objfw`
-  Windows (MSYS2/MINGW32)    | `pacman -S mingw-w64-i686-objfw`
   Windows (MSYS2/CLANG64)    | `pacman -S mingw-w64-clang-x86_64-objfw`
   Windows (MSYS2/CLANGARM64) | `pacman -S mingw-w64-clang-aarch64-objfw`
+  Windows (MSYS2/UCRT64)     | `pacman -S mingw-w64-ucrt-x86_64-objfw`
+  Windows (MSYS2/MINGW32)    | `pacman -S mingw-w64-i686-objfw`
 
   If your operating system is not listed, you can
   <a href="#building-from-source">build ObjFW from source</a>.  
@@ -136,18 +137,18 @@ other place, you are most likely using a mirror.
 
   Clone the Fossil repository like this:
 
-    $ fossil clone https://objfw.nil.im
+    fossil clone https://objfw.nil.im
 
   You can then use Fossil's web interface to browse the timeline, tickets,
   wiki pages, etc.:
 
-    $ cd objfw
-    $ fossil ui
+    cd objfw
+    fossil ui
 
   In order to verify the signature of the currently checked out checkin, you
   can use:
 
-    $ fossil artifact current | gpg --verify
+    fossil artifact current | gpg --verify
 
   Please note that not all checkins are signed, as the signing key only resides
   on trusted systems. This means that checkins I perform on e.g. Windows are
@@ -159,7 +160,7 @@ other place, you are most likely using a mirror.
 
   To clone the Git repository, use the following:
 
-    $ git clone https://github.com/ObjFW/ObjFW
+    git clone https://github.com/ObjFW/ObjFW
 
   Git commits are not signed, so if you want to check the signature of an
   individual commit, branch head or tag, please use Fossil.
@@ -168,15 +169,15 @@ other place, you are most likely using a mirror.
 
   To build ObjFW from source and install it, just run the following commands:
 
-    $ ./configure
-    $ make
-    $ make check
-    $ sudo make install
+    ./configure
+    make
+    make check
+    sudo make install
 
   In case you checked out ObjFW from the Fossil or Git repository, you need to
   run the following command first:
 
-    $ ./autogen.sh
+    ./autogen.sh
 
 <h2 id="macos-and-ios">macOS and iOS</h2>
 
@@ -192,19 +193,19 @@ other place, you are most likely using a mirror.
   To build for iOS, follow the regular instructions, but instead of
   `./configure` do something like this:
 
-    $ clang="xcrun --sdk iphoneos clang"
-    $ export OBJC="$clang -arch arm64e -arch arm64"
-    $ export OBJCPP="$clang -arch arm64e -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
-    $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
+    clang="xcrun --sdk iphoneos clang"
+    export OBJC="$clang -arch arm64e -arch arm64"
+    export OBJCPP="$clang -arch arm64e -E"
+    export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
   To build for the iOS simulator, follow the regular instructions, but instead
   of `./configure` use something like this:
 
-    $ clang="xcrun --sdk iphonesimulator clang"
-    $ export OBJC="$clang -arch $(uname -m)"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
-    $ ./configure --prefix=/usr/local/iossim --host=$(uname -m)-apple-darwin
+    clang="xcrun --sdk iphonesimulator clang"
+    export OBJC="$clang -arch $(uname -m)"
+    export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    ./configure --prefix=/usr/local/iossim --host=$(uname -m)-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
@@ -260,27 +261,37 @@ other place, you are most likely using a mirror.
 
   For CLANG64, use:
 
-    $ pacman -Syu mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-fossil
+    pacman -Syu mingw-w64-clang-x86_64-clang \
+                mingw-w64-clang-x86_64-fossil \
+                mingw-w64-clang-x86_64-openssl
 
   For CLANG32, use:
 
-    $ pacman -Syu mingw-w64-clang-i686-clang mingw-w64-clang-i686-fossil
+    pacman -Syu mingw-w64-clang-i686-clang \
+                mingw-w64-clang-i686-fossil \
+                mingw-w64-clang-i686-openssl
 
   For CLANGARM64, use (you need to use Fossil via another environment):
 
-    $ pacman -Syu mingw-w64-clang-aarch64-clang
+    pacman -Syu mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-openssl
 
   For MINGW64, use:
 
-    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
+    pacman -Syu mingw-w64-x86_64-clang \
+                mingw-w64-x86_64-fossil \
+                mingw-w64-x86_64-openssl
 
   For MINGW32, use:
 
-    $ pacman -Syu mingw-w64-i686-clang mingw-w64-i686-fossil
+    pacman -Syu mingw-w64-i686-clang \
+                mingw-w64-i686-fossil \
+                mingw-w64-i686-openssl
 
   For UCRT64, use:
 
-    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
+    pacman -Syu mingw-w64-ucrt-x86_64-clang \
+                mingw-w64-ucrt-x86_64-fossil \
+                mingw-w64-ucrt-x86_64-openssl
 
   When using `pacman` to install the packages, `pacman` might tell you to close
   the window. If it does so, close the window, restart MSYS2 and execute the
@@ -292,19 +303,19 @@ other place, you are most likely using a mirror.
 
   Finally, install a few more things that are common between all environments:
 
-    $ pacman -S autoconf automake make
+    pacman -S autoconf automake make
 
 <h3 id="steps-windows">Getting, building and installing ObjFW</h3>
 
   Start the MSYS2 using the shortcut for the environment you want to use and
   check out ObjFW:
 
-    $ fossil clone https://objfw.nil.im
+    fossil clone https://objfw.nil.im
 
   You can also download a release tarball if you want. Now `cd` to the newly
   checked out repository and build and install it:
 
-    $ ./autogen.sh && ./configure && make -j16 install
+    ./autogen.sh && ./configure && make -j16 install
 
   If everything was successful, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
@@ -317,33 +328,33 @@ other place, you are most likely using a mirror.
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=arm-none-eabi --with-nds
+    ./configure --host=arm-none-eabi --with-nds
 
 <h3 id="nintendo-3ds">Nintendo 3DS</h3>
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=arm-none-eabi --with-3ds
+    ./configure --host=arm-none-eabi --with-3ds
 
 <h3 id="wii">Wii</h3>
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=powerpc-eabi --with-wii
+    ./configure --host=powerpc-eabi --with-wii
 
 <h2 id="amiga">Amiga</h2>
 
   Install [amiga-gcc](https://github.com/bebbo/amiga-gcc). Then follow the
   normal process, but instead of `./configure` run:
 
-    $ ./configure --host=m68k-amigaos
+    ./configure --host=m68k-amigaos
 
 
 <h1 id="first-app">Writing your first application with ObjFW</h1>
 
   To create your first, empty application, you can use `objfw-new`:
 
-    $ objfw-new --app MyFirstApp
+    objfw-new --app MyFirstApp
 
   This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching:]`
   method is called as soon as ObjFW finished all initialization. Use this as
@@ -354,7 +365,7 @@ other place, you are most likely using a mirror.
 
   You can compile your new app using `objfw-compile`:
 
-    $ objfw-compile -o MyFirstApp MyFirstApp.m
+    objfw-compile -o MyFirstApp MyFirstApp.m
 
   `objfw-compile` is a tool that allows building applications and libraries
   using ObjFW without needing a full-blown build system. If you want to use
@@ -371,7 +382,7 @@ other place, you are most likely using a mirror.
   installed. Once installed, you can build the documentation from the root
   directory of the repository:
 
-    $ make docs
+    make docs
 
 
 <h1 id="bugs">Bugs and feature requests</h1>
