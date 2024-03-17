@@ -1,0 +1,30 @@
+name: msys2
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        sys:
+          # Broken: Exceptions with ARC fail. Works with other mingw-w64
+          # distributions.
+          #- mingw32
+          - mingw64
+          - ucrt64
+          - clang32
+          - clang64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: ${{matrix.sys}}
+          install: autoconf automake make
+          pacboy: clang:p openssl:p
+      - shell: msys2 {0}
+        run: |
+          ./autogen.sh
+          ./configure OBJC=clang
+          make -j4
+          make check
+          make install
