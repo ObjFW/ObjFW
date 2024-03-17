@@ -346,4 +346,41 @@
 	    @"test");
 }
 #endif
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+- (void)testExtendedAttributes
+{
+	OFData *data = [OFData dataWithItems: "test" count: 4];
+	OFString *testFilePath = _testFileIRI.fileSystemRepresentation;
+	OFFileAttributes attributes;
+	OFArray *extendedAttributeNames;
+
+	[_fileManager setExtendedAttributeData: data
+				       forName: @"user.test"
+				  ofItemAtPath: testFilePath];
+
+	attributes = [_fileManager attributesOfItemAtIRI: _testFileIRI];
+	extendedAttributeNames =
+	    [attributes objectForKey: OFFileExtendedAttributesNames];
+	OTAssertNotNil(extendedAttributeNames);
+	OTAssertTrue([extendedAttributeNames containsObject: @"user.test"]);
+	OTAssertEqualObjects(
+	    [_fileManager extendedAttributeDataForName: @"user.test"
+					  ofItemAtPath: testFilePath],
+	    data);
+
+	[_fileManager removeExtendedAttributeForName: @"user.test"
+					ofItemAtPath: testFilePath];
+
+	attributes = [_fileManager attributesOfItemAtIRI: _testFileIRI];
+	extendedAttributeNames =
+	    [attributes objectForKey: OFFileExtendedAttributesNames];
+	OTAssertNotNil(extendedAttributeNames);
+	OTAssertFalse([extendedAttributeNames containsObject: @"user.test"]);
+	OTAssertThrowsSpecific(
+	    [_fileManager extendedAttributeDataForName: @"user.test"
+					  ofItemAtPath: testFilePath],
+	    OFGetItemAttributesFailedException);
+}
+#endif
 @end
