@@ -165,6 +165,8 @@ lastError(void)
 		return ENOENT;
 	case ERROR_ACCESS_DENIED:
 		return EACCES;
+	case ERROR_PRIVILEGE_NOT_HELD:
+		return EPERM;
 	case ERROR_DIRECTORY:
 		return ENOTDIR;
 	case ERROR_NOT_READY:

@@ -184,4 +184,166 @@
 		[_fileManager changeCurrentDirectoryPath: oldDirectoryPath];
 	}
 }
+
+- (void)testCopyItemAtPathToPath
+{
+	OFIRI *sourceIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"source"];
+	OFIRI *destinationIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"destination"];
+	OFIRI *subdirectory1IRI = [sourceIRI
+	    IRIByAppendingPathComponent: @"a"];
+	OFIRI *subdirectory2IRI = [sourceIRI
+	    IRIByAppendingPathComponent: @"b"];
+	OFIRI *file1IRI = [subdirectory1IRI
+	    IRIByAppendingPathComponent: @"1.txt"];
+	OFIRI *file2IRI = [subdirectory2IRI
+	    IRIByAppendingPathComponent: @"2.txt"];
+
+	[_fileManager createDirectoryAtIRI: subdirectory1IRI
+			     createParents: true];
+	[_fileManager createDirectoryAtIRI: subdirectory2IRI
+			     createParents: true];
+	[@"1" writeToIRI: file1IRI];
+	[@"2" writeToIRI: file2IRI];
+
+	subdirectory1IRI = [destinationIRI IRIByAppendingPathComponent: @"a"];
+	subdirectory2IRI = [destinationIRI IRIByAppendingPathComponent: @"b"];
+	file1IRI = [subdirectory1IRI IRIByAppendingPathComponent: @"1.txt"];
+	file2IRI = [subdirectory2IRI IRIByAppendingPathComponent: @"2.txt"];
+
+	OTAssertFalse([_fileManager directoryExistsAtIRI: subdirectory1IRI]);
+	OTAssertFalse([_fileManager directoryExistsAtIRI: subdirectory2IRI]);
+	OTAssertFalse([_fileManager fileExistsAtIRI: file1IRI]);
+	OTAssertFalse([_fileManager fileExistsAtIRI: file2IRI]);
+
+	[_fileManager copyItemAtPath: sourceIRI.fileSystemRepresentation
+			      toPath: destinationIRI.fileSystemRepresentation];
+
+	OTAssertTrue([_fileManager directoryExistsAtIRI: subdirectory1IRI]);
+	OTAssertTrue([_fileManager directoryExistsAtIRI: subdirectory2IRI]);
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: file1IRI],
+	    @"1");
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: file2IRI],
+	    @"2");
+}
+
+- (void)testMoveItemAtPathToPath
+{
+	OFIRI *sourceIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"source"];
+	OFIRI *destinationIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"destination"];
+	OFIRI *subdirectory1IRI = [sourceIRI
+	    IRIByAppendingPathComponent: @"a"];
+	OFIRI *subdirectory2IRI = [sourceIRI
+	    IRIByAppendingPathComponent: @"b"];
+	OFIRI *file1IRI = [subdirectory1IRI
+	    IRIByAppendingPathComponent: @"1.txt"];
+	OFIRI *file2IRI = [subdirectory2IRI
+	    IRIByAppendingPathComponent: @"2.txt"];
+
+	[_fileManager createDirectoryAtIRI: subdirectory1IRI
+			     createParents: true];
+	[_fileManager createDirectoryAtIRI: subdirectory2IRI
+			     createParents: true];
+	[@"1" writeToIRI: file1IRI];
+	[@"2" writeToIRI: file2IRI];
+
+	[_fileManager moveItemAtPath: sourceIRI.fileSystemRepresentation
+			      toPath: destinationIRI.fileSystemRepresentation];
+
+	OTAssertFalse([_fileManager directoryExistsAtIRI: subdirectory1IRI]);
+	OTAssertFalse([_fileManager directoryExistsAtIRI: subdirectory2IRI]);
+	OTAssertFalse([_fileManager fileExistsAtIRI: file1IRI]);
+	OTAssertFalse([_fileManager fileExistsAtIRI: file2IRI]);
+
+	subdirectory1IRI = [destinationIRI IRIByAppendingPathComponent: @"a"];
+	subdirectory2IRI = [destinationIRI IRIByAppendingPathComponent: @"b"];
+	file1IRI = [subdirectory1IRI IRIByAppendingPathComponent: @"1.txt"];
+	file2IRI = [subdirectory2IRI IRIByAppendingPathComponent: @"2.txt"];
+
+	OTAssertTrue([_fileManager directoryExistsAtIRI: subdirectory1IRI]);
+	OTAssertTrue([_fileManager directoryExistsAtIRI: subdirectory2IRI]);
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: file1IRI],
+	    @"1");
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: file2IRI],
+	    @"2");
+}
+
+- (void)testRemoveItemAtPath
+{
+	OFIRI *subdirectoryIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"dir"];
+	OFIRI *fileIRI = [subdirectoryIRI
+	    IRIByAppendingPathComponent: @"file.txt"];
+
+	[_fileManager createDirectoryAtIRI: subdirectoryIRI];
+	[@"file" writeToIRI: fileIRI];
+
+	OTAssertTrue([_fileManager directoryExistsAtIRI: subdirectoryIRI]);
+	OTAssertTrue([_fileManager fileExistsAtIRI: fileIRI]);
+
+	[_fileManager removeItemAtPath:
+	    subdirectoryIRI.fileSystemRepresentation];
+
+	OTAssertFalse([_fileManager fileExistsAtIRI: fileIRI]);
+	OTAssertFalse([_fileManager directoryExistsAtIRI: subdirectoryIRI]);
+}
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
+- (void)testLinkItemAtPathToPath
+{
+	OFIRI *sourceIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"source"];
+	OFIRI *destinationIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"destination"];
+	OFFileAttributes attributes;
+
+	[@"test" writeToIRI: sourceIRI];
+
+	[_fileManager linkItemAtPath: sourceIRI.fileSystemRepresentation
+			      toPath: destinationIRI.fileSystemRepresentation];
+
+	attributes = [_fileManager attributesOfItemAtIRI: destinationIRI];
+	OTAssertEqual(attributes.fileType, OFFileTypeRegular);
+	OTAssertEqual(attributes.fileSize, 4);
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: destinationIRI],
+	    @"test");
+}
+#endif
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
+- (void)testCreateSymbolicLinkAtPathWithDestinationPath
+{
+	OFIRI *sourceIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"source"];
+	OFIRI *destinationIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"destination"];
+	OFFileAttributes attributes;
+
+	[@"test" writeToIRI: sourceIRI];
+
+	@try {
+		OFString *sourcePath = sourceIRI.fileSystemRepresentation;
+		OFString *destinationPath =
+		    destinationIRI.fileSystemRepresentation;
+
+		[_fileManager createSymbolicLinkAtPath: destinationPath
+				   withDestinationPath: sourcePath];
+	} @catch (OFCreateSymbolicLinkFailedException *e) {
+		if (e.errNo == EPERM)
+			OTSkip(@"No permission to create symlink.\n"
+			    @"On Windows, only the administrator can create "
+			    @"symbolic links.");
+		else
+			@throw e;
+	}
+
+	attributes = [_fileManager attributesOfItemAtIRI: destinationIRI];
+	OTAssertEqual(attributes.fileType, OFFileTypeSymbolicLink);
+	OTAssertEqualObjects([OFString stringWithContentsOfIRI: destinationIRI],
+	    @"test");
+}
+#endif
 @end
