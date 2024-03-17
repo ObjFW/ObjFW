@@ -1,8 +1,8 @@
-name: macos-12
+name: macos-latest
 on: [push, pull_request]
 jobs:
   tests:
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       matrix:
         configure_flags:
