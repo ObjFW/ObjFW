@@ -280,9 +280,12 @@ isSubclassOfClass(Class class, Class superclass)
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
 			[OFStdOut setForegroundColor: [OFColor maroon]];
 			[OFStdOut writeLine: @"]: failed"];
-			[OFStdOut writeLine: description];
 		} else
 			[OFStdOut writeLine: @"failed"];
+
+		if (description != nil)
+			[OFStdOut writeLine: description];
+
 		break;
 	case StatusSkipped:
 		if (OFStdOut.hasTerminal) {
