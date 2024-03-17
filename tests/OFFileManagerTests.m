@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
