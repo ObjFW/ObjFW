@@ -324,15 +324,18 @@
 
 - (void)appendPathComponent: (OFString *)component
 {
-	bool isDirectory = false;
+	[self appendPathComponent: component isDirectory: false];
 
 #ifdef OF_HAVE_FILES
 	if ([_scheme isEqual: @"file"] &&
-	    [[OFFileManager defaultManager] directoryExistsAtIRI: self])
-		isDirectory = true;
+	    ![_percentEncodedPath hasSuffix: @"/"] &&
+	    [[OFFileManager defaultManager] directoryExistsAtIRI: self]) {
+		OFString *path = [[_percentEncodedPath
+		    stringByAppendingString: @"/"] retain];
+		[_percentEncodedPath release];
+		_percentEncodedPath = path;
+	}
 #endif
-
-	[self appendPathComponent: component isDirectory: isDirectory];
 }
 
 - (void)appendPathComponent: (OFString *)component
