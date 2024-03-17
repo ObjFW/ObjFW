@@ -318,11 +318,17 @@
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 - (void)testCreateSymbolicLinkAtPathWithDestinationPath
 {
-	OFIRI *sourceIRI = [_testsDirectoryIRI
-	    IRIByAppendingPathComponent: @"source"];
-	OFIRI *destinationIRI = [_testsDirectoryIRI
-	    IRIByAppendingPathComponent: @"destination"];
+	OFIRI *sourceIRI, *destinationIRI;
 	OFFileAttributes attributes;
+
+# ifdef OF_WINDOWS
+	if ([OFSystemInfo wineVersion] != nil)
+		OTSkip(@"Wine creates broken symlinks");
+# endif
+
+	sourceIRI = [_testsDirectoryIRI IRIByAppendingPathComponent: @"source"];
+	destinationIRI = [_testsDirectoryIRI
+	    IRIByAppendingPathComponent: @"destination"];
 
 	[@"test" writeToIRI: sourceIRI];
 
