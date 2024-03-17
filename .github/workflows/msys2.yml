@@ -21,10 +21,18 @@ jobs:
           msystem: ${{matrix.sys}}
           install: autoconf automake make
           pacboy: clang:p openssl:p
-      - shell: msys2 {0}
-        run: |
-          ./autogen.sh
-          ./configure OBJC=clang
-          make -j4
-          make check
-          make install
+      - name: autogen.sh
+        shell: msys2 {0}
+        run: ./autogen.sh
+      - name: configure
+        shell: msys2 {0}
+        run: ./configure OBJC=clang
+      - name: make
+        shell: msys2 {0}
+        run: make -j4
+      - name: make check
+        shell: msys2 {0}
+        run: make check
+      - name: make install
+        shell: msys2 {0}
+        run: make install
