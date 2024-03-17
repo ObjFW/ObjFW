@@ -42,6 +42,7 @@ SRCS = ForwardingTests.m			\
        OFLocaleTests.m				\
        OFMatrix4x4Tests.m			\
        OFMemoryStreamTests.m			\
+       OFMessagePackTests.m			\
        OFMethodSignatureTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
