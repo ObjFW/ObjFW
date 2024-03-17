@@ -41,19 +41,21 @@ setPermissions(OFString *path, OFZooArchiveEntry *entry)
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
-	if (POSIXPermissions == nil)
-		return;
+	if (POSIXPermissions != nil) {
+		OFFileAttributes attributes;
 
-	POSIXPermissions = [OFNumber numberWithUnsignedShort:
-	    POSIXPermissions.unsignedShortValue & 0777];
+		POSIXPermissions = [OFNumber numberWithUnsignedShort:
+		    POSIXPermissions.unsignedShortValue & 0777];
+		attributes = [OFDictionary
+		    dictionaryWithObject: POSIXPermissions
+				  forKey: OFFilePOSIXPermissions];
 
-	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: POSIXPermissions
-			  forKey: OFFilePOSIXPermissions];
-
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	}
 #endif
+
+	[app quarantineFile: path];
 }
 
 static void

@@ -58,6 +58,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 						 ofItemAtPath: path];
 	}
 #endif
+
+	[app quarantineFile: path];
 }
 
 static void

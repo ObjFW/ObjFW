@@ -49,6 +49,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 #endif
+
+	[app quarantineFile: path];
 }
 
 static void

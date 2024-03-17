@@ -36,6 +36,7 @@
 #import "ZooArchive.h"
 
 #import "OFCreateDirectoryFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -476,6 +477,19 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 					      mode: mode
 					  encoding: encoding];
 
+#ifdef OF_MACOS
+		@try {
+			OFString *attributeName = @"com.apple.quarantine";
+
+			_quarantine = [[[OFFileManager defaultManager]
+			    extendedAttributeDataForName: attributeName
+					     ofItemAtIRI: IRI] retain];
+		} @catch (OFGetItemAttributesFailedException *e) {
+			if (e.errNo != /*ENOATTR*/ 93)
+				@throw e;
+		}
+#endif
+
 		if (outputDir != nil) {
 			OFFileManager *fileManager =
 			    [OFFileManager defaultManager];
@@ -815,5 +829,16 @@ error:
 	objc_autoreleasePoolPop(pool);
 
 	return [path autorelease];
+}
+
+- (void)quarantineFile: (OFString *)path
+{
+#ifdef OF_MACOS
+	if (_quarantine != nil)
+		[[OFFileManager defaultManager]
+		    setExtendedAttributeData: _quarantine
+				     forName: @"com.apple.quarantine"
+				ofItemAtPath: path];
+#endif
 }
 @end

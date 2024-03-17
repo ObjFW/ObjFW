@@ -43,6 +43,8 @@ setPermissions(OFString *destination, OFIRI *source)
 	[fileManager setAttributes: destinationAttributes
 		      ofItemAtPath: destination];
 #endif
+
+	[app quarantineFile: destination];
 }
 
 static void

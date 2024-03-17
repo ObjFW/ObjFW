@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFArc: OFObject <OFApplicationDelegate>
 {
+	OFData *_quarantine;
 	int8_t _overwrite;
 @public
 	int8_t _outputLevel;
@@ -47,6 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName;
 - (nullable OFString *)safeLocalPathForPath: (OFString *)path;
+- (void)quarantineFile: (OFString *)path;
 @end
 
 OF_ASSUME_NONNULL_END
