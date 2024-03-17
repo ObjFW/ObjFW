@@ -26,6 +26,12 @@
 @dynamic uncompressedSize, compressedSize, minVersionNeeded, deleted;
 @dynamic fileComment, fileName, operatingSystemIdentifier, POSIXPermissions;
 @dynamic timeZone;
+/*
+ * The following properties are not implemented, but old Apple GCC requries
+ * @dynamic for @optional properties.
+ */
+@dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
+@dynamic groupOwnerAccountName;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {

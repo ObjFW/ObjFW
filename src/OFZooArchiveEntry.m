@@ -28,6 +28,13 @@
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFZooArchiveEntry
+/*
+ * The following properties are not implemented, but old Apple GCC requries
+ * @dynamic for @optional properties.
+ */
+@dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
+@dynamic groupOwnerAccountName;
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
