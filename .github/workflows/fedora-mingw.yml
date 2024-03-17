@@ -1,0 +1,29 @@
+name: fedora-mingw
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - prefix: mingw32
+            triple: i686-w64-mingw32
+          - prefix: mingw64
+            triple: x86_64-w64-mingw32
+    container: fedora
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo dnf upgrade --refresh -y
+        sudo dnf install -y ${{matrix.prefix}}-gcc ${{matrix.prefix}}-openssl clang autoconf automake make wine
+    - uses: actions/checkout@v4
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: ./configure --host=${{matrix.triple}} OBJC="clang -target ${{matrix.triple}}"
+    - name: make
+      run: make -j$(nproc)
+    - name: make check
+      run: WINEPATH=/usr/${{matrix.triple}}/sys-root/mingw/bin WINEPREFIX=/tmp/wineprefix make check
+    - name: make install
+      run: sudo make install
