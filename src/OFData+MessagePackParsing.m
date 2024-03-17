@@ -258,25 +258,28 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithChar: buffer[1]];
+		*object = [OFNumber numberWithChar: (int8_t)buffer[1]];
 		return 2;
 	case 0xD1: /* int 16 */
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithShort: readUInt16(buffer + 1)];
+		*object = [OFNumber numberWithShort:
+		    (int16_t)readUInt16(buffer + 1)];
 		return 3;
 	case 0xD2: /* int 32 */
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithLong: readUInt32(buffer + 1)];
+		*object = [OFNumber numberWithLong:
+		    (int32_t)readUInt32(buffer + 1)];
 		return 5;
 	case 0xD3: /* int 64 */
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithLongLong: readUInt64(buffer + 1)];
+		*object = [OFNumber numberWithLongLong:
+		    (int64_t)readUInt64(buffer + 1)];
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */
