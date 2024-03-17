@@ -2340,17 +2340,24 @@ OF_SINGLETON_METHODS
 #if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
-	/*
-	 * If we have no strtof_l, we have no other choice than to replace the
-	 * locale's decimal point with something that will be rejected and
-	 * replacing "." with the locale's decimal point.
-	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [[self
-	    stringByReplacingOccurrencesOfString: decimalSeparator
-				      withString: @"!"]
-	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalSeparator].UTF8String;
+	const char *UTF8String;
+
+	if ([decimalSeparator isEqual: @"."])
+		UTF8String = self.UTF8String;
+	else
+		/*
+		 * If we have no strtof_l, we have no other choice than to
+		 * replace the locale's decimal point with something that will
+		 * be rejected and replacing "." with the locale's decimal
+		 * point.
+		 */
+		UTF8String = [[self
+		    stringByReplacingOccurrencesOfString: decimalSeparator
+					      withString: @"!"]
+		    stringByReplacingOccurrencesOfString: @"."
+					      withString: decimalSeparator]
+		    .UTF8String;
 #endif
 	char *endPtr = NULL;
 	float value;
@@ -2400,17 +2407,24 @@ OF_SINGLETON_METHODS
 #if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
-	/*
-	 * If we have no strtod_l, we have no other choice than to replace the
-	 * locale's decimal point with something that will be rejected and
-	 * replacing "." with the locale's decimal point.
-	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [[self
-	    stringByReplacingOccurrencesOfString: decimalSeparator
-				      withString: @"!"]
-	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalSeparator].UTF8String;
+	const char *UTF8String;
+
+	if ([decimalSeparator isEqual: @"."])
+		UTF8String = self.UTF8String;
+	else
+		/*
+		 * If we have no strtod_l, we have no other choice than to
+		 * replace the locale's decimal point with something that will
+		 * be rejected and replacing "." with the locale's decimal
+		 * point.
+		 */
+		UTF8String = [[self
+		    stringByReplacingOccurrencesOfString: decimalSeparator
+					      withString: @"!"]
+		    stringByReplacingOccurrencesOfString: @"."
+					      withString: decimalSeparator]
+		    .UTF8String;
 #endif
 	char *endPtr = NULL;
 	double value;
