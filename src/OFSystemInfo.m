@@ -159,6 +159,10 @@ static size_t numberOfCPUs = 1;
 static OFString *operatingSystemName = nil;
 static OFString *operatingSystemVersion = nil;
 
+#ifdef OF_WINDOWS
+static const char *(*wine_get_version)(void);
+#endif
+
 static void
 initOperatingSystemName(void)
 {
@@ -391,10 +395,16 @@ x86XCR(uint32_t ecx)
 #endif
 
 #if defined(OF_WINDOWS)
+	HANDLE module;
+
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	pageSize = si.dwPageSize;
 	numberOfCPUs = si.dwNumberOfProcessors;
+
+	if ((module = GetModuleHandle("ntdll.dll")) != NULL)
+		wine_get_version = (const char *(*)(void))
+		    GetProcAddress(module, "wine_get_version");
 #elif defined(OF_QNX)
 	if ((tmp = sysconf(_SC_PAGESIZE)) > 0)
 		pageSize = tmp;
@@ -458,6 +468,17 @@ x86XCR(uint32_t ecx)
 
 	return operatingSystemVersion;
 }
+
+#ifdef OF_WINDOWS
++ (OFString *)wineVersion
+{
+	if (wine_get_version != NULL)
+		return [OFString stringWithCString: wine_get_version()
+					  encoding: [OFLocale encoding]];
+
+	return nil;
+}
+#endif
 
 + (OFIRI *)userDataIRI
 {

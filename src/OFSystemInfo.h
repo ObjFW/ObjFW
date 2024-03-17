@@ -37,6 +37,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
+@property (class, readonly, nullable, nonatomic) OFString *wineVersion;
+#endif
 @property (class, readonly, nullable, nonatomic) OFIRI *userDataIRI;
 @property (class, readonly, nullable, nonatomic) OFIRI *userConfigIRI;
 @property (class, readonly, nullable, nonatomic) OFIRI *temporaryDirectoryIRI;
@@ -146,6 +149,19 @@ OF_SUBCLASSING_RESTRICTED
  * @return The version of the operating system the application is running on
  */
 + (nullable OFString *)operatingSystemVersion;
+
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
+/**
+ * @brief Returns the version of Wine the application is running on, or `nil`
+ *	  if not running on Wine (e.g. on Windows natively).
+ *
+ * @note This is only available on Windows.
+ *
+ * @return The version of Wine the application is running on, or `nil` if not
+ *	   running on Wine (e.g. on Windows natively)
+ */
++ (nullable OFString *)wineVersion;
+#endif
 
 /**
  * @brief Returns the path where user data for the application can be stored.

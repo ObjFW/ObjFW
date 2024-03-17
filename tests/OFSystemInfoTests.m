@@ -65,6 +65,9 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	ADD_UINT(@"ObjFW version minor", [OFSystemInfo ObjFWVersionMinor])
 	ADD(@"Operating system name", [OFSystemInfo operatingSystemName]);
 	ADD(@"Operating system version", [OFSystemInfo operatingSystemVersion]);
+#ifdef OF_WINDOWS
+	ADD(@"Wine version", [OFSystemInfo wineVersion]);
+#endif
 	ADD_ULONGLONG(@"Page size", [OFSystemInfo pageSize]);
 	ADD_ULONGLONG(@"Number of CPUs", [OFSystemInfo numberOfCPUs]);
 	ADD(@"User config IRI", [OFSystemInfo userConfigIRI].string);
