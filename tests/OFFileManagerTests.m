@@ -334,12 +334,12 @@
 		[_fileManager createSymbolicLinkAtPath: destinationPath
 				   withDestinationPath: sourcePath];
 	} @catch (OFCreateSymbolicLinkFailedException *e) {
-		if (e.errNo == EPERM)
-			OTSkip(@"No permission to create symlink.\n"
-			    @"On Windows, only the administrator can create "
-			    @"symbolic links.");
-		else
+		if (e.errNo != EPERM)
 			@throw e;
+
+		OTSkip(@"No permission to create symlink.\n"
+		    @"On Windows, only the administrator can create symbolic "
+		    @"links.");
 	}
 
 	attributes = [_fileManager attributesOfItemAtIRI: destinationIRI];
@@ -357,9 +357,16 @@
 	OFFileAttributes attributes;
 	OFArray *extendedAttributeNames;
 
-	[_fileManager setExtendedAttributeData: data
-				       forName: @"user.test"
-				  ofItemAtPath: testFilePath];
+	@try {
+		[_fileManager setExtendedAttributeData: data
+					       forName: @"user.test"
+					  ofItemAtPath: testFilePath];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != ENOTSUP)
+			@throw e;
+
+		OTSkip(@"Extended attributes are not supported");
+	}
 
 	attributes = [_fileManager attributesOfItemAtIRI: _testFileIRI];
 	extendedAttributeNames =
