@@ -5,13 +5,14 @@ SUBDIRS = ${TESTPLUGIN}	\
 	  ${OBJC_SYNC}	\
 	  terminal
 
-CLEAN = EBOOT.PBP		\
-	boot.dol		\
-	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds	\
-	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx	\
-	testfile_bin.m		\
+CLEAN = EBOOT.PBP			\
+	boot.dol			\
+	${PROG_NOINST}.arm9		\
+	${PROG_NOINST}.nds		\
+	${PROG_NOINST}.nro		\
+	${PROG_NOINST}.rpx		\
+	big_dictionary_msgpack.m	\
+	testfile_bin.m			\
 	testfile_ini.m
 DISTCLEAN = Info.plist
 
@@ -76,6 +77,7 @@ SRCS = ForwardingTests.m			\
        ${USE_SRCS_SUBPROCESSES}			\
        ${USE_SRCS_THREADS}			\
        ${USE_SRCS_WINDOWS}			\
+       big_dictionary_msgpack.m			\
        testfile_bin.m				\
        testfile_ini.m
 SRCS_FILES = OFFileManagerTests.m
@@ -103,6 +105,9 @@ SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 include ../buildsys.mk
 
+big_dictionary_msgpack.m:
+	${SHELL} ../utils/objfw-embed \
+		big_dictionary.msgpack big_dictionary.msgpack $@
 testfile_bin.m: testfile.bin
 	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
 testfile_ini.m: testfile.ini

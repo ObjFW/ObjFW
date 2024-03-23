@@ -20,6 +20,7 @@
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFMessagePackExtension
 @synthesize type = _type, data = _data;
@@ -100,7 +101,7 @@
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
-	} else if (count < 0x100) {
+	} else if (count <= UINT8_MAX) {
 		uint8_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 3];
@@ -112,7 +113,7 @@
 		[ret addItem: &length];
 
 		[ret addItem: &_type];
-	} else if (count < 0x10000) {
+	} else if (count <= UINT16_MAX) {
 		uint16_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 4];
@@ -124,7 +125,7 @@
 		[ret addItems: &length count: 2];
 
 		[ret addItem: &_type];
-	} else {
+	} else if (count <= UINT32_MAX) {
 		uint32_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 6];
@@ -136,7 +137,8 @@
 		[ret addItems: &length count: 4];
 
 		[ret addItem: &_type];
-	}
+	} else
+		@throw [OFOutOfRangeException exception];
 
 	[ret addItems: _data.items count: _data.count];
 	[ret makeImmutable];
