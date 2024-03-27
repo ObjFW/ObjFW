@@ -54,6 +54,10 @@
 # undef HAVE_ISATTY
 #endif
 
+#ifdef OF_MSDOS
+# include <conio.h>
+#endif
+
 #ifdef OF_WII_U
 # define BOOL WUT_BOOL
 # include <coreinit/debug.h>
@@ -442,7 +446,13 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -457,7 +467,13 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -525,7 +541,11 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(column + 1, wherey());
+#else
 	[self writeFormat: @"\033[%uG", column + 1];
+#endif
 }
 
 - (void)setCursorPosition: (OFPoint)position
@@ -536,8 +556,12 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(position.x + 1, position.y + 1);
+#else
 	[self writeFormat: @"\033[%u;%uH",
 			   (unsigned)position.y + 1, (unsigned)position.x + 1];
+#endif
 }
 
 - (void)setRelativeCursorPosition: (OFPoint)position
@@ -545,6 +569,9 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(wherex() + position.x, wherey() + position.y);
+#else
 	if (position.x > 0)
 		[self writeFormat: @"\033[%uC", (unsigned)position.x];
 	else if (position.x < 0)
@@ -554,5 +581,6 @@ colorToANSI(OFColor *color)
 		[self writeFormat: @"\033[%uB", (unsigned)position.y];
 	else if (position.y < 0)
 		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
+#endif
 }
 @end
