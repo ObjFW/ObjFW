@@ -44,9 +44,9 @@ static const float allowedImprecision = 0.0000001;
 		      alpha: (float)alpha
 {
 #ifdef OF_OBJFW_RUNTIME
-	uint8_t redInt = nearbyintf(red * 255);
-	uint8_t greenInt = nearbyintf(green * 255);
-	uint8_t blueInt = nearbyintf(blue * 255);
+	uint8_t redInt = roundf(red * 255);
+	uint8_t greenInt = roundf(green * 255);
+	uint8_t blueInt = roundf(blue * 255);
 
 	if (fabsf(red * 255 - redInt) < allowedImprecision &&
 	    fabsf(green * 255 - greenInt) < allowedImprecision &&
