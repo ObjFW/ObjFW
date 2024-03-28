@@ -262,18 +262,6 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 }
 #endif
 
-+ (instancetype)alloc
-{
-	OFMatrix4x4 *instance;
-	float (*values)[4];
-
-	instance = OFAllocObject(self, 16 * sizeof(float), 16,
-	    (void **)&values);
-	instance->_values = values;
-
-	return instance;
-}
-
 + (OFMatrix4x4 *)identityMatrix
 {
 	return [[[OFMatrix4x4 alloc]

@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFMatrix4x4: OFObject <OFCopying>
 {
-	float (*_values)[4];
+	OF_ALIGN(16) float _values[4][4];
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
