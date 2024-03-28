@@ -81,6 +81,9 @@ extern struct Stret OFForward_stret(id, SEL, ...);
 #endif
 
 struct PreIvars {
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
 	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	OFSpinlock retainCountSpinlock;
@@ -157,6 +160,33 @@ OFFreeMemory(void *pointer)
 {
 	free(pointer);
 }
+
+#ifdef OF_MSDOS
+/* Unfortunately, DJGPP's memalign() is broken. */
+
+static void *
+alignedAlloc(size_t size, size_t alignment, ptrdiff_t *offset)
+{
+	char *ptr, *aligned;
+
+	if ((ptr = malloc(size + alignment)) == NULL)
+		return NULL;
+
+	aligned = (char *)OFRoundUpToPowerOf2(alignment, (uintptr_t)ptr);
+	*offset = aligned - ptr;
+
+	return aligned;
+}
+
+static void
+alignedFree(void *ptr, ptrdiff_t offset)
+{
+	if (ptr == NULL)
+		return;
+
+	free((void *)((uintptr_t)ptr - offset));
+}
+#endif
 
 #if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
 static void
@@ -332,6 +362,9 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 {
 	OFObject *instance;
 	size_t instanceSize;
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
 
 	instanceSize = class_getInstanceSize(class);
 
@@ -340,14 +373,19 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		    PRE_IVARS_ALIGN + instanceSize) -
 		    PRE_IVARS_ALIGN - instanceSize;
 
-#ifndef OF_WINDOWS
-	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
-	    extraAlignment + extraSize);
-#else
+#if defined(OF_WINDOWS)
 	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
 	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
 	    extraSize);
+#elif defined(OF_MSDOS)
+	instance = alignedAlloc(PRE_IVARS_ALIGN + instanceSize +
+	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT, &offset);
+	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
+	    extraSize);
+#else
+	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
+	    extraAlignment + extraSize);
 #endif
 
 	if OF_UNLIKELY (instance == nil) {
@@ -356,15 +394,20 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		@throw (id)&allocFailedException;
 	}
 
+#ifdef OF_MSDOS
+	((struct PreIvars *)instance)->offset = offset;
+#endif
 	((struct PreIvars *)instance)->retainCount = 1;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
-# ifndef OF_WINDOWS
-		free(instance);
-# else
+# if defined(OF_WINDOWS)
 		__mingw_aligned_free(instance);
+# elif defined(OF_MSDOS)
+		alignedFree(instance, offset);
+# else
+		free(instance);
 # endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -378,10 +421,12 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		OFSpinlockFree(&((struct PreIvars *)(void *)
 		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
 #endif
-#ifndef OF_WINDOWS
-		free((char *)instance - PRE_IVARS_ALIGN);
-#else
+#if defined(OF_WINDOWS)
 		__mingw_aligned_free((char *)instance - PRE_IVARS_ALIGN);
+#elif defined(OF_MSDOS)
+		alignedFree((char *)instance - PRE_IVARS_ALIGN, offset);
+#else
+		free((char *)instance - PRE_IVARS_ALIGN);
 #endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
@@ -1249,10 +1294,12 @@ _references_to_categories_of_OFObject(void)
 	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
 #endif
 
-#ifndef OF_WINDOWS
-	free((char *)self - PRE_IVARS_ALIGN);
-#else
+#if defined(OF_WINDOWS)
 	__mingw_aligned_free((char *)self - PRE_IVARS_ALIGN);
+#elif defined(OF_MSDOS)
+	alignedFree((char *)self - PRE_IVARS_ALIGN, PRE_IVARS->offset);
+#else
+	free((char *)self - PRE_IVARS_ALIGN);
 #endif
 }
 
