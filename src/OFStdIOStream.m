@@ -123,6 +123,46 @@ OFLogV(OFConstantString *format, va_list arguments)
 	objc_autoreleasePoolPop(pool);
 }
 
+#ifdef OF_MSDOS
+int
+colorToMSDOS(OFColor *color)
+{
+	if ([color isEqual: [OFColor black]])
+		return BLACK;
+	if ([color isEqual: [OFColor navy]])
+		return BLUE;
+	if ([color isEqual: [OFColor green]])
+		return GREEN;
+	if ([color isEqual: [OFColor teal]])
+		return CYAN;
+	if ([color isEqual: [OFColor maroon]])
+		return RED;
+	if ([color isEqual: [OFColor purple]])
+		return MAGENTA;
+	if ([color isEqual: [OFColor olive]])
+		return BROWN;
+	if ([color isEqual: [OFColor silver]])
+		return LIGHTGRAY;
+	if ([color isEqual: [OFColor gray]])
+		return DARKGRAY;
+	if ([color isEqual: [OFColor blue]])
+		return LIGHTBLUE;
+	if ([color isEqual: [OFColor lime]])
+		return LIGHTGREEN;
+	if ([color isEqual: [OFColor aqua]])
+		return LIGHTCYAN;
+	if ([color isEqual: [OFColor red]])
+		return LIGHTRED;
+	if ([color isEqual: [OFColor fuchsia]])
+		return LIGHTMAGENTA;
+	if ([color isEqual: [OFColor yellow]])
+		return YELLOW;
+	if ([color isEqual: [OFColor white]])
+		return WHITE;
+
+	return -1;
+}
+#else
 static int
 colorToANSI(OFColor *color)
 {
@@ -161,6 +201,7 @@ colorToANSI(OFColor *color)
 
 	return -1;
 }
+#endif
 
 @implementation OFStdIOStream
 #ifndef OF_WINDOWS
@@ -344,6 +385,32 @@ colorToANSI(OFColor *color)
 							     errNo: EIO];
 
 	return (size_t)bytesWritten;
+#elif defined(OF_MSDOS)
+	ssize_t bytesWritten;
+
+	if (self.hasTerminal) {
+		const char *buffer_ = buffer;
+
+		for (size_t i = 0; i < length; i++) {
+			if (buffer_[i] == '\n')
+				putch('\r');
+
+			putch(buffer_[i]);
+		}
+
+		return length;
+	}
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((bytesWritten = write(_fd, buffer, length)) < 0)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: 0
+							     errNo: errno];
+
+	return (size_t)bytesWritten;
 #elif defined(OF_WII_U)
 	OSConsoleWrite(buffer, length);
 
@@ -493,10 +560,17 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textcolor(code);
+#else
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
 	[self writeFormat: @"\033[%um", code];
+#endif
 }
 
 - (void)setBackgroundColor: (OFColor *)color
@@ -506,10 +580,17 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textbackground(code);
+#else
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
 	[self writeFormat: @"\033[%um", code + 10];
+#endif
 }
 
 - (void)reset
@@ -517,7 +598,11 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	normvideo();
+#else
 	[self writeString: @"\033[0m"];
+#endif
 }
 
 - (void)clear
@@ -525,7 +610,11 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	clrscr();
+#else
 	[self writeString: @"\033[2J"];
+#endif
 }
 
 - (void)eraseLine
@@ -533,7 +622,15 @@ colorToANSI(OFColor *color)
 	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	int column = wherex();
+
+	gotoxy(1, wherey());
+	clreol();
+	gotoxy(column, wherey());
+#else
 	[self writeString: @"\033[2K"];
+#endif
 }
 
 - (void)setCursorColumn: (unsigned int)column
