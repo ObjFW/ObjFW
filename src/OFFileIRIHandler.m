@@ -1598,9 +1598,15 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 # elif defined(OF_MACOS)
 	ssize_t size = getxattr(cPath, cName, NULL, 0, 0, XATTR_NOFOLLOW);
 # endif
-	void *value = OFAllocMemory(1, size);
+	void *value;
 	OFData *data;
 
+	if (size < 0)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	value = OFAllocMemory(1, size);
 	@try {
 # if defined(OF_LINUX)
 		if ((size = lgetxattr(cPath, cName, value, size)) < 0)
