@@ -4,6 +4,44 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
+ + Adds a new framework for writing tests called ObjFWTest
+ * All tests were migrated to ObjFWTest
+ + The runtime now supports associated objects
+ + OFDNSResolver now caches responses
+ + OFDNSResolver now supports URI and LOC DNS resource records
+ + Adds methods to handle path extension to OFIRI
+ + Adds support for Mbed TLS
+ + Adds more methods to OFSystemInfo to check for CPU features
+ * OFSystemInfo now only indicates CPU features as supported if the OS also
+   supports them
+ + OFLHAArchive now supports extracting and creating files > 4 GB
+ + OFLHAArchive now supports header level 3
+ + OFLHAArchive now supports extracting -lhx-, -lz4- and -pm0- files
+ * OFLHAArchive no longer defaults to ISO 8859-1
+ + New class OFZooArchive for extracting and creating Zoo files
+ * The schemes for archive IRI handlers have been renamed
+ * The schemes for archive IRI handlers now look for the rightmost `!`,
+   which allows for chaining with less quoting
+ * Fixes getting non-existent xattrs in OFFileManager
+ * Objects on Windows and MS-DOS now get properly aligned so that SIMD can be
+   used on ivars
+ * Fixes parsing of signed numbers in MessagePack
+ + OFStdIOStream now supports cursor movement and colors on MS-DOS
+ * All headers are now compatible with -masm=intel
+ + OFMatrix4x4 can now transform multiple vectors at once
+ + OFMatrix4x4 has a 3DNow! implementation for multiplication and vector
+   transformations now
+ + OFMatrix4x4 has an SSE implementation for vector transformations now
+ * Updates Unicode support to 15.1
+ * Fixes compatibility with LibreSSL
+ + ofarc now supports extracting and creating Zoo archives
+ + ofarc now has an --iri option to directly work on local and remote IRIs
+ + ofarc now prints the archive comment with -lv
+ + ofarc can now add an archive comment with --archive-comment=
+ + ofarc now propagates the quarantine xattr on macOS when extracting an
+   archive
+
 ObjFW 1.0.10 -> ObjFW 1.0.11, 2024-03-09
  * Fixes -[OFHTTPClientResponse isAtEndOfStream] and
    -[OFGZIPStream isAtEndOfStream].
