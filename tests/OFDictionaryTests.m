@@ -93,6 +93,12 @@ static OFString *objects[] = {
 	OTAssertEqualObjects([[_dictionary copy] autorelease], _dictionary);
 }
 
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects(
+	    [[_dictionary mutableCopy] autorelease], _dictionary);
+}
+
 - (void)testValueForKey
 {
 	OTAssertEqualObjects([_dictionary valueForKey: keys[0]], objects[0]);

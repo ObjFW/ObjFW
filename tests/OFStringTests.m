@@ -92,6 +92,16 @@ static const OFChar16 swappedChar16String[] = {
 	    @"täṠ€".hash);
 }
 
+- (void)testCopy
+{
+	OTAssertEqualObjects([[_string copy] autorelease], _string);
+}
+
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects([[_string mutableCopy] autorelease], _string);
+}
+
 - (void)testCompare
 {
 	OTAssertEqual([_string compare: @"täṠ€🤔"], OFOrderedSame);

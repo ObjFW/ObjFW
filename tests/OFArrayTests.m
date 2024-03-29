@@ -99,6 +99,24 @@ static OFString *const cArray[] = {
 	OTAssertNotEqual(array, _array);
 }
 
+- (void)testHash
+{
+	OFArray *array = [self.arrayClass arrayWithObjects: cArray count: 3];
+
+	OTAssertEqual(array.hash, _array.hash);
+	OTAssertNotEqual(array.hash, [[OFArray array] hash]);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects([[_array copy] autorelease], _array);
+}
+
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects([[_array mutableCopy] autorelease], _array);
+}
+
 - (void)testObjectAtIndex
 {
 	OTAssertEqualObjects([_array objectAtIndex: 0], cArray[0]);

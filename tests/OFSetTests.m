@@ -80,6 +80,11 @@
 	OTAssertEqualObjects([[_set copy] autorelease], _set);
 }
 
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects([[_set mutableCopy] autorelease], _set);
+}
+
 - (void)testIsSubsetOfSet
 {
 	OTAssertTrue([([OFSet setWithObjects: @"foo", nil])
