@@ -33,7 +33,8 @@ cat <<EOF
 
 static const uint8_t bytes[] = {
 EOF
-od -vtx1 $1 | sed -e '/^[^ ][^ ]*$/d;s/  */ /g' -e 's/ $//g;s/^[^ ][^ ]* //' -e 's/ /, 0x/g' -e 's/^/	0x/' -e 's/$/,/'
+od -vtx1 "$1" | cut -d' ' -sf2- | \
+    sed '/^ *$/d;s/^ *//;s/ *$//;s/  */ /g;s/^/0x/;s/ /, 0x/g;s/$/,/'
 cat <<EOF
 };
 
