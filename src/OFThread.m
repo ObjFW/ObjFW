@@ -16,7 +16,6 @@
 #include "config.h"
 
 #define _POSIX_TIMERS
-#define __NO_EXT_QNX
 
 #include <errno.h>
 

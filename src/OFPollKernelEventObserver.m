@@ -13,8 +13,6 @@
  * file.
  */
 
-#define __NO_EXT_QNX
-
 #include "config.h"
 
 #include <errno.h>

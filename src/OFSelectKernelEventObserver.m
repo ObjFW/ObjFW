@@ -15,8 +15,6 @@
 
 #include "config.h"
 
-#define __NO_EXT_QNX
-
 #include "platform.h"
 
 #ifdef OF_WINDOWS
