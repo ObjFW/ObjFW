@@ -233,15 +233,15 @@ CPPFLAGS += -I../src				\
 	    -DOBJFWTEST_LOCAL_INCLUDES		\
 	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
-# Repetition is required for Wii U, as otherwise it cannot find main. Just
-# moving -lobjfwtest later doesn't work either, as then the linker cannot find
-# ObjFW symbols. So the only solution is to list everything twice.
-LIBS := -L../src/test	\
-	-lobjfwtest	\
-	${TESTS_LIBS}	\
-	${LIBS}		\
-	-lobjfwtest	\
-	${TESTS_LIBS}	\
-	${LIBS}
+# Repetition of libraries is required for Wii U, as otherwise it cannot find
+# main. Just moving -lobjfwtest later doesn't work either, as then the linker
+# cannot find ObjFW symbols. So the only solution is to list everything twice,
+# but hide it behind a variable because listing it twice causes a warning on
+# macOS.
+LIBS := -L../src/test		\
+	-lobjfwtest		\
+	${TESTS_LIBS}		\
+	${LIBS}			\
+	${WII_U_TESTS_LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

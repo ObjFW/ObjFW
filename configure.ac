@@ -202,6 +202,12 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 
 	AC_DEFINE(OF_WII_U, 1, [Whether we are compiling for Wii U])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+	# Repetition of libraries is required for Wii U, as otherwise it cannot
+	# find main. Just moving -lobjfwtest later doesn't work either, as then
+	# the linker cannot find ObjFW symbols. So the only solution is to list
+	# everything twice, but hide it behind a variable because listing it
+	# twice causes a warning on macOS.
+	AC_SUBST(WII_U_TESTS_LIBS, '-lobjfwtest ${TESTS_LIBS} ${LIBS}')
 ])
 
 AC_ARG_WITH(nds,
