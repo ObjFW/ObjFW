@@ -364,7 +364,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 - (OFVector4D)transformedVector: (OFVector4D)vector
 {
-	OFVector4D copy = vector;
+	OF_ALIGN(16) OFVector4D copy = vector;
 
 	[self transformVectors: &copy count: 1];
 

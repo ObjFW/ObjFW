@@ -149,7 +149,7 @@
 
 - (void)testTransformVectorsCount
 {
-	OFVector4D points[2] = {{ 1, 2, 3, 1 }, { 7, 8, 9, 2 }};
+	OF_ALIGN(16) OFVector4D points[2] = {{ 1, 2, 3, 1 }, { 7, 8, 9, 2 }};
 
 	[_matrix transformVectors: points count: 2];
 

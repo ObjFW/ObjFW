@@ -94,6 +94,11 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Transforms the specified vectors in-place according to the matrix.
  *
+ * @warning Please note that the vectors must be 16 byte aligned! This is
+ *	    required to allow SIMD optimizations. Passing a pointer to vectors
+ *	    that are not 16 byte aligned will crash if SIMD optimizations are
+ *	    enabled.
+ *
  * @param vectors The vectors to transform
  * @param count The count of the specified vectors
  */
