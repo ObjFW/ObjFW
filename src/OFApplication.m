@@ -117,7 +117,7 @@ atexitHandler(void)
 int
 OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
-	[[OFLocale alloc] init];
+	[OFLocale currentLocale];
 
 	app = [[OFApplication alloc] of_init];
 

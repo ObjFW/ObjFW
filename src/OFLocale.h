@@ -95,9 +95,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the current OFLocale.
  *
- * @warning If you don't use @ref OFApplication, this might be `nil`! In this
- *	    case, you need to manually allocate an instance and call
- *	    @ref init once.
+ * @note If you don't use @ref OFApplication, you need to call this as early as
+ *	 possible to initialize the locale!
  *
  * @return The current OFLocale instance
  */
@@ -147,17 +146,8 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (void)addLocalizationDirectoryIRI: (OFIRI *)IRI;
 
-/**
- * @brief Initializes the current OFLocale.
- *
- * @warning This sets the locale via `setlocale()`!
- *
- * @warning You should never call this yourself, except if you do not use
- *	    @ref OFApplication. In this case, you need to allocate exactly one
- *	    instance of OFLocale, which will become the current locale, and
- *	    call this method.
- */
-- (instancetype)init;
+- (instancetype)init OF_DEPRECATED(ObjFW, 1, 1, "Manually creating an OFLocale "
+    "is no longer necessary. Use +[OFLocale currentLocale] instead.");
 
 /**
  * @brief Adds a directory to scan for localizations.
