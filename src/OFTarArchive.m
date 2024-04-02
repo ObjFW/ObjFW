@@ -325,6 +325,8 @@ OF_DIRECT_MEMBERS
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
+	[_archive release];
+
 	[super dealloc];
 }
 
@@ -464,6 +466,8 @@ OF_DIRECT_MEMBERS
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }
