@@ -29,6 +29,7 @@ Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
+.p2align 3
 Lsel_forwardingTargetForSelector_:
 	.quad Lstr_forwardingTargetForSelector_
 
