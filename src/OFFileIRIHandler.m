@@ -1711,7 +1711,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	const char *cName = [name cStringWithEncoding: encoding];
 	size_t size = data.count * data.itemSize;
 
-# if defined(OF_LINUX) || defined(OFMACOS)
+# if defined(OF_LINUX) || defined(OF_MACOS)
 #  if defined(OF_LINUX)
 	if (lsetxattr(cPath, cName, data.items, size, 0) != 0) {
 #  elif defined(OF_MACOS)
