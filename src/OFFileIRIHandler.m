@@ -35,6 +35,9 @@
 #if defined(OF_LINUX) || defined(OF_MACOS)
 # include <sys/xattr.h>
 #endif
+#ifdef OF_HAIKU
+# include <kernel/fs_attr.h>
+#endif
 #ifdef OF_WINDOWS
 # include <utime.h>
 #endif
@@ -587,22 +590,23 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
-# if defined(OF_LINUX)
-	ssize_t size = llistxattr(cPath, NULL, 0);
-# elif defined(OF_MACOS)
-	ssize_t size = listxattr(cPath, NULL, 0, XATTR_NOFOLLOW);
-# endif
-	char *list = OFAllocMemory(1, size);
 	OFMutableArray *names = nil;
+# if defined(OF_LINUX) || defined(OF_MACOS)
+#  if defined(OF_LINUX)
+	ssize_t size = llistxattr(cPath, NULL, 0);
+#  elif defined(OF_MACOS)
+	ssize_t size = listxattr(cPath, NULL, 0, XATTR_NOFOLLOW);
+#  endif
+	char *list = OFAllocMemory(1, size);
 
 	@try {
 		char *name;
 
-# if defined(OF_LINUX)
+#  if defined(OF_LINUX)
 		if ((size = llistxattr(cPath, list, size)) < 0)
-# elif defined(OF_MACOS)
+#  elif defined(OF_MACOS)
 		if ((size = listxattr(cPath, list, size, XATTR_NOFOLLOW)) < 0)
-# endif
+#  endif
 			return;
 
 		names = [OFMutableArray array];
@@ -621,7 +625,27 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	} @finally {
 		OFFreeMemory(list);
 	}
+# elif defined(OF_HAIKU)
+	DIR *dir = fs_open_attr_dir(cPath);
 
+	if (dir == NULL)
+		return;
+
+	@try {
+		struct dirent *dirent;
+
+		names = [OFMutableArray array];
+
+		while ((dirent = fs_read_attr_dir(dir)) != NULL)
+			[names addObject:
+			    [OFString stringWithCString: dirent->d_name
+					       encoding: encoding]];
+	} @finally {
+		fs_close_attr_dir(dir);
+	}
+# endif
+
+	[names makeImmutable];
 	[attributes setObject: names forKey: OFFileExtendedAttributesNames];
 }
 #endif
@@ -1595,13 +1619,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
 	const char *cName = [name cStringWithEncoding: encoding];
-# if defined(OF_LINUX)
-	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
-# elif defined(OF_MACOS)
-	ssize_t size = getxattr(cPath, cName, NULL, 0, 0, XATTR_NOFOLLOW);
-# endif
-	void *value;
+	void *value = NULL;
 	OFData *data;
+# if defined(OF_LINUX) || defined(OF_MACOS)
+#  if defined(OF_LINUX)
+	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
+#  elif defined(OF_MACOS)
+	ssize_t size = getxattr(cPath, cName, NULL, 0, 0, XATTR_NOFOLLOW);
+#  endif
 
 	if (size < 0)
 		@throw [OFGetItemAttributesFailedException
@@ -1610,20 +1635,59 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	value = OFAllocMemory(1, size);
 	@try {
-# if defined(OF_LINUX)
+#  if defined(OF_LINUX)
 		if ((size = lgetxattr(cPath, cName, value, size)) < 0)
-# elif defined(OF_MACOS)
+#  elif defined(OF_MACOS)
 		if ((size = getxattr(cPath, cName, value, size, 0,
 		    XATTR_NOFOLLOW)) < 0)
-# endif
+#  endif
 			@throw [OFGetItemAttributesFailedException
 			    exceptionWithIRI: IRI
 				       errNo: errno];
 
-		data = [OFData dataWithItems: value count: size];
+		data = [OFData dataWithItemsNoCopy: value
+					     count: size
+				      freeWhenDone: true];
+		value = NULL;
 	} @finally {
 		OFFreeMemory(value);
 	}
+# elif defined(OF_HAIKU)
+	int fd = open(cPath, O_RDONLY);
+	struct attr_info info;
+
+	if (fd == -1)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	@try {
+		if (fs_stat_attr(fd, cName, &info) != 0)
+			@throw [OFGetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				       errNo: errno];
+
+		if (info.size < 0 || info.size > SSIZE_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		value = OFAllocMemory(1, (size_t)info.size);
+
+		errno = 0;
+		if (fs_read_attr(fd, cName, B_ANY_TYPE, 0, value,
+		    (size_t)info.size) != (ssize_t)info.size)
+			@throw [OFGetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				       errNo: errno];
+
+		data = [OFData dataWithItemsNoCopy: value
+					     count: (size_t)info.size
+				      freeWhenDone: true];
+		value = NULL;
+	} @finally {
+		OFFreeMemory(value);
+		close(fd);
+	}
+# endif
 
 	[data retain];
 
@@ -1639,16 +1703,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
+	const char *cPath = [path cStringWithEncoding: encoding];
+	const char *cName = [name cStringWithEncoding: encoding];
+	size_t size = data.count * data.itemSize;
 
-# if defined(OF_LINUX)
-	if (lsetxattr([path cStringWithEncoding: encoding],
-	    [name cStringWithEncoding: encoding], data.items,
-	    data.count * data.itemSize, 0) != 0) {
-# elif defined(OF_MACOS)
-	if (setxattr([path cStringWithEncoding: encoding],
-	    [name cStringWithEncoding: encoding], data.items,
-	    data.count * data.itemSize, 0, XATTR_NOFOLLOW) != 0) {
-# endif
+# if defined(OF_LINUX) || defined(OFMACOS)
+#  if defined(OF_LINUX)
+	if (lsetxattr(cPath, cName, data.items, size, 0) != 0) {
+#  elif defined(OF_MACOS)
+	if (setxattr(cPath, cName, data.items, size, 0, XATTR_NOFOLLOW) != 0) {
+#  endif
 		int errNo = errno;
 
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
@@ -1658,6 +1722,42 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		     failedAttribute: @""
 			       errNo: errNo];
 	}
+# elif defined(OF_HAIKU)
+	int fd;
+
+	if (size > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((fd = open(cPath, O_WRONLY)) == -1) {
+		int errNo = errno;
+
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errNo];
+	}
+
+	@try {
+		if (fs_write_attr(fd, cName, B_RAW_TYPE, 0, data.items, size) !=
+		    (ssize_t)size) {
+			int errNo = errno;
+
+			/*
+			 * TODO: Add an attribute (prefix?) for extended
+			 *	 attributes?
+			 */
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: [OFDictionary dictionary]
+			     failedAttribute: @""
+				       errNo: errNo];
+		}
+	} @finally {
+		close(fd);
+	}
+# endif
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1668,14 +1768,15 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
+	const char *cPath = [path cStringWithEncoding: encoding];
+	const char *cName = [name cStringWithEncoding: encoding];
 
-# if defined(OF_LINUX)
-	if (lremovexattr([path cStringWithEncoding: encoding],
-	    [name cStringWithEncoding: encoding]) != 0) {
-# elif defined(OF_MACOS)
-	if (removexattr([path cStringWithEncoding: encoding],
-	    [name cStringWithEncoding: encoding], XATTR_NOFOLLOW) != 0) {
-# endif
+# if defined(OF_LINUX) || defined(OF_MACOS)
+#  if defined(OF_LINUX)
+	if (lremovexattr(cPath, cName) != 0) {
+#  elif defined(OF_MACOS)
+	if (removexattr(cPath, cName, XATTR_NOFOLLOW) != 0) {
+#  endif
 		int errNo = errno;
 
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
@@ -1685,6 +1786,38 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		     failedAttribute: @""
 			       errNo: errNo];
 	}
+# elif defined(OF_HAIKU)
+	int fd;
+
+	if ((fd = open(cPath, O_WRONLY)) == -1) {
+		int errNo = errno;
+
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errNo];
+	}
+
+	@try {
+		if (fs_remove_attr(fd, cName) != 0) {
+			int errNo = errno;
+
+			/*
+			 * TODO: Add an attribute (prefix?) for extended
+			 *	 attributes?
+			 */
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: [OFDictionary dictionary]
+			     failedAttribute: @""
+				       errNo: errNo];
+		}
+	} @finally {
+		close(fd);
+	}
+# endif
 
 	objc_autoreleasePoolPop(pool);
 }
