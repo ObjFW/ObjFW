@@ -222,6 +222,47 @@ releaseMutex(void)
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
 {
+	OFData *data;
+
+	[self getExtendedAttributeData: &data
+			       andType: NULL
+			       forName: name
+			   ofItemAtIRI: IRI];
+
+	return data;
+}
+
+- (void)getExtendedAttributeData: (OFData **)data
+			 andType: (id *)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	/*
+	 * Only call into -[extendedAttributeDataForName:ofItemAtIRI:] if it
+	 * has been overridden. This is to be backwards-compatible to
+	 * subclasses that predate the introduction of
+	 * -[getExtendedAttributeData:andType:forName:ofItemAtIRI:].
+	 * Without this check, this would result in an infinite loop.
+	 */
+	SEL selector = @selector(extendedAttributeDataForName:ofItemAtIRI:);
+
+	if (class_getMethodImplementation(object_getClass(self), selector) !=
+	    class_getMethodImplementation([OFIRIHandler class], selector)) {
+		/*
+		 * Use -[performSelector:withObject:withObject:] to avoid
+		 * deprecation warning. This entire thing is purely for
+		 * backwards compatibility.
+		 */
+		*data = [self performSelector: selector
+				   withObject: name
+				   withObject: IRI];
+	
+		if (type != NULL)
+			*type = nil;
+
+		return;
+	}
+
 	OF_UNRECOGNIZED_SELECTOR
 }
 
@@ -229,6 +270,48 @@ releaseMutex(void)
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
 {
+	[self setExtendedAttributeData: data
+			       andType: nil
+			       forName: name
+			   ofItemAtIRI: IRI];
+}
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (id)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+
+	if (type == nil) {
+		/*
+		 * Only call into
+		 * -[setExtendedAttributeData:forName:ofItemAtIRI:] if it has
+		 * been overridden. This is to be backwards-compatible to
+		 * subclasses that predate the introduction of
+		 * -[setExtendedAttributeData:andType:forName:ofItemAtIRI:].
+		 * Without this check, this would result in an infinite loop.
+		 */
+		SEL selector =
+		    @selector(setExtendedAttributeData:forName:ofItemAtIRI:);
+
+		if (class_getMethodImplementation(object_getClass(self),
+		    selector) !=
+		    class_getMethodImplementation([OFIRIHandler class],
+		    selector)) {
+			/*
+			 * Use
+			 * -[performSelector:withObject:withObject:withObject:]
+			 * to avoid deprecation warning. This entire thing is
+			 * purely for backwards compatibility.
+			 */
+			[self performSelector: selector
+				   withObject: data
+				   withObject: name
+				   withObject: IRI];
+			return;
+		}
+	}
+
 	OF_UNRECOGNIZED_SELECTOR
 }
 

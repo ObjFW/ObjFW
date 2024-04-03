@@ -40,6 +40,7 @@
 # include <sys/xattr.h>
 #endif
 #ifdef OF_HAIKU
+# include <ctype.h>
 # include <kernel/fs_attr.h>
 #endif
 #ifdef OF_WINDOWS
@@ -1615,8 +1616,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
-- (OFData *)extendedAttributeDataForName: (OFString *)name
-			     ofItemAtIRI: (OFIRI *)IRI
+- (void)getExtendedAttributeData: (OFData **)data
+			 andType: (id *)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path = IRI.fileSystemRepresentation;
@@ -1624,7 +1627,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	const char *cPath = [path cStringWithEncoding: encoding];
 	const char *cName = [name cStringWithEncoding: encoding];
 	void *value = NULL;
-	OFData *data;
 # if defined(OF_LINUX) || defined(OF_MACOS)
 #  if defined(OF_LINUX)
 	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
@@ -1649,13 +1651,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    exceptionWithIRI: IRI
 				       errNo: errno];
 
-		data = [OFData dataWithItemsNoCopy: value
-					     count: size
-				      freeWhenDone: true];
+		*data = [OFData dataWithItemsNoCopy: value
+					      count: size
+				       freeWhenDone: true];
 		value = NULL;
 	} @finally {
 		OFFreeMemory(value);
 	}
+
+	if (type != NULL)
+		*type = nil;
 # elif defined(OF_HAIKU)
 	int fd = open(cPath, O_RDONLY);
 	struct attr_info info;
@@ -1683,24 +1688,26 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    exceptionWithIRI: IRI
 				       errNo: errno];
 
-		data = [OFData dataWithItemsNoCopy: value
-					     count: (size_t)info.size
-				      freeWhenDone: true];
+		*data = [OFData dataWithItemsNoCopy: value
+					      count: (size_t)info.size
+				       freeWhenDone: true];
 		value = NULL;
+
+		if (type != NULL)
+			*type = [OFNumber numberWithUnsignedLong: info.type];
 	} @finally {
 		OFFreeMemory(value);
 		close(fd);
 	}
 # endif
 
-	[data retain];
+	[*data retain];
 
 	objc_autoreleasePoolPop(pool);
-
-	return [data autorelease];
 }
 
 - (void)setExtendedAttributeData: (OFData *)data
+			 andType: (id)type
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
 {
@@ -1712,6 +1719,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	size_t size = data.count * data.itemSize;
 
 # if defined(OF_LINUX) || defined(OF_MACOS)
+	if (type != nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
 #  if defined(OF_LINUX)
 	if (lsetxattr(cPath, cName, data.items, size, 0) != 0) {
 #  elif defined(OF_MACOS)
@@ -1727,7 +1738,15 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			       errNo: errNo];
 	}
 # elif defined(OF_HAIKU)
+	unsigned long long typeInt;
 	int fd;
+
+	if (type != nil && ![type isKindOfClass: [OFNumber class]])
+		@throw [OFInvalidArgumentException exception];
+
+	typeInt = (type != nil ? [type unsignedLongLongValue] : 0);
+	if (typeInt > UINT32_MAX)
+		@throw [OFInvalidArgumentException exception];
 
 	if (size > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -1744,8 +1763,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 
 	@try {
-		if (fs_write_attr(fd, cName, B_RAW_TYPE, 0, data.items, size) !=
-		    (ssize_t)size) {
+		if (fs_write_attr(fd, cName, (uint32_t)typeInt, 0,
+		    data.items, size) != (ssize_t)size) {
 			int errNo = errno;
 
 			/*

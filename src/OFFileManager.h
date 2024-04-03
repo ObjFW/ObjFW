@@ -700,6 +700,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the extended attribute
  * @param path The path of the item to return the extended attribute from
+ * @return The extended attribute data for the specified name of the item at
+ *	   the specified IRI
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
  *					     failed
  * @throw OFNotImplementedException Getting extended attributes is not
@@ -707,6 +709,30 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			    ofItemAtPath: (OFString *)path;
+
+/**
+ * @brief Gets the extended attribute data and type for the specified name
+ *	  of the item at the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param data A pointer to `OFData *` that gets set to the data of the
+ *	       extended attribute
+ * @param type A pointer to `id` that gets set to the type of the extended
+ *	       attribute, if not `NULL`. Gets set to `nil` if the extended
+ *	       attribute has no type. The type of the type depends on the
+ *	       system.
+ * @param name The name of the extended attribute
+ * @param path The path of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)getExtendedAttributeData: (OFData *_Nonnull *_Nonnull)data
+			 andType: (id _Nullable *_Nullable)type
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path;
 #endif
 
 /**
@@ -717,6 +743,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the extended attribute
  * @param IRI The IRI of the item to return the extended attribute from
+ * @return The extended attribute data for the specified name of the item at
+ *	   the specified IRI
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
  *					     failed
  * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
@@ -726,6 +754,32 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI;
+
+/**
+ * @brief Gets the extended attribute data and type for the specified name
+ *	  of the item at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param data A pointer to `OFData *` that gets set to the data of the
+ *	       extended attribute
+ * @param type A pointer to `id` that gets set to the type of the extended
+ *	       attribute, if not `NULL`. Gets set to `nil` if the extended
+ *	       attribute has no type. The type of the type depends on the IRI
+ *	       handler.
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to return the extended attribute from
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (void)getExtendedAttributeData: (OFData *_Nonnull *_Nonnull)data
+			 andType: (id _Nullable *_Nullable)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 /**
@@ -743,6 +797,30 @@ OF_SUBCLASSING_RESTRICTED
  *				    implemented for the specified item
  */
 - (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path;
+
+/**
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified path.
+ *
+ * This method is not available on some systems.
+ *
+ * @param data The data for the extended attribute
+ * @param type The type for the extended attribute. `nil` does not mean to keep
+ *	       the existing type, but to set it to no type. The type of the
+ *	       type depends on the system.
+ * @param name The name of the extended attribute
+ * @param path The path of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item or a
+ *				    type was specified and typed extended
+ *				    attributes are not supported
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (nullable id)type
 			 forName: (OFString *)name
 		    ofItemAtPath: (OFString *)path;
 #endif
@@ -764,6 +842,32 @@ OF_SUBCLASSING_RESTRICTED
  *				    implemented for the specified item
  */
 - (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
+
+/**
+ * @brief Sets the extended attribute data for the specified name of the item
+ *	  at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param data The data for the extended attribute
+ * @param type The type for the extended attribute. `nil` does not mean to keep
+ *	       the existing type, but to set it to no type. The type of the
+ *	       type depends on the IRI handler.
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException No handler is registered for the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item or a
+ *				    type was specified and typed extended
+ *				    attributes are not supported
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (nullable id)type
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI;
 

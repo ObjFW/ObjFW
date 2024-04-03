@@ -402,4 +402,52 @@
 	    OFGetItemAttributesFailedException);
 }
 #endif
+
+#ifdef OF_HAIKU
+- (void)testGetExtendedAttributeDataAndTypeForNameOfItemAtPath
+{
+	OFData *data;
+	id type;
+
+	[_fileManager getExtendedAttributeData: &data
+				       andType: &type
+				       forName: @"BEOS:TYPE"
+				  ofItemAtPath: @"/boot/system/lib/libbe.so"];
+	OTAssertEqualObjects(type,
+	    [OFNumber numberWithUnsignedLong: B_MIME_STRING_TYPE]);
+	OTAssertEqualObjects(data,
+	    [OFData dataWithItems: "application/x-vnd.Be-elfexecutable"
+			    count: 35]);
+}
+
+- (void)testSetExtendedAttributeDataAndTypeForNameOfItemAtPath
+{
+	OFString *testFilePath = _testFileIRI.fileSystemRepresentation;
+	OFData *data, *expectedData = [OFData dataWithItems: "foobar" count: 6];
+	id type, expectedType = [OFNumber numberWithUnsignedLong: 1234];
+
+	[_fileManager setExtendedAttributeData: expectedData
+				       andType: expectedType
+				       forName: @"testattribute"
+				  ofItemAtPath: testFilePath];
+
+	[_fileManager getExtendedAttributeData: &data
+				       andType: &type
+				       forName: @"testattribute"
+				  ofItemAtPath: testFilePath];
+
+	OTAssertEqualObjects(data, expectedData);
+	OTAssertEqualObjects(type, expectedType);
+
+	[_fileManager removeExtendedAttributeForName: @"testattribute"
+					ofItemAtPath: testFilePath];
+
+	OTAssertThrowsSpecific(
+	    [_fileManager getExtendedAttributeData: &data
+					   andType: &type
+					   forName: @"testattribute"
+				      ofItemAtPath: testFilePath],
+	    OFGetItemAttributesFailedException);
+}
+#endif
 @end
