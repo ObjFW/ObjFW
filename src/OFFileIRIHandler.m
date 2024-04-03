@@ -1702,8 +1702,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 # endif
 
 	[*data retain];
+	if (type != NULL)
+		[*type retain];
 
 	objc_autoreleasePoolPop(pool);
+
+	[*data autorelease];
+	if (type != NULL)
+		[*type autorelease];
 }
 
 - (void)setExtendedAttributeData: (OFData *)data
