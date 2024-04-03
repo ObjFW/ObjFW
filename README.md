@@ -105,18 +105,9 @@ other place, you are most likely using a mirror.
 
 <h1 id="license">License</h1>
 
-  ObjFW is released under three licenses:
+  ObjFW is released under the GNU Lesser General Public License version 3.0.
 
-   * [QPL](LICENSE.QPL)
-   * [GPLv2](LICENSE.GPLv2)
-   * [GPLv3](LICENSE.GPLv3)
-
-  The QPL allows you to use ObjFW in any open source project. Because the GPL
-  does not allow using code under any other license, ObjFW is also available
-  under the GPLv2 and GPLv3 to allow GPL-licensed projects to use ObjFW.
-
-  You can pick under which of those three licenses you want to use ObjFW. If
-  none of them work for you, contact me and we can find a solution.
+  If this license does not work for you, contact me and we can find a solution.
 
 
 <h1 id="releases">Releases</h1>
@@ -430,7 +421,7 @@ other place, you are most likely using a mirror.
 
 <h1 id="commercial-use">Commercial use</h1>
 
-  If for whatever reason neither the terms of the QPL nor those of the GPL work
-  for you, a proprietary license for ObjFW including support is available upon
-  request. Just write a mail to js@nil.im and we can find a reasonable solution
-  for both parties.
+  If for whatever reason the terms of GNU Lesser General Public License version
+  3.0 don't work for you, a proprietary license for ObjFW including support is
+  available upon request. Just write a mail to js@nil.im and we can find a
+reasonable solution for both parties.
