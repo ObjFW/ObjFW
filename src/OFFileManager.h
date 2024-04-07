@@ -39,8 +39,8 @@ OF_ASSUME_NONNULL_BEGIN
     defined(OF_WINDOWS) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 # endif
-# if defined(OF_LINUX) || defined(OF_MACOS) ||defined(OF_HAIKU) || \
-    defined(DOXYGEN)
+# if defined(OF_LINUX) || defined(OF_MACOS) || defined(OF_NETBSD) || \
+    defined(OF_HAIKU) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 # endif
 #endif

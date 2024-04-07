@@ -39,6 +39,9 @@
 #if defined(OF_LINUX) || defined(OF_MACOS)
 # include <sys/xattr.h>
 #endif
+#ifdef OF_NETBSD
+# include <sys/extattr.h>
+#endif
 #ifdef OF_HAIKU
 # include <ctype.h>
 # include <kernel/fs_attr.h>
@@ -382,6 +385,27 @@ lstatWrapper(OFString *path, Stat *buffer)
 #endif
 }
 
+#ifdef OF_NETBSD
+static void
+parseAttributeName(OFString **name, int *namespace)
+{
+	size_t pos = [*name rangeOfString: @"."].location;
+	OFString *namespaceName;
+
+	if (pos == OFNotFound)
+		@throw [OFInvalidArgumentException exception];
+
+	namespaceName = [*name substringToIndex: pos];
+
+	if (extattr_string_to_namespace(
+	    [namespaceName cStringWithEncoding: [OFLocale encoding]],
+	    namespace) == -1)
+		@throw [OFInvalidArgumentException exception];
+
+	*name = [*name substringFromIndex: pos + 1];
+}
+#endif
+
 static void
 setTypeAttribute(OFMutableFileAttributes attributes, Stat *s)
 {
@@ -602,8 +626,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #  elif defined(OF_MACOS)
 	ssize_t size = listxattr(cPath, NULL, 0, XATTR_NOFOLLOW);
 #  endif
-	char *list = OFAllocMemory(1, size);
+	char *list;
 
+	if (size < 0)
+		return;
+
+	list = OFAllocMemory(1, size);
 	@try {
 		char *name;
 
@@ -629,6 +657,61 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		}
 	} @finally {
 		OFFreeMemory(list);
+	}
+# elif defined(OF_NETBSD)
+	names = [OFMutableArray array];
+
+	for (size_t i = 0; extattr_namespaces[i] != 0; i++) {
+		ssize_t size;
+		char *list;
+
+		if ((size = extattr_list_link(cPath, extattr_namespaces[i],
+		    NULL, 0)) < 0)
+			continue;
+
+		list = OFAllocMemory(1, size);
+		@try {
+			OFString *namespace;
+			char *cNamespace, *iter;
+
+			if (extattr_namespace_to_string(
+			    extattr_namespaces[i], &cNamespace) == -1)
+				continue;
+
+			namespace = [OFString stringWithCString: cNamespace
+						       encoding: encoding];
+
+			if ((size = extattr_list_link(cPath,
+			    extattr_namespaces[i], list, size)) < 0)
+				continue;
+
+			iter = list;
+
+			while (size > 0) {
+				ssize_t length = *(unsigned char *)iter;
+				OFString *name;
+
+				iter++;
+				size--;
+
+				if (length > size)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				name = [OFString stringWithCString: iter
+							  encoding: encoding
+							    length: length];
+				name = [OFString stringWithFormat:
+				    @"%@.%@",  namespace, name];
+
+				[names addObject: name];
+
+				iter += length;
+				size -= length;
+			}
+		} @finally {
+			OFFreeMemory(list);
+		}
 	}
 # elif defined(OF_HAIKU)
 	DIR *dir = fs_open_attr_dir(cPath);
@@ -1625,9 +1708,9 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
-	const char *cName = [name cStringWithEncoding: encoding];
 	void *value = NULL;
 # if defined(OF_LINUX) || defined(OF_MACOS)
+	const char *cName = [name cStringWithEncoding: encoding];
 #  if defined(OF_LINUX)
 	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
 #  elif defined(OF_MACOS)
@@ -1661,7 +1744,39 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	if (type != NULL)
 		*type = nil;
+# elif defined(OF_NETBSD)
+	int namespace;
+	const char *cName;
+	ssize_t size;
+
+	parseAttributeName(&name, &namespace);
+	cName = [name cStringWithEncoding: encoding];
+
+	if ((size = extattr_get_link(cPath, namespace, cName, NULL, 0)) < 0)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	value = OFAllocMemory(1, size);
+	@try {
+		if ((size = extattr_get_link(cPath, namespace, cName,
+		    value, size)) < 0)
+			@throw [OFGetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				       errNo: errno];
+
+		*data = [OFData dataWithItemsNoCopy: value
+					      count: size
+				       freeWhenDone: true];
+		value = NULL;
+	} @finally {
+		OFFreeMemory(value);
+	}
+
+	if (type != NULL)
+		*type = nil;
 # elif defined(OF_HAIKU)
+	const char *cName = [name cStringWithEncoding: encoding];
 	int fd = open(cPath, O_RDONLY);
 	struct attr_info info;
 
@@ -1721,10 +1836,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
-	const char *cName = [name cStringWithEncoding: encoding];
 	size_t size = data.count * data.itemSize;
 
 # if defined(OF_LINUX) || defined(OF_MACOS)
+	const char *cName = [name cStringWithEncoding: encoding];
+
 	if (type != nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
@@ -1743,7 +1859,33 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		     failedAttribute: @""
 			       errNo: errNo];
 	}
+# elif defined(OF_NETBSD)
+	int namespace;
+	const char *cName;
+
+	if (size > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (type != nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	parseAttributeName(&name, &namespace);
+	cName = [name cStringWithEncoding: encoding];
+
+	if (extattr_set_link(cPath, namespace, cName, data.items, size) !=
+	    (ssize_t)size) {
+		int errNo = errno;
+
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errNo];
+	}
 # elif defined(OF_HAIKU)
+	const char *cName = [name cStringWithEncoding: encoding];
 	unsigned long long typeInt;
 	int fd;
 
@@ -1798,14 +1940,31 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
+# if defined(OF_LINUX) || defined(OF_MACOS)
 	const char *cName = [name cStringWithEncoding: encoding];
 
-# if defined(OF_LINUX) || defined(OF_MACOS)
 #  if defined(OF_LINUX)
 	if (lremovexattr(cPath, cName) != 0) {
 #  elif defined(OF_MACOS)
 	if (removexattr(cPath, cName, XATTR_NOFOLLOW) != 0) {
 #  endif
+		int errNo = errno;
+
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errNo];
+	}
+# elif defined(OF_NETBSD)
+	int namespace;
+	const char *cName;
+
+	parseAttributeName(&name, &namespace);
+	cName = [name cStringWithEncoding: encoding];
+
+	if (extattr_delete_link(cPath, namespace, cName) != 0) {
 		int errNo = errno;
 
 		/* TODO: Add an attribute (prefix?) for extended attributes? */

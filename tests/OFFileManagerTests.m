@@ -372,7 +372,7 @@
 					       forName: @"user.test"
 					  ofItemAtPath: testFilePath];
 	} @catch (OFSetItemAttributesFailedException *e) {
-		if (e.errNo != ENOTSUP)
+		if (e.errNo != ENOTSUP && e.errNo != EOPNOTSUPP)
 			@throw e;
 
 		OTSkip(@"Extended attributes are not supported");
