@@ -39,7 +39,7 @@
 #if defined(OF_LINUX) || defined(OF_MACOS)
 # include <sys/xattr.h>
 #endif
-#ifdef OF_NETBSD
+#if defined(OF_FREEBSD) || defined(OF_NETBSD)
 # include <sys/extattr.h>
 #endif
 #ifdef OF_HAIKU
@@ -156,6 +156,11 @@ static int (*_wutime64FuncPtr)(const wchar_t *, struct __utimbuf64 *);
 static WINAPI BOOLEAN (*createSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*createHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
+#endif
+
+#if defined(OF_FREEBSD) || defined(OF_NETBSD)
+static const char *namespaces[] = EXTATTR_NAMESPACE_NAMES;
+static int numNamespaces = sizeof(namespaces) / sizeof(*namespaces);
 #endif
 
 #ifdef OF_WINDOWS
@@ -385,24 +390,30 @@ lstatWrapper(OFString *path, Stat *buffer)
 #endif
 }
 
-#ifdef OF_NETBSD
+#if defined(OF_FREEBSD) || defined(OF_NETBSD)
 static void
 parseAttributeName(OFString **name, int *namespace)
 {
 	size_t pos = [*name rangeOfString: @"."].location;
 	OFString *namespaceName;
+	const char *cNamespace;
 
 	if (pos == OFNotFound)
 		@throw [OFInvalidArgumentException exception];
 
 	namespaceName = [*name substringToIndex: pos];
-
-	if (extattr_string_to_namespace(
-	    [namespaceName cStringWithEncoding: [OFLocale encoding]],
-	    namespace) == -1)
-		@throw [OFInvalidArgumentException exception];
+	cNamespace = [namespaceName cStringWithEncoding: [OFLocale encoding]];
 
 	*name = [*name substringFromIndex: pos + 1];
+
+	for (int i = 0; i < numNamespaces; i++) {
+		if (strcmp(namespaces[i], cNamespace) == 0) {
+			*namespace = i;
+			return;
+		}
+	}
+
+	@throw [OFInvalidArgumentException exception];
 }
 #endif
 
@@ -658,31 +669,25 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	} @finally {
 		OFFreeMemory(list);
 	}
-# elif defined(OF_NETBSD)
+# elif defined(OF_FREEBSD) || defined(OF_NETBSD)
 	names = [OFMutableArray array];
 
-	for (size_t i = 0; extattr_namespaces[i] != 0; i++) {
+	for (int i = 0; i < numNamespaces; i++) {
 		ssize_t size;
 		char *list;
 
-		if ((size = extattr_list_link(cPath, extattr_namespaces[i],
-		    NULL, 0)) < 0)
+		if ((size = extattr_list_link(cPath, i, NULL, 0)) < 0)
 			continue;
 
 		list = OFAllocMemory(1, size);
 		@try {
-			OFString *namespace;
-			char *cNamespace, *iter;
+			OFString *namespace = [OFString
+			    stringWithCString: namespaces[i]
+				     encoding: encoding];
+			char *iter;
 
-			if (extattr_namespace_to_string(
-			    extattr_namespaces[i], &cNamespace) == -1)
-				continue;
-
-			namespace = [OFString stringWithCString: cNamespace
-						       encoding: encoding];
-
-			if ((size = extattr_list_link(cPath,
-			    extattr_namespaces[i], list, size)) < 0)
+			if ((size = extattr_list_link(cPath, i,
+			    list, size)) < 0)
 				continue;
 
 			iter = list;
@@ -1744,7 +1749,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	if (type != NULL)
 		*type = nil;
-# elif defined(OF_NETBSD)
+# elif defined(OF_FREEBSD) || defined(OF_NETBSD)
 	int namespace;
 	const char *cName;
 	ssize_t size;
@@ -1859,7 +1864,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		     failedAttribute: @""
 			       errNo: errNo];
 	}
-# elif defined(OF_NETBSD)
+# elif defined(OF_FREEBSD) || defined(OF_NETBSD)
 	int namespace;
 	const char *cName;
 
@@ -1957,7 +1962,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		     failedAttribute: @""
 			       errNo: errNo];
 	}
-# elif defined(OF_NETBSD)
+# elif defined(OF_FREEBSD) || defined(OF_NETBSD)
 	int namespace;
 	const char *cName;
 
