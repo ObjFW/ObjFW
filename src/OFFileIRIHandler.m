@@ -158,7 +158,7 @@ static WINAPI BOOLEAN (*createHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
 #endif
 
-#if defined(OF_FREEBSD) || defined(OF_NETBSD)
+#ifdef OF_FREEBSD
 static const char *namespaces[] = EXTATTR_NAMESPACE_NAMES;
 static int numNamespaces = sizeof(namespaces) / sizeof(*namespaces);
 #endif
@@ -406,6 +406,7 @@ parseAttributeName(OFString **name, int *namespace)
 
 	*name = [*name substringFromIndex: pos + 1];
 
+# if defined(OF_FREEBSD)
 	for (int i = 0; i < numNamespaces; i++) {
 		if (strcmp(namespaces[i], cNamespace) == 0) {
 			*namespace = i;
@@ -414,6 +415,10 @@ parseAttributeName(OFString **name, int *namespace)
 	}
 
 	@throw [OFInvalidArgumentException exception];
+# elif defined(OF_NETBSD)
+	if (extattr_string_to_namespace(cNamespace, namespace) == -1)
+		@throw [OFInvalidArgumentException exception];
+# endif
 }
 #endif
 
@@ -672,24 +677,38 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 # elif defined(OF_FREEBSD) || defined(OF_NETBSD)
 	names = [OFMutableArray array];
 
+#  if defined(OF_FREEBSD)
 	for (int i = 0; i < numNamespaces; i++) {
+		int namespace = i;
+		const char *cNamespace = namespaces[i];
+#  elif defined(OF_NETBSD)
+	for (size_t i = 0; extattr_namespaces[i] != 0; i++) {
+		int namespace = extattr_namespaces[i];
+		char *cNamespace;
+#  endif
 		ssize_t size;
 		char *list;
 
-		if ((size = extattr_list_link(cPath, i, NULL, 0)) < 0)
+		if ((size = extattr_list_link(cPath, namespace, NULL, 0)) < 0)
 			continue;
 
 		list = OFAllocMemory(1, size);
 		@try {
-			OFString *namespace = [OFString
-			    stringWithCString: namespaces[i]
-				     encoding: encoding];
+			OFString *namespaceName;
 			char *iter;
 
-			if ((size = extattr_list_link(cPath, i,
+			if ((size = extattr_list_link(cPath, namespace,
 			    list, size)) < 0)
 				continue;
 
+#  ifdef OF_NETBSD
+			if (extattr_namespace_to_string(namespace,
+			    &cNamespace) == -1)
+				continue;
+#  endif
+
+			namespaceName = [OFString stringWithCString: cNamespace
+							   encoding: encoding];
 			iter = list;
 
 			while (size > 0) {
@@ -707,7 +726,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 							  encoding: encoding
 							    length: length];
 				name = [OFString stringWithFormat:
-				    @"%@.%@",  namespace, name];
+				    @"%@.%@",  namespaceName, name];
 
 				[names addObject: name];
 
