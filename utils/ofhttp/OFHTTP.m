@@ -989,7 +989,7 @@ after_exception_handling:
 			goto next;
 		}
 
-#ifdef OF_LINUX
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 		@try {
 			OFString *IRIString = request.IRI.string;
 			OFData *downloadedFromData = [OFData
