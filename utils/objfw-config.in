@@ -34,8 +34,8 @@ LIB_SUFFIX="@LIB_SUFFIX@"
 LDFLAGS="@LDFLAGS@"
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
-LIBS="-L${libdir} -lobjfw @RUNTIME_LIBS@ @LIBS@"
-FRAMEWORK_LIBS="-F${prefix}/Library/Frameworks -framework ObjFW"
+LIBS="-lobjfw @RUNTIME_LIBS@ @LIBS@"
+FRAMEWORK_LIBS="-framework ObjFW"
 FRAMEWORK_LIBS="$FRAMEWORK_LIBS @RUNTIME_FRAMEWORK_LIBS@ @LIBS@"
 PLUGIN_CFLAGS="@PLUGIN_CFLAGS@"
 PLUGIN_LDFLAGS="@PLUGIN_LDFLAGS@"
@@ -109,6 +109,11 @@ parse_packages() {
 	done
 }
 parse_packages "$@"
+
+# Add search directories after all packages have been processed so that they
+# always come first.
+LIBS="-L${libdir} $LIBS"
+FRAMEWORK_LIBS="-F${prefix}/Library/Frameworks $FRAMEWORK_LIBS"
 
 flag_printed="no"
 output_flag() {
