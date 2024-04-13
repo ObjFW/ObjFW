@@ -1,3 +1,4 @@
 package_format 1
 LIBS="-lobjfwtls $LIBS"
 FRAMEWORK_LIBS="-framework ObjFWTLS $FRAMEWORK_LIBS"
+STATIC_LIBS="${libdir}/libobjfwtls.a $STATIC_LIBS"
