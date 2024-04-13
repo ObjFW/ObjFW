@@ -48,5 +48,5 @@ uninstall-extra:
 		else \
 			${DELETE_FAILED}; \
 		fi \
-	fi; \
+	fi
 	rmdir ${libdir}/objfw-config >/dev/null 2>&1 || true
