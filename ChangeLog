@@ -5,6 +5,7 @@ Legend:
 This file only contains the most significant changes.
 
 ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
+ * ObjFW is now licensed under LGPLv3.0-only
  + Adds a new framework for writing tests called ObjFWTest
  * All tests were migrated to ObjFWTest
  + The runtime now supports associated objects
@@ -24,9 +25,12 @@ ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
  * The schemes for archive IRI handlers now look for the rightmost `!`,
    which allows for chaining with less quoting
  * Fixes getting non-existent xattrs in OFFileManager
- * Objects on Windows and MS-DOS now get properly aligned so that SIMD can be
-   used on ivars
+ * Objects on Windows, MS-DOS and 32 bit Solaris now get properly aligned so
+   that SIMD can be used on ivars
  * Fixes parsing of signed numbers in MessagePack
+ * Fixes a memory leak in OFTarArchive
+ + Adds support for typed extended file attributes (only on Haiku)
+ + Adds support for extended file attributes on Haiku, NetBSD and FreeBSD
  + OFStdIOStream now supports cursor movement and colors on MS-DOS
  * All headers are now compatible with -masm=intel
  + OFMatrix4x4 can now transform multiple vectors at once
@@ -35,6 +39,9 @@ ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
  + OFMatrix4x4 has an SSE implementation for vector transformations now
  * Updates Unicode support to 15.1
  * Fixes compatibility with LibreSSL
+ * Fixes two linker warnings on macOS
+ * Fixes compiling on QNX
+ * OFLocale now supports automatic initialization
  + ofarc now supports extracting and creating Zoo archives
  + ofarc now has an --iri option to directly work on local and remote IRIs
  + ofarc now prints the archive comment with -lv
