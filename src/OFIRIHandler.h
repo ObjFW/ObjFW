@@ -301,6 +301,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the extended attribute data for the specified name of the
  *	  item at the specified IRI.
  *
+ * @deprecated Use @ref getExtendedAttributeData:andType:forName:ofItemAtIRI:
+ *	       instead.
+ *
  * This method is not available for all IRIs.
  *
  * @param name The name of the extended attribute
@@ -316,8 +319,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
-   OF_DEPRECATED(ObjFW, 1, 1,
-   "Use -[getExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
+    OF_DEPRECATED(ObjFW, 1, 1,
+    "Use -[getExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
 
 /**
  * @brief Gets the extended attribute data and type for the specified name
@@ -348,6 +351,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Sets the extended attribute data for the specified name of the item
  *	  at the specified IRI.
+ *
+ * @deprecated Use @ref setExtendedAttributeData:andType:forName:ofItemAtIRI:
+ *	       instead.
  *
  * This method is not available for all IRIs.
  *
