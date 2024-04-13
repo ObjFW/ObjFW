@@ -41,6 +41,26 @@ includesubdir = ObjFWBridge
 
 include ../../buildsys.mk
 
+install-extra:
+	i=ObjFWBridge.oc; \
+	${INSTALL_STATUS}; \
+	if ${MKDIR_P} ${libdir}/objfw-config && ${INSTALL} -m 644 $$i ${libdir}/objfw-config/$$i; then \
+		${INSTALL_OK}; \
+	else \
+		${INSTALL_FAILED}; \
+	fi
+
+uninstall-extra:
+	i=ObjFWBridge.oc; \
+	if test -f ${libdir}/objfw-config/$$i; then \
+		if rm -f ${libdir}/objfw-config/$$i; then \
+			${DELETE_OK}; \
+		else \
+			${DELETE_FAILED}; \
+		fi \
+	fi
+	rmdir ${libdir}/objfw-config >/dev/null 2>&1 || true
+
 CPPFLAGS += -I. -I.. -I../.. -I../exceptions -DOBJFWBRIDGE_LOCAL_INCLUDES
 LD = ${OBJC}
 FRAMEWORK_LIBS := -framework Foundation -F.. -framework ObjFW ${LIBS}

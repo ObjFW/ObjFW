@@ -1,0 +1,3 @@
+package_format 1
+LIBS="-lobjfwbridge $LIBS"
+FRAMEWORK_LIBS="-framework ObjFWBridge $FRAMEWORK_LIBS"
