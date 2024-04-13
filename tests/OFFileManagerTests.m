@@ -3,14 +3,18 @@
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -368,7 +372,7 @@
 					       forName: @"user.test"
 					  ofItemAtPath: testFilePath];
 	} @catch (OFSetItemAttributesFailedException *e) {
-		if (e.errNo != ENOTSUP)
+		if (e.errNo != ENOTSUP && e.errNo != EOPNOTSUPP)
 			@throw e;
 
 		OTSkip(@"Extended attributes are not supported");
@@ -395,6 +399,54 @@
 	OTAssertThrowsSpecific(
 	    [_fileManager extendedAttributeDataForName: @"user.test"
 					  ofItemAtPath: testFilePath],
+	    OFGetItemAttributesFailedException);
+}
+#endif
+
+#ifdef OF_HAIKU
+- (void)testGetExtendedAttributeDataAndTypeForNameOfItemAtPath
+{
+	OFData *data;
+	id type;
+
+	[_fileManager getExtendedAttributeData: &data
+				       andType: &type
+				       forName: @"BEOS:TYPE"
+				  ofItemAtPath: @"/boot/system/lib/libbe.so"];
+	OTAssertEqualObjects(type,
+	    [OFNumber numberWithUnsignedLong: B_MIME_STRING_TYPE]);
+	OTAssertEqualObjects(data,
+	    [OFData dataWithItems: "application/x-vnd.Be-elfexecutable"
+			    count: 35]);
+}
+
+- (void)testSetExtendedAttributeDataAndTypeForNameOfItemAtPath
+{
+	OFString *testFilePath = _testFileIRI.fileSystemRepresentation;
+	OFData *data, *expectedData = [OFData dataWithItems: "foobar" count: 6];
+	id type, expectedType = [OFNumber numberWithUnsignedLong: 1234];
+
+	[_fileManager setExtendedAttributeData: expectedData
+				       andType: expectedType
+				       forName: @"testattribute"
+				  ofItemAtPath: testFilePath];
+
+	[_fileManager getExtendedAttributeData: &data
+				       andType: &type
+				       forName: @"testattribute"
+				  ofItemAtPath: testFilePath];
+
+	OTAssertEqualObjects(data, expectedData);
+	OTAssertEqualObjects(type, expectedType);
+
+	[_fileManager removeExtendedAttributeForName: @"testattribute"
+					ofItemAtPath: testFilePath];
+
+	OTAssertThrowsSpecific(
+	    [_fileManager getExtendedAttributeData: &data
+					   andType: &type
+					   forName: @"testattribute"
+				      ofItemAtPath: testFilePath],
 	    OFGetItemAttributesFailedException);
 }
 #endif

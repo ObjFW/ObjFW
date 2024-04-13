@@ -3,14 +3,18 @@
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,6 +27,8 @@
 #import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFString.h"
+
+#import "OFOnce.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -37,8 +43,19 @@
 # undef Class
 #endif
 
+@interface OFLocale ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+@end
+
+static OFOnceControl initLocaleControl = OFOnceControlInitValue;
 static OFLocale *currentLocale = nil;
 static OFDictionary *operatorPrecedences = nil;
+
+static void
+initLocale(void)
+{
+	currentLocale = [[OFLocale alloc] of_init];
+}
 
 #ifndef OF_AMIGAOS
 static void
@@ -312,10 +329,13 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 + (void)initialize
 {
+	void *pool;
 	OFNumber *one, *two, *three, *four;
 
 	if (self != [OFLocale class])
 		return;
+
+	pool = objc_autoreleasePoolPush();
 
 	/* 1 is also used to denote a unary operator. */
 	one = [OFNumber numberWithUnsignedInt: 1];
@@ -337,30 +357,42 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	    @"!", one,
 	    @"is_real", one,
 	    nil];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 + (OFLocale *)currentLocale
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale;
 }
 
 + (OFString *)languageCode
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.languageCode;
 }
 
 + (OFString *)countryCode
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.countryCode;
 }
 
 + (OFStringEncoding)encoding
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.encoding;
 }
 
 + (OFString *)decimalSeparator
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.decimalSeparator;
 }
 
@@ -371,15 +403,25 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 - (instancetype)init
 {
+	/*
+	 * In the past, applications not using OFApplication were required to
+	 * create an instance of OFLocale manually. This is no longer needed
+	 * and +[currentLocale] creates the singleton. However, in order to not
+	 * break old applications, this method needs to just return the
+	 * singleton now.
+	 */
+	[self release];
+
+	return [OFLocale currentLocale];
+}
+
+- (instancetype)of_init
+{
 	self = [super init];
 
 	@try {
 #ifndef OF_AMIGAOS
 		char *locale, *messagesLocale = NULL;
-
-		if (currentLocale != nil)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
 
 # ifdef OF_MSDOS
 		_encoding = OFStringEncodingCodepage437;
@@ -484,20 +526,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		@throw e;
 	}
 
-	currentLocale = self;
-
 	return self;
 }
 
-- (void)dealloc
-{
-	[_languageCode release];
-	[_countryCode release];
-	[_decimalSeparator release];
-	[_localizedStrings release];
-
-	[super dealloc];
-}
+OF_SINGLETON_METHODS
 
 - (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {

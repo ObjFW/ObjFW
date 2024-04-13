@@ -201,6 +201,12 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 
 	AC_DEFINE(OF_WII_U, 1, [Whether we are compiling for Wii U])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+	# Repetition of libraries is required for Wii U, as otherwise it cannot
+	# find main. Just moving -lobjfwtest later doesn't work either, as then
+	# the linker cannot find ObjFW symbols. So the only solution is to list
+	# everything twice, but hide it behind a variable because listing it
+	# twice causes a warning on macOS.
+	AC_SUBST(WII_U_TESTS_LIBS, '-lobjfwtest ${TESTS_LIBS} ${LIBS}')
 ])
 
 AC_ARG_WITH(nds,
@@ -591,16 +597,16 @@ case "$objc_runtime" in
 			}
 		])
 	], [
-		AS_IF([$EGREP __gnu_objc_personality_v0 conftest.$ac_objext \
-		    >/dev/null], [
+		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
+		    $EGREP __gnu_objc_personality_v0 >/dev/null], [
 			exception_type="DWARF"
 		])
-		AS_IF([$EGREP __gnu_objc_personality_sj0 conftest.$ac_objext \
-		    >/dev/null], [
+		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
+		    $EGREP __gnu_objc_personality_sj0 >/dev/null], [
 			exception_type="SjLj"
 		])
-		AS_IF([$EGREP __gnu_objc_personality_seh0 conftest.$ac_objext \
-		    >/dev/null], [
+		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
+		    $EGREP __gnu_objc_personality_seh0 >/dev/null], [
 			exception_type="SEH"
 		])
 
@@ -811,12 +817,14 @@ AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
 			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
 		])
 	], [
-		AS_IF([$EGREP BigEnd conftest.$ac_objext >/dev/null], [
+		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
+		    $EGREP BigEnd >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
 				[Whether floats are big endian])
 			fp_endianess="big endian"
 		], [
-			AS_IF([$EGREP dnEgiB conftest.$ac_objext >/dev/null], [
+			AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
+			    $EGREP dnEgiB >/dev/null], [
 				fp_endianess="little endian"
 			])
 		])

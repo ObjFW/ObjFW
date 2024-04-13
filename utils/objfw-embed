@@ -1,4 +1,23 @@
 #!/bin/sh
+#
+#  Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+#
+#  All rights reserved.
+#
+#  This program is free software: you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License version 3.0 only,
+#  as published by the Free Software Foundation.
+#
+#  This program is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+#  version 3.0 for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  version 3.0 along with this program. If not, see
+#  <https://www.gnu.org/licenses/>.
+#
+
 if test $# != 3; then
 	echo "Usage: $0 source_file filename output.m" 1>&2
 	exit 1
@@ -18,7 +37,8 @@ cat <<EOF
 
 static const uint8_t bytes[] = {
 EOF
-od -vtx1 $1 | sed -e '/^[^ ][^ ]*$/d;s/  */ /g' -e 's/ $//g;s/^[^ ][^ ]* //' -e 's/ /, 0x/g' -e 's/^/	0x/' -e 's/$/,/'
+od -vtx1 "$1" | cut -d' ' -sf2- | \
+    sed '/^ *$/d;s/^ *//;s/ *$//;s/  */ /g;s/^/0x/;s/ /, 0x/g;s/$/,/'
 cat <<EOF
 };
 

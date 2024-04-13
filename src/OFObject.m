@@ -3,14 +3,18 @@
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -376,15 +380,15 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 #if defined(OF_WINDOWS)
 	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
-	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
-	    extraSize);
 #elif defined(OF_MSDOS)
 	instance = alignedAlloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT, &offset);
-	memset(instance, 0, PRE_IVARS_ALIGN + instanceSize + extraAlignment +
-	    extraSize);
+#elif defined(OF_SOLARIS)
+	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
+	    PRE_IVARS_ALIGN + instanceSize + extraAlignment + extraSize) != 0)
+		instance = NULL;
 #else
-	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
+	instance = malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 #endif
 
@@ -415,6 +419,8 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 #endif
 
 	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
+
+	memset(instance, 0, instanceSize + extraAlignment + extraSize);
 
 	if (!objc_constructInstance(class, instance)) {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
