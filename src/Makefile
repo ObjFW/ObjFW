@@ -225,6 +225,7 @@ SRCS += OFASPrintF.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\
 	OFUTF8String.m			\
+	${LIBBASES_M}			\
 	${RUNTIME_ASSOCIATION_M}	\
 	${RUNTIME_AUTORELEASE_M}	\
 	${RUNTIME_INSTANCE_M}		\
