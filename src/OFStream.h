@@ -1404,6 +1404,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @note Override this method in case your stream can buffer data itself, such
  *	 as when implementing @ref OFTLSStream. If not overridden, it always
  *	 returns false.
+ *
  * @return Whether the lowlevel has data in the read buffer
  */
 - (bool)lowlevelHasDataInReadBuffer;

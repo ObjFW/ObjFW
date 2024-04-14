@@ -34,7 +34,8 @@ LIBS := -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}
 install-extra:
 	i=ObjFWTest.oc; \
 	${INSTALL_STATUS}; \
-	if ${MKDIR_P} ${libdir}/objfw-config && ${INSTALL} -m 644 $$i ${libdir}/objfw-config/$$i; then \
+	if ${MKDIR_P} ${libdir}/objfw-config && \
+	    ${INSTALL} -m 644 $$i ${libdir}/objfw-config/$$i; then \
 		${INSTALL_OK}; \
 	else \
 		${INSTALL_FAILED}; \

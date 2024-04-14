@@ -424,4 +424,4 @@ other place, you are most likely using a mirror.
   If for whatever reason the terms of GNU Lesser General Public License version
   3.0 don't work for you, a proprietary license for ObjFW including support is
   available upon request. Just write a mail to js@nil.im and we can find a
-reasonable solution for both parties.
+  reasonable solution for both parties.
