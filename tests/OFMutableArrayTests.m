@@ -88,11 +88,14 @@ static OFString *const cArray[] = {
 {
 	[_mutableArray insertObject: [[cArray[1] mutableCopy] autorelease]
 			    atIndex: 1];
+	[_mutableArray insertObject: [[cArray[1] mutableCopy] autorelease]
+			    atIndex: 4];
 	[_mutableArray replaceObjectIdenticalTo: cArray[1]
 				     withObject: cArray[0]];
 
 	OTAssertEqualObjects(_mutableArray,
-	    ([OFArray arrayWithObjects: @"Foo", @"Bar", @"Foo", @"Baz", nil]));
+	    ([OFArray arrayWithObjects: @"Foo", @"Bar", @"Foo", @"Baz", @"Bar",
+	    nil]));
 }
 
 - (void)testReplaceObjectAtIndexWithObject
