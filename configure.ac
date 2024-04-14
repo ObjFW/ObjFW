@@ -153,6 +153,7 @@ esac
 AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
 AC_PROG_EGREP
+AC_PROG_AWK
 AC_PROG_LN_S
 
 BUILDSYS_CHECK_IOS
@@ -598,18 +599,11 @@ case "$objc_runtime" in
 			}
 		])
 	], [
-		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_v0 >/dev/null], [
-			exception_type="DWARF"
-		])
-		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_sj0 >/dev/null], [
-			exception_type="SjLj"
-		])
-		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_seh0 >/dev/null], [
-			exception_type="SEH"
-		])
+		exception_type="$($AWK '
+		    /__gnu_objc_personality_v0/ { print "DWARF" }
+		    /__gnu_objc_personality_sj0/ { print "SjLj" }
+		    /__gnu_objc_personality_seh0/ { print "SEH" }' \
+		    conftest.$ac_objext)"
 
 		case "$exception_type" in
 		DWARF)
@@ -811,24 +805,27 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 		[Floating point implementation does not conform to IEEE 754!])])
 
 AC_MSG_CHECKING(for floating point endianess)
-fp_endianess="unknown"
 AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
 			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
 		])
 	], [
-		AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
-		    $EGREP BigEnd >/dev/null], [
+		fp_endianess="$($AWK '
+		    /BigEnd/ { print "big endian" }
+		    /dnEgiB/ { print "little endian" }' conftest.$ac_objext)"
+
+		case "$fp_endianess" in
+		"big endian")
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
 				[Whether floats are big endian])
-			fp_endianess="big endian"
-		], [
-			AS_IF([tr -dc "[[:print:]]" <conftest.$ac_objext | \
-			    $EGREP dnEgiB >/dev/null], [
-				fp_endianess="little endian"
-			])
-		])
+			;;
+		"little endian")
+			;;
+		*)
+			fp_endianess="unknown";
+			;;
+		esac
 	])
 ], [
 	fp_endianess="universal"
