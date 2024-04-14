@@ -1998,6 +1998,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			       errNo: errNo];
 	}
 # elif defined(OF_HAIKU)
+	const char *cName = [name cStringWithEncoding: encoding];
 	int fd;
 
 	if ((fd = open(cPath, O_WRONLY)) == -1) {
