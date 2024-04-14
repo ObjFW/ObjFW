@@ -134,7 +134,7 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 - (void)setObject: (ObjectType)object atIndexedSubscript: (size_t)index;
 
 /**
- * @brief Replaces the first object that has the same address as the specified
+ * @brief Replaces all objects that have the same address as the specified
  *	  object with the other specified object.
  *
  * @param oldObject The object to replace

@@ -43,7 +43,6 @@
 # include <sys/extattr.h>
 #endif
 #ifdef OF_HAIKU
-# include <ctype.h>
 # include <kernel/fs_attr.h>
 #endif
 #ifdef OF_WINDOWS

@@ -247,13 +247,9 @@ OF_SINGLETON_METHODS
 
 	count = self.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if ([self objectAtIndex: i] == oldObject) {
+	for (size_t i = 0; i < count; i++)
+		if ([self objectAtIndex: i] == oldObject)
 			[self replaceObjectAtIndex: i withObject: newObject];
-
-			return;
-		}
-	}
 }
 
 - (void)removeObjectAtIndex: (size_t)idx

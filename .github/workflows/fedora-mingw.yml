@@ -10,7 +10,9 @@ jobs:
             triple: i686-w64-mingw32
           - prefix: mingw64
             triple: x86_64-w64-mingw32
-    container: fedora
+          - prefix: ucrt64
+            triple: x86_64-w64-mingw32ucrt
+    container: fedora:41
     steps:
     - name: Install dependencies
       run: |
