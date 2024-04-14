@@ -4,7 +4,7 @@ Legend:
 
 This file only contains the most significant changes.
 
-ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
+ObjFW 1.0.12 -> ObjFW 1.1, 2024-04-14
  * ObjFW is now licensed under LGPLv3.0-only
  + Adds a new framework for writing tests called ObjFWTest
  * All tests were migrated to ObjFWTest
@@ -50,6 +50,15 @@ ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
  + ofarc can now add an archive comment with --archive-comment=
  + ofarc now propagates the quarantine xattr on macOS when extracting an
    archive
+
+ObjFW 1.0.11 -> ObjFW 1.0.12, 2024-03-11
+ * Fixes a regression in OFZIPArchive that was introduced in 1.0.11 that
+   resulted in failing to extract archives and creating broken archives.
+ * Fixes a rare condition where OFInflateStream could end up in an endless
+   loop.
+ * Fixes OFTarArchiveEntry not having a default date, which could result in
+   messaging nil on a FP return, which yielded invalid results on 32-bit x86
+   with GCC.
 
 ObjFW 1.0.10 -> ObjFW 1.0.11, 2024-03-09
  * Fixes -[OFHTTPClientResponse isAtEndOfStream] and
