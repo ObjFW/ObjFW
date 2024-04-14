@@ -4,6 +4,9 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1 -> ObjFW 1.1.1, 2024-04-14
+ * Fixes missing ${DESTDIR} in some Makefiles.
+
 ObjFW 1.0.12 -> ObjFW 1.1, 2024-04-14
  * ObjFW is now licensed under LGPLv3.0-only.
  + Adds a new framework for writing tests called ObjFWTest.
