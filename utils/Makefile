@@ -13,7 +13,8 @@ DISTCLEAN = objfw-config
 install-extra: objfw-config objfw-compile objfw-embed
 	for i in objfw-config objfw-compile objfw-embed; do \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/${BIN_PREFIX}$$i; then \
+		if ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i \
+		    ${DESTDIR}${bindir}/${BIN_PREFIX}$$i; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \

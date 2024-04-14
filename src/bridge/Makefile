@@ -44,7 +44,8 @@ include ../../buildsys.mk
 install-extra:
 	i=ObjFWBridge.oc; \
 	${INSTALL_STATUS}; \
-	if ${MKDIR_P} ${libdir}/objfw-config && ${INSTALL} -m 644 $$i ${libdir}/objfw-config/$$i; then \
+	if ${MKDIR_P} ${libdir}/objfw-config && \
+	    ${INSTALL} -m 644 $$i ${libdir}/objfw-config/$$i; then \
 		${INSTALL_OK}; \
 	else \
 		${INSTALL_FAILED}; \
