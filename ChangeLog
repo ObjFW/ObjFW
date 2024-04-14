@@ -24,6 +24,8 @@ ObjFW 1.0.11 -> ObjFW 1.1, 2024-??-??
  * The schemes for archive IRI handlers have been renamed
  * The schemes for archive IRI handlers now look for the rightmost `!`,
    which allows for chaining with less quoting
+ * Fixes -[OFMutableArray replaceObjectIdenticalTo:withObject:] being
+   inconsistent with -[OFMutableArray replaceObject:withObject:].
  * Fixes getting non-existent xattrs in OFFileManager
  * Objects on Windows, MS-DOS and 32 bit Solaris now get properly aligned so
    that SIMD can be used on ivars
