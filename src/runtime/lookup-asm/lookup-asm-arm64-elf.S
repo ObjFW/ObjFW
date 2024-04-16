@@ -35,8 +35,7 @@
 
 	cbz	x0, .LreturnNilMethod
 
-	tst	x0, #1
-	b.ne	.LtaggedPointer_\name
+	tbnz	x0, #0, .LtaggedPointer_\name
 
 	ldr	x2, [x0]
 	ldr	x2, [x2, #64]
