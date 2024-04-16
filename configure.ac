@@ -1284,26 +1284,6 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_MEMBERS([struct stat.st_birthtime], [], [], [
 		#include <sys/stat.h>
 	])
-
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Werror"
-	AC_MSG_CHECKING(for readdir_r)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <dirent.h>
-		], [
-			DIR *dir = 0;
-			struct dirent entry, *result;
-
-			readdir_r(dir, &entry, &result);
-		])
-	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(HAVE_READDIR_R, 1, [Whether we have readdir_r()])
-	], [
-		AC_MSG_RESULT(no)
-	])
-	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
 AC_CHECK_HEADERS(dirent.h)

@@ -140,7 +140,7 @@ releasePasswdMutex(void)
 	[passwdMutex release];
 }
 #endif
-#if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
+#if defined(OF_HAVE_THREADS) && !defined(__GLIBC__) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
 
 static void
@@ -775,7 +775,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	passwdMutex = [[OFMutex alloc] init];
 	atexit(releasePasswdMutex);
 #endif
-#if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
+#if defined(OF_HAVE_THREADS) && !defined(__GLIBC__) && !defined(OF_WINDOWS)
 	readdirMutex = [[OFMutex alloc] init];
 	atexit(releaseReaddirMutex);
 #endif
@@ -1422,7 +1422,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 							      mode: nil
 							     errNo: errno];
 
-# if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
+# if defined(OF_HAVE_THREADS) && !defined(__GLIBC__)
 	@try {
 		[readdirMutex lock];
 	} @catch (id e) {
@@ -1434,21 +1434,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	@try {
 		for (;;) {
 			struct dirent *dirent;
-# ifdef HAVE_READDIR_R
-			struct dirent buffer;
-# endif
 			OFString *file;
 
-# ifdef HAVE_READDIR_R
-			if (readdir_r(dir, &buffer, &dirent) != 0)
-				@throw [OFReadFailedException
-				    exceptionWithObject: self
-					requestedLength: 0
-						  errNo: errno];
-
-			if (dirent == NULL)
-				break;
-# else
 			errno = 0;
 			if ((dirent = readdir(dir)) == NULL) {
 				if (errno == 0)
@@ -1459,7 +1446,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 						requestedLength: 0
 							  errNo: errno];
 			}
-# endif
 
 			if (strcmp(dirent->d_name, ".") == 0 ||
 			    strcmp(dirent->d_name, "..") == 0)
@@ -1476,7 +1462,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		}
 	} @finally {
 		closedir(dir);
-# if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
+# if defined(OF_HAVE_THREADS) && !defined(__GLIBC__)
 		[readdirMutex unlock];
 # endif
 	}
