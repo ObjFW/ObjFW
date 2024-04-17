@@ -101,6 +101,10 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	ret
 
 .LnilMethod:
+#ifdef HAVE_BTI
+	bti	c
+#endif
+
 	mov	x0, #0
 	ret
 
