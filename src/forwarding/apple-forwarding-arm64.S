@@ -91,16 +91,12 @@ _OFForward_stret:
 	ldp	q4, q5, [sp, #160]
 	ldp	q6, q7, [sp, #192]
 
-	mov	sp, fp
 	ldp	fp, lr, [sp], #224
-
 	b	_objc_msgSend
 
 0:
 	ldp	x0, x1, [sp, #16]
 	ldr	x19, [sp, #88]
 
-	mov	sp, fp
 	ldp	fp, lr, [sp], #224
-
 	b	_OFMethodNotFound
