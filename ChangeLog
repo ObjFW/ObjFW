@@ -4,6 +4,14 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.1 -> ObjFW 1.1.2, 2024-04-20
+ * Fixes configure script on systems using BusyBox for tr.
+ * Fixes compiling for Haiku.
+ * Fixes -[contentsOfDirectoryAtIRI:] corrupting the stack on Solaris.
+ * Fixes compiling for Wii with newer SDK.
+ * Fixes missing endbr / bti.
+ * Minor optimizations to ARM64 assembly.
+
 ObjFW 1.1 -> ObjFW 1.1.1, 2024-04-14
  * Fixes missing ${DESTDIR} in some Makefiles.
 
