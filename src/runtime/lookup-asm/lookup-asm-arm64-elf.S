@@ -35,8 +35,7 @@
 
 	cbz	x0, .LreturnNilMethod
 
-	tst	x0, #1
-	b.ne	.LtaggedPointer_\name
+	tbnz	x0, #0, .LtaggedPointer_\name
 
 	ldr	x2, [x0]
 	ldr	x2, [x2, #64]
@@ -102,6 +101,10 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	ret
 
 .LnilMethod:
+#ifdef HAVE_BTI
+	bti	c
+#endif
+
 	mov	x0, #0
 	ret
 

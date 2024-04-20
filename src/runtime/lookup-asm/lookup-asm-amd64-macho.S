@@ -98,5 +98,7 @@ LreturnNilMethod:
 	ret
 
 LnilMethod:
+	_CET_ENDBR
+
 	xorq	%rax, %rax
 	ret

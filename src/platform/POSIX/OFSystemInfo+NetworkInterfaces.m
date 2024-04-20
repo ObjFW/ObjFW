@@ -636,7 +636,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 
 	return true;
 #elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
-    defined(HAVE_STRUCT_SOCKADDR_DL)
+    defined(HAVE_STRUCT_SOCKADDR_DL) && defined(IFT_ETHER)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct ifconf ifc;

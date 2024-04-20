@@ -117,6 +117,8 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	ret
 
 .LnilMethod:
+	_CET_ENDBR
+
 	xorl	%eax, %eax
 	ret
 
