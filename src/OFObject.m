@@ -84,6 +84,10 @@ extern struct Stret OFForward_stret(id, SEL, ...);
 # define OFForward_stret OFMethodNotFound_stret
 #endif
 
+#ifdef OF_WINDOWS
+BOOLEAN (*RtlGenRandomFuncPtr)(PVOID, ULONG);
+#endif
+
 struct PreIvars {
 #ifdef OF_MSDOS
 	ptrdiff_t offset;
@@ -192,11 +196,23 @@ alignedFree(void *ptr, ptrdiff_t offset)
 }
 #endif
 
-#if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
+#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
+    defined(OF_WINDOWS)
+static OFOnceControl randomOnceControl = OFOnceControlInitValue;
+
 static void
 initRandom(void)
 {
 	struct timeval tv;
+
+# ifdef OF_WINDOWS
+	HANDLE handle;
+
+	if ((handle = GetModuleHandleA("advapi32.dll")) != NULL &&
+	    (RtlGenRandomFuncPtr = (BOOLEAN (*)(PVOID, ULONG))
+	    GetProcAddress(handle, "SystemFunction036")) != NULL)
+		return;
+# endif
 
 # ifdef HAVE_RANDOM
 	gettimeofday(&tv, NULL);
@@ -220,8 +236,16 @@ OFRandom16(void)
 
 	return buffer;
 #else
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initRandom);
+	OFOnce(&randomOnceControl, initRandom);
+
+# ifdef OF_WINDOWS
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint16_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 # ifdef HAVE_RANDOM
 	return random() & 0xFFFF;
 # else
@@ -242,6 +266,16 @@ OFRandom32(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint32_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint32_t)OFRandom16() << 16) | OFRandom16();
 #endif
 }
@@ -262,6 +296,16 @@ OFRandom64(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint64_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
 }
