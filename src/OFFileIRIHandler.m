@@ -45,9 +45,6 @@
 #ifdef OF_HAIKU
 # include <kernel/fs_attr.h>
 #endif
-#ifdef OF_WINDOWS
-# include <utime.h>
-#endif
 #ifdef OF_DJGPP
 # include <syslimits.h>
 #endif
@@ -151,7 +148,6 @@ releaseReaddirMutex(void)
 #endif
 
 #ifdef OF_WINDOWS
-static int (*_wutime64FuncPtr)(const wchar_t *, struct __utimbuf64 *);
 static WINAPI BOOLEAN (*createSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*createHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
@@ -168,6 +164,19 @@ filetimeToTimeInterval(const FILETIME *filetime)
 {
 	return (double)((int64_t)filetime->dwHighDateTime << 32 |
 	    filetime->dwLowDateTime) / 10000000.0 - 11644473600.0;
+}
+
+static FILETIME
+timeIntervalToFiletime(OFTimeInterval timeInterval)
+{
+	uint64_t timestamp =
+	    (uint64_t)((timeInterval + 11644473600.0) * 10000000.0);
+	FILETIME filetime = {
+		.dwHighDateTime = timestamp >> 32,
+		.dwLowDateTime = timestamp & 0xFFFFFFFF
+	};
+
+	return filetime;
 }
 
 static int
@@ -781,10 +790,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = GetModuleHandle("msvcrt.dll")) != NULL)
-		_wutime64FuncPtr = (int (*)(const wchar_t *,
-		    struct __utimbuf64 *))GetProcAddress(module, "_wutime64");
-
 	if ((module = GetModuleHandleA("kernel32.dll")) != NULL) {
 		createSymbolicLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
@@ -899,54 +904,42 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		modificationDate = lastAccessDate;
 
 #if defined(OF_WINDOWS)
-	if (_wutime64FuncPtr != NULL) {
-		struct __utimbuf64 times = {
-			.actime =
-			    (__time64_t)lastAccessDate.timeIntervalSince1970,
-			.modtime =
-			    (__time64_t)modificationDate.timeIntervalSince1970
-		};
+	FILETIME accessTime = timeIntervalToFiletime(
+	    lastAccessDate.timeIntervalSince1970);
+	FILETIME modificationTime = timeIntervalToFiletime(
+	    modificationDate.timeIntervalSince1970);
+	HANDLE handle;
 
-		if (_wutime64FuncPtr([path UTF16String], &times) != 0) {
-			int errNo = errno;
+	if ([OFSystemInfo isWindowsNT])
+		handle = CreateFileW(path.UTF16String, FILE_WRITE_ATTRIBUTES,
+		    FILE_SHARE_READ, NULL, OPEN_EXISTING,
+		    FILE_ATTRIBUTE_NORMAL, NULL);
+	else
+		handle = CreateFileA(
+		    [path cStringWithEncoding: [OFLocale encoding]],
+		    FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, NULL,
+		    OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-			if (errNo == EACCES && [self directoryExistsAtIRI: IRI])
-				errNo = EISDIR;
+	if (handle == NULL)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: lastError()];
 
-			@throw [OFSetItemAttributesFailedException
-			    exceptionWithIRI: IRI
-				  attributes: attributes
-			     failedAttribute: attributeKey
-				       errNo: errNo];
-		}
-	} else {
-		struct _utimbuf times = {
-			.actime = (time_t)lastAccessDate.timeIntervalSince1970,
-			.modtime =
-			    (time_t)modificationDate.timeIntervalSince1970
-		};
-		int status;
+	if (!SetFileTime(handle, NULL, &accessTime, &modificationTime)) {
+		int errNo = lastError();
 
-		if ([OFSystemInfo isWindowsNT])
-			status = _wutime([path UTF16String], &times);
-		else
-			status = _utime(
-			    [path cStringWithEncoding: [OFLocale encoding]],
-			    &times);
+		CloseHandle(handle);
 
-		if (status != 0) {
-			int errNo = errno;
-
-			if (errNo == EACCES && [self directoryExistsAtIRI: IRI])
-				errNo = EISDIR;
-
-			@throw [OFSetItemAttributesFailedException
-			    exceptionWithIRI: IRI
-				  attributes: attributes
-			     failedAttribute: attributeKey
-				       errNo: errNo];
-		}
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errNo];
 	}
+
+	CloseHandle(handle);
 #elif defined(OF_AMIGAOS)
 	/* AmigaOS does not support access time. */
 	OFTimeInterval modificationTime =
