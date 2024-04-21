@@ -85,7 +85,7 @@ extern struct Stret OFForward_stret(id, SEL, ...);
 #endif
 
 #ifdef OF_WINDOWS
-BOOLEAN (*RtlGenRandomFuncPtr)(PVOID, ULONG);
+static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
 #endif
 
 struct PreIvars {
@@ -209,7 +209,7 @@ initRandom(void)
 	HANDLE handle;
 
 	if ((handle = GetModuleHandleA("advapi32.dll")) != NULL &&
-	    (RtlGenRandomFuncPtr = (BOOLEAN (*)(PVOID, ULONG))
+	    (RtlGenRandomFuncPtr = (BOOLEAN NTAPI (*)(PVOID, ULONG))
 	    GetProcAddress(handle, "SystemFunction036")) != NULL)
 		return;
 # endif
