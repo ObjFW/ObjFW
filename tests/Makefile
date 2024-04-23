@@ -105,13 +105,12 @@ SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 include ../buildsys.mk
 
-big_dictionary_msgpack.m:
-	${SHELL} ../utils/objfw-embed \
-		big_dictionary.msgpack big_dictionary.msgpack $@
+big_dictionary_msgpack.m: big_dictionary.msgpack
+	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
+	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
+	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android
 run:
