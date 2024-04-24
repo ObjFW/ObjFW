@@ -588,56 +588,28 @@ case "$objc_runtime" in
 	])
 
 	AC_MSG_CHECKING(for exception type)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			extern void foo();
+	AC_EGREP_CPP(egrep_cpp_yes, [
+		#ifdef __SEH__
+		egrep_cpp_yes
+		#endif
+	], [
+		AC_MSG_RESULT(SEH)
+		exception_type="SEH"
+		raise_exception="_Unwind_RaiseException"
+	], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef __USING_SJLJ_EXCEPTIONS__
+			egrep_cpp_yes
+			#endif
 		], [
-			@try {
-				foo();
-			} @finally {
-				foo();
-			}
-		])
-	], [
-		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_v0 >/dev/null], [
-			exception_type="DWARF"
-		])
-		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_sj0 >/dev/null], [
+			AC_MSG_RESULT(SjLj)
 			exception_type="SjLj"
-		])
-		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
-		    $EGREP __gnu_objc_personality_seh0 >/dev/null], [
-			exception_type="SEH"
-		])
-
-		case "$exception_type" in
-		DWARF)
-			AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
-				[Whether DWARF exceptions are used])
-			raise_exception="_Unwind_RaiseException"
-			;;
-		SjLj)
-			AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
-				[Whether SjLj exceptions are used])
 			raise_exception="_Unwind_SjLj_RaiseException"
-			;;
-		SEH)
-			AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
-				[Whether SEH exceptions are used])
+		], [
+			AC_MSG_RESULT(DWARF)
+			exception_type="DWARF"
 			raise_exception="_Unwind_RaiseException"
-			;;
-		*)
-			AC_MSG_RESULT(unknown)
-			AC_MSG_ERROR([Exception type not detected!])
-			;;
-		esac
-
-		AC_MSG_RESULT($exception_type)
-	], [
-		AC_MSG_RESULT(exceptions unavailable!)
-		AC_MSG_ERROR([Exceptions not accepted by compiler!])
+		])
 	])
 
 	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [

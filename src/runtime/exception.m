@@ -33,22 +33,20 @@
 # import "OFPlainMutex.h"
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 # include <windows.h>
 #endif
 
-#if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_v0
-# define CXX_PERSONALITY_STR "__gxx_personality_v0"
-#elif defined(HAVE_SJLJ_EXCEPTIONS)
+#if defined(__SEH__)
+# define PERSONALITY	 gnu_objc_personality
+#elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"
 # define _Unwind_RaiseException _Unwind_SjLj_RaiseException
 # define __builtin_eh_return_data_regno(i) (i)
-#elif defined(HAVE_SEH_EXCEPTIONS)
-# define PERSONALITY	 gnu_objc_personality
 #else
-# error Unknown exception type!
+# define PERSONALITY __gnu_objc_personality_v0
+# define CXX_PERSONALITY_STR "__gxx_personality_v0"
 #endif
 
 #if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
@@ -130,7 +128,7 @@ struct objc_exception {
 		void (*cleanup)(
 		    _Unwind_Reason_Code, struct _Unwind_Exception *);
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
-# ifndef HAVE_SEH_EXCEPTIONS
+# ifndef __SEH__
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
@@ -243,7 +241,7 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code (*)(int, int, uint64_t,
     struct _Unwind_Exception *, struct _Unwind_Context *));
@@ -446,7 +444,7 @@ findCallsite(struct _Unwind_Context *ctx, struct LSDA *LSDA,
 	*landingpad = 0;
 	*actionRecords = NULL;
 
-#ifndef HAVE_SJLJ_EXCEPTIONS
+#ifndef __USING_SJLJ_EXCEPTIONS__
 	while (ptr < LSDA->actionTable) {
 		uintptr_t callsiteStart, callsiteLength, callsiteLandingpad;
 		uintptr_t callsiteAction;
@@ -580,7 +578,7 @@ findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
 	return 0;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 static
 #endif
 PERSONALITY_FUNC(PERSONALITY)
@@ -786,7 +784,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 	return old;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void *,
     PCONTEXT, PDISPATCHER_CONTEXT);
 static seh_personality_fn __gxx_personality_seh0;
