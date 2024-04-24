@@ -157,6 +157,8 @@
 # define OF_MINT
 #elif defined(__gnu_hurd__)
 # define OF_HURD
+#elif defined(__serenity__)
+# define OF_SERENITYOS
 #endif
 
 #ifdef __GLIBC__
