@@ -36,11 +36,19 @@ OF_APPLICATION_DELEGATE(Subprocess)
 		[OFApplication terminateWithStatus: 1];
 
 	if (![[[OFApplication environment] objectForKey: @"tëst"]
-	    isEqual: @"yés"])
+	    isEqual: @"yés"]) {
 		[OFApplication terminateWithStatus: 2];
+	}
 
-	while ((line = [OFStdIn readLine]) != nil)
-		[OFStdOut writeLine: line.uppercaseString];
+#ifdef OF_WINDOWS
+	/* On Windows 9x, closing the pipe doesn't seem to cause EOF. */
+	if (![OFSystemInfo isWindowsNT]) {
+		if ((line = [OFStdIn readLine]) != nil)
+			[OFStdOut writeLine: line.uppercaseString];
+	} else
+#endif
+		while ((line = [OFStdIn readLine]) != nil)
+			[OFStdOut writeLine: line.uppercaseString];
 
 	[OFApplication terminate];
 }
