@@ -31,9 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDate;
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 @class OFMutableData;
 
 /**

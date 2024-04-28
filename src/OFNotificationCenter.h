@@ -23,9 +23,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -47,9 +44,6 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFNotificationCenter: OFObject
 {
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
-#endif
 	OFMutableDictionary *_handles;
 }
 

@@ -24,10 +24,6 @@
 #import "OFIRI.h"
 #import "OFNumber.h"
 
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
-
 #import "OFArchiveIRIHandler.h"
 #import "OFEmbeddedIRIHandler.h"
 #ifdef OF_HAVE_FILES
@@ -40,15 +36,6 @@
 #import "OFUnsupportedProtocolException.h"
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
-#ifdef OF_HAVE_THREADS
-static OFMutex *mutex;
-
-static void
-releaseMutex(void)
-{
-	[mutex release];
-}
-#endif
 
 @implementation OFIRIHandler
 @synthesize scheme = _scheme;
@@ -59,10 +46,6 @@ releaseMutex(void)
 		return;
 
 	handlers = [[OFMutableDictionary alloc] init];
-#ifdef OF_HAVE_THREADS
-	mutex = [[OFMutex alloc] init];
-	atexit(releaseMutex);
-#endif
 
 	[self registerClass: [OFEmbeddedIRIHandler class]
 		  forScheme: @"embedded"];
@@ -82,10 +65,7 @@ releaseMutex(void)
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme
 {
-#ifdef OF_HAVE_THREADS
-	[mutex lock];
-	@try {
-#endif
+	@synchronized (handlers) {
 		OFIRIHandler *handler;
 
 		if ([handlers objectForKey: scheme] != nil)
@@ -97,11 +77,7 @@ releaseMutex(void)
 		} @finally {
 			[handler release];
 		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[mutex unlock];
 	}
-#endif
 
 	return true;
 }
@@ -110,16 +86,9 @@ releaseMutex(void)
 {
 	OF_KINDOF(OFIRIHandler *) handler;
 
-#ifdef OF_HAVE_THREADS
-	[mutex lock];
-	@try {
-#endif
+	@synchronized (handlers) {
 		handler = [handlers objectForKey: IRI.scheme];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[mutex unlock];
 	}
-#endif
 
 	if (handler == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];

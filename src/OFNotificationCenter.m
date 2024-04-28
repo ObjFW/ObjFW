@@ -24,9 +24,6 @@
 #import "OFNotificationCenter.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 #import "OFSet.h"
 #import "OFString.h"
 
@@ -187,9 +184,6 @@ static OFNotificationCenter *defaultCenter;
 	self = [super init];
 
 	@try {
-#ifdef OF_HAVE_THREADS
-		_mutex = [[OFMutex alloc] init];
-#endif
 		_handles = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
 		[self release];
@@ -201,9 +195,6 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)dealloc
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex release];
-#endif
 	[_handles release];
 
 	[super dealloc];
@@ -211,10 +202,7 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)of_addObserver: (OFNotificationCenterHandle *)handle
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
+	@synchronized (_handles) {
 		OFMutableSet *handlesForName =
 		    [_handles objectForKey: handle->_name];
 
@@ -225,11 +213,7 @@ static OFNotificationCenter *defaultCenter;
 		}
 
 		[handlesForName addObject: handle];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 }
 
 - (void)addObserver: (id)observer
@@ -282,15 +266,10 @@ static OFNotificationCenter *defaultCenter;
 	handle = handle_;
 	pool = objc_autoreleasePoolPush();
 
-	/* {} required to avoid -Wmisleading-indentation false positive. */
-	if (![handle isKindOfClass: [OFNotificationCenterHandle class]]) {
+	if (![handle isKindOfClass: [OFNotificationCenterHandle class]])
 		@throw [OFInvalidArgumentException exception];
-	}
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
+	@synchronized (_handles) {
 		OFNotificationName name = [[handle->_name copy] autorelease];
 		OFMutableSet *handlesForName = [_handles objectForKey: name];
 
@@ -298,11 +277,7 @@ static OFNotificationCenter *defaultCenter;
 
 		if (handlesForName.count == 0)
 			[_handles removeObjectForKey: name];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -329,20 +304,13 @@ static OFNotificationCenter *defaultCenter;
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *matchedHandles = [OFMutableArray array];
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
+	@synchronized (_handles) {
 		for (OFNotificationCenterHandle *handle in
 		    [_handles objectForKey: notification.name])
 			if (handle->_object == nil ||
 			    handle->_object == notification.object)
 				[matchedHandles addObject: handle];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 
 	for (OFNotificationCenterHandle *handle in matchedHandles) {
 #ifdef OF_HAVE_BLOCKS

@@ -302,7 +302,6 @@ OF_SINGLETON_METHODS
 OF_SINGLETON_METHODS
 @end
 
-
 @implementation OFDate
 + (void)initialize
 {
