@@ -32,14 +32,14 @@
 - (void)testSCTPSocket
 {
 	OFSCTPSocket *server, *client, *accepted;
-	uint16_t port;
+	OFSocketAddress address;
 	char buffer[6];
 
 	server = [OFSCTPSocket socket];
 	client = [OFSCTPSocket socket];
 
 	@try {
-		port = [server bindToHost: @"127.0.0.1" port: 0];
+		address = [server bindToHost: @"127.0.0.1" port: 0];
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
@@ -51,7 +51,8 @@
 
 	[server listen];
 
-	[client connectToHost: @"127.0.0.1" port: port];
+	[client connectToHost: @"127.0.0.1"
+			 port: OFSocketAddressIPPort(&address)];
 
 	accepted = [server accept];
 	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),

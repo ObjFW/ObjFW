@@ -215,7 +215,7 @@ static const OFRunLoopMode connectRunLoopMode =
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
@@ -267,11 +267,6 @@ static const OFRunLoopMode connectRunLoopMode =
 								  errNo: errNo];
 	}
 
-	objc_autoreleasePoolPop(pool);
-
-	if (port > 0)
-		return port;
-
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
@@ -290,10 +285,12 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
 	case AF_INET:
-		return OFFromBigEndian16(address.sockaddr.in.sin_port);
+		address.family = OFSocketAddressFamilyIPv4;
+		break;
 # ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
+		address.family = OFSocketAddressFamilyIPv6;
+		break;
 # endif
 	default:
 		closesocket(_socket);
@@ -305,6 +302,10 @@ static const OFRunLoopMode connectRunLoopMode =
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return address;
 }
 
 - (void)setCanDelaySendingPackets: (bool)canDelaySendingPackets

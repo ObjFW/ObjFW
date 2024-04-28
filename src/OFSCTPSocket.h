@@ -148,9 +148,9 @@ typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
  *	       IPv6 to bind to all.
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
- * @return The port the socket was bound to
+ * @return The address the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END
