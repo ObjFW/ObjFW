@@ -308,8 +308,13 @@
 
 	[@"test" writeToIRI: sourceIRI];
 
-	[_fileManager linkItemAtPath: sourceIRI.fileSystemRepresentation
-			      toPath: destinationIRI.fileSystemRepresentation];
+	@try {
+		[_fileManager
+		    linkItemAtPath: sourceIRI.fileSystemRepresentation
+			    toPath: destinationIRI.fileSystemRepresentation];
+	} @catch (OFNotImplementedException *e) {
+		OTSkip(@"Links not supported");
+	}
 
 	attributes = [_fileManager attributesOfItemAtIRI: destinationIRI];
 	OTAssertEqual(attributes.fileType, OFFileTypeRegular);
@@ -350,6 +355,8 @@
 		OTSkip(@"No permission to create symlink.\n"
 		    @"On Windows, only the administrator can create symbolic "
 		    @"links.");
+	} @catch (OFNotImplementedException *e) {
+		OTSkip(@"Symlinks not supported");
 	}
 
 	attributes = [_fileManager attributesOfItemAtIRI: destinationIRI];
