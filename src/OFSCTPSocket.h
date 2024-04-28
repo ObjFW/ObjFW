@@ -76,6 +76,9 @@ typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
 /**
  * @brief Whether sending packets can be delayed. Setting this to NO sets
  *        SCTP_NODELAY on the socket.
+ *
+ * @throw OFGetOptionFailedException The option could not be retrieved
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canDelaySendingPackets;
 
@@ -93,6 +96,8 @@ typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
+ * @throw OFConnectIPSocketFailedException Connecting failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
@@ -149,6 +154,8 @@ typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
  * @return The address the socket was bound to
+ * @throw OFBindIPSocketFailedException Binding failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
