@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -218,6 +222,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -494,7 +499,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint16_t from the stream in native endianess
+ * @return A uint16_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -508,7 +513,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint32_t from the stream in the native endianess
+ * @return A uint32_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -522,7 +527,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint64_t from the stream in the native endianess
+ * @return A uint64_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -536,7 +541,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A float from the stream in the native endianess
+ * @return A float from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -550,7 +555,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A double from the stream in the native endianess
+ * @return A double from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -564,7 +569,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint16_t from the stream in native endianess
+ * @return A uint16_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -578,7 +583,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint32_t from the stream in the native endianess
+ * @return A uint32_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -592,7 +597,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint64_t from the stream in the native endianess
+ * @return A uint64_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -606,7 +611,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A float from the stream in the native endianess
+ * @return A float from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -620,7 +625,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A double from the stream in the native endianess
+ * @return A double from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -864,7 +869,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  stream occurs.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -879,7 +884,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -895,7 +900,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -911,7 +916,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -1390,6 +1395,19 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return Whether the lowlevel is at the end of the stream
  */
 - (bool)lowlevelIsAtEndOfStream;
+
+/**
+ * @brief Returns whether the lowlevel has data in the read buffer.
+ *
+ * @warning Do not call this directly!
+ *
+ * @note Override this method in case your stream can buffer data itself, such
+ *	 as when implementing @ref OFTLSStream. If not overridden, it always
+ *	 returns false.
+ *
+ * @return Whether the lowlevel has data in the read buffer
+ */
+- (bool)lowlevelHasDataInReadBuffer;
 @end
 
 OF_ASSUME_NONNULL_END

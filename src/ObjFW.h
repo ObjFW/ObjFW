@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -45,9 +49,9 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFUUID.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 #import "OFColor.h"
 
 #import "OFNotification.h"
@@ -66,6 +70,8 @@
 #import "OFTarArchiveEntry.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFZooArchive.h"
+#import "OFZooArchiveEntry.h"
 #import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -141,11 +147,14 @@
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 
+#import "OFMatrix4x4.h"
+
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
 #endif
 
 #import "OFAllocFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFException.h"
 #import "OFChangeCurrentDirectoryFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -196,7 +205,6 @@
 #import "OFWriteFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFAcceptSocketFailedException.h"
-# import "OFAlreadyConnectedException.h"
 # import "OFBindIPSocketFailedException.h"
 # import "OFBindSocketFailedException.h"
 # import "OFConnectIPSocketFailedException.h"

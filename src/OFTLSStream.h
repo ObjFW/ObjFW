@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStream.h"
@@ -61,13 +65,12 @@ typedef enum {
  * if available.
  *
  * Subclasses need to override @ref lowlevelReadIntoBuffer:length:,
- * @ref lowlevelWriteBuffer:length: and
- * @ref asyncPerformClientHandshakeWithHost:runLoopMode:. The method
- * @ref hasDataInReadBuffer should be overridden to return `true` if the TLS
- * stream has cached unprocessed data internally, while returning
- * `self.underlyingStream.hasDataInReadBuffer` if it does not have any
- * unprocessed data. In order to get access to the underlying stream,
- * @ref underlyingStream can be used.
+ * @ref lowlevelWriteBuffer:length:,
+ * @ref lowlevelHasDataInReadBuffer and
+ * @ref asyncPerformClientHandshakeWithHost:runLoopMode:.
+ *
+ * In order to get access to the underlying stream, @ref underlyingStream can
+ * be used.
  */
 @interface OFTLSStream: OFStream <OFReadyForReadingObserving,
     OFReadyForWritingObserving>
@@ -109,18 +112,21 @@ typedef enum {
  * @return A new, autoreleased TLS stream
  */
 + (instancetype)streamWithStream: (OFStream <OFReadyForReadingObserving,
-				       OFReadyForWritingObserving> *)stream;
+				      OFReadyForWritingObserving> *)stream;
 
 /**
  * @brief Initializes the TLS stream with the specified stream as its
  *	  underlying stream.
+ *
+ * @note The delegate of the specified stream will be changed to the TLS
+ *	 stream. You must not change this before the TLS session is completed.
  *
  * @param stream The stream to use as underlying stream. Must not be closed
  *		 before the TLS stream is closed.
  * @return An initialized TLS stream
  */
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
-				     OFReadyForWritingObserving> *)stream
+				    OFReadyForWritingObserving> *)stream
     OF_DESIGNATED_INITIALIZER;
 
 /**
@@ -129,7 +135,7 @@ typedef enum {
  *
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host;
 
@@ -140,7 +146,7 @@ typedef enum {
  * @param host The host to perform the handshake with
  * @param runLoopMode The run loop mode in which to perform the async handshake
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
 				runLoopMode: (OFRunLoopMode)runLoopMode;
@@ -150,7 +156,7 @@ typedef enum {
  *
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
- * @throw OFAlreadyConnectedException The handshake was already performed
+ * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
 @end

@@ -1,17 +1,17 @@
 include ../../extra.mk
 
 SUBDIRS = lookup-asm
-SUBDIRS_AFTER = ${LINKLIB}
 DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
 STATIC_LIB = ${OBJFWRT_STATIC_LIB}
 FRAMEWORK = ${OBJFWRT_FRAMEWORK}
-AMIGA_LIB = ${OBJFWRT_AMIGA_LIB}
 LIB_MAJOR = ${OBJFWRT_LIB_MAJOR}
 LIB_MINOR = ${OBJFWRT_LIB_MINOR}
+LIB_PATCH = ${OBJFWRT_LIB_PATCH}
 
 SRCS = arc.m			\
+       association.m		\
        autorelease.m		\
        category.m		\
        class.m			\
@@ -43,19 +43,13 @@ includesubdir = ObjFWRT
 
 OBJS_EXTRA = lookup-asm/lookup-asm.a
 LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
-AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
-		       lookup-asm/lookup-asm.amigalib.a	\
-		       amiga-end.amigalib.o
 
 include ../../buildsys.mk
 
 CPPFLAGS += -I. -I.. -I../..					\
 	    -DOBJC_COMPILING_RUNTIME				\
-	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
 	    -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}		\
 	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}
-AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
 RCFLAGS = --use-temp-file						      \

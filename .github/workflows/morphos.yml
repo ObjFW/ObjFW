@@ -4,17 +4,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: amigadev/crosstools:ppc-morphos
-    strategy:
-      matrix:
-        configure_flags:
-          -
-          - --disable-amiga-lib
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
-      run: ./configure --host=ppc-morphos ${{ matrix.configure_flags }}
+      run: ./configure --host=ppc-morphos
     - name: make
       run: make -j$(nproc)
     - name: make install

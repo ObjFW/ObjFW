@@ -1,24 +1,27 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFNull.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -41,23 +44,6 @@ static OFNull *null = nil;
 	return null;
 }
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool;
-
-	[self release];
-
-	pool = objc_autoreleasePoolPush();
-
-	if (![element.name isEqual: self.className] ||
-	    ![element.namespace isEqual: OFSerializationNS])
-		@throw [OFInvalidArgumentException exception];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [OFNull null];
-}
-
 - (OFString *)description
 {
 	return @"<null>";
@@ -66,21 +52,6 @@ static OFNull *null = nil;
 - (id)copy
 {
 	return self;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: self.className
-				      namespace: OFSerializationNS];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -107,27 +78,5 @@ static OFNull *null = nil;
 	return [OFData dataWithItems: &type count: 1];
 }
 
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end

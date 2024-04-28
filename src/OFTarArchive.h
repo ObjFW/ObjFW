@@ -1,27 +1,30 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
-#import "OFKernelEventObserver.h"
 #import "OFString.h"
 #import "OFTarArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
 @class OFStream;
-@class OFURI;
 
 /**
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
@@ -32,11 +35,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFTarArchive: OFObject
 {
 	OFStream *_stream;
-	enum OFTarArchiveMode {
-		OFTarArchiveModeRead,
-		OFTarArchiveModeWrite,
-		OFTarArchiveModeAppend
-	} _mode;
+	uint_least8_t _mode;
 	OFStringEncoding _encoding;
 	OFTarArchiveEntry *_Nullable _currentEntry;
 #ifdef OF_TAR_ARCHIVE_M
@@ -68,7 +67,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFTarArchive object with the specified file.
  *
- * @param URI The URI to the tar archive
+ * @param IRI The IRI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
@@ -77,18 +76,18 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFSeekFailedException The archive was open in append mode and seeking
  *				failed
  */
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode;
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates a URI for accessing a the specified file within the specified
+ * @brief Creates an IRI for accessing the specified file within the specified
  *	  tar archive.
  *
  * @param path The path of the file within the archive
- * @param URI The URI of the archive
- * @return A URI for accessing the specified file within the specified tar
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified tar
  *	   archive
  */
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI;
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -113,7 +112,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified file.
  *
- * @param URI The URI to the tar archive
+ * @param IRI The IRI to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
@@ -122,7 +121,7 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFSeekFailedException The archive was open in append mode and seeking
  *				failed
  */
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode;
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns the next entry from the tar archive or `nil` if all entries
@@ -162,8 +161,8 @@ OF_SUBCLASSING_RESTRICTED
  * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
  *	 underlying stream does so, too.
  *
- * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry or
+ * @warning Calling @ref streamForWritingEntry: will invalidate all streams
+ *	    returned by @ref streamForReadingCurrentEntry or
  *	    @ref streamForWritingEntry:! Reading from or writing to an
  *	    invalidated stream will throw an @ref OFReadFailedException or
  *	    @ref OFWriteFailedException!

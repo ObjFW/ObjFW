@@ -1,91 +1,208 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "OFSetTests.h"
 
-#import "OFSet.h"
-#import "OFMapTableSet.h"
-#import "OFMutableMapTableSet.h"
-
-static OFString *module;
-
-@interface SimpleSet: OFSet
+@interface CustomSet: OFSet
 {
-	OFMutableSet *_set;
+	OFSet *_set;
 }
 @end
 
-@interface SimpleMutableSet: OFMutableSet
+@implementation OFSetTests
+- (Class)setClass
 {
-	OFMutableSet *_set;
-	unsigned long _mutations;
+	return [CustomSet class];
+}
+
+- (void)setUp
+{
+	[super setUp];
+
+	_set = [[OFSet alloc] initWithObjects: @"foo", @"bar", @"baz", nil];
+}
+
+- (void)dealloc
+{
+	[_set release];
+
+	[super dealloc];
+}
+
+- (void)testSetWithArray
+{
+	OTAssertEqualObjects([self.setClass setWithArray:
+	    ([OFArray arrayWithObjects: @"foo", @"bar", @"baz", @"foo", nil])],
+	    _set);
+}
+
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(_set,
+	    ([OFSet setWithObjects: @"foo", @"bar", @"baz", nil]));
+}
+
+- (void)testHash
+{
+	OTAssertEqual(_set.hash,
+	    [([OFSet setWithObjects: @"foo", @"bar", @"baz", nil]) hash]);
+}
+
+- (void)testDescription
+{
+	OFString *description = _set.description;
+
+	OTAssert(
+	    [description isEqual: @"{(\n\tfoo,\n\tbar,\n\tbaz\n)}"] ||
+	    [description isEqual: @"{(\n\tfoo,\n\tbaz,\n\tbar\n)}"] ||
+	    [description isEqual: @"{(\n\tbar,\n\tfoo,\n\tbaz\n)}"] ||
+	    [description isEqual: @"{(\n\tbar,\n\tbaz,\n\tfoo\n)}"] ||
+	    [description isEqual: @"{(\n\tbaz,\n\tfoo,\n\tbar\n)}"] ||
+	    [description isEqual: @"{(\n\tbaz,\n\tbar,\n\tfoo\n)}"]);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects([[_set copy] autorelease], _set);
+}
+
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects([[_set mutableCopy] autorelease], _set);
+}
+
+- (void)testIsSubsetOfSet
+{
+	OTAssertTrue([([OFSet setWithObjects: @"foo", nil])
+	    isSubsetOfSet: _set]);
+	OTAssertFalse([([OFSet setWithObjects: @"foo", @"Foo", nil])
+	    isSubsetOfSet: _set]);
+}
+
+- (void)testIntersectsSet
+{
+	OTAssertTrue([([OFSet setWithObjects: @"foo", @"Foo", nil])
+	    intersectsSet: _set]);
+	OTAssertFalse([([OFSet setWithObjects: @"Foo", nil])
+	    intersectsSet: _set]);
+}
+
+- (void)testEnumerator
+{
+	OFEnumerator *enumerator = [_set objectEnumerator];
+	bool seenFoo = false, seenBar = false, seenBaz = false;
+	OFString *object;
+
+	while ((object = [enumerator nextObject]) != nil) {
+		if ([object isEqual: @"foo"]) {
+			OTAssertFalse(seenFoo);
+			seenFoo = true;
+		} else if ([object isEqual: @"bar"]) {
+			OTAssertFalse(seenBar);
+			seenBar = true;
+		} else if ([object isEqual: @"baz"]) {
+			OTAssertFalse(seenBaz);
+			seenBaz = true;
+		} else
+			OTAssert(false, @"Unexpected object seen: %@", object);
+	}
+
+	OTAssert(seenFoo && seenBar && seenBaz);
+}
+
+- (void)testFastEnumeration
+{
+	bool seenFoo = false, seenBar = false, seenBaz = false;
+
+	for (OFString *object in _set) {
+		if ([object isEqual: @"foo"]) {
+			OTAssertFalse(seenFoo);
+			seenFoo = true;
+		} else if ([object isEqual: @"bar"]) {
+			OTAssertFalse(seenBar);
+			seenBar = true;
+		} else if ([object isEqual: @"baz"]) {
+			OTAssertFalse(seenBaz);
+			seenBaz = true;
+		} else
+			OTAssert(false, @"Unexpected object seen: %@", object);
+	}
+
+	OTAssert(seenFoo && seenBar && seenBaz);
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)testEnumerateObjectsUsingBlock
+{
+	__block bool seenFoo = false, seenBar = false, seenBaz = false;
+
+	[_set enumerateObjectsUsingBlock: ^ (id object, bool *stop) {
+		if ([object isEqual: @"foo"]) {
+			OTAssertFalse(seenFoo);
+			seenFoo = true;
+		} else if ([object isEqual: @"bar"]) {
+			OTAssertFalse(seenBar);
+			seenBar = true;
+		} else if ([object isEqual: @"baz"]) {
+			OTAssertFalse(seenBaz);
+			seenBaz = true;
+		} else
+			OTAssert(false, @"Unexpected object seen: %@", object);
+	}];
+
+	OTAssert(seenFoo && seenBar && seenBaz);
+}
+
+- (void)testFilteredSetUsingBlock
+{
+	OFSet *filteredSet = [_set filteredSetUsingBlock: ^ (id object) {
+		return [object hasPrefix: @"ba"];
+	}];
+
+	OTAssertEqualObjects(filteredSet,
+	    ([OFSet setWithObjects: @"bar", @"baz", nil]));
+}
+#endif
+
+- (void)testValueForKey
+{
+	OFSet *set = [[self.setClass setWithObjects:
+	    @"a", @"ab", @"abc", @"b", nil] valueForKey: @"length"];
+
+	OTAssertEqualObjects(set, ([OFSet  setWithObjects:
+	    [OFNumber numberWithInt: 1], [OFNumber numberWithInt: 2],
+	    [OFNumber numberWithInt: 3], nil]));
+
+	OTAssertEqualObjects([set valueForKey: @"@count"],
+	    [OFNumber numberWithInt: 3]);
 }
 @end
 
-@implementation SimpleSet
-- (instancetype)init
+@implementation CustomSet
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [super init];
 
 	@try {
-		_set = [[OFMutableSet alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSet: (OFSet *)set
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithSet: set];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithArray: (OFArray *)array
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithArray: array];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
-{
-	self = [super init];
-
-	@try {
-		_set = [[OFMutableSet alloc] initWithObject: firstObject
-						  arguments: arguments];
+		_set = [[OFSet alloc] initWithObjects: objects count: count];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -114,182 +231,5 @@ static OFString *module;
 - (OFEnumerator *)objectEnumerator
 {
 	return [_set objectEnumerator];
-}
-@end
-
-@implementation SimpleMutableSet
-+ (void)initialize
-{
-	if (self == [SimpleMutableSet class])
-		[self inheritMethodsFromClass: [SimpleSet class]];
-}
-
-- (void)addObject: (id)object
-{
-	bool existed = [self containsObject: object];
-
-	[_set addObject: object];
-
-	if (existed)
-		_mutations++;
-}
-
-- (void)removeObject: (id)object
-{
-	bool existed = [self containsObject: object];
-
-	[_set removeObject: object];
-
-	if (existed)
-		_mutations++;
-}
-
-- (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
-			   objects: (id *)objects
-			     count: (int)count
-{
-	int ret = [_set countByEnumeratingWithState: state
-					    objects: objects
-					      count: count];
-
-	state->mutationsPtr = &_mutations;
-
-	return ret;
-}
-@end
-
-@implementation TestsAppDelegate (OFSetTests)
-- (void)setTestsWithClass: (Class)setClass mutableClass: (Class)mutableSetClass
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFSet *set1, *set2;
-	OFMutableSet *mutableSet;
-	bool ok;
-	size_t i;
-
-	TEST(@"+[setWithArray:]",
-	    (set1 = [setClass setWithArray: [OFArray arrayWithObjects: @"foo",
-	    @"bar", @"baz", @"foo", @"x", nil]]))
-
-	TEST(@"+[setWithObjects:]",
-	    (set2 = [setClass setWithObjects: @"foo", @"bar", @"baz", @"bar",
-	    @"x", nil]))
-
-	TEST(@"-[isEqual:]", [set1 isEqual: set2])
-
-	TEST(@"-[hash]", set1.hash == set2.hash)
-
-	TEST(@"-[description]",
-	    [set1.description
-	    isEqual: @"{(\n\tx,\n\tbar,\n\tfoo,\n\tbaz\n)}"] &&
-	    [set1.description isEqual: set2.description])
-
-	TEST(@"-[copy]", [set1 isEqual: [[set1 copy] autorelease]])
-
-	TEST(@"-[mutableCopy]",
-	    [set1 isEqual: [[set1 mutableCopy] autorelease]]);
-
-	mutableSet = [mutableSetClass setWithSet: set1];
-
-	TEST(@"-[addObject:]",
-	    R([mutableSet addObject: @"baz"]) && [mutableSet isEqual: set2] &&
-	    R([mutableSet addObject: @"y"]) && [mutableSet isEqual:
-	    [setClass setWithObjects: @"foo", @"bar", @"baz", @"x", @"y", nil]])
-
-	TEST(@"-[removeObject:]",
-	    R([mutableSet removeObject: @"y"]) && [mutableSet isEqual: set1])
-
-	TEST(@"-[isSubsetOfSet:]",
-	    R([mutableSet removeObject: @"foo"]) &&
-	    [mutableSet isSubsetOfSet: set1] &&
-	    ![set1 isSubsetOfSet: mutableSet]);
-
-	TEST(@"-[intersectsSet:]",
-	    [(set2 = [setClass setWithObjects: @"x", nil])
-	    intersectsSet: set1] && [set1 intersectsSet: set2] &&
-	    ![[setClass setWithObjects: @"1", nil] intersectsSet: set1]);
-
-	TEST(@"-[minusSet:]",
-	    R([mutableSet minusSet: [setClass setWithObjects: @"x", nil]]) &&
-	    [mutableSet isEqual: [setClass setWithObjects:
-	    @"baz", @"bar", nil]])
-
-	TEST(@"-[intersectSet:]",
-	    R([mutableSet intersectSet: [setClass setWithObjects:
-	    @"baz", nil]]) && [mutableSet isEqual: [setClass setWithObjects:
-	    @"baz", nil]])
-
-	TEST(@"-[unionSet:]",
-	    R([mutableSet unionSet: [setClass setWithObjects:
-	    @"x", @"bar", nil]]) && [mutableSet isEqual:
-	    [setClass setWithObjects: @"baz", @"bar", @"x", nil]])
-
-	TEST(@"-[removeAllObjects]",
-	    R([mutableSet removeAllObjects]) &&
-	    [mutableSet isEqual: [setClass set]])
-
-	ok = true;
-	i = 0;
-
-	for (OFString *s in set1) {
-		switch (i) {
-		case 0:
-			if (![s isEqual: @"x"])
-				ok = false;
-			break;
-		case 1:
-			if (![s isEqual: @"bar"])
-				ok = false;
-			break;
-		case 2:
-			if (![s isEqual: @"foo"])
-				ok = false;
-			break;
-		case 3:
-			if (![s isEqual: @"baz"])
-				ok = false;
-			break;
-		}
-
-		i++;
-	}
-
-	if (i != 4)
-		ok = false;
-
-	TEST(@"Fast enumeration", ok)
-
-	ok = false;
-	[mutableSet addObject: @"foo"];
-	[mutableSet addObject: @"bar"];
-	@try {
-		for (OFString *s in mutableSet)
-			[mutableSet removeObject: s];
-	} @catch (OFEnumerationMutationException *e) {
-		ok = true;
-	}
-
-	TEST(@"Detection of mutation during Fast Enumeration", ok);
-
-	TEST(@"-[valueForKey:]",
-	    [(set1 = [[setClass setWithObjects: @"a", @"ab", @"abc", @"b", nil]
-	    valueForKey: @"length"]) isEqual: [setClass setWithObjects:
-	    [OFNumber numberWithInt: 1], [OFNumber numberWithInt: 2],
-	    [OFNumber numberWithInt: 3], nil]] &&
-	    [[set1 valueForKey: @"@count"] isEqual:
-	    [OFNumber numberWithInt: 3]])
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setTests
-{
-	module = @"OFSet";
-	[self setTestsWithClass: [SimpleSet class]
-		   mutableClass: [SimpleMutableSet class]];
-
-	module = @"OFMapTableSet";
-	[self setTestsWithClass: [OFMapTableSet class]
-		   mutableClass: [OFMutableMapTableSet class]];
 }
 @end

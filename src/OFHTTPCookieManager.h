@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -19,8 +23,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFHTTPCookie;
+@class OFIRI;
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFURI;
 
 /**
  * @class OFHTTPCookieManager OFHTTPCookieManager.h ObjFW/OFHTTPCookieManager.h
@@ -46,35 +50,35 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)manager;
 
 /**
- * @brief Adds the specified cookie for the specified URI.
+ * @brief Adds the specified cookie for the specified IRI.
  *
  * @warning This modifies the cookie (e.g. it sets the domain if it is unset)!
  *	    If you do not want this, pass a copy!
  *
  * @param cookie The cookie to add to the manager
- * @param URI The URI for which the cookie should be added
+ * @param IRI The IRI for which the cookie should be added
  */
-- (void)addCookie: (OFHTTPCookie *)cookie forURI: (OFURI *)URI;
+- (void)addCookie: (OFHTTPCookie *)cookie forIRI: (OFIRI *)IRI;
 
 /**
- * @brief Adds the specified cookies for the specified URI.
+ * @brief Adds the specified cookies for the specified IRI.
  *
  * @warning This modifies the cookies (e.g. it sets the domain if it is unset)!
  *	    If you do not want this, pass copies!
  *
  * @param cookies An array of cookies to add to the manager
- * @param URI The URI for which the cookies should be added
+ * @param IRI The IRI for which the cookies should be added
  */
 - (void)addCookies: (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
-	    forURI: (OFURI *)URI;
+	    forIRI: (OFIRI *)IRI;
 
 /**
- * @brief Returns the cookies for the specified URI.
+ * @brief Returns the cookies for the specified IRI.
  *
- * @param URI The URI for which the cookies should be returned
- * @return The cookies for the specified URI
+ * @param IRI The IRI for which the cookies should be returned
+ * @return The cookies for the specified IRI
  */
-- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURI: (OFURI *)URI;
+- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForIRI: (OFIRI *)IRI;
 
 /**
  * @brief Purges all expired cookies.

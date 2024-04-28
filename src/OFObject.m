@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,8 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "unistd_wrapper.h"
-
-#include <assert.h>
 
 #ifdef OF_APPLE_RUNTIME
 # include <dlfcn.h>
@@ -41,6 +43,7 @@
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 # import "OFPlainMutex.h"	/* For OFSpinlock */
 #endif
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -65,7 +68,9 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -79,15 +84,22 @@ extern struct Stret OFForward_stret(id, SEL, ...);
 # define OFForward_stret OFMethodNotFound_stret
 #endif
 
+#ifdef OF_WINDOWS
+static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
+#endif
+
 struct PreIvars {
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
 	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	OFSpinlock retainCountSpinlock;
 #endif
 };
 
-#define PRE_IVARS_ALIGN ((sizeof(struct PreIvars) + \
-    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
+#define PRE_IVARS_ALIGN \
+	OFRoundUpToPowerOf2(sizeof(struct PreIvars), OF_BIGGEST_ALIGNMENT)
 #define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
@@ -157,11 +169,50 @@ OFFreeMemory(void *pointer)
 	free(pointer);
 }
 
-#if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
+#ifdef OF_MSDOS
+/* Unfortunately, DJGPP's memalign() is broken. */
+
+static void *
+alignedAlloc(size_t size, size_t alignment, ptrdiff_t *offset)
+{
+	char *ptr, *aligned;
+
+	if ((ptr = malloc(size + alignment)) == NULL)
+		return NULL;
+
+	aligned = (char *)OFRoundUpToPowerOf2(alignment, (uintptr_t)ptr);
+	*offset = aligned - ptr;
+
+	return aligned;
+}
+
+static void
+alignedFree(void *ptr, ptrdiff_t offset)
+{
+	if (ptr == NULL)
+		return;
+
+	free((void *)((uintptr_t)ptr - offset));
+}
+#endif
+
+#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
+    defined(OF_WINDOWS)
+static OFOnceControl randomOnceControl = OFOnceControlInitValue;
+
 static void
 initRandom(void)
 {
 	struct timeval tv;
+
+# ifdef OF_WINDOWS
+	HANDLE handle;
+
+	if ((handle = GetModuleHandleA("advapi32.dll")) != NULL &&
+	    (RtlGenRandomFuncPtr = (BOOLEAN NTAPI (*)(PVOID, ULONG))
+	    GetProcAddress(handle, "SystemFunction036")) != NULL)
+		return;
+# endif
 
 # ifdef HAVE_RANDOM
 	gettimeofday(&tv, NULL);
@@ -185,8 +236,16 @@ OFRandom16(void)
 
 	return buffer;
 #else
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initRandom);
+	OFOnce(&randomOnceControl, initRandom);
+
+# ifdef OF_WINDOWS
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint16_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 # ifdef HAVE_RANDOM
 	return random() & 0xFFFF;
 # else
@@ -207,6 +266,16 @@ OFRandom32(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint32_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint32_t)OFRandom16() << 16) | OFRandom16();
 #endif
 }
@@ -227,6 +296,16 @@ OFRandom64(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint64_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
 }
@@ -252,13 +331,12 @@ typeEncodingForSelector(Class class, SEL selector)
 static void
 uncaughtExceptionHandler(id exception)
 {
-	OFString *description = [exception description];
 	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
 	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
-	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: encoding]);
+	OFLog(@"Runtime error: Unhandled exception:");
+	OFLog(@"%@", exception);
 
 	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
 		stackTraceAddresses = [exception stackTraceAddresses];
@@ -273,7 +351,8 @@ uncaughtExceptionHandler(id exception)
 		if (stackTraceSymbols.count != count)
 			stackTraceSymbols = nil;
 
-		fputs("\nStack trace:\n", stderr);
+		OFLog(@"");
+		OFLog(@"Stack trace:");
 
 		if (stackTraceSymbols != nil) {
 			for (size_t i = 0; i < count; i++) {
@@ -283,18 +362,16 @@ uncaughtExceptionHandler(id exception)
 				    objectAtIndex: i]
 				    cStringWithEncoding: encoding];
 
-				fprintf(stderr, "  %p  %s\n", address, symbol);
+				OFLog(@"  %p  %s", address, symbol);
 			}
 		} else {
 			for (size_t i = 0; i < count; i++) {
 				void *address = [[stackTraceAddresses
 				    objectAtIndex: i] pointerValue];
 
-				fprintf(stderr, "  %p\n", address);
+				OFLog(@"  %p", address);
 			}
 		}
-
-		fputs("\n", stderr);
 	}
 
 	abort();
@@ -333,27 +410,53 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 {
 	OFObject *instance;
 	size_t instanceSize;
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
 
 	instanceSize = class_getInstanceSize(class);
 
 	if OF_UNLIKELY (extraAlignment > 1)
-		extraAlignment = ((instanceSize + extraAlignment - 1) &
-		    ~(extraAlignment - 1)) - extraAlignment;
+		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
+		    PRE_IVARS_ALIGN + instanceSize) -
+		    PRE_IVARS_ALIGN - instanceSize;
 
-	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
+#if defined(OF_WINDOWS)
+	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
+	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
+#elif defined(OF_MSDOS)
+	instance = alignedAlloc(PRE_IVARS_ALIGN + instanceSize +
+	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT, &offset);
+#elif defined(OF_SOLARIS)
+	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
+	    PRE_IVARS_ALIGN + instanceSize + extraAlignment + extraSize) != 0)
+		instance = NULL;
+#else
+	instance = malloc(PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
+#endif
 
 	if OF_UNLIKELY (instance == nil) {
-		allocFailedException.isa = [OFAllocFailedException class];
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
 		@throw (id)&allocFailedException;
 	}
 
+#ifdef OF_MSDOS
+	((struct PreIvars *)instance)->offset = offset;
+#endif
 	((struct PreIvars *)instance)->retainCount = 1;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
+# if defined(OF_WINDOWS)
+		__mingw_aligned_free(instance);
+# elif defined(OF_MSDOS)
+		alignedFree(instance, offset);
+# else
 		free(instance);
+# endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
@@ -361,12 +464,20 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 
 	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
 
+	memset(instance, 0, instanceSize + extraAlignment + extraSize);
+
 	if (!objc_constructInstance(class, instance)) {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 		OFSpinlockFree(&((struct PreIvars *)(void *)
 		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
 #endif
+#if defined(OF_WINDOWS)
+		__mingw_aligned_free((char *)instance - PRE_IVARS_ALIGN);
+#elif defined(OF_MSDOS)
+		alignedFree((char *)instance - PRE_IVARS_ALIGN, offset);
+#else
 		free((char *)instance - PRE_IVARS_ALIGN);
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
@@ -388,7 +499,6 @@ void
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;
-	_OFObject_Serialization_reference = 1;
 }
 
 @implementation OFObject
@@ -440,11 +550,6 @@ _references_to_categories_of_OFObject(void)
 	return OFAllocObject(self, 0, 0, NULL);
 }
 
-+ (instancetype)new
-{
-	return [[self alloc] init];
-}
-
 + (Class)class
 {
 	return self;
@@ -477,10 +582,8 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)conformsToProtocol: (Protocol *)protocol
 {
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
+		if (class_conformsToProtocol(iter, protocol))
 			return true;
 
 	return false;
@@ -582,12 +685,12 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - (instancetype)init
@@ -1171,7 +1274,7 @@ _references_to_categories_of_OFObject(void)
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVARS->retainCount >= 0);
+	OFAssert(PRE_IVARS->retainCount >= 0);
 	return PRE_IVARS->retainCount;
 }
 
@@ -1241,7 +1344,13 @@ _references_to_categories_of_OFObject(void)
 	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
 #endif
 
+#if defined(OF_WINDOWS)
+	__mingw_aligned_free((char *)self - PRE_IVARS_ALIGN);
+#elif defined(OF_MSDOS)
+	alignedFree((char *)self - PRE_IVARS_ALIGN, PRE_IVARS->offset);
+#else
 	free((char *)self - PRE_IVARS_ALIGN);
+#endif
 }
 
 /* Required to use properties with the Apple runtime */

@@ -1,19 +1,26 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
+
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 #ifdef HAVE_KQUEUE
 # import "OFKqueueKernelEventObserver.h"
@@ -28,68 +35,55 @@
 # import "OFSelectKernelEventObserver.h"
 #endif
 
-#import "TestsAppDelegate.h"
+@interface OFKernelEventObserverTests: OTTestCase
+    <OFKernelEventObserverDelegate>
+{
+	OFTCPSocket *_server, *_client, *_accepted;
+	OFKernelEventObserver *_observer;
+	size_t _events;
+}
+@end
 
 static const size_t numExpectedEvents = 3;
 
-static OFString *module;
-
-@interface ObserverTest: OFObject <OFKernelEventObserverDelegate>
+@implementation OFKernelEventObserverTests
+- (void)setUp
 {
-@public
-	TestsAppDelegate *_testsAppDelegate;
-	OFKernelEventObserver *_observer;
-	OFTCPSocket *_server, *_client, *_accepted;
-	size_t _events;
-	int _fails;
-}
+	OFSocketAddress address;
 
-- (void)run;
-@end
+	[super setUp];
 
-@implementation ObserverTest
-- (instancetype)initWithTestsAppDelegate: (TestsAppDelegate *)testsAppDelegate
-{
-	self = [super init];
+	_server = [[OFTCPSocket alloc] init];
+	address = [_server bindToHost: @"127.0.0.1" port: 0];
+	[_server listen];
 
-	@try {
-		uint16_t port;
-
-		_testsAppDelegate = testsAppDelegate;
-
-		_server = [[OFTCPSocket alloc] init];
-		port = [_server bindToHost: @"127.0.0.1" port: 0];
-		[_server listen];
-
-		_client = [[OFTCPSocket alloc] init];
-		[_client connectToHost: @"127.0.0.1" port: port];
-		[_client writeBuffer: "0" length: 1];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	_client = [[OFTCPSocket alloc] init];
+	[_client connectToHost: @"127.0.0.1"
+			  port: OFSocketAddressIPPort(&address)];
+	[_client writeBuffer: "0" length: 1];
 }
 
 - (void)dealloc
 {
-	[_server release];
 	[_client release];
+	[_server release];
 	[_accepted release];
+	[_observer release];
 
 	[super dealloc];
 }
 
-- (void)run
+- (void)testKernelEventObserverWithClass: (Class)class
 {
-	OFDate *deadline;
 	bool deadlineExceeded = false;
+	OFDate *deadline;
 
-	[_testsAppDelegate outputTesting: @"-[observe] with listening socket"
-				inModule: module];
+	_observer = [[class alloc] init];
+	_observer.delegate = self;
+	[_observer addObjectForReading: _server];
 
 	deadline = [OFDate dateWithTimeIntervalSinceNow: 1];
+
 	while (_events < numExpectedEvents) {
 		if (deadline.timeIntervalSinceNow < 0) {
 			deadlineExceeded = true;
@@ -99,27 +93,8 @@ static OFString *module;
 		[_observer observeForTimeInterval: 0.01];
 	}
 
-	if (!deadlineExceeded)
-		[_testsAppDelegate
-		    outputSuccess: @"-[observe] not exceeding deadline"
-			 inModule: module];
-	else {
-		[_testsAppDelegate
-		    outputFailure: @"-[observe] not exceeding deadline"
-			 inModule: module];
-		_fails++;
-	}
-
-	if (_events == numExpectedEvents)
-		[_testsAppDelegate
-		    outputSuccess: @"-[observe] handling all events"
-			 inModule: module];
-	else {
-		[_testsAppDelegate
-		    outputFailure: @"-[observe] handling all events"
-			 inModule: module];
-		_fails++;
-	}
+	OTAssertFalse(deadlineExceeded);
+	OTAssertEqual(_events, numExpectedEvents);
 }
 
 - (void)objectIsReadyForReading: (id)object
@@ -128,108 +103,58 @@ static OFString *module;
 
 	switch (_events++) {
 	case 0:
-		if (object == _server)
-			[_testsAppDelegate
-			    outputSuccess: @"-[observe] with listening socket"
-				 inModule: module];
-		else {
-			[_testsAppDelegate
-			    outputFailure: @"-[observe] with listening socket"
-				 inModule: module];
-			_fails++;
-		}
+		OTAssertEqual(object, _server);
 
 		_accepted = [[object accept] retain];
 		[_observer addObjectForReading: _accepted];
-
-		[_testsAppDelegate
-		    outputTesting: @"-[observe] with data ready to read"
-			 inModule: module];
-
 		break;
 	case 1:
-		if (object == _accepted &&
-		    [object readIntoBuffer: &buffer length: 1] == 1 &&
-		    buffer == '0')
-			[_testsAppDelegate
-			    outputSuccess: @"-[observe] with data ready to read"
-				 inModule: module];
-		else {
-			[_testsAppDelegate
-			    outputFailure: @"-[observe] with data ready to read"
-				 inModule: module];
-			_fails++;
-		}
+		OTAssert(object, _accepted);
+
+		OTAssertEqual([object readIntoBuffer: &buffer length: 1], 1);
+		OTAssertEqual(buffer, '0');
 
 		[_client close];
-
-		[_testsAppDelegate
-		    outputTesting: @"-[observe] with closed connection"
-			 inModule: module];
-
 		break;
 	case 2:
-		if (object == _accepted &&
-		    [object readIntoBuffer: &buffer length: 1] == 0)
-			[_testsAppDelegate
-			    outputSuccess: @"-[observe] with closed connection"
-				 inModule: module];
-		else {
-			[_testsAppDelegate
-			    outputFailure: @"-[observe] with closed connection"
-				 inModule: module];
-			_fails++;
-		}
+		OTAssertEqual(object,  _accepted);
 
+		OTAssertEqual([object readIntoBuffer: &buffer length: 1], 0);
 		break;
 	default:
-		OFEnsure(0);
+		OTAssert(false);
 	}
 }
-@end
 
-@implementation TestsAppDelegate (OFKernelEventObserverTests)
-- (void)kernelEventObserverTestsWithClass: (Class)class
-{
-	void *pool = objc_autoreleasePoolPush();
-	ObserverTest *test;
-
-	module = [class className];
-	test = [[[ObserverTest alloc]
-	    initWithTestsAppDelegate: self] autorelease];
-
-	TEST(@"+[observer]", (test->_observer = [class observer]))
-	test->_observer.delegate = test;
-
-	TEST(@"-[addObjectForReading:]",
-	    R([test->_observer addObjectForReading: test->_server]))
-
-	[test run];
-	_fails += test->_fails;
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)kernelEventObserverTests
-{
 #ifdef HAVE_SELECT
-	[self kernelEventObserverTestsWithClass:
+- (void)testSelectKernelEventObserver
+{
+	[self testKernelEventObserverWithClass:
 	    [OFSelectKernelEventObserver class]];
+}
 #endif
 
 #ifdef HAVE_POLL
-	[self kernelEventObserverTestsWithClass:
+- (void)testPollKernelEventObserver
+{
+	[self testKernelEventObserverWithClass:
 	    [OFPollKernelEventObserver class]];
+}
 #endif
 
 #ifdef HAVE_EPOLL
-	[self kernelEventObserverTestsWithClass:
+- (void)testEpollKernelEventObserver
+{
+	[self testKernelEventObserverWithClass:
 	    [OFEpollKernelEventObserver class]];
+}
 #endif
 
 #ifdef HAVE_KQUEUE
-	[self kernelEventObserverTestsWithClass:
+- (void)testKqueueKernelEventObserver
+{
+	[self testKernelEventObserverWithClass:
 	    [OFKqueueKernelEventObserver class]];
-#endif
 }
+#endif
 @end

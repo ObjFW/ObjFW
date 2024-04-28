@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -31,7 +35,7 @@ OFForward:
 #endif
 	stmfd	sp!, {r0-r4, lr}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L0
+	ldr	r4, .Lsel_forwardingTargetForSelector_$indirect_.L0
 .L0:
 	add	r4, pc
 
@@ -86,7 +90,7 @@ OFForward_stret:
 #endif
 	stmfd	sp!, {r0-r4, lr}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L1
+	ldr	r4, .Lsel_forwardingTargetForSelector_$indirect_.L1
 .L1:
 	add	r4, pc
 
@@ -136,38 +140,38 @@ OFForward_stret:
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
-	ldr	r0, module$indirect_.L2
+.Linit:
+	ldr	r0, .Lmodule$indirect_.L2
 .L2:
 	add	r0, pc
 	b	__objc_exec_class(PLT)
 
-sel_forwardingTargetForSelector_$indirect_.L0:
-	.long sel_forwardingTargetForSelector_-(.L0+8)
-sel_forwardingTargetForSelector_$indirect_.L1:
-	.long sel_forwardingTargetForSelector_-(.L1+8)
-module$indirect_.L2:
-	.long module-(.L2+8)
+.Lsel_forwardingTargetForSelector_$indirect_.L0:
+	.long .Lsel_forwardingTargetForSelector_-(.L0+8)
+.Lsel_forwardingTargetForSelector_$indirect_.L1:
+	.long .Lsel_forwardingTargetForSelector_-(.L1+8)
+.Lmodule$indirect_.L2:
+	.long .Lmodule-(.L2+8)
 
 .section .init_array, "aw", %init_array
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

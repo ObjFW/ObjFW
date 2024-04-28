@@ -1,76 +1,91 @@
 include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}	\
+	  ${SUBPROCESS}	\
 	  ${OBJC_SYNC}	\
 	  terminal
 
-CLEAN = EBOOT.PBP		\
-	boot.dol		\
-	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds	\
-	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx	\
-	serialization_xml.m	\
-	testfile_bin.m		\
+CLEAN = EBOOT.PBP			\
+	boot.dol			\
+	${PROG_NOINST}.arm9		\
+	${PROG_NOINST}.nds		\
+	${PROG_NOINST}.nro		\
+	${PROG_NOINST}.rpx		\
+	big_dictionary_msgpack.m	\
+	testfile_bin.m			\
 	testfile_ini.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
-SRCS = ForwardingTests.m		\
-       OFArrayTests.m			\
-       ${OF_BLOCK_TESTS_M}		\
-       OFCharacterSetTests.m		\
-       OFDataTests.m			\
-       OFDateTests.m			\
-       OFDictionaryTests.m		\
-       OFHMACTests.m			\
-       OFINIFileTests.m			\
-       OFInvocationTests.m		\
-       OFJSONTests.m			\
-       OFListTests.m			\
-       OFLocaleTests.m			\
-       OFMD5HashTests.m			\
-       OFMemoryStreamTests.m		\
-       OFMethodSignatureTests.m		\
-       OFNotificationCenterTests.m	\
-       OFNumberTests.m			\
-       OFObjectTests.m			\
-       OFPBKDF2Tests.m			\
-       OFPropertyListTests.m		\
-       OFRIPEMD160HashTests.m		\
-       OFSHA1HashTests.m		\
-       OFSHA224HashTests.m		\
-       OFSHA256HashTests.m		\
-       OFSHA384HashTests.m		\
-       OFSHA512HashTests.m		\
-       OFScryptTests.m			\
-       OFSerializationTests.m		\
-       OFSetTests.m			\
-       OFStreamTests.m			\
-       OFStringTests.m			\
-       OFSystemInfoTests.m		\
-       OFURITests.m			\
-       OFValueTests.m			\
-       OFXMLElementBuilderTests.m	\
-       OFXMLNodeTests.m			\
-       OFXMLParserTests.m		\
-       RuntimeTests.m			\
-       ${RUNTIME_ARC_TESTS_M}		\
-       TestsAppDelegate.m		\
-       ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
-       ${USE_SRCS_SOCKETS}		\
-       ${USE_SRCS_THREADS}		\
-       ${USE_SRCS_WINDOWS}		\
-       serialization_xml.m		\
-       testfile_bin.m			\
+SRCS = ForwardingTests.m			\
+       OFArrayTests.m				\
+       ${OF_BLOCK_TESTS_M}			\
+       OFCharacterSetTests.m			\
+       OFColorTests.m				\
+       OFConcreteArrayTests.m			\
+       OFConcreteDictionaryTests.m		\
+       OFConcreteMutableArrayTests.m		\
+       OFConcreteMutableDictionaryTests.m	\
+       OFConcreteMutableSetTests.m		\
+       OFConcreteSetTests.m			\
+       OFCryptographicHashTests.m		\
+       OFDataTests.m				\
+       OFDateTests.m				\
+       OFDictionaryTests.m			\
+       OFHMACTests.m				\
+       OFINIFileTests.m				\
+       OFIRITests.m				\
+       OFInvocationTests.m			\
+       OFJSONTests.m				\
+       OFLHAArchiveTests.m			\
+       OFListTests.m				\
+       OFLocaleTests.m				\
+       OFMatrix4x4Tests.m			\
+       OFMemoryStreamTests.m			\
+       OFMessagePackTests.m			\
+       OFMethodSignatureTests.m			\
+       OFMutableArrayTests.m			\
+       OFMutableDataTests.m			\
+       OFMutableDictionaryTests.m		\
+       OFMutableSetTests.m			\
+       OFMutableStringTests.m			\
+       OFMutableUTF8StringTests.m		\
+       OFNotificationCenterTests.m		\
+       OFNumberTests.m				\
+       OFObjectTests.m				\
+       OFPBKDF2Tests.m				\
+       OFPropertyListTests.m			\
+       OFScryptTests.m				\
+       OFSetTests.m				\
+       OFStreamTests.m				\
+       OFStringTests.m				\
+       OFSystemInfoTests.m			\
+       OFTarArchiveTests.m			\
+       OFUTF8StringTests.m			\
+       OFValueTests.m				\
+       OFXMLElementBuilderTests.m		\
+       OFXMLNodeTests.m				\
+       OFXMLParserTests.m			\
+       OFZIPArchiveTests.m			\
+       OFZooArchiveTests.m			\
+       ${RUNTIME_ARC_TESTS_M}			\
+       RuntimeTests.m				\
+       ${USE_SRCS_FILES}			\
+       ${USE_SRCS_PLUGINS}			\
+       ${USE_SRCS_SOCKETS}			\
+       ${USE_SRCS_SUBPROCESSES}			\
+       ${USE_SRCS_THREADS}			\
+       ${USE_SRCS_WINDOWS}			\
+       big_dictionary_msgpack.m			\
+       testfile_bin.m				\
        testfile_ini.m
+SRCS_FILES = OFFileManagerTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
-	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
+	       OFHTTPCookieTests.m		\
 	       OFKernelEventObserverTests.m	\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
@@ -86,20 +101,18 @@ SRCS_IPX = OFIPXSocketTests.m		\
 SRCS_SCTP = OFSCTPSocketTests.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
+SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
 SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
-IOS_USER ?= mobile
-IOS_TMP ?= /tmp/objfw-test
-
 include ../buildsys.mk
 
-serialization_xml.m: serialization.xml
-	${SHELL} ../utils/objfw-embed serialization.xml serialization.xml $@
+big_dictionary_msgpack.m: big_dictionary.msgpack
+	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
+	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
+	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -110,7 +123,6 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
-	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -143,16 +155,12 @@ run:
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
 		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	fi
-	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
-		${LN_S} ../src/runtime/${OBJFWRT_AMIGA_LIB} \
-		    ${OBJFWRT_AMIGA_LIB}; \
-	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
-	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
+	${WRAPPER} ./${PROG_NOINST} ${TESTCASES}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
@@ -162,24 +170,6 @@ run:
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
-
-run-on-ios: all
-	if [ -z "${IOS_HOST}" ]; then \
-		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
-		exit 1; \
-	fi
-	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
-	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
-	scp -q ../src/libobjfw.dylib \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
-	scp -q tests testfile.txt ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
-	scp -q plugin/TestPlugin.bundle \
-	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
-	echo "Running tests binary on iOS device ${IOS_HOST}..."
-	ssh ${IOS_USER}@${IOS_HOST} \
-	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${WRAPPER} ./tests'
 
 run-on-android: all
 	echo "Uploading files to Android device..."
@@ -209,7 +199,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
@@ -236,8 +226,23 @@ ${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
 ${PROG_NOINST}.rpx: ${PROG_NOINST}
 	elf2rpl $< $@
 
-CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
+CPPFLAGS += -I../src				\
+	    -I../src/exceptions			\
+	    -I../src/runtime			\
+	    -I../src/test			\
+	    -I..				\
+	    -DOBJFWTEST_LOCAL_INCLUDES		\
+	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
-LIBS := ${TESTS_LIBS} ${LIBS}
+# Repetition of libraries is required for Wii U, as otherwise it cannot find
+# main. Just moving -lobjfwtest later doesn't work either, as then the linker
+# cannot find ObjFW symbols. So the only solution is to list everything twice,
+# but hide it behind a variable because listing it twice causes a warning on
+# macOS.
+LIBS := -L../src/test		\
+	-lobjfwtest		\
+	${TESTS_LIBS}		\
+	${LIBS}			\
+	${WII_U_TESTS_LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

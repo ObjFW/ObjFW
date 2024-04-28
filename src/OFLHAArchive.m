@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_LHA_ARCHIVE_M
@@ -22,14 +26,15 @@
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
-#import "OFArchiveURIHandler.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFCRC16.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFKernelEventObserver.h"
 #import "OFLHADecompressingStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -37,6 +42,7 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
 enum {
@@ -70,7 +76,7 @@ OF_DIRECT_MEMBERS
 	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
 	OFStreamOffset _headerOffset;
-	uint32_t _bytesWritten;
+	uint64_t _bytesWritten;
 	uint16_t _CRC16;
 }
 
@@ -88,14 +94,14 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"lha", path, URI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
 }
 
 - (instancetype)init
@@ -124,10 +130,14 @@ OF_DIRECT_MEMBERS
 			@throw [OFInvalidArgumentException exception];
 
 		if (_mode == modeAppend)
-			[(OFSeekableStream *)_stream seekToOffset: 0
+			/*
+			 * Only works with properly zero-terminated files that
+			 * have no trailing garbage. Unfortunately there is no
+			 * good way to check for this other than reading the
+			 * entire archive.
+			 */
+			[(OFSeekableStream *)_stream seekToOffset: -1
 							   whence: OFSeekEnd];
-
-		_encoding = OFStringEncodingISO8859_1;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -136,16 +146,16 @@ OF_DIRECT_MEMBERS
 	return self;
 }
 
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
 	@try {
 		if ([mode isEqual: @"a"])
-			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
 		else
-			stream = [OFURIHandler openItemAtURI: URI mode: mode];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -176,6 +186,19 @@ OF_DIRECT_MEMBERS
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
+	if (_currentEntry != nil && _lastReturnedStream == nil) {
+		/*
+		 * No read stream was created since the last call to
+		 * -[nextEntry]. Create it so that we can properly skip the
+		 *  data.
+		 */
+		void *pool = objc_autoreleasePoolPush();
+
+		[self streamForReadingCurrentEntry];
+
+		objc_autoreleasePoolPop(pool);
+	}
+
 	[_currentEntry release];
 	_currentEntry = nil;
 
@@ -202,7 +225,17 @@ OF_DIRECT_MEMBERS
 					      length: 21 - headerLen];
 	}
 
-	_currentEntry= [[OFLHAArchiveEntry alloc]
+	/*
+	 * Some archives have trailing garbage after the single byte 0
+	 * termination. However, a level 2 header uses 2 bytes for the size, so
+	 * could just have a header size that is a multiple of 256. Therefore,
+	 * consider it only the end of the archive if what follows would not be
+	 * a level 2 header.
+	 */
+	if (header[0] == 0 && header[20] != 2)
+		return nil;
+
+	_currentEntry = [[OFLHAArchiveEntry alloc]
 	    of_initWithHeader: header
 		       stream: _stream
 		     encoding: _encoding];
@@ -254,6 +287,7 @@ OF_DIRECT_MEMBERS
 			stream: (OFSeekableStream *)_stream
 			 entry: entry
 		      encoding: _encoding] autorelease];
+	_hasWritten = true;
 
 	return _lastReturnedStream;
 }
@@ -268,6 +302,11 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
+
+	/* LHA archives should be terminated with a header of size 0 */
+	if (_hasWritten)
+		[_stream writeBuffer: "" length: 1];
+
 	_lastReturnedStream = nil;
 
 	[_stream release];
@@ -306,8 +345,19 @@ OF_DIRECT_MEMBERS
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
-		else
+		else if ([compressionMethod isEqual: @"-lhx-"])
+			_decompressedStream = [[OFLHADecompressingStream alloc]
+			    of_initWithStream: stream
+				 distanceBits: 5
+			       dictionaryBits: 20];
+		else if ([compressionMethod isEqual: @"-lh0-"] ||
+		    [compressionMethod isEqual: @"-lhd-"] ||
+		    [compressionMethod isEqual: @"-lz4-"] ||
+		    [compressionMethod isEqual: @"-pm0-"])
 			_decompressedStream = [stream retain];
+		else
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: compressionMethod];
 
 		_entry = [entry copy];
 		_toRead = entry.uncompressedSize;
@@ -321,7 +371,7 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	if (_stream != nil || _decompressedStream != nil)
+	if (_stream != nil && _decompressedStream != nil)
 		[self close];
 
 	[_entry release];
@@ -368,9 +418,9 @@ OF_DIRECT_MEMBERS
 
 		if (_CRC16 != _entry.CRC16) {
 			OFString *actualChecksum = [OFString stringWithFormat:
-			    @"%04" PRIX16, _CRC16];
+			    @"%04" @PRIX16, _CRC16];
 			OFString *expectedChecksum = [OFString stringWithFormat:
-			    @"%04" PRIX16, _entry.CRC16];
+			    @"%04" @PRIX16, _entry.CRC16];
 
 			@throw [OFChecksumMismatchException
 			    exceptionWithActualChecksum: actualChecksum
@@ -507,7 +557,7 @@ OF_DIRECT_MEMBERS
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (UINT32_MAX - _bytesWritten < length)
+	if (UINT64_MAX - _bytesWritten < length)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
@@ -515,7 +565,7 @@ OF_DIRECT_MEMBERS
 	} @catch (OFWriteFailedException *e) {
 		OFEnsure(e.bytesWritten <= length);
 
-		_bytesWritten += (uint32_t)e.bytesWritten;
+		_bytesWritten += (uint64_t)e.bytesWritten;
 		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
@@ -524,7 +574,7 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	_bytesWritten += (uint32_t)length;
+	_bytesWritten += (uint64_t)length;
 	_CRC16 = OFCRC16(_CRC16, buffer, length);
 
 	return length;

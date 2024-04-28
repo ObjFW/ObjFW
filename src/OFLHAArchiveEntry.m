@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -24,6 +28,7 @@
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFNumber.h"
+#import "OFSeekableStream.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -32,7 +37,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
-@implementation OFLHAArchiveEntry
 static OFDate *
 parseMSDOSDate(uint32_t MSDOSDate)
 {
@@ -52,6 +56,7 @@ parseMSDOSDate(uint32_t MSDOSDate)
 					format: @"%Y-%m-%d %H:%M:%S"];
 }
 
+@implementation OFLHAArchiveEntry
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
@@ -200,6 +205,22 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	    initWithTimeIntervalSince1970: modificationDate];
 }
 
+static void
+parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	uint64_t tmp;
+
+	if (extension.count != 17)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&tmp, (char *)extension.items + 1, 8);
+	entry->_compressedSize = OFFromLittleEndian64(tmp);
+
+	memcpy(&tmp, (char *)extension.items + 9, 8);
+	entry->_uncompressedSize = OFFromLittleEndian64(tmp);
+}
+
 static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding, bool allowFileName)
@@ -217,6 +238,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		break;
 	case 0x3F:
 		function = parseCommentExtension;
+		break;
+	case 0x42:
+		function = parseFileSizeExtension;
 		break;
 	case 0x50:
 		function = parsePermissionsExtension;
@@ -242,19 +266,33 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	return true;
 }
 
-static void
+static size_t
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
     OFStringEncoding encoding, bool allowFileName)
 {
-	uint16_t size;
+	size_t consumed = 0;
 
-	while ((size = [stream readLittleEndianInt16]) > 0) {
+	for (;;) {
+		uint32_t size;
 		OFData *extension;
 
-		if (size < 2)
+		if (entry->_headerLevel == 3) {
+			size = [stream readLittleEndianInt32];
+			consumed += 4;
+		} else {
+			size = [stream readLittleEndianInt16];
+			consumed += 2;
+		}
+
+		if (size == 0)
+			break;
+
+		if (size < 2 || (entry->_headerLevel == 3 && size < 4))
 			@throw [OFInvalidFormatException exception];
 
-		extension = [stream readDataWithCount: size - 2];
+		extension = [stream readDataWithCount:
+		    size - (entry->_headerLevel == 3 ? 4 : 2)];
+		consumed += extension.count;
 
 		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
@@ -266,6 +304,8 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			entry->_compressedSize -= size;
 		}
 	}
+
+	return consumed;
 }
 
 static void
@@ -335,15 +375,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	@try {
 		uint32_t date;
 
-		_compressionMethod = [[OFString alloc]
-		    initWithCString: header + 2
-			   encoding: OFStringEncodingASCII
-			     length: 5];
-
-		if (_compressedSize > UINT32_MAX ||
-		    _uncompressedSize > UINT32_MAX)
-			@throw [OFOutOfRangeException exception];
-
 		memcpy(&_compressedSize, header + 7, 4);
 		_compressedSize =
 		    OFFromLittleEndian32((uint32_t)_compressedSize);
@@ -362,8 +393,12 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		case 0:
 		case 1:;
 			void *pool = objc_autoreleasePoolPush();
+			uint8_t extendedAreaSize;
 			uint8_t fileNameLength;
 			OFString *tmp;
+
+			if (header[0] < (21 - 2) + 1 + 2)
+				@throw [OFInvalidFormatException exception];
 
 			_modificationDate = [parseMSDOSDate(date) retain];
 
@@ -376,22 +411,85 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 			_CRC16 = [stream readLittleEndianInt16];
 
+			extendedAreaSize =
+			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
+
 			if (_headerLevel == 1) {
+				if (extendedAreaSize < 3)
+					@throw [OFInvalidFormatException
+					    exception];
+
 				_operatingSystemIdentifier = [stream readInt8];
 
-				readExtensions(self, stream, encoding, false);
+				/*
+				 * 1 for the operating system identifier, 2
+				 * because we don't want to skip the size of
+				 * the next extended header.
+				 */
+				extendedAreaSize -= 1 + 2;
 			}
+
+			/* Skip extended area */
+			if ([stream isKindOfClass: [OFSeekableStream class]])
+				[(OFSeekableStream *)stream
+				    seekToOffset: extendedAreaSize
+					  whence: OFSeekCurrent];
+			else {
+				char buffer[256];
+
+				while (extendedAreaSize > 0)
+					extendedAreaSize -= [stream
+					    readIntoBuffer: buffer
+						    length: extendedAreaSize];
+			}
+
+			if (_headerLevel == 1)
+				readExtensions(self, stream, encoding, false);
 
 			objc_autoreleasePoolPop(pool);
 			break;
 		case 2:
+		case 3:;
+			uint32_t padding = 0;
+
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];
 
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
 
-			readExtensions(self, stream, encoding, true);
+			if (_headerLevel == 3)
+				/* Size of entire header */
+				padding = [stream readLittleEndianInt32];
+			else
+				padding = (header[1] << 8) | header[0];
+
+			/*
+			 * 21 for header, 2 for CRC16, 1 for operating system
+			 * identifier.
+			 */
+			padding -= 21 + 2 + 1;
+
+			padding -= readExtensions(self, stream, encoding, true);
+
+			/* Skip padding */
+			if ([stream isKindOfClass: [OFSeekableStream class]])
+				[(OFSeekableStream *)stream
+				    seekToOffset: padding
+					  whence: OFSeekCurrent];
+			else {
+				while (padding > 0) {
+					char buffer[512];
+					size_t min = padding;
+
+					if (min > 512)
+						min = 512;
+
+					padding -= [stream
+					    readIntoBuffer: buffer
+						    length: min];
+				}
+			}
 
 			break;
 		default:;
@@ -404,6 +502,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 		if (_fileName == nil)
 			@throw [OFInvalidFormatException exception];
+
+		_compressionMethod = [[OFString alloc]
+		    initWithCString: header + 2
+			   encoding: OFStringEncodingASCII
+			     length: 5];
 
 		[_extensions makeImmutable];
 	} @catch (id e) {
@@ -558,6 +661,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	size_t fileNameLength, directoryNameLength;
 	uint16_t tmp16;
 	uint32_t tmp32;
+	uint64_t tmp64;
 	size_t headerSize;
 
 	if ([_compressionMethod cStringLengthWithEncoding:
@@ -569,7 +673,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	if (fileNameLength > UINT16_MAX - 3 ||
 	    directoryNameLength > UINT16_MAX - 3 ||
-	    _compressedSize > UINT32_MAX || _uncompressedSize > UINT32_MAX)
+	    _compressedSize > UINT64_MAX || _uncompressedSize > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
@@ -633,6 +737,20 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		[data addItems: [_fileComment cStringWithEncoding: encoding]
 			 count: fileCommentLength];
 	}
+
+	/*
+	 * Always include the file size extension, as the header can be written
+	 * with size 0 initially and then rewritten with the actual size in
+	 * case the data to be archived is being streamed - but for that we
+	 * need to make sure we always have the space.
+	 */
+	tmp16 = OFToLittleEndian16(19);
+	[data addItems: &tmp16 count: sizeof(tmp16)];
+	[data addItem: "\x42"];
+	tmp64 = OFToLittleEndian64(_compressedSize);
+	[data addItems: &tmp64 count: sizeof(tmp64)];
+	tmp64 = OFToLittleEndian64(_uncompressedSize);
+	[data addItems: &tmp64 count: sizeof(tmp64)];
 
 	if (_POSIXPermissions != nil) {
 		tmp16 = OFToLittleEndian16(5);
@@ -706,6 +824,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	/* Zero-length extension to terminate */
 	[data increaseCountBy: 2];
+
+	/*
+	 * Some implementations only check the first byte to see if the end of
+	 * the archive has been reached, which is 0 for every multiple of 256.
+	 * Add one byte of padding to avoid this.
+	 */
+	if ((data.count & 0xFF) == 0)
+		[data increaseCountBy: 1];
 
 	headerSize = data.count;
 

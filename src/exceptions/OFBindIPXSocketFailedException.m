@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -80,12 +84,11 @@
 
 - (OFString *)description
 {
-	OFData *node = [OFData dataWithItems: _node count: sizeof(_node)];
-
 	return [OFString stringWithFormat:
-	    @"Binding to network %" @PRIx16 " on node %@ with port %" @PRIx16
-	    @" failed for packet type %" @PRIx8 " in socket of type %@: %@",
-	    _network, node, _port, _packetType, [_socket class],
-	    OFStrError(_errNo)];
+	    @"Binding to network %" @PRIx16 " on node "
+	    @"%02X:%02X:%02X:%02X:%02X:%02X with port %" @PRIx16 @" failed for "
+	    @"packet type %" @PRIx8 " in socket of type %@: %@",
+	    _network, _node[0], _node[1], _node[2], _node[3], _node[4],
+	    _node[5], _port, _packetType, [_socket class], OFStrError(_errNo)];
 }
 @end

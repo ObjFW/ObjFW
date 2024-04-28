@@ -1,29 +1,36 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFNotificationCenter";
 static const OFNotificationName notificationName =
     @"OFNotificationCenterTestName";
 static const OFNotificationName otherNotificationName =
     @"OFNotificationCenterTestOtherName";
 
-@interface OFNotificationCenterTest: OFObject
+@interface OFNotificationCenterTests: OTTestCase
+@end
+
+@interface OFNotificationCenterTestClass: OFObject
 {
 @public
 	id _expectedObject;
@@ -33,7 +40,7 @@ static const OFNotificationName otherNotificationName =
 - (void)handleNotification: (OFNotification *)notification;
 @end
 
-@implementation OFNotificationCenterTest
+@implementation OFNotificationCenterTestClass
 - (void)handleNotification: (OFNotification *)notification
 {
 	OFEnsure([notification.name isEqual: notificationName]);
@@ -44,84 +51,85 @@ static const OFNotificationName otherNotificationName =
 }
 @end
 
-@implementation TestsAppDelegate (OFNotificationCenterTests)
-- (void)notificationCenterTests
+@implementation OFNotificationCenterTests
+- (void)testNotificationCenter
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFNotificationCenter *center = [OFNotificationCenter defaultCenter];
-	OFNotificationCenterTest *test1, *test2, *test3, *test4;
+	OFNotificationCenterTestClass *test1, *test2, *test3, *test4;
 	OFNotification *notification;
 
-	test1 =
-	    [[[OFNotificationCenterTest alloc] init] autorelease];
+	test1 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
 	test1->_expectedObject = self;
-	test2 =
-	    [[[OFNotificationCenterTest alloc] init] autorelease];
-	test3 =
-	    [[[OFNotificationCenterTest alloc] init] autorelease];
+	test2 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
+	test3 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
 	test3->_expectedObject = self;
-	test4 =
-	    [[[OFNotificationCenterTest alloc] init] autorelease];
+	test4 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
 
 	/* First one intentionally added twice to test deduplication. */
-	TEST(@"-[addObserver:selector:name:object:]",
-	    R([center addObserver: test1
-			 selector: @selector(handleNotification:)
-			     name: notificationName
-			   object: self]) &&
-	    R([center addObserver: test1
-			 selector: @selector(handleNotification:)
-			     name: notificationName
-			   object: self]) &&
-	    R([center addObserver: test2
-			 selector: @selector(handleNotification:)
-			     name: notificationName
-			   object: nil]) &&
-	    R([center addObserver: test3
-			 selector: @selector(handleNotification:)
-			     name: otherNotificationName
-			   object: self]) &&
-	    R([center addObserver: test4
-			 selector: @selector(handleNotification:)
-			     name: otherNotificationName
-			   object: nil]))
+	[center addObserver: test1
+		   selector: @selector(handleNotification:)
+		       name: notificationName
+		     object: self];
+	[center addObserver: test1
+		   selector: @selector(handleNotification:)
+		       name: notificationName
+		     object: self];
+	[center addObserver: test2
+		   selector: @selector(handleNotification:)
+		       name: notificationName
+		     object: nil];
+	[center addObserver: test3
+		   selector: @selector(handleNotification:)
+		       name: otherNotificationName
+		     object: self];
+	[center addObserver: test4
+		   selector: @selector(handleNotification:)
+		       name: otherNotificationName
+		     object: nil];
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: nil];
-	TEST(@"-[postNotification:] #1",
-	    R([center postNotification: notification]) &&
-	    test1->_received == 0 && test2->_received == 1 &&
-	    test3->_received == 0 && test4->_received == 0)
+	[center postNotification: notification];
+	OTAssertEqual(test1->_received, 0);
+	OTAssertEqual(test2->_received, 1);
+	OTAssertEqual(test3->_received, 0);
+	OTAssertEqual(test4->_received, 0);
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: self];
-	TEST(@"-[postNotification:] #2",
-	    R([center postNotification: notification]) &&
-	    test1->_received == 1 && test2->_received == 2 &&
-	    test3->_received == 0 && test4->_received == 0)
+	[center postNotification: notification];
+	OTAssertEqual(test1->_received, 1);
+	OTAssertEqual(test2->_received, 2);
+	OTAssertEqual(test3->_received, 0);
+	OTAssertEqual(test4->_received, 0);
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: @"foo"];
-	TEST(@"-[postNotification:] #3",
-	    R([center postNotification: notification]) &&
-	    test1->_received == 1 && test2->_received == 3 &&
-	    test3->_received == 0 && test4->_received == 0)
+	[center postNotification: notification];
+	OTAssertEqual(test1->_received, 1);
+	OTAssertEqual(test2->_received, 3);
+	OTAssertEqual(test3->_received, 0);
+	OTAssertEqual(test4->_received, 0);
 
 #ifdef OF_HAVE_BLOCKS
 	__block bool received = false;
-	OFNotificationCenterHandle *handle;
+	id handle;
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: self];
-	TEST(@"-[addObserverForName:object:usingBlock:]",
-	    (handle = [center addObserverForName: notificationName
-					  object: self
-				      usingBlock: ^ (OFNotification *notif) {
-		OFEnsure(notif == notification && !received);
+	handle = [center addObserverForName: notificationName
+				     object: self
+				 usingBlock: ^ (OFNotification *notification_) {
+		OTAssertEqual(notification_, notification);
+		OTAssertFalse(received);
 		received = true;
-	    }]) && R([center postNotification: notification]) && received &&
-	    test1->_received == 2 && test2->_received == 4 &&
-	    test3->_received == 0 && test4->_received == 0)
+	    }];
+	[center postNotification: notification];
+	OTAssertTrue(received);
+	OTAssertEqual(test1->_received, 2);
+	OTAssertEqual(test2->_received, 4);
+	OTAssertEqual(test3->_received, 0);
+	OTAssertEqual(test4->_received, 0);
 
 	/* Act like the block test didn't happen. */
 	[center removeObserver: handle];
@@ -129,31 +137,29 @@ static const OFNotificationName otherNotificationName =
 	test2->_received--;
 #endif
 
-	TEST(@"-[removeObserver:selector:name:object:]",
-	    R([center removeObserver: test1
-			    selector: @selector(handleNotification:)
-				name: notificationName
-			      object: self]) &&
-	    R([center removeObserver: test2
-			    selector: @selector(handleNotification:)
-				name: notificationName
-			      object: nil]) &&
-	    R([center removeObserver: test3
-			    selector: @selector(handleNotification:)
-				name: otherNotificationName
-			      object: self]) &&
-	    R([center removeObserver: test4
-			    selector: @selector(handleNotification:)
-				name: otherNotificationName
-			      object: nil]))
+	[center removeObserver: test1
+		      selector: @selector(handleNotification:)
+			  name: notificationName
+			object: self];
+	[center removeObserver: test2
+		      selector: @selector(handleNotification:)
+			  name: notificationName
+			object: nil];
+	[center removeObserver: test3
+		      selector: @selector(handleNotification:)
+			  name: otherNotificationName
+			object: self];
+	[center removeObserver: test4
+		      selector: @selector(handleNotification:)
+			  name: otherNotificationName
+			object: nil];
 
 	notification = [OFNotification notificationWithName: notificationName
 						     object: self];
-	TEST(@"-[postNotification:] with no observers",
-	    R([center postNotification: notification]) &&
-	    test1->_received == 1 && test2->_received == 3 &&
-	    test3->_received == 0 && test4->_received == 0)
-
-	objc_autoreleasePoolPop(pool);
+	[center postNotification: notification];
+	OTAssertEqual(test1->_received, 1);
+	OTAssertEqual(test2->_received, 3);
+	OTAssertEqual(test3->_received, 0);
+	OTAssertEqual(test4->_received, 0);
 }
 @end

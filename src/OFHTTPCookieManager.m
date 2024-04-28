@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,7 +23,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFHTTPCookie.h"
-#import "OFURI.h"
+#import "OFIRI.h"
 
 @implementation OFHTTPCookieManager
 + (instancetype)manager
@@ -53,17 +57,19 @@
 	return [[_cookies copy] autorelease];
 }
 
-- (void)addCookie: (OFHTTPCookie *)cookie forURI: (OFURI *)URI
+- (void)addCookie: (OFHTTPCookie *)cookie forIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *cookieDomain, *URIHost;
+	OFString *cookieDomain, *IRIHost;
 	size_t i;
+
+	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
 	if (![cookie.path hasPrefix: @"/"])
 		cookie.path = @"/";
 
 	if (cookie.secure &&
-	    [URI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
+	    [IRI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -71,11 +77,11 @@
 	cookieDomain = cookie.domain.lowercaseString;
 	cookie.domain = cookieDomain;
 
-	URIHost = URI.host.lowercaseString;
-	if (![cookieDomain isEqual: URIHost]) {
-		URIHost = [@"." stringByAppendingString: URIHost];
+	IRIHost = IRI.host.lowercaseString;
+	if (![cookieDomain isEqual: IRIHost]) {
+		IRIHost = [@"." stringByAppendingString: IRIHost];
 
-		if (![cookieDomain hasSuffix: URIHost]) {
+		if (![cookieDomain hasSuffix: IRIHost]) {
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
@@ -100,66 +106,69 @@
 }
 
 - (void)addCookies: (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
-	    forURI: (OFURI *)URI
+	    forIRI: (OFIRI *)IRI
 {
 	for (OFHTTPCookie *cookie in cookies)
-		[self addCookie: cookie forURI: URI];
+		[self addCookie: cookie forIRI: IRI];
 }
 
-- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForURI: (OFURI *)URI
+- (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForIRI: (OFIRI *)IRI
 {
 	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+
+	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
 	for (OFHTTPCookie *cookie in _cookies) {
-		void *pool;
+		void *pool2;
 		OFDate *expires;
-		OFString *cookieDomain, *URIHost, *cookiePath, *URIPath;
+		OFString *cookieDomain, *IRIHost, *cookiePath, *IRIPath;
 		bool match;
 
 		expires = cookie.expires;
 		if (expires != nil && expires.timeIntervalSinceNow <= 0)
 			continue;
 
-		if (cookie.secure && [URI.scheme caseInsensitiveCompare:
+		if (cookie.secure && [IRI.scheme caseInsensitiveCompare:
 		    @"https"] != OFOrderedSame)
 			continue;
 
-		pool = objc_autoreleasePoolPush();
+		pool2 = objc_autoreleasePoolPush();
 
 		cookieDomain = cookie.domain.lowercaseString;
-		URIHost = URI.host.lowercaseString;
+		IRIHost = IRI.host.lowercaseString;
 		if ([cookieDomain hasPrefix: @"."]) {
-			if ([URIHost hasSuffix: cookieDomain])
+			if ([IRIHost hasSuffix: cookieDomain])
 				match = true;
 			else {
 				cookieDomain =
 				    [cookieDomain substringFromIndex: 1];
 
-				match = [cookieDomain isEqual: URIHost];
+				match = [cookieDomain isEqual: IRIHost];
 			}
 		} else
-			match = [cookieDomain isEqual: URIHost];
+			match = [cookieDomain isEqual: IRIHost];
 
 		if (!match) {
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 			continue;
 		}
 
 		cookiePath = cookie.path;
-		URIPath = URI.path;
+		IRIPath = IRI.path;
 		if (![cookiePath isEqual: @"/"]) {
-			if ([cookiePath isEqual: URIPath])
+			if ([cookiePath isEqual: IRIPath])
 				match = true;
 			else {
 				if (![cookiePath hasSuffix: @"/"])
 					cookiePath = [cookiePath
 					    stringByAppendingString: @"/"];
 
-				match = [URIPath hasPrefix: cookiePath];
+				match = [IRIPath hasPrefix: cookiePath];
 			}
 
 			if (!match) {
-				objc_autoreleasePoolPop(pool);
+				objc_autoreleasePoolPop(pool2);
 				continue;
 			}
 		}
@@ -168,6 +177,8 @@
 	}
 
 	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }

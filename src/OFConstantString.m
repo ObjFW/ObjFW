@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_CONSTANT_STRING_M
@@ -52,29 +56,7 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFConstantString
@@ -135,29 +117,7 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 
 /*
  * In all following methods, the constant string is converted to an
@@ -549,20 +509,6 @@ struct {
 	return [self dataWithEncoding: encoding];
 }
 
-#ifdef OF_HAVE_UNICODE_TABLES
-- (OFString *)decomposedStringWithCanonicalMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCanonicalMapping;
-}
-
-- (OFString *)decomposedStringWithCompatibilityMapping
-{
-	[self finishInitialization];
-	return self.decomposedStringWithCompatibilityMapping;
-}
-#endif
-
 #ifdef OF_WINDOWS
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
@@ -585,16 +531,16 @@ struct {
 }
 #endif
 
-- (void)writeToURI: (OFURI *)URI
+- (void)writeToIRI: (OFIRI *)IRI
 {
 	[self finishInitialization];
-	[self writeToURI: URI];
+	[self writeToIRI: IRI];
 }
 
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	[self finishInitialization];
-	[self writeToURI: URI encoding: encoding];
+	[self writeToIRI: IRI encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

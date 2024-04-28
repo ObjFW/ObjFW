@@ -16,8 +16,8 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../..							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofhash/localization\"
-LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+LIBS := -L../../src -L../../src/tls ${OFHASH_LIBS} -lobjfw		\
+	-L../../src/runtime ${RUNTIME_LIBS}				\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}

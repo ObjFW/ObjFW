@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -26,7 +30,7 @@
 #endif
 
 #if defined(__x86_64__) || defined(__amd64__)
-# define OF_X86_64
+# define OF_AMD64
 #elif defined(__i386__)
 # define OF_X86
 #elif defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__)
@@ -151,6 +155,14 @@
 # define OF_ACORN_RISC_OS
 #elif defined(__MINT__)
 # define OF_MINT
+#elif defined(__gnu_hurd__)
+# define OF_HURD
+#elif defined(__serenity__)
+# define OF_SERENITYOS
+#endif
+
+#ifdef __GLIBC__
+# define OF_GLIBC
 #endif
 
 #if defined(__ELF__)

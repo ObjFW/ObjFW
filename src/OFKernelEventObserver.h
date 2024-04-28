@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -27,9 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDate;
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 @class OFMutableData;
 
 /**
@@ -45,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief This callback is called when an object did get ready for reading.
  *
  * @note If the object is a subclass of @ref OFStream and
- *	 @ref OFStream::tryReadLine or @ref OFStream::tryReadUntilDelimiter:
+ *	 @ref OFStream#tryReadLine or @ref OFStream#tryReadUntilDelimiter:
  *	 has been called on the stream, this callback will not be called again
  *	 until new data has been received, even though there is still data in
  *	 the cache. The reason for this is to prevent spinning in a loop when
@@ -64,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)objectIsReadyForWriting: (id)object;
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief This callback is called when an Exec Signal was received.
  *
@@ -121,18 +122,18 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
-#if defined(OF_AMIGAOS)
+# if defined(OF_AMIGAOS)
 	struct Task *_waitingTask;
 	ULONG _cancelSignal;
-#elif defined(OF_HAVE_PIPE)
+# elif defined(OF_HAVE_PIPE)
 	int _cancelFD[2];
-#else
+# else
 	OFSocketHandle _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
-#endif
-#ifdef OF_AMIGAOS
+# endif
+# ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
-#endif
+# endif
 	OF_RESERVE_IVARS(OFKernelEventObserver, 4)
 }
 
@@ -142,14 +143,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;
 
-#ifdef OF_AMIGAOS
+# if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
  * @brief A mask of Exec Signals to wait for.
  *
  * @note This is only available on AmigaOS!
  */
 @property (nonatomic) ULONG execSignalMask;
-#endif
+# endif
 
 /**
  * @brief Creates a new OFKernelEventObserver.

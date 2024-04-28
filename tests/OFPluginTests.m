@@ -1,56 +1,58 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 #import "plugin/TestPlugin.h"
 
-#ifndef OF_IOS
-static OFString *const pluginName = @"plugin/TestPlugin";
-#else
-static OFString *const pluginName = @"PlugIns/TestPlugin";
-#endif
+@interface OFPluginTests: OTTestCase
+@end
 
-static OFString *const module = @"OFPlugin";
-
-@implementation TestsAppDelegate (OFPluginTests)
-- (void)pluginTests
+@implementation OFPluginTests
+- (void)testPlugin
 {
-	void *pool = objc_autoreleasePoolPush();
+	TestPlugin *test = nil;
 	OFString *path;
 	OFPlugin *plugin;
 	Class (*class)(void);
-	TestPlugin *test;
 
-	TEST(@"+[pathForName:]", (path = [OFPlugin pathForName: pluginName]))
+#ifndef OF_IOS
+	path = [OFPlugin pathForName: @"plugin/TestPlugin"];
+#else
+	path = [OFPlugin pathForName: @"PlugIns/TestPlugin"];
+#endif
+	OTAssertNotNil(path);
 
-	TEST(@"+[pluginWithPath:]", (plugin = [OFPlugin pluginWithPath: path]))
+	plugin = [OFPlugin pluginWithPath: path];
+	OTAssertNotNil(plugin);
 
-	TEST(@"-[addressForSymbol:]",
-	    (class = (Class (*)(void))(uintptr_t)
-	    [plugin addressForSymbol: @"class"]))
+	class = (Class (*)(void))(uintptr_t)[plugin addressForSymbol: @"class"];
+	OTAssert(class != NULL);
 
-	test = [[class() alloc] init];
 	@try {
-		TEST(@"TestPlugin's -[test:]", [test test: 1234] == 2468)
+		test = [[class() alloc] init];
+		OTAssertEqual([test test: 1234], 2468);
 	} @finally {
 		[test release];
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

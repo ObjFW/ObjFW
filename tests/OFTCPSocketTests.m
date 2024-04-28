@@ -1,57 +1,55 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFTCPSocket";
+@interface OFTCPSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFTCPSocketTests)
-- (void)TCPSocketTests
+@implementation OFTCPSocketTests
+- (void)testTCPSocket
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFTCPSocket *server, *client = nil, *accepted;
-	uint16_t port;
+	OFTCPSocket *server, *client, *accepted;
+	OFSocketAddress address;
 	char buffer[6];
 
-	TEST(@"+[socket]", (server = [OFTCPSocket socket]) &&
-	    (client = [OFTCPSocket socket]))
+	server = [OFTCPSocket socket];
+	client = [OFTCPSocket socket];
 
-	TEST(@"-[bindToHost:port:]",
-	    (port = [server bindToHost: @"127.0.0.1" port: 0]))
+	address = [server bindToHost: @"127.0.0.1" port: 0];
+	[server listen];
 
-	TEST(@"-[listen]", R([server listen]))
+	[client connectToHost: @"127.0.0.1"
+			 port: OFSocketAddressIPPort(&address)];
 
-	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1" port: port]))
+	accepted = [server accept];
+	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
+	    @"127.0.0.1");
 
-	TEST(@"-[accept]", (accepted = [server accept]))
+	[client writeString: @"Hello!"];
 
-	TEST(@"-[remoteAddress]",
-	    [OFSocketAddressString(accepted.remoteAddress)
-	    isEqual: @"127.0.0.1"])
-
-	TEST(@"-[writeString:]", R([client writeString: @"Hello!"]))
-
-	TEST(@"-[readIntoBuffer:length:]",
-	    [accepted readIntoBuffer: buffer length: 6] &&
-	    !memcmp(buffer, "Hello!", 6))
-
-	objc_autoreleasePoolPop(pool);
+	[accepted readIntoBuffer: buffer exactLength: 6];
+	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
 }
 @end

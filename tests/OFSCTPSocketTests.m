@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,58 +22,44 @@
 #include <errno.h>
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFSCTPSocket";
+@interface OFSCTPSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFSCTPSocketTests)
-- (void)SCTPSocketTests
+@implementation OFSCTPSocketTests
+- (void)testSCTPSocket
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFSCTPSocket *server, *client = nil, *accepted;
+	OFSCTPSocket *server, *client, *accepted;
 	uint16_t port;
-	char buf[6];
+	char buffer[6];
 
-	TEST(@"+[socket]", (server = [OFSCTPSocket socket]) &&
-	    (client = [OFSCTPSocket socket]))
+	server = [OFSCTPSocket socket];
+	client = [OFSCTPSocket socket];
 
 	@try {
-		TEST(@"-[bindToHost:port:]",
-		    (port = [server bindToHost: @"127.0.0.1" port: 0]))
+		port = [server bindToHost: @"127.0.0.1" port: 0];
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EPROTONOSUPPORT:
-			[OFStdOut setForegroundColor: [OFColor lime]];
-			[OFStdOut writeLine:
-			    @"\r[OFSCTPSocket] -[bindToHost:port:]: "
-			    @"SCTP unsupported, skipping tests"];
-			break;
+			OTSkip(@"SCTP unsupported");
 		default:
 			@throw e;
 		}
-
-		objc_autoreleasePoolPop(pool);
-		return;
 	}
 
-	TEST(@"-[listen]", R([server listen]))
+	[server listen];
 
-	TEST(@"-[connectToHost:port:]",
-	    R([client connectToHost: @"127.0.0.1" port: port]))
+	[client connectToHost: @"127.0.0.1" port: port];
 
-	TEST(@"-[accept]", (accepted = [server accept]))
+	accepted = [server accept];
+	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
+	    @"127.0.0.1");
 
-	TEST(@"-[remoteAddress]",
-	    [OFSocketAddressString(accepted.remoteAddress)
-	    isEqual: @"127.0.0.1"])
+	[client sendBuffer: "Hello!" length: 6];
 
-	TEST(@"-[sendBuffer:length:]",
-	    R([client sendBuffer: "Hello!" length: 6]))
-
-	TEST(@"-[receiveIntoBuffer:length:]",
-	    [accepted receiveIntoBuffer: buf length: 6] &&
-	    !memcmp(buf, "Hello!", 6))
-
-	objc_autoreleasePoolPop(pool);
+	[accepted receiveIntoBuffer: buffer length: 6];
+	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
 }
 @end

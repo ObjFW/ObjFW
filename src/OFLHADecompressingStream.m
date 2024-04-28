@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
-
-#include <assert.h>
 
 #import "OFLHADecompressingStream.h"
 #import "OFKernelEventObserver.h"
@@ -50,7 +52,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
-	assert(stream->_savedBitsLength < count);
+	OFAssert(stream->_savedBitsLength < count);
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {
@@ -509,9 +511,9 @@ start:
 	    .fileDescriptorForReading;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer ||
+	return (_stream.hasDataInReadBuffer ||
 	    _bufferLength - _bufferIndex > 0);
 }
 

@@ -1,26 +1,28 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <string.h>
-#include <assert.h>
 
 #import "OFList.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 #import "OFArray.h"
 
 #import "OFEnumerationMutationException.h"
@@ -68,35 +70,6 @@ OFListItemObject(OFListItem listItem)
 + (instancetype)list
 {
 	return [[[self alloc] init] autorelease];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [self init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLElement *child in
-		    [element elementsForNamespace: OFSerializationNS]) {
-			void *pool2 = objc_autoreleasePoolPush();
-
-			[self appendObject: child.objectByDeserializing];
-
-			objc_autoreleasePoolPop(pool2);
-		}
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
 }
 
 - (void)dealloc
@@ -256,7 +229,7 @@ OFListItemObject(OFListItem listItem)
 			return false;
 
 	/* One is bigger than the other even though we checked the count */
-	assert(iter == NULL && iter2 == NULL);
+	OFAssert(iter == NULL && iter2 == NULL);
 
 	return true;
 }
@@ -372,24 +345,6 @@ OFListItemObject(OFListItem listItem)
 	[ret makeImmutable];
 
 	return ret;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OFXMLElement *element =
-	    [OFXMLElement elementWithName: self.className
-				namespace: OFSerializationNS];
-
-	for (OFListItem iter = _firstListItem;
-	    iter != NULL; iter = iter->next) {
-		void *pool = objc_autoreleasePoolPush();
-
-		[element addChild: [iter->object XMLElementBySerializing]];
-
-		objc_autoreleasePoolPop(pool);
-	}
-
-	return element;
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state

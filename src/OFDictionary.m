@@ -1,32 +1,33 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFConcreteDictionary.h"
 #import "OFData.h"
 #import "OFEnumerator.h"
-#import "OFMapTableDictionary.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -36,15 +37,13 @@ static struct {
 	Class isa;
 } placeholder;
 
-static OFCharacterSet *URIQueryPartAllowedCharacterSet = nil;
-
 @interface OFDictionary ()
 - (OFString *)
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
 			       depth: (size_t)depth;
 @end
 
-@interface OFDictionaryPlaceholder: OFDictionary
+@interface OFPlaceholderDictionary: OFDictionary
 @end
 
 OF_DIRECT_MEMBERS
@@ -57,32 +56,33 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
-OF_DIRECT_MEMBERS
-@interface OFURIQueryPartAllowedCharacterSet: OFCharacterSet
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet;
-@end
-
-@implementation OFDictionaryPlaceholder
+@implementation OFPlaceholderDictionary
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFMapTableDictionary alloc] init];
+	return (id)[[OFConcreteDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFMapTableDictionary alloc]
+	return (id)[[OFConcreteDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObject: object
+	return (id)[[OFConcreteDictionary alloc] initWithObject: object
 							 forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects forKeys: (OFArray *)keys
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys];
 }
 
@@ -90,7 +90,7 @@ OF_DIRECT_MEMBERS
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+	return (id)[[OFConcreteDictionary alloc] initWithObjects: objects
 							 forKeys: keys
 							   count: count];
 }
@@ -101,7 +101,7 @@ OF_DIRECT_MEMBERS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[OFMapTableDictionary alloc] initWithKey: firstKey
+	ret = [[OFConcreteDictionary alloc] initWithKey: firstKey
 					      arguments: arguments];
 	va_end(arguments);
 
@@ -111,101 +111,22 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithKey: (id <OFCopying>)firstKey
 		  arguments: (va_list)arguments
 {
-	return (id)[[OFMapTableDictionary alloc] initWithKey: firstKey
+	return (id)[[OFConcreteDictionary alloc] initWithKey: firstKey
 						   arguments: arguments];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMapTableDictionary alloc]
-	    initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
-@end
-
-@implementation OFURIQueryPartAllowedCharacterSet
-+ (void)initialize
-{
-	if (self != [OFURIQueryPartAllowedCharacterSet class])
-		return;
-
-	URIQueryPartAllowedCharacterSet =
-	    [[OFURIQueryPartAllowedCharacterSet alloc] init];
-}
-
-+ (OFCharacterSet *)URIQueryPartAllowedCharacterSet
-{
-	return URIQueryPartAllowedCharacterSet;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
-
-- (bool)characterIsMember: (OFUnichar)character
-{
-	if (character < CHAR_MAX && OFASCIIIsAlnum(character))
-		return true;
-
-	switch (character) {
-	case '-':
-	case '.':
-	case '_':
-	case '~':
-	case '!':
-	case '$':
-	case '\'':
-	case '(':
-	case ')':
-	case '*':
-	case '+':
-	case ',':
-	case ';':
-		return true;
-	default:
-		return false;
-	}
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFDictionary
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		placeholder.isa = [OFDictionaryPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderDictionary class]);
 }
 
 + (instancetype)alloc
@@ -263,7 +184,8 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFDictionary class]]) {
+	if ([self isMemberOfClass: [OFDictionary class]] ||
+	    [self isMemberOfClass: [OFMutableDictionary class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -279,19 +201,53 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	OF_INVALID_INIT_METHOD
+	void *pool = objc_autoreleasePoolPush();
+	id const *objects, *keys;
+	size_t count;
+
+	@try {
+		OFArray *objects_ = [dictionary.objectEnumerator allObjects];
+		OFArray *keys_ = [dictionary.keyEnumerator allObjects];
+
+		count = dictionary.count;
+
+		if (count != keys_.count || count != objects_.count)
+			@throw [OFInvalidArgumentException exception];
+
+		objects = objects_.objects;
+		keys = keys_.objects;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
+
+	return self;
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	if (key == nil || object == nil)
-		@throw [OFInvalidArgumentException exception];
+	@try {
+		if (key == nil || object == nil)
+			@throw [OFInvalidArgumentException exception];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
-	return [self initWithKeysAndObjects: key, object, nil];
+	return [self initWithObjects: &object forKeys: &key count: 1];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects_ forKeys: (OFArray *)keys_
 {
+	void *pool = objc_autoreleasePoolPush();
 	id const *objects, *keys;
 	size_t count;
 
@@ -308,15 +264,28 @@ OF_DIRECT_MEMBERS
 		@throw e;
 	}
 
-	return [self initWithObjects: objects forKeys: keys count: count];
+	self = [self initWithObjects: objects forKeys: keys count: count];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (instancetype)initWithKeysAndObjects: (id)firstKey, ...
 {
@@ -332,12 +301,64 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithKey: (id)firstKey arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
-}
+	size_t count = 1;
+	id *objects = NULL, *keys = NULL;
+	va_list argumentsCopy;
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
+	if (firstKey == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		size_t i = 0;
+		id key, object;
+
+		if (count % 2 != 0)
+			@throw [OFInvalidArgumentException exception];
+
+		count /= 2;
+
+		objects = OFAllocMemory(count, sizeof(id));
+		keys = OFAllocMemory(count, sizeof(id));
+
+		keys[i] = firstKey;
+		objects[i] = va_arg(arguments, id);
+
+		if (objects[i] == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		i++;
+
+		while ((key = va_arg(arguments, id)) != nil &&
+		    (object = va_arg(arguments, id)) != nil) {
+			OFEnsure(i < count);
+
+			objects[i] = object;
+			keys[i] = key;
+
+			i++;
+		}
+	} @catch (id e) {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects
+				     forKeys: keys
+				       count: count];
+	} @finally {
+		OFFreeMemory(objects);
+		OFFreeMemory(keys);
+	}
+
+	return self;
 }
 
 - (id)objectForKey: (id)key
@@ -512,6 +533,7 @@ OF_DIRECT_MEMBERS
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFEnumerator *enumerator;
 	int i;
 
@@ -523,7 +545,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];
@@ -637,50 +659,6 @@ OF_DIRECT_MEMBERS
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id <OFSerialization> key, object;
-
-	if ([self isKindOfClass: [OFMutableDictionary class]])
-		element = [OFXMLElement elementWithName: @"OFMutableDictionary"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFDictionary"
-					      namespace: OFSerializationNS];
-
-	keyEnumerator = [self keyEnumerator];
-	objectEnumerator = [self objectEnumerator];
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	       (object = [objectEnumerator nextObject]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
-		OFXMLElement *keyElement, *objectElement;
-
-		keyElement = [OFXMLElement
-		    elementWithName: @"key"
-			  namespace: OFSerializationNS];
-		[keyElement addChild: key.XMLElementBySerializing];
-
-		objectElement = [OFXMLElement
-		    elementWithName: @"object"
-			  namespace: OFSerializationNS];
-		[objectElement addChild: object.XMLElementBySerializing];
-
-		[element addChild: keyElement];
-		[element addChild: objectElement];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -826,7 +804,7 @@ OF_DIRECT_MEMBERS
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	assert(i == count);
+	OFAssert(i == count);
 
 	[data makeImmutable];
 

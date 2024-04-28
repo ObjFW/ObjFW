@@ -1,23 +1,25 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <stdlib.h>
-
-#include <assert.h>
 
 #import "OFTimer.h"
 #import "OFTimer+Private.h"
@@ -487,8 +489,8 @@
 	 * The run loop references the timer, so it should never be deallocated
 	 * if it is still in a run loop.
 	 */
-	assert(_inRunLoop == nil);
-	assert(_inRunLoopMode == nil);
+	OFAssert(_inRunLoop == nil);
+	OFAssert(_inRunLoopMode == nil);
 
 	[_fireDate release];
 	[_target release];
@@ -526,38 +528,39 @@
 	[oldInRunLoopMode release];
 }
 
+- (void)of_reschedule
+{
+	long long missedIntervals;
+	OFTimeInterval newFireDate;
+	OFRunLoop *runLoop;
+
+	if (!_repeats || !_valid)
+		return;
+
+	missedIntervals = -_fireDate.timeIntervalSinceNow / _interval;
+
+	/* In case the clock was changed backwards */
+	if (missedIntervals < 0)
+		missedIntervals = 0;
+
+	newFireDate = _fireDate.timeIntervalSince1970 +
+	    (missedIntervals + 1) * _interval;
+
+	[_fireDate release];
+	_fireDate = nil;
+	_fireDate = [[OFDate alloc]
+	    initWithTimeIntervalSince1970: newFireDate];
+
+	runLoop = [OFRunLoop currentRunLoop];
+	[runLoop addTimer: self forMode: runLoop.currentMode];
+}
+
 - (void)fire
 {
-	void *pool = objc_autoreleasePoolPush();
-	id target = [[_target retain] autorelease];
-	id object1 = [[_object1 retain] autorelease];
-	id object2 = [[_object2 retain] autorelease];
-	id object3 = [[_object3 retain] autorelease];
-	id object4 = [[_object4 retain] autorelease];
-
 	OFEnsure(_arguments <= 4);
 
-	if (_repeats && _valid) {
-		int64_t missedIntervals =
-		    -_fireDate.timeIntervalSinceNow / _interval;
-		OFTimeInterval newFireDate;
-		OFRunLoop *runLoop;
-
-		/* In case the clock was changed backwards */
-		if (missedIntervals < 0)
-			missedIntervals = 0;
-
-		newFireDate = _fireDate.timeIntervalSince1970 +
-		    (missedIntervals + 1) * _interval;
-
-		[_fireDate release];
-		_fireDate = [[OFDate alloc]
-		    initWithTimeIntervalSince1970: newFireDate];
-
-		runLoop = [OFRunLoop currentRunLoop];
-		[runLoop addTimer: self forMode: runLoop.currentMode];
-	} else
-		[self invalidate];
+	if (!_valid)
+		return;
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
@@ -566,33 +569,37 @@
 #endif
 		switch (_arguments) {
 		case 0:
-			[target performSelector: _selector];
+			[_target performSelector: _selector];
 			break;
 		case 1:
-			[target performSelector: _selector withObject: object1];
+			[_target performSelector: _selector
+				      withObject: _object1];
 			break;
 		case 2:
-			[target performSelector: _selector
-				     withObject: object1
-				     withObject: object2];
+			[_target performSelector: _selector
+				      withObject: _object1
+				      withObject: _object2];
 			break;
 		case 3:
-			[target performSelector: _selector
-				     withObject: object1
-				     withObject: object2
-				     withObject: object3];
+			[_target performSelector: _selector
+				      withObject: _object1
+				      withObject: _object2
+				      withObject: _object3];
 			break;
 		case 4:
-			[target performSelector: _selector
-				     withObject: object1
-				     withObject: object2
-				     withObject: object3
-				     withObject: object4];
+			[_target performSelector: _selector
+				      withObject: _object1
+				      withObject: _object2
+				      withObject: _object3
+				      withObject: _object4];
 			break;
 		}
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif
+
+	if  (!_repeats)
+		[self invalidate];
 
 #ifdef OF_HAVE_THREADS
 	[_condition lock];
@@ -603,8 +610,6 @@
 		[_condition unlock];
 	}
 #endif
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (OFDate *)fireDate
@@ -637,6 +642,9 @@
 {
 	_valid = false;
 
+#ifdef OF_HAVE_BLOCKS
+	[_block release];
+#endif
 	[_target release];
 	[_object1 release];
 	[_object2 release];

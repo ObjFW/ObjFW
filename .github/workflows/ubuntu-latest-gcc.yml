@@ -21,12 +21,14 @@ jobs:
           - --disable-compiler-tls --disable-threads
           - --with-tls=gnutls
           - --with-tls=gnutls --disable-shared
+          - --with-tls=mbedtls
+          - --with-tls=mbedtls --disable-shared
     steps:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gobjc libssl-dev gnutls-dev
-    - uses: actions/checkout@v2
+        sudo apt-get install gobjc libssl-dev gnutls-dev libmbedtls-dev
+    - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure

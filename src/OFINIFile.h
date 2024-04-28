@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -19,8 +23,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFURI;
 
 /**
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -41,7 +45,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file.
  *
- * @param URI The URI to the file whose contents the OFINIFile should contain
+ * @param IRI The IRI to the file whose contents the OFINIFile should contain
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  * @throw OFInvalidFormatException The format of the specified INI file is
@@ -49,13 +53,13 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidEncodingException The INI file is not in the specified
  *				     encoding
  */
-+ (instancetype)fileWithURI: (OFURI *)URI;
++ (instancetype)fileWithIRI: (OFIRI *)IRI;
 
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file in
  *	  the specified encoding.
  *
- * @param URI The URI to the file whose contents the OFINIFile should contain
+ * @param IRI The IRI to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  * @throw OFInvalidFormatException The format of the specified INI file is
@@ -63,7 +67,7 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidEncodingException The INI file is not in the specified
  *				     encoding
  */
-+ (instancetype)fileWithURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
++ (instancetype)fileWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -71,7 +75,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.
  *
- * @param URI The URI to the file whose contents the OFINIFile should contain
+ * @param IRI The IRI to the file whose contents the OFINIFile should contain
  *
  * @return An initialized OFINIFile with the contents of the specified file
  * @throw OFInvalidFormatException The format of the specified INI file is
@@ -79,13 +83,13 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidEncodingException The INI file is not in the specified
  *				     encoding
  */
-- (instancetype)initWithURI: (OFURI *)URI;
+- (instancetype)initWithIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file in the specified encoding.
  *
- * @param URI The URI to the file whose contents the OFINIFile should contain
+ * @param IRI The IRI to the file whose contents the OFINIFile should contain
  * @param encoding The encoding of the specified file
  * @return An initialized OFINIFile with the contents of the specified file
  * @throw OFInvalidFormatException The format of the specified INI file is
@@ -93,7 +97,7 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFInvalidEncodingException The INI file is not in the specified
  *				     encoding
  */
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		   encoding: (OFStringEncoding)encoding
     OF_DESIGNATED_INITIALIZER;
 
@@ -111,18 +115,18 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Writes the contents of the OFINIFile to a file.
  *
- * @param URI The URI of the file to write to
+ * @param IRI The IRI of the file to write to
  */
-- (void)writeToURI: (OFURI *)URI;
+- (void)writeToIRI: (OFIRI *)IRI;
 
 /**
  * @brief Writes the contents of the OFINIFile to a file in the specified
  *	  encoding.
  *
- * @param URI The URI of the file to write to
+ * @param IRI The IRI of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToURI: (OFURI *)URI encoding: (OFStringEncoding)encoding;
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

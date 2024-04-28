@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,7 +24,7 @@
 #import "OFGnuTLSTLSStream.h"
 #import "OFData.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
@@ -127,7 +131,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		gnutls_bye(_session, GNUTLS_SHUT_WR);
 
 	gnutls_deinit(_session);
-	_initialized = false;
+	_initialized = _handshakeDone = false;
 
 	[_host release];
 	_host = nil;
@@ -185,12 +189,10 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	return ret;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	if (gnutls_record_check_pending(_session) > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    gnutls_record_check_pending(_session) > 0);
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
@@ -198,11 +200,12 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	int status;
 
 	if (_initialized)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
 	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
@@ -241,15 +244,15 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 	if (status == GNUTLS_E_INTERRUPTED || status == GNUTLS_E_AGAIN) {
 		if (gnutls_record_get_direction(_session) == 1)
-			[_underlyingStream
-			    asyncWriteData: [OFData dataWithItems: "" count: 0]
-			       runLoopMode: runLoopMode];
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
 		else
 			[_underlyingStream asyncReadIntoBuffer: (void *)""
 							length: 0
 						   runLoopMode: runLoopMode];
 
 		[_delegate retain];
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -267,12 +270,14 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		int status = gnutls_handshake(_session);
@@ -280,11 +285,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		if (status == GNUTLS_E_INTERRUPTED ||
 		    status == GNUTLS_E_AGAIN) {
 			if (gnutls_record_get_direction(_session) == 1) {
-				OFData *data = [OFData dataWithItems: ""
-							       count: 0];
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: data
+				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
 			} else

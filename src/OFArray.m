@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,16 +22,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include <assert.h>
-
 #import "OFArray.h"
 #import "OFArray+Private.h"
-#import "OFAdjacentArray.h"
+#import "OFConcreteArray.h"
 #import "OFData.h"
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFSubarray.h"
-#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -47,14 +48,20 @@ static struct {
 @end
 
 @implementation OFPlaceholderArray
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFAdjacentArray alloc] init];
+	return (id)[[OFConcreteArray alloc] init];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: object];
+	return (id)[[OFConcreteArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -63,7 +70,7 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFAdjacentArray alloc] initWithObject: firstObject
+	ret = [[OFConcreteArray alloc] initWithObject: firstObject
 					    arguments: arguments];
 	va_end(arguments);
 
@@ -73,52 +80,33 @@ static struct {
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFAdjacentArray alloc] initWithObject: firstObject
+	return (id)[[OFConcreteArray alloc] initWithObject: firstObject
 						 arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFAdjacentArray alloc] initWithArray: array];
+	return (id)[[OFConcreteArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFAdjacentArray alloc] initWithObjects: objects
+	return (id)[[OFConcreteArray alloc] initWithObjects: objects
 						      count: count];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFAdjacentArray alloc] initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFArray
 + (void)initialize
 {
 	if (self == [OFArray class])
-		placeholder.isa = [OFPlaceholderArray class];
+		object_setClass((id)&placeholder, [OFPlaceholderArray class]);
 }
 
 + (instancetype)alloc
@@ -166,7 +154,8 @@ static struct {
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFArray class]]) {
+	if ([self isMemberOfClass: [OFArray class]] ||
+	    [self isMemberOfClass: [OFMutableArray class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -182,12 +171,7 @@ static struct {
 
 - (instancetype)initWithObject: (id)object
 {
-	if (object == nil) {
-		[self release];
-		@throw [OFInvalidArgumentException exception];
-	}
-
-	return [self initWithObjects: object, nil];
+	return [self initWithObjects: &object count: 1];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -202,27 +186,81 @@ static struct {
 	return ret;
 }
 
-- (instancetype)initWithObject: (id)firstObject
-		     arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	OF_INVALID_INIT_METHOD
+	size_t count = 1;
+	va_list argumentsCopy;
+	id *objects;
+
+	if (firstObject == nil)
+		return [self init];
+
+	va_copy(argumentsCopy, arguments);
+	while (va_arg(argumentsCopy, id) != nil)
+		count++;
+
+	@try {
+		objects = OFAllocMemory(count, sizeof(id));
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		objects[0] = firstObject;
+
+		for (size_t i = 1; i < count; i++) {
+			objects[i] = va_arg(arguments, id);
+			OFEnsure(objects[i] != nil);
+		}
+
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	OF_INVALID_INIT_METHOD
+	id *objects;
+	size_t count;
+
+	@try {
+		count = array.count;
+		objects = OFAllocMemory(count, sizeof(id));
+
+		[array getObjects: objects
+			  inRange: OFMakeRange(0, count)];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithObjects: objects count: count];
+	} @finally {
+		OFFreeMemory(objects);
+	}
+
+	return self;
 }
 
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	OF_INVALID_INIT_METHOD
-}
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (size_t)count
 {
@@ -377,7 +415,8 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFSubarray arrayWithArray: self range: range];
+		return [[[OFSubarray alloc] initWithArray: self
+						    range: range] autorelease];
 
 	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {
@@ -550,33 +589,6 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	if ([self isKindOfClass: [OFMutableArray class]])
-		element = [OFXMLElement elementWithName: @"OFMutableArray"
-					      namespace: OFSerializationNS];
-	else
-		element = [OFXMLElement elementWithName: @"OFArray"
-					      namespace: OFSerializationNS];
-
-	for (id <OFSerialization> object in self) {
-		void *pool2 = objc_autoreleasePoolPush();
-
-		[element addChild: object.XMLElementBySerializing];
-
-		objc_autoreleasePoolPop(pool2);
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
-}
-
 - (OFString *)JSONRepresentation
 {
 	return [self of_JSONRepresentationWithOptions: 0 depth: 0];
@@ -689,7 +701,7 @@ static struct {
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	assert(i == count);
+	OFAssert(i == count);
 
 	[data makeImmutable];
 
@@ -728,6 +740,16 @@ static struct {
 	return new;
 }
 
+- (OFArray *)sortedArrayUsingFunction: (OFCompareFunction)compare
+			      context: (void *)context
+			      options: (OFArraySortOptions)options
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+	[new sortUsingFunction: compare context: context options: options];
+	[new makeImmutable];
+	return new;
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
 				options: (OFArraySortOptions)options
@@ -751,6 +773,7 @@ static struct {
 			   objects: (id *)objects
 			     count: (int)count
 {
+	static unsigned long dummyMutations;
 	OFRange range = OFMakeRange(state->state, count);
 
 	if (range.length > SIZE_MAX - range.location)
@@ -766,7 +789,7 @@ static struct {
 
 	state->state = (unsigned long)(range.location + range.length);
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long *)self;
+	state->mutationsPtr = &dummyMutations;
 
 	return (int)range.length;
 }

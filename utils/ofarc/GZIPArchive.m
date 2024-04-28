@@ -1,24 +1,31 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFApplication.h"
+#import "OFArray.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFStdIOStream.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFStdIOStream.h"
 
 #import "GZIPArchive.h"
 #import "OFArc.h"
@@ -26,12 +33,12 @@
 static OFArc *app;
 
 static void
-setPermissions(OFString *destination, OFString *source)
+setPermissions(OFString *destination, OFIRI *source)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFFileAttributes attributes = [fileManager
-	    attributesOfItemAtPath: source];
+	    attributesOfItemAtIRI: source];
 	OFFileAttributeKey key = OFFilePOSIXPermissions;
 	OFFileAttributes destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
@@ -40,6 +47,8 @@ setPermissions(OFString *destination, OFString *source)
 	[fileManager setAttributes: destinationAttributes
 		      ofItemAtPath: destination];
 #endif
+
+	[app quarantineFile: destination];
 }
 
 static void
@@ -65,24 +74,28 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
-{
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
-}
-
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
+{
+	return [[[self alloc] initWithIRI: IRI
+				   stream: stream
+				     mode: mode
+				 encoding: encoding] autorelease];
+}
+
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_stream = [[OFGZIPStream alloc] initWithStream: stream
 							  mode: mode];
+		_archiveIRI = [IRI copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -94,6 +107,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 - (void)dealloc
 {
 	[_stream release];
+	[_archiveIRI release];
 
 	[super dealloc];
 }
@@ -111,15 +125,14 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	OFFile *output;
 
 	if (files.count != 0) {
-		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"cannot_extract_specific_file_from_gz",
 		    @"Cannot extract a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
 		return;
 	}
 
-	fileName = app->_archivePath.lastPathComponent
-	    .stringByDeletingPathExtension;
+	fileName = _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (app->_outputLevel >= 0)
 		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
@@ -130,7 +143,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		return;
 
 	output = [OFFile fileWithPath: fileName mode: @"w"];
-	setPermissions(fileName, app->_archivePath);
+	setPermissions(fileName, _archiveIRI);
 
 	while (!_stream.atEndOfStream) {
 		ssize_t length = [app copyBlockFromStream: _stream
@@ -156,8 +169,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
-	OFString *fileName = app->_archivePath.lastPathComponent
-	    .stringByDeletingPathExtension;
+	OFString *fileName =
+	    _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (files.count > 0) {
 		[OFStdErr writeLine: OF_LOCALIZED(

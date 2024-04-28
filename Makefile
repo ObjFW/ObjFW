@@ -12,12 +12,12 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-.PHONY: docs release
+.PHONY: check docs release
 
 utils tests: src
 
 check: tests
-	cd tests && ${MAKE} -s run
+	${MAKE} -C tests -s run
 
 docs:
 	rm -fr docs
@@ -35,9 +35,6 @@ release: docs
 	gzip -9 objfw-${PACKAGE_VERSION}.tar
 	rm -f objfw-${PACKAGE_VERSION}.tar
 	gpg -b objfw-${PACKAGE_VERSION}.tar.gz || true
-	echo "Generating documentation..."
-	rm -fr docs
-	doxygen >/dev/null
 	rm -fr objfw-docs-${PACKAGE_VERSION} objfw-docs-${PACKAGE_VERSION}.tar \
 		objfw-docs-${PACKAGE_VERSION}.tar.gz
 	mv docs objfw-docs-${PACKAGE_VERSION}

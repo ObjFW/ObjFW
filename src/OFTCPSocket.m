@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,7 +22,6 @@
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED
 #endif
-#define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
@@ -43,7 +46,7 @@
 #import "OFTCPSocketSOCKS5Connector.h"
 #import "OFThread.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotImplementedException.h"
@@ -141,7 +144,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
@@ -289,7 +292,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	const int one = 1;
 	void *pool = objc_autoreleasePoolPush();
@@ -300,7 +303,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if (_SOCKS5Host != nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
@@ -361,10 +364,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 			if ((ret = bind(_socket,
 			    (struct sockaddr *)&address.sockaddr,
-			    address.length)) == 0) {
-				port = rnd;
+			    address.length)) == 0)
 				break;
-			}
 
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
@@ -381,11 +382,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 		}
 	}
 #endif
-
-	objc_autoreleasePoolPop(pool);
-
-	if (port > 0)
-		return port;
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	memset(&address, 0, sizeof(address));
@@ -406,10 +402,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	switch (((struct sockaddr *)&address.sockaddr)->sa_family) {
 	case AF_INET:
-		return OFFromBigEndian16(address.sockaddr.in.sin_port);
+		address.family = OFSocketAddressFamilyIPv4;
+		break;
 # ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		return OFFromBigEndian16(address.sockaddr.in6.sin6_port);
+		address.family = OFSocketAddressFamilyIPv6;
+		break;
 # endif
 	default:
 		closesocket(_socket);
@@ -421,14 +419,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
-#else
-	closesocket(_socket);
-	_socket = OFInvalidSocketHandle;
-	@throw [OFBindIPSocketFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EADDRNOTAVAIL];
 #endif
+
+	objc_autoreleasePoolPop(pool);
+
+	return address;
 }
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)

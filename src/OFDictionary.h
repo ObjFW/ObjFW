@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -25,7 +29,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -77,7 +80,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  *	 @ref keyEnumerator.
  */
 @interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define KeyType id
@@ -151,6 +154,13 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
     OF_SENTINEL;
 
 /**
+ * @brief Initializes an already allocated OFDictionary to be empty.
+ *
+ * @return An initialized OFDictionary
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFDictionary with the specified
  *	  OFDictionary.
  *
@@ -192,7 +202,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			forKeys: (KeyType const _Nonnull *_Nonnull)keys
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys

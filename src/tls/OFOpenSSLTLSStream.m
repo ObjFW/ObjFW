@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,7 +24,7 @@
 #import "OFOpenSSLTLSStream.h"
 #import "OFData.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
@@ -94,6 +98,8 @@ static SSL_CTX *clientContext;
 	SSL_free(_SSL);
 	_SSL = NULL;
 
+	_handshakeDone = false;
+
 	[_host release];
 	_host = nil;
 
@@ -108,22 +114,6 @@ static SSL_CTX *clientContext;
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (BIO_ctrl_pending(_readBIO) < 1) {
-		@try {
-			size_t tmp = [_underlyingStream
-			    readIntoBuffer: _buffer
-				    length: bufferSize];
-
-			OFEnsure(tmp <= INT_MAX);
-			/* Writing to a memory BIO must never fail. */
-			OFEnsure(BIO_write(_readBIO, _buffer, (int)tmp) ==
-			    (int)tmp);
-		} @catch (OFReadFailedException *e) {
-			if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
-				@throw e;
-		}
-	}
-
 	ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
 
 	while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -135,26 +125,48 @@ static SSL_CTX *clientContext;
 		[_underlyingStream flushWriteBuffer];
 	}
 
-	if (ret != 1) {
-		/*
-		 * The underlying stream might have had data ready, but not
-		 * enough for OpenSSL to return decrypted data. This means the
-		 * caller might have observed the TLS stream for reading, got a
-		 * ready signal and read - and expects the read to succeed, not
-		 * to fail with EWOULDBLOCK, as it was signaled ready.
-		 * Therefore, return 0, as we could read 0 decrypted bytes, but
-		 * cleared the ready signal of the underlying stream.
-		 */
+	if (ret == 1)
+		return bytesRead;
+
+	if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ) {
+		if (BIO_ctrl_pending(_readBIO) < 1) {
+			@try {
+				size_t tmp = [_underlyingStream
+				    readIntoBuffer: _buffer
+					    length: bufferSize];
+
+				OFEnsure(tmp <= INT_MAX);
+				/* Writing to a memory BIO must never fail. */
+				OFEnsure(BIO_write(_readBIO, _buffer,
+				    (int)tmp) == (int)tmp);
+			} @catch (OFReadFailedException *e) {
+				if (e.errNo == EWOULDBLOCK || e.errNo != EAGAIN)
+					return 0;
+			}
+		}
+
+		ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
+
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
+			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
+
+			OFEnsure(tmp >= 0);
+
+			[_underlyingStream writeBuffer: _buffer length: tmp];
+			[_underlyingStream flushWriteBuffer];
+		}
+
+		if (ret == 1)
+			return bytesRead;
+
 		if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ)
 			return 0;
-
-		/* FIXME: Translate error to errNo */
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: 0];
 	}
 
-	return bytesRead;
+	/* FIXME: Translate error to errNo */
+	@throw [OFReadFailedException exceptionWithObject: self
+					  requestedLength: length
+						    errNo: 0];
 }
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
@@ -190,12 +202,15 @@ static SSL_CTX *clientContext;
 	return bytesWritten;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	if (SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+#ifdef HAVE_SSL_HAS_PENDING
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    SSL_has_pending(_SSL) || BIO_ctrl_pending(_readBIO) > 0);
+#else
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0);
+#endif
 }
 
 - (void)asyncPerformClientHandshakeWithHost: (OFString *)host
@@ -203,11 +218,12 @@ static SSL_CTX *clientContext;
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	int status;
 
 	if (_SSL != NULL)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if ((_readBIO = BIO_new(BIO_s_mem())) == NULL)
 		@throw [OFTLSHandshakeFailedException
@@ -276,12 +292,13 @@ static SSL_CTX *clientContext;
 							length: bufferSize
 						   runLoopMode: runLoopMode];
 			[_delegate retain];
+			objc_autoreleasePoolPop(pool);
 			return;
 		case SSL_ERROR_WANT_WRITE:
-			[_underlyingStream
-			    asyncWriteData: [OFData dataWithItems: "" count: 0]
-			       runLoopMode: runLoopMode];
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
 			[_delegate retain];
+			objc_autoreleasePoolPop(pool);
 			return;
 		default:
 			/* FIXME: Map to better errors */
@@ -298,6 +315,8 @@ static SSL_CTX *clientContext;
 		[_delegate		       stream: self
 		    didPerformClientHandshakeWithHost: host
 					    exception: exception];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -309,7 +328,6 @@ static SSL_CTX *clientContext;
 		static const OFTLSStreamErrorCode unknownErrorCode =
 		    OFTLSStreamErrorCodeUnknown;
 		int status;
-		OFData *data;
 
 		OFEnsure(length <= INT_MAX);
 		OFEnsure(BIO_write(_readBIO, buffer, (int)length) ==
@@ -332,11 +350,10 @@ static SSL_CTX *clientContext;
 			switch (SSL_get_error(_SSL, status)) {
 			case SSL_ERROR_WANT_READ:
 				return true;
-			case SSL_ERROR_WANT_WRITE:
-				data = [OFData dataWithItems: "" count: 0];
+			case SSL_ERROR_WANT_WRITE:;
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: data
+				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
 			default:

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -33,14 +37,20 @@
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
+#import "OFAlreadyOpenException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#if defined(OF_AMIGAOS) && !defined(UNIQUE_ID)
+# define UNIQUE_ID -1
+#endif
 
 @implementation OFDatagramSocket
 @synthesize delegate = _delegate;
@@ -71,6 +81,9 @@
 		}
 
 		_socket = OFInvalidSocketHandle;
+#ifdef OF_HAVE_AMIGAOS
+		_socketID = -1;
+#endif
 		_canBlock = true;
 	} @catch (id e) {
 		[self release];
@@ -198,34 +211,39 @@
 #endif
 
 	if (sender != NULL) {
-		switch (((struct sockaddr *)&sender->sockaddr)->sa_family) {
-		case AF_INET:
-			sender->family = OFSocketAddressFamilyIPv4;
-			break;
+		struct sockaddr *sa = (struct sockaddr *)&sender->sockaddr;
+
+		if (sender->length >= (socklen_t)sizeof(sa->sa_family)) {
+			switch (sa->sa_family) {
+			case AF_INET:
+				sender->family = OFSocketAddressFamilyIPv4;
+				break;
 #ifdef OF_HAVE_IPV6
-		case AF_INET6:
-			sender->family = OFSocketAddressFamilyIPv6;
-			break;
+			case AF_INET6:
+				sender->family = OFSocketAddressFamilyIPv6;
+				break;
 #endif
 #ifdef OF_HAVE_UNIX_SOCKETS
-		case AF_UNIX:
-			sender->family = OFSocketAddressFamilyUNIX;
-			break;
+			case AF_UNIX:
+				sender->family = OFSocketAddressFamilyUNIX;
+				break;
 #endif
 #ifdef OF_HAVE_IPX
-		case AF_IPX:
-			sender->family = OFSocketAddressFamilyIPX;
-			break;
+			case AF_IPX:
+				sender->family = OFSocketAddressFamilyIPX;
+				break;
 #endif
 #ifdef OF_HAVE_APPLETALK
-		case AF_APPLETALK:
-			sender->family = OFSocketAddressFamilyAppleTalk;
-			break;
+			case AF_APPLETALK:
+				sender->family = OFSocketAddressFamilyAppleTalk;
+				break;
 #endif
-		default:
+			default:
+				sender->family = OFSocketAddressFamilyUnknown;
+				break;
+			}
+		} else
 			sender->family = OFSocketAddressFamilyUnknown;
-			break;
-		}
 	}
 
 	return ret;
@@ -399,6 +417,51 @@
 		@throw [OFOutOfRangeException exception];
 
 	return (int)_socket;
+#endif
+}
+
+- (void)releaseSocketFromCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if ((_socketID = ReleaseSocket(_socket, UNIQUE_ID)) == -1) {
+		switch (Errno()) {
+		case ENOMEM:
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: 0];
+		case EBADF:
+			@throw [OFNotOpenException exceptionWithObject: self];
+		default:
+			OFEnsure(0);
+		}
+	}
+
+	_socket = OFInvalidSocketHandle;
+#endif
+}
+
+- (void)obtainSocketForCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket != OFInvalidSocketHandle)
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
+
+	if (_socketID == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	/*
+	 * FIXME: We should store these, but that requires changing all
+	 *	  subclasses. This only becomes a problem if IPv6 support ever
+	 *	  gets added.
+	 */
+	_socket = ObtainSocket(_socketID, AF_INET, SOCK_DGRAM, 0);
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self.class];
+
+	_socketID = -1;
 #endif
 }
 

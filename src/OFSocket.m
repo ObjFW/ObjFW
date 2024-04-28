@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -53,7 +57,9 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #ifdef OF_NINTENDO_3DS
@@ -431,6 +437,34 @@ parseIPv6Component(OFString *component)
 	return (uint16_t)number;
 }
 
+static OFString *
+transformEmbeddedIPv4(OFString *IPv6)
+{
+	size_t lastColon = [IPv6
+	    rangeOfString: @":"
+		  options: OFStringSearchBackwards].location;
+	OFString *IPv4;
+	OFSocketAddress address;
+	const struct sockaddr_in *addrIn;
+	uint32_t addr;
+
+	if (lastColon == OFNotFound)
+		@throw [OFInvalidFormatException exception];
+
+	IPv4 = [IPv6 substringWithRange:
+	    OFMakeRange(lastColon + 1, IPv6.length - lastColon - 1)];
+	IPv6 = [IPv6 substringWithRange: OFMakeRange(0, lastColon + 1)];
+
+	address = OFSocketAddressParseIPv4(IPv4, 0);
+	addrIn = &address.sockaddr.in;
+	addr = OFFromBigEndian32(addrIn->sin_addr.s_addr);
+
+	return [IPv6 stringByAppendingString:
+	    [OFString stringWithFormat: @"%x%02x:%x%02x",
+	    (addr & 0xFF000000) >> 24, (addr & 0x00FF0000) >> 16,
+	    (addr & 0x0000FF00) >>  8, addr & 0x000000FF]];
+}
+
 OFSocketAddress
 OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 {
@@ -467,6 +501,9 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 		if (addrIn6->sin6_scope_id == 0)
 			@throw [OFInvalidArgumentException exception];
 	}
+
+	if ([IPv6 rangeOfString: @"."].location != OFNotFound)
+		IPv6 = transformEmbeddedIPv4(IPv6);
 
 	doubleColon = [IPv6 rangeOfString: @"::"].location;
 	if (doubleColon != OFNotFound) {
@@ -557,6 +594,9 @@ OFSocketAddressMakeUNIX(OFString *path)
 	ret.length = (socklen_t)
 	    (offsetof(struct sockaddr_un, sun_path) + length);
 
+#ifdef HAVE_STRUCT_SOCKADDR_UN_SUN_LEN
+	ret.sockaddr.un.sun_len = (uint8_t)length;
+#endif
 #ifdef AF_UNIX
 	ret.sockaddr.un.sun_family = AF_UNIX;
 #else
@@ -907,6 +947,34 @@ IPv6String(const OFSocketAddress *address)
 	return string;
 }
 
+static OFString *
+IPXString(const OFSocketAddress *address)
+{
+	const struct sockaddr_ipx *addrIPX = &address->sockaddr.ipx;
+	uint32_t network;
+	uint64_t node;
+
+	memcpy(&network, &addrIPX->sipx_network, sizeof(addrIPX->sipx_network));
+	node = ((uint64_t)addrIPX->sipx_node[0] << 40) |
+	    ((uint64_t)addrIPX->sipx_node[1] << 32) |
+	    ((uint64_t)addrIPX->sipx_node[2] << 24) |
+	    ((uint64_t)addrIPX->sipx_node[3] << 16) |
+	    ((uint64_t)addrIPX->sipx_node[4] << 8) |
+	    (uint64_t)addrIPX->sipx_node[5];
+
+	return [OFString stringWithFormat: @"%" PRIX32 ".%" PRIX64,
+	    OFFromBigEndian32(network), node];
+}
+
+static OFString *
+appleTalkString(const OFSocketAddress *address)
+{
+	const struct sockaddr_at *addrAT = &address->sockaddr.at;
+
+	return [OFString stringWithFormat: @"%" PRIu8 ".%" PRIu8,
+	    OFFromBigEndian16(addrAT->sat_net), addrAT->sat_node];
+}
+
 OFString *
 OFSocketAddressString(const OFSocketAddress *address)
 {
@@ -915,8 +983,43 @@ OFSocketAddressString(const OFSocketAddress *address)
 		return IPv4String(address);
 	case OFSocketAddressFamilyIPv6:
 		return IPv6String(address);
+	case OFSocketAddressFamilyUNIX:
+		return OFSocketAddressUNIXPath(address);
+	case OFSocketAddressFamilyIPX:
+		return IPXString(address);
+	case OFSocketAddressFamilyAppleTalk:
+		return appleTalkString(address);
 	default:
 		@throw [OFInvalidArgumentException exception];
+	}
+}
+
+OFString *
+OFSocketAddressDescription(const OFSocketAddress *address)
+{
+	switch (address->family) {
+	case OFSocketAddressFamilyIPv4:
+		return [OFString
+		    stringWithFormat: @"%@:%" PRIu16,
+				      IPv4String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPv6:
+		return [OFString
+		    stringWithFormat: @"[%@]:%" PRIu16,
+				      IPv6String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPX:
+		return [OFString
+		    stringWithFormat: @"%@.%" PRIX16,
+				      IPXString(address),
+				      OFSocketAddressIPXPort(address)];
+	case OFSocketAddressFamilyAppleTalk:
+		return [OFString
+		    stringWithFormat: @"%@." PRIu8,
+				      appleTalkString(address),
+				      OFSocketAddressAppleTalkPort(address)];
+	default:
+		return OFSocketAddressString(address);
 	}
 }
 
@@ -961,9 +1064,6 @@ OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 	for (socklen_t i = 0; i < length; i++)
 		if (address->sockaddr.un.sun_path[i] == 0)
 			length = i;
-
-	if (length <= 0)
-		return nil;
 
 	return [OFString stringWithCString: address->sockaddr.un.sun_path
 				  encoding: [OFLocale encoding]

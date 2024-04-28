@@ -1,25 +1,29 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#include <assert.h>
 #include <ctype.h>
 
 #import "OFMethodSignature.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -36,7 +40,7 @@ alignmentOfArray(const char **type, size_t *length)
 {
 	size_t alignment;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -65,7 +69,7 @@ alignmentOfStruct(const char **type, size_t *length)
 	bool first = true;
 #endif
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -111,7 +115,7 @@ alignmentOfUnion(const char **type, size_t *length)
 {
 	size_t alignment = 0;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -146,7 +150,8 @@ alignmentOfUnion(const char **type, size_t *length)
 }
 
 static size_t
-#if defined(__clang__) && __clang_major__ == 3 && __clang_minor__ <= 7
+#if defined(__clang__) && __has_attribute(__optnone__) && \
+    __clang_major__ == 3 && __clang_minor__ <= 7
 /* Work around an ICE in Clang 3.7.0 on Windows/x86 */
 __attribute__((__optnone__))
 #endif
@@ -292,7 +297,7 @@ sizeOfArray(const char **type, size_t *length)
 	size_t count = 0;
 	size_t size;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -332,7 +337,7 @@ sizeOfStruct(const char **type, size_t *length)
 	bool first = true;
 #endif
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -405,7 +410,7 @@ sizeOfUnion(const char **type, size_t *length)
 {
 	size_t size = 0;
 
-	assert(*length > 0);
+	OFAssert(*length > 0);
 
 	(*type)++;
 	(*length)--;
@@ -440,6 +445,11 @@ sizeOfUnion(const char **type, size_t *length)
 }
 
 static size_t
+#if defined(__clang__) && __has_attribute(__optnone__) && \
+    __clang_major__ == 3 && __clang_minor__ <= 7
+/* Work around an ICE in Clang 3.7.0 on Windows/x86 */
+__attribute__((__optnone__))
+#endif
 sizeOfEncoding(const char **type, size_t *length)
 {
 	size_t size;
@@ -584,6 +594,11 @@ OFAlignmentOfTypeEncoding(const char *type)
 + (instancetype)signatureWithObjCTypes: (const char*)types
 {
 	return [[[self alloc] initWithObjCTypes: types] autorelease];
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithObjCTypes: (const char *)types

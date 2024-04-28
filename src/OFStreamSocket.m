@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,8 @@
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED
 #endif
-#define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
-#include <assert.h>
 #include <errno.h>
 #include <string.h>
 
@@ -32,15 +34,21 @@
 #import "OFSocket+Private.h"
 
 #import "OFAcceptSocketFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenOnSocketFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#if defined(OF_AMIGAOS) && !defined(UNIQUE_ID)
+# define UNIQUE_ID -1
+#endif
 
 @implementation OFStreamSocket
 @dynamic delegate;
@@ -72,6 +80,9 @@
 		}
 
 		_socket = OFInvalidSocketHandle;
+#ifdef OF_AMIGAOS
+		_socketID = -1;
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -243,13 +254,17 @@
 
 - (instancetype)accept
 {
-	OFStreamSocket *client = [[[[self class] alloc] init] autorelease];
+	OFStreamSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = [[[[self class] alloc] init] autorelease];
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
@@ -283,7 +298,7 @@
 # endif
 #endif
 
-	assert(client->_remoteAddress.length <=
+	OFAssert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
 	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)
@@ -355,6 +370,51 @@
 		@throw [OFOutOfRangeException exception];
 
 	return &_remoteAddress;
+}
+
+- (void)releaseSocketFromCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if ((_socketID = ReleaseSocket(_socket, UNIQUE_ID)) == -1) {
+		switch (Errno()) {
+		case ENOMEM:
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: 0];
+		case EBADF:
+			@throw [OFNotOpenException exceptionWithObject: self];
+		default:
+			OFEnsure(0);
+		}
+	}
+
+	_socket = OFInvalidSocketHandle;
+#endif
+}
+
+- (void)obtainSocketForCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket != OFInvalidSocketHandle)
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
+
+	if (_socketID == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	/*
+	 * FIXME: We should store these, but that requires changing all
+	 *	  subclasses. This only becomes a problem if IPv6 support ever
+	 *	  gets added.
+	 */
+	_socket = ObtainSocket(_socketID, AF_INET, SOCK_STREAM, 0);
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self.class];
+
+	_socketID = -1;
+#endif
 }
 
 - (void)close

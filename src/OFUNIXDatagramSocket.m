@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -24,7 +28,7 @@
 #import "OFSocket+Private.h"
 #import "OFString.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindUNIXSocketFailedException.h"
 
 @implementation OFUNIXDatagramSocket
@@ -38,12 +42,17 @@
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	address = OFSocketAddressMakeUNIX(path);
+	if (path != nil)
+		address = OFSocketAddressMakeUNIX(path);
+	else {
+		address.family = OFSocketAddressFamilyUnknown;
+		address.length = 0;
+	}
 
-	if ((_socket = socket(address.sockaddr.un.sun_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+	if ((_socket = socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0)) ==
+	    OFInvalidSocketHandle)
 		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
@@ -56,17 +65,19 @@
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
-	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+	if (path != nil) {
+		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
+		    address.length) != 0) {
+			int errNo = OFSocketErrNo();
 
-		closesocket(_socket);
-		_socket = OFInvalidSocketHandle;
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindUNIXSocketFailedException
-		    exceptionWithPath: path
-			       socket: self
-				errNo: errNo];
+			@throw [OFBindUNIXSocketFailedException
+			    exceptionWithPath: path
+				       socket: self
+					errNo: errNo];
+		}
 	}
 
 	return address;

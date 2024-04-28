@@ -1,23 +1,27 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define __NO_EXT_QNX
 
 #include "config.h"
 
 #include <limits.h>	/* include any libc header to get the libc defines */
+#include <setjmp.h>
+#include <signal.h>
 
 #include "unistd_wrapper.h"
 
@@ -31,8 +35,10 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <exec/execbase.h>
 # include <proto/exec.h>
+# undef Class
 #endif
 
 #if defined(OF_AMIGAOS4)
@@ -47,22 +53,32 @@
 # undef nx_id
 #endif
 
+#ifdef OF_DJGPP
+# include <dos.h>
+#endif
+
 #import "OFSystemInfo.h"
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFDictionary.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+# import "OFFileManager.h"
+#endif
+#import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFNumber.h"
 #import "OFOnce.h"
 #import "OFString.h"
-#import "OFURI.h"
+
+#import "OFInvalidFormatException.h"
+#import "OFOpenItemFailedException.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
 #  include <sysdir.h>
 # endif
-#endif
-#ifdef OF_WINDOWS
-# include <windows.h>
 #endif
 #ifdef OF_HAIKU
 # include <FindDirectory.h>
@@ -101,16 +117,53 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
     NSSearchPathEnumerationState, char *);
 #endif
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+
+static bool SSESupport;
+static jmp_buf SSETestEnv;
+
+static void
+SSETestSIGILLHandler(int signum)
+{
+	longjmp(SSETestEnv, 1);
+}
+
+# ifndef __clang__
+#  pragma GCC push_options
+#  pragma GCC target("sse")
+# endif
+static void
+SSETest(void)
+{
+	void (*oldHandler)(int) = signal(SIGILL, SSETestSIGILLHandler);
+
+	if (setjmp(SSETestEnv) == 0) {
+		__asm__ __volatile__ (
+		    "movaps	%%xmm0, %%xmm0"
+		    ::: "xmm0"	/* clang is unhappy if we don't clobber it */
+		);
+		SSESupport = true;
+	} else
+		SSESupport = false;
+
+	signal(SIGILL, oldHandler);
+}
+# ifndef __clang__
+#  pragma GCC pop_options
+# endif
 #endif
 
 static size_t pageSize = 4096;
 static size_t numberOfCPUs = 1;
 static OFString *operatingSystemName = nil;
 static OFString *operatingSystemVersion = nil;
+
+#ifdef OF_WINDOWS
+static const char *(*wine_get_version)(void);
+#endif
 
 static void
 initOperatingSystemName(void)
@@ -131,22 +184,28 @@ initOperatingSystemName(void)
 	operatingSystemName = @"AmigaOS 4";
 #elif defined(OF_WII)
 	operatingSystemName = @"Nintendo Wii";
+#elif defined(OF_WII_U)
+	operatingSystemName = @"Nintendo Wii U";
 #elif defined(NINTENDO_3DS)
 	operatingSystemName = @"Nintendo 3DS";
 #elif defined(OF_NINTENDO_DS)
 	operatingSystemName = @"Nintendo DS";
+#elif defined(OF_NINTENDO_SWITCH)
+	operatingSystemName = @"Nintendo Switch";
 #elif defined(OF_PSP)
 	operatingSystemName = @"PlayStation Portable";
-#elif defined(OF_MSDOS)
-	operatingSystemName = @"MS-DOS";
+#elif defined(OF_DJGPP)
+	operatingSystemName = [[OFString alloc]
+	    initWithCString: _os_flavor
+		   encoding: OFStringEncodingASCII];
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname utsname;
+	struct utsname name;
 
-	if (uname(&utsname) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemName = [[OFString alloc]
-	    initWithCString: utsname.sysname
+	    initWithCString: name.sysname
 		   encoding: [OFLocale encoding]];
 #endif
 }
@@ -230,44 +289,51 @@ initOperatingSystemVersion(void)
 	operatingSystemVersion = [[OFString alloc]
 	    initWithFormat: @"Kickstart %u.%u",
 			    SysBase->LibNode.lib_Version, SysBase->SoftVer];
+#elif defined(OF_DJGPP)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"%u.%u", _osmajor, _osminor];
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
-    defined(OF_PSP) || defined(OF_MSDOS)
+    defined(OF_PSP)
 	/* Intentionally nothing */
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname utsname;
+	struct utsname name;
 
-	if (uname(&utsname) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemVersion = [[OFString alloc]
-	    initWithCString: utsname.release
+	    initWithCString: name.release
 		   encoding: [OFLocale encoding]];
 #endif
 }
 
 #ifdef OF_NINTENDO_SWITCH
-static OFURI *tmpFSURI = nil;
+static OFIRI *tmpFSIRI = nil;
 
 static void
 mountTmpFS(void)
 {
 	if (R_SUCCEEDED(fsdevMountTemporaryStorage("tmpfs")))
-		tmpFSURI = [[OFURI alloc] initFileURIWithPath: @"tmpfs:/"
+		tmpFSIRI = [[OFIRI alloc] initFileIRIWithPath: @"tmpfs:/"
 						  isDirectory: true];
 }
 #endif
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 static OF_INLINE struct X86Regs OF_CONST_FUNC
 x86CPUID(uint32_t eax, uint32_t ecx)
 {
 	struct X86Regs regs;
 
-# if defined(OF_X86_64) && defined(__GNUC__)
+# if defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
-	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=b" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # elif defined(OF_X86) && defined(__GNUC__)
 	/*
@@ -280,12 +346,34 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    "xchgl	%%ebx, %%edi\n\t"
 	    "cpuid\n\t"
 	    "xchgl	%%edi, %%ebx"
-	    : "=a"(regs.eax), "=D"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=D" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # else
 	memset(&regs, 0, sizeof(regs));
 # endif
+
+	return regs;
+}
+
+static OF_INLINE struct X86Regs
+x86XCR(uint32_t ecx)
+{
+	struct X86Regs regs = { 0 };
+
+	if (!(x86CPUID(1, 0).ecx & (1u << 27)))
+		return regs;
+
+	__asm__ (
+	    "xgetbv"
+	    : "=a" (regs.eax),
+	      "=d" (regs.edx)
+	    : "c" (ecx)
+	);
 
 	return regs;
 }
@@ -299,11 +387,26 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if (self != [OFSystemInfo class])
 		return;
 
+#if defined(OF_AMD64) || defined(OF_X86)
+	/*
+	 * Do this as early as possible, as it involves signals.
+	 * Required as cpuid can return SSE support while the OS has not
+	 * enabled it.
+	 */
+	SSETest();
+#endif
+
 #if defined(OF_WINDOWS)
+	HANDLE module;
+
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	pageSize = si.dwPageSize;
 	numberOfCPUs = si.dwNumberOfProcessors;
+
+	if ((module = GetModuleHandle("ntdll.dll")) != NULL)
+		wine_get_version = (const char *(*)(void))
+		    GetProcAddress(module, "wine_get_version");
 #elif defined(OF_QNX)
 	if ((tmp = sysconf(_SC_PAGESIZE)) > 0)
 		pageSize = tmp;
@@ -368,7 +471,18 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return operatingSystemVersion;
 }
 
-+ (OFURI *)userDataURI
+#ifdef OF_WINDOWS
++ (OFString *)wineVersion
+{
+	if (wine_get_version != NULL)
+		return [OFString stringWithCString: wine_get_version()
+					  encoding: [OFLocale encoding]];
+
+	return nil;
+}
+#endif
+
++ (OFIRI *)userDataIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -410,7 +524,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	[path makeImmutable];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -418,7 +532,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: appData isDirectory: true];
+	return [OFIRI fileIRIWithPath: appData isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -426,19 +540,21 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"PROGDIR:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
-	OFURI *URI;
+	OFIRI *IRI;
 	void *pool;
 
 	if ((var = [env objectForKey: @"XDG_DATA_HOME"]) != nil &&
 	    var.length > 0)
-		return [OFURI fileURIWithPath: var isDirectory: true];
+		return [OFIRI fileIRIWithPath: var isDirectory: true];
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		return nil;
@@ -447,18 +563,18 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	var = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    var, @".local", @"share", nil]];
-	URI = [[OFURI alloc] initFileURIWithPath: var isDirectory: true];
+	IRI = [[OFIRI alloc] initFileIRIWithPath: var isDirectory: true];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [URI autorelease];
+	return [IRI autorelease];
 # endif
 #else
 	return nil;
 #endif
 }
 
-+ (OFURI *)userConfigURI
++ (OFIRI *)userConfigIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -500,7 +616,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	[path appendString: @"/Preferences"];
 	[path makeImmutable];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -508,7 +624,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: appData isDirectory: true];
+	return [OFIRI fileIRIWithPath: appData isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -516,31 +632,33 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"PROGDIR:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
 
 	if ((var = [env objectForKey: @"XDG_CONFIG_HOME"]) != nil &&
 	    var.length > 0)
-		return [OFURI fileURIWithPath: var isDirectory: true];
+		return [OFIRI fileIRIWithPath: var isDirectory: true];
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		return nil;
 
 	var = [var stringByAppendingPathComponent: @".config"];
 
-	return [OFURI fileURIWithPath: var isDirectory: true];
+	return [OFIRI fileIRIWithPath: var isDirectory: true];
 # endif
 #else
 	return nil;
 #endif
 }
 
-+ (OFURI *)temporaryDirectoryURI
++ (OFIRI *)temporaryDirectoryIRI
 {
 #ifdef OF_HAVE_FILES
 # if defined(OF_MACOS) || defined(OF_IOS)
@@ -549,13 +667,13 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	OFString *path;
 
 	if ((length = confstr(_CS_DARWIN_USER_TEMP_DIR, buffer, PATH_MAX)) == 0)
-		return [OFURI fileURIWithPath: @"/tmp" isDirectory: true];
+		return [OFIRI fileIRIWithPath: @"/tmp" isDirectory: true];
 
 	path = [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]
 				    length: length - 1];
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_WINDOWS)
 	OFString *path;
 
@@ -576,7 +694,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 					  encoding: [OFLocale encoding]];
 	}
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -584,32 +702,38 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    pathC, PATH_MAX) != B_OK)
 		return nil;
 
-	return [OFURI fileURIWithPath: [OFString stringWithUTF8String: pathC]
+	return [OFIRI fileIRIWithPath: [OFString stringWithUTF8String: pathC]
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
-	return [OFURI fileURIWithPath: @"T:" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"T:" isDirectory: true];
 # elif defined(OF_MSDOS)
 	OFString *path = [[OFApplication environment] objectForKey: @"TEMP"];
 
 	if (path == nil)
 		return nil;
 
-	return [OFURI fileURIWithPath: path isDirectory: true];
+	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_MINT)
-	return [OFURI fileURIWithPath: @"u:\\tmp" isDirectory: true];
+	return [OFIRI fileIRIWithPath: @"u:\\tmp" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # elif defined(OF_NINTENDO_SWITCH)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, mountTmpFS);
 
-	return tmpFSURI;
+	return tmpFSIRI;
 # else
-	OFString *path =
-	    [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
+	OFString *path;
 
+	path = [[OFApplication environment] objectForKey: @"XDG_RUNTIME_DIR"];
 	if (path != nil)
-		return [OFURI fileURIWithPath: path];
+		return [OFIRI fileIRIWithPath: path isDirectory: true];
 
-	return [OFURI fileURIWithPath: @"/tmp"];
+	path = [[OFApplication environment] objectForKey: @"TMPDIR"];
+	if (path != nil)
+		return [OFIRI fileIRIWithPath: path isDirectory: true];
+
+	return [OFIRI fileIRIWithPath: @"/tmp" isDirectory: true];
 # endif
 #else
 	return nil;
@@ -618,7 +742,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUVendor
 {
-#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	struct X86Regs regs = x86CPUID(0, 0);
 	uint32_t buffer[3];
 
@@ -641,7 +765,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 + (OFString *)CPUModel
 {
-#if (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#if (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	struct X86Regs regs = x86CPUID(0x80000000, 0);
 	uint32_t buffer[12];
 	size_t i;
@@ -700,60 +824,180 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-#if defined(OF_X86_64) || defined(OF_X86)
+#if defined(OF_AMD64) || defined(OF_X86)
 + (bool)supportsMMX
 {
-	return (x86CPUID(1, 0).edx & (1u << 23));
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 23));
+}
+
++ (bool)supports3DNow
+{
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 31));
+}
+
++ (bool)supportsEnhanced3DNow
+{
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 30));
 }
 
 + (bool)supportsSSE
 {
-	return (x86CPUID(1, 0).edx & (1u << 25));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86CPUID(1, 0).edx & (1u << 26));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86CPUID(1, 0).ecx & (1u << 0));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86CPUID(1, 0).ecx & (1u << 9));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86CPUID(1, 0).ecx & (1u << 19));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86CPUID(1, 0).ecx & (1u << 20));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20));
 }
 
 + (bool)supportsAVX
 {
-	return (x86CPUID(1, 0).ecx & (1u << 28));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 28)) &&
+	    (x86XCR(0).eax & 0x6) == 0x6);
 }
 
 + (bool)supportsAVX2
 {
-	return x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5));
+	return ((x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5))) &&
+	    (x86XCR(0).eax & 0x6) == 0x6);
 }
 
 + (bool)supportsAESNI
 {
-	return (x86CPUID(1, 0).ecx & (1u << 25));
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 25));
 }
 
 + (bool)supportsSHAExtensions
 {
-	return (x86CPUID(7, 0).ebx & (1u << 29));
+	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 29));
+}
+
++ (bool)supportsFusedMultiplyAdd
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 12));
+}
+
++ (bool)supportsF16C
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 29));
+}
+
++ (bool)supportsAVX512Foundation
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 16)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ConflictDetectionInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 28)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ExponentialAndReciprocalInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 27)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512PrefetchInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 26)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorLengthExtensions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 31)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512DoublewordAndQuadwordInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 17)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ByteAndWordInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 30)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512IntegerFusedMultiplyAdd
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 21)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorByteManipulationInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 1)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorPopulationCountInstruction
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 14)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorNeuralNetworkInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 11)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorByteManipulationInstructions2
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 6)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512BitAlgorithms
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 12)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512Float16Instructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).edx & (1u << 23)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512BFloat16Instructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 1).eax & (1u << 5)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
 }
 #endif
 

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,11 +22,16 @@
 #include <errno.h>
 
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -33,6 +42,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
+#import "OFSetItemAttributesFailedException.h"
 
 static OFArc *app;
 
@@ -52,6 +62,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 						 ofItemAtPath: path];
 	}
 #endif
+
+	[app quarantineFile: path];
 }
 
 static void
@@ -66,8 +78,13 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation ZIPArchive
@@ -77,24 +94,29 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
-{
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
-}
-
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
+{
+	return [[[self alloc] initWithIRI: IRI
+				   stream: stream
+				     mode: mode
+				 encoding: encoding] autorelease];
+}
+
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
+		_archiveIRI = [IRI copy];
 		_archive = [[OFZIPArchive alloc] initWithStream: stream
 							   mode: mode];
+		_archive.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -105,13 +127,52 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
+	[_archiveIRI release];
 	[_archive release];
 
 	[super dealloc];
 }
 
+- (OFSeekableStream *)archive: (OFZIPArchive *)archive
+	    wantsPartNumbered: (unsigned int)partNumber
+	       lastPartNumber: (unsigned int)lastPartNumber
+{
+	OFIRI *IRI;
+
+	if ([_archiveIRI.pathExtension caseInsensitiveCompare: @"zip"] !=
+	    OFOrderedSame)
+		return nil;
+
+	if (partNumber > 98)
+		return nil;
+
+	if (partNumber == lastPartNumber)
+		IRI = _archiveIRI;
+	else {
+		OFMutableIRI *copy = [[_archiveIRI mutableCopy] autorelease];
+		[copy deletePathExtension];
+		[copy appendPathExtension: [OFString
+		    stringWithFormat: @"z%02u", partNumber + 1]];
+		[copy makeImmutable];
+		IRI = copy;
+	}
+
+	return (OFSeekableStream *)[OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+}
+
 - (void)listFiles
 {
+	if (app->_outputLevel >= 1 && _archive.archiveComment != nil) {
+		[OFStdOut writeLine: OF_LOCALIZED(
+		    @"list_archive_comment",
+		    @"Archive comment:")];
+		[OFStdOut writeString: @"\t"];
+		[OFStdOut writeLine: [_archive.archiveComment
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"]];
+		[OFStdOut writeLine: @""];
+	}
+
 	for (OFZIPArchiveEntry *entry in _archive.entries) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -239,6 +300,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
+	OFMutableArray *delayedModificationDates = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 
@@ -276,7 +338,14 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
-			setModificationDate(outFileName, entry);
+			/*
+			 * As creating a new file in a directory changes its
+			 * modification date, we can only set it once all files
+			 * have been created.
+			 */
+			[delayedModificationDates addObject:
+			    [OFPair pairWithFirstObject: outFileName
+					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
 				[OFStdOut writeString: @"\r"];
@@ -346,6 +415,9 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
+	for (OFPair *pair in delayedModificationDates)
+		setModificationDate(pair.firstObject, pair.secondObject);
+
 	if (missing.count > 0) {
 		for (OFString *file in missing)
 			[OFStdErr writeLine: OF_LOCALIZED(
@@ -400,15 +472,11 @@ outer_loop_end:
 }
 
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (OFString *)archiveComment
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
-	if (files.count < 1) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
-		    @"Need one or more files to add!")];
-		app->_exitStatus = 1;
-		return;
-	}
+	_archive.archiveComment = archiveComment;
 
 	for (OFString *localFileName in files) {
 		void *pool = objc_autoreleasePoolPush();

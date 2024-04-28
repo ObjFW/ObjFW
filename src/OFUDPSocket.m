@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -34,19 +38,21 @@
 #import "OFSocket+Private.h"
 #import "OFThread.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 
 @implementation OFUDPSocket
 @dynamic delegate;
 
-- (uint16_t)of_bindToAddress: (OFSocketAddress *)address
-		   extraType: (int)extraType OF_DIRECT
+- (void)of_bindToAddress: (OFSocketAddress *)address
+	       extraType: (int)extraType OF_DIRECT
 {
-	void *pool = objc_autoreleasePoolPush();
-	uint16_t port;
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
+#endif
+#if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+	OFString *host;
+	uint16_t port;
 #endif
 
 	if ((_socket = socket(
@@ -102,7 +108,7 @@
 			if (OFSocketErrNo() != EADDRINUSE) {
 				int errNo = OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
-				port = OFSocketAddressIPPort(address);
+				uint16_t port = OFSocketAddressIPPort(address);
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
@@ -117,12 +123,10 @@
 	}
 #endif
 
-	objc_autoreleasePoolPop(pool);
-
-	if ((port = OFSocketAddressIPPort(address)) > 0)
-		return port;
-
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+	host = OFSocketAddressString(address);
+	port = OFSocketAddressIPPort(address);
+
 	memset(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
@@ -133,50 +137,42 @@
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
-		@throw [OFBindIPSocketFailedException
-		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressIPPort(address)
-			       socket: self
-				errNo: errNo];
+		@throw [OFBindIPSocketFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
 	}
 
 	switch (((struct sockaddr *)&address->sockaddr)->sa_family) {
 	case AF_INET:
-		return OFFromBigEndian16(address->sockaddr.in.sin_port);
+		address->family = OFSocketAddressFamilyIPv4;
+		break;
 # ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		return OFFromBigEndian16(address->sockaddr.in6.sin6_port);
+		address->family = OFSocketAddressFamilyIPv6;
+		break;
 # endif
 	default:
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
 		@throw [OFBindIPSocketFailedException
-		    exceptionWithHost: OFSocketAddressString(address)
-				 port: OFSocketAddressIPPort(address)
+		    exceptionWithHost: host
+				 port: port
 			       socket: self
 				errNo: EAFNOSUPPORT];
 	}
-#else
-	closesocket(_socket);
-	_socket = OFInvalidSocketHandle;
-
-	@throw [OFBindIPSocketFailedException
-	    exceptionWithHost: OFSocketAddressString(address)
-			 port: OFSocketAddressIPPort(address)
-		       socket: self
-			errNo: EADDRNOTAVAIL];
 #endif
 }
 
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *socketAddresses;
 	OFSocketAddress address;
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
@@ -185,10 +181,10 @@
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
 
-	port = [self of_bindToAddress: &address extraType: 0];
+	[self of_bindToAddress: &address extraType: 0];
 
 	objc_autoreleasePoolPop(pool);
 
-	return port;
+	return address;
 }
 @end

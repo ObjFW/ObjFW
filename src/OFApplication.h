@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <signal.h>
@@ -28,6 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFSandbox;
 @class OFString;
+
+/**
+ * @brief A notification that will be sent when the application did finish
+ *	  launching.
+ */
+extern const OFNotificationName OFApplicationDidFinishLaunchingNotification;
 
 /**
  * @brief A notification that will be sent when the application will terminate.
@@ -51,7 +61,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * OF_APPLICATION_DELEGATE(MyAppDelegate)
  *
  * @implementation MyAppDelegate
- * - (void)applicationDidFinishLaunching
+ * - (void)applicationDidFinishLaunching: (OFNotification *)notification
  * {
  *         [OFApplication terminate];
  * }
@@ -81,14 +91,20 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 /**
  * @brief A method which is called when the application was initialized and is
  *	  running now.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationDidFinishLaunchingNotification
  */
-- (void)applicationDidFinishLaunching;
+- (void)applicationDidFinishLaunching: (OFNotification *)notification;
 
 @optional
 /**
  * @brief A method which is called when the application will terminate.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationWillTerminateNotification
  */
-- (void)applicationWillTerminate;
+- (void)applicationWillTerminate: (OFNotification *)notification;
 
 /**
  * @brief A method which is called when the application received a SIGINT.
@@ -153,7 +169,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  *
  * When the application is about to be terminated,
- * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * @ref OFApplicationDelegate#applicationWillTerminate: will be called on the
  * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED

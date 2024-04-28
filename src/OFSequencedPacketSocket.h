@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -126,6 +130,10 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
     OFReadyForReadingObserving, OFReadyForWritingObserving>
 {
 	OFSocketHandle _socket;
+#ifdef OF_AMIGAOS
+	LONG _socketID;	/* unused, reserved for ABI stability */
+	int _family;	/* unused, reserved for ABI stability */
+#endif
 	bool _canBlock, _listening;
 	OFSocketAddress _remoteAddress;
 	id _Nullable _delegate;
@@ -137,6 +145,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * By default, a socket can block.
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -204,7 +213,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
- * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
@@ -237,7 +247,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  *
  * @param buffer The buffer to write the packet to
  * @param length The length of the buffer
- * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
  * @param block The block to call when the packet has been received. If the
  *		block returns true, it will be called again with the same
  *		buffer and maximum length when more packets have been received.
@@ -271,7 +282,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
- * @param runLoopMode The run loop mode in which to perform the async send
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
  */
 - (void)asyncSendData: (OFData *)data runLoopMode: (OFRunLoopMode)runLoopMode;
 
@@ -291,7 +303,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Asynchronously sends the specified packet.
  *
  * @param data The data to send as a packet
- * @param runLoopMode The run loop mode in which to perform the async send
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
@@ -335,7 +348,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously accept an incoming connection.
  *
- * @param runLoopMode The run loop mode in which to perform the async accept
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      accept
  */
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 
@@ -352,7 +366,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously accept an incoming connection.
  *
- * @param runLoopMode The run loop mode in which to perform the async accept
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      accept
  * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
@@ -366,6 +381,30 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Cancels all pending asynchronous requests on the socket.
  */
 - (void)cancelAsyncRequests;
+
+/**
+ * @brief Releases the socket from the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * After calling this method, you must no longer use the socket until
+ * @ref obtainSocketForCurrentThread has been called.
+ */
+- (void)releaseSocketFromCurrentThread;
+
+/**
+ * @brief Obtains the socket for the current thread.
+ *
+ * This is necessary on some platforms in order to allow a different thread to
+ * use the socket, e.g. on AmigaOS, but you should call it on all operating
+ * systems before using the socket from a different thread.
+ *
+ * You must only call this method after @ref releaseSocketFromCurrentThread has
+ * been called from a different thread.
+ */
+- (void)obtainSocketForCurrentThread;
 
 /**
  * @brief Closes the socket so that it can neither receive nor send any more

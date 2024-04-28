@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,8 +23,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
 
 #import "OFXMLElement.h"
 #import "OFArray.h"
@@ -39,13 +41,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
 #import "OFUnboundNamespaceException.h"
-
-/* References for static linking */
-void
-_references_to_categories_of_OFXMLElement(void)
-{
-	_OFXMLElement_Serialization_reference = 1;
-}
 
 @interface OFXMLElementElementBuilderDelegate: OFObject
     <OFXMLElementBuilderDelegate>
@@ -268,104 +263,6 @@ _references_to_categories_of_OFXMLElement(void)
 		_namespaces = [element->_namespaces retain];
 		[_children release];
 		_children = [element->_children retain];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool;
-	OFString *name, *namespace;
-
-	@try {
-		pool = objc_autoreleasePoolPush();
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		name = [element attributeForName: @"name"].stringValue;
-		namespace =
-		    [element attributeForName: @"namespace"].stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithName: name namespace: namespace];
-
-	@try {
-		OFXMLElement *attributesElement, *namespacesElement;
-		OFXMLElement *childrenElement;
-		OFEnumerator *keyEnumerator, *objectEnumerator;
-		OFString *key, *object;
-
-		attributesElement = [[element
-		    elementForName: @"attributes"
-			 namespace: OFSerializationNS]
-		    elementsForNamespace: OFSerializationNS].firstObject;
-		namespacesElement = [[element
-		    elementForName: @"namespaces"
-			 namespace: OFSerializationNS]
-		    elementsForNamespace: OFSerializationNS].firstObject;
-		childrenElement = [[element
-		    elementForName: @"children"
-			 namespace: OFSerializationNS]
-		    elementsForNamespace: OFSerializationNS].firstObject;
-
-		[_attributes release];
-		_attributes = nil;
-		_attributes = [attributesElement.objectByDeserializing
-		    mutableCopy];
-
-		[_namespaces release];
-		_namespaces = nil;
-		_namespaces = [namespacesElement.objectByDeserializing
-		    mutableCopy];
-
-		[_children release];
-		_children = nil;
-		_children = [childrenElement.objectByDeserializing
-		    mutableCopy];
-
-		/* Sanity checks */
-		if ((_attributes != nil && ![_attributes isKindOfClass:
-		    [OFMutableArray class]]) || (_namespaces != nil &&
-		    ![_namespaces isKindOfClass:
-		    [OFMutableDictionary class]]) || (_children != nil &&
-		    ![_children isKindOfClass: [OFMutableArray class]]))
-			@throw [OFInvalidArgumentException exception];
-
-		for (OFXMLAttribute *attribute in _attributes)
-			if (![attribute isKindOfClass: [OFXMLAttribute class]])
-				@throw [OFInvalidArgumentException exception];
-
-		keyEnumerator = [_namespaces keyEnumerator];
-		objectEnumerator = [_namespaces objectEnumerator];
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil)
-			if (![key isKindOfClass: [OFString class]] ||
-			    ![object isKindOfClass: [OFString class]])
-				@throw [OFInvalidArgumentException exception];
-
-		for (object in _children)
-			if (![object isKindOfClass: [OFXMLNode class]])
-				@throw [OFInvalidArgumentException exception];
-
-		if (_namespaces == nil)
-			_namespaces = [[OFMutableDictionary alloc] init];
-
-		[_namespaces
-		    setObject: @"xml"
-		       forKey: @"http://www.w3.org/XML/1998/namespace"];
-		[_namespaces setObject: @"xmlns"
-				forKey: @"http://www.w3.org/2000/xmlns/"];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -633,7 +530,7 @@ _references_to_categories_of_OFXMLElement(void)
 			cString[i++] = '/';
 
 		cString[i++] = '>';
-		assert(i == length);
+		OFAssert(i == length);
 
 		objc_autoreleasePoolPop(pool);
 
@@ -668,69 +565,6 @@ _references_to_categories_of_OFXMLElement(void)
 				    namespaces: nil
 				   indentation: indentation
 					 level: 0];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: self.className
-				      namespace: OFSerializationNS];
-
-	if (_name != nil)
-		[element addAttributeWithName: @"name" stringValue: _name];
-
-	if (_namespace != nil)
-		[element addAttributeWithName: @"namespace"
-				  stringValue: _namespace];
-
-	if (_attributes != nil) {
-		OFXMLElement *attributesElement;
-
-		attributesElement =
-		    [OFXMLElement elementWithName: @"attributes"
-					namespace: OFSerializationNS];
-		[attributesElement addChild:
-		    _attributes.XMLElementBySerializing];
-		[element addChild: attributesElement];
-	}
-
-	if (_namespaces != nil) {
-		OFXMLElement *namespacesElement;
-		OFMutableDictionary *namespacesCopy =
-		    [[_namespaces mutableCopy] autorelease];
-
-		[namespacesCopy removeObjectForKey:
-		    @"http://www.w3.org/XML/1998/namespace"];
-		[namespacesCopy removeObjectForKey:
-		    @"http://www.w3.org/2000/xmlns/"];
-
-		if (namespacesCopy.count > 0) {
-			namespacesElement =
-			    [OFXMLElement elementWithName: @"namespaces"
-						namespace: OFSerializationNS];
-			[namespacesElement addChild:
-			    namespacesCopy.XMLElementBySerializing];
-			[element addChild: namespacesElement];
-		}
-	}
-
-	if (_children != nil) {
-		OFXMLElement *childrenElement;
-
-		childrenElement =
-		    [OFXMLElement elementWithName: @"children"
-					namespace: OFSerializationNS];
-		[childrenElement addChild: _children.XMLElementBySerializing];
-		[element addChild: childrenElement];
-	}
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (void)addAttribute: (OFXMLAttribute *)attribute

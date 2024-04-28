@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -37,6 +41,7 @@
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
 #import "OFThread+Private.h"
@@ -54,8 +59,10 @@
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif
@@ -84,6 +91,8 @@ OF_DIRECT_MEMBERS
 - (void)of_run;
 @end
 
+const OFNotificationName OFApplicationDidFinishLaunchingNotification =
+    @"OFApplicationDidFinishLaunchingNotification";
 const OFNotificationName OFApplicationWillTerminateNotification =
     @"OFApplicationWillTerminateNotification";
 static OFApplication *app = nil;
@@ -92,15 +101,16 @@ static void
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
-
-	[[OFNotificationCenter defaultCenter]
-	    postNotificationName: OFApplicationWillTerminateNotification
+	OFNotification *notification = [OFNotification
+	    notificationWithName: OFApplicationWillTerminateNotification
 			  object: app];
 
-	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
-		[delegate applicationWillTerminate];
+	if ([delegate respondsToSelector: @selector(applicationWillTerminate:)])
+		[delegate applicationWillTerminate: notification];
 
 	[delegate release];
+
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
@@ -111,18 +121,17 @@ atexitHandler(void)
 int
 OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
-#ifdef OF_WINDOWS
-	wchar_t **wargv, **wenvp;
-	int wargc, si = 0;
-#endif
-
-	[[OFLocale alloc] init];
+	[OFLocale currentLocale];
 
 	app = [[OFApplication alloc] of_init];
 
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
+		wchar_t **wargv, **wenvp;
+		int wargc, si = 0;
+
 		__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
+
 		[app of_setArgumentCount: argc
 		       andArgumentValues: argv
 		    andWideArgumentCount: wargc
@@ -260,9 +269,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				pos = [tmp rangeOfString: @"="].location;
 				if (pos == OFNotFound) {
-					fprintf(stderr,
-					    "Warning: Invalid environment "
-					    "variable: %s\n", tmp.UTF8String);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %@", tmp);
 					continue;
 				}
 
@@ -302,9 +310,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 				pos = [tmp rangeOfString: @"="].location;
 				if (pos == OFNotFound) {
-					fprintf(stderr,
-					    "Warning: Invalid environment "
-					    "variable: %s\n", tmp.UTF8String);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %@", tmp);
 					continue;
 				}
 
@@ -396,8 +403,8 @@ SIGNAL_HANDLER(SIGUSR2)
 				char *sep;
 
 				if ((sep = strchr(*env, '=')) == NULL) {
-					fprintf(stderr, "Warning: Invalid "
-					    "environment variable: %s\n", *env);
+					OFLog(@"Warning: Invalid environment "
+					    "variable: %s", *env);
 					continue;
 				}
 
@@ -580,6 +587,7 @@ SIGNAL_HANDLER(SIGUSR2)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
+	OFNotification *notification;
 
 #ifdef OF_HAVE_THREADS
 	[OFThread of_createMainThread];
@@ -599,7 +607,15 @@ SIGNAL_HANDLER(SIGUSR2)
 	 */
 
 	pool = objc_autoreleasePoolPush();
-	[_delegate applicationDidFinishLaunching];
+
+	notification = [OFNotification
+	    notificationWithName: OFApplicationDidFinishLaunchingNotification
+			  object: app];
+
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
+
+	[_delegate applicationDidFinishLaunching: notification];
+
 	objc_autoreleasePoolPop(pool);
 
 	[runLoop run];

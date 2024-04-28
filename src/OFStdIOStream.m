@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -32,7 +36,7 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
-# include "OFWin32ConsoleStdIOStream.h"
+# import "OFWin32ConsoleStdIOStream.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -47,9 +51,15 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 # undef HAVE_ISATTY
+#endif
+
+#ifdef OF_MSDOS
+# include <conio.h>
 #endif
 
 #ifdef OF_WII_U
@@ -105,6 +115,9 @@ OFLogV(OFConstantString *format, va_list arguments)
 	me = [OFApplication programName];
 #endif
 
+	if (me == nil)
+		me = @"?";
+
 	msg = [[[OFString alloc] initWithFormat: format
 				      arguments: arguments] autorelease];
 
@@ -114,7 +127,46 @@ OFLogV(OFConstantString *format, va_list arguments)
 	objc_autoreleasePoolPop(pool);
 }
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
+#ifdef OF_MSDOS
+int
+colorToMSDOS(OFColor *color)
+{
+	if ([color isEqual: [OFColor black]])
+		return BLACK;
+	if ([color isEqual: [OFColor navy]])
+		return BLUE;
+	if ([color isEqual: [OFColor green]])
+		return GREEN;
+	if ([color isEqual: [OFColor teal]])
+		return CYAN;
+	if ([color isEqual: [OFColor maroon]])
+		return RED;
+	if ([color isEqual: [OFColor purple]])
+		return MAGENTA;
+	if ([color isEqual: [OFColor olive]])
+		return BROWN;
+	if ([color isEqual: [OFColor silver]])
+		return LIGHTGRAY;
+	if ([color isEqual: [OFColor gray]])
+		return DARKGRAY;
+	if ([color isEqual: [OFColor blue]])
+		return LIGHTBLUE;
+	if ([color isEqual: [OFColor lime]])
+		return LIGHTGREEN;
+	if ([color isEqual: [OFColor aqua]])
+		return LIGHTCYAN;
+	if ([color isEqual: [OFColor red]])
+		return LIGHTRED;
+	if ([color isEqual: [OFColor fuchsia]])
+		return LIGHTMAGENTA;
+	if ([color isEqual: [OFColor yellow]])
+		return YELLOW;
+	if ([color isEqual: [OFColor white]])
+		return WHITE;
+
+	return -1;
+}
+#else
 static int
 colorToANSI(OFColor *color)
 {
@@ -134,7 +186,7 @@ colorToANSI(OFColor *color)
 		return 36;
 	if ([color isEqual: [OFColor silver]])
 		return 37;
-	if ([color isEqual: [OFColor grey]])
+	if ([color isEqual: [OFColor gray]])
 		return 90;
 	if ([color isEqual: [OFColor red]])
 		return 91;
@@ -337,6 +389,32 @@ colorToANSI(OFColor *color)
 							     errNo: EIO];
 
 	return (size_t)bytesWritten;
+#elif defined(OF_MSDOS)
+	ssize_t bytesWritten;
+
+	if (self.hasTerminal) {
+		const char *buffer_ = buffer;
+
+		for (size_t i = 0; i < length; i++) {
+			if (buffer_[i] == '\n')
+				putch('\r');
+
+			putch(buffer_[i]);
+		}
+
+		return length;
+	}
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((bytesWritten = write(_fd, buffer, length)) < 0)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: 0
+							     errNo: errno];
+
+	return (size_t)bytesWritten;
 #elif defined(OF_WII_U)
 	OSConsoleWrite(buffer, length);
 
@@ -427,7 +505,10 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
+	return true;
+#elif defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);
 #else
 	return false;
@@ -436,7 +517,13 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -451,7 +538,13 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -466,12 +559,17 @@ colorToANSI(OFColor *color)
 
 - (void)setForegroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textcolor(code);
+#else
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
@@ -481,12 +579,17 @@ colorToANSI(OFColor *color)
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textbackground(code);
+#else
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
@@ -496,40 +599,52 @@ colorToANSI(OFColor *color)
 
 - (void)reset
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	normvideo();
+#else
 	[self writeString: @"\033[0m"];
 #endif
 }
 
 - (void)clear
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	clrscr();
+#else
 	[self writeString: @"\033[2J"];
 #endif
 }
 
 - (void)eraseLine
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	int column = wherex();
+
+	gotoxy(1, wherey());
+	clreol();
+	gotoxy(column, wherey());
+#else
 	[self writeString: @"\033[2K"];
 #endif
 }
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(column + 1, wherey());
+#else
 	[self writeFormat: @"\033[%uG", column + 1];
 #endif
 }
@@ -539,10 +654,12 @@ colorToANSI(OFColor *color)
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(position.x + 1, position.y + 1);
+#else
 	[self writeFormat: @"\033[%u;%uH",
 			   (unsigned)position.y + 1, (unsigned)position.x + 1];
 #endif
@@ -550,10 +667,12 @@ colorToANSI(OFColor *color)
 
 - (void)setRelativeCursorPosition: (OFPoint)position
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(wherex() + position.x, wherey() + position.y);
+#else
 	if (position.x > 0)
 		[self writeFormat: @"\033[%uC", (unsigned)position.x];
 	else if (position.x < 0)

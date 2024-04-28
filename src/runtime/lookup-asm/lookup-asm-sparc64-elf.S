@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,7 +29,7 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
-	brz,pn	%o0, returnNilMethod
+	brz,pn	%o0, .LreturnNilMethod
 	 and	%o0, 1, %o2
 	brnz,pn	%o2, .LtaggedPointer_\name
 	 nop
@@ -101,7 +105,7 @@
 \name:
 	mov	%o0, %o2
 	ldx	[%o0], %o0
-	brz,pn	%o0, returnNilMethod
+	brz,pn	%o0, .LreturnNilMethod
 	 nop
 
 	ldx	[%o2 + 8], %o2
@@ -116,7 +120,7 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
+.LreturnNilMethod:
 #ifdef OF_PIC
 	mov	%o7, %g1
 
@@ -126,21 +130,21 @@ returnNilMethod:
 0:
 	add	%o7, %o1, %o1
 
-	sethi	%hi(nilMethod), %o0
-	or	%o0, %lo(nilMethod), %o0
+	sethi	%hi(.LnilMethod), %o0
+	or	%o0, %lo(.LnilMethod), %o0
 
 	jmpl	%g1 + 8, %g0
 	 ldx	[%o1 + %o0], %o0
 #else
-	sethi	%hi(nilMethod), %o0
+	sethi	%hi(.LnilMethod), %o0
 	retl
-	 or	%o0, %lo(nilMethod), %o0
+	 or	%o0, %lo(.LnilMethod), %o0
 #endif
 
-nilMethod:
+.LnilMethod:
 	retl
 	 clr	%o0
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

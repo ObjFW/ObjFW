@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,6 +24,7 @@
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFMessagePackExtension
 @synthesize type = _type, data = _data;
@@ -100,7 +105,7 @@
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
-	} else if (count < 0x100) {
+	} else if (count <= UINT8_MAX) {
 		uint8_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 3];
@@ -112,7 +117,7 @@
 		[ret addItem: &length];
 
 		[ret addItem: &_type];
-	} else if (count < 0x10000) {
+	} else if (count <= UINT16_MAX) {
 		uint16_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 4];
@@ -124,7 +129,7 @@
 		[ret addItems: &length count: 2];
 
 		[ret addItem: &_type];
-	} else {
+	} else if (count <= UINT32_MAX) {
 		uint32_t length;
 
 		ret = [OFMutableData dataWithCapacity: count + 6];
@@ -136,7 +141,8 @@
 		[ret addItems: &length count: 4];
 
 		[ret addItem: &_type];
-	}
+	} else
+		@throw [OFOutOfRangeException exception];
 
 	[ret addItems: _data.items count: _data.count];
 	[ret makeImmutable];

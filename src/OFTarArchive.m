@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_TAR_ARCHIVE_M
@@ -22,12 +26,13 @@
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
-#import "OFArchiveURIHandler.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFDate.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFKernelEventObserver.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
-#import "OFURI.h"
-#import "OFURIHandler.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -35,6 +40,12 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
+
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
 
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
@@ -74,14 +85,14 @@ OF_DIRECT_MEMBERS
 	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
 }
 
-+ (instancetype)archiveWithURI: (OFURI *)URI mode: (OFString *)mode
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithURI: URI mode: mode] autorelease];
+	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
 }
 
-+ (OFURI *)URIForFilePath: (OFString *)path inArchiveWithURI: (OFURI *)URI
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveURIHandlerURIForFileInArchive(@"tar", path, URI);
+	return OFArchiveIRIHandlerIRIForFileInArchive(@"tar", path, IRI);
 }
 
 - (instancetype)init
@@ -97,15 +108,15 @@ OF_DIRECT_MEMBERS
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"])
-			_mode = OFTarArchiveModeRead;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OFTarArchiveModeWrite;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OFTarArchiveModeAppend;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OFTarArchiveModeAppend) {
+		if (_mode == modeAppend) {
 			uint32_t buffer[1024 / sizeof(uint32_t)];
 			bool empty = true;
 
@@ -136,16 +147,16 @@ OF_DIRECT_MEMBERS
 	return self;
 }
 
-- (instancetype)initWithURI: (OFURI *)URI mode: (OFString *)mode
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *stream;
 
 	@try {
 		if ([mode isEqual: @"a"])
-			stream = [OFURIHandler openItemAtURI: URI mode: @"r+"];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
 		else
-			stream = [OFURIHandler openItemAtURI: URI mode: mode];
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -172,8 +183,21 @@ OF_DIRECT_MEMBERS
 	uint32_t buffer[512 / sizeof(uint32_t)];
 	bool empty = true;
 
-	if (_mode != OFTarArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
+
+	if (_currentEntry != nil && _lastReturnedStream == nil) {
+		/*
+		 * No read stream was created since the last call to
+		 * -[nextEntry]. Create it so that we can properly skip the
+		 *  data.
+		 */
+		void *pool = objc_autoreleasePoolPush();
+
+		[self streamForReadingCurrentEntry];
+
+		objc_autoreleasePoolPop(pool);
+	}
 
 	[_currentEntry release];
 	_currentEntry = nil;
@@ -214,7 +238,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OFTarArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_currentEntry == nil)
@@ -232,7 +256,7 @@ OF_DIRECT_MEMBERS
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
-	if (_mode != OFTarArchiveModeWrite && _mode != OFTarArchiveModeAppend)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
@@ -264,7 +288,7 @@ OF_DIRECT_MEMBERS
 	}
 	_lastReturnedStream = nil;
 
-	if (_mode == OFTarArchiveModeWrite || _mode == OFTarArchiveModeAppend) {
+	if (_mode == modeWrite || _mode == modeAppend) {
 		char buffer[1024];
 		memset(buffer, '\0', 1024);
 		[_stream writeBuffer: buffer length: 1024];
@@ -305,6 +329,8 @@ OF_DIRECT_MEMBERS
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
+	[_archive release];
+
 	[super dealloc];
 }
 
@@ -343,9 +369,9 @@ OF_DIRECT_MEMBERS
 	return _atEndOfStream;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
+	return _stream.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading
@@ -444,6 +470,8 @@ OF_DIRECT_MEMBERS
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
+
+	[_archive release];
 
 	[super dealloc];
 }

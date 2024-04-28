@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef OBJFW_MACROS_H
@@ -103,22 +107,28 @@
 #endif
 
 #if __STDC_VERSION__ >= 201112L
+# define OF_ALIGN(size) _Alignas(size)
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
 #else
+# define OF_ALIGN(size) __attribute__((__aligned__(size)))
 # define OF_ALIGNOF(type) __alignof__(type)
-# define OF_ALIGNAS(type) __attribute__((__aligned__(__alignof__(type))))
+# define OF_ALIGNAS(type) OF_ALIGN(OF_ALIGNOF(type))
 #endif
 
-#if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
-# define OF_BIGGEST_ALIGNMENT _Alignof(max_align_t)
+#ifdef __BIGGEST_ALIGNMENT__
+# define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
 #else
-# ifdef __BIGGEST_ALIGNMENT__
-#  define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
-# else
-#  /* Hopefully no arch needs more than 16 byte alignment */
-#  define OF_BIGGEST_ALIGNMENT 16
-# endif
+/* Hopefully no arch needs more than 16 byte alignment */
+# define OF_BIGGEST_ALIGNMENT 16
+#endif
+/*
+ * We use SSE inline assembly on AMD64 and x86, so it must never be smaller
+ * than 16.
+ */
+#if (defined(OF_AMD64) || defined(OF_X86)) && OF_BIGGEST_ALIGNMENT < 16
+# undef OF_BIGGEST_ALIGNMENT
+# define OF_BIGGEST_ALIGNMENT 16
 #endif
 
 #define OF_PREPROCESSOR_CONCAT2(a, b) a##b
@@ -292,6 +302,17 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
+#if defined(__clang__) || OF_GCC_VERSION >= 405
+# define OF_DEPRECATED(project, major, minor, msg)		\
+    __attribute__((__deprecated__("Deprecated in " #project " "	\
+    #major "." #minor ": " msg)))
+#elif defined(__GNUC__)
+# define OF_DEPRECATED(project, major, minor, msg) \
+    __attribute__((__deprecated__))
+#else
+# define OF_DEPRECATED(project, major, minor, msg)
+#endif
+
 #if __has_attribute(__objc_boxable__)
 # define OF_BOXABLE __attribute__((__objc_boxable__))
 #else
@@ -316,14 +337,14 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(OF_X86_64) || defined(OF_X86) || defined(OF_ARM64) || \
+# if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64) || \
     defined(OF_ARM) || defined(OF_POWERPC)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
 # if defined(OF_ELF)
-#  if defined(OF_X86_64) || defined(OF_X86) || \
+#  if defined(OF_AMD64) || defined(OF_X86) || \
     defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
     defined(OF_MIPS) || defined(OF_SPARC64) || defined(OF_SPARC)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
@@ -332,14 +353,14 @@
 #   endif
 #  endif
 # elif defined(OF_MACH_O)
-#  if defined(OF_X86_64)
+#  if defined(OF_AMD64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
 # elif defined(OF_WINDOWS)
-#  if defined(OF_X86_64) || defined(OF_X86)
+#  if defined(OF_AMD64) || defined(OF_X86)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -359,15 +380,28 @@
 			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
+@class OFConstantString;
+# ifdef __cplusplus
+extern "C" {
+# endif
+extern void OFLog(OFConstantString *_Nonnull, ...);
+# ifdef __cplusplus
+}
+# endif
 # define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\
-			fprintf(stderr, "Failed to ensure condition "	\
-			    "in " __FILE__ ":%d:\n" #cond "\n",		\
-			    __LINE__);					\
+			OFLog(@"Failed to ensure condition in "		\
+			    @__FILE__ ":%d: " @#cond, __LINE__);	\
 			abort();					\
 		}							\
 	} while (0)
+#endif
+
+#ifndef NDEBUG
+# define OFAssert(...) OFEnsure(__VA_ARGS__)
+#else
+# define OFAssert(...)
 #endif
 
 #define OF_UNRECOGNIZED_SELECTOR OFMethodNotFound(self, _cmd);
@@ -402,6 +436,30 @@
 									\
 	[super dealloc];	/* Get rid of a stupid warning */
 #endif
+#define OF_SINGLETON_METHODS			\
+	- (instancetype)autorelease		\
+	{					\
+		return self;			\
+	}					\
+						\
+	- (instancetype)retain			\
+	{					\
+		return self;			\
+	}					\
+						\
+	- (void)release				\
+	{					\
+	}					\
+						\
+	- (unsigned int)retainCount		\
+	{					\
+		return OFMaxRetainCount;	\
+	}					\
+						\
+	- (void)dealloc				\
+	{					\
+		OF_DEALLOC_UNSUPPORTED		\
+	}
 
 #define OF_CONSTRUCTOR(prio)					\
 	static void __attribute__((__constructor__(prio)))	\
@@ -443,23 +501,24 @@ OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
-#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
-	    "xchgb	%h0, %b0"
-	    : "=Q"(i)
-	    : "0"(i)
+	    "xchg{b}	{ %h0, %b0 | %b0, %h0 }"
+	    : "=Q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lhbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev16	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
@@ -473,23 +532,24 @@ OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
-#elif (defined(OF_X86_64) || defined(OF_X86)) && defined(__GNUC__)
+#elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=q"(i)
-	    : "0"(i)
+	    : "=q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lwbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
@@ -505,19 +565,19 @@ OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
-#elif defined(OF_X86_64) && defined(__GNUC__)
+#elif defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_X86) && defined(__GNUC__)
 	__asm__ (
-	    "bswap	%%eax\n\t"
-	    "bswap	%%edx\n\t"
-	    "xchgl	%%eax, %%edx"
-	    : "=A"(i)
-	    : "0"(i)
+	    "bswap	{%%}eax\n\t"
+	    "bswap	{%%}edx\n\t"
+	    "xchg{l}	{ %%eax, %%edx | edx, eax }"
+	    : "=A" (i)
+	    : "0" (i)
 	);
 #else
 	i = (uint64_t)OFByteSwap32NonConst(

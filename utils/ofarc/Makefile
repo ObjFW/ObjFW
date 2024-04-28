@@ -5,7 +5,8 @@ SRCS = GZIPArchive.m	\
        LHAArchive.m	\
        OFArc.m		\
        TarArchive.m	\
-       ZIPArchive.m
+       ZIPArchive.m	\
+       ZooArchive.m
 DATA = localization/de.json		\
        localization/localizations.json
 
@@ -20,8 +21,8 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../..							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"
-LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
+	-L../../src/runtime ${RUNTIME_LIBS}				\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}

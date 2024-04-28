@@ -1,53 +1,57 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFUnsupportedProtocolException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURI.h"
 
 @implementation OFUnsupportedProtocolException
-@synthesize URI = _URI;
+@synthesize IRI = _IRI;
 
-+ (instancetype)exceptionWithURI: (OFURI *)URI
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithURI: URI] autorelease];
+	return [[[self alloc] initWithIRI: IRI] autorelease];
 }
 
-- (instancetype)initWithURI: (OFURI *)URI
+- (instancetype)initWithIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
-	_URI = [URI retain];
+	_IRI = [IRI retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_URI release];
+	[_IRI release];
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	if (_URI != nil)
+	if (_IRI != nil)
 		return [OFString stringWithFormat:
-		    @"The protocol of URI %@ is not supported!", _URI];
+		    @"The protocol of IRI %@ is not supported!", _IRI];
 	else
 		return @"The requested protocol is unsupported!";
 }

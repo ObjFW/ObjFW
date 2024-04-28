@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_HTTP_SERVER_M
@@ -28,14 +32,14 @@
 #import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFSocket+Private.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
-#import "OFURI.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -382,7 +386,7 @@ normalizedKey(OFString *key)
 
 	method = [line substringToIndex: pos];
 	@try {
-		_method = OFHTTPRequestMethodParseName(method);
+		_method = OFHTTPRequestMethodParseString(method);
 	} @catch (OFInvalidArgumentException *e) {
 		return [self sendErrorAndClose: 405];
 	}
@@ -514,7 +518,7 @@ normalizedKey(OFString *key)
 - (void)createResponse
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURI *URI;
+	OFMutableIRI *IRI;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
 	size_t pos;
@@ -534,10 +538,10 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URI = [OFMutableURI URIWithScheme: @"http"];
-	URI.host = _host;
+	IRI = [OFMutableIRI IRIWithScheme: @"http"];
+	IRI.host = _host;
 	if (_port != 80)
-		URI.port = [OFNumber numberWithUnsignedShort: _port];
+		IRI.port = [OFNumber numberWithUnsignedShort: _port];
 
 	@try {
 		if ((pos = [_path rangeOfString: @"?"].location) !=
@@ -547,19 +551,19 @@ normalizedKey(OFString *key)
 			path = [_path substringToIndex: pos];
 			query = [_path substringFromIndex: pos + 1];
 
-			URI.percentEncodedPath = path;
-			URI.percentEncodedQuery = query;
+			IRI.percentEncodedPath = path;
+			IRI.percentEncodedQuery = query;
 		} else
-			URI.percentEncodedPath = _path;
+			IRI.percentEncodedPath = _path;
 	} @catch (OFInvalidFormatException *e) {
 		objc_autoreleasePoolPop(pool);
 		[self sendErrorAndClose: 400];
 		return;
 	}
 
-	[URI makeImmutable];
+	[IRI makeImmutable];
 
-	request = [OFHTTPRequest requestWithURI: URI];
+	request = [OFHTTPRequest requestWithIRI: IRI];
 	request.method = _method;
 	request.protocolVersion =
 	    (OFHTTPRequestProtocolVersion){ 1, _HTTPMinorVersion };
@@ -735,9 +739,9 @@ normalizedKey(OFString *key)
 	}
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _socket.hasDataInReadBuffer);
+	return _socket.hasDataInReadBuffer;
 }
 
 - (int)fileDescriptorForReading
@@ -804,7 +808,7 @@ normalizedKey(OFString *key)
 	OFString *old;
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	old = _host;
 	_host = [host copy];
@@ -819,7 +823,7 @@ normalizedKey(OFString *key)
 - (void)setPort: (uint16_t)port
 {
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_port = port;
 }
@@ -836,7 +840,7 @@ normalizedKey(OFString *key)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_numberOfThreads = numberOfThreads;
 }
@@ -850,15 +854,17 @@ normalizedKey(OFString *key)
 - (void)start
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFSocketAddress address;
 
 	if (_host == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
-		@throw [OFAlreadyConnectedException exception];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
-	_port = [_listeningSocket bindToHost: _host port: _port];
+	address = [_listeningSocket bindToHost: _host port: _port];
+	_port = OFSocketAddressIPPort(&address);
 	[_listeningSocket listen];
 
 #ifdef OF_HAVE_THREADS

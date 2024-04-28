@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,7 +29,7 @@
 # include <wchar.h>
 #endif
 
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -36,6 +40,7 @@
 # include <sys/types.h>
 #endif
 
+#import "OFASPrintF.h"
 #import "OFString.h"
 #import "OFLocale.h"
 
@@ -83,7 +88,7 @@ struct Context {
 	bool useLocale;
 };
 
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
 static locale_t cLocale;
 
 OF_CONSTRUCTOR()
@@ -377,7 +382,7 @@ formatConversionSpecifierState(struct Context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
-#ifndef HAVE_ASPRINTF_L
+#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
 	OFString *point;
 #endif
 
@@ -548,23 +553,37 @@ formatConversionSpecifierState(struct Context *ctx)
 		switch (ctx->lengthModifier) {
 		case lengthModifierNone:
 		case lengthModifierL:
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, double));
 			else
+#elif defined(HAVE_USELOCALE)
+			if (!ctx->useLocale) {
+				locale_t previousLocale = uselocale(cLocale);
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, double));
+				uselocale(previousLocale);
+			} else
 #endif
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    va_arg(ctx->arguments, double));
 			break;
 		case lengthModifierCapitalL:
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, long double));
 			else
+#elif defined(HAVE_USELOCALE)
+			if (!ctx->useLocale) {
+				locale_t previousLocale = uselocale(cLocale);
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, long double));
+				uselocale(previousLocale);
+			} else
 #endif
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    va_arg(ctx->arguments, long double));
@@ -573,14 +592,14 @@ formatConversionSpecifierState(struct Context *ctx)
 			return false;
 		}
 
-#ifndef HAVE_ASPRINTF_L
+#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
 		if (tmpLen == -1)
 			return false;
 
 		/*
-		 * If there's no asprintf_l, we have no other choice than to
-		 * use this ugly hack to replace the locale's decimal point
-		 * back to ".".
+		 * If there's no asprintf_l and no uselocale, we have no other
+		 * choice than to use this ugly hack to replace the locale's
+		 * decimal point back to ".".
 		 */
 		point = [OFLocale decimalSeparator];
 

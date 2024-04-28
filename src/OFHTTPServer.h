@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -58,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    socket
  * @return Whether to continue listening. If you return false, existing
  *	   connections will still be handled and you can start accepting new
- *	   connections again by calling @ref OFHTTPServer::start again.
+ *	   connections again by calling @ref OFHTTPServer#start again.
  */
 -			  (bool)server: (OFHTTPServer *)server
   didReceiveExceptionOnListeningSocket: (id)exception;
@@ -106,16 +110,16 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The host on which the HTTP server will listen.
  *
- * @throw OFAlreadyConnectedException The host could not be set because
- *				      @ref start had already been called
+ * @throw OFAlreadyOpenException The host could not be set because @ref start
+ *				  had already been called
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
 /**
  * @brief The port on which the HTTP server will listen.
  *
- * @throw OFAlreadyConnectedException The port could not be set because
- *				      @ref start had already been called
+ * @throw OFAlreadyOpenException The port could not be set because @ref start
+ *				 had already been called
  */
 @property (nonatomic) uint16_t port;
 
@@ -134,8 +138,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * For maximum CPU utilization, set this to `[OFSystemInfo numberOfCPUs] + 1`.
  *
- * @throw OFAlreadyConnectedException The number of threads could not be set
- *				      because @ref start had already been called
+ * @throw OFAlreadyOpenException The number of threads could not be set because
+ *				 @ref start had already been called
  */
 @property (nonatomic) size_t numberOfThreads;
 #endif
@@ -158,7 +162,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Starts the HTTP server in the current thread's run loop.
  *
- * @throw OFAlreadyConnectedException The server had already been started
+ * @throw OFAlreadyOpenException The server had already been started
  */
 - (void)start;
 

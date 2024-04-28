@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -28,7 +32,6 @@
 
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 #import "OFValue.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -40,20 +43,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief Provides a way to store a number in an object.
  */
-#ifndef OF_NUMBER_M
-OF_SUBCLASSING_RESTRICTED
-#endif
-@interface OFNumber: OFValue <OFComparing, OFSerialization,
-    OFJSONRepresentation, OFMessagePackRepresentation>
-{
-	union {
-		double float_;
-		long long signed_;
-		unsigned long long unsigned_;
-	} _value;
-	const char *_typeEncoding;
-}
-
+@interface OFNumber: OFValue <OFComparing, OFJSONRepresentation,
+    OFMessagePackRepresentation>
 /**
  * @brief The OFNumber as a `bool`.
  */
@@ -124,8 +115,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
-+ (instancetype)valueWithBytes: (const void *)bytes
-		      objCType: (const char *)objCType OF_UNAVAILABLE;
 + (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
 + (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
 + (instancetype)valueWithRange: (OFRange)range OF_UNAVAILABLE;
@@ -236,10 +225,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new autoreleased OFNumber
  */
 + (instancetype)numberWithDouble: (double)value;
-
-- (instancetype)init OF_UNAVAILABLE;
-- (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OFNumber with the specified `bool`.

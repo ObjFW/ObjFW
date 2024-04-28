@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFDatagramSocket.h"
@@ -18,6 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
  * @protocol OFDDPSocketDelegate OFDDPSocket.h ObjFW/OFDDPSocket.h
@@ -43,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note On some systems, packets received with the wrong protocol type just
  *	 get filtered by the kernel, however, on other systems, the packet is
  *	 queued up and will raise an @ref OFReadFailedException with the
- *	 @ref errNo set to `ENOMSG` when being received.
+ *	 @ref OFReadFailedException#errNo set to `ENOMSG` when being received.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
@@ -81,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       it, use 11 for compatibility with Open Transport.
  * @return The address on which this socket can be reached
  * @throw OFBindDDPSockeFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already bound
+ * @throw OFAlreadyOpenException The socket is already bound
  */
 - (OFSocketAddress)bindToNetwork: (uint16_t)network
 			    node: (uint8_t)node

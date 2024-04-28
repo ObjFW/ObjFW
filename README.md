@@ -11,10 +11,11 @@ other place, you are most likely using a mirror.
 <h1 id="table-of-contents">Table of Contents</h1>
 
  * [What is ObjFW?](#what)
+ * [Installation](#installation)
  * [License](#license)
  * [Releases](#releases)
  * [Cloning the repository](#cloning)
- * [Installation](#installation)
+ * [Building from source](#building-from-source)
    * [macOS and iOS](#macos-and-ios)
      * [Building as a framework](#building-framework)
      * [Using the macOS or iOS framework in Xcode](#framework-in-xcode)
@@ -54,7 +55,7 @@ other place, you are most likely using a mirror.
      compatible to a certain degree. This means that a developer still needs to
      care about differences between frameworks if they want to be portable. The
      idea behind ObjFW is that a developer does not need to concern themselves
-     with portablility and making sure their code works with multiple
+     with portability and making sure their code works with multiple
      frameworks: Instead, if it works it ObjFW on one platform, they can
      reasonably expect it to also work with ObjFW on another platform. ObjFW
      behaving differently on different operating systems (unless inevitable
@@ -75,25 +76,43 @@ other place, you are most likely using a mirror.
   than both GNU's and Apple's runtime.
 
 
+<h1 id="installation">Installation</h1>
+
+  ObjFW packages are available for various operating systems and can be
+  installed as following:
+
+  Operating System           | Command
+  ---------------------------|---------------------------------------------
+  Alpine Linux               | `doas apk add objfw`
+  CRUX                       | `sudo prt-get depinst objfw`
+  Fedora                     | `sudo dnf install objfw`
+  FreeBSD                    | `sudo pkg install objfw`
+  Haiku                      | `pkgman install objfw`
+  Haiku (gcc2h)              | `pkgman install objfw_x86`
+  macOS (Homebrew)           | `brew install objfw`
+  macOS (pkgsrc)             | `cd $PKGSRCDIR/devel/objfw && make install`
+  NetBSD                     | `cd /usr/pkgsrc/devel/objfw && make install`
+  OpenBSD                    | `doas pkg_add objfw`
+  OpenIndiana                | `sudo pkg install developer/objfw`
+  Windows (MSYS2/CLANG64)    | `pacman -S mingw-w64-clang-x86_64-objfw`
+  Windows (MSYS2/CLANGARM64) | `pacman -S mingw-w64-clang-aarch64-objfw`
+  Windows (MSYS2/UCRT64)     | `pacman -S mingw-w64-ucrt-x86_64-objfw`
+  Windows (MSYS2/MINGW32)    | `pacman -S mingw-w64-i686-objfw`
+
+  If your operating system is not listed, you can
+  <a href="#building-from-source">build ObjFW from source</a>.  
+
+
 <h1 id="license">License</h1>
 
-  ObjFW is released under three licenses:
+  ObjFW is released under the GNU Lesser General Public License version 3.0.
 
-   * [QPL](LICENSE.QPL)
-   * [GPLv2](LICENSE.GPLv2)
-   * [GPLv3](LICENSE.GPLv3)
-
-  The QPL allows you to use ObjFW in any open source project. Because the GPL
-  does not allow using code under any other license, ObjFW is also available
-  under the GPLv2 and GPLv3 to allow GPL-licensed projects to use ObjFW.
-
-  You can pick under which of those three licenses you want to use ObjFW. If
-  none of them work for you, contact me and we can find a solution.
+  If this license does not work for you, contact me and we can find a solution.
 
 
 <h1 id="releases">Releases</h1>
 
-  Releases of ObjFW, as well as changelogs and the accompanying documentation
+  Releases of ObjFW, as well as change logs and the accompanying documentation,
   can be found [here](https://objfw.nil.im/wiki?name=Releases).
 
 
@@ -109,22 +128,18 @@ other place, you are most likely using a mirror.
 
   Clone the Fossil repository like this:
 
-    $ fossil clone https://objfw.nil.im
+    fossil clone https://objfw.nil.im
 
   You can then use Fossil's web interface to browse the timeline, tickets,
   wiki pages, etc.:
 
-    $ cd objfw
-    $ fossil ui
-
-  It's also possible to open the same local repository multiple times, so that
-  you have multiple working directories all backed by the same local
-  repository.
+    cd objfw
+    fossil ui
 
   In order to verify the signature of the currently checked out checkin, you
   can use:
 
-    $ fossil artifact current | gpg --verify
+    fossil artifact current | gpg --verify
 
   Please note that not all checkins are signed, as the signing key only resides
   on trusted systems. This means that checkins I perform on e.g. Windows are
@@ -136,24 +151,24 @@ other place, you are most likely using a mirror.
 
   To clone the Git repository, use the following:
 
-    $ git clone https://github.com/ObjFW/ObjFW
+    git clone https://github.com/ObjFW/ObjFW
 
   Git commits are not signed, so if you want to check the signature of an
   individual commit, branch head or tag, please use Fossil.
 
-<h1 id="installation">Installation</h1>
+<h1 id="building-from-source">Building from source</h1>
 
-  To install ObjFW, just run the following commands:
+  To build ObjFW from source and install it, just run the following commands:
 
-    $ ./configure
-    $ make
-    $ make check
-    $ sudo make install
+    ./configure
+    make
+    make check
+    sudo make install
 
   In case you checked out ObjFW from the Fossil or Git repository, you need to
   run the following command first:
 
-    $ ./autogen.sh
+    ./autogen.sh
 
 <h2 id="macos-and-ios">macOS and iOS</h2>
 
@@ -164,25 +179,24 @@ other place, you are most likely using a mirror.
   frameworks will end up in `$PREFIX/Library/Frameworks`.
 
   To build for macOS, just follow the
-  <a href="#installation">regular instructions</a> above.
+  <a href="#building-from-source">regular instructions</a> above.
 
   To build for iOS, follow the regular instructions, but instead of
   `./configure` do something like this:
 
-    $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-    $ export OBJC="$clang -arch armv7 -arch arm64"
-    $ export OBJCPP="$clang -arch armv7 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
+    clang="xcrun --sdk iphoneos clang"
+    export OBJC="$clang -arch arm64e -arch arm64"
+    export OBJCPP="$clang -arch arm64e -E"
+    export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    ./configure --prefix=/usr/local/ios --host=arm64-apple-darwin
 
   To build for the iOS simulator, follow the regular instructions, but instead
   of `./configure` use something like this:
 
-    $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-    $ export OBJC="$clang -arch arm64 -arch x86_64"
-    $ export OBJCPP="$clang -arch arm64 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
-    $ ./configure --prefix=/usr/local/iossim --host=arm64-apple-darwin
+    clang="xcrun --sdk iphonesimulator clang"
+    export OBJC="$clang -arch $(uname -m)"
+    export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    ./configure --prefix=/usr/local/iossim --host=$(uname -m)-apple-darwin
 
 <h3 id="framework-in-xcode">Using the macOS or iOS framework in Xcode</h3>
 
@@ -238,27 +252,37 @@ other place, you are most likely using a mirror.
 
   For CLANG64, use:
 
-    $ pacman -Syu mingw-w64-clang-x86_64-clang mingw-w64-clang-x86_64-fossil
+    pacman -Syu mingw-w64-clang-x86_64-clang \
+                mingw-w64-clang-x86_64-fossil \
+                mingw-w64-clang-x86_64-openssl
 
   For CLANG32, use:
 
-    $ pacman -Syu mingw-w64-clang-i686-clang mingw-w64-clang-i686-fossil
+    pacman -Syu mingw-w64-clang-i686-clang \
+                mingw-w64-clang-i686-fossil \
+                mingw-w64-clang-i686-openssl
 
   For CLANGARM64, use (you need to use Fossil via another environment):
 
-    $ pacman -Syu mingw-w64-clang-aarch64-clang
+    pacman -Syu mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-openssl
 
   For MINGW64, use:
 
-    $ pacman -Syu mingw-w64-x86_64-clang mingw-w64-x86_64-fossil
+    pacman -Syu mingw-w64-x86_64-clang \
+                mingw-w64-x86_64-fossil \
+                mingw-w64-x86_64-openssl
 
   For MINGW32, use:
 
-    $ pacman -Syu mingw-w64-i686-clang mingw-w64-i686-fossil
+    pacman -Syu mingw-w64-i686-clang \
+                mingw-w64-i686-fossil \
+                mingw-w64-i686-openssl
 
   For UCRT64, use:
 
-    $ pacman -Syu mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-fossil
+    pacman -Syu mingw-w64-ucrt-x86_64-clang \
+                mingw-w64-ucrt-x86_64-fossil \
+                mingw-w64-ucrt-x86_64-openssl
 
   When using `pacman` to install the packages, `pacman` might tell you to close
   the window. If it does so, close the window, restart MSYS2 and execute the
@@ -270,19 +294,19 @@ other place, you are most likely using a mirror.
 
   Finally, install a few more things that are common between all environments:
 
-    $ pacman -S autoconf automake make
+    pacman -S autoconf automake make
 
 <h3 id="steps-windows">Getting, building and installing ObjFW</h3>
 
   Start the MSYS2 using the shortcut for the environment you want to use and
   check out ObjFW:
 
-    $ fossil clone https://objfw.nil.im
+    fossil clone https://objfw.nil.im
 
   You can also download a release tarball if you want. Now `cd` to the newly
   checked out repository and build and install it:
 
-    $ ./autogen.sh && ./configure && make -j16 install
+    ./autogen.sh && ./configure && make -j16 install
 
   If everything was successful, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
@@ -295,35 +319,35 @@ other place, you are most likely using a mirror.
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=arm-none-eabi --with-nds
+    ./configure --host=arm-none-eabi --with-nds
 
 <h3 id="nintendo-3ds">Nintendo 3DS</h3>
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=arm-none-eabi --with-3ds
+    ./configure --host=arm-none-eabi --with-3ds
 
 <h3 id="wii">Wii</h3>
 
   Follow the normal process, but instead of `./configure` run:
 
-    $ ./configure --host=powerpc-eabi --with-wii
+    ./configure --host=powerpc-eabi --with-wii
 
 <h2 id="amiga">Amiga</h2>
 
   Install [amiga-gcc](https://github.com/bebbo/amiga-gcc). Then follow the
   normal process, but instead of `./configure` run:
 
-    $ ./configure --host=m68k-amigaos
+    ./configure --host=m68k-amigaos
 
 
 <h1 id="first-app">Writing your first application with ObjFW</h1>
 
   To create your first, empty application, you can use `objfw-new`:
 
-    $ objfw-new --app MyFirstApp
+    objfw-new --app MyFirstApp
 
-  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
+  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching:]`
   method is called as soon as ObjFW finished all initialization. Use this as
   the entry point to your own code. For example, you could add the following
   line there to create a "Hello World":
@@ -332,7 +356,7 @@ other place, you are most likely using a mirror.
 
   You can compile your new app using `objfw-compile`:
 
-    $ objfw-compile -o MyFirstApp MyFirstApp.m
+    objfw-compile -o MyFirstApp MyFirstApp.m
 
   `objfw-compile` is a tool that allows building applications and libraries
   using ObjFW without needing a full-blown build system. If you want to use
@@ -349,7 +373,7 @@ other place, you are most likely using a mirror.
   installed. Once installed, you can build the documentation from the root
   directory of the repository:
 
-    $ make docs
+    make docs
 
 
 <h1 id="bugs">Bugs and feature requests</h1>
@@ -368,16 +392,14 @@ other place, you are most likely using a mirror.
 
    * The [forum](https://objfw.nil.im/forum)
    * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
+   * A [Discord room](https://objfw.nil.im/discord), bridged to the Matrix
+     room above
+   * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
+   * A [Slack room](https://objfw.nil.im/slack), bridged to the Matrix room
+     above
    * An IRC channel named `#objfw` on `irc.oftc.net`
      ([Web chat](https://webchat.oftc.net/?channels=%23objfw)), bridged to the
      Matrix room above
-   * A [Slack channel](https://objfw.nil.im/slack), bridged to the Matrix room
-     above
-   * A [Discord channel](https://objfw.nil.im/discord), bridged to the Matrix
-     room above
-   * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
-   * A [Gitter room](https://gitter.im/ObjFW/ObjFW), bridged to the Matrix room
-     above
 
   Please don't hesitate to join any or all of those!
 
@@ -394,12 +416,12 @@ other place, you are most likely using a mirror.
     reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in
     2017!
   * Thank you to [Hill Ma](https://github.com/mahiuchun) for donating an M1 Mac
-    Mini to the project!
+    Mini to the project in 2022!
 
 
 <h1 id="commercial-use">Commercial use</h1>
 
-  If for whatever reason neither the terms of the QPL nor those of the GPL work
-  for you, a proprietary license for ObjFW including support is available upon
-  request. Just write a mail to js@nil.im and we can find a reasonable solution
-  for both parties.
+  If for whatever reason the terms of GNU Lesser General Public License version
+  3.0 don't work for you, a proprietary license for ObjFW including support is
+  available upon request. Just write a mail to js@nil.im and we can find a
+  reasonable solution for both parties.

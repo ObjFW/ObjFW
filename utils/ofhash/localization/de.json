@@ -1,10 +1,21 @@
+/*
+ * German localization for ofhash.
+ *
+ * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this localization for
+ * any purpose with or without fee is hereby granted.
+ */
+
+/* vim: se ft=javascript sw=4 et: */
+
 {
-    "usage": [
+    usage: [
         "Benutzung: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] ",
-        "[--sha256] [--sha384] [--sha512] datei1 [datei2 ...]"
+        "[--sha256] [--sha384] [--sha512] [--iri] datei1 [datei2 ...]"
     ],
-    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]",
-    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]",
-    "failed_to_open_file": "Fehler beim Öffnen der Datei %[file]: %[error]",
-    "failed_to_read_file": "Fehler beim Lesen der Datei %[file]: %[error]"
+    unknown_long_option: "%[prog]: Unbekannte Option: --%[opt]",
+    unknown_option: "%[prog]: Unbekannte Option: -%[opt]",
+    failed_to_open_file: "Fehler beim Öffnen der Datei %[file]: %[error]",
+    failed_to_read_file: "Fehler beim Lesen der Datei %[file]: %[error]",
 }

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStreamSocket.h"
@@ -80,12 +84,12 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /**
- * @brief Whether the socket sends keep alives for the connection.
+ * @brief Whether the socket sends keep-alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool sendsKeepAlives;
 #endif
@@ -97,8 +101,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @warning This is not available on the Wii!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
- * @throw OFGetOptionFailedException The option could not be gotten
  */
 @property (nonatomic) bool canDelaySendingSegments;
 #endif
@@ -157,7 +161,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  * @param host The host to connect to
  * @param port The port on the host to connect to
  * @throw OFConnectIPSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
@@ -174,7 +178,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
@@ -197,7 +202,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToHost: (OFString *)host
@@ -213,11 +219,11 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  *	       IPv6 to bind to all.
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
- * @return The port the socket was bound to
+ * @return The address the socket was bound to
  * @throw OFBindIPSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
 
 OF_ASSUME_NONNULL_END
