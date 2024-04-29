@@ -35,12 +35,12 @@
 # import "OFPlainMutex.h"
 #endif
 
-struct EmbeddedFile {
+static struct EmbeddedFile {
 	OFString *path;
 	const uint8_t *bytes;
 	size_t size;
 } *embeddedFiles = NULL;
-size_t numEmbeddedFiles = 0;
+static size_t numEmbeddedFiles = 0;
 #ifdef OF_HAVE_THREADS
 static OFPlainMutex mutex;
 static OFOnceControl mutexOnceControl = OFOnceControlInitValue;
