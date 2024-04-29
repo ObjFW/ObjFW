@@ -121,7 +121,7 @@ OF_DIRECT_MEMBERS
 @end
 
 uint32_t
-OFZIPArchiveReadField32(const uint8_t **data, uint16_t *size)
+_OFZIPArchiveReadField32(const uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
 
@@ -138,7 +138,7 @@ OFZIPArchiveReadField32(const uint8_t **data, uint16_t *size)
 }
 
 uint64_t
-OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
+_OFZIPArchiveReadField64(const uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
 
@@ -203,7 +203,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(@"zip", path, IRI);
+	return _OFArchiveIRIHandlerIRIForFileInArchive(@"zip", path, IRI);
 }
 
 - (instancetype)init
@@ -748,10 +748,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = OFZIPArchiveReadField64(
+				_uncompressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = OFZIPArchiveReadField64(
+				_compressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0)
@@ -924,7 +924,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC32 = OFCRC32(_CRC32, buffer, ret);
+	_CRC32 = _OFCRC32(_CRC32, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -1017,7 +1017,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		OFEnsure(e.bytesWritten <= length);
 
 		_bytesWritten += (unsigned long long)e.bytesWritten;
-		_CRC32 = OFCRC32(_CRC32, buffer, e.bytesWritten);
+		_CRC32 = _OFCRC32(_CRC32, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
@@ -1026,7 +1026,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	}
 
 	_bytesWritten += (unsigned long long)length;
-	_CRC32 = OFCRC32(_CRC32, buffer, length);
+	_CRC32 = _OFCRC32(_CRC32, buffer, length);
 
 	return length;
 }

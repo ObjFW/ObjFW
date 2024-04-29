@@ -353,7 +353,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -367,26 +367,26 @@ convert(OFMutableString *self, char (*startFunction)(char),
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
-	[self of_convertWithWordStartTable: OFUnicodeUppercaseTable
-			   wordMiddleTable: OFUnicodeUppercaseTable
-			wordStartTableSize: OFUnicodeUppercaseTableSize
-		       wordMiddleTableSize: OFUnicodeUppercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeUppercaseTable
+			   wordMiddleTable: _OFUnicodeUppercaseTable
+			wordStartTableSize: _OFUnicodeUppercaseTableSize
+		       wordMiddleTableSize: _OFUnicodeUppercaseTableSize];
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartTable: OFUnicodeLowercaseTable
-			   wordMiddleTable: OFUnicodeLowercaseTable
-			wordStartTableSize: OFUnicodeLowercaseTableSize
-		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeLowercaseTable
+			   wordMiddleTable: _OFUnicodeLowercaseTable
+			wordStartTableSize: _OFUnicodeLowercaseTableSize
+		       wordMiddleTableSize: _OFUnicodeLowercaseTableSize];
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartTable: OFUnicodeTitlecaseTable
-			   wordMiddleTable: OFUnicodeLowercaseTable
-			wordStartTableSize: OFUnicodeTitlecaseTableSize
-		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeTitlecaseTable
+			   wordMiddleTable: _OFUnicodeLowercaseTable
+			wordStartTableSize: _OFUnicodeTitlecaseTableSize
+		       wordMiddleTableSize: _OFUnicodeLowercaseTableSize];
 }
 #else
 - (void)uppercase

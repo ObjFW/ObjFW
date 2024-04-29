@@ -248,7 +248,7 @@
 				    readIntoBuffer: buffer
 					    length: length];
 
-				_CRC32 = OFCRC32(_CRC32, buffer, bytesRead);
+				_CRC32 = _OFCRC32(_CRC32, buffer, bytesRead);
 				_uncompressedSize += bytesRead;
 
 				return bytesRead;

@@ -19,22 +19,23 @@
 
 #import "OFString.h"
 
-#define OFUnicodeUppercaseTableSize 0x1EA
-#define OFUnicodeLowercaseTableSize 0x1EA
-#define OFUnicodeTitlecaseTableSize 0x1EA
-#define OFUnicodeCaseFoldingTableSize 0x1EA
+#define _OFUnicodeUppercaseTableSize 0x1EA
+#define _OFUnicodeLowercaseTableSize 0x1EA
+#define _OFUnicodeTitlecaseTableSize 0x1EA
+#define _OFUnicodeCaseFoldingTableSize 0x1EA
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 extern const OFUnichar *const _Nonnull
-    OFUnicodeUppercaseTable[OFUnicodeUppercaseTableSize];
+    _OFUnicodeUppercaseTable[_OFUnicodeUppercaseTableSize] OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
-    OFUnicodeLowercaseTable[OFUnicodeLowercaseTableSize];
+    _OFUnicodeLowercaseTable[_OFUnicodeLowercaseTableSize] OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
-    OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];
+    _OFUnicodeTitlecaseTable[_OFUnicodeTitlecaseTableSize] OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
-    OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];
+    _OFUnicodeCaseFoldingTable[_OFUnicodeCaseFoldingTableSize]
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

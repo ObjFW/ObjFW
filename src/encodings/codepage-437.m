@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFCodepage437Table[] = {
+const OFChar16 _OFCodepage437Table[] OF_VISIBILITY_HIDDEN = {
 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
@@ -41,8 +41,8 @@ const OFChar16 OFCodepage437Table[] = {
 	0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
 };
-const size_t OFCodepage437TableOffset =
-    256 - (sizeof(OFCodepage437Table) / sizeof(*OFCodepage437Table));
+const size_t _OFCodepage437TableOffset OF_VISIBILITY_HIDDEN =
+    256 - (sizeof(_OFCodepage437Table) / sizeof(*_OFCodepage437Table));
 
 static const unsigned char page0[] = {
 	0xFF, 0xAD, 0x9B, 0x9C, 0x00, 0x9D, 0x00, 0x00,
@@ -132,8 +132,8 @@ static const unsigned char page25[] = {
 };
 static const uint8_t page25Start = 0x00;
 
-bool
-OFUnicodeToCodepage437(const OFUnichar *input, unsigned char *output,
+bool OF_VISIBILITY_HIDDEN
+_OFUnicodeToCodepage437(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {

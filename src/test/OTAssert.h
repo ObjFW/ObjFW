@@ -33,7 +33,7 @@
  *	      followed by optional arguments
  */
 #define OTAssert(condition, ...) \
-	OTAssertImpl(self, _cmd, condition, @#condition, \
+	_OTAssertImpl(self, _cmd, condition, @#condition, \
 	    @__FILE__, __LINE__, ## __VA_ARGS__, nil)
 
 /**
@@ -200,14 +200,15 @@
  *	      followed by optional arguments
  */
 #define OTSkip(...) \
-	OTSkipImpl(self, _cmd, @__FILE__, __LINE__, ## __VA_ARGS__, nil)
+	_OTSkipImpl(self, _cmd, @__FILE__, __LINE__, ## __VA_ARGS__, nil)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
-    OFString *file, size_t line, ...);
-extern void OTSkipImpl(id testCase, SEL test, OFString *file, size_t line, ...);
+extern void _OTAssertImpl(id testCase, SEL test, bool condition,
+    OFString *check, OFString *file, size_t line, ...);
+extern void _OTSkipImpl(id testCase, SEL test, OFString *file, size_t line,
+    ...);
 #ifdef __cplusplus
 }
 #endif

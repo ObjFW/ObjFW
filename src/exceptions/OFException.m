@@ -216,7 +216,7 @@ OFStrError(int errNo)
 
 #ifdef OF_WINDOWS
 OFString *
-OFWindowsStatusToString(LSTATUS status)
+_OFWindowsStatusToString(LSTATUS status)
 {
 	OFString *string = nil;
 	void *buffer;

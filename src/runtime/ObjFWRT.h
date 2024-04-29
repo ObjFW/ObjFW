@@ -196,7 +196,6 @@ typedef enum objc_associationPolicy {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /**
  * @brief Registers a selector with the specified name with the runtime.
  *

@@ -31,7 +31,7 @@
 #import "OFPBKDF2.h"
 
 void
-OFSalsa20_8Core(uint32_t buffer[16])
+_OFSalsa20_8Core(uint32_t buffer[16])
 {
 	uint32_t tmp[16];
 
@@ -81,7 +81,7 @@ OFSalsa20_8Core(uint32_t buffer[16])
 }
 
 void
-OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
+_OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 {
 	uint32_t tmp[16];
 
@@ -97,7 +97,7 @@ OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 		for (size_t j = 0; j < 16; j++)
 			tmp[j] ^= input[i * 16 + j];
 
-		OFSalsa20_8Core(tmp);
+		_OFSalsa20_8Core(tmp);
 
 		/*
 		 * Even indices are stored in the first half and odd ones in
@@ -110,7 +110,7 @@ OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 }
 
 void
-OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
+_OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
     uint32_t *tmp)
 {
 	/* Check defined here and executed in OFScrypt() */
@@ -124,7 +124,7 @@ OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 
 	for (size_t i = 0; i < costFactor; i++) {
 		memcpy(tmp2 + i * 32 * blockSize, tmp, 128 * blockSize);
-		OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
+		_OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
@@ -134,7 +134,7 @@ OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];
 
-		OFScryptBlockMix(buffer, tmp, blockSize);
+		_OFScryptBlockMix(buffer, tmp, blockSize);
 
 		if (i < costFactor - 1)
 			memcpy(tmp, buffer, 128 * blockSize);
@@ -200,7 +200,7 @@ OFScrypt(OFScryptParameters param)
 		});
 
 		for (size_t i = 0; i < param.parallelization; i++)
-			OFScryptROMix(bufferItems + i * 32 * param.blockSize,
+			_OFScryptROMix(bufferItems + i * 32 * param.blockSize,
 			    param.blockSize, param.costFactor, tmpItems);
 
 		OFPBKDF2((OFPBKDF2Parameters){

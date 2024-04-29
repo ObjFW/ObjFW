@@ -66,7 +66,7 @@
 	if (self != [OFKernelEventObserver class])
 		return;
 
-	if (!OFSocketInit())
+	if (!_OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -132,7 +132,7 @@
 			    exceptionWithClass: self.class];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (OFGetSockName(_cancelFD[0],
+		if (_OFGetSockName(_cancelFD[0],
 		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -152,7 +152,7 @@
 			if (ret == 0)
 				break;
 
-			if (OFSocketErrNo() != EADDRINUSE)
+			if (_OFSocketErrNo() != EADDRINUSE)
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
 		}

@@ -54,7 +54,7 @@ static struct {
 @end
 
 /* References for static linking */
-void
+void OF_VISIBILITY_HIDDEN
 _references_to_categories_of_OFData(void)
 {
 	_OFData_CryptographicHashing_reference = 1;
@@ -405,7 +405,7 @@ OF_SINGLETON_METHODS
 	@try {
 		data = [OFMutableData data];
 
-		if (!OFBase64Decode(data,
+		if (!_OFBase64Decode(data,
 		    [string cStringWithEncoding: OFStringEncodingASCII],
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
@@ -625,7 +625,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByBase64Encoding
 {
-	return OFBase64Encode(self.items, self.count * self.itemSize);
+	return _OFBase64Encode(self.items, self.count * self.itemSize);
 }
 
 - (OFRange)rangeOfData: (OFData *)data

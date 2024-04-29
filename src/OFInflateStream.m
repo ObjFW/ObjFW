@@ -164,12 +164,12 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	for (uint16_t i = 280; i <= 287; i++)
 		lengths[i] = 8;
 
-	fixedLitLenTree = OFHuffmanTreeNew(lengths, 288);
+	fixedLitLenTree = _OFHuffmanTreeNew(lengths, 288);
 
 	for (uint16_t i = 0; i <= 31; i++)
 		lengths[i] = 5;
 
-	fixedDistTree = OFHuffmanTreeNew(lengths, 32);
+	fixedDistTree = _OFHuffmanTreeNew(lengths, 32);
 }
 
 + (instancetype)streamWithStream: (OFStream *)stream
@@ -217,14 +217,14 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 		OFFreeMemory(_context.huffmanTree.lengths);
 
 		if (_context.huffmanTree.codeLenTree != NULL)
-			OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
+			_OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
 	}
 
 	if (_state == stateHuffmanTree || _state == stateHuffmanBlock) {
 		if (_context.huffman.litLenTree != fixedLitLenTree)
-			OFHuffmanTreeFree(_context.huffman.litLenTree);
+			_OFHuffmanTreeFree(_context.huffman.litLenTree);
 		if (_context.huffman.distTree != fixedDistTree)
-			OFHuffmanTreeFree(_context.huffman.distTree);
+			_OFHuffmanTreeFree(_context.huffman.distTree);
 	}
 
 	[super dealloc];
@@ -395,7 +395,7 @@ start:
 				CTX.lengths[codeLengthsOrder[i]] = bits;
 			}
 
-			CTX.codeLenTree = OFHuffmanTreeNew(CTX.lengths, 19);
+			CTX.codeLenTree = _OFHuffmanTreeNew(CTX.lengths, 19);
 			CTX.treeIter = CTX.codeLenTree;
 
 			OFFreeMemory(CTX.lengths);
@@ -413,7 +413,7 @@ start:
 			uint8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
-				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
+				if OF_UNLIKELY (!_OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value)) {
 					CTX.receivedCount = i;
 					return bytesWritten;
@@ -480,12 +480,12 @@ start:
 			CTX.value = 0xFF;
 		}
 
-		OFHuffmanTreeFree(CTX.codeLenTree);
+		_OFHuffmanTreeFree(CTX.codeLenTree);
 		CTX.codeLenTree = NULL;
 
-		CTX.litLenTree = OFHuffmanTreeNew(CTX.lengths,
+		CTX.litLenTree = _OFHuffmanTreeNew(CTX.lengths,
 		    CTX.litLenCodesCount + 257);
-		CTX.distTree = OFHuffmanTreeNew(
+		CTX.distTree = _OFHuffmanTreeNew(
 		    CTX.lengths + CTX.litLenCodesCount + 257,
 		    CTX.distCodesCount + 1);
 
@@ -537,7 +537,7 @@ start:
 
 			/* Distance of length distance pair */
 			if (CTX.state == huffmanStateAwaitDistance) {
-				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
+				if OF_UNLIKELY (!_OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value))
 					return bytesWritten;
 
@@ -601,16 +601,16 @@ start:
 				CTX.treeIter = CTX.litLenTree;
 			}
 
-			if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+			if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 			    &CTX.treeIter, &value))
 				return bytesWritten;
 
 			/* End of block */
 			if OF_UNLIKELY (value == 256) {
 				if (CTX.litLenTree != fixedLitLenTree)
-					OFHuffmanTreeFree(CTX.litLenTree);
+					_OFHuffmanTreeFree(CTX.litLenTree);
 				if (CTX.distTree != fixedDistTree)
-					OFHuffmanTreeFree(CTX.distTree);
+					_OFHuffmanTreeFree(CTX.distTree);
 
 				_state = stateBlockHeader;
 				goto start;

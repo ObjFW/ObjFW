@@ -42,10 +42,10 @@ typedef struct {
 #elif defined(OF_AMIGAOS)
 # include <exec/tasks.h>
 typedef struct {
-	struct OFPlainConditionWaitingTask {
+	struct _OFPlainConditionWaitingTask {
 		struct Task *task;
 		unsigned char sigBit;
-		struct OFPlainConditionWaitingTask *next;
+		struct _OFPlainConditionWaitingTask *next;
 	} *waitingTasks;
 } OFPlainCondition;
 #endif

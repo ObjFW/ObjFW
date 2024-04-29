@@ -74,6 +74,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to get value named %@: %@",
-	    _valueName, OFWindowsStatusToString(_status)];
+	    _valueName, _OFWindowsStatusToString(_status)];
 }
 @end

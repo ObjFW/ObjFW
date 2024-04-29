@@ -244,10 +244,10 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern uint32_t OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull);
-extern uint64_t OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull);
+extern uint32_t _OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern uint64_t _OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

@@ -152,7 +152,7 @@ static const unsigned char testVector4[64] = {
 	uint32_t salsa20Buffer[16];
 
 	memcpy(salsa20Buffer, salsa20Input, 64);
-	OFSalsa20_8Core(salsa20Buffer);
+	_OFSalsa20_8Core(salsa20Buffer);
 	OTAssertEqual(memcmp(salsa20Buffer, salsa20Output, 64), 0);
 }
 
@@ -160,7 +160,7 @@ static const unsigned char testVector4[64] = {
 {
 	uint32_t blockMixBuffer[32];
 
-	OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1);
+	_OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1);
 	OTAssertEqual(memcmp(blockMixBuffer, blockMixOutput, 128), 0);
 }
 
@@ -169,7 +169,7 @@ static const unsigned char testVector4[64] = {
 	uint32_t ROMixBuffer[32], ROMixTmp[17 * 32];
 
 	memcpy(ROMixBuffer, ROMixInput, 128);
-	OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp);
+	_OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp);
 	OTAssertEqual(memcmp(ROMixBuffer, ROMixOutput, 128), 0);
 }
 

@@ -212,7 +212,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
 	    @"\n"
-	    @"#import \"OFString.h\"\n\n"
+	    @"#import \"unicode.h\"\n"
+	    @"\n"
 	    @"static const OFUnichar emptyPage[0x100] = { 0 };\n"
 	    @"\n"];
 
@@ -383,9 +384,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	_titlecaseTableSize++;
 	_caseFoldingTableSize++;
 
-	/* Write OFUnicodeUppercaseTable */
+	/* Write _OFUnicodeUppercaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeUppercaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeUppercaseTable[0x%X] = {\n\t",
 			   _uppercaseTableSize];
 
 	for (OFUnichar i = 0; i < _uppercaseTableSize; i++) {
@@ -404,9 +405,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeLowercaseTable */
+	/* Write _OFUnicodeLowercaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeLowercaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeLowercaseTable[0x%X] = {\n\t",
 			   _lowercaseTableSize];
 
 	for (OFUnichar i = 0; i < _lowercaseTableSize; i++) {
@@ -425,9 +426,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeTitlecaseTable */
+	/* Write _OFUnicodeTitlecaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeTitlecaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeTitlecaseTable[0x%X] = {\n\t",
 			   _titlecaseTableSize];
 
 	for (OFUnichar i = 0; i < _titlecaseTableSize; i++) {
@@ -448,9 +449,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeCaseFoldingTable */
+	/* Write _OFUnicodeCaseFoldingTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeCaseFoldingTable[0x%X] = {\n\t",
+			   @"_OFUnicodeCaseFoldingTable[0x%X] = {\n\t",
 			   _caseFoldingTableSize];
 
 	for (OFUnichar i = 0; i < _caseFoldingTableSize; i++) {
@@ -484,10 +485,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#import \"OFString.h\"\n\n"];
 
 	[file writeFormat:
-	    @"#define OFUnicodeUppercaseTableSize 0x%X\n"
-	    @"#define OFUnicodeLowercaseTableSize 0x%X\n"
-	    @"#define OFUnicodeTitlecaseTableSize 0x%X\n"
-	    @"#define OFUnicodeCaseFoldingTableSize 0x%X\n\n",
+	    @"#define _OFUnicodeUppercaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeLowercaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeTitlecaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeCaseFoldingTableSize 0x%X\n\n",
 	    _uppercaseTableSize, _lowercaseTableSize, _titlecaseTableSize,
 	    _caseFoldingTableSize];
 
@@ -496,13 +497,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"extern \"C\" {\n"
 	    @"#endif\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeUppercaseTable[OFUnicodeUppercaseTableSize];\n"
+	    @"    _OFUnicodeUppercaseTable[_OFUnicodeUppercaseTableSize] "
+	    @"OF_VISIBILITY_HIDDEN;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeLowercaseTable[OFUnicodeLowercaseTableSize];\n"
+	    @"    _OFUnicodeLowercaseTable[_OFUnicodeLowercaseTableSize] "
+	    @"OF_VISIBILITY_HIDDEN;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];\n"
+	    @"    _OFUnicodeTitlecaseTable[_OFUnicodeTitlecaseTableSize] "
+	    @"OF_VISIBILITY_HIDDEN;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];\n"
+	    @"    _OFUnicodeCaseFoldingTable[_OFUnicodeCaseFoldingTableSize]\n"
+	    @"    OF_VISIBILITY_HIDDEN;\n"
 	    @"#ifdef __cplusplus\n"
 	    @"}\n"
 	    @"#endif\n"];

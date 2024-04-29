@@ -101,7 +101,7 @@ OF_DIRECT_MEMBERS
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
+	return _OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
 }
 
 - (instancetype)init
@@ -411,7 +411,7 @@ OF_DIRECT_MEMBERS
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC16 = OFCRC16(_CRC16, buffer, ret);
+	_CRC16 = _OFCRC16(_CRC16, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -566,7 +566,7 @@ OF_DIRECT_MEMBERS
 		OFEnsure(e.bytesWritten <= length);
 
 		_bytesWritten += (uint64_t)e.bytesWritten;
-		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
+		_CRC16 = _OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
@@ -575,7 +575,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	_bytesWritten += (uint64_t)length;
-	_CRC16 = OFCRC16(_CRC16, buffer, length);
+	_CRC16 = _OFCRC16(_CRC16, buffer, length);
 
 	return length;
 }

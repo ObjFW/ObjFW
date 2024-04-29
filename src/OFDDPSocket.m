@@ -105,7 +105,7 @@ struct ATInterfaceConfig {
 				    port: port
 			    protocolType: protocolType
 				  socket: self
-				   errNo: OFSocketErrNo()];
+				   errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -116,7 +116,7 @@ struct ATInterfaceConfig {
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -134,9 +134,9 @@ struct ATInterfaceConfig {
 	address.family = OFSocketAddressFamilyAppleTalk;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -173,7 +173,7 @@ struct ATInterfaceConfig {
 				    port: port
 			    protocolType: protocolType
 				  socket: self
-				   errNo: OFSocketErrNo()];
+				   errNo: _OFSocketErrNo()];
 
 	OFSocketAddressSetAppleTalkNetwork(&address, config.address.s_net);
 	OFSocketAddressSetAppleTalkNode(&address, config.address.s_node);
@@ -227,7 +227,7 @@ struct ATInterfaceConfig {
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	if (ret < 1 || protocolType != _protocolType)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -266,7 +266,7 @@ struct ATInterfaceConfig {
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	if ((size_t)bytesWritten != length + 1) {
 		bytesWritten--;

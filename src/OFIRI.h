@@ -411,8 +411,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool OFIRIIsIPv6Host(OFString *host);
-extern void OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool);
+extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_HIDDEN;
+extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

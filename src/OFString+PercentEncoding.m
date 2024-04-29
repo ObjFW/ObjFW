@@ -54,7 +54,7 @@ int _OFString_PercentEncoding_reference;
 			char buffer[4];
 			size_t bufferLen;
 
-			if ((bufferLen = OFUTF8StringEncode(c, buffer)) == 0)
+			if ((bufferLen = _OFUTF8StringEncode(c, buffer)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			for (size_t j = 0; j < bufferLen; j++) {

@@ -248,16 +248,17 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = OFZIPArchiveReadField64(
+				_uncompressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = OFZIPArchiveReadField64(
+				_compressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_localFileHeaderOffset == 0xFFFFFFFF)
 				_localFileHeaderOffset =
-				    OFZIPArchiveReadField64(&ZIP64, &ZIP64Size);
+				    _OFZIPArchiveReadField64(&ZIP64,
+				    &ZIP64Size);
 			if (_startDiskNumber == 0xFFFF)
-				_startDiskNumber = OFZIPArchiveReadField32(
+				_startDiskNumber = _OFZIPArchiveReadField32(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0 || _localFileHeaderOffset < 0)

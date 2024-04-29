@@ -62,7 +62,7 @@
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressIPPort(address)
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -78,7 +78,7 @@
 #endif
 		if (bind(_socket, (struct sockaddr *)&address->sockaddr,
 		    address->length) != 0) {
-			int errNo = OFSocketErrNo();
+			int errNo = _OFSocketErrNo();
 
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
@@ -105,8 +105,8 @@
 			    address->length)) == 0)
 				break;
 
-			if (OFSocketErrNo() != EADDRINUSE) {
-				int errNo = OFSocketErrNo();
+			if (_OFSocketErrNo() != EADDRINUSE) {
+				int errNo = _OFSocketErrNo();
 				OFString *host = OFSocketAddressString(address);
 				uint16_t port = OFSocketAddressIPPort(address);
 
@@ -130,9 +130,9 @@
 	memset(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
-	if (OFGetSockName(_socket, (struct sockaddr *)&address->sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address->sockaddr,
 	    &address->length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;

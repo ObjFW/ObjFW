@@ -149,7 +149,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -170,7 +170,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	/* Cast needed for AmigaOS, where the argument is declared non-const */
 	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -323,7 +323,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -340,7 +340,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 		    address.length) != 0) {
-			int errNo = OFSocketErrNo();
+			int errNo = _OFSocketErrNo();
 
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
@@ -367,8 +367,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    address.length)) == 0)
 				break;
 
-			if (OFSocketErrNo() != EADDRINUSE) {
-				int errNo = OFSocketErrNo();
+			if (_OFSocketErrNo() != EADDRINUSE) {
+				int errNo = _OFSocketErrNo();
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
@@ -387,9 +387,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -435,7 +435,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 }
 
 - (bool)sendsKeepAlives
@@ -447,7 +447,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return v;
 }
@@ -462,7 +462,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 }
 
 - (bool)canDelaySendingSegments
@@ -474,7 +474,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return !v;
 }

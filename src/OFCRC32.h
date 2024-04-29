@@ -29,8 +29,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern uint32_t OFCRC32(uint32_t crc, const void *_Nonnull bytes,
-    size_t length);
+extern uint32_t _OFCRC32(uint32_t crc, const void *_Nonnull bytes,
+    size_t length) OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

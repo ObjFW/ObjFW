@@ -128,11 +128,11 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	OFFreeMemory(_slidingWindow);
 
 	if (_codeLenTree != NULL)
-		OFHuffmanTreeFree(_codeLenTree);
+		_OFHuffmanTreeFree(_codeLenTree);
 	if (_litLenTree != NULL)
-		OFHuffmanTreeFree(_litLenTree);
+		_OFHuffmanTreeFree(_litLenTree);
 	if (_distTree != NULL)
-		OFHuffmanTreeFree(_distTree);
+		_OFHuffmanTreeFree(_distTree);
 
 	OFFreeMemory(_codesLengths);
 
@@ -226,7 +226,7 @@ start:
 				_codesReceived++;
 		}
 
-		_codeLenTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_codeLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
@@ -236,7 +236,7 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 			return bytesWritten;
 
-		_codeLenTree = OFHuffmanTreeNewSingle(bits);
+		_codeLenTree = _OFHuffmanTreeNewSingle(bits);
 
 		_state = stateLitLenCodesCount;
 		goto start;
@@ -248,7 +248,7 @@ start:
 			@throw [OFInvalidFormatException exception];
 
 		if OF_UNLIKELY (bits == 0) {
-			OFHuffmanTreeFree(_codeLenTree);
+			_OFHuffmanTreeFree(_codeLenTree);
 			_codeLenTree = NULL;
 
 			_state = stateLitLenTreeSingle;
@@ -302,7 +302,7 @@ start:
 				continue;
 			}
 
-			if (!OFHuffmanTreeWalk(self, tryReadBits, &_treeIter,
+			if (!_OFHuffmanTreeWalk(self, tryReadBits, &_treeIter,
 			    &value))
 				return bytesWritten;
 
@@ -315,11 +315,11 @@ start:
 				_codesLengths[_codesReceived++] = value - 2;
 		}
 
-		_litLenTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_litLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
-		OFHuffmanTreeFree(_codeLenTree);
+		_OFHuffmanTreeFree(_codeLenTree);
 		_codeLenTree = NULL;
 
 		_state = stateDistCodesCount;
@@ -328,7 +328,7 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
 			return bytesWritten;
 
-		_litLenTree = OFHuffmanTreeNewSingle(bits);
+		_litLenTree = _OFHuffmanTreeNewSingle(bits);
 
 		_state = stateDistCodesCount;
 		goto start;
@@ -379,7 +379,7 @@ start:
 				_codesReceived++;
 		}
 
-		_distTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_distTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
@@ -390,15 +390,15 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distanceBits))
 			return bytesWritten;
 
-		_distTree = OFHuffmanTreeNewSingle(bits);
+		_distTree = _OFHuffmanTreeNewSingle(bits);
 
 		_treeIter = _litLenTree;
 		_state = stateBlockLitLen;
 		goto start;
 	case stateBlockLitLen:
 		if OF_UNLIKELY (_symbolsLeft == 0) {
-			OFHuffmanTreeFree(_litLenTree);
-			OFHuffmanTreeFree(_distTree);
+			_OFHuffmanTreeFree(_litLenTree);
+			_OFHuffmanTreeFree(_distTree);
 			_litLenTree = _distTree = NULL;
 
 			_state = stateBlockHeader;
@@ -426,7 +426,7 @@ start:
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
 
-		if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+		if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 		    &_treeIter, &value))
 			return bytesWritten;
 
@@ -448,7 +448,7 @@ start:
 
 		goto start;
 	case stateBlockDistLength:
-		if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+		if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 		    &_treeIter, &value))
 			return bytesWritten;
 

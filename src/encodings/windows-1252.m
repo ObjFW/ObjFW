@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFWindows1252Table[] = {
+const OFChar16 _OFWindows1252Table[] OF_VISIBILITY_HIDDEN = {
 	0x20AC, 0xFFFF, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
 	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0xFFFF, 0x017D, 0xFFFF,
 	0xFFFF, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
@@ -41,8 +41,8 @@ const OFChar16 OFWindows1252Table[] = {
 	0x00F0, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
 };
-const size_t OFWindows1252TableOffset =
-    256 - (sizeof(OFWindows1252Table) / sizeof(*OFWindows1252Table));
+const size_t _OFWindows1252TableOffset OF_VISIBILITY_HIDDEN =
+    256 - (sizeof(_OFWindows1252Table) / sizeof(*_OFWindows1252Table));
 
 static const unsigned char page0[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -101,8 +101,8 @@ static const unsigned char page21[] = {
 };
 static const uint8_t page21Start = 0x22;
 
-bool
-OFUnicodeToWindows1252(const OFUnichar *input, unsigned char *output,
+bool OF_VISIBILITY_HIDDEN
+_OFUnicodeToWindows1252(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {

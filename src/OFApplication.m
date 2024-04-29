@@ -114,7 +114,7 @@ atexitHandler(void)
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-	OFSocketDeinit();
+	_OFSocketDeinit();
 #endif
 }
 
