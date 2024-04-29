@@ -91,7 +91,7 @@ int
 OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, ULONG *signalMask)
 {
-	struct OFPlainConditionWaitingTask waitingTask = {
+	struct _OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
@@ -142,7 +142,7 @@ int
 OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask)
 {
-	struct OFPlainConditionWaitingTask waitingTask = {
+	struct _OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};

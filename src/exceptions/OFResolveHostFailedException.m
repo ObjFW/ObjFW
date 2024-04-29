@@ -75,6 +75,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"The host %@ could not be resolved: %@",
-	    _host, OFDNSResolverErrorCodeDescription(_errorCode)];
+	    _host, _OFDNSResolverErrorCodeDescription(_errorCode)];
 }
 @end

@@ -423,7 +423,7 @@ formatConversionSpecifierState(struct Context *ctx)
 
 		{
 			char buffer[5];
-			size_t len = OFUTF8StringEncode(
+			size_t len = _OFUTF8StringEncode(
 			    va_arg(ctx->arguments, OFUnichar), buffer);
 
 			if (len == 0)
@@ -454,7 +454,7 @@ formatConversionSpecifierState(struct Context *ctx)
 
 			j = 0;
 			for (size_t i = 0; i < len; i++) {
-				size_t clen = OFUTF8StringEncode(arg[i],
+				size_t clen = _OFUTF8StringEncode(arg[i],
 				    buffer + j);
 
 				if (clen == 0) {
@@ -759,7 +759,7 @@ static bool (*states[])(struct Context *) = {
 };
 
 int
-OFVASPrintF(char **string, const char *format, va_list arguments)
+_OFVASPrintF(char **string, const char *format, va_list arguments)
 {
 	struct Context ctx;
 

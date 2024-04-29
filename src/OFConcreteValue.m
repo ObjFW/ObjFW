@@ -31,7 +31,7 @@
 
 	@try {
 		_size = OFSizeOfTypeEncoding(objCType);
-		_objCType = OFStrDup(objCType);
+		_objCType = _OFStrDup(objCType);
 		_bytes = OFAllocMemory(1, _size);
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {

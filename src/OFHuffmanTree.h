@@ -33,7 +33,7 @@ typedef struct _OFHuffmanTree {
 
 /* Inlined for performance. */
 static OF_INLINE bool
-OFHuffmanTreeWalk(id _Nullable stream,
+_OFHuffmanTreeWalk(id _Nullable stream,
     bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
     OFHuffmanTree _Nonnull *_Nonnull tree, uint16_t *_Nonnull value)
 {
@@ -59,10 +59,12 @@ OFHuffmanTreeWalk(id _Nullable stream,
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFHuffmanTree _Nonnull OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
-    uint16_t count);
-extern OFHuffmanTree _Nonnull OFHuffmanTreeNewSingle(uint16_t value);
-extern void OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree);
+extern OFHuffmanTree _Nonnull _OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
+    uint16_t count) OF_VISIBILITY_HIDDEN;
+extern OFHuffmanTree _Nonnull _OFHuffmanTreeNewSingle(uint16_t value)
+    OF_VISIBILITY_HIDDEN;
+extern void _OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree)
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

@@ -67,7 +67,7 @@
 	if (scheme.length < 1 || !OFASCIIIsAlpha(*scheme.UTF8String))
 		@throw [OFInvalidFormatException exception];
 
-	OFIRIVerifyIsEscaped(scheme,
+	_OFIRIVerifyIsEscaped(scheme,
 	    [OFCharacterSet IRISchemeAllowedCharacterSet], false);
 
 	_scheme = [scheme.lowercaseString copy];
@@ -82,7 +82,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedHost;
 
-	if (OFIRIIsIPv6Host(host))
+	if (_OFIRIIsIPv6Host(host))
 		_percentEncodedHost = [[OFString alloc]
 		    initWithFormat: @"[%@]", host];
 	else
@@ -101,11 +101,11 @@
 
 	if ([percentEncodedHost hasPrefix: @"["] &&
 	    [percentEncodedHost hasSuffix: @"]"]) {
-		if (!OFIRIIsIPv6Host([percentEncodedHost substringWithRange:
+		if (!_OFIRIIsIPv6Host([percentEncodedHost substringWithRange:
 		    OFMakeRange(1, percentEncodedHost.length - 2)]))
 			@throw [OFInvalidFormatException exception];
 	} else if (percentEncodedHost != nil)
-		OFIRIVerifyIsEscaped(percentEncodedHost,
+		_OFIRIVerifyIsEscaped(percentEncodedHost,
 		    [OFCharacterSet IRIHostAllowedCharacterSet], true);
 
 	old = _percentEncodedHost;
@@ -143,7 +143,7 @@
 	OFString *old;
 
 	if (percentEncodedUser != nil)
-		OFIRIVerifyIsEscaped(percentEncodedUser,
+		_OFIRIVerifyIsEscaped(percentEncodedUser,
 		    [OFCharacterSet IRIUserAllowedCharacterSet], true);
 
 	old = _percentEncodedUser;
@@ -170,7 +170,7 @@
 	OFString *old;
 
 	if (percentEncodedPassword != nil)
-		OFIRIVerifyIsEscaped(percentEncodedPassword,
+		_OFIRIVerifyIsEscaped(percentEncodedPassword,
 		    [OFCharacterSet IRIPasswordAllowedCharacterSet], true);
 
 	old = _percentEncodedPassword;
@@ -196,7 +196,7 @@
 {
 	OFString *old;
 
-	OFIRIVerifyIsEscaped(percentEncodedPath,
+	_OFIRIVerifyIsEscaped(percentEncodedPath,
 	    [OFCharacterSet IRIPathAllowedCharacterSet], true);
 
 	old = _percentEncodedPath;
@@ -242,7 +242,7 @@
 	OFString *old;
 
 	if (percentEncodedQuery != nil)
-		OFIRIVerifyIsEscaped(percentEncodedQuery,
+		_OFIRIVerifyIsEscaped(percentEncodedQuery,
 		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 	old = _percentEncodedQuery;
@@ -309,7 +309,7 @@
 	OFString *old;
 
 	if (percentEncodedFragment != nil)
-		OFIRIVerifyIsEscaped(percentEncodedFragment,
+		_OFIRIVerifyIsEscaped(percentEncodedFragment,
 		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 	old = _percentEncodedFragment;

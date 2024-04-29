@@ -27,8 +27,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFIRI *OFArchiveIRIHandlerIRIForFileInArchive(OFString *, OFString *,
-    OFIRI *);
+extern OFIRI *_OFArchiveIRIHandlerIRIForFileInArchive(OFString *, OFString *,
+    OFIRI *) OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

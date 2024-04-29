@@ -195,7 +195,7 @@ end:
 @end
 
 OFIRI *
-OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
+_OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
     OFString *pathInArchive, OFIRI *archiveIRI)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;

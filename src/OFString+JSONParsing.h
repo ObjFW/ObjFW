@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_JSONParsing_reference;
+extern int _OFString_JSONParsing_reference OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

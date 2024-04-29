@@ -71,6 +71,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to delete subkey at path %@: %@",
-	    _subkeyPath, OFWindowsStatusToString(_status)];
+	    _subkeyPath, _OFWindowsStatusToString(_status)];
 }
 @end

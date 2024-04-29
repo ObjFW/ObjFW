@@ -58,7 +58,7 @@ treeInsert(OFHuffmanTree tree, uint16_t code, uint8_t length, uint16_t value)
 }
 
 OFHuffmanTree
-OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
+_OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 {
 	OFHuffmanTree tree;
 	uint16_t *lengthCount = NULL;
@@ -113,7 +113,7 @@ OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 }
 
 OFHuffmanTree
-OFHuffmanTreeNewSingle(uint16_t value)
+_OFHuffmanTreeNewSingle(uint16_t value)
 {
 	OFHuffmanTree tree = newTree();
 
@@ -123,11 +123,11 @@ OFHuffmanTreeNewSingle(uint16_t value)
 }
 
 void
-OFHuffmanTreeFree(OFHuffmanTree tree)
+_OFHuffmanTreeFree(OFHuffmanTree tree)
 {
 	for (uint_fast8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leaves[i] != NULL)
-			OFHuffmanTreeFree(tree->leaves[i]);
+			_OFHuffmanTreeFree(tree->leaves[i]);
 
 	OFFreeMemory(tree);
 }

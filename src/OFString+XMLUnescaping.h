@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_XMLUnescaping_reference;
+extern int _OFString_XMLUnescaping_reference OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

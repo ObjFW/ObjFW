@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFObject_KeyValueCoding_reference;
+extern int _OFObject_KeyValueCoding_reference OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

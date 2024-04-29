@@ -43,7 +43,7 @@ static const signed char decodeTable[128] = {
 };
 
 OFString *
-OFBase64Encode(const void *data, size_t length)
+_OFBase64Encode(const void *data, size_t length)
 {
 	OFMutableString *ret = [OFMutableString string];
 	uint8_t *buffer = (uint8_t *)data;
@@ -99,7 +99,7 @@ OFBase64Encode(const void *data, size_t length)
 }
 
 bool
-OFBase64Decode(OFMutableData *data, const char *string, size_t length)
+_OFBase64Decode(OFMutableData *data, const char *string, size_t length)
 {
 	const uint8_t *buffer = (const uint8_t *)string;
 	size_t i;

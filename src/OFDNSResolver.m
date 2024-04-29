@@ -624,7 +624,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	if (self != [OFDNSResolver class])
 		return;
 
-	if (!OFSocketInit())
+	if (!_OFSocketInit())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }

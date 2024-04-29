@@ -97,6 +97,7 @@
 # define OF_CONST_FUNC __attribute__((__const__))
 # define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
+# define OF_VISIBILITY_HIDDEN __attribute__((__visibility__("hidden")))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) (cond)
@@ -104,6 +105,7 @@
 # define OF_CONST_FUNC
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)
+# define OF_VISIBILITY_HIDDEN
 #endif
 
 #if __STDC_VERSION__ >= 201112L
@@ -469,13 +471,13 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16Const(uint16_t i)
+_OFByteSwap16Const(uint16_t i)
 {
 	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32Const(uint32_t i)
+_OFByteSwap32Const(uint32_t i)
 {
 	return (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >> 8 |
@@ -484,7 +486,7 @@ OFByteSwap32Const(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64Const(uint64_t i)
+_OFByteSwap64Const(uint64_t i)
 {
 	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
 	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
@@ -497,7 +499,7 @@ OFByteSwap64Const(uint64_t i)
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16NonConst(uint16_t i)
+_OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
@@ -528,7 +530,7 @@ OFByteSwap16NonConst(uint16_t i)
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32NonConst(uint32_t i)
+_OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
@@ -561,7 +563,7 @@ OFByteSwap32NonConst(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64NonConst(uint64_t i)
+_OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
@@ -580,24 +582,24 @@ OFByteSwap64NonConst(uint64_t i)
 	    : "0" (i)
 	);
 #else
-	i = (uint64_t)OFByteSwap32NonConst(
+	i = (uint64_t)_OFByteSwap32NonConst(
 	    (uint32_t)(i & UINT32_C(0xFFFFFFFF))) << 32 |
-	    OFByteSwap32NonConst((uint32_t)(i >> 32));
+	    _OFByteSwap32NonConst((uint32_t)(i >> 32));
 #endif
 	return i;
 }
 
 #ifdef __GNUC__
 # define OFByteSwap16(i) \
-    (__builtin_constant_p(i) ? OFByteSwap16Const(i) : OFByteSwap16NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap16Const(i) : _OFByteSwap16NonConst(i))
 # define OFByteSwap32(i) \
-    (__builtin_constant_p(i) ? OFByteSwap32Const(i) : OFByteSwap32NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap32Const(i) : _OFByteSwap32NonConst(i))
 # define OFByteSwap64(i) \
-    (__builtin_constant_p(i) ? OFByteSwap64Const(i) : OFByteSwap64NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap64Const(i) : _OFByteSwap64NonConst(i))
 #else
-# define OFByteSwap16(i) OFByteSwap16Const(i)
-# define OFByteSwap32(i) OFByteSwap32Const(i)
-# define OFByteSwap64(i) OFByteSwap64Const(i)
+# define OFByteSwap16(i) _OFByteSwap16Const(i)
+# define OFByteSwap32(i) _OFByteSwap32Const(i)
+# define OFByteSwap64(i) _OFByteSwap64Const(i)
 #endif
 
 static OF_INLINE uint32_t

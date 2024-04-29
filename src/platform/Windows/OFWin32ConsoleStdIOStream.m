@@ -180,7 +180,7 @@ codepageToEncoding(UINT codepage)
 			char UTF8[4];
 			size_t UTF8Len;
 
-			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
+			if ((UTF8Len = _OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
@@ -237,7 +237,7 @@ codepageToEncoding(UINT codepage)
 				i++;
 			}
 
-			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
+			if ((UTF8Len = _OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
@@ -278,7 +278,7 @@ codepageToEncoding(UINT codepage)
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
 
-		UTF8Len = -OFUTF8StringDecode(
+		UTF8Len = -_OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		OFEnsure(UTF8Len > 0);
@@ -294,7 +294,7 @@ codepageToEncoding(UINT codepage)
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
 			return 0;
 
-		UTF8Len = OFUTF8StringDecode(
+		UTF8Len = _OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
@@ -366,7 +366,7 @@ codepageToEncoding(UINT codepage)
 			OFUnichar c;
 			ssize_t UTF8Len;
 
-			UTF8Len = OFUTF8StringDecode(buffer + i, length - i,
+			UTF8Len = _OFUTF8StringDecode(buffer + i, length - i,
 			    &c);
 
 			if (UTF8Len < 0 && UTF8Len >= -4) {

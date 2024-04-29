@@ -58,9 +58,9 @@
 # define hstrerror(err) "unknown (no hstrerror)"
 # define SOCKET_ERROR -1
 # if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
-#  define SocketBase ((struct Library *)OFTLSKeyGet(OFSocketBaseKey))
+#  define SocketBase ((struct Library *)OFTLSKeyGet(_OFSocketBaseKey))
 #  ifdef OF_AMIGAOS4
-#   define ISocket ((struct SocketIFace *)OFTLSKeyGet(OFSocketInterfaceKey))
+#   define ISocket ((struct SocketIFace *)OFTLSKeyGet(_OFSocketInterfaceKey))
 #  endif
 # endif
 # ifdef OF_MORPHOS

@@ -24,7 +24,7 @@
 static const uint32_t CRC32Magic = 0xEDB88320;
 
 uint32_t
-OFCRC32(uint32_t CRC, const void *bytes_, size_t length)
+_OFCRC32(uint32_t CRC, const void *bytes_, size_t length)
 {
 	const unsigned char *bytes = bytes_;
 

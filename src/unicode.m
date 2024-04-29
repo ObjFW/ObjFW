@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFString.h"
+#import "unicode.h"
 
 static const OFUnichar emptyPage[0x100] = { 0 };
 
@@ -2123,7 +2123,7 @@ static const OFUnichar caseFoldingPage251[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeUppercaseTable[0x1EA] = {
 	uppercasePage0, uppercasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2249,7 +2249,7 @@ const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeLowercaseTable[0x1EA] = {
 	lowercasePage0, lowercasePage1, lowercasePage2, lowercasePage3,
 	lowercasePage4, lowercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2375,7 +2375,7 @@ const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
 	emptyPage, lowercasePage489
 };
 
-const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeTitlecaseTable[0x1EA] = {
 	uppercasePage0, titlecasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2501,7 +2501,7 @@ const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const OFUnichar *const OFUnicodeCaseFoldingTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeCaseFoldingTable[0x1EA] = {
 	caseFoldingPage0, caseFoldingPage1, lowercasePage2,
 	caseFoldingPage3, lowercasePage4, lowercasePage5,
 	emptyPage, emptyPage, emptyPage,

@@ -80,6 +80,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set value named %@ of type %u: %@",
-	    _valueName, _type, OFWindowsStatusToString(_status)];
+	    _valueName, _type, _OFWindowsStatusToString(_status)];
 }
 @end

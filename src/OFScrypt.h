@@ -65,10 +65,11 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void OFSalsa20_8Core(uint32_t buffer[_Nonnull 16]);
-extern void OFScryptBlockMix(uint32_t *output, const uint32_t *input,
+/* No OF_VISIBILITY_HIDDEN so tests can call it. */
+extern void _OFSalsa20_8Core(uint32_t buffer[_Nonnull 16]);
+extern void _OFScryptBlockMix(uint32_t *output, const uint32_t *input,
     size_t blockSize);
-extern void OFScryptROMix(uint32_t *buffer, size_t blockSize,
+extern void _OFScryptROMix(uint32_t *buffer, size_t blockSize,
     size_t costFactor, uint32_t *tmp);
 
 /**

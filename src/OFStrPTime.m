@@ -25,7 +25,7 @@
 #import "macros.h"
 
 const char *
-OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
+_OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 {
 	enum {
 		stateSearchConversionSpecifier,
