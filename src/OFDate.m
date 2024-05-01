@@ -279,8 +279,8 @@ OF_SINGLETON_METHODS
 	}
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-	value = OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
-	    seconds)));
+	value = OFFromBigEndian64(OFBitConvertDoubleToUInt64(
+	    OFToBigEndianDouble(seconds)));
 
 	/* Almost all dates fall into this range. */
 	if (value & (UINT64_C(4) << 60)) {
