@@ -318,7 +318,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 	for (uint_fast8_t i = 0; i < 4; i++)
 		for (uint_fast8_t j = 0; j < 4; j++)
-			OFHashAddHash(&hash, OFFloatToRawUInt32(_values[i][j]));
+			OFHashAddHash(&hash,
+			    OFBitConvertFloatToUInt32(_values[i][j]));
 
 	OFHashFinalize(&hash);
 

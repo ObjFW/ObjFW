@@ -1335,12 +1335,26 @@ extern OFStringEncoding OFStringEncodingParseName(OFString *name);
  */
 extern OFString *_Nullable OFStringEncodingName(OFStringEncoding encoding);
 
+/**
+ * @brief Returns the length of the specified UTF-16 string.
+ *
+ * @param string The UTF-16 string
+ * @return The length of the specified UTF-16 string
+ */
+extern size_t OFUTF16StringLength(const OFChar16 *string);
+
+/**
+ * @brief Returns the length of the specified UTF-32 string.
+ *
+ * @param string The UTF-32 string
+ * @return The length of the specified UTF-32 string
+ */
+extern size_t OFUTF32StringLength(const OFChar32 *string);
+
 extern char *_Nullable _OFStrDup(const char *_Nonnull) OF_VISIBILITY_HIDDEN;
 extern size_t _OFUTF8StringEncode(OFUnichar, char *) OF_VISIBILITY_HIDDEN;
 extern ssize_t _OFUTF8StringDecode(const char *, size_t, OFUnichar *)
     OF_VISIBILITY_HIDDEN;
-extern size_t OFUTF16StringLength(const OFChar16 *);
-extern size_t OFUTF32StringLength(const OFChar32 *);
 #ifdef __cplusplus
 }
 #endif

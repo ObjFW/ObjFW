@@ -1482,8 +1482,44 @@ extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
 extern void objc_removeAssociatedObjects(id _Nonnull object);
 # endif
 #endif
+
+/**
+ * @brief Allocates a new object.
+ *
+ * This is useful to override @ref OFObject#alloc in a subclass that can then
+ * allocate extra memory in the same memory allocation.
+ *
+ * @param class_ The class of which to allocate an object
+ * @param extraSize Extra space after the ivars to allocate
+ * @param extraAlignment Alignment of the extra space after the ivars
+ * @param extra A pointer to set to a pointer to the extra space
+ * @return The allocated object
+ */
 extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
     void *_Nullable *_Nullable extra);
+
+/**
+ * @brief This function is called when a method is not found.
+ *
+ * It can also be called intentionally to indicate that a method is not
+ * implemetned, for example in an abstract method. However, instead of calling
+ * OFMethodNotFound directly, it is preferred to do the following:
+ *
+ *     - (void)abstractMethod
+ *     {
+ *     	OF_UNRECOGNIZED_SELECTOR
+ *     }
+ *
+ * However, do not use this for init methods. Instead, use the following:
+ *
+ *     - (instancetype)init
+ *     {
+ *     	OF_INVALID_INIT_METHOD
+ *     }
+ *
+ * @param self The object which does not have the method
+ * @param _cmd The selector of the method that does not exist
+ */
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
 
 /**
