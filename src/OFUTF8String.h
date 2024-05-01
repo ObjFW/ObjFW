@@ -46,8 +46,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int OFUTF8StringCheck(const char *, size_t, size_t *);
-extern size_t OFUTF8StringIndexToPosition(const char *, size_t, size_t);
+extern int _OFUTF8StringCheck(const char *, size_t, size_t *)
+    OF_VISIBILITY_HIDDEN;
+extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

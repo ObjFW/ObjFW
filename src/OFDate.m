@@ -279,8 +279,8 @@ OF_SINGLETON_METHODS
 	}
 
 #if defined(OF_OBJFW_RUNTIME) && UINTPTR_MAX == UINT64_MAX
-	value = OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
-	    seconds)));
+	value = OFFromBigEndian64(OFBitConvertDoubleToUInt64(
+	    OFToBigEndianDouble(seconds)));
 
 	/* Almost all dates fall into this range. */
 	if (value & (UINT64_C(4) << 60)) {
@@ -414,7 +414,7 @@ OF_SINGLETON_METHODS
 	struct tm tm = { .tm_isdst = -1 };
 	short tz = 0;
 
-	if (OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
+	if (_OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 
@@ -430,14 +430,14 @@ OF_SINGLETON_METHODS
 	const char *UTF8String = string.UTF8String;
 	struct tm tm = { .tm_isdst = -1 };
 	/*
-	 * OFStrPTime() can never set this to SHRT_MAX, no matter what is
+	 * _OFStrPTime() can never set this to SHRT_MAX, no matter what is
 	 * passed to it, so this is a safe way to figure out if the date
 	 * contains a time zone.
 	 */
 	short tz = SHRT_MAX;
 	OFTimeInterval seconds;
 
-	if (OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
+	if (_OFStrPTime(UTF8String, format.UTF8String, &tm, &tz) !=
 	    UTF8String + string.UTF8StringLength)
 		@throw [OFInvalidFormatException exception];
 
@@ -692,7 +692,7 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		if (_OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
 		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 
@@ -741,7 +741,7 @@ OF_SINGLETON_METHODS
 	pageSize = [OFSystemInfo pageSize];
 	buffer = OFAllocMemory(1, pageSize);
 	@try {
-		if (OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
+		if (_OFStrFTime(buffer, pageSize, format.UTF8String, &tm,
 		    0) == 0)
 			@throw [OFOutOfRangeException exception];
 

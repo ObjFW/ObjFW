@@ -56,8 +56,8 @@
 	int16_t timeZone;
 	const char *dateString = "Wed, 09 Jun 2021 +0200x";
 
-	OTAssertEqual(OFStrPTime(dateString, "%a, %d %b %Y %z", &tm, &timeZone),
-	    dateString + 22);
+	OTAssertEqual(_OFStrPTime(dateString, "%a, %d %b %Y %z", &tm,
+	    &timeZone), dateString + 22);
 	OTAssertEqual(tm.tm_wday, 3);
 	OTAssertEqual(tm.tm_mday, 9);
 	OTAssertEqual(tm.tm_mon, 5);

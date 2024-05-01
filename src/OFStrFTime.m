@@ -34,7 +34,7 @@ static const char monthNames[12][4] = {
 };
 
 size_t
-OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
+_OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
     short tz)
 {
 	enum {

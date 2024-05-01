@@ -82,6 +82,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to open subkey at path %@: %@",
-	    _path, OFWindowsStatusToString(_status)];
+	    _path, _OFWindowsStatusToString(_status)];
 }
 @end

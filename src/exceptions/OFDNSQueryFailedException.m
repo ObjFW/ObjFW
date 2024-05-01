@@ -23,7 +23,7 @@
 #import "OFString.h"
 
 OFString *
-OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
+_OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 {
 	switch (errorCode) {
 	case OFDNSResolverErrorCodeTimeout:
@@ -100,6 +100,6 @@ OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 {
 	return [OFString stringWithFormat:
 	    @"DNS query %@ could not be performed: %@",
-	    _query, OFDNSResolverErrorCodeDescription(_errorCode)];
+	    _query, _OFDNSResolverErrorCodeDescription(_errorCode)];
 }
 @end

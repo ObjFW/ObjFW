@@ -95,7 +95,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
 	    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_SCTP)) ==
 	    OFInvalidSocketHandle) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -115,7 +115,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -242,7 +242,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		    exceptionWithHost: host
 				 port: port
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -256,7 +256,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -270,9 +270,9 @@ static const OFRunLoopMode connectRunLoopMode =
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -316,7 +316,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 }
 
 - (bool)canDelaySendingPackets
@@ -328,7 +328,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return !v;
 }

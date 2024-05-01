@@ -446,20 +446,20 @@ extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
 extern uint8_t OFSocketAddressAppleTalkPort(
     const OFSocketAddress *_Nonnull address);
 
-extern bool OFSocketInit(void);
+extern bool _OFSocketInit(void) OF_VISIBILITY_HIDDEN;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern void OFSocketDeinit(void);
+extern void _OFSocketDeinit(void) OF_VISIBILITY_HIDDEN;
 #endif
-extern int OFSocketErrNo(void);
+extern int _OFSocketErrNo(void) OF_VISIBILITY_HIDDEN;
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen);
+extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen) OF_VISIBILITY_HIDDEN;
 #endif
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern OFTLSKey OFSocketBaseKey;
+extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_HIDDEN;
 # ifdef OF_AMIGAOS4
-extern OFTLSKey OFSocketInterfaceKey;
+extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_HIDDEN;
 # endif
 #endif
 #ifdef __cplusplus

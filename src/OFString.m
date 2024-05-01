@@ -104,31 +104,31 @@ static locale_t cLocale;
 @interface OFPlaceholderString: OFString
 @end
 
-extern bool OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToKOI8R(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToKOI8R(const OFUnichar *, unsigned char *,
     size_t, bool);
-extern bool OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
+extern bool _OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
     size_t, bool);
 
 /* References for static linking */
-void
+void OF_VISIBILITY_HIDDEN
 _references_to_categories_of_OFString(void)
 {
 	_OFString_CryptographicHashing_reference = 1;
@@ -142,7 +142,7 @@ _references_to_categories_of_OFString(void)
 	_OFString_XMLUnescaping_reference = 1;
 }
 
-void
+void OF_VISIBILITY_HIDDEN
 _reference_to_OFConstantString(void)
 {
 	[OFConstantString class];
@@ -243,7 +243,7 @@ OFStringEncodingName(OFStringEncoding encoding)
 }
 
 size_t
-OFUTF8StringEncode(OFUnichar character, char *buffer)
+_OFUTF8StringEncode(OFUnichar character, char *buffer)
 {
 	if (character < 0x80) {
 		buffer[0] = character;
@@ -269,7 +269,7 @@ OFUTF8StringEncode(OFUnichar character, char *buffer)
 }
 
 ssize_t
-OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
+_OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 {
 	const unsigned char *buffer = (const unsigned char *)buffer_;
 
@@ -341,7 +341,7 @@ OFUTF32StringLength(const OFChar32 *string)
 }
 
 char *
-OFStrDup(const char *string)
+_OFStrDup(const char *string)
 {
 	size_t length = strlen(string);
 	char *copy = (char *)OFAllocMemory(1, length + 1);
@@ -1062,7 +1062,7 @@ OF_SINGLETON_METHODS
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = OFUTF8StringEncode(characters[i], buffer);
+			size_t len = _OFUTF8StringEncode(characters[i], buffer);
 
 			/*
 			 * Check for one more than the current index, as we
@@ -1134,7 +1134,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_2(characters, (unsigned char *)cString,
+		if (!_OFUnicodeToISO8859_2(characters, (unsigned char *)cString,
 		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1147,7 +1147,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_3(characters, (unsigned char *)cString,
+		if (!_OFUnicodeToISO8859_3(characters, (unsigned char *)cString,
 		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1160,8 +1160,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_15(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToISO8859_15(characters,
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1173,7 +1173,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToWindows1251(characters,
+		if (!_OFUnicodeToWindows1251(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1186,7 +1186,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToWindows1252(characters,
+		if (!_OFUnicodeToWindows1252(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1199,7 +1199,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage437(characters,
+		if (!_OFUnicodeToCodepage437(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1212,7 +1212,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage850(characters,
+		if (!_OFUnicodeToCodepage850(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1225,7 +1225,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage858(characters,
+		if (!_OFUnicodeToCodepage858(characters,
 		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1238,7 +1238,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToMacRoman(characters, (unsigned char *)cString,
+		if (!_OFUnicodeToMacRoman(characters, (unsigned char *)cString,
 		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1251,7 +1251,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToKOI8R(characters, (unsigned char *)cString,
+		if (!_OFUnicodeToKOI8R(characters, (unsigned char *)cString,
 		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1264,7 +1264,7 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToKOI8U(characters, (unsigned char *)cString,
+		if (!_OFUnicodeToKOI8U(characters, (unsigned char *)cString,
 		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
@@ -1401,7 +1401,7 @@ OF_SINGLETON_METHODS
 
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = OFUTF8StringEncode(characters[i], buffer);
+			size_t len = _OFUTF8StringEncode(characters[i], buffer);
 
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -1554,16 +1554,16 @@ OF_SINGLETON_METHODS
 		OFUnichar oc = otherCharacters[i];
 
 #ifdef OF_HAVE_UNICODE_TABLES
-		if (c >> 8 < OFUnicodeCaseFoldingTableSize) {
+		if (c >> 8 < _OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    OFUnicodeCaseFoldingTable[c >> 8][c & 0xFF];
+			    _OFUnicodeCaseFoldingTable[c >> 8][c & 0xFF];
 
 			if (tc)
 				c = tc;
 		}
-		if (oc >> 8 < OFUnicodeCaseFoldingTableSize) {
+		if (oc >> 8 < _OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    OFUnicodeCaseFoldingTable[oc >> 8][oc & 0xFF];
+			    _OFUnicodeCaseFoldingTable[oc >> 8][oc & 0xFF];
 
 			if (tc)
 				oc = tc;

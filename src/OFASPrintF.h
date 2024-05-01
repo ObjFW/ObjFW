@@ -33,8 +33,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int OFVASPrintF(
-    char *_Nullable *_Nonnull, const char *_Nonnull, va_list);
+extern int _OFVASPrintF(
+    char *_Nullable *_Nonnull, const char *_Nonnull, va_list)
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

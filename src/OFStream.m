@@ -1180,7 +1180,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = OFVASPrintF(&UTF8String, format.UTF8String,
+	if ((length = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 

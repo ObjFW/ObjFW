@@ -24,7 +24,7 @@
 static const uint16_t CRC16Magic = 0xA001;
 
 uint16_t
-OFCRC16(uint16_t CRC, const void *bytes_, size_t length)
+_OFCRC16(uint16_t CRC, const void *bytes_, size_t length)
 {
 	const unsigned char *bytes = bytes_;
 

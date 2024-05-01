@@ -120,7 +120,7 @@ initIRIFragmentAllowedCharacterSet(void)
 }
 
 bool
-OFIRIIsIPv6Host(OFString *host)
+_OFIRIIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
@@ -421,7 +421,7 @@ OF_SINGLETON_METHODS
 @end
 
 void
-OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
+_OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
     bool allowPercent)
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -544,14 +544,14 @@ parseUserInfo(OFIRI *self, const char *UTF8String, size_t length)
 		    initWithUTF8String: colon + 1
 				length: length - (colon - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(self->_percentEncodedPassword,
+		_OFIRIVerifyIsEscaped(self->_percentEncodedPassword,
 		    [OFCharacterSet IRIPasswordAllowedCharacterSet], true);
 	} else
 		self->_percentEncodedUser = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: length];
 
-	OFIRIVerifyIsEscaped(self->_percentEncodedUser,
+	_OFIRIVerifyIsEscaped(self->_percentEncodedUser,
 	    [OFCharacterSet IRIUserAllowedCharacterSet], true);
 }
 
@@ -597,7 +597,7 @@ parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 			length = 0;
 		}
 
-		OFIRIVerifyIsEscaped(self->_percentEncodedHost,
+		_OFIRIVerifyIsEscaped(self->_percentEncodedHost,
 		    [OFCharacterSet IRIHostAllowedCharacterSet], true);
 	}
 
@@ -657,7 +657,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: fragment + 1
 				  length: length - (fragment - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(*fragmentString,
+		_OFIRIVerifyIsEscaped(*fragmentString,
 		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
@@ -668,7 +668,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: query + 1
 				  length: length - (query - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(*queryString,
+		_OFIRIVerifyIsEscaped(*queryString,
 		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = query - UTF8String;
@@ -677,7 +677,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 	*pathString = [OFString stringWithUTF8String: UTF8String
 					      length: length];
 
-	OFIRIVerifyIsEscaped(*pathString,
+	_OFIRIVerifyIsEscaped(*pathString,
 	    [OFCharacterSet IRIPathAllowedCharacterSet], true);
 }
 
@@ -700,7 +700,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 						    length: colon - UTF8String]
 		    lowercaseString] copy];
 
-		OFIRIVerifyIsEscaped(_scheme,
+		_OFIRIVerifyIsEscaped(_scheme,
 		    [OFCharacterSet IRISchemeAllowedCharacterSet], false);
 
 		length -= colon - UTF8String + 1;
@@ -1026,7 +1026,7 @@ merge(OFString *base, OFString *path)
 		OFString *host = [_percentEncodedHost substringWithRange:
 		    OFMakeRange(1, _percentEncodedHost.length - 2)];
 
-		if (!OFIRIIsIPv6Host(host))
+		if (!_OFIRIIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;

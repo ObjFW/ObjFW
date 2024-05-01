@@ -842,7 +842,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	tmp16 = OFToLittleEndian16(headerSize);
 	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
-	tmp16 = OFCRC16(0, data.items, data.count);
+	tmp16 = _OFCRC16(0, data.items, data.count);
 	tmp16 = OFToLittleEndian16(tmp16);
 	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 

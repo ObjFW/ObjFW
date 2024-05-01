@@ -125,7 +125,7 @@ OF_DIRECT_MEMBERS
 static OFString *
 normalizedKey(OFString *key)
 {
-	char *cString = OFStrDup(key.UTF8String);
+	char *cString = _OFStrDup(key.UTF8String);
 	unsigned char *tmp = (unsigned char *)cString;
 	bool firstLetter = true;
 	OFString *ret;

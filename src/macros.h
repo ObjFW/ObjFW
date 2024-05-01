@@ -39,6 +39,8 @@
 
 #include <sys/time.h>
 
+/** @file */
+
 #include "platform.h"
 
 #ifdef OF_OBJFW_RUNTIME
@@ -97,6 +99,7 @@
 # define OF_CONST_FUNC __attribute__((__const__))
 # define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
+# define OF_VISIBILITY_HIDDEN __attribute__((__visibility__("hidden")))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) (cond)
@@ -104,6 +107,7 @@
 # define OF_CONST_FUNC
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)
+# define OF_VISIBILITY_HIDDEN
 #endif
 
 #if __STDC_VERSION__ >= 201112L
@@ -469,13 +473,13 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16Const(uint16_t i)
+_OFByteSwap16Const(uint16_t i)
 {
 	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32Const(uint32_t i)
+_OFByteSwap32Const(uint32_t i)
 {
 	return (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >> 8 |
@@ -484,7 +488,7 @@ OFByteSwap32Const(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64Const(uint64_t i)
+_OFByteSwap64Const(uint64_t i)
 {
 	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
 	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
@@ -497,7 +501,7 @@ OFByteSwap64Const(uint64_t i)
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16NonConst(uint16_t i)
+_OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
@@ -528,7 +532,7 @@ OFByteSwap16NonConst(uint16_t i)
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32NonConst(uint32_t i)
+_OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
@@ -561,7 +565,7 @@ OFByteSwap32NonConst(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64NonConst(uint64_t i)
+_OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
@@ -580,82 +584,235 @@ OFByteSwap64NonConst(uint64_t i)
 	    : "0" (i)
 	);
 #else
-	i = (uint64_t)OFByteSwap32NonConst(
+	i = (uint64_t)_OFByteSwap32NonConst(
 	    (uint32_t)(i & UINT32_C(0xFFFFFFFF))) << 32 |
-	    OFByteSwap32NonConst((uint32_t)(i >> 32));
+	    _OFByteSwap32NonConst((uint32_t)(i >> 32));
 #endif
 	return i;
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(DOXYGEN)
+/**
+ * @brief Byte swaps the specified 16 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap16(i) \
-    (__builtin_constant_p(i) ? OFByteSwap16Const(i) : OFByteSwap16NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap16Const(i) : _OFByteSwap16NonConst(i))
+
+/**
+ * @brief Byte swaps the specified 32 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap32(i) \
-    (__builtin_constant_p(i) ? OFByteSwap32Const(i) : OFByteSwap32NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap32Const(i) : _OFByteSwap32NonConst(i))
+
+/**
+ * @brief Byte swaps the specified 64 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap64(i) \
-    (__builtin_constant_p(i) ? OFByteSwap64Const(i) : OFByteSwap64NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap64Const(i) : _OFByteSwap64NonConst(i))
 #else
-# define OFByteSwap16(i) OFByteSwap16Const(i)
-# define OFByteSwap32(i) OFByteSwap32Const(i)
-# define OFByteSwap64(i) OFByteSwap64Const(i)
+# define OFByteSwap16(i) _OFByteSwap16Const(i)
+# define OFByteSwap32(i) _OFByteSwap32Const(i)
+# define OFByteSwap64(i) _OFByteSwap64Const(i)
 #endif
 
-static OF_INLINE uint32_t
-OFFloatToRawUInt32(float f)
+/**
+ * @brief Bit-converts the specified float to a uint32_t.
+ *
+ * @param f The float to bit-convert
+ * @return The float bit-converted to a uint32_t
+ */
+static OF_INLINE uint32_t OF_CONST_FUNC
+OFBitConvertFloatToUInt32(float f)
 {
 	uint32_t ret;
 	memcpy(&ret, &f, 4);
 	return ret;
 }
 
-static OF_INLINE float
-OFRawUInt32ToFloat(uint32_t uInt32)
+/**
+ * @brief Bit-converts the specified uint32_t to a float.
+ *
+ * @param uInt32 The uint32_t to bit-convert
+ * @return The uint32_t bit-converted to a float
+ */
+static OF_INLINE float OF_CONST_FUNC
+OFBitConvertUInt32ToFloat(uint32_t uInt32)
 {
 	float ret;
 	memcpy(&ret, &uInt32, 4);
 	return ret;
 }
 
-static OF_INLINE uint64_t
-OFDoubleToRawUInt64(double d)
+/**
+ * @brief Bit-converts the specified double to a uint64_t.
+ *
+ * @param d The double to bit-convert
+ * @return The double bit-converted to a uint64_t
+ */
+static OF_INLINE uint64_t OF_CONST_FUNC
+OFBitConvertDoubleToUInt64(double d)
 {
 	uint64_t ret;
 	memcpy(&ret, &d, 8);
 	return ret;
 }
 
-static OF_INLINE double
-OFRawUInt64ToDouble(uint64_t uInt64)
+/**
+ * @brief Bit-converts the specified uint64_t to a double.
+ *
+ * @param uInt64 The uint64_t to bit-convert
+ * @return The uint64_t bit-converted to a double
+ */
+static OF_INLINE double OF_CONST_FUNC
+OFBitConvertUInt64ToDouble(uint64_t uInt64)
 {
 	double ret;
 	memcpy(&ret, &uInt64, 8);
 	return ret;
 }
 
+/**
+ * @brief Byte swaps the specified float.
+ *
+ * @param f The float to byte swap
+ * @return The byte swapped float
+ */
 static OF_INLINE float OF_CONST_FUNC
 OFByteSwapFloat(float f)
 {
-	return OFRawUInt32ToFloat(OFByteSwap32(OFFloatToRawUInt32(f)));
+	return OFBitConvertUInt32ToFloat(OFByteSwap32(
+	    OFBitConvertFloatToUInt32(f)));
 }
 
+/**
+ * @brief Byte swaps the specified double.
+ *
+ * @param d The double to byte swap
+ * @return The byte swapped double
+ */
 static OF_INLINE double OF_CONST_FUNC
 OFByteSwapDouble(double d)
 {
-	return OFRawUInt64ToDouble(OFByteSwap64(OFDoubleToRawUInt64(d)));
+	return OFBitConvertUInt64ToDouble(OFByteSwap64(
+	    OFBitConvertDoubleToUInt64(d)));
 }
 
-#ifdef OF_BIG_ENDIAN
+#if defined(OF_BIG_ENDIAN) || defined(DOXYGEN)
+/**
+ * @brief Converts the specified 16 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to native endian
+ */
 # define OFFromBigEndian16(i) (i)
+
+/**
+ * @brief Converts the specified 32 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to native endian
+ */
 # define OFFromBigEndian32(i) (i)
+
+/**
+ * @brief Converts the specified 64 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to native endian
+ */
 # define OFFromBigEndian64(i) (i)
+
+/**
+ * @brief Converts the specified 16 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to native endian
+ */
 # define OFFromLittleEndian16(i) OFByteSwap16(i)
+
+/**
+ * @brief Converts the specified 32 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to native endian
+ */
 # define OFFromLittleEndian32(i) OFByteSwap32(i)
+
+/**
+ * @brief Converts the specified 64 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to native endian
+ */
 # define OFFromLittleEndian64(i) OFByteSwap64(i)
+
+/**
+ * @brief Converts the specified 16 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to big endian
+ */
 # define OFToBigEndian16(i) (i)
+
+/**
+ * @brief Converts the specified 32 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to big endian
+ */
 # define OFToBigEndian32(i) (i)
+
+/**
+ * @brief Converts the specified 64 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to big endian
+ */
 # define OFToBigEndian64(i) (i)
+
+/**
+ * @brief Converts the specified 16 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to little endian
+ */
 # define OFToLittleEndian16(i) OFByteSwap16(i)
+
+/**
+ * @brief Converts the specified 32 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to little endian
+ */
 # define OFToLittleEndian32(i) OFByteSwap32(i)
+
+/**
+ * @brief Converts the specified 64 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to little endian
+ */
 # define OFToLittleEndian64(i) OFByteSwap64(i)
 #else
 # define OFFromBigEndian16(i) OFByteSwap16(i)
@@ -672,14 +829,69 @@ OFByteSwapDouble(double d)
 # define OFToLittleEndian64(i) (i)
 #endif
 
-#ifdef OF_FLOAT_BIG_ENDIAN
+#if defined(OF_FLOAT_BIG_ENDIAN) || defined(DOXYGEN)
+/**
+ * @brief Converts the specified float from big endian to native endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to native endian
+ */
 # define OFFromBigEndianFloat(f) (f)
+
+/**
+ * @brief Converts the specified double from big endian to native endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to native endian
+ */
 # define OFFromBigEndianDouble(d) (d)
+
+/**
+ * @brief Converts the specified float from little endian to native endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to native endian
+ */
 # define OFFromLittleEndianFloat(f) OFByteSwapFloat(f)
+
+/**
+ * @brief Converts the specified double from little endian to native endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to native endian
+ */
 # define OFFromLittleEndianDouble(d) OFByteSwapDouble(d)
+
+/**
+ * @brief Converts the specified float from native endian to big endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to big endian
+ */
 # define OFToBigEndianFloat(f) (f)
+
+/**
+ * @brief Converts the specified double from native endian to big endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to big endian
+ */
 # define OFToBigEndianDouble(d) (d)
+
+/**
+ * @brief Converts the specified float from native endian to little endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to little endian
+ */
 # define OFToLittleEndianFloat(f) OFByteSwapFloat(f)
+
+/**
+ * @brief Converts the specified double from native endian to little endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to little endian
+ */
 # define OFToLittleEndianDouble(d) OFByteSwapDouble(d)
 #else
 # define OFFromBigEndianFloat(f) OFByteSwapFloat(f)
@@ -692,17 +904,39 @@ OFByteSwapDouble(double d)
 # define OFToLittleEndianDouble(d) (d)
 #endif
 
+/**
+ * @brief Rotates the specified value left by the specified amount of bits.
+ *
+ * @param value The value to rotate
+ * @param bits The number of bits to rotate left the value by
+ * @return The value rotated left by the specified amount of bits
+ */
 #define OFRotateLeft(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) << ((bits) % (sizeof(value) * 8))) |			\
     ((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
+
+/**
+ * @brief Rotates the specified value right by the specified amount of bits.
+ *
+ * @param value The value to rotate
+ * @param bits The number of bits to rotate right the value by
+ * @return The value rotated right by the specified amount of bits
+ */
 #define OFRotateRight(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) >> ((bits) % (sizeof(value) * 8))) |			\
     ((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
 
+/**
+ * @brief Rounds up the specified value to the specified power of two.
+ *
+ * @param pow2 The power of 2 to round up to
+ * @param value The value to round up to the specified power of two
+ * @return The specified value rounded up to the specified power of two
+ */
 #define OFRoundUpToPowerOf2(pow2, value)	\
     (((value) + (pow2) - 1) & ~((pow2) - 1))
 

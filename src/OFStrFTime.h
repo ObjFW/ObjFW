@@ -33,8 +33,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern size_t OFStrFTime(char *buffer, size_t bufferLen, const char *format,
-    struct tm *tm, short tz);
+extern size_t _OFStrFTime(char *buffer, size_t bufferLen, const char *format,
+    struct tm *tm, short tz) OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

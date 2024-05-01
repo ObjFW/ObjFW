@@ -25,7 +25,7 @@
 #import "OTTestSkippedException.h"
 
 void
-OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
+_OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
     OFString *file, size_t line, ...)
 {
 	va_list arguments;
@@ -50,7 +50,7 @@ OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
 }
 
 void
-OTSkipImpl(id testCase, SEL test, OFString *file, size_t line, ...)
+_OTSkipImpl(id testCase, SEL test, OFString *file, size_t line, ...)
 {
 	va_list arguments;
 	OFConstantString *format;

@@ -109,7 +109,7 @@ OF_DIRECT_MEMBERS
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
 {
-	return OFArchiveIRIHandlerIRIForFileInArchive(@"zoo", path, IRI);
+	return _OFArchiveIRIHandlerIRIForFileInArchive(@"zoo", path, IRI);
 }
 
 - (instancetype)init
@@ -309,7 +309,7 @@ OF_DIRECT_MEMBERS
 		memcpy(buffer + 6, &tmp32, 4);
 
 		tmp16 = OFToLittleEndian16(
-		    OFCRC16(0, buffer, _lastHeaderLength));
+		    _OFCRC16(0, buffer, _lastHeaderLength));
 		memcpy(buffer + 54, &tmp16, 2);
 
 		[_stream seekToOffset: _lastHeaderOffset whence: OFSeekSet];
@@ -495,7 +495,7 @@ OF_DIRECT_MEMBERS
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC16 = OFCRC16(_CRC16, buffer, ret);
+	_CRC16 = _OFCRC16(_CRC16, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
@@ -606,7 +606,7 @@ OF_DIRECT_MEMBERS
 		OFEnsure(e.bytesWritten <= length);
 
 		_bytesWritten += (uint32_t)e.bytesWritten;
-		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
+		_CRC16 = _OFCRC16(_CRC16, buffer, e.bytesWritten);
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return e.bytesWritten;
@@ -615,7 +615,7 @@ OF_DIRECT_MEMBERS
 	}
 
 	_bytesWritten += (uint32_t)length;
-	_CRC16 = OFCRC16(_CRC16, buffer, length);
+	_CRC16 = _OFCRC16(_CRC16, buffer, length);
 
 	return length;
 }

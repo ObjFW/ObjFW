@@ -25,6 +25,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 @class OFArray OF_GENERIC(ObjectType);
 @class OFString;
 @class OFValue;
@@ -192,9 +194,21 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Converts the specified error number (from `<errno.h>`) to a string.
+ *
+ * Unlike the system function `strerror`, this function is always thread-safe.
+ *
+ * As an addition, on Windows, it is also able to convert socket error numbers
+ * to string.
+ *
+ * @param errNo The error number to convert to a string
+ * @return A string describing the error
+ */
 extern OFString *OFStrError(int errNo);
+
 #ifdef OF_WINDOWS
-extern OFString *OFWindowsStatusToString(LSTATUS status);
+extern OFString *_OFWindowsStatusToString(LSTATUS status) OF_VISIBILITY_HIDDEN;
 #endif
 #ifdef __cplusplus
 }

@@ -242,7 +242,7 @@
 	if (events < 0)
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
-				    errNo: OFSocketErrNo()];
+				    errNo: _OFSocketErrNo()];
 
 #ifdef OF_AMIGAOS
 	if (execSignalMask != 0 &&

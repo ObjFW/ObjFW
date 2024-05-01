@@ -52,7 +52,7 @@
 		@throw [OFConnectUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -63,7 +63,7 @@
 
 	if (connect(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -92,7 +92,7 @@
 		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -103,7 +103,7 @@
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;

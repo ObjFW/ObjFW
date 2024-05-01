@@ -40,7 +40,7 @@ static int dateTag;
 
 	value |= UINT64_C(4) << 60;
 
-	return OFFromBigEndianDouble(OFRawUInt64ToDouble(OFToBigEndian64(
+	return OFFromBigEndianDouble(OFBitConvertUInt64ToDouble(OFToBigEndian64(
 	    value)));
 }
 
