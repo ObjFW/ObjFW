@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install libssl-dev gnutls-dev
+        sudo apt-get install libsctp-dev libssl-dev gnutls-dev
     - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
