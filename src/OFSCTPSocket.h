@@ -27,6 +27,14 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSCTPSocket;
 @class OFString;
 
+/**
+ * @brief Flags for an SCTP packet.
+ */
+typedef enum {
+	/** The packet is sent / received out of order. */
+	OFSCTPPacketUnordered = 1
+} OFSCTPPacketFlags;
+
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief A block which is called when the socket connected.
@@ -42,12 +50,13 @@ typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
  * @param length The length of the packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param exception An exception which occurred while receiving or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^OFSCTPSocketAsyncReceiveBlock)(size_t length, uint16_t streamID,
-    uint32_t PPID, id _Nullable exception);
+    uint32_t PPID, OFSCTPPacketFlags flags, id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
@@ -89,6 +98,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param length The length of the packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param exception An exception that occurred while receiving, or nil on
  *		    success
  * @return A bool whether the same block should be used for the next receive
@@ -98,6 +108,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 		length: (size_t)length
 	      streamID: (uint16_t)streamID
 		  PPID: (uint32_t)PPID
+		 flags: (OFSCTPPacketFlags)flags
 	     exception: (nullable id)exception;
 
 /**
@@ -107,6 +118,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param data The data which was sent
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param exception An exception that occurred while sending, or nil on success
  * @return The data to repeat the send with or nil if it should not repeat
  */
@@ -114,6 +126,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 		didSendData: (OFData *)data
 		   streamID: (uint16_t)streamID
 		       PPID: (uint32_t)PPID
+		      flags: (OFSCTPPacketFlags)flags
 		  exception: (nullable id)exception;
 @end
 
@@ -227,6 +240,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param length The length of the buffer
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @return The length of the received packet
  * @throw OFReadFailedException Receiving failed
  * @throw OFNotOpenException The socket is not open
@@ -234,7 +248,8 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		   streamID: (nullable uint16_t *)streamID
-		       PPID: (nullable uint32_t *)PPID;
+		       PPID: (nullable uint32_t *)PPID
+		      flags: (nullable OFSCTPPacketFlags *)flags;
 
 /**
  * @brief Asynchronously receives a packet with stream ID and PPID and stores
@@ -311,13 +326,15 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param length The length of the buffer
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @throw OFWriteFailedException Sending failed
  * @throw OFNotOpenException The socket is not open
  */
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  streamID: (uint16_t)streamID
-	      PPID: (uint32_t)PPID;
+	      PPID: (uint32_t)PPID
+	     flags: (OFSCTPPacketFlags)flags;
 
 /**
  * @brief Asynchronously sends the specified packet on the specified stream.
@@ -325,10 +342,12 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param data The data to send as a packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  */
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
-		 PPID: (uint32_t)PPID;
+		 PPID: (uint32_t)PPID
+		flags: (OFSCTPPacketFlags)flags;
 
 /**
  * @brief Asynchronously sends the specified packet on the specified stream.
@@ -336,12 +355,14 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param data The data to send as a packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param runLoopMode The run loop mode in which to perform the asynchronous
  *		      send
  */
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
+		flags: (OFSCTPPacketFlags)flags
 	  runLoopMode: (OFRunLoopMode)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
@@ -351,6 +372,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param data The data to send as a packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
@@ -358,6 +380,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
+		flags: (OFSCTPPacketFlags)flags
 		block: (OFSCTPSocketAsyncSendDataBlock)block;
 
 /**
@@ -366,6 +389,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param data The data to send as a packet
  * @param streamID The stream ID for the message
  * @param PPID The Payload Protocol Identifier for the message
+ * @param flags Flags for the packet
  * @param runLoopMode The run loop mode in which to perform the asynchronous
  *		      send
  * @param block The block to call when the packet has been sent. It should
@@ -375,6 +399,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
+		flags: (OFSCTPPacketFlags)flags
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSCTPSocketAsyncSendDataBlock)block;
 #endif

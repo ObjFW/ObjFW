@@ -224,6 +224,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFData *_data;
 	uint16_t _streamID;
 	uint32_t _PPID;
+	OFSCTPPacketFlags _flags;
 }
 @end
 # endif
@@ -1041,13 +1042,15 @@ static OFRunLoop *mainRunLoop = nil;
 	size_t length;
 	uint16_t streamID;
 	uint32_t PPID;
+	OFSCTPPacketFlags flags;
 	id exception = nil;
 
 	@try {
 		length = [object receiveIntoBuffer: _buffer
 					    length: _length
 					  streamID: &streamID
-					      PPID: &PPID];
+					      PPID: &PPID
+					     flags: &flags];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -1055,11 +1058,12 @@ static OFRunLoop *mainRunLoop = nil;
 
 #  ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(length, streamID, PPID, exception);
+		return _block(length, streamID, PPID, flags, exception);
 	else {
 #  endif
 		if (![_delegate respondsToSelector: @selector(socket:
-		    didReceiveIntoBuffer:length:streamID:PPID:exception:)])
+		    didReceiveIntoBuffer:length:streamID:PPID:flags:
+		    exception:)])
 			return false;
 
 		return [_delegate socket: object
@@ -1067,6 +1071,7 @@ static OFRunLoop *mainRunLoop = nil;
 				  length: length
 				streamID: streamID
 				    PPID: PPID
+				   flags: flags
 			       exception: exception];
 #  ifdef OF_HAVE_BLOCKS
 	}
@@ -1093,7 +1098,8 @@ static OFRunLoop *mainRunLoop = nil;
 		[object sendBuffer: _data.items
 			    length: _data.count * _data.itemSize
 			  streamID: _streamID
-			      PPID: _PPID];
+			      PPID: _PPID
+			     flags: _flags];
 	} @catch (id e) {
 		exception = e;
 	}
@@ -1112,14 +1118,15 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 #  endif
-		if (![_delegate respondsToSelector:
-		    @selector(socket:didSendData:streamID:PPID:exception:)])
+		if (![_delegate respondsToSelector: @selector(socket:
+		    didSendData:streamID:PPID:flags:exception:)])
 			return false;
 
 		newData = [_delegate socket: object
 				didSendData: _data
 				   streamID: _streamID
 				       PPID: _PPID
+				      flags: _flags
 				  exception: exception];
 
 		if (newData == nil)
@@ -1481,6 +1488,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 				data: (OFData *)data
 			    streamID: (uint16_t)streamID
 				PPID: (uint32_t)PPID
+			       flags: (OFSCTPPacketFlags)flags
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (OFSCTPSocketAsyncSendDataBlock)block
@@ -1496,6 +1504,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	queueItem->_data = [data copy];
 	queueItem->_streamID = streamID;
 	queueItem->_PPID = PPID;
+	queueItem->_flags = flags;
 
 	QUEUE_ITEM
 }

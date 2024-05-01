@@ -140,6 +140,7 @@ OF_DIRECT_MEMBERS
       data: (OFData *)data
   streamID: (uint16_t)streamID
       PPID: (uint32_t)PPID
+     flags: (OFSCTPPacketFlags)flags
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFSCTPSocketAsyncSendDataBlock)block

@@ -44,7 +44,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertTrue(condition, ...) \
-	OTAssert(condition == true, ## __VA_ARGS__)
+	OTAssert((condition) == true, ## __VA_ARGS__)
 
 /**
  * @brief Asserts that the specified condition is false.
@@ -54,7 +54,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertFalse(condition, ...) \
-	OTAssert(condition == false, ## __VA_ARGS__)
+	OTAssert((condition) == false, ## __VA_ARGS__)
 
 /**
  * @brief Asserts that the two values are equal.
