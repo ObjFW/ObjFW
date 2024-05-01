@@ -356,7 +356,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		     length: (size_t)length
 		   streamID: (uint16_t *)streamID
 		       PPID: (uint32_t *)PPID
-		      flags: (OFSCTPPacketFlags *)flags
+		      flags: (OFSCTPMessageFlags *)flags
 {
 	ssize_t ret;
 	struct iovec iov = {
@@ -399,7 +399,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		if (infotype == SCTP_RECVV_RCVINFO &&
 		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo) &&
 		    rcvinfo.rcv_flags & SCTP_UNORDERED)
-			*flags |= OFSCTPPacketUnordered;
+			*flags |= OFSCTPMessageUnordered;
 	}
 
 	return ret;
@@ -462,7 +462,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	    length: (size_t)length
 	  streamID: (uint16_t)streamID
 	      PPID: (uint32_t)PPID
-	     flags: (OFSCTPPacketFlags)flags
+	     flags: (OFSCTPMessageFlags)flags
 {
 	ssize_t bytesWritten;
 	struct iovec iov = {
@@ -473,7 +473,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		.snd_sid = streamID,
 		.snd_ppid = PPID,
 		.snd_flags =
-		    ((flags & OFSCTPPacketUnordered) ? SCTP_UNORDERED : 0),
+		    ((flags & OFSCTPMessageUnordered) ? SCTP_UNORDERED : 0),
 	};
 
 	if (_socket == OFInvalidSocketHandle)
@@ -500,7 +500,7 @@ static const OFRunLoopMode connectRunLoopMode =
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
-		flags: (OFSCTPPacketFlags)flags
+		flags: (OFSCTPMessageFlags)flags
 {
 	[self asyncSendData: data
 		   streamID: streamID
@@ -512,7 +512,7 @@ static const OFRunLoopMode connectRunLoopMode =
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
-		flags: (OFSCTPPacketFlags)flags
+		flags: (OFSCTPMessageFlags)flags
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForSCTPSocket: self
@@ -531,8 +531,8 @@ static const OFRunLoopMode connectRunLoopMode =
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
-		flags: (OFSCTPPacketFlags)flags
-		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+		flags: (OFSCTPMessageFlags)flags
+		block: (OFSCTPSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
 		   streamID: streamID
@@ -545,9 +545,9 @@ static const OFRunLoopMode connectRunLoopMode =
 - (void)asyncSendData: (OFData *)data
 	     streamID: (uint16_t)streamID
 		 PPID: (uint32_t)PPID
-		flags: (OFSCTPPacketFlags)flags
+		flags: (OFSCTPMessageFlags)flags
 	  runLoopMode: (OFRunLoopMode)runLoopMode
-		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+		block: (OFSCTPSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForSCTPSocket: self
 					   data: data
@@ -560,9 +560,9 @@ static const OFRunLoopMode connectRunLoopMode =
 }
 #endif
 
-- (void)setCanDelaySendingPackets: (bool)canDelaySendingPackets
+- (void)setCanDelaySendingMessages: (bool)canDelaySendingMessages
 {
-	int v = !canDelaySendingPackets;
+	int v = !canDelaySendingMessages;
 
 	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_NODELAY,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
@@ -571,7 +571,7 @@ static const OFRunLoopMode connectRunLoopMode =
 				  errNo: _OFSocketErrNo()];
 }
 
-- (bool)canDelaySendingPackets
+- (bool)canDelaySendingMessages
 {
 	int v;
 	socklen_t len = sizeof(v);

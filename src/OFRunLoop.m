@@ -224,7 +224,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFData *_data;
 	uint16_t _streamID;
 	uint32_t _PPID;
-	OFSCTPPacketFlags _flags;
+	OFSCTPMessageFlags _flags;
 }
 @end
 # endif
@@ -1042,7 +1042,7 @@ static OFRunLoop *mainRunLoop = nil;
 	size_t length;
 	uint16_t streamID;
 	uint32_t PPID;
-	OFSCTPPacketFlags flags;
+	OFSCTPMessageFlags flags;
 	id exception = nil;
 
 	@try {
@@ -1488,7 +1488,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 				data: (OFData *)data
 			    streamID: (uint16_t)streamID
 				PPID: (uint32_t)PPID
-			       flags: (OFSCTPPacketFlags)flags
+			       flags: (OFSCTPMessageFlags)flags
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (OFSCTPSocketAsyncSendDataBlock)block

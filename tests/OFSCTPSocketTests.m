@@ -36,7 +36,7 @@
 	char buffer[6];
 	uint16_t streamID;
 	uint32_t PPID;
-	OFSCTPPacketFlags flags;
+	OFSCTPMessageFlags flags;
 
 	server = [OFSCTPSocket socket];
 	client = [OFSCTPSocket socket];
@@ -65,7 +65,7 @@
 		    length: 6
 		  streamID: 1
 		      PPID: 1234
-		     flags: OFSCTPPacketUnordered];
+		     flags: OFSCTPMessageUnordered];
 
 	[accepted receiveIntoBuffer: buffer
 			     length: 6
@@ -75,6 +75,6 @@
 	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
 	OTAssertEqual(streamID, 1);
 	OTAssertEqual(PPID, 1234);
-	OTAssertTrue(flags & OFSCTPPacketUnordered);
+	OTAssertTrue(flags & OFSCTPMessageUnordered);
 }
 @end
