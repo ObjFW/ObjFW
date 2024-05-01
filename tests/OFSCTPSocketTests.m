@@ -34,6 +34,8 @@
 	OFSCTPSocket *server, *client, *accepted;
 	OFSocketAddress address;
 	char buffer[6];
+	uint16_t streamID;
+	uint32_t PPID;
 
 	server = [OFSCTPSocket socket];
 	client = [OFSCTPSocket socket];
@@ -58,9 +60,14 @@
 	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
 	    @"127.0.0.1");
 
-	[client sendBuffer: "Hello!" length: 6];
+	[client sendBuffer: "Hello!" length: 6 streamID: 1 PPID: 1234];
 
-	[accepted receiveIntoBuffer: buffer length: 6];
+	[accepted receiveIntoBuffer: buffer
+			     length: 6
+			   streamID: &streamID
+			       PPID: &PPID];
 	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
+	OTAssertEqual(streamID, 1);
+	OTAssertEqual(PPID, 1234);
 }
 @end

@@ -202,6 +202,31 @@ static OFRunLoop *mainRunLoop = nil;
 	OFData *_data;
 }
 @end
+
+# ifdef OF_HAVE_SCTP
+@interface OFRunLoopSCTPReceiveQueueItem: OFRunLoopQueueItem
+{
+@public
+#  ifdef OF_HAVE_BLOCKS
+	OFSCTPSocketAsyncReceiveBlock _block;
+#  endif
+	void *_buffer;
+	size_t _length;
+}
+@end
+
+@interface OFRunLoopSCTPSendQueueItem: OFRunLoopQueueItem
+{
+@public
+#  ifdef OF_HAVE_BLOCKS
+	OFSCTPSocketAsyncSendDataBlock _block;
+#  endif
+	OFData *_data;
+	uint16_t _streamID;
+	uint32_t _PPID;
+}
+@end
+# endif
 #endif
 
 @implementation OFRunLoopState
@@ -1008,6 +1033,119 @@ static OFRunLoop *mainRunLoop = nil;
 	[super dealloc];
 }
 @end
+
+# ifdef OF_HAVE_SCTP
+@implementation OFRunLoopSCTPReceiveQueueItem
+- (bool)handleObject: (id)object
+{
+	size_t length;
+	uint16_t streamID;
+	uint32_t PPID;
+	id exception = nil;
+
+	@try {
+		length = [object receiveIntoBuffer: _buffer
+					    length: _length
+					  streamID: &streamID
+					      PPID: &PPID];
+	} @catch (id e) {
+		length = 0;
+		exception = e;
+	}
+
+#  ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(length, streamID, PPID, exception);
+	else {
+#  endif
+		if (![_delegate respondsToSelector: @selector(socket:
+		    didReceiveIntoBuffer:length:streamID:PPID:exception:)])
+			return false;
+
+		return [_delegate socket: object
+		    didReceiveIntoBuffer: _buffer
+				  length: length
+				streamID: streamID
+				    PPID: PPID
+			       exception: exception];
+#  ifdef OF_HAVE_BLOCKS
+	}
+#  endif
+}
+
+# ifdef OF_HAVE_BLOCKS
+- (void)dealloc
+{
+	[_block release];
+
+	[super dealloc];
+}
+# endif
+@end
+
+@implementation OFRunLoopSCTPSendQueueItem
+- (bool)handleObject: (id)object
+{
+	id exception = nil;
+	OFData *newData, *oldData;
+
+	@try {
+		[object sendBuffer: _data.items
+			    length: _data.count * _data.itemSize
+			  streamID: _streamID
+			      PPID: _PPID];
+	} @catch (id e) {
+		exception = e;
+	}
+
+#  ifdef OF_HAVE_BLOCKS
+	if (_block != NULL) {
+		newData = _block(exception);
+
+		if (newData == nil)
+			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
+
+		return true;
+	} else {
+#  endif
+		if (![_delegate respondsToSelector:
+		    @selector(socket:didSendData:streamID:PPID:exception:)])
+			return false;
+
+		newData = [_delegate socket: object
+				didSendData: _data
+				   streamID: _streamID
+				       PPID: _PPID
+				  exception: exception];
+
+		if (newData == nil)
+			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
+
+		return true;
+#  ifdef OF_HAVE_BLOCKS
+	}
+#  endif
+}
+
+- (void)dealloc
+{
+	[_data release];
+# ifdef OF_HAVE_BLOCKS
+	[_block release];
+# endif
+
+	[super dealloc];
+}
+@end
+# endif
 #endif
 
 @implementation OFRunLoop
@@ -1316,6 +1454,52 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 	QUEUE_ITEM
 }
+
+# ifdef OF_HAVE_SCTP
++ (void)of_addAsyncReceiveForSCTPSocket: (OFSCTPSocket *)sock
+				 buffer: (void *)buffer
+				 length: (size_t)length
+				   mode: (OFRunLoopMode)mode
+#  ifdef OF_HAVE_BLOCKS
+				  block: (OFSCTPSocketAsyncReceiveBlock)block
+#  endif
+			       delegate: (id <OFSCTPSocketDelegate>)delegate
+{
+	NEW_READ(OFRunLoopSCTPReceiveQueueItem, sock, mode)
+
+	queueItem->_delegate = [delegate retain];
+#  ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+#  endif
+	queueItem->_buffer = buffer;
+	queueItem->_length = length;
+
+	QUEUE_ITEM
+}
+
++ (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)sock
+				data: (OFData *)data
+			    streamID: (uint16_t)streamID
+				PPID: (uint32_t)PPID
+				mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+			       block: (OFSCTPSocketAsyncSendDataBlock)block
+# endif
+			    delegate: (id <OFSCTPSocketDelegate>)delegate
+{
+	NEW_WRITE(OFRunLoopSCTPSendQueueItem, sock, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_data = [data copy];
+	queueItem->_streamID = streamID;
+	queueItem->_PPID = PPID;
+
+	QUEUE_ITEM
+}
+# endif
 # undef NEW_READ
 # undef NEW_WRITE
 # undef QUEUE_ITEM

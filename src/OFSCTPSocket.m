@@ -40,11 +40,15 @@
 #import "OFString.h"
 #import "OFThread.h"
 
+#import "OFAcceptSocketFailedException.h"
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
+#import "OFWriteFailedException.h"
 
 static const OFRunLoopMode connectRunLoopMode =
     @"OFSCTPSocketConnectRunLoopMode";
@@ -87,6 +91,7 @@ static const OFRunLoopMode connectRunLoopMode =
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
+	int one = 1;
 
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
@@ -103,6 +108,16 @@ static const OFRunLoopMode connectRunLoopMode =
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
+
+	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_RECVRCVINFO, &one,
+	    sizeof(one)) != 0) {
+		*errNo = _OFSocketErrNo();
+
+		closesocket(_socket);
+		_socket = OFInvalidSocketHandle;
+
+		return false;
+	}
 
 	return true;
 }
@@ -307,6 +322,216 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	return address;
 }
+
+
+- (instancetype)accept
+{
+	OFSCTPSocket *accepted = [super accept];
+	int one = 1;
+
+	if (setsockopt(accepted->_socket, IPPROTO_SCTP, SCTP_RECVRCVINFO, &one,
+	    sizeof(one)) != 0)
+		@throw [OFAcceptSocketFailedException
+		    exceptionWithSocket: self
+				  errNo: _OFSocketErrNo()];
+
+	return accepted;
+}
+
+- (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length
+{
+	return [self receiveIntoBuffer: buffer
+				length: length
+			      streamID: NULL
+				  PPID: NULL];
+}
+
+- (size_t)receiveIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		   streamID: (uint16_t *)streamID
+		       PPID: (uint32_t *)PPID
+{
+	ssize_t ret;
+	struct iovec iov = {
+		.iov_base = buffer,
+		.iov_len = length
+	};
+	struct sctp_rcvinfo rcvinfo;
+	socklen_t rcvinfoSize = (socklen_t)sizeof(rcvinfo);
+	unsigned int infotype = SCTP_RECVV_RCVINFO;
+
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if ((ret = sctp_recvv(_socket, &iov, 1, NULL, 0, &rcvinfo, &rcvinfoSize,
+	    &infotype, 0)) < 0)
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: _OFSocketErrNo()];
+
+	if (streamID != NULL) {
+		if (infotype == SCTP_RECVV_RCVINFO &&
+		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo))
+			*streamID = rcvinfo.rcv_sid;
+		else
+			*streamID = 0;
+	}
+
+	if (PPID != NULL) {
+		if (infotype == SCTP_RECVV_RCVINFO &&
+		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo))
+			*PPID = rcvinfo.rcv_ppid;
+		else
+			*PPID = 0;
+	}
+
+	return ret;
+}
+
+- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
+				length: (size_t)length
+{
+	[self asyncReceiveWithInfoIntoBuffer: buffer
+				      length: length
+				 runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
+				length: (size_t)length
+			   runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[OFRunLoop of_addAsyncReceiveForSCTPSocket: self
+					    buffer: buffer
+					    length: length
+					      mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					     block: NULL
+# endif
+					  delegate: _delegate];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
+				length: (size_t)length
+				 block: (OFSCTPSocketAsyncReceiveBlock)block
+{
+	[self asyncReceiveWithInfoIntoBuffer: buffer
+				      length: length
+				 runLoopMode: OFDefaultRunLoopMode
+				       block: block];
+}
+
+- (void)
+    asyncReceiveWithInfoIntoBuffer: (void *)buffer
+			    length: (size_t)length
+		       runLoopMode: (OFRunLoopMode)runLoopMode
+			     block: (OFSCTPSocketAsyncReceiveBlock)block
+{
+	[OFRunLoop of_addAsyncReceiveForSCTPSocket: self
+					    buffer: buffer
+					    length: length
+					      mode: runLoopMode
+					     block: block
+					  delegate: nil];
+}
+#endif
+
+- (void)sendBuffer: (const void *)buffer length: (size_t)length
+{
+	[self sendBuffer: buffer length: length streamID: 0 PPID: 0];
+}
+
+- (void)sendBuffer: (const void *)buffer
+	    length: (size_t)length
+	  streamID: (uint16_t)streamID
+	      PPID: (uint32_t)PPID
+{
+	ssize_t bytesWritten;
+	struct iovec iov = {
+		.iov_base = (void *)buffer,
+		.iov_len = length
+	};
+	struct sctp_sndinfo sndinfo = {
+		.snd_sid = streamID,
+		.snd_ppid = PPID
+	};
+
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((bytesWritten = sctp_sendv(_socket, &iov, 1, NULL, 0, &sndinfo,
+	    (socklen_t)sizeof(sndinfo), SCTP_SENDV_SNDINFO, 0)) < 0)
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+			   bytesWritten: 0
+				  errNo: _OFSocketErrNo()];
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     streamID: (uint16_t)streamID
+		 PPID: (uint32_t)PPID
+{
+	[self asyncSendData: data
+		   streamID: streamID
+		       PPID: PPID
+		runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     streamID: (uint16_t)streamID
+		 PPID: (uint32_t)PPID
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[OFRunLoop of_addAsyncSendForSCTPSocket: self
+					   data: data
+				       streamID: streamID
+					   PPID: PPID
+					   mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					  block: NULL
+# endif
+				       delegate: _delegate];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncSendData: (OFData *)data
+	     streamID: (uint16_t)streamID
+		 PPID: (uint32_t)PPID
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+{
+	[self asyncSendData: data
+		   streamID: streamID
+		       PPID: PPID
+		runLoopMode: OFDefaultRunLoopMode
+		      block: block];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     streamID: (uint16_t)streamID
+		 PPID: (uint32_t)PPID
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+{
+	[OFRunLoop of_addAsyncSendForSCTPSocket: self
+					   data: data
+				       streamID: streamID
+					   PPID: PPID
+					   mode: runLoopMode
+					  block: block
+				       delegate: nil];
+}
+#endif
 
 - (void)setCanDelaySendingPackets: (bool)canDelaySendingPackets
 {
