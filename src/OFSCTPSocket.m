@@ -91,7 +91,9 @@ static const OFRunLoopMode connectRunLoopMode =
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
+#ifdef SCTP_RECVRCVINFO
 	int one = 1;
+#endif
 
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
@@ -109,6 +111,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
+#ifdef SCTP_RECVRCVINFO
 	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_RECVRCVINFO, &one,
 	    sizeof(one)) != 0) {
 		*errNo = _OFSocketErrNo();
@@ -118,6 +121,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 		return false;
 	}
+#endif
 
 	return true;
 }
@@ -323,7 +327,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	return address;
 }
 
-
+#ifdef SCTP_RECVRCVINFO
 - (instancetype)accept
 {
 	OFSCTPSocket *accepted = [super accept];
@@ -337,6 +341,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	return accepted;
 }
+#endif
 
 - (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length
 {
