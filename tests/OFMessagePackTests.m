@@ -362,7 +362,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 			  forKeys: keys.objects
 			    count: 65536] messagePackRepresentation],
 	    [OFData dataWithContentsOfIRI:
-	    [OFIRI IRIWithString: @"embedded:big_dictionary.msgpack"]]);
+	    [OFIRI IRIWithString: @"gzip:embedded:big_dictionary.msgpack.gz"]]);
 }
 
 - (void)testObjectByParsingMessagePackForDictionary
@@ -392,7 +392,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 			       forKey: [OFNumber numberWithUnsignedInt: i]];
 	OTAssertEqualObjects(dictionary,
 	    [[OFData dataWithContentsOfIRI:
-	    [OFIRI IRIWithString: @"embedded:big_dictionary.msgpack"]]
+	    [OFIRI IRIWithString: @"gzip:embedded:big_dictionary.msgpack.gz"]]
 	    objectByParsingMessagePack]);
 }
 
