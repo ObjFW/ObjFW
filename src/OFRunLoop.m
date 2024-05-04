@@ -655,10 +655,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
-	[_data release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
+	[_data release];
 
 	[super dealloc];
 }
@@ -924,10 +924,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
-	[_data release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
+	[_data release];
 
 	[super dealloc];
 }
@@ -1024,10 +1024,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
-	[_data release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
+	[_data release];
 
 	[super dealloc];
 }
@@ -1131,10 +1131,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
-	[_data release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
+	[_data release];
 	[_info release];
 
 	[super dealloc];

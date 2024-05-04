@@ -465,8 +465,8 @@ static const OFRunLoopMode connectRunLoopMode =
 		    [[info objectForKey: OFSCTPStreamID] unsignedShortValue],
 		.snd_ppid = (uint32_t)
 		    [[info objectForKey: OFSCTPPPID] unsignedLongValue],
-		.snd_flags =
-		    [[info objectForKey: OFSCTPUnordered] boolValue]
+		.snd_flags = ([[info objectForKey: OFSCTPUnordered] boolValue]
+		    ? SCTP_UNORDERED : 0)
 	};
 
 	if (_socket == OFInvalidSocketHandle)
