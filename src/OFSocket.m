@@ -452,9 +452,8 @@ transformEmbeddedIPv4(OFString *IPv6)
 	if (lastColon == OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
-	IPv4 = [IPv6 substringWithRange:
-	    OFMakeRange(lastColon + 1, IPv6.length - lastColon - 1)];
-	IPv6 = [IPv6 substringWithRange: OFMakeRange(0, lastColon + 1)];
+	IPv4 = [IPv6 substringFromIndex: lastColon + 1];
+	IPv6 = [IPv6 substringToIndex: lastColon + 1];
 
 	address = OFSocketAddressParseIPv4(IPv4, 0);
 	addrIn = &address.sockaddr.in;

@@ -93,10 +93,9 @@ initPathAllowedCharacters(void)
 		@throw [OFInvalidArgumentException exception];
 
 	archiveIRI = [OFIRI IRIWithString:
-	    [percentEncodedPath substringWithRange: OFMakeRange(0, pos)]
+	    [percentEncodedPath substringToIndex: pos]
 	    .stringByRemovingPercentEncoding];
-	path = [percentEncodedPath substringWithRange:
-	    OFMakeRange(pos + 1, percentEncodedPath.length - pos - 1)]
+	path = [percentEncodedPath substringFromIndex: pos + 1]
 	    .stringByRemovingPercentEncoding;
 
 	if ([scheme isEqual: @"lha"]) {

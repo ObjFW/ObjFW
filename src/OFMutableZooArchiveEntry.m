@@ -146,12 +146,10 @@
 	lastSlash = [fileName rangeOfString: @"/"
 				    options: OFStringSearchBackwards].location;
 	if (lastSlash != OFNotFound) {
-		_fileName = [[fileName substringWithRange: OFMakeRange(
-		    lastSlash + 1, fileName.length - lastSlash - 1)] copy];
+		_fileName = [[fileName substringFromIndex: lastSlash + 1] copy];
 		[oldFileName release];
 
-		_directoryName = [[fileName substringWithRange:
-		    OFMakeRange(0, lastSlash)] copy];
+		_directoryName = [[fileName substringToIndex: lastSlash] copy];
 		[oldDirectoryName release];
 	} else {
 		_fileName = [fileName copy];
