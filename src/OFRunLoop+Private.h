@@ -138,9 +138,7 @@ OF_DIRECT_MEMBERS
   delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
 + (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)socket
       data: (OFData *)data
-  streamID: (uint16_t)streamID
-      PPID: (uint32_t)PPID
-     flags: (OFSCTPMessageFlags)flags
+      info: (OFSCTPMessageInfo)info
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFSCTPSocketAsyncSendDataBlock)block

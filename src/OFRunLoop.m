@@ -222,9 +222,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFSCTPSocketAsyncSendDataBlock _block;
 #  endif
 	OFData *_data;
-	uint16_t _streamID;
-	uint32_t _PPID;
-	OFSCTPMessageFlags _flags;
+	OFSCTPMessageInfo _info;
 }
 @end
 # endif
@@ -1040,17 +1038,13 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleObject: (id)object
 {
 	size_t length;
-	uint16_t streamID;
-	uint32_t PPID;
-	OFSCTPMessageFlags flags;
+	OFSCTPMessageInfo info;
 	id exception = nil;
 
 	@try {
 		length = [object receiveIntoBuffer: _buffer
 					    length: _length
-					  streamID: &streamID
-					      PPID: &PPID
-					     flags: &flags];
+					      info: &info];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -1058,20 +1052,17 @@ static OFRunLoop *mainRunLoop = nil;
 
 #  ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(length, streamID, PPID, flags, exception);
+		return _block(length, info, exception);
 	else {
 #  endif
-		if (![_delegate respondsToSelector: @selector(socket:
-		    didReceiveIntoBuffer:length:streamID:PPID:flags:
-		    exception:)])
+		if (![_delegate respondsToSelector: @selector(
+		    socket:didReceiveIntoBuffer:length:info:exception:)])
 			return false;
 
 		return [_delegate socket: object
 		    didReceiveIntoBuffer: _buffer
 				  length: length
-				streamID: streamID
-				    PPID: PPID
-				   flags: flags
+				    info: info
 			       exception: exception];
 #  ifdef OF_HAVE_BLOCKS
 	}
@@ -1097,9 +1088,7 @@ static OFRunLoop *mainRunLoop = nil;
 	@try {
 		[object sendBuffer: _data.items
 			    length: _data.count * _data.itemSize
-			  streamID: _streamID
-			      PPID: _PPID
-			     flags: _flags];
+			      info: _info];
 	} @catch (id e) {
 		exception = e;
 	}
@@ -1118,15 +1107,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 #  endif
-		if (![_delegate respondsToSelector: @selector(socket:
-		    didSendData:streamID:PPID:flags:exception:)])
+		if (![_delegate respondsToSelector: @selector(
+		    socket:didSendData:info:exception:)])
 			return false;
 
 		newData = [_delegate socket: object
 				didSendData: _data
-				   streamID: _streamID
-				       PPID: _PPID
-				      flags: _flags
+				       info: _info
 				  exception: exception];
 
 		if (newData == nil)
@@ -1148,6 +1135,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
+	[_info release];
 
 	[super dealloc];
 }
@@ -1486,9 +1474,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 + (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)sock
 				data: (OFData *)data
-			    streamID: (uint16_t)streamID
-				PPID: (uint32_t)PPID
-			       flags: (OFSCTPMessageFlags)flags
+				info: (OFSCTPMessageInfo)info
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
 			       block: (OFSCTPSocketAsyncSendDataBlock)block
@@ -1502,9 +1488,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	queueItem->_block = [block copy];
 # endif
 	queueItem->_data = [data copy];
-	queueItem->_streamID = streamID;
-	queueItem->_PPID = PPID;
-	queueItem->_flags = flags;
+	queueItem->_info = [info copy];
 
 	QUEUE_ITEM
 }

@@ -34,9 +34,8 @@
 	OFSCTPSocket *server, *client, *accepted;
 	OFSocketAddress address;
 	char buffer[6];
-	uint16_t streamID;
-	uint32_t PPID;
-	OFSCTPMessageFlags flags;
+	OFNumber *streamID, *PPID, *unordered;
+	OFSCTPMessageInfo sendInfo, receiveInfo;
 
 	server = [OFSCTPSocket socket];
 	client = [OFSCTPSocket socket];
@@ -61,20 +60,21 @@
 	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
 	    @"127.0.0.1");
 
+	streamID = [OFNumber numberWithUnsignedShort: 1];
+	PPID = [OFNumber numberWithUnsignedLong: 1234];
+	unordered = [OFNumber numberWithBool: true];
+	sendInfo = [OFDictionary dictionaryWithKeysAndObjects:
+	    OFSCTPStreamID, streamID,
+	    OFSCTPPPID, PPID,
+	    OFSCTPUnordered, unordered, nil];
 	[client sendBuffer: "Hello!"
 		    length: 6
-		  streamID: 1
-		      PPID: 1234
-		     flags: OFSCTPMessageUnordered];
+		      info: sendInfo];
 
 	[accepted receiveIntoBuffer: buffer
 			     length: 6
-			   streamID: &streamID
-			       PPID: &PPID
-			      flags: &flags];
+			       info: &receiveInfo];
 	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
-	OTAssertEqual(streamID, 1);
-	OTAssertEqual(PPID, 1234);
-	OTAssertTrue(flags & OFSCTPMessageUnordered);
+	OTAssertEqualObjects(receiveInfo, sendInfo);
 }
 @end

@@ -33,6 +33,8 @@
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFSocket.h"
@@ -49,6 +51,10 @@
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+const OFSCTPMessageInfoKey OFSCTPStreamID = @"OFSCTPStreamID";
+const OFSCTPMessageInfoKey OFSCTPPPID = @"OFSCTPPPID";
+const OFSCTPMessageInfoKey OFSCTPUnordered = @"OFSCTPUnordered";
 
 static const OFRunLoopMode connectRunLoopMode =
     @"OFSCTPSocketConnectRunLoopMode";
@@ -345,18 +351,12 @@ static const OFRunLoopMode connectRunLoopMode =
 
 - (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length
 {
-	return [self receiveIntoBuffer: buffer
-				length: length
-			      streamID: NULL
-				  PPID: NULL
-				 flags: NULL];
+	return [self receiveIntoBuffer: buffer length: length info: NULL];
 }
 
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		   streamID: (uint16_t *)streamID
-		       PPID: (uint32_t *)PPID
-		      flags: (OFSCTPMessageFlags *)flags
+		       info: (OFSCTPMessageInfo *)info
 {
 	ssize_t ret;
 	struct iovec iov = {
@@ -377,29 +377,22 @@ static const OFRunLoopMode connectRunLoopMode =
 			requestedLength: length
 				  errNo: _OFSocketErrNo()];
 
-	if (streamID != NULL) {
+	if (info != NULL) {
 		if (infotype == SCTP_RECVV_RCVINFO &&
-		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo))
-			*streamID = rcvinfo.rcv_sid;
-		else
-			*streamID = 0;
-	}
+		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo)) {
+			OFNumber *streamID = [OFNumber numberWithUnsignedShort:
+			    rcvinfo.rcv_sid];
+			OFNumber *PPID = [OFNumber numberWithUnsignedLong:
+			    rcvinfo.rcv_ppid];
+			OFNumber *unordered = [OFNumber numberWithBool:
+			    (rcvinfo.rcv_flags & SCTP_UNORDERED)];
 
-	if (PPID != NULL) {
-		if (infotype == SCTP_RECVV_RCVINFO &&
-		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo))
-			*PPID = rcvinfo.rcv_ppid;
-		else
-			*PPID = 0;
-	}
-
-	if (flags != NULL) {
-		*flags = 0;
-
-		if (infotype == SCTP_RECVV_RCVINFO &&
-		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo) &&
-		    rcvinfo.rcv_flags & SCTP_UNORDERED)
-			*flags |= OFSCTPMessageUnordered;
+			*info = [OFDictionary dictionaryWithKeysAndObjects:
+			    OFSCTPStreamID, streamID,
+			    OFSCTPPPID, PPID,
+			    OFSCTPUnordered, unordered, nil];
+		} else
+			*info = [OFDictionary dictionary];
 	}
 
 	return ret;
@@ -455,14 +448,12 @@ static const OFRunLoopMode connectRunLoopMode =
 
 - (void)sendBuffer: (const void *)buffer length: (size_t)length
 {
-	[self sendBuffer: buffer length: length streamID: 0 PPID: 0 flags: 0];
+	[self sendBuffer: buffer length: length info: nil];
 }
 
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  streamID: (uint16_t)streamID
-	      PPID: (uint32_t)PPID
-	     flags: (OFSCTPMessageFlags)flags
+	      info: (OFSCTPMessageInfo)info
 {
 	ssize_t bytesWritten;
 	struct iovec iov = {
@@ -470,10 +461,12 @@ static const OFRunLoopMode connectRunLoopMode =
 		.iov_len = length
 	};
 	struct sctp_sndinfo sndinfo = {
-		.snd_sid = streamID,
-		.snd_ppid = PPID,
+		.snd_sid = (uint16_t)
+		    [[info objectForKey: OFSCTPStreamID] unsignedShortValue],
+		.snd_ppid = (uint32_t)
+		    [[info objectForKey: OFSCTPPPID] unsignedLongValue],
 		.snd_flags =
-		    ((flags & OFSCTPMessageUnordered) ? SCTP_UNORDERED : 0),
+		    [[info objectForKey: OFSCTPUnordered] boolValue]
 	};
 
 	if (_socket == OFInvalidSocketHandle)
@@ -497,29 +490,18 @@ static const OFRunLoopMode connectRunLoopMode =
 							     errNo: 0];
 }
 
-- (void)asyncSendData: (OFData *)data
-	     streamID: (uint16_t)streamID
-		 PPID: (uint32_t)PPID
-		flags: (OFSCTPMessageFlags)flags
+- (void)asyncSendData: (OFData *)data info: (OFSCTPMessageInfo)info
 {
-	[self asyncSendData: data
-		   streamID: streamID
-		       PPID: PPID
-		      flags: flags
-		runLoopMode: OFDefaultRunLoopMode];
+	[self asyncSendData: data info: nil runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     streamID: (uint16_t)streamID
-		 PPID: (uint32_t)PPID
-		flags: (OFSCTPMessageFlags)flags
+		 info: (OFSCTPMessageInfo)info
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForSCTPSocket: self
 					   data: data
-				       streamID: streamID
-					   PPID: PPID
-					  flags: flags
+					   info: info
 					   mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
 					  block: NULL
@@ -529,31 +511,23 @@ static const OFRunLoopMode connectRunLoopMode =
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
-	     streamID: (uint16_t)streamID
-		 PPID: (uint32_t)PPID
-		flags: (OFSCTPMessageFlags)flags
+		 info: (OFSCTPMessageInfo)info
 		block: (OFSCTPSocketAsyncSendDataBlock)block
 {
 	[self asyncSendData: data
-		   streamID: streamID
-		       PPID: PPID
-		      flags: flags
+		       info: info
 		runLoopMode: OFDefaultRunLoopMode
 		      block: block];
 }
 
 - (void)asyncSendData: (OFData *)data
-	     streamID: (uint16_t)streamID
-		 PPID: (uint32_t)PPID
-		flags: (OFSCTPMessageFlags)flags
+		 info: (OFSCTPMessageInfo)info
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSCTPSocketAsyncSendDataBlock)block
 {
 	[OFRunLoop of_addAsyncSendForSCTPSocket: self
 					   data: data
-				       streamID: streamID
-					   PPID: PPID
-					  flags: flags
+					   info: info
 					   mode: runLoopMode
 					  block: block
 				       delegate: nil];
