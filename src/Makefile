@@ -153,11 +153,13 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFURIDNSResourceRecord.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
 SRCS_APPLETALK = OFDDPSocket.m
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
+SRCS_SCTP = OFSCTPSocket.m
 SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
 		    OFUNIXStreamSocket.m
 SRCS_SUBPROCESSES = OFSubprocess.m

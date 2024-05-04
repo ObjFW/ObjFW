@@ -23,6 +23,9 @@
 
 #import "OFAsyncIPSocketConnector.h"
 #import "OFData.h"
+#ifdef OF_HAVE_SCTP
+# import "OFSCTPSocket.h"
+#endif
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -74,6 +77,10 @@
 	if (_block != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
 			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
+# ifdef OF_HAVE_SCTP
+		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
+			((OFSCTPSocketAsyncConnectBlock)_block)(_exception);
+# endif
 		else
 			OFEnsure(0);
 	} else {

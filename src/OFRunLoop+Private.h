@@ -23,6 +23,9 @@
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFStreamSocket.h"
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -98,7 +101,7 @@ OF_DIRECT_MEMBERS
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFDatagramSocketAsyncReceiveBlock)block
 # endif
-  delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
+  delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
       data: (OFData *)data
   receiver: (const OFSocketAddress *)receiver
@@ -115,7 +118,7 @@ OF_DIRECT_MEMBERS
 # ifdef OF_HAVE_BLOCKS
      block: (nullable OFSequencedPacketSocketAsyncReceiveBlock)block
 # endif
-  delegate: (nullable id <OFSequencedPacketSocketDelegate>) delegate;
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_addAsyncSendForSequencedPacketSocket:
 					       (OFSequencedPacketSocket *)socket
       data: (OFData *)data
@@ -124,6 +127,24 @@ OF_DIRECT_MEMBERS
      block: (nullable OFSequencedPacketSocketAsyncSendDataBlock)block
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
+# ifdef OF_HAVE_SCTP
++ (void)of_addAsyncReceiveForSCTPSocket: (OFSCTPSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (OFRunLoopMode)mode
+#  ifdef OF_HAVE_BLOCKS
+     block: (nullable OFSCTPSocketAsyncReceiveBlock)block
+#  endif
+  delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
++ (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)socket
+      data: (OFData *)data
+      info: (OFSCTPMessageInfo)info
+      mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+     block: (nullable OFSCTPSocketAsyncSendDataBlock)block
+# endif
+  delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
+# endif
 + (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode;
 #endif
 - (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode;

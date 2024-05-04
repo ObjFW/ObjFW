@@ -39,6 +39,9 @@
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
 #endif
+#ifdef OF_HAVE_NETINET_SCTP_H
+# include <netinet/sctp.h>
+#endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif

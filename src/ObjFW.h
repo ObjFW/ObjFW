@@ -90,6 +90,9 @@
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
 # ifdef OF_HAVE_UNIX_SOCKETS
 #  import "OFUNIXDatagramSocket.h"
 #  import "OFUNIXStreamSocket.h"
