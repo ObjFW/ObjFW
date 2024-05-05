@@ -248,7 +248,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			[addresses addItem: &address];
 
 next:
-#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#  if defined(HAVE_STRUCT_SOCKADDR_SA_LEN) && !defined(OF_NETBSD)
 			if (current->ifr_addr.sa_len > sizeof(struct sockaddr))
 				buffer += sizeof(struct ifreq) -
 				    sizeof(struct sockaddr) +
