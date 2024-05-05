@@ -1,6 +1,6 @@
 dnl
 dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
-dnl               2018, 2020, 2021, 2022, 2023
+dnl               2018, 2020, 2021, 2022, 2023, 2024
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
 dnl https://fossil.nil.im/buildsys
@@ -344,49 +344,50 @@ AC_DEFUN([BUILDSYS_PLUGIN], [
 	*-*-darwin*)
 		AC_MSG_RESULT(Darwin)
 		PLUGIN_CFLAGS='-fPIC -DPIC'
-		PLUGIN_LDFLAGS='-bundle ${PLUGIN_LDFLAGS_BUNDLE_LOADER}'
-		PLUGIN_SUFFIX='.bundle'
-		AS_IF([test x"$host_is_ios" = x"yes"], [
-			LINK_PLUGIN='rm -fr $$out && ${MKDIR_P} $$out && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && ${LD} -o $$out/$${out%${PLUGIN_SUFFIX}} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} $$out'
-		], [
-			LINK_PLUGIN='rm -fr $$out && ${MKDIR_P} $$out/Contents/MacOS && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Contents/Info.plist; fi && ${LD} -o $$out/Contents/MacOS/$${out%${PLUGIN_SUFFIX}} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} $$out'
-		])
-		INSTALL_PLUGIN='&& rm -fr ${DESTDIR}${plugindir}/$$i && cp -R $$i ${DESTDIR}${plugindir}/'
-		UNINSTALL_PLUGIN='&& rm -fr ${DESTDIR}${plugindir}/$$i'
+		PLUGIN_LDFLAGS='-bundle'
+		PLUGIN_SUFFIX='.dylib'
 		;;
 	*-*-mingw* | *-*-cygwin*)
 		AC_MSG_RESULT(MinGW / Cygwin)
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared -Wl,--export-all-symbols'
 		PLUGIN_SUFFIX='.dll'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	hppa*-*-hpux*)
 		AC_MSG_RESULT([HP-UX (PA-RISC)])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.sl'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	*)
 		AC_MSG_RESULT(ELF)
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	esac
 
 	AC_SUBST(PLUGIN_CFLAGS)
 	AC_SUBST(PLUGIN_LDFLAGS)
 	AC_SUBST(PLUGIN_SUFFIX)
-	AC_SUBST(LINK_PLUGIN)
-	AC_SUBST(INSTALL_PLUGIN)
-	AC_SUBST(UNINSTALL_PLUGIN)
+])
+
+AC_DEFUN([BUILDSYS_BUNDLE], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_REQUIRE([BUILDSYS_CHECK_IOS])
+	AC_REQUIRE([BUILDSYS_PLUGIN])
+
+	case "$host_os" in
+	darwin*)
+		AS_IF([test x"$host_is_ios" = x"yes"], [
+			LINK_BUNDLE='${MKDIR_P} $$out && ${INSTALL} -m 644 Info.plist $$out/Info.plist && ${LD} -o $$out/$${out%.bundle} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		], [
+			LINK_BUNDLE='${MKDIR_P} $$out/Contents/MacOS && ${INSTALL} -m 644 Info.plist $$out/Contents/Info.plist && ${LD} -o $$out/Contents/MacOS/$${out%.bundle} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		])
+
+		AC_SUBST(LINK_BUNDLE)
+
+		$1
+		;;
+	esac
 ])

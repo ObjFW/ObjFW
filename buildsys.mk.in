@@ -1,6 +1,6 @@
 #
 #  Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#                2017, 2018, 2020, 2021, 2022, 2023
+#                2017, 2018, 2020, 2021, 2022, 2023, 2024
 #    Jonathan Schleifer <js@nil.im>
 #
 #  https://fossil.nil.im/buildsys
@@ -89,6 +89,7 @@ bindir = @bindir@
 libdir = @libdir@
 amigalibdir ?= ${prefix}/libs
 plugindir ?= ${libdir}/${PACKAGE_NAME}
+bundledir ?= ${prefix}/Library/PlugIns/${PACKAGE_NAME}
 datarootdir = @datarootdir@
 datadir = @datadir@
 includedir = @includedir@
@@ -143,6 +144,7 @@ all:
 	    ${FRAMEWORK} ${FRAMEWORK_NOINST}			\
 	    ${AMIGA_LIB} ${AMIGA_LIB_NOINST}			\
 	    ${PLUGIN} ${PLUGIN_NOINST}				\
+	    ${BUNDLE} ${BUNDLE_NOINST}				\
 	    ${PROG} ${PROG_NOINST}				\
 	    ${JARFILE} locales
 	${MAKE} @MAKEFLAGS_SILENT@ subdirs-after
@@ -214,9 +216,7 @@ ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 			COPY_HEADERS_IF_SUBDIR=${includesubdir} \
 			COPY_HEADERS_DESTINATION=$$PWD/$@/Headers \
 			copy-headers-into-framework && \
-		    if test -f Info.plist; then \
-			    ${INSTALL} -m 644 Info.plist $@/Info.plist; \
-		    fi && \
+		    ${INSTALL} -m 644 Info.plist $@/Info.plist && \
 		    if test -f module.modulemap; then \
 			    ${MKDIR_P} $@/Modules && \
 			    ${INSTALL} -m 644 module.modulemap \
@@ -299,10 +299,20 @@ ${AMIGA_LIB} ${AMIGA_LIB_NOINST}: ${EXT_DEPS} ${AMIGA_LIB_OBJS_START}	    \
 		${LINK_FAILED}; \
 	fi
 
-${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
+${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA}
 	${LINK_STATUS}
 	out="$@"; \
-	if @LINK_PLUGIN@; then \
+	if ${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+		${LINK_OK}; \
+	else \
+		rm -fr $$out; false; \
+		${LINK_FAILED}; \
+	fi
+
+${BUNDLE} ${BUNDLE_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA}
+	${LINK_STATUS}
+	out="$@"; \
+	if rm -fr $$out && @LINK_BUNDLE@ && ${CODESIGN} -fs ${CODESIGN_IDENTITY} $$out; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; false; \
@@ -809,7 +819,26 @@ install: all install-extra
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${plugindir} @INSTALL_PLUGIN@; then \
+		if ${MKDIR_P} ${DESTDIR}${plugindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+
+	for i in "" ${BUNDLE}; do \
+		if ${MKDIR_P} ${DESTDIR}${bundledir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bundledir}/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+	for i in "" ${BUNDLE}; do \
+		test x"$$i" = x"" && continue; \
+		${INSTALL_STATUS}; \
+		rm -fr ${DESTDIR}${bundledir}/$$i; \
+		if ${MKDIR_P} ${DESTDIR}${bundledir} && \
+		    cp -R $$i ${DESTDIR}${bundledir}/; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -930,7 +959,7 @@ uninstall:
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -e ${DESTDIR}${plugindir}/$$i; then \
-			if : @UNINSTALL_PLUGIN@; then \
+			if rm -f ${DESTDIR}${plugindir}/$$i; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
@@ -938,6 +967,20 @@ uninstall:
 		fi \
 	done
 	rmdir ${DESTDIR}${plugindir} >/dev/null 2>&1 || true
+
+	for i in "" ${BUNDLE}; do \
+		test x"$$i" = x"" && continue; \
+		if test -d ${DESTDIR}${bundledir}/$$i; then \
+			if rm -fr ${DESTDIR}${bundledir}/$$i; \
+			then \
+				${DELETE_OK}; \
+			else \
+				${DELETE_FAILED}; \
+			fi \
+		fi \
+	done
+	rmdir ${DESTDIR}${bundledir} >/dev/null 2>&1 || true
+	rmdir ${DESTDIR}${prefix}/Library >/dev/null 2>&1 || true
 
 	for i in "" ${DATA}; do \
 		test x"$$i" = x"" && continue; \
@@ -1022,7 +1065,8 @@ clean:
 	    ${SHARED_LIB} ${SHARED_LIB_NOINST} ${AMIGA_LIB} \
 	    ${AMIGA_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} \
 	    ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${STATIC_AMIGA_LIB} \
-	    ${STATIC_AMIGA_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} \
+	    ${STATIC_AMIGA_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} \
+	    ${PLUGIN} ${PLUGIN_NOINST} ${BUNDLE} ${BUNDLE_NOINST} \
 	    ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \

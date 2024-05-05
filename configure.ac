@@ -417,6 +417,10 @@ AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
 		build_framework="yes"
 	])
+
+	BUILDSYS_BUNDLE([
+		AC_SUBST(TESTPLUGIN_BUNDLE, "TestPlugin.bundle")
+	])
 ], [
 	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
