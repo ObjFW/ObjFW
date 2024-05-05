@@ -22,6 +22,10 @@
 #import "OFObject.h"
 #import "OFNotification.h"
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
@@ -68,13 +72,39 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * @end
  * @endcode
  */
-#define OF_APPLICATION_DELEGATE(class_)			\
+#ifndef OF_WINDOWS
+# define OF_APPLICATION_DELEGATE(class_)		\
 	int						\
 	main(int argc, char *argv[])			\
 	{						\
 		return OFApplicationMain(&argc, &argv,	\
 		    (class_ *)[[class_ alloc] init]);	\
 	}
+#else
+# define OF_APPLICATION_DELEGATE(class_)				\
+	int								\
+	main(int argc, char *argv[])					\
+	{								\
+		return OFApplicationMain(&argc, &argv,			\
+		    (class_ *)[[class_ alloc] init]);			\
+	}								\
+									\
+	WINAPI int							\
+	WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,		\
+	    LPSTR lpCmdLine, int nShowCmd)				\
+	{								\
+		extern void __getmainargs(int *, char ***, char ***,	\
+		    int, int *);					\
+		extern int _CRT_glob;					\
+		int argc = 0, si = 0;					\
+		char **argv = NULL, **envp = NULL;			\
+									\
+		__getmainargs(&argc, &argv, &envp, _CRT_glob, &si);	\
+									\
+		return OFApplicationMain(&argc, &argv,			\
+		    (class_ *)[[class_ alloc] init]);			\
+	}
+#endif
 
 #ifdef OF_HAVE_PLEDGE
 # define OF_HAVE_SANDBOX

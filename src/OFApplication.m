@@ -56,8 +56,6 @@
 # include <crt_externs.h>
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-extern int _CRT_glob;
-extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
 # define Class IntuitionClass
 # include <proto/exec.h>
@@ -127,6 +125,9 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
+		extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int,
+		    int *);
+		extern int _CRT_glob;
 		wchar_t **wargv, **wenvp;
 		int wargc, si = 0;
 
