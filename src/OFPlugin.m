@@ -27,6 +27,7 @@
 #endif
 
 #import "OFPlugin.h"
+#import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
@@ -46,15 +47,20 @@
 
 + (OFString *)pathForName: (OFString *)name
 {
-#if defined(OF_MACOS)
-	return [name stringByAppendingFormat: @".bundle/Contents/MacOS/%@",
-					      name.lastPathComponent];
-#elif defined(OF_IOS)
-	return [name stringByAppendingFormat: @".bundle/%@",
-					      name.lastPathComponent];
-#else
-	return [name stringByAppendingString: @PLUGIN_SUFFIX];
+#if (defined(OF_MACOS) || defined(OF_IOS)) && defined(OF_HAVE_FILES)
+	OFString *path = [name stringByAppendingPathExtension: @"bundle"];
+
+	if ([[OFFileManager defaultManager] directoryExistsAtPath: path])
+# if defined(OF_MACOS)
+		return [path stringByAppendingFormat: @"/Contents/MacOS/%@",
+						      name.lastPathComponent];
+# elif defined(OF_IOS)
+		return [name stringByAppendingFormat: @"/%@",
+						      name.lastPathComponent];
+# endif
 #endif
+
+	return [name stringByAppendingString: @PLUGIN_SUFFIX];
 }
 
 - (instancetype)initWithPath: (OFString *)path

@@ -46,8 +46,11 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the plugin path for a plugin with the specified name.
  *
- * E.g. on ELF systems, it appends .so, while on macOS and iOS, it creates the
- * appropriate plugin path. This can also be prefixed by a directory.
+ * E.g. on ELF systems, it appends `.so`, while on macOS and iOS, it checks if
+ * there is a `.bundle` and if so uses the plugin contained in it, but
+ * otherwise falls back to appending `.dylib`.
+ *
+ * This can also be prefixed by a directory.
  *
  * @param name The name to return the plugin path for
  * @return The plugin path
