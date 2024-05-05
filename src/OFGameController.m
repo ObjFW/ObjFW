@@ -23,8 +23,10 @@
 
 #import "OFOutOfRangeException.h"
 
-#ifdef OF_NINTENDO_3DS
-# include "platform/3DS/OFGameController.m"
+#if defined(OF_NINTENDO_DS)
+# include "platform/NintendoDS/OFGameController.m"
+#elif defined(F_NINTENDO_3DS)
+# include "platform/Nintendo3DS/OFGameController.m"
 #else
 @implementation OFGameController
 @dynamic buttons, pressedButtons, numAxes;

@@ -323,18 +323,7 @@ isSubclassOfClass(Class class, Class superclass)
 
 			VIDEO_WaitVSync();
 		}
-#elif defined(OF_NINTENDO_DS)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		for (;;) {
-			swiWaitForVBlank();
-			scanKeys();
-
-			if (keysDown() & KEY_A)
-				break;
-		}
-#elif defined(OF_NINTENDO_3DS)
+#elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 		[OFStdOut setForegroundColor: [OFColor silver]];
 		[OFStdOut writeLine: @"Press A to continue"];
 
@@ -346,7 +335,11 @@ isSubclassOfClass(Class class, Class superclass)
 			if ([controller.pressedButtons containsObject: @"A"])
 				break;
 
+# if defined(OF_NINTENDO_DS)
+			swiWaitForVBlank();
+# elif defined(OF_NINTENDO_3DS)
 			gspWaitForVBlank();
+# endif
 			objc_autoreleasePoolPop(pool);
 		}
 #elif defined(OF_NINTENDO_SWITCH)
