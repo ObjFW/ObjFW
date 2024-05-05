@@ -25,7 +25,7 @@
 
 #if defined(OF_NINTENDO_DS)
 # include "platform/NintendoDS/OFGameController.m"
-#elif defined(F_NINTENDO_3DS)
+#elif defined(OF_NINTENDO_3DS)
 # include "platform/Nintendo3DS/OFGameController.m"
 #else
 @implementation OFGameController
@@ -46,7 +46,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (OFPoint)positionOfAnalogSticksWithIndex: (size_t)index
+- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
