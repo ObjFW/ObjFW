@@ -366,12 +366,13 @@ static const OFRunLoopMode connectRunLoopMode =
 	struct sctp_rcvinfo rcvinfo;
 	socklen_t rcvinfoSize = (socklen_t)sizeof(rcvinfo);
 	unsigned int infotype = SCTP_RECVV_RCVINFO;
+	int flags;
 
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = sctp_recvv(_socket, &iov, 1, NULL, 0, &rcvinfo, &rcvinfoSize,
-	    &infotype, 0)) < 0)
+	if ((ret = sctp_recvv(_socket, &iov, 1, NULL, NULL,
+	    &rcvinfo, &rcvinfoSize, &infotype, &flags)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
