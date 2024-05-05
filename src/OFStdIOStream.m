@@ -645,7 +645,10 @@ colorToANSI(OFColor *color)
 #ifdef OF_MSDOS
 	gotoxy(column + 1, wherey());
 #else
-	[self writeFormat: @"\033[%uG", column + 1];
+	if (column == 0)
+		[self writeString: @"\r"];
+	else
+		[self writeFormat: @"\033[%uG", column + 1];
 #endif
 }
 
