@@ -25,6 +25,7 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFileManager.m			\
+       OFGameController.m		\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\

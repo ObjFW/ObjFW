@@ -339,12 +339,15 @@ isSubclassOfClass(Class class, Class superclass)
 		[OFStdOut writeLine: @"Press A to continue"];
 
 		for (;;) {
-			hidScanInput();
+			void *pool = objc_autoreleasePoolPush();
+			OFGameController *controller =
+			    [OFGameController controllerWithIndex: 0];
 
-			if (hidKeysDown() & KEY_A)
+			if ([controller.pressedButtons containsObject: @"A"])
 				break;
 
 			gspWaitForVBlank();
+			objc_autoreleasePoolPop(pool);
 		}
 #elif defined(OF_NINTENDO_SWITCH)
 		[OFStdOut setForegroundColor: [OFColor silver]];
