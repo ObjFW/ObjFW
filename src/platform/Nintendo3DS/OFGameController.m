@@ -126,12 +126,12 @@ initController(void)
 	return pressedButtons;
 }
 
-- (size_t)numAxes
+- (size_t)numAnalogSticks
 {
 	return 1;
 }
 
-- (OFPoint)positionOfAxisWithIndex: (size_t)index
+- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
 {
 	circlePosition pos;
 

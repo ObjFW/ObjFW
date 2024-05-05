@@ -113,12 +113,12 @@ initController(void)
 	return pressedButtons;
 }
 
-- (size_t)numAxes
+- (size_t)numAnalogSticks
 {
 	return 0;
 }
 
-- (OFPoint)positionOfAxisWithIndex: (size_t)index
+- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
 {
 	@throw [OFOutOfRangeException exception];
 }

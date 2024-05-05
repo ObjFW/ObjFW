@@ -29,7 +29,7 @@
 # include "platform/Nintendo3DS/OFGameController.m"
 #else
 @implementation OFGameController
-@dynamic buttons, pressedButtons, numAxes;
+@dynamic buttons, pressedButtons, numAnalogSticks;
 
 + (size_t)numControllers
 {
@@ -46,7 +46,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (OFPoint)positionOfAxisWithIndex: (size_t)index
+- (OFPoint)positionOfAnalogSticksWithIndex: (size_t)index
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

@@ -46,9 +46,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFSet OF_GENERIC(OFString *) *pressedButtons;
 
 /**
- * @brief The number of axes the controller has.
+ * @brief The number of analog sticks the controller has.
  */
-@property (readonly, nonatomic) size_t numAxes;
+@property (readonly, nonatomic) size_t numAnalogSticks;
 
 /**
  * @brief Returns the number of available controllers.
@@ -68,14 +68,14 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
- * @brief Returns the current position of the specified axis.
+ * @brief Returns the current position of the specified analog stick.
  *
  * The range is from (-1, -1) to (1, 1).
  *
- * @param index The index of the axis whose position to return
- * @return The current position of the specified axis
+ * @param index The index of the analog stick whose position to return
+ * @return The current position of the specified analog stick
  */
-- (OFPoint)positionOfAxisWithIndex: (size_t)index;
+- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index;
 @end
 
 OF_ASSUME_NONNULL_END
