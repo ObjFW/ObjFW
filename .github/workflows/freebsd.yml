@@ -17,6 +17,7 @@ jobs:
         copyback: false
         prepare: |
           pkg install -y autoconf automake gnutls pkgconf
+          kldload sctp
         run: |
           ./autogen.sh
           ./configure OBJC=clang ${{ matrix.configure_flags }}
