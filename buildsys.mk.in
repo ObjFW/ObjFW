@@ -827,13 +827,6 @@ install: all install-extra
 	done
 
 	for i in "" ${BUNDLE}; do \
-		if ${MKDIR_P} ${DESTDIR}${bundledir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bundledir}/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	done
-	for i in "" ${BUNDLE}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		rm -fr ${DESTDIR}${bundledir}/$$i; \
