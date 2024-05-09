@@ -98,7 +98,8 @@ buttonToName(uint16_t button)
 
 @implementation OFGameController
 @synthesize name = _name, buttons = _buttons;
-@synthesize numAnalogSticks = _numAnalogSticks;
+@synthesize hasLeftAnalogStick = _hasLeftAnalogStick;
+@synthesize hasRightAnalogStick = _hasRightAnalogStick;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
@@ -199,13 +200,12 @@ buttonToName(uint16_t button)
 				    exception];
 
 			if (OFBitSetIsSet(absBits, ABS_X) &&
-			    OFBitSetIsSet(absBits, ABS_Y)) {
-				_numAnalogSticks++;
+			    OFBitSetIsSet(absBits, ABS_Y))
+				_hasLeftAnalogStick = true;
 
-				if (OFBitSetIsSet(absBits, ABS_RX) &&
-				    OFBitSetIsSet(absBits, ABS_RY))
-					_numAnalogSticks++;
-			}
+			if (OFBitSetIsSet(absBits, ABS_RX) &&
+			    OFBitSetIsSet(absBits, ABS_RY))
+				_hasRightAnalogStick = true;
 
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
@@ -273,22 +273,22 @@ buttonToName(uint16_t button)
 		case EV_ABS:
 			switch (event.code) {
 			case ABS_X:
-				_analogStickPositions[0].x =
+				_leftAnalogStickPosition.x =
 				    (float)event.value /
 				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
 				break;
 			case ABS_Y:
-				_analogStickPositions[0].y =
+				_leftAnalogStickPosition.y =
 				    (float)event.value /
 				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
 				break;
 			case ABS_RX:
-				_analogStickPositions[1].x =
+				_rightAnalogStickPosition.x =
 				    (float)event.value /
 				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
 				break;
 			case ABS_RY:
-				_analogStickPositions[1].y =
+				_rightAnalogStickPosition.y =
 				    (float)event.value /
 				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
 				break;
@@ -369,18 +369,19 @@ buttonToName(uint16_t button)
 - (OFSet *)pressedButtons
 {
 	[self of_processEvents];
-
 	return [[_pressedButtons copy] autorelease];
 }
 
-- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
+- (OFPoint)leftAnalogStickPosition
 {
-	if (index + 1 > _numAnalogSticks)
-		@throw [OFOutOfRangeException exception];
-
 	[self of_processEvents];
+	return _leftAnalogStickPosition;
+}
 
-	return _analogStickPositions[index];
+- (OFPoint)rightAnalogStickPosition
+{
+	[self of_processEvents];
+	return _rightAnalogStickPosition;
 }
 
 - (OFString *)description

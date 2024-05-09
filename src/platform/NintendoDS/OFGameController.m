@@ -47,6 +47,8 @@ initControllers(void)
 }
 
 @implementation OFGameController
+@dynamic leftAnalogStickPosition, rightAnalogStickPosition;
+
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -116,14 +118,14 @@ initControllers(void)
 	return pressedButtons;
 }
 
-- (size_t)numAnalogSticks
+- (bool)hasLeftAnalogStick
 {
-	return 0;
+	return false;
 }
 
-- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
+- (bool)hasRightAnalogStick
 {
-	@throw [OFOutOfRangeException exception];
+	return false;
 }
 
 - (OFString *)description

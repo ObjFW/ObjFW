@@ -47,6 +47,8 @@ initControllers(void)
 }
 
 @implementation OFGameController
+@dynamic rightAnalogStickPosition;
+
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -129,18 +131,19 @@ initControllers(void)
 	return pressedButtons;
 }
 
-- (size_t)numAnalogSticks
+- (bool)hasLeftAnalogStick
 {
-	return 1;
+	return true;
 }
 
-- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
+- (bool)hasRightAnalogStick
+{
+	return false;
+}
+
+- (OFPoint)leftAnalogStickPosition
 {
 	circlePosition pos;
-
-	if (index > 0)
-		@throw [OFOutOfRangeException exception];
-
 	hidCircleRead(&pos);
 
 	return OFMakePoint(

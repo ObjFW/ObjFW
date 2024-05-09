@@ -68,10 +68,16 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut setForegroundColor: [OFColor gray]];
 			[OFStdOut writeString: @"\n"];
 
-			for (i = 0; i < controller.numAnalogSticks; i++) {
-				OFPoint position = [controller
-				    positionOfAnalogStickWithIndex: i];
+			if (controller.hasLeftAnalogStick) {
+				OFPoint position =
+				    controller.leftAnalogStickPosition;
 				[OFStdOut writeFormat: @"(%5.2f, %5.2f) ",
+						       position.x, position.y];
+			}
+			if (controller.hasRightAnalogStick) {
+				OFPoint position =
+				    controller.rightAnalogStickPosition;
+				[OFStdOut writeFormat: @"(%5.2f, %5.2f)",
 						       position.x, position.y];
 			}
 			[OFStdOut writeString: @"\n"];

@@ -39,8 +39,8 @@ OF_SUBCLASSING_RESTRICTED
 	int _fd;
 	OFString *_name;
 	OFMutableSet *_buttons, *_pressedButtons;
-	size_t _numAnalogSticks;
-	OFPoint _analogStickPositions[2];
+	bool _hasLeftAnalogStick, _hasRightAnalogStick;
+	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 #endif
 }
 
@@ -66,9 +66,28 @@ OF_SUBCLASSING_RESTRICTED
     OFSet OF_GENERIC(OFString *) *pressedButtons;
 
 /**
- * @brief The number of analog sticks the controller has.
+ * @brief Whether the controller has a left analog stick.
  */
-@property (readonly, nonatomic) size_t numAnalogSticks;
+@property (readonly, nonatomic) bool hasLeftAnalogStick;
+
+/**
+ * @brief The position of the left analog stick.
+ *
+ * The range is from (-1, -1) to (1, 1).
+ */
+@property (readonly, nonatomic) OFPoint leftAnalogStickPosition;
+
+/**
+ * @brief Whether the controller has a right analog stick.
+ */
+@property (readonly, nonatomic) bool hasRightAnalogStick;
+
+/**
+ * @brief The position of the right analog stick.
+ *
+ * The range is from (-1, -1) to (1, 1).
+ */
+@property (readonly, nonatomic) OFPoint rightAnalogStickPosition;
 
 /**
  * @brief Returns the available controllers.
@@ -78,16 +97,6 @@ OF_SUBCLASSING_RESTRICTED
 + (OFArray OF_GENERIC(OFGameController *) *)controllers;
 
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Returns the current position of the specified analog stick.
- *
- * The range is from (-1, -1) to (1, 1).
- *
- * @param index The index of the analog stick whose position to return
- * @return The current position of the specified analog stick
- */
-- (OFPoint)positionOfAnalogStickWithIndex: (size_t)index;
 @end
 
 OF_ASSUME_NONNULL_END
