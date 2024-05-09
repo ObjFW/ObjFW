@@ -38,7 +38,10 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
+static const uint16_t vendorIDMicrosoft = 0x045E;
 static const uint16_t vendorIDNintendo = 0x057E;
+
+static const uint16_t productIDXbox360Controller = 0x028E;
 static const uint16_t productIDN64Controller = 0x2019;
 
 @interface OFGameController ()
@@ -55,7 +58,14 @@ static const uint16_t buttons[] = {
 static OFString *
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == vendorIDNintendo &&
+	if (vendorID == vendorIDMicrosoft &&
+	    productID == productIDXbox360Controller) {
+		switch (button) {
+		case BTN_C:
+		case BTN_Z:
+			return nil;
+		}
+	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
 		switch (button) {
 		case BTN_TL2:
@@ -104,11 +114,11 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	case BTN_START:
 		return @"Start";
 	case BTN_MODE:
-		return @"Mode";
+		return @"Home";
 	case BTN_THUMBL:
-		return @"Thumb L";
+		return @"Left Stick";
 	case BTN_THUMBR:
-		return @"Thumb R";
+		return @"Right Stick";
 	case BTN_DPAD_UP:
 		return @"D-Pad Up";
 	case BTN_DPAD_DOWN:
