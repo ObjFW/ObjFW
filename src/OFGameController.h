@@ -37,6 +37,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_LINUX
 	OFString *_path;
 	int _fd;
+	uint16_t _vendorID, _productID;
 	OFString *_name;
 	OFMutableSet *_buttons, *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;

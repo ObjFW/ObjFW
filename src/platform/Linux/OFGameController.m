@@ -38,6 +38,9 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
+static const uint16_t vendorIDNintendo = 0x057E;
+static const uint16_t productIDN64Controller = 0x2019;
+
 @interface OFGameController ()
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
 - (void)of_processEvents;
@@ -50,8 +53,31 @@ static const uint16_t buttons[] = {
 };
 
 static OFString *
-buttonToName(uint16_t button)
+buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
+	if (vendorID == vendorIDNintendo &&
+	    productID == productIDN64Controller) {
+		switch (button) {
+		case BTN_TL2:
+			return @"Z";
+		case BTN_Y:
+			return @"C-Stick Left";
+		case BTN_C:
+			return @"C-Stick Right";
+		case BTN_SELECT:
+			return @"C-Stick Up";
+		case BTN_X:
+			return @"C-Stick Down";
+		case BTN_MODE:
+			return @"Home";
+		case BTN_Z:
+			return @"Capture";
+		case BTN_THUMBL:
+		case BTN_THUMBR:
+			return nil;
+		}
+	}
+
 	switch (button) {
 	case BTN_A:
 		return @"A";
@@ -168,6 +194,7 @@ scale(float value, float min, float max)
 		    KEY_MAX) / OF_ULONG_BIT] = { 0 };
 		unsigned long absBits[OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    ABS_MAX) / OF_ULONG_BIT] = { 0 };
+		struct input_id inputID;
 		char name[128];
 
 		_path = [path copy];
@@ -192,6 +219,12 @@ scale(float value, float min, float max)
 		if (!OFBitSetIsSet(keyBits, BTN_GAMEPAD))
 			@throw [OFInvalidArgumentException exception];
 
+		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		_vendorID = inputID.vendor;
+		_productID = inputID.product;
+
 		if (ioctl(_fd, EVIOCGNAME(sizeof(name)), name) == -1)
 			@throw [OFInitializationFailedException exception];
 
@@ -199,8 +232,14 @@ scale(float value, float min, float max)
 						 encoding: encoding];
 
 		_buttons = [[OFMutableSet alloc] init];
-		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons); i++)
-			[_buttons addObject: buttonToName(buttons[i])];
+		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
+		    i++) {
+			OFString *buttonName =
+			    buttonToName(buttons[i], _vendorID, _productID);
+
+			if (buttonName != nil)
+				[_buttons addObject: buttonName];
+		}
 
 		_pressedButtons = [[OFMutableSet alloc] init];
 
@@ -292,6 +331,8 @@ scale(float value, float min, float max)
 	struct input_event event;
 
 	for (;;) {
+		OFString *name;
+
 		errno = 0;
 
 		if (read(_fd, &event, sizeof(event)) < (int)sizeof(event)) {
@@ -306,12 +347,13 @@ scale(float value, float min, float max)
 
 		switch (event.type) {
 		case EV_KEY:
-			if (event.value)
-				[_pressedButtons addObject:
-				    buttonToName(event.code)];
-			else
-				[_pressedButtons removeObject:
-				    buttonToName(event.code)];
+			if ((name = buttonToName(event.code, _vendorID,
+			    _productID)) != nil) {
+				if (event.value)
+					[_pressedButtons addObject: name];
+				else
+					[_pressedButtons removeObject: name];
+			}
 			break;
 		case EV_ABS:
 			switch (event.code) {
