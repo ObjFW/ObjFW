@@ -43,19 +43,29 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OFGameController *controller in controllers) {
-			OFArray *buttons =
+			OFArray OF_GENERIC(OFGameControllerButton) *buttons =
 			    controller.buttons.allObjects.sortedArray;
 			size_t i = 0;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeLine: controller.name];
 
-			for (OFString *button in buttons) {
-				bool pressed = [controller.pressedButtons
-				    containsObject: button];
+			for (OFGameControllerButton button in buttons) {
+				float pressure =
+				    [controller pressureForButton: button];
 
-				[OFStdOut setForegroundColor: (pressed
-				    ? [OFColor yellow] : [OFColor gray])];
+				if (pressure == 1)
+					[OFStdOut setForegroundColor:
+					    [OFColor red]];
+				else if (pressure > 0.5)
+					[OFStdOut setForegroundColor:
+					    [OFColor yellow]];
+				else if (pressure > 0)
+					[OFStdOut setForegroundColor:
+					    [OFColor green]];
+				else
+					[OFStdOut setForegroundColor:
+					    [OFColor gray]];
 
 				[OFStdOut writeFormat: @"[%@]", button];
 

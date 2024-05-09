@@ -69,5 +69,10 @@ const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
 {
 	OF_INVALID_INIT_METHOD
 }
+
+- (float)pressureForButton: (OFGameControllerButton)button
+{
+	return 0;
+}
 @end
 #endif

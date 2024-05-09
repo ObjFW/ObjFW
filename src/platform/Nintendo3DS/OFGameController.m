@@ -73,7 +73,7 @@ initControllers(void)
 	return @"Nintendo 3DS";
 }
 
-- (OFSet *)buttons
+- (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
 	return [OFSet setWithObjects: OFGameControllerButtonA,
 	    OFGameControllerButtonB, OFGameControllerButtonSelect,
@@ -87,9 +87,10 @@ initControllers(void)
 	    OFGameControllerButtonCPadDown, nil];
 }
 
-- (OFSet *)pressedButtons
+- (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
 {
-	OFMutableSet *pressedButtons = [OFMutableSet setWithCapacity: 18];
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *pressedButtons =
+	    [OFMutableSet setWithCapacity: 18];
 	u32 keys;
 
 	hidScanInput();
@@ -155,6 +156,11 @@ initControllers(void)
 	return OFMakePoint(
 	    (float)pos.dx / (pos.dx < 0 ? -INT16_MIN : INT16_MAX),
 	    (float)pos.dy / (pos.dy < 0 ? -INT16_MIN : INT16_MAX));
+}
+
+- (float)pressureForButton: (OFGameControllerButton)button
+{
+	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
 - (OFString *)description

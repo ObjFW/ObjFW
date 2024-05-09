@@ -73,7 +73,7 @@ initControllers(void)
 	return @"Nintendo DS";
 }
 
-- (OFSet *)buttons
+- (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
 	return [OFSet setWithObjects: OFGameControllerButtonA,
 	    OFGameControllerButtonB, OFGameControllerButtonSelect,
@@ -84,9 +84,10 @@ initControllers(void)
 	    OFGameControllerButtonY, nil];
 }
 
-- (OFSet *)pressedButtons
+- (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
 {
-	OFMutableSet *pressedButtons = [OFMutableSet setWithCapacity: 12];
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *pressedButtons =
+	    [OFMutableSet setWithCapacity: 12];
 	uint32 keys;
 
 	scanKeys();
@@ -130,6 +131,11 @@ initControllers(void)
 - (bool)hasRightAnalogStick
 {
 	return false;
+}
+
+- (float)pressureForButton: (OFGameControllerButton)button
+{
+	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
 - (OFString *)description

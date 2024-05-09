@@ -199,11 +199,14 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_name;
 	OFMutableSet *_buttons, *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;
+	bool _hasZLPressure, _hasZRPressure;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
+	float _ZLPressure, _ZRPressure;
 	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
 	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
 	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
 	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
+	int32_t _ZLMinPressure, _ZLMaxPressure, _ZRMinPressure, _ZRMaxPressure;
 #endif
 }
 
@@ -220,13 +223,14 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The buttons the controller has.
  */
-@property (readonly, nonatomic, copy) OFSet OF_GENERIC(OFString *) *buttons;
+@property (readonly, nonatomic, copy)
+    OFSet OF_GENERIC(OFGameControllerButton) *buttons;
 
 /**
  * @brief The currently pressed buttons on the controller.
  */
 @property (readonly, nonatomic, copy)
-    OFSet OF_GENERIC(OFString *) *pressedButtons;
+    OFSet OF_GENERIC(OFGameControllerButton) *pressedButtons;
 
 /**
  * @brief Whether the controller has a left analog stick.
@@ -260,6 +264,16 @@ OF_SUBCLASSING_RESTRICTED
 + (OFArray OF_GENERIC(OFGameController *) *)controllers;
 
 - (instancetype)init OF_UNAVAILABLE;
+
+/**
+ * @brief Returns how hard the specified button is pressed.
+ *
+ * The returned value is in the range from 0 to 1.
+ *
+ * @param button The button for which to return how hard it is pressed.
+ * @return How hard the specified button is pressed
+ */
+- (float)pressureForButton: (OFGameControllerButton)button;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -55,7 +55,7 @@ static const uint16_t buttons[] = {
 	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT
 };
 
-static OFString *
+static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
 	if (vendorID == vendorIDMicrosoft &&
@@ -244,7 +244,7 @@ scale(float value, float min, float max)
 		_buttons = [[OFMutableSet alloc] init];
 		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
 		    i++) {
-			OFString *buttonName =
+			OFGameControllerButton buttonName =
 			    buttonToName(buttons[i], _vendorID, _productID);
 
 			if (buttonName != nil)
@@ -311,10 +311,35 @@ scale(float value, float min, float max)
 				    OFGameControllerButtonDPadDown];
 			}
 
-			if (OFBitSetIsSet(absBits, ABS_Z))
+			if (OFBitSetIsSet(absBits, ABS_Z)) {
+				struct input_absinfo info;
+
+				_hasZLPressure = true;
+
+				if (ioctl(_fd, EVIOCGABS(ABS_Z), &info) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				_ZLMinPressure = info.minimum;
+				_ZLMaxPressure = info.maximum;
+
 				[_buttons addObject: OFGameControllerButtonZL];
-			if (OFBitSetIsSet(absBits, ABS_RZ))
+			}
+
+			if (OFBitSetIsSet(absBits, ABS_RZ)) {
+				struct input_absinfo info;
+
+				_hasZRPressure = true;
+
+				if (ioctl(_fd, EVIOCGABS(ABS_RZ), &info) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				_ZRMinPressure = info.minimum;
+				_ZRMaxPressure = info.maximum;
+
 				[_buttons addObject: OFGameControllerButtonZR];
+			}
 		}
 
 		[_buttons makeImmutable];
@@ -345,7 +370,7 @@ scale(float value, float min, float max)
 	struct input_event event;
 
 	for (;;) {
-		OFString *name;
+		OFGameControllerButton name;
 
 		errno = 0;
 
@@ -426,7 +451,10 @@ scale(float value, float min, float max)
 				}
 				break;
 			case ABS_Z:
-				if (event.value > 0)
+				_ZLPressure = scale(event.value,
+				    _ZLMinPressure, _ZLMaxPressure);
+
+				if (_ZLPressure > 0)
 					[_pressedButtons addObject:
 					    OFGameControllerButtonZL];
 				else
@@ -434,7 +462,10 @@ scale(float value, float min, float max)
 					    OFGameControllerButtonZL];
 				break;
 			case ABS_RZ:
-				if (event.value > 0)
+				_ZRPressure = scale(event.value,
+				    _ZRMinPressure, _ZRMaxPressure);
+
+				if (_ZRPressure > 0)
 					[_pressedButtons addObject:
 					    OFGameControllerButtonZR];
 				else
@@ -483,6 +514,21 @@ scale(float value, float min, float max)
 {
 	[self of_processEvents];
 	return _rightAnalogStickPosition;
+}
+
+- (float)pressureForButton: (OFGameControllerButton)button
+{
+	if ([button isEqual: OFGameControllerButtonZL] && _hasZLPressure) {
+		[self of_processEvents];
+		return _ZLPressure;
+	}
+
+	if ([button isEqual: OFGameControllerButtonZR] && _hasZRPressure) {
+		[self of_processEvents];
+		return _ZRPressure;
+	}
+
+	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
 - (OFString *)description
