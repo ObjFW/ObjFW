@@ -38,10 +38,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
-static const uint16_t vendorIDMicrosoft = 0x045E;
 static const uint16_t vendorIDNintendo = 0x057E;
-
-static const uint16_t productIDXbox360Controller = 0x028E;
 static const uint16_t productIDN64Controller = 0x2019;
 
 @interface OFGameController ()
@@ -58,14 +55,7 @@ static const uint16_t buttons[] = {
 static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == vendorIDMicrosoft &&
-	    productID == productIDXbox360Controller) {
-		switch (button) {
-		case BTN_C:
-		case BTN_Z:
-			return nil;
-		}
-	} else if (vendorID == vendorIDNintendo &&
+	if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
 		switch (button) {
 		case BTN_TL2:
@@ -82,9 +72,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return OFGameControllerButtonHome;
 		case BTN_Z:
 			return OFGameControllerButtonCapture;
-		case BTN_THUMBL:
-		case BTN_THUMBR:
-			return nil;
 		}
 	}
 
@@ -243,13 +230,10 @@ scale(float value, float min, float max)
 
 		_buttons = [[OFMutableSet alloc] init];
 		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
-		    i++) {
-			OFGameControllerButton buttonName =
-			    buttonToName(buttons[i], _vendorID, _productID);
-
-			if (buttonName != nil)
-				[_buttons addObject: buttonName];
-		}
+		    i++)
+			if (OFBitSetIsSet(keyBits, buttons[i]))
+				[_buttons addObject: buttonToName(
+				    buttons[i], _vendorID, _productID)];
 
 		_pressedButtons = [[OFMutableSet alloc] init];
 
@@ -370,8 +354,6 @@ scale(float value, float min, float max)
 	struct input_event event;
 
 	for (;;) {
-		OFGameControllerButton name;
-
 		errno = 0;
 
 		if (read(_fd, &event, sizeof(event)) < (int)sizeof(event)) {
@@ -386,13 +368,12 @@ scale(float value, float min, float max)
 
 		switch (event.type) {
 		case EV_KEY:
-			if ((name = buttonToName(event.code, _vendorID,
-			    _productID)) != nil) {
-				if (event.value)
-					[_pressedButtons addObject: name];
-				else
-					[_pressedButtons removeObject: name];
-			}
+			if (event.value)
+				[_pressedButtons addObject: buttonToName(
+				    event.code, _vendorID, _productID)];
+			else
+				[_pressedButtons removeObject: buttonToName(
+				    event.code, _vendorID, _productID)];
 			break;
 		case EV_ABS:
 			switch (event.code) {
