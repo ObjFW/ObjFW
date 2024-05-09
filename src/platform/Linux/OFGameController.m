@@ -66,13 +66,13 @@ buttonToName(uint16_t button)
 	case BTN_Z:
 		return @"Z";
 	case BTN_TL:
-		return @"TL";
+		return @"L";
 	case BTN_TR:
-		return @"TR";
+		return @"R";
 	case BTN_TL2:
-		return @"TL2";
+		return @"ZL";
 	case BTN_TR2:
-		return @"TR2";
+		return @"ZR";
 	case BTN_SELECT:
 		return @"Select";
 	case BTN_START:
@@ -214,6 +214,11 @@ buttonToName(uint16_t button)
 				[_buttons addObject: @"D-Pad Up"];
 				[_buttons addObject: @"D-Pad Down"];
 			}
+
+			if (OFBitSetIsSet(absBits, ABS_Z))
+				[_buttons addObject: @"ZL"];
+			if (OFBitSetIsSet(absBits, ABS_RZ))
+				[_buttons addObject: @"ZR"];
 		}
 
 		[_buttons makeImmutable];
@@ -322,6 +327,18 @@ buttonToName(uint16_t button)
 					[_pressedButtons removeObject:
 					    @"D-Pad Down"];
 				}
+				break;
+			case ABS_Z:
+				if (event.value > 0)
+					[_pressedButtons addObject: @"ZL"];
+				else
+					[_pressedButtons removeObject: @"ZL"];
+				break;
+			case ABS_RZ:
+				if (event.value > 0)
+					[_pressedButtons addObject: @"ZR"];
+				else
+					[_pressedButtons removeObject: @"ZR"];
 				break;
 			}
 
