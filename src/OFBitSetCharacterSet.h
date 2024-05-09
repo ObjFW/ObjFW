@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFBitSetCharacterSet: OFCharacterSet
 {
-	unsigned char *_bitset;
+	unsigned long *_bitSet;
 	size_t _size;
 }
 @end

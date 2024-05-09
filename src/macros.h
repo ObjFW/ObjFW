@@ -940,22 +940,24 @@ OFByteSwapDouble(double d)
 #define OFRoundUpToPowerOf2(pow2, value)	\
     (((value) + (pow2) - 1) & ~((pow2) - 1))
 
+#define OF_ULONG_BIT (sizeof(unsigned long) * CHAR_BIT)
+
 static OF_INLINE bool
-OFBitsetIsSet(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetIsSet(unsigned long *_Nonnull storage, size_t idx)
 {
-	return storage[idx / CHAR_BIT] & (1u << (idx % CHAR_BIT));
+	return storage[idx / OF_ULONG_BIT] & (1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void
-OFBitsetSet(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetSet(unsigned long *_Nonnull storage, size_t idx)
 {
-	storage[idx / CHAR_BIT] |= (1u << (idx % CHAR_BIT));
+	storage[idx / OF_ULONG_BIT] |= (1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void
-OFBitsetClear(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetClear(unsigned long *_Nonnull storage, size_t idx)
 {
-	storage[idx / CHAR_BIT] &= ~(1u << (idx % CHAR_BIT));
+	storage[idx / OF_ULONG_BIT] &= ~(1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void

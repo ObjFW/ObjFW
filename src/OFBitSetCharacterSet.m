@@ -42,23 +42,25 @@
 		for (size_t i = 0; i < length; i++) {
 			OFUnichar c = characters[i];
 
-			if (c / CHAR_BIT >= _size) {
+			if (c / OF_ULONG_BIT >= _size) {
 				size_t newSize;
 
 				if (UINT32_MAX - c < 1)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OFRoundUpToPowerOf2(CHAR_BIT, c + 1) /
-				    CHAR_BIT;
+				newSize = OFRoundUpToPowerOf2(OF_ULONG_BIT,
+				    c + 1) / OF_ULONG_BIT;
 
-				_bitset = OFResizeMemory(_bitset, newSize, 1);
-				memset(_bitset + _size, '\0', newSize - _size);
+				_bitSet = OFResizeMemory(_bitSet, newSize,
+				    sizeof(unsigned long));
+				memset(_bitSet + _size, '\0',
+				    (newSize - _size) * sizeof(unsigned long));
 
 				_size = newSize;
 			}
 
-			OFBitsetSet(_bitset, c);
+			OFBitSetSet(_bitSet, c);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -72,16 +74,16 @@
 
 - (void)dealloc
 {
-	OFFreeMemory(_bitset);
+	OFFreeMemory(_bitSet);
 
 	[super dealloc];
 }
 
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character / CHAR_BIT >= _size)
+	if (character / OF_ULONG_BIT >= _size)
 		return false;
 
-	return OFBitsetIsSet(_bitset, character);
+	return OFBitSetIsSet(_bitSet, character);
 }
 @end
