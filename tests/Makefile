@@ -1,8 +1,9 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}	\
-	  ${SUBPROCESS}	\
-	  ${OBJC_SYNC}	\
+SUBDIRS = ${TESTPLUGIN}		\
+	  ${SUBPROCESS}		\
+	  gamecontroller	\
+	  ${OBJC_SYNC}		\
 	  terminal
 
 CLEAN = EBOOT.PBP			\
