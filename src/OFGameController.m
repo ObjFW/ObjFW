@@ -24,6 +24,31 @@
 
 #import "OFOutOfRangeException.h"
 
+const OFGameControllerButton OFGameControllerButtonA = @"A";
+const OFGameControllerButton OFGameControllerButtonB = @"B";
+const OFGameControllerButton OFGameControllerButtonC = @"C";
+const OFGameControllerButton OFGameControllerButtonX = @"X";
+const OFGameControllerButton OFGameControllerButtonY = @"Y";
+const OFGameControllerButton OFGameControllerButtonZ = @"Z";
+const OFGameControllerButton OFGameControllerButtonL = @"L";
+const OFGameControllerButton OFGameControllerButtonR = @"R";
+const OFGameControllerButton OFGameControllerButtonZL = @"ZL";
+const OFGameControllerButton OFGameControllerButtonZR = @"ZR";
+const OFGameControllerButton OFGameControllerButtonSelect = @"Select";
+const OFGameControllerButton OFGameControllerButtonStart = @"Start";
+const OFGameControllerButton OFGameControllerButtonHome = @"Home";
+const OFGameControllerButton OFGameControllerButtonCapture = @"Capture";
+const OFGameControllerButton OFGameControllerButtonLeftStick = @"Left Stick";
+const OFGameControllerButton OFGameControllerButtonRightStick = @"Right Stick";
+const OFGameControllerButton OFGameControllerButtonDPadUp = @"D-Pad Up";
+const OFGameControllerButton OFGameControllerButtonDPadDown = @"D-Pad Down";
+const OFGameControllerButton OFGameControllerButtonDPadLeft = @"D-Pad Left";
+const OFGameControllerButton OFGameControllerButtonDPadRight = @"D-Pad Right";
+const OFGameControllerButton OFGameControllerButtonCPadUp = @"C-Pad Up";
+const OFGameControllerButton OFGameControllerButtonCPadDown = @"C-Pad Down";
+const OFGameControllerButton OFGameControllerButtonCPadLeft = @"C-Pad Left";
+const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
+
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "platform/Linux/OFGameController.m"
 #elif defined(OF_NINTENDO_DS)

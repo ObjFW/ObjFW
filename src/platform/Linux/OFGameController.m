@@ -69,19 +69,19 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	    productID == productIDN64Controller) {
 		switch (button) {
 		case BTN_TL2:
-			return @"Z";
+			return OFGameControllerButtonZ;
 		case BTN_Y:
-			return @"C-Stick Left";
+			return OFGameControllerButtonCPadLeft;
 		case BTN_C:
-			return @"C-Stick Right";
+			return OFGameControllerButtonCPadRight;
 		case BTN_SELECT:
-			return @"C-Stick Up";
+			return OFGameControllerButtonCPadUp;
 		case BTN_X:
-			return @"C-Stick Down";
+			return OFGameControllerButtonCPadDown;
 		case BTN_MODE:
-			return @"Home";
+			return OFGameControllerButtonHome;
 		case BTN_Z:
-			return @"Capture";
+			return OFGameControllerButtonCapture;
 		case BTN_THUMBL:
 		case BTN_THUMBR:
 			return nil;
@@ -90,43 +90,43 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 
 	switch (button) {
 	case BTN_A:
-		return @"A";
+		return OFGameControllerButtonA;
 	case BTN_B:
-		return @"B";
+		return OFGameControllerButtonB;
 	case BTN_C:
-		return @"C";
+		return OFGameControllerButtonC;
 	case BTN_X:
-		return @"X";
+		return OFGameControllerButtonX;
 	case BTN_Y:
-		return @"Y";
+		return OFGameControllerButtonY;
 	case BTN_Z:
-		return @"Z";
+		return OFGameControllerButtonZ;
 	case BTN_TL:
-		return @"L";
+		return OFGameControllerButtonL;
 	case BTN_TR:
-		return @"R";
+		return OFGameControllerButtonR;
 	case BTN_TL2:
-		return @"ZL";
+		return OFGameControllerButtonZL;
 	case BTN_TR2:
-		return @"ZR";
+		return OFGameControllerButtonZR;
 	case BTN_SELECT:
-		return @"Select";
+		return OFGameControllerButtonSelect;
 	case BTN_START:
-		return @"Start";
+		return OFGameControllerButtonStart;
 	case BTN_MODE:
-		return @"Home";
+		return OFGameControllerButtonHome;
 	case BTN_THUMBL:
-		return @"Left Stick";
+		return OFGameControllerButtonLeftStick;
 	case BTN_THUMBR:
-		return @"Right Stick";
+		return OFGameControllerButtonRightStick;
 	case BTN_DPAD_UP:
-		return @"D-Pad Up";
+		return OFGameControllerButtonDPadUp;
 	case BTN_DPAD_DOWN:
-		return @"D-Pad Down";
+		return OFGameControllerButtonDPadDown;
 	case BTN_DPAD_LEFT:
-		return @"D-Pad Left";
+		return OFGameControllerButtonDPadLeft;
 	case BTN_DPAD_RIGHT:
-		return @"D-Pad Right";
+		return OFGameControllerButtonDPadRight;
 	}
 
 	return nil;
@@ -301,16 +301,20 @@ scale(float value, float min, float max)
 
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
-				[_buttons addObject: @"D-Pad Left"];
-				[_buttons addObject: @"D-Pad Right"];
-				[_buttons addObject: @"D-Pad Up"];
-				[_buttons addObject: @"D-Pad Down"];
+				[_buttons addObject:
+				    OFGameControllerButtonDPadLeft];
+				[_buttons addObject:
+				    OFGameControllerButtonDPadRight];
+				[_buttons addObject:
+				    OFGameControllerButtonDPadUp];
+				[_buttons addObject:
+				    OFGameControllerButtonDPadDown];
 			}
 
 			if (OFBitSetIsSet(absBits, ABS_Z))
-				[_buttons addObject: @"ZL"];
+				[_buttons addObject: OFGameControllerButtonZL];
 			if (OFBitSetIsSet(absBits, ABS_RZ))
-				[_buttons addObject: @"ZR"];
+				[_buttons addObject: OFGameControllerButtonZR];
 		}
 
 		[_buttons makeImmutable];
@@ -388,50 +392,54 @@ scale(float value, float min, float max)
 			case ABS_HAT0X:
 				if (event.value < 0) {
 					[_pressedButtons addObject:
-					    @"D-Pad Left"];
+					    OFGameControllerButtonDPadLeft];
 					[_pressedButtons removeObject:
-					    @"D-Pad Right"];
+					    OFGameControllerButtonDPadRight];
 				} else if (event.value > 0) {
 					[_pressedButtons addObject:
-					    @"D-Pad Right"];
+					    OFGameControllerButtonDPadRight];
 					[_pressedButtons removeObject:
-					    @"D-Pad Left"];
+					    OFGameControllerButtonDPadLeft];
 				} else {
 					[_pressedButtons removeObject:
-					    @"D-Pad Left"];
+					    OFGameControllerButtonDPadLeft];
 					[_pressedButtons removeObject:
-					    @"D-Pad Right"];
+					    OFGameControllerButtonDPadRight];
 				}
 				break;
 			case ABS_HAT0Y:
 				if (event.value < 0) {
 					[_pressedButtons addObject:
-					    @"D-Pad Up"];
+					    OFGameControllerButtonDPadUp];
 					[_pressedButtons removeObject:
-					    @"D-Pad Down"];
+					    OFGameControllerButtonDPadDown];
 				} else if (event.value > 0) {
 					[_pressedButtons addObject:
-					    @"D-Pad Down"];
+					    OFGameControllerButtonDPadDown];
 					[_pressedButtons removeObject:
-					    @"D-Pad Up"];
+					    OFGameControllerButtonDPadUp];
 				} else {
 					[_pressedButtons removeObject:
-					    @"D-Pad Up"];
+					    OFGameControllerButtonDPadUp];
 					[_pressedButtons removeObject:
-					    @"D-Pad Down"];
+					    OFGameControllerButtonDPadDown];
 				}
 				break;
 			case ABS_Z:
 				if (event.value > 0)
-					[_pressedButtons addObject: @"ZL"];
+					[_pressedButtons addObject:
+					    OFGameControllerButtonZL];
 				else
-					[_pressedButtons removeObject: @"ZL"];
+					[_pressedButtons removeObject:
+					    OFGameControllerButtonZL];
 				break;
 			case ABS_RZ:
 				if (event.value > 0)
-					[_pressedButtons addObject: @"ZR"];
+					[_pressedButtons addObject:
+					    OFGameControllerButtonZR];
 				else
-					[_pressedButtons removeObject: @"ZR"];
+					[_pressedButtons removeObject:
+					    OFGameControllerButtonZR];
 				break;
 			}
 

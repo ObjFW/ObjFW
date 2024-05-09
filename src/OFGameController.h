@@ -29,6 +29,164 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSet OF_GENERIC(ObjectType);
 
 /**
+ * @brief A button on a controller.
+ *
+ * Possible values are:
+ *
+ *   * @ref OFGameControllerButtonA
+ *   * @ref OFGameControllerButtonB
+ *   * @ref OFGameControllerButtonC
+ *   * @ref OFGameControllerButtonX
+ *   * @ref OFGameControllerButtonY
+ *   * @ref OFGameControllerButtonZ
+ *   * @ref OFGameControllerButtonL
+ *   * @ref OFGameControllerButtonR
+ *   * @ref OFGameControllerButtonZL
+ *   * @ref OFGameControllerButtonZR
+ *   * @ref OFGameControllerButtonSelect
+ *   * @ref OFGameControllerButtonStart
+ *   * @ref OFGameControllerButtonHome
+ *   * @ref OFGameControllerButtonLeftStick
+ *   * @ref OFGameControllerButtonRightStick
+ *   * @ref OFGameControllerButtonDPadUp
+ *   * @ref OFGameControllerButtonDPadDown
+ *   * @ref OFGameControllerButtonDPadLeft
+ *   * @ref OFGameControllerButtonDPadRight
+ *   * @ref OFGameControllerButtonCPadUp
+ *   * @ref OFGameControllerButtonCPadDown
+ *   * @ref OFGameControllerButtonCPadLeft
+ *   * @ref OFGameControllerButtonCPadRight
+ */
+typedef OFConstantString *OFGameControllerButton;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief The A button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonA;
+
+/**
+ * @brief The B button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonB;
+
+/**
+ * @brief The C button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonC;
+
+/**
+ * @brief The X button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonX;
+
+/**
+ * @brief The Y button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonY;
+
+/**
+ * @brief The Z button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonZ;
+
+/**
+ * @brief The L button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonL;
+
+/**
+ * @brief The R button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonR;
+
+/**
+ * @brief The ZL button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonZL;
+
+/**
+ * @brief The ZR button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonZR;
+
+/**
+ * @brief The Select button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonSelect;
+
+/**
+ * @brief The Start button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonStart;
+
+/**
+ * @brief The Home button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonHome;
+
+/**
+ * @brief The Capture button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonCapture;
+
+/**
+ * @brief The left stick button (pressing the left stick) on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonLeftStick;
+
+/**
+ * @brief The right stick button (pressing the right stick) on a game
+ *	  controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonRightStick;
+
+/**
+ * @brief The D-Pad Up button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonDPadUp;
+
+/**
+ * @brief The D-Pad Down button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonDPadDown;
+
+/**
+ * @brief The D-Pad Left button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonDPadLeft;
+
+/**
+ * @brief The D-Pad Right button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonDPadRight;
+
+/**
+ * @brief The C-Pad Up button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonCPadUp;
+
+/**
+ * @brief The C-Pad Down button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonCPadDown;
+
+/**
+ * @brief The C-Pad Left button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonCPadLeft;
+
+/**
+ * @brief The C-Pad Right button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonCPadRight;
+#ifdef __cplusplus
+}
+#endif
+
+/**
  * @brief A class for reading state from a game controller.
  */
 OF_SUBCLASSING_RESTRICTED

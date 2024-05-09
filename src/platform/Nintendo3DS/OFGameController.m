@@ -75,10 +75,16 @@ initControllers(void)
 
 - (OFSet *)buttons
 {
-	return [OFSet setWithObjects: @"A", @"B", @"Select", @"Start",
-	    @"D-Pad Right", @"D-Pad Left", @"D-Pad Up", @"D-Pad Down", @"R",
-	    @"L", @"X", @"Y", @"ZL", @"ZR", @"C-Stick Right", @"C-Stick Left",
-	    @"C-Stick Up", @"C-Stick Down", nil];
+	return [OFSet setWithObjects: OFGameControllerButtonA,
+	    OFGameControllerButtonB, OFGameControllerButtonSelect,
+	    OFGameControllerButtonStart, OFGameControllerButtonDPadRight,
+	    OFGameControllerButtonDPadLeft, OFGameControllerButtonDPadUp,
+	    OFGameControllerButtonDPadDown, OFGameControllerButtonR,
+	    OFGameControllerButtonL, OFGameControllerButtonX,
+	    OFGameControllerButtonY, OFGameControllerButtonZL,
+	    OFGameControllerButtonZR, OFGameControllerButtonCPadRight,
+	    OFGameControllerButtonCPadLeft, OFGameControllerButtonCPadUp,
+	    OFGameControllerButtonCPadDown, nil];
 }
 
 - (OFSet *)pressedButtons
@@ -90,41 +96,41 @@ initControllers(void)
 	keys = hidKeysHeld();
 
 	if (keys & KEY_A)
-		[pressedButtons addObject: @"A"];
+		[pressedButtons addObject: OFGameControllerButtonA];
 	if (keys & KEY_B)
-		[pressedButtons addObject: @"A"];
+		[pressedButtons addObject: OFGameControllerButtonB];
 	if (keys & KEY_SELECT)
-		[pressedButtons addObject: @"Select"];
+		[pressedButtons addObject: OFGameControllerButtonSelect];
 	if (keys & KEY_START)
-		[pressedButtons addObject: @"Start"];
+		[pressedButtons addObject: OFGameControllerButtonStart];
 	if (keys & KEY_DRIGHT)
-		[pressedButtons addObject: @"D-Pad Right"];
+		[pressedButtons addObject: OFGameControllerButtonDPadRight];
 	if (keys & KEY_DLEFT)
-		[pressedButtons addObject: @"D-Pad Left"];
+		[pressedButtons addObject: OFGameControllerButtonDPadLeft];
 	if (keys & KEY_DUP)
-		[pressedButtons addObject: @"D-Pad Up"];
+		[pressedButtons addObject: OFGameControllerButtonDPadUp];
 	if (keys & KEY_DDOWN)
-		[pressedButtons addObject: @"D-Pad Down"];
+		[pressedButtons addObject: OFGameControllerButtonDPadDown];
 	if (keys & KEY_R)
-		[pressedButtons addObject: @"R"];
+		[pressedButtons addObject: OFGameControllerButtonR];
 	if (keys & KEY_L)
-		[pressedButtons addObject: @"L"];
+		[pressedButtons addObject: OFGameControllerButtonL];
 	if (keys & KEY_X)
-		[pressedButtons addObject: @"X"];
+		[pressedButtons addObject: OFGameControllerButtonX];
 	if (keys & KEY_Y)
-		[pressedButtons addObject: @"Y"];
+		[pressedButtons addObject: OFGameControllerButtonY];
 	if (keys & KEY_ZL)
-		[pressedButtons addObject: @"ZL"];
+		[pressedButtons addObject: OFGameControllerButtonZL];
 	if (keys & KEY_ZR)
-		[pressedButtons addObject: @"ZR"];
+		[pressedButtons addObject: OFGameControllerButtonZR];
 	if (keys & KEY_CSTICK_RIGHT)
-		[pressedButtons addObject: @"C-Stick Right"];
+		[pressedButtons addObject: OFGameControllerButtonCPadRight];
 	if (keys & KEY_CSTICK_LEFT)
-		[pressedButtons addObject: @"C-Stick Left"];
+		[pressedButtons addObject: OFGameControllerButtonCPadLeft];
 	if (keys & KEY_CSTICK_UP)
-		[pressedButtons addObject: @"C-Stick Up"];
+		[pressedButtons addObject: OFGameControllerButtonCPadUp];
 	if (keys & KEY_CSTICK_DOWN)
-		[pressedButtons addObject: @"C-Stick Down"];
+		[pressedButtons addObject: OFGameControllerButtonCPadDown];
 
 	[pressedButtons makeImmutable];
 
