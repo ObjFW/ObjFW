@@ -287,6 +287,42 @@ buttonToName(uint16_t button)
 				    (float)event.value /
 				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
 				break;
+			case ABS_HAT0X:
+				if (event.value < 0) {
+					[_pressedButtons addObject:
+					    @"D-Pad Left"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Right"];
+				} else if (event.value > 0) {
+					[_pressedButtons addObject:
+					    @"D-Pad Right"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Left"];
+				} else {
+					[_pressedButtons removeObject:
+					    @"D-Pad Left"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Right"];
+				}
+				break;
+			case ABS_HAT0Y:
+				if (event.value < 0) {
+					[_pressedButtons addObject:
+					    @"D-Pad Up"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Down"];
+				} else if (event.value > 0) {
+					[_pressedButtons addObject:
+					    @"D-Pad Down"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Up"];
+				} else {
+					[_pressedButtons removeObject:
+					    @"D-Pad Up"];
+					[_pressedButtons removeObject:
+					    @"D-Pad Down"];
+				}
+				break;
 			}
 
 			break;

@@ -65,6 +65,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				} else
 					[OFStdOut writeString: @" "];
 			}
+			[OFStdOut setForegroundColor: [OFColor gray]];
 			[OFStdOut writeString: @"\n"];
 
 			for (i = 0; i < controller.numAnalogSticks; i++) {
