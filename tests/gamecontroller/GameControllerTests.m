@@ -50,6 +50,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeLine: controller.name];
 
+			[controller retrieveState];
+
 			for (OFGameControllerButton button in buttons) {
 				float pressure =
 				    [controller pressureForButton: button];

@@ -192,7 +192,7 @@ extern const OFGameControllerButton OFGameControllerButtonCPadRight;
 OF_SUBCLASSING_RESTRICTED
 @interface OFGameController: OFObject
 {
-#ifdef OF_LINUX
+#if defined(OF_LINUX)
 	OFString *_path;
 	int _fd;
 	uint16_t _vendorID, _productID;
@@ -207,6 +207,11 @@ OF_SUBCLASSING_RESTRICTED
 	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
 	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
 	int32_t _ZLMinPressure, _ZLMaxPressure, _ZRMinPressure, _ZRMaxPressure;
+#elif defined(OF_NINTENDO_DS)
+	OFMutableSet *_pressedButtons;
+#elif defined(OF_NINTENDO_3DS)
+	OFMutableSet *_pressedButtons;
+	OFPoint _leftAnalogStickPosition;
 #endif
 }
 
@@ -264,6 +269,14 @@ OF_SUBCLASSING_RESTRICTED
 + (OFArray OF_GENERIC(OFGameController *) *)controllers;
 
 - (instancetype)init OF_UNAVAILABLE;
+
+/**
+ * @brief Retrieve the current state from the game controller.
+ *
+ * The state returned by @ref OFGameController's messages does not change until
+ * this method is called.
+ */
+- (void)retrieveState;
 
 /**
  * @brief Returns how hard the specified button is pressed.

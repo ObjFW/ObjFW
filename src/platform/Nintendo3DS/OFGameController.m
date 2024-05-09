@@ -47,6 +47,7 @@ initControllers(void)
 }
 
 @implementation OFGameController
+@synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
 @dynamic rightAnalogStickPosition;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
@@ -65,7 +66,79 @@ initControllers(void)
 
 - (instancetype)of_init
 {
-	return [super init];
+	self = [super init];
+
+	@try {
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 18];
+
+		[self retrieveState];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_pressedButtons release];
+
+	[super dealloc];
+}
+
+- (void)retrieveState
+{
+	u32 keys;
+	circlePosition pos;
+
+	hidScanInput();
+
+	keys = hidKeysHeld();
+	hidCircleRead(&pos);
+
+	[_pressedButtons removeAllObjects];
+
+	if (keys & KEY_A)
+		[_pressedButtons addObject: OFGameControllerButtonA];
+	if (keys & KEY_B)
+		[_pressedButtons addObject: OFGameControllerButtonB];
+	if (keys & KEY_SELECT)
+		[_pressedButtons addObject: OFGameControllerButtonSelect];
+	if (keys & KEY_START)
+		[_pressedButtons addObject: OFGameControllerButtonStart];
+	if (keys & KEY_DRIGHT)
+		[_pressedButtons addObject: OFGameControllerButtonDPadRight];
+	if (keys & KEY_DLEFT)
+		[_pressedButtons addObject: OFGameControllerButtonDPadLeft];
+	if (keys & KEY_DUP)
+		[_pressedButtons addObject: OFGameControllerButtonDPadUp];
+	if (keys & KEY_DDOWN)
+		[_pressedButtons addObject: OFGameControllerButtonDPadDown];
+	if (keys & KEY_R)
+		[_pressedButtons addObject: OFGameControllerButtonR];
+	if (keys & KEY_L)
+		[_pressedButtons addObject: OFGameControllerButtonL];
+	if (keys & KEY_X)
+		[_pressedButtons addObject: OFGameControllerButtonX];
+	if (keys & KEY_Y)
+		[_pressedButtons addObject: OFGameControllerButtonY];
+	if (keys & KEY_ZL)
+		[_pressedButtons addObject: OFGameControllerButtonZL];
+	if (keys & KEY_ZR)
+		[_pressedButtons addObject: OFGameControllerButtonZR];
+	if (keys & KEY_CSTICK_RIGHT)
+		[_pressedButtons addObject: OFGameControllerButtonCPadRight];
+	if (keys & KEY_CSTICK_LEFT)
+		[_pressedButtons addObject: OFGameControllerButtonCPadLeft];
+	if (keys & KEY_CSTICK_UP)
+		[_pressedButtons addObject: OFGameControllerButtonCPadUp];
+	if (keys & KEY_CSTICK_DOWN)
+		[_pressedButtons addObject: OFGameControllerButtonCPadDown];
+
+	_leftAnalogStickPosition = OFMakePoint(
+	    (float)pos.dx / (pos.dx < 0 ? -INT16_MIN : INT16_MAX),
+	    (float)pos.dy / (pos.dy < 0 ? -INT16_MIN : INT16_MAX));
 }
 
 - (OFString *)name
@@ -89,53 +162,7 @@ initControllers(void)
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
 {
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *pressedButtons =
-	    [OFMutableSet setWithCapacity: 18];
-	u32 keys;
-
-	hidScanInput();
-	keys = hidKeysHeld();
-
-	if (keys & KEY_A)
-		[pressedButtons addObject: OFGameControllerButtonA];
-	if (keys & KEY_B)
-		[pressedButtons addObject: OFGameControllerButtonB];
-	if (keys & KEY_SELECT)
-		[pressedButtons addObject: OFGameControllerButtonSelect];
-	if (keys & KEY_START)
-		[pressedButtons addObject: OFGameControllerButtonStart];
-	if (keys & KEY_DRIGHT)
-		[pressedButtons addObject: OFGameControllerButtonDPadRight];
-	if (keys & KEY_DLEFT)
-		[pressedButtons addObject: OFGameControllerButtonDPadLeft];
-	if (keys & KEY_DUP)
-		[pressedButtons addObject: OFGameControllerButtonDPadUp];
-	if (keys & KEY_DDOWN)
-		[pressedButtons addObject: OFGameControllerButtonDPadDown];
-	if (keys & KEY_R)
-		[pressedButtons addObject: OFGameControllerButtonR];
-	if (keys & KEY_L)
-		[pressedButtons addObject: OFGameControllerButtonL];
-	if (keys & KEY_X)
-		[pressedButtons addObject: OFGameControllerButtonX];
-	if (keys & KEY_Y)
-		[pressedButtons addObject: OFGameControllerButtonY];
-	if (keys & KEY_ZL)
-		[pressedButtons addObject: OFGameControllerButtonZL];
-	if (keys & KEY_ZR)
-		[pressedButtons addObject: OFGameControllerButtonZR];
-	if (keys & KEY_CSTICK_RIGHT)
-		[pressedButtons addObject: OFGameControllerButtonCPadRight];
-	if (keys & KEY_CSTICK_LEFT)
-		[pressedButtons addObject: OFGameControllerButtonCPadLeft];
-	if (keys & KEY_CSTICK_UP)
-		[pressedButtons addObject: OFGameControllerButtonCPadUp];
-	if (keys & KEY_CSTICK_DOWN)
-		[pressedButtons addObject: OFGameControllerButtonCPadDown];
-
-	[pressedButtons makeImmutable];
-
-	return pressedButtons;
+	return [[_pressedButtons copy] autorelease];
 }
 
 - (bool)hasLeftAnalogStick
@@ -146,16 +173,6 @@ initControllers(void)
 - (bool)hasRightAnalogStick
 {
 	return false;
-}
-
-- (OFPoint)leftAnalogStickPosition
-{
-	circlePosition pos;
-	hidCircleRead(&pos);
-
-	return OFMakePoint(
-	    (float)pos.dx / (pos.dx < 0 ? -INT16_MIN : INT16_MAX),
-	    (float)pos.dy / (pos.dy < 0 ? -INT16_MIN : INT16_MAX));
 }
 
 - (float)pressureForButton: (OFGameControllerButton)button

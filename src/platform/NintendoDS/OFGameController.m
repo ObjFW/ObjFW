@@ -65,7 +65,60 @@ initControllers(void)
 
 - (instancetype)of_init
 {
-	return [super init];
+	self = [super init];
+
+	@try {
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 12];
+
+		[self retrieveState];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_pressedButtons release];
+
+	[super dealloc];
+}
+
+- (void)retrieveState
+{
+	uint32 keys;
+
+	scanKeys();
+	keys = keysCurrent();
+
+	[_pressedButtons removeAllObjects];
+
+	if (keys & KEY_A)
+		[_pressedButtons addObject: OFGameControllerButtonA];
+	if (keys & KEY_B)
+		[_pressedButtons addObject: OFGameControllerButtonB];
+	if (keys & KEY_SELECT)
+		[_pressedButtons addObject: OFGameControllerButtonSelect];
+	if (keys & KEY_START)
+		[_pressedButtons addObject: OFGameControllerButtonStart];
+	if (keys & KEY_RIGHT)
+		[_pressedButtons addObject: OFGameControllerButtonDPadRight];
+	if (keys & KEY_LEFT)
+		[_pressedButtons addObject: OFGameControllerButtonDPadLeft];
+	if (keys & KEY_UP)
+		[_pressedButtons addObject: OFGameControllerButtonDPadUp];
+	if (keys & KEY_DOWN)
+		[_pressedButtons addObject: OFGameControllerButtonDPadDown];
+	if (keys & KEY_R)
+		[_pressedButtons addObject: OFGameControllerButtonR];
+	if (keys & KEY_L)
+		[_pressedButtons addObject: OFGameControllerButtonL];
+	if (keys & KEY_X)
+		[_pressedButtons addObject: OFGameControllerButtonX];
+	if (keys & KEY_Y)
+		[_pressedButtons addObject: OFGameControllerButtonY];
 }
 
 - (OFString *)name
@@ -86,41 +139,7 @@ initControllers(void)
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
 {
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *pressedButtons =
-	    [OFMutableSet setWithCapacity: 12];
-	uint32 keys;
-
-	scanKeys();
-	keys = keysCurrent();
-
-	if (keys & KEY_A)
-		[pressedButtons addObject: OFGameControllerButtonA];
-	if (keys & KEY_B)
-		[pressedButtons addObject: OFGameControllerButtonB];
-	if (keys & KEY_SELECT)
-		[pressedButtons addObject: OFGameControllerButtonSelect];
-	if (keys & KEY_START)
-		[pressedButtons addObject: OFGameControllerButtonStart];
-	if (keys & KEY_RIGHT)
-		[pressedButtons addObject: OFGameControllerButtonDPadRight];
-	if (keys & KEY_LEFT)
-		[pressedButtons addObject: OFGameControllerButtonDPadLeft];
-	if (keys & KEY_UP)
-		[pressedButtons addObject: OFGameControllerButtonDPadUp];
-	if (keys & KEY_DOWN)
-		[pressedButtons addObject: OFGameControllerButtonDPadDown];
-	if (keys & KEY_R)
-		[pressedButtons addObject: OFGameControllerButtonR];
-	if (keys & KEY_L)
-		[pressedButtons addObject: OFGameControllerButtonL];
-	if (keys & KEY_X)
-		[pressedButtons addObject: OFGameControllerButtonX];
-	if (keys & KEY_Y)
-		[pressedButtons addObject: OFGameControllerButtonY];
-
-	[pressedButtons makeImmutable];
-
-	return pressedButtons;
+	return [[_pressedButtons copy] autorelease];
 }
 
 - (bool)hasLeftAnalogStick

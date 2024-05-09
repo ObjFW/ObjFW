@@ -43,7 +43,6 @@ static const uint16_t productIDN64Controller = 0x2019;
 
 @interface OFGameController ()
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-- (void)of_processEvents;
 @end
 
 static const uint16_t buttons[] = {
@@ -134,6 +133,8 @@ scale(float value, float min, float max)
 @synthesize name = _name, buttons = _buttons;
 @synthesize hasLeftAnalogStick = _hasLeftAnalogStick;
 @synthesize hasRightAnalogStick = _hasRightAnalogStick;
+@synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
+@synthesize rightAnalogStickPosition = _rightAnalogStickPosition;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
@@ -327,6 +328,8 @@ scale(float value, float min, float max)
 		}
 
 		[_buttons makeImmutable];
+
+		[self retrieveState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -349,7 +352,7 @@ scale(float value, float min, float max)
 	[super dealloc];
 }
 
-- (void)of_processEvents
+- (void)retrieveState
 {
 	struct input_event event;
 
@@ -481,33 +484,16 @@ scale(float value, float min, float max)
 
 - (OFSet *)pressedButtons
 {
-	[self of_processEvents];
 	return [[_pressedButtons copy] autorelease];
-}
-
-- (OFPoint)leftAnalogStickPosition
-{
-	[self of_processEvents];
-	return _leftAnalogStickPosition;
-}
-
-- (OFPoint)rightAnalogStickPosition
-{
-	[self of_processEvents];
-	return _rightAnalogStickPosition;
 }
 
 - (float)pressureForButton: (OFGameControllerButton)button
 {
-	if ([button isEqual: OFGameControllerButtonZL] && _hasZLPressure) {
-		[self of_processEvents];
+	if (button == OFGameControllerButtonZL && _hasZLPressure)
 		return _ZLPressure;
-	}
 
-	if ([button isEqual: OFGameControllerButtonZR] && _hasZRPressure) {
-		[self of_processEvents];
+	if (button == OFGameControllerButtonZR && _hasZRPressure)
 		return _ZRPressure;
-	}
 
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }

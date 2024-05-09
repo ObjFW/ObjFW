@@ -70,6 +70,10 @@ const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
 	OF_INVALID_INIT_METHOD
 }
 
+- (void)retrieveState
+{
+}
+
 - (float)pressureForButton: (OFGameControllerButton)button
 {
 	return 0;
