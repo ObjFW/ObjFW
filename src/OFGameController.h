@@ -41,6 +41,10 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableSet *_buttons, *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
+	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
+	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
+	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
+	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
 #endif
 }
 

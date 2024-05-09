@@ -83,7 +83,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut writeString: @"\n"];
 		}
 
-		[OFThread sleepForTimeInterval: 0.1];
+		[OFThread sleepForTimeInterval: 1.f / 60.f];
 	}
 }
 @end

@@ -96,6 +96,17 @@ buttonToName(uint16_t button)
 	return nil;
 }
 
+static float
+scale(float value, float min, float max)
+{
+	if (value < min)
+		value = min;
+	if (value > max)
+		value = max;
+
+	return ((value - min) / (max - min) * 2) - 1;
+}
+
 @implementation OFGameController
 @synthesize name = _name, buttons = _buttons;
 @synthesize hasLeftAnalogStick = _hasLeftAnalogStick;
@@ -200,12 +211,44 @@ buttonToName(uint16_t button)
 				    exception];
 
 			if (OFBitSetIsSet(absBits, ABS_X) &&
-			    OFBitSetIsSet(absBits, ABS_Y))
+			    OFBitSetIsSet(absBits, ABS_Y)) {
+				struct input_absinfo infoX, infoY;
+
 				_hasLeftAnalogStick = true;
 
+				if (ioctl(_fd, EVIOCGABS(ABS_X), &infoX) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				if (ioctl(_fd, EVIOCGABS(ABS_Y), &infoY) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				_leftAnalogStickMinX = infoX.minimum;
+				_leftAnalogStickMaxX = infoX.maximum;
+				_leftAnalogStickMinY = infoY.minimum;
+				_leftAnalogStickMaxY = infoY.maximum;
+			}
+
 			if (OFBitSetIsSet(absBits, ABS_RX) &&
-			    OFBitSetIsSet(absBits, ABS_RY))
+			    OFBitSetIsSet(absBits, ABS_RY)) {
+				struct input_absinfo infoX, infoY;
+
 				_hasRightAnalogStick = true;
+
+				if (ioctl(_fd, EVIOCGABS(ABS_RX), &infoX) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				if (ioctl(_fd, EVIOCGABS(ABS_RY), &infoY) == -1)
+					@throw [OFInitializationFailedException
+					    exception];
+
+				_rightAnalogStickMinX = infoX.minimum;
+				_rightAnalogStickMaxX = infoX.maximum;
+				_rightAnalogStickMinY = infoY.minimum;
+				_rightAnalogStickMaxY = infoY.maximum;
+			}
 
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
@@ -273,24 +316,22 @@ buttonToName(uint16_t button)
 		case EV_ABS:
 			switch (event.code) {
 			case ABS_X:
-				_leftAnalogStickPosition.x =
-				    (float)event.value /
-				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
+				_leftAnalogStickPosition.x = scale(event.value,
+				    _leftAnalogStickMinX, _leftAnalogStickMaxX);
 				break;
 			case ABS_Y:
-				_leftAnalogStickPosition.y =
-				    (float)event.value /
-				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
+				_leftAnalogStickPosition.y = scale(event.value,
+				    _leftAnalogStickMinY, _leftAnalogStickMaxY);
 				break;
 			case ABS_RX:
-				_rightAnalogStickPosition.x =
-				    (float)event.value /
-				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
+				_rightAnalogStickPosition.x = scale(event.value,
+				    _rightAnalogStickMinX,
+				    _rightAnalogStickMaxX);
 				break;
 			case ABS_RY:
-				_rightAnalogStickPosition.y =
-				    (float)event.value /
-				    (event.value < 0 ? -INT16_MIN : INT16_MAX);
+				_rightAnalogStickPosition.y = scale(event.value,
+				    _rightAnalogStickMinY,
+				    _rightAnalogStickMaxY);
 				break;
 			case ABS_HAT0X:
 				if (event.value < 0) {
