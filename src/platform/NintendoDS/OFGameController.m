@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFGameController.h"
+#import "OFArray.h"
 #import "OFSet.h"
 
 #import "OFOutOfRangeException.h"
