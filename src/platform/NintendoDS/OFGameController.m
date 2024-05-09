@@ -32,30 +32,27 @@
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 @end
 
-static OFGameController *controller;
+static OFArray OF_GENERIC(OFGameController *) *controllers;
 
 static void
-initController(void)
+initControllers(void)
 {
-	controller = [[OFGameController alloc] of_init];
+	void *pool = objc_autoreleasePoolPush();
+
+	controllers = [[OFArray alloc] initWithObject:
+	    [[[OFGameController alloc] of_init] autorelease]];
+
+	objc_autoreleasePoolPop();
 }
 
 @implementation OFGameController
-+ (size_t)numControllers
-{
-	return 1;
-}
-
-+ (OFGameController *)controllerWithIndex: (size_t)index
++ (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 
-	if (index > 0)
-		@throw [OFOutOfRangeException exception];
+	OFOnce(&onceControl, initControllers);
 
-	OFOnce(&onceControl, initController);
-
-	return [[controller retain] autorelease];
+	return [[controllers retain] autorelease];
 }
 
 - (instancetype)init
@@ -66,6 +63,11 @@ initController(void)
 - (instancetype)of_init
 {
 	return [super init];
+}
+
+- (OFString *)name
+{
+	return @"Nintendo DS";
 }
 
 - (OFSet *)buttons
@@ -121,5 +123,10 @@ initController(void)
 - (OFPoint)positionOfAnalogStickWithIndex: (size_t)index
 {
 	@throw [OFOutOfRangeException exception];
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
 }
 @end

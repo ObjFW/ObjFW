@@ -330,7 +330,7 @@ isSubclassOfClass(Class class, Class superclass)
 		for (;;) {
 			void *pool = objc_autoreleasePoolPush();
 			OFGameController *controller =
-			    [OFGameController controllerWithIndex: 0];
+			    [[OFGameController controllers] objectAtIndex: 0];
 
 			if ([controller.pressedButtons containsObject: @"A"])
 				break;

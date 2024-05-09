@@ -23,22 +23,19 @@
 
 #import "OFOutOfRangeException.h"
 
-#if defined(OF_NINTENDO_DS)
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include "platform/Linux/OFGameController.m"
+#elif defined(OF_NINTENDO_DS)
 # include "platform/NintendoDS/OFGameController.m"
 #elif defined(OF_NINTENDO_3DS)
 # include "platform/Nintendo3DS/OFGameController.m"
 #else
 @implementation OFGameController
-@dynamic buttons, pressedButtons, numAnalogSticks;
+@dynamic name, buttons, pressedButtons, numAnalogSticks;
 
-+ (size_t)numControllers
++ (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
-	return 0;
-}
-
-+ (OFGameController *)controllerWithIndex: (size_t)index
-{
-	@throw [OFOutOfRangeException exception];
+	return [OFArray array];
 }
 
 - (instancetype)init

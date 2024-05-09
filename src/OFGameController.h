@@ -24,6 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableSet OF_GENERIC(ObjectType);
 @class OFSet OF_GENERIC(ObjectType);
 
 /**
@@ -31,19 +33,37 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFGameController: OFObject
-#ifdef OF_HAVE_CLASS_PROPERTIES
-@property (class, readonly, nonatomic) size_t numControllers;
+{
+#ifdef OF_LINUX
+	OFString *_path;
+	int _fd;
+	OFString *_name;
+	OFMutableSet *_buttons, *_pressedButtons;
+	size_t _numAnalogSticks;
+	OFPoint _analogStickPositions[2];
 #endif
+}
+
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic)
+    OFArray <OFGameController *> *controllers;
+#endif
+
+/**
+ * @brief The name of the controller.
+ */
+@property (readonly, nonatomic, copy) OFString *name;
 
 /**
  * @brief The buttons the controller has.
  */
-@property (readonly, nonatomic) OFSet OF_GENERIC(OFString *) *buttons;
+@property (readonly, nonatomic, copy) OFSet OF_GENERIC(OFString *) *buttons;
 
 /**
  * @brief The currently pressed buttons on the controller.
  */
-@property (readonly, nonatomic) OFSet OF_GENERIC(OFString *) *pressedButtons;
+@property (readonly, nonatomic, copy)
+    OFSet OF_GENERIC(OFString *) *pressedButtons;
 
 /**
  * @brief The number of analog sticks the controller has.
@@ -51,19 +71,11 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) size_t numAnalogSticks;
 
 /**
- * @brief Returns the number of available controllers.
+ * @brief Returns the available controllers.
  *
- * @return The number of available controllers
+ * @return The available controllers
  */
-+ (size_t)numControllers;
-
-/**
- * @brief Returns the specified controller.
- *
- * @param index The index of the controller to return
- * @return The specified controller
- */
-+ (OFGameController *)controllerWithIndex: (size_t)index;
++ (OFArray OF_GENERIC(OFGameController *) *)controllers;
 
 - (instancetype)init OF_UNAVAILABLE;
 
