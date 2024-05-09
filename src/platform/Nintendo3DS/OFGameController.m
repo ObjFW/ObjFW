@@ -43,7 +43,7 @@ initControllers(void)
 	controllers = [[OFArray alloc] initWithObject:
 	    [[[OFGameController alloc] of_init] autorelease]];
 
-	objc_autoreleasePoolPop();
+	objc_autoreleasePoolPop(pool);
 }
 
 @implementation OFGameController
