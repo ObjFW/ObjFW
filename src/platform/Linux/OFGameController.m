@@ -40,6 +40,7 @@
 
 static const uint16_t vendorIDNintendo = 0x057E;
 static const uint16_t productIDN64Controller = 0x2019;
+static const uint16_t productIDMegaDriveController = 0x201E;
 
 @interface OFGameController ()
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
@@ -70,6 +71,22 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_MODE:
 			return OFGameControllerButtonHome;
 		case BTN_Z:
+			return OFGameControllerButtonCapture;
+		}
+	} else if (vendorID == vendorIDNintendo &&
+	    productID == productIDMegaDriveController) {
+		switch (button) {
+		case BTN_B:
+			return OFGameControllerButtonA;
+		case BTN_A:
+			return OFGameControllerButtonB;
+		case BTN_Z:
+			return OFGameControllerButtonC;
+		case BTN_TR2:
+			return OFGameControllerButtonStart;
+		case BTN_TR:
+			return OFGameControllerButtonMode;
+		case BTN_THUMBL:
 			return OFGameControllerButtonCapture;
 		}
 	}

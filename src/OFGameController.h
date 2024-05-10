@@ -46,6 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  *   * @ref OFGameControllerButtonSelect
  *   * @ref OFGameControllerButtonStart
  *   * @ref OFGameControllerButtonHome
+ *   * @ref OFGameControllerButtonCapture
  *   * @ref OFGameControllerButtonLeftStick
  *   * @ref OFGameControllerButtonRightStick
  *   * @ref OFGameControllerButtonDPadUp
@@ -56,6 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  *   * @ref OFGameControllerButtonCPadDown
  *   * @ref OFGameControllerButtonCPadLeft
  *   * @ref OFGameControllerButtonCPadRight
+ *   * @ref OFGameControllerButtonMode
  */
 typedef OFConstantString *OFGameControllerButton;
 
@@ -182,6 +184,11 @@ extern const OFGameControllerButton OFGameControllerButtonCPadLeft;
  * @brief The C-Pad Right button on a game controller.
  */
 extern const OFGameControllerButton OFGameControllerButtonCPadRight;
+
+/**
+ * @brief The Mode button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerButtonMode;
 #ifdef __cplusplus
 }
 #endif
