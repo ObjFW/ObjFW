@@ -491,7 +491,6 @@ scale(float value, float min, float max)
 {
 	if (button == OFGameControllerButtonZL && _hasZLPressure)
 		return _ZLPressure;
-
 	if (button == OFGameControllerButtonZR && _hasZRPressure)
 		return _ZRPressure;
 

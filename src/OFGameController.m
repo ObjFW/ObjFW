@@ -22,8 +22,6 @@
 #import "OFGameController.h"
 #import "OFArray.h"
 
-#import "OFOutOfRangeException.h"
-
 const OFGameControllerButton OFGameControllerButtonA = @"A";
 const OFGameControllerButton OFGameControllerButtonB = @"B";
 const OFGameControllerButton OFGameControllerButtonC = @"C";
@@ -51,6 +49,8 @@ const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "platform/Linux/OFGameController.m"
+#elif defined(OF_WINDOWS)
+# include "platform/Windows/OFGameController.m"
 #elif defined(OF_NINTENDO_DS)
 # include "platform/NintendoDS/OFGameController.m"
 #elif defined(OF_NINTENDO_3DS)

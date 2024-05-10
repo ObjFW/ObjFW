@@ -212,6 +212,11 @@ OF_SUBCLASSING_RESTRICTED
 #elif defined(OF_NINTENDO_3DS)
 	OFMutableSet *_pressedButtons;
 	OFPoint _leftAnalogStickPosition;
+#elif defined(OF_WINDOWS)
+	DWORD _index;
+	OFMutableSet *_pressedButtons;
+	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
+	float _ZLPressure, _ZRPressure;
 #endif
 }
 
@@ -275,6 +280,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * The state returned by @ref OFGameController's messages does not change until
  * this method is called.
+ *
+ * @throw OFReadFailedException The controller's state could not be read
  */
 - (void)retrieveState;
 
