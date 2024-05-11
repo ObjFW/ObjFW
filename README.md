@@ -85,6 +85,7 @@ other place, you are most likely using a mirror.
   ---------------------------|---------------------------------------------
   Alpine Linux               | `doas apk add objfw`
   CRUX                       | `sudo prt-get depinst objfw`
+  Debian                     | `sudo apt install objfw`
   Fedora                     | `sudo dnf install objfw`
   FreeBSD                    | `sudo pkg install objfw`
   Haiku                      | `pkgman install objfw`
