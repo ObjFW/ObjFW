@@ -23,6 +23,7 @@
 #import "OFArray.h"
 #import "OFColor.h"
 #import "OFGameController.h"
+#import "OFNumber.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFThread.h"
@@ -48,7 +49,17 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			size_t i = 0;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeLine: controller.name];
+			[OFStdOut writeString: controller.name];
+
+			if (controller.vendorID != nil &&
+			    controller.productID != nil) {
+				[OFStdOut setForegroundColor: [OFColor teal]];
+				[OFStdOut writeFormat: @" [%04X:%04X]",
+				    controller.vendorID.unsignedShortValue,
+				    controller.productID.unsignedShortValue];
+			}
+
+			[OFStdOut writeString: @"\n"];
 
 			[controller retrieveState];
 

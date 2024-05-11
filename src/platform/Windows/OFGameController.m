@@ -180,6 +180,16 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 	return @"XInput 1.3";
 }
 
+- (OFNumber *)vendorID
+{
+	return nil;
+}
+
+- (OFNumber *)productID
+{
+	return nil;
+}
+
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
 	return [OFSet setWithObjects:

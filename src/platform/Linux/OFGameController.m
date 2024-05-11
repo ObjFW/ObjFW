@@ -27,6 +27,7 @@
 #import "OFArray.h"
 #import "OFFileManager.h"
 #import "OFLocale.h"
+#import "OFNumber.h"
 #import "OFSet.h"
 
 #include <sys/ioctl.h>
@@ -350,6 +351,16 @@ scale(float value, float min, float max)
 	[_pressedButtons release];
 
 	[super dealloc];
+}
+
+- (OFNumber *)vendorID
+{
+	return [OFNumber numberWithUnsignedShort: _vendorID];
+}
+
+- (OFNumber *)productID
+{
+	return [OFNumber numberWithUnsignedShort: _productID];
 }
 
 - (void)retrieveState

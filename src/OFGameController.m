@@ -71,6 +71,16 @@ const OFGameControllerButton OFGameControllerButtonMode = @"Mode";
 	OF_INVALID_INIT_METHOD
 }
 
+- (OFNumber *)vendorID
+{
+	return nil;
+}
+
+- (OFNumber *)productID
+{
+	return nil;
+}
+
 - (void)retrieveState
 {
 }

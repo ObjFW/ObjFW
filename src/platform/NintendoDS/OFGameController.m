@@ -126,6 +126,16 @@ initControllers(void)
 	return @"Nintendo DS";
 }
 
+- (OFNumber *)vendorID
+{
+	return nil;
+}
+
+- (OFNumber *)productID
+{
+	return nil;
+}
+
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
 	return [OFSet setWithObjects: OFGameControllerButtonA,

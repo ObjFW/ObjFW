@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableSet OF_GENERIC(ObjectType);
+@class OFNumber;
 @class OFSet OF_GENERIC(ObjectType);
 
 /**
@@ -236,6 +237,16 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The name of the controller.
  */
 @property (readonly, nonatomic, copy) OFString *name;
+
+/**
+ * @brief The vendor ID of the controller or `nil` if unavailable.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *vendorID;
+
+/**
+ * @brief The product ID of the controller or `nil` if unavailable.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID;
 
 /**
  * @brief The buttons the controller has.
