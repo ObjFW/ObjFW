@@ -840,6 +840,23 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 
 case "$host_cpu" in
 arm* | earm*)
+	AC_MSG_CHECKING(for blx)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			#if !defined(__arm64__) && !defined(__arch64__) && \
+			    !defined(__ARM64_ARCH_8__)
+			__asm__ __volatile__ (
+				"blx	r12"
+			);
+			#endif
+		])
+	], [
+		AC_DEFINE(HAVE_BLX, 1, [Whether we have blx])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+
 	AC_MSG_CHECKING(for VFP2 or above)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([], [
