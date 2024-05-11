@@ -307,6 +307,30 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFPoint rightAnalogStickPosition;
 
 /**
+ * @brief The north button on the right diamond pad or `nil` if there is none.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFGameControllerButton northButton;
+
+/**
+ * @brief The south button on the right diamond pad or `nil` if there is none.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFGameControllerButton southButton;
+
+/**
+ * @brief The west button on the right diamond pad or `nil` if there is none.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFGameControllerButton westButton;
+
+/**
+ * @brief The east button on the right diamond pad or `nil` if there is none.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFGameControllerButton eastButton;
+
+/**
  * @brief Returns the available controllers.
  *
  * @return The available controllers

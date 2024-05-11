@@ -537,6 +537,58 @@ scale(float value, float min, float max)
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
+- (OFGameControllerButton)northButton
+{
+	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
+		return nil;
+	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
+		return OFGameControllerButtonX;
+	if (_vendorID == vendorIDNintendo &&
+	    _productID == productIDN64Controller)
+		return nil;
+
+	return OFGameControllerButtonY;
+}
+
+- (OFGameControllerButton)southButton
+{
+	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
+		return nil;
+	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
+		return OFGameControllerButtonB;
+	if (_vendorID == vendorIDNintendo &&
+	    _productID == productIDN64Controller)
+		return nil;
+
+	return OFGameControllerButtonA;
+}
+
+- (OFGameControllerButton)westButton
+{
+	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
+		return nil;
+	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
+		return OFGameControllerButtonY;
+	if (_vendorID == vendorIDNintendo &&
+	    _productID == productIDN64Controller)
+		return nil;
+
+	return OFGameControllerButtonX;
+}
+
+- (OFGameControllerButton)eastButton
+{
+	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
+		return nil;
+	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
+		return OFGameControllerButtonA;
+	if (_vendorID == vendorIDNintendo &&
+	    _productID == productIDN64Controller)
+		return nil;
+
+	return OFGameControllerButtonB;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];

@@ -190,6 +190,26 @@ initControllers(void)
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
+- (OFGameControllerButton)northButton
+{
+	return OFGameControllerButtonX;
+}
+
+- (OFGameControllerButton)southButton
+{
+	return OFGameControllerButtonB;
+}
+
+- (OFGameControllerButton)westButton
+{
+	return OFGameControllerButtonY;
+}
+
+- (OFGameControllerButton)eastButton
+{
+	return OFGameControllerButtonA;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];

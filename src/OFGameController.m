@@ -64,6 +64,7 @@ const OFGameControllerButton OFGameControllerButtonMode = @"Mode";
 @implementation OFGameController
 @dynamic name, buttons, pressedButtons, hasLeftAnalogStick;
 @dynamic leftAnalogStickPosition, hasRightAnalogStick, rightAnalogStickPosition;
+@dynamic northButton, southButton, westButton, eastButton;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {

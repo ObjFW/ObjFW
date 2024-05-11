@@ -59,7 +59,11 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				    controller.productID.unsignedShortValue];
 			}
 
-			[OFStdOut writeString: @"\n"];
+			[OFStdOut setForegroundColor: [OFColor blue]];
+			[OFStdOut writeFormat:
+			    @"\nNorth: %@  South: %@  West: %@  East: %@\n",
+			    controller.northButton, controller.southButton,
+			    controller.westButton, controller.eastButton];
 
 			[controller retrieveState];
 

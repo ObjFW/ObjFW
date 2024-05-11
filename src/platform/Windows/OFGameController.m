@@ -228,6 +228,26 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
 }
 
+- (OFGameControllerButton)northButton
+{
+	return OFGameControllerButtonY;
+}
+
+- (OFGameControllerButton)southButton
+{
+	return OFGameControllerButtonA;
+}
+
+- (OFGameControllerButton)westButton
+{
+	return OFGameControllerButtonX;
+}
+
+- (OFGameControllerButton)eastButton
+{
+	return OFGameControllerButtonB;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
