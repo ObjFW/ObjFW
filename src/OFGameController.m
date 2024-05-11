@@ -46,6 +46,10 @@ const OFGameControllerButton OFGameControllerButtonCPadUp = @"C-Pad Up";
 const OFGameControllerButton OFGameControllerButtonCPadDown = @"C-Pad Down";
 const OFGameControllerButton OFGameControllerButtonCPadLeft = @"C-Pad Left";
 const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
+const OFGameControllerButton OFGameControllerButtonPlus = @"+";
+const OFGameControllerButton OFGameControllerButtonMinus = @"-";
+const OFGameControllerButton OFGameControllerButtonSL = @"SL";
+const OFGameControllerButton OFGameControllerButtonSR = @"SR";
 const OFGameControllerButton OFGameControllerButtonMode = @"Mode";
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)

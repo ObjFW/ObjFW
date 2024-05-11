@@ -40,6 +40,8 @@
 #import "OFReadFailedException.h"
 
 static const uint16_t vendorIDNintendo = 0x057E;
+static const uint16_t productIDLeftJoycon = 0x2006;
+static const uint16_t productIDRightJoycon = 0x2007;
 static const uint16_t productIDN64Controller = 0x2019;
 
 @interface OFGameController ()
@@ -56,6 +58,32 @@ static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
 	if (vendorID == vendorIDNintendo &&
+	    productID == productIDLeftJoycon) {
+		switch (button) {
+		case BTN_SELECT:
+			return OFGameControllerButtonMinus;
+		case BTN_Z:
+			return OFGameControllerButtonCapture;
+		case BTN_TR:
+			return OFGameControllerButtonSL;
+		case BTN_TR2:
+			return OFGameControllerButtonSR;
+		}
+	} else if (vendorID == vendorIDNintendo &&
+	    productID == productIDRightJoycon) {
+		switch (button) {
+		case BTN_B:
+			return OFGameControllerButtonA;
+		case BTN_A:
+			return OFGameControllerButtonB;
+		case BTN_START:
+			return OFGameControllerButtonPlus;
+		case BTN_TL:
+			return OFGameControllerButtonSL;
+		case BTN_TL2:
+			return OFGameControllerButtonSR;
+		}
+	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
 		switch (button) {
 		case BTN_TL2:
@@ -215,7 +243,8 @@ scale(float value, float min, float max)
 		    -1)
 			@throw [OFInitializationFailedException exception];
 
-		if (!OFBitSetIsSet(keyBits, BTN_GAMEPAD))
+		if (!OFBitSetIsSet(keyBits, BTN_GAMEPAD) &&
+		    !OFBitSetIsSet(keyBits, BTN_DPAD_UP))
 			@throw [OFInvalidArgumentException exception];
 
 		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
