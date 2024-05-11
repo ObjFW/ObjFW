@@ -55,7 +55,11 @@ OFForward:
 	ldr	r0, [sp, #0]
 	mov	r1, r4
 	ldr	r2, [sp, #4]
+#ifdef HAVE_BLX
 	blx	r12
+#else
+	bl	r12
+#endif
 
 	cmp	r0, #0
 	beq	0f
@@ -111,7 +115,11 @@ OFForward_stret:
 	ldr	r0, [sp, #4]
 	mov	r1, r4
 	ldr	r2, [sp, #8]
+#ifdef HAVE_BLX
 	blx	r12
+#else
+	bl	r12
+#endif
 
 	cmp	r0, #0
 	beq	0f
