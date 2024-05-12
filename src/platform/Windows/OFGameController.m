@@ -21,6 +21,7 @@
 
 #import "OFGameController.h"
 #import "OFArray.h"
+#import "OFNumber.h"
 #import "OFSet.h"
 
 #import "OFInitializationFailedException.h"
@@ -32,9 +33,21 @@
 - (instancetype)of_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
 @end
 
+struct XInputCapabilitiesEx {
+	XINPUT_CAPABILITIES capabilities;
+	WORD vendorID;
+	WORD productID;
+	WORD versionNumber;
+	WORD unknown1;
+	DWORD unknown2;
+};
+
 static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
+static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
+    struct XInputCapabilitiesEx *);
 
 @implementation OFGameController
+@synthesize vendorID = _vendorID, productID = _productID;
 @synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
 @synthesize rightAnalogStickPosition = _rightAnalogStickPosition;
 
@@ -45,10 +58,14 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 	if (self != [OFGameController class])
 		return;
 
-	if ((module = LoadLibraryA("xinput1_3.dll")) != NULL)
+	if ((module = LoadLibraryA("xinput1_4.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, "XInputGetState");
+		XInputGetCapabilitiesExFuncPtr = (WINAPI DWORD (*)(DWORD, DWORD,
+		    DWORD, struct XInputCapabilitiesEx *))
+		    GetProcAddress(module, "XInputGetCapabilitiesEx");
+	}
 }
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
@@ -97,6 +114,22 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 			@throw [OFInitializationFailedException exception];
 
 		_index = index;
+
+		if (XInputGetCapabilitiesExFuncPtr != NULL) {
+			struct XInputCapabilitiesEx capabilities;
+
+			if (XInputGetCapabilitiesExFuncPtr(1, _index,
+			    XINPUT_FLAG_GAMEPAD, &capabilities) ==
+			    ERROR_SUCCESS) {
+				_vendorID = [[OFNumber alloc]
+				    initWithUnsignedShort:
+				    capabilities.vendorID];
+				_productID = [[OFNumber alloc]
+				    initWithUnsignedShort:
+				    capabilities.productID];
+			}
+		}
+
 		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 16];
 
 		[self retrieveState];
@@ -110,6 +143,8 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 
 - (void)dealloc
 {
+	[_vendorID release];
+	[_productID release];
 	[_pressedButtons release];
 
 	[super dealloc];
@@ -178,16 +213,6 @@ static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 - (OFString *)name
 {
 	return @"XInput 1.3";
-}
-
-- (OFNumber *)vendorID
-{
-	return nil;
-}
-
-- (OFNumber *)productID
-{
-	return nil;
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons

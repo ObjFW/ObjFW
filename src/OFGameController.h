@@ -244,6 +244,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFPoint _leftAnalogStickPosition;
 #elif defined(OF_WINDOWS)
 	DWORD _index;
+	OFNumber *_Nullable _vendorID, *_Nullable productID;
 	OFMutableSet *_pressedButtons;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 	float _ZLPressure, _ZRPressure;
