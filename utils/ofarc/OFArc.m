@@ -482,15 +482,18 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 					  encoding: encoding];
 
 #ifdef OF_MACOS
-		@try {
-			OFString *attributeName = @"com.apple.quarantine";
+		if ([IRI.scheme isEqual: @"file"]) {
+			@try {
+				OFString *attributeName =
+				    @"com.apple.quarantine";
 
-			_quarantine = [[[OFFileManager defaultManager]
-			    extendedAttributeDataForName: attributeName
-					     ofItemAtIRI: IRI] retain];
-		} @catch (OFGetItemAttributesFailedException *e) {
-			if (e.errNo != /*ENOATTR*/ 93)
-				@throw e;
+				_quarantine = [[[OFFileManager defaultManager]
+				    extendedAttributeDataForName: attributeName
+						     ofItemAtIRI: IRI] retain];
+			} @catch (OFGetItemAttributesFailedException *e) {
+				if (e.errNo != /*ENOATTR*/ 93)
+					@throw e;
+			}
 		}
 #endif
 
