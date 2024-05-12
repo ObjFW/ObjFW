@@ -95,6 +95,7 @@ other place, you are most likely using a mirror.
   NetBSD                     | `cd /usr/pkgsrc/devel/objfw && make install`
   OpenBSD                    | `doas pkg_add objfw`
   OpenIndiana                | `sudo pkg install developer/objfw`
+  Ubuntu                     | `sudo apt install objfw`
   Windows (MSYS2/CLANG64)    | `pacman -S mingw-w64-clang-x86_64-objfw`
   Windows (MSYS2/CLANGARM64) | `pacman -S mingw-w64-clang-aarch64-objfw`
   Windows (MSYS2/UCRT64)     | `pacman -S mingw-w64-ucrt-x86_64-objfw`
