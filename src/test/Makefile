@@ -22,6 +22,7 @@ CPPFLAGS += -I. 			\
 	    -I../..			\
 	    -I../exceptions		\
 	    -I../runtime		\
+	    -I../hid			\
 	    -DOBJFWTEST_LOCAL_INCLUDES
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\

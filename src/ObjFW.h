@@ -148,7 +148,6 @@
 #import "OFRunLoop.h"
 
 #import "OFMatrix4x4.h"
-#import "OFGameController.h"
 
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"

@@ -17,8 +17,17 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-#import "OFString.h"
+#ifdef OBJFWHID_LOCAL_INCLUDES
+# import "OFObject.h"
+# import "OFString.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFObject.h>
+#  import <ObjFW/OFString.h>
+# endif
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 

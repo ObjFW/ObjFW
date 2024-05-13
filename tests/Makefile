@@ -124,6 +124,10 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR}
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}
+	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll
+	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -134,7 +138,7 @@ run:
 	fi
 	if test -f ../src/objfw${OBJFW_LIB_MAJOR}.dll; then \
 		${LN_S} ../src/objfw${OBJFW_LIB_MAJOR}.dll \
-			objfw${OBJFW_LIB_MAJOR}.dll; \
+		    objfw${OBJFW_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
 		${LN_S} ../src/libobjfw.dylib \
@@ -145,19 +149,40 @@ run:
 		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
 		${LN_S} ../src/runtime/libobjfwrt.so \
 		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
-	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
-		${LN_S} ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	then \
+		${LN_S} \
+		    ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} \
+		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll; then \
 		${LN_S} ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll \
-			objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
+		    objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
 		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	fi
+	if test -f ../src/hid/libobjfwhid.so; then \
+		${LN_S} ../src/hid/libobjfwhid.so \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
+		${LN_S} ../src/hid/libobjfwhid.so \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/hid/libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	then \
+		${LN_S} ../src/hid/libobjfwhid.so.${OBJFWHIID_LIB_MAJOR_MINOR} \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	fi
+	if test -f ../src/hid/objfwhid${OBJFWHID_LIB_MAJOR}.dll; then \
+		${LN_S} ../src/hid/objfwhid${OBJFWHID_LIB_MAJOR}.dll \
+		    objfwhid${OBJFWHID_LIB_MAJOR}.dll; \
+	fi
+	if test -f ../src/hid/libobjfwhid.dylib; then \
+		${LN_S} ../src/hid/libobjfwhid.dylib \
+		    libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
+	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
-	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
+	DYLD_FRAMEWORK_PATH=../src:../src/runtime:../src/hid$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
@@ -170,6 +195,10 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll; \
+	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
 run-on-android: all
@@ -181,6 +210,10 @@ run-on-android: all
 	if test -f ../src/runtime/libobjfwrt.so; then \
 		adb push ../src/runtime/libobjfwrt.so \
 		    /data/local/tmp/objfw/libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
+	fi
+	if test -f ../src/hid/libobjfwhid.so; then \
+		adb push ../src/hid/libobjfwhid.so \
+		    /data/local/tmp/objfw/libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
@@ -200,7 +233,8 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a \
+		${LIBOBJFWHID_DEP}
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
@@ -241,6 +275,7 @@ OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 # but hide it behind a variable because listing it twice causes a warning on
 # macOS.
 LIBS := -L../src/test		\
+	-L../src/hid		\
 	-lobjfwtest		\
 	${TESTS_LIBS}		\
 	${LIBS}			\

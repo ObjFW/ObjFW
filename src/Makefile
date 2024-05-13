@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE} ${TLS} test
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -25,7 +25,6 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFFileManager.m			\
-       OFGameController.m		\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\

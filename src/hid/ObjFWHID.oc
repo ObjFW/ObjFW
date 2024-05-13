@@ -1,0 +1,4 @@
+package_format 1
+LIBS="-lobjfwhid $LIBS"
+FRAMEWORK_LIBS="-framework ObjFWHID $FRAMEWORK_LIBS"
+STATIC_LIBS="${libdir}/libobjfwhid.a $STATIC_LIBS"
