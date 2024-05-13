@@ -17,21 +17,6 @@ includesubdir = ObjFWTest
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. 			\
-	    -I..			\
-	    -I../..			\
-	    -I../exceptions		\
-	    -I../runtime		\
-	    -I../hid			\
-	    -DOBJFWTEST_LOCAL_INCLUDES
-LD = ${OBJC}
-FRAMEWORK_LIBS := -F..				\
-		  -framework ObjFW		\
-		  -F../runtime			\
-		  ${RUNTIME_FRAMEWORK_LIBS}	\
-		  ${LIBS}
-LIBS := -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}
-
 install-extra:
 	i=ObjFWTest.oc; \
 	${INSTALL_STATUS}; \
@@ -52,3 +37,12 @@ uninstall-extra:
 		fi \
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
+
+CPPFLAGS += -I. 			\
+	    -I..			\
+	    -I../..			\
+	    -I../exceptions		\
+	    -I../hid			\
+	    -I../runtime		\
+	    -DOBJFWTEST_LOCAL_INCLUDES
+LD = ${OBJC}

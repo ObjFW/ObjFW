@@ -4,6 +4,16 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.2 -> ObjFW 1.1.3, 2024-05-12
+ * Fixes +[OFSystemInfo networkInterfaces] on NetBSD.
+ * Properly hides private symbols so they can't be used accidentally anymore.
+ * Adds missing documentation for various functions and macros.
+ * Uses RtlGenRandom to get proper randomness on Windows now.
+ * No longer uses _wutime64, which is buggy in some MinGW distributions.
+ * Only uses blx on ARM if it is available now.
+ * Adds a workaround for OFSubprocess tests on Windows 9x.
+ * Skips symlink tests if symlinks are unavailable.
+
 ObjFW 1.1.1 -> ObjFW 1.1.2, 2024-04-20
  * Fixes configure script on systems using BusyBox for tr.
  * Fixes compiling for Haiku.
