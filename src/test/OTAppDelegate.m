@@ -29,6 +29,8 @@
 
 #import "OTTestCase.h"
 
+#import "OFGameController.h"
+
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
 

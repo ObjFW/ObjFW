@@ -44,5 +44,6 @@ CPPFLAGS += -I. 			\
 	    -I../exceptions		\
 	    -I../hid			\
 	    -I../runtime		\
+	    -DOBJFWHID_LOCAL_INCLUDES	\
 	    -DOBJFWTEST_LOCAL_INCLUDES
 LD = ${OBJC}
