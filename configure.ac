@@ -435,11 +435,10 @@ AS_IF([test x"$enable_shared" != x"no"], [
 AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-framework ObjFWHID $TESTS_LIBS"
-	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
+	TESTS_LIBS="-F../src -F../src/runtime -F../src/hid $TESTS_LIBS"
 ], [
-	TESTS_LIBS="\${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src/runtime $TESTS_LIBS"
-	TESTS_LIBS="-L../src -lobjfwhid -lobjfw $TESTS_LIBS"
+	TESTS_LIBS="-L../src/runtime \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-L../src/hid -lobjfwhid -L../src -lobjfw $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))

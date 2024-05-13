@@ -275,7 +275,6 @@ OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 # but hide it behind a variable because listing it twice causes a warning on
 # macOS.
 LIBS := -L../src/test		\
-	-L../src/hid		\
 	-lobjfwtest		\
 	${TESTS_LIBS}		\
 	${LIBS}			\
