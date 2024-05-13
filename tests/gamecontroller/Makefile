@@ -97,7 +97,8 @@ CPPFLAGS += -I../../src			\
 	    -I../../src/exceptions	\
 	    -I../../src/hid		\
 	    -I../../src/runtime		\
-	    -I../..
+	    -I../..			\
+	    -DOBJFWHID_LOCAL_INCLUDES
 LIBS := -L../../src/hid -lobjfwhid		\
 	-L../../src -lobjfw			\
 	-L../../src/runtime ${RUNTIME_LIBS}	\

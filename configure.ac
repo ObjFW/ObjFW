@@ -428,8 +428,8 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
-	AC_SUBST(LIBOBJFWHID_DEP, "../src/libobjfwhid.a")
-	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/libobjfwhid.a")
+	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
+	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 ])
 
 AS_IF([test x"$build_framework" = x"yes"], [
