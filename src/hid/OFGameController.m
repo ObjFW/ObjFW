@@ -22,35 +22,43 @@
 #import "OFGameController.h"
 #import "OFArray.h"
 
-const OFGameControllerButton OFGameControllerButtonA = @"A";
-const OFGameControllerButton OFGameControllerButtonB = @"B";
-const OFGameControllerButton OFGameControllerButtonC = @"C";
-const OFGameControllerButton OFGameControllerButtonX = @"X";
-const OFGameControllerButton OFGameControllerButtonY = @"Y";
-const OFGameControllerButton OFGameControllerButtonZ = @"Z";
-const OFGameControllerButton OFGameControllerButtonL = @"L";
-const OFGameControllerButton OFGameControllerButtonR = @"R";
-const OFGameControllerButton OFGameControllerButtonZL = @"ZL";
-const OFGameControllerButton OFGameControllerButtonZR = @"ZR";
-const OFGameControllerButton OFGameControllerButtonSelect = @"Select";
-const OFGameControllerButton OFGameControllerButtonStart = @"Start";
-const OFGameControllerButton OFGameControllerButtonHome = @"Home";
-const OFGameControllerButton OFGameControllerButtonCapture = @"Capture";
-const OFGameControllerButton OFGameControllerButtonLeftStick = @"Left Stick";
-const OFGameControllerButton OFGameControllerButtonRightStick = @"Right Stick";
-const OFGameControllerButton OFGameControllerButtonDPadUp = @"D-Pad Up";
-const OFGameControllerButton OFGameControllerButtonDPadDown = @"D-Pad Down";
-const OFGameControllerButton OFGameControllerButtonDPadLeft = @"D-Pad Left";
-const OFGameControllerButton OFGameControllerButtonDPadRight = @"D-Pad Right";
-const OFGameControllerButton OFGameControllerButtonCPadUp = @"C-Pad Up";
-const OFGameControllerButton OFGameControllerButtonCPadDown = @"C-Pad Down";
-const OFGameControllerButton OFGameControllerButtonCPadLeft = @"C-Pad Left";
-const OFGameControllerButton OFGameControllerButtonCPadRight = @"C-Pad Right";
-const OFGameControllerButton OFGameControllerButtonPlus = @"+";
-const OFGameControllerButton OFGameControllerButtonMinus = @"-";
-const OFGameControllerButton OFGameControllerButtonSL = @"SL";
-const OFGameControllerButton OFGameControllerButtonSR = @"SR";
-const OFGameControllerButton OFGameControllerButtonMode = @"Mode";
+const OFGameControllerButton OFGameControllerNorthButton = @"North";
+const OFGameControllerButton OFGameControllerSouthButton = @"South";
+const OFGameControllerButton OFGameControllerWestButton = @"West";
+const OFGameControllerButton OFGameControllerEastButton = @"East";
+const OFGameControllerButton OFGameControllerLeftTriggerButton =
+    @"Left Trigger";
+const OFGameControllerButton OFGameControllerRightTriggerButton =
+    @"Right Trigger";
+const OFGameControllerButton OFGameControllerLeftShoulderButton =
+    @"Left Shoulder";
+const OFGameControllerButton OFGameControllerRightShoulderButton =
+    @"Right Shoulder";
+const OFGameControllerButton OFGameControllerLeftStickButton = @"Left Stick";
+const OFGameControllerButton OFGameControllerRightStickButton = @"Right Stick";
+const OFGameControllerButton OFGameControllerDPadUpButton = @"D-Pad Up";
+const OFGameControllerButton OFGameControllerDPadDownButton = @"D-Pad Down";
+const OFGameControllerButton OFGameControllerDPadLeftButton = @"D-Pad Left";
+const OFGameControllerButton OFGameControllerDPadRightButton = @"D-Pad Right";
+const OFGameControllerButton OFGameControllerStartButton = @"Start";
+const OFGameControllerButton OFGameControllerSelectButton = @"Select";
+const OFGameControllerButton OFGameControllerHomeButton = @"Home";
+const OFGameControllerButton OFGameControllerCaptureButton = @"Capture";
+const OFGameControllerButton OFGameControllerAButton = @"A";
+const OFGameControllerButton OFGameControllerBButton = @"B";
+const OFGameControllerButton OFGameControllerCButton = @"C";
+const OFGameControllerButton OFGameControllerXButton = @"X";
+const OFGameControllerButton OFGameControllerYButton = @"Y";
+const OFGameControllerButton OFGameControllerZButton = @"Z";
+const OFGameControllerButton OFGameControllerCPadUpButton = @"C-Pad Up";
+const OFGameControllerButton OFGameControllerCPadDownButton = @"C-Pad Down";
+const OFGameControllerButton OFGameControllerCPadLeftButton = @"C-Pad Left";
+const OFGameControllerButton OFGameControllerCPadRightButton = @"C-Pad Right";
+const OFGameControllerButton OFGameControllerPlusButton = @"+";
+const OFGameControllerButton OFGameControllerMinusButton = @"-";
+const OFGameControllerButton OFGameControllerSLButton = @"SL";
+const OFGameControllerButton OFGameControllerSRButton = @"SR";
+const OFGameControllerButton OFGameControllerModeButton = @"Mode";
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "platform/Linux/OFGameController.m"
@@ -64,7 +72,6 @@ const OFGameControllerButton OFGameControllerButtonMode = @"Mode";
 @implementation OFGameController
 @dynamic name, buttons, pressedButtons, hasLeftAnalogStick;
 @dynamic leftAnalogStickPosition, hasRightAnalogStick, rightAnalogStickPosition;
-@dynamic northButton, southButton, westButton, eastButton;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {

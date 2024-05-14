@@ -43,33 +43,39 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Possible values are:
  *
- *   * @ref OFGameControllerButtonA
- *   * @ref OFGameControllerButtonB
- *   * @ref OFGameControllerButtonC
- *   * @ref OFGameControllerButtonX
- *   * @ref OFGameControllerButtonY
- *   * @ref OFGameControllerButtonZ
- *   * @ref OFGameControllerButtonL
- *   * @ref OFGameControllerButtonR
- *   * @ref OFGameControllerButtonZL
- *   * @ref OFGameControllerButtonZR
- *   * @ref OFGameControllerButtonSelect
- *   * @ref OFGameControllerButtonStart
- *   * @ref OFGameControllerButtonHome
- *   * @ref OFGameControllerButtonCapture
- *   * @ref OFGameControllerButtonLeftStick
- *   * @ref OFGameControllerButtonRightStick
- *   * @ref OFGameControllerButtonDPadUp
- *   * @ref OFGameControllerButtonDPadDown
- *   * @ref OFGameControllerButtonDPadLeft
- *   * @ref OFGameControllerButtonDPadRight
- *   * @ref OFGameControllerButtonCPadUp
- *   * @ref OFGameControllerButtonCPadDown
- *   * @ref OFGameControllerButtonCPadLeft
- *   * @ref OFGameControllerButtonCPadRight
- *   * @ref OFGameControllerButtonSL
- *   * @ref OFGameControllerButtonSR
- *   * @ref OFGameControllerButtonMode
+ *  * @ref OFGameControllerNorthButton
+ *  * @ref OFGameControllerSouthButton
+ *  * @ref OFGameControllerWestButton
+ *  * @ref OFGameControllerEastButton
+ *  * @ref OFGameControllerLeftTriggerButton
+ *  * @ref OFGameControllerRightTriggerButton
+ *  * @ref OFGameControllerLeftShoulderButton
+ *  * @ref OFGameControllerRightShoulderButton
+ *  * @ref OFGameControllerLeftStickButton
+ *  * @ref OFGameControllerRightStickButton
+ *  * @ref OFGameControllerDPadUpButton
+ *  * @ref OFGameControllerDPadDownButton
+ *  * @ref OFGameControllerDPadLeftButton
+ *  * @ref OFGameControllerDPadRightButton
+ *  * @ref OFGameControllerStartButton
+ *  * @ref OFGameControllerSelectButton
+ *  * @ref OFGameControllerHomeButton
+ *  * @ref OFGameControllerCaptureButton
+ *  * @ref OFGameControllerAButton
+ *  * @ref OFGameControllerBButton
+ *  * @ref OFGameControllerCButton
+ *  * @ref OFGameControllerXButton
+ *  * @ref OFGameControllerYButton
+ *  * @ref OFGameControllerZButton
+ *  * @ref OFGameControllerCPadUpButton
+ *  * @ref OFGameControllerCPadDownButton
+ *  * @ref OFGameControllerCPadLeftButton
+ *  * @ref OFGameControllerCPadRightButton
+ *  * @ref OFGameControllerPlusButton
+ *  * @ref OFGameControllerMinusButton
+ *  * @ref OFGameControllerSLButton
+ *  * @ref OFGameControllerSRButton
+ *  * @ref OFGameControllerModeButton
  */
 typedef OFConstantString *OFGameControllerButton;
 
@@ -77,150 +83,170 @@ typedef OFConstantString *OFGameControllerButton;
 extern "C" {
 #endif
 /**
- * @brief The A button on a game controller.
+ * @brief The north button on a game controller's diamond pad.
  */
-extern const OFGameControllerButton OFGameControllerButtonA;
+extern const OFGameControllerButton OFGameControllerNorthButton;
 
 /**
- * @brief The B button on a game controller.
+ * @brief The south button on a game controller's diamond pad.
  */
-extern const OFGameControllerButton OFGameControllerButtonB;
+extern const OFGameControllerButton OFGameControllerSouthButton;
 
 /**
- * @brief The C button on a game controller.
+ * @brief The west button on a game controller's diamond pad.
  */
-extern const OFGameControllerButton OFGameControllerButtonC;
+extern const OFGameControllerButton OFGameControllerWestButton;
 
 /**
- * @brief The X button on a game controller.
+ * @brief The east button on a game controller's diamond pad.
  */
-extern const OFGameControllerButton OFGameControllerButtonX;
+extern const OFGameControllerButton OFGameControllerEastButton;
 
 /**
- * @brief The Y button on a game controller.
+ * @brief The left trigger button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonY;
+extern const OFGameControllerButton OFGameControllerLeftTriggerButton;
 
 /**
- * @brief The Z button on a game controller.
+ * @brief The right trigger button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonZ;
+extern const OFGameControllerButton OFGameControllerRightTriggerButton;
 
 /**
- * @brief The L button on a game controller.
+ * @brief The left shoulder button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonL;
+extern const OFGameControllerButton OFGameControllerLeftShoulderButton;
 
 /**
- * @brief The R button on a game controller.
+ * @brief The right shoulder button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonR;
-
-/**
- * @brief The ZL button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonZL;
-
-/**
- * @brief The ZR button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonZR;
-
-/**
- * @brief The Select button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonSelect;
-
-/**
- * @brief The Start button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonStart;
-
-/**
- * @brief The Home button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonHome;
-
-/**
- * @brief The Capture button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerButtonCapture;
+extern const OFGameControllerButton OFGameControllerRightShoulderButton;
 
 /**
  * @brief The left stick button (pressing the left stick) on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonLeftStick;
+extern const OFGameControllerButton OFGameControllerLeftStickButton;
 
 /**
  * @brief The right stick button (pressing the right stick) on a game
  *	  controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonRightStick;
+extern const OFGameControllerButton OFGameControllerRightStickButton;
 
 /**
  * @brief The D-Pad Up button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonDPadUp;
+extern const OFGameControllerButton OFGameControllerDPadUpButton;
 
 /**
  * @brief The D-Pad Down button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonDPadDown;
+extern const OFGameControllerButton OFGameControllerDPadDownButton;
 
 /**
  * @brief The D-Pad Left button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonDPadLeft;
+extern const OFGameControllerButton OFGameControllerDPadLeftButton;
 
 /**
  * @brief The D-Pad Right button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonDPadRight;
+extern const OFGameControllerButton OFGameControllerDPadRightButton;
+
+/**
+ * @brief The Start button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerStartButton;
+
+/**
+ * @brief The Select button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerSelectButton;
+
+/**
+ * @brief The Home button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerHomeButton;
+
+/**
+ * @brief The Capture button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerCaptureButton;
+
+/**
+ * @brief The A button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerAButton;
+
+/**
+ * @brief The B button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerBButton;
+
+/**
+ * @brief The C button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerCButton;
+
+/**
+ * @brief The X button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerXButton;
+
+/**
+ * @brief The Y button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerYButton;
+
+/**
+ * @brief The Z button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerZButton;
 
 /**
  * @brief The C-Pad Up button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonCPadUp;
+extern const OFGameControllerButton OFGameControllerCPadUpButton;
 
 /**
  * @brief The C-Pad Down button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonCPadDown;
+extern const OFGameControllerButton OFGameControllerCPadDownButton;
 
 /**
  * @brief The C-Pad Left button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonCPadLeft;
+extern const OFGameControllerButton OFGameControllerCPadLeftButton;
 
 /**
  * @brief The C-Pad Right button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonCPadRight;
+extern const OFGameControllerButton OFGameControllerCPadRightButton;
 
 /**
  * @brief The + button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonPlus;
+extern const OFGameControllerButton OFGameControllerPlusButton;
 
 /**
  * @brief The - button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonMinus;
+extern const OFGameControllerButton OFGameControllerMinusButton;
 
 /**
  * @brief The SL button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonSL;
+extern const OFGameControllerButton OFGameControllerSLButton;
 
 /**
  * @brief The SR button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonSR;
+extern const OFGameControllerButton OFGameControllerSRButton;
 
 /**
  * @brief The Mode button on a game controller.
  */
-extern const OFGameControllerButton OFGameControllerButtonMode;
+extern const OFGameControllerButton OFGameControllerModeButton;
 #ifdef __cplusplus
 }
 #endif
@@ -238,14 +264,15 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_name;
 	OFMutableSet *_buttons, *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;
-	bool _hasZLPressure, _hasZRPressure;
+	bool _hasLeftTriggerPressure, _hasRightTriggerPressure;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _ZLPressure, _ZRPressure;
+	float _leftTriggerPressure, _rightTriggerPressure;
 	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
 	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
 	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
 	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
-	int32_t _ZLMinPressure, _ZLMaxPressure, _ZRMinPressure, _ZRMaxPressure;
+	int32_t _leftTriggerMinPressure, _leftTriggerMaxPressure;
+	int32_t _rightTriggerMinPressure, _rightTriggerMaxPressure;
 #elif defined(OF_NINTENDO_DS)
 	OFMutableSet *_pressedButtons;
 #elif defined(OF_NINTENDO_3DS)
@@ -256,7 +283,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFNumber *_Nullable _vendorID, *_Nullable productID;
 	OFMutableSet *_pressedButtons;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _ZLPressure, _ZRPressure;
+	float _leftTriggerPressure, _rightTriggerPressure;
 #endif
 }
 
@@ -315,30 +342,6 @@ OF_SUBCLASSING_RESTRICTED
  * The range is from (-1, -1) to (1, 1).
  */
 @property (readonly, nonatomic) OFPoint rightAnalogStickPosition;
-
-/**
- * @brief The north button on the right diamond pad or `nil` if there is none.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFGameControllerButton northButton;
-
-/**
- * @brief The south button on the right diamond pad or `nil` if there is none.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFGameControllerButton southButton;
-
-/**
- * @brief The west button on the right diamond pad or `nil` if there is none.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFGameControllerButton westButton;
-
-/**
- * @brief The east button on the right diamond pad or `nil` if there is none.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFGameControllerButton eastButton;
 
 /**
  * @brief Returns the available controllers.

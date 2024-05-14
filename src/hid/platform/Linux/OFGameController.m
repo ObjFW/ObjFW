@@ -61,87 +61,87 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	    productID == productIDLeftJoycon) {
 		switch (button) {
 		case BTN_SELECT:
-			return OFGameControllerButtonMinus;
+			return OFGameControllerMinusButton;
 		case BTN_Z:
-			return OFGameControllerButtonCapture;
+			return OFGameControllerCaptureButton;
 		case BTN_TR:
-			return OFGameControllerButtonSL;
+			return OFGameControllerSLButton;
 		case BTN_TR2:
-			return OFGameControllerButtonSR;
+			return OFGameControllerSRButton;
 		}
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDRightJoycon) {
 		switch (button) {
-		case BTN_B:
-			return OFGameControllerButtonA;
-		case BTN_A:
-			return OFGameControllerButtonB;
+		case BTN_X:
+			return OFGameControllerNorthButton;
+		case BTN_Y:
+			return OFGameControllerWestButton;
 		case BTN_START:
-			return OFGameControllerButtonPlus;
+			return OFGameControllerPlusButton;
 		case BTN_TL:
-			return OFGameControllerButtonSL;
+			return OFGameControllerSLButton;
 		case BTN_TL2:
-			return OFGameControllerButtonSR;
+			return OFGameControllerSRButton;
 		}
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
 		switch (button) {
-		case BTN_TL2:
-			return OFGameControllerButtonZ;
-		case BTN_Y:
-			return OFGameControllerButtonCPadLeft;
-		case BTN_C:
-			return OFGameControllerButtonCPadRight;
+		case BTN_A:
+			return OFGameControllerAButton;
+		case BTN_B:
+			return OFGameControllerBButton;
 		case BTN_SELECT:
-			return OFGameControllerButtonCPadUp;
+			return OFGameControllerCPadUpButton;
 		case BTN_X:
-			return OFGameControllerButtonCPadDown;
-		case BTN_MODE:
-			return OFGameControllerButtonHome;
+			return OFGameControllerCPadDownButton;
+		case BTN_Y:
+			return OFGameControllerCPadLeftButton;
+		case BTN_C:
+			return OFGameControllerCPadRightButton;
 		case BTN_Z:
-			return OFGameControllerButtonCapture;
+			return OFGameControllerCaptureButton;
 		}
 	}
 
 	switch (button) {
-	case BTN_A:
-		return OFGameControllerButtonA;
-	case BTN_B:
-		return OFGameControllerButtonB;
-	case BTN_C:
-		return OFGameControllerButtonC;
-	case BTN_X:
-		return OFGameControllerButtonX;
 	case BTN_Y:
-		return OFGameControllerButtonY;
-	case BTN_Z:
-		return OFGameControllerButtonZ;
-	case BTN_TL:
-		return OFGameControllerButtonL;
-	case BTN_TR:
-		return OFGameControllerButtonR;
+		return OFGameControllerNorthButton;
+	case BTN_A:
+		return OFGameControllerSouthButton;
+	case BTN_X:
+		return OFGameControllerWestButton;
+	case BTN_B:
+		return OFGameControllerEastButton;
 	case BTN_TL2:
-		return OFGameControllerButtonZL;
+		return OFGameControllerLeftTriggerButton;
 	case BTN_TR2:
-		return OFGameControllerButtonZR;
-	case BTN_SELECT:
-		return OFGameControllerButtonSelect;
-	case BTN_START:
-		return OFGameControllerButtonStart;
-	case BTN_MODE:
-		return OFGameControllerButtonHome;
+		return OFGameControllerRightTriggerButton;
+	case BTN_TL:
+		return OFGameControllerLeftShoulderButton;
+	case BTN_TR:
+		return OFGameControllerRightShoulderButton;
 	case BTN_THUMBL:
-		return OFGameControllerButtonLeftStick;
+		return OFGameControllerLeftStickButton;
 	case BTN_THUMBR:
-		return OFGameControllerButtonRightStick;
+		return OFGameControllerRightStickButton;
 	case BTN_DPAD_UP:
-		return OFGameControllerButtonDPadUp;
+		return OFGameControllerDPadUpButton;
 	case BTN_DPAD_DOWN:
-		return OFGameControllerButtonDPadDown;
+		return OFGameControllerDPadDownButton;
 	case BTN_DPAD_LEFT:
-		return OFGameControllerButtonDPadLeft;
+		return OFGameControllerDPadLeftButton;
 	case BTN_DPAD_RIGHT:
-		return OFGameControllerButtonDPadRight;
+		return OFGameControllerDPadRightButton;
+	case BTN_START:
+		return OFGameControllerStartButton;
+	case BTN_SELECT:
+		return OFGameControllerSelectButton;
+	case BTN_MODE:
+		return OFGameControllerHomeButton;
+	case BTN_C:
+		return OFGameControllerCButton;
+	case BTN_Z:
+		return OFGameControllerZButton;
 	}
 
 	return nil;
@@ -317,43 +317,45 @@ scale(float value, float min, float max)
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
 				[_buttons addObject:
-				    OFGameControllerButtonDPadLeft];
+				    OFGameControllerDPadLeftButton];
 				[_buttons addObject:
-				    OFGameControllerButtonDPadRight];
+				    OFGameControllerDPadRightButton];
 				[_buttons addObject:
-				    OFGameControllerButtonDPadUp];
+				    OFGameControllerDPadUpButton];
 				[_buttons addObject:
-				    OFGameControllerButtonDPadDown];
+				    OFGameControllerDPadDownButton];
 			}
 
 			if (OFBitSetIsSet(absBits, ABS_Z)) {
 				struct input_absinfo info;
 
-				_hasZLPressure = true;
+				_hasLeftTriggerPressure = true;
 
 				if (ioctl(_fd, EVIOCGABS(ABS_Z), &info) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
-				_ZLMinPressure = info.minimum;
-				_ZLMaxPressure = info.maximum;
+				_leftTriggerMinPressure = info.minimum;
+				_leftTriggerMaxPressure = info.maximum;
 
-				[_buttons addObject: OFGameControllerButtonZL];
+				[_buttons addObject:
+				    OFGameControllerLeftTriggerButton];
 			}
 
 			if (OFBitSetIsSet(absBits, ABS_RZ)) {
 				struct input_absinfo info;
 
-				_hasZRPressure = true;
+				_hasRightTriggerPressure = true;
 
 				if (ioctl(_fd, EVIOCGABS(ABS_RZ), &info) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
-				_ZRMinPressure = info.minimum;
-				_ZRMaxPressure = info.maximum;
+				_rightTriggerMinPressure = info.minimum;
+				_rightTriggerMaxPressure = info.maximum;
 
-				[_buttons addObject: OFGameControllerButtonZR];
+				[_buttons addObject:
+				    OFGameControllerRightTriggerButton];
 			}
 		}
 
@@ -441,60 +443,62 @@ scale(float value, float min, float max)
 			case ABS_HAT0X:
 				if (event.value < 0) {
 					[_pressedButtons addObject:
-					    OFGameControllerButtonDPadLeft];
+					    OFGameControllerDPadLeftButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadRight];
+					    OFGameControllerDPadRightButton];
 				} else if (event.value > 0) {
 					[_pressedButtons addObject:
-					    OFGameControllerButtonDPadRight];
+					    OFGameControllerDPadRightButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadLeft];
+					    OFGameControllerDPadLeftButton];
 				} else {
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadLeft];
+					    OFGameControllerDPadLeftButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadRight];
+					    OFGameControllerDPadRightButton];
 				}
 				break;
 			case ABS_HAT0Y:
 				if (event.value < 0) {
 					[_pressedButtons addObject:
-					    OFGameControllerButtonDPadUp];
+					    OFGameControllerDPadUpButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadDown];
+					    OFGameControllerDPadDownButton];
 				} else if (event.value > 0) {
 					[_pressedButtons addObject:
-					    OFGameControllerButtonDPadDown];
+					    OFGameControllerDPadDownButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadUp];
+					    OFGameControllerDPadUpButton];
 				} else {
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadUp];
+					    OFGameControllerDPadUpButton];
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonDPadDown];
+					    OFGameControllerDPadDownButton];
 				}
 				break;
 			case ABS_Z:
-				_ZLPressure = scale(event.value,
-				    _ZLMinPressure, _ZLMaxPressure);
+				_leftTriggerPressure = scale(event.value,
+				    _leftTriggerMinPressure,
+				    _leftTriggerMaxPressure);
 
-				if (_ZLPressure > 0)
+				if (_leftTriggerPressure > 0)
 					[_pressedButtons addObject:
-					    OFGameControllerButtonZL];
+					    OFGameControllerLeftTriggerButton];
 				else
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonZL];
+					    OFGameControllerLeftTriggerButton];
 				break;
 			case ABS_RZ:
-				_ZRPressure = scale(event.value,
-				    _ZRMinPressure, _ZRMaxPressure);
+				_rightTriggerPressure = scale(event.value,
+				    _rightTriggerMinPressure,
+				    _rightTriggerMaxPressure);
 
-				if (_ZRPressure > 0)
+				if (_rightTriggerPressure > 0)
 					[_pressedButtons addObject:
-					    OFGameControllerButtonZR];
+					    OFGameControllerRightTriggerButton];
 				else
 					[_pressedButtons removeObject:
-					    OFGameControllerButtonZR];
+					    OFGameControllerRightTriggerButton];
 				break;
 			}
 
@@ -529,64 +533,14 @@ scale(float value, float min, float max)
 
 - (float)pressureForButton: (OFGameControllerButton)button
 {
-	if (button == OFGameControllerButtonZL && _hasZLPressure)
-		return _ZLPressure;
-	if (button == OFGameControllerButtonZR && _hasZRPressure)
-		return _ZRPressure;
+	if (button == OFGameControllerLeftTriggerButton &&
+	    _hasLeftTriggerPressure)
+		return _leftTriggerPressure;
+	if (button == OFGameControllerRightTriggerButton &&
+	    _hasRightTriggerPressure)
+		return _rightTriggerPressure;
 
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
-}
-
-- (OFGameControllerButton)northButton
-{
-	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
-		return nil;
-	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
-		return OFGameControllerButtonX;
-	if (_vendorID == vendorIDNintendo &&
-	    _productID == productIDN64Controller)
-		return nil;
-
-	return OFGameControllerButtonY;
-}
-
-- (OFGameControllerButton)southButton
-{
-	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
-		return nil;
-	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
-		return OFGameControllerButtonB;
-	if (_vendorID == vendorIDNintendo &&
-	    _productID == productIDN64Controller)
-		return nil;
-
-	return OFGameControllerButtonA;
-}
-
-- (OFGameControllerButton)westButton
-{
-	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
-		return nil;
-	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
-		return OFGameControllerButtonY;
-	if (_vendorID == vendorIDNintendo &&
-	    _productID == productIDN64Controller)
-		return nil;
-
-	return OFGameControllerButtonX;
-}
-
-- (OFGameControllerButton)eastButton
-{
-	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoycon)
-		return nil;
-	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoycon)
-		return OFGameControllerButtonA;
-	if (_vendorID == vendorIDNintendo &&
-	    _productID == productIDN64Controller)
-		return nil;
-
-	return OFGameControllerButtonB;
 }
 
 - (OFString *)description

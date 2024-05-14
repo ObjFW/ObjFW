@@ -95,30 +95,31 @@ initControllers(void)
 
 	[_pressedButtons removeAllObjects];
 
-	if (keys & KEY_A)
-		[_pressedButtons addObject: OFGameControllerButtonA];
-	if (keys & KEY_B)
-		[_pressedButtons addObject: OFGameControllerButtonB];
-	if (keys & KEY_SELECT)
-		[_pressedButtons addObject: OFGameControllerButtonSelect];
-	if (keys & KEY_START)
-		[_pressedButtons addObject: OFGameControllerButtonStart];
-	if (keys & KEY_RIGHT)
-		[_pressedButtons addObject: OFGameControllerButtonDPadRight];
-	if (keys & KEY_LEFT)
-		[_pressedButtons addObject: OFGameControllerButtonDPadLeft];
-	if (keys & KEY_UP)
-		[_pressedButtons addObject: OFGameControllerButtonDPadUp];
-	if (keys & KEY_DOWN)
-		[_pressedButtons addObject: OFGameControllerButtonDPadDown];
-	if (keys & KEY_R)
-		[_pressedButtons addObject: OFGameControllerButtonR];
-	if (keys & KEY_L)
-		[_pressedButtons addObject: OFGameControllerButtonL];
 	if (keys & KEY_X)
-		[_pressedButtons addObject: OFGameControllerButtonX];
+		[_pressedButtons addObject: OFGameControllerNorthButton];
+	if (keys & KEY_B)
+		[_pressedButtons addObject: OFGameControllerSouthButton];
 	if (keys & KEY_Y)
-		[_pressedButtons addObject: OFGameControllerButtonY];
+		[_pressedButtons addObject: OFGameControllerWestButton];
+	if (keys & KEY_A)
+		[_pressedButtons addObject: OFGameControllerEastButton];
+	if (keys & KEY_L)
+		[_pressedButtons addObject: OFGameControllerLeftShoulderButton];
+	if (keys & KEY_R)
+		[_pressedButtons addObject:
+		    OFGameControllerRightShoulderButton];
+	if (keys & KEY_UP)
+		[_pressedButtons addObject: OFGameControllerDPadUpButton];
+	if (keys & KEY_DOWN)
+		[_pressedButtons addObject: OFGameControllerDPadDownButton];
+	if (keys & KEY_LEFT)
+		[_pressedButtons addObject: OFGameControllerDPadLeftButton];
+	if (keys & KEY_RIGHT)
+		[_pressedButtons addObject: OFGameControllerDPadRightButton];
+	if (keys & KEY_START)
+		[_pressedButtons addObject: OFGameControllerStartButton];
+	if (keys & KEY_SELECT)
+		[_pressedButtons addObject: OFGameControllerSelectButton];
 }
 
 - (OFString *)name
@@ -138,13 +139,19 @@ initControllers(void)
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
-	return [OFSet setWithObjects: OFGameControllerButtonA,
-	    OFGameControllerButtonB, OFGameControllerButtonSelect,
-	    OFGameControllerButtonStart, OFGameControllerButtonDPadRight,
-	    OFGameControllerButtonDPadLeft, OFGameControllerButtonDPadUp,
-	    OFGameControllerButtonDPadDown, OFGameControllerButtonR,
-	    OFGameControllerButtonL, OFGameControllerButtonX,
-	    OFGameControllerButtonY, nil];
+	return [OFSet setWithObjects:
+	    OFGameControllerNorthButton,
+	    OFGameControllerSouthButton,
+	    OFGameControllerWestButton,
+	    OFGameControllerEastButton,
+	    OFGameControllerLeftShoulderButton,
+	    OFGameControllerRightShoulderButton,
+	    OFGameControllerDPadUpButton,
+	    OFGameControllerDPadDownButton,
+	    OFGameControllerDPadLeftButton,
+	    OFGameControllerDPadRightButton,
+	    OFGameControllerStartButton,
+	    OFGameControllerSelectButton, nil];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
@@ -165,26 +172,6 @@ initControllers(void)
 - (float)pressureForButton: (OFGameControllerButton)button
 {
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
-}
-
-- (OFGameControllerButton)northButton
-{
-	return OFGameControllerButtonX;
-}
-
-- (OFGameControllerButton)southButton
-{
-	return OFGameControllerButtonB;
-}
-
-- (OFGameControllerButton)westButton
-{
-	return OFGameControllerButtonY;
-}
-
-- (OFGameControllerButton)eastButton
-{
-	return OFGameControllerButtonA;
 }
 
 - (OFString *)description

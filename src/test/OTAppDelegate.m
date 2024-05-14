@@ -334,7 +334,8 @@ isSubclassOfClass(Class class, Class superclass)
 			OFGameController *controller =
 			    [[OFGameController controllers] objectAtIndex: 0];
 
-			if ([controller.pressedButtons containsObject: @"A"])
+			if ([controller.pressedButtons containsObject:
+			    OFGameControllerEastButton])
 				break;
 
 # if defined(OF_NINTENDO_DS)

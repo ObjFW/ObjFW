@@ -161,42 +161,43 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 	[_pressedButtons removeAllObjects];
 
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-		[_pressedButtons addObject: OFGameControllerButtonDPadUp];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-		[_pressedButtons addObject: OFGameControllerButtonDPadDown];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-		[_pressedButtons addObject: OFGameControllerButtonDPadLeft];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-		[_pressedButtons addObject: OFGameControllerButtonDPadRight];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_START)
-		[_pressedButtons addObject: OFGameControllerButtonStart];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
-		[_pressedButtons addObject: OFGameControllerButtonSelect];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
-		[_pressedButtons addObject: OFGameControllerButtonLeftStick];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)
-		[_pressedButtons addObject: OFGameControllerButtonRightStick];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)
-		[_pressedButtons addObject: OFGameControllerButtonL];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
-		[_pressedButtons addObject: OFGameControllerButtonR];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-		[_pressedButtons addObject: OFGameControllerButtonA];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
-		[_pressedButtons addObject: OFGameControllerButtonB];
-	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_X)
-		[_pressedButtons addObject: OFGameControllerButtonX];
 	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
-		[_pressedButtons addObject: OFGameControllerButtonY];
+		[_pressedButtons addObject: OFGameControllerNorthButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
+		[_pressedButtons addObject: OFGameControllerSouthButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_X)
+		[_pressedButtons addObject: OFGameControllerWestButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+		[_pressedButtons addObject: OFGameControllerEastButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)
+		[_pressedButtons addObject: OFGameControllerLeftShoulderButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
+		[_pressedButtons addObject:
+		    OFGameControllerRightShoulderButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
+		[_pressedButtons addObject: OFGameControllerLeftStickButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)
+		[_pressedButtons addObject: OFGameControllerRightStickButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+		[_pressedButtons addObject: OFGameControllerDPadUpButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+		[_pressedButtons addObject: OFGameControllerDPadDownButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+		[_pressedButtons addObject: OFGameControllerDPadLeftButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+		[_pressedButtons addObject: OFGameControllerDPadRightButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_START)
+		[_pressedButtons addObject: OFGameControllerStartButton];
+	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
+		[_pressedButtons addObject: OFGameControllerSelectButton];
 
-	_ZLPressure = (float)state.Gamepad.bLeftTrigger / 255;
-	_ZRPressure = (float)state.Gamepad.bRightTrigger / 255;
+	_leftTriggerPressure = (float)state.Gamepad.bLeftTrigger / 255;
+	_rightTriggerPressure = (float)state.Gamepad.bRightTrigger / 255;
 
-	if (_ZLPressure > 0)
-		[_pressedButtons addObject: OFGameControllerButtonZL];
-	if (_ZRPressure > 0)
-		[_pressedButtons addObject: OFGameControllerButtonZR];
+	if (_leftTriggerPressure > 0)
+		[_pressedButtons addObject: OFGameControllerLeftTriggerButton];
+	if (_rightTriggerPressure > 0)
+		[_pressedButtons addObject: OFGameControllerRightTriggerButton];
 
 	_leftAnalogStickPosition = OFMakePoint(
 	    (float)state.Gamepad.sThumbLX /
@@ -218,14 +219,22 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
 	return [OFSet setWithObjects:
-	    OFGameControllerButtonA, OFGameControllerButtonB,
-	    OFGameControllerButtonX, OFGameControllerButtonY,
-	    OFGameControllerButtonL, OFGameControllerButtonR,
-	    OFGameControllerButtonZL, OFGameControllerButtonZR,
-	    OFGameControllerButtonStart, OFGameControllerButtonSelect,
-	    OFGameControllerButtonLeftStick, OFGameControllerButtonRightStick,
-	    OFGameControllerButtonDPadLeft, OFGameControllerButtonDPadRight,
-	    OFGameControllerButtonDPadUp, OFGameControllerButtonDPadDown, nil];
+	    OFGameControllerNorthButton,
+	    OFGameControllerSouthButton,
+	    OFGameControllerWestButton,
+	    OFGameControllerEastButton,
+	    OFGameControllerLeftTriggerButton,
+	    OFGameControllerRightTriggerButton,
+	    OFGameControllerLeftShoulderButton,
+	    OFGameControllerRightShoulderButton,
+	    OFGameControllerLeftStickButton,
+	    OFGameControllerRightStickButton,
+	    OFGameControllerDPadLeftButton,
+	    OFGameControllerDPadRightButton,
+	    OFGameControllerDPadUpButton,
+	    OFGameControllerDPadDownButton,
+	    OFGameControllerStartButton,
+	    OFGameControllerSelectButton, nil];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
@@ -245,32 +254,12 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 - (float)pressureForButton: (OFGameControllerButton)button
 {
-	if (button == OFGameControllerButtonZL)
-		return _ZLPressure;
-	if (button == OFGameControllerButtonZR)
-		return _ZRPressure;
+	if (button == OFGameControllerLeftTriggerButton)
+		return _leftTriggerPressure;
+	if (button == OFGameControllerRightTriggerButton)
+		return _rightTriggerPressure;
 
 	return ([self.pressedButtons containsObject: button] ? 1 : 0);
-}
-
-- (OFGameControllerButton)northButton
-{
-	return OFGameControllerButtonY;
-}
-
-- (OFGameControllerButton)southButton
-{
-	return OFGameControllerButtonA;
-}
-
-- (OFGameControllerButton)westButton
-{
-	return OFGameControllerButtonX;
-}
-
-- (OFGameControllerButton)eastButton
-{
-	return OFGameControllerButtonB;
 }
 
 - (OFString *)description
