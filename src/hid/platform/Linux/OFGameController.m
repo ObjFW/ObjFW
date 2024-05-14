@@ -399,6 +399,8 @@ scale(float value, float min, float max)
 	struct input_event event;
 
 	for (;;) {
+		OFGameControllerButton button;
+
 		errno = 0;
 
 		if (read(_fd, &event, sizeof(event)) < (int)sizeof(event)) {
@@ -413,12 +415,13 @@ scale(float value, float min, float max)
 
 		switch (event.type) {
 		case EV_KEY:
-			if (event.value)
-				[_pressedButtons addObject: buttonToName(
-				    event.code, _vendorID, _productID)];
-			else
-				[_pressedButtons removeObject: buttonToName(
-				    event.code, _vendorID, _productID)];
+			if ((button = buttonToName(event.code, _vendorID,
+			    _productID)) != nil) {
+				if (event.value)
+					[_pressedButtons addObject: button];
+				else
+					[_pressedButtons removeObject: button];
+			}
 			break;
 		case EV_ABS:
 			switch (event.code) {
