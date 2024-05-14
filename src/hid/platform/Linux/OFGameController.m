@@ -40,9 +40,15 @@
 #import "OFReadFailedException.h"
 
 static const uint16_t vendorIDNintendo = 0x057E;
+static const uint16_t vendorIDSony = 0x054C;
+
+/* Nintendo controllers */
 static const uint16_t productIDLeftJoycon = 0x2006;
 static const uint16_t productIDRightJoycon = 0x2007;
 static const uint16_t productIDN64Controller = 0x2019;
+
+/* Sony controllers */
+static const uint16_t productIDDualSense = 0x0CE6;
 
 @interface OFGameController ()
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
@@ -100,6 +106,14 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return OFGameControllerCPadRightButton;
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
+		}
+	} else if (vendorID == vendorIDSony &&
+	    productID == productIDDualSense) {
+		switch (button) {
+		case BTN_X:
+			return OFGameControllerNorthButton;
+		case BTN_Y:
+			return OFGameControllerWestButton;
 		}
 	}
 
