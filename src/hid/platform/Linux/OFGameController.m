@@ -39,8 +39,22 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
+/*
+ * Controllers with tested correct mapping:
+ *
+ *   Microsoft X-Box 360 pad [045E:028E]
+ *   Joy-Con (L) [057E:2006]
+ *   Joy-Con (R) [057E:2007]
+ *   N64 Controller [057E:2019]
+ *   Sony Interactive Entertainment DualSense Wireless Controller [054C:0CE6]
+ */
+
+static const uint16_t vendorIDMicrosoft = 0x045E;
 static const uint16_t vendorIDNintendo = 0x057E;
 static const uint16_t vendorIDSony = 0x054C;
+
+/* Microsoft controllers */
+static const uint16_t productIDXbox360 = 0x028E;
 
 /* Nintendo controllers */
 static const uint16_t productIDLeftJoycon = 0x2006;
@@ -63,7 +77,14 @@ static const uint16_t buttons[] = {
 static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == vendorIDNintendo &&
+	if (vendorID == vendorIDMicrosoft && productID == productIDXbox360) {
+		switch (button) {
+		case BTN_Y:
+			return OFGameControllerNorthButton;
+		case BTN_X:
+			return OFGameControllerWestButton;
+		}
+	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDLeftJoycon) {
 		switch (button) {
 		case BTN_SELECT:
@@ -78,10 +99,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDRightJoycon) {
 		switch (button) {
-		case BTN_X:
-			return OFGameControllerNorthButton;
-		case BTN_Y:
-			return OFGameControllerWestButton;
 		case BTN_START:
 			return OFGameControllerPlusButton;
 		case BTN_TL:
@@ -107,24 +124,16 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		}
-	} else if (vendorID == vendorIDSony &&
-	    productID == productIDDualSense) {
-		switch (button) {
-		case BTN_X:
-			return OFGameControllerNorthButton;
-		case BTN_Y:
-			return OFGameControllerWestButton;
-		}
 	}
 
 	switch (button) {
-	case BTN_Y:
+	case BTN_NORTH:
 		return OFGameControllerNorthButton;
-	case BTN_A:
+	case BTN_SOUTH:
 		return OFGameControllerSouthButton;
-	case BTN_X:
+	case BTN_WEST:
 		return OFGameControllerWestButton;
-	case BTN_B:
+	case BTN_EAST:
 		return OFGameControllerEastButton;
 	case BTN_TL2:
 		return OFGameControllerLeftTriggerButton;
