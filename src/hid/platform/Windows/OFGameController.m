@@ -45,6 +45,7 @@ struct XInputCapabilitiesEx {
 static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
+static const char *XInputVersion;
 
 @implementation OFGameController
 @synthesize vendorID = _vendorID, productID = _productID;
@@ -65,6 +66,17 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 		XInputGetCapabilitiesExFuncPtr = (WINAPI DWORD (*)(DWORD, DWORD,
 		    DWORD, struct XInputCapabilitiesEx *))
 		    GetProcAddress(module, "XInputGetCapabilitiesEx");
+		XInputVersion = "1.4";
+	} else if ((module = LoadLibraryA("xinput1_3.dll")) != NULL) {
+		XInputGetStateFuncPtr =
+		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
+		    GetProcAddress(module, "XInputGetState");
+		XInputVersion = "1.3";
+	} else if ((module = LoadLibraryA("xinput9_1_0.dll")) != NULL) {
+		XInputGetStateFuncPtr =
+		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
+		    GetProcAddress(module, "XInputGetState");
+		XInputVersion = "9.1.0";
 	}
 }
 
@@ -213,7 +225,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 - (OFString *)name
 {
-	return @"XInput 1.3";
+	return [OFString stringWithFormat: @"XInput %s device", XInputVersion];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
