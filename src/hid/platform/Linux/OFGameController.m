@@ -47,6 +47,7 @@
  *   Joy-Con (R) [057E:2007]
  *   N64 Controller [057E:2019]
  *   Sony Interactive Entertainment DualSense Wireless Controller [054C:0CE6]
+ *   8BitDo Pro 2 Wired Controller [2DC8:3106]
  */
 
 static const uint16_t vendorIDMicrosoft = 0x045E;
@@ -77,14 +78,7 @@ static const uint16_t buttons[] = {
 static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == vendorIDMicrosoft && productID == productIDXbox360) {
-		switch (button) {
-		case BTN_Y:
-			return OFGameControllerNorthButton;
-		case BTN_X:
-			return OFGameControllerWestButton;
-		}
-	} else if (vendorID == vendorIDNintendo &&
+	if (vendorID == vendorIDNintendo &&
 	    productID == productIDLeftJoycon) {
 		switch (button) {
 		case BTN_SELECT:
@@ -99,6 +93,10 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDRightJoycon) {
 		switch (button) {
+		case BTN_NORTH:
+			return OFGameControllerNorthButton;
+		case BTN_WEST:
+			return OFGameControllerWestButton;
 		case BTN_START:
 			return OFGameControllerPlusButton;
 		case BTN_TL:
@@ -124,16 +122,24 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		}
+	} else if (vendorID == vendorIDSony &&
+	    productID == productIDDualSense) {
+		switch (button) {
+		case BTN_NORTH:
+			return OFGameControllerNorthButton;
+		case BTN_WEST:
+			return OFGameControllerWestButton;
+		}
 	}
 
 	switch (button) {
-	case BTN_NORTH:
+	case BTN_Y:
 		return OFGameControllerNorthButton;
-	case BTN_SOUTH:
+	case BTN_A:
 		return OFGameControllerSouthButton;
-	case BTN_WEST:
+	case BTN_X:
 		return OFGameControllerWestButton;
-	case BTN_EAST:
+	case BTN_B:
 		return OFGameControllerEastButton;
 	case BTN_TL2:
 		return OFGameControllerLeftTriggerButton;
