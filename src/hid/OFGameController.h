@@ -259,41 +259,7 @@ extern const OFGameControllerButton OFGameControllerAssistantButton;
 /**
  * @brief A class for reading state from a game controller.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFGameController: OFObject
-{
-#if defined(OF_LINUX)
-	OFString *_path;
-	int _fd;
-	uint16_t _vendorID, _productID;
-	OFString *_name;
-	OFMutableSet *_buttons, *_pressedButtons;
-	bool _hasLeftAnalogStick, _hasRightAnalogStick;
-	bool _hasLeftTriggerPressure, _hasRightTriggerPressure;
-	unsigned int _leftTriggerPressureBit, _rightTriggerPressureBit;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _leftTriggerPressure, _rightTriggerPressure;
-	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
-	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
-	unsigned int _rightAnalogStickXBit, _rightAnalogStickYBit;
-	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
-	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
-	int32_t _leftTriggerMinPressure, _leftTriggerMaxPressure;
-	int32_t _rightTriggerMinPressure, _rightTriggerMaxPressure;
-#elif defined(OF_NINTENDO_DS)
-	OFMutableSet *_pressedButtons;
-#elif defined(OF_NINTENDO_3DS)
-	OFMutableSet *_pressedButtons;
-	OFPoint _leftAnalogStickPosition;
-#elif defined(OF_WINDOWS)
-	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable productID;
-	OFMutableSet *_pressedButtons;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _leftTriggerPressure, _rightTriggerPressure;
-#endif
-}
-
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic)
     OFArray <OFGameController *> *controllers;
@@ -356,8 +322,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return The available controllers
  */
 + (OFArray OF_GENERIC(OFGameController *) *)controllers;
-
-- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Retrieve the current state from the game controller.

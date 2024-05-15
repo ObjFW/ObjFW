@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#import "OFGameController.h"
+#import "OFEvdevGameController.h"
 #import "OFArray.h"
 #import "OFFileManager.h"
 #import "OFLocale.h"
@@ -71,10 +71,6 @@ static const uint16_t productIDDualShock4 = 0x09CC;
 
 /* Google controllers */
 static const uint16_t productIDStadia = 0x9400;
-
-@interface OFGameController ()
-- (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-@end
 
 static const uint16_t buttons[] = {
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
@@ -203,7 +199,7 @@ scale(float value, float min, float max)
 	return ((value - min) / (max - min) * 2) - 1;
 }
 
-@implementation OFGameController
+@implementation OFEvdevGameController
 @synthesize name = _name, buttons = _buttons;
 @synthesize hasLeftAnalogStick = _hasLeftAnalogStick;
 @synthesize hasRightAnalogStick = _hasRightAnalogStick;
@@ -226,7 +222,7 @@ scale(float value, float min, float max)
 		path = [@"/dev/input" stringByAppendingPathComponent: device];
 
 		@try {
-			controller = [[[OFGameController alloc]
+			controller = [[[OFEvdevGameController alloc]
 			    of_initWithPath: path] autorelease];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
@@ -571,11 +567,11 @@ scale(float value, float min, float max)
 	}
 }
 
-- (OFComparisonResult)compare: (OFGameController *)otherController
+- (OFComparisonResult)compare: (OFEvdevGameController *)otherController
 {
 	unsigned long long selfIndex, otherIndex;
 
-	if (![otherController isKindOfClass: [OFGameController class]])
+	if (![otherController isKindOfClass: [OFEvdevGameController class]])
 		@throw [OFInvalidArgumentException exception];
 
 	selfIndex = [_path substringFromIndex: 16].unsignedLongLongValue;

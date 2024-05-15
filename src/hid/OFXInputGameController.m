@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFGameController.h"
+#import "OFXInputGameController.h"
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFSet.h"
@@ -28,10 +28,6 @@
 #import "OFReadFailedException.h"
 
 #include <xinput.h>
-
-@interface OFGameController ()
-- (instancetype)of_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
-@end
 
 struct XInputCapabilitiesEx {
 	XINPUT_CAPABILITIES capabilities;
@@ -47,7 +43,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
 static const char *XInputVersion;
 
-@implementation OFGameController
+@implementation OFXInputGameController
 @synthesize vendorID = _vendorID, productID = _productID;
 @synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
 @synthesize rightAnalogStickPosition = _rightAnalogStickPosition;
@@ -56,7 +52,7 @@ static const char *XInputVersion;
 {
 	HMODULE module;
 
-	if (self != [OFGameController class])
+	if (self != [OFXInputGameController class])
 		return;
 
 	if ((module = LoadLibraryA("xinput1_4.dll")) != NULL) {
@@ -91,7 +87,7 @@ static const char *XInputVersion;
 			OFGameController *controller;
 
 			@try {
-				controller = [[[OFGameController alloc]
+				controller = [[[OFXInputGameController alloc]
 				    of_initWithIndex: i] autorelease];
 			} @catch (OFInitializationFailedException *e) {
 				/* Controller does not exist. */

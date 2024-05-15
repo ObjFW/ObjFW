@@ -22,6 +22,19 @@
 #import "OFGameController.h"
 #import "OFArray.h"
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include "OFEvdevGameController.h"
+#endif
+#ifdef OF_WINDOWS
+# include "OFXInputGameController.h"
+#endif
+#ifdef OF_NINTENDO_DS
+# include "OFNintendoDSGameController.h"
+#endif
+#ifdef OF_NINTENDO_3DS
+# include "OFNintendo3DSGameController.h"
+#endif
+
 const OFGameControllerButton OFGameControllerNorthButton = @"North";
 const OFGameControllerButton OFGameControllerSouthButton = @"South";
 const OFGameControllerButton OFGameControllerWestButton = @"West";
@@ -61,27 +74,39 @@ const OFGameControllerButton OFGameControllerSRButton = @"SR";
 const OFGameControllerButton OFGameControllerModeButton = @"Mode";
 const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# include "platform/Linux/OFGameController.m"
-#elif defined(OF_WINDOWS)
-# include "platform/Windows/OFGameController.m"
-#elif defined(OF_NINTENDO_DS)
-# include "platform/NintendoDS/OFGameController.m"
-#elif defined(OF_NINTENDO_3DS)
-# include "platform/Nintendo3DS/OFGameController.m"
-#else
 @implementation OFGameController
 @dynamic name, buttons, pressedButtons, hasLeftAnalogStick;
 @dynamic leftAnalogStickPosition, hasRightAnalogStick, rightAnalogStickPosition;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	return [OFEvdevGameController controllers];
+#elif defined(OF_WINDOWS)
+	return [OFXInputGameController controllers];
+#elif defined(OF_NINTENDO_DS)
+	return [OFNintendoDSGameController controllers];
+#elif defined(OF_NINTENDO_3DS)
+	return [OFNintendo3DSGameController controllers];
+#else
 	return [OFArray array];
+#endif
 }
 
 - (instancetype)init
 {
-	OF_INVALID_INIT_METHOD
+	if ([self isMemberOfClass: [OFGameController class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
+
+		abort();
+	}
+
+	return [super init];
 }
 
 - (OFNumber *)vendorID
@@ -96,11 +121,24 @@ const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
 - (void)retrieveState
 {
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (float)pressureForButton: (OFGameControllerButton)button
 {
-	return 0;
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include "OFEvdevGameController.m"
+#endif
+#ifdef OF_WINDOWS
+# include "OFXInputGameController.m"
+#endif
+#ifdef OF_NINTENDO_DS
+# include "OFNintendoDSGameController.m"
+#endif
+#ifdef OF_NINTENDO_3DS
+# include "OFNintendo3DSGameController.m"
 #endif

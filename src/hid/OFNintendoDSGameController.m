@@ -19,19 +19,15 @@
 
 #include "config.h"
 
-#import "OFGameController.h"
+#import "OFNintendoDSGameController.h"
 #import "OFArray.h"
 #import "OFSet.h"
 
 #import "OFOutOfRangeException.h"
 
-#define id id_3ds
-#include <3ds.h>
-#undef id
-
-@interface OFGameController ()
-- (instancetype)of_init OF_METHOD_FAMILY(init);
-@end
+#define asm __asm__
+#include <nds.h>
+#undef asm
 
 static OFArray OF_GENERIC(OFGameController *) *controllers;
 
@@ -41,15 +37,12 @@ initControllers(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	controllers = [[OFArray alloc] initWithObject:
-	    [[[OFGameController alloc] of_init] autorelease]];
+	    [[[OFNintendoDSGameController alloc] init] autorelease]];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-@implementation OFGameController
-@synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
-@dynamic rightAnalogStickPosition;
-
+@implementation OFNintendoDSGameController
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -61,15 +54,10 @@ initControllers(void)
 
 - (instancetype)init
 {
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_init
-{
 	self = [super init];
 
 	@try {
-		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 18];
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 12];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -89,13 +77,10 @@ initControllers(void)
 
 - (void)retrieveState
 {
-	u32 keys;
-	circlePosition pos;
+	uint32 keys;
 
-	hidScanInput();
-
-	keys = hidKeysHeld();
-	hidCircleRead(&pos);
+	scanKeys();
+	keys = keysCurrent();
 
 	[_pressedButtons removeAllObjects];
 
@@ -107,54 +92,28 @@ initControllers(void)
 		[_pressedButtons addObject: OFGameControllerWestButton];
 	if (keys & KEY_A)
 		[_pressedButtons addObject: OFGameControllerEastButton];
-	if (keys & KEY_ZL)
-		[_pressedButtons addObject: OFGameControllerLeftTriggerButton];
-	if (keys & KEY_ZR)
-		[_pressedButtons addObject: OFGameControllerRightTriggerButton];
 	if (keys & KEY_L)
 		[_pressedButtons addObject: OFGameControllerLeftShoulderButton];
 	if (keys & KEY_R)
 		[_pressedButtons addObject:
 		    OFGameControllerRightShoulderButton];
-	if (keys & KEY_DUP)
+	if (keys & KEY_UP)
 		[_pressedButtons addObject: OFGameControllerDPadUpButton];
-	if (keys & KEY_DDOWN)
+	if (keys & KEY_DOWN)
 		[_pressedButtons addObject: OFGameControllerDPadDownButton];
-	if (keys & KEY_DLEFT)
+	if (keys & KEY_LEFT)
 		[_pressedButtons addObject: OFGameControllerDPadLeftButton];
-	if (keys & KEY_DRIGHT)
+	if (keys & KEY_RIGHT)
 		[_pressedButtons addObject: OFGameControllerDPadRightButton];
 	if (keys & KEY_START)
 		[_pressedButtons addObject: OFGameControllerStartButton];
 	if (keys & KEY_SELECT)
 		[_pressedButtons addObject: OFGameControllerSelectButton];
-	if (keys & KEY_CSTICK_UP)
-		[_pressedButtons addObject: OFGameControllerCPadUpButton];
-	if (keys & KEY_CSTICK_DOWN)
-		[_pressedButtons addObject: OFGameControllerCPadDownButton];
-	if (keys & KEY_CSTICK_LEFT)
-		[_pressedButtons addObject: OFGameControllerCPadLeftButton];
-	if (keys & KEY_CSTICK_RIGHT)
-		[_pressedButtons addObject: OFGameControllerCPadRightButton];
-
-	_leftAnalogStickPosition = OFMakePoint(
-	    (float)pos.dx / (pos.dx < 0 ? -INT16_MIN : INT16_MAX),
-	    (float)pos.dy / (pos.dy < 0 ? -INT16_MIN : INT16_MAX));
 }
 
 - (OFString *)name
 {
-	return @"Nintendo 3DS";
-}
-
-- (OFNumber *)vendorID
-{
-	return nil;
-}
-
-- (OFNumber *)productID
-{
-	return nil;
+	return @"Nintendo DS";
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
@@ -164,20 +123,14 @@ initControllers(void)
 	    OFGameControllerSouthButton,
 	    OFGameControllerWestButton,
 	    OFGameControllerEastButton,
-	    OFGameControllerLeftTriggerButton,
-	    OFGameControllerRightTriggerButton,
-	    OFGameControllerRightShoulderButton,
 	    OFGameControllerLeftShoulderButton,
+	    OFGameControllerRightShoulderButton,
 	    OFGameControllerDPadUpButton,
 	    OFGameControllerDPadDownButton,
 	    OFGameControllerDPadLeftButton,
 	    OFGameControllerDPadRightButton,
 	    OFGameControllerStartButton,
-	    OFGameControllerSelectButton,
-	    OFGameControllerCPadRightButton,
-	    OFGameControllerCPadLeftButton,
-	    OFGameControllerCPadUpButton,
-	    OFGameControllerCPadDownButton, nil];
+	    OFGameControllerSelectButton, nil];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
@@ -187,7 +140,7 @@ initControllers(void)
 
 - (bool)hasLeftAnalogStick
 {
-	return true;
+	return false;
 }
 
 - (bool)hasRightAnalogStick
