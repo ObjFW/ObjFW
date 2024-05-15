@@ -48,11 +48,13 @@
  *   N64 Controller [057E:2019]
  *   Sony Interactive Entertainment DualSense Wireless Controller [054C:0CE6]
  *   8BitDo Pro 2 Wired Controller [2DC8:3106]
+ *   Stadia2SZY-0d6c [18D1:9400]
  */
 
 static const uint16_t vendorIDMicrosoft = 0x045E;
 static const uint16_t vendorIDNintendo = 0x057E;
 static const uint16_t vendorIDSony = 0x054C;
+static const uint16_t vendorIDGoogle = 0x18D1;
 
 /* Microsoft controllers */
 static const uint16_t productIDXbox360 = 0x028E;
@@ -65,6 +67,9 @@ static const uint16_t productIDN64Controller = 0x2019;
 /* Sony controllers */
 static const uint16_t productIDDualSense = 0x0CE6;
 
+/* Google controllers */
+static const uint16_t productIDStadia = 0x9400;
+
 @interface OFGameController ()
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
 @end
@@ -72,7 +77,8 @@ static const uint16_t productIDDualSense = 0x0CE6;
 static const uint16_t buttons[] = {
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
 	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
-	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT
+	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
+	BTN_TRIGGER_HAPPY1, BTN_TRIGGER_HAPPY2
 };
 
 static OFGameControllerButton
@@ -129,6 +135,13 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return OFGameControllerNorthButton;
 		case BTN_WEST:
 			return OFGameControllerWestButton;
+		}
+	} else if (vendorID == vendorIDGoogle && productID == productIDStadia) {
+		switch (button) {
+		case BTN_TRIGGER_HAPPY1:
+			return OFGameControllerAssistantButton;
+		case BTN_TRIGGER_HAPPY2:
+			return OFGameControllerCaptureButton;
 		}
 	}
 
@@ -290,10 +303,15 @@ scale(float value, float min, float max)
 
 		_buttons = [[OFMutableSet alloc] init];
 		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
-		    i++)
-			if (OFBitSetIsSet(keyBits, buttons[i]))
-				[_buttons addObject: buttonToName(
-				    buttons[i], _vendorID, _productID)];
+		    i++) {
+			if (OFBitSetIsSet(keyBits, buttons[i])) {
+				OFGameControllerButton button = buttonToName(
+				    buttons[i], _vendorID, _productID);
+
+				if (button != nil)
+					[_buttons addObject: button];
+			}
+		}
 
 		_pressedButtons = [[OFMutableSet alloc] init];
 
@@ -302,6 +320,23 @@ scale(float value, float min, float max)
 			    absBits) == -1)
 				@throw [OFInitializationFailedException
 				    exception];
+
+			if (_vendorID == vendorIDGoogle &&
+			    _productID == productIDStadia) {
+				/*
+				 * It's unclear how this can be screwed up
+				 * *this* bad.
+				 */
+				_rightAnalogStickXBit = ABS_Z;
+				_rightAnalogStickYBit = ABS_RZ;
+				_leftTriggerPressureBit = ABS_BRAKE;
+				_rightTriggerPressureBit = ABS_GAS;
+			} else {
+				_rightAnalogStickXBit = ABS_RX;
+				_rightAnalogStickYBit = ABS_RY;
+				_leftTriggerPressureBit = ABS_Z;
+				_rightTriggerPressureBit = ABS_RZ;
+			}
 
 			if (OFBitSetIsSet(absBits, ABS_X) &&
 			    OFBitSetIsSet(absBits, ABS_Y)) {
@@ -323,17 +358,19 @@ scale(float value, float min, float max)
 				_leftAnalogStickMaxY = infoY.maximum;
 			}
 
-			if (OFBitSetIsSet(absBits, ABS_RX) &&
-			    OFBitSetIsSet(absBits, ABS_RY)) {
+			if (OFBitSetIsSet(absBits, _rightAnalogStickXBit) &&
+			    OFBitSetIsSet(absBits, _rightAnalogStickYBit)) {
 				struct input_absinfo infoX, infoY;
 
 				_hasRightAnalogStick = true;
 
-				if (ioctl(_fd, EVIOCGABS(ABS_RX), &infoX) == -1)
+				if (ioctl(_fd, EVIOCGABS(_rightAnalogStickXBit),
+				    &infoX) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
-				if (ioctl(_fd, EVIOCGABS(ABS_RY), &infoY) == -1)
+				if (ioctl(_fd, EVIOCGABS(_rightAnalogStickYBit),
+				    &infoY) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
@@ -355,12 +392,13 @@ scale(float value, float min, float max)
 				    OFGameControllerDPadDownButton];
 			}
 
-			if (OFBitSetIsSet(absBits, ABS_Z)) {
+			if (OFBitSetIsSet(absBits, _leftTriggerPressureBit)) {
 				struct input_absinfo info;
 
 				_hasLeftTriggerPressure = true;
 
-				if (ioctl(_fd, EVIOCGABS(ABS_Z), &info) == -1)
+				if (ioctl(_fd, EVIOCGABS(
+				    _leftTriggerPressureBit), &info) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
@@ -371,12 +409,13 @@ scale(float value, float min, float max)
 				    OFGameControllerLeftTriggerButton];
 			}
 
-			if (OFBitSetIsSet(absBits, ABS_RZ)) {
+			if (OFBitSetIsSet(absBits, _rightTriggerPressureBit)) {
 				struct input_absinfo info;
 
 				_hasRightTriggerPressure = true;
 
-				if (ioctl(_fd, EVIOCGABS(ABS_RZ), &info) == -1)
+				if (ioctl(_fd, EVIOCGABS(
+				    _rightTriggerPressureBit), &info) == -1)
 					@throw [OFInitializationFailedException
 					    exception];
 
@@ -453,26 +492,21 @@ scale(float value, float min, float max)
 			}
 			break;
 		case EV_ABS:
-			switch (event.code) {
-			case ABS_X:
+			if (event.code == ABS_X)
 				_leftAnalogStickPosition.x = scale(event.value,
 				    _leftAnalogStickMinX, _leftAnalogStickMaxX);
-				break;
-			case ABS_Y:
+			else if (event.code == ABS_Y)
 				_leftAnalogStickPosition.y = scale(event.value,
 				    _leftAnalogStickMinY, _leftAnalogStickMaxY);
-				break;
-			case ABS_RX:
+			else if (event.code == _rightAnalogStickXBit)
 				_rightAnalogStickPosition.x = scale(event.value,
 				    _rightAnalogStickMinX,
 				    _rightAnalogStickMaxX);
-				break;
-			case ABS_RY:
+			else if (event.code == _rightAnalogStickYBit)
 				_rightAnalogStickPosition.y = scale(event.value,
 				    _rightAnalogStickMinY,
 				    _rightAnalogStickMaxY);
-				break;
-			case ABS_HAT0X:
+			else if (event.code == ABS_HAT0X) {
 				if (event.value < 0) {
 					[_pressedButtons addObject:
 					    OFGameControllerDPadLeftButton];
@@ -489,8 +523,7 @@ scale(float value, float min, float max)
 					[_pressedButtons removeObject:
 					    OFGameControllerDPadRightButton];
 				}
-				break;
-			case ABS_HAT0Y:
+			} else if (event.code == ABS_HAT0Y) {
 				if (event.value < 0) {
 					[_pressedButtons addObject:
 					    OFGameControllerDPadUpButton];
@@ -507,8 +540,7 @@ scale(float value, float min, float max)
 					[_pressedButtons removeObject:
 					    OFGameControllerDPadDownButton];
 				}
-				break;
-			case ABS_Z:
+			} else if (event.code == _leftTriggerPressureBit) {
 				_leftTriggerPressure = scale(event.value,
 				    _leftTriggerMinPressure,
 				    _leftTriggerMaxPressure);
@@ -519,8 +551,7 @@ scale(float value, float min, float max)
 				else
 					[_pressedButtons removeObject:
 					    OFGameControllerLeftTriggerButton];
-				break;
-			case ABS_RZ:
+			} else if (event.code == _rightTriggerPressureBit) {
 				_rightTriggerPressure = scale(event.value,
 				    _rightTriggerMinPressure,
 				    _rightTriggerMaxPressure);
@@ -531,9 +562,7 @@ scale(float value, float min, float max)
 				else
 					[_pressedButtons removeObject:
 					    OFGameControllerRightTriggerButton];
-				break;
 			}
-
 			break;
 		}
 	}

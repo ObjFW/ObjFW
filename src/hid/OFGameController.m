@@ -59,6 +59,7 @@ const OFGameControllerButton OFGameControllerMinusButton = @"-";
 const OFGameControllerButton OFGameControllerSLButton = @"SL";
 const OFGameControllerButton OFGameControllerSRButton = @"SR";
 const OFGameControllerButton OFGameControllerModeButton = @"Mode";
+const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "platform/Linux/OFGameController.m"

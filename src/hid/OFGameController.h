@@ -247,6 +247,11 @@ extern const OFGameControllerButton OFGameControllerSRButton;
  * @brief The Mode button on a game controller.
  */
 extern const OFGameControllerButton OFGameControllerModeButton;
+
+/**
+ * @brief The Assistant button on a game controller.
+ */
+extern const OFGameControllerButton OFGameControllerAssistantButton;
 #ifdef __cplusplus
 }
 #endif
@@ -265,10 +270,12 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableSet *_buttons, *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;
 	bool _hasLeftTriggerPressure, _hasRightTriggerPressure;
+	unsigned int _leftTriggerPressureBit, _rightTriggerPressureBit;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 	float _leftTriggerPressure, _rightTriggerPressure;
 	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
 	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
+	unsigned int _rightAnalogStickXBit, _rightAnalogStickYBit;
 	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
 	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
 	int32_t _leftTriggerMinPressure, _leftTriggerMaxPressure;
