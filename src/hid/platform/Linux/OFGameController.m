@@ -49,6 +49,7 @@
  *   Sony Interactive Entertainment DualSense Wireless Controller [054C:0CE6]
  *   8BitDo Pro 2 Wired Controller [2DC8:3106]
  *   Stadia2SZY-0d6c [18D1:9400]
+ *   Wireless Controller [054C:09CC]
  */
 
 static const uint16_t vendorIDMicrosoft = 0x045E;
@@ -66,6 +67,7 @@ static const uint16_t productIDN64Controller = 0x2019;
 
 /* Sony controllers */
 static const uint16_t productIDDualSense = 0x0CE6;
+static const uint16_t productIDDualShock4 = 0x09CC;
 
 /* Google controllers */
 static const uint16_t productIDStadia = 0x9400;
@@ -129,7 +131,8 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return OFGameControllerCaptureButton;
 		}
 	} else if (vendorID == vendorIDSony &&
-	    productID == productIDDualSense) {
+	    (productID == productIDDualSense ||
+	    productID == productIDDualShock4)) {
 		switch (button) {
 		case BTN_NORTH:
 			return OFGameControllerNorthButton;
