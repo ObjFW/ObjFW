@@ -85,8 +85,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	if (vendorID == vendorIDNintendo &&
 	    productID == productIDLeftJoycon) {
 		switch (button) {
-		case BTN_SELECT:
-			return OFGameControllerMinusButton;
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		case BTN_TR:
@@ -101,8 +99,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return OFGameControllerNorthButton;
 		case BTN_WEST:
 			return OFGameControllerWestButton;
-		case BTN_START:
-			return OFGameControllerPlusButton;
 		case BTN_TL:
 			return OFGameControllerSLButton;
 		case BTN_TL2:

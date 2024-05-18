@@ -71,8 +71,6 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFGameControllerCPadDownButton
  *  * @ref OFGameControllerCPadLeftButton
  *  * @ref OFGameControllerCPadRightButton
- *  * @ref OFGameControllerPlusButton
- *  * @ref OFGameControllerMinusButton
  *  * @ref OFGameControllerSLButton
  *  * @ref OFGameControllerSRButton
  *  * @ref OFGameControllerModeButton
@@ -222,16 +220,6 @@ extern const OFGameControllerButton OFGameControllerCPadLeftButton;
  * @brief The C-Pad Right button on a game controller.
  */
 extern const OFGameControllerButton OFGameControllerCPadRightButton;
-
-/**
- * @brief The + button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerPlusButton;
-
-/**
- * @brief The - button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerMinusButton;
 
 /**
  * @brief The SL button on a game controller.
