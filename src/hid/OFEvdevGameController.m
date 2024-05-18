@@ -600,11 +600,6 @@ scale(float value, float min, float max)
 	    _hasRightTriggerPressure)
 		return _rightTriggerPressure;
 
-	return ([self.pressedButtons containsObject: button] ? 1 : 0);
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
+	return [super pressureForButton: button];
 }
 @end

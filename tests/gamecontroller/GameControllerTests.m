@@ -49,17 +49,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			size_t i = 0;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeString: controller.name];
-
-			if (controller.vendorID != nil &&
-			    controller.productID != nil) {
-				[OFStdOut setForegroundColor: [OFColor teal]];
-				[OFStdOut writeFormat: @" [%04X:%04X]",
-				    controller.vendorID.unsignedShortValue,
-				    controller.productID.unsignedShortValue];
-			}
-
-			[OFStdOut writeString: @"\n"];
+			[OFStdOut writeLine: controller.description];
 
 			[controller retrieveState];
 

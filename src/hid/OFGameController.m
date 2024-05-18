@@ -21,6 +21,8 @@
 
 #import "OFGameController.h"
 #import "OFArray.h"
+#import "OFNumber.h"
+#import "OFSet.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "OFEvdevGameController.h"
@@ -126,7 +128,19 @@ const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
 - (float)pressureForButton: (OFGameControllerButton)button
 {
-	OF_UNRECOGNIZED_SELECTOR
+	return ([self.pressedButtons containsObject: button] ? 1 : 0);
+}
+
+- (OFString *)description
+{
+	if (self.vendorID != nil && self.productID != nil)
+		return [OFString stringWithFormat:
+		    @"<%@: %@ [%04X:%04X]>",
+		    self.class, self.name, self.vendorID.unsignedShortValue,
+		    self.productID.unsignedShortValue];
+	else
+		return [OFString stringWithFormat: @"<%@: %@>",
+						   self.class, self.name];
 }
 @end
 

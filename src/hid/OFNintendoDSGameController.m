@@ -147,14 +147,4 @@ initControllers(void)
 {
 	return false;
 }
-
-- (float)pressureForButton: (OFGameControllerButton)button
-{
-	return ([self.pressedButtons containsObject: button] ? 1 : 0);
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
-}
 @end
