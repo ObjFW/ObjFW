@@ -96,6 +96,12 @@ ${PROG_NOINST}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2} \
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
 
+${PROG_NOINST}.arm9: ${PROG_NOINST}
+	arm-none-eabi-objcopy -O binary $< $@
+
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
+	ndstool -c $@ -9 ${PROG_NOINST}
+
 CPPFLAGS += -I../../src			\
 	    -I../../src/exceptions	\
 	    -I../../src/hid		\

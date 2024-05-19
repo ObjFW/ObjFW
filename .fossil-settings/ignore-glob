@@ -45,6 +45,8 @@ tests/PARAM.SFO
 tests/big_dictionary_msgpack_gz.m
 tests/gamecontroller/gamecontroller_tests
 tests/gamecontroller/gamecontroller_tests.3dsx
+tests/gamecontroller/gamecontroller_tests.arm9
+tests/gamecontroller/gamecontroller_tests.nds
 tests/iOS.xcodeproj/*.pbxuser
 tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata

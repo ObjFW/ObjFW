@@ -28,6 +28,13 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+# define BUTTONS_PER_LINE 2
+#endif
+
 #ifdef OF_NINTENDO_3DS
 /* Newer versions of libctru started using id as a parameter name. */
 # define id id_3ds
@@ -40,6 +47,12 @@
 # define BUTTONS_PER_LINE 5
 #endif
 
+#if defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+# define red maroon
+# define yellow olive
+# define gray silver
+#endif
+
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 @end
 
@@ -50,7 +63,9 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 {
 	OFArray *controllers;
 
-#if defined(OF_NINTENDO_3DS)
+#if defined(OF_NINTENDO_DS)
+	consoleDemoInit();
+#elif defined(OF_NINTENDO_3DS)
 	gfxInitDefault();
 	atexit(gfxExit);
 
@@ -62,6 +77,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 	[OFStdOut clear];
 
 	for (;;) {
+		void *pool = objc_autoreleasePoolPush();
+
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OFGameController *controller in controllers) {
@@ -122,6 +139,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		}
 
 		[OFThread sleepForTimeInterval: 1.f / 60.f];
+
+		objc_autoreleasePoolPop(pool);
 	}
 }
 @end
