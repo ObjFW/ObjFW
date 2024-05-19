@@ -127,9 +127,17 @@ initControllers(void)
 	if (keys & KEY_CSTICK_RIGHT)
 		[_pressedButtons addObject: OFGameControllerCPadRightButton];
 
+	if (pos.dx > 150)
+		pos.dx = 150;
+	if (pos.dx < -150)
+		pos.dx = -150;
+	if (pos.dy > 150)
+		pos.dy = 150;
+	if (pos.dy < -150)
+		pos.dy = -150;
+
 	_leftAnalogStickPosition = OFMakePoint(
-	    (float)pos.dx / (pos.dx < 0 ? -INT16_MIN : INT16_MAX),
-	    (float)pos.dy / (pos.dy < 0 ? -INT16_MIN : INT16_MAX));
+	    (float)pos.dx / 150, -(float)pos.dy / 150);
 }
 
 - (OFString *)name
