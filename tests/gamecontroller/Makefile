@@ -93,6 +93,9 @@ run:
 ${PROG_NOINST}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2} \
 		${LIBOBJFWHID_DEP_LVL2}
 
+${PROG_NOINST}.3dsx: ${PROG_NOINST}
+	3dsxtool $< $@
+
 CPPFLAGS += -I../../src			\
 	    -I../../src/exceptions	\
 	    -I../../src/hid		\

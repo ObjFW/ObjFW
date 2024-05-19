@@ -44,6 +44,7 @@ tests/Info.plist
 tests/PARAM.SFO
 tests/big_dictionary_msgpack_gz.m
 tests/gamecontroller/gamecontroller_tests
+tests/gamecontroller/gamecontroller_tests.3dsx
 tests/iOS.xcodeproj/*.pbxuser
 tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata

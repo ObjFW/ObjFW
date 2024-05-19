@@ -28,6 +28,18 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
+#ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
+# define BUTTONS_PER_LINE 3
+#endif
+
+#ifndef BUTTONS_PER_LINE
+# define BUTTONS_PER_LINE 5
+#endif
+
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 @end
 
@@ -36,7 +48,16 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFArray *controllers = [OFGameController controllers];
+	OFArray *controllers;
+
+#if defined(OF_NINTENDO_3DS)
+	gfxInitDefault();
+	atexit(gfxExit);
+
+	consoleInit(GFX_TOP, NULL);
+#endif
+
+	controllers = [OFGameController controllers];
 
 	[OFStdOut clear];
 
@@ -49,12 +70,17 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			size_t i = 0;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeLine: controller.description];
+			[OFStdOut writeString: controller.description];
 
 			[controller retrieveState];
 
 			for (OFGameControllerButton button in buttons) {
-				float pressure =
+				float pressure;
+
+				if (i == 0)
+					[OFStdOut writeString: @"\n"];
+
+				pressure =
 				    [controller pressureForButton: button];
 
 				if (pressure == 1)
@@ -72,8 +98,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 				[OFStdOut writeFormat: @"[%@]", button];
 
-				if (++i == 5) {
-					[OFStdOut writeString: @"\n"];
+				if (++i == BUTTONS_PER_LINE) {
 					i = 0;
 				} else
 					[OFStdOut writeString: @" "];
