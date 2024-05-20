@@ -62,7 +62,7 @@
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 {
-	OFArray OF_GENERIC(OFGameController) *_controllers;
+	OFArray OF_GENERIC(OFGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
 }
 @end

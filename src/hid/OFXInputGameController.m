@@ -29,6 +29,10 @@
 
 #include <xinput.h>
 
+#ifndef XINPUT_GAMEPAD_GUIDE
+# define XINPUT_GAMEPAD_GUIDE 0x400
+#endif
+
 struct XInputCapabilitiesEx {
 	XINPUT_CAPABILITIES capabilities;
 	WORD vendorID;
@@ -41,7 +45,7 @@ struct XInputCapabilitiesEx {
 static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
-static const char *XInputVersion;
+static int XInputVersion;
 
 @implementation OFXInputGameController
 @synthesize vendorID = _vendorID, productID = _productID;
@@ -58,21 +62,21 @@ static const char *XInputVersion;
 	if ((module = LoadLibraryA("xinput1_4.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
-		    GetProcAddress(module, "XInputGetState");
+		    GetProcAddress(module, (LPCSTR)100);
 		XInputGetCapabilitiesExFuncPtr = (WINAPI DWORD (*)(DWORD, DWORD,
 		    DWORD, struct XInputCapabilitiesEx *))
 		    GetProcAddress(module, "XInputGetCapabilitiesEx");
-		XInputVersion = "1.4";
+		XInputVersion = 14;
 	} else if ((module = LoadLibraryA("xinput1_3.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
-		    GetProcAddress(module, "XInputGetState");
-		XInputVersion = "1.3";
+		    GetProcAddress(module, (LPCSTR)100);
+		XInputVersion = 13;
 	} else if ((module = LoadLibraryA("xinput9_1_0.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, "XInputGetState");
-		XInputVersion = "9.1.0";
+		XInputVersion = 910;
 	}
 }
 
@@ -133,7 +137,7 @@ static const char *XInputVersion;
 			}
 		}
 
-		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 16];
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 17];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -193,6 +197,9 @@ static const char *XInputVersion;
 		[_pressedButtons addObject: OFGameControllerStartButton];
 	if (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)
 		[_pressedButtons addObject: OFGameControllerSelectButton];
+	if (XInputVersion != 910 &&
+	    state.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE)
+		[_pressedButtons addObject: OFGameControllerHomeButton];
 
 	_leftTriggerPressure = (float)state.Gamepad.bLeftTrigger / 255;
 	_rightTriggerPressure = (float)state.Gamepad.bRightTrigger / 255;
@@ -216,7 +223,16 @@ static const char *XInputVersion;
 
 - (OFString *)name
 {
-	return [OFString stringWithFormat: @"XInput %s device", XInputVersion];
+	switch (XInputVersion) {
+	case 14:
+		return @"XInput 1.4 device";
+	case 13:
+		return @"XInput 1.3 device";
+	case 910:
+		return @"XInput 9.1.0 device";
+	}
+
+	return nil;
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
@@ -237,7 +253,8 @@ static const char *XInputVersion;
 	    OFGameControllerDPadUpButton,
 	    OFGameControllerDPadDownButton,
 	    OFGameControllerStartButton,
-	    OFGameControllerSelectButton, nil];
+	    OFGameControllerSelectButton,
+	    (XInputVersion != 910 ? OFGameControllerHomeButton : nil), nil];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
