@@ -74,6 +74,14 @@ updateConsole(bool force)
 }
 #endif
 
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
+# define red maroon
+# define lime green
+# define yellow olive
+# define fuchsia purple
+#endif
+
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
 @end
 
@@ -441,10 +449,7 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeString: @"Running "];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test case%s\n",
@@ -571,28 +576,17 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#else
-	[OFStdOut setForegroundColor: [OFColor purple]];
-#endif
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
 	[OFStdOut writeFormat: @"%zu", numFailed];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
 	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
 	[OFStdOut writeFormat: @"%zu", numSkipped];
 	[OFStdOut setForegroundColor: [OFColor purple]];
 	[OFStdOut writeFormat: @" test%s skipped\n",
