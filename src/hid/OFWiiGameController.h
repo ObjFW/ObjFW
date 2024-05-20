@@ -26,7 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
 	int32_t _index;
 	uint32_t _type;
 	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	OFPoint _leftAnalogStickPosition;
+	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
+	float _leftTriggerPressure, _rightTriggerPressure;
 }
 
 - (instancetype)of_initWithIndex: (int32_t)index

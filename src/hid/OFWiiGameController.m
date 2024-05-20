@@ -64,7 +64,8 @@ scale(float value, float min, float max, float center)
 		uint32_t type;
 
 		if (WPAD_Probe(i, &type) == WPAD_ERR_NONE &&
-		    (type == WPAD_EXP_NONE || type == WPAD_EXP_NUNCHUK))
+		    (type == WPAD_EXP_NONE || type == WPAD_EXP_NUNCHUK ||
+		    type == WPAD_EXP_CLASSIC))
 			[controllers addObject: [[[OFWiiGameController alloc]
 			    of_initWithIndex: i
 					type: type] autorelease]];
@@ -85,7 +86,7 @@ scale(float value, float min, float max, float center)
 		_index = index;
 		_type = type;
 
-		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 13];
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 15];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -141,7 +142,7 @@ scale(float value, float min, float max, float center)
 		[_pressedButtons addObject: OFGameControllerHomeButton];
 
 	if (_type == WPAD_EXP_NUNCHUK) {
-		joystick_t *js;
+		joystick_t *js = &data->exp.nunchuk.js;
 
 		if (data->btns_h & WPAD_NUNCHUK_BUTTON_C)
 			[_pressedButtons addObject:
@@ -150,10 +151,65 @@ scale(float value, float min, float max, float center)
 			[_pressedButtons addObject:
 			    OFGameControllerLeftTriggerButton];
 
-		js = &data->exp.nunchuk.js;
 		_leftAnalogStickPosition = OFMakePoint(
 		    scale(js->pos.x, js->min.x, js->max.x, js->center.x),
 		    -scale(js->pos.y, js->min.y, js->max.y, js->center.y));
+	} else if (_type == WPAD_EXP_CLASSIC) {
+		joystick_t *ljs = &data->exp.classic.ljs;
+		joystick_t *rjs = &data->exp.classic.rjs;
+
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_X)
+			[_pressedButtons addObject:
+			    OFGameControllerNorthButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_B)
+			[_pressedButtons addObject:
+			    OFGameControllerSouthButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_Y)
+			[_pressedButtons addObject: OFGameControllerWestButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_A)
+			[_pressedButtons addObject: OFGameControllerEastButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_FULL_L)
+			[_pressedButtons addObject:
+			    OFGameControllerLeftTriggerButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_FULL_R)
+			[_pressedButtons addObject:
+			    OFGameControllerRightTriggerButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_ZL)
+			[_pressedButtons addObject:
+			    OFGameControllerLeftShoulderButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_ZR)
+			[_pressedButtons addObject:
+			    OFGameControllerRightShoulderButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_UP)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadUpButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_DOWN)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadDownButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_LEFT)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadLeftButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_RIGHT)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadRightButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_PLUS)
+			[_pressedButtons addObject:
+			    OFGameControllerStartButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_MINUS)
+			[_pressedButtons addObject:
+			    OFGameControllerSelectButton];
+		if (data->btns_h & WPAD_CLASSIC_BUTTON_HOME)
+			[_pressedButtons addObject: OFGameControllerHomeButton];
+
+		_leftAnalogStickPosition = OFMakePoint(
+		    scale(ljs->pos.x, ljs->min.x, ljs->max.x, ljs->center.x),
+		    -scale(ljs->pos.y, ljs->min.y, ljs->max.y, ljs->center.y));
+		_rightAnalogStickPosition = OFMakePoint(
+		    scale(rjs->pos.x, rjs->min.x, rjs->max.x, rjs->center.x),
+		    -scale(rjs->pos.y, rjs->min.y, rjs->max.y, rjs->center.y));
+
+		_leftTriggerPressure = data->exp.classic.l_shoulder;
+		_rightTriggerPressure = data->exp.classic.r_shoulder;
 	}
 }
 
@@ -161,13 +217,15 @@ scale(float value, float min, float max, float center)
 {
 	if (_type == WPAD_EXP_NUNCHUK)
 		return @"Wiimote with Nunchuk";
-
-	return @"Wiimote";
+	else if (_type == WPAD_EXP_CLASSIC)
+		return @"Wiimote with Classic Controller";
+	else
+		return @"Wiimote";
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)buttons
 {
-	OFMutableSet *buttons = [OFMutableSet setWithCapacity: 13];
+	OFMutableSet *buttons = [OFMutableSet setWithCapacity: 15];
 
 	[buttons addObject: OFGameControllerSouthButton];
 	[buttons addObject: OFGameControllerRightTriggerButton];
@@ -184,6 +242,11 @@ scale(float value, float min, float max, float center)
 	if (_type == WPAD_EXP_NUNCHUK) {
 		[buttons addObject: OFGameControllerLeftShoulderButton];
 		[buttons addObject: OFGameControllerLeftTriggerButton];
+	} else if (_type == WPAD_EXP_CLASSIC) {
+		[buttons addObject: OFGameControllerNorthButton];
+		[buttons addObject: OFGameControllerLeftTriggerButton];
+		[buttons addObject: OFGameControllerLeftShoulderButton];
+		[buttons addObject: OFGameControllerRightShoulderButton];
 	}
 
 	[buttons makeImmutable];
@@ -198,20 +261,41 @@ scale(float value, float min, float max, float center)
 
 - (bool)hasLeftAnalogStick
 {
-	return (_type == WPAD_EXP_NUNCHUK);
+	return (_type == WPAD_EXP_NUNCHUK || _type == WPAD_EXP_CLASSIC);
 }
 
 - (bool)hasRightAnalogStick
 {
-	return false;
+	return (_type == WPAD_EXP_CLASSIC);
 }
 
 - (OFPoint)leftAnalogStickPosition
 {
-	if (_type != WPAD_EXP_NUNCHUK)
+	if (_type != WPAD_EXP_NUNCHUK && _type != WPAD_EXP_CLASSIC)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
 	return _leftAnalogStickPosition;
+}
+
+- (OFPoint)rightAnalogStickPosition
+{
+	if (_type != WPAD_EXP_CLASSIC)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return _rightAnalogStickPosition;
+}
+
+- (float)pressureForButton: (OFGameControllerButton)button
+{
+	if (_type == WPAD_EXP_CLASSIC) {
+		if (button == OFGameControllerLeftTriggerButton)
+			return _leftTriggerPressure;
+		if (button == OFGameControllerRightTriggerButton)
+			return _rightTriggerPressure;
+	}
+
+	return [super pressureForButton: button];
 }
 @end
