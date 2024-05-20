@@ -247,6 +247,16 @@ typedef id _Nullable (^OFThreadBlock)(void);
  */
 + (void)yield;
 
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(DOXYGEN)
+/**
+ * @brief Waits for the vertical blank.
+ *
+ * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
+ */
++ (void)waitForVerticalBlank;
+#endif
+
 #ifdef OF_HAVE_THREADS
 /**
  * @brief Terminates the current thread, letting it return `nil`.

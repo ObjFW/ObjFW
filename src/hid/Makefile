@@ -2,23 +2,24 @@ include ../../extra.mk
 
 DISTCLEAN = Info.plist
 
-STATIC_LIB = libobjfwtest.a
+SHARED_LIB = ${OBJFWHID_SHARED_LIB}
+STATIC_LIB = ${OBJFWHID_STATIC_LIB}
+FRAMEWORK = ${OBJFWHID_FRAMEWORK}
+LIB_MAJOR = ${OBJFWHID_LIB_MAJOR}
+LIB_MINOR = ${OBJFWHID_LIB_MINOR}
+LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
-SRCS = OTAssert.m		\
-       OTOrderedDictionary.m	\
-       OTTestCase.m
+SRCS = OFGameController.m
+
 INCLUDES := ${SRCS:.m=.h}	\
-	    ObjFWTest.h
-SRCS += OTAppDelegate.m			\
-	OTAssertionFailedException.m	\
-	OTTestSkippedException.m
+	    ObjFWHID.h
 
-includesubdir = ObjFWTest
+includesubdir = ObjFWHID
 
 include ../../buildsys.mk
 
 install-extra:
-	i=ObjFWTest.oc; \
+	i=ObjFWHID.oc; \
 	${INSTALL_STATUS}; \
 	if ${MKDIR_P} ${DESTDIR}${libdir}/objfw-config && \
 	    ${INSTALL} -m 644 $$i ${DESTDIR}${libdir}/objfw-config/$$i; then \
@@ -28,7 +29,7 @@ install-extra:
 	fi
 
 uninstall-extra:
-	i=ObjFWTest.oc; \
+	i=ObjFWHID.oc; \
 	if test -f ${DESTDIR}${libdir}/objfw-config/$$i; then \
 		if rm -f ${DESTDIR}${libdir}/objfw-config/$$i; then \
 			${DELETE_OK}; \
@@ -38,12 +39,12 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I. 			\
+CPPFLAGS += -I.				\
 	    -I..			\
 	    -I../..			\
 	    -I../exceptions		\
-	    -I../hid			\
 	    -I../runtime		\
-	    -DOBJFWHID_LOCAL_INCLUDES	\
-	    -DOBJFWTEST_LOCAL_INCLUDES
+	    -DOBJFWHID_LOCAL_INCLUDES
 LD = ${OBJC}
+FRAMEWORK_LIBS := -F.. -framework ObjFW ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}

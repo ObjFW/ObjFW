@@ -25,35 +25,18 @@
 #import "OFMethodSignature.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
+#import "OFThread.h"
 #import "OFValue.h"
 
 #import "OTTestCase.h"
+
+#import "OFGameController.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
 
 #ifdef OF_IOS
 # include <CoreFoundation/CoreFoundation.h>
-#endif
-
-#ifdef OF_WII
-# define asm __asm__
-# include <gccore.h>
-# include <wiiuse/wpad.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_DS
-# define asm __asm__
-# include <nds.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_3DS
-/* Newer versions of libctru started using id as a parameter name. */
-# define id id_3ds
-# include <3ds.h>
-# undef id
 #endif
 
 #ifdef OF_NINTENDO_SWITCH
@@ -125,33 +108,8 @@ isSubclassOfClass(Class class, Class superclass)
 	    [OFString stringWithUTF8String: (const char *)resourcesPath]];
 
 	CFRelease(resourcesURL);
-#elif defined(OF_WII)
-	GXRModeObj *mode;
-	void *nextFB;
-
-	VIDEO_Init();
-	WPAD_Init();
-
-	mode = VIDEO_GetPreferredMode(NULL);
-	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
-	VIDEO_Configure(mode);
-	VIDEO_SetNextFramebuffer(nextFB);
-	VIDEO_SetBlack(FALSE);
-	VIDEO_Flush();
-
-	VIDEO_WaitVSync();
-	if (mode->viTVMode & VI_NON_INTERLACE)
-		VIDEO_WaitVSync();
-
-	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
-	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
-#elif defined(OF_NINTENDO_DS)
-	consoleDemoInit();
-#elif defined(OF_NINTENDO_3DS)
-	gfxInitDefault();
-	atexit(gfxExit);
-
-	consoleInit(GFX_TOP, NULL);
+#elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	[OFStdIOStream setUpConsole];
 #elif defined(OF_NINTENDO_SWITCH)
 	consoleInit(NULL);
 	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
@@ -319,40 +277,24 @@ isSubclassOfClass(Class class, Class superclass)
 	}
 
 	if (status == StatusFailed) {
-#if defined(OF_WII)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 		[OFStdOut setForegroundColor: [OFColor silver]];
 		[OFStdOut writeLine: @"Press A to continue"];
 
 		for (;;) {
-			WPAD_ScanPads();
+			void *pool = objc_autoreleasePoolPush();
+			OFGameController *controller =
+			    [[OFGameController controllers] objectAtIndex: 0];
 
-			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+			[controller retrieveState];
+
+			if ([controller.pressedButtons containsObject:
+			    OFGameControllerEastButton])
 				break;
 
-			VIDEO_WaitVSync();
-		}
-#elif defined(OF_NINTENDO_DS)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
+			[OFThread waitForVerticalBlank];
 
-		for (;;) {
-			swiWaitForVBlank();
-			scanKeys();
-
-			if (keysDown() & KEY_A)
-				break;
-		}
-#elif defined(OF_NINTENDO_3DS)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		for (;;) {
-			hidScanInput();
-
-			if (hidKeysDown() & KEY_A)
-				break;
-
-			gspWaitForVBlank();
+			objc_autoreleasePoolPop(pool);
 		}
 #elif defined(OF_NINTENDO_SWITCH)
 		[OFStdOut setForegroundColor: [OFColor silver]];
@@ -593,40 +535,33 @@ isSubclassOfClass(Class class, Class superclass)
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
-#if defined(OF_WII)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press home button to exit"];
+# ifdef OF_WII
+	[OFStdOut writeLine: @"Press Home button to exit"];
+# else
+	[OFStdOut writeLine: @"Press Start button to exit"];
+# endif
 
 	for (;;) {
-		WPAD_ScanPads();
+		void *pool = objc_autoreleasePoolPush();
+		OFGameController *controller =
+		    [[OFGameController controllers] objectAtIndex: 0];
 
-		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+		[controller retrieveState];
+
+# ifdef OF_WII
+		if ([controller.pressedButtons containsObject:
+		    OFGameControllerHomeButton])
+# else
+		if ([controller.pressedButtons containsObject:
+		    OFGameControllerStartButton])
+# endif
 			break;
 
-		VIDEO_WaitVSync();
-	}
-#elif defined(OF_NINTENDO_DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
+		[OFThread waitForVerticalBlank];
 
-	for (;;) {
-		swiWaitForVBlank();
-		scanKeys();
-
-		if (keysDown() & KEY_START)
-			break;
-	}
-#elif defined(OF_NINTENDO_3DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
-
-	for (;;) {
-		hidScanInput();
-
-		if (hidKeysDown() & KEY_START)
-			break;
-
-		gspWaitForVBlank();
+		objc_autoreleasePoolPop(pool);
 	}
 #elif defined(OF_NINTENDO_SWITCH)
 	while (appletMainLoop())

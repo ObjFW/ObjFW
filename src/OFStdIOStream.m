@@ -62,10 +62,29 @@
 # include <conio.h>
 #endif
 
+#ifdef OF_WII
+# define asm __asm__
+# include <gccore.h>
+# undef asm
+#endif
+
 #ifdef OF_WII_U
 # define BOOL WUT_BOOL
 # include <coreinit/debug.h>
 # undef BOOL
+#endif
+
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
+#ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
 #endif
 
 /* References for static linking */
@@ -259,6 +278,43 @@ colorToANSI(OFColor *color)
 		OFStdErr = [[OFStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 # endif
+}
+#endif
+
+#if defined(OF_WII)
++ (void)setUpConsole
+{
+	GXRModeObj *mode;
+	void *nextFB;
+
+	VIDEO_Init();
+
+	mode = VIDEO_GetPreferredMode(NULL);
+	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
+	VIDEO_Configure(mode);
+	VIDEO_SetNextFramebuffer(nextFB);
+	VIDEO_SetBlack(FALSE);
+	VIDEO_Flush();
+
+	VIDEO_WaitVSync();
+	if (mode->viTVMode & VI_NON_INTERLACE)
+		VIDEO_WaitVSync();
+
+	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
+	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
+}
+#elif defined(OF_NINTENDO_DS)
++ (void)setUpConsole
+{
+	consoleDemoInit();
+}
+#elif defined(OF_NINTENDO_3DS)
++ (void)setUpConsole
+{
+	gfxInitDefault();
+	atexit(gfxExit);
+
+	consoleInit(GFX_BOTTOM, NULL);
 }
 #endif
 

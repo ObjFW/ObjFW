@@ -1,4 +1,5 @@
 package_format 1
+package_depends_on ObjFWHID
 LIBS="-lobjfwtest $LIBS"
 FRAMEWORK_LIBS="-lobjfwtest $FRAMEWORK_LIBS"
 STATIC_LIBS="${libdir}/libobjfwtest.a $STATIC_LIBS"
