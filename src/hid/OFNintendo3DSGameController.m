@@ -79,12 +79,13 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 - (void)retrieveState
 {
 	u32 keys;
-	circlePosition pos;
+	circlePosition leftPos, rightPos;
 
 	hidScanInput();
 
 	keys = hidKeysHeld();
-	hidCircleRead(&pos);
+	hidCircleRead(&leftPos);
+	hidCstickRead(&rightPos);
 
 	[_pressedButtons removeAllObjects];
 
@@ -118,20 +119,28 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 	if (keys & KEY_SELECT)
 		[_pressedButtons addObject: OFGameControllerSelectButton];
 
-	if (pos.dx > 150)
-		pos.dx = 150;
-	if (pos.dx < -150)
-		pos.dx = -150;
-	if (pos.dy > 150)
-		pos.dy = 150;
-	if (pos.dy < -150)
-		pos.dy = -150;
+	if (leftPos.dx > 150)
+		leftPos.dx = 150;
+	if (leftPos.dx < -150)
+		leftPos.dx = -150;
+	if (leftPos.dy > 150)
+		leftPos.dy = 150;
+	if (leftPos.dy < -150)
+		leftPos.dy = -150;
+
+	if (rightPos.dx > 150)
+		rightPos.dx = 150;
+	if (rightPos.dx < -150)
+		rightPos.dx = -150;
+	if (rightPos.dy > 150)
+		rightPos.dy = 150;
+	if (rightPos.dy < -150)
+		rightPos.dy = -150;
 
 	_leftAnalogStickPosition = OFMakePoint(
-	    (float)pos.dx / 150, -(float)pos.dy / 150);
+	    (float)leftPos.dx / 150, -(float)leftPos.dy / 150);
 	_rightAnalogStickPosition = OFMakePoint(
-	    -!!(keys & KEY_CSTICK_LEFT) + !!(keys & KEY_CSTICK_RIGHT),
-	    -!!(keys & KEY_CSTICK_UP) + !!(keys & KEY_CSTICK_DOWN));
+	    (float)rightPos.dx / 150, -(float)rightPos.dy / 150);
 }
 
 - (OFString *)name
