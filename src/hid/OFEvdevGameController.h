@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 	int _fd;
 	bool _discardUntilReport;
 	unsigned long *_keyBits;
+	bool _DPadIsHAT0;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
 	OFMutableSet OF_GENERIC(OFGameControllerButton) *_buttons;

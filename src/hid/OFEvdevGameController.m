@@ -340,6 +340,8 @@ scale(float value, float min, float max)
 
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
+				_DPadIsHAT0 = true;
+
 				[_buttons addObject:
 				    OFGameControllerDPadLeftButton];
 				[_buttons addObject:
@@ -427,6 +429,36 @@ scale(float value, float min, float max)
 			if (button != nil)
 				[_pressedButtons addObject: button];
 		}
+	}
+
+	if (_DPadIsHAT0) {
+		struct input_absinfo infoX, infoY;
+
+		if (ioctl(_fd, EVIOCGABS(ABS_HAT0X), &infoX) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoX)
+					  errNo: errno];
+
+		if (ioctl(_fd, EVIOCGABS(ABS_HAT0Y), &infoY) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoY)
+					  errNo: errno];
+
+		if (infoX.value < 0)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadLeftButton];
+		else if (infoX.value > 0)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadRightButton];
+
+		if (infoY.value < 0)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadUpButton];
+		else if (infoY.value > 0)
+			[_pressedButtons addObject:
+			    OFGameControllerDPadDownButton];
 	}
 
 	if (_hasLeftAnalogStick) {
