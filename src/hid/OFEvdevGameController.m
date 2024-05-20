@@ -241,8 +241,6 @@ scale(float value, float min, float max)
 		OFStringEncoding encoding = [OFLocale encoding];
 		unsigned long evBits[OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    EV_MAX) / OF_ULONG_BIT] = { 0 };
-		unsigned long keyBits[OFRoundUpToPowerOf2(OF_ULONG_BIT,
-		    KEY_MAX) / OF_ULONG_BIT] = { 0 };
 		unsigned long absBits[OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    ABS_MAX) / OF_ULONG_BIT] = { 0 };
 		struct input_id inputID;
@@ -263,12 +261,16 @@ scale(float value, float min, float max)
 		if (!OFBitSetIsSet(evBits, EV_KEY))
 			@throw [OFInvalidArgumentException exception];
 
-		if (ioctl(_fd, EVIOCGBIT(EV_KEY, sizeof(keyBits)), keyBits) ==
-		    -1)
+		_keyBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(OF_ULONG_BIT,
+		    KEY_MAX) / OF_ULONG_BIT, sizeof(unsigned long));
+
+		if (ioctl(_fd, EVIOCGBIT(EV_KEY, OFRoundUpToPowerOf2(
+		    OF_ULONG_BIT, KEY_MAX) / OF_ULONG_BIT *
+		    sizeof(unsigned long)), _keyBits) == -1)
 			@throw [OFInitializationFailedException exception];
 
-		if (!OFBitSetIsSet(keyBits, BTN_GAMEPAD) &&
-		    !OFBitSetIsSet(keyBits, BTN_DPAD_UP))
+		if (!OFBitSetIsSet(_keyBits, BTN_GAMEPAD) &&
+		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP))
 			@throw [OFInvalidArgumentException exception];
 
 		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
@@ -286,7 +288,7 @@ scale(float value, float min, float max)
 		_buttons = [[OFMutableSet alloc] init];
 		for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
 		    i++) {
-			if (OFBitSetIsSet(keyBits, buttons[i])) {
+			if (OFBitSetIsSet(_keyBits, buttons[i])) {
 				OFGameControllerButton button = buttonToName(
 				    buttons[i], _vendorID, _productID);
 
@@ -321,53 +323,19 @@ scale(float value, float min, float max)
 			}
 
 			if (OFBitSetIsSet(absBits, ABS_X) &&
-			    OFBitSetIsSet(absBits, ABS_Y)) {
-				struct input_absinfo infoX, infoY;
-
+			    OFBitSetIsSet(absBits, ABS_Y))
 				_hasLeftAnalogStick = true;
 
-				if (ioctl(_fd, EVIOCGABS(ABS_X), &infoX) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				if (ioctl(_fd, EVIOCGABS(ABS_Y), &infoY) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				_leftAnalogStickMinX = infoX.minimum;
-				_leftAnalogStickMaxX = infoX.maximum;
-				_leftAnalogStickMinY = infoY.minimum;
-				_leftAnalogStickMaxY = infoY.maximum;
-			}
-
 			if (OFBitSetIsSet(absBits, _rightAnalogStickXBit) &&
-			    OFBitSetIsSet(absBits, _rightAnalogStickYBit)) {
-				struct input_absinfo infoX, infoY;
-
+			    OFBitSetIsSet(absBits, _rightAnalogStickYBit))
 				_hasRightAnalogStick = true;
-
-				if (ioctl(_fd, EVIOCGABS(_rightAnalogStickXBit),
-				    &infoX) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				if (ioctl(_fd, EVIOCGABS(_rightAnalogStickYBit),
-				    &infoY) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				_rightAnalogStickMinX = infoX.minimum;
-				_rightAnalogStickMaxX = infoX.maximum;
-				_rightAnalogStickMinY = infoY.minimum;
-				_rightAnalogStickMaxY = infoY.maximum;
-			}
 
 			if (_vendorID == vendorIDNintendo &&
 			    _productID == productIDN64Controller &&
-			    OFBitSetIsSet(keyBits, BTN_Y) &&
-			    OFBitSetIsSet(keyBits, BTN_C) &&
-			    OFBitSetIsSet(keyBits, BTN_SELECT) &&
-			    OFBitSetIsSet(keyBits, BTN_X))
+			    OFBitSetIsSet(_keyBits, BTN_Y) &&
+			    OFBitSetIsSet(_keyBits, BTN_C) &&
+			    OFBitSetIsSet(_keyBits, BTN_SELECT) &&
+			    OFBitSetIsSet(_keyBits, BTN_X))
 				_hasRightAnalogStick = true;
 
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
@@ -383,35 +351,13 @@ scale(float value, float min, float max)
 			}
 
 			if (OFBitSetIsSet(absBits, _leftTriggerPressureBit)) {
-				struct input_absinfo info;
-
 				_hasLeftTriggerPressure = true;
-
-				if (ioctl(_fd, EVIOCGABS(
-				    _leftTriggerPressureBit), &info) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				_leftTriggerMinPressure = info.minimum;
-				_leftTriggerMaxPressure = info.maximum;
-
 				[_buttons addObject:
 				    OFGameControllerLeftTriggerButton];
 			}
 
 			if (OFBitSetIsSet(absBits, _rightTriggerPressureBit)) {
-				struct input_absinfo info;
-
 				_hasRightTriggerPressure = true;
-
-				if (ioctl(_fd, EVIOCGABS(
-				    _rightTriggerPressureBit), &info) == -1)
-					@throw [OFInitializationFailedException
-					    exception];
-
-				_rightTriggerMinPressure = info.minimum;
-				_rightTriggerMaxPressure = info.maximum;
-
 				[_buttons addObject:
 				    OFGameControllerRightTriggerButton];
 			}
@@ -419,7 +365,11 @@ scale(float value, float min, float max)
 
 		[_buttons makeImmutable];
 
-		[self retrieveState];
+		@try {
+			[self of_pollState];
+		} @catch (OFReadFailedException *e) {
+			@throw [OFInitializationFailedException exception];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -434,6 +384,8 @@ scale(float value, float min, float max)
 
 	if (_fd != -1)
 		close(_fd);
+
+	OFFreeMemory(_keyBits);
 
 	[_name release];
 	[_buttons release];
@@ -450,6 +402,126 @@ scale(float value, float min, float max)
 - (OFNumber *)productID
 {
 	return [OFNumber numberWithUnsignedShort: _productID];
+}
+
+- (void)of_pollState
+{
+	unsigned long keyState[OFRoundUpToPowerOf2(OF_ULONG_BIT, KEY_MAX) /
+	    OF_ULONG_BIT] = { 0 };
+
+	if (ioctl(_fd, EVIOCGKEY(sizeof(keyState)), &keyState) == -1)
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: sizeof(keyState)
+				  errNo: errno];
+
+	[_pressedButtons removeAllObjects];
+
+	for (size_t i = 0; i < sizeof(buttons) / sizeof(*buttons);
+	    i++) {
+		if (OFBitSetIsSet(_keyBits, buttons[i]) &&
+		    OFBitSetIsSet(keyState, buttons[i])) {
+			OFGameControllerButton button = buttonToName(
+			    buttons[i], _vendorID, _productID);
+
+			if (button != nil)
+				[_pressedButtons addObject: button];
+		}
+	}
+
+	if (_hasLeftAnalogStick) {
+		struct input_absinfo infoX, infoY;
+
+		if (ioctl(_fd, EVIOCGABS(ABS_X), &infoX) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoX)
+					  errNo: errno];
+
+		if (ioctl(_fd, EVIOCGABS(ABS_Y), &infoY) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoY)
+					  errNo: errno];
+
+		_leftAnalogStickMinX = infoX.minimum;
+		_leftAnalogStickMaxX = infoX.maximum;
+		_leftAnalogStickMinY = infoY.minimum;
+		_leftAnalogStickMaxY = infoY.maximum;
+		_leftAnalogStickPosition.x = scale(infoX.value,
+		    _leftAnalogStickMinX, _leftAnalogStickMaxX);
+		_leftAnalogStickPosition.y = scale(infoY.value,
+		    _leftAnalogStickMinY, _leftAnalogStickMaxY);
+	}
+
+	if (_vendorID == vendorIDNintendo &&
+	    _productID == productIDN64Controller &&
+	    OFBitSetIsSet(_keyBits, BTN_Y) && OFBitSetIsSet(_keyBits, BTN_C) &&
+	    OFBitSetIsSet(_keyBits, BTN_SELECT) &&
+	    OFBitSetIsSet(_keyBits, BTN_X))
+		_rightAnalogStickPosition = OFMakePoint(
+		    -OFBitSetIsSet(keyState, BTN_Y) +
+		    OFBitSetIsSet(keyState, BTN_C),
+		    -OFBitSetIsSet(keyState, BTN_SELECT) +
+		    OFBitSetIsSet(keyState, BTN_X));
+	else if (_hasRightAnalogStick) {
+		struct input_absinfo infoX, infoY;
+
+		if (ioctl(_fd, EVIOCGABS(_rightAnalogStickXBit), &infoX) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoX)
+					  errNo: errno];
+
+		if (ioctl(_fd, EVIOCGABS(_rightAnalogStickYBit), &infoY) == -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(infoY)
+					  errNo: errno];
+
+		_rightAnalogStickMinX = infoX.minimum;
+		_rightAnalogStickMaxX = infoX.maximum;
+		_rightAnalogStickMinY = infoY.minimum;
+		_rightAnalogStickMaxY = infoY.maximum;
+		_rightAnalogStickPosition.x = scale(infoX.value,
+		    _rightAnalogStickMinX, _rightAnalogStickMaxX);
+		_rightAnalogStickPosition.y = scale(infoY.value,
+		    _rightAnalogStickMinY, _rightAnalogStickMaxY);
+	}
+
+	if (_hasLeftTriggerPressure) {
+		struct input_absinfo info;
+
+		if (ioctl(_fd, EVIOCGABS( _leftTriggerPressureBit), &info) ==
+		    -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(info)
+					  errNo: errno];
+
+		_leftTriggerMinPressure = info.minimum;
+		_leftTriggerMaxPressure = info.maximum;
+		_leftTriggerPressure = scale(info.value,
+		    _leftTriggerMinPressure,
+		    _leftTriggerMaxPressure);
+	}
+
+	if (_hasRightTriggerPressure) {
+		struct input_absinfo info;
+
+		if (ioctl(_fd, EVIOCGABS(_rightTriggerPressureBit), &info) ==
+		    -1)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: sizeof(info)
+					  errNo: errno];
+
+		_rightTriggerMinPressure = info.minimum;
+		_rightTriggerMaxPressure = info.maximum;
+		_leftTriggerPressure = scale(info.value,
+		    _leftTriggerMinPressure,
+		    _leftTriggerMaxPressure);
+	}
 }
 
 - (void)retrieveState
@@ -471,7 +543,22 @@ scale(float value, float min, float max)
 					  errNo: errno];
 		}
 
+		if (_discardUntilReport) {
+			if (event.type == EV_SYN && event.value == SYN_REPORT) {
+				_discardUntilReport = false;
+				[self of_pollState];
+			}
+
+			continue;
+		}
+
 		switch (event.type) {
+		case EV_SYN:
+			if (event.value == SYN_DROPPED) {
+				_discardUntilReport = true;
+				continue;
+			}
+			break;
 		case EV_KEY:
 			if ((button = buttonToName(event.code, _vendorID,
 			    _productID)) != nil) {

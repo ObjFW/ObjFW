@@ -25,6 +25,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_path;
 	int _fd;
+	bool _discardUntilReport;
+	unsigned long *_keyBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
 	OFMutableSet OF_GENERIC(OFGameControllerButton) *_buttons;
@@ -44,6 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
+- (void)of_pollState;
 @end
 
 OF_ASSUME_NONNULL_END
