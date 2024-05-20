@@ -314,7 +314,7 @@ colorToANSI(OFColor *color)
 	gfxInitDefault();
 	atexit(gfxExit);
 
-	consoleInit(GFX_TOP, NULL);
+	consoleInit(GFX_BOTTOM, NULL);
 }
 #endif
 
