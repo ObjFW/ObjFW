@@ -33,6 +33,7 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 
 @implementation OFNintendo3DSGameController
 @synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
+@synthesize rightAnalogStickPosition = _rightAnalogStickPosition;
 
 + (void)initialize
 {
@@ -57,7 +58,7 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 	self = [super init];
 
 	@try {
-		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 18];
+		_pressedButtons = [[OFMutableSet alloc] initWithCapacity: 14];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -116,14 +117,6 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 		[_pressedButtons addObject: OFGameControllerStartButton];
 	if (keys & KEY_SELECT)
 		[_pressedButtons addObject: OFGameControllerSelectButton];
-	if (keys & KEY_CSTICK_UP)
-		[_pressedButtons addObject: OFGameControllerCPadUpButton];
-	if (keys & KEY_CSTICK_DOWN)
-		[_pressedButtons addObject: OFGameControllerCPadDownButton];
-	if (keys & KEY_CSTICK_LEFT)
-		[_pressedButtons addObject: OFGameControllerCPadLeftButton];
-	if (keys & KEY_CSTICK_RIGHT)
-		[_pressedButtons addObject: OFGameControllerCPadRightButton];
 
 	if (pos.dx > 150)
 		pos.dx = 150;
@@ -136,6 +129,9 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 
 	_leftAnalogStickPosition = OFMakePoint(
 	    (float)pos.dx / 150, -(float)pos.dy / 150);
+	_rightAnalogStickPosition = OFMakePoint(
+	    -!!(keys & KEY_CSTICK_LEFT) + !!(keys & KEY_CSTICK_RIGHT),
+	    -!!(keys & KEY_CSTICK_UP) + !!(keys & KEY_CSTICK_DOWN));
 }
 
 - (OFString *)name
@@ -159,11 +155,7 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 	    OFGameControllerDPadLeftButton,
 	    OFGameControllerDPadRightButton,
 	    OFGameControllerStartButton,
-	    OFGameControllerSelectButton,
-	    OFGameControllerCPadRightButton,
-	    OFGameControllerCPadLeftButton,
-	    OFGameControllerCPadUpButton,
-	    OFGameControllerCPadDownButton, nil];
+	    OFGameControllerSelectButton, nil];
 }
 
 - (OFSet OF_GENERIC(OFGameControllerButton) *)pressedButtons
@@ -178,6 +170,6 @@ static OFArray OF_GENERIC(OFGameController *) *controllers;
 
 - (bool)hasRightAnalogStick
 {
-	return false;
+	return true;
 }
 @end

@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFNintendo3DSGameController: OFGameController
 {
 	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	OFPoint _leftAnalogStickPosition;
+	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 }
 @end
 
