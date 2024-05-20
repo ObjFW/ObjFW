@@ -100,8 +100,6 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 	consoleInit(GFX_TOP, NULL);
 #endif
 
-	[OFStdOut clear];
-
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -112,6 +110,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 			_controllers = [[OFGameController controllers] retain];
 			_lastControllersUpdate = [[OFDate alloc] init];
+
+			[OFStdOut clear];
 		}
 
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
