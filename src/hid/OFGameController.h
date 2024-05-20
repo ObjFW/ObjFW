@@ -212,8 +212,11 @@ extern const OFGameControllerButton OFGameControllerCaptureButton;
 /**
  * @brief Whether the controller has a right analog stick.
  *
- * @note The Nintendo 64 controller has no right analog stick, however, the C
- *	 buttons are used to emulate one.
+ * @note The Nintendo 64 controller has no right analog stick. However, the C
+ *	 buttons are used to emulate one. As C buttons allow pressing buttons
+ *	 for two opposite directions at the same time while an analog stick
+ *	 does not allow for this, the value -0.0 is used instead of 0.0 to
+ *	 indicate both opposite directions are pressed at the same time.
  */
 @property (readonly, nonatomic) bool hasRightAnalogStick;
 

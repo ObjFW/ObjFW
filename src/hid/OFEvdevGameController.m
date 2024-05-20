@@ -73,10 +73,10 @@ static const uint16_t productIDDualShock4 = 0x09CC;
 static const uint16_t productIDStadia = 0x9400;
 
 static const uint16_t buttons[] = {
-	BTN_A, BTN_B, BTN_X, BTN_Y, BTN_TL, BTN_TR, BTN_TL2, BTN_TR2,
-	BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR, BTN_DPAD_UP,
-	BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT, BTN_TRIGGER_HAPPY1,
-	BTN_TRIGGER_HAPPY2
+	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
+	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
+	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
+	BTN_TRIGGER_HAPPY1, BTN_TRIGGER_HAPPY2
 };
 
 static OFGameControllerButton
@@ -110,11 +110,13 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_B:
 			return OFGameControllerWestButton;
 		case BTN_SELECT:
+			return @"_C-Pad Up";
 		case BTN_X:
+			return @"_C-Pad Down";
 		case BTN_Y:
+			return @"_C-Pad Left";
 		case BTN_C:
-			/* Used to emulate right analog stick. */
-			return nil;
+			return @"_C-Pad Right";
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		}
@@ -185,6 +187,38 @@ scale(float value, float min, float max)
 		value = max;
 
 	return ((value - min) / (max - min) * 2) - 1;
+}
+
+static bool
+emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
+    OFMutableSet *pressedButtons, OFPoint *rightAnalogStickPosition)
+{
+	if (vendorID == vendorIDNintendo &&
+	    productID == productIDN64Controller) {
+		if ([pressedButtons containsObject: @"_C-Pad Left"] &&
+		    [pressedButtons containsObject: @"_C-Pad Right"])
+			rightAnalogStickPosition->x = -0.f;
+		else if ([pressedButtons containsObject: @"_C-Pad Left"])
+			rightAnalogStickPosition->x = -1.f;
+		else if ([pressedButtons containsObject: @"_C-Pad Right"])
+			rightAnalogStickPosition->x = 1.f;
+		else
+			rightAnalogStickPosition->x = 0.f;
+
+		if ([pressedButtons containsObject: @"_C-Pad Up"] &&
+		    [pressedButtons containsObject: @"_C-Pad Down"])
+			rightAnalogStickPosition->y = -0.f;
+		else if ([pressedButtons containsObject: @"_C-Pad Up"])
+			rightAnalogStickPosition->y = -1.f;
+		else if ([pressedButtons containsObject: @"_C-Pad Down"])
+			rightAnalogStickPosition->y = 1.f;
+		else
+			rightAnalogStickPosition->y = 0.f;
+
+		return true;
+	}
+
+	return false;
 }
 
 @implementation OFEvdevGameController
@@ -292,7 +326,7 @@ scale(float value, float min, float max)
 				OFGameControllerButton button = buttonToName(
 				    buttons[i], _vendorID, _productID);
 
-				if (button != nil)
+				if (button != nil && ![button hasPrefix: @"_"])
 					[_buttons addObject: button];
 			}
 		}
@@ -486,17 +520,8 @@ scale(float value, float min, float max)
 		    _leftAnalogStickMinY, _leftAnalogStickMaxY);
 	}
 
-	if (_vendorID == vendorIDNintendo &&
-	    _productID == productIDN64Controller &&
-	    OFBitSetIsSet(_keyBits, BTN_Y) && OFBitSetIsSet(_keyBits, BTN_C) &&
-	    OFBitSetIsSet(_keyBits, BTN_SELECT) &&
-	    OFBitSetIsSet(_keyBits, BTN_X))
-		_rightAnalogStickPosition = OFMakePoint(
-		    -OFBitSetIsSet(keyState, BTN_Y) +
-		    OFBitSetIsSet(keyState, BTN_C),
-		    -OFBitSetIsSet(keyState, BTN_SELECT) +
-		    OFBitSetIsSet(keyState, BTN_X));
-	else if (_hasRightAnalogStick) {
+	if (!emulateRightAnalogStick(_vendorID, _productID, _pressedButtons,
+	    &_rightAnalogStickPosition) && _hasRightAnalogStick) {
 		struct input_absinfo infoX, infoY;
 
 		if (ioctl(_fd, EVIOCGABS(_rightAnalogStickXBit), &infoX) == -1)
@@ -596,31 +621,11 @@ scale(float value, float min, float max)
 					[_pressedButtons addObject: button];
 				else
 					[_pressedButtons removeObject: button];
-			}
 
-			/* Use C buttons to emulate right analog stick */
-			if (_vendorID == vendorIDNintendo &&
-			    _productID == productIDN64Controller) {
-				switch (event.code) {
-				case BTN_Y:
-					_rightAnalogStickPosition.x +=
-					    (event.value ? -1 : 1);
-					break;
-				case BTN_C:
-					_rightAnalogStickPosition.x +=
-					    (event.value ? 1 : -1);
-					break;
-				case BTN_SELECT:
-					_rightAnalogStickPosition.y +=
-					    (event.value ? -1 : 1);
-					break;
-				case BTN_X:
-					_rightAnalogStickPosition.y +=
-					    (event.value ? 1 : -1);
-					break;
-				}
+				emulateRightAnalogStick(_vendorID, _productID,
+				    _pressedButtons,
+				    &_rightAnalogStickPosition);
 			}
-
 			break;
 		case EV_ABS:
 			if (event.code == ABS_X)
@@ -720,7 +725,16 @@ scale(float value, float min, float max)
 
 - (OFSet *)pressedButtons
 {
-	return [[_pressedButtons copy] autorelease];
+	OFMutableSet *pressedButtons =
+	    [OFMutableSet setWithCapacity: _pressedButtons.count];
+
+	for (OFGameControllerButton button in _pressedButtons)
+		if (![button hasPrefix: @"_"])
+			[pressedButtons addObject: button];
+
+	[pressedButtons makeImmutable];
+
+	return pressedButtons;
 }
 
 - (float)pressureForButton: (OFGameControllerButton)button
