@@ -502,8 +502,7 @@ scale(float value, float min, float max)
 		_leftTriggerMinPressure = info.minimum;
 		_leftTriggerMaxPressure = info.maximum;
 		_leftTriggerPressure = scale(info.value,
-		    _leftTriggerMinPressure,
-		    _leftTriggerMaxPressure);
+		    _leftTriggerMinPressure, _leftTriggerMaxPressure);
 	}
 
 	if (_hasRightTriggerPressure) {
@@ -518,9 +517,8 @@ scale(float value, float min, float max)
 
 		_rightTriggerMinPressure = info.minimum;
 		_rightTriggerMaxPressure = info.maximum;
-		_leftTriggerPressure = scale(info.value,
-		    _leftTriggerMinPressure,
-		    _leftTriggerMaxPressure);
+		_rightTriggerPressure = scale(info.value,
+		    _rightTriggerMinPressure, _rightTriggerMaxPressure);
 	}
 }
 
