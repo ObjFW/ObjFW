@@ -29,6 +29,8 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
+#import "OFReadFailedException.h"
+
 #if defined(OF_NINTENDO_DS)
 static size_t buttonsPerLine = 2;
 #elif defined(OF_NINTENDO_3DS)
@@ -83,7 +85,13 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeString: controller.description];
 
-			[controller retrieveState];
+			@try {
+				[controller retrieveState];
+			} @catch (OFReadFailedException *e) {
+				[OFStdOut setForegroundColor: [OFColor red]];
+				[OFStdOut writeFormat: @"\n%@", e.description];
+				continue;
+			}
 
 			for (OFGameControllerButton button in buttons) {
 				float pressure;
