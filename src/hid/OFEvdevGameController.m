@@ -73,10 +73,10 @@ static const uint16_t productIDDualShock4 = 0x09CC;
 static const uint16_t productIDStadia = 0x9400;
 
 static const uint16_t buttons[] = {
-	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
-	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
-	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
-	BTN_TRIGGER_HAPPY1, BTN_TRIGGER_HAPPY2
+	BTN_A, BTN_B, BTN_X, BTN_Y, BTN_TL, BTN_TR, BTN_TL2, BTN_TR2,
+	BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR, BTN_DPAD_UP,
+	BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT, BTN_TRIGGER_HAPPY1,
+	BTN_TRIGGER_HAPPY2
 };
 
 static OFGameControllerButton
@@ -107,18 +107,14 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
 		switch (button) {
-		case BTN_A:
-			return OFGameControllerAButton;
 		case BTN_B:
-			return OFGameControllerBButton;
+			return OFGameControllerWestButton;
 		case BTN_SELECT:
-			return OFGameControllerCPadUpButton;
 		case BTN_X:
-			return OFGameControllerCPadDownButton;
 		case BTN_Y:
-			return OFGameControllerCPadLeftButton;
 		case BTN_C:
-			return OFGameControllerCPadRightButton;
+			/* Used to emulate right analog stick. */
+			return nil;
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		}
@@ -175,10 +171,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		return OFGameControllerSelectButton;
 	case BTN_MODE:
 		return OFGameControllerHomeButton;
-	case BTN_C:
-		return OFGameControllerCButton;
-	case BTN_Z:
-		return OFGameControllerZButton;
 	}
 
 	return nil;
@@ -370,6 +362,14 @@ scale(float value, float min, float max)
 				_rightAnalogStickMaxY = infoY.maximum;
 			}
 
+			if (_vendorID == vendorIDNintendo &&
+			    _productID == productIDN64Controller &&
+			    OFBitSetIsSet(keyBits, BTN_Y) &&
+			    OFBitSetIsSet(keyBits, BTN_C) &&
+			    OFBitSetIsSet(keyBits, BTN_SELECT) &&
+			    OFBitSetIsSet(keyBits, BTN_X))
+				_hasRightAnalogStick = true;
+
 			if (OFBitSetIsSet(absBits, ABS_HAT0X) &&
 			    OFBitSetIsSet(absBits, ABS_HAT0Y)) {
 				[_buttons addObject:
@@ -480,6 +480,30 @@ scale(float value, float min, float max)
 				else
 					[_pressedButtons removeObject: button];
 			}
+
+			/* Use C buttons to emulate right analog stick */
+			if (_vendorID == vendorIDNintendo &&
+			    _productID == productIDN64Controller) {
+				switch (event.code) {
+				case BTN_Y:
+					_rightAnalogStickPosition.x +=
+					    (event.value ? -1 : 1);
+					break;
+				case BTN_C:
+					_rightAnalogStickPosition.x +=
+					    (event.value ? 1 : -1);
+					break;
+				case BTN_SELECT:
+					_rightAnalogStickPosition.y +=
+					    (event.value ? -1 : 1);
+					break;
+				case BTN_X:
+					_rightAnalogStickPosition.y +=
+					    (event.value ? 1 : -1);
+					break;
+				}
+			}
+
 			break;
 		case EV_ABS:
 			if (event.code == ABS_X)

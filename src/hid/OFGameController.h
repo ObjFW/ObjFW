@@ -61,16 +61,6 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFGameControllerSelectButton
  *  * @ref OFGameControllerHomeButton
  *  * @ref OFGameControllerCaptureButton
- *  * @ref OFGameControllerAButton
- *  * @ref OFGameControllerBButton
- *  * @ref OFGameControllerCButton
- *  * @ref OFGameControllerXButton
- *  * @ref OFGameControllerYButton
- *  * @ref OFGameControllerZButton
- *  * @ref OFGameControllerCPadUpButton
- *  * @ref OFGameControllerCPadDownButton
- *  * @ref OFGameControllerCPadLeftButton
- *  * @ref OFGameControllerCPadRightButton
  *  * @ref OFGameControllerSLButton
  *  * @ref OFGameControllerSRButton
  *  * @ref OFGameControllerAssistantButton
@@ -172,56 +162,6 @@ extern const OFGameControllerButton OFGameControllerHomeButton;
 extern const OFGameControllerButton OFGameControllerCaptureButton;
 
 /**
- * @brief The A button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerAButton;
-
-/**
- * @brief The B button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerBButton;
-
-/**
- * @brief The C button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerCButton;
-
-/**
- * @brief The X button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerXButton;
-
-/**
- * @brief The Y button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerYButton;
-
-/**
- * @brief The Z button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerZButton;
-
-/**
- * @brief The C-Pad Up button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerCPadUpButton;
-
-/**
- * @brief The C-Pad Down button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerCPadDownButton;
-
-/**
- * @brief The C-Pad Left button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerCPadLeftButton;
-
-/**
- * @brief The C-Pad Right button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerCPadRightButton;
-
-/**
  * @brief The SL button on a game controller.
  */
 extern const OFGameControllerButton OFGameControllerSLButton;
@@ -289,6 +229,9 @@ extern const OFGameControllerButton OFGameControllerAssistantButton;
 
 /**
  * @brief Whether the controller has a right analog stick.
+ *
+ * @note The Nintendo 64 controller has no right analog stick, however, the C
+ *	 buttons are used to emulate one.
  */
 @property (readonly, nonatomic) bool hasRightAnalogStick;
 
@@ -296,6 +239,9 @@ extern const OFGameControllerButton OFGameControllerAssistantButton;
  * @brief The position of the right analog stick.
  *
  * The range is from (-1, -1) to (1, 1).
+ *
+ * @note The Nintendo 64 controller has no right analog stick, however, the C
+ *	 buttons are used to emulate one.
  */
 @property (readonly, nonatomic) OFPoint rightAnalogStickPosition;
 
