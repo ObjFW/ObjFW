@@ -81,13 +81,6 @@ OF_SUBCLASSING_RESTRICTED
  * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
  */
 + (void)setUpConsole;
-
-/**
- * @brief Waits for the vertical blank of the console.
- *
- * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
- */
-+ (void)waitForConsoleVBlank;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;

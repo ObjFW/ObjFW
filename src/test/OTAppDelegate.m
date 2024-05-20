@@ -25,6 +25,7 @@
 #import "OFMethodSignature.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
+#import "OFThread.h"
 #import "OFValue.h"
 
 #import "OTTestCase.h"
@@ -283,7 +284,7 @@ isSubclassOfClass(Class class, Class superclass)
 			    OFGameControllerEastButton])
 				break;
 
-			[OFStdIOStream waitForConsoleVBlank];
+			[OFThread waitForVerticalBlank];
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -564,7 +565,7 @@ isSubclassOfClass(Class class, Class superclass)
 # endif
 			break;
 
-		[OFStdIOStream waitForConsoleVBlank];
+		[OFThread waitForVerticalBlank];
 
 		objc_autoreleasePoolPop(pool);
 	}

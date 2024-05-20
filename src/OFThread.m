@@ -42,13 +42,25 @@
 #endif
 
 #ifdef OF_WII
+# define asm __asm__
 # define nanosleep ogc_nanosleep
+# include <gccore.h>
 # include <ogcsys.h>
 # undef nanosleep
+# undef asm
+#endif
+
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
 #endif
 
 #ifdef OF_NINTENDO_3DS
-# include <3ds/svc.h>
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
 #endif
 
 #import "OFThread.h"
@@ -312,6 +324,23 @@ callMain(id object)
 	[self sleepForTimeInterval: 0];
 #endif
 }
+
+#if defined(OF_WII)
++ (void)waitForVerticalBlank
+{
+	VIDEO_WaitVSync();
+}
+#elif defined(OF_NINTENDO_DS)
++ (void)waitForVerticalBlank
+{
+	swiWaitForVBlank();
+}
+#elif defined(OF_NINTENDO_3DS)
++ (void)waitForVerticalBlank
+{
+	gspWaitForVBlank();
+}
+#endif
 
 #ifdef OF_HAVE_THREADS
 + (void)terminate

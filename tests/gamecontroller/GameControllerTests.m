@@ -29,7 +29,6 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
-
 #if defined(OF_NINTENDO_DS)
 static size_t buttonsPerLine = 2;
 #elif defined(OF_NINTENDO_3DS)
@@ -134,7 +133,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
-		[OFStdIOStream waitForConsoleVBlank];
+		[OFThread waitForVerticalBlank];
 #else
 		[OFThread sleepForTimeInterval: 1.f / 60.f];
 #endif

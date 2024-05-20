@@ -303,20 +303,10 @@ colorToANSI(OFColor *color)
 	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
 	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
 }
-
-+ (void)waitForConsoleVBlank
-{
-	VIDEO_WaitVSync();
-}
 #elif defined(OF_NINTENDO_DS)
 + (void)setUpConsole
 {
 	consoleDemoInit();
-}
-
-+ (void)waitForConsoleVBlank
-{
-	swiWaitForVBlank();
 }
 #elif defined(OF_NINTENDO_3DS)
 + (void)setUpConsole
@@ -325,11 +315,6 @@ colorToANSI(OFColor *color)
 	atexit(gfxExit);
 
 	consoleInit(GFX_TOP, NULL);
-}
-
-+ (void)waitForConsoleVBlank
-{
-	gspWaitForVBlank();
 }
 #endif
 
