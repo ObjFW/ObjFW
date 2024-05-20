@@ -72,6 +72,24 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) int rows;
 
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(DOXYGEN)
+/**
+ * @brief Sets up a console for @ref OFStdOut / @ref OFStdErr output on systems
+ *	  that don't have a console by default.
+ *
+ * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
+ */
++ (void)setUpConsole;
+
+/**
+ * @brief Waits for the vertical blank of the console.
+ *
+ * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
+ */
++ (void)waitForConsoleVBlank;
+#endif
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**

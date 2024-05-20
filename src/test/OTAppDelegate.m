@@ -38,25 +38,6 @@
 # include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#ifdef OF_WII
-# define asm __asm__
-# include <gccore.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_DS
-# define asm __asm__
-# include <nds.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_3DS
-/* Newer versions of libctru started using id as a parameter name. */
-# define id id_3ds
-# include <3ds.h>
-# undef id
-#endif
-
 #ifdef OF_NINTENDO_SWITCH
 # define id nx_id
 # include <switch.h>
@@ -118,32 +99,8 @@ isSubclassOfClass(Class class, Class superclass)
 	    [OFString stringWithUTF8String: (const char *)resourcesPath]];
 
 	CFRelease(resourcesURL);
-#elif defined(OF_WII)
-	GXRModeObj *mode;
-	void *nextFB;
-
-	VIDEO_Init();
-
-	mode = VIDEO_GetPreferredMode(NULL);
-	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
-	VIDEO_Configure(mode);
-	VIDEO_SetNextFramebuffer(nextFB);
-	VIDEO_SetBlack(FALSE);
-	VIDEO_Flush();
-
-	VIDEO_WaitVSync();
-	if (mode->viTVMode & VI_NON_INTERLACE)
-		VIDEO_WaitVSync();
-
-	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
-	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
-#elif defined(OF_NINTENDO_DS)
-	consoleDemoInit();
-#elif defined(OF_NINTENDO_3DS)
-	gfxInitDefault();
-	atexit(gfxExit);
-
-	consoleInit(GFX_TOP, NULL);
+#elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	[OFStdIOStream setUpConsole];
 #elif defined(OF_NINTENDO_SWITCH)
 	consoleInit(NULL);
 	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
@@ -326,13 +283,8 @@ isSubclassOfClass(Class class, Class superclass)
 			    OFGameControllerEastButton])
 				break;
 
-# if defined(OF_WII)
-			VIDEO_WaitVSync();
-# elif defined(OF_NINTENDO_DS)
-			swiWaitForVBlank();
-# elif defined(OF_NINTENDO_3DS)
-			gspWaitForVBlank();
-# endif
+			[OFStdIOStream waitForConsoleVBlank];
+
 			objc_autoreleasePoolPop(pool);
 		}
 #elif defined(OF_NINTENDO_SWITCH)
@@ -612,13 +564,8 @@ isSubclassOfClass(Class class, Class superclass)
 # endif
 			break;
 
-# if defined(OF_WII)
-		VIDEO_WaitVSync();
-# elif defined(OF_NINTENDO_DS)
-		swiWaitForVBlank();
-# elif defined(OF_NINTENDO_3DS)
-		gspWaitForVBlank();
-# endif
+		[OFStdIOStream waitForConsoleVBlank];
+
 		objc_autoreleasePoolPop(pool);
 	}
 #elif defined(OF_NINTENDO_SWITCH)

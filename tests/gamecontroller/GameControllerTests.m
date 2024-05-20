@@ -29,29 +29,13 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
-#ifdef OF_WII
-# define asm __asm__
-# include <gccore.h>
-# undef asm
-#endif
 
-#ifdef OF_NINTENDO_DS
-# define asm __asm__
-# include <nds.h>
-# undef asm
-# define BUTTONS_PER_LINE 2
-#endif
-
-#ifdef OF_NINTENDO_3DS
-/* Newer versions of libctru started using id as a parameter name. */
-# define id id_3ds
-# include <3ds.h>
-# undef id
-# define BUTTONS_PER_LINE 3
-#endif
-
-#ifndef BUTTONS_PER_LINE
-# define BUTTONS_PER_LINE 5
+#if defined(OF_NINTENDO_DS)
+static size_t buttonsPerLine = 2;
+#elif defined(OF_NINTENDO_3DS)
+static size_t buttonsPerLine = 3;
+#else
+static size_t buttonsPerLine = 5;
 #endif
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
@@ -72,32 +56,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-#if defined(OF_WII)
-	GXRModeObj *mode;
-	void *nextFB;
-
-	VIDEO_Init();
-
-	mode = VIDEO_GetPreferredMode(NULL);
-	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
-	VIDEO_Configure(mode);
-	VIDEO_SetNextFramebuffer(nextFB);
-	VIDEO_SetBlack(FALSE);
-	VIDEO_Flush();
-
-	VIDEO_WaitVSync();
-	if (mode->viTVMode & VI_NON_INTERLACE)
-		VIDEO_WaitVSync();
-
-	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
-	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
-#elif defined(OF_NINTENDO_DS)
-	consoleDemoInit();
-#elif defined(OF_NINTENDO_3DS)
-	gfxInitDefault();
-	atexit(gfxExit);
-
-	consoleInit(GFX_TOP, NULL);
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	[OFStdIOStream setUpConsole];
 #endif
 
 	for (;;) {
@@ -150,7 +110,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 				[OFStdOut writeFormat: @"[%@]", button];
 
-				if (++i == BUTTONS_PER_LINE) {
+				if (++i == buttonsPerLine) {
 					i = 0;
 				} else
 					[OFStdOut writeString: @" "];
@@ -173,7 +133,11 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut writeString: @"\n"];
 		}
 
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+		[OFStdIOStream waitForConsoleVBlank];
+#else
 		[OFThread sleepForTimeInterval: 1.f / 60.f];
+#endif
 
 		objc_autoreleasePoolPop(pool);
 	}
