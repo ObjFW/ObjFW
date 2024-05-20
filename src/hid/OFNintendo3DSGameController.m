@@ -31,27 +31,25 @@
 
 static OFArray OF_GENERIC(OFGameController *) *controllers;
 
-static void
-initControllers(void)
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	controllers = [[OFArray alloc] initWithObject:
-	    [[[OFNintendo3DSGameController alloc] init] autorelease]];
-
-	objc_autoreleasePoolPop(pool);
-}
-
 @implementation OFNintendo3DSGameController
 @synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
 
++ (void)initialize
+{
+	void *pool;
+
+	if (self != [OFNintendo3DSGameController class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	controllers = [[OFArray alloc] initWithObject:
+	    [[[OFNintendo3DSGameController alloc] init] autorelease]];
+	objc_autoreleasePoolPop(pool);
+}
+
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-
-	OFOnce(&onceControl, initControllers);
-
-	return [[controllers retain] autorelease];
+	return controllers;
 }
 
 - (instancetype)init

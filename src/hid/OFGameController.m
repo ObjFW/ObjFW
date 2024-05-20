@@ -30,6 +30,9 @@
 #ifdef OF_WINDOWS
 # include "OFXInputGameController.h"
 #endif
+#ifdef OF_WII
+# include "OFWiiGameController.h"
+#endif
 #ifdef OF_NINTENDO_DS
 # include "OFNintendoDSGameController.h"
 #endif
@@ -71,7 +74,6 @@ const OFGameControllerButton OFGameControllerCPadLeftButton = @"C-Pad Left";
 const OFGameControllerButton OFGameControllerCPadRightButton = @"C-Pad Right";
 const OFGameControllerButton OFGameControllerSLButton = @"SL";
 const OFGameControllerButton OFGameControllerSRButton = @"SR";
-const OFGameControllerButton OFGameControllerModeButton = @"Mode";
 const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
 @implementation OFGameController
@@ -84,6 +86,8 @@ const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 	return [OFEvdevGameController controllers];
 #elif defined(OF_WINDOWS)
 	return [OFXInputGameController controllers];
+#elif defined(OF_WII)
+	return [OFWiiGameController controllers];
 #elif defined(OF_NINTENDO_DS)
 	return [OFNintendoDSGameController controllers];
 #elif defined(OF_NINTENDO_3DS)
@@ -147,6 +151,9 @@ const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 #endif
 #ifdef OF_WINDOWS
 # include "OFXInputGameController.m"
+#endif
+#ifdef OF_WII
+# include "OFWiiGameController.m"
 #endif
 #ifdef OF_NINTENDO_DS
 # include "OFNintendoDSGameController.m"

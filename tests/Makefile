@@ -8,6 +8,7 @@ SUBDIRS = ${TESTPLUGIN}		\
 
 CLEAN = EBOOT.PBP			\
 	boot.dol			\
+	${PROG_NOINST}.3dsx		\
 	${PROG_NOINST}.arm9		\
 	${PROG_NOINST}.nds		\
 	${PROG_NOINST}.nro		\

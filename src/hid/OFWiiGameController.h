@@ -21,11 +21,16 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFNintendo3DSGameController: OFGameController
+@interface OFWiiGameController: OFGameController
 {
+	int32_t _index;
+	uint32_t _type;
 	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
 	OFPoint _leftAnalogStickPosition;
 }
+
+- (instancetype)of_initWithIndex: (int32_t)index
+			    type: (uint32_t)type OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

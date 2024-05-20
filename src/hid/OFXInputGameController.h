@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	DWORD _index;
 	OFNumber *_Nullable _vendorID, *_Nullable productID;
-	OFMutableSet *_pressedButtons;
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 	float _leftTriggerPressure, _rightTriggerPressure;
 }

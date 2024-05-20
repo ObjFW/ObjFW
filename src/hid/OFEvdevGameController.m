@@ -241,11 +241,6 @@ scale(float value, float min, float max)
 	return controllers;
 }
 
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (instancetype)of_initWithPath: (OFString *)path
 {
 	self = [super init];

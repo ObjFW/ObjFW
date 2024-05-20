@@ -31,25 +31,23 @@
 
 static OFArray OF_GENERIC(OFGameController *) *controllers;
 
-static void
-initControllers(void)
+@implementation OFNintendoDSGameController
++ (void)initialize
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 
+	if (self != [OFNintendoDSGameController class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
 	controllers = [[OFArray alloc] initWithObject:
 	    [[[OFNintendoDSGameController alloc] init] autorelease]];
-
 	objc_autoreleasePoolPop(pool);
 }
 
-@implementation OFNintendoDSGameController
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
 {
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-
-	OFOnce(&onceControl, initControllers);
-
-	return [[controllers retain] autorelease];
+	return controllers;
 }
 
 - (instancetype)init

@@ -41,7 +41,6 @@
 #ifdef OF_WII
 # define asm __asm__
 # include <gccore.h>
-# include <wiiuse/wpad.h>
 # undef asm
 #endif
 
@@ -124,7 +123,6 @@ isSubclassOfClass(Class class, Class superclass)
 	void *nextFB;
 
 	VIDEO_Init();
-	WPAD_Init();
 
 	mode = VIDEO_GetPreferredMode(NULL);
 	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
@@ -313,19 +311,7 @@ isSubclassOfClass(Class class, Class superclass)
 	}
 
 	if (status == StatusFailed) {
-#if defined(OF_WII)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		for (;;) {
-			WPAD_ScanPads();
-
-			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
-				break;
-
-			VIDEO_WaitVSync();
-		}
-#elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 		[OFStdOut setForegroundColor: [OFColor silver]];
 		[OFStdOut writeLine: @"Press A to continue"];
 
@@ -334,11 +320,15 @@ isSubclassOfClass(Class class, Class superclass)
 			OFGameController *controller =
 			    [[OFGameController controllers] objectAtIndex: 0];
 
+			[controller retrieveState];
+
 			if ([controller.pressedButtons containsObject:
 			    OFGameControllerEastButton])
 				break;
 
-# if defined(OF_NINTENDO_DS)
+# if defined(OF_WII)
+			VIDEO_WaitVSync();
+# elif defined(OF_NINTENDO_DS)
 			swiWaitForVBlank();
 # elif defined(OF_NINTENDO_3DS)
 			gspWaitForVBlank();
@@ -598,40 +588,38 @@ isSubclassOfClass(Class class, Class superclass)
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
-#if defined(OF_WII)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press home button to exit"];
+# ifdef OF_WII
+	[OFStdOut writeLine: @"Press Home button to exit"];
+# else
+	[OFStdOut writeLine: @"Press Start button to exit"];
+# endif
 
 	for (;;) {
-		WPAD_ScanPads();
+		void *pool = objc_autoreleasePoolPush();
+		OFGameController *controller =
+		    [[OFGameController controllers] objectAtIndex: 0];
 
-		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+		[controller retrieveState];
+
+# ifdef OF_WII
+		if ([controller.pressedButtons containsObject:
+		    OFGameControllerHomeButton])
+# else
+		if ([controller.pressedButtons containsObject:
+		    OFGameControllerStartButton])
+# endif
 			break;
 
+# if defined(OF_WII)
 		VIDEO_WaitVSync();
-	}
-#elif defined(OF_NINTENDO_DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
-
-	for (;;) {
+# elif defined(OF_NINTENDO_DS)
 		swiWaitForVBlank();
-		scanKeys();
-
-		if (keysDown() & KEY_START)
-			break;
-	}
-#elif defined(OF_NINTENDO_3DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
-
-	for (;;) {
-		hidScanInput();
-
-		if (hidKeysDown() & KEY_START)
-			break;
-
+# elif defined(OF_NINTENDO_3DS)
 		gspWaitForVBlank();
+# endif
+		objc_autoreleasePoolPop(pool);
 	}
 #elif defined(OF_NINTENDO_SWITCH)
 	while (appletMainLoop())

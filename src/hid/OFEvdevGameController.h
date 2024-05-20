@@ -27,7 +27,8 @@ OF_ASSUME_NONNULL_BEGIN
 	int _fd;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	OFMutableSet *_buttons, *_pressedButtons;
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *_buttons;
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
 	bool _hasLeftAnalogStick, _hasRightAnalogStick;
 	bool _hasLeftTriggerPressure, _hasRightTriggerPressure;
 	unsigned int _leftTriggerPressureBit, _rightTriggerPressureBit;

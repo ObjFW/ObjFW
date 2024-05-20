@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFNintendoDSGameController: OFGameController
 {
-	OFMutableSet *_pressedButtons;
+	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
 }
 @end
 

@@ -28,6 +28,12 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
+#ifdef OF_WII
+# define asm __asm__
+# include <gccore.h>
+# undef asm
+#endif
+
 #ifdef OF_NINTENDO_DS
 # define asm __asm__
 # include <nds.h>
@@ -47,7 +53,7 @@
 # define BUTTONS_PER_LINE 5
 #endif
 
-#if defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 # define red maroon
 # define yellow olive
 # define gray silver
@@ -63,7 +69,26 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 {
 	OFArray *controllers;
 
-#if defined(OF_NINTENDO_DS)
+#if defined(OF_WII)
+	GXRModeObj *mode;
+	void *nextFB;
+
+	VIDEO_Init();
+
+	mode = VIDEO_GetPreferredMode(NULL);
+	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
+	VIDEO_Configure(mode);
+	VIDEO_SetNextFramebuffer(nextFB);
+	VIDEO_SetBlack(FALSE);
+	VIDEO_Flush();
+
+	VIDEO_WaitVSync();
+	if (mode->viTVMode & VI_NON_INTERLACE)
+		VIDEO_WaitVSync();
+
+	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
+	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
+#elif defined(OF_NINTENDO_DS)
 	consoleDemoInit();
 #elif defined(OF_NINTENDO_3DS)
 	gfxInitDefault();
@@ -78,6 +103,11 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
+
+#ifdef OF_WII
+		/* Wii needs some time before controllers are found. */
+		controllers = [OFGameController controllers];
+#endif
 
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 

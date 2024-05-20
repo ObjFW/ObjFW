@@ -105,11 +105,6 @@ static const char *XInputVersion;
 	return controllers;
 }
 
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (instancetype)of_initWithIndex: (DWORD)index
 {
 	self = [super init];

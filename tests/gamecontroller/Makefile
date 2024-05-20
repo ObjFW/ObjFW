@@ -1,5 +1,10 @@
 include ../../extra.mk
 
+CLEAN = boot.dol		\
+	${PROG_NOINST}.3dsx	\
+	${PROG_NOINST}.arm9	\
+	${PROG_NOINST}.ndsd	\
+
 PROG_NOINST = gamecontroller_tests${PROG_SUFFIX}
 SRCS = GameControllerTests.m
 
@@ -90,6 +95,9 @@ run:
 	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
+boot.dol: ${PROG_NOINST}
+	elf2dol ${PROG_NOINST} $@
+
 ${PROG_NOINST}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2} \
 		${LIBOBJFWHID_DEP_LVL2}
 
@@ -108,7 +116,7 @@ CPPFLAGS += -I../../src			\
 	    -I../../src/runtime		\
 	    -I../..			\
 	    -DOBJFWHID_LOCAL_INCLUDES
-LIBS := -L../../src/hid -lobjfwhid		\
+LIBS := -L../../src/hid -lobjfwhid ${HID_LIBS}	\
 	-L../../src -lobjfw			\
 	-L../../src/runtime ${RUNTIME_LIBS}	\
 	${LIBS}

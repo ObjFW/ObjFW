@@ -172,7 +172,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
-	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
+	HID_LIBS="$HID_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
@@ -438,7 +438,8 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src -F../src/runtime -F../src/hid $TESTS_LIBS"
 ], [
 	TESTS_LIBS="-L../src/runtime \${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src/hid -lobjfwhid -L../src -lobjfw $TESTS_LIBS"
+	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
+	TESTS_LIBS="-L../src/hid -lobjfwhid $HID_LIBS $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
@@ -2384,6 +2385,7 @@ AC_SUBST(DEP_ASFLAGS, '${DEP_OBJCFLAGS}')
 AC_SUBST(OBJFW_CPPFLAGS)
 AC_SUBST(OBJFW_OBJCFLAGS)
 
+AC_SUBST(HID_LIBS)
 AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([
@@ -2391,6 +2393,7 @@ AC_CONFIG_FILES([
 	extra.mk
 	src/Info.plist
 	src/hid/Info.plist
+	src/hid/ObjFWHID.oc
 	tests/Info.plist
 	utils/objfw-config
 ])
