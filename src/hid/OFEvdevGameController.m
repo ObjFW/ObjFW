@@ -88,9 +88,9 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		case BTN_TR:
-			return OFGameControllerSLButton;
+			return @"SL";
 		case BTN_TR2:
-			return OFGameControllerSRButton;
+			return @"SR";
 		}
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDRightJoycon) {
@@ -100,9 +100,9 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_WEST:
 			return OFGameControllerWestButton;
 		case BTN_TL:
-			return OFGameControllerSLButton;
+			return @"SL";
 		case BTN_TL2:
-			return OFGameControllerSRButton;
+			return @"SR";
 		}
 	} else if (vendorID == vendorIDNintendo &&
 	    productID == productIDN64Controller) {
@@ -130,7 +130,7 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	} else if (vendorID == vendorIDGoogle && productID == productIDStadia) {
 		switch (button) {
 		case BTN_TRIGGER_HAPPY1:
-			return OFGameControllerAssistantButton;
+			return @"Assistant";
 		case BTN_TRIGGER_HAPPY2:
 			return OFGameControllerCaptureButton;
 		}

@@ -61,9 +61,6 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFGameControllerSelectButton
  *  * @ref OFGameControllerHomeButton
  *  * @ref OFGameControllerCaptureButton
- *  * @ref OFGameControllerSLButton
- *  * @ref OFGameControllerSRButton
- *  * @ref OFGameControllerAssistantButton
  */
 typedef OFConstantString *OFGameControllerButton;
 
@@ -160,21 +157,6 @@ extern const OFGameControllerButton OFGameControllerHomeButton;
  * @brief The Capture button on a game controller.
  */
 extern const OFGameControllerButton OFGameControllerCaptureButton;
-
-/**
- * @brief The SL button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerSLButton;
-
-/**
- * @brief The SR button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerSRButton;
-
-/**
- * @brief The Assistant button on a game controller.
- */
-extern const OFGameControllerButton OFGameControllerAssistantButton;
 #ifdef __cplusplus
 }
 #endif

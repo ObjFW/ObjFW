@@ -62,9 +62,6 @@ const OFGameControllerButton OFGameControllerStartButton = @"Start";
 const OFGameControllerButton OFGameControllerSelectButton = @"Select";
 const OFGameControllerButton OFGameControllerHomeButton = @"Home";
 const OFGameControllerButton OFGameControllerCaptureButton = @"Capture";
-const OFGameControllerButton OFGameControllerSLButton = @"SL";
-const OFGameControllerButton OFGameControllerSRButton = @"SR";
-const OFGameControllerButton OFGameControllerAssistantButton = @"Assistant";
 
 @implementation OFGameController
 @dynamic name, buttons, pressedButtons, hasLeftAnalogStick;
