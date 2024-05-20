@@ -573,14 +573,7 @@ colorToANSI(OFColor *color)
 	if ((code = colorToANSI(color)) == -1)
 		return;
 
-# ifdef OF_NINTENDO_3DS
-	if (code >= 90)
-		[self writeFormat: @"\033[1;%um", code - 60];
-	else
-		[self writeFormat: @"\033[0;%um", code];
-# else
 	[self writeFormat: @"\033[%um", code];
-# endif
 #endif
 }
 
