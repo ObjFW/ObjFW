@@ -22,6 +22,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFColor.h"
+#import "OFDate.h"
 #import "OFGameController.h"
 #import "OFNumber.h"
 #import "OFSet.h"
@@ -60,6 +61,10 @@
 #endif
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
+{
+	OFArray OF_GENERIC(OFGameController) *_controllers;
+	OFDate *_lastControllersUpdate;
+}
 @end
 
 OF_APPLICATION_DELEGATE(GameControllerTests)
@@ -67,8 +72,6 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFArray *controllers;
-
 #if defined(OF_WII)
 	GXRModeObj *mode;
 	void *nextFB;
@@ -97,21 +100,23 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 	consoleInit(GFX_TOP, NULL);
 #endif
 
-	controllers = [OFGameController controllers];
-
 	[OFStdOut clear];
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
 
-#ifdef OF_WII
-		/* Wii needs some time before controllers are found. */
-		controllers = [OFGameController controllers];
-#endif
+		if (_lastControllersUpdate == nil ||
+		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
+			[_controllers release];
+			[_lastControllersUpdate release];
+
+			_controllers = [[OFGameController controllers] retain];
+			_lastControllersUpdate = [[OFDate alloc] init];
+		}
 
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
-		for (OFGameController *controller in controllers) {
+		for (OFGameController *controller in _controllers) {
 			OFArray OF_GENERIC(OFGameControllerButton) *buttons =
 			    controller.buttons.allObjects.sortedArray;
 			size_t i = 0;
