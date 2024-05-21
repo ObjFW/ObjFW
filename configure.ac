@@ -305,6 +305,7 @@ case "$OBJC" in
 		dnl everything used in ObjFW's assembly files. Therefore, use
 		dnl the integrated assembler for ObjC files, but not for
 		dnl assembly files.
+		ASFLAGS="$ASFLAGS -no-integrated-as"
 		OBJCFLAGS="$OBJCFLAGS -integrated-as"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -integrated-as"
 		;;
