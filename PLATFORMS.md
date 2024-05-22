@@ -99,9 +99,9 @@ iOS
 Linux
 -----
 
-  * Architectures: Alpha, AMD64, ARMv5, ARMv6, ARMv7, ARM64, Itanium, m68k,
-                   MIPS (O32), MIPS64 (N64), RISC-V 64, PA-RISC, PowerPC,
-                   PowerPC 64, S390x, SuperH-4, x86
+  * Architectures: Alpha, AMD64, ARMv5, ARMv6, ARMv7, ARM64, Itanium,
+                   LoongArch 64, m68k, MIPS (O32), MIPS64 (N64), RISC-V 64,
+                   PA-RISC, PowerPC, PowerPC 64, S390x, SuperH-4, x86
   * Compilers: Clang 3.0-18.1.1, GCC 4.6-14.1.1
   * C libraries: glibc, musl
   * Runtimes: ObjFW
