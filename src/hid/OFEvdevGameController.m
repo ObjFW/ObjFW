@@ -61,8 +61,8 @@ static const uint16_t vendorIDGoogle = 0x18D1;
 static const uint16_t productIDXbox360 = 0x028E;
 
 /* Nintendo controllers */
-static const uint16_t productIDLeftJoycon = 0x2006;
-static const uint16_t productIDRightJoycon = 0x2007;
+static const uint16_t productIDLeftJoyCon = 0x2006;
+static const uint16_t productIDRightJoyCon = 0x2007;
 static const uint16_t productIDN64Controller = 0x2019;
 
 /* Sony controllers */
@@ -83,8 +83,16 @@ static OFGameControllerButton
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
 	if (vendorID == vendorIDNintendo &&
-	    productID == productIDLeftJoycon) {
+	    productID == productIDLeftJoyCon) {
 		switch (button) {
+		case BTN_DPAD_RIGHT:
+			return OFGameControllerNorthButton;
+		case BTN_DPAD_LEFT:
+			return OFGameControllerSouthButton;
+		case BTN_DPAD_UP:
+			return OFGameControllerWestButton;
+		case BTN_DPAD_DOWN:
+			return OFGameControllerEastButton;
 		case BTN_Z:
 			return OFGameControllerCaptureButton;
 		case BTN_TR:
@@ -93,12 +101,16 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return @"SR";
 		}
 	} else if (vendorID == vendorIDNintendo &&
-	    productID == productIDRightJoycon) {
+	    productID == productIDRightJoyCon) {
 		switch (button) {
-		case BTN_NORTH:
-			return OFGameControllerNorthButton;
 		case BTN_WEST:
+			return OFGameControllerNorthButton;
+		case BTN_EAST:
+			return OFGameControllerSouthButton;
+		case BTN_SOUTH:
 			return OFGameControllerWestButton;
+		case BTN_NORTH:
+			return OFGameControllerEastButton;
 		case BTN_TL:
 			return @"SL";
 		case BTN_TL2:
@@ -225,7 +237,6 @@ emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
 @synthesize name = _name, buttons = _buttons;
 @synthesize hasLeftAnalogStick = _hasLeftAnalogStick;
 @synthesize hasRightAnalogStick = _hasRightAnalogStick;
-@synthesize leftAnalogStickPosition = _leftAnalogStickPosition;
 @synthesize rightAnalogStickPosition = _rightAnalogStickPosition;
 
 + (OFArray OF_GENERIC(OFGameController *) *)controllers
@@ -339,25 +350,42 @@ emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
 				@throw [OFInitializationFailedException
 				    exception];
 
-			if (_vendorID == vendorIDGoogle &&
+			if (_vendorID == vendorIDNintendo &&
+			    _productID == productIDRightJoyCon) {
+				/*
+				 * Make the right analog stick on the right
+				 * Joy-Con the left analog stick so that it can
+				 * be used as a single controller.
+				 */
+				_leftAnalogStickXBit = ABS_RX;
+				_leftAnalogStickYBit = ABS_RY;
+				_rightAnalogStickXBit = ABS_X;
+				_rightAnalogStickYBit = ABS_Y;
+				_leftTriggerPressureBit = ABS_Z;
+				_rightTriggerPressureBit = ABS_RZ;
+			} else if (_vendorID == vendorIDGoogle &&
 			    _productID == productIDStadia) {
 				/*
 				 * It's unclear how this can be screwed up
 				 * *this* bad.
 				 */
+				_leftAnalogStickXBit = ABS_X;
+				_leftAnalogStickYBit = ABS_Y;
 				_rightAnalogStickXBit = ABS_Z;
 				_rightAnalogStickYBit = ABS_RZ;
 				_leftTriggerPressureBit = ABS_BRAKE;
 				_rightTriggerPressureBit = ABS_GAS;
 			} else {
+				_leftAnalogStickXBit = ABS_X;
+				_leftAnalogStickYBit = ABS_Y;
 				_rightAnalogStickXBit = ABS_RX;
 				_rightAnalogStickYBit = ABS_RY;
 				_leftTriggerPressureBit = ABS_Z;
 				_rightTriggerPressureBit = ABS_RZ;
 			}
 
-			if (OFBitSetIsSet(absBits, ABS_X) &&
-			    OFBitSetIsSet(absBits, ABS_Y))
+			if (OFBitSetIsSet(absBits, _leftAnalogStickXBit) &&
+			    OFBitSetIsSet(absBits, _leftAnalogStickYBit))
 				_hasLeftAnalogStick = true;
 
 			if (OFBitSetIsSet(absBits, _rightAnalogStickXBit) &&
@@ -498,13 +526,13 @@ emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
 	if (_hasLeftAnalogStick) {
 		struct input_absinfo infoX, infoY;
 
-		if (ioctl(_fd, EVIOCGABS(ABS_X), &infoX) == -1)
+		if (ioctl(_fd, EVIOCGABS(_leftAnalogStickXBit), &infoX) == -1)
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: sizeof(infoX)
 					  errNo: errno];
 
-		if (ioctl(_fd, EVIOCGABS(ABS_Y), &infoY) == -1)
+		if (ioctl(_fd, EVIOCGABS(_leftAnalogStickYBit), &infoY) == -1)
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: sizeof(infoY)
@@ -628,10 +656,10 @@ emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
 			}
 			break;
 		case EV_ABS:
-			if (event.code == ABS_X)
+			if (event.code == _leftAnalogStickXBit)
 				_leftAnalogStickPosition.x = scale(event.value,
 				    _leftAnalogStickMinX, _leftAnalogStickMaxX);
-			else if (event.code == ABS_Y)
+			else if (event.code == _leftAnalogStickYBit)
 				_leftAnalogStickPosition.y = scale(event.value,
 				    _leftAnalogStickMinY, _leftAnalogStickMaxY);
 			else if (event.code == _rightAnalogStickXBit)
@@ -735,6 +763,18 @@ emulateRightAnalogStick(uint16_t vendorID, uint16_t productID,
 	[pressedButtons makeImmutable];
 
 	return pressedButtons;
+}
+
+- (OFPoint)leftAnalogStickPosition
+{
+	if (_vendorID == vendorIDNintendo && _productID == productIDLeftJoyCon)
+		return OFMakePoint(
+		    _leftAnalogStickPosition.y, -_leftAnalogStickPosition.x);
+	if (_vendorID == vendorIDNintendo && _productID == productIDRightJoyCon)
+		return OFMakePoint(
+		    -_leftAnalogStickPosition.y, _leftAnalogStickPosition.x);
+
+	return _leftAnalogStickPosition;
 }
 
 - (float)pressureForButton: (OFGameControllerButton)button

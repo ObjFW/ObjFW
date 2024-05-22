@@ -37,6 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned int _leftTriggerPressureBit, _rightTriggerPressureBit;
 	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
 	float _leftTriggerPressure, _rightTriggerPressure;
+	unsigned int _leftAnalogStickXBit, _leftAnalogStickYBit;
 	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
 	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
 	unsigned int _rightAnalogStickXBit, _rightAnalogStickYBit;
