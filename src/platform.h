@@ -29,7 +29,7 @@
 # endif
 #endif
 
-#if defined(__x86_64__) || defined(__amd64__)
+#if (defined(__x86_64__) || defined(__amd64__)) && defined(__LP64__)
 # define OF_AMD64
 #elif defined(__i386__)
 # define OF_X86
