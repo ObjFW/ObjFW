@@ -4,6 +4,13 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.3 -> ObjFW 1.1.4, 2024-05-22
+ * Fixes ofarc failing to extract from stdin on macOS.
+ * Fixes the workaround for missing blx on ARM.
+ * Avoids Clang's integrated assembler on MIPS64 for .S files (as it cannot
+   calcualte the offset between two labels).
+ * Fixes X32 being mistaken for AMD64.
+
 ObjFW 1.1.2 -> ObjFW 1.1.3, 2024-05-12
  * Fixes +[OFSystemInfo networkInterfaces] on NetBSD.
  * Properly hides private symbols so they can't be used accidentally anymore.
