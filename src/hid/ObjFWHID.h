@@ -18,3 +18,4 @@
  */
 
 #import "OFGameController.h"
+#import "OFCombinedJoyConsGameController.h"

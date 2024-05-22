@@ -22,6 +22,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFColor.h"
+#import "OFCombinedJoyConsGameController.h"
 #import "OFDate.h"
 #import "OFGameController.h"
 #import "OFNumber.h"
@@ -47,7 +48,7 @@ static size_t buttonsPerLine = 5;
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 {
-	OFArray OF_GENERIC(OFGameController *) *_controllers;
+	OFMutableArray OF_GENERIC(OFGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
 }
 @end
@@ -66,11 +67,34 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 		if (_lastControllersUpdate == nil ||
 		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
+			OFGameController *leftJoyCon = nil, *rightJoyCon = nil;
+
 			[_controllers release];
 			[_lastControllersUpdate release];
 
-			_controllers = [[OFGameController controllers] retain];
+			_controllers = [[OFGameController controllers]
+			    mutableCopy];
 			_lastControllersUpdate = [[OFDate alloc] init];
+
+			for (OFGameController *controller in _controllers) {
+				if (controller.vendorID.unsignedShortValue !=
+				    0x057E)
+					continue;
+
+				if (controller.productID.unsignedShortValue ==
+				    0x2006)
+					leftJoyCon = controller;
+				else if (
+				    controller.productID.unsignedShortValue ==
+				    0x2007)
+					rightJoyCon = controller;
+			}
+
+			if (leftJoyCon != nil && rightJoyCon != nil)
+				[_controllers addObject:
+				    [OFCombinedJoyConsGameController
+				    controllerWithLeftJoyCon: leftJoyCon
+						 rightJoyCon: rightJoyCon]];
 
 			[OFStdOut clear];
 		}
