@@ -58,7 +58,8 @@ OFForward:
 #ifdef HAVE_BLX
 	blx	r12
 #else
-	bl	r12
+	mov	lr, pc
+	bx	r12
 #endif
 
 	cmp	r0, #0
@@ -118,7 +119,8 @@ OFForward_stret:
 #ifdef HAVE_BLX
 	blx	r12
 #else
-	bl	r12
+	mov	lr, pc
+	bx	r12
 #endif
 
 	cmp	r0, #0
