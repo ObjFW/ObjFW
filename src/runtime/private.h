@@ -300,7 +300,8 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
     defined(OF_POWERPC64) || defined(OF_POWERPC) || \
     defined(OF_ARM64) || defined(OF_ARM) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
-    defined(OF_SPARC64) || defined(OF_SPARC)
+    defined(OF_SPARC64) || defined(OF_SPARC) || \
+    defined(OF_RISCV64)
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(OF_MACH_O)

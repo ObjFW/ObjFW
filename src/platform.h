@@ -94,9 +94,9 @@
 #  define OF_M68010
 # endif
 #elif defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
-# define OF_RISC_V_64
+# define OF_RISCV64
 #elif defined(__riscv)
-# define OF_RISC_V
+# define OF_RISCV
 #elif defined(__s390x__)
 # define OF_S390X
 #elif defined(__s390__)
