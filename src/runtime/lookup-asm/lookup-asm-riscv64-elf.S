@@ -62,7 +62,7 @@
 	ret
 
 0:
-	j	\notFound
+	tail	\notFound@plt
 
 .LtaggedPointer_\name:
 	la	t1, objc_taggedPointerSecret
