@@ -58,7 +58,7 @@
 
 	beqz	t0, 0f
 
-	move	a0, t0
+	mv	a0, t0
 	ret
 
 0:
@@ -83,7 +83,7 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
-	move	t0, a0
+	mv	t0, a0
 	ld	a0, (a0)
 	beqz	a0, .LreturnNilMethod
 
@@ -108,6 +108,6 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	li	a0, 0
 	ret
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif
