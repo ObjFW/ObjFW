@@ -271,6 +271,7 @@ resolveInstanceMethod:, which are always available):
   * MIPS (O32/ELF, EABI/ELF)
   * MIPS64 (N64/ELF)
   * PowerPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
+  * RISC-V 64 (SysV/ELF)
   * SPARC (SysV/ELF)
   * SPARC64 (SysV/ELF)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
