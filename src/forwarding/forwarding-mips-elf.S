@@ -68,7 +68,7 @@ OFForward:
 	sw	$a2, 36($sp)
 	sw	$a3, 40($sp)
 #ifdef OF_MIPS_EABI
-	/* For some reason, $a4-$a8 are not always defined */
+	/* For some reason, $a4-$a7 are not always defined */
 	sw	$8, 44($sp)
 	sw	$9, 48($sp)
 	sw	$10, 52($sp)
@@ -163,7 +163,7 @@ OFForward:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found
+	j_pic	OFMethodNotFound
 .type OFForward, %function
 .size OFForward, .-OFForward
 
@@ -289,7 +289,7 @@ OFForward_stret:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found_stret
+	j_pic	OFMethodNotFound_stret
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
