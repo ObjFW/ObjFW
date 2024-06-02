@@ -31,6 +31,7 @@
 #import "OTTestCase.h"
 
 #import "HIDGameController.h"
+#import "HIDGameControllerButton.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
@@ -548,7 +549,7 @@ isSubclassOfClass(Class class, Class superclass)
 		void *pool = objc_autoreleasePoolPush();
 		HIDGameController *controller =
 		    [[HIDGameController controllers] objectAtIndex: 0];
-		HIDGameControlelrButton *button =
+		HIDGameControllerButton *button =
 # ifdef OF_WII
 		    [controller.buttons objectForKey: @"Home"];
 # else

@@ -23,7 +23,7 @@
 #import "HIDGameControllerAxis.h"
 
 @implementation HIDGameControllerEmulatedButton: HIDGameControllerButton
-- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE
+- (instancetype)initWithName: (OFString *)name
 {
 	OF_INVALID_INIT_METHOD
 }
