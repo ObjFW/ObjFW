@@ -17,21 +17,20 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFGameController.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "HIDGameControllerButton.h"
 
-@interface OFWiiGameController: OFGameController
+@implementation HIDGameControllerButton
+@synthesize value = _value;
+
+- (bool)isPressed
 {
-	int32_t _index;
-	uint32_t _type;
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _leftTriggerPressure, _rightTriggerPressure;
+	return (_value > 0);
 }
 
-- (instancetype)of_initWithIndex: (int32_t)index
-			    type: (uint32_t)type OF_METHOD_FAMILY(init);
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
+}
 @end
-
-OF_ASSUME_NONNULL_END

@@ -30,7 +30,7 @@
 
 #import "OTTestCase.h"
 
-#import "OFGameController.h"
+#import "HIDGameController.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
@@ -283,13 +283,14 @@ isSubclassOfClass(Class class, Class superclass)
 
 		for (;;) {
 			void *pool = objc_autoreleasePoolPush();
-			OFGameController *controller =
-			    [[OFGameController controllers] objectAtIndex: 0];
+			HIDGameController *controller =
+			    [[HIDGameController controllers] objectAtIndex: 0];
+			HIDGameControllerButton *button =
+			    [controller.buttons objectForKey: @"A"];
 
 			[controller retrieveState];
 
-			if ([controller.pressedButtons containsObject:
-			    OFGameControllerEastButton])
+			if (button.pressed)
 				break;
 
 			[OFThread waitForVerticalBlank];
@@ -545,18 +546,18 @@ isSubclassOfClass(Class class, Class superclass)
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
-		OFGameController *controller =
-		    [[OFGameController controllers] objectAtIndex: 0];
+		HIDGameController *controller =
+		    [[HIDGameController controllers] objectAtIndex: 0];
+		HIDGameControlelrButton *button =
+# ifdef OF_WII
+		    [controller.buttons objectForKey: @"Home"];
+# else
+		    [controller.buttons objectForKey: @"Start"];
+# endif
 
 		[controller retrieveState];
 
-# ifdef OF_WII
-		if ([controller.pressedButtons containsObject:
-		    OFGameControllerHomeButton])
-# else
-		if ([controller.pressedButtons containsObject:
-		    OFGameControllerStartButton])
-# endif
+		if (button.pressed)
 			break;
 
 		[OFThread waitForVerticalBlank];

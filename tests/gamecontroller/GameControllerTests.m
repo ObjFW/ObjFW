@@ -22,13 +22,15 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFColor.h"
-#import "OFCombinedJoyConsGameController.h"
 #import "OFDate.h"
-#import "OFGameController.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
-#import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFThread.h"
+
+#import "HIDGameController.h"
+#import "HIDGameControllerAxis.h"
+#import "HIDGameControllerButton.h"
 
 #import "OFReadFailedException.h"
 
@@ -48,7 +50,7 @@ static size_t buttonsPerLine = 5;
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 {
-	OFMutableArray OF_GENERIC(OFGameController *) *_controllers;
+	OFMutableArray OF_GENERIC(HIDGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
 }
 @end
@@ -67,43 +69,23 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 		if (_lastControllersUpdate == nil ||
 		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
-			OFGameController *leftJoyCon = nil, *rightJoyCon = nil;
-
 			[_controllers release];
 			[_lastControllersUpdate release];
 
-			_controllers = [[OFGameController controllers]
+			_controllers = [[HIDGameController controllers]
 			    mutableCopy];
 			_lastControllersUpdate = [[OFDate alloc] init];
-
-			for (OFGameController *controller in _controllers) {
-				if (controller.vendorID.unsignedShortValue !=
-				    0x057E)
-					continue;
-
-				if (controller.productID.unsignedShortValue ==
-				    0x2006)
-					leftJoyCon = controller;
-				else if (
-				    controller.productID.unsignedShortValue ==
-				    0x2007)
-					rightJoyCon = controller;
-			}
-
-			if (leftJoyCon != nil && rightJoyCon != nil)
-				[_controllers addObject:
-				    [OFCombinedJoyConsGameController
-				    controllerWithLeftJoyCon: leftJoyCon
-						 rightJoyCon: rightJoyCon]];
 
 			[OFStdOut clear];
 		}
 
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
-		for (OFGameController *controller in _controllers) {
-			OFArray OF_GENERIC(OFGameControllerButton) *buttons =
-			    controller.buttons.allObjects.sortedArray;
+		for (HIDGameController *controller in _controllers) {
+			OFArray OF_GENERIC(OFString *) *buttons =
+			    controller.buttons.allKeys.sortedArray;
+			OFArray OF_GENERIC(OFString *) *axes =
+			    controller.axes.allKeys.sortedArray;
 			size_t i = 0;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
@@ -117,29 +99,27 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				continue;
 			}
 
-			for (OFGameControllerButton button in buttons) {
-				float pressure;
+			for (OFString *name in buttons) {
+				HIDGameControllerButton *button =
+				    [controller.buttons objectForKey: name];
 
 				if (i == 0)
 					[OFStdOut writeString: @"\n"];
 
-				pressure =
-				    [controller pressureForButton: button];
-
-				if (pressure == 1)
+				if (button.value == 1)
 					[OFStdOut setForegroundColor:
 					    [OFColor red]];
-				else if (pressure > 0.5)
+				else if (button.value > 0.5)
 					[OFStdOut setForegroundColor:
 					    [OFColor yellow]];
-				else if (pressure > 0)
+				else if (button.value > 0)
 					[OFStdOut setForegroundColor:
 					    [OFColor green]];
 				else
 					[OFStdOut setForegroundColor:
 					    [OFColor gray]];
 
-				[OFStdOut writeFormat: @"[%@]", button];
+				[OFStdOut writeFormat: @"[%@]", button.name];
 
 				if (++i == buttonsPerLine) {
 					i = 0;
@@ -149,18 +129,14 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut setForegroundColor: [OFColor gray]];
 			[OFStdOut writeString: @"\n"];
 
-			if (controller.hasLeftAnalogStick) {
-				OFPoint position =
-				    controller.leftAnalogStickPosition;
-				[OFStdOut writeFormat: @"(%5.2f, %5.2f) ",
-						       position.x, position.y];
+			for (OFString *name in axes) {
+				HIDGameControllerAxis *axis =
+				    [controller.axes objectForKey: name];
+
+				[OFStdOut writeFormat: @"%@: %5.2f ",
+						       name, axis.value];
 			}
-			if (controller.hasRightAnalogStick) {
-				OFPoint position =
-				    controller.rightAnalogStickPosition;
-				[OFStdOut writeFormat: @"(%5.2f, %5.2f)",
-						       position.x, position.y];
-			}
+
 			[OFStdOut writeString: @"\n"];
 		}
 

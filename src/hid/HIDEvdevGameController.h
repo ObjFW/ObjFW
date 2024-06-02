@@ -17,34 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFGameController.h"
+#import "HIDGameController.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFEvdevGameController: OFGameController
+@interface HIDEvdevGameController: HIDGameController
 {
 	OFString *_path;
 	int _fd;
 	bool _discardUntilReport;
-	unsigned long *_keyBits;
-	bool _DPadIsHAT0;
+	unsigned long *_evBits, *_keyBits, *_absBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_buttons;
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	bool _hasLeftAnalogStick, _hasRightAnalogStick;
-	bool _hasLeftTriggerPressure, _hasRightTriggerPressure;
-	unsigned int _leftTriggerPressureBit, _rightTriggerPressureBit;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _leftTriggerPressure, _rightTriggerPressure;
-	unsigned int _leftAnalogStickXBit, _leftAnalogStickYBit;
-	int32_t _leftAnalogStickMinX, _leftAnalogStickMaxX;
-	int32_t _leftAnalogStickMinY, _leftAnalogStickMaxY;
-	unsigned int _rightAnalogStickXBit, _rightAnalogStickYBit;
-	int32_t _rightAnalogStickMinX, _rightAnalogStickMaxX;
-	int32_t _rightAnalogStickMinY, _rightAnalogStickMaxY;
-	int32_t _leftTriggerMinPressure, _leftTriggerMaxPressure;
-	int32_t _rightTriggerMinPressure, _rightTriggerMaxPressure;
+	OFDictionary OF_GENERIC(OFString *, HIDGameControllerButton *)
+	    *_buttons;
+	OFDictionary OF_GENERIC(OFString *, HIDGameControllerAxis *) *_axes;
 }
 
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);

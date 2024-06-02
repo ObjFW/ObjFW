@@ -17,20 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFGameController.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "HIDGameControllerAxis.h"
 
-@interface OFXInputGameController: OFGameController
+@implementation HIDGameControllerAxis
+@synthesize value = _value;
+
+- (OFString *)description
 {
-	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable productID;
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
-	float _leftTriggerPressure, _rightTriggerPressure;
+	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
 }
-
-- (instancetype)of_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
 @end
-
-OF_ASSUME_NONNULL_END

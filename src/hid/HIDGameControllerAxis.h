@@ -17,14 +17,23 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFGameController.h"
+#import "HIDGameControllerElement.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFNintendoDSGameController: OFGameController
+/**
+ * @brief An button of a game controller.
+ */
+@interface HIDGameControllerAxis: HIDGameControllerElement
 {
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
+	float _value;
+	OF_RESERVE_IVARS(HIDGameControllerButton, 4)
 }
+
+/**
+ * @brief The value of the axis.
+ */
+@property (nonatomic) float value;
 @end
 
 OF_ASSUME_NONNULL_END

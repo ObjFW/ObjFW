@@ -17,15 +17,28 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFGameController.h"
+#import "HIDGameControllerElement.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFNintendo3DSGameController: OFGameController
+/**
+ * @brief An button of a game controller.
+ */
+@interface HIDGameControllerButton: HIDGameControllerElement
 {
-	OFMutableSet OF_GENERIC(OFGameControllerButton) *_pressedButtons;
-	OFPoint _leftAnalogStickPosition, _rightAnalogStickPosition;
+	float _value;
+	OF_RESERVE_IVARS(HIDGameControllerButton, 4)
 }
+
+/**
+ * @brief Whether the game controller button is pressed.
+ */
+@property (readonly, nonatomic, getter=isPressed) bool pressed;
+
+/**
+ * @brief The pressure with which the button is pressed.
+ */
+@property (nonatomic) float value;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -17,8 +17,36 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameController.h"
+#include "config.h"
+
 #import "HIDGameControllerElement.h"
-#import "HIDGameControllerButton.h"
-#import "HIDGameControllerAxis.h"
-#import "HIDGameControllerDirectionalPad.h"
+
+@implementation HIDGameControllerElement
+@synthesize name = _name, analog = _analog;
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+{
+	self = [super init];
+
+	@try {
+		_name = [name copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_name release];
+
+	[super dealloc];
+}
+@end

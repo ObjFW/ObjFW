@@ -17,8 +17,22 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameController.h"
-#import "HIDGameControllerElement.h"
 #import "HIDGameControllerButton.h"
-#import "HIDGameControllerAxis.h"
-#import "HIDGameControllerDirectionalPad.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class HIDGameControllerAxis;
+
+OF_SUBCLASSING_RESTRICTED
+@interface HIDGameControllerEmulatedButton: HIDGameControllerButton
+{
+	HIDGameControllerAxis *_axis;
+	bool _positive;
+}
+
+- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
+- (instancetype)initWithAxis: (HIDGameControllerAxis *)axis
+		    positive: (bool)positive;
+@end
+
+OF_ASSUME_NONNULL_END
