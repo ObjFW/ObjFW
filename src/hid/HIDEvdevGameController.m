@@ -24,13 +24,16 @@
 #include <unistd.h>
 
 #import "HIDEvdevGameController.h"
+
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+
 #import "HIDGameControllerAxis.h"
 #import "HIDGameControllerButton.h"
+#import "HIDGameControllerMapping.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -48,7 +51,9 @@
 }
 @end
 
-@implementation HIDEvdevGameControllerAxis
+@interface HIDEvdevGameControllerMapping: HIDGameControllerMapping
+- (instancetype)of_initWithButtons: (OFDictionary *)buttons
+			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
 @end
 
 static const uint16_t buttonIDs[] = {
@@ -262,7 +267,7 @@ scale(float value, float min, float max)
 }
 
 @implementation HIDEvdevGameController
-@synthesize name = _name, buttons = _buttons, axes = _axes;
+@synthesize name = _name, unmappedMapping = _mapping;
 
 + (OFArray OF_GENERIC(HIDGameController *) *)controllers
 {
@@ -308,6 +313,7 @@ scale(float value, float min, float max)
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		OFStringEncoding encoding = [OFLocale encoding];
 		struct input_id inputID;
 		char name[128];
@@ -357,8 +363,7 @@ scale(float value, float min, float max)
 		_name = [[OFString alloc] initWithCString: name
 						 encoding: encoding];
 
-		buttons = [[OFMutableDictionary alloc] init];
-		_buttons = buttons;
+		buttons = [OFMutableDictionary dictionary];
 		for (size_t i = 0; i < sizeof(buttonIDs) / sizeof(*buttonIDs);
 		    i++) {
 			if (OFBitSetIsSet(_keyBits, buttonIDs[i])) {
@@ -377,8 +382,7 @@ scale(float value, float min, float max)
 		}
 		[buttons makeImmutable];
 
-		axes = [[OFMutableDictionary alloc] init];
-		_axes = axes;
+		axes = [OFMutableDictionary dictionary];
 		if (OFBitSetIsSet(_evBits, EV_ABS)) {
 			_absBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(
 			    OF_ULONG_BIT, ABS_MAX) / OF_ULONG_BIT,
@@ -410,7 +414,13 @@ scale(float value, float min, float max)
 		}
 		[axes makeImmutable];
 
+		_mapping = [[HIDEvdevGameControllerMapping alloc]
+		    of_initWithButtons: buttons
+				  axes: axes];
+
 		[self of_pollState];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -431,8 +441,7 @@ scale(float value, float min, float max)
 	OFFreeMemory(_absBits);
 
 	[_name release];
-	[_buttons release];
-	[_axes release];
+	[_mapping release];
 
 	[super dealloc];
 }
@@ -470,7 +479,7 @@ scale(float value, float min, float max)
 		if (name == nil)
 			continue;
 
-		button = [_buttons objectForKey: name];
+		button = [_mapping.buttons objectForKey: name];
 		if (button == nil)
 			continue;
 
@@ -492,7 +501,7 @@ scale(float value, float min, float max)
 				continue;
 
 			axis = (HIDEvdevGameControllerAxis *)
-			    [_axes objectForKey: name];
+			    [_mapping.axes objectForKey: name];
 			if (axis == nil)
 				continue;
 
@@ -512,6 +521,7 @@ scale(float value, float min, float max)
 
 - (void)retrieveState
 {
+	void *pool = objc_autoreleasePoolPush();
 	struct input_event event;
 
 	for (;;) {
@@ -552,7 +562,7 @@ scale(float value, float min, float max)
 			if (name == nil)
 				continue;
 
-			button = [_buttons objectForKey: name];
+			button = [_mapping.buttons objectForKey: name];
 			if (button == nil)
 				continue;
 
@@ -565,7 +575,7 @@ scale(float value, float min, float max)
 				continue;
 
 			axis = (HIDEvdevGameControllerAxis *)
-			    [_axes objectForKey: name];
+			    [_mapping.axes objectForKey: name];
 			if (axis == nil)
 				continue;
 
@@ -575,6 +585,8 @@ scale(float value, float min, float max)
 			break;
 		}
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFComparisonResult)compare: (HIDEvdevGameController *)otherController
@@ -594,5 +606,26 @@ scale(float value, float min, float max)
 		return OFOrderedAscending;
 
 	return OFOrderedSame;
+}
+@end
+
+@implementation HIDEvdevGameControllerAxis
+@end
+
+@implementation HIDEvdevGameControllerMapping
+- (instancetype)of_initWithButtons: (OFDictionary *)buttons
+			      axes: (OFDictionary *)axes
+{
+	self = [super init];
+
+	@try {
+		_buttons = [buttons retain];
+		_axes = [axes retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 @end

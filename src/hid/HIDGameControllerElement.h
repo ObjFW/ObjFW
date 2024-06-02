@@ -32,6 +32,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
+ * @class HIDGameControllerElement \
+ *	  HIDGameControllerElement.h ObjFWHID/HIDGameControllerElement.h
+ *
  * @brief An element of a game controller, e.g. a button, an axis or a
  *	  directional pad.
  */

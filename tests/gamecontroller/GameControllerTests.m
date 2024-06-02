@@ -31,6 +31,7 @@
 #import "HIDGameController.h"
 #import "HIDGameControllerAxis.h"
 #import "HIDGameControllerButton.h"
+#import "HIDGameControllerMapping.h"
 
 #import "OFReadFailedException.h"
 
@@ -82,11 +83,13 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (HIDGameController *controller in _controllers) {
+			HIDGameControllerMapping *mapping =
+			    controller.unmappedMapping;
 			OFArray OF_GENERIC(OFString *) *buttons =
-			    controller.buttons.allKeys.sortedArray;
+			    mapping.buttons.allKeys.sortedArray;
 			OFArray OF_GENERIC(OFString *) *axes =
-			    controller.axes.allKeys.sortedArray;
-			size_t i = 0;
+			    mapping.axes.allKeys.sortedArray;
+			size_t i;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeString: controller.description];
@@ -99,9 +102,10 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				continue;
 			}
 
+			i = 0;
 			for (OFString *name in buttons) {
 				HIDGameControllerButton *button =
-				    [controller.buttons objectForKey: name];
+				    [mapping.buttons objectForKey: name];
 
 				if (i == 0)
 					[OFStdOut writeString: @"\n"];
@@ -129,12 +133,21 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[OFStdOut setForegroundColor: [OFColor gray]];
 			[OFStdOut writeString: @"\n"];
 
+			i = 0;
 			for (OFString *name in axes) {
 				HIDGameControllerAxis *axis =
-				    [controller.axes objectForKey: name];
+				    [mapping.axes objectForKey: name];
+
+				if (i == 0)
+					[OFStdOut writeString: @"\n"];
 
 				[OFStdOut writeFormat: @"%@: %5.2f ",
 						       name, axis.value];
+
+				if (++i == buttonsPerLine) {
+					i = 0;
+				} else
+					[OFStdOut writeString: @" "];
 			}
 
 			[OFStdOut writeString: @"\n"];

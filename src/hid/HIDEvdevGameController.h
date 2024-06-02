@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class HIDGameControllerMapping;
+
 @interface HIDEvdevGameController: HIDGameController
 {
 	OFString *_path;
@@ -29,9 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned long *_evBits, *_keyBits, *_absBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	OFDictionary OF_GENERIC(OFString *, HIDGameControllerButton *)
-	    *_buttons;
-	OFDictionary OF_GENERIC(OFString *, HIDGameControllerAxis *) *_axes;
+	HIDGameControllerMapping *_mapping;
 }
 
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);

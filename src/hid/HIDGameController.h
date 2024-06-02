@@ -31,13 +31,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class HIDGameControllerAxis;
-@class HIDGameControllerButton;
+@class HIDGameControllerMapping;
 @class OFArray OF_GENERIC(ObjectType);
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
 
 /**
+ * @class HIDGameController HIDGameController.h ObjFWHID/HIDGameController.h
+ *
  * @brief A class for reading state from a game controller.
  */
 @interface HIDGameController: OFObject
@@ -62,16 +62,10 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID;
 
 /**
- * @brief A map of all button names to their @ref HIDGameControllerButton.
+ * @brief An unmapped mapping for the game controller, meaning no remapping is
+ *	  being performed.
  */
-@property (readonly, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, HIDGameControllerButton *) *buttons;
-
-/**
- * @brief A map of all axis names to their @ref HIDGameControllerAxis.
- */
-@property (readonly, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, HIDGameControllerAxis *) *axes;
+@property (readonly, nonatomic) HIDGameControllerMapping *unmappedMapping;
 
 /**
  * @brief Returns the available controllers.

@@ -29,7 +29,7 @@
 #endif
 
 @implementation HIDGameController
-@dynamic name, buttons, axes;
+@dynamic name, unmappedMapping;
 
 + (OFArray OF_GENERIC(HIDGameController *) *)controllers
 {

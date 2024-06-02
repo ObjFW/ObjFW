@@ -24,6 +24,10 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
+ * @class HIDGameControllerDirectionalPad \
+ *	  HIDGameControllerDirectionalPad.h \
+ *	  ObjFWHID/HIDGameControllerDirectionalPad.h
+ *
  * @brief An directional pad or thumb stick of a game controller.
  */
 OF_SUBCLASSING_RESTRICTED

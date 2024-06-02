@@ -22,7 +22,10 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An button of a game controller.
+ * @class HIDGameControllerAxis \
+ *	  HIDGameControllerAxis.h ObjFWHID/HIDGameControllerAxis.h
+ *
+ * @brief An axis of a game controller.
  */
 @interface HIDGameControllerAxis: HIDGameControllerElement
 {

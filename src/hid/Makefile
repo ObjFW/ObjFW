@@ -11,9 +11,10 @@ LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
 SRCS = HIDGameController.m			\
        HIDGameControllerAxis.m			\
-       HIDGameControllerButton.m			\
-       HIDGameControllerDirectionalPad.m		\
-       HIDGameControllerElement.m
+       HIDGameControllerButton.m		\
+       HIDGameControllerDirectionalPad.m	\
+       HIDGameControllerElement.m		\
+       HIDGameControllerMapping.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWHID.h

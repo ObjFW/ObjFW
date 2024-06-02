@@ -17,31 +17,20 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameControllerElement.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "HIDGameControllerMapping.h"
 
-/**
- * @class HIDGameControllerButton \
- *	  HIDGameControllerButton.h ObjFWHID/HIDGameControllerButton.h
- *
- * @brief A button of a game controller.
- */
-@interface HIDGameControllerButton: HIDGameControllerElement
+@implementation HIDGameControllerMapping: OFObject
+@synthesize buttons = _buttons, axes = _axes;
+@synthesize directionalPads = _directionalPads;
+
+- (void)dealloc
 {
-	float _value;
-	OF_RESERVE_IVARS(HIDGameControllerButton, 4)
+	[_buttons release];
+	[_axes release];
+	[_directionalPads release];
+
+	[super dealloc];
 }
-
-/**
- * @brief Whether the game controller button is pressed.
- */
-@property (readonly, nonatomic, getter=isPressed) bool pressed;
-
-/**
- * @brief The pressure with which the button is pressed.
- */
-@property (nonatomic) float value;
 @end
-
-OF_ASSUME_NONNULL_END

@@ -32,6 +32,7 @@
 
 #import "HIDGameController.h"
 #import "HIDGameControllerButton.h"
+#import "HIDGameControllerMapping.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
@@ -287,7 +288,8 @@ isSubclassOfClass(Class class, Class superclass)
 			HIDGameController *controller =
 			    [[HIDGameController controllers] objectAtIndex: 0];
 			HIDGameControllerButton *button =
-			    [controller.buttons objectForKey: @"A"];
+			    [controller.unmappedMapping.buttons
+			    objectForKey: @"A"];
 
 			[controller retrieveState];
 
@@ -551,9 +553,9 @@ isSubclassOfClass(Class class, Class superclass)
 		    [[HIDGameController controllers] objectAtIndex: 0];
 		HIDGameControllerButton *button =
 # ifdef OF_WII
-		    [controller.buttons objectForKey: @"Home"];
+		    [controller.unmappedMapping.buttons objectForKey: @"Home"];
 # else
-		    [controller.buttons objectForKey: @"Start"];
+		    [controller.unmappedMapping.buttons objectForKey: @"Start"];
 # endif
 
 		[controller retrieveState];
