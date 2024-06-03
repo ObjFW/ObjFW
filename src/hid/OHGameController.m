@@ -29,7 +29,7 @@
 #endif
 
 @implementation OHGameController
-@dynamic name, unmappedMapping;
+@dynamic name, rawProfile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {

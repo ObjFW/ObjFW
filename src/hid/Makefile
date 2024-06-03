@@ -14,7 +14,7 @@ SRCS = OHGameController.m		\
        OHGameControllerButton.m		\
        OHGameControllerDirectionalPad.m	\
        OHGameControllerElement.m	\
-       OHGameControllerMapping.m
+       OHGameControllerProfile.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWHID.h

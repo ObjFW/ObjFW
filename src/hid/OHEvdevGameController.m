@@ -33,7 +33,7 @@
 
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
-#import "OHGameControllerMapping.h"
+#import "OHGameControllerProfile.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -51,7 +51,7 @@
 }
 @end
 
-@interface OHEvdevGameControllerMapping: OHGameControllerMapping
+@interface OHEvdevGameControllerProfile: OHGameControllerProfile
 - (instancetype)of_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
 @end
@@ -267,7 +267,7 @@ scale(float value, float min, float max)
 }
 
 @implementation OHEvdevGameController
-@synthesize name = _name, unmappedMapping = _mapping;
+@synthesize name = _name, rawProfile = _rawProfile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
@@ -414,7 +414,7 @@ scale(float value, float min, float max)
 		}
 		[axes makeImmutable];
 
-		_mapping = [[OHEvdevGameControllerMapping alloc]
+		_rawProfile = [[OHEvdevGameControllerProfile alloc]
 		    of_initWithButtons: buttons
 				  axes: axes];
 
@@ -441,7 +441,7 @@ scale(float value, float min, float max)
 	OFFreeMemory(_absBits);
 
 	[_name release];
-	[_mapping release];
+	[_rawProfile release];
 
 	[super dealloc];
 }
@@ -479,7 +479,7 @@ scale(float value, float min, float max)
 		if (name == nil)
 			continue;
 
-		button = [_mapping.buttons objectForKey: name];
+		button = [_rawProfile.buttons objectForKey: name];
 		if (button == nil)
 			continue;
 
@@ -504,7 +504,7 @@ scale(float value, float min, float max)
 				continue;
 
 			axis = (OHEvdevGameControllerAxis *)
-			    [_mapping.axes objectForKey: name];
+			    [_rawProfile.axes objectForKey: name];
 			if (axis == nil)
 				continue;
 
@@ -565,7 +565,7 @@ scale(float value, float min, float max)
 			if (name == nil)
 				continue;
 
-			button = [_mapping.buttons objectForKey: name];
+			button = [_rawProfile.buttons objectForKey: name];
 			if (button == nil)
 				continue;
 
@@ -581,7 +581,7 @@ scale(float value, float min, float max)
 				continue;
 
 			axis = (OHEvdevGameControllerAxis *)
-			    [_mapping.axes objectForKey: name];
+			    [_rawProfile.axes objectForKey: name];
 			if (axis == nil)
 				continue;
 
@@ -618,7 +618,7 @@ scale(float value, float min, float max)
 @implementation OHEvdevGameControllerAxis
 @end
 
-@implementation OHEvdevGameControllerMapping
+@implementation OHEvdevGameControllerProfile
 - (instancetype)of_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes
 {

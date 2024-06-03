@@ -31,7 +31,7 @@
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
-#import "OHGameControllerMapping.h"
+#import "OHGameControllerProfile.h"
 
 #import "OFReadFailedException.h"
 
@@ -83,12 +83,12 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OHGameController *controller in _controllers) {
-			OHGameControllerMapping *mapping =
-			    controller.unmappedMapping;
+			OHGameControllerProfile *profile =
+			    controller.rawProfile;
 			OFArray OF_GENERIC(OFString *) *buttons =
-			    mapping.buttons.allKeys.sortedArray;
+			    profile.buttons.allKeys.sortedArray;
 			OFArray OF_GENERIC(OFString *) *axes =
-			    mapping.axes.allKeys.sortedArray;
+			    profile.axes.allKeys.sortedArray;
 			size_t i;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
@@ -105,7 +105,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			i = 0;
 			for (OFString *name in buttons) {
 				OHGameControllerButton *button =
-				    [mapping.buttons objectForKey: name];
+				    [profile.buttons objectForKey: name];
 
 				if (i == 0)
 					[OFStdOut writeString: @"\n"];
@@ -136,7 +136,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			i = 0;
 			for (OFString *name in axes) {
 				OHGameControllerAxis *axis =
-				    [mapping.axes objectForKey: name];
+				    [profile.axes objectForKey: name];
 
 				if (i == 0)
 					[OFStdOut writeString: @"\n"];

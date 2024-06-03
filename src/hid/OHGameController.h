@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
-@class OHGameControllerMapping;
+@class OHGameControllerProfile;
 
 /**
  * @class OHGameController OHGameController.h ObjFWHID/OHGameController.h
@@ -41,6 +41,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for reading state from a game controller.
  */
 @interface OHGameController: OFObject
+{
+	OF_RESERVE_IVARS(OHGameController, 4)
+}
+
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic)
     OFArray <OHGameController *> *controllers;
@@ -62,10 +66,10 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID;
 
 /**
- * @brief An unmapped mapping for the game controller, meaning no remapping is
+ * @brief The raw profile for the game controller, meaning no remapping is
  *	  being performed.
  */
-@property (readonly, nonatomic) OHGameControllerMapping *unmappedMapping;
+@property (readonly, nonatomic) OHGameControllerProfile *rawProfile;
 
 /**
  * @brief Returns the available controllers.

@@ -19,10 +19,10 @@
 
 #include "config.h"
 
-#import "OHGameControllerMapping.h"
+#import "OHGameControllerProfile.h"
 #import "OFDictionary.h"
 
-@implementation OHGameControllerMapping: OFObject
+@implementation OHGameControllerProfile: OFObject
 @synthesize buttons = _buttons, axes = _axes;
 @synthesize directionalPads = _directionalPads;
 

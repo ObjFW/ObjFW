@@ -32,7 +32,7 @@
 
 #import "OHGameController.h"
 #import "OHGameControllerButton.h"
-#import "OHGameControllerMapping.h"
+#import "OHGameControllerProfile.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
@@ -288,8 +288,7 @@ isSubclassOfClass(Class class, Class superclass)
 			OHGameController *controller =
 			    [[OHGameController controllers] objectAtIndex: 0];
 			OHGameControllerButton *button =
-			    [controller.unmappedMapping.buttons
-			    objectForKey: @"A"];
+			    [controller.rawProfile.buttons objectForKey: @"A"];
 
 			[controller retrieveState];
 
@@ -553,9 +552,9 @@ isSubclassOfClass(Class class, Class superclass)
 		    [[OHGameController controllers] objectAtIndex: 0];
 		OHGameControllerButton *button =
 # ifdef OF_WII
-		    [controller.unmappedMapping.buttons objectForKey: @"Home"];
+		    [controller.rawProfile.buttons objectForKey: @"Home"];
 # else
-		    [controller.unmappedMapping.buttons objectForKey: @"Start"];
+		    [controller.rawProfile.buttons objectForKey: @"Start"];
 # endif
 
 		[controller retrieveState];

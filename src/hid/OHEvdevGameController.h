@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHGameControllerMapping;
+@class OHGameControllerProfile;
 
 @interface OHEvdevGameController: OHGameController
 {
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned long *_evBits, *_keyBits, *_absBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	OHGameControllerMapping *_mapping;
+	OHGameControllerProfile *_rawProfile;
 }
 
 - (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
