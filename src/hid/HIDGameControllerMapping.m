@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "HIDGameControllerMapping.h"
+#import "OFDictionary.h"
 
 @implementation HIDGameControllerMapping: OFObject
 @synthesize buttons = _buttons, axes = _axes;

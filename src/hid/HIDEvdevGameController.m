@@ -483,7 +483,10 @@ scale(float value, float min, float max)
 		if (button == nil)
 			continue;
 
-		button.value = (OFBitSetIsSet(keyState, buttonIDs[i]) ? 1 : 0);
+		if (OFBitSetIsSet(keyState, buttonIDs[i]))
+			button.value = 1.f;
+		else
+			button.value = 0.f;
 	}
 
 	if (OFBitSetIsSet(_evBits, EV_ABS)) {
@@ -566,7 +569,10 @@ scale(float value, float min, float max)
 			if (button == nil)
 				continue;
 
-			button.value = (event.value ? 1 : 0);
+			if (event.value)
+				button.value = 1.f;
+			else
+				button.value = 0.f;
 
 			break;
 		case EV_ABS:
