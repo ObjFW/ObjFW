@@ -32,17 +32,17 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class HIDGameControllerElement \
- *	  HIDGameControllerElement.h ObjFWHID/HIDGameControllerElement.h
+ * @class OHGameControllerElement \
+ *	  OHGameControllerElement.h ObjFWHID/OHGameControllerElement.h
  *
  * @brief An element of a game controller, e.g. a button, an axis or a
  *	  directional pad.
  */
-@interface HIDGameControllerElement: OFObject
+@interface OHGameControllerElement: OFObject
 {
 	OFString *_name;
 	bool _analog;
-	OF_RESERVE_IVARS(HIDGameControllerElement, 4)
+	OF_RESERVE_IVARS(OHGameControllerElement, 4)
 }
 
 /**

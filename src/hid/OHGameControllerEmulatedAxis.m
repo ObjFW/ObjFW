@@ -17,27 +17,27 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "config.h"
 
-#import "HIDGameControllerEmulatedButton.h"
-#import "HIDGameControllerAxis.h"
+#import "OHGameControllerEmulatedAxis.h"
+#import "OHGameControllerButton.h"
 
-@implementation HIDGameControllerEmulatedButton: HIDGameControllerButton
+@implementation OHGameControllerEmulatedAxis
 - (instancetype)initWithName: (OFString *)name
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithAxis: (HIDGameControllerAxis *)axis
-		    positive: (bool)positive
+- (instancetype)initWithNegativeButton: (OHGameControllerButton *)negativeButton
+			positiveButton: (OHGameControllerButton *)positiveButton
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *name;
 
 	@try {
 		name = [OFString stringWithFormat:
-		    @"%@ %@ as emulated button",
-		    (positive ? @"Positive" : @"Negative"), axis.name];
+		    @"%@ and %@ as emulated axis",
+		    negativeButton.name, positiveButton.name];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -47,24 +47,34 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	_axis = [axis retain];
-	_positive = positive;
+	_negativeButton = [negativeButton retain];
+	_positiveButton = [positiveButton retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_axis release];
+	[_negativeButton release];
+	[_positiveButton release];
 
 	[super dealloc];
 }
 
-- (bool)isPressed
+- (void)setValue: (float)value
 {
-	if (_positive)
-		return (_axis.value > 0);
-	else
-		return (_axis.value < 0);
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (float)value
+{
+	if (_negativeButton.pressed && _positiveButton.pressed)
+		return -0;
+	if (_negativeButton.pressed)
+		return -1;
+	if (_positiveButton.pressed)
+		return 1;
+
+	return 0;
 }
 @end

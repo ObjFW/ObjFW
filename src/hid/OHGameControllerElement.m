@@ -19,13 +19,34 @@
 
 #include "config.h"
 
-#import "HIDGameControllerAxis.h"
+#import "OHGameControllerElement.h"
 
-@implementation HIDGameControllerAxis
-@synthesize value = _value;
+@implementation OHGameControllerElement
+@synthesize name = _name, analog = _analog;
 
-- (OFString *)description
+- (instancetype)init
 {
-	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+{
+	self = [super init];
+
+	@try {
+		_name = [name copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_name release];
+
+	[super dealloc];
 }
 @end

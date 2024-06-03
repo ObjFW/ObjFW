@@ -17,68 +17,68 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameControllerElement.h"
-#import "HIDGameControllerAxis.h"
-#import "HIDGameControllerButton.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerAxis.h"
+#import "OHGameControllerButton.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class HIDGameControllerDirectionalPad \
- *	  HIDGameControllerDirectionalPad.h \
- *	  ObjFWHID/HIDGameControllerDirectionalPad.h
+ * @class OHGameControllerDirectionalPad \
+ *	  OHGameControllerDirectionalPad.h 
+ *	  ObjFWHID/OHGameControllerDirectionalPad.h
  *
  * @brief An directional pad or thumb stick of a game controller.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface HIDGameControllerDirectionalPad: HIDGameControllerElement
+@interface OHGameControllerDirectionalPad: OHGameControllerElement
 {
-	HIDGameControllerAxis *_xAxis, *_yAxis;
-	HIDGameControllerButton *_upButton, *_downButton;
-	HIDGameControllerButton *_leftButton, *_rightButton;
+	OHGameControllerAxis *_xAxis, *_yAxis;
+	OHGameControllerButton *_upButton, *_downButton;
+	OHGameControllerButton *_leftButton, *_rightButton;
 }
 
 /**
  * @brief The X axis of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerAxis *xAxis;
+@property (readonly, nonatomic) OHGameControllerAxis *xAxis;
 
 /**
  * @brief The Y axis of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerAxis *yAxis;
+@property (readonly, nonatomic) OHGameControllerAxis *yAxis;
 
 /**
  * @brief The up button of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerButton *upButton;
+@property (readonly, nonatomic) OHGameControllerButton *upButton;
 
 /**
  * @brief The down button of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerButton *downButton;
+@property (readonly, nonatomic) OHGameControllerButton *downButton;
 
 /**
  * @brief The left button of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerButton *leftButton;
+@property (readonly, nonatomic) OHGameControllerButton *leftButton;
 
 /**
  * @brief The right button of the directional pad.
  */
-@property (readonly, nonatomic) HIDGameControllerButton *rightButton;
+@property (readonly, nonatomic) OHGameControllerButton *rightButton;
 
 - (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
 
 - (instancetype)initWithName: (OFString *)name
-		       xAxis: (HIDGameControllerAxis *)xAxis
-		       yAxis: (HIDGameControllerAxis *)yAxis;
+		       xAxis: (OHGameControllerAxis *)xAxis
+		       yAxis: (OHGameControllerAxis *)yAxis;
 
 - (instancetype)initWithName: (OFString *)name
-		    upButton: (HIDGameControllerButton *)upButton
-		  downButton: (HIDGameControllerButton *)downButton
-		  leftButton: (HIDGameControllerButton *)leftButton
-		 rightButton: (HIDGameControllerButton *)rightButton;
+		    upButton: (OHGameControllerButton *)upButton
+		  downButton: (OHGameControllerButton *)downButton
+		  leftButton: (OHGameControllerButton *)leftButton
+		 rightButton: (OHGameControllerButton *)rightButton;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -30,9 +30,9 @@
 
 #import "OTTestCase.h"
 
-#import "HIDGameController.h"
-#import "HIDGameControllerButton.h"
-#import "HIDGameControllerMapping.h"
+#import "OHGameController.h"
+#import "OHGameControllerButton.h"
+#import "OHGameControllerMapping.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
@@ -285,9 +285,9 @@ isSubclassOfClass(Class class, Class superclass)
 
 		for (;;) {
 			void *pool = objc_autoreleasePoolPush();
-			HIDGameController *controller =
-			    [[HIDGameController controllers] objectAtIndex: 0];
-			HIDGameControllerButton *button =
+			OHGameController *controller =
+			    [[OHGameController controllers] objectAtIndex: 0];
+			OHGameControllerButton *button =
 			    [controller.unmappedMapping.buttons
 			    objectForKey: @"A"];
 
@@ -549,9 +549,9 @@ isSubclassOfClass(Class class, Class superclass)
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
-		HIDGameController *controller =
-		    [[HIDGameController controllers] objectAtIndex: 0];
-		HIDGameControllerButton *button =
+		OHGameController *controller =
+		    [[OHGameController controllers] objectAtIndex: 0];
+		OHGameControllerButton *button =
 # ifdef OF_WII
 		    [controller.unmappedMapping.buttons objectForKey: @"Home"];
 # else

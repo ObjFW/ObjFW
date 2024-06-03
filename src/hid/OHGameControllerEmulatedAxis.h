@@ -17,8 +17,22 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
-#import "OHGameControllerElement.h"
-#import "OHGameControllerButton.h"
 #import "OHGameControllerAxis.h"
-#import "OHGameControllerDirectionalPad.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class OHGameControllerButton;
+
+OF_SUBCLASSING_RESTRICTED
+@interface OHGameControllerEmulatedAxis: OHGameControllerAxis
+{
+	OHGameControllerButton *_negativeButton, *_positiveButton;
+}
+
+- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
+- (instancetype)
+    initWithNegativeButton: (OHGameControllerButton *)negativeButton
+	    positiveButton: (OHGameControllerButton *)positiveButton;
+@end
+
+OF_ASSUME_NONNULL_END

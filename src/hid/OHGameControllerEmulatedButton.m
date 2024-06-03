@@ -19,34 +19,52 @@
 
 #include "config.h"
 
-#import "HIDGameControllerElement.h"
+#import "OHGameControllerEmulatedButton.h"
+#import "OHGameControllerAxis.h"
 
-@implementation HIDGameControllerElement
-@synthesize name = _name, analog = _analog;
-
-- (instancetype)init
+@implementation OHGameControllerEmulatedButton: OHGameControllerButton
+- (instancetype)initWithName: (OFString *)name
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithName: (OFString *)name
+- (instancetype)initWithAxis: (OHGameControllerAxis *)axis
+		    positive: (bool)positive
 {
-	self = [super init];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *name;
 
 	@try {
-		_name = [name copy];
+		name = [OFString stringWithFormat:
+		    @"%@ %@ as emulated button",
+		    (positive ? @"Positive" : @"Negative"), axis.name];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [super initWithName: name];
+
+	objc_autoreleasePoolPop(pool);
+
+	_axis = [axis retain];
+	_positive = positive;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_name release];
+	[_axis release];
 
 	[super dealloc];
+}
+
+- (bool)isPressed
+{
+	if (_positive)
+		return (_axis.value > 0);
+	else
+		return (_axis.value < 0);
 }
 @end

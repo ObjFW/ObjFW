@@ -19,11 +19,11 @@
 
 #include "config.h"
 
-#import "HIDGameControllerDirectionalPad.h"
-#import "HIDGameControllerEmulatedAxis.h"
-#import "HIDGameControllerEmulatedButton.h"
+#import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerEmulatedAxis.h"
+#import "OHGameControllerEmulatedButton.h"
 
-@implementation HIDGameControllerDirectionalPad
+@implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
 @synthesize upButton = _upButton, downButton = _downButton;
 @synthesize leftButton = _leftButton, rightButton = _rightButton;
@@ -34,8 +34,8 @@
 }
 
 - (instancetype)initWithName: (OFString *)name
-		       xAxis: (HIDGameControllerAxis *)xAxis
-		       yAxis: (HIDGameControllerAxis *)yAxis
+		       xAxis: (OHGameControllerAxis *)xAxis
+		       yAxis: (OHGameControllerAxis *)yAxis
 {
 	self = [super initWithName: name];
 
@@ -43,16 +43,16 @@
 		_xAxis = [xAxis retain];
 		_yAxis = [yAxis retain];
 
-		_upButton = [[HIDGameControllerEmulatedButton alloc]
+		_upButton = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _yAxis
 			positive: false];
-		_downButton = [[HIDGameControllerEmulatedButton alloc]
+		_downButton = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _yAxis
 			positive: true];
-		_leftButton = [[HIDGameControllerEmulatedButton alloc]
+		_leftButton = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _xAxis
 			positive: false];
-		_rightButton = [[HIDGameControllerEmulatedButton alloc]
+		_rightButton = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _xAxis
 			positive: true];
 	} @catch (id e) {
@@ -64,10 +64,10 @@
 }
 
 - (instancetype)initWithName: (OFString *)name
-		    upButton: (HIDGameControllerButton *)upButton
-		  downButton: (HIDGameControllerButton *)downButton
-		  leftButton: (HIDGameControllerButton *)leftButton
-		 rightButton: (HIDGameControllerButton *)rightButton
+		    upButton: (OHGameControllerButton *)upButton
+		  downButton: (OHGameControllerButton *)downButton
+		  leftButton: (OHGameControllerButton *)leftButton
+		 rightButton: (OHGameControllerButton *)rightButton
 {
 	self = [super initWithName: name];
 
@@ -77,10 +77,10 @@
 		_leftButton = [leftButton retain];
 		_rightButton = [rightButton retain];
 
-		_xAxis = [[HIDGameControllerEmulatedAxis alloc]
+		_xAxis = [[OHGameControllerEmulatedAxis alloc]
 		    initWithNegativeButton: _leftButton
 			    positiveButton: _rightButton];
-		_yAxis = [[HIDGameControllerEmulatedAxis alloc]
+		_yAxis = [[OHGameControllerEmulatedAxis alloc]
 		    initWithNegativeButton: _upButton
 			    positiveButton: _downButton];
 	} @catch (id e) {

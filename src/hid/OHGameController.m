@@ -19,22 +19,22 @@
 
 #include "config.h"
 
-#import "HIDGameController.h"
+#import "OHGameController.h"
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFSet.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# include "HIDEvdevGameController.h"
+# include "OHEvdevGameController.h"
 #endif
 
-@implementation HIDGameController
+@implementation OHGameController
 @dynamic name, unmappedMapping;
 
-+ (OFArray OF_GENERIC(HIDGameController *) *)controllers
++ (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-	return [HIDEvdevGameController controllers];
+	return [OHEvdevGameController controllers];
 #else
 	return [OFArray array];
 #endif
@@ -42,7 +42,7 @@
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [HIDGameController class]]) {
+	if ([self isMemberOfClass: [OHGameController class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -85,5 +85,5 @@
 @end
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# include "HIDEvdevGameController.m"
+# include "OHEvdevGameController.m"
 #endif

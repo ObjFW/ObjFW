@@ -17,25 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameController.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OHGameControllerAxis.h"
 
-@class HIDGameControllerMapping;
+@implementation OHGameControllerAxis
+@synthesize value = _value;
 
-@interface HIDEvdevGameController: HIDGameController
+- (OFString *)description
 {
-	OFString *_path;
-	int _fd;
-	bool _discardUntilReport;
-	unsigned long *_evBits, *_keyBits, *_absBits;
-	uint16_t _vendorID, _productID;
-	OFString *_name;
-	HIDGameControllerMapping *_mapping;
+	return [OFString stringWithFormat: @"<%@: %@>", self.class, self.name];
 }
-
-- (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-- (void)of_pollState;
 @end
-
-OF_ASSUME_NONNULL_END

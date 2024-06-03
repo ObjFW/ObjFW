@@ -17,22 +17,25 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameControllerAxis.h"
+#import "OHGameController.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class HIDGameControllerButton;
+@class OHGameControllerMapping;
 
-OF_SUBCLASSING_RESTRICTED
-@interface HIDGameControllerEmulatedAxis: HIDGameControllerAxis
+@interface OHEvdevGameController: OHGameController
 {
-	HIDGameControllerButton *_negativeButton, *_positiveButton;
+	OFString *_path;
+	int _fd;
+	bool _discardUntilReport;
+	unsigned long *_evBits, *_keyBits, *_absBits;
+	uint16_t _vendorID, _productID;
+	OFString *_name;
+	OHGameControllerMapping *_mapping;
 }
 
-- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
-- (instancetype)
-    initWithNegativeButton: (HIDGameControllerButton *)negativeButton
-	    positiveButton: (HIDGameControllerButton *)positiveButton;
+- (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
+- (void)of_pollState;
 @end
 
 OF_ASSUME_NONNULL_END

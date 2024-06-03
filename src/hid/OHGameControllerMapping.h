@@ -31,45 +31,44 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class HIDGameControllerAxis;
-@class HIDGameControllerButton;
-@class HIDGameControllerDirectionalPad;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OHGameControllerAxis;
+@class OHGameControllerButton;
+@class OHGameControllerDirectionalPad;
 
 /**
- * @class HIDGameControllerMapping \
- *	  HIDGameControllerMapping.h ObjFWHID/HIDGameControllerMapping.h
+ * @class OHGameControllerMapping \
+ *	  OHGameControllerMapping.h ObjFWHID/OHGameControllerMapping.h
  *
- * @brief A mapping for a @ref HIDGameController.
+ * @brief A mapping for a @ref OHGameController.
  */
-@interface HIDGameControllerMapping: OFObject
+@interface OHGameControllerMapping: OFObject
 {
-	OFDictionary OF_GENERIC(OFString *, HIDGameControllerButton *)
-	    *_buttons;
-	OFDictionary OF_GENERIC(OFString *, HIDGameControllerAxis *) *_axes;
-	OFDictionary OF_GENERIC(OFString *, HIDGameControllerDirectionalPad *)
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
-	OF_RESERVE_IVARS(HIDGameControllerMapping, 4)
+	OF_RESERVE_IVARS(OHGameControllerMapping, 4)
 }
 
 /**
- * @brief A map of all button names to their @ref HIDGameControllerButton.
+ * @brief A map of all button names to their @ref OHGameControllerButton.
  */
 @property (readonly, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, HIDGameControllerButton *) *buttons;
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *buttons;
 
 /**
- * @brief A map of all axis names to their @ref HIDGameControllerAxis.
+ * @brief A map of all axis names to their @ref OHGameControllerAxis.
  */
 @property (readonly, nonatomic)
-    OFDictionary OF_GENERIC(OFString *, HIDGameControllerAxis *) *axes;
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *axes;
 
 /**
  * @brief A map of all directional pads to their
- *	  @ref HIDGameControllerDirectionalPad.
+ *	  @ref OHGameControllerDirectionalPad.
  */
 @property (readonly, nonatomic) OFDictionary OF_GENERIC(OFString *,
-    HIDGameControllerDirectionalPad *) *directionalPads;
+    OHGameControllerDirectionalPad *) *directionalPads;
 @end
 
 OF_ASSUME_NONNULL_END

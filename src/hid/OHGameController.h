@@ -31,19 +31,19 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class HIDGameControllerMapping;
 @class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
+@class OHGameControllerMapping;
 
 /**
- * @class HIDGameController HIDGameController.h ObjFWHID/HIDGameController.h
+ * @class OHGameController OHGameController.h ObjFWHID/OHGameController.h
  *
  * @brief A class for reading state from a game controller.
  */
-@interface HIDGameController: OFObject
+@interface OHGameController: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic)
-    OFArray <HIDGameController *> *controllers;
+    OFArray <OHGameController *> *controllers;
 #endif
 
 /**
@@ -65,19 +65,19 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An unmapped mapping for the game controller, meaning no remapping is
  *	  being performed.
  */
-@property (readonly, nonatomic) HIDGameControllerMapping *unmappedMapping;
+@property (readonly, nonatomic) OHGameControllerMapping *unmappedMapping;
 
 /**
  * @brief Returns the available controllers.
  *
  * @return The available controllers
  */
-+ (OFArray OF_GENERIC(HIDGameController *) *)controllers;
++ (OFArray OF_GENERIC(OHGameController *) *)controllers;
 
 /**
  * @brief Retrieves the current state from the game controller.
  *
- * The state returned by @ref HIDGameController's methods does not change until
+ * The state returned by @ref OHGameController's methods does not change until
  * this method is called.
  *
  * @throw OFReadFailedException The controller's state could not be read

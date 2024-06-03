@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#import "HIDEvdevGameController.h"
+#import "OHEvdevGameController.h"
 
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -31,9 +31,9 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
-#import "HIDGameControllerAxis.h"
-#import "HIDGameControllerButton.h"
-#import "HIDGameControllerMapping.h"
+#import "OHGameControllerAxis.h"
+#import "OHGameControllerButton.h"
+#import "OHGameControllerMapping.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -44,14 +44,14 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
-@interface HIDEvdevGameControllerAxis: HIDGameControllerAxis
+@interface OHEvdevGameControllerAxis: OHGameControllerAxis
 {
 @public
 	int32_t _minValue, _maxValue;
 }
 @end
 
-@interface HIDEvdevGameControllerMapping: HIDGameControllerMapping
+@interface OHEvdevGameControllerMapping: OHGameControllerMapping
 - (instancetype)of_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
 @end
@@ -266,10 +266,10 @@ scale(float value, float min, float max)
 	return ((value - min) / (max - min) * 2) - 1;
 }
 
-@implementation HIDEvdevGameController
+@implementation OHEvdevGameController
 @synthesize name = _name, unmappedMapping = _mapping;
 
-+ (OFArray OF_GENERIC(HIDGameController *) *)controllers
++ (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
 	OFMutableArray *controllers = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
@@ -277,7 +277,7 @@ scale(float value, float min, float max)
 	for (OFString *device in [[OFFileManager defaultManager]
 	    contentsOfDirectoryAtPath: @"/dev/input"]) {
 		OFString *path;
-		HIDGameController *controller;
+		OHGameController *controller;
 
 		if (![device hasPrefix: @"event"])
 			continue;
@@ -285,7 +285,7 @@ scale(float value, float min, float max)
 		path = [@"/dev/input" stringByAppendingPathComponent: device];
 
 		@try {
-			controller = [[[HIDEvdevGameController alloc]
+			controller = [[[OHEvdevGameController alloc]
 			    of_initWithPath: path] autorelease];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
@@ -368,13 +368,13 @@ scale(float value, float min, float max)
 		    i++) {
 			if (OFBitSetIsSet(_keyBits, buttonIDs[i])) {
 				OFString *buttonName;
-				HIDGameControllerButton *button;
+				OHGameControllerButton *button;
 
 				buttonName = buttonToName(buttonIDs[i]);
 				if (buttonName == nil)
 					continue;
 
-				button = [[[HIDGameControllerButton alloc]
+				button = [[[OHGameControllerButton alloc]
 				    initWithName: buttonName] autorelease];
 
 				[buttons setObject: button forKey: buttonName];
@@ -398,13 +398,13 @@ scale(float value, float min, float max)
 			    i < sizeof(axisIDs) / sizeof(*axisIDs); i++) {
 				if (OFBitSetIsSet(_absBits, axisIDs[i])) {
 					OFString *axisName;
-					HIDEvdevGameControllerAxis *axis;
+					OHEvdevGameControllerAxis *axis;
 
 					axisName = axisToName(axisIDs[i]);
 					if (axisName == nil)
 						continue;
 
-					axis = [[[HIDEvdevGameControllerAxis
+					axis = [[[OHEvdevGameControllerAxis
 					    alloc] initWithName: axisName]
 					    autorelease];
 
@@ -414,7 +414,7 @@ scale(float value, float min, float max)
 		}
 		[axes makeImmutable];
 
-		_mapping = [[HIDEvdevGameControllerMapping alloc]
+		_mapping = [[OHEvdevGameControllerMapping alloc]
 		    of_initWithButtons: buttons
 				  axes: axes];
 
@@ -470,7 +470,7 @@ scale(float value, float min, float max)
 	for (size_t i = 0; i < sizeof(buttonIDs) / sizeof(*buttonIDs);
 	    i++) {
 		OFString *name;
-		HIDGameControllerButton *button;
+		OHGameControllerButton *button;
 
 		if (!OFBitSetIsSet(_keyBits, buttonIDs[i]))
 			continue;
@@ -494,7 +494,7 @@ scale(float value, float min, float max)
 		    i++) {
 			struct input_absinfo info;
 			OFString *name;
-			HIDEvdevGameControllerAxis *axis;
+			OHEvdevGameControllerAxis *axis;
 
 			if (!OFBitSetIsSet(_absBits, axisIDs[i]))
 				continue;
@@ -503,7 +503,7 @@ scale(float value, float min, float max)
 			if (name == nil)
 				continue;
 
-			axis = (HIDEvdevGameControllerAxis *)
+			axis = (OHEvdevGameControllerAxis *)
 			    [_mapping.axes objectForKey: name];
 			if (axis == nil)
 				continue;
@@ -529,8 +529,8 @@ scale(float value, float min, float max)
 
 	for (;;) {
 		OFString *name;
-		HIDGameControllerButton *button;
-		HIDEvdevGameControllerAxis *axis;
+		OHGameControllerButton *button;
+		OHEvdevGameControllerAxis *axis;
 
 		errno = 0;
 
@@ -580,7 +580,7 @@ scale(float value, float min, float max)
 			if (name == nil)
 				continue;
 
-			axis = (HIDEvdevGameControllerAxis *)
+			axis = (OHEvdevGameControllerAxis *)
 			    [_mapping.axes objectForKey: name];
 			if (axis == nil)
 				continue;
@@ -595,11 +595,11 @@ scale(float value, float min, float max)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFComparisonResult)compare: (HIDEvdevGameController *)otherController
+- (OFComparisonResult)compare: (OHEvdevGameController *)otherController
 {
 	unsigned long long selfIndex, otherIndex;
 
-	if (![otherController isKindOfClass: [HIDEvdevGameController class]])
+	if (![otherController isKindOfClass: [OHEvdevGameController class]])
 		@throw [OFInvalidArgumentException exception];
 
 	selfIndex = [_path substringFromIndex: 16].unsignedLongLongValue;
@@ -615,10 +615,10 @@ scale(float value, float min, float max)
 }
 @end
 
-@implementation HIDEvdevGameControllerAxis
+@implementation OHEvdevGameControllerAxis
 @end
 
-@implementation HIDEvdevGameControllerMapping
+@implementation OHEvdevGameControllerMapping
 - (instancetype)of_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes
 {

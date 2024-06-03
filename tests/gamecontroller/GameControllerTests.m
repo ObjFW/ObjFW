@@ -28,10 +28,10 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
-#import "HIDGameController.h"
-#import "HIDGameControllerAxis.h"
-#import "HIDGameControllerButton.h"
-#import "HIDGameControllerMapping.h"
+#import "OHGameController.h"
+#import "OHGameControllerAxis.h"
+#import "OHGameControllerButton.h"
+#import "OHGameControllerMapping.h"
 
 #import "OFReadFailedException.h"
 
@@ -51,7 +51,7 @@ static size_t buttonsPerLine = 5;
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 {
-	OFMutableArray OF_GENERIC(HIDGameController *) *_controllers;
+	OFMutableArray OF_GENERIC(OHGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
 }
 @end
@@ -73,7 +73,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			[_controllers release];
 			[_lastControllersUpdate release];
 
-			_controllers = [[HIDGameController controllers]
+			_controllers = [[OHGameController controllers]
 			    mutableCopy];
 			_lastControllersUpdate = [[OFDate alloc] init];
 
@@ -82,8 +82,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
-		for (HIDGameController *controller in _controllers) {
-			HIDGameControllerMapping *mapping =
+		for (OHGameController *controller in _controllers) {
+			OHGameControllerMapping *mapping =
 			    controller.unmappedMapping;
 			OFArray OF_GENERIC(OFString *) *buttons =
 			    mapping.buttons.allKeys.sortedArray;
@@ -104,7 +104,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 			i = 0;
 			for (OFString *name in buttons) {
-				HIDGameControllerButton *button =
+				OHGameControllerButton *button =
 				    [mapping.buttons objectForKey: name];
 
 				if (i == 0)
@@ -135,7 +135,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 			i = 0;
 			for (OFString *name in axes) {
-				HIDGameControllerAxis *axis =
+				OHGameControllerAxis *axis =
 				    [mapping.axes objectForKey: name];
 
 				if (i == 0)

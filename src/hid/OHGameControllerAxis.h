@@ -17,20 +17,20 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "HIDGameControllerElement.h"
+#import "OHGameControllerElement.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class HIDGameControllerAxis \
- *	  HIDGameControllerAxis.h ObjFWHID/HIDGameControllerAxis.h
+ * @class OHGameControllerAxis \
+ *	  OHGameControllerAxis.h ObjFWHID/OHGameControllerAxis.h
  *
  * @brief An axis of a game controller.
  */
-@interface HIDGameControllerAxis: HIDGameControllerElement
+@interface OHGameControllerAxis: OHGameControllerElement
 {
 	float _value;
-	OF_RESERVE_IVARS(HIDGameControllerButton, 4)
+	OF_RESERVE_IVARS(OHGameControllerButton, 4)
 }
 
 /**

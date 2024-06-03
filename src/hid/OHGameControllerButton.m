@@ -19,9 +19,9 @@
 
 #include "config.h"
 
-#import "HIDGameControllerButton.h"
+#import "OHGameControllerButton.h"
 
-@implementation HIDGameControllerButton
+@implementation OHGameControllerButton
 @synthesize value = _value;
 
 - (bool)isPressed
