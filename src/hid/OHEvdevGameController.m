@@ -535,8 +535,10 @@ scale(float value, float min, float max)
 		errno = 0;
 
 		if (read(_fd, &event, sizeof(event)) < (int)sizeof(event)) {
-			if (errno == EWOULDBLOCK)
+			if (errno == EWOULDBLOCK) {
+				objc_autoreleasePoolPop(pool);
 				return;
+			}
 
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
@@ -591,8 +593,6 @@ scale(float value, float min, float max)
 			break;
 		}
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (OFComparisonResult)compare: (OHEvdevGameController *)otherController

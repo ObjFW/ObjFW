@@ -2349,6 +2349,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	])
 ])
 
+case "$host_os" in
+linux*)
+	AS_IF([test x"$enable_files" != x"no"], [
+		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
+	])
+	;;
+esac
+
 AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "${host_alias}-")
 

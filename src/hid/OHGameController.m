@@ -83,7 +83,3 @@
 						   self.class, self.name];
 }
 @end
-
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# include "OHEvdevGameController.m"
-#endif
