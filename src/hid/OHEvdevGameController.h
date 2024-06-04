@@ -34,8 +34,8 @@ OF_ASSUME_NONNULL_BEGIN
 	OHGameControllerProfile *_rawProfile;
 }
 
-- (instancetype)of_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-- (void)of_pollState;
+- (instancetype)oh_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
+- (void)oh_pollState;
 @end
 
 OF_ASSUME_NONNULL_END

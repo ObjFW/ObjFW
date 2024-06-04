@@ -19,19 +19,11 @@
 
 #include "config.h"
 
-#import "OTTestCase.h"
+#import "OHGamepad.h"
 
-@implementation OTTestCase
-+ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
-{
-	return nil;
-}
-
-- (void)setUp
-{
-}
-
-- (void)tearDown
-{
-}
+@implementation OHGamepad
+@dynamic northButton, southButton, westButton, eastButton, leftShoulderButton;
+@dynamic rightShoulderButton, leftTriggerButton, rightTriggerButton;
+@dynamic leftThumbstickButton, rightThumbstickButton, menuButton, optionsButton;
+@dynamic homeButton, leftThumbstick, rightThumbstick, directionalPad;
 @end

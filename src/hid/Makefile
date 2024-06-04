@@ -15,14 +15,17 @@ SRCS = OHGameController.m		\
        OHGameControllerDirectionalPad.m	\
        OHGameControllerElement.m	\
        OHGameControllerProfile.m	\
+       OHGamepad.m			\
        ${USE_SRCS_EVDEV}
-SRCS_EVDEV = OHEvdevGameController.m
+SRCS_EVDEV = OHEvdevGameController.m	\
+	     OHEvdevGamepad.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWHID.h
 
 SRCS += OHGameControllerEmulatedAxis.m		\
-	OHGameControllerEmulatedButton.m
+	OHGameControllerEmulatedButton.m	\
+	OHGameControllerEmulatedTriggerButton.m
 
 includesubdir = ObjFWHID
 

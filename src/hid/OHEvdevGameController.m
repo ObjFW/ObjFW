@@ -31,6 +31,7 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OHEvdevGamepad.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
@@ -52,7 +53,7 @@
 @end
 
 @interface OHEvdevGameControllerProfile: OHGameControllerProfile
-- (instancetype)of_initWithButtons: (OFDictionary *)buttons
+- (instancetype)oh_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
 @end
 
@@ -116,13 +117,13 @@ buttonToName(uint16_t button)
 	case BTN_THUMBR:
 		return @"Thumb R";
 	case BTN_DPAD_UP:
-		return @"DPad Up";
+		return @"D-Pad Up";
 	case BTN_DPAD_DOWN:
-		return @"DPad Down";
+		return @"D-Pad Down";
 	case BTN_DPAD_LEFT:
-		return @"DPad Left";
+		return @"D-Pad Left";
 	case BTN_DPAD_RIGHT:
-		return @"DPad Right";
+		return @"D-Pad Right";
 	case BTN_TRIGGER_HAPPY1:
 		return @"Trigger Happy 1";
 	case BTN_TRIGGER_HAPPY2:
@@ -286,7 +287,7 @@ scale(float value, float min, float max)
 
 		@try {
 			controller = [[[OHEvdevGameController alloc]
-			    of_initWithPath: path] autorelease];
+			    oh_initWithPath: path] autorelease];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
 				continue;
@@ -308,7 +309,7 @@ scale(float value, float min, float max)
 	return controllers;
 }
 
-- (instancetype)of_initWithPath: (OFString *)path
+- (instancetype)oh_initWithPath: (OFString *)path
 {
 	self = [super init];
 
@@ -415,10 +416,10 @@ scale(float value, float min, float max)
 		[axes makeImmutable];
 
 		_rawProfile = [[OHEvdevGameControllerProfile alloc]
-		    of_initWithButtons: buttons
+		    oh_initWithButtons: buttons
 				  axes: axes];
 
-		[self of_pollState];
+		[self oh_pollState];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -456,7 +457,7 @@ scale(float value, float min, float max)
 	return [OFNumber numberWithUnsignedShort: _productID];
 }
 
-- (void)of_pollState
+- (void)oh_pollState
 {
 	unsigned long keyState[OFRoundUpToPowerOf2(OF_ULONG_BIT, KEY_MAX) /
 	    OF_ULONG_BIT] = { 0 };
@@ -549,7 +550,7 @@ scale(float value, float min, float max)
 		if (_discardUntilReport) {
 			if (event.type == EV_SYN && event.value == SYN_REPORT) {
 				_discardUntilReport = false;
-				[self of_pollState];
+				[self oh_pollState];
 			}
 
 			continue;
@@ -595,6 +596,16 @@ scale(float value, float min, float max)
 	}
 }
 
+- (OHGamepad *)gamepad
+{
+	@try {
+		return [[[OHEvdevGamepad alloc]
+		    initWithController: self] autorelease];
+	} @catch (OFInvalidArgumentException *e) {
+		return nil;
+	}
+}
+
 - (OFComparisonResult)compare: (OHEvdevGameController *)otherController
 {
 	unsigned long long selfIndex, otherIndex;
@@ -619,7 +630,7 @@ scale(float value, float min, float max)
 @end
 
 @implementation OHEvdevGameControllerProfile
-- (instancetype)of_initWithButtons: (OFDictionary *)buttons
+- (instancetype)oh_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes
 {
 	self = [super init];

@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
 @class OHGameControllerProfile;
+@class OHGamepad;
 
 /**
  * @class OHGameController OHGameController.h ObjFWHID/OHGameController.h
@@ -70,6 +71,12 @@ OF_ASSUME_NONNULL_BEGIN
  *	  being performed.
  */
 @property (readonly, nonatomic) OHGameControllerProfile *rawProfile;
+
+/**
+ * @brief The gamepad profile for the game controller, or `nil` if not
+ *	  supported.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OHGamepad *gamepad;
 
 /**
  * @brief Returns the available controllers.

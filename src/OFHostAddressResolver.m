@@ -115,7 +115,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	}
 }
 
-@implementation OFHostAddressResolver: OFObject
+@implementation OFHostAddressResolver
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver

@@ -23,6 +23,7 @@
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFSet.h"
+#import "OHGamepad.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include "OHEvdevGameController.h"
@@ -69,6 +70,11 @@
 - (void)retrieveState
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OHGamepad *)gamepad
+{
+	return nil;
 }
 
 - (OFString *)description

@@ -19,24 +19,22 @@
 
 #include "config.h"
 
-#import "OHGameControllerEmulatedButton.h"
+#import "OHGameControllerEmulatedTriggerButton.h"
 #import "OHGameControllerAxis.h"
 
-@implementation OHGameControllerEmulatedButton
+@implementation OHGameControllerEmulatedTriggerButton
 - (instancetype)initWithName: (OFString *)name
 {
 	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithAxis: (OHGameControllerAxis *)axis
-		    positive: (bool)positive
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *name;
 
 	@try {
-		name = [OFString stringWithFormat:
-		    @"%@%c", axis.name, (positive ? '+' : '-')];
+		name = axis.name;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -47,7 +45,6 @@
 	objc_autoreleasePoolPop(pool);
 
 	_axis = [axis retain];
-	_positive = positive;
 
 	return self;
 }
@@ -61,14 +58,11 @@
 
 - (bool)isPressed
 {
-	if (_positive)
-		return (_axis.value > 0);
-	else
-		return (_axis.value < 0);
+	return (_axis.value > -1);
 }
 
 - (float)value
 {
-	return (self.isPressed ? 1 : 0);
+	return (_axis.value + 1) / 2;
 }
 @end

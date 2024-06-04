@@ -77,7 +77,7 @@ OF_DIRECT_MEMBERS
 			     entry: (OFTarArchiveEntry *)entry;
 @end
 
-@implementation OFTarArchive: OFObject
+@implementation OFTarArchive
 @synthesize encoding = _encoding;
 
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode

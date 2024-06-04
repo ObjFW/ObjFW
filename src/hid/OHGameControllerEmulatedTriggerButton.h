@@ -17,21 +17,20 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OHGameControllerButton.h"
 
-#import "OTTestCase.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OTTestCase
-+ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
+@class OHGameControllerAxis;
+
+OF_SUBCLASSING_RESTRICTED
+@interface OHGameControllerEmulatedTriggerButton: OHGameControllerButton
 {
-	return nil;
+	OHGameControllerAxis *_axis;
 }
 
-- (void)setUp
-{
-}
-
-- (void)tearDown
-{
-}
+- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
+- (instancetype)initWithAxis: (OHGameControllerAxis *)axis;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -22,7 +22,7 @@
 #import "OHGameControllerProfile.h"
 #import "OFDictionary.h"
 
-@implementation OHGameControllerProfile: OFObject
+@implementation OHGameControllerProfile
 @synthesize buttons = _buttons, axes = _axes;
 @synthesize directionalPads = _directionalPads;
 

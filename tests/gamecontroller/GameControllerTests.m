@@ -31,7 +31,9 @@
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
+#import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerProfile.h"
+#import "OHGamepad.h"
 
 #import "OFReadFailedException.h"
 
@@ -61,9 +63,14 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+	bool gamepad = false;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdIOStream setUpConsole];
 #endif
+
+	if ([[OFApplication arguments].firstObject isEqual: @"gamepad"])
+		gamepad = true;
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
@@ -83,22 +90,24 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OHGameController *controller in _controllers) {
-			OHGameControllerProfile *profile =
-			    controller.rawProfile;
+			OHGameControllerProfile *profile = (gamepad
+			    ? controller.gamepad : controller.rawProfile);
 			OFArray OF_GENERIC(OFString *) *buttons =
 			    profile.buttons.allKeys.sortedArray;
 			OFArray OF_GENERIC(OFString *) *axes =
 			    profile.axes.allKeys.sortedArray;
+			OFArray OF_GENERIC(OFString *) *directionalPads =
+			    profile.directionalPads.allKeys.sortedArray;
 			size_t i;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeString: controller.description];
+			[OFStdOut writeLine: controller.description];
 
 			@try {
 				[controller retrieveState];
 			} @catch (OFReadFailedException *e) {
 				[OFStdOut setForegroundColor: [OFColor red]];
-				[OFStdOut writeFormat: @"\n%@", e.description];
+				[OFStdOut writeString: e.description];
 				continue;
 			}
 
@@ -107,8 +116,10 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				OHGameControllerButton *button =
 				    [profile.buttons objectForKey: name];
 
-				if (i == 0)
+				if (i++ == buttonsPerLine) {
 					[OFStdOut writeString: @"\n"];
+					i = 0;
+				}
 
 				if (button.value == 1)
 					[OFStdOut setForegroundColor:
@@ -123,12 +134,7 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 					[OFStdOut setForegroundColor:
 					    [OFColor gray]];
 
-				[OFStdOut writeFormat: @"[%@]", button.name];
-
-				if (++i == buttonsPerLine) {
-					i = 0;
-				} else
-					[OFStdOut writeString: @" "];
+				[OFStdOut writeFormat: @"[%@] ", name];
 			}
 			[OFStdOut setForegroundColor: [OFColor gray]];
 			[OFStdOut writeString: @"\n"];
@@ -138,19 +144,35 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				OHGameControllerAxis *axis =
 				    [profile.axes objectForKey: name];
 
-				if (i == 0)
+				if (i++ == buttonsPerLine) {
 					[OFStdOut writeString: @"\n"];
-
-				[OFStdOut writeFormat: @"%@: %5.2f ",
-						       name, axis.value];
-
-				if (++i == buttonsPerLine) {
 					i = 0;
-				} else
-					[OFStdOut writeString: @" "];
-			}
+				}
 
-			[OFStdOut writeString: @"\n"];
+				[OFStdOut writeFormat: @"%@: %5.2f  ",
+						       name, axis.value];
+			}
+			if (axes.count > 0)
+				[OFStdOut writeString: @"\n"];
+
+			i = 0;
+			for (OFString *name in directionalPads) {
+				OHGameControllerDirectionalPad *directionalPad =
+				    [profile.directionalPads
+				    objectForKey: name];
+
+				if (i++ == 2) {
+					[OFStdOut writeString: @"\n"];
+					i = 0;
+				}
+
+				[OFStdOut writeFormat:
+				    @"%@: (%5.2f, %5.2f)  ",
+				    name, directionalPad.xAxis.value,
+				    directionalPad.yAxis.value];
+			}
+			if (directionalPads.count > 0)
+				[OFStdOut writeString: @"\n"];
 		}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)

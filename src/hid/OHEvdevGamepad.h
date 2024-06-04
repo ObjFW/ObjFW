@@ -17,21 +17,19 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OHGamepad.h"
 
-#import "OTTestCase.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OTTestCase
-+ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
+@class OHEvdevGameController;
+@class OHGameControllerProfile;
+
+@interface OHEvdevGamepad: OHGamepad
 {
-	return nil;
+	OHGameControllerProfile *_rawProfile;
 }
 
-- (void)setUp
-{
-}
-
-- (void)tearDown
-{
-}
+- (instancetype)initWithController: (OHEvdevGameController *)controller;
 @end
+
+OF_ASSUME_NONNULL_END
