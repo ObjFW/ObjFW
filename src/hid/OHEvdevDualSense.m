@@ -31,11 +31,6 @@
 	OFMutableDictionary *buttons =
 	    [[_rawProfile.buttons mutableCopy] autorelease];
 
-	[buttons removeObjectForKey: @"D-Pad Up"];
-	[buttons removeObjectForKey: @"D-Pad Down"];
-	[buttons removeObjectForKey: @"D-Pad Left"];
-	[buttons removeObjectForKey: @"D-Pad Right"];
-
 	[buttons setObject: self.leftTriggerButton forKey: @"L2"];
 	[buttons setObject: self.rightTriggerButton forKey: @"R2"];
 
@@ -71,26 +66,16 @@
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"Z"];
-
-	if (axis != nil)
-		return [[[OHGameControllerEmulatedTriggerButton alloc]
-		    initWithName: @"L2"
-			    axis: axis] autorelease];
-
-	return [_rawProfile.buttons objectForKey: @"L2"];
+	return [[[OHGameControllerEmulatedTriggerButton alloc]
+	    initWithName: @"L2"
+		    axis: [_rawProfile.axes objectForKey: @"Z"]] autorelease];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"RZ"];
-
-	if (axis != nil)
-		return [[[OHGameControllerEmulatedTriggerButton alloc]
-		    initWithName: @"R2"
-			    axis: axis] autorelease];
-
-	return [_rawProfile.buttons objectForKey: @"R2"];
+	return [[[OHGameControllerEmulatedTriggerButton alloc]
+	    initWithName: @"R2"
+		    axis: [_rawProfile.axes objectForKey: @"RZ"]] autorelease];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
