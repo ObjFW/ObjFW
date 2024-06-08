@@ -131,23 +131,23 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	case BTN_Z:
 		return @"Z";
 	case BTN_TL:
-		return @"TL";
+		return @"LB";
 	case BTN_TR:
-		return @"TR";
+		return @"RB";
 	case BTN_TL2:
-		return @"TL2";
+		return @"LT";
 	case BTN_TR2:
-		return @"TR2";
+		return @"RT";
 	case BTN_SELECT:
-		return @"Select";
+		return @"Back";
 	case BTN_START:
 		return @"Start";
 	case BTN_MODE:
-		return @"Mode";
+		return @"Guide";
 	case BTN_THUMBL:
-		return @"Thumb L";
+		return @"LSB";
 	case BTN_THUMBR:
-		return @"Thumb R";
+		return @"RSB";
 	case BTN_DPAD_UP:
 		return @"D-Pad Up";
 	case BTN_DPAD_DOWN:

@@ -74,10 +74,10 @@
 	[buttons removeObjectForKey: @"D-Pad Right"];
 
 	if ([_rawProfile.axes objectForKey: @"Z"] != nil)
-		[buttons setObject: self.leftTriggerButton forKey: @"TL2"];
+		[buttons setObject: self.leftTriggerButton forKey: @"LT"];
 
 	if ([_rawProfile.axes objectForKey: @"RZ"] != nil)
-		[buttons setObject: self.rightTriggerButton forKey: @"TR2"];
+		[buttons setObject: self.rightTriggerButton forKey: @"RT"];
 
 	[buttons makeImmutable];
 
@@ -134,12 +134,12 @@
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_rawProfile.buttons objectForKey: @"TL"];
+	return [_rawProfile.buttons objectForKey: @"LB"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_rawProfile.buttons objectForKey: @"TR"];
+	return [_rawProfile.buttons objectForKey: @"RB"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
@@ -150,7 +150,7 @@
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
 		    initWithAxis: axis] autorelease];
 
-	return [_rawProfile.buttons objectForKey: @"TL2"];
+	return [_rawProfile.buttons objectForKey: @"LT"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
@@ -161,17 +161,17 @@
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
 		    initWithAxis: axis] autorelease];
 
-	return [_rawProfile.buttons objectForKey: @"TR2"];
+	return [_rawProfile.buttons objectForKey: @"RT"];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_rawProfile.buttons objectForKey: @"Thumb L"];
+	return [_rawProfile.buttons objectForKey: @"LSB"];
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_rawProfile.buttons objectForKey: @"Thumb R"];
+	return [_rawProfile.buttons objectForKey: @"RSB"];
 }
 
 - (OHGameControllerButton *)menuButton
@@ -181,12 +181,12 @@
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_rawProfile.buttons objectForKey: @"Select"];
+	return [_rawProfile.buttons objectForKey: @"Back"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_rawProfile.buttons objectForKey: @"Mode"];
+	return [_rawProfile.buttons objectForKey: @"Guide"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
