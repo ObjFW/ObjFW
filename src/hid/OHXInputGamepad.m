@@ -195,7 +195,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }
 
-- (OHGameControllerDirectionalPad *)directionalPad
+- (OHGameControllerDirectionalPad *)dPad
 {
 	return [_directionalPads objectForKey: @"D-Pad"];
 }
