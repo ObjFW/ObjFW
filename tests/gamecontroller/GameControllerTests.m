@@ -63,14 +63,9 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	bool gamepad = false;
-
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdIOStream setUpConsole];
 #endif
-
-	if ([[OFApplication arguments].firstObject isEqual: @"gamepad"])
-		gamepad = true;
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
@@ -90,7 +85,8 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OHGameController *controller in _controllers) {
-			OHGameControllerProfile *profile = (gamepad
+			OHGameControllerProfile *profile =
+			    (controller.gamepad != nil
 			    ? controller.gamepad : controller.rawProfile);
 			OFArray OF_GENERIC(OFString *) *buttons =
 			    profile.buttons.allKeys.sortedArray;
@@ -173,6 +169,38 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			}
 			if (directionalPads.count > 0)
 				[OFStdOut writeString: @"\n"];
+
+			if ([profile isKindOfClass: [OHGamepad class]]) {
+				OHGamepad *gamepad = (OHGamepad *)profile;
+
+				[OFStdOut writeFormat:
+				    @"[Map] North: %@  South: %@"
+				    @"  West: %@  East: %@\n",
+				    gamepad.northButton.name,
+				    gamepad.southButton.name,
+				    gamepad.westButton.name,
+				    gamepad.eastButton.name];
+				[OFStdOut writeFormat:
+				    @"[Map] Left Shoulder: %@"
+				    @"  Right Shoulder: %@\n",
+				    gamepad.leftShoulderButton.name,
+				    gamepad.rightShoulderButton.name];
+				[OFStdOut writeFormat:
+				    @"[Map] Left Trigger: %@"
+				    @"  Right Trigger: %@\n",
+				    gamepad.leftTriggerButton.name,
+				    gamepad.rightTriggerButton.name];
+				[OFStdOut writeFormat:
+				    @"[Map] Left Thumbstick: %@"
+				    @"  Right Thumbstick: %@\n",
+				    gamepad.leftThumbstickButton.name,
+				    gamepad.rightThumbstickButton.name];
+				[OFStdOut writeFormat:
+				    @"[Map] Menu: %@  Options: %@  Home: %@\n",
+				    gamepad.menuButton.name,
+				    gamepad.optionsButton.name,
+				    gamepad.homeButton.name];
+			}
 		}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
