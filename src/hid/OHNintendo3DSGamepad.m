@@ -45,16 +45,10 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button;
-
-			button = [[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]];
-			@try {
-				[buttons setObject: button
-					    forKey: buttonNames[i]];
-			} @finally {
-				[button release];
-			}
+			OHGameControllerButton *button =
+			    [[[OHGameControllerButton alloc]
+			    initWithName: buttonNames[i]] autorelease];
+			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];

@@ -37,16 +37,6 @@
 
 static OFArray OF_GENERIC(OHGameController *) *controllers;
 
-/* Work around for the compiler getting confused. */
-static float
-keyValue(u32 keys, u32 key)
-{
-	if (keys & key)
-		return 1;
-	else
-		return 0;
-}
-
 @implementation OHNintendo3DSGameController
 @synthesize gamepad = _gamepad;
 
@@ -102,16 +92,16 @@ keyValue(u32 keys, u32 key)
 	hidCircleRead(&leftPos);
 	hidCstickRead(&rightPos);
 
-	_gamepad.northButton.value = keyValue(keys, KEY_X);
-	_gamepad.southButton.value = keyValue(keys, KEY_B);
-	_gamepad.westButton.value = keyValue(keys, KEY_Y);
-	_gamepad.eastButton.value = keyValue(keys, KEY_A);
-	_gamepad.leftShoulderButton.value = keyValue(keys, KEY_L);
-	_gamepad.rightShoulderButton.value = keyValue(keys, KEY_R);
-	_gamepad.leftTriggerButton.value = keyValue(keys, KEY_ZL);
-	_gamepad.rightTriggerButton.value = keyValue(keys, KEY_ZR);
-	_gamepad.menuButton.value = keyValue(keys, KEY_START);
-	_gamepad.optionsButton.value = keyValue(keys, KEY_SELECT);
+	[_gamepad.northButton setValue: !!(keys & KEY_X)];
+	[_gamepad.southButton setValue: !!(keys & KEY_B)];
+	[_gamepad.westButton setValue: !!(keys & KEY_Y)];
+	[_gamepad.eastButton setValue: !!(keys & KEY_A)];
+	[_gamepad.leftShoulderButton setValue: !!(keys & KEY_L)];
+	[_gamepad.rightShoulderButton setValue: !!(keys & KEY_R)];
+	[_gamepad.leftTriggerButton setValue: !!(keys & KEY_ZL)];
+	[_gamepad.rightTriggerButton setValue: !!(keys & KEY_ZR)];
+	[_gamepad.menuButton setValue: !!(keys & KEY_START)];
+	[_gamepad.optionsButton setValue: !!(keys & KEY_SELECT)];
 
 	if (leftPos.dx > 150)
 		leftPos.dx = 150;
@@ -136,10 +126,10 @@ keyValue(u32 keys, u32 key)
 	_gamepad.rightThumbstick.xAxis.value = (float)rightPos.dx / 150;
 	_gamepad.rightThumbstick.yAxis.value = -(float)rightPos.dy / 150;
 
-	_gamepad.dPad.up.value = keyValue(keys, KEY_DUP);
-	_gamepad.dPad.down.value = keyValue(keys, KEY_DDOWN);
-	_gamepad.dPad.left.value = keyValue(keys, KEY_DLEFT);
-	_gamepad.dPad.right.value = keyValue(keys, KEY_DRIGHT);
+	[_gamepad.dPad.up setValue: !!(keys & KEY_DUP)];
+	[_gamepad.dPad.down setValue: !!(keys & KEY_DDOWN)];
+	[_gamepad.dPad.left setValue: !!(keys & KEY_DLEFT)];
+	[_gamepad.dPad.right setValue: !!(keys & KEY_DRIGHT)];
 }
 
 - (OFString *)name
