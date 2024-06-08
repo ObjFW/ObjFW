@@ -43,8 +43,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OFMutableDictionary *directionalPads;
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
-		OHGameControllerButton *upButton, *downButton;
-		OHGameControllerButton *leftButton, *rightButton;
+		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
 			OHGameControllerButton *button =
@@ -88,20 +87,20 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[directionalPads setObject: directionalPad
 				    forKey: @"Right Thumbstick"];
 
-		upButton = [[[OHGameControllerButton alloc]
+		up = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Up"] autorelease];
-		downButton = [[[OHGameControllerButton alloc]
+		down = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Down"] autorelease];
-		leftButton = [[[OHGameControllerButton alloc]
+		left = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Left"] autorelease];
-		rightButton = [[[OHGameControllerButton alloc]
+		right = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Right"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
-			upButton: upButton
-		      downButton: downButton
-		      leftButton: leftButton
-		     rightButton: rightButton] autorelease];
+			      up: up
+			    down: down
+			    left: left
+			   right: right] autorelease];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];

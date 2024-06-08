@@ -25,8 +25,7 @@
 
 @implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
-@synthesize upButton = _upButton, downButton = _downButton;
-@synthesize leftButton = _leftButton, rightButton = _rightButton;
+@synthesize up = _up, down = _down, left = _left, right = _right;
 
 - (instancetype)initWithName: (OFString *)name
 {
@@ -43,16 +42,16 @@
 		_xAxis = [xAxis retain];
 		_yAxis = [yAxis retain];
 
-		_upButton = [[OHGameControllerEmulatedButton alloc]
+		_up = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _yAxis
 			positive: false];
-		_downButton = [[OHGameControllerEmulatedButton alloc]
+		_down = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _yAxis
 			positive: true];
-		_leftButton = [[OHGameControllerEmulatedButton alloc]
+		_left = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _xAxis
 			positive: false];
-		_rightButton = [[OHGameControllerEmulatedButton alloc]
+		_right = [[OHGameControllerEmulatedButton alloc]
 		    initWithAxis: _xAxis
 			positive: true];
 	} @catch (id e) {
@@ -64,25 +63,25 @@
 }
 
 - (instancetype)initWithName: (OFString *)name
-		    upButton: (OHGameControllerButton *)upButton
-		  downButton: (OHGameControllerButton *)downButton
-		  leftButton: (OHGameControllerButton *)leftButton
-		 rightButton: (OHGameControllerButton *)rightButton
+			  up: (OHGameControllerButton *)up
+			down: (OHGameControllerButton *)down
+			left: (OHGameControllerButton *)left
+		       right: (OHGameControllerButton *)right
 {
 	self = [super initWithName: name];
 
 	@try {
-		_upButton = [upButton retain];
-		_downButton = [downButton retain];
-		_leftButton = [leftButton retain];
-		_rightButton = [rightButton retain];
+		_up = [up retain];
+		_down = [down retain];
+		_left = [left retain];
+		_right = [right retain];
 
 		_xAxis = [[OHGameControllerEmulatedAxis alloc]
-		    initWithNegativeButton: _leftButton
-			    positiveButton: _rightButton];
+		    initWithNegativeButton: _left
+			    positiveButton: _right];
 		_yAxis = [[OHGameControllerEmulatedAxis alloc]
-		    initWithNegativeButton: _upButton
-			    positiveButton: _downButton];
+		    initWithNegativeButton: _up
+			    positiveButton: _down];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -95,10 +94,10 @@
 {
 	[_xAxis release];
 	[_yAxis release];
-	[_upButton release];
-	[_downButton release];
-	[_leftButton release];
-	[_rightButton release];
+	[_up release];
+	[_down release];
+	[_left release];
+	[_right release];
 
 	[super dealloc];
 }

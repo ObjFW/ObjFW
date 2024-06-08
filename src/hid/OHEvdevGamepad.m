@@ -207,8 +207,7 @@
 {
 	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"HAT0X"];
 	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"HAT0Y"];
-	OHGameControllerButton *upButton, *downButton;
-	OHGameControllerButton *leftButton, *rightButton;
+	OHGameControllerButton *up, *down, *left, *right;
 
 	if (xAxis != nil && yAxis != nil)
 		return [[[OHGameControllerDirectionalPad alloc]
@@ -216,19 +215,18 @@
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 
-	upButton = [_rawProfile.buttons objectForKey: @"D-Pad Up"];
-	downButton = [_rawProfile.buttons objectForKey: @"D-Pad Down"];
-	leftButton = [_rawProfile.buttons objectForKey: @"D-Pad Left"];
-	rightButton = [_rawProfile.buttons objectForKey: @"D-Pad Right"];
+	up = [_rawProfile.buttons objectForKey: @"D-Pad Up"];
+	down = [_rawProfile.buttons objectForKey: @"D-Pad Down"];
+	left = [_rawProfile.buttons objectForKey: @"D-Pad Left"];
+	right = [_rawProfile.buttons objectForKey: @"D-Pad Right"];
 
-	if (upButton != nil && downButton != nil &&
-	    leftButton != nil && rightButton != nil)
+	if (up != nil && down != nil && left != nil && right != nil)
 		return [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
-			upButton: upButton
-		      downButton: downButton
-		      leftButton: leftButton
-		     rightButton: rightButton] autorelease];
+			      up: up
+			    down: down
+			    left: left
+			   right: right] autorelease];
 
 	return nil;
 }

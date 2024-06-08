@@ -34,8 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OHGameControllerDirectionalPad: OHGameControllerElement
 {
 	OHGameControllerAxis *_xAxis, *_yAxis;
-	OHGameControllerButton *_upButton, *_downButton;
-	OHGameControllerButton *_leftButton, *_rightButton;
+	OHGameControllerButton *_up, *_down, *_left, *_right;
 }
 
 /**
@@ -51,22 +50,22 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The up button of the directional pad.
  */
-@property (readonly, nonatomic) OHGameControllerButton *upButton;
+@property (readonly, nonatomic) OHGameControllerButton *up;
 
 /**
  * @brief The down button of the directional pad.
  */
-@property (readonly, nonatomic) OHGameControllerButton *downButton;
+@property (readonly, nonatomic) OHGameControllerButton *down;
 
 /**
  * @brief The left button of the directional pad.
  */
-@property (readonly, nonatomic) OHGameControllerButton *leftButton;
+@property (readonly, nonatomic) OHGameControllerButton *left;
 
 /**
  * @brief The right button of the directional pad.
  */
-@property (readonly, nonatomic) OHGameControllerButton *rightButton;
+@property (readonly, nonatomic) OHGameControllerButton *right;
 
 - (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
 
@@ -75,10 +74,10 @@ OF_SUBCLASSING_RESTRICTED
 		       yAxis: (OHGameControllerAxis *)yAxis;
 
 - (instancetype)initWithName: (OFString *)name
-		    upButton: (OHGameControllerButton *)upButton
-		  downButton: (OHGameControllerButton *)downButton
-		  leftButton: (OHGameControllerButton *)leftButton
-		 rightButton: (OHGameControllerButton *)rightButton;
+			  up: (OHGameControllerButton *)up
+			down: (OHGameControllerButton *)down
+			left: (OHGameControllerButton *)left
+		       right: (OHGameControllerButton *)right;
 @end
 
 OF_ASSUME_NONNULL_END
