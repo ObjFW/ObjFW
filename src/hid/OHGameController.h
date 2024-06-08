@@ -96,4 +96,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)retrieveState;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern const uint16_t OHVendorIDSony;
+extern const uint16_t OHProductIDDualSense;
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

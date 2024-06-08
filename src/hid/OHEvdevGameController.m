@@ -31,6 +31,7 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OHEvdevDualSense.h"
 #import "OHEvdevGamepad.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -83,8 +84,39 @@ static const uint16_t axisIDs[] = {
 };
 
 static OFString *
-buttonToName(uint16_t button)
+buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
+	if (vendorID == OHVendorIDSony && productID == OHProductIDDualSense) {
+		switch (button) {
+		case BTN_NORTH:
+			return @"Triangle";
+		case BTN_SOUTH:
+			return @"Cross";
+		case BTN_WEST:
+			return @"Square";
+		case BTN_EAST:
+			return @"Circle";
+		case BTN_TL:
+			return @"L1";
+		case BTN_TR:
+			return @"R1";
+		case BTN_TL2:
+			return @"L2";
+		case BTN_TR2:
+			return @"R2";
+		case BTN_THUMBL:
+			return @"L3";
+		case BTN_THUMBR:
+			return @"R3";
+		case BTN_START:
+			return @"Options";
+		case BTN_SELECT:
+			return @"Create";
+		case BTN_MODE:
+			return @"PS";
+		}
+	}
+
 	switch (button) {
 	case BTN_A:
 		return @"A";
@@ -371,7 +403,8 @@ scale(float value, float min, float max)
 				OFString *buttonName;
 				OHGameControllerButton *button;
 
-				buttonName = buttonToName(buttonIDs[i]);
+				buttonName = buttonToName(buttonIDs[i],
+				    _vendorID, _productID);
 				if (buttonName == nil)
 					continue;
 
@@ -476,7 +509,7 @@ scale(float value, float min, float max)
 		if (!OFBitSetIsSet(_keyBits, buttonIDs[i]))
 			continue;
 
-		name = buttonToName(buttonIDs[i]);
+		name = buttonToName(buttonIDs[i], _vendorID, _productID);
 		if (name == nil)
 			continue;
 
@@ -564,7 +597,7 @@ scale(float value, float min, float max)
 			}
 			break;
 		case EV_KEY:
-			name = buttonToName(event.code);
+			name = buttonToName(event.code, _vendorID, _productID);
 			if (name == nil)
 				continue;
 
@@ -599,8 +632,13 @@ scale(float value, float min, float max)
 - (OHGamepad *)gamepad
 {
 	@try {
-		return [[[OHEvdevGamepad alloc]
-		    initWithController: self] autorelease];
+		if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDDualSense)
+			return [[[OHEvdevDualSense alloc]
+			    initWithController: self] autorelease];
+		else
+			return [[[OHEvdevGamepad alloc]
+			    initWithController: self] autorelease];
 	} @catch (OFInvalidArgumentException *e) {
 		return nil;
 	}

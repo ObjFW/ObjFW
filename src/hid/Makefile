@@ -20,7 +20,8 @@ SRCS = OHGameController.m		\
        ${USE_SRCS_NINTENDO_3DS}		\
        ${USE_SRCS_NINTENDO_DS}		\
        ${USE_SRCS_XINPUT}
-SRCS_EVDEV = OHEvdevGameController.m	\
+SRCS_EVDEV = OHEvdevDualSense.m		\
+	     OHEvdevGameController.m	\
 	     OHEvdevGamepad.m
 SRCS_NINTENDO_3DS = OHNintendo3DSGameController.m	\
 		    OHNintendo3DSGamepad.m
