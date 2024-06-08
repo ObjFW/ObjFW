@@ -211,13 +211,13 @@ static int XInputVersion;
 	    -(float)state.Gamepad.sThumbRY /
 	    (state.Gamepad.sThumbRY < 0 ? -INT16_MIN : INT16_MAX);
 
-	_gamepad.directionalPad.upButton.value =
+	_gamepad.dPad.upButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP);
-	_gamepad.directionalPad.downButton.value =
+	_gamepad.dPad.downButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-	_gamepad.directionalPad.leftButton.value =
+	_gamepad.dPad.leftButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-	_gamepad.directionalPad.rightButton.value =
+	_gamepad.dPad.rightButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
 }
 

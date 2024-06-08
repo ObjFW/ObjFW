@@ -47,7 +47,7 @@
 		    self.rightThumbstickButton == nil ||
 		    self.menuButton == nil || self.optionsButton == nil ||
 		    self.homeButton == nil || self.leftThumbstick == nil ||
-		    self.rightThumbstick == nil || self.directionalPad == nil)
+		    self.rightThumbstick == nil || self.dPad == nil)
 			@throw [OFInvalidArgumentException exception];
 
 		objc_autoreleasePoolPop(pool);
@@ -95,7 +95,7 @@
 	return [OFDictionary dictionaryWithKeysAndObjects:
 	    @"Left Thumbstick", self.leftThumbstick,
 	    @"Right Thumbstick", self.rightThumbstick,
-	    @"D-Pad", self.directionalPad, nil];
+	    @"D-Pad", self.dPad, nil];
 }
 
 - (OHGameControllerButton *)northButton
@@ -203,7 +203,7 @@
 		   yAxis: yAxis] autorelease];
 }
 
-- (OHGameControllerDirectionalPad *)directionalPad
+- (OHGameControllerDirectionalPad *)dPad
 {
 	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"HAT0X"];
 	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"HAT0Y"];

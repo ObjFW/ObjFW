@@ -31,22 +31,88 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OHGamepad, 4)
 }
 
+/**
+ * @brief The north button on the gamepad's diamond pad.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *northButton;
+
+/**
+ * @brief The south button on the gamepad's diamond pad.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *southButton;
+
+/**
+ * @brief The west button on the gamepad's diamond pad.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *westButton;
+
+/**
+ * @brief The east button on the gamepad's diamond pad.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *eastButton;
+
+/**
+ * @brief The left shoulder button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *leftShoulderButton;
+
+/**
+ * @brief The right shoulder button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *rightShoulderButton;
+
+/**
+ * @brief The left trigger button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *leftTriggerButton;
+
+/**
+ * @brief The right trigger button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *rightTriggerButton;
+
+/**
+ * @brief The left thumb stick button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *leftThumbstickButton;
+
+/**
+ * @brief The right thumb stick button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *rightThumbstickButton;
+
+/**
+ * @brief The menu button, sometimes also called start button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *menuButton;
+
+/**
+ * @brief The options button, sometimes also called select button.
+ */
 @property (readonly, nonatomic) OHGameControllerButton *optionsButton;
-@property (readonly, nonatomic) OHGameControllerButton *homeButton;
+
+/**
+ * @brief The home button.
+ *
+ * This button is optional and may be `nil`.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OHGameControllerButton *homeButton;
+
+/**
+ * @brief The left thumb stick.
+ */
 @property (readonly, nonatomic) OHGameControllerDirectionalPad *leftThumbstick;
+
+/**
+ * @brief The right thumb stick.
+ */
 @property (readonly, nonatomic) OHGameControllerDirectionalPad *rightThumbstick;
-@property (readonly, nonatomic) OHGameControllerDirectionalPad *directionalPad;
+
+/**
+ * @brief The D-Pad.
+ */
+@property (readonly, nonatomic) OHGameControllerDirectionalPad *dPad;
 @end
 
 OF_ASSUME_NONNULL_END

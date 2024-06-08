@@ -25,5 +25,5 @@
 @dynamic northButton, southButton, westButton, eastButton, leftShoulderButton;
 @dynamic rightShoulderButton, leftTriggerButton, rightTriggerButton;
 @dynamic leftThumbstickButton, rightThumbstickButton, menuButton, optionsButton;
-@dynamic homeButton, leftThumbstick, rightThumbstick, directionalPad;
+@dynamic homeButton, leftThumbstick, rightThumbstick, dPad;
 @end
