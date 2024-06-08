@@ -35,5 +35,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)oh_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int OHXInputVersion;
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END
 

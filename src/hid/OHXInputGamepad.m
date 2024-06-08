@@ -24,6 +24,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHXInputGameController.h"
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
@@ -46,10 +47,14 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]];
+			OHGameControllerButton *button;
 
+			if ([buttonNames[i] isEqual: @"Guide"] &&
+			    OHXInputVersion == 910)
+				continue;
+
+			button = [[OHGameControllerButton alloc]
+			    initWithName: buttonNames[i]];
 			@try {
 				[buttons setObject: button
 					    forKey: buttonNames[i]];

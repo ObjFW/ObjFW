@@ -46,10 +46,10 @@ struct XInputCapabilitiesEx {
 	DWORD unknown2;
 };
 
+int OHXInputVersion;
 static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
-static int XInputVersion;
 
 @implementation OHXInputGameController
 @synthesize vendorID = _vendorID, productID = _productID, gamepad = _gamepad;
@@ -68,17 +68,17 @@ static int XInputVersion;
 		XInputGetCapabilitiesExFuncPtr = (WINAPI DWORD (*)(DWORD, DWORD,
 		    DWORD, struct XInputCapabilitiesEx *))
 		    GetProcAddress(module, (LPCSTR)108);
-		XInputVersion = 14;
+		OHXInputVersion = 14;
 	} else if ((module = LoadLibrary("xinput1_3.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, (LPCSTR)100);
-		XInputVersion = 13;
+		OHXInputVersion = 13;
 	} else if ((module = LoadLibrary("xinput9_1_0.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, "XInputGetState");
-		XInputVersion = 910;
+		OHXInputVersion = 910;
 	}
 }
 
@@ -189,7 +189,7 @@ static int XInputVersion;
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_START);
 	_gamepad.optionsButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
-	if (XInputVersion != 910)
+	if (OHXInputVersion != 910)
 		_gamepad.homeButton.value =
 		    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE);
 
@@ -223,7 +223,7 @@ static int XInputVersion;
 
 - (OFString *)name
 {
-	switch (XInputVersion) {
+	switch (OHXInputVersion) {
 	case 14:
 		return @"XInput 1.4 device";
 	case 13:
