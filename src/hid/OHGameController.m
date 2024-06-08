@@ -26,7 +26,10 @@
 #import "OHGamepad.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# include "OHEvdevGameController.h"
+# import "OHEvdevGameController.h"
+#endif
+#ifdef OF_WINDOWS
+# import "OHXInputGameController.h"
 #endif
 
 @implementation OHGameController
@@ -36,6 +39,8 @@
 {
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 	return [OHEvdevGameController controllers];
+#elif defined(OF_WINDOWS)
+	return [OHXInputGameController controllers];
 #else
 	return [OFArray array];
 #endif

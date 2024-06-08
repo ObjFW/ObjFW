@@ -2355,6 +2355,9 @@ linux*)
 		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
 	])
 	;;
+mingw*)
+	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
+	;;
 esac
 
 AS_IF([test x"$cross_compiling" = x"yes"], [

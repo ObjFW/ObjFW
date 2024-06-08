@@ -16,9 +16,12 @@ SRCS = OHGameController.m		\
        OHGameControllerElement.m	\
        OHGameControllerProfile.m	\
        OHGamepad.m			\
-       ${USE_SRCS_EVDEV}
+       ${USE_SRCS_EVDEV}		\
+       ${USE_SRCS_XINPUT}
 SRCS_EVDEV = OHEvdevGameController.m	\
 	     OHEvdevGamepad.m
+SRCS_XINPUT = OHXInputGameController.m	\
+	      OHXInputGamepad.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWHID.h
