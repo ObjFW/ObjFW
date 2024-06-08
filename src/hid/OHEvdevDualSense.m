@@ -21,9 +21,6 @@
 
 #import "OHEvdevDualSense.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OHEvdevGameController.h"
-#import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerEmulatedTriggerButton.h"
 
 #import "OFInvalidArgumentException.h"
@@ -70,6 +67,30 @@
 - (OHGameControllerButton *)leftShoulderButton
 {
 	return [_rawProfile.buttons objectForKey: @"L1"];
+}
+
+- (OHGameControllerButton *)leftTriggerButton
+{
+	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"Z"];
+
+	if (axis != nil)
+		return [[[OHGameControllerEmulatedTriggerButton alloc]
+		    initWithName: @"L2"
+			    axis: axis] autorelease];
+
+	return [_rawProfile.buttons objectForKey: @"L2"];
+}
+
+- (OHGameControllerButton *)rightTriggerButton
+{
+	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"RZ"];
+
+	if (axis != nil)
+		return [[[OHGameControllerEmulatedTriggerButton alloc]
+		    initWithName: @"R2"
+			    axis: axis] autorelease];
+
+	return [_rawProfile.buttons objectForKey: @"R2"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton

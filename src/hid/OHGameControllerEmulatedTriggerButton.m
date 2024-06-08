@@ -28,21 +28,10 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithAxis: (OHGameControllerAxis *)axis
+- (instancetype)initWithName: (OFString *)name
+			axis: (OHGameControllerAxis *)axis
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *name;
-
-	@try {
-		name = axis.name;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
 	self = [super initWithName: name];
-
-	objc_autoreleasePoolPop(pool);
 
 	_axis = [axis retain];
 

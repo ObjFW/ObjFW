@@ -148,7 +148,8 @@
 
 	if (axis != nil)
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
-		    initWithAxis: axis] autorelease];
+		    initWithName: @"LT"
+			    axis: axis] autorelease];
 
 	return [_rawProfile.buttons objectForKey: @"LT"];
 }
@@ -159,7 +160,8 @@
 
 	if (axis != nil)
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
-		    initWithAxis: axis] autorelease];
+		    initWithName: @"RT"
+			    axis: axis] autorelease];
 
 	return [_rawProfile.buttons objectForKey: @"RT"];
 }

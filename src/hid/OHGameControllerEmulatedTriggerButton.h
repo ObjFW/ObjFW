@@ -30,7 +30,8 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 - (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
-- (instancetype)initWithAxis: (OHGameControllerAxis *)axis;
+- (instancetype)initWithName: (OFString *)name
+			axis: (OHGameControllerAxis *)axis;
 @end
 
 OF_ASSUME_NONNULL_END
