@@ -42,11 +42,8 @@
 		    self.leftShoulderButton == nil ||
 		    self.rightShoulderButton == nil ||
 		    self.leftTriggerButton == nil ||
-		    self.rightTriggerButton == nil ||
-		    self.leftThumbstickButton == nil ||
-		    self.rightThumbstickButton == nil ||
-		    self.menuButton == nil || self.optionsButton == nil ||
-		    self.homeButton == nil || self.leftThumbstick == nil ||
+		    self.rightTriggerButton == nil || self.menuButton == nil ||
+		    self.optionsButton == nil || self.leftThumbstick == nil ||
 		    self.rightThumbstick == nil || self.dPad == nil)
 			@throw [OFInvalidArgumentException exception];
 
@@ -68,25 +65,42 @@
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
-	return [OFDictionary dictionaryWithKeysAndObjects:
-	    @"North", self.northButton,
-	    @"South", self.southButton,
-	    @"West", self.westButton,
-	    @"East", self.eastButton,
-	    @"Left Shoulder", self.leftShoulderButton,
-	    @"Right Shoulder", self.rightShoulderButton,
-	    @"Left Trigger", self.leftTriggerButton,
-	    @"Right Trigger", self.rightTriggerButton,
-	    @"Left Thumbstick", self.leftThumbstickButton,
-	    @"Right Thumbstick", self.rightThumbstickButton,
-	    @"Menu", self.menuButton,
-	    @"Options", self.optionsButton,
-	    @"Home", self.homeButton, nil];
+	OFMutableDictionary *buttons =
+	    [[_rawProfile.buttons mutableCopy] autorelease];
+
+	[buttons removeObjectForKey: @"D-Pad Up"];
+	[buttons removeObjectForKey: @"D-Pad Down"];
+	[buttons removeObjectForKey: @"D-Pad Left"];
+	[buttons removeObjectForKey: @"D-Pad Right"];
+
+	if ([_rawProfile.axes objectForKey: @"Z"] != nil)
+		[buttons setObject: self.leftTriggerButton forKey: @"TL2"];
+
+	if ([_rawProfile.axes objectForKey: @"RZ"] != nil)
+		[buttons setObject: self.rightTriggerButton forKey: @"TR2"];
+
+	[buttons makeImmutable];
+
+	return buttons;
 }
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
 {
-	return [OFDictionary dictionary];
+	OFMutableDictionary *axes =
+	    [[_rawProfile.axes mutableCopy] autorelease];
+
+	[axes removeObjectForKey: @"X"];
+	[axes removeObjectForKey: @"Y"];
+	[axes removeObjectForKey: @"RX"];
+	[axes removeObjectForKey: @"RY"];
+	[axes removeObjectForKey: @"Z"];
+	[axes removeObjectForKey: @"RZ"];
+	[axes removeObjectForKey: @"HAT0X"];
+	[axes removeObjectForKey: @"HAT0Y"];
+
+	[axes makeImmutable];
+
+	return axes;
 }
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *) *)
