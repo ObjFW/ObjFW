@@ -17,9 +17,12 @@ SRCS = OHGameController.m		\
        OHGameControllerProfile.m	\
        OHGamepad.m			\
        ${USE_SRCS_EVDEV}		\
+       ${USE_SRCS_NINTENDO_3DS}		\
        ${USE_SRCS_XINPUT}
 SRCS_EVDEV = OHEvdevGameController.m	\
 	     OHEvdevGamepad.m
+SRCS_NINTENDO_3DS = OHNintendo3DSGameController.m	\
+		    OHNintendo3DSGamepad.m
 SRCS_XINPUT = OHXInputGameController.m	\
 	      OHXInputGamepad.m
 

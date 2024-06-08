@@ -17,30 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
-
-#include <windows.h>
+#import "OHGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHXInputGamepad;
-
-@interface OHXInputGameController: OHGameController
-{
-	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable _productID;
-	OHXInputGamepad *_gamepad;
-}
-
-- (instancetype)oh_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
+@interface OHNintendo3DSGamepad: OHGamepad
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int OHXInputVersion;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

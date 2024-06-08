@@ -31,6 +31,9 @@
 #ifdef OF_WINDOWS
 # import "OHXInputGameController.h"
 #endif
+#ifdef OF_NINTENDO_3DS
+# import "OHNintendo3DSGameController.h"
+#endif
 
 @implementation OHGameController
 @dynamic name, rawProfile;
@@ -41,6 +44,8 @@
 	return [OHEvdevGameController controllers];
 #elif defined(OF_WINDOWS)
 	return [OHXInputGameController controllers];
+#elif defined(OF_NINTENDO_3DS)
+	return [OHNintendo3DSGameController controllers];
 #else
 	return [OFArray array];
 #endif

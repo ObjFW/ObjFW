@@ -19,28 +19,14 @@
 
 #import "OHGameController.h"
 
-#include <windows.h>
-
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHXInputGamepad;
+@class OHNintendo3DSGamepad;
 
-@interface OHXInputGameController: OHGameController
+@interface OHNintendo3DSGameController: OHGameController
 {
-	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable _productID;
-	OHXInputGamepad *_gamepad;
+	OHNintendo3DSGamepad *_gamepad;
 }
-
-- (instancetype)oh_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int OHXInputVersion;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

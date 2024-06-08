@@ -73,13 +73,19 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The left thumb stick button.
+ *
+ * This button is optional and may be `nil`.
  */
-@property (readonly, nonatomic) OHGameControllerButton *leftThumbstickButton;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OHGameControllerButton *leftThumbstickButton;
 
 /**
  * @brief The right thumb stick button.
+ *
+ * This button is optional and may be `nil`.
  */
-@property (readonly, nonatomic) OHGameControllerButton *rightThumbstickButton;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OHGameControllerButton *rightThumbstickButton;
 
 /**
  * @brief The menu button, sometimes also called start button.

@@ -259,6 +259,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
 		[Whether we are compiling for Nintendo 3DS])
+	AC_SUBST(USE_SRCS_NINTENDO_3DS, '${SRCS_NINTENDO_3DS}')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
