@@ -34,6 +34,7 @@
 #import "OHEvdevDualSense.h"
 #import "OHEvdevDualShock4.h"
 #import "OHEvdevGamepad.h"
+#import "OHEvdevStadiaGamepad.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
@@ -123,6 +124,34 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 	if (vendorID == OHVendorIDSony && productID == OHProductIDDualShock4)
 		if (button == BTN_SELECT)
 			return @"Share";
+
+	if (vendorID == OHVendorIDGoogle &&
+	    productID == OHProductIDStadiaController) {
+		switch (button) {
+		case BTN_TL:
+			return @"L1";
+		case BTN_TR:
+			return @"R1";
+		case BTN_TRIGGER_HAPPY4:
+			return @"L2";
+		case BTN_TRIGGER_HAPPY3:
+			return @"R2";
+		case BTN_THUMBL:
+			return @"L3";
+		case BTN_THUMBR:
+			return @"R3";
+		case BTN_START:
+			return @"Menu";
+		case BTN_SELECT:
+			return @"Options";
+		case BTN_MODE:
+			return @"Stadia";
+		case BTN_TRIGGER_HAPPY1:
+			return @"Assistant";
+		case BTN_TRIGGER_HAPPY2:
+			return @"Capture";
+		}
+	}
 
 	switch (button) {
 	case BTN_A:
@@ -646,6 +675,10 @@ scale(float value, float min, float max)
 		else if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualShock4)
 			return [[[OHEvdevDualShock4 alloc]
+			    initWithController: self] autorelease];
+		else if (_vendorID == OHVendorIDGoogle &&
+		    _productID == OHProductIDStadiaController)
+			return [[[OHEvdevStadiaGamepad alloc]
 			    initWithController: self] autorelease];
 		else
 			return [[[OHEvdevGamepad alloc]

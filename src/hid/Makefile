@@ -24,7 +24,8 @@ SRCS_EVDEV = OHEvdevDualSense.m			\
 	     OHEvdevDualShock4.m		\
 	     OHEvdevGameController.m		\
 	     OHEvdevGamepad.m			\
-	     OHEvdevPlayStationGamepad.m
+	     OHEvdevPlayStationGamepad.m	\
+	     OHEvdevStadiaGamepad.m
 SRCS_NINTENDO_3DS = OHNintendo3DSGameController.m	\
 		    OHNintendo3DSGamepad.m
 SRCS_NINTENDO_DS = OHNintendoDSGameController.m

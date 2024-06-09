@@ -19,11 +19,13 @@
 
 #include "config.h"
 
-#import "OHEvdevPlayStationGamepad.h"
+#import "OHEvdevStadiaGamepad.h"
 #import "OFDictionary.h"
+#import "OHGameControllerAxis.h"
+#import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerEmulatedTriggerButton.h"
 
-@implementation OHEvdevPlayStationGamepad
+@implementation OHEvdevStadiaGamepad
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
 	OFMutableDictionary *buttons =
@@ -37,24 +39,23 @@
 	return buttons;
 }
 
-- (OHGameControllerButton *)northButton
+- (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
 {
-	return [_rawProfile.buttons objectForKey: @"Triangle"];
-}
+	OFMutableDictionary *axes =
+	    [[_rawProfile.axes mutableCopy] autorelease];
 
-- (OHGameControllerButton *)southButton
-{
-	return [_rawProfile.buttons objectForKey: @"Cross"];
-}
+	[axes removeObjectForKey: @"X"];
+	[axes removeObjectForKey: @"Y"];
+	[axes removeObjectForKey: @"Z"];
+	[axes removeObjectForKey: @"RZ"];
+	[axes removeObjectForKey: @"Gas"];
+	[axes removeObjectForKey: @"Brake"];
+	[axes removeObjectForKey: @"HAT0X"];
+	[axes removeObjectForKey: @"HAT0Y"];
 
-- (OHGameControllerButton *)westButton
-{
-	return [_rawProfile.buttons objectForKey: @"Square"];
-}
+	[axes makeImmutable];
 
-- (OHGameControllerButton *)eastButton
-{
-	return [_rawProfile.buttons objectForKey: @"Circle"];
+	return axes;
 }
 
 - (OHGameControllerButton *)leftShoulderButton
@@ -69,16 +70,18 @@
 
 - (OHGameControllerButton *)leftTriggerButton
 {
+	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"Brake"];
+
 	return [[[OHGameControllerEmulatedTriggerButton alloc]
 	    initWithName: @"L2"
-		    axis: [_rawProfile.axes objectForKey: @"Z"]] autorelease];
+		    axis: axis] autorelease];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
 	return [[[OHGameControllerEmulatedTriggerButton alloc]
 	    initWithName: @"R2"
-		    axis: [_rawProfile.axes objectForKey: @"RZ"]] autorelease];
+		    axis: [_rawProfile.axes objectForKey: @"Gas"]] autorelease];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
@@ -93,11 +96,27 @@
 
 - (OHGameControllerButton *)menuButton
 {
+	return [_rawProfile.buttons objectForKey: @"Menu"];
+}
+
+- (OHGameControllerButton *)optionsButton
+{
 	return [_rawProfile.buttons objectForKey: @"Options"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_rawProfile.buttons objectForKey: @"PS"];
+	return [_rawProfile.buttons objectForKey: @"Stadia"];
+}
+
+- (OHGameControllerDirectionalPad *)rightThumbstick
+{
+	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"Z"];
+	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"RZ"];
+
+	return [[[OHGameControllerDirectionalPad alloc]
+	    initWithName: @"Right Thumbstick"
+		   xAxis: xAxis
+		   yAxis: yAxis] autorelease];
 }
 @end

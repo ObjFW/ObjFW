@@ -100,8 +100,10 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern const uint16_t OHVendorIDSony;
+extern const uint16_t OHVendorIDGoogle;
 extern const uint16_t OHProductIDDualShock4;
 extern const uint16_t OHProductIDDualSense;
+extern const uint16_t OHProductIDStadiaController;
 #ifdef __cplusplus
 }
 #endif
