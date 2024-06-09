@@ -76,12 +76,11 @@ static const size_t maxControllers = 8;
 	self = [super init];
 
 	@try {
-		padInitialize(&_padState, HidNpadIdType_No1 + index,
+		padInitialize(&_pad, HidNpadIdType_No1 + index,
 		    (index == 0 ? HidNpadIdType_Handheld : 0));
-		padUpdate(&_padState);
+		padUpdate(&_pad);
 
-		if (!(padGetAttributes(&_padState) &
-		    HidNpadAttribute_IsConnected))
+		if (!padIsConnected(&_pad))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
@@ -115,8 +114,8 @@ static const size_t maxControllers = 8;
 	HidAnalogStickState stick;
 	OHGameControllerDirectionalPad *directionalPad;
 
-	padUpdate(&_padState);
-	keys = padGetButtons(&_padState);
+	padUpdate(&_pad);
+	keys = padGetButtons(&_pad);
 
 	[[buttons objectForKey: @"A"] setValue: !!(keys & HidNpadButton_A)];
 	[[buttons objectForKey: @"B"] setValue: !!(keys & HidNpadButton_B)];
@@ -133,14 +132,14 @@ static const size_t maxControllers = 8;
 	[[buttons objectForKey: @"+"] setValue: !!(keys & HidNpadButton_Plus)];
 	[[buttons objectForKey: @"-"] setValue: !!(keys & HidNpadButton_Minus)];
 
-	stick = padGetStickPos(&_padState, 0);
+	stick = padGetStickPos(&_pad, 0);
 	directionalPad = [directionalPads objectForKey: @"Left Thumbstick"];
 	[directionalPad.xAxis setValue:
 	    (float)stick.x / (stick.x < 0 ? -INT16_MIN : INT16_MAX)];
 	[directionalPad.yAxis setValue:
 	    -(float)stick.y / (stick.y < 0 ? -INT16_MIN : INT16_MAX)];
 
-	stick = padGetStickPos(&_padState, 1);
+	stick = padGetStickPos(&_pad, 1);
 	directionalPad = [directionalPads objectForKey: @"Right Thumbstick"];
 	[directionalPad.xAxis setValue:
 	    (float)stick.x / (stick.x < 0 ? -INT16_MIN : INT16_MAX)];

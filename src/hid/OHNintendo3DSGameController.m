@@ -82,8 +82,14 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 - (void)retrieveState
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *)
+	    *buttons = _extendedGamepad.buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *directionalPads = _extendedGamepad.directionalPads;
 	u32 keys;
 	circlePosition leftPos, rightPos;
+	OHGameControllerDirectionalPad *directionalPad;
 
 	hidScanInput();
 
@@ -91,16 +97,16 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	hidCircleRead(&leftPos);
 	hidCstickRead(&rightPos);
 
-	[_extendedGamepad.northButton setValue: !!(keys & KEY_X)];
-	[_extendedGamepad.southButton setValue: !!(keys & KEY_B)];
-	[_extendedGamepad.westButton setValue: !!(keys & KEY_Y)];
-	[_extendedGamepad.eastButton setValue: !!(keys & KEY_A)];
-	[_extendedGamepad.leftShoulderButton setValue: !!(keys & KEY_L)];
-	[_extendedGamepad.rightShoulderButton setValue: !!(keys & KEY_R)];
-	[_extendedGamepad.leftTriggerButton setValue: !!(keys & KEY_ZL)];
-	[_extendedGamepad.rightTriggerButton setValue: !!(keys & KEY_ZR)];
-	[_extendedGamepad.menuButton setValue: !!(keys & KEY_START)];
-	[_extendedGamepad.optionsButton setValue: !!(keys & KEY_SELECT)];
+	[[buttons objectForKey: @"A"] setValue: !!(keys & KEY_A)];
+	[[buttons objectForKey: @"B"] setValue: !!(keys & KEY_B)];
+	[[buttons objectForKey: @"X"] setValue: !!(keys & KEY_X)];
+	[[buttons objectForKey: @"Y"] setValue: !!(keys & KEY_Y)];
+	[[buttons objectForKey: @"L"] setValue: !!(keys & KEY_L)];
+	[[buttons objectForKey: @"R"] setValue: !!(keys & KEY_R)];
+	[[buttons objectForKey: @"ZL"] setValue: !!(keys & KEY_ZL)];
+	[[buttons objectForKey: @"ZR"] setValue: !!(keys & KEY_ZR)];
+	[[buttons objectForKey: @"Start"] setValue: !!(keys & KEY_START)];
+	[[buttons objectForKey: @"Select"] setValue: !!(keys & KEY_SELECT)];
 
 	if (leftPos.dx > 150)
 		leftPos.dx = 150;
@@ -120,16 +126,21 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	if (rightPos.dy < -150)
 		rightPos.dy = -150;
 
-	_extendedGamepad.leftThumbstick.xAxis.value = (float)leftPos.dx / 150;
-	_extendedGamepad.leftThumbstick.yAxis.value = -(float)leftPos.dy / 150;
-	_extendedGamepad.rightThumbstick.xAxis.value = (float)rightPos.dx / 150;
-	_extendedGamepad.rightThumbstick.yAxis.value =
-	    -(float)rightPos.dy / 150;
+	directionalPad = [directionalPads objectForKey: @"Circle Pad"];
+	directionalPad.xAxis.value = (float)leftPos.dx / 150;
+	directionalPad.yAxis.value = -(float)leftPos.dy / 150;
 
-	[_extendedGamepad.dPad.up setValue: !!(keys & KEY_DUP)];
-	[_extendedGamepad.dPad.down setValue: !!(keys & KEY_DDOWN)];
-	[_extendedGamepad.dPad.left setValue: !!(keys & KEY_DLEFT)];
-	[_extendedGamepad.dPad.right setValue: !!(keys & KEY_DRIGHT)];
+	directionalPad = [directionalPads objectForKey: @"C-Stick"];
+	directionalPad.xAxis.value = (float)rightPos.dx / 150;
+	directionalPad.yAxis.value = -(float)rightPos.dy / 150;
+
+	directionalPad = [directionalPads objectForKey: @"D-Pad"];
+	[directionalPad.up setValue: !!(keys & KEY_DUP)];
+	[directionalPad.down setValue: !!(keys & KEY_DDOWN)];
+	[directionalPad.left setValue: !!(keys & KEY_DLEFT)];
+	[directionalPad.right setValue: !!(keys & KEY_DRIGHT)];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString *)name

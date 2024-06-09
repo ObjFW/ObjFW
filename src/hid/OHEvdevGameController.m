@@ -61,8 +61,8 @@
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
 }
 
-- (instancetype)oh_initWithButtons: (OFDictionary *)buttons
-			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
+- (instancetype)initWithButtons: (OFDictionary *)buttons
+			   axes: (OFDictionary *)axes;
 @end
 
 static const uint16_t buttonIDs[] = {
@@ -424,7 +424,7 @@ scale(float value, float min, float max)
 
 		@try {
 			controller = [[[OHEvdevGameController alloc]
-			    oh_initWithPath: path] autorelease];
+			    initWithPath: path] autorelease];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
 				continue;
@@ -446,7 +446,7 @@ scale(float value, float min, float max)
 	return controllers;
 }
 
-- (instancetype)oh_initWithPath: (OFString *)path
+- (instancetype)initWithPath: (OFString *)path
 {
 	self = [super init];
 
@@ -554,8 +554,8 @@ scale(float value, float min, float max)
 		[axes makeImmutable];
 
 		_rawProfile = [[OHEvdevGameControllerProfile alloc]
-		    oh_initWithButtons: buttons
-				  axes: axes];
+		    initWithButtons: buttons
+			       axes: axes];
 
 		[self oh_pollState];
 
@@ -788,8 +788,8 @@ scale(float value, float min, float max)
 @implementation OHEvdevGameControllerProfile
 @synthesize buttons = _buttons, axes = _axes;
 
-- (instancetype)oh_initWithButtons: (OFDictionary *)buttons
-			      axes: (OFDictionary *)axes
+- (instancetype)initWithButtons: (OFDictionary *)buttons
+			   axes: (OFDictionary *)axes
 {
 	self = [super init];
 

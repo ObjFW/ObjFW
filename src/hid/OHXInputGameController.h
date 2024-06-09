@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OHXInputExtendedGamepad *_extendedGamepad;
 }
 
-- (instancetype)oh_initWithIndex: (DWORD)index OF_METHOD_FAMILY(init);
+- (instancetype)initWithIndex: (DWORD)index;
 @end
 
 #ifdef __cplusplus

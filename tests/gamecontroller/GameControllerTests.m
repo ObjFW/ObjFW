@@ -189,9 +189,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 #endif
 #if defined(OF_NINTENDO_SWITCH)
 	consoleInit(NULL);
-#endif
 
-#ifdef OF_NINTENDO_SWITCH
 	while (appletMainLoop()) {
 #else
 	for (;;) {

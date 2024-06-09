@@ -95,7 +95,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 			@try {
 				controller = [[[OHXInputGameController alloc]
-				    oh_initWithIndex: i] autorelease];
+				    initWithIndex: i] autorelease];
 			} @catch (OFInitializationFailedException *e) {
 				/* Controller does not exist. */
 				continue;
@@ -112,7 +112,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	return controllers;
 }
 
-- (instancetype)oh_initWithIndex: (DWORD)index
+- (instancetype)initWithIndex: (DWORD)index
 {
 	self = [super init];
 

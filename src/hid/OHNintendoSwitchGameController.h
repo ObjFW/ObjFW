@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OHNintendoSwitchGameController: OHGameController
 {
-	PadState _padState;
+	PadState _pad;
 	OHNintendoSwitchExtendedGamepad *_extendedGamepad;
 }
 
