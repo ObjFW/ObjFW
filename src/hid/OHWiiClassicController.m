@@ -19,19 +19,18 @@
 
 #include "config.h"
 
-#import "OHXInputExtendedGamepad.h"
+#import "OHWiiClassicController.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 
 static OFString *const buttonNames[] = {
-	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
-	@"Start", @"Back", @"Guide"
+	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"+", @"-", @"Home"
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHXInputExtendedGamepad
+@implementation OHWiiClassicController
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
 - (instancetype)init
@@ -48,13 +47,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button;
-
-			if ([buttonNames[i] isEqual: @"Guide"] &&
-			    OHXInputVersion == 910)
-				continue;
-
-			button = [[OHGameControllerButton alloc]
+			OHGameControllerButton *button =
+			    [[OHGameControllerButton alloc]
 			    initWithName: buttonNames[i]];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
@@ -129,67 +123,67 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerButton *)northButton
 {
-	return [_buttons objectForKey: @"Y"];
+	return [_buttons objectForKey: @"X"];
 }
 
 - (OHGameControllerButton *)southButton
 {
-	return [_buttons objectForKey: @"A"];
+	return [_buttons objectForKey: @"B"];
 }
 
 - (OHGameControllerButton *)westButton
 {
-	return [_buttons objectForKey: @"X"];
+	return [_buttons objectForKey: @"Y"];
 }
 
 - (OHGameControllerButton *)eastButton
 {
-	return [_buttons objectForKey: @"B"];
+	return [_buttons objectForKey: @"A"];
 }
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_buttons objectForKey: @"LB"];
+	return [_buttons objectForKey: @"ZL"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_buttons objectForKey: @"RB"];
+	return [_buttons objectForKey: @"ZR"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	return [_buttons objectForKey: @"LT"];
+	return [_buttons objectForKey: @"L"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	return [_buttons objectForKey: @"RT"];
+	return [_buttons objectForKey: @"R"];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_buttons objectForKey: @"LSB"];
+	return nil;
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_buttons objectForKey: @"RSB"];
+	return nil;
 }
 
 - (OHGameControllerButton *)menuButton
 {
-	return [_buttons objectForKey: @"Start"];
+	return [_buttons objectForKey: @"+"];
 }
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_buttons objectForKey: @"Back"];
+	return [_buttons objectForKey: @"-"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_buttons objectForKey: @"Guide"];
+	return [_buttons objectForKey: @"Home"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick

@@ -178,6 +178,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
+	AC_SUBST(USE_SRCS_WII, '${SRCS_WII}')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 

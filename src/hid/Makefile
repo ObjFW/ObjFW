@@ -18,6 +18,7 @@ SRCS = OHCombinedJoyCons.m		\
        ${USE_SRCS_EVDEV}		\
        ${USE_SRCS_NINTENDO_3DS}		\
        ${USE_SRCS_NINTENDO_DS}		\
+       ${USE_SRCS_WII}			\
        ${USE_SRCS_XINPUT}
 SRCS_EVDEV = OHEvdevDualSense.m				\
 	     OHEvdevDualShock4.m			\
@@ -29,6 +30,8 @@ SRCS_NINTENDO_3DS = OHNintendo3DSExtendedGamepad.m	\
 		    OHNintendo3DSGameController.m
 SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
 		   OHNintendoDSGameController.m
+SRCS_WII = OHWiiClassicController.m	\
+	   OHWiiGameController.m
 SRCS_XINPUT = OHXInputExtendedGamepad.m	\
 	      OHXInputGameController.m
 

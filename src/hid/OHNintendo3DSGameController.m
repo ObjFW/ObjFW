@@ -22,7 +22,6 @@
 #import "OHNintendo3DSGameController.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"

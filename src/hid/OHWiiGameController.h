@@ -18,23 +18,17 @@
  */
 
 #import "OHGameController.h"
-#import "OHGameControllerProfile.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHEvdevGameController: OHGameController
+@interface OHWiiGameController: OHGameController
 {
-	OFString *_path;
-	int _fd;
-	bool _discardUntilReport;
-	unsigned long *_evBits, *_keyBits, *_absBits;
-	uint16_t _vendorID, _productID;
-	OFString *_name;
+	int32_t _index;
+	uint32_t _type;
 	id <OHGameControllerProfile> _rawProfile;
 }
 
-- (instancetype)oh_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-- (void)oh_pollState;
+- (instancetype)initWithIndex: (int32_t)index type: (uint32_t)type;
 @end
 
 OF_ASSUME_NONNULL_END

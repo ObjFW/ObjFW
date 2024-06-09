@@ -17,24 +17,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
-#import "OHGameControllerProfile.h"
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHEvdevGameController: OHGameController
+@interface OHWiiClassicController: OFObject <OHExtendedGamepad>
 {
-	OFString *_path;
-	int _fd;
-	bool _discardUntilReport;
-	unsigned long *_evBits, *_keyBits, *_absBits;
-	uint16_t _vendorID, _productID;
-	OFString *_name;
-	id <OHGameControllerProfile> _rawProfile;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
 }
-
-- (instancetype)oh_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
-- (void)oh_pollState;
 @end
 
 OF_ASSUME_NONNULL_END
