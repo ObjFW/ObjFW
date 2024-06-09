@@ -24,6 +24,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHXInputGameController.h"
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
