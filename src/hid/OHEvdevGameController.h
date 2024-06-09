@@ -18,6 +18,7 @@
  */
 
 #import "OHGameController.h"
+#import "OHGameControllerProfile.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned long *_evBits, *_keyBits, *_absBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	OHGameControllerProfile *_rawProfile;
+	id <OHGameControllerProfile> _rawProfile;
 }
 
 - (instancetype)oh_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);

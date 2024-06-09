@@ -22,15 +22,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OHExtendedGamepad OHExtendedGamepad.h ObjFWHID/OHExtendedGamepad.h
+ * @protocol OHExtendedGamepad OHExtendedGamepad.h ObjFWHID/OHExtendedGamepad.h
  *
  * @brief A game controller profile representing a gamepad.
  */
-@interface OHExtendedGamepad: OHGamepad
-{
-	OF_RESERVE_IVARS(OHExtendedGamepad, 4)
-}
-
+@protocol OHExtendedGamepad <OHGamepad>
 /**
  * @brief The left trigger button.
  */

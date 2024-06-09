@@ -21,7 +21,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHNintendoDSGamepad: OHGamepad
+@interface OHNintendoDSGamepad: OFObject <OHGamepad>
+{
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
+}
 @end
 
 OF_ASSUME_NONNULL_END

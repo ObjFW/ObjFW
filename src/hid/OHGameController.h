@@ -29,13 +29,14 @@
 # endif
 #endif
 
+#import "OHGamepad.h"
+#import "OHExtendedGamepad.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
-@class OHExtendedGamepad;
 @class OHGameControllerProfile;
-@class OHGamepad;
 
 /**
  * @class OHGameController OHGameController.h ObjFWHID/OHGameController.h
@@ -71,20 +72,20 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The raw profile for the game controller, meaning no remapping is
  *	  being performed.
  */
-@property (readonly, nonatomic) OHGameControllerProfile *rawProfile;
+@property (readonly, nonatomic) id <OHGameControllerProfile> rawProfile;
 
 /**
  * @brief The gamepad profile for the game controller, or `nil` if not
  *	  supported.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OHGamepad *gamepad;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OHGamepad> gamepad;
 
 /**
  * @brief The extended gamepad profile for the game controller, or `nil` if not
  *	  supported.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OHExtendedGamepad *extendedGamepad;
+    id <OHExtendedGamepad> extendedGamepad;
 
 /**
  * @brief Returns the available controllers.

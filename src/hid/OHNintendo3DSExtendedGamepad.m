@@ -31,6 +31,8 @@ static OFString *const buttonNames[] = {
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 @implementation OHNintendo3DSExtendedGamepad
+@synthesize buttons = _buttons, directionalPads = _directionalPads;
+
 - (instancetype)init
 {
 	self = [super init];
@@ -52,8 +54,6 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
-
-		_axes = [[OFDictionary alloc] init];
 
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
@@ -108,6 +108,19 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	return self;
 }
 
+- (void)dealloc
+{
+	[_buttons release];
+	[_directionalPads release];
+
+	[super dealloc];
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
+{
+	return [OFDictionary dictionary];
+}
+
 - (OHGameControllerButton *)northButton
 {
 	return [_buttons objectForKey: @"X"];
@@ -148,6 +161,16 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	return [_buttons objectForKey: @"ZR"];
 }
 
+- (OHGameControllerButton *)leftThumbstickButton
+{
+	return nil;
+}
+
+- (OHGameControllerButton *)rightThumbstickButton
+{
+	return nil;
+}
+
 - (OHGameControllerButton *)menuButton
 {
 	return [_buttons objectForKey: @"Start"];
@@ -156,6 +179,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 - (OHGameControllerButton *)optionsButton
 {
 	return [_buttons objectForKey: @"Select"];
+}
+
+- (OHGameControllerButton *)homeButton
+{
+	return nil;
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick

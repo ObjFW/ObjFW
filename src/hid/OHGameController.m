@@ -96,12 +96,12 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OHGamepad *)gamepad
+- (id <OHGamepad>)gamepad
 {
 	return nil;
 }
 
-- (OHExtendedGamepad *)extendedGamepad
+- (id <OHExtendedGamepad>)extendedGamepad
 {
 	return nil;
 }

@@ -22,15 +22,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OHGamepad OHGamepad.h ObjFWHID/OHGamepad.h
+ * @protocol OHGamepad OHGamepad.h ObjFWHID/OHGamepad.h
  *
  * @brief A game controller profile representing a gamepad.
  */
-@interface OHGamepad: OHGameControllerProfile
-{
-	OF_RESERVE_IVARS(OHGamepad, 4)
-}
-
+@protocol OHGamepad <OHGameControllerProfile>
 /**
  * @brief The north button on the gamepad's diamond pad.
  */

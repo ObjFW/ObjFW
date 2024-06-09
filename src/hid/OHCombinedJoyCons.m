@@ -28,6 +28,8 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OHCombinedJoyCons
+@synthesize buttons = _buttons, directionalPads = _directionalPads;
+
 + (instancetype)gamepadWithLeftJoyCon: (OHGameController *)leftJoyCon
 			  rightJoyCon: (OHGameController *)rightJoyCon
 {
@@ -82,8 +84,6 @@
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
 
-		_axes = [[OFDictionary alloc] init];
-
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
@@ -128,8 +128,15 @@
 {
 	[_leftJoyCon release];
 	[_rightJoyCon release];
+	[_buttons release];
+	[_directionalPads release];
 
 	[super dealloc];
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
+{
+	return [OFDictionary dictionary];
 }
 
 - (OHGameControllerButton *)northButton
@@ -197,12 +204,12 @@
 	return [_buttons objectForKey: @"Home"];
 }
 
-- (OHGameControllerDirectionalPad *)leftThumbStick
+- (OHGameControllerDirectionalPad *)leftThumbstick
 {
 	return [_directionalPads objectForKey: @"Left Thumbstick"];
 }
 
-- (OHGameControllerDirectionalPad *)rightThumbStick
+- (OHGameControllerDirectionalPad *)rightThumbstick
 {
 	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }

@@ -22,11 +22,10 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OHEvdevGameController;
-@class OHGameControllerProfile;
 
-@interface OHEvdevExtendedGamepad: OHExtendedGamepad
+@interface OHEvdevExtendedGamepad: OFObject <OHExtendedGamepad>
 {
-	OHGameControllerProfile *_rawProfile;
+	id <OHGameControllerProfile> _rawProfile;
 }
 
 - (instancetype)initWithController: (OHEvdevGameController *)controller;

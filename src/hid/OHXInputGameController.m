@@ -236,12 +236,12 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	return nil;
 }
 
-- (OHGameControllerProfile *)rawProfile
+- (id <OHGameControllerProfile>)rawProfile
 {
 	return _extendedGamepad;
 }
 
-- (OHGamepad *)gamepad
+- (id <OHGamepad>)gamepad
 {
 	return _extendedGamepad;
 }

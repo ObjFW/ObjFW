@@ -62,7 +62,7 @@ static size_t buttonsPerLine = 5;
 
 OF_APPLICATION_DELEGATE(GameControllerTests)
 
-static void printProfile(OHGameControllerProfile *profile)
+static void printProfile(id <OHGameControllerProfile> profile)
 {
 	OFArray OF_GENERIC(OFString *) *buttons =
 	    profile.buttons.allKeys.sortedArray;
@@ -127,8 +127,8 @@ static void printProfile(OHGameControllerProfile *profile)
 	if (directionalPads.count > 0)
 		[OFStdOut writeString: @"\n"];
 
-	if ([profile isKindOfClass: [OHGamepad class]]) {
-		OHGamepad *gamepad = (OHGamepad *)profile;
+	if ([profile conformsToProtocol: @protocol(OHGamepad)]) {
+		id <OHGamepad> gamepad = (id <OHGamepad>)profile;
 
 		[OFStdOut writeFormat:
 		    @"[Map] North: %@  South: %@  West: %@  East: %@\n",
@@ -140,9 +140,9 @@ static void printProfile(OHGameControllerProfile *profile)
 		    gamepad.rightShoulderButton.name];
 	}
 
-	if ([profile isKindOfClass: [OHExtendedGamepad class]]) {
-		OHExtendedGamepad *extendedGamepad =
-		    (OHExtendedGamepad *)profile;
+	if ([profile conformsToProtocol: @protocol(OHExtendedGamepad)]) {
+		id <OHExtendedGamepad> extendedGamepad =
+		    (id <OHExtendedGamepad>)profile;
 
 		[OFStdOut writeFormat:
 		    @"[Map] Left Trigger: %@  Right Trigger: %@\n",
@@ -154,23 +154,23 @@ static void printProfile(OHGameControllerProfile *profile)
 		    extendedGamepad.rightThumbstickButton.name];
 	}
 
-	if ([profile isKindOfClass: [OHGamepad class]]) {
-		OHGamepad *gamepad = (OHGamepad *)profile;
+	if ([profile conformsToProtocol: @protocol(OHGamepad)]) {
+		id <OHGamepad> gamepad = (id <OHGamepad>)profile;
 
 		[OFStdOut writeFormat:
 		    @"[Map] Menu: %@  Options: %@",
 		    gamepad.menuButton.name, gamepad.optionsButton.name];
 	}
 
-	if ([profile isKindOfClass: [OHExtendedGamepad class]]) {
-		OHExtendedGamepad *extendedGamepad =
-		    (OHExtendedGamepad *)profile;
+	if ([profile conformsToProtocol: @protocol(OHExtendedGamepad)]) {
+		id <OHExtendedGamepad> extendedGamepad =
+		    (id <OHExtendedGamepad>)profile;
 
 		[OFStdOut writeFormat: @"  Home: %@",
 		    extendedGamepad.homeButton.name];
 	}
 
-	if ([profile isKindOfClass: [OHGamepad class]])
+	if ([profile conformsToProtocol: @protocol(OHGamepad)])
 		[OFStdOut writeString: @"\n"];
 }
 
@@ -199,7 +199,7 @@ static void printProfile(OHGameControllerProfile *profile)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OHGameController *controller in _controllers) {
-			OHGameControllerProfile *profile;
+			id <OHGameControllerProfile> profile;
 
 			profile = controller.extendedGamepad;
 			if (profile == nil)

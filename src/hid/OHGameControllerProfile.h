@@ -37,20 +37,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameControllerDirectionalPad;
 
 /**
- * @class OHGameControllerProfile \
- *	  OHGameControllerProfile.h ObjFWHID/OHGameControllerProfile.h
+ * @protocol OHGameControllerProfile \
+ *	     OHGameControllerProfile.h ObjFWHID/OHGameControllerProfile.h
  *
  * @brief A profile for a @ref OHGameController.
  */
-@interface OHGameControllerProfile: OFObject
-{
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
-	    *_directionalPads;
-	OF_RESERVE_IVARS(OHGameControllerProfile, 4)
-}
-
+@protocol OHGameControllerProfile <OFObject>
 /**
  * @brief A map of all button names to their @ref OHGameControllerButton.
  */

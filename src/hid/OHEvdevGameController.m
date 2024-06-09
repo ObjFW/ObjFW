@@ -55,7 +55,12 @@
 }
 @end
 
-@interface OHEvdevGameControllerProfile: OHGameControllerProfile
+@interface OHEvdevGameControllerProfile: OFObject <OHGameControllerProfile>
+{
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
+}
+
 - (instancetype)oh_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes OF_METHOD_FAMILY(init);
 @end
@@ -729,12 +734,12 @@ scale(float value, float min, float max)
 	}
 }
 
-- (OHGamepad *)gamepad
+- (id <OHGamepad>)gamepad
 {
 	return self.extendedGamepad;
 }
 
-- (OHExtendedGamepad *)extendedGamepad
+- (id <OHExtendedGamepad>)extendedGamepad
 {
 	@try {
 		if (_vendorID == OHVendorIDSony &&
@@ -781,6 +786,8 @@ scale(float value, float min, float max)
 @end
 
 @implementation OHEvdevGameControllerProfile
+@synthesize buttons = _buttons, axes = _axes;
+
 - (instancetype)oh_initWithButtons: (OFDictionary *)buttons
 			      axes: (OFDictionary *)axes
 {
@@ -795,5 +802,19 @@ scale(float value, float min, float max)
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[_buttons release];
+	[_axes release];
+
+	[super dealloc];
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *) *)
+    directionalPads
+{
+	return [OFDictionary dictionary];
 }
 @end

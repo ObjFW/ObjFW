@@ -22,15 +22,22 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OHGameController;
+@class OHGameControllerButton;
+@class OHGameControllerDirectionalPad;
 
 /**
  * @class OHCombinedJoyCons OHCombinedJoyCons.h ObjFWHID/OHCombinedJoyCons.h
  *
  * @brief Combines a left and a right Joy-Con into a gamepad.
  */
-@interface OHCombinedJoyCons: OHExtendedGamepad
+OF_SUBCLASSING_RESTRICTED
+@interface OHCombinedJoyCons: OFObject <OHExtendedGamepad>
 {
-	OHGameControllerProfile *_leftJoyCon, *_rightJoyCon;
+	id <OHGameControllerProfile> _leftJoyCon;
+	id <OHGameControllerProfile> _rightJoyCon;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
 }
 
 /**

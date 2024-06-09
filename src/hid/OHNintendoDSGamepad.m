@@ -30,6 +30,8 @@ static OFString *const buttonNames[] = {
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 @implementation OHNintendoDSGamepad
+@synthesize buttons = _buttons, directionalPads = _directionalPads;
+
 - (instancetype)init
 {
 	self = [super init];
@@ -49,8 +51,6 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
-
-		_axes = [[OFMutableDictionary alloc] init];
 
 		up = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Up"] autorelease];
@@ -78,6 +78,19 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[_buttons release];
+	[_directionalPads release];
+
+	[super dealloc];
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
+{
+	return [OFDictionary dictionary];
 }
 
 - (OHGameControllerButton *)northButton
