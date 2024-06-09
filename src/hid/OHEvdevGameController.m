@@ -113,19 +113,59 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return @"R3";
 		case BTN_START:
 			return @"Options";
+		case BTN_SELECT:
+			if (productID == OHProductIDDualSense)
+				return @"Create";
+			else
+				return @"Share";
 		case BTN_MODE:
 			return @"PS";
 		}
-	}
-
-	if (vendorID == OHVendorIDSony && productID == OHProductIDDualSense)
-		if (button == BTN_SELECT)
-			return @"Create";
-	if (vendorID == OHVendorIDSony && productID == OHProductIDDualShock4)
-		if (button == BTN_SELECT)
-			return @"Share";
-
-	if (vendorID == OHVendorIDGoogle &&
+	} else if (vendorID == OHVendorIDNintendo &&
+	    productID == OHProductIDLeftJoyCon) {
+		switch (button) {
+		case BTN_TL:
+			return @"L";
+		case BTN_TL2:
+			return @"ZL";
+		case BTN_THUMBL:
+			return @"Left Stick";
+		case BTN_SELECT:
+			return @"-";
+		case BTN_Z:
+			return @"Capture";
+		case BTN_TR:
+			return @"SL";
+		case BTN_TR2:
+			return @"SR";
+		}
+	} else if (vendorID == OHVendorIDNintendo &&
+	    productID == OHProductIDRightJoyCon) {
+		switch (button) {
+		case BTN_NORTH:
+			return @"X";
+		case BTN_SOUTH:
+			return @"B";
+		case BTN_WEST:
+			return @"Y";
+		case BTN_EAST:
+			return @"A";
+		case BTN_TR:
+			return @"R";
+		case BTN_TR2:
+			return @"ZR";
+		case BTN_THUMBR:
+			return @"Right Stick";
+		case BTN_START:
+			return @"+";
+		case BTN_MODE:
+			return @"Home";
+		case BTN_TL:
+			return @"SL";
+		case BTN_TL2:
+			return @"SR";
+		}
+	} else if (vendorID == OHVendorIDGoogle &&
 	    productID == OHProductIDStadiaController) {
 		switch (button) {
 		case BTN_TL:

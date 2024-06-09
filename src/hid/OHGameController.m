@@ -39,9 +39,12 @@
 #endif
 
 const uint16_t OHVendorIDSony = 0x054C;
+const uint16_t OHVendorIDNintendo = 0x057E;
 const uint16_t OHVendorIDGoogle = 0x18D1;
 const uint16_t OHProductIDDualShock4 = 0x09CC;
 const uint16_t OHProductIDDualSense = 0x0CE6;
+const uint16_t OHProductIDLeftJoyCon = 0x2006;
+const uint16_t OHProductIDRightJoyCon = 0x2007;
 const uint16_t OHProductIDStadiaController = 0x9400;
 
 @implementation OHGameController
