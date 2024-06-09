@@ -3,7 +3,8 @@ include ../../extra.mk
 CLEAN = boot.dol		\
 	${PROG_NOINST}.3dsx	\
 	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.ndsd	\
+	${PROG_NOINST}.nds	\
+	${PROG_NOINST}.nro
 
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = GameControllerTests.m
@@ -109,6 +110,9 @@ ${PROG_NOINST}.arm9: ${PROG_NOINST}
 
 ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
 	ndstool -c $@ -9 ${PROG_NOINST}
+
+${PROG_NOINST}.nro: ${PROG_NOINST}
+	elf2nro ${PROG_NOINST} $@
 
 CPPFLAGS += -I../../src			\
 	    -I../../src/exceptions	\

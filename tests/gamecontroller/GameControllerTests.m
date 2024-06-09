@@ -47,10 +47,17 @@ static size_t buttonsPerLine = 3;
 static size_t buttonsPerLine = 5;
 #endif
 
-#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 # define red maroon
 # define yellow olive
 # define gray silver
+#endif
+
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
 #endif
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
@@ -180,8 +187,15 @@ static void printProfile(id <OHGameControllerProfile> profile)
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdIOStream setUpConsole];
 #endif
+#if defined(OF_NINTENDO_SWITCH)
+	consoleInit(NULL);
+#endif
 
+#ifdef OF_NINTENDO_SWITCH
+	while (appletMainLoop()) {
+#else
 	for (;;) {
+#endif
 		void *pool = objc_autoreleasePoolPush();
 		OHGameController *leftJoyCon = nil, *rightJoyCon = nil;
 
@@ -244,6 +258,8 @@ static void printProfile(id <OHGameControllerProfile> profile)
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 		[OFThread waitForVerticalBlank];
+#elif defined(OF_NINTENDO_SWITCH)
+		consoleUpdate(NULL);
 #else
 		[OFThread sleepForTimeInterval: 1.f / 60.f];
 #endif

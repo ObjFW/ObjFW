@@ -39,6 +39,9 @@
 #ifdef OF_WII
 # import "OHWiiGameController.h"
 #endif
+#ifdef OF_NINTENDO_SWITCH
+# import "OHNintendoSwitchGameController.h"
+#endif
 
 const uint16_t OHVendorIDSony = 0x054C;
 const uint16_t OHVendorIDNintendo = 0x057E;
@@ -65,6 +68,8 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 	return [OHNintendo3DSGameController controllers];
 #elif defined(OF_WII)
 	return [OHWiiGameController controllers];
+#elif defined(OF_NINTENDO_SWITCH)
+	return [OHNintendoSwitchGameController controllers];
 #else
 	return [OFArray array];
 #endif

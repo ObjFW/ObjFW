@@ -49,6 +49,7 @@ tests/gamecontroller/tests
 tests/gamecontroller/tests.3dsx
 tests/gamecontroller/tests.arm9
 tests/gamecontroller/tests.nds
+tests/gamecontroller/tests.nro
 tests/iOS.xcodeproj/*.pbxuser
 tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata

@@ -287,6 +287,7 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_SWITCH, 1,
 		[Whether we are compiling for Nintendo Switch])
+	AC_SUBST(USE_SRCS_NINTENDO_SWITCH, '${SRCS_NINTENDO_SWITCH}')
 ])
 
 CPP="$OBJCPP"

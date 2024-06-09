@@ -114,7 +114,6 @@ isSubclassOfClass(Class class, Class superclass)
 	[OFStdIOStream setUpConsole];
 #elif defined(OF_NINTENDO_SWITCH)
 	consoleInit(NULL);
-	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 	updateConsole(true);
 #endif
 }
@@ -279,11 +278,16 @@ isSubclassOfClass(Class class, Class superclass)
 	}
 
 	if (status == StatusFailed) {
-#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
 		[OFStdOut setForegroundColor: [OFColor silver]];
 		[OFStdOut writeLine: @"Press A to continue"];
 
+# ifdef OF_NINTENDO_SWITCH
+		while (appletMainLoop()) {
+# else
 		for (;;) {
+# endif
 			void *pool = objc_autoreleasePoolPush();
 			OHGameController *controller =
 			    [[OHGameController controllers] objectAtIndex: 0];
@@ -295,22 +299,13 @@ isSubclassOfClass(Class class, Class superclass)
 			if (button.pressed)
 				break;
 
+# ifdef OF_NINTENDO_SWITCH
+			updateConsole(true);
+# else
 			[OFThread waitForVerticalBlank];
+# endif
 
 			objc_autoreleasePoolPop(pool);
-		}
-#elif defined(OF_NINTENDO_SWITCH)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		while (appletMainLoop()) {
-			PadState pad;
-
-			padUpdate(&pad);
-			updateConsole(true);
-
-			if (padGetButtonsDown(&pad) & HidNpadButton_A)
-				break;
 		}
 #endif
 	}
