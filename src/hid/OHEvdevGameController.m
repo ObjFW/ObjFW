@@ -33,8 +33,8 @@
 
 #import "OHEvdevDualSense.h"
 #import "OHEvdevDualShock4.h"
-#import "OHEvdevGamepad.h"
-#import "OHEvdevStadiaGamepad.h"
+#import "OHEvdevExtendedGamepad.h"
+#import "OHEvdevStadiaExtendedGamepad.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
@@ -731,6 +731,11 @@ scale(float value, float min, float max)
 
 - (OHGamepad *)gamepad
 {
+	return self.extendedGamepad;
+}
+
+- (OHExtendedGamepad *)extendedGamepad
+{
 	@try {
 		if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualSense)
@@ -742,10 +747,10 @@ scale(float value, float min, float max)
 			    initWithController: self] autorelease];
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
-			return [[[OHEvdevStadiaGamepad alloc]
+			return [[[OHEvdevStadiaExtendedGamepad alloc]
 			    initWithController: self] autorelease];
 		else
-			return [[[OHEvdevGamepad alloc]
+			return [[[OHEvdevExtendedGamepad alloc]
 			    initWithController: self] autorelease];
 	} @catch (OFInvalidArgumentException *e) {
 		return nil;

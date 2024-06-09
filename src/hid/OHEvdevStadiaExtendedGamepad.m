@@ -19,13 +19,13 @@
 
 #include "config.h"
 
-#import "OHEvdevStadiaGamepad.h"
+#import "OHEvdevStadiaExtendedGamepad.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerEmulatedTriggerButton.h"
 
-@implementation OHEvdevStadiaGamepad
+@implementation OHEvdevStadiaExtendedGamepad
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
 	OFMutableDictionary *buttons =

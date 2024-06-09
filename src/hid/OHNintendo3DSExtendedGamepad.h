@@ -17,11 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGamepad.h"
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHNintendo3DSGamepad: OHGamepad
+@interface OHNintendo3DSExtendedGamepad: OHExtendedGamepad
 @end
 
 OF_ASSUME_NONNULL_END

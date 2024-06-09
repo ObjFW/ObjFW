@@ -17,11 +17,26 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHEvdevGamepad.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OHExtendedGamepad.h"
 
-@interface OHEvdevPlayStationGamepad: OHEvdevGamepad
+@implementation OHExtendedGamepad
+@dynamic leftTriggerButton, rightTriggerButton, leftThumbstick, rightThumbstick;
+@dynamic dPad;
+
+- (OHGameControllerButton *)leftThumbstickButton
+{
+	return nil;
+}
+
+- (OHGameControllerButton *)rightThumbstickButton
+{
+	return nil;
+}
+
+- (OHGameControllerButton *)homeButton
+{
+	return nil;
+}
 @end
-
-OF_ASSUME_NONNULL_END

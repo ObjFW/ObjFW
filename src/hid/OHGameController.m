@@ -23,7 +23,6 @@
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFSet.h"
-#import "OHGamepad.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
@@ -98,6 +97,11 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 }
 
 - (OHGamepad *)gamepad
+{
+	return nil;
+}
+
+- (OHExtendedGamepad *)extendedGamepad
 {
 	return nil;
 }

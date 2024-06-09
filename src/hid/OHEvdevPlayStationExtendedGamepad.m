@@ -19,11 +19,11 @@
 
 #include "config.h"
 
-#import "OHEvdevPlayStationGamepad.h"
+#import "OHEvdevPlayStationExtendedGamepad.h"
 #import "OFDictionary.h"
 #import "OHGameControllerEmulatedTriggerButton.h"
 
-@implementation OHEvdevPlayStationGamepad
+@implementation OHEvdevPlayStationExtendedGamepad
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
 	OFMutableDictionary *buttons =

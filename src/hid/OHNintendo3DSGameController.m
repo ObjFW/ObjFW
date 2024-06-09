@@ -26,7 +26,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHNintendo3DSGamepad.h"
+#import "OHNintendo3DSExtendedGamepad.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -38,7 +38,7 @@
 static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 @implementation OHNintendo3DSGameController
-@synthesize gamepad = _gamepad;
+@synthesize extendedGamepad = _extendedGamepad;
 
 + (void)initialize
 {
@@ -63,7 +63,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	self = [super init];
 
 	@try {
-		_gamepad = [[OHNintendo3DSGamepad alloc] init];
+		_extendedGamepad = [[OHNintendo3DSExtendedGamepad alloc] init];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -76,7 +76,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 - (void)dealloc
 {
-	[_gamepad release];
+	[_extendedGamepad release];
 
 	[super dealloc];
 }
@@ -92,16 +92,16 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	hidCircleRead(&leftPos);
 	hidCstickRead(&rightPos);
 
-	[_gamepad.northButton setValue: !!(keys & KEY_X)];
-	[_gamepad.southButton setValue: !!(keys & KEY_B)];
-	[_gamepad.westButton setValue: !!(keys & KEY_Y)];
-	[_gamepad.eastButton setValue: !!(keys & KEY_A)];
-	[_gamepad.leftShoulderButton setValue: !!(keys & KEY_L)];
-	[_gamepad.rightShoulderButton setValue: !!(keys & KEY_R)];
-	[_gamepad.leftTriggerButton setValue: !!(keys & KEY_ZL)];
-	[_gamepad.rightTriggerButton setValue: !!(keys & KEY_ZR)];
-	[_gamepad.menuButton setValue: !!(keys & KEY_START)];
-	[_gamepad.optionsButton setValue: !!(keys & KEY_SELECT)];
+	[_extendedGamepad.northButton setValue: !!(keys & KEY_X)];
+	[_extendedGamepad.southButton setValue: !!(keys & KEY_B)];
+	[_extendedGamepad.westButton setValue: !!(keys & KEY_Y)];
+	[_extendedGamepad.eastButton setValue: !!(keys & KEY_A)];
+	[_extendedGamepad.leftShoulderButton setValue: !!(keys & KEY_L)];
+	[_extendedGamepad.rightShoulderButton setValue: !!(keys & KEY_R)];
+	[_extendedGamepad.leftTriggerButton setValue: !!(keys & KEY_ZL)];
+	[_extendedGamepad.rightTriggerButton setValue: !!(keys & KEY_ZR)];
+	[_extendedGamepad.menuButton setValue: !!(keys & KEY_START)];
+	[_extendedGamepad.optionsButton setValue: !!(keys & KEY_SELECT)];
 
 	if (leftPos.dx > 150)
 		leftPos.dx = 150;
@@ -121,15 +121,16 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	if (rightPos.dy < -150)
 		rightPos.dy = -150;
 
-	_gamepad.leftThumbstick.xAxis.value = (float)leftPos.dx / 150;
-	_gamepad.leftThumbstick.yAxis.value = -(float)leftPos.dy / 150;
-	_gamepad.rightThumbstick.xAxis.value = (float)rightPos.dx / 150;
-	_gamepad.rightThumbstick.yAxis.value = -(float)rightPos.dy / 150;
+	_extendedGamepad.leftThumbstick.xAxis.value = (float)leftPos.dx / 150;
+	_extendedGamepad.leftThumbstick.yAxis.value = -(float)leftPos.dy / 150;
+	_extendedGamepad.rightThumbstick.xAxis.value = (float)rightPos.dx / 150;
+	_extendedGamepad.rightThumbstick.yAxis.value =
+	    -(float)rightPos.dy / 150;
 
-	[_gamepad.dPad.up setValue: !!(keys & KEY_DUP)];
-	[_gamepad.dPad.down setValue: !!(keys & KEY_DDOWN)];
-	[_gamepad.dPad.left setValue: !!(keys & KEY_DLEFT)];
-	[_gamepad.dPad.right setValue: !!(keys & KEY_DRIGHT)];
+	[_extendedGamepad.dPad.up setValue: !!(keys & KEY_DUP)];
+	[_extendedGamepad.dPad.down setValue: !!(keys & KEY_DDOWN)];
+	[_extendedGamepad.dPad.left setValue: !!(keys & KEY_DLEFT)];
+	[_extendedGamepad.dPad.right setValue: !!(keys & KEY_DRIGHT)];
 }
 
 - (OFString *)name
@@ -139,6 +140,11 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 - (OHGameControllerProfile *)rawProfile
 {
-	return _gamepad;
+	return _extendedGamepad;
+}
+
+- (OHGamepad *)gamepad
+{
+	return _extendedGamepad;
 }
 @end

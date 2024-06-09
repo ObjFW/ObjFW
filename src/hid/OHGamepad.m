@@ -23,21 +23,5 @@
 
 @implementation OHGamepad
 @dynamic northButton, southButton, westButton, eastButton, leftShoulderButton;
-@dynamic rightShoulderButton, leftTriggerButton, rightTriggerButton;
-@dynamic menuButton, optionsButton, leftThumbstick, rightThumbstick, dPad;
-
-- (OHGameControllerButton *)leftThumbstickButton
-{
-	return nil;
-}
-
-- (OHGameControllerButton *)rightThumbstickButton
-{
-	return nil;
-}
-
-- (OHGameControllerButton *)homeButton
-{
-	return nil;
-}
+@dynamic rightShoulderButton, menuButton, optionsButton, dPad;
 @end

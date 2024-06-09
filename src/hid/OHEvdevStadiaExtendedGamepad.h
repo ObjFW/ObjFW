@@ -17,11 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGamepad.h"
+#import "OHEvdevExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHXInputGamepad: OHGamepad
+@interface OHEvdevStadiaExtendedGamepad: OHEvdevExtendedGamepad
 @end
 
 OF_ASSUME_NONNULL_END

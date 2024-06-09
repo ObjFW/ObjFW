@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OHEvdevGamepad.h"
+#import "OHEvdevExtendedGamepad.h"
 #import "OFDictionary.h"
 #import "OHEvdevGameController.h"
 #import "OHGameControllerDirectionalPad.h"
@@ -27,7 +27,7 @@
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OHEvdevGamepad
+@implementation OHEvdevExtendedGamepad
 - (instancetype)initWithController: (OHEvdevGameController *)controller
 {
 	self = [super init];

@@ -19,6 +19,10 @@
 
 #import "OHGameController.h"
 #import "OHGameControllerElement.h"
-#import "OHGameControllerButton.h"
 #import "OHGameControllerAxis.h"
+#import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerProfile.h"
+#import "OHGamepad.h"
+#import "OHExtendedGamepad.h"
+#import "OHCombinedJoyCons.h"

@@ -17,16 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
+#import "OHEvdevExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHNintendo3DSExtendedGamepad;
-
-@interface OHNintendo3DSGameController: OHGameController
-{
-	OHNintendo3DSExtendedGamepad *_extendedGamepad;
-}
+@interface OHEvdevPlayStationExtendedGamepad: OHEvdevExtendedGamepad
 @end
 
 OF_ASSUME_NONNULL_END

@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
+@class OHExtendedGamepad;
 @class OHGameControllerProfile;
 @class OHGamepad;
 
@@ -77,6 +78,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	  supported.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OHGamepad *gamepad;
+
+/**
+ * @brief The extended gamepad profile for the game controller, or `nil` if not
+ *	  supported.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OHExtendedGamepad *extendedGamepad;
 
 /**
  * @brief Returns the available controllers.

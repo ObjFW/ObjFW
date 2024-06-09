@@ -19,18 +19,20 @@
 
 #include "config.h"
 
-#import "OHNintendo3DSGamepad.h"
+#import "OHXInputExtendedGamepad.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHXInputGameController.h"
 
 static OFString *const buttonNames[] = {
-	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Start", @"Select"
+	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
+	@"Start", @"Back", @"Guide"
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHNintendo3DSGamepad
+@implementation OHXInputExtendedGamepad
 - (instancetype)init
 {
 	self = [super init];
@@ -45,9 +47,14 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
+			OHGameControllerButton *button;
+
+			if ([buttonNames[i] isEqual: @"Guide"] &&
+			    OHXInputVersion == 910)
+				continue;
+
+			button = [[OHGameControllerButton alloc]
+			    initWithName: buttonNames[i]];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
@@ -63,22 +70,22 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		yAxis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"Y"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Circle Pad"
+		    initWithName: @"Left Thumbstick"
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Circle Pad"];
+				    forKey: @"Left Thumbstick"];
 
 		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"CX"] autorelease];
+		    initWithName: @"RX"] autorelease];
 		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"CY"] autorelease];
+		    initWithName: @"RY"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"C-Stick"
+		    initWithName: @"Right Thumbstick"
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
-				    forKey: @"C-Stick"];
+				    forKey: @"Right Thumbstick"];
 
 		up = [[[OHGameControllerButton alloc]
 		    initWithName: @"D-Pad Up"] autorelease];
@@ -110,42 +117,52 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerButton *)northButton
 {
-	return [_buttons objectForKey: @"X"];
+	return [_buttons objectForKey: @"Y"];
 }
 
 - (OHGameControllerButton *)southButton
 {
-	return [_buttons objectForKey: @"B"];
+	return [_buttons objectForKey: @"A"];
 }
 
 - (OHGameControllerButton *)westButton
 {
-	return [_buttons objectForKey: @"Y"];
+	return [_buttons objectForKey: @"X"];
 }
 
 - (OHGameControllerButton *)eastButton
 {
-	return [_buttons objectForKey: @"A"];
+	return [_buttons objectForKey: @"B"];
 }
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_buttons objectForKey: @"L"];
+	return [_buttons objectForKey: @"LB"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_buttons objectForKey: @"R"];
+	return [_buttons objectForKey: @"RB"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	return [_buttons objectForKey: @"ZL"];
+	return [_buttons objectForKey: @"LT"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	return [_buttons objectForKey: @"ZR"];
+	return [_buttons objectForKey: @"RT"];
+}
+
+- (OHGameControllerButton *)leftThumbstickButton
+{
+	return [_buttons objectForKey: @"LSB"];
+}
+
+- (OHGameControllerButton *)rightThumbstickButton
+{
+	return [_buttons objectForKey: @"RSB"];
 }
 
 - (OHGameControllerButton *)menuButton
@@ -155,17 +172,22 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_buttons objectForKey: @"Select"];
+	return [_buttons objectForKey: @"Back"];
+}
+
+- (OHGameControllerButton *)homeButton
+{
+	return [_buttons objectForKey: @"Guide"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	return [_directionalPads objectForKey: @"Circle Pad"];
+	return [_directionalPads objectForKey: @"Left Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	return [_directionalPads objectForKey: @"C-Stick"];
+	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)dPad

@@ -62,32 +62,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OHGameControllerButton *rightShoulderButton;
 
 /**
- * @brief The left trigger button.
- */
-@property (readonly, nonatomic) OHGameControllerButton *leftTriggerButton;
-
-/**
- * @brief The right trigger button.
- */
-@property (readonly, nonatomic) OHGameControllerButton *rightTriggerButton;
-
-/**
- * @brief The left thumb stick button.
- *
- * This button is optional and may be `nil`.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OHGameControllerButton *leftThumbstickButton;
-
-/**
- * @brief The right thumb stick button.
- *
- * This button is optional and may be `nil`.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OHGameControllerButton *rightThumbstickButton;
-
-/**
  * @brief The menu button, sometimes also called start button.
  */
 @property (readonly, nonatomic) OHGameControllerButton *menuButton;
@@ -96,24 +70,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The options button, sometimes also called select button.
  */
 @property (readonly, nonatomic) OHGameControllerButton *optionsButton;
-
-/**
- * @brief The home button.
- *
- * This button is optional and may be `nil`.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OHGameControllerButton *homeButton;
-
-/**
- * @brief The left thumb stick.
- */
-@property (readonly, nonatomic) OHGameControllerDirectionalPad *leftThumbstick;
-
-/**
- * @brief The right thumb stick.
- */
-@property (readonly, nonatomic) OHGameControllerDirectionalPad *rightThumbstick;
 
 /**
  * @brief The D-Pad.

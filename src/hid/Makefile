@@ -10,6 +10,7 @@ LIB_MINOR = ${OBJFWHID_LIB_MINOR}
 LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
 SRCS = OHCombinedJoyCons.m		\
+       OHExtendedGamepad.m		\
        OHGameController.m		\
        OHGameControllerAxis.m		\
        OHGameControllerButton.m		\
@@ -21,17 +22,17 @@ SRCS = OHCombinedJoyCons.m		\
        ${USE_SRCS_NINTENDO_3DS}		\
        ${USE_SRCS_NINTENDO_DS}		\
        ${USE_SRCS_XINPUT}
-SRCS_EVDEV = OHEvdevDualSense.m			\
-	     OHEvdevDualShock4.m		\
-	     OHEvdevGameController.m		\
-	     OHEvdevGamepad.m			\
-	     OHEvdevPlayStationGamepad.m	\
-	     OHEvdevStadiaGamepad.m
+SRCS_EVDEV = OHEvdevDualSense.m				\
+	     OHEvdevDualShock4.m			\
+	     OHEvdevExtendedGamepad.m			\
+	     OHEvdevGameController.m			\
+	     OHEvdevPlayStationExtendedGamepad.m	\
+	     OHEvdevStadiaExtendedGamepad.m
 SRCS_NINTENDO_3DS = OHNintendo3DSGameController.m	\
-		    OHNintendo3DSGamepad.m
+		    OHNintendo3DSExtendedGamepad.m
 SRCS_NINTENDO_DS = OHNintendoDSGameController.m
-SRCS_XINPUT = OHXInputGameController.m	\
-	      OHXInputGamepad.m
+SRCS_XINPUT = OHXInputExtendedGamepad.m	\
+	      OHXInputGameController.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    ObjFWHID.h
