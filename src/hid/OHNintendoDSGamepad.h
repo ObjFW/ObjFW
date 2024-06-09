@@ -17,16 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
+#import "OHGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHNintendoDSGamepad;
-
-@interface OHNintendoDSGameController: OHGameController
-{
-	OHNintendoDSGamepad *_gamepad;
-}
+@interface OHNintendoDSGamepad: OHGamepad
 @end
 
 OF_ASSUME_NONNULL_END

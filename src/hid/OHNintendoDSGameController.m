@@ -25,7 +25,7 @@
 #import "OFNumber.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHGameControllerProfile.h"
+#import "OHNintendoDSGamepad.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -34,18 +34,10 @@
 #include <nds.h>
 #undef asm
 
-@interface OHNintendoDSGameControllerProfile: OHGameControllerProfile
-@end
-
 static OFArray OF_GENERIC(OHGameController *) *controllers;
 
-static OFString *const buttonNames[] = {
-	@"A", @"B", @"X", @"Y", @"L", @"R", @"Start", @"Select"
-};
-static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
-
 @implementation OHNintendoDSGameController
-@synthesize rawProfile = _rawProfile;
+@synthesize gamepad = _gamepad;
 
 + (void)initialize
 {
@@ -70,7 +62,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	self = [super init];
 
 	@try {
-		_rawProfile = [[OHNintendoDSGameControllerProfile alloc] init];
+		_gamepad = [[OHNintendoDSGamepad alloc] init];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -83,16 +75,16 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (void)dealloc
 {
-	[_rawProfile release];
+	[_gamepad release];
 
 	[super dealloc];
 }
 
 - (void)retrieveState
 {
-	OFDictionary *buttons = _rawProfile.buttons;
+	OFDictionary *buttons = _gamepad.buttons;
 	OHGameControllerDirectionalPad *dPad =
-	    [_rawProfile.directionalPads objectForKey: @"D-Pad"];
+	    [_gamepad.directionalPads objectForKey: @"D-Pad"];
 	u32 keys;
 
 	scanKeys();
@@ -117,54 +109,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	return @"Nintendo DS";
 }
-@end
 
-@implementation OHNintendoDSGameControllerProfile
-- (instancetype)init
+- (OHGameControllerProfile *)rawProfile
 {
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFMutableDictionary *buttons =
-		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
-		OHGameControllerButton *up, *down, *left, *right;
-		OHGameControllerDirectionalPad *dPad;
-
-		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
-			[buttons setObject: button forKey: buttonNames[i]];
-		}
-		[buttons makeImmutable];
-		_buttons = [buttons retain];
-
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
-		dPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right] autorelease];
-
-		_directionalPads = [[OFDictionary alloc]
-		    initWithObject: dPad
-			    forKey: @"D-Pad"];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return _gamepad;
 }
 @end
