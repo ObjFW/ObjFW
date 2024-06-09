@@ -129,7 +129,7 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_TL2:
 			return @"ZL";
 		case BTN_THUMBL:
-			return @"Left Stick";
+			return @"Left Thumbstick";
 		case BTN_SELECT:
 			return @"-";
 		case BTN_Z:
@@ -155,7 +155,7 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_TR2:
 			return @"ZR";
 		case BTN_THUMBR:
-			return @"Right Stick";
+			return @"Right Thumbstick";
 		case BTN_START:
 			return @"+";
 		case BTN_MODE:

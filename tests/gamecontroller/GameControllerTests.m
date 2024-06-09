@@ -28,6 +28,7 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
+#import "OHCombinedJoyCons.h"
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -53,12 +54,103 @@ static size_t buttonsPerLine = 5;
 
 @interface GameControllerTests: OFObject <OFApplicationDelegate>
 {
-	OFMutableArray OF_GENERIC(OHGameController *) *_controllers;
+	OFArray OF_GENERIC(OHGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
 }
 @end
 
 OF_APPLICATION_DELEGATE(GameControllerTests)
+
+static void printProfile(OHGameControllerProfile *profile)
+{
+	OFArray OF_GENERIC(OFString *) *buttons =
+	    profile.buttons.allKeys.sortedArray;
+	OFArray OF_GENERIC(OFString *) *axes = profile.axes.allKeys.sortedArray;
+	OFArray OF_GENERIC(OFString *) *directionalPads =
+	    profile.directionalPads.allKeys.sortedArray;
+	size_t i;
+
+	i = 0;
+	for (OFString *name in buttons) {
+		OHGameControllerButton *button =
+		    [profile.buttons objectForKey: name];
+
+		if (i++ == buttonsPerLine) {
+			[OFStdOut writeString: @"\n"];
+			i = 0;
+		}
+
+		if (button.value == 1)
+			[OFStdOut setForegroundColor: [OFColor red]];
+		else if (button.value > 0.5)
+			[OFStdOut setForegroundColor: [OFColor yellow]];
+		else if (button.value > 0)
+			[OFStdOut setForegroundColor: [OFColor green]];
+		else
+			[OFStdOut setForegroundColor: [OFColor gray]];
+
+		[OFStdOut writeFormat: @"[%@] ", name];
+	}
+	[OFStdOut setForegroundColor: [OFColor gray]];
+	[OFStdOut writeString: @"\n"];
+
+	i = 0;
+	for (OFString *name in axes) {
+		OHGameControllerAxis *axis = [profile.axes objectForKey: name];
+
+		if (i++ == buttonsPerLine) {
+			[OFStdOut writeString: @"\n"];
+			i = 0;
+		}
+
+		[OFStdOut writeFormat: @"%@: %5.2f  ", name, axis.value];
+	}
+	if (axes.count > 0)
+		[OFStdOut writeString: @"\n"];
+
+	i = 0;
+	for (OFString *name in directionalPads) {
+		OHGameControllerDirectionalPad *directionalPad =
+		    [profile.directionalPads objectForKey: name];
+
+		if (i++ == 2) {
+			[OFStdOut writeString: @"\n"];
+			i = 0;
+		}
+
+		[OFStdOut writeFormat:
+		    @"%@: (%5.2f, %5.2f)  ",
+		    name,
+		    directionalPad.xAxis.value, directionalPad.yAxis.value];
+	}
+	if (directionalPads.count > 0)
+		[OFStdOut writeString: @"\n"];
+
+	if ([profile isKindOfClass: [OHGamepad class]]) {
+		OHGamepad *gamepad = (OHGamepad *)profile;
+
+		[OFStdOut writeFormat:
+		    @"[Map] North: %@  South: %@  West: %@  East: %@\n",
+		    gamepad.northButton.name, gamepad.southButton.name,
+		    gamepad.westButton.name, gamepad.eastButton.name];
+		[OFStdOut writeFormat:
+		    @"[Map] Left Shoulder: %@  Right Shoulder: %@\n",
+		    gamepad.leftShoulderButton.name,
+		    gamepad.rightShoulderButton.name];
+		[OFStdOut writeFormat:
+		    @"[Map] Left Trigger: %@  Right Trigger: %@\n",
+		    gamepad.leftTriggerButton.name,
+		    gamepad.rightTriggerButton.name];
+		[OFStdOut writeFormat:
+		    @"[Map] Left Thumbstick: %@  Right Thumbstick: %@\n",
+		    gamepad.leftThumbstickButton.name,
+		    gamepad.rightThumbstickButton.name];
+		[OFStdOut writeFormat:
+		    @"[Map] Menu: %@  Options: %@  Home: %@\n",
+		    gamepad.menuButton.name, gamepad.optionsButton.name,
+		    gamepad.homeButton.name];
+	}
+}
 
 @implementation GameControllerTests
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
@@ -69,14 +161,14 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 
 	for (;;) {
 		void *pool = objc_autoreleasePoolPush();
+		OHGameController *leftJoyCon = nil, *rightJoyCon = nil;
 
 		if (_lastControllersUpdate == nil ||
 		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
 			[_controllers release];
 			[_lastControllersUpdate release];
 
-			_controllers = [[OHGameController controllers]
-			    mutableCopy];
+			_controllers = [[OHGameController controllers] retain];
 			_lastControllersUpdate = [[OFDate alloc] init];
 
 			[OFStdOut clear];
@@ -88,13 +180,6 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 			OHGameControllerProfile *profile =
 			    (controller.gamepad != nil
 			    ? controller.gamepad : controller.rawProfile);
-			OFArray OF_GENERIC(OFString *) *buttons =
-			    profile.buttons.allKeys.sortedArray;
-			OFArray OF_GENERIC(OFString *) *axes =
-			    profile.axes.allKeys.sortedArray;
-			OFArray OF_GENERIC(OFString *) *directionalPads =
-			    profile.directionalPads.allKeys.sortedArray;
-			size_t i;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeLine: controller.description];
@@ -107,100 +192,28 @@ OF_APPLICATION_DELEGATE(GameControllerTests)
 				continue;
 			}
 
-			i = 0;
-			for (OFString *name in buttons) {
-				OHGameControllerButton *button =
-				    [profile.buttons objectForKey: name];
+			printProfile(profile);
 
-				if (i++ == buttonsPerLine) {
-					[OFStdOut writeString: @"\n"];
-					i = 0;
-				}
-
-				if (button.value == 1)
-					[OFStdOut setForegroundColor:
-					    [OFColor red]];
-				else if (button.value > 0.5)
-					[OFStdOut setForegroundColor:
-					    [OFColor yellow]];
-				else if (button.value > 0)
-					[OFStdOut setForegroundColor:
-					    [OFColor green]];
-				else
-					[OFStdOut setForegroundColor:
-					    [OFColor gray]];
-
-				[OFStdOut writeFormat: @"[%@] ", name];
+			if (controller.vendorID.unsignedShortValue ==
+			    OHVendorIDNintendo) {
+				if (controller.productID.unsignedShortValue ==
+				    OHProductIDLeftJoyCon)
+					leftJoyCon = controller;
+				if (controller.productID.unsignedShortValue ==
+				    OHProductIDRightJoyCon)
+					rightJoyCon = controller;
 			}
-			[OFStdOut setForegroundColor: [OFColor gray]];
-			[OFStdOut writeString: @"\n"];
+		}
 
-			i = 0;
-			for (OFString *name in axes) {
-				OHGameControllerAxis *axis =
-				    [profile.axes objectForKey: name];
+		if (leftJoyCon != nil && rightJoyCon != nil) {
+			OHCombinedJoyCons *combinedJoyCons = [OHCombinedJoyCons
+			    gamepadWithLeftJoyCon: leftJoyCon
+				      rightJoyCon: rightJoyCon];
 
-				if (i++ == buttonsPerLine) {
-					[OFStdOut writeString: @"\n"];
-					i = 0;
-				}
+			[OFStdOut setForegroundColor: [OFColor green]];
+			[OFStdOut writeLine: @"Combined Joy-Cons"];
 
-				[OFStdOut writeFormat: @"%@: %5.2f  ",
-						       name, axis.value];
-			}
-			if (axes.count > 0)
-				[OFStdOut writeString: @"\n"];
-
-			i = 0;
-			for (OFString *name in directionalPads) {
-				OHGameControllerDirectionalPad *directionalPad =
-				    [profile.directionalPads
-				    objectForKey: name];
-
-				if (i++ == 2) {
-					[OFStdOut writeString: @"\n"];
-					i = 0;
-				}
-
-				[OFStdOut writeFormat:
-				    @"%@: (%5.2f, %5.2f)  ",
-				    name, directionalPad.xAxis.value,
-				    directionalPad.yAxis.value];
-			}
-			if (directionalPads.count > 0)
-				[OFStdOut writeString: @"\n"];
-
-			if ([profile isKindOfClass: [OHGamepad class]]) {
-				OHGamepad *gamepad = (OHGamepad *)profile;
-
-				[OFStdOut writeFormat:
-				    @"[Map] North: %@  South: %@"
-				    @"  West: %@  East: %@\n",
-				    gamepad.northButton.name,
-				    gamepad.southButton.name,
-				    gamepad.westButton.name,
-				    gamepad.eastButton.name];
-				[OFStdOut writeFormat:
-				    @"[Map] Left Shoulder: %@"
-				    @"  Right Shoulder: %@\n",
-				    gamepad.leftShoulderButton.name,
-				    gamepad.rightShoulderButton.name];
-				[OFStdOut writeFormat:
-				    @"[Map] Left Trigger: %@"
-				    @"  Right Trigger: %@\n",
-				    gamepad.leftTriggerButton.name,
-				    gamepad.rightTriggerButton.name];
-				[OFStdOut writeFormat:
-				    @"[Map] Left Thumbstick: %@"
-				    @"  Right Thumbstick: %@\n",
-				    gamepad.leftThumbstickButton.name,
-				    gamepad.rightThumbstickButton.name];
-				[OFStdOut writeFormat:
-				    @"[Map] Menu: %@  Options: %@  Home: %@\n",
-				    gamepad.menuButton.name,
-				    gamepad.optionsButton.name,
-				    gamepad.homeButton.name];
-			}
+			printProfile(combinedJoyCons);
 		}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
