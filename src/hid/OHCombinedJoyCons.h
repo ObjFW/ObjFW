@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGamepad.h"
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief Combines a left and a right Joy-Con into a gamepad.
  */
-@interface OHCombinedJoyCons: OHGamepad
+@interface OHCombinedJoyCons: OHExtendedGamepad
 {
 	OHGameControllerProfile *_leftJoyCon, *_rightJoyCon;
 }

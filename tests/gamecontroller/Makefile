@@ -5,7 +5,7 @@ CLEAN = boot.dol		\
 	${PROG_NOINST}.arm9	\
 	${PROG_NOINST}.ndsd	\
 
-PROG_NOINST = gamecontroller_tests${PROG_SUFFIX}
+PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = GameControllerTests.m
 
 include ../../buildsys.mk

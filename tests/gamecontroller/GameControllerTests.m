@@ -29,6 +29,7 @@
 #import "OFThread.h"
 
 #import "OHCombinedJoyCons.h"
+#import "OHExtendedGamepad.h"
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -137,19 +138,40 @@ static void printProfile(OHGameControllerProfile *profile)
 		    @"[Map] Left Shoulder: %@  Right Shoulder: %@\n",
 		    gamepad.leftShoulderButton.name,
 		    gamepad.rightShoulderButton.name];
+	}
+
+	if ([profile isKindOfClass: [OHExtendedGamepad class]]) {
+		OHExtendedGamepad *extendedGamepad =
+		    (OHExtendedGamepad *)profile;
+
 		[OFStdOut writeFormat:
 		    @"[Map] Left Trigger: %@  Right Trigger: %@\n",
-		    gamepad.leftTriggerButton.name,
-		    gamepad.rightTriggerButton.name];
+		    extendedGamepad.leftTriggerButton.name,
+		    extendedGamepad.rightTriggerButton.name];
 		[OFStdOut writeFormat:
 		    @"[Map] Left Thumbstick: %@  Right Thumbstick: %@\n",
-		    gamepad.leftThumbstickButton.name,
-		    gamepad.rightThumbstickButton.name];
-		[OFStdOut writeFormat:
-		    @"[Map] Menu: %@  Options: %@  Home: %@\n",
-		    gamepad.menuButton.name, gamepad.optionsButton.name,
-		    gamepad.homeButton.name];
+		    extendedGamepad.leftThumbstickButton.name,
+		    extendedGamepad.rightThumbstickButton.name];
 	}
+
+	if ([profile isKindOfClass: [OHGamepad class]]) {
+		OHGamepad *gamepad = (OHGamepad *)profile;
+
+		[OFStdOut writeFormat:
+		    @"[Map] Menu: %@  Options: %@",
+		    gamepad.menuButton.name, gamepad.optionsButton.name];
+	}
+
+	if ([profile isKindOfClass: [OHExtendedGamepad class]]) {
+		OHExtendedGamepad *extendedGamepad =
+		    (OHExtendedGamepad *)profile;
+
+		[OFStdOut writeFormat: @"  Home: %@",
+		    extendedGamepad.homeButton.name];
+	}
+
+	if ([profile isKindOfClass: [OHGamepad class]])
+		[OFStdOut writeString: @"\n"];
 }
 
 @implementation GameControllerTests

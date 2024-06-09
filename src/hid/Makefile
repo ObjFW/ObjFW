@@ -28,8 +28,8 @@ SRCS_EVDEV = OHEvdevDualSense.m				\
 	     OHEvdevGameController.m			\
 	     OHEvdevPlayStationExtendedGamepad.m	\
 	     OHEvdevStadiaExtendedGamepad.m
-SRCS_NINTENDO_3DS = OHNintendo3DSGameController.m	\
-		    OHNintendo3DSExtendedGamepad.m
+SRCS_NINTENDO_3DS = OHNintendo3DSExtendedGamepad.m	\
+		    OHNintendo3DSGameController.m
 SRCS_NINTENDO_DS = OHNintendoDSGameController.m
 SRCS_XINPUT = OHXInputExtendedGamepad.m	\
 	      OHXInputGameController.m
