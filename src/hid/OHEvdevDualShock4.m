@@ -19,12 +19,12 @@
 
 #include "config.h"
 
-#import "OHEvdevDualSense.h"
+#import "OHEvdevDualShock4.h"
 #import "OFDictionary.h"
 
-@implementation OHEvdevDualSense
+@implementation OHEvdevDualShock4
 - (OHGameControllerButton *)optionsButton
 {
-	return [_rawProfile.buttons objectForKey: @"Create"];
+	return [_rawProfile.buttons objectForKey: @"Share"];
 }
 @end

@@ -17,11 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHEvdevGamepad.h"
+#import "OHEvdevPlayStationGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHEvdevDualSense: OHEvdevGamepad
+@interface OHEvdevDualSense: OHEvdevPlayStationGamepad
 @end
 
 OF_ASSUME_NONNULL_END

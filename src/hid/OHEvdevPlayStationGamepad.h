@@ -17,14 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OHEvdevGamepad.h"
 
-#import "OHEvdevDualSense.h"
-#import "OFDictionary.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OHEvdevDualSense
-- (OHGameControllerButton *)optionsButton
-{
-	return [_rawProfile.buttons objectForKey: @"Create"];
-}
+@interface OHEvdevPlayStationGamepad: OHEvdevGamepad
 @end
+
+OF_ASSUME_NONNULL_END

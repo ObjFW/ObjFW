@@ -32,6 +32,7 @@
 #import "OFNumber.h"
 
 #import "OHEvdevDualSense.h"
+#import "OHEvdevDualShock4.h"
 #import "OHEvdevGamepad.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -86,7 +87,8 @@ static const uint16_t axisIDs[] = {
 static OFString *
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == OHVendorIDSony && productID == OHProductIDDualSense) {
+	if (vendorID == OHVendorIDSony && (productID == OHProductIDDualSense ||
+	    productID == OHProductIDDualShock4)) {
 		switch (button) {
 		case BTN_NORTH:
 			return @"Triangle";
@@ -110,12 +112,17 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 			return @"R3";
 		case BTN_START:
 			return @"Options";
-		case BTN_SELECT:
-			return @"Create";
 		case BTN_MODE:
 			return @"PS";
 		}
 	}
+
+	if (vendorID == OHVendorIDSony && productID == OHProductIDDualSense)
+		if (button == BTN_SELECT)
+			return @"Create";
+	if (vendorID == OHVendorIDSony && productID == OHProductIDDualShock4)
+		if (button == BTN_SELECT)
+			return @"Share";
 
 	switch (button) {
 	case BTN_A:
@@ -635,6 +642,10 @@ scale(float value, float min, float max)
 		if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualSense)
 			return [[[OHEvdevDualSense alloc]
+			    initWithController: self] autorelease];
+		else if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDDualShock4)
+			return [[[OHEvdevDualShock4 alloc]
 			    initWithController: self] autorelease];
 		else
 			return [[[OHEvdevGamepad alloc]
