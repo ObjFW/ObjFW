@@ -37,7 +37,7 @@ SRCS_WII = OHWiiClassicController.m	\
 	   OHWiiGameController.m	\
 	   OHWiimote.m			\
 	   OHWiimoteWithNunchuk.m
-SRCS_XINPUT = OHXInputExtendedGamepad.m	\
+SRCS_XINPUT = OHXbox360Gamepad.m	\
 	      OHXInputGameController.m
 
 INCLUDES := ${SRCS:.m=.h}		\

@@ -26,7 +26,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHXInputExtendedGamepad.h"
+#import "OHXbox360Gamepad.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -46,7 +46,7 @@ struct XInputCapabilitiesEx {
 	DWORD unknown2;
 };
 
-int OHXInputVersion;
+static int XInputVersion;
 static WINAPI DWORD (*XInputGetStateFuncPtr)(DWORD, XINPUT_STATE *);
 static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
@@ -69,17 +69,17 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 		XInputGetCapabilitiesExFuncPtr = (WINAPI DWORD (*)(DWORD, DWORD,
 		    DWORD, struct XInputCapabilitiesEx *))
 		    GetProcAddress(module, (LPCSTR)108);
-		OHXInputVersion = 14;
+		XInputVersion = 14;
 	} else if ((module = LoadLibrary("xinput1_3.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, (LPCSTR)100);
-		OHXInputVersion = 13;
+		XInputVersion = 13;
 	} else if ((module = LoadLibrary("xinput9_1_0.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, "XInputGetState");
-		OHXInputVersion = 910;
+		XInputVersion = 910;
 	}
 }
 
@@ -141,7 +141,8 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 			}
 		}
 
-		_extendedGamepad = [[OHXInputExtendedGamepad alloc] init];
+		_extendedGamepad = [[OHXbox360Gamepad alloc]
+		    initWithHasGuideButton: (XInputVersion != 910)];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -190,7 +191,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_START);
 	_extendedGamepad.optionsButton.value =
 	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
-	if (OHXInputVersion != 910)
+	if (XInputVersion != 910)
 		_extendedGamepad.homeButton.value =
 		    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE);
 
@@ -224,7 +225,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 - (OFString *)name
 {
-	switch (OHXInputVersion) {
+	switch (XInputVersion) {
 	case 14:
 		return @"XInput 1.4 device";
 	case 13:

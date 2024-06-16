@@ -21,12 +21,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHXInputExtendedGamepad: OFObject <OHExtendedGamepad>
+@interface OHXbox360Gamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
 }
+
+- (instancetype)initWithHasGuideButton: (bool)hasGuideButton;
 @end
 
 OF_ASSUME_NONNULL_END

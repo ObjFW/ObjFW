@@ -23,24 +23,16 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHXInputExtendedGamepad;
+@class OHXbox360Gamepad;
 
 @interface OHXInputGameController: OHGameController
 {
 	DWORD _index;
 	OFNumber *_Nullable _vendorID, *_Nullable _productID;
-	OHXInputExtendedGamepad *_extendedGamepad;
+	OHXbox360Gamepad *_extendedGamepad;
 }
 
 - (instancetype)initWithIndex: (DWORD)index;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int OHXInputVersion;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

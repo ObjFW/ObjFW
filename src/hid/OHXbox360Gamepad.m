@@ -19,12 +19,11 @@
 
 #include "config.h"
 
-#import "OHXInputExtendedGamepad.h"
+#import "OHXbox360Gamepad.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHXInputGameController.h"
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
@@ -32,10 +31,15 @@ static OFString *const buttonNames[] = {
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHXInputExtendedGamepad
+@implementation OHXbox360Gamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
 - (instancetype)init
+{
+	return [self initWithHasGuideButton: true];
+}
+
+- (instancetype)initWithHasGuideButton: (bool)hasGuideButton
 {
 	self = [super init];
 
@@ -52,7 +56,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			OHGameControllerButton *button;
 
 			if ([buttonNames[i] isEqual: @"Guide"] &&
-			    OHXInputVersion == 910)
+			    !hasGuideButton)
 				continue;
 
 			button = [[OHGameControllerButton alloc]
