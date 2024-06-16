@@ -25,6 +25,8 @@
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHWiiClassicController.h"
+#import "OHWiimote.h"
+#import "OHWiimoteWithNunchuk.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -33,26 +35,6 @@
 #define asm __asm__
 #include <wiiuse/wpad.h>
 #undef asm
-
-@interface OHWiiGameControllerProfile: OFObject <OHGameControllerProfile>
-{
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
-	    *_directionalPads;
-}
-
-- (instancetype)initWithType: (uint32_t)type;
-@end
-
-static OFString *const buttonNames[] = {
-	@"A", @"B", @"1", @"2", @"+", @"-", @"Home"
-};
-static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
-static OFString *const nunchukButtonNames[] = {
-	@"C", @"Z"
-};
-static const size_t numNunchukButtons =
-    sizeof(nunchukButtonNames) / sizeof(*nunchukButtonNames);
 
 static float
 scale(float value, float min, float max, float center)
@@ -114,9 +96,10 @@ scale(float value, float min, float max, float center)
 
 		if (type == WPAD_EXP_CLASSIC)
 			_rawProfile = [[OHWiiClassicController alloc] init];
+		else if (type == WPAD_EXP_NUNCHUK)
+			_rawProfile = [[OHWiimoteWithNunchuk alloc] init];
 		else
-			_rawProfile = [[OHWiiGameControllerProfile alloc]
-			    initWithType: type];
+			_rawProfile = [[OHWiimote alloc] init];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -269,102 +252,5 @@ scale(float value, float min, float max, float center)
 		return (id <OHExtendedGamepad>)_rawProfile;
 
 	return nil;
-}
-@end
-
-@implementation OHWiiGameControllerProfile
-@synthesize buttons = _buttons, directionalPads = _directionalPads;
-
-- (instancetype)initWithType: (uint32_t)type
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFMutableDictionary *buttons;
-		OFMutableDictionary *directionalPads;
-		OHGameControllerDirectionalPad *directionalPad;
-		OHGameControllerButton *up, *down, *left, *right;
-		OHGameControllerAxis *xAxis, *yAxis;
-
-		if (type != WPAD_EXP_NONE && type != WPAD_EXP_NUNCHUK)
-			@throw [OFInvalidArgumentException exception];
-
-		buttons = [OFMutableDictionary
-		    dictionaryWithCapacity: numButtons + numNunchukButtons];
-
-		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
-			[buttons setObject: button forKey: buttonNames[i]];
-		}
-
-		directionalPads = [OFMutableDictionary dictionary];
-
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right] autorelease];
-		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
-
-		if (type == WPAD_EXP_NUNCHUK) {
-			for (size_t i = 0; i < numNunchukButtons; i++) {
-				OHGameControllerButton *button =
-				    [[[OHGameControllerButton alloc]
-				    initWithName: nunchukButtonNames[i]]
-					autorelease];
-
-				[buttons setObject: button
-					    forKey: nunchukButtonNames[i]];
-			}
-
-			xAxis = [[[OHGameControllerAxis alloc]
-			    initWithName: @"X"] autorelease];
-			yAxis = [[[OHGameControllerAxis alloc]
-			    initWithName: @"Y"] autorelease];
-			directionalPad = [[[OHGameControllerDirectionalPad alloc]
-			    initWithName: @"Analog Stick"
-				   xAxis: xAxis
-				   yAxis: yAxis] autorelease];
-			[directionalPads setObject: directionalPad
-					    forKey: @"Analog Stick"];
-		}
-
-		[buttons makeImmutable];
-		[directionalPads makeImmutable];
-		_buttons = [buttons retain];
-		_directionalPads = [directionalPads retain];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[_buttons release];
-	[_directionalPads release];
-
-	[super dealloc];
-}
-
-- (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
-{
-	return [OFDictionary dictionary];
 }
 @end

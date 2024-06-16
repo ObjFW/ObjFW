@@ -34,7 +34,9 @@ SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
 SRCS_NINTENDO_SWITCH = OHNintendoSwitchExtendedGamepad.m	\
 		       OHNintendoSwitchGameController.m
 SRCS_WII = OHWiiClassicController.m	\
-	   OHWiiGameController.m
+	   OHWiiGameController.m	\
+	   OHWiimote.m			\
+	   OHWiimoteWithNunchuk.m
 SRCS_XINPUT = OHXInputExtendedGamepad.m	\
 	      OHXInputGameController.m
 
