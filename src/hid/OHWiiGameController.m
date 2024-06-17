@@ -51,7 +51,7 @@ scale(float value, float min, float max, float center)
 }
 
 @implementation OHWiiGameController
-@synthesize rawProfile = _rawProfile;
+@synthesize profile = _profile;
 
 + (void)initialize
 {
@@ -95,11 +95,11 @@ scale(float value, float min, float max, float center)
 		_type = type;
 
 		if (type == WPAD_EXP_CLASSIC)
-			_rawProfile = [[OHWiiClassicController alloc] init];
+			_profile = [[OHWiiClassicController alloc] init];
 		else if (type == WPAD_EXP_NUNCHUK)
-			_rawProfile = [[OHWiimoteWithNunchuk alloc] init];
+			_profile = [[OHWiimoteWithNunchuk alloc] init];
 		else
-			_rawProfile = [[OHWiimote alloc] init];
+			_profile = [[OHWiimote alloc] init];
 
 		[self retrieveState];
 	} @catch (id e) {
@@ -112,15 +112,15 @@ scale(float value, float min, float max, float center)
 
 - (void)dealloc
 {
-	[_rawProfile release];
+	[_profile release];
 
 	[super dealloc];
 }
 
 - (void)retrieveState
 {
-	OFDictionary *buttons = _rawProfile.buttons;
-	OFDictionary *directionalPads = _rawProfile.directionalPads;
+	OFDictionary *buttons = _profile.buttons;
+	OFDictionary *directionalPads = _profile.directionalPads;
 	WPADData *data;
 
 	if (WPAD_ReadPending(_index, NULL) < WPAD_ERR_NONE)
@@ -241,7 +241,7 @@ scale(float value, float min, float max, float center)
 - (id <OHGamepad>)gamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHGamepad>)_rawProfile;
+		return (id <OHGamepad>)_profile;
 
 	return nil;
 }
@@ -249,7 +249,7 @@ scale(float value, float min, float max, float center)
 - (id <OHExtendedGamepad>)extendedGamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHExtendedGamepad>)_rawProfile;
+		return (id <OHExtendedGamepad>)_profile;
 
 	return nil;
 }

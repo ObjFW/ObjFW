@@ -69,10 +69,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID;
 
 /**
- * @brief The raw profile for the game controller, meaning no remapping is
- *	  being performed.
+ * @brief The profile for the game controller.
  */
-@property (readonly, nonatomic) id <OHGameControllerProfile> rawProfile;
+@property (readonly, nonatomic) id <OHGameControllerProfile> profile;
 
 /**
  * @brief The gamepad profile for the game controller, or `nil` if not

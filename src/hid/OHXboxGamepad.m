@@ -19,97 +19,92 @@
 
 #include "config.h"
 
-#import "OHCombinedJoyCons.h"
+#import "OHXboxGamepad.h"
 #import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OHGameController.h"
+#import "OHGameControllerAxis.h"
+#import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 
-#import "OFInvalidArgumentException.h"
+static OFString *const buttonNames[] = {
+	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
+	@"Start", @"Back", @"Guide"
+};
+static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHCombinedJoyCons
+@implementation OHXboxGamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
-
-+ (instancetype)gamepadWithLeftJoyCon: (OHGameController *)leftJoyCon
-			  rightJoyCon: (OHGameController *)rightJoyCon
-{
-	return [[[self alloc] initWithLeftJoyCon: leftJoyCon
-				     rightJoyCon: rightJoyCon] autorelease];
-}
 
 - (instancetype)init
 {
-	OF_INVALID_INIT_METHOD
+	return [self initWithHasGuideButton: true];
 }
 
-- (instancetype)initWithLeftJoyCon: (OHGameController *)leftJoyCon
-		       rightJoyCon: (OHGameController *)rightJoyCon
+- (instancetype)initWithHasGuideButton: (bool)hasGuideButton
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFDictionary *leftButtons, *rightButtons;
-		OFMutableDictionary *buttons, *directionalPads;
+		OFMutableDictionary *buttons =
+		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
+		OFMutableDictionary *directionalPads;
+		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
+		OHGameControllerButton *up, *down, *left, *right;
 
-		if (leftJoyCon.vendorID.unsignedShortValue !=
-		    OHVendorIDNintendo ||
-		    rightJoyCon.vendorID.unsignedShortValue !=
-		    OHVendorIDNintendo)
-			@throw [OFInvalidArgumentException exception];
+		for (size_t i = 0; i < numButtons; i++) {
+			OHGameControllerButton *button;
 
-		if (leftJoyCon.productID.unsignedShortValue !=
-		    OHProductIDLeftJoyCon ||
-		    rightJoyCon.productID.unsignedShortValue !=
-		    OHProductIDRightJoyCon)
-			@throw [OFInvalidArgumentException exception];
+			if ([buttonNames[i] isEqual: @"Guide"] &&
+			    !hasGuideButton)
+				continue;
 
-		_leftJoyCon = [leftJoyCon.profile retain];
-		_rightJoyCon = [rightJoyCon.profile retain];
-
-		leftButtons = _leftJoyCon.buttons;
-		rightButtons = _rightJoyCon.buttons;
-
-		buttons = [OFMutableDictionary dictionaryWithCapacity:
-		    leftButtons.count + rightButtons.count];
-		[buttons addEntriesFromDictionary: leftButtons];
-		[buttons addEntriesFromDictionary: rightButtons];
-		[buttons removeObjectForKey: @"D-Pad Up"];
-		[buttons removeObjectForKey: @"D-Pad Down"];
-		[buttons removeObjectForKey: @"D-Pad Left"];
-		[buttons removeObjectForKey: @"D-Pad Right"];
-		[buttons removeObjectForKey: @"SL"];
-		[buttons removeObjectForKey: @"SR"];
+			button = [[[OHGameControllerButton alloc]
+			    initWithName: buttonNames[i]] autorelease];
+			[buttons setObject: button forKey: buttonNames[i]];
+		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
 
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
+		xAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"X"] autorelease];
+		yAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"Y"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"Left Thumbstick"
-			   xAxis: [_leftJoyCon.axes objectForKey: @"X"]
-			   yAxis: [_leftJoyCon.axes objectForKey: @"Y"]]
-		    autorelease];
+			   xAxis: xAxis
+			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Left Thumbstick"];
 
+		xAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"RX"] autorelease];
+		yAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"RY"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"Right Thumbstick"
-			   xAxis: [_rightJoyCon.axes objectForKey: @"RX"]
-			   yAxis: [_rightJoyCon.axes objectForKey: @"RY"]]
-		    autorelease];
+			   xAxis: xAxis
+			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Right Thumbstick"];
 
+		up = [[[OHGameControllerButton alloc]
+		    initWithName: @"D-Pad Up"] autorelease];
+		down = [[[OHGameControllerButton alloc]
+		    initWithName: @"D-Pad Down"] autorelease];
+		left = [[[OHGameControllerButton alloc]
+		    initWithName: @"D-Pad Left"] autorelease];
+		right = [[[OHGameControllerButton alloc]
+		    initWithName: @"D-Pad Right"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
-			      up: [leftButtons objectForKey: @"D-Pad Up"]
-			    down: [leftButtons objectForKey: @"D-Pad Down"]
-			    left: [leftButtons objectForKey: @"D-Pad Left"]
-			   right: [leftButtons objectForKey: @"D-Pad Right"]]
-		    autorelease];
+			      up: up
+			    down: down
+			    left: left
+			   right: right] autorelease];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];
@@ -126,8 +121,6 @@
 
 - (void)dealloc
 {
-	[_leftJoyCon release];
-	[_rightJoyCon release];
 	[_buttons release];
 	[_directionalPads release];
 
@@ -141,67 +134,67 @@
 
 - (OHGameControllerButton *)northButton
 {
-	return [_buttons objectForKey: @"X"];
+	return [_buttons objectForKey: @"Y"];
 }
 
 - (OHGameControllerButton *)southButton
 {
-	return [_buttons objectForKey: @"B"];
+	return [_buttons objectForKey: @"A"];
 }
 
 - (OHGameControllerButton *)westButton
 {
-	return [_buttons objectForKey: @"Y"];
+	return [_buttons objectForKey: @"X"];
 }
 
 - (OHGameControllerButton *)eastButton
 {
-	return [_buttons objectForKey: @"A"];
+	return [_buttons objectForKey: @"B"];
 }
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_buttons objectForKey: @"L"];
+	return [_buttons objectForKey: @"LB"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_buttons objectForKey: @"R"];
+	return [_buttons objectForKey: @"RB"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	return [_buttons objectForKey: @"ZL"];
+	return [_buttons objectForKey: @"LT"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	return [_buttons objectForKey: @"ZR"];
+	return [_buttons objectForKey: @"RT"];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_buttons objectForKey: @"Left Thumbstick"];
+	return [_buttons objectForKey: @"LSB"];
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_buttons objectForKey: @"Right Thumbstick"];
+	return [_buttons objectForKey: @"RSB"];
 }
 
 - (OHGameControllerButton *)menuButton
 {
-	return [_buttons objectForKey: @"+"];
+	return [_buttons objectForKey: @"Start"];
 }
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_buttons objectForKey: @"-"];
+	return [_buttons objectForKey: @"Back"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_buttons objectForKey: @"Home"];
+	return [_buttons objectForKey: @"Guide"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick

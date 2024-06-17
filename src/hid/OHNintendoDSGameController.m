@@ -109,7 +109,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	return @"Nintendo DS";
 }
 
-- (id <OHGameControllerProfile>)rawProfile
+- (id <OHGameControllerProfile>)profile
 {
 	return _gamepad;
 }

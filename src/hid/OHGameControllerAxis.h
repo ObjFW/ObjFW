@@ -30,6 +30,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OHGameControllerAxis: OHGameControllerElement
 {
 	float _value;
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+	int32_t _minRawValue, _maxRawValue;
+#endif
 	OF_RESERVE_IVARS(OHGameControllerButton, 4)
 }
 

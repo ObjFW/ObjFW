@@ -54,7 +54,7 @@ const uint16_t OHProductIDN64Controller = 0x2019;
 const uint16_t OHProductIDStadiaController = 0x9400;
 
 @implementation OHGameController
-@dynamic name, rawProfile;
+@dynamic name, profile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {

@@ -22,6 +22,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@protocol OHEvdevMapping <OFObject>
+- (OHGameControllerButton *)oh_buttonForEvdevButton: (uint16_t)button;
+- (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis;
+@end
+
 @interface OHEvdevGameController: OHGameController
 {
 	OFString *_path;
@@ -30,11 +35,16 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned long *_evBits, *_keyBits, *_absBits;
 	uint16_t _vendorID, _productID;
 	OFString *_name;
-	id <OHGameControllerProfile> _rawProfile;
+	id <OHGameControllerProfile, OHEvdevMapping> _profile;
 }
 
 - (instancetype)initWithPath: (OFString *)path;
 - (void)oh_pollState;
 @end
+
+extern const uint16_t OHEvdevButtonIDs[];
+extern const size_t OHNumEvdevButtonIDs;
+extern const uint16_t OHEvdevAxisIDs[];
+extern const size_t OHNumEvdevAxisIDs;
 
 OF_ASSUME_NONNULL_END

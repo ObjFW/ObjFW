@@ -23,6 +23,8 @@
 #import "OHGameControllerAxis.h"
 
 @implementation OHGameControllerEmulatedTriggerButton
+@synthesize axis = _axis;
+
 - (instancetype)initWithName: (OFString *)name
 {
 	OF_INVALID_INIT_METHOD

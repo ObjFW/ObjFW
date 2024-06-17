@@ -17,14 +17,24 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OHEvdevGameController.h"
+#import "OHGameControllerProfile.h"
 
-#import "OHEvdevDualShock4.h"
-#import "OFDictionary.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OHEvdevDualShock4
-- (OHGameControllerButton *)optionsButton
+@interface OHEvdevGameControllerProfile: OFObject <OHGameControllerProfile,
+    OHEvdevMapping>
 {
-	return [_rawProfile.buttons objectForKey: @"Share"];
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
+	uint16_t _vendorID, _productID;
 }
+
+- (instancetype)initWithKeyBits: (unsigned long *)keyBits
+			 evBits: (unsigned long *)evBits
+			absBits: (unsigned long *)absBits
+		       vendorID: (uint16_t)vendorID
+		      productID: (uint16_t)productID;
 @end
+
+OF_ASSUME_NONNULL_END

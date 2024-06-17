@@ -17,14 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OHGameControllerAxis.h"
 
-#import "OHEvdevDualSense.h"
-#import "OFDictionary.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OHEvdevDualSense
-- (OHGameControllerButton *)optionsButton
-{
-	return [_rawProfile.buttons objectForKey: @"Create"];
-}
+@interface OHGameControllerAxis ()
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+@property (nonatomic, setter=oh_setMinRawValue:) int32_t oh_minRawValue;
+@property (nonatomic, setter=oh_setMaxRawValue:) int32_t oh_maxRawValue;
+#endif
 @end
+
+OF_ASSUME_NONNULL_END

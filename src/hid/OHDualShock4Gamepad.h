@@ -17,11 +17,18 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHEvdevPlayStationExtendedGamepad.h"
+#import "OHExtendedGamepad.h"
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# import "OHEvdevGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHEvdevDualSense: OHEvdevPlayStationExtendedGamepad
+@interface OHDualShock4Gamepad: OFObject <OHExtendedGamepad,
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+    OHEvdevMapping
+#endif
+>
 @end
 
 OF_ASSUME_NONNULL_END

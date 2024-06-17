@@ -160,7 +160,7 @@ static const size_t maxControllers = 8;
 	return @"Nintendo Switch";
 }
 
-- (id <OHGameControllerProfile>)rawProfile
+- (id <OHGameControllerProfile>)profile
 {
 	return _extendedGamepad;
 }

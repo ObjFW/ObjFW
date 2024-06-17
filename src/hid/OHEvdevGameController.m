@@ -31,13 +31,14 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
-#import "OHEvdevDualSense.h"
-#import "OHEvdevDualShock4.h"
+#import "OHDualSenseGamepad.h"
+#import "OHDualShock4Gamepad.h"
 #import "OHEvdevExtendedGamepad.h"
-#import "OHEvdevStadiaExtendedGamepad.h"
+#import "OHGameControllerAxis+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
+#import "OHStadiaGamepad.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -48,24 +49,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
-@interface OHEvdevGameControllerAxis: OHGameControllerAxis
-{
-@public
-	int32_t _minValue, _maxValue;
-}
-@end
-
-@interface OHEvdevGameControllerProfile: OFObject <OHGameControllerProfile>
-{
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
-}
-
-- (instancetype)initWithButtons: (OFDictionary *)buttons
-			   axes: (OFDictionary *)axes;
-@end
-
-static const uint16_t buttonIDs[] = {
+const uint16_t OHEvdevButtonIDs[] = {
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
 	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
 	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
@@ -84,314 +68,15 @@ static const uint16_t buttonIDs[] = {
 	BTN_TRIGGER_HAPPY37, BTN_TRIGGER_HAPPY38, BTN_TRIGGER_HAPPY39,
 	BTN_TRIGGER_HAPPY40
 };
-static const uint16_t axisIDs[] = {
+const size_t OHNumEvdevButtonIDs =
+    sizeof(OHEvdevButtonIDs) / sizeof(*OHEvdevButtonIDs);
+const uint16_t OHEvdevAxisIDs[] = {
 	ABS_X, ABS_Y, ABS_Z, ABS_RX, ABS_RY, ABS_RZ, ABS_THROTTLE, ABS_RUDDER,
 	ABS_WHEEL, ABS_GAS, ABS_BRAKE, ABS_HAT0X, ABS_HAT0Y, ABS_HAT1X,
 	ABS_HAT1Y, ABS_HAT2X, ABS_HAT2Y, ABS_HAT3X, ABS_HAT3Y
 };
-
-static OFString *
-buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
-{
-	if (vendorID == OHVendorIDSony && (productID == OHProductIDDualSense ||
-	    productID == OHProductIDDualShock4)) {
-		switch (button) {
-		case BTN_NORTH:
-			return @"Triangle";
-		case BTN_SOUTH:
-			return @"Cross";
-		case BTN_WEST:
-			return @"Square";
-		case BTN_EAST:
-			return @"Circle";
-		case BTN_TL:
-			return @"L1";
-		case BTN_TR:
-			return @"R1";
-		case BTN_TL2:
-			return @"L2";
-		case BTN_TR2:
-			return @"R2";
-		case BTN_THUMBL:
-			return @"L3";
-		case BTN_THUMBR:
-			return @"R3";
-		case BTN_START:
-			return @"Options";
-		case BTN_SELECT:
-			if (productID == OHProductIDDualSense)
-				return @"Create";
-			else
-				return @"Share";
-		case BTN_MODE:
-			return @"PS";
-		}
-	} else if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDLeftJoyCon) {
-		switch (button) {
-		case BTN_TL:
-			return @"L";
-		case BTN_TL2:
-			return @"ZL";
-		case BTN_THUMBL:
-			return @"Left Thumbstick";
-		case BTN_SELECT:
-			return @"-";
-		case BTN_Z:
-			return @"Capture";
-		case BTN_TR:
-			return @"SL";
-		case BTN_TR2:
-			return @"SR";
-		}
-	} else if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDRightJoyCon) {
-		switch (button) {
-		case BTN_NORTH:
-			return @"X";
-		case BTN_SOUTH:
-			return @"B";
-		case BTN_WEST:
-			return @"Y";
-		case BTN_EAST:
-			return @"A";
-		case BTN_TR:
-			return @"R";
-		case BTN_TR2:
-			return @"ZR";
-		case BTN_THUMBR:
-			return @"Right Thumbstick";
-		case BTN_START:
-			return @"+";
-		case BTN_MODE:
-			return @"Home";
-		case BTN_TL:
-			return @"SL";
-		case BTN_TL2:
-			return @"SR";
-		}
-	} else if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDN64Controller) {
-		switch (button) {
-		case BTN_SELECT:
-			return @"C-Pad Up";
-		case BTN_X:
-			return @"C-Pad Down";
-		case BTN_Y:
-			return @"C-Pad Left";
-		case BTN_C:
-			return @"C-Pad Right";
-		case BTN_TL:
-			return @"L";
-		case BTN_TR:
-			return @"R";
-		case BTN_TL2:
-			return @"Z";
-		case BTN_TR2:
-			return @"ZR";
-		case BTN_MODE:
-			return @"Home";
-		case BTN_Z:
-			return @"Capture";
-		}
-	} else if (vendorID == OHVendorIDGoogle &&
-	    productID == OHProductIDStadiaController) {
-		switch (button) {
-		case BTN_TL:
-			return @"L1";
-		case BTN_TR:
-			return @"R1";
-		case BTN_TRIGGER_HAPPY4:
-			return @"L2";
-		case BTN_TRIGGER_HAPPY3:
-			return @"R2";
-		case BTN_THUMBL:
-			return @"L3";
-		case BTN_THUMBR:
-			return @"R3";
-		case BTN_START:
-			return @"Menu";
-		case BTN_SELECT:
-			return @"Options";
-		case BTN_MODE:
-			return @"Stadia";
-		case BTN_TRIGGER_HAPPY1:
-			return @"Assistant";
-		case BTN_TRIGGER_HAPPY2:
-			return @"Capture";
-		}
-	}
-
-	switch (button) {
-	case BTN_A:
-		return @"A";
-	case BTN_B:
-		return @"B";
-	case BTN_C:
-		return @"C";
-	case BTN_X:
-		return @"X";
-	case BTN_Y:
-		return @"Y";
-	case BTN_Z:
-		return @"Z";
-	case BTN_TL:
-		return @"LB";
-	case BTN_TR:
-		return @"RB";
-	case BTN_TL2:
-		return @"LT";
-	case BTN_TR2:
-		return @"RT";
-	case BTN_SELECT:
-		return @"Back";
-	case BTN_START:
-		return @"Start";
-	case BTN_MODE:
-		return @"Guide";
-	case BTN_THUMBL:
-		return @"LSB";
-	case BTN_THUMBR:
-		return @"RSB";
-	case BTN_DPAD_UP:
-		return @"D-Pad Up";
-	case BTN_DPAD_DOWN:
-		return @"D-Pad Down";
-	case BTN_DPAD_LEFT:
-		return @"D-Pad Left";
-	case BTN_DPAD_RIGHT:
-		return @"D-Pad Right";
-	case BTN_TRIGGER_HAPPY1:
-		return @"Trigger Happy 1";
-	case BTN_TRIGGER_HAPPY2:
-		return @"Trigger Happy 2";
-	case BTN_TRIGGER_HAPPY3:
-		return @"Trigger Happy 3";
-	case BTN_TRIGGER_HAPPY4:
-		return @"Trigger Happy 4";
-	case BTN_TRIGGER_HAPPY5:
-		return @"Trigger Happy 5";
-	case BTN_TRIGGER_HAPPY6:
-		return @"Trigger Happy 6";
-	case BTN_TRIGGER_HAPPY7:
-		return @"Trigger Happy 7";
-	case BTN_TRIGGER_HAPPY8:
-		return @"Trigger Happy 8";
-	case BTN_TRIGGER_HAPPY9:
-		return @"Trigger Happy 9";
-	case BTN_TRIGGER_HAPPY10:
-		return @"Trigger Happy 10";
-	case BTN_TRIGGER_HAPPY11:
-		return @"Trigger Happy 11";
-	case BTN_TRIGGER_HAPPY12:
-		return @"Trigger Happy 12";
-	case BTN_TRIGGER_HAPPY13:
-		return @"Trigger Happy 13";
-	case BTN_TRIGGER_HAPPY14:
-		return @"Trigger Happy 14";
-	case BTN_TRIGGER_HAPPY15:
-		return @"Trigger Happy 15";
-	case BTN_TRIGGER_HAPPY16:
-		return @"Trigger Happy 16";
-	case BTN_TRIGGER_HAPPY17:
-		return @"Trigger Happy 17";
-	case BTN_TRIGGER_HAPPY18:
-		return @"Trigger Happy 18";
-	case BTN_TRIGGER_HAPPY19:
-		return @"Trigger Happy 19";
-	case BTN_TRIGGER_HAPPY20:
-		return @"Trigger Happy 20";
-	case BTN_TRIGGER_HAPPY21:
-		return @"Trigger Happy 21";
-	case BTN_TRIGGER_HAPPY22:
-		return @"Trigger Happy 22";
-	case BTN_TRIGGER_HAPPY23:
-		return @"Trigger Happy 23";
-	case BTN_TRIGGER_HAPPY24:
-		return @"Trigger Happy 24";
-	case BTN_TRIGGER_HAPPY25:
-		return @"Trigger Happy 25";
-	case BTN_TRIGGER_HAPPY26:
-		return @"Trigger Happy 26";
-	case BTN_TRIGGER_HAPPY27:
-		return @"Trigger Happy 27";
-	case BTN_TRIGGER_HAPPY28:
-		return @"Trigger Happy 28";
-	case BTN_TRIGGER_HAPPY29:
-		return @"Trigger Happy 29";
-	case BTN_TRIGGER_HAPPY30:
-		return @"Trigger Happy 30";
-	case BTN_TRIGGER_HAPPY31:
-		return @"Trigger Happy 31";
-	case BTN_TRIGGER_HAPPY32:
-		return @"Trigger Happy 32";
-	case BTN_TRIGGER_HAPPY33:
-		return @"Trigger Happy 33";
-	case BTN_TRIGGER_HAPPY34:
-		return @"Trigger Happy 34";
-	case BTN_TRIGGER_HAPPY35:
-		return @"Trigger Happy 35";
-	case BTN_TRIGGER_HAPPY36:
-		return @"Trigger Happy 36";
-	case BTN_TRIGGER_HAPPY37:
-		return @"Trigger Happy 37";
-	case BTN_TRIGGER_HAPPY38:
-		return @"Trigger Happy 38";
-	case BTN_TRIGGER_HAPPY39:
-		return @"Trigger Happy 39";
-	case BTN_TRIGGER_HAPPY40:
-		return @"Trigger Happy 40";
-	default:
-		return nil;
-	}
-}
-
-static OFString *
-axisToName(uint16_t axis)
-{
-	switch (axis) {
-	case ABS_X:
-		return @"X";
-	case ABS_Y:
-		return @"Y";
-	case ABS_Z:
-		return @"Z";
-	case ABS_RX:
-		return @"RX";
-	case ABS_RY:
-		return @"RY";
-	case ABS_RZ:
-		return @"RZ";
-	case ABS_THROTTLE:
-		return @"Throttle";
-	case ABS_RUDDER:
-		return @"Rudder";
-	case ABS_WHEEL:
-		return @"Wheel";
-	case ABS_GAS:
-		return @"Gas";
-	case ABS_BRAKE:
-		return @"Brake";
-	case ABS_HAT0X:
-		return @"HAT0X";
-	case ABS_HAT0Y:
-		return @"HAT0Y";
-	case ABS_HAT1X:
-		return @"HAT1X";
-	case ABS_HAT1Y:
-		return @"HAT1Y";
-	case ABS_HAT2X:
-		return @"HAT2X";
-	case ABS_HAT2Y:
-		return @"HAT2Y";
-	case ABS_HAT3X:
-		return @"HAT3X";
-	case ABS_HAT3Y:
-		return @"HAT3Y";
-	default:
-		return nil;
-	}
-}
+const size_t OHNumEvdevAxisIDs =
+    sizeof(OHEvdevAxisIDs) / sizeof(*OHEvdevAxisIDs);
 
 static float
 scale(float value, float min, float max)
@@ -405,7 +90,7 @@ scale(float value, float min, float max)
 }
 
 @implementation OHEvdevGameController
-@synthesize name = _name, rawProfile = _rawProfile;
+@synthesize name = _name, profile = _profile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
@@ -455,7 +140,6 @@ scale(float value, float min, float max)
 		OFStringEncoding encoding = [OFLocale encoding];
 		struct input_id inputID;
 		char name[128];
-		OFMutableDictionary *buttons, *axes;
 
 		_path = [path copy];
 
@@ -501,27 +185,6 @@ scale(float value, float min, float max)
 		_name = [[OFString alloc] initWithCString: name
 						 encoding: encoding];
 
-		buttons = [OFMutableDictionary dictionary];
-		for (size_t i = 0; i < sizeof(buttonIDs) / sizeof(*buttonIDs);
-		    i++) {
-			if (OFBitSetIsSet(_keyBits, buttonIDs[i])) {
-				OFString *buttonName;
-				OHGameControllerButton *button;
-
-				buttonName = buttonToName(buttonIDs[i],
-				    _vendorID, _productID);
-				if (buttonName == nil)
-					continue;
-
-				button = [[[OHGameControllerButton alloc]
-				    initWithName: buttonName] autorelease];
-
-				[buttons setObject: button forKey: buttonName];
-			}
-		}
-		[buttons makeImmutable];
-
-		axes = [OFMutableDictionary dictionary];
 		if (OFBitSetIsSet(_evBits, EV_ABS)) {
 			_absBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(
 			    OF_ULONG_BIT, ABS_MAX) / OF_ULONG_BIT,
@@ -532,30 +195,24 @@ scale(float value, float min, float max)
 			    sizeof(unsigned long)), _absBits) == -1)
 				@throw [OFInitializationFailedException
 				    exception];
-
-			for (size_t i = 0;
-			    i < sizeof(axisIDs) / sizeof(*axisIDs); i++) {
-				if (OFBitSetIsSet(_absBits, axisIDs[i])) {
-					OFString *axisName;
-					OHEvdevGameControllerAxis *axis;
-
-					axisName = axisToName(axisIDs[i]);
-					if (axisName == nil)
-						continue;
-
-					axis = [[[OHEvdevGameControllerAxis
-					    alloc] initWithName: axisName]
-					    autorelease];
-
-					[axes setObject: axis forKey: axisName];
-				}
-			}
 		}
-		[axes makeImmutable];
 
-		_rawProfile = [[OHEvdevGameControllerProfile alloc]
-		    initWithButtons: buttons
-			       axes: axes];
+		if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDDualSense)
+			_profile = [[OHDualSenseGamepad alloc] init];
+		else if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDDualShock4)
+			_profile = [[OHDualShock4Gamepad alloc] init];
+		else if (_vendorID == OHVendorIDGoogle &&
+		    _productID == OHProductIDStadiaController)
+			_profile = [[OHStadiaGamepad alloc] init];
+		else
+			_profile = [[OHEvdevExtendedGamepad alloc]
+			    initWithKeyBits: _keyBits
+				     evBits: _evBits
+				    absBits: _absBits
+				   vendorID: _vendorID
+				  productID: _productID];
 
 		[self oh_pollState];
 
@@ -580,7 +237,7 @@ scale(float value, float min, float max)
 	OFFreeMemory(_absBits);
 
 	[_name release];
-	[_rawProfile release];
+	[_profile release];
 
 	[super dealloc];
 }
@@ -606,55 +263,45 @@ scale(float value, float min, float max)
 			requestedLength: sizeof(keyState)
 				  errNo: errno];
 
-	for (size_t i = 0; i < sizeof(buttonIDs) / sizeof(*buttonIDs);
-	    i++) {
-		OFString *name;
+	for (size_t i = 0; i < OHNumEvdevButtonIDs; i++) {
 		OHGameControllerButton *button;
 
-		if (!OFBitSetIsSet(_keyBits, buttonIDs[i]))
+		if (!OFBitSetIsSet(_keyBits, OHEvdevButtonIDs[i]))
 			continue;
 
-		name = buttonToName(buttonIDs[i], _vendorID, _productID);
-		if (name == nil)
-			continue;
-
-		button = [_rawProfile.buttons objectForKey: name];
+		button = [_profile
+		    oh_buttonForEvdevButton: OHEvdevButtonIDs[i]];
 		if (button == nil)
 			continue;
 
-		if (OFBitSetIsSet(keyState, buttonIDs[i]))
+		if (OFBitSetIsSet(keyState, OHEvdevButtonIDs[i]))
 			button.value = 1.f;
 		else
 			button.value = 0.f;
 	}
 
 	if (OFBitSetIsSet(_evBits, EV_ABS)) {
-		for (size_t i = 0; i < sizeof(axisIDs) / sizeof(*axisIDs);
-		    i++) {
+		for (size_t i = 0; i < OHNumEvdevAxisIDs; i++) {
 			struct input_absinfo info;
-			OFString *name;
-			OHEvdevGameControllerAxis *axis;
+			OHGameControllerAxis *axis;
 
-			if (!OFBitSetIsSet(_absBits, axisIDs[i]))
+			if (!OFBitSetIsSet(_absBits, OHEvdevAxisIDs[i]))
 				continue;
 
-			name = axisToName(axisIDs[i]);
-			if (name == nil)
-				continue;
-
-			axis = (OHEvdevGameControllerAxis *)
-			    [_rawProfile.axes objectForKey: name];
+			axis = [_profile
+			    oh_axisForEvdevAxis: OHEvdevAxisIDs[i]];
 			if (axis == nil)
 				continue;
 
-			if (ioctl(_fd, EVIOCGABS(axisIDs[i]), &info) == -1)
+			if (ioctl(_fd, EVIOCGABS(OHEvdevAxisIDs[i]),
+			    &info) == -1)
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: sizeof(info)
 						  errNo: errno];
 
-			axis->_minValue = info.minimum;
-			axis->_maxValue = info.maximum;
+			axis.oh_minRawValue = info.minimum;
+			axis.oh_maxRawValue = info.maximum;
 			axis.value = scale(info.value,
 			    info.minimum, info.maximum);
 		}
@@ -667,9 +314,8 @@ scale(float value, float min, float max)
 	struct input_event event;
 
 	for (;;) {
-		OFString *name;
 		OHGameControllerButton *button;
-		OHEvdevGameControllerAxis *axis;
+		OHGameControllerAxis *axis;
 
 		errno = 0;
 
@@ -702,11 +348,7 @@ scale(float value, float min, float max)
 			}
 			break;
 		case EV_KEY:
-			name = buttonToName(event.code, _vendorID, _productID);
-			if (name == nil)
-				continue;
-
-			button = [_rawProfile.buttons objectForKey: name];
+			button = [_profile oh_buttonForEvdevButton: event.code];
 			if (button == nil)
 				continue;
 
@@ -717,17 +359,12 @@ scale(float value, float min, float max)
 
 			break;
 		case EV_ABS:
-			name = axisToName(event.code);
-			if (name == nil)
-				continue;
-
-			axis = (OHEvdevGameControllerAxis *)
-			    [_rawProfile.axes objectForKey: name];
+			axis = [_profile oh_axisForEvdevAxis: event.code];
 			if (axis == nil)
 				continue;
 
 			axis.value = scale(event.value,
-			   axis->_minValue, axis->_maxValue);
+			   axis.oh_minRawValue, axis.oh_maxRawValue);
 
 			break;
 		}
@@ -736,30 +373,18 @@ scale(float value, float min, float max)
 
 - (id <OHGamepad>)gamepad
 {
-	return self.extendedGamepad;
+	if ([_profile conformsToProtocol: @protocol(OHGamepad)])
+		return (id <OHGamepad>)_profile;
+
+	return nil;
 }
 
 - (id <OHExtendedGamepad>)extendedGamepad
 {
-	@try {
-		if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualSense)
-			return [[[OHEvdevDualSense alloc]
-			    initWithController: self] autorelease];
-		else if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualShock4)
-			return [[[OHEvdevDualShock4 alloc]
-			    initWithController: self] autorelease];
-		else if (_vendorID == OHVendorIDGoogle &&
-		    _productID == OHProductIDStadiaController)
-			return [[[OHEvdevStadiaExtendedGamepad alloc]
-			    initWithController: self] autorelease];
-		else
-			return [[[OHEvdevExtendedGamepad alloc]
-			    initWithController: self] autorelease];
-	} @catch (OFInvalidArgumentException *e) {
-		return nil;
-	}
+	if ([_profile conformsToProtocol: @protocol(OHExtendedGamepad)])
+		return (id <OHExtendedGamepad>)_profile;
+
+	return nil;
 }
 
 - (OFComparisonResult)compare: (OHEvdevGameController *)otherController
@@ -779,42 +404,5 @@ scale(float value, float min, float max)
 		return OFOrderedAscending;
 
 	return OFOrderedSame;
-}
-@end
-
-@implementation OHEvdevGameControllerAxis
-@end
-
-@implementation OHEvdevGameControllerProfile
-@synthesize buttons = _buttons, axes = _axes;
-
-- (instancetype)initWithButtons: (OFDictionary *)buttons
-			   axes: (OFDictionary *)axes
-{
-	self = [super init];
-
-	@try {
-		_buttons = [buttons retain];
-		_axes = [axes retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	[_buttons release];
-	[_axes release];
-
-	[super dealloc];
-}
-
-- (OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *) *)
-    directionalPads
-{
-	return [OFDictionary dictionary];
 }
 @end

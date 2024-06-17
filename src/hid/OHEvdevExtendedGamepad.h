@@ -17,18 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHExtendedGamepad.h"
+#import "OHEvdevGameControllerProfile.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHEvdevGameController;
-
-@interface OHEvdevExtendedGamepad: OFObject <OHExtendedGamepad>
-{
-	id <OHGameControllerProfile> _rawProfile;
-}
-
-- (instancetype)initWithController: (OHEvdevGameController *)controller;
+@interface OHEvdevExtendedGamepad: OHEvdevGameControllerProfile
+    <OHExtendedGamepad>
 @end
 
 OF_ASSUME_NONNULL_END

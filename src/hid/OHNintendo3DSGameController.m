@@ -148,7 +148,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	return @"Nintendo 3DS";
 }
 
-- (id <OHGameControllerProfile>)rawProfile
+- (id <OHGameControllerProfile>)profile
 {
 	return _extendedGamepad;
 }

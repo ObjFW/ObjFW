@@ -20,9 +20,13 @@
 #include "config.h"
 
 #import "OHGameControllerAxis.h"
+#import "OHGameControllerAxis+Private.h"
 
 @implementation OHGameControllerAxis
 @synthesize value = _value;
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+@synthesize oh_minRawValue = _minRawValue, oh_maxRawValue = _maxRawValue;
+#endif
 
 - (OFString *)description
 {

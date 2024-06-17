@@ -28,14 +28,20 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OHEvdevExtendedGamepad
-- (instancetype)initWithController: (OHEvdevGameController *)controller
+- (instancetype)initWithKeyBits: (unsigned long *)keyBits
+			 evBits: (unsigned long *)evBits
+			absBits: (unsigned long *)absBits
+		       vendorID: (uint16_t)vendorID
+		      productID: (uint16_t)productID
 {
-	self = [super init];
+	self = [super initWithKeyBits: keyBits
+			       evBits: evBits
+			      absBits: absBits
+			     vendorID: vendorID
+			    productID: productID];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		_rawProfile = [controller.rawProfile retain];
 
 		if (self.northButton == nil || self.southButton == nil ||
 		    self.westButton == nil || self.eastButton == nil ||
@@ -45,7 +51,8 @@
 		    self.rightTriggerButton == nil || self.menuButton == nil ||
 		    self.optionsButton == nil || self.leftThumbstick == nil ||
 		    self.rightThumbstick == nil || self.dPad == nil)
-			@throw [OFInvalidArgumentException exception];
+			object_setClass(self,
+			    [OHEvdevGameControllerProfile class]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -56,27 +63,19 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_rawProfile release];
-
-	[super dealloc];
-}
-
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
-	OFMutableDictionary *buttons =
-	    [[_rawProfile.buttons mutableCopy] autorelease];
+	OFMutableDictionary *buttons = [[_buttons mutableCopy] autorelease];
 
 	[buttons removeObjectForKey: @"D-Pad Up"];
 	[buttons removeObjectForKey: @"D-Pad Down"];
 	[buttons removeObjectForKey: @"D-Pad Left"];
 	[buttons removeObjectForKey: @"D-Pad Right"];
 
-	if ([_rawProfile.axes objectForKey: @"Z"] != nil)
+	if ([_axes objectForKey: @"Z"] != nil)
 		[buttons setObject: self.leftTriggerButton forKey: @"LT"];
 
-	if ([_rawProfile.axes objectForKey: @"RZ"] != nil)
+	if ([_axes objectForKey: @"RZ"] != nil)
 		[buttons setObject: self.rightTriggerButton forKey: @"RT"];
 
 	[buttons makeImmutable];
@@ -86,8 +85,7 @@
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
 {
-	OFMutableDictionary *axes =
-	    [[_rawProfile.axes mutableCopy] autorelease];
+	OFMutableDictionary *axes = [[_axes mutableCopy] autorelease];
 
 	[axes removeObjectForKey: @"X"];
 	[axes removeObjectForKey: @"Y"];
@@ -114,87 +112,87 @@
 
 - (OHGameControllerButton *)northButton
 {
-	return [_rawProfile.buttons objectForKey: @"Y"];
+	return [_buttons objectForKey: @"Y"];
 }
 
 - (OHGameControllerButton *)southButton
 {
-	return [_rawProfile.buttons objectForKey: @"A"];
+	return [_buttons objectForKey: @"A"];
 }
 
 - (OHGameControllerButton *)westButton
 {
-	return [_rawProfile.buttons objectForKey: @"X"];
+	return [_buttons objectForKey: @"X"];
 }
 
 - (OHGameControllerButton *)eastButton
 {
-	return [_rawProfile.buttons objectForKey: @"B"];
+	return [_buttons objectForKey: @"B"];
 }
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_rawProfile.buttons objectForKey: @"LB"];
+	return [_buttons objectForKey: @"LB"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_rawProfile.buttons objectForKey: @"RB"];
+	return [_buttons objectForKey: @"RB"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"Z"];
+	OHGameControllerAxis *axis = [_axes objectForKey: @"Z"];
 
 	if (axis != nil)
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
 		    initWithName: @"LT"
 			    axis: axis] autorelease];
 
-	return [_rawProfile.buttons objectForKey: @"LT"];
+	return [_buttons objectForKey: @"LT"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	OHGameControllerAxis *axis = [_rawProfile.axes objectForKey: @"RZ"];
+	OHGameControllerAxis *axis = [_axes objectForKey: @"RZ"];
 
 	if (axis != nil)
 		return [[[OHGameControllerEmulatedTriggerButton alloc]
 		    initWithName: @"RT"
 			    axis: axis] autorelease];
 
-	return [_rawProfile.buttons objectForKey: @"RT"];
+	return [_buttons objectForKey: @"RT"];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_rawProfile.buttons objectForKey: @"LSB"];
+	return [_buttons objectForKey: @"LSB"];
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_rawProfile.buttons objectForKey: @"RSB"];
+	return [_buttons objectForKey: @"RSB"];
 }
 
 - (OHGameControllerButton *)menuButton
 {
-	return [_rawProfile.buttons objectForKey: @"Start"];
+	return [_buttons objectForKey: @"Start"];
 }
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_rawProfile.buttons objectForKey: @"Back"];
+	return [_buttons objectForKey: @"Back"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_rawProfile.buttons objectForKey: @"Guide"];
+	return [_buttons objectForKey: @"Guide"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"X"];
-	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"Y"];
+	OHGameControllerAxis *xAxis = [_axes objectForKey: @"X"];
+	OHGameControllerAxis *yAxis = [_axes objectForKey: @"Y"];
 
 	if (xAxis == nil || yAxis == nil)
 		return nil;
@@ -207,8 +205,8 @@
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"RX"];
-	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"RY"];
+	OHGameControllerAxis *xAxis = [_axes objectForKey: @"RX"];
+	OHGameControllerAxis *yAxis = [_axes objectForKey: @"RY"];
 
 	if (xAxis == nil || yAxis == nil)
 		return nil;
@@ -221,8 +219,8 @@
 
 - (OHGameControllerDirectionalPad *)dPad
 {
-	OHGameControllerAxis *xAxis = [_rawProfile.axes objectForKey: @"HAT0X"];
-	OHGameControllerAxis *yAxis = [_rawProfile.axes objectForKey: @"HAT0Y"];
+	OHGameControllerAxis *xAxis = [_axes objectForKey: @"HAT0X"];
+	OHGameControllerAxis *yAxis = [_axes objectForKey: @"HAT0Y"];
 	OHGameControllerButton *up, *down, *left, *right;
 
 	if (xAxis != nil && yAxis != nil)
@@ -231,10 +229,10 @@
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 
-	up = [_rawProfile.buttons objectForKey: @"D-Pad Up"];
-	down = [_rawProfile.buttons objectForKey: @"D-Pad Down"];
-	left = [_rawProfile.buttons objectForKey: @"D-Pad Left"];
-	right = [_rawProfile.buttons objectForKey: @"D-Pad Right"];
+	up = [_buttons objectForKey: @"D-Pad Up"];
+	down = [_buttons objectForKey: @"D-Pad Down"];
+	left = [_buttons objectForKey: @"D-Pad Left"];
+	right = [_buttons objectForKey: @"D-Pad Right"];
 
 	if (up != nil && down != nil && left != nil && right != nil)
 		return [[[OHGameControllerDirectionalPad alloc]

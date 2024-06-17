@@ -14,19 +14,30 @@ SRCS = OHCombinedJoyCons.m		\
        OHGameControllerAxis.m		\
        OHGameControllerButton.m		\
        OHGameControllerDirectionalPad.m	\
-       OHGameControllerElement.m	\
-       ${USE_SRCS_EVDEV}		\
-       ${USE_SRCS_NINTENDO_3DS}		\
-       ${USE_SRCS_NINTENDO_DS}		\
-       ${USE_SRCS_NINTENDO_SWITCH}	\
-       ${USE_SRCS_WII}			\
-       ${USE_SRCS_XINPUT}
-SRCS_EVDEV = OHEvdevDualSense.m				\
-	     OHEvdevDualShock4.m			\
-	     OHEvdevExtendedGamepad.m			\
+       OHGameControllerElement.m
+
+INCLUDES := ${SRCS:.m=.h}		\
+	    OHExtendedGamepad.h		\
+	    OHGameControllerProfile.h	\
+	    OHGamepad.h			\
+	    ObjFWHID.h
+
+SRCS += OHDualSenseGamepad.m			\
+	OHDualShock4Gamepad.m			\
+	OHGameControllerEmulatedAxis.m		\
+	OHGameControllerEmulatedButton.m	\
+	OHGameControllerEmulatedTriggerButton.m	\
+	OHStadiaGamepad.m			\
+	OHXboxGamepad.m				\
+	${USE_SRCS_EVDEV}			\
+	${USE_SRCS_NINTENDO_3DS}		\
+	${USE_SRCS_NINTENDO_DS}			\
+	${USE_SRCS_NINTENDO_SWITCH}		\
+	${USE_SRCS_WII}				\
+	${USE_SRCS_XINPUT}
+SRCS_EVDEV = OHEvdevExtendedGamepad.m			\
 	     OHEvdevGameController.m			\
-	     OHEvdevPlayStationExtendedGamepad.m	\
-	     OHEvdevStadiaExtendedGamepad.m
+	     OHEvdevGameControllerProfile.m
 SRCS_NINTENDO_3DS = OHNintendo3DSExtendedGamepad.m	\
 		    OHNintendo3DSGameController.m
 SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
@@ -37,18 +48,7 @@ SRCS_WII = OHWiiClassicController.m	\
 	   OHWiiGameController.m	\
 	   OHWiimote.m			\
 	   OHWiimoteWithNunchuk.m
-SRCS_XINPUT = OHXbox360Gamepad.m	\
-	      OHXInputGameController.m
-
-INCLUDES := ${SRCS:.m=.h}		\
-	    OHExtendedGamepad.h		\
-	    OHGameControllerProfile.h	\
-	    OHGamepad.h			\
-	    ObjFWHID.h
-
-SRCS += OHGameControllerEmulatedAxis.m		\
-	OHGameControllerEmulatedButton.m	\
-	OHGameControllerEmulatedTriggerButton.m
+SRCS_XINPUT = OHXInputGameController.m
 
 includesubdir = ObjFWHID
 

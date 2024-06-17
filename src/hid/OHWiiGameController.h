@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	int32_t _index;
 	uint32_t _type;
-	id <OHGameControllerProfile> _rawProfile;
+	id <OHGameControllerProfile> _profile;
 }
 
 - (instancetype)initWithIndex: (int32_t)index type: (uint32_t)type;

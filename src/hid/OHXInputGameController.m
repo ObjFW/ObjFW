@@ -26,7 +26,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHXbox360Gamepad.h"
+#import "OHXboxGamepad.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -141,7 +141,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 			}
 		}
 
-		_extendedGamepad = [[OHXbox360Gamepad alloc]
+		_extendedGamepad = [[OHXboxGamepad alloc]
 		    initWithHasGuideButton: (XInputVersion != 910)];
 
 		[self retrieveState];
@@ -237,7 +237,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	return nil;
 }
 
-- (id <OHGameControllerProfile>)rawProfile
+- (id <OHGameControllerProfile>)profile
 {
 	return _extendedGamepad;
 }

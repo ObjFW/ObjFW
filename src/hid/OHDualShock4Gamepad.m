@@ -19,27 +19,27 @@
 
 #include "config.h"
 
-#import "OHXbox360Gamepad.h"
+#import "OHDualShock4Gamepad.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerEmulatedTriggerButton.h"
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include <linux/input.h>
+#endif
 
 static OFString *const buttonNames[] = {
-	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
-	@"Start", @"Back", @"Guide"
+	@"Triangle", @"Cross", @"Square", @"Circle", @"L1", @"R1", @"L3", @"R3",
+	@"Options", @"Share", @"PS"
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHXbox360Gamepad
+@implementation OHDualShock4Gamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
 - (instancetype)init
-{
-	return [self initWithHasGuideButton: true];
-}
-
-- (instancetype)initWithHasGuideButton: (bool)hasGuideButton
 {
 	self = [super init];
 
@@ -47,22 +47,31 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableDictionary *buttons =
 		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
+		OHGameControllerButton *button;
 		OFMutableDictionary *directionalPads;
-		OHGameControllerAxis *xAxis, *yAxis;
+		OHGameControllerAxis *axis, *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
-		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button;
-
-			if ([buttonNames[i] isEqual: @"Guide"] &&
-			    !hasGuideButton)
-				continue;
-
-			button = [[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]];
+			button = [[[OHGameControllerButton alloc]
+			    initWithName: buttonNames[i]] autorelease];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
+
+		axis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"L2"] autorelease];
+		button = [[[OHGameControllerEmulatedTriggerButton alloc]
+		    initWithName: @"L2"
+			    axis: axis] autorelease];
+		[buttons setObject: button forKey: @"L2"];
+
+		axis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"R2"] autorelease];
+		button = [[[OHGameControllerEmulatedTriggerButton alloc]
+		    initWithName: @"R2"
+			    axis: axis] autorelease];
+		[buttons setObject: button forKey: @"R2"];
+
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
 
@@ -74,37 +83,31 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		yAxis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"Y"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Left Thumbstick"
+		    initWithName: @"Left Stick"
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Left Thumbstick"];
+				    forKey: @"Left Stick"];
 
 		xAxis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"RX"] autorelease];
 		yAxis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"RY"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Right Thumbstick"
+		    initWithName: @"Right Stick"
 			   xAxis: xAxis
 			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Right Thumbstick"];
+				    forKey: @"Right Stick"];
 
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
+		xAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"D-Pad X"] autorelease];
+		yAxis = [[[OHGameControllerAxis alloc]
+		    initWithName: @"D-Pad Y"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right] autorelease];
+			   xAxis: xAxis
+			   yAxis: yAxis] autorelease];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];
@@ -134,81 +137,154 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerButton *)northButton
 {
-	return [_buttons objectForKey: @"Y"];
+	return [_buttons objectForKey: @"Triangle"];
 }
 
 - (OHGameControllerButton *)southButton
 {
-	return [_buttons objectForKey: @"A"];
+	return [_buttons objectForKey: @"Cross"];
 }
 
 - (OHGameControllerButton *)westButton
 {
-	return [_buttons objectForKey: @"X"];
+	return [_buttons objectForKey: @"Square"];
 }
 
 - (OHGameControllerButton *)eastButton
 {
-	return [_buttons objectForKey: @"B"];
+	return [_buttons objectForKey: @"Circle"];
 }
 
 - (OHGameControllerButton *)leftShoulderButton
 {
-	return [_buttons objectForKey: @"LB"];
+	return [_buttons objectForKey: @"L1"];
 }
 
 - (OHGameControllerButton *)rightShoulderButton
 {
-	return [_buttons objectForKey: @"RB"];
+	return [_buttons objectForKey: @"R1"];
 }
 
 - (OHGameControllerButton *)leftTriggerButton
 {
-	return [_buttons objectForKey: @"LT"];
+	return [_buttons objectForKey: @"L2"];
 }
 
 - (OHGameControllerButton *)rightTriggerButton
 {
-	return [_buttons objectForKey: @"RT"];
+	return [_buttons objectForKey: @"R2"];
 }
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_buttons objectForKey: @"LSB"];
+	return [_buttons objectForKey: @"L3"];
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_buttons objectForKey: @"RSB"];
+	return [_buttons objectForKey: @"R3"];
 }
 
 - (OHGameControllerButton *)menuButton
 {
-	return [_buttons objectForKey: @"Start"];
+	return [_buttons objectForKey: @"Options"];
 }
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_buttons objectForKey: @"Back"];
+	return [_buttons objectForKey: @"Share"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_buttons objectForKey: @"Guide"];
+	return [_buttons objectForKey: @"PS"];
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	return [_directionalPads objectForKey: @"Left Thumbstick"];
+	return [_directionalPads objectForKey: @"Left Stick"];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	return [_directionalPads objectForKey: @"Right Thumbstick"];
+	return [_directionalPads objectForKey: @"Right Stick"];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
 {
 	return [_directionalPads objectForKey: @"D-Pad"];
 }
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+- (OHGameControllerButton *)oh_buttonForEvdevButton: (uint16_t)button
+{
+	OFString *name;
+
+	switch (button) {
+	case BTN_NORTH:
+		name = @"Triangle";
+		break;
+	case BTN_SOUTH:
+		name = @"Cross";
+		break;
+	case BTN_WEST:
+		name = @"Square";
+		break;
+	case BTN_EAST:
+		name = @"Circle";
+		break;
+	case BTN_TL:
+		name = @"L1";
+		break;
+	case BTN_TR:
+		name = @"R1";
+		break;
+	case BTN_THUMBL:
+		name = @"L3";
+		break;
+	case BTN_THUMBR:
+		name = @"R3";
+		break;
+	case BTN_START:
+		name = @"Options";
+		break;
+	case BTN_SELECT:
+		name = @"Share";
+		break;
+	case BTN_MODE:
+		name = @"PS";
+		break;
+	default:
+		return nil;
+	}
+
+	return [_buttons objectForKey: name];
+}
+
+- (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis
+{
+	switch (axis) {
+	case ABS_X:
+		return [[_directionalPads objectForKey: @"Left Stick"] xAxis];
+	case ABS_Y:
+		return [[_directionalPads objectForKey: @"Left Stick"] yAxis];
+	case ABS_RX:
+		return [[_directionalPads objectForKey: @"Right Stick"] xAxis];
+	case ABS_RY:
+		return [[_directionalPads objectForKey: @"Right Stick"] yAxis];
+	case ABS_HAT0X:
+		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
+	case ABS_HAT0Y:
+		return [[_directionalPads objectForKey: @"D-Pad"] yAxis];
+	case ABS_Z:
+		return ((OHGameControllerEmulatedTriggerButton *)
+		    [_buttons objectForKey: @"L2"]).axis;
+	case ABS_RZ:
+		return ((OHGameControllerEmulatedTriggerButton *)
+		    [_buttons objectForKey: @"R2"]).axis;
+	default:
+		return nil;
+	}
+}
+#endif
 @end

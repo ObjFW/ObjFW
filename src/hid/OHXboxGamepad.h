@@ -17,11 +17,18 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHEvdevPlayStationExtendedGamepad.h"
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHEvdevDualShock4: OHEvdevPlayStationExtendedGamepad
+@interface OHXboxGamepad: OFObject <OHExtendedGamepad>
+{
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
+}
+
+- (instancetype)initWithHasGuideButton: (bool)hasGuideButton;
 @end
 
 OF_ASSUME_NONNULL_END

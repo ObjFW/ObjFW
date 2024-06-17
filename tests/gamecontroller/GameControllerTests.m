@@ -211,13 +211,8 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
 
 		for (OHGameController *controller in _controllers) {
-			id <OHGameControllerProfile> profile;
-
-			profile = controller.extendedGamepad;
-			if (profile == nil)
-				profile = controller.gamepad;
-			if (profile == nil)
-				profile = controller.rawProfile;
+			id <OHGameControllerProfile> profile =
+			    controller.profile;
 
 			[OFStdOut setForegroundColor: [OFColor green]];
 			[OFStdOut writeLine: controller.description];
