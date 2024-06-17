@@ -20,8 +20,8 @@
 #include "config.h"
 
 #import "OHGameControllerDirectionalPad.h"
-#import "OHGameControllerEmulatedAxis.h"
-#import "OHGameControllerEmulatedButton.h"
+#import "OHEmulatedGameControllerAxis.h"
+#import "OHEmulatedGameControllerButton.h"
 
 @implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
@@ -42,16 +42,16 @@
 		_xAxis = [xAxis retain];
 		_yAxis = [yAxis retain];
 
-		_up = [[OHGameControllerEmulatedButton alloc]
+		_up = [[OHEmulatedGameControllerButton alloc]
 		    initWithAxis: _yAxis
 			positive: false];
-		_down = [[OHGameControllerEmulatedButton alloc]
+		_down = [[OHEmulatedGameControllerButton alloc]
 		    initWithAxis: _yAxis
 			positive: true];
-		_left = [[OHGameControllerEmulatedButton alloc]
+		_left = [[OHEmulatedGameControllerButton alloc]
 		    initWithAxis: _xAxis
 			positive: false];
-		_right = [[OHGameControllerEmulatedButton alloc]
+		_right = [[OHEmulatedGameControllerButton alloc]
 		    initWithAxis: _xAxis
 			positive: true];
 	} @catch (id e) {
@@ -76,10 +76,10 @@
 		_left = [left retain];
 		_right = [right retain];
 
-		_xAxis = [[OHGameControllerEmulatedAxis alloc]
+		_xAxis = [[OHEmulatedGameControllerAxis alloc]
 		    initWithNegativeButton: _left
 			    positiveButton: _right];
-		_yAxis = [[OHGameControllerEmulatedAxis alloc]
+		_yAxis = [[OHEmulatedGameControllerAxis alloc]
 		    initWithNegativeButton: _up
 			    positiveButton: _down];
 	} @catch (id e) {

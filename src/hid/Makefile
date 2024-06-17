@@ -24,9 +24,9 @@ INCLUDES := ${SRCS:.m=.h}		\
 
 SRCS += OHDualSenseGamepad.m			\
 	OHDualShock4Gamepad.m			\
-	OHGameControllerEmulatedAxis.m		\
-	OHGameControllerEmulatedButton.m	\
-	OHGameControllerEmulatedTriggerButton.m	\
+	OHEmulatedGameControllerAxis.m		\
+	OHEmulatedGameControllerButton.m	\
+	OHEmulatedGameControllerTriggerButton.m	\
 	OHStadiaGamepad.m			\
 	OHXboxGamepad.m				\
 	${USE_SRCS_EVDEV}			\

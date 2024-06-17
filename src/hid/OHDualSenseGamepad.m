@@ -21,10 +21,10 @@
 
 #import "OHDualSenseGamepad.h"
 #import "OFDictionary.h"
+#import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHGameControllerEmulatedTriggerButton.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include <linux/input.h>
@@ -60,14 +60,14 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 		axis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"L2"] autorelease];
-		button = [[[OHGameControllerEmulatedTriggerButton alloc]
+		button = [[[OHEmulatedGameControllerTriggerButton alloc]
 		    initWithName: @"L2"
 			    axis: axis] autorelease];
 		[buttons setObject: button forKey: @"L2"];
 
 		axis = [[[OHGameControllerAxis alloc]
 		    initWithName: @"R2"] autorelease];
-		button = [[[OHGameControllerEmulatedTriggerButton alloc]
+		button = [[[OHEmulatedGameControllerTriggerButton alloc]
 		    initWithName: @"R2"
 			    axis: axis] autorelease];
 		[buttons setObject: button forKey: @"R2"];
@@ -277,10 +277,10 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	case ABS_HAT0Y:
 		return [[_directionalPads objectForKey: @"D-Pad"] yAxis];
 	case ABS_Z:
-		return ((OHGameControllerEmulatedTriggerButton *)
+		return ((OHEmulatedGameControllerTriggerButton *)
 		    [_buttons objectForKey: @"L2"]).axis;
 	case ABS_RZ:
-		return ((OHGameControllerEmulatedTriggerButton *)
+		return ((OHEmulatedGameControllerTriggerButton *)
 		    [_buttons objectForKey: @"R2"]).axis;
 	default:
 		return nil;

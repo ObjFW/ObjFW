@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameControllerAxis;
 
 OF_SUBCLASSING_RESTRICTED
-@interface OHGameControllerEmulatedButton: OHGameControllerButton
+@interface OHEmulatedGameControllerButton: OHGameControllerButton
 {
 	OHGameControllerAxis *_axis;
 	bool _positive;

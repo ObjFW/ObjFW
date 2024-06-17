@@ -21,9 +21,9 @@
 
 #import "OHEvdevExtendedGamepad.h"
 #import "OFDictionary.h"
+#import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHEvdevGameController.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHGameControllerEmulatedTriggerButton.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -145,7 +145,7 @@
 	OHGameControllerAxis *axis = [_axes objectForKey: @"Z"];
 
 	if (axis != nil)
-		return [[[OHGameControllerEmulatedTriggerButton alloc]
+		return [[[OHEmulatedGameControllerTriggerButton alloc]
 		    initWithName: @"LT"
 			    axis: axis] autorelease];
 
@@ -157,7 +157,7 @@
 	OHGameControllerAxis *axis = [_axes objectForKey: @"RZ"];
 
 	if (axis != nil)
-		return [[[OHGameControllerEmulatedTriggerButton alloc]
+		return [[[OHEmulatedGameControllerTriggerButton alloc]
 		    initWithName: @"RT"
 			    axis: axis] autorelease];
 
