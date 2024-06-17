@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFTXTDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFTXTDNSResourceRecord OFTXTDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing a TXT DNS resource record.
  */

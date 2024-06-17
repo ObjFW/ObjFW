@@ -38,7 +38,7 @@ typedef enum {
 } OFDataSearchOptions;
 
 /**
- * @class OFData OFData.h ObjFW/OFData.h
+ * @class OFData OFData.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary data in an array.
  */

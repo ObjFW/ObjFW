@@ -45,7 +45,7 @@ typedef OFString *_Nullable (^OFStringXMLUnescapingBlock)(OFString *string,
 #endif
 
 /**
- * @protocol OFStringXMLUnescapingDelegate OFString.h ObjFW/OFString.h
+ * @protocol OFStringXMLUnescapingDelegate OFString.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  *	  stringByXMLUnescapingWithHandler:.

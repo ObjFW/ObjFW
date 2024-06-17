@@ -27,8 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /**
- * @class OFWindowsRegistryKey \
- *	  OFWindowsRegistryKey.h ObjFW/OFWindowsRegistryKey.h
+ * @class OFWindowsRegistryKey OFWindowsRegistryKey.h ObjFW/ObjFW.h
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFWindowsRegistryKey: OFObject

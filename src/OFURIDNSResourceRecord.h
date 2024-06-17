@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFURIDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFURIDNSResourceRecord OFURIDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing an URI DNS resource record.
  */

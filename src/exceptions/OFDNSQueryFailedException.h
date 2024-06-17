@@ -25,8 +25,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFDNSQueryFailedException \
- *	  OFDNSQueryFailedException.h ObjFW/OFDNSQueryFailedException.h
+ * @class OFDNSQueryFailedException OFDNSQueryFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a DNS query failed.
  */

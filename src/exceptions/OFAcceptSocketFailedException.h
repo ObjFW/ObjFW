@@ -26,8 +26,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFAcceptSocketFailedException \
- *	  OFAcceptSocketFailedException.h ObjFW/OFAcceptSocketFailedException.h
+ * @class OFAcceptSocketFailedException OFAcceptSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that accepting a connection failed.
  */

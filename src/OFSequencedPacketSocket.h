@@ -65,8 +65,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 #endif
 
 /**
- * @protocol OFSequencedPacketSocketDelegate OFSequencedPacketSocket.h \
- *	     ObjFW/OFSequencedPacketSocket.h
+ * @protocol OFSequencedPacketSocketDelegate OFSequencedPacketSocket.h
+ *	     ObjFW/ObjFW.h
  *
  * @brief A delegate for OFSequencedPacketSocket.
  */
@@ -114,8 +114,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 @end
 
 /**
- * @class OFSequencedPacketSocket OFSequencedPacketSocket.h \
- *	  ObjFW/OFSequencedPacketSocket.h
+ * @class OFSequencedPacketSocket OFSequencedPacketSocket.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief A base class for sequenced packet sockets.
  *

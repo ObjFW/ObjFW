@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFCopyItemFailedException \
- *	  OFCopyItemFailedException.h ObjFW/OFCopyItemFailedException.h
+ * @class OFCopyItemFailedException OFCopyItemFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that copying a item failed.
  */

@@ -131,7 +131,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 #endif
 
 /**
- * @class OFString OFString.h ObjFW/OFString.h
+ * @class OFString OFString.h ObjFW/ObjFW.h
  *
  * @brief A class for handling strings.
  */

@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameControllerDirectionalPad;
 
 /**
- * @class OHCombinedJoyCons OHCombinedJoyCons.h ObjFWHID/OHCombinedJoyCons.h
+ * @class OHCombinedJoyCons OHCombinedJoyCons.h ObjFWHID/ObjFWHID.h
  *
  * @brief Combines a left and a right Joy-Con into a gamepad.
  */

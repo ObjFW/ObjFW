@@ -23,7 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFCharacterSet OFCharacterSet.h ObjFW/OFCharacterSet.h
+ * @class OFCharacterSet OFCharacterSet.h ObjFW/ObjFW.h
  *
  * @brief A class cluster representing a character set.
  *

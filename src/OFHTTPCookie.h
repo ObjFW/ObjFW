@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
+ * @class OFHTTPCookie OFHTTPCookie.h ObjFW/ObjFW.h
  *
  * @brief A class for storing and manipulating HTTP cookies.
  */

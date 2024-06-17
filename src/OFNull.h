@@ -24,7 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFNull OFNull.h ObjFW/OFNull.h
+ * @class OFNull OFNull.h ObjFW/ObjFW.h
  *
  * @brief A class for representing null values in collections.
  */

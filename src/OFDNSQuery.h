@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFDNSQuery OFDNSQuery.h ObjFW/OFDNSQuery.h
+ * @class OFDNSQuery OFDNSQuery.h ObjFW/ObjFW.h
  *
  * @brief A class representing a DNS query.
  */

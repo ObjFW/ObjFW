@@ -22,8 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFChecksumMismatchException \
- *	  OFChecksumMismatchException.h ObjFW/OFChecksumMismatchException.h
+ * @class OFChecksumMismatchException OFChecksumMismatchException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a checksum did not match.
  */

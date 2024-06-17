@@ -67,7 +67,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 #endif
 
 /**
- * @class OFDictionary OFDictionary.h ObjFW/OFDictionary.h
+ * @class OFDictionary OFDictionary.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for storing objects in a dictionary.
  *

@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
+ * @class OFHTTPResponse OFHTTPResponse.h ObjFW/ObjFW.h
  *
  * @brief A class for representing an HTTP request response as a stream.
  */

@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFSettings OFSettings.h ObjFW/OFSettings.h
+ * @class OFSettings OFSettings.h ObjFW/ObjFW.h
  *
  * Paths are delimited by dots, for example `category.subcategory.key`.
  *

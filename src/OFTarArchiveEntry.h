@@ -50,7 +50,7 @@ typedef enum {
 } OFTarArchiveEntryType;
 
 /**
- * @class OFTarArchiveEntry OFTarArchiveEntry.h ObjFW/OFTarArchiveEntry.h
+ * @class OFTarArchiveEntry OFTarArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry of a tar archive.
  */

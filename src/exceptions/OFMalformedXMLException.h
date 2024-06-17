@@ -24,8 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMalformedXMLException \
- *	  OFMalformedXMLException.h ObjFW/OFMalformedXMLException.h
+ * @class OFMalformedXMLException OFMalformedXMLException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a parser encountered malformed XML.
  */

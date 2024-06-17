@@ -25,9 +25,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSetWindowsRegistryValueFailedException \
- *	  OFSetWindowsRegistryValueFailedException.h \
- *	  ObjFW/OFSetWindowsRegistryValueFailedException.h
+ * @class OFSetWindowsRegistryValueFailedException
+ *	  OFSetWindowsRegistryValueFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that setting a Windows registry value failed.
  */

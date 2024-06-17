@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFTruncatedDataException \
- *	  OFTruncatedDataException.h ObjFW/OFTruncatedDataException.h
+ * @class OFTruncatedDataException OFTruncatedDataException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that data was truncated while it should not
  *	  have been truncated.

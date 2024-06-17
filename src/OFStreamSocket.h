@@ -41,7 +41,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 #endif
 
 /**
- * @protocol OFStreamSocketDelegate OFStreamSocket.h ObjFW/OFStreamSocket.h
+ * @protocol OFStreamSocketDelegate OFStreamSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFStreamSocket.
  */
@@ -62,7 +62,7 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 @end
 
 /**
- * @class OFStreamSocket OFStreamSocket.h ObjFW/OFStreamSocket.h
+ * @class OFStreamSocket OFStreamSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use stream sockets.
  */

@@ -28,9 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFWaitForConditionFailedException \
- *	  OFWaitForConditionFailedException.h \
- *	  ObjFW/OFWaitForConditionFailedException.h
+ * @class OFWaitForConditionFailedException OFWaitForConditionFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating waiting for a condition failed.
  */

@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInitializationFailedException \
- *	  OFInitializationFailedException.h \
- *	  ObjFW/OFInitializationFailedException.h
+ * @class OFInitializationFailedException OFInitializationFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that initializing something failed.
  */

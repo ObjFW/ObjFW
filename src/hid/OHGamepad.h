@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OHGamepad OHGamepad.h ObjFWHID/OHGamepad.h
+ * @protocol OHGamepad OHGamepad.h ObjFWHID/ObjFWHID.h
  *
  * @brief A game controller profile representing a gamepad.
  */

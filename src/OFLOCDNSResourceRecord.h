@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFLOCDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFLOCDNSResourceRecord OFLOCDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing an LOC DNS resource record.
  */

@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFOpenItemFailedException \
- *	  OFOpenItemFailedException.h ObjFW/OFOpenItemFailedException.h
+ * @class OFOpenItemFailedException OFOpenItemFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an item could not be opened.
  */

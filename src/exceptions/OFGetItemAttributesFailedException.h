@@ -24,9 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFGetItemAttributesFailedException \
- *	  OFGetItemAttributesFailedException.h \
- *	  ObjFW/OFGetItemAttributesFailedException.h
+ * @class OFGetItemAttributesFailedException
+ *	  OFGetItemAttributesFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an item's attributes could not be retrieved.
  */

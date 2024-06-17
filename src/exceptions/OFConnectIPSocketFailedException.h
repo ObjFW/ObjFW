@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFConnectIPSocketFailedException \
- *	  OFConnectIPSocketFailedException.h \
- *	  ObjFW/OFConnectIPSocketFailedException.h
+ * @class OFConnectIPSocketFailedException OFConnectIPSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that an IP connection could not be
  *	  established.

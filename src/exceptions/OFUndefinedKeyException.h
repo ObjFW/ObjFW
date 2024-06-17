@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFUndefinedKeyException \
- *	  OFUndefinedKeyException.h ObjFW/OFUndefinedKeyException.h
+ * @class OFUndefinedKeyException OFUndefinedKeyException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a key is undefined (e.g. for Key Value
  *	  Coding).

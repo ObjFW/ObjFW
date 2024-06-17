@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @protocol OFUDPSocketDelegate OFUDPSocket.h ObjFW/OFUDPSocket.h
+ * @protocol OFUDPSocketDelegate OFUDPSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFUDPSocket.
  */
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFUDPSocket OFUDPSocket.h ObjFW/OFUDPSocket.h
+ * @class OFUDPSocket OFUDPSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use UDP sockets.
  *

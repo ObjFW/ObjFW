@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFAlreadyOpenException \
- *	  OFAlreadyOpenException.h ObjFW/OFAlreadyOpenException.h
+ * @class OFAlreadyOpenException OFAlreadyOpenException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that an object is already open and thus
  *	  cannot be opened again.

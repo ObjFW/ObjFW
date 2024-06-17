@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableString OFString.h ObjFW/OFString.h
+ * @class OFMutableString OFMutableString.h ObjFW/ObjFW.h
  *
  * @brief A class for storing and modifying strings.
  */

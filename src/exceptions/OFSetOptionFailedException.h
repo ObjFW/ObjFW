@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSetOptionFailedException \
- *	  OFSetOptionFailedException.h ObjFW/OFSetOptionFailedException.h
+ * @class OFSetOptionFailedException OFSetOptionFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that setting an option for an object failed.
  */

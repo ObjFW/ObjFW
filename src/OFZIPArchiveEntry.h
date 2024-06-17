@@ -100,7 +100,7 @@ typedef enum {
 @class OFDate;
 
 /**
- * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/OFZIPArchiveEntry.h
+ * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.

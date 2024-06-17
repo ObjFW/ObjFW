@@ -25,9 +25,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFOpenWindowsRegistryKeyFailedException \
- *	  OFOpenWindowsRegistryKeyFailedException.h \
- *	  ObjFW/OFOpenWindowsRegistryKeyFailedException.h
+ * @class OFOpenWindowsRegistryKeyFailedException
+ *	  OFOpenWindowsRegistryKeyFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that opening a Windows registry key failed.
  */

@@ -25,7 +25,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @struct OFOptionsParserOption OFOptionsParser.h ObjFW/OFOptionsParser.h
+ * @struct OFOptionsParserOption OFOptionsParser.h ObjFW/ObjFW.h
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
@@ -64,7 +64,7 @@ typedef struct {
 } OFOptionsParserOption;
 
 /**
- * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
+ * @class OFOptionsParser OFOptionsParser.h ObjFW/ObjFW.h
  *
  * @brief A class for parsing the program options specified on the command line.
  */

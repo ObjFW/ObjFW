@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInvalidFormatException \
- *	  OFInvalidFormatException.h ObjFW/OFInvalidFormatException.h
+ * @class OFInvalidFormatException OFInvalidFormatException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the format is invalid.
  */

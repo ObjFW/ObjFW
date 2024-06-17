@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFNotOpenException OFNotOpenException.h ObjFW/OFNotOpenException.h
+ * @class OFNotOpenException OFNotOpenException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an object is not open, connected or bound.
  */

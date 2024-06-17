@@ -182,7 +182,7 @@ struct sockaddr_at {
 #endif
 
 /**
- * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
+ * @struct OFSocketAddress OFSocket.h ObjFW/ObjFW.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */

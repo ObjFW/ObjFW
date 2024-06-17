@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFColor;
 
 /**
- * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
+ * @class OFStdIOStream OFStdIOStream.h ObjFW/ObjFW.h
  *
  * @brief A class for providing standard input, output and error as OFStream.
  *

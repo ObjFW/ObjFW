@@ -24,8 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFRemoveItemFailedException \
- *	  OFRemoveItemFailedException.h ObjFW/OFRemoveItemFailedException.h
+ * @class OFRemoveItemFailedException OFRemoveItemFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that removing an item failed.
  */

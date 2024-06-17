@@ -24,9 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFCreateDirectoryFailedException \
- *	  OFCreateDirectoryFailedException.h \
- *	  ObjFW/OFCreateDirectoryFailedException.h
+ * @class OFCreateDirectoryFailedException OFCreateDirectoryFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating a directory couldn't be created.
  */

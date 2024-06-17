@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSHA224Hash OFSHA224Hash.h ObjFW/OFSHA224Hash.h
+ * @class OFSHA224Hash OFSHA224Hash.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create an SHA-224 hash.
  */

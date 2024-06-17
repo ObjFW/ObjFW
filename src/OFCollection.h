@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFCollection OFCollection.h ObjFW/OFCollection.h
+ * @protocol OFCollection OFCollection.h ObjFW/ObjFW.h
  *
  * @brief A protocol with methods common for all collections.
  */

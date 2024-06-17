@@ -25,7 +25,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFZooArchive OFZooArchive.h ObjFW/OFZooArchive.h
+ * @class OFZooArchive OFZooArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating Zoo files.
  */

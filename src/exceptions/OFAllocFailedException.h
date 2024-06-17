@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFAllocFailedException \
- *	  OFAllocFailedException.h ObjFW/OFAllocFailedException.h
+ * @class OFAllocFailedException OFAllocFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an object could not be allocated.
  *

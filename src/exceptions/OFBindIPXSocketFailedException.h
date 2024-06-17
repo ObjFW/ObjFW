@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindIPXSocketFailedException \
- *	  OFBindIPXSocketFailedException.h \
- *	  ObjFW/OFBindIPXSocketFailedException.h
+ * @class OFBindIPXSocketFailedException OFBindIPXSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that binding an IPX socket failed.
  */

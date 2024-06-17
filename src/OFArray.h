@@ -98,7 +98,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 #endif
 
 /**
- * @class OFArray OFArray.h ObjFW/OFArray.h
+ * @class OFArray OFArray.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for storing objects in an array.
  *

@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFWriteFailedException \
- *	  OFWriteFailedException.h ObjFW/OFWriteFailedException.h
+ * @class OFWriteFailedException OFWriteFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that writing to an object failed.
  */

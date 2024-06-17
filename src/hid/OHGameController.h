@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameControllerProfile;
 
 /**
- * @class OHGameController OHGameController.h ObjFWHID/OHGameController.h
+ * @class OHGameController OHGameController.h ObjFWHID/ObjFWHID.h
  *
  * @brief A class for reading state from a game controller.
  */

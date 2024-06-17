@@ -27,8 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLElementBuilder;
 
 /**
- * @protocol OFXMLElementBuilderDelegate
- *	     OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ * @protocol OFXMLElementBuilderDelegate OFXMLElementBuilder.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  * OFXMLElementBuilder.
@@ -97,7 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/ObjFW.h
  *
  * @brief A class implementing the OFXMLParserDelegate protocol that can build
  * OFXMLElements from the document parsed by the OFXMLParser.

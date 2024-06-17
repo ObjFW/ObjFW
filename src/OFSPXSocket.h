@@ -38,7 +38,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
- * @protocol OFSPXSocketDelegate OFSPXSocket.h ObjFW/OFSPXSocket.h
+ * @protocol OFSPXSocketDelegate OFSPXSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFSPXSocket.
  */
@@ -62,7 +62,7 @@ typedef void (^OFSPXSocketAsyncConnectBlock)(id _Nullable exception);
 @end
 
 /**
- * @class OFSPXSocket OFSPXSocket.h ObjFW/OFSPXSocket.h
+ * @class OFSPXSocket OFSPXSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use SPX sockets.
  *

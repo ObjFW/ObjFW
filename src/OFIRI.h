@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFIRI OFIRI.h ObjFW/OFIRI.h
+ * @class OFIRI OFIRI.h ObjFW/ObjFW.h
  *
  * @brief A class for representing IRIs, URIs, URLs and URNs, for parsing them
  *	  as well as accessing parts of them.

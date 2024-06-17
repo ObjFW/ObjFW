@@ -263,7 +263,7 @@ extern const OFFileAttributeType OFFileTypeUnknown;
 #endif
 
 /**
- * @class OFFileManager OFFileManager.h ObjFW/OFFileManager.h
+ * @class OFFileManager OFFileManager.h ObjFW/ObjFW.h
  *
  * @brief A class which provides management for files, e.g. reading contents of
  *	  directories, deleting files, renaming files, etc.

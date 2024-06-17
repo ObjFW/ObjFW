@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInvalidArgumentException \
- *	  OFInvalidArgumentException.h ObjFW/OFInvalidArgumentException.h
+ * @class OFInvalidArgumentException OFInvalidArgumentException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the argument is invalid for this method.
  */

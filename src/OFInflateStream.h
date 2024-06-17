@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 #define OFInflateStreamBufferSize 4096
 
 /**
- * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
+ * @class OFInflateStream OFInflateStream.h ObjFW/ObjFW.h
  *
  * @note This class only conforms to OFReadyForReadingObserving if the
  *	 underlying stream does so, too.

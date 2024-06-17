@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInvalidJSONException \
- *	  OFInvalidJSONException.h ObjFW/OFInvalidJSONException.h
+ * @class OFInvalidJSONException OFInvalidJSONException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating a JSON representation is invalid.
  */

@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInvalidEncodingException \
- *	  OFInvalidEncodingException.h ObjFW/OFInvalidEncodingException.h
+ * @class OFInvalidEncodingException OFInvalidEncodingException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the encoding is invalid for this object.
  */

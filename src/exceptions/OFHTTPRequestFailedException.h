@@ -29,9 +29,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPResponse;
 
 /**
- * @class OFHTTPRequestFailedException \
- *	  OFHTTPRequestFailedException.h \
- *	  ObjFW/OFHTTPRequestFailedException.h
+ * @class OFHTTPRequestFailedException OFHTTPRequestFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that an HTTP request failed.
  */

@@ -24,7 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFRecursiveMutex OFRecursiveMutex.h ObjFW/OFRecursiveMutex.h
+ * @class OFRecursiveMutex OFRecursiveMutex.h ObjFW/ObjFW.h
  *
  * @brief A class for creating mutual exclusions which can be entered
  *	  recursively.

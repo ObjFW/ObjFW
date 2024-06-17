@@ -24,9 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFUnsupportedProtocolException \
- *	  OFUnsupportedProtocolException.h \
- *	  ObjFW/OFUnsupportedProtocolException.h
+ * @class OFUnsupportedProtocolException OFUnsupportedProtocolException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the protocol specified by the IRI is not
  *	  supported.

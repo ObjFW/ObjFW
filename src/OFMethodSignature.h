@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableData;
 
 /**
- * @class OFMethodSignature OFMethodSignature.h ObjFW/OFMethodSignature.h
+ * @class OFMethodSignature OFMethodSignature.h ObjFW/ObjFW.h
  *
  * @brief A class for parsing type encodings and accessing them.
  */

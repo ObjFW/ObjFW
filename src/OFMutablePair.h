@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutablePair OFPair.h ObjFW/OFPair.h
+ * @class OFMutablePair OFMutablePair.h ObjFW/ObjFW.h
  *
  * @brief A class for storing a pair of two objects.
  */

@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFGetCurrentDirectoryFailedException \
- *	  OFGetCurrentDirectoryFailedException.h \
- *	  ObjFW/OFGetCurrentDirectoryFailedException.h
+ * @class OFGetCurrentDirectoryFailedException
+ *	  OFGetCurrentDirectoryFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that getting the current directory path
  *	  failed.

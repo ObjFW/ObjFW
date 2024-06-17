@@ -57,7 +57,7 @@ extern const OFRunLoopMode OFDefaultRunLoopMode;
 #endif
 
 /**
- * @class OFRunLoop OFRunLoop.h ObjFW/OFRunLoop.h
+ * @class OFRunLoop OFRunLoop.h ObjFW/ObjFW.h
  *
  * @brief A class providing a run loop for the application and its processes.
  */

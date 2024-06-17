@@ -32,7 +32,7 @@ static const OFFileHandle OFInvalidFileHandle = NULL;
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFFile OFFile.h ObjFW/OFFile.h
+ * @class OFFile OFFile.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to read and write files.
  */

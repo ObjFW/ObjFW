@@ -45,7 +45,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 #endif
 
 /**
- * @class OFThread OFThread.h ObjFW/OFThread.h
+ * @class OFThread OFThread.h ObjFW/ObjFW.h
  *
  * @brief A class which provides portable threads.
  *

@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDate;
 
 /**
- * @class OFCondition OFCondition.h ObjFW/OFCondition.h
+ * @class OFCondition OFCondition.h ObjFW/ObjFW.h
  *
  * @brief A class implementing a condition variable for thread synchronization.
  */

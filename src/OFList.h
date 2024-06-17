@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 # pragma clang diagnostic ignored "-Wdocumentation"
 #endif
 /**
- * @struct OFListItem OFList.h ObjFW/OFList.h
+ * @struct OFListItem OFList.h ObjFW/ObjFW.h
  *
  * @brief A list item.
  *
@@ -80,7 +80,7 @@ extern id _Nonnull OFListItemObject(OFListItem _Nonnull listItem);
 #endif
 
 /**
- * @class OFList OFList.h ObjFW/OFList.h
+ * @class OFList OFList.h ObjFW/ObjFW.h
  *
  * @brief A class which provides easy to use double-linked lists.
  */

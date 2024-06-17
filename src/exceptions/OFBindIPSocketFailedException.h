@@ -26,8 +26,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindIPSocketFailedException \
- *	  OFBindIPSocketFailedException.h ObjFW/OFBindIPSocketFailedException.h
+ * @class OFBindIPSocketFailedException OFBindIPSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that binding an IP socket failed.
  */

@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFConnectUNIXSocketFailedException \
- *	  OFConnectUNIXSocketFailedException.h \
- *	  ObjFW/OFConnectUNIXSocketFailedException.h
+ * @class OFConnectUNIXSocketFailedException
+ *	  OFConnectUNIXSocketFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a UNIX socket connection could not be
  *	  established.

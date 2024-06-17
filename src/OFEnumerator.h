@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFEnumerator OF_GENERIC(ObjectType);
 
 /**
- * @protocol OFEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for getting an enumerator for the object.
  *
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * this as well.
  */
 /**
- * @struct OFFastEnumerationState OFEnumerator.h ObjFW/OFEnumerator.h
+ * @struct OFFastEnumerationState OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief State information for fast enumerations.
  */
@@ -69,7 +69,7 @@ typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 
 /**
- * @protocol OFFastEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFFastEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for fast enumeration.
  *
@@ -96,7 +96,7 @@ typedef OFFastEnumerationState NSFastEnumerationState;
 @end
 
 /**
- * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
+ * @class OFEnumerator OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to enumerate through collections.
  */

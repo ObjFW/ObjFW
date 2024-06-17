@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSHA384Hash OFSHA384Hash.h ObjFW/OFSHA384Hash.h
+ * @class OFSHA384Hash OFSHA384Hash.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create an SHA-384 hash.
  */

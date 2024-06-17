@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFLinkItemFailedException \
- *	  OFLinkItemFailedException.h ObjFW/OFLinkItemFailedException.h
+ * @class OFLinkItemFailedException OFLinkItemFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that creating a link failed.
  */

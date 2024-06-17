@@ -28,8 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFThread;
 
 /**
- * @class OFThreadStillRunningException \
- *	  OFThreadStillRunningException.h ObjFW/OFThreadStillRunningException.h
+ * @class OFThreadStillRunningException OFThreadStillRunningException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a thread is still running.
  */

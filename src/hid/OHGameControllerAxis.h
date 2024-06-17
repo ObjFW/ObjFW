@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OHGameControllerAxis \
- *	  OHGameControllerAxis.h ObjFWHID/OHGameControllerAxis.h
+ * @class OHGameControllerAxis OHGameControllerAxis.h ObjFWHID/ObjFWHID.h
  *
  * @brief An axis of a game controller.
  */

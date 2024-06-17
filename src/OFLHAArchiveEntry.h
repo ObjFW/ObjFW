@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/OFLHAArchiveEntry.h
+ * @class OFLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry in an LHA archive.
  */

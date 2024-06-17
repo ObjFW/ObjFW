@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableTriple OFTriple.h ObjFW/OFTriple.h
+ * @class OFMutableTriple OFMutableTriple.h ObjFW/ObjFW.h
  *
  * @brief A class for storing a triple of three objects.
  */

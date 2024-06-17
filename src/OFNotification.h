@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef OFConstantString *OFNotificationName;
 
 /**
- * @class OFNotification OFNotification.h ObjFW/OFNotification.h
+ * @class OFNotification OFNotification.h ObjFW/ObjFW.h
  *
  * @brief A class to represent a notification for or from
  *	  @ref OFNotificationCenter.

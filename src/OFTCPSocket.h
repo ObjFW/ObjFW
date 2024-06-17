@@ -38,7 +38,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 #endif
 
 /**
- * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/OFTCPSocket.h
+ * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFTCPSocket.
  */
@@ -60,7 +60,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 @end
 
 /**
- * @class OFTCPSocket OFTCPSocket.h ObjFW/OFTCPSocket.h
+ * @class OFTCPSocket OFTCPSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use TCP sockets.
  *

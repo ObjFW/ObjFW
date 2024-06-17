@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFCryptographicHash \
- *	     OFCryptographicHash.h ObjFW/OFCryptographicHash.h
+ * @protocol OFCryptographicHash OFCryptographicHash.h ObjFW/ObjFW.h
  *
  * @brief A protocol for classes providing cryptographic hash functions.
  *

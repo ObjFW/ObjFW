@@ -111,7 +111,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 #endif
 
 /**
- * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
+ * @protocol OFApplicationDelegate OFApplication.h ObjFW/ObjFW.h
  *
  * @brief A protocol for delegates of OFApplication.
  *
@@ -190,7 +190,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 @end
 
 /**
- * @class OFApplication OFApplication.h ObjFW/OFApplication.h
+ * @class OFApplication OFApplication.h ObjFW/ObjFW.h
  *
  * @brief A class which represents the application as an object.
  *

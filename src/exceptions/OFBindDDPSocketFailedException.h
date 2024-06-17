@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindDDPSocketFailedException \
- *	  OFBindDDPSocketFailedException.h \
- *	  ObjFW/OFBindDDPSocketFailedException.h
+ * @class OFBindDDPSocketFailedException OFBindDDPSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that binding a DDP socket failed.
  */

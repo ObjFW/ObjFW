@@ -146,7 +146,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /**
- * @class OFException OFException.h ObjFW/OFException.h
+ * @class OFException OFException.h ObjFW/ObjFW.h
  *
  * @brief The base class for all exceptions in ObjFW
  *

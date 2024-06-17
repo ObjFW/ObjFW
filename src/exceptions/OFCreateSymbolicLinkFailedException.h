@@ -24,9 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFCreateSymbolicLinkFailedException \
- *	  OFCreateSymbolicLinkFailedException.h \
- *	  ObjFW/OFCreateSymbolicLinkFailedException.h
+ * @class OFCreateSymbolicLinkFailedException
+ *	  OFCreateSymbolicLinkFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that creating a symbolic link failed.
  */

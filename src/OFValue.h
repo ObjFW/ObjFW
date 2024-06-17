@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFValue OFValue.h ObjFW/OFValue.h
+ * @class OFValue OFValue.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary values in an object.
  */

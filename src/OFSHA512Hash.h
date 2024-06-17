@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSHA512Hash OFSHA512Hash.h ObjFW/OFSHA512Hash.h
+ * @class OFSHA512Hash OFSHA512Hash.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create an SHA-512 hash.
  */

@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSRVDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFSRVDNSResourceRecord OFSRVDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing an SRV DNS resource record.
  */

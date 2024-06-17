@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableSet OFSet.h ObjFW/OFSet.h
+ * @class OFMutableSet OFMutableSet.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for a mutable unordered set of unique objects.
  *

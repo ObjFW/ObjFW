@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMemoryStream OFMemoryStream.h ObjFW/OFMemoryStream.h
+ * @class OFMemoryStream OFMemoryStream.h ObjFW/ObjFW.h
  *
  * @brief A seekable stream for reading from and writing to memory.
  */

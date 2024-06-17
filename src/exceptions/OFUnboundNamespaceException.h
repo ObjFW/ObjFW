@@ -24,8 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLElement;
 
 /**
- * @class OFUnboundNamespaceException \
- *	  OFUnboundNamespaceException.h ObjFW/OFUnboundNamespaceException.h
+ * @class OFUnboundNamespaceException OFUnboundNamespaceException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating an attempt to use an unbound namespace.
  */

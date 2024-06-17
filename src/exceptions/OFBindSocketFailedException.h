@@ -28,8 +28,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindSocketFailedException \
- *	  OFBindSocketFailedException.h ObjFW/OFBindSocketFailedException.h
+ * @class OFBindSocketFailedException OFBindSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that binding a socket failed.
  */

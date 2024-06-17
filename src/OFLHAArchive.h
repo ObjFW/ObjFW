@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
+ * @class OFLHAArchive OFLHAArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating LHA files.
  */

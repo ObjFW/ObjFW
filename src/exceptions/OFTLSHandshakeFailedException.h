@@ -36,8 +36,8 @@ extern int _OFTLSHandshakeFailedException_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @class OFTLSHandshakeFailedException \
- *	  OFTLSHandshakeFailedException.h ObjFW/OFTLSHandshakeFailedException.h
+ * @class OFTLSHandshakeFailedException OFTLSHandshakeFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a TLS handshake.
  */

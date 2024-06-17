@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFXMLNode OFXMLNode.h ObjFW/OFXMLNode.h
+ * @class OFXMLNode OFXMLNode.h ObjFW/ObjFW.h
  *
  * @brief A class which stores an XML element.
  */

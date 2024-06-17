@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
+ * @class OFSystemInfo OFSystemInfo.h ObjFW/ObjFW.h
  *
  * @brief A class for querying information about the system.
  */

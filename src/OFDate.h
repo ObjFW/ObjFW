@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFConstantString;
 
 /**
- * @class OFDate OFDate.h ObjFW/OFDate.h
+ * @class OFDate OFDate.h ObjFW/ObjFW.h
  *
  * @brief A class for storing, accessing and comparing dates.
  */

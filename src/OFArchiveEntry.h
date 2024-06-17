@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 
 /**
- * @protocol OFArchiveEntry OFArchiveEntry.h ObjFW/OFArchiveEntry.h
+ * @protocol OFArchiveEntry OFArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry in an archive.
  */

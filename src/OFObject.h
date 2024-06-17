@@ -103,7 +103,7 @@ typedef enum {
 } OFByteOrder;
 
 /**
- * @struct OFRange OFObject.h ObjFW/OFObject.h
+ * @struct OFRange OFObject.h ObjFW/ObjFW.h
  *
  * @brief A range.
  */
@@ -154,7 +154,7 @@ OFEqualRanges(OFRange range1, OFRange range2)
 typedef double OFTimeInterval;
 
 /**
- * @struct OFPoint OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint OFObject.h ObjFW/ObjFW.h
  *
  * @brief A point in 2D space.
  */
@@ -200,7 +200,7 @@ OFEqualPoints(OFPoint point1, OFPoint point2)
 }
 
 /**
- * @struct OFSize OFObject.h ObjFW/OFObject.h
+ * @struct OFSize OFObject.h ObjFW/ObjFW.h
  *
  * @brief A size.
  */
@@ -246,7 +246,7 @@ OFEqualSizes(OFSize size1, OFSize size2)
 }
 
 /**
- * @struct OFRect OFObject.h ObjFW/OFObject.h
+ * @struct OFRect OFObject.h ObjFW/ObjFW.h
  *
  * @brief A rectangle.
  */
@@ -297,7 +297,7 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 }
 
 /**
- * @struct OFVector3D OFObject.h ObjFW/OFObject.h
+ * @struct OFVector3D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 3D space.
  */
@@ -349,7 +349,7 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
 }
 
 /**
- * @struct OFVector4D OFObject.h ObjFW/OFObject.h
+ * @struct OFVector4D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 4D space.
  */
@@ -463,7 +463,7 @@ static const size_t OFNotFound = SIZE_MAX;
 @class OFThread;
 
 /**
- * @protocol OFObject OFObject.h ObjFW/OFObject.h
+ * @protocol OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The protocol which all root classes implement.
  */
@@ -682,7 +682,7 @@ static const size_t OFNotFound = SIZE_MAX;
 @end
 
 /**
- * @class OFObject OFObject.h ObjFW/OFObject.h
+ * @class OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
@@ -1342,7 +1342,7 @@ OF_ROOT_CLASS
 @end
 
 /**
- * @protocol OFCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of copies.
  */
@@ -1360,7 +1360,7 @@ OF_ROOT_CLASS
 @end
 
 /**
- * @protocol OFMutableCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFMutableCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of mutable copies.
  *
@@ -1377,7 +1377,7 @@ OF_ROOT_CLASS
 @end
 
 /**
- * @protocol OFComparing OFObject.h ObjFW/OFObject.h
+ * @protocol OFComparing OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for comparing objects.
  *

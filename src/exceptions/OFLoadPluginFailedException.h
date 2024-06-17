@@ -22,8 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFLoadPluginFailedException \
- *	  OFLoadPluginFailedException.h ObjFW/OFLoadPluginFailedException.h
+ * @class OFLoadPluginFailedException OFLoadPluginFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating a plugin could not be loaded.
  */

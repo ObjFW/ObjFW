@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/OFIPXSocket.h
+ * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFIPXSocket.
  */
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFIPXSocket OFIPXSocket.h ObjFW/OFIPXSocket.h
+ * @class OFIPXSocket OFIPXSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use IPX sockets.
  *

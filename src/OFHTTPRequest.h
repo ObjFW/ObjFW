@@ -53,7 +53,7 @@ typedef enum {
 } OFHTTPRequestMethod;
 
 /**
- * @struct OFHTTPRequestProtocolVersion OFHTTPRequest.h ObjFW/OFHTTPRequest.h
+ * @struct OFHTTPRequestProtocolVersion OFHTTPRequest.h ObjFW/ObjFW.h
  *
  * @brief The HTTP version of the HTTP request.
  */
@@ -65,7 +65,7 @@ typedef struct OF_BOXABLE OFHTTPRequestProtocolVersion {
 } OFHTTPRequestProtocolVersion;
 
 /**
- * @class OFHTTPRequest OFHTTPRequest.h ObjFW/OFHTTPRequest.h
+ * @class OFHTTPRequest OFHTTPRequest.h ObjFW/ObjFW.h
  *
  * @brief A class for storing HTTP requests.
  */

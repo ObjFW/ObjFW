@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableData;
 
 /**
- * @class OFInvocation OFInvocation.h ObjFW/OFInvocation.h
+ * @class OFInvocation OFInvocation.h ObjFW/ObjFW.h
  *
  * @brief A class for storing and accessing invocations, and invoking them.
  */

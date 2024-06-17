@@ -23,8 +23,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFResolveHostFailedException \
- *	  OFResolveHostFailedException.h ObjFW/OFResolveHostFailedException.h
+ * @class OFResolveHostFailedException OFResolveHostFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that resolving a host failed.
  */

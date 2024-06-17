@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBlock OFBlock.h ObjFW/OFBlock.h
+ * @class OFBlock OFBlock.h ObjFW/ObjFW.h
  *
  * @brief The class for all blocks, since all blocks are also objects.
  */

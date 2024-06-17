@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFChangeCurrentDirectoryFailedException \
- *	  OFChangeCurrentDirectoryFailedException.h \
- *	  ObjFW/OFChangeCurrentDirectoryFailedException.h
+ * @class OFChangeCurrentDirectoryFailedException
+ *	  OFChangeCurrentDirectoryFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that changing the current directory path
  *	  failed.

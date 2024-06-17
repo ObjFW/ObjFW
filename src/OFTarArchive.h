@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
+ * @class OFTarArchive OFTarArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating tar archives.
  */

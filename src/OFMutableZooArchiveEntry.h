@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableZooArchiveEntry OFZooArchiveEntry.h ObjFW/OFZooArchiveEntry.h
+ * @class OFMutableZooArchiveEntry OFMutableZooArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents a mutable entry in a Zoo archive.
  */

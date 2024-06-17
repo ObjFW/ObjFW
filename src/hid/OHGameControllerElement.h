@@ -32,8 +32,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OHGameControllerElement \
- *	  OHGameControllerElement.h ObjFWHID/OHGameControllerElement.h
+ * @class OHGameControllerElement OHGameControllerElement.h ObjFWHID/ObjFWHID.h
  *
  * @brief An element of a game controller, e.g. a button, an axis or a
  *	  directional pad.

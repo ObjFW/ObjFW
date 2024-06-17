@@ -34,8 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableData;
 
 /**
- * @protocol OFKernelEventObserverDelegate
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFKernelEventObserverDelegate OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  *	  OFKernelEventObserver.
@@ -76,8 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @protocol OFReadyForReadingObserving
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFReadyForReadingObserving OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for reading by OFKernelEventObserver.
@@ -91,8 +89,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @protocol OFReadyForWritingObserving
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFReadyForWritingObserving OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for writing by OFKernelEventObserver.
@@ -107,8 +104,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @class OFKernelEventObserver
- *	  OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @class OFKernelEventObserver OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief A class that can observe multiple kernel events (e.g. streams being
  *	  ready to read) at once.

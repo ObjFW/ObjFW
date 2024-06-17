@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFPTRDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFPTRDNSResourceRecord OFPTRDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing a PTR DNS resource record.
  */

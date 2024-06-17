@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h \
- *	     ObjFW/OFUNIXStreamSocket.h
+ * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFUNIXStreamSocket.
  */
@@ -33,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFUNIXStreamSocket OFUNIXStreamSocket.h ObjFW/OFUNIXStreamSocket.h
+ * @class OFUNIXStreamSocket OFUNIXStreamSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use UNIX stream sockets.
  *

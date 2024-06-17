@@ -28,8 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFThread;
 
 /**
- * @class OFStartThreadFailedException \
- *	  OFStartThreadFailedException.h ObjFW/OFStartThreadFailedException.h
+ * @class OFStartThreadFailedException OFStartThreadFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that starting a thread failed.
  */

@@ -61,7 +61,7 @@ typedef enum {
 } OFSeekWhence;
 
 /**
- * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
+ * @class OFSeekableStream OFSeekableStream.h ObjFW/ObjFW.h
  *
  * @brief A stream that supports seeking.
  *

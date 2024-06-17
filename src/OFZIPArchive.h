@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFZIPArchive;
 
 /**
- * @protocol OFZIPArchiveDelegate OFZIPArchive.h ObjFW/OFZIPArchive.h
+ * @protocol OFZIPArchiveDelegate OFZIPArchive.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFZIPArchive.
  */
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
+ * @class OFZIPArchive OFZIPArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating ZIP files.
  */

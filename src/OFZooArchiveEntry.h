@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFZooArchiveEntry OFZooArchiveEntry.h ObjFW/OFZooArchiveEntry.h
+ * @class OFZooArchiveEntry OFZooArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry in a Zoo archive.
  */

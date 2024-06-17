@@ -37,7 +37,7 @@ typedef enum {
 } OFTLSStreamErrorCode;
 
 /**
- * @protocol OFTLSStreamDelegate OFTLSStream.h ObjFW/OFTLSStream.h
+ * @protocol OFTLSStreamDelegate OFTLSStream.h ObjFW/ObjFW.h
  *
  * A delegate for OFTLSStream.
  */
@@ -57,7 +57,7 @@ typedef enum {
 @end
 
 /**
- * @class OFTLSStream OFTLSStream.h ObjFW/OFTLSStream.h
+ * @class OFTLSStream OFTLSStream.h ObjFW/ObjFW.h
  *
  * @brief A class that provides Transport Layer Security on top of a stream.
  *

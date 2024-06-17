@@ -24,7 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFKeyValueCoding OFKeyValueCoding.h ObjFW/OFKeyValueCoding.h
+ * @protocol OFKeyValueCoding OFKeyValueCoding.h ObjFW/ObjFW.h
  *
  * @brief A protocol for Key Value Coding.
  *

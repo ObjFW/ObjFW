@@ -28,9 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFConditionStillWaitingException \
- *	  OFConditionStillWaitingException.h \
- *	  ObjFW/OFConditionStillWaitingException.h
+ * @class OFConditionStillWaitingException OFConditionStillWaitingException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a thread is still waiting for a
  *	  condition.

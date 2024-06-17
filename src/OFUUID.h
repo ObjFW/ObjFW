@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFUUID OFUUID.h ObjFW/OFUUID.h
+ * @class OFUUID OFUUID.h ObjFW/ObjFW.h
  *
  * @brief A UUID conforming to RFC 4122.
  */

@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
- * @class OFLocale OFLocale.h ObjFW/OFLocale.h
+ * @class OFLocale OFLocale.h ObjFW/ObjFW.h
  *
  * @brief A class for querying the locale and retrieving localized strings.
  */

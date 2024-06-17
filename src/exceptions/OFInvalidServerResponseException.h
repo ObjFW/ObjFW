@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFInvalidServerResponseException \
- *	  OFInvalidServerResponseException.h \
- *	  ObjFW/OFInvalidServerResponseException.h
+ * @class OFInvalidServerResponseException OFInvalidServerResponseException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the server sent an invalid response.
  */

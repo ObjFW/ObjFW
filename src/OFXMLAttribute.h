@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFXMLAttribute OFXMLAttribute.h ObjFW/OFXMLAttribute.h
+ * @class OFXMLAttribute OFXMLAttribute.h ObjFW/ObjFW.h
  *
  * @brief A representation of an attribute of an XML element as an object.
  */

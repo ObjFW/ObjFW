@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFINICategory OFINICategory.h ObjFW/OFINICategory.h
+ * @class OFINICategory OFINICategory.h ObjFW/ObjFW.h
  *
  * @brief A class for representing a category of an INI file.
  */

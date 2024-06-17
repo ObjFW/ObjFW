@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFNotImplementedException \
- *	  OFNotImplementedException.h ObjFW/OFNotImplementedException.h
+ * @class OFNotImplementedException OFNotImplementedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a method or part of it is not
  *        implemented.

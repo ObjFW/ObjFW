@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @struct OFMapTableFunctions OFMapTable.h ObjFW/OFMapTable.h
+ * @struct OFMapTableFunctions OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A struct describing the functions to be used by the map table.
  */
@@ -67,7 +67,7 @@ typedef void *_Nullable (^OFMapTableReplaceBlock)(void *_Nullable key,
 @class OFMapTableEnumerator;
 
 /**
- * @class OFMapTable OFMapTable.h ObjFW/OFMapTable.h
+ * @class OFMapTable OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A class similar to OFDictionary, but providing more options how keys
  *	  and objects should be retained, released, compared and hashed.
@@ -230,7 +230,7 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 /**
- * @class OFMapTableEnumerator OFMapTable.h ObjFW/OFMapTable.h
+ * @class OFMapTableEnumerator OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to enumerate through an OFMapTable's
  *	  keys or objects.

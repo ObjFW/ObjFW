@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableTarArchiveEntry OFTarArchiveEntry.h ObjFW/OFTarArchiveEntry.h
+ * @class OFMutableTarArchiveEntry OFMutableTarArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents a mutable entry of a tar archive.
  */

@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFMoveItemFailedException \
- *	  OFMoveItemFailedException.h ObjFW/OFMoveItemFailedException.h
+ * @class OFMoveItemFailedException OFMoveItemFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that moving an item failed.
  */

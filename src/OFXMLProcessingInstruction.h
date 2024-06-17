@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFXMLProcessingInstruction \
- *	  OFXMLProcessingInstruction.h ObjFW/OFXMLProcessingInstruction.h
+ * @class OFXMLProcessingInstruction OFXMLProcessingInstruction.h ObjFW/ObjFW.h
  *
  * @brief A class for representing an XML processing instruction.
  */

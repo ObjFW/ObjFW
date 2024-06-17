@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OHGameControllerButton \
- *	  OHGameControllerButton.h ObjFWHID/OHGameControllerButton.h
+ * @class OHGameControllerButton OHGameControllerButton.h ObjFWHID/ObjFWHID.h
  *
  * @brief A button of a game controller.
  */

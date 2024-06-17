@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSecureData OFSecureData.h ObjFW/OFSecureData.h
+ * @class OFSecureData OFSecureData.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary data in secure (non-swappable) memory,
  *	  securely wiping it when it gets deallocated.

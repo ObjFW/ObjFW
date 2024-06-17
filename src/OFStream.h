@@ -95,7 +95,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 #endif
 
 /**
- * @protocol OFStreamDelegate OFStream.h ObjFW/OFStream.h
+ * @protocol OFStreamDelegate OFStream.h ObjFW/ObjFW.h
  *
  * A delegate for OFStream.
  */
@@ -168,7 +168,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 @end
 
 /**
- * @class OFStream OFStream.h ObjFW/OFStream.h
+ * @class OFStream OFStream.h ObjFW/ObjFW.h
  *
  * @brief A base class for different types of streams.
  *

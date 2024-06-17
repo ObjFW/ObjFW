@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFConnectSPXSocketFailedException \
- *	  OFConnectSPXSocketFailedException.h \
- *	  ObjFW/OFConnectSocketFailedException.h
+ * @class OFConnectSPXSocketFailedException OFConnectSPXSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that an SPX connection could not be
  *	  established.

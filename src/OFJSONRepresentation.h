@@ -35,8 +35,7 @@ typedef enum {
 } OFJSONRepresentationOptions;
 
 /**
- * @protocol OFJSONRepresentation
- *	     OFJSONRepresentation.h ObjFW/OFJSONRepresentation.h
+ * @protocol OFJSONRepresentation OFJSONRepresentation.h ObjFW/ObjFW.h
  *
  * @brief A protocol implemented by classes that support encoding to a JSON
  *	  representation.

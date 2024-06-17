@@ -23,8 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFLockFailedException \
- *	  OFLockFailedException.h ObjFW/OFLockFailedException.h
+ * @class OFLockFailedException OFLockFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that locking a lock failed.
  */

@@ -73,7 +73,7 @@ typedef enum {
 } OFDNSRecordType;
 
 /**
- * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing a DNS resource record.
  */

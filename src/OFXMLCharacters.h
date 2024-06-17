@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFXMLCharacters OFXMLCharacters.h ObjFW/OFXMLCharacters.h
+ * @class OFXMLCharacters OFXMLCharacters.h ObjFW/ObjFW.h
  *
  * @brief A class representing XML characters.
  */

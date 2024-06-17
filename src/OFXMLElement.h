@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLAttribute;
 
 /**
- * @class OFXMLElement OFXMLElement.h ObjFW/OFXMLElement.h
+ * @class OFXMLElement OFXMLElement.h ObjFW/ObjFW.h
  *
  * @brief A class which stores an XML element.
  */

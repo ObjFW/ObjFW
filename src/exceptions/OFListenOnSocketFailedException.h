@@ -26,9 +26,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFListenOnSocketFailedException \
- *	  OFListenOnSocketFailedException.h \
- *	  ObjFW/OFListenOnSocketFailedException.h
+ * @class OFListenOnSocketFailedException OFListenOnSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that listening on the socket failed.
  */

@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLParser;
 
 /**
- * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/OFXMLParser.h
+ * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
@@ -123,7 +123,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFXMLParser OFXMLParser.h ObjFW/OFXMLParser.h
+ * @class OFXMLParser OFXMLParser.h ObjFW/ObjFW.h
  *
  * @brief An event-based XML parser.
  *

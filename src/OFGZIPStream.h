@@ -46,7 +46,7 @@ typedef enum {
 } OFGZIPStreamOperatingSystem;
 
 /**
- * @class OFGZIPStream OFGZIPStream.h ObjFW/OFGZIPStream.h
+ * @class OFGZIPStream OFGZIPStream.h ObjFW/ObjFW.h
  *
  * @brief A class that handles GZIP compression and decompression transparently
  *	  for an underlying stream.

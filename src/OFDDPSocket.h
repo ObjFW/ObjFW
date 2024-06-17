@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
- * @protocol OFDDPSocketDelegate OFDDPSocket.h ObjFW/OFDDPSocket.h
+ * @protocol OFDDPSocketDelegate OFDDPSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFDDPSocket.
  */
@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFDDPSocket OFDDPSocket.h ObjFW/OFDDPSocket.h
+ * @class OFDDPSocket OFDDPSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use AppleTalk DDP
  *	  sockets.

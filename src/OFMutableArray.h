@@ -35,7 +35,7 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 #endif
 
 /**
- * @class OFMutableArray OFArray.h ObjFW/OFArray.h
+ * @class OFMutableArray OFMutableArray.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for storing, adding and removing objects in an
  *	  array.

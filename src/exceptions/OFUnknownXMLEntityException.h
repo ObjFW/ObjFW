@@ -22,8 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFUnknownXMLEntityException \
- *	  OFUnknownXMLEntityException.h ObjFW/OFUnknownXMLEntityException.h
+ * @class OFUnknownXMLEntityException OFUnknownXMLEntityException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a parser encountered an unknown XML
  *	  entity.

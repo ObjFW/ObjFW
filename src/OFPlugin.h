@@ -32,7 +32,7 @@ typedef HMODULE OFPluginHandle;
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
+ * @class OFPlugin OFPlugin.h ObjFW/ObjFW.h
  *
  * @brief A class representing a loaded plugin (shared library).
  *

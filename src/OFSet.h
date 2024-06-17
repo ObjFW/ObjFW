@@ -55,7 +55,7 @@ typedef bool (^OFSetFilterBlock)(id object);
 #endif
 
 /**
- * @class OFSet OFSet.h ObjFW/OFSet.h
+ * @class OFSet OFSet.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for an unordered set of unique objects.
  *

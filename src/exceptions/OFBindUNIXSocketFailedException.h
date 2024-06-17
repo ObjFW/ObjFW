@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFBindUNIXSocketFailedException \
- *	  OFBindUNIXSocketFailedException.h \
- *	  ObjFW/OFBindUNIXSocketFailedException.h
+ * @class OFBindUNIXSocketFailedException OFBindUNIXSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that binding a UNIX socket failed.
  */

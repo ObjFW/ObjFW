@@ -24,8 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /**
- * @protocol OFMessagePackRepresentation \
- *	     OFMessagePackRepresentation.h ObjFW/OFMessagePackRepresentation.h
+ * @protocol OFMessagePackRepresentation OFMessagePackRepresentation.h
+ *	     ObjFW/ObjFW.h
  *
  * @brief A protocol implemented by classes that support encoding to a
  *	  MessagePack representation.

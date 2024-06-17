@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFXMLCDATA OFXMLCDATA.h ObjFW/OFXMLCDATA.h
+ * @class OFXMLCDATA OFXMLCDATA.h ObjFW/ObjFW.h
  *
  * @brief A class representing XML CDATA.
  */

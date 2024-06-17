@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFUDPSocket;
 
 /**
- * @enum OFDNSResolverErrorCode OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @enum OFDNSResolverErrorCode OFDNSResolver.h ObjFW/ObjFW.h
  *
  * @brief An enum describing why resolving a host failed.
  */
@@ -75,7 +75,7 @@ typedef enum {
 } OFDNSResolverErrorCode;
 
 /**
- * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/ObjFW.h
  *
  * @brief A delegate for performed DNS queries.
  */
@@ -96,7 +96,7 @@ typedef enum {
 @end
 
 /**
- * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/ObjFW.h
  *
  * @brief A delegate for resolved hosts.
  */
@@ -118,7 +118,7 @@ typedef enum {
 @end
 
 /**
- * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @class OFDNSResolver OFDNSResolver.h ObjFW/ObjFW.h
  *
  * @brief A class for resolving DNS names.
  *

@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
+ * @class OFINIFile OFINIFile.h ObjFW/ObjFW.h
  *
  * @brief A class for reading, creating and modifying INI files.
  */

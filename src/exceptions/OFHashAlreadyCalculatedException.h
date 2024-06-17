@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFHashAlreadyCalculatedException \
- *	  OFHashAlreadyCalculatedException.h \
- *	  ObjFW/OFHashAlreadyCalculatedException.h
+ * @class OFHashAlreadyCalculatedException OFHashAlreadyCalculatedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the hash has already been calculated.
  */

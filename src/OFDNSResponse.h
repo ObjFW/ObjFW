@@ -29,7 +29,7 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
     OF_KINDOF(OFDNSResourceRecord *)) *) *OFDNSResponseRecords;
 
 /**
- * @class OFDNSResponse OFDNSResponse.h ObjFW/OFDNSResponse.h
+ * @class OFDNSResponse OFDNSResponse.h ObjFW/ObjFW.h
  *
  * @brief A class storing a response from @ref OFDNSResolver.
  */

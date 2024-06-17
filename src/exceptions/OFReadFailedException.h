@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFReadFailedException \
- *	  OFReadFailedException.h ObjFW/OFReadFailedException.h
+ * @class OFReadFailedException OFReadFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that reading from an object failed.
  */

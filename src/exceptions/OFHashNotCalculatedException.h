@@ -22,8 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFHashNotCalculatedException OFHashNotCalculatedException.h \
- *	  ObjFW/OFHashNotCalculatedException.h
+ * @class OFHashNotCalculatedException OFHashNotCalculatedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the hash has not been calculated yet.
  */

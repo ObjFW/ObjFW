@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
- * @class OFSubprocess OFSubprocess.h ObjFW/OFSubprocess.h
+ * @class OFSubprocess OFSubprocess.h ObjFW/ObjFW.h
  *
  * @brief A class for stream-like communication with a newly created subprocess.
  */

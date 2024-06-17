@@ -25,9 +25,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFGetWindowsRegistryValueFailedException \
- *	  OFGetWindowsRegistryValueFailedException.h \
- *	  ObjFW/OFGetWindowsRegistryValueFailedException.h
+ * @class OFGetWindowsRegistryValueFailedException
+ *	  OFGetWindowsRegistryValueFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that getting a Windows registry value failed.
  */

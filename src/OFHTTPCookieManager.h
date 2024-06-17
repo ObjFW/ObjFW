@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFHTTPCookieManager OFHTTPCookieManager.h ObjFW/OFHTTPCookieManager.h
+ * @class OFHTTPCookieManager OFHTTPCookieManager.h ObjFW/ObjFW.h
  *
  * @brief A class for managing cookies for multiple domains.
  */

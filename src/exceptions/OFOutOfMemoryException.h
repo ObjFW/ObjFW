@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFOutOfMemoryException \
- *	  OFOutOfMemoryException.h ObjFW/OFOutOfMemoryException.h
+ * @class OFOutOfMemoryException OFOutOfMemoryException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating there is not enough memory available.
  */

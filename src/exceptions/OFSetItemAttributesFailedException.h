@@ -25,9 +25,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFSetItemAttributesFailedException \
- *	  OFSetItemAttributesFailedException.h \
- *	  ObjFW/OFSetItemAttributesFailedException.h
+ * @class OFSetItemAttributesFailedException
+ *	  OFSetItemAttributesFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an item's attributes could not be set.
  */

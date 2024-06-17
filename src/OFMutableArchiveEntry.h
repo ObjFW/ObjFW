@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFMutableArchiveEntry OFArchiveEntry.h ObjFW/OFArchiveEntry.h
+ * @protocol OFMutableArchiveEntry OFArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents a mutable entry in an archive.
  */

@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @protocol OFUNIXDatagramSocketDelegate OFUNIXDatagramSocket.h \
- *	     ObjFW/OFUNIXDatagramSocket.h
+ * @protocol OFUNIXDatagramSocketDelegate OFUNIXDatagramSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFUNIXDatagramSocket.
  */
@@ -33,8 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFUNIXDatagramSocket OFUNIXDatagramSocket.h \
- *	  ObjFW/OFUNIXDatagramSocket.h
+ * @class OFUNIXDatagramSocket OFUNIXDatagramSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use UNIX datagram
  *	  sockets.

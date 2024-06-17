@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFOutOfRangeException \
- *	  OFOutOfRangeException.h ObjFW/OFOutOfRangeException.h
+ * @class OFOutOfRangeException OFOutOfRangeException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating the given value is out of range.
  */

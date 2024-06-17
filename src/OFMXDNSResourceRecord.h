@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMXDNSResourceRecord \
- *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ * @class OFMXDNSResourceRecord OFMXDNSResourceRecord.h ObjFW/ObjFW.h
  *
  * @brief A class representing an MX DNS resource record.
  */

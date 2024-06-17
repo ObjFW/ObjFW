@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @class OFNumber OFNumber.h ObjFW/OFNumber.h
+ * @class OFNumber OFNumber.h ObjFW/ObjFW.h
  *
  * @brief Provides a way to store a number in an object.
  */

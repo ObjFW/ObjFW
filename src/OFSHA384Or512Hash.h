@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSecureData;
 
 /**
- * @class OFSHA384Or512Hash OFSHA384Or512Hash.h ObjFW/OFSHA384Or512Hash.h
+ * @class OFSHA384Or512Hash OFSHA384Or512Hash.h ObjFW/ObjFW.h
  *
  * @brief A base class for SHA-384 and SHA-512.
  */

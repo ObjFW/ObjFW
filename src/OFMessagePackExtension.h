@@ -25,8 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /**
- * @class OFMessagePackExtension \
- *	  OFMessagePackExtension.h ObjFW/OFMessagePackExtension.h
+ * @class OFMessagePackExtension OFMessagePackExtension.h ObjFW/ObjFW.h
  *
  * @brief A class for representing the MessagePack extension type.
  */

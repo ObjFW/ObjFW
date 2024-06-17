@@ -28,9 +28,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFConnectSocketFailedException \
- *	  OFConnectSocketFailedException.h \
- *	  ObjFW/OFConnectSocketFailedException.h
+ * @class OFConnectSocketFailedException OFConnectSocketFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a connection could not be established.
  */

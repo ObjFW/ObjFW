@@ -22,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFGetOptionFailedException \
- *	  OFGetOptionFailedException.h ObjFW/OFGetOptionFailedException.h
+ * @class OFGetOptionFailedException OFGetOptionFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that getting an option for an object failed.
  */

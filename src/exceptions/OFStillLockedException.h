@@ -23,8 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFStillLockedException \
- *	  OFStillLockedException.h ObjFW/OFStillLockedException.h
+ * @class OFStillLockedException OFStillLockedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a lock is still locked.
  */

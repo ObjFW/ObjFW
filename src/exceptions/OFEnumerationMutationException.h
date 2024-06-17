@@ -22,9 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFEnumerationMutationException \
- *	  OFEnumerationMutationException.h \
- *	  ObjFW/OFEnumerationMutationException.h
+ * @class OFEnumerationMutationException OFEnumerationMutationException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a mutation was detected during
  *        enumeration.

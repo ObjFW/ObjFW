@@ -37,8 +37,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameControllerDirectionalPad;
 
 /**
- * @protocol OHGameControllerProfile \
- *	     OHGameControllerProfile.h ObjFWHID/OHGameControllerProfile.h
+ * @protocol OHGameControllerProfile OHGameControllerProfile.h
+ *	     ObjFWHID/ObjFWHID.h
  *
  * @brief A profile for a @ref OHGameController.
  */

@@ -54,8 +54,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 #endif
 
 /**
- * @protocol OFDatagramSocketDelegate OFDatagramSocket.h \
- *	     ObjFW/OFDatagramSocket.h
+ * @protocol OFDatagramSocketDelegate OFDatagramSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFDatagramSocket.
  */
@@ -94,7 +93,7 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 @end
 
 /**
- * @class OFDatagramSocket OFDatagramSocket.h ObjFW/OFDatagramSocket.h
+ * @class OFDatagramSocket OFDatagramSocket.h ObjFW/ObjFW.h
  *
  * @brief A base class for datagram sockets.
  *

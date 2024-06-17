@@ -40,7 +40,7 @@ typedef void (^OFTimerBlock)(OFTimer *timer);
 #endif
 
 /**
- * @class OFTimer OFTimer.h ObjFW/OFTimer.h
+ * @class OFTimer OFTimer.h ObjFW/ObjFW.h
  *
  * @brief A class for creating and firing timers.
  */

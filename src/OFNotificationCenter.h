@@ -34,8 +34,7 @@ typedef void (^OFNotificationCenterBlock)(OFNotification *notification);
 #endif
 
 /**
- * @class OFNotificationCenter OFNotificationCenter.h \
- *	  ObjFW/OFNotificationCenter.h
+ * @class OFNotificationCenter OFNotificationCenter.h ObjFW/ObjFW.h
  *
  * @brief A class to send and register for notifications.
  */

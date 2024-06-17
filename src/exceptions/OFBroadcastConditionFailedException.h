@@ -28,9 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFBroadcastConditionFailedException \
- *	  OFBroadcastConditionFailedException.h \
- *	  ObjFW/OFBroadcastConditionFailedException.h
+ * @class OFBroadcastConditionFailedException
+ *	  OFBroadcastConditionFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating broadcasting a condition failed.
  */

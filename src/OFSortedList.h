@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSortedList OFSortedList.h ObjFW/OFSortedList.h
+ * @class OFSortedList OFSortedList.h ObjFW/ObjFW.h
  *
  * @brief A class which provides easy to use sorted double-linked lists.
  *

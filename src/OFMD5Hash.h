@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSecureData;
 
 /**
- * @class OFMD5Hash OFMD5Hash.h ObjFW/OFMD5Hash.h
+ * @class OFMD5Hash OFMD5Hash.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create an MD5 hash.
  */

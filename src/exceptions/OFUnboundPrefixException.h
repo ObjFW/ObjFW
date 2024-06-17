@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLParser;
 
 /**
- * @class OFUnboundPrefixException \
- *	  OFUnboundPrefixException.h ObjFW/OFUnboundPrefixException.h
+ * @class OFUnboundPrefixException OFUnboundPrefixException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating an attempt to use an unbound prefix.
  */

@@ -24,7 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutex OFMutex.h ObjFW/OFMutex.h
+ * @class OFMutex OFMutex.h ObjFW/ObjFW.h
  *
  * @brief A class for creating mutual exclusions.
  *

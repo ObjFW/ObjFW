@@ -23,7 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFHMAC OFHMAC.h ObjFW/OFHMAC.h
+ * @class OFHMAC OFHMAC.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to calculate an HMAC.
  */

@@ -22,8 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFUnsupportedVersionException \
- *	  OFUnsupportedVersionException.h ObjFW/OFUnsupportedVersionException.h
+ * @class OFUnsupportedVersionException OFUnsupportedVersionException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that the specified version of the format or
  *	  protocol is not supported.

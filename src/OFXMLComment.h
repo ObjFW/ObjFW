@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFXMLComment OFXMLComment.h ObjFW/OFXMLComment.h
+ * @class OFXMLComment OFXMLComment.h ObjFW/ObjFW.h
  *
  * @brief A class for representing XML comments.
  */

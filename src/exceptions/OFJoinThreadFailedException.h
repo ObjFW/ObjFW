@@ -28,8 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFThread;
 
 /**
- * @class OFJoinThreadFailedException \
- *	  OFJoinThreadFailedException.h ObjFW/OFJoinThreadFailedException.h
+ * @class OFJoinThreadFailedException OFJoinThreadFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating that joining a thread failed.
  */

@@ -35,7 +35,7 @@ typedef id _Nonnull (^OFDictionaryReplaceBlock)(id key, id object);
 #endif
 
 /**
- * @class OFMutableDictionary OFDictionary.h ObjFW/OFDictionary.h
+ * @class OFMutableDictionary OFMutableDictionary.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for storing and changing objects in a dictionary.
  *

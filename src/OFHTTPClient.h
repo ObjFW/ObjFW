@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTLSStream;
 
 /**
- * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
+ * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFHTTPClient.
  */
@@ -144,7 +144,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFHTTPClient OFHTTPClient.h ObjFW/OFHTTPClient.h
+ * @class OFHTTPClient OFHTTPClient.h ObjFW/ObjFW.h
  *
  * @brief A class for performing HTTP requests.
  */

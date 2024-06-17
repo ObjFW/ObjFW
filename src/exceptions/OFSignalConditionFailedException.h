@@ -28,9 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFCondition;
 
 /**
- * @class OFSignalConditionFailedException \
- *	  OFSignalConditionFailedException.h \
- *	  ObjFW/OFSignalConditionFailedException.h
+ * @class OFSignalConditionFailedException OFSignalConditionFailedException.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief An exception indicating signaling a condition failed.
  */

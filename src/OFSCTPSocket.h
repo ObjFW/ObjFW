@@ -105,7 +105,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 #endif
 
 /**
- * @protocol OFSCTPSocketDelegate OFSCTPSocket.h ObjFW/OFSCTPSocket.h
+ * @protocol OFSCTPSocketDelegate OFSCTPSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFSCTPSocket.
  */
@@ -158,7 +158,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
 @end
 
 /**
- * @class OFSCTPSocket OFSCTPSocket.h ObjFW/OFSCTPSocket.h
+ * @class OFSCTPSocket OFSCTPSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use SCTP sockets in
  *	  one-to-one mode.

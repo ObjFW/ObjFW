@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFTCPSocket;
 
 /**
- * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/OFHTTPServer.h
+ * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFHTTPServer.
  */
@@ -89,7 +89,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFHTTPServer OFHTTPServer.h ObjFW/OFHTTPServer.h
+ * @class OFHTTPServer OFHTTPServer.h ObjFW/ObjFW.h
  *
  * @brief A class for creating a simple HTTP server inside of applications.
  */

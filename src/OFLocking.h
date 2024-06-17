@@ -22,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFLocking OFLocking.h ObjFW/OFLocking.h
+ * @protocol OFLocking OFLocking.h ObjFW/ObjFW.h
  *
  * @brief A protocol for locks.
  */

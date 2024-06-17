@@ -23,8 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSeekFailedException \
- *	  OFSeekFailedException.h ObjFW/OFSeekFailedException.h
+ * @class OFSeekFailedException OFSeekFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that seeking in a stream failed.
  */

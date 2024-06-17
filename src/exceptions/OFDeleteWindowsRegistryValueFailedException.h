@@ -25,9 +25,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFDeleteWindowsRegistryValueFailedException \
- *	  OFDeleteWindowsRegistryValueFailedException.h \
- *	  ObjFW/OFDeleteWindowsRegistryValueFailedException.h
+ * @class OFDeleteWindowsRegistryValueFailedException
+ *	  OFDeleteWindowsRegistryValueFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that deleting a Windows registry value failed.
  */

@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @class OFIRIHandler OFIRIHandler.h ObjFW/OFIRIHandler.h
+ * @class OFIRIHandler OFIRIHandler.h ObjFW/ObjFW.h
  *
  * @brief A handler for an IRI scheme.
  */
