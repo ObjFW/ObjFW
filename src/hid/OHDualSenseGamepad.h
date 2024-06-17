@@ -24,9 +24,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHDualSenseGamepad: OFObject <OHExtendedGamepad,
+@interface OHDualSenseGamepad: OFObject <OHExtendedGamepad
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-    OHEvdevMapping
+    , OHEvdevMapping
 #endif
 >
 {
