@@ -292,7 +292,7 @@ isSubclassOfClass(Class class, Class superclass)
 			OHGameController *controller =
 			    [[OHGameController controllers] objectAtIndex: 0];
 			OHGameControllerButton *button =
-			    [controller.rawProfile.buttons objectForKey: @"A"];
+			    [controller.profile.buttons objectForKey: @"A"];
 
 			[controller retrieveState];
 
@@ -547,9 +547,9 @@ isSubclassOfClass(Class class, Class superclass)
 		    [[OHGameController controllers] objectAtIndex: 0];
 		OHGameControllerButton *button =
 # ifdef OF_WII
-		    [controller.rawProfile.buttons objectForKey: @"Home"];
+		    [controller.profile.buttons objectForKey: @"Home"];
 # else
-		    [controller.rawProfile.buttons objectForKey: @"Start"];
+		    [controller.profile.buttons objectForKey: @"Start"];
 # endif
 
 		[controller retrieveState];
