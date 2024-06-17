@@ -32,7 +32,7 @@
 	tst	%o0
 	bz	.LreturnNilMethod
 	 btst	1, %o0
-	bnz	.LtaggedPointer_\name	
+	bnz	.LtaggedPointer_\name
 	 nop
 
 	ld	[%o0], %o2

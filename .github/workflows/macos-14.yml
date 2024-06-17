@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         configure_flags:
-          - 
+          -
           - --disable-threads
           - --disable-threads --disable-sockets
           - --disable-threads --disable-files

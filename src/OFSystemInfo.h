@@ -197,7 +197,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns a path where temporary files for can be stored.
- * 
+ *
  * If possible, returns a temporary directory for the user, otherwise returns a
  * global temporary directory.
  *

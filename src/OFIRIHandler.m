@@ -225,7 +225,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 		*data = [self performSelector: selector
 				   withObject: name
 				   withObject: IRI];
-	
+
 		if (type != NULL)
 			*type = nil;
 

@@ -185,7 +185,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		    [fileManager attributesOfItemAtPath: file];
 
 		if ([attributes.fileType isEqual: OFFileTypeDirectory])
-			[expandedFiles addObjectsFromArray: 
+			[expandedFiles addObjectsFromArray:
 			    [fileManager subpathsOfDirectoryAtPath: file]];
 		else
 			[expandedFiles addObject: file];

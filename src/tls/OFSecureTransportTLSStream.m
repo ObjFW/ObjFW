@@ -232,7 +232,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		 * readable or writable doesn't work either, as the stream is
 		 * almost always at least ready for one of the two.
 		 */
-		[_underlyingStream asyncReadIntoBuffer: (void *)"" 
+		[_underlyingStream asyncReadIntoBuffer: (void *)""
 						length: 0
 					   runLoopMode: runLoopMode];
 		[_delegate retain];

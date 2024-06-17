@@ -170,7 +170,7 @@ Nintendo Switch
 
   * OS Versions: yuzu 1093
   * Architectures: AArch64
-  * Compilers: GCC 12.1.0 (devkitA64 release 19) 
+  * Compilers: GCC 12.1.0 (devkitA64 release 19)
   * Runtimes: ObjFW
   * Limitations: No sockets, no shared libraries, not tested on real hardware
 

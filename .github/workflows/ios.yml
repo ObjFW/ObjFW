@@ -9,7 +9,7 @@ jobs:
           - arm64
           - x86_64
         configure_flags:
-          - 
+          -
           - --disable-shared
     steps:
     - name: Install dependencies

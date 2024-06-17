@@ -102,7 +102,7 @@ other place, you are most likely using a mirror.
   Windows (MSYS2/MINGW32)    | `pacman -S mingw-w64-i686-objfw`
 
   If your operating system is not listed, you can
-  <a href="#building-from-source">build ObjFW from source</a>.  
+  <a href="#building-from-source">build ObjFW from source</a>.
 
 
 <h1 id="license">License</h1>
