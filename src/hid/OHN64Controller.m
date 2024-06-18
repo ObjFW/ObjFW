@@ -84,20 +84,21 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Pad Up"] autorelease];
+		    initWithName: @"C-Up"] autorelease];
 		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Pad Down"] autorelease];
+		    initWithName: @"C-Down"] autorelease];
 		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Pad Left"] autorelease];
+		    initWithName: @"C-Left"] autorelease];
 		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Pad Right"] autorelease];
+		    initWithName: @"C-Right"] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"C-Pad"
+		    initWithName: @"C-Buttons"
 			      up: up
 			    down: down
 			    left: left
 			   right: right] autorelease];
-		[directionalPads setObject: directionalPad forKey: @"C-Pad"];
+		[directionalPads setObject: directionalPad
+				    forKey: @"C-Buttons"];
 
 		[directionalPads makeImmutable];
 		_directionalPads = [directionalPads retain];
@@ -135,13 +136,13 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	case BTN_TL2:
 		return [_buttons objectForKey: @"Z"];
 	case BTN_SELECT:
-		return [[_directionalPads objectForKey: @"C-Pad"] up];
+		return [[_directionalPads objectForKey: @"C-Buttons"] up];
 	case BTN_X:
-		return [[_directionalPads objectForKey: @"C-Pad"] down];
+		return [[_directionalPads objectForKey: @"C-Buttons"] down];
 	case BTN_Y:
-		return [[_directionalPads objectForKey: @"C-Pad"] left];
+		return [[_directionalPads objectForKey: @"C-Buttons"] left];
 	case BTN_C:
-		return [[_directionalPads objectForKey: @"C-Pad"] right];
+		return [[_directionalPads objectForKey: @"C-Buttons"] right];
 	case BTN_TL:
 		return [_buttons objectForKey: @"L"];
 	case BTN_TR:
