@@ -73,30 +73,6 @@ buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 		case BTN_TL2:
 			return @"SR";
 		}
-	} else if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDN64Controller) {
-		switch (button) {
-		case BTN_SELECT:
-			return @"C-Pad Up";
-		case BTN_X:
-			return @"C-Pad Down";
-		case BTN_Y:
-			return @"C-Pad Left";
-		case BTN_C:
-			return @"C-Pad Right";
-		case BTN_TL:
-			return @"L";
-		case BTN_TR:
-			return @"R";
-		case BTN_TL2:
-			return @"Z";
-		case BTN_TR2:
-			return @"ZR";
-		case BTN_MODE:
-			return @"Home";
-		case BTN_Z:
-			return @"Capture";
-		}
 	}
 
 	switch (button) {

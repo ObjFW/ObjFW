@@ -34,6 +34,7 @@
 #import "OHDualSenseGamepad.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHEvdevExtendedGamepad.h"
+#import "OHExtendedN64Controller.h"
 #import "OHGameControllerAxis+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -203,6 +204,9 @@ scale(float value, float min, float max)
 		else if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualShock4)
 			_profile = [[OHDualShock4Gamepad alloc] init];
+		else if (_vendorID == OHVendorIDNintendo &&
+		    _productID == OHProductIDN64Controller)
+			_profile = [[OHExtendedN64Controller alloc] init];
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
 			_profile = [[OHStadiaGamepad alloc] init];

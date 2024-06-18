@@ -27,6 +27,8 @@ SRCS += OHDualSenseGamepad.m			\
 	OHEmulatedGameControllerAxis.m		\
 	OHEmulatedGameControllerButton.m	\
 	OHEmulatedGameControllerTriggerButton.m	\
+	OHExtendedN64Controller.m		\
+	OHN64Controller.m			\
 	OHStadiaGamepad.m			\
 	OHXboxGamepad.m				\
 	${USE_SRCS_EVDEV}			\
