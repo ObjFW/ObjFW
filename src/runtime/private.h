@@ -219,60 +219,73 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
-extern void objc_registerAllCategories(struct objc_symtab *_Nonnull);
+extern void objc_registerAllCategories(struct objc_symtab *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
 extern struct objc_category *_Nullable *_Nullable
-    objc_categoriesForClass(Class _Nonnull);
-extern void objc_unregisterAllCategories(void);
-extern void objc_initializeClass(Class _Nonnull);
-extern void objc_updateDTable(Class _Nonnull);
-extern void objc_registerAllClasses(struct objc_symtab *_Nonnull);
-extern Class _Nullable objc_classnameToClass(const char *_Nonnull, bool);
-extern void objc_unregisterClass(Class _Nonnull);
-extern void objc_unregisterAllClasses(void);
-extern uint32_t objc_string_hash(const void *_Nonnull);
-extern bool objc_string_equal(const void *_Nonnull, const void *_Nonnull);
+    objc_categoriesForClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_unregisterAllCategories(void) OF_VISIBILITY_HIDDEN;
+extern void objc_initializeClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_updateDTable(Class _Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_registerAllClasses(struct objc_symtab *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern Class _Nullable objc_classnameToClass(const char *_Nonnull, bool)
+    OF_VISIBILITY_HIDDEN;
+extern void objc_unregisterClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_unregisterAllClasses(void) OF_VISIBILITY_HIDDEN;
+extern uint32_t objc_string_hash(const void *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern bool objc_string_equal(const void *_Nonnull, const void *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
 extern struct objc_hashtable *_Nonnull objc_hashtable_new(
-    objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t);
-extern struct objc_hashtable_bucket objc_deletedBucket;
+    objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t)
+    OF_VISIBILITY_HIDDEN;
+extern struct objc_hashtable_bucket objc_deletedBucket OF_VISIBILITY_HIDDEN;
 extern void objc_hashtable_set(struct objc_hashtable *_Nonnull,
-    const void *_Nonnull, const void *_Nonnull);
+    const void *_Nonnull, const void *_Nonnull) OF_VISIBILITY_HIDDEN;
 extern void *_Nullable objc_hashtable_get(struct objc_hashtable *_Nonnull,
-    const void *_Nonnull);
+    const void *_Nonnull) OF_VISIBILITY_HIDDEN;
 extern void objc_hashtable_delete(struct objc_hashtable *_Nonnull,
-    const void *_Nonnull);
-extern void objc_hashtable_free(struct objc_hashtable *_Nonnull);
-extern void objc_registerSelector(struct objc_selector *_Nonnull);
-extern void objc_registerAllSelectors(struct objc_symtab *_Nonnull);
-extern void objc_unregisterAllSelectors(void);
-extern struct objc_sparsearray *_Nonnull objc_sparsearray_new(uint8_t);
+    const void *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_hashtable_free(struct objc_hashtable *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern void objc_registerSelector(struct objc_selector *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern void objc_registerAllSelectors(struct objc_symtab *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern void objc_unregisterAllSelectors(void) OF_VISIBILITY_HIDDEN;
+extern struct objc_sparsearray *_Nonnull objc_sparsearray_new(uint8_t)
+    OF_VISIBILITY_HIDDEN;
 extern void *_Nullable objc_sparsearray_get(struct objc_sparsearray *_Nonnull,
-    uintptr_t);
+    uintptr_t) OF_VISIBILITY_HIDDEN;
 extern void objc_sparsearray_set(struct objc_sparsearray *_Nonnull, uintptr_t,
-    void *_Nullable);
-extern void objc_sparsearray_free(struct objc_sparsearray *_Nonnull);
-extern struct objc_dtable *_Nonnull objc_dtable_new(void);
+    void *_Nullable) OF_VISIBILITY_HIDDEN;
+extern void objc_sparsearray_free(struct objc_sparsearray *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern struct objc_dtable *_Nonnull objc_dtable_new(void) OF_VISIBILITY_HIDDEN;
 extern void objc_dtable_copy(struct objc_dtable *_Nonnull,
-    struct objc_dtable *_Nonnull);
+    struct objc_dtable *_Nonnull) OF_VISIBILITY_HIDDEN;
 extern void objc_dtable_set(struct objc_dtable *_Nonnull, uint32_t,
-    IMP _Nullable);
-extern void objc_dtable_free(struct objc_dtable *_Nonnull);
-extern void objc_dtable_cleanup(void);
-extern void objc_initStaticInstances(struct objc_symtab *_Nonnull);
-extern void objc_forgetPendingStaticInstances(void);
-extern void objc_zeroWeakReferences(id _Nonnull);
-extern Class _Nullable object_getTaggedPointerClass(id _Nonnull);
+    IMP _Nullable) OF_VISIBILITY_HIDDEN;
+extern void objc_dtable_free(struct objc_dtable *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_dtable_cleanup(void) OF_VISIBILITY_HIDDEN;
+extern void objc_initStaticInstances(struct objc_symtab *_Nonnull)
+    OF_VISIBILITY_HIDDEN;
+extern void objc_forgetPendingStaticInstances(void) OF_VISIBILITY_HIDDEN;
+extern void objc_zeroWeakReferences(id _Nonnull) OF_VISIBILITY_HIDDEN;
+extern Class _Nullable object_getTaggedPointerClass(id _Nonnull)
+    OF_VISIBILITY_HIDDEN;
 #ifdef OF_HAVE_THREADS
-extern void objc_globalMutex_lock(void);
-extern void objc_globalMutex_unlock(void);
-extern void objc_globalMutex_free(void);
+extern void objc_globalMutex_lock(void) OF_VISIBILITY_HIDDEN;
+extern void objc_globalMutex_unlock(void) OF_VISIBILITY_HIDDEN;
+extern void objc_globalMutex_free(void) OF_VISIBILITY_HIDDEN;
 #else
 # define objc_globalMutex_lock()
 # define objc_globalMutex_unlock()
 # define objc_globalMutex_free()
 #endif
-extern char *_Nullable objc_strdup(const char *_Nonnull string);
+extern char *_Nullable objc_strdup(const char *_Nonnull string)
+    OF_VISIBILITY_HIDDEN;
 
-static inline IMP _Nullable
+static OF_INLINE IMP _Nullable
 objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 {
 #ifdef OF_SELUID24
@@ -290,7 +303,7 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 }
 
 extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
-    const char *_Nonnull format, ...);
+    const char *_Nonnull format, ...) OF_VISIBILITY_HIDDEN;
 #define OBJC_ERROR(...)							\
 	objc_error("ObjFWRT @ " __FILE__ ":" OF_STRINGIFY(__LINE__),	\
 	    __VA_ARGS__)
