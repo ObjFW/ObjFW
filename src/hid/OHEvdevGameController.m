@@ -39,6 +39,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
+#import "OHLeftJoyCon.h"
+#import "OHRightJoyCon.h"
 #import "OHStadiaGamepad.h"
 
 #include <sys/ioctl.h>
@@ -207,6 +209,12 @@ scale(float value, float min, float max)
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDN64Controller)
 			_profile = [[OHExtendedN64Controller alloc] init];
+		else if (_vendorID == OHVendorIDNintendo &&
+		    _productID == OHProductIDLeftJoyCon)
+			_profile = [[OHLeftJoyCon alloc] init];
+		else if (_vendorID == OHVendorIDNintendo &&
+		    _productID == OHProductIDRightJoyCon)
+			_profile = [[OHRightJoyCon alloc] init];
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
 			_profile = [[OHStadiaGamepad alloc] init];

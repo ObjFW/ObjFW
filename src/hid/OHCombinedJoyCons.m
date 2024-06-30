@@ -51,7 +51,6 @@
 		void *pool = objc_autoreleasePoolPush();
 		OFDictionary *leftButtons, *rightButtons;
 		OFMutableDictionary *buttons, *directionalPads;
-		OHGameControllerDirectionalPad *directionalPad;
 
 		if (leftJoyCon.vendorID.unsignedShortValue !=
 		    OHVendorIDNintendo ||
@@ -75,10 +74,6 @@
 		    leftButtons.count + rightButtons.count];
 		[buttons addEntriesFromDictionary: leftButtons];
 		[buttons addEntriesFromDictionary: rightButtons];
-		[buttons removeObjectForKey: @"D-Pad Up"];
-		[buttons removeObjectForKey: @"D-Pad Down"];
-		[buttons removeObjectForKey: @"D-Pad Left"];
-		[buttons removeObjectForKey: @"D-Pad Right"];
 		[buttons removeObjectForKey: @"SL"];
 		[buttons removeObjectForKey: @"SR"];
 		[buttons makeImmutable];
@@ -86,32 +81,10 @@
 
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
-
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Left Thumbstick"
-			   xAxis: [_leftJoyCon.axes objectForKey: @"X"]
-			   yAxis: [_leftJoyCon.axes objectForKey: @"Y"]]
-		    autorelease];
-		[directionalPads setObject: directionalPad
-				    forKey: @"Left Thumbstick"];
-
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Right Thumbstick"
-			   xAxis: [_rightJoyCon.axes objectForKey: @"RX"]
-			   yAxis: [_rightJoyCon.axes objectForKey: @"RY"]]
-		    autorelease];
-		[directionalPads setObject: directionalPad
-				    forKey: @"Right Thumbstick"];
-
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: [leftButtons objectForKey: @"D-Pad Up"]
-			    down: [leftButtons objectForKey: @"D-Pad Down"]
-			    left: [leftButtons objectForKey: @"D-Pad Left"]
-			   right: [leftButtons objectForKey: @"D-Pad Right"]]
-		    autorelease];
-		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
-
+		[directionalPads addEntriesFromDictionary:
+		    _leftJoyCon.directionalPads];
+		[directionalPads addEntriesFromDictionary:
+		    _rightJoyCon.directionalPads];
 		[directionalPads makeImmutable];
 		_directionalPads = [directionalPads retain];
 

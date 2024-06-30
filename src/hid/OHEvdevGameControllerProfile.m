@@ -29,52 +29,6 @@
 static OFString *
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
-	if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDLeftJoyCon) {
-		switch (button) {
-		case BTN_TL:
-			return @"L";
-		case BTN_TL2:
-			return @"ZL";
-		case BTN_THUMBL:
-			return @"Left Thumbstick";
-		case BTN_SELECT:
-			return @"-";
-		case BTN_Z:
-			return @"Capture";
-		case BTN_TR:
-			return @"SL";
-		case BTN_TR2:
-			return @"SR";
-		}
-	} else if (vendorID == OHVendorIDNintendo &&
-	    productID == OHProductIDRightJoyCon) {
-		switch (button) {
-		case BTN_NORTH:
-			return @"X";
-		case BTN_SOUTH:
-			return @"B";
-		case BTN_WEST:
-			return @"Y";
-		case BTN_EAST:
-			return @"A";
-		case BTN_TR:
-			return @"R";
-		case BTN_TR2:
-			return @"ZR";
-		case BTN_THUMBR:
-			return @"Right Thumbstick";
-		case BTN_START:
-			return @"+";
-		case BTN_MODE:
-			return @"Home";
-		case BTN_TL:
-			return @"SL";
-		case BTN_TL2:
-			return @"SR";
-		}
-	}
-
 	switch (button) {
 	case BTN_A:
 		return @"A";
