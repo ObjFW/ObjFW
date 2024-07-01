@@ -24,6 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHStadiaGamepad OHStadiaGamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Stadia gamepad.
+ */
 @interface OHStadiaGamepad: OFObject <OHExtendedGamepad
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     , OHEvdevMapping

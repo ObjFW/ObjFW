@@ -24,6 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHN64Controller OHN64Controller.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Nintendo 64 controller.
+ */
 @interface OHN64Controller: OFObject <OHGameControllerProfile
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     , OHEvdevMapping

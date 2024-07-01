@@ -21,6 +21,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHExtendedN64Controller OHExtendedN64Controller.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief An extended Nintendo 64 controller.
+ *
+ * An extended Nintendo 64 controller has extra buttons, such as the Nintendo
+ * Switch Online N64 controller.
+ */
 @interface OHExtendedN64Controller: OHN64Controller
 @end
 

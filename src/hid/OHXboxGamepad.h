@@ -21,6 +21,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHXboxGamepad OHXboxGamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Microsoft Xbox gamepad.
+ */
 @interface OHXboxGamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;

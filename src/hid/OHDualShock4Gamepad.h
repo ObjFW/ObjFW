@@ -24,6 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHDualShock4Gamepad OHDualShock4Gamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Sony DualShock 4 gamepad.
+ */
 @interface OHDualShock4Gamepad: OFObject <OHExtendedGamepad
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     , OHEvdevMapping

@@ -24,6 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHLeftJoyCon OHLeftJoyCon.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A left Nintendo Switch Joy-Con.
+ */
 @interface OHLeftJoyCon: OFObject <OHGameControllerProfile
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     , OHEvdevMapping

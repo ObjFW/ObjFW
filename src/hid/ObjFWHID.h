@@ -25,4 +25,13 @@
 #import "OHGameControllerProfile.h"
 #import "OHGamepad.h"
 #import "OHExtendedGamepad.h"
+
 #import "OHCombinedJoyCons.h"
+#import "OHDualSenseGamepad.h"
+#import "OHDualShock4Gamepad.h"
+#import "OHExtendedN64Controller.h"
+#import "OHLeftJoyCon.h"
+#import "OHN64Controller.h"
+#import "OHRightJoyCon.h"
+#import "OHStadiaGamepad.h"
+#import "OHXboxGamepad.h"

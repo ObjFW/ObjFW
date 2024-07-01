@@ -24,6 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHDualSenseGamepad OHDualSenseGamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Sony DualSense gamepad.
+ */
 @interface OHDualSenseGamepad: OFObject <OHExtendedGamepad
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     , OHEvdevMapping
