@@ -28,7 +28,6 @@
 #import "OFStdIOStream.h"
 #import "OFThread.h"
 
-#import "OHCombinedJoyCons.h"
 #import "OHExtendedGamepad.h"
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
@@ -36,6 +35,9 @@
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerProfile.h"
 #import "OHGamepad.h"
+#import "OHJoyConPair.h"
+#import "OHLeftJoyCon.h"
+#import "OHRightJoyCon.h"
 
 #import "OFReadFailedException.h"
 
@@ -195,7 +197,8 @@ static void printProfile(id <OHGameControllerProfile> profile)
 	for (;;) {
 #endif
 		void *pool = objc_autoreleasePoolPush();
-		OHGameController *leftJoyCon = nil, *rightJoyCon = nil;
+		OHLeftJoyCon *leftJoyCon = nil;
+		OHRightJoyCon *rightJoyCon = nil;
 
 		if (_lastControllersUpdate == nil ||
 		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
@@ -227,26 +230,21 @@ static void printProfile(id <OHGameControllerProfile> profile)
 
 			printProfile(profile);
 
-			if (controller.vendorID.unsignedShortValue ==
-			    OHVendorIDNintendo) {
-				if (controller.productID.unsignedShortValue ==
-				    OHProductIDLeftJoyCon)
-					leftJoyCon = controller;
-				if (controller.productID.unsignedShortValue ==
-				    OHProductIDRightJoyCon)
-					rightJoyCon = controller;
-			}
+			if ([profile isKindOfClass: [OHLeftJoyCon class]])
+				leftJoyCon = (OHLeftJoyCon *)profile;
+			else if ([profile isKindOfClass: [OHRightJoyCon class]])
+				rightJoyCon = (OHRightJoyCon *)profile;
 		}
 
 		if (leftJoyCon != nil && rightJoyCon != nil) {
-			OHCombinedJoyCons *combinedJoyCons = [OHCombinedJoyCons
+			OHJoyConPair *joyConPair = [OHJoyConPair
 			    gamepadWithLeftJoyCon: leftJoyCon
 				      rightJoyCon: rightJoyCon];
 
 			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeLine: @"Combined Joy-Cons"];
+			[OFStdOut writeLine: @"Joy-Con Pair"];
 
-			printProfile(combinedJoyCons);
+			printProfile(joyConPair);
 		}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)

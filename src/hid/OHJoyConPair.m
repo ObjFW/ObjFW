@@ -19,19 +19,21 @@
 
 #include "config.h"
 
-#import "OHCombinedJoyCons.h"
+#import "OHJoyConPair.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OHGameController.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHLeftJoyCon.h"
+#import "OHRightJoyCon.h"
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OHCombinedJoyCons
+@implementation OHJoyConPair
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
-+ (instancetype)gamepadWithLeftJoyCon: (OHGameController *)leftJoyCon
-			  rightJoyCon: (OHGameController *)rightJoyCon
++ (instancetype)gamepadWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
+			  rightJoyCon: (OHRightJoyCon *)rightJoyCon
 {
 	return [[[self alloc] initWithLeftJoyCon: leftJoyCon
 				     rightJoyCon: rightJoyCon] autorelease];
@@ -42,38 +44,22 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithLeftJoyCon: (OHGameController *)leftJoyCon
-		       rightJoyCon: (OHGameController *)rightJoyCon
+- (instancetype)initWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
+		       rightJoyCon: (OHRightJoyCon *)rightJoyCon
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFDictionary *leftButtons, *rightButtons;
 		OFMutableDictionary *buttons, *directionalPads;
 
-		if (leftJoyCon.vendorID.unsignedShortValue !=
-		    OHVendorIDNintendo ||
-		    rightJoyCon.vendorID.unsignedShortValue !=
-		    OHVendorIDNintendo)
-			@throw [OFInvalidArgumentException exception];
-
-		if (leftJoyCon.productID.unsignedShortValue !=
-		    OHProductIDLeftJoyCon ||
-		    rightJoyCon.productID.unsignedShortValue !=
-		    OHProductIDRightJoyCon)
-			@throw [OFInvalidArgumentException exception];
-
-		_leftJoyCon = [leftJoyCon.profile retain];
-		_rightJoyCon = [rightJoyCon.profile retain];
-
-		leftButtons = _leftJoyCon.buttons;
-		rightButtons = _rightJoyCon.buttons;
+		_leftJoyCon = [leftJoyCon retain];
+		_rightJoyCon = [rightJoyCon retain];
 
 		buttons = [OFMutableDictionary dictionaryWithCapacity:
-		    leftButtons.count + rightButtons.count];
-		[buttons addEntriesFromDictionary: leftButtons];
-		[buttons addEntriesFromDictionary: rightButtons];
+		    _leftJoyCon.buttons.count + _rightJoyCon.buttons.count];
+		[buttons addEntriesFromDictionary: _leftJoyCon.buttons];
+		[buttons addEntriesFromDictionary: _rightJoyCon.buttons];
 		[buttons removeObjectForKey: @"SL"];
 		[buttons removeObjectForKey: @"SR"];
 		[buttons makeImmutable];

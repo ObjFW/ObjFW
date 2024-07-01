@@ -9,8 +9,7 @@ LIB_MAJOR = ${OBJFWHID_LIB_MAJOR}
 LIB_MINOR = ${OBJFWHID_LIB_MINOR}
 LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
-SRCS = OHCombinedJoyCons.m		\
-       OHDualSenseGamepad.m		\
+SRCS = OHDualSenseGamepad.m		\
        OHDualShock4Gamepad.m		\
        OHExtendedN64Controller.m	\
        OHGameController.m		\
@@ -18,6 +17,7 @@ SRCS = OHCombinedJoyCons.m		\
        OHGameControllerButton.m		\
        OHGameControllerDirectionalPad.m	\
        OHGameControllerElement.m	\
+       OHJoyConPair.m			\
        OHLeftJoyCon.m			\
        OHN64Controller.m		\
        OHRightJoyCon.m			\

@@ -24,45 +24,46 @@ OF_ASSUME_NONNULL_BEGIN
 @class OHGameController;
 @class OHGameControllerButton;
 @class OHGameControllerDirectionalPad;
+@class OHLeftJoyCon;
+@class OHRightJoyCon;
 
 /**
- * @class OHCombinedJoyCons OHCombinedJoyCons.h ObjFWHID/ObjFWHID.h
+ * @class OHJoyConPair OHJoyConPair.h ObjFWHID/ObjFWHID.h
  *
  * @brief Combines a left and a right Joy-Con into a gamepad.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OHCombinedJoyCons: OFObject <OHExtendedGamepad>
+@interface OHJoyConPair: OFObject <OHExtendedGamepad>
 {
-	id <OHGameControllerProfile> _leftJoyCon;
-	id <OHGameControllerProfile> _rightJoyCon;
+	OHLeftJoyCon *_leftJoyCon;
+	OHRightJoyCon *_rightJoyCon;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
 }
 
 /**
- * @brief Creates a new @ref OHCombinedJoyCons with the specified left and
- *	  right Joy-Con.
+ * @brief Creates a new Joy-Con pair with the specified left and right Joy-Con.
  *
- * @param leftJoyCon The left Joy-Con
- * @param rightJoyCon The right Joy-Con
- * @return An new @ref OHCombinedJoyCons
+ * @param leftJoyCon The left Joy-Con for the pair
+ * @param rightJoyCon The right Joy-Con for the pair
+ * @return An new Joy-Con pair
  */
-+ (instancetype)gamepadWithLeftJoyCon: (OHGameController *)leftJoyCon
-			  rightJoyCon: (OHGameController *)rightJoyCon;
++ (instancetype)gamepadWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
+			  rightJoyCon: (OHRightJoyCon *)rightJoyCon;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated @ref OHCombinedJoyCons with the
- *	  specified left and right Joy-Con.
+ * @brief Initializes an already allocated Joy-Con pair with the specified left
+ *	  and right Joy-Con.
  *
- * @param leftJoyCon The left Joy-Con
- * @param rightJoyCon The right Joy-Con
- * @return An initialized @ref OHCombinedJoyCons
+ * @param leftJoyCon The left Joy-Con for the pair
+ * @param rightJoyCon The right Joy-Con for the pair
+ * @return An initialized Joy-Con pair
  */
-- (instancetype)initWithLeftJoyCon: (OHGameController *)leftJoyCon
-		       rightJoyCon: (OHGameController *)rightJoyCon;
+- (instancetype)initWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
+		       rightJoyCon: (OHRightJoyCon *)rightJoyCon;
 @end
 
 OF_ASSUME_NONNULL_END
