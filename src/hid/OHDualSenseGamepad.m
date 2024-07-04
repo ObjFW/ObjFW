@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OHDualSenseGamepad.h"
+#import "OHDualSenseGamepad+Private.h"
 #import "OFDictionary.h"
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"

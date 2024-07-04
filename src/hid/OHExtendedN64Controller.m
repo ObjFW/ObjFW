@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OHExtendedN64Controller.h"
+#import "OHN64Controller+Private.h"
 #import "OFDictionary.h"
 #import "OHGameControllerButton.h"
 

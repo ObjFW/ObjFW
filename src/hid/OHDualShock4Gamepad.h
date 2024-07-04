@@ -18,9 +18,6 @@
  */
 
 #import "OHExtendedGamepad.h"
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# import "OHEvdevGameController.h"
-#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,11 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A Sony DualShock 4 gamepad.
  */
-@interface OHDualShock4Gamepad: OFObject <OHExtendedGamepad
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-    , OHEvdevMapping
-#endif
->
+@interface OHDualShock4Gamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)

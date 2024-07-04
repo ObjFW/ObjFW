@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OHDualShock4Gamepad.h"
+#import "OHDualShock4Gamepad+Private.h"
 #import "OFDictionary.h"
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"

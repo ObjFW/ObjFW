@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OHStadiaGamepad.h"
+#import "OHStadiaGamepad+Private.h"
 #import "OFDictionary.h"
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"

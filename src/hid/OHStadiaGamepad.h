@@ -18,9 +18,6 @@
  */
 
 #import "OHExtendedGamepad.h"
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# import "OHEvdevGameController.h"
-#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,11 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A Stadia gamepad.
  */
-@interface OHStadiaGamepad: OFObject <OHExtendedGamepad
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-    , OHEvdevMapping
-#endif
->
+@interface OHStadiaGamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)

@@ -32,7 +32,9 @@
 #import "OFNumber.h"
 
 #import "OHDualSenseGamepad.h"
+#import "OHDualSenseGamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
+#import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
 #import "OHExtendedN64Controller.h"
 #import "OHGameControllerAxis+Private.h"
@@ -40,8 +42,13 @@
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
 #import "OHLeftJoyCon.h"
+#import "OHLeftJoyCon+Private.h"
+#import "OHN64Controller.h"
+#import "OHN64Controller+Private.h"
 #import "OHRightJoyCon.h"
+#import "OHRightJoyCon+Private.h"
 #import "OHStadiaGamepad.h"
+#import "OHStadiaGamepad+Private.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>

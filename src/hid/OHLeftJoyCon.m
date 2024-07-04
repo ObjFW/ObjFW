@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OHLeftJoyCon.h"
+#import "OHLeftJoyCon+Private.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"

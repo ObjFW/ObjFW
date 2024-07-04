@@ -17,21 +17,17 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameControllerProfile.h"
+#import "OHDualSenseGamepad.h"
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# import "OHEvdevGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-/**
- * @class OHN64Controller OHN64Controller.h ObjFWHID/ObjFWHID.h
- *
- * @brief A Nintendo 64 controller.
- */
-@interface OHN64Controller: OFObject <OHGameControllerProfile>
-{
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
-	    *_directionalPads;
-}
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+@interface OHDualSenseGamepad () <OHEvdevMapping>
 @end
+#endif
 
 OF_ASSUME_NONNULL_END
