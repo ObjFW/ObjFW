@@ -4,6 +4,11 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.4 -> ObjFW 1.1.5, 2024-07-06
+ * Fixes MIPS32.
+ * Properly hides private symbols in the runtime so they can't be used
+   accidentally anymore.
+
 ObjFW 1.1.3 -> ObjFW 1.1.4, 2024-05-22
  * Fixes ofarc failing to extract from stdin on macOS.
  * Fixes the workaround for missing blx on ARM.
