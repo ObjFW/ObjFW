@@ -702,8 +702,8 @@ extern void objc_removeAssociatedObjects(id _Nonnull object);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
-struct objc_module;
-extern void __objc_exec_class(struct objc_module *_Nonnull module);
+struct _objc_module;
+extern void __objc_exec_class(struct _objc_module *_Nonnull module);
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

@@ -132,7 +132,7 @@ static struct {
 	}
 };
 
-static struct objc_module module = {
+static struct _objc_module module = {
 	8, sizeof(module), NULL, (struct objc_symtab *)&symtab
 };
 
