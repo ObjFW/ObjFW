@@ -181,7 +181,7 @@ struct objc_symtab {
 	void *_Nonnull defs[1];
 };
 
-struct objc_module {
+struct _objc_module {
 	unsigned long version;	/* 9 = non-fragile */
 	unsigned long size;
 	const char *_Nullable name;
