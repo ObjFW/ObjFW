@@ -103,6 +103,8 @@
 # define OF_S390
 #elif defined(__e2k__)
 # define OF_ELBRUS_2000
+#elif defined(__loongarch64)
+# define OF_LOONGARCH64
 #endif
 
 #if defined(__APPLE__)
