@@ -44,6 +44,8 @@
 #  include "lookup-asm-sparc-elf.S"
 # elif defined(OF_RISCV64)
 #  include "lookup-asm-riscv64-elf.S"
+# elif defined(OF_LOONGARCH64)
+#  include "lookup-asm-loongarch64-elf.S"
 # endif
 #elif defined(OF_MACH_O)
 # if defined(OF_AMD64)
