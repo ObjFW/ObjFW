@@ -101,6 +101,8 @@
 # define OF_S390X
 #elif defined(__s390__)
 # define OF_S390
+#elif defined(__sh__)
+# define OF_SUPERH
 #elif defined(__e2k__)
 # define OF_ELBRUS_2000
 #elif defined(__loongarch64)
