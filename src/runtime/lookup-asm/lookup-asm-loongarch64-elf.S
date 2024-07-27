@@ -34,8 +34,8 @@
 	andi	$t0, $a0, 1
 	bnez	$t0, .LtaggedPointer_\name
 
-	ld.d	$t0, $a0, 0
-	ld.d	$t0, $t0, 64
+	ldptr.d	$t0, $a0, 0
+	ldptr.d	$t0, $t0, 64
 
 .Lmain_\name:
 #ifdef OF_SELUID24
@@ -70,7 +70,7 @@
 
 	la.global $t0, objc_taggedPointerClasses
 	ldx.d	$t0, $t0, $t1
-	ld.d	$t0, $t0, 64
+	ldptr.d	$t0, $t0, 64
 
 	b	.Lmain_\name
 .type \name, %function
@@ -80,11 +80,11 @@
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	move	$t0, $a0
-	ld.d	$a0, $a0, 0
+	ldptr.d	$a0, $a0, 0
 	beqz	$a0, .LreturnNilMethod
 
-	ld.d	$t0, $t0, 8
-	ld.d	$t0, $t0, 64
+	ldptr.d	$t0, $t0, 8
+	ldptr.d	$t0, $t0, 64
 
 	b	.Lmain_\lookup
 .type \name, %function

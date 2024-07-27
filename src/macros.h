@@ -352,7 +352,7 @@
     defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
     defined(OF_SPARC64) || defined(OF_SPARC) || \
-    defined(OF_RISCV64)
+    defined(OF_RISCV64) || defined(OF_LOONGARCH64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
