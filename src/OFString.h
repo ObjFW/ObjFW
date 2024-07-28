@@ -95,6 +95,8 @@ typedef enum {
 	OFStringEncodingKOI8R,
 	/** KOI8-U */
 	OFStringEncodingKOI8U,
+	/** Windows-1250 */
+	OFStringEncodingWindows1250,
 	/** Try to automatically detect the encoding */
 	OFStringEncodingAutodetect = -1
 } OFStringEncoding;

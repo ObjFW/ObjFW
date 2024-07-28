@@ -937,6 +937,7 @@ ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
 ENCODING_FLAG(koi8-r, koi8_r, [KOI8-R], HAVE_KOI8_R)
 ENCODING_FLAG(koi8-u, koi8_u, [KOI8-U], HAVE_KOI8_U)
 ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
+ENCODING_FLAG(windows-1250, windows_1250, [Windows-1250], HAVE_WINDOWS_1250)
 ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
 ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
 

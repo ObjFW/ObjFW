@@ -110,6 +110,8 @@ extern bool _OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
     size_t, bool);
 extern bool _OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
     size_t, bool);
+extern bool _OFUnicodeToWindows1250(const OFUnichar *, unsigned char *,
+    size_t, bool);
 extern bool _OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
     size_t, bool);
 extern bool _OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
@@ -172,6 +174,10 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"iso-8859-15"] ||
 	    [string isEqual: @"iso_8859-15"])
 		encoding = OFStringEncodingISO8859_15;
+	else if ([string isEqual: @"windows-1250"] ||
+	    [string isEqual: @"cp1250"] || [string isEqual: @"cp-1250"] ||
+	    [string isEqual: @"1250"])
+		encoding = OFStringEncodingWindows1250;
 	else if ([string isEqual: @"windows-1251"] ||
 	    [string isEqual: @"cp1251"] || [string isEqual: @"cp-1251"] ||
 	    [string isEqual: @"1251"])
@@ -219,6 +225,8 @@ OFStringEncodingName(OFStringEncoding encoding)
 		return @"ISO 8859-3";
 	case OFStringEncodingISO8859_15:
 		return @"ISO 8859-15";
+	case OFStringEncodingWindows1250:
+		return @"Windows-1250";
 	case OFStringEncodingWindows1251:
 		return @"Windows-1251";
 	case OFStringEncodingWindows1252:
@@ -1168,6 +1176,19 @@ OF_SINGLETON_METHODS
 
 		return length;
 #endif
+#ifdef HAVE_WINDOWS_1250
+	case OFStringEncodingWindows1250:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!_OFUnicodeToWindows1250(characters,
+		    (unsigned char *)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
 #ifdef HAVE_WINDOWS_1251
 	case OFStringEncodingWindows1251:
 		if (length + 1 > maxLength)
@@ -1332,6 +1353,7 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingISO8859_2:
 	case OFStringEncodingISO8859_3:
 	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1250:
 	case OFStringEncodingWindows1251:
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:
@@ -1415,6 +1437,7 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingISO8859_2:
 	case OFStringEncodingISO8859_3:
 	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1250:
 	case OFStringEncodingWindows1251:
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:

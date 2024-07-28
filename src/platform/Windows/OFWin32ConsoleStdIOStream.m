@@ -71,6 +71,8 @@ codepageToEncoding(UINT codepage)
 		return OFStringEncodingCodepage850;
 	case 858:
 		return OFStringEncodingCodepage858;
+	case 1250:
+		return OFStringEncodingWindows1250;
 	case 1251:
 		return OFStringEncodingWindows1251;
 	case 1252:

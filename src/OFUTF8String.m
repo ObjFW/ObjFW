@@ -49,6 +49,8 @@ extern const OFChar16 _OFISO8859_3Table[];
 extern const size_t _OFISO8859_3TableOffset;
 extern const OFChar16 _OFISO8859_15Table[];
 extern const size_t _OFISO8859_15TableOffset;
+extern const OFChar16 _OFWindows1250Table[];
+extern const size_t _OFWindows1250TableOffset;
 extern const OFChar16 _OFWindows1251Table[];
 extern const size_t _OFWindows1251TableOffset;
 extern const OFChar16 _OFWindows1252Table[];
@@ -323,6 +325,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 #endif
 #ifdef HAVE_ISO_8859_15
 		CASE(OFStringEncodingISO8859_15, _OFISO8859_15Table)
+#endif
+#ifdef HAVE_WINDOWS_1250
+		CASE(OFStringEncodingWindows1250, _OFWindows1250Table)
 #endif
 #ifdef HAVE_WINDOWS_1251
 		CASE(OFStringEncodingWindows1251, _OFWindows1251Table)

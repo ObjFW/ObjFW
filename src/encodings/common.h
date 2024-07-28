@@ -18,7 +18,7 @@
  */
 
 #define CASE_MISSING_IS_KEEP(nr)				\
-	case nr:						\
+	case 0x##nr:						\
 		if OF_UNLIKELY ((c & 0xFF) < page##nr##Start) {	\
 			output[i] = (unsigned char)c;		\
 			continue;				\
@@ -31,7 +31,7 @@
 			continue;				\
 		}						\
 								\
-		if (page##nr[idx] == 0x00) {			\
+		if (page##nr[idx] == 0) {			\
 			if (lossy) {				\
 				output[i] = '?';		\
 				continue;			\
@@ -53,7 +53,7 @@
 									 \
 		idx = (c & 0xFF) - page##nr##Start;			 \
 									 \
-		if (idx >= sizeof(page##nr) || page##nr[idx] == 0) { \
+		if (idx >= sizeof(page##nr) || page##nr[idx] == 0) {	 \
 			if (lossy) {					 \
 				output[i] = '?';			 \
 				continue;				 \
