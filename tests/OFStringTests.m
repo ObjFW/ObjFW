@@ -43,6 +43,15 @@ static const OFChar16 swappedChar16String[] = {
 	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
 	0
 };
+static const char *range80ToFF =
+    "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91"
+    "\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3"
+    "\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5"
+    "\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7"
+    "\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9"
+    "\xDA\xDB\xDC\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB"
+    "\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD"
+    "\xFE\xFF";
 
 @interface CustomString: OFString
 {
@@ -303,8 +312,47 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testStringWithCStringEncodingCodepage437
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithCString: "\xB0\xB1\xB2\xDB"
-		     encoding: OFStringEncodingCodepage437], @"░▒▓█");
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage437],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛"
+	    @"┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_850
+- (void)testStringWithCStringEncodingCodepage850
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage850],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_852
+- (void)testStringWithCStringEncodingCodepage852
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage852],
+	    @"ÇüéâäůćçłëŐőîŹÄĆÉĹĺôöĽľŚśÖÜŤťŁ×čáíóúĄąŽžĘę¬źČş«»░▒▓│┤ÁÂĚŞ╣║╗╝Żż"
+	    @"┐└┴┬├─┼Ăă╚╔╩╦╠═╬¤đĐĎËďŇÍÎě┘┌█▄ŢŮ▀ÓßÔŃńňŠšŔÚŕŰýÝţ´­˝˛ˇ˘§÷¸°¨˙űŘř"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_858
+- (void)testStringWithCStringEncodingCodepage858
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage858],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ ");
 }
 #endif
 
@@ -403,14 +451,52 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testCStringWithEncodingCodepage437
 {
 	OTAssertEqual(
-	    strcmp([[self.stringClass stringWithString: @"Tést strîng ░▒▓"]
-	    cStringWithEncoding: OFStringEncodingCodepage437],
-	    "T\x82st str\x8Cng \xB0\xB1\xB2"), 0);
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛"
+	    @"┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage437],
+	    range80ToFF), 0);
 
 	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"T€st strîng ░▒▓"]
 	    cStringWithEncoding: OFStringEncodingCodepage437],
 	    OFInvalidEncodingException);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_850
+- (void)testCStringWithEncodingCodepage850
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage850],
+	    range80ToFF), 0);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_852
+- (void)testCStringWithEncodingCodepage852
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäůćçłëŐőîŹÄĆÉĹĺôöĽľŚśÖÜŤťŁ×čáíóúĄąŽžĘę¬źČş«»░▒▓│┤ÁÂĚŞ╣║╗╝Żż"
+	    @"┐└┴┬├─┼Ăă╚╔╩╦╠═╬¤đĐĎËďŇÍÎě┘┌█▄ŢŮ▀ÓßÔŃńňŠšŔÚŕŰýÝţ´­˝˛ˇ˘§÷¸°¨˙űŘř"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage852],
+	    range80ToFF), 0);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_858
+- (void)testCStringWithEncodingCodepage858
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage858],
+	    range80ToFF), 0);
 }
 #endif
 

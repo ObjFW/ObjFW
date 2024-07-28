@@ -120,6 +120,8 @@ extern bool _OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
     size_t, bool);
 extern bool _OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
     size_t, bool);
+extern bool _OFUnicodeToCodepage852(const OFUnichar *, unsigned char *,
+    size_t, bool);
 extern bool _OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
     size_t, bool);
 extern bool _OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
@@ -192,6 +194,9 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"cp850"] || [string isEqual: @"cp-850"] ||
 	    [string isEqual: @"ibm850"] || [string isEqual: @"850"])
 		encoding = OFStringEncodingCodepage850;
+	else if ([string isEqual: @"cp852"] || [string isEqual: @"cp-852"] ||
+	    [string isEqual: @"ibm852"] || [string isEqual: @"852"])
+		encoding = OFStringEncodingCodepage852;
 	else if ([string isEqual: @"cp858"] || [string isEqual: @"cp-858"] ||
 	    [string isEqual: @"ibm858"] || [string isEqual: @"858"])
 		encoding = OFStringEncodingCodepage858;
@@ -235,6 +240,8 @@ OFStringEncodingName(OFStringEncoding encoding)
 		return @"Codepage 437";
 	case OFStringEncodingCodepage850:
 		return @"Codepage 850";
+	case OFStringEncodingCodepage852:
+		return @"Codepage 852";
 	case OFStringEncodingCodepage858:
 		return @"Codepage 858";
 	case OFStringEncodingMacRoman:
@@ -1241,6 +1248,19 @@ OF_SINGLETON_METHODS
 
 		return length;
 #endif
+#ifdef HAVE_CODEPAGE_852
+	case OFStringEncodingCodepage852:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!_OFUnicodeToCodepage852(characters,
+		    (unsigned char *)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
 #ifdef HAVE_CODEPAGE_858
 	case OFStringEncodingCodepage858:
 		if (length + 1 > maxLength)
@@ -1358,6 +1378,7 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:
 	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage852:
 	case OFStringEncodingCodepage858:
 	case OFStringEncodingMacRoman:
 	case OFStringEncodingKOI8R:
@@ -1442,6 +1463,7 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:
 	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage852:
 	case OFStringEncodingCodepage858:
 	case OFStringEncodingMacRoman:
 	case OFStringEncodingKOI8R:

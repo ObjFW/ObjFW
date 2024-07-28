@@ -59,6 +59,8 @@ extern const OFChar16 _OFCodepage437Table[];
 extern const size_t _OFCodepage437TableOffset;
 extern const OFChar16 _OFCodepage850Table[];
 extern const size_t _OFCodepage850TableOffset;
+extern const OFChar16 _OFCodepage852Table[];
+extern const size_t _OFCodepage852TableOffset;
 extern const OFChar16 _OFCodepage858Table[];
 extern const size_t _OFCodepage858TableOffset;
 extern const OFChar16 _OFMacRomanTable[];
@@ -340,6 +342,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 #endif
 #ifdef HAVE_CODEPAGE_850
 		CASE(OFStringEncodingCodepage850, _OFCodepage850Table)
+#endif
+#ifdef HAVE_CODEPAGE_852
+		CASE(OFStringEncodingCodepage852, _OFCodepage852Table)
 #endif
 #ifdef HAVE_CODEPAGE_858
 		CASE(OFStringEncodingCodepage858, _OFCodepage858Table)
