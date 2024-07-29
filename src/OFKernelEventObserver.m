@@ -278,7 +278,7 @@
 		    (struct sockaddr *)&_cancelAddr, 8) == 1)
 			break;
 
-		OFEnsure(OFSocketErrNo() == EINTR);
+		OFEnsure(_OFSocketErrNo() == EINTR);
 	} while (true);
 #else
 	do {
@@ -286,7 +286,7 @@
 		    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) == 1)
 			break;
 
-		OFEnsure(OFSocketErrNo() == EINTR);
+		OFEnsure(_OFSocketErrNo() == EINTR);
 	} while (true);
 #endif
 }
