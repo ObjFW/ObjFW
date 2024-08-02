@@ -83,13 +83,20 @@
 
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
-	test	%eax, %eax
+	testl	%eax, %eax
 	jz	.LreturnNilMethod
 
+	subl	$16, %esp
+	movl	%eax, (%esp)
+	movl	24(%esp), %eax
 	movl	%eax, 4(%esp)
+
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
-	jmp	.Lmain_\lookup
+	call	.Lmain_\lookup
+
+	addl	$16, %esp
+	ret
 .def \name
 .scl 2
 .type 32
