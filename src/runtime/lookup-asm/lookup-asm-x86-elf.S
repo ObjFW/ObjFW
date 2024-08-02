@@ -97,10 +97,17 @@
 	testl	%eax, %eax
 	jz	.LreturnNilMethod
 
+	subl	$16, %esp
+	movl	%eax, (%esp)
+	movl	24(%esp), %eax
 	movl	%eax, 4(%esp)
-	mov	4(%edx), %edx
-	mov	32(%edx), %edx
-	jmp	.Lmain_\lookup
+
+	movl	4(%edx), %edx
+	movl	32(%edx), %edx
+	call	.Lmain_\lookup
+
+	addl	$16, %esp
+	ret
 .type \name, %function
 .size \name, .-\name
 .endm
