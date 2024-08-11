@@ -4,6 +4,12 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.5 -> ObjFW 1.1.6, 2024-08-11
+ * Fixes ObjC++ with GCC.
+ * Adds handling of EINTR in OFKernelEventObserver.
+ * Fixes overriding / reusing stack arguments in super calls on x86.
+ * Makes headers compatible with -Wunused-parameter.
+
 ObjFW 1.1.4 -> ObjFW 1.1.5, 2024-07-06
  * Fixes MIPS32.
  * Properly hides private symbols in the runtime so they can't be used
