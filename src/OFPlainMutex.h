@@ -278,6 +278,8 @@ static OF_INLINE int
 OFSpinlockFree(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
+	(void)spinlock;
+
 	return 0;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_destroy(spinlock);
