@@ -22,4 +22,9 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#import "OFTLSKey.h"
+
+extern int OFTLSKeyNew(OFTLSKey *key) OF_VISIBILITY_HIDDEN;
+extern int OFTLSKeyFree(OFTLSKey key) OF_VISIBILITY_HIDDEN;
+
 #include "../OFTLSKey.m"

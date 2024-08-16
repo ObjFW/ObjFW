@@ -22,4 +22,22 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#import "OFPlainMutex.h"
+
+extern int OFPlainMutexNew(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainMutexLock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainMutexTryLock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainMutexUnlock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainMutexFree(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
+    OF_VISIBILITY_HIDDEN;
+extern int OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex)
+    OF_VISIBILITY_HIDDEN;
+extern int OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex)
+    OF_VISIBILITY_HIDDEN;
+extern int OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex)
+    OF_VISIBILITY_HIDDEN;
+extern int OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex)
+    OF_VISIBILITY_HIDDEN;
+
 #include "../OFPlainMutex.m"
