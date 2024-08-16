@@ -22,4 +22,9 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#import "OFOnce.h"
+
+extern void OFOnce(OFOnceControl *control, OFOnceFunction function)
+    OF_VISIBILITY_HIDDEN;
+
 #include "../OFOnce.m"
