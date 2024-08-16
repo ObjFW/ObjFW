@@ -24,11 +24,6 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFSubarray
-+ (instancetype)arrayWithArray: (OFArray *)array range: (OFRange)range
-{
-	return [[[self alloc] initWithArray: array range: range] autorelease];
-}
-
 - (instancetype)initWithArray: (OFArray *)array range: (OFRange)range
 {
 	self = [super init];
