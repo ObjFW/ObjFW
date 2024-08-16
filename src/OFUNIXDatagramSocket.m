@@ -23,6 +23,8 @@
 # include <fcntl.h>
 #endif
 
+#include <errno.h>
+
 #import "OFUNIXDatagramSocket.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
@@ -36,10 +38,11 @@
 
 - (OFSocketAddress)bindToPath: (OFString *)path
 {
+#ifndef OF_HURD
 	OFSocketAddress address;
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
+# if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	int flags;
-#endif
+# endif
 
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
@@ -60,10 +63,10 @@
 
 	_canBlock = true;
 
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
+# if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL_H) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
-#endif
+# endif
 
 	if (path != nil) {
 		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
@@ -81,5 +84,15 @@
 	}
 
 	return address;
+#else
+	/*
+	 * Datagram UNIX sockets on Hurd are broken and don't return the sender
+	 * correctly when using recvfrom().
+	 */
+	@throw [OFBindUNIXSocketFailedException
+	    exceptionWithPath: path
+		       socket: self
+			errNo: EAFNOSUPPORT];
+#endif
 }
 @end
