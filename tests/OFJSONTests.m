@@ -66,6 +66,15 @@ static OFString *string = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 	    @"{\"foo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"foo\",false]}");
 }
 
+- (void)testSortedJSONRepresentation
+{
+	OTAssertEqualObjects(
+	    [([OFDictionary dictionaryWithKeysAndObjects:
+	    @"b", @"a", @"a", @"b", nil])
+	    JSONRepresentationWithOptions: OFJSONRepresentationOptionSorted],
+	    @"{\"a\":\"b\",\"b\":\"a\"}");
+}
+
 - (void)testPrettyJSONRepresentation
 {
 	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:

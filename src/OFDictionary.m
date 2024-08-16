@@ -678,10 +678,11 @@ OF_SINGLETON_METHODS
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *keyEnumerator = [self keyEnumerator];
-	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	OFArray *keys = self.allKeys;
 	size_t i, count = self.count;
-	id key, object;
+
+	if (options & OFJSONRepresentationOptionSorted)
+		keys = keys.sortedArray;
 
 	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
@@ -692,9 +693,9 @@ OF_SINGLETON_METHODS
 		[JSON appendString: @"\n"];
 
 		i = 0;
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil) {
+		for (id key in keys) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = [self objectForKey: key];
 			int identifierOptions =
 			    options | OFJSONRepresentationOptionIsIdentifier;
 
@@ -722,9 +723,9 @@ OF_SINGLETON_METHODS
 		[JSON appendString: indentation];
 	} else {
 		i = 0;
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil) {
+		for (id key in keys) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = [self objectForKey: key];
 			int identifierOptions =
 			    options | OFJSONRepresentationOptionIsIdentifier;
 

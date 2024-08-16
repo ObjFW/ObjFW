@@ -31,6 +31,8 @@ typedef enum {
 	OFJSONRepresentationOptionPretty       = 0x01,
 	/** Generate JSON5 */
 	OFJSONRepresentationOptionJSON5	       = 0x02,
+	/** Sort keys alphabetically */
+	OFJSONRepresentationOptionSorted       = 0x04,
 	OFJSONRepresentationOptionIsIdentifier = 0x10
 } OFJSONRepresentationOptions;
 
