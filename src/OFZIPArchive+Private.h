@@ -17,30 +17,19 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFString.h"
+#import "OFZIPArchive.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFUTF8String: OFString
-{
-	/*
-	 * A pointer to the actual data.
-	 *
-	 * Since constant strings don't have `_storage`, they have to allocate
-	 * it on the first access. Strings created at runtime just set the
-	 * pointer to `&_storage`.
-	 */
-	struct OFUTF8StringIvars {
-		char          *cString;
-		size_t        cStringLength;
-		bool          isUTF8;
-		size_t        length;
-		bool          hasHash;
-		unsigned long hash;
-		bool          freeWhenDone;
-	} *restrict _s;
-	struct OFUTF8StringIvars _storage;
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern uint32_t _OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern uint64_t _OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
+    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
+#ifdef __cplusplus
 }
-@end
+#endif
 
 OF_ASSUME_NONNULL_END

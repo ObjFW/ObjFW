@@ -51,6 +51,7 @@
 #import "OFData.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
+#import "OFString+Private.h"
 #import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"

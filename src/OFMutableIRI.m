@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFMutableIRI.h"
+#import "OFIRI.h"
 #import "OFIRI+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"

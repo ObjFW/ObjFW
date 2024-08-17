@@ -408,16 +408,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFCharacterSet *)IRIFragmentAllowedCharacterSet;
 @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_HIDDEN;
-extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
-    OF_VISIBILITY_HIDDEN;
-#ifdef __cplusplus
-}
-#endif
-
 OF_ASSUME_NONNULL_END
 
 #import "OFMutableIRI.h"

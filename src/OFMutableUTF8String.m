@@ -26,7 +26,9 @@
 #import "OFMutableUTF8String.h"
 #import "OFASPrintF.h"
 #import "OFString.h"
+#import "OFString+Private.h"
 #import "OFUTF8String.h"
+#import "OFUTF8String+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"

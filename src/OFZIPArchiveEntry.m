@@ -25,6 +25,8 @@
 #import "OFDate.h"
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFZIPArchive.h"
+#import "OFZIPArchive+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"

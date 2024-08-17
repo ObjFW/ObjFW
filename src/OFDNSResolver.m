@@ -32,6 +32,8 @@
 #import "OFHostAddressResolver.h"
 #import "OFNumber.h"
 #import "OFPair.h"
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFTimer.h"

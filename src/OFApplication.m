@@ -41,6 +41,10 @@
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFSocket.h"
+# import "OFSocket+Private.h"
+#endif
 #import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"

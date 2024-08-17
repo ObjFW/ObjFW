@@ -106,6 +106,7 @@
 # import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 #  import "OFSocket.h"
+#  import "OFSocket+Private.h"
 # endif
 
 static OFTLSKey threadSelfKey;

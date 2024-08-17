@@ -31,6 +31,7 @@
 #import "OFStreamSocket+Private.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFAcceptSocketFailedException.h"

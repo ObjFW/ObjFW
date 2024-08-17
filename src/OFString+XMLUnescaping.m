@@ -21,7 +21,8 @@
 
 #include <string.h>
 
-#import "OFString.h"
+#import "OFString+XMLUnescaping.h"
+#import "OFString+Private.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFUnknownXMLEntityException.h"

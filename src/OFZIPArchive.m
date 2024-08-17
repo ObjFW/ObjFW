@@ -24,6 +24,7 @@
 #include <errno.h>
 
 #import "OFZIPArchive.h"
+#import "OFZIPArchive+Private.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
 #import "OFArchiveIRIHandler.h"

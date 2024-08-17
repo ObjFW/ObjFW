@@ -28,4 +28,15 @@ OF_DIRECT_MEMBERS
 			      storage: (char *)storage OF_METHOD_FAMILY(init);
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _OFUTF8StringCheck(const char *, size_t, size_t *)
+    OF_VISIBILITY_HIDDEN;
+extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
+    OF_VISIBILITY_HIDDEN;
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

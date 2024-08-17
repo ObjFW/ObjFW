@@ -25,6 +25,7 @@
 #include <math.h>
 
 #import "OFString+JSONParsing.h"
+#import "OFString+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"

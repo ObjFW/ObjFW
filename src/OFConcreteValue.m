@@ -20,6 +20,7 @@
 #import "OFConcreteValue.h"
 #import "OFMethodSignature.h"
 #import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFOutOfRangeException.h"
 

@@ -34,6 +34,7 @@
 #endif
 
 #import "OFString.h"
+#import "OFString+Private.h"
 #import "OFASPrintF.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"

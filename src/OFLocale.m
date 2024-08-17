@@ -27,6 +27,7 @@
 #import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFOnce.h"
 

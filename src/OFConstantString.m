@@ -26,6 +26,7 @@
 
 #import "OFConstantString.h"
 #import "OFUTF8String.h"
+#import "OFUTF8String+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidEncodingException.h"

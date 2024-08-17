@@ -23,6 +23,7 @@
 #include <string.h>
 
 #import "OFString+PercentEncoding.h"
+#import "OFString+Private.h"
 #import "OFCharacterSet.h"
 
 #import "OFInvalidFormatException.h"

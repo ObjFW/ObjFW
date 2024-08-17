@@ -95,3 +95,30 @@ typedef uint32_t in_addr_t;
 typedef u32 in_addr_t;
 typedef u32 nfds_t;
 #endif
+
+OF_ASSUME_NONNULL_BEGIN
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern bool _OFSocketInit(void) OF_VISIBILITY_HIDDEN;
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+extern void _OFSocketDeinit(void) OF_VISIBILITY_HIDDEN;
+#endif
+extern int _OFSocketErrNo(void) OF_VISIBILITY_HIDDEN;
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen) OF_VISIBILITY_HIDDEN;
+#endif
+
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_HIDDEN;
+# ifdef OF_AMIGAOS4
+extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_HIDDEN;
+# endif
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+OF_ASSUME_NONNULL_END

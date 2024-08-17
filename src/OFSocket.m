@@ -30,6 +30,8 @@
 
 #include <errno.h>
 
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFLocale.h"
@@ -37,8 +39,6 @@
 # import "OFMutex.h"
 #endif
 #import "OFOnce.h"
-#import "OFSocket.h"
-#import "OFSocket+Private.h"
 #import "OFString.h"
 #ifdef OF_HAVE_THREADS
 # import "OFTLSKey.h"

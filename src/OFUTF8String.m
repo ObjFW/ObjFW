@@ -33,6 +33,8 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFMutableUTF8String.h"
+#import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"

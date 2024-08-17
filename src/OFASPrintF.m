@@ -41,8 +41,9 @@
 #endif
 
 #import "OFASPrintF.h"
-#import "OFString.h"
 #import "OFLocale.h"
+#import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFInitializationFailedException.h"
 

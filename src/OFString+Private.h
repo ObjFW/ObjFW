@@ -21,26 +21,15 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFUTF8String: OFString
-{
-	/*
-	 * A pointer to the actual data.
-	 *
-	 * Since constant strings don't have `_storage`, they have to allocate
-	 * it on the first access. Strings created at runtime just set the
-	 * pointer to `&_storage`.
-	 */
-	struct OFUTF8StringIvars {
-		char          *cString;
-		size_t        cStringLength;
-		bool          isUTF8;
-		size_t        length;
-		bool          hasHash;
-		unsigned long hash;
-		bool          freeWhenDone;
-	} *restrict _s;
-	struct OFUTF8StringIvars _storage;
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern char *_Nullable _OFStrDup(const char *_Nonnull) OF_VISIBILITY_HIDDEN;
+extern size_t _OFUTF8StringEncode(OFUnichar, char *) OF_VISIBILITY_HIDDEN;
+extern ssize_t _OFUTF8StringDecode(const char *, size_t, OFUnichar *)
+    OF_VISIBILITY_HIDDEN;
+#ifdef __cplusplus
 }
-@end
+#endif
 
 OF_ASSUME_NONNULL_END
