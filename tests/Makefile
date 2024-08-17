@@ -171,7 +171,7 @@ run:
 		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
 	elif test -f ../src/hid/libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
 	then \
-		${LN_S} ../src/hid/libobjfwhid.so.${OBJFWHIID_LIB_MAJOR_MINOR} \
+		${LN_S} ../src/hid/libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR} \
 		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../src/hid/objfwhid${OBJFWHID_LIB_MAJOR}.dll; then \
