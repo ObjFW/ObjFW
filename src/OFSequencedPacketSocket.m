@@ -51,16 +51,6 @@
 @implementation OFSequencedPacketSocket
 @synthesize listening = _listening, delegate = _delegate;
 
-+ (void)initialize
-{
-	if (self != [OFSequencedPacketSocket class])
-		return;
-
-	if (!_OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)socket
 {
 	return [[[self alloc] init] autorelease];
@@ -75,6 +65,10 @@
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
 		}
+
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
 
 		_socket = OFInvalidSocketHandle;
 		_canBlock = true;

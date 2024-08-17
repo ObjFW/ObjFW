@@ -61,10 +61,11 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	OFMutex *_timersQueueMutex;
 #endif
-#if defined(OF_HAVE_SOCKETS)
+#ifdef OF_HAVE_SOCKETS
 	OFKernelEventObserver *_kernelEventObserver;
 	OFMutableDictionary *_readQueues, *_writeQueues;
-#elif defined(OF_HAVE_THREADS)
+#endif
+#ifdef OF_HAVE_THREADS
 	OFCondition *_condition;
 # ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
@@ -239,13 +240,11 @@ static OFRunLoop *mainRunLoop = nil;
 		_timersQueueMutex = [[OFMutex alloc] init];
 #endif
 
-#if defined(OF_HAVE_SOCKETS)
-		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
-		_kernelEventObserver.delegate = self;
-
+#ifdef OF_HAVE_SOCKETS
 		_readQueues = [[OFMutableDictionary alloc] init];
 		_writeQueues = [[OFMutableDictionary alloc] init];
-#elif defined(OF_HAVE_THREADS)
+#endif
+#if defined(OF_HAVE_THREADS)
 		_condition = [[OFCondition alloc] init];
 #endif
 #ifdef OF_AMIGAOS
@@ -272,11 +271,12 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_THREADS
 	[_timersQueueMutex release];
 #endif
-#if defined(OF_HAVE_SOCKETS)
+#ifdef OF_HAVE_SOCKETS
 	[_kernelEventObserver release];
 	[_readQueues release];
 	[_writeQueues release];
-#elif defined(OF_HAVE_THREADS)
+#endif
+#ifdef OF_HAVE_THREADS
 	[_condition release];
 #endif
 #ifdef OF_AMIGAOS
@@ -1166,7 +1166,8 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 static OFRunLoopState *
-stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
+stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
+    bool createObserver)
 {
 	OFRunLoopState *state;
 
@@ -1184,6 +1185,14 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 				[state release];
 			}
 		}
+
+#ifdef OF_HAVE_SOCKETS
+		if (createObserver && state->_kernelEventObserver == nil) {
+			state->_kernelEventObserver =
+			    [[OFKernelEventObserver alloc] init];
+			state->_kernelEventObserver.delegate = state;
+		}
+#endif
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[self->_statesMutex unlock];
@@ -1194,43 +1203,43 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 }
 
 #ifdef OF_HAVE_SOCKETS
-# define NEW_READ(type, object, mode)					\
-	void *pool = objc_autoreleasePoolPush();			\
-	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
-	OFList *queue = [state->_readQueues objectForKey: object];	\
-	type *queueItem;						\
-									\
-	if (queue == nil) {						\
-		queue = [OFList list];					\
-		[state->_readQueues setObject: queue forKey: object];	\
-	}								\
-									\
-	if (queue.count == 0)						\
-		[state->_kernelEventObserver				\
-		    addObjectForReading: object];			\
-									\
+# define NEW_READ(type, object, mode)					 \
+	void *pool = objc_autoreleasePoolPush();			 \
+	OFRunLoop *runLoop = [self currentRunLoop];			 \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true); \
+	OFList *queue = [state->_readQueues objectForKey: object];	 \
+	type *queueItem;						 \
+									 \
+	if (queue == nil) {						 \
+		queue = [OFList list];					 \
+		[state->_readQueues setObject: queue forKey: object];	 \
+	}								 \
+									 \
+	if (queue.count == 0)						 \
+		[state->_kernelEventObserver				 \
+		    addObjectForReading: object];			 \
+									 \
 	queueItem = [[[type alloc] init] autorelease];
-# define NEW_WRITE(type, object, mode)					\
-	void *pool = objc_autoreleasePoolPush();			\
-	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoopState *state = stateForMode(runLoop, mode, true);	\
-	OFList *queue = [state->_writeQueues objectForKey: object];	\
-	type *queueItem;						\
-									\
-	if (queue == nil) {						\
-		queue = [OFList list];					\
-		[state->_writeQueues setObject: queue forKey: object];	\
-	}								\
-									\
-	if (queue.count == 0)						\
-		[state->_kernelEventObserver				\
-		    addObjectForWriting: object];			\
-									\
+# define NEW_WRITE(type, object, mode)					 \
+	void *pool = objc_autoreleasePoolPush();			 \
+	OFRunLoop *runLoop = [self currentRunLoop];			 \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true); \
+	OFList *queue = [state->_writeQueues objectForKey: object];	 \
+	type *queueItem;						 \
+									 \
+	if (queue == nil) {						 \
+		queue = [OFList list];					 \
+		[state->_writeQueues setObject: queue forKey: object];	 \
+	}								 \
+									 \
+	if (queue.count == 0)						 \
+		[state->_kernelEventObserver				 \
+		    addObjectForWriting: object];			 \
+									 \
 	queueItem = [[[type alloc] init] autorelease];
-#define QUEUE_ITEM							\
-	[queue appendObject: queueItem];				\
-									\
+#define QUEUE_ITEM							 \
+	[queue appendObject: queueItem];				 \
+									 \
 	objc_autoreleasePoolPop(pool);
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1501,7 +1510,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoopState *state = stateForMode(runLoop, mode, false);
+	OFRunLoopState *state = stateForMode(runLoop, mode, false, false);
 	OFList *queue;
 
 	if (state == nil)
@@ -1581,7 +1590,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 - (void)addTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
-	OFRunLoopState *state = stateForMode(self, mode, true);
+	OFRunLoopState *state = stateForMode(self, mode, true, false);
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1596,16 +1605,17 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 	[timer of_setInRunLoop: self mode: mode];
 
-#if defined(OF_HAVE_SOCKETS)
+#ifdef OF_HAVE_SOCKETS
 	[state->_kernelEventObserver cancel];
-#elif defined(OF_HAVE_THREADS)
+#endif
+#ifdef OF_HAVE_THREADS
 	[state->_condition signal];
 #endif
 }
 
 - (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode
 {
-	OFRunLoopState *state = stateForMode(self, mode, false);
+	OFRunLoopState *state = stateForMode(self, mode, false, false);
 
 	/* {} required to avoid -Wmisleading-indentation false positive. */
 	if (state == nil) {
@@ -1644,7 +1654,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	       target: (id)target
 	     selector: (SEL)selector
 {
-	OFRunLoopState *state = stateForMode(self, mode, true);
+	OFRunLoopState *state = stateForMode(self, mode, true, false);
 
 # ifdef OF_HAVE_THREADS
 	[state->_execSignalsMutex lock];
@@ -1656,7 +1666,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 # ifdef OF_HAVE_SOCKETS
 		state->_kernelEventObserver.execSignalMask |= (1ul << signal);
-# elif defined(OF_HAVE_THREADS)
+# endif
+# ifdef OF_HAVE_THREADS
 		state->_execSignalMask |= (1ul << signal);
 # endif
 # ifdef OF_HAVE_THREADS
@@ -1665,9 +1676,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	}
 # endif
 
-# if defined(OF_HAVE_SOCKETS)
+# ifdef OF_HAVE_SOCKETS
 	[state->_kernelEventObserver cancel];
-# elif defined(OF_HAVE_THREADS)
+# endif
+# ifdef OF_HAVE_THREADS
 	[state->_condition signal];
 # endif
 }
@@ -1687,7 +1699,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 		  target: (id)target
 		selector: (SEL)selector
 {
-	OFRunLoopState *state = stateForMode(self, mode, false);
+	OFRunLoopState *state = stateForMode(self, mode, false, false);
 
 	if (state == nil)
 		return;
@@ -1719,7 +1731,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 # ifdef OF_HAVE_SOCKETS
 		state->_kernelEventObserver.execSignalMask = newMask;
-# elif defined(OF_HAVE_THREADS)
+# endif
+# ifdef OF_HAVE_THREADS
 		state->_execSignalMask = newMask;
 # endif
 # ifdef OF_HAVE_THREADS
@@ -1728,9 +1741,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	}
 # endif
 
-# if defined(OF_HAVE_SOCKETS)
+# ifdef OF_HAVE_SOCKETS
 	[state->_kernelEventObserver cancel];
-# elif defined(OF_HAVE_THREADS)
+# endif
+# ifdef OF_HAVE_THREADS
 	[state->_condition signal];
 # endif
 }
@@ -1754,7 +1768,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoopMode previousMode = _currentMode;
-	OFRunLoopState *state = stateForMode(self, mode, false);
+	OFRunLoopState *state = stateForMode(self, mode, false, false);
 
 	if (state == nil)
 		return;
@@ -1762,7 +1776,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 	_currentMode = mode;
 	@try {
 		OFDate *nextTimer;
-#if defined(OF_AMIGAOS) && !defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+#if defined(OF_AMIGAOS) && defined(OF_HAVE_THREADS)
 		ULONG signalMask;
 #endif
 
@@ -1825,31 +1839,42 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 				timeout = [nextTimer earlierDate: deadline]
 				    .timeIntervalSinceNow;
 
-			if (timeout < 0)
+			if (timeout < 0) {
 				timeout = 0;
-
-#if defined(OF_HAVE_SOCKETS)
-			@try {
-				[state->_kernelEventObserver
-				    observeForTimeInterval: timeout];
-			} @catch (OFObserveKernelEventsFailedException *e) {
-				if (e.errNo != EINTR)
-					@throw e;
 			}
-#elif defined(OF_HAVE_THREADS)
-			[state->_condition lock];
+
+#ifdef OF_HAVE_SOCKETS
+			if (state->_kernelEventObserver != nil) {
+				@try {
+					[state->_kernelEventObserver
+					    observeForTimeInterval: timeout];
+				} @catch (OFObserveKernelEventsFailedException
+				    *e) {
+					if (e.errNo != EINTR)
+						@throw e;
+				}
+			} else {
+#endif
+#ifdef OF_HAVE_THREADS
+				[state->_condition lock];
 # ifdef OF_AMIGAOS
-			signalMask = state->_execSignalMask;
-			[state->_condition waitForTimeInterval: timeout
-						  orExecSignal: &signalMask];
-			if (signalMask != 0)
-				[state execSignalWasReceived: signalMask];
+				signalMask = state->_execSignalMask;
+				[state->_condition
+				    waitForTimeInterval: timeout
+					   orExecSignal: &signalMask];
+				if (signalMask != 0)
+					[state
+					    execSignalWasReceived: signalMask];
 # else
-			[state->_condition waitForTimeInterval: timeout];
+				[state->_condition
+				    waitForTimeInterval: timeout];
 # endif
-			[state->_condition unlock];
+				[state->_condition unlock];
 #else
-			[OFThread sleepForTimeInterval: timeout];
+				[OFThread sleepForTimeInterval: timeout];
+#endif
+#ifdef OF_HAVE_SOCKETS
+			}
 #endif
 		} else {
 			/*
@@ -1857,27 +1882,35 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 			 * until we get an event. If a timer is added by
 			 * another thread, it cancels the observe.
 			 */
-#if defined(OF_HAVE_SOCKETS)
-			@try {
-				[state->_kernelEventObserver observe];
-			} @catch (OFObserveKernelEventsFailedException *e) {
-				if (e.errNo != EINTR)
-					@throw e;
-			}
-#elif defined(OF_HAVE_THREADS)
-			[state->_condition lock];
+#ifdef OF_HAVE_SOCKETS
+			if (state->_kernelEventObserver != nil) {
+				@try {
+					[state->_kernelEventObserver observe];
+				} @catch (OFObserveKernelEventsFailedException
+				    *e) {
+					if (e.errNo != EINTR)
+						@throw e;
+				}
+			} else {
+#endif
+#ifdef OF_HAVE_THREADS
+				[state->_condition lock];
 # ifdef OF_AMIGAOS
-			signalMask = state->_execSignalMask;
-			[state->_condition
-			    waitForConditionOrExecSignal: &signalMask];
-			if (signalMask != 0)
-				[state execSignalWasReceived: signalMask];
+				signalMask = state->_execSignalMask;
+				[state->_condition
+				    waitForConditionOrExecSignal: &signalMask];
+				if (signalMask != 0)
+					[state
+					    execSignalWasReceived: signalMask];
 # else
-			[state->_condition wait];
+				[state->_condition wait];
 # endif
-			[state->_condition unlock];
+				[state->_condition unlock];
 #else
-			[OFThread sleepForTimeInterval: 86400];
+				[OFThread sleepForTimeInterval: 86400];
+#endif
+#ifdef OF_HAVE_SOCKETS
+			}
 #endif
 		}
 
@@ -1889,16 +1922,18 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create)
 
 - (void)stop
 {
-	OFRunLoopState *state = stateForMode(self, OFDefaultRunLoopMode, false);
+	OFRunLoopState *state = stateForMode(self, OFDefaultRunLoopMode,
+	    false, false);
 
 	_stop = true;
 
 	if (state == nil)
 		return;
 
-#if defined(OF_HAVE_SOCKETS)
+#ifdef OF_HAVE_SOCKETS
 	[state->_kernelEventObserver cancel];
-#elif defined(OF_HAVE_THREADS)
+#endif
+#ifdef OF_HAVE_THREADS
 	[state->_condition signal];
 #endif
 }

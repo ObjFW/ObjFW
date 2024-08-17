@@ -55,16 +55,6 @@
 @dynamic delegate;
 @synthesize listening = _listening;
 
-+ (void)initialize
-{
-	if (self != [OFStreamSocket class])
-		return;
-
-	if (!_OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)socket
 {
 	return [[[self alloc] init] autorelease];
@@ -79,6 +69,10 @@
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
 		}
+
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
 
 		_socket = OFInvalidSocketHandle;
 #ifdef OF_AMIGAOS

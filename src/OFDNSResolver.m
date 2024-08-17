@@ -620,18 +620,6 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 @end
 
 @implementation OFDNSResolver
-#ifdef OF_AMIGAOS
-+ (void)initialize
-{
-	if (self != [OFDNSResolver class])
-		return;
-
-	if (!_OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-#endif
-
 + (instancetype)resolver
 {
 	return [[[self alloc] init] autorelease];
@@ -642,6 +630,10 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	self = [super init];
 
 	@try {
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		_settings = [[OFDNSResolverSettings alloc] init];
 		_queries = [[OFMutableDictionary alloc] init];
 		_TCPQueries = [[OFMutableDictionary alloc] init];

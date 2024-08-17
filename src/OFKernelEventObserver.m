@@ -61,16 +61,6 @@
 @synthesize execSignalMask = _execSignalMask;
 #endif
 
-+ (void)initialize
-{
-	if (self != [OFKernelEventObserver class])
-		return;
-
-	if (!_OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)observer
 {
 	return [[[self alloc] init] autorelease];
@@ -103,6 +93,10 @@
     !defined(OF_NINTENDO_3DS)
 		socklen_t cancelAddrLen;
 #endif
+
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
 
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
