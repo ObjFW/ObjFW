@@ -484,11 +484,14 @@ static const OFRunLoopMode connectRunLoopMode =
 			   bytesWritten: 0
 				  errNo: _OFSocketErrNo()];
 
+#ifndef OF_SOLARIS
+	/* Solaris seems to just return 0. */
 	if ((size_t)bytesWritten != length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: bytesWritten
 							     errNo: 0];
+#endif
 }
 
 - (void)asyncSendData: (OFData *)data info: (OFSCTPMessageInfo)info
