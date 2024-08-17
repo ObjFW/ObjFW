@@ -54,9 +54,9 @@ other place, you are most likely using a mirror.
    * GNUstep already provides a reimplementation of Foundation, which is only
      compatible to a certain degree. This means that a developer still needs to
      care about differences between frameworks if they want to be portable. The
-     idea behind ObjFW is that a developer does not need to concern themselves
+     idea behind ObjFW is that developers do not need to concern themselves
      with portability and making sure their code works with multiple
-     frameworks: Instead, if it works it ObjFW on one platform, they can
+     frameworks: Instead, if it works with ObjFW on one platform, they can
      reasonably expect it to also work with ObjFW on another platform. ObjFW
      behaving differently on different operating systems (unless inevitable
      because it is a platform-specific part, like the Windows Registry) is
