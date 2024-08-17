@@ -207,7 +207,7 @@ Solaris
 -------
 
   * OS Versions: OpenIndiana 2015.03, OpenIndiana 2023.04, Oracle Solaris 11.4
-  * Architectures: AMD64, x86
+  * Architectures: AMD64, SPARC64, x86
   * Compilers: Clang 3.4.2, Clang 11.0.0, Clang 13.0.1, GCC 4.8.3, GCC 10.4.0
   * Runtimes: ObjFW
 
