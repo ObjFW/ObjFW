@@ -94,6 +94,10 @@ OF_SUBCLASSING_RESTRICTED
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
 # endif
+# if defined(OF_LOONGARCH64) || defined(DOXYGEN)
+@property (class, readonly, nonatomic) bool supportsLSX;
+@property (class, readonly, nonatomic) bool supportsLASX;
+# endif
 # if defined(OF_WINDOWS) || defined(DOXYGEN)
 @property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
 # endif
@@ -529,6 +533,26 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU and OS support AltiVec
  */
 + (bool)supportsAltiVec;
+#endif
+
+#if defined(OF_LOONGARCH64) || defined(DOXYGEN)
+/**
+ * @brief Returns whether the CPU and OS support LSX.
+ *
+ * @note This method is only available on LoongArch 64!
+ *
+ * @return Whether the CPU and OS support LSX
+ */
++ (bool)supportsLSX;
+
+/**
+ * @brief Returns whether the CPU and OS support LASX.
+ *
+ * @note This method is only available on LoongArch 64!
+ *
+ * @return Whether the CPU and OS support LASX
+ */
++ (bool)supportsLASX;
 #endif
 
 #if defined(OF_WINDOWS) || defined(DOXYGEN)

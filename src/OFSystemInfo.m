@@ -379,6 +379,22 @@ x86XCR(uint32_t ecx)
 }
 #endif
 
+#ifdef OF_LOONGARCH64
+static uint32_t
+cpucfg(uint32_t word)
+{
+	uint32_t ret;
+
+	__asm__ (
+	    "cpucfg	%0, %1"
+	    : "=r" (ret)
+	    : "r" (word)
+	);
+
+	return ret;
+}
+#endif
+
 @implementation OFSystemInfo
 + (void)initialize
 {
@@ -1025,6 +1041,18 @@ x86XCR(uint32_t ecx)
 # endif
 
 	return false;
+}
+#endif
+
+#ifdef OF_LOONGARCH64
++ (bool)supportsLSX
+{
+	return cpucfg(2) & (1 << 6);
+}
+
++ (bool)supportsLASX
+{
+	return cpucfg(2) & (1 << 7);
 }
 #endif
 

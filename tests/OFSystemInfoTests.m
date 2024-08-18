@@ -136,6 +136,11 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	ADD_BOOL(@"Supports AltiVec", [OFSystemInfo supportsAltiVec]);
 #endif
 
+#ifdef OF_LOONGARCH64
+	ADD_BOOL(@"Supports LSX", [OFSystemInfo supportsLSX]);
+	ADD_BOOL(@"Supports LASX", [OFSystemInfo supportsLASX]);
+#endif
+
 #undef ADD
 #undef ADD_UINT
 #undef ADD_ULONGLONG
