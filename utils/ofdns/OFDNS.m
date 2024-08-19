@@ -55,9 +55,9 @@ help(OFStream *stream, bool full, int status)
 		    @"-s  --server="
 		    @"  The server to query\n    "
 		    @"-t  --type=  "
-		    @"  The record type to query (defaults to ALL, can be "
-		    @"repeated)\n    "
-		    @"    --tcp   "
+		    @"  The record type to query (defaults to AAAA and A,\n"
+		    @"                   can be repeated)\n    "
+		    @"    --tcp    "
 		    @"  Force using TCP for the query")];
 	}
 
@@ -194,8 +194,10 @@ help(OFStream *stream, bool full, int status)
 	DNSClass = (DNSClassString != nil
 	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
-	if (recordTypes.count == 0)
-		[recordTypes addObject: @"ALL"];
+	if (recordTypes.count == 0) {
+		[recordTypes addObject: @"AAAA"];
+		[recordTypes addObject: @"A"];
+	}
 
 	if (server != nil)
 		resolver.nameServers = [OFArray arrayWithObject: server];
