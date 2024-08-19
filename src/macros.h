@@ -349,7 +349,8 @@
 #else
 # if defined(OF_ELF)
 #  if defined(OF_AMD64) || defined(OF_X86) || \
-    defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
+    defined(OF_ARM64) || defined(OF_ARM) || \
+    defined(OF_POWERPC) || defined(OF_POWERPC64) || \
     defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
     defined(OF_SPARC64) || defined(OF_SPARC) || \
     defined(OF_RISCV64) || defined(OF_LOONGARCH64)

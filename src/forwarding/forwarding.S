@@ -45,6 +45,8 @@
 #   include "forwarding-arm-elf.S"
 #  elif defined(OF_POWERPC)
 #   include "forwarding-powerpc-elf.S"
+#  elif defined(OF_POWERPC64) && defined(_CALL_ELF) && _CALL_ELF == 2
+#   include "forwarding-powerpc64-elf.S"
 #  elif defined(OF_MIPS64_N64)
 #   include "forwarding-mips64-n64-elf.S"
 #  elif defined(OF_MIPS)
