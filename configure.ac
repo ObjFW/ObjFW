@@ -364,6 +364,13 @@ AX_CHECK_COMPILER_FLAGS([-Wobjc-missing-property-synthesis -Werror],
 AX_CHECK_COMPILER_FLAGS([-Wmissing-method-return-type -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wmissing-method-return-type"])
 
+AS_IF([test x"$host_cpu" = x"powerpc64"], [
+	dnl Buggy warning in both GCC and Clang on PowerPC 64!
+	dnl But only in big endian mode.
+	AX_CHECK_COMPILER_FLAGS([-Wno-overlength-strings -Werror],
+		[OBJCFLAGS="$OBJCFLAGS -Wno-overlength-strings"])
+])
+
 case "$host" in
 m68k-*-amigaos*)
 	dnl The inline headers generate code that triggers -Wpointer-sign.
