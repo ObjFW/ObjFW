@@ -21,45 +21,43 @@
 
 #include "platform.h"
 
+.abiversion 2
+
 .globl OFForward
 .globl OFForward_stret
 
 .section .text
-.section .opd, "aw", @progbits
 OFForward:
-	.p2align 3
-	.quad .Lbegin_OFForward
-	.quad .TOC.@tocbase
-	.quad 0
-.previous
-.Lbegin_OFForward:
 	.cfi_startproc
+	addis	%r2, %r12, .TOC.-OFForward@ha
+	addi	%r2, %r2, .TOC.-OFForward@l
+.localentry OFForward, .-OFForward
 	mflr	%r0
 	std	%r0, 16(%r1)
-	stdu	%r1, -256(%r1)
-	.cfi_def_cfa_offset 256
+	stdu	%r1, -160(%r1)
+	.cfi_def_cfa_offset 160
 	.cfi_offset lr, 16
-	std	%r2, 40(%r1)
+	std	%r2, 24(%r1)
 
 	/* Save all arguments */
-	std	%r3, 128(%r1)
-	std	%r4, 136(%r1)
-	std	%r5, 144(%r1)
-	std	%r6, 152(%r1)
-	std	%r7, 160(%r1)
-	std	%r8, 168(%r1)
-	std	%r9, 176(%r1)
-	std	%r10, 184(%r1)
+	std	%r3, 32(%r1)
+	std	%r4, 40(%r1)
+	std	%r5, 48(%r1)
+	std	%r6, 56(%r1)
+	std	%r7, 64(%r1)
+	std	%r8, 72(%r1)
+	std	%r9, 80(%r1)
+	std	%r10, 88(%r1)
 
 	/* Save all floating point arguments */
-	stfd	%f1, 192(%r1)
-	stfd	%f2, 200(%r1)
-	stfd	%f3, 208(%r1)
-	stfd	%f4, 216(%r1)
-	stfd	%f5, 224(%r1)
-	stfd	%f6, 232(%r1)
-	stfd	%f7, 240(%r1)
-	stfd	%f8, 248(%r1)
+	stfd	%f1, 96(%r1)
+	stfd	%f2, 104(%r1)
+	stfd	%f3, 112(%r1)
+	stfd	%f4, 120(%r1)
+	stfd	%f5, 128(%r1)
+	stfd	%f6, 136(%r1)
+	stfd	%f7, 144(%r1)
+	stfd	%f8, 152(%r1)
 
 	bl	object_getClass
 	nop
@@ -72,117 +70,108 @@ OFForward:
 	cmpdi	%r3, 0
 	beq-	0f
 
-	ld	%r3, 128(%r1)
+	ld	%r3, 32(%r1)
 	addis	%r4, %r2, .Lsel_forwardingTargetForSelector_@toc@ha
 	addi	%r4, %r4, .Lsel_forwardingTargetForSelector_@toc@l
 	bl	objc_msg_lookup
 	nop
 	mr	%r12, %r3
 
-	ld	%r3, 128(%r1)
+	ld	%r3, 32(%r1)
 	addis	%r4, %r2, .Lsel_forwardingTargetForSelector_@toc@ha
 	addi	%r4, %r4, .Lsel_forwardingTargetForSelector_@toc@l
-	ld	%r5, 136(%r1)
-
-	ld	%r2, 8(%r12)
-	ld	%r12, 0(%r12)
+	ld	%r5, 40(%r1)
 	mtctr	%r12
 	bctrl
-	ld	%r2, 40(%r1)
+	ld	%r2, 24(%r1)
 
 	cmpdi	%r3, 0
 	beq-	0f
-	ld	%r4, 128(%r1)
+	ld	%r4, 32(%r1)
 	cmpw	%r3, %r4
 	beq-	0f
 
-	std	%r3, 128(%r1)
+	std	%r3, 32(%r1)
 
-	ld	%r4, 136(%r1)
+	ld	%r4, 40(%r1)
 	bl	objc_msg_lookup
 	nop
 	mr	%r12, %r3
 
 	/* Restore all arguments */
-	ld	%r3, 128(%r1)
-	ld	%r4, 136(%r1)
-	ld	%r5, 144(%r1)
-	ld	%r6, 152(%r1)
-	ld	%r7, 160(%r1)
-	ld	%r8, 168(%r1)
-	ld	%r9, 176(%r1)
-	ld	%r10, 184(%r1)
+	ld	%r3, 32(%r1)
+	ld	%r4, 40(%r1)
+	ld	%r5, 48(%r1)
+	ld	%r6, 56(%r1)
+	ld	%r7, 64(%r1)
+	ld	%r8, 72(%r1)
+	ld	%r9, 80(%r1)
+	ld	%r10, 88(%r1)
 
 	/* Restore all floating point arguments */
-	lfd	%f1, 192(%r1)
-	lfd	%f2, 200(%r1)
-	lfd	%f3, 208(%r1)
-	lfd	%f4, 216(%r1)
-	lfd	%f5, 224(%r1)
-	lfd	%f6, 232(%r1)
-	lfd	%f7, 240(%r1)
-	lfd	%f8, 248(%r1)
+	lfd	%f1, 96(%r1)
+	lfd	%f2, 104(%r1)
+	lfd	%f3, 112(%r1)
+	lfd	%f4, 120(%r1)
+	lfd	%f5, 128(%r1)
+	lfd	%f6, 136(%r1)
+	lfd	%f7, 144(%r1)
+	lfd	%f8, 152(%r1)
 
-	addi	%r1, %r1, 256
+	addi	%r1, %r1, 160
 	ld	%r0, 16(%r1)
 	mtlr	%r0
 
-	ld	%r2, 8(%r12)
-	ld	%r12, 0(%r12)
 	mtctr	%r12
 	bctr
 
 0:
-	ld	%r3, 128(%r1)
-	ld	%r4, 136(%r1)
+	ld	%r3, 32(%r1)
+	ld	%r4, 40(%r1)
 
 	bl	OFMethodNotFound
 	nop
 
-	addi	%r1, %r1, 256
+	addi	%r1, %r1, 160
 	lwz	%r0, 16(%r1)
 	mtlr	%r0
 
 	blr
 	.cfi_endproc
 .type OFForward, @function
-.size OFForward, .-.Lbegin_OFForward
+.size OFForward, .-OFForward
 
-.section .opd, "aw", @progbits
 OFForward_stret:
-	.p2align 3
-	.quad .Lbegin_OFForward_stret
-	.quad .TOC.@tocbase
-	.quad 0
-.previous
-.Lbegin_OFForward_stret:
 	.cfi_startproc
+	addis	%r2, %r12, .TOC.-OFForward_stret@ha
+	addi	%r2, %r2, .TOC.-OFForward_stret@l
+.localentry OFForward_stret, .-OFForward_stret
 	mflr	%r0
 	std	%r0, 16(%r1)
-	stdu	%r1, -256(%r1)
-	.cfi_def_cfa_offset 256
+	stdu	%r1, -160(%r1)
+	.cfi_def_cfa_offset 160
 	.cfi_offset lr, 16
-	std	%r2, 40(%r1)
+	std	%r2, 24(%r1)
 
 	/* Save all arguments */
-	std	%r3, 128(%r1)
-	std	%r4, 136(%r1)
-	std	%r5, 144(%r1)
-	std	%r6, 152(%r1)
-	std	%r7, 160(%r1)
-	std	%r8, 168(%r1)
-	std	%r9, 176(%r1)
-	std	%r10, 184(%r1)
+	std	%r3, 32(%r1)
+	std	%r4, 40(%r1)
+	std	%r5, 48(%r1)
+	std	%r6, 56(%r1)
+	std	%r7, 64(%r1)
+	std	%r8, 72(%r1)
+	std	%r9, 80(%r1)
+	std	%r10, 88(%r1)
 
 	/* Save all floating point arguments */
-	stfd	%f1, 192(%r1)
-	stfd	%f2, 200(%r1)
-	stfd	%f3, 208(%r1)
-	stfd	%f4, 216(%r1)
-	stfd	%f5, 224(%r1)
-	stfd	%f6, 232(%r1)
-	stfd	%f7, 240(%r1)
-	stfd	%f8, 248(%r1)
+	stfd	%f1, 96(%r1)
+	stfd	%f2, 104(%r1)
+	stfd	%f3, 112(%r1)
+	stfd	%f4, 120(%r1)
+	stfd	%f5, 128(%r1)
+	stfd	%f6, 136(%r1)
+	stfd	%f7, 144(%r1)
+	stfd	%f8, 152(%r1)
 
 	mr	%r3, %r4
 	bl	object_getClass
@@ -196,91 +185,82 @@ OFForward_stret:
 	cmpdi	%r3, 0
 	beq-	0f
 
-	ld	%r3, 136(%r1)
+	ld	%r3, 40(%r1)
 	addis	%r4, %r2, .Lsel_forwardingTargetForSelector_@toc@ha
 	addi	%r4, %r4, .Lsel_forwardingTargetForSelector_@toc@l
 	bl	objc_msg_lookup
 	nop
 	mr	%r12, %r3
 
-	ld	%r3, 136(%r1)
+	ld	%r3, 40(%r1)
 	addis	%r4, %r2, .Lsel_forwardingTargetForSelector_@toc@ha
 	addi	%r4, %r4, .Lsel_forwardingTargetForSelector_@toc@l
-	ld	%r5, 144(%r1)
-
-	ld	%r2, 8(%r12)
-	ld	%r12, 0(%r12)
+	ld	%r5, 48(%r1)
 	mtctr	%r12
 	bctrl
-	ld	%r2, 40(%r1)
+	ld	%r2, 24(%r1)
 
 	cmpdi	%r3, 0
 	beq-	0f
-	ld	%r4, 136(%r1)
+	ld	%r4, 40(%r1)
 	cmpw	%r3, %r4
 	beq-	0f
 
-	std	%r3, 136(%r1)
+	std	%r3, 40(%r1)
 
-	ld	%r4, 144(%r1)
+	ld	%r4, 48(%r1)
 	bl	objc_msg_lookup_stret
 	nop
 	mr	%r12, %r3
 
 	/* Restore all arguments */
-	ld	%r3, 128(%r1)
-	ld	%r4, 136(%r1)
-	ld	%r5, 144(%r1)
-	ld	%r6, 152(%r1)
-	ld	%r7, 160(%r1)
-	ld	%r8, 168(%r1)
-	ld	%r9, 176(%r1)
-	ld	%r10, 184(%r1)
+	ld	%r3, 32(%r1)
+	ld	%r4, 40(%r1)
+	ld	%r5, 48(%r1)
+	ld	%r6, 56(%r1)
+	ld	%r7, 64(%r1)
+	ld	%r8, 72(%r1)
+	ld	%r9, 80(%r1)
+	ld	%r10, 88(%r1)
 
 	/* Restore all floating point arguments */
-	lfd	%f1, 192(%r1)
-	lfd	%f2, 200(%r1)
-	lfd	%f3, 208(%r1)
-	lfd	%f4, 216(%r1)
-	lfd	%f5, 224(%r1)
-	lfd	%f6, 232(%r1)
-	lfd	%f7, 240(%r1)
-	lfd	%f8, 248(%r1)
+	lfd	%f1, 96(%r1)
+	lfd	%f2, 104(%r1)
+	lfd	%f3, 112(%r1)
+	lfd	%f4, 120(%r1)
+	lfd	%f5, 128(%r1)
+	lfd	%f6, 136(%r1)
+	lfd	%f7, 144(%r1)
+	lfd	%f8, 152(%r1)
 
-	addi	%r1, %r1, 256
+	addi	%r1, %r1, 160
 	ld	%r0, 16(%r1)
 	mtlr	%r0
 
-	ld	%r2, 8(%r12)
-	ld	%r12, 0(%r12)
 	mtctr	%r12
 	bctr
 
 0:
-	ld	%r3, 128(%r1)
-	ld	%r4, 136(%r1)
-	ld	%r5, 144(%r1)
+	ld	%r3, 32(%r1)
+	ld	%r4, 40(%r1)
+	ld	%r5, 48(%r1)
 
 	bl	OFMethodNotFound_stret
 	nop
 
-	addi	%r1, %r1, 256
+	addi	%r1, %r1, 160
 	lwz	%r0, 16(%r1)
 	mtlr	%r0
 
 	blr
 	.cfi_endproc
 .type OFForward_stret, @function
-.size OFForward_stret, .-.Lbegin_OFForward_stret
+.size OFForward_stret, .-OFForward_stret
 
-.section .opd, "aw", @progbits
 .Linit:
-	.p2align 3
-	.quad .Lbegin_.Linit
-	.quad .TOC.@tocbase
-	.quad 0
-.previous
-.Lbegin_.Linit:
+	addis	%r2, %r12, .TOC.-.Linit@ha
+	addi	%r2, %r2, .TOC.-.Linit@l
+.localentry .Linit, .-.Linit
 	mflr	%r0
 	std	%r0, 16(%r1)
 	stdu	%r1, -32(%r1)

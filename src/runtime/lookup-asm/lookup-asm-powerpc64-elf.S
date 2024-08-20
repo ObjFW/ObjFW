@@ -44,7 +44,7 @@
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_\name:
 	cmpdi	%r3, 0
@@ -116,7 +116,7 @@
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_\name:
 	mr	%r5, %r3
@@ -154,7 +154,7 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	.quad .Lbegin_nilMethod
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_nilMethod:
 	li	%r3, 0
