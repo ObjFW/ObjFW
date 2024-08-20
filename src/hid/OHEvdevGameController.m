@@ -59,6 +59,8 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
+#import "evdev_compat.h"
+
 const uint16_t OHEvdevButtonIDs[] = {
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
 	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,

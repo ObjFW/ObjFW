@@ -26,6 +26,8 @@
 
 #include <linux/input.h>
 
+#import "evdev_compat.h"
+
 static OFString *
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {

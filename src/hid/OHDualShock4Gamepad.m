@@ -29,6 +29,7 @@
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include <linux/input.h>
+# import "evdev_compat.h"
 #endif
 
 static OFString *const buttonNames[] = {
