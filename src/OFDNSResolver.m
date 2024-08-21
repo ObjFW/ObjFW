@@ -185,7 +185,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv4;
-		address.length = sizeof(address.sockaddr.in);
+		address.length = (socklen_t)sizeof(address.sockaddr.in);
 
 		address.sockaddr.in.sin_family = AF_INET;
 		memcpy(&address.sockaddr.in.sin_addr.s_addr, buffer + i, 4);
@@ -372,7 +372,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 
 		memset(&address, 0, sizeof(address));
 		address.family = OFSocketAddressFamilyIPv6;
-		address.length = sizeof(address.sockaddr.in6);
+		address.length = (socklen_t)sizeof(address.sockaddr.in6);
 
 #ifdef AF_INET6
 		address.sockaddr.in6.sin6_family = AF_INET6;

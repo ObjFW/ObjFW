@@ -128,8 +128,8 @@ _OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
-		uint32_t j = OFFromLittleEndian32(
-		    tmp[(2 * blockSize - 1) * 16]) & (costFactor - 1);
+		uint32_t j = (uint32_t)(OFFromLittleEndian32(
+		    tmp[(2 * blockSize - 1) * 16]) & (costFactor - 1));
 
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];

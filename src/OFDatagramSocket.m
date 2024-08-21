@@ -157,7 +157,7 @@
 {
 #ifndef OF_WII
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_BROADCAST,
 	    (char *)&v, &len) != 0 || len != sizeof(v))

@@ -165,7 +165,7 @@ struct ATInterfaceConfig {
 
 #ifdef OF_MACOS
 	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
-	    sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
+	    (socklen_t)sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
 	    struct ATInterfaceConfig), &config) != 0)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network

@@ -186,7 +186,7 @@ id
 objc_getAssociatedObject(id object, const void *key)
 {
 	size_t slot = slotForObject(object);
-	id ret;
+	id ret = nil;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)

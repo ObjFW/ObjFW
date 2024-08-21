@@ -380,7 +380,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	ret.length = 8;
 #else
-	ret.length = sizeof(ret.sockaddr.in);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.in);
 #endif
 
 	addrIn->sin_family = AF_INET;
@@ -475,7 +475,7 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPv6;
-	ret.length = sizeof(ret.sockaddr.in6);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.in6);
 
 #ifdef AF_INET6
 	addrIn6->sin6_family = AF_INET6;
@@ -618,7 +618,7 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPX;
-	ret.length = sizeof(ret.sockaddr.ipx);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.ipx);
 
 #ifdef AF_IPX
 	ret.sockaddr.ipx.sipx_family = AF_IPX;
@@ -641,7 +641,7 @@ OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyAppleTalk;
-	ret.length = sizeof(ret.sockaddr.at);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.at);
 
 #ifdef AF_APPLETALK
 	ret.sockaddr.at.sat_family = AF_APPLETALK;
@@ -1059,7 +1059,8 @@ OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 	if (address->family != OFSocketAddressFamilyUNIX)
 		@throw [OFInvalidArgumentException exception];
 
-	length = address->length - offsetof(struct sockaddr_un, sun_path);
+	length =
+	    address->length - (socklen_t)offsetof(struct sockaddr_un, sun_path);
 
 	for (socklen_t i = 0; i < length; i++)
 		if (address->sockaddr.un.sun_path[i] == 0)

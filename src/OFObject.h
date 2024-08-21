@@ -1463,10 +1463,12 @@ extern void OFFreeMemory(void *_Nullable pointer);
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
-# ifndef __OBJC2__
+# ifdef OF_DECLARE_CONSTRUCT_INSTANCE
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+# endif
+# ifdef OF_DECLARE_SET_ASSOCIATED_OBJECT
 typedef enum objc_associationPolicy {
 	OBJC_ASSOCIATION_ASSIGN	= 0,
 	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,

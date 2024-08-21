@@ -193,7 +193,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
-		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
 		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
 			return false;
 
@@ -656,7 +656,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
-		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
 		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
 			return false;
 

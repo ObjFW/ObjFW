@@ -450,7 +450,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			break;
 		case 2:
 		case 3:;
-			uint32_t padding = 0;
+			size_t padding = 0;
 
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970: date];

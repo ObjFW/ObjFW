@@ -441,7 +441,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)sendsKeepAlives
 {
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
@@ -468,7 +468,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)canDelaySendingSegments
 {
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
 	    (char *)&v, &len) != 0 || len != sizeof(v))

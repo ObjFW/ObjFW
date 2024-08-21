@@ -218,7 +218,7 @@
 - (int)of_socketError
 {
 	int errNo;
-	socklen_t len = sizeof(errNo);
+	socklen_t len = (socklen_t)sizeof(errNo);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
 	    &len) != 0)
