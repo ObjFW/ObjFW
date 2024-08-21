@@ -132,7 +132,7 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	    [OFSystemInfo supportsAVX512BFloat16Instructions]);
 #endif
 
-#ifdef OF_POWERPC
+#if defined(OF_POWERPC) || defined(OF_POWERPC64)
 	ADD_BOOL(@"Supports AltiVec", [OFSystemInfo supportsAltiVec]);
 #endif
 
