@@ -40,7 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 # endif
 # if defined(OF_LINUX) || defined(OF_MACOS) || defined(OF_FREEBSD) || \
-    defined(OF_NETBSD) || defined(OF_HAIKU) || defined(DOXYGEN)
+    defined(OF_NETBSD) || defined(OF_HAIKU) || defined(OF_SOLARIS) || \
+    defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 # endif
 #endif

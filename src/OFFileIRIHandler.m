@@ -763,6 +763,62 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	} @finally {
 		fs_close_attr_dir(dir);
 	}
+# elif defined(OF_SOLARIS)
+	int fd;
+	DIR *dir;
+
+	if ((fd = attropen(cPath, ".", O_RDONLY)) == -1)
+		return;
+
+	if ((dir = fdopendir(fd)) == NULL) {
+		close(fd);
+		return;
+	}
+
+#  ifdef OF_HAVE_THREADS
+	@try {
+		[readdirMutex lock];
+	} @catch (id e) {
+		closedir(dir);
+		close(fd);
+		@throw e;
+	}
+#  endif
+
+	@try {
+		names = [OFMutableArray array];
+
+		for (;;) {
+			struct dirent *dirent;
+			OFString *name;
+
+			errno = 0;
+			if ((dirent = readdir(dir)) == NULL) {
+				if (errno == 0)
+					break;
+				else
+					return;
+			}
+
+			if (strcmp(dirent->d_name, ".") == 0 ||
+			    strcmp(dirent->d_name, "..") == 0)
+				continue;
+
+			name = [[OFString alloc] initWithCString: dirent->d_name
+							encoding: encoding];
+			@try {
+				[names addObject: name];
+			} @finally {
+				[name release];
+			}
+		}
+	} @finally {
+#  ifdef OF_HAVE_THREADS
+		[readdirMutex unlock];
+#  endif
+		closedir(dir);
+		close(fd);
+	}
 # endif
 
 	[names makeImmutable];
@@ -1710,9 +1766,9 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 	OFStringEncoding encoding = [OFLocale encoding];
 	const char *cPath = [path cStringWithEncoding: encoding];
-	void *value = NULL;
 # if defined(OF_LINUX) || defined(OF_MACOS)
 	const char *cName = [name cStringWithEncoding: encoding];
+	void *value = NULL;
 #  if defined(OF_LINUX)
 	ssize_t size = lgetxattr(cPath, cName, NULL, 0);
 #  elif defined(OF_MACOS)
@@ -1750,6 +1806,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	int namespace;
 	const char *cName;
 	ssize_t size;
+	void *value = NULL;
 
 	parseAttributeName(&name, &namespace);
 	cName = [name cStringWithEncoding: encoding];
@@ -1781,6 +1838,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	const char *cName = [name cStringWithEncoding: encoding];
 	int fd = open(cPath, O_RDONLY);
 	struct attr_info info;
+	void *value = NULL;
 
 	if (fd == -1)
 		@throw [OFGetItemAttributesFailedException
@@ -1816,6 +1874,36 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		OFFreeMemory(value);
 		close(fd);
 	}
+# elif defined(OF_SOLARIS)
+	const char *cName = [name cStringWithEncoding: encoding];
+	int fd;
+
+	if ((fd = attropen(cPath, cName, O_RDONLY)) == -1)
+		@throw [OFGetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			       errNo: errno];
+
+	@try {
+		OFMutableData *mutableData = [OFMutableData data];
+		char buffer[512];
+		ssize_t length;
+
+		while ((length = read(fd, buffer, 512)) > 0)
+			[mutableData addItems: buffer count: length];
+
+		if (length < 0)
+			@throw [OFGetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				       errNo: errno];
+
+		[mutableData makeImmutable];
+		*data = mutableData;
+	} @finally {
+		close(fd);
+	}
+
+	if (type != NULL)
+		*type = nil;
 # endif
 
 	[*data retain];
@@ -1841,12 +1929,13 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	size_t size = data.count * data.itemSize;
 
 # if defined(OF_LINUX) || defined(OF_MACOS)
-	const char *cName = [name cStringWithEncoding: encoding];
+	const char *cName;
 
 	if (type != nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
+	cName = [name cStringWithEncoding: encoding];
 #  if defined(OF_LINUX)
 	if (lsetxattr(cPath, cName, data.items, size, 0) != 0) {
 #  elif defined(OF_MACOS)
@@ -1930,6 +2019,39 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	} @finally {
 		close(fd);
 	}
+# elif defined(OF_SOLARIS)
+	const char *cName;
+	int fd;
+
+	if (type != nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	cName = [name cStringWithEncoding: encoding];
+	fd = attropen(cPath, cName, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+	if (fd == -1)
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errno];
+
+	@try {
+		if (write(fd, data.items, size) != (ssize_t)size)
+			/*
+			 * TODO: Add an attribute (prefix?) for extended
+			 *	 attributes?
+			 */
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: [OFDictionary dictionary]
+			     failedAttribute: @""
+				       errNo: errno];
+	} @finally {
+		close(fd);
+	}
 # endif
 
 	objc_autoreleasePoolPop(pool);
@@ -2005,6 +2127,32 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			     failedAttribute: @""
 				       errNo: errNo];
 		}
+	} @finally {
+		close(fd);
+	}
+# elif defined(OF_SOLARIS)
+	const char *cName = [name cStringWithEncoding: encoding];
+	int fd;
+
+	if ((fd = attropen(cPath, ".", O_RDONLY)) < 0)
+		/* TODO: Add an attribute (prefix?) for extended attributes? */
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: [OFDictionary dictionary]
+		     failedAttribute: @""
+			       errNo: errno];
+
+	@try {
+		if (unlinkat(fd, cName, 0) != 0)
+			/*
+			 * TODO: Add an attribute (prefix?) for extended
+			 *	 attributes?
+			 */
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: [OFDictionary dictionary]
+			     failedAttribute: @""
+				       errNo: errno];
 	} @finally {
 		close(fd);
 	}
