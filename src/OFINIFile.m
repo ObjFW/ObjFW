@@ -79,8 +79,8 @@ isWhitespaceLine(OFString *line)
 	self = [super init];
 
 	@try {
-		_prologue = [[OFINICategory alloc] of_initWithName: nil];
-		_categories = [[OFMutableArray alloc] init];
+		_categories = [[OFMutableArray alloc] initWithObject:
+		    [[[OFINICategory alloc] of_initWithName: @""] autorelease]];
 
 		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
@@ -93,7 +93,6 @@ isWhitespaceLine(OFString *line)
 
 - (void)dealloc
 {
-	[_prologue release];
 	[_categories release];
 
 	[super dealloc];
@@ -120,7 +119,7 @@ isWhitespaceLine(OFString *line)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *file;
-	OFINICategory *category = _prologue;
+	OFINICategory *category = nil;
 	OFString *line;
 
 	if (encoding == OFStringEncodingAutodetect)
@@ -148,11 +147,18 @@ isWhitespaceLine(OFString *line)
 
 			categoryName = [line substringWithRange:
 			    OFMakeRange(1, line.length - 2)];
+			if (categoryName.length == 0)
+				@throw [OFInvalidFormatException exception];
+
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];
-		} else
+		} else {
+			if (category == nil)
+				category = [self categoryForName: @""];
+
 			[category of_parseLine: line];
+		}
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -168,9 +174,6 @@ isWhitespaceLine(OFString *line)
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	bool first = true;
-
-	if ([_prologue of_writeToStream: file encoding: encoding first: true])
-		first = false;
 
 	for (OFINICategory *category in _categories)
 		if ([category of_writeToStream: file

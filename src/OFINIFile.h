@@ -34,7 +34,6 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFINIFile: OFObject
 {
-	OFINICategory *_prologue;
 	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;
 }
 
