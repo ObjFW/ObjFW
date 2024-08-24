@@ -111,7 +111,8 @@
 
 - (void)testWriteToIRIEncoding
 {
-	OFString *expectedOutput = @"; Comment before sections\r\n"
+	OFString *expectedOutput = @"; Comment in global section\r\n"
+	    @"global=yes\r\n"
 	    @"\r\n"
 	    @"[tests]\r\n"
 	    @"foo=baz\r\n"
@@ -175,16 +176,5 @@
 #else
 	(void)expectedOutput;
 #endif
-}
-
-- (void)testPairOutsideOfSectionRejected
-{
-	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile_broken.ini"];
-
-	OFRegisterEmbeddedFile(@"testfile_broken.ini",
-	    (const uint8_t *)"; comment\r\na=b", 14);
-
-	OTAssertThrowsSpecific([OFINIFile fileWithIRI: IRI],
-	    OFInvalidFormatException);
 }
 @end

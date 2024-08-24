@@ -159,9 +159,6 @@ unescapeString(OFString *string)
 		OFString *key, *value;
 		size_t pos;
 
-		if (_name == nil)
-			@throw [OFInvalidFormatException exception];
-
 		pair = [[[OFINISectionPair alloc] init] autorelease];
 
 		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
@@ -483,7 +480,7 @@ unescapeString(OFString *string)
 	if (_lines.count == 0)
 		return false;
 
-	if (_name != nil) {
+	if (_name.length > 0) {
 		if (first)
 			[stream writeFormat: @"[%@]\r\n", _name];
 		else
