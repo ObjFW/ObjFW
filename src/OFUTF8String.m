@@ -460,18 +460,25 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		_s = &_storage;
 
 		_s->cStringLength = string.UTF8StringLength;
-
-		if ([string isKindOfClass: [OFUTF8String class]] ||
-		    [string isKindOfClass: [OFMutableUTF8String class]])
-			_s->isUTF8 = ((OFUTF8String *)string)->_s->isUTF8;
-		else
-			_s->isUTF8 = true;
-
 		_s->length = string.length;
 
 		_s->cString = OFAllocMemory(_s->cStringLength + 1, 1);
 		memcpy(_s->cString, string.UTF8String, _s->cStringLength + 1);
 		_s->freeWhenDone = true;
+
+		if ([string isKindOfClass: [OFUTF8String class]] ||
+		    [string isKindOfClass: [OFMutableUTF8String class]])
+			_s->isUTF8 = ((OFUTF8String *)string)->_s->isUTF8;
+		else {
+			switch (_OFUTF8StringCheck(_s->cString,
+			    _s->cStringLength, NULL)) {
+			case 1:
+				_s->isUTF8 = true;
+				break;
+			case -1:
+				@throw [OFInvalidEncodingException exception];
+			}
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
