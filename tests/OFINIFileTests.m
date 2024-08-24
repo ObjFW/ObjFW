@@ -49,27 +49,27 @@
 	[super dealloc];
 }
 
-- (void)testCategoryForName
+- (void)testSectionForName
 {
-	OTAssertNotNil([_file categoryForName: @"tests"]);
-	OTAssertNotNil([_file categoryForName: @"foobar"]);
-	OTAssertNotNil([_file categoryForName: @"types"]);
+	OTAssertNotNil([_file sectionForName: @"tests"]);
+	OTAssertNotNil([_file sectionForName: @"foobar"]);
+	OTAssertNotNil([_file sectionForName: @"types"]);
 }
 
 - (void)testStringValueForKey
 {
 	OTAssertEqualObjects(
-	    [[_file categoryForName: @"tests"] stringValueForKey: @"foo"],
+	    [[_file sectionForName: @"tests"] stringValueForKey: @"foo"],
 	    @"bar");
 
-	OTAssertEqualObjects([[_file categoryForName: @"foobar"]
+	OTAssertEqualObjects([[_file sectionForName: @"foobar"]
 	    stringValueForKey: @"quxquxqux"],
 	    @"hello\"wörld");
 }
 
 - (void)testLongLongValueForKeyDefaultValue
 {
-	OTAssertEqual([[_file categoryForName: @"types"]
+	OTAssertEqual([[_file sectionForName: @"types"]
 	    longLongValueForKey: @"integer"
 		   defaultValue: 2],
 	    0x20);
@@ -77,14 +77,14 @@
 
 - (void)testBoolValueForKeyDefaultValue
 {
-	OTAssertTrue([[_file categoryForName: @"types"]
+	OTAssertTrue([[_file sectionForName: @"types"]
 	    boolValueForKey: @"bool"
 	       defaultValue: false]);
 }
 
 - (void)testFloatValueForKeyDefaultValue
 {
-	OTAssertEqual([[_file categoryForName: @"types"]
+	OTAssertEqual([[_file sectionForName: @"types"]
 	    floatValueForKey: @"float"
 		defaultValue: 1],
 	    0.5f);
@@ -92,7 +92,7 @@
 
 - (void)testDoubleValueForKeyDefaultValue
 {
-	OTAssertEqual([[_file categoryForName: @"types"]
+	OTAssertEqual([[_file sectionForName: @"types"]
 	    doubleValueForKey: @"double"
 		 defaultValue: 3],
 	    0.25);
@@ -100,7 +100,7 @@
 
 - (void)testArrayValueForKey
 {
-	OFINICategory *types = [_file categoryForName: @"types"];
+	OFINISection *types = [_file sectionForName: @"types"];
 	OFArray *array = [OFArray arrayWithObjects: @"1", @"2", nil];
 
 	OTAssertEqualObjects([types arrayValueForKey: @"array1"], array);
@@ -111,7 +111,7 @@
 
 - (void)testWriteToIRIEncoding
 {
-	OFString *expectedOutput = @"; Comment before categories\r\n"
+	OFString *expectedOutput = @"; Comment before sections\r\n"
 	    @"\r\n"
 	    @"[tests]\r\n"
 	    @"foo=baz\r\n"
@@ -133,9 +133,9 @@
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
-	OFINICategory *tests = [_file categoryForName: @"tests"];
-	OFINICategory *foobar = [_file categoryForName: @"foobar"];
-	OFINICategory *types = [_file categoryForName: @"types"];
+	OFINISection *tests = [_file sectionForName: @"tests"];
+	OFINISection *foobar = [_file sectionForName: @"foobar"];
+	OFINISection *types = [_file sectionForName: @"types"];
 	OFArray *array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
 	OFIRI *writeIRI;
@@ -177,7 +177,7 @@
 #endif
 }
 
-- (void)testValuePairOutsideOfCategoryRejected
+- (void)testPairOutsideOfSectionRejected
 {
 	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile_broken.ini"];
 

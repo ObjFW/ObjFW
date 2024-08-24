@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFINICategory.h"
+#import "OFINISection.h"
 #import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 OF_DIRECT_MEMBERS
-@interface OFINICategory ()
+@interface OFINISection ()
 - (instancetype)of_initWithName: (nullable OFString *)name
     OF_METHOD_FAMILY(init);
 - (void)of_parseLine: (OFString *)line;

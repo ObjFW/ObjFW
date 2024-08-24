@@ -29,6 +29,7 @@ SRCS = OFApplication.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
        OFInflate64Stream.m		\

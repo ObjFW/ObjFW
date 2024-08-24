@@ -77,6 +77,7 @@
 # import "OFFile.h"
 #endif
 #import "OFINIFile.h"
+#import "OFINICategory.h"
 #import "OFSettings.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"

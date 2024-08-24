@@ -19,7 +19,7 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFINICategory.h"
+#import "OFINISection.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -34,14 +34,20 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFINIFile: OFObject
 {
-	OFINICategory *_prologue;
-	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;
+	OFINISection *_prologue;
+	OFMutableArray OF_GENERIC(OFINISection *) *_sections;
 }
 
 /**
- * @brief All categories in the INI file.
+ * @brief All sections in the INI file.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFINICategory *) *categories;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFINISection *) *sections;
+
+/**
+ * @brief All sections in the INI file.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFINISection *) *categories
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[sections] instead");
 
 /**
  * @brief Creates a new OFINIFile with the contents of the specified file.
@@ -103,15 +109,25 @@ OF_SUBCLASSING_RESTRICTED
     OF_DESIGNATED_INITIALIZER;
 
 /**
- * @brief Returns an @ref OFINICategory for the category with the specified
- *	  name.
+ * @brief Returns an @ref OFINISection for the section with the specified name.
  *
- * @param name The name of the category for which an @ref OFINICategory should
- *	       be returned
+ * @param name The name of the section for which an @ref OFINISection should be
+ *	       returned
  *
- * @return An @ref OFINICategory for the category with the specified name
+ * @return An @ref OFINISection for the section with the specified name
  */
-- (OFINICategory *)categoryForName: (OFString *)name;
+- (OFINISection *)sectionForName: (OFString *)name;
+
+/**
+ * @brief Returns an @ref OFINISection for the section with the specified name.
+ *
+ * @param name The name of the section for which an @ref OFINISection should be
+ *	       returned
+ *
+ * @return An @ref OFINISection for the section with the specified name
+ */
+- (OFINISection *)categoryForName: (OFString *)name
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[sectionForName:] instead");
 
 /**
  * @brief Writes the contents of the OFINIFile to a file.

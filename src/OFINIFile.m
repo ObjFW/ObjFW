@@ -23,8 +23,8 @@
 
 #import "OFINIFile.h"
 #import "OFArray.h"
-#import "OFINICategory+Private.h"
-#import "OFINICategory.h"
+#import "OFINISection.h"
+#import "OFINISection+Private.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
 #import "OFStream.h"
@@ -52,7 +52,7 @@ isWhitespaceLine(OFString *line)
 }
 
 @implementation OFINIFile
-@synthesize categories = _categories;
+@synthesize sections = _sections;
 
 + (instancetype)fileWithIRI: (OFIRI *)IRI
 {
@@ -79,8 +79,8 @@ isWhitespaceLine(OFString *line)
 	self = [super init];
 
 	@try {
-		_prologue = [[OFINICategory alloc] of_initWithName: nil];
-		_categories = [[OFMutableArray alloc] init];
+		_prologue = [[OFINISection alloc] of_initWithName: nil];
+		_sections = [[OFMutableArray alloc] init];
 
 		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
@@ -94,33 +94,43 @@ isWhitespaceLine(OFString *line)
 - (void)dealloc
 {
 	[_prologue release];
-	[_categories release];
+	[_sections release];
 
 	[super dealloc];
 }
 
-- (OFINICategory *)categoryForName: (OFString *)name
+- (OFArray OF_GENERIC(OFINISection *) *)categories
+{
+	return self.sections;
+}
+
+- (OFINISection *)sectionForName: (OFString *)name
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFINICategory *category;
+	OFINISection *section;
 
-	for (category in _categories)
-		if ([category.name isEqual: name])
-			return category;
+	for (section in _sections)
+		if ([section.name isEqual: name])
+			return section;
 
-	category = [[[OFINICategory alloc] of_initWithName: name] autorelease];
-	[_categories addObject: category];
+	section = [[[OFINISection alloc] of_initWithName: name] autorelease];
+	[_sections addObject: section];
 
 	objc_autoreleasePoolPop(pool);
 
-	return category;
+	return section;
+}
+
+- (OFINISection *)categoryForName: (OFString *)name
+{
+	return [self sectionForName: name];
 }
 
 - (void)of_parseIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFStream *file;
-	OFINICategory *category = _prologue;
+	OFINISection *section = _prologue;
 	OFString *line;
 
 	if (encoding == OFStringEncodingAutodetect)
@@ -141,18 +151,18 @@ isWhitespaceLine(OFString *line)
 			continue;
 
 		if ([line hasPrefix: @"["]) {
-			OFString *categoryName;
+			OFString *sectionName;
 
 			if (![line hasSuffix: @"]"])
 				@throw [OFInvalidFormatException exception];
 
-			categoryName = [line substringWithRange:
+			sectionName = [line substringWithRange:
 			    OFMakeRange(1, line.length - 2)];
-			category = [[[OFINICategory alloc]
-			    of_initWithName: categoryName] autorelease];
-			[_categories addObject: category];
+			section = [[[OFINISection alloc]
+			    of_initWithName: sectionName] autorelease];
+			[_sections addObject: section];
 		} else
-			[category of_parseLine: line];
+			[section of_parseLine: line];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -172,10 +182,10 @@ isWhitespaceLine(OFString *line)
 	if ([_prologue of_writeToStream: file encoding: encoding first: true])
 		first = false;
 
-	for (OFINICategory *category in _categories)
-		if ([category of_writeToStream: file
-				      encoding: encoding
-					 first: first])
+	for (OFINISection *section in _sections)
+		if ([section of_writeToStream: file
+				     encoding: encoding
+					first: first])
 			first = false;
 
 	objc_autoreleasePoolPop(pool);
@@ -184,6 +194,6 @@ isWhitespaceLine(OFString *line)
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",
-					   self.class, _categories];
+					   self.class, _sections];
 }
 @end
