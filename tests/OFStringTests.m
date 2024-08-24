@@ -265,8 +265,9 @@ static const char *range80ToFF =
 - (void)testStringWithCStringEncodingISO8859_15
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
-		     encoding: OFStringEncodingISO8859_15], @"€ŠšŽžŒœŸ");
+	    stringWithCString: "a\x80\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
+		     encoding: OFStringEncodingISO8859_15],
+	    @"a\xC2\x80€ŠšŽžŒœŸ");
 }
 #endif
 
