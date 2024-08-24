@@ -22,6 +22,8 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
+#import "OFEmbeddedIRIHandler.h"
+
 @interface OFINIFileTests: OTTestCase
 {
 	OFINIFile *_file;
@@ -109,7 +111,9 @@
 
 - (void)testWriteToIRIEncoding
 {
-	OFString *expectedOutput = @"[tests]\r\n"
+	OFString *expectedOutput = @"; Comment before categories\r\n"
+	    @"\r\n"
+	    @"[tests]\r\n"
 	    @"foo=baz\r\n"
 	    @"foobar=baz\r\n"
 	    @";comment\r\n"
@@ -171,5 +175,16 @@
 #else
 	(void)expectedOutput;
 #endif
+}
+
+- (void)testValuePairOutsideOfCategoryRejected
+{
+	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile_broken.ini"];
+
+	OFRegisterEmbeddedFile(@"testfile_broken.ini",
+	    (const uint8_t *)"; comment\r\na=b", 14);
+
+	OTAssertThrowsSpecific([OFINIFile fileWithIRI: IRI],
+	    OFInvalidFormatException);
 }
 @end
