@@ -360,19 +360,22 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			char buffer[4];
 			size_t byteLength;
 
-			if (character < tableOffset) {
-				_s->cString[j++] = cString[i];
-				continue;
-			}
-
-			unichar = table[character - tableOffset];
+			if (character >= tableOffset)
+				unichar = table[character - tableOffset];
+			else
+				unichar = character;
 
 			if (unichar == 0xFFFF)
 				@throw [OFInvalidEncodingException exception];
 
-			_s->isUTF8 = true;
-			byteLength = _OFUTF8StringEncode(unichar, buffer);
+			if (unichar < 0x7F) {
+				_s->cString[j++] = (char)unichar;
+				continue;
+			}
 
+			_s->isUTF8 = true;
+
+			byteLength = _OFUTF8StringEncode(unichar, buffer);
 			if (byteLength == 0)
 				@throw [OFInvalidEncodingException exception];
 
