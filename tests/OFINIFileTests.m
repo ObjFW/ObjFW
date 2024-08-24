@@ -121,7 +121,7 @@
 	    @"new=new\r\n"
 	    @"\r\n"
 	    @"[foobar]\r\n"
-	    @";foobarcomment\r\n"
+	    @"#foobarcomment\r\n"
 	    @"qux=\" asd\"\r\n"
 	    @"quxquxqux=\"hello\\\"wörld\"\r\n"
 	    @"qux2=\"a\\f\"\r\n"
