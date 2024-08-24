@@ -346,18 +346,19 @@
 
 - (void)appendString: (OFString *)string
 {
+	const char *UTF8String;
 	size_t UTF8StringLength;
 
 	if (string == nil)
 		@throw [OFInvalidArgumentException exception];
 
+	UTF8String = string.UTF8String;
 	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
-	memcpy(_s->cString + _s->cStringLength, string.UTF8String,
-	    UTF8StringLength);
+	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
 	_s->length += string.length;
@@ -368,8 +369,16 @@
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
-	} else
-		_s->isUTF8 = true;
+	} else {
+		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
+		    NULL)) {
+		case 1:
+			_s->isUTF8 = true;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException exception];
+		}
+	}
 }
 
 - (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
@@ -431,7 +440,8 @@
 
 - (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	size_t newCStringLength;
+	const char *UTF8String;
+	size_t UTF8StringLength, newCStringLength;
 
 	if (idx > _s->length)
 		@throw [OFOutOfRangeException exception];
@@ -440,14 +450,16 @@
 		idx = _OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
-	newCStringLength = _s->cStringLength + string.UTF8StringLength;
+	UTF8String = string.UTF8String;
+	UTF8StringLength = string.UTF8StringLength;
+
+	newCStringLength = _s->cStringLength + UTF8StringLength;
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1, 1);
 
-	memmove(_s->cString + idx + string.UTF8StringLength,
-	    _s->cString + idx, _s->cStringLength - idx);
-	memcpy(_s->cString + idx, string.UTF8String,
-	    string.UTF8StringLength);
+	memmove(_s->cString + idx + UTF8StringLength, _s->cString + idx,
+	    _s->cStringLength - idx);
+	memcpy(_s->cString + idx, UTF8String, UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	_s->cStringLength = newCStringLength;
@@ -457,8 +469,16 @@
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
-	} else
-		_s->isUTF8 = true;
+	} else {
+		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
+		    NULL)) {
+		case 1:
+			_s->isUTF8 = true;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException exception];
+		}
+	}
 }
 
 - (void)deleteCharactersInRange: (OFRange)range
@@ -497,6 +517,8 @@
 	size_t start = range.location;
 	size_t end = range.location + range.length;
 	size_t newCStringLength, newLength;
+	const char *replacementString;
+	size_t replacementLength;
 
 	if (replacement == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -513,8 +535,11 @@
 		    _s->cStringLength);
 	}
 
-	newCStringLength = _s->cStringLength - (end - start) +
-	    replacement.UTF8StringLength;
+	replacementString = replacement.UTF8String;
+	replacementLength = replacement.UTF8StringLength;
+
+	newCStringLength =
+	    _s->cStringLength - (end - start) + replacementLength;
 	_s->hasHash = false;
 
 	/*
@@ -529,10 +554,9 @@
 		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
 		    1);
 
-	memmove(_s->cString + start + replacement.UTF8StringLength,
-	    _s->cString + end, _s->cStringLength - end);
-	memcpy(_s->cString + start, replacement.UTF8String,
-	    replacement.UTF8StringLength);
+	memmove(_s->cString + start + replacementLength, _s->cString + end,
+	    _s->cStringLength - end);
+	memcpy(_s->cString + start, replacementString, replacementLength);
 	_s->cString[newCStringLength] = '\0';
 
 	/*
@@ -550,8 +574,16 @@
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
-	} else
-		_s->isUTF8 = true;
+	} else {
+		switch (_OFUTF8StringCheck(replacementString, replacementLength,
+		    NULL)) {
+		case 1:
+			_s->isUTF8 = true;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException exception];
+		}
+	}
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
@@ -635,8 +667,16 @@
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
-	} else
-		_s->isUTF8 = true;
+	} else {
+		switch (_OFUTF8StringCheck(replacementString, replacementLength,
+		    NULL)) {
+		case 1:
+			_s->isUTF8 = true;
+			break;
+		case -1:
+			@throw [OFInvalidEncodingException exception];
+		}
+	}
 }
 
 - (void)deleteLeadingWhitespaces
