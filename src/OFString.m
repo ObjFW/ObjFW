@@ -1485,8 +1485,7 @@ OF_SINGLETON_METHODS
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getCharacters: (OFUnichar *)buffer
-	      inRange: (OFRange)range
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self characterAtIndex: range.location + i];
