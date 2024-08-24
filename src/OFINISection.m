@@ -154,7 +154,7 @@ unescapeString(OFString *string)
 
 - (void)of_parseLine: (OFString *)line
 {
-	if (![line hasPrefix: @";"]) {
+	if (![line hasPrefix: @";"] && ![line hasPrefix: @"#"]) {
 		OFINISectionPair *pair;
 		OFString *key, *value;
 		size_t pos;
