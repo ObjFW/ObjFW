@@ -155,10 +155,14 @@ unescapeString(OFString *string)
 - (void)of_parseLine: (OFString *)line
 {
 	if (![line hasPrefix: @";"]) {
-		OFINICategoryPair *pair =
-		    [[[OFINICategoryPair alloc] init] autorelease];
+		OFINICategoryPair *pair;
 		OFString *key, *value;
 		size_t pos;
+
+		if (_name == nil)
+			@throw [OFInvalidFormatException exception];
+
+		pair = [[[OFINICategoryPair alloc] init] autorelease];
 
 		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
 			@throw [OFInvalidFormatException exception];
@@ -479,10 +483,12 @@ unescapeString(OFString *string)
 	if (_lines.count == 0)
 		return false;
 
-	if (first)
-		[stream writeFormat: @"[%@]\r\n", _name];
-	else
-		[stream writeFormat: @"\r\n[%@]\r\n", _name];
+	if (_name != nil) {
+		if (first)
+			[stream writeFormat: @"[%@]\r\n", _name];
+		else
+			[stream writeFormat: @"\r\n[%@]\r\n", _name];
+	}
 
 	for (id line in _lines) {
 		if ([line isKindOfClass: [OFINICategoryComment class]]) {

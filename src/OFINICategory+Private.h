@@ -26,7 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_DIRECT_MEMBERS
 @interface OFINICategory ()
-- (instancetype)of_initWithName: (OFString *)name OF_METHOD_FAMILY(init);
+- (instancetype)of_initWithName: (nullable OFString *)name
+    OF_METHOD_FAMILY(init);
 - (void)of_parseLine: (OFString *)line;
 - (bool)of_writeToStream: (OFStream *)stream
 		encoding: (OFStringEncoding)encoding
