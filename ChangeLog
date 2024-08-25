@@ -4,6 +4,17 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.6 -> ObjFW 1.1.7, 2024-08-25
+ * Fixes creating OFStrings from C strings with some encodings.
+ * Fixes creating an ASCII C string from an OFString that has been initialized
+   by passing an instance of a custom string class.
+ * Fixes OFINIFile not parsing `=` within `"` correctly.
+ * OFINIFile now allows comments and pairs before the first category.
+ * OFINIFile now allows # for comments.
+ * Hides some private symbols in the runtime library.
+ * Disables UNIX datagram sockets on Hurd as Hurd has incomplete support for
+   UNIX datagram sockets.
+
 ObjFW 1.1.5 -> ObjFW 1.1.6, 2024-08-11
  * Fixes ObjC++ with GCC.
  * Adds handling of EINTR in OFKernelEventObserver.
