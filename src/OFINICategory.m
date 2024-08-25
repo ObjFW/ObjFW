@@ -51,7 +51,7 @@ escapeString(OFString *string)
 	if (![string hasPrefix: @" "] && ![string hasPrefix: @"\t"] &&
 	    ![string hasPrefix: @"\f"] && ![string hasSuffix: @" "] &&
 	    ![string hasSuffix: @"\t"] && ![string hasSuffix: @"\f"] &&
-	    ![string containsString: @"\""])
+	    ![string containsString: @"\""] && ![string containsString: @"="])
 		return string;
 
 	mutableString = [[string mutableCopy] autorelease];
@@ -64,28 +64,6 @@ escapeString(OFString *string)
 
 	[mutableString insertString: @"\"" atIndex: 0];
 	[mutableString appendString: @"\""];
-
-	[mutableString makeImmutable];
-
-	return mutableString;
-}
-
-static OFString *
-unescapeString(OFString *string)
-{
-	OFMutableString *mutableString;
-
-	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
-		return string;
-
-	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
-	mutableString = [[string mutableCopy] autorelease];
-
-	[mutableString replaceOccurrencesOfString: @"\\f" withString: @"\f"];
-	[mutableString replaceOccurrencesOfString: @"\\r" withString: @"\r"];
-	[mutableString replaceOccurrencesOfString: @"\\n" withString: @"\n"];
-	[mutableString replaceOccurrencesOfString: @"\\\"" withString: @"\""];
-	[mutableString replaceOccurrencesOfString: @"\\\\" withString: @"\\"];
 
 	[mutableString makeImmutable];
 
@@ -152,35 +130,128 @@ unescapeString(OFString *string)
 	[super dealloc];
 }
 
+static void
+parseQuoted(const char **cString, const char **start, size_t *length)
+{
+	bool inEscape = false;
+
+	(*cString)++;
+	*start = *cString;
+
+	while (**cString != '\0') {
+		if (inEscape)
+			inEscape = false;
+		else {
+			if (**cString == '\\')
+				inEscape = true;
+			else if (**cString == '"')
+				break;
+		}
+		(*cString)++;
+	}
+	if (**cString == '\0')
+		@throw [OFInvalidFormatException exception];
+
+	*length = *cString - *start;
+
+	(*cString)++;
+
+	while (OFASCIIIsSpace(**cString))
+		(*cString)++;
+}
+
+static void
+unescapeMutableString(OFMutableString *string)
+{
+	[string replaceOccurrencesOfString: @"\\f" withString: @"\f"];
+	[string replaceOccurrencesOfString: @"\\r" withString: @"\r"];
+	[string replaceOccurrencesOfString: @"\\n" withString: @"\n"];
+	[string replaceOccurrencesOfString: @"\\\"" withString: @"\""];
+	[string replaceOccurrencesOfString: @"\\\\" withString: @"\\"];
+}
+
 - (void)of_parseLine: (OFString *)line
 {
-	if (![line hasPrefix: @";"] && ![line hasPrefix: @"#"]) {
-		OFINICategoryPair *pair;
-		OFString *key, *value;
-		size_t pos;
+	void *pool = objc_autoreleasePoolPush();
+	const char *cString = line.UTF8String;
+	bool keyIsQuoted = false, valueIsQuoted = false;
+	const char *keyStart, *valueStart;
+	size_t keyLength, valueLength;
+	OFMutableString *key, *value;
+	OFINICategoryPair *pair;
 
-		pair = [[[OFINICategoryPair alloc] init] autorelease];
+	while (OFASCIIIsSpace(*cString))
+		cString++;
 
-		if ((pos = [line rangeOfString: @"="].location) == OFNotFound)
-			@throw [OFInvalidFormatException exception];
-
-		key = unescapeString([line substringToIndex: pos]
-		    .stringByDeletingEnclosingWhitespaces);
-		value = unescapeString([line substringFromIndex: pos + 1]
-		    .stringByDeletingEnclosingWhitespaces);
-
-		pair->_key = [key copy];
-		pair->_value = [value copy];
-
-		[_lines addObject: pair];
-	} else {
+	if (*cString == ';' || *cString == '#') {
 		OFINICategoryComment *comment =
 		    [[[OFINICategoryComment alloc] init] autorelease];
-
 		comment->_comment = [line copy];
-
 		[_lines addObject: comment];
+		return;
 	}
+
+	if (*cString == '"') {
+		keyIsQuoted = true;
+		parseQuoted(&cString, &keyStart, &keyLength);
+	} else {
+		keyStart = cString;
+
+		while (*cString != '=' && *cString != '\0')
+			cString++;
+
+		keyLength = cString - keyStart;
+	}
+
+	if (*cString != '=')
+		@throw [OFInvalidFormatException exception];
+	cString++;
+
+	while (OFASCIIIsSpace(*cString))
+		cString++;
+
+	if (*cString == '"') {
+		valueIsQuoted = true;
+		parseQuoted(&cString, &valueStart, &valueLength);
+	} else {
+		valueStart = cString;
+
+		while (*cString != '\0')
+			cString++;
+
+		valueLength = cString - valueStart;
+	}
+
+	while (*cString != '\0') {
+		if (!OFASCIIIsSpace(*cString))
+			@throw [OFInvalidFormatException exception];
+
+		cString++;
+	}
+
+	key = [OFMutableString stringWithUTF8String: keyStart
+					     length: keyLength];
+	value = [OFMutableString stringWithUTF8String: valueStart
+					       length: valueLength];
+
+	if (keyIsQuoted)
+		unescapeMutableString(key);
+	else
+		[key deleteEnclosingWhitespaces];
+	if (valueIsQuoted)
+		unescapeMutableString(value);
+	else
+		[value deleteEnclosingWhitespaces];
+
+	[key makeImmutable];
+	[value makeImmutable];
+
+	pair = [[[OFINICategoryPair alloc] init] autorelease];
+	pair->_key = [key copy];
+	pair->_value = [value copy];
+	[_lines addObject: pair];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString *)stringValueForKey: (OFString *)key
