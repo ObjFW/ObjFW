@@ -125,6 +125,7 @@
 	    @"qux=\" asd\"\r\n"
 	    @"quxquxqux=\"hello\\\"wörld\"\r\n"
 	    @"qux2=\"a\\f\"\r\n"
+	    @"\"asd=asd\"=foobar\r\n"
 	    @"qux3=a\fb\r\n"
 	    @"\r\n"
 	    @"[types]\r\n"
