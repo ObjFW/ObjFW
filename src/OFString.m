@@ -49,6 +49,7 @@
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
+#import "OFTaggedPointerString.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
 
@@ -88,6 +89,14 @@ static struct {
 
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 static locale_t cLocale;
+#endif
+
+#ifdef OF_OBJFW_RUNTIME
+# if UINTPTR_MAX == UINT64_MAX
+#  define MAX_TAGGED_POINTER_LENGTH 8
+# else
+#  define MAX_TAGGED_POINTER_LENGTH 4
+# endif
 #endif
 
 @interface OFString ()
@@ -366,6 +375,19 @@ _OFStrDup(const char *string)
 	return copy;
 }
 
+#ifdef OF_OBJFW_RUNTIME
+static bool
+isASCII(const char *string, size_t length)
+{
+	uint8_t combined = 0;
+
+	for (size_t i = 0; i < length; i++)
+		combined |= string[i];
+
+	return !(combined & ~0x7F);
+}
+#endif
+
 @implementation OFPlaceholderString
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
@@ -375,16 +397,30 @@ _OFStrDup(const char *string)
 #endif
 - (instancetype)init
 {
-	return (id)[[OFUTF8String alloc] init];
+	return (id)@"";
 }
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 {
+	size_t length = strlen(UTF8String);
 	OFUTF8String *string;
-	size_t length;
 	void *storage;
 
-	length = strlen(UTF8String);
+	if (length == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (length <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCII(UTF8String, length)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: length];
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
+
 	string = OFAllocObject([OFUTF8String class], length + 1, 1, &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
@@ -397,6 +433,21 @@ _OFStrDup(const char *string)
 {
 	OFUTF8String *string;
 	void *storage;
+
+	if (UTF8StringLength == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (UTF8StringLength <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCII(UTF8String, UTF8StringLength)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: UTF8StringLength];
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
 
 	string = OFAllocObject([OFUTF8String class], UTF8StringLength + 1, 1,
 	    &storage);
@@ -427,12 +478,27 @@ _OFStrDup(const char *string)
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding
 {
-	if (encoding == OFStringEncodingUTF8) {
+	if (encoding == OFStringEncodingUTF8 ||
+	    encoding == OFStringEncodingASCII) {
+		size_t length = strlen(cString);
 		OFUTF8String *string;
-		size_t length;
 		void *storage;
 
-		length = strlen(cString);
+		if (length == 0)
+			return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+		if (length <= MAX_TAGGED_POINTER_LENGTH &&
+		    isASCII(cString, length)) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: cString
+					   length: length];
+
+			if (ret != nil)
+				return ret;
+		}
+#endif
+
 		string = OFAllocObject([OFUTF8String class], length + 1, 1,
 		    &storage);
 
@@ -449,9 +515,25 @@ _OFStrDup(const char *string)
 		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
-	if (encoding == OFStringEncodingUTF8) {
+	if (encoding == OFStringEncodingUTF8 ||
+	    encoding == OFStringEncodingASCII) {
 		OFUTF8String *string;
 		void *storage;
+
+		if (cStringLength == 0)
+			return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+		if (cStringLength <= MAX_TAGGED_POINTER_LENGTH &&
+		    isASCII(cString, cStringLength)) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: cString
+					   length: cStringLength];
+
+			if (ret != nil)
+				return ret;
+		}
+#endif
 
 		string = OFAllocObject([OFUTF8String class], cStringLength + 1,
 		    1, &storage);
@@ -481,6 +563,34 @@ _OFStrDup(const char *string)
 - (instancetype)initWithCharacters: (const OFUnichar *)string
 			    length: (size_t)length
 {
+	if (length == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (length <= MAX_TAGGED_POINTER_LENGTH) {
+		char buffer[MAX_TAGGED_POINTER_LENGTH];
+		bool isUnicode = false;
+
+		for (size_t i = 0; i < length; i++) {
+			if (string[i] >= 0x80) {
+				isUnicode = true;
+				break;
+			}
+
+			buffer[i] = (char)string[i];
+		}
+
+		if (!isUnicode) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: buffer
+					   length: length];
+
+			if (ret != nil)
+				return ret;
+		}
+	}
+#endif
+
 	return (id)[[OFUTF8String alloc] initWithCharacters: string
 						     length: length];
 }

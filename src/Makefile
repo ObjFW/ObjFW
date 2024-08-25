@@ -247,7 +247,8 @@ SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFTCPSocketSOCKS5Connector.m
 SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
 		       OFTaggedPointerDate.m		\
-		       OFTaggedPointerNumber.m
+		       OFTaggedPointerNumber.m		\
+		       OFTaggedPointerString.m
 SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 
