@@ -1,0 +1,25 @@
+name: djgpp
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container: centos:7
+    steps:
+    - name: Install pkgsrc
+      run: |
+        curl -O https://pkgsrc.smartos.org/packages/Linux/bootstrap/bootstrap-el7-trunk-x86_64-20220718.tar.gz
+        tar xfvzp bootstrap-el7-trunk-x86_64-20220718.tar.gz -C /
+        echo /usr/pkg/sbin >>$GITHUB_PATH
+        echo /usr/pkg/bin >>$GITHUB_PATH
+    - name: Install packages
+      run: |
+        pkgin -y update
+        pkgin -y install cross-i586-pc-msdosdjgpp-gcc autoconf automake m4 gmake
+        echo /usr/pkg/cross-djgpp/bin >>$GITHUB_PATH
+    - uses: actions/checkout@v1
+    - name: autogen.sh
+      run: M4=gm4 ./autogen.sh
+    - name: configure
+      run: ./configure --host=i586-pc-msdosdjgpp
+    - name: make
+      run: gmake -j$(nproc)
