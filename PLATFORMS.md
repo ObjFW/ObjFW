@@ -240,7 +240,7 @@ resolveInstanceMethod:, which are always available):
 
   * AMD64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)
   * ARM (EABI/ELF, Apple/Mach-O)
-  * ARM64 (ARM64/ELF, Apple/Mach-O)
+  * ARM64 (ARM64/ELF, Apple/Mach-O, Win64/PE)
   * LoongArch 64 (ELF)
   * MIPS (O32/ELF, EABI/ELF)
   * MIPS64 (N64/ELF)
