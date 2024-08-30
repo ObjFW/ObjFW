@@ -56,5 +56,7 @@
 #  include "lookup-asm-amd64-win64.S"
 # elif defined(OF_X86)
 #  include "lookup-asm-x86-win32.S"
+# elif defined(OF_ARM64)
+#  include "lookup-asm-arm64-win64.S"
 # endif
 #endif

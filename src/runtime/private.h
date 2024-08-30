@@ -322,7 +322,7 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(OF_WINDOWS)
-# if defined(OF_AMD64) || defined(OF_X86)
+# if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64)
 #  define OF_ASM_LOOKUP
 # endif
 #endif
