@@ -73,6 +73,8 @@
 #   include "forwarding-amd64-win64.S"
 #  elif defined(OF_X86)
 #   include "forwarding-x86-win32.S"
+#  elif defined(OF_ARM64)
+#   include "forwarding-arm64-win64.S"
 #  endif
 # endif
 #endif

@@ -371,7 +371,7 @@
 #   endif
 #  endif
 # elif defined(OF_WINDOWS)
-#  if defined(OF_AMD64) || defined(OF_X86)
+#  if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
