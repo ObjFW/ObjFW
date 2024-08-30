@@ -128,7 +128,7 @@ OFForward_stret:
 .Lsymtab:
 	.xword 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
-	.long 4
+	.long 0
 	.xword 0
 .Lmodule:
 	.xword 8, 32, 0, .Lsymtab
