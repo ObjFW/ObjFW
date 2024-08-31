@@ -6,7 +6,8 @@ SUBDIRS += ${OBJFW_NEW}		\
 	   ${OFHASH}		\
 	   ${OFHTTP}
 
-MAN = objfw-config.1
+MAN = objfw-compile.1	\
+      objfw-config.1
 
 include ../buildsys.mk
 
