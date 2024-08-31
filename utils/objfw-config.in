@@ -54,7 +54,7 @@ objfw-config: Available arguments are:
     --cppflags        Outputs the required CPPFLAGS
     --cxxflags        Outputs the required CXXFLAGS
     --framework-libs  Outputs the required LIBS, preferring frameworks
-    --help            Print this help
+    --help            Prints the help
     --ldflags         Outputs the required LDFLAGS
     --libs            Outputs the required LIBS
     --lib-cflags      Outputs CFLAGS for building a library
@@ -72,7 +72,7 @@ objfw-config: Available arguments are:
     --reexport        Outputs LDFLAGS to reexport ObjFW
     --rpath           Outputs LDFLAGS for using rpath
     --static-libs     Outputs the required LIBS to link ObjFW statically
-    --version         Outputs the installed version
+    --version         Outputs the installed ObjFW version
 __EOF__
 	exit $1
 }

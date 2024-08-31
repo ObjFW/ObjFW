@@ -1,0 +1,96 @@
+.TH OBJFW-CONFIG 1
+.SH NAME
+objfw-config - print flags required for compiling with ObjFW
+.SH SYNOPSIS
+.B objfw-config
+[\fBoptions\fR]
+.SH DESCRIPTION
+.B objfw-config
+is a program which outputs various flags needed to compile software using ObjFW.
+.SH OPTIONS
+.TP
+.BR \-\-all
+Outputs all flags + libs.
+.TP
+.BR \-\-arc
+Outputs the required \fIOBJCFLAGS\fR to use ARC.
+.TP
+.BR \-\-cflags
+Outputs the required \fICFLAGS\fR.
+.TP
+.BR \-\-cppflags
+Outputs the required \fICPPFLAGS\fR.
+.TP
+.BR \-\-cxxflags
+Outputs the required \fICXXFLAGS\fR.
+.TP
+.BR \-\-framework-libs
+Outputs the required \fILIBS\fR, preferring frameworks.
+.TP
+.BR \-\-help
+Prints the help.
+.TP
+.BR \-\-ldflags
+Outputs the required \fILDFLAGS\fR.
+.TP
+.BR \-\-libs
+Outputs the required \fILIBS\fR.
+.TP
+.BR \-\-lib-cflags
+Outputs \fICFLAGS\fR for building a library.
+.TP
+.BR \-\-lib-ldflags
+Outputs \fILDFLAGS\fR for building a library.
+.TP
+.BR \-\-lib-prefix
+Outputs the prefix for libraries.
+.TP
+.BR \-\-lib-suffix
+Outputs the suffix for libraries.
+.TP
+.BR \-\-objc
+Outputs the \fIOBJC\fR used to compile ObjFW. It is required to use the same
+\fIOBJC\fR that was used to compile ObjFW.
+.TP
+.BR \-\-objcflags
+Outputs the required \fIOBJCFLAGS\fR.
+.TP
+.BR \-\-package \fINAME\fR
+Additionally outputs the flags for the specified package.
+.TP
+.BR \-\-packages-dir
+Outputs the directory where flags for packages are stored.
+.TP
+.BR \-\-plugin-cflags
+Outputs \fICFLAGS\fR for building a plugin.
+.TP
+.BR \-\-plugin-ldflags
+Outputs \fILDFLAGS\fR for building a plugin.
+.TP
+.BR \-\-plugin-suffix
+Outputs the suffix for plugins.
+.TP
+.BR \-\-prog-suffix
+Outputs the suffix for binaries.
+.TP
+.BR \-\-reexport
+Outputs \fILDFLAGS\fR to reexport ObjFW.
+.TP
+.BR \-\-rpath
+Outputs \fILDFLAGS\fR for using rpath.
+.TP
+.BR \-\-static-libs
+Outputs the required \fILIBS\fR to link ObjFW statically.
+.TP
+.BR \-\-version
+Outputs the installed ObjFW version.
+.SH EXAMPLES
+Print \fIOBJCFLAGS\fR and \fICPPFLAGS\fR:
+.PP
+	objfw-config \-\-objcflags \-\-cppflags
+.PP
+Print \fILIBS\fR and \fILDFLAGS\fR for ObjFW and ObjFWTLS:
+.PP
+	objfw-config \-\-libs \-\-ldflags --package ObjFWTLS
+.SH SEE ALSO
+\fIobjfw-compile\fR(1)
