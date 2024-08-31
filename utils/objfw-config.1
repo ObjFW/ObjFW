@@ -31,34 +31,34 @@ is a program which outputs various flags needed to compile software using ObjFW.
 Outputs all flags + libs.
 .TP
 .BR \-\-arc
-Outputs the required \fIOBJCFLAGS\fR to use ARC.
+Outputs the required \fBOBJCFLAGS\fR to use ARC.
 .TP
 .BR \-\-cflags
-Outputs the required \fICFLAGS\fR.
+Outputs the required \fBCFLAGS\fR.
 .TP
 .BR \-\-cppflags
-Outputs the required \fICPPFLAGS\fR.
+Outputs the required \fBCPPFLAGS\fR.
 .TP
 .BR \-\-cxxflags
-Outputs the required \fICXXFLAGS\fR.
+Outputs the required \fBCXXFLAGS\fR.
 .TP
 .BR \-\-framework-libs
-Outputs the required \fILIBS\fR, preferring frameworks.
+Outputs the required \fBLIBS\fR, preferring frameworks.
 .TP
 .BR \-\-help
 Prints the help.
 .TP
 .BR \-\-ldflags
-Outputs the required \fILDFLAGS\fR.
+Outputs the required \fBLDFLAGS\fR.
 .TP
 .BR \-\-libs
-Outputs the required \fILIBS\fR.
+Outputs the required \fBLIBS\fR.
 .TP
 .BR \-\-lib-cflags
-Outputs \fICFLAGS\fR for building a library.
+Outputs \fBCFLAGS\fR for building a library.
 .TP
 .BR \-\-lib-ldflags
-Outputs \fILDFLAGS\fR for building a library.
+Outputs \fBLDFLAGS\fR for building a library.
 .TP
 .BR \-\-lib-prefix
 Outputs the prefix for libraries.
@@ -67,23 +67,23 @@ Outputs the prefix for libraries.
 Outputs the suffix for libraries.
 .TP
 .BR \-\-objc
-Outputs the \fIOBJC\fR used to compile ObjFW. It is required to use the same
-\fIOBJC\fR that was used to compile ObjFW.
+Outputs the \fBOBJC\fR used to compile ObjFW. It is required to use the same
+\fBOBJC\fR that was used to compile ObjFW.
 .TP
 .BR \-\-objcflags
-Outputs the required \fIOBJCFLAGS\fR.
+Outputs the required \fBOBJCFLAGS\fR.
 .TP
-.BR \-\-package \fINAME\fR
+.BR \-\-package " " \fIname\fR
 Additionally outputs the flags for the specified package.
 .TP
 .BR \-\-packages-dir
 Outputs the directory where flags for packages are stored.
 .TP
 .BR \-\-plugin-cflags
-Outputs \fICFLAGS\fR for building a plugin.
+Outputs \fBCFLAGS\fR for building a plugin.
 .TP
 .BR \-\-plugin-ldflags
-Outputs \fILDFLAGS\fR for building a plugin.
+Outputs \fBLDFLAGS\fR for building a plugin.
 .TP
 .BR \-\-plugin-suffix
 Outputs the suffix for plugins.
@@ -92,22 +92,22 @@ Outputs the suffix for plugins.
 Outputs the suffix for binaries.
 .TP
 .BR \-\-reexport
-Outputs \fILDFLAGS\fR to reexport ObjFW.
+Outputs \fBLDFLAGS\fR to reexport ObjFW.
 .TP
 .BR \-\-rpath
-Outputs \fILDFLAGS\fR for using rpath.
+Outputs \fBLDFLAGS\fR for using rpath.
 .TP
 .BR \-\-static-libs
-Outputs the required \fILIBS\fR to link ObjFW statically.
+Outputs the required \fBLIBS\fR to link ObjFW statically.
 .TP
 .BR \-\-version
 Outputs the installed ObjFW version.
 .SH EXAMPLES
-Print \fIOBJCFLAGS\fR and \fICPPFLAGS\fR:
+Print \fBOBJCFLAGS\fR and \fBCPPFLAGS\fR:
 .PP
 	objfw-config \-\-objcflags \-\-cppflags
 .PP
-Print \fILIBS\fR and \fILDFLAGS\fR for ObjFW and ObjFWTLS:
+Print \fBLIBS\fR and \fBLDFLAGS\fR for ObjFW and ObjFWTLS:
 .PP
 	objfw-config \-\-libs \-\-ldflags --package ObjFWTLS
 .SH SEE ALSO
