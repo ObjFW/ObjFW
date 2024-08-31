@@ -30,6 +30,7 @@ arm-*-riscos*)
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	LDFLAGS="$LDFLAGS $flags"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $flags"
 
 	enable_shared="no"
 	enable_threads="no"
@@ -42,7 +43,9 @@ m68k-*-amigaos*)
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 	LDFLAGS="$LDFLAGS -noixemul"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
 	LIBS="$LIBS -ldebug"
+	OBJFW_LIBS="$OBJFW_LIBS -ldebug"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -64,7 +67,9 @@ powerpc-*-amigaos*)
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
 	LIBS="$LIBS -ldebug"
+	OBJFW_LIBS="$OBJFW_LIBS -ldebug"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -78,7 +83,9 @@ powerpc-*-amigaos*)
 	;;
 *-*-mingw*)
 	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -Wl,--allow-multiple-definition"
 	LIBS="$LIBS -lversion"
+	OBJFW_LIBS="$OBJFW_LIBS -lversion"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
 	;;
@@ -92,10 +99,13 @@ powerpc-*-amigaos*)
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
 	CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
 	LDFLAGS="$LDFLAGS -G0"
-	LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
-	LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
-	LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
-	LIBS="$LIBS -lpsputility -lpspuser -lpspkernel -lgcc -lpsplibc"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -G0"
+	tmp="-L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay -lpspge -lpspctrl"
+	tmp="$tmp -lpspsdk -lc -lpspnet -lpspnet_inet -lpspnet_apctl"
+	tmp="$tmp -lpspnet_resolver -lpsputility -lpspuser -lpspkernel -lgcc"
+	tmp="$tmp -lpsplibc"
+	LIBS="$LIBS $tmp"
+	OBJFW_LIBS="$OBJFW_LIBS $tmp"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
@@ -116,6 +126,7 @@ hppa*-*-hpux*)
 	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
 	dnl We need -latomic for GCC's atomics to work.
 	LIBS="$LIBS -latomic"
+	OBJFW_LIBS="$OBJFW_LIBS -latomic"
 	;;
 *-*-mint*)
 	enable_shared="no"
@@ -171,7 +182,9 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
+	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	HID_LIBS="$HID_LIBS -lwiiuse -lbte"
 	enable_shared="no"
 	enable_threads="no"	# TODO
@@ -195,8 +208,11 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 	CPPFLAGS="-isystem $DEVKITPRO/wut/include -D__WIIU__ -D__WUT__"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -isystem \$DEVKITPRO/wut/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__WIIU__ -D__WUT__"
-	LDFLAGS="-specs=$DEVKITPRO/wut/share/wut.specs"
-	LIBS="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
+	tmp="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	LIBS="$LIBS $tmp"
+	OBJFW_LIBS="$OBJFW_LIBS $tmp"
 	enable_files="no"	# TODO
 	enable_shared="no"	# TODO
 	enable_threads="no"	# TODO
@@ -226,7 +242,10 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	ASFLAGS="$ASFLAGS -march=armv5te"
 	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
-	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=ds_arm9.specs"
+	tmp="-L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
+	LIBS="$LIBS $tmp"
+	OBJFW_LIBS="$OBJFW_LIBS $tmp"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
@@ -251,9 +270,12 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	ASFLAGS="$ASFLAGS -march=armv6k"
-	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
-	LDFLAGS="$LDFLAGS -mfloat-abi=hard -mtp=soft -mword-relocations"
+	tmp="-specs=3dsx.specs -march=armv6k -mtune=mpcore -mfloat-abi=hard"
+	tmp="$tmp -mtp=soft -mword-relocations"
+	LDFLAGS="$LDFLAGS $tmp"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
 	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
+	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libctru/lib -lctru"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
@@ -279,7 +301,10 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
 	ASFLAGS="$ASFLAGS $flags"
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $flags"
 	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
+	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libnx/lib -lnx"
 	enable_shared="no"
 	enable_threads="yes"
 	enable_sockets="no"	# TODO
@@ -299,6 +324,7 @@ OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 dnl amiga-gcc requires -fexceptions in LDFLAGS in order to link in the glue code
 dnl for registering the frames.
 LDFLAGS="$LDFLAGS -fexceptions"
+OBJFW_LDFLAGS="$OBJFW_LDFLAGS -fexceptions"
 
 case "$OBJC" in
 *clang*)
@@ -638,7 +664,10 @@ case "$objc_runtime" in
 
 	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
 		dnl c++abi requires pthread on OpenBSD
-		AS_IF([test x"$ac_lib" = x"c++abi"], [LIBS="$LIBS -lpthread"])
+		AS_IF([test x"$ac_lib" = x"c++abi"], [
+			LIBS="$LIBS -lpthread"
+			OBJFW_LIBS="$OBJFW_LIBS -lpthread"
+		])
 	], [
 		AC_MSG_ERROR([$raise_exception missing!])
 	], [-lpthread])
@@ -695,14 +724,19 @@ darwin*)
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK, ["-Wl,-reexport-lobjc"])
 		LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
+		OBJFW_LDFLAGS="$OBJFW_LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
 	])
 
 	AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
 		AS_IF([test x"$exception_type" = x"DWARF"], [
-			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
+			tmp="-Wl,-U,___gxx_personality_v0"
+			LDFLAGS="$LDFLAGS $tmp"
+			OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
 		])
 		AS_IF([test x"$exception_type" = x"SjLj"], [
-			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
+			tmp="-Wl,-U,___gxx_personality_sj0"
+			LDFLAGS="$LDFLAGS $tmp"
+			OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
 		])
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
@@ -893,7 +927,10 @@ i?86 | x86_64)
 	;;
 esac
 
-AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
+AC_CHECK_LIB(m, fmod, [
+	LIBS="$LIBS -lm"
+	OBJFW_LIBS="$OBJFW_LIBS -lm"
+])
 AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
 AC_CHECK_FUNCS(strtof truncf)
@@ -967,7 +1004,10 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
-	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+	AC_CHECK_LIB(dl, dlopen, [
+		LIBS="$LIBS -ldl"
+		OBJFW_LIBS="$OBJFW_LIBS -ldl"
+	])
 ])
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
 case "$host_os" in
@@ -1009,7 +1049,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		AC_CHECK_LIB(pthread, main, LIBS="$LIBS -lpthread")
+		AC_CHECK_LIB(pthread, main, [
+			LIBS="$LIBS -lpthread"
+			OBJFW_LIBS="$OBJFW_LIBS -lpthread"
+		])
 
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
@@ -1395,12 +1438,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	haiku*)
 		LIBS="$LIBS -lnetwork"
+		OBJFW_LIBS="$OBJFW_LIBS -lnetwork"
 		;;
 	mingw*)
 		LIBS="$LIBS -lws2_32 -liphlpapi"
+		OBJFW_LIBS="$OBJFW_LIBS -lws2_32 -liphlpapi"
 		;;
 	*)
-		AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
+		AC_CHECK_LIB(socket, socket, [
+			LIBS="$LIBS -lsocket"
+			OBJFW_LIBS="$OBJFW_LIBS -lsocket"
+		])
 		;;
 	esac
 
@@ -1448,6 +1496,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
 				[Whether we have netinet/sctp.h])
 			AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
+
+			AS_IF([test x"$ac_lib" != x""], [
+				OBJFW_LIBS="$OBJFW_LIBS -l$ac_lib"
+			])
 		])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
@@ -2413,6 +2465,8 @@ AC_SUBST(DEP_ASFLAGS, '${DEP_OBJCFLAGS}')
 
 AC_SUBST(OBJFW_CPPFLAGS)
 AC_SUBST(OBJFW_OBJCFLAGS)
+AC_SUBST(OBJFW_LDFLAGS)
+AC_SUBST(OBJFW_LIBS)
 
 AC_SUBST(HID_LIBS)
 AC_SUBST(TESTS_LIBS)
