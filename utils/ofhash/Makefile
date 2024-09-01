@@ -4,6 +4,7 @@ PROG = ofhash${PROG_SUFFIX}
 SRCS = OFHash.m
 DATA = localization/de.json		\
        localization/localizations.json
+MAN = ofhash.1
 
 include ../../buildsys.mk
 
