@@ -5,6 +5,7 @@ SRCS = OFHTTP.m		\
        ProgressBar.m
 DATA = localization/de.json		\
        localization/localizations.json
+MAN = ofhttp.1
 
 include ../../buildsys.mk
 

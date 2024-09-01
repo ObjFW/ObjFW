@@ -1,0 +1,80 @@
+.\"
+.\" Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+.\"
+.\" All rights reserved.
+.\"
+.\" This program is free software: you can redistribute it and/or modify it
+.\" under the terms of the GNU Lesser General Public License version 3.0 only,
+.\" as published by the Free Software Foundation.
+.\"
+.\" This program is distributed in the hope that it will be useful, but WITHOUT
+.\" ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\" FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+.\" version 3.0 for more details.
+.\"
+.\" You should have received a copy of the GNU Lesser General Public License
+.\" version 3.0 along with this program. If not, see
+.\" <https://www.gnu.org/licenses/>.
+.\"
+.TH ofhttp 1
+.SH NAME
+ofhttp - perform HTTP and HTTPS requests and download files
+.SH SYNOPSIS
+.B ofhttp
+[\fBoptions\fR] \firi1\fR [\fIiri2\fR ...]
+.SH DESCRIPTION
+.B ofhttp
+is a program to perform HTTP and HTTPS requests and download files.
+.SH OPTIONS
+.TP
+.BR \fB\-b\fR " " \fIfile\fR ", " \fB\-\-body=\fIfile\fR
+Specify the file to send as body (\fB-\fR for standard input).
+.TP
+.BR \fB\-c\fR ", " \fB\-\-continue\fR
+Continue download of existing file.
+.TP
+.BR \fB\-f\fR ", " \fB\-\-force\fR
+Force / overwrite existing file.
+.TP
+.BR \fB\-h\fR ", " \fB\-\-help\fR
+Show the help.
+.TP
+.BR \fB\-H\fR " " \fIheader\fR ", " \fB\-\-header=\fIheader\fR
+Add a header (e.g. \fBX-Foo:Bar\fR).
+.TP
+.BR \fB\-m\fR " " \fImethod\fR ", " \fB\-\-method=\fImethod\fR
+Set the method of the HTTP request.
+.TP
+.BR \fB\-o\fR " " \fIfile\fR ", " \fB\-\-output=\fIfile\fR
+Specify the output file name.
+.TP
+.BR \fB\-O\fR ", " \fB\-\-detect\-filename\fR
+Do a HEAD request to detect the file name.
+.TP
+.BR \fB\-P\fR " " \fIproxy\fR ", " \fB\-\-proxy=\fIproxy\fR
+Sepcify SOCKS5 proxy.
+.TP
+.BR \fB\-q\fR ", " \fB\-\-quiet\fR
+Quiet mode (no output, except errors).
+.TP
+.BR \fB\-v\fR ", " \fB\-\-verbose\fR
+Verbose mode (print headers).
+.TP
+.BR \fB\-\-insecure\fR
+Ignore TLS errors and allow insecure redirects.
+.TP
+.BR \fB\-\-ignore\-status\fR
+Ignore HTTP status code.
+.SH EXAMPLES
+Download \fBhttps://example.com/testfile.bin\fR:
+.PP
+	ofhttp https://example.com/testfile.bin
+.PP
+Download \fBhttps://example.com/testfile.bin\fR via Tor:
+.PP
+	ofhttp -P 127.0.0.1:9050 https://example.com/testfile.bin
+.PP
+Send a \fBPOST\fR request to an endpoint expecting JSON and only print the
+response:
+.PP
+	echo '{"a":"b"}' | ofhttp -mPOST -b- -qo- https://example.com/json
