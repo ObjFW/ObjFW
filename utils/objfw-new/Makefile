@@ -6,6 +6,7 @@ SRCS = NewApp.m		\
        NewTest.m	\
        ObjFWNew.m	\
        Property.m
+MAN = objfw-new.1
 
 include ../../buildsys.mk
 
