@@ -29,67 +29,67 @@ objfw-compile - compile simple projects using ObjFW
 is a program to compile simple projects using ObjFW.
 .SH OPTIONS
 .TP
-.BR \-o " " \fIoutname\fR
+.BR \fB\-o\fR " " \fIoutname\fR
 Specify the output name (not the file name!).
 .TP
-.BR \-\-arc
+.BR \fB\-\-arc\fR
 Use automatic reference counting.
 .TP
-.BR \-\-lib " " \fIversion\fR
+.BR \fB\-\-lib\fR " " \fIversion\fR
 Compile a static library (with the specified version) instead of an application.
 .TP
-.BR \-\-plugin
+.BR \fB\-\-plugin\fR
 Compile a plugin instead of an application.
 .TP
-.BR \-\-package " " \fIname\fR
+.BR \fB\-\-package\fR " " \fIname\fR
 Use the specified package.
 .TP
-.BR \-\-builddir " " \fIdir\fR
+.BR \fB\-\-builddir\fR " " \fIdir\fR
 Place built objects into the specified directory.
 .TP
-.BR \-D\fIdefine\fR ", " \-D " " \fIdefine\fR
+.BR \fB\-D\fIdefine\fR ", " \fB\-D\fR " " \fIdefine\fR
 Pass the specified define to the compiler.
 .TP
-.BR \-framework " " \fIframework\fR
+.BR \fB\-framework\fR " " \fIframework\fR
 Pass the specified -framework argument to the linker (macOS / iOS only).
 .TP
-.BR \-f\fIflag\fR
+.BR \fB\-f\fIflag\fR
 Pass the specified -f flag to the compiler.
 .TP
-.BR \-F\fIdir\fR ", " \-F " " \fIdir\fR
+.BR \fB\-F\fIdir\fR ", " \fB\-F\fR " " \fIdir\fR
 Pass the specified -F flag to the linker (macOS / iOS only).
 .TP
-.BR \-g\fIflag\fR
+.BR \fB\-g\fIflag\fR
 Pass the specified -g flag to the compiler.
 .TP
-.BR \-I\fIdir\fR ", " \-I " " \fIdir\fR
+.BR \fB\-I\fIdir\fR ", " \fB\-I\fR " " \fIdir\fR
 Pass the specified -I flag to the compiler.
 .TP
-.BR \-l\fIlib\fR ", " \-l " " \fIlib\fR
+.BR \fB\-l\fIlib\fR ", " \fB\-l\fR " " \fIlib\fR
 Pass the specified -l flag to the linker.
 .TP
-.BR \-L\fIdir\fR ", " \-L " " \fIdir\fR
+.BR \fB\-L\fIdir\fR ", " \fB\-L\fR " " \fIdir\fR
 Pass the specified -L flag to the linker.
 .TP
-.BR \-m\fIflag\fR
+.BR \fB\-m\fIflag\fR
 Pass the specified -m flag to the compiler.
 .TP
-.BR \-O\fIlevel\fR
+.BR \fB\-O\fIlevel\fR
 Pass the specified -O flag to the compiler.
 .TP
-.BR \-pthread
+.BR \fB\-pthread\fR
 Pass -pthread to the compiler and linker.
 .TP
-.BR \-std=\fIlang\fR
+.BR \fB\-std=\fIlang\fR
 Pass the specified -std= flag to the compiler.
 .TP
-.BR \-Wl,\fIflag\fR
+.BR \fB\-Wl,\fIflag\fR
 Pass the specified -Wl, flag to the linker.
 .TP
-.BR \-W\fIwarning\fR
+.BR \fB\-W\fIwarning\fR
 Pass the specified -W flag to the compiler.
 .TP
-.BR \-\-help
+.BR \fB\-\-help\fR
 Show the help.
 .SH EXAMPLES
 Compile a program with two source files:
