@@ -4,6 +4,7 @@ PROG = ofdns${PROG_SUFFIX}
 SRCS = OFDNS.m
 DATA = localization/de.json		\
        localization/localizations.json
+MAN = ofdns.1
 
 include ../../buildsys.mk
 
