@@ -49,11 +49,12 @@ OFOnce(OFOnceControl *control, void (*function)(void))
 		return;
 
 	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
+		OFAcquireMemoryBarrier();
+
 		function();
-
-		OFMemoryBarrier();
-
 		OFAtomicIntIncrease(control);
+
+		OFReleaseMemoryBarrier();
 	} else
 		while (*control == 1)
 			OFYieldThread();
