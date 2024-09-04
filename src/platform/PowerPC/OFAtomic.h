@@ -398,7 +398,7 @@ static OF_INLINE void
 OFMemoryBarrier(void)
 {
 	__asm__ __volatile__ (
-	    ".long 0x7C2004AC /* lwsync */" ::: "memory"
+	    ".long 0x7C0004AC /* sync */" ::: "memory"
 	);
 }
 
