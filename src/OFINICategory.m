@@ -22,8 +22,9 @@
 #import "OFINICategory.h"
 #import "OFINICategory+Private.h"
 #import "OFArray.h"
-#import "OFString.h"
+#import "OFCharacterSet.h"
 #import "OFStream.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -42,16 +43,17 @@
 }
 @end
 
+static OFCharacterSet *needsEscapeCharacterSet;
+
 static OFString *
 escapeString(OFString *string)
 {
 	OFMutableString *mutableString;
 
-	/* FIXME: Optimize */
-	if (![string hasPrefix: @" "] && ![string hasPrefix: @"\t"] &&
-	    ![string hasPrefix: @"\f"] && ![string hasSuffix: @" "] &&
-	    ![string hasSuffix: @"\t"] && ![string hasSuffix: @"\f"] &&
-	    ![string containsString: @"\""] && ![string containsString: @"="])
+	if (![string hasPrefix: @" "] && ![string hasSuffix: @" "] &&
+	    ![string hasPrefix: @"\t"] && ![string hasSuffix: @"\t"] &&
+	    [string indexOfCharacterFromSet: needsEscapeCharacterSet] ==
+	    OFNotFound)
 		return string;
 
 	mutableString = [[string mutableCopy] autorelease];
@@ -101,6 +103,15 @@ escapeString(OFString *string)
 
 @implementation OFINICategory
 @synthesize name = _name;
+
++ (void)initialize
+{
+	if (self != [OFINICategory class])
+		return;
+
+	needsEscapeCharacterSet = [[OFCharacterSet alloc]
+	    initWithCharactersInString: @"\r\n\f\"\\="];
+}
 
 - (instancetype)of_initWithName: (OFString *)name OF_DIRECT
 {
