@@ -26,7 +26,9 @@
 #import "OFEmbeddedIRIHandler.h"
 #import "OFIRI.h"
 #import "OFMemoryStream.h"
+#import "OFNumber.h"
 
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
 
@@ -125,5 +127,46 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 						      mode: mode
 						     errNo: ENOENT];
+}
+
+- (OFFileAttributes)attributesOfItemAtIRI: (OFIRI *)IRI
+{
+	OFString *path;
+
+	if (![IRI.scheme isEqual: @"embedded"] || IRI.host.length > 0 ||
+	    IRI.port != nil || IRI.user != nil || IRI.password != nil ||
+	    IRI.query != nil || IRI.fragment != nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((path = IRI.path) == nil) {
+		@throw [OFInvalidArgumentException exception];
+	}
+
+#ifdef OF_HAVE_THREADS
+	OFEnsure(OFPlainMutexLock(&mutex) == 0);
+	@try {
+#endif
+		for (size_t i = 0; i < numEmbeddedFiles; i++) {
+			OFNumber *fileSize;
+
+			if (![embeddedFiles[i].path isEqual: path])
+				continue;
+
+			fileSize = [OFNumber numberWithUnsignedLongLong:
+			    embeddedFiles[i].size];
+
+			return [OFDictionary dictionaryWithKeysAndObjects:
+			    OFFileSize, fileSize,
+			    OFFileType, OFFileTypeRegular,
+			    nil];
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		OFEnsure(OFPlainMutexUnlock(&mutex) == 0);
+	}
+#endif
+
+	@throw [OFGetItemAttributesFailedException exceptionWithIRI: IRI
+							      errNo: ENOENT];
 }
 @end
