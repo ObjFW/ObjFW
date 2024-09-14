@@ -82,6 +82,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
+		{ '\0', @"rmd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
 		{ '\0', @"sha224", 0, &calculateSHA224, NULL },
 		{ '\0', @"sha256", 0, &calculateSHA256, NULL },
