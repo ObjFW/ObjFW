@@ -1336,7 +1336,7 @@ OF_ROOT_CLASS
  *	    returns!
  *
  * @param selector The selector not understood by the receiver
- * @throw OFNotImplementedException
+ * @throw OFNotImplementedException The method is not implemented
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
