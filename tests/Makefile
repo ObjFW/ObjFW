@@ -101,7 +101,8 @@ SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
 SRCS_SCTP = OFSCTPSocketTests.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m		\
+		    OFUNIXSequencedPacketSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m

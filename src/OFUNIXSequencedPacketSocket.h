@@ -17,31 +17,32 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFStreamSocket.h"
+#import "OFSequencedPacketSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-
 /**
- * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h ObjFW/ObjFW.h
+ * @protocol OFUNIXSequencedPacketSocketDelegate \
+ *	     OFUNIXSequencedPacketSocket.h ObjFW/ObjFW.h
  *
- * A delegate for OFUNIXStreamSocket.
+ * A delegate for OFUNIXSequencedPacketSocket.
  */
-@protocol OFUNIXStreamSocketDelegate <OFStreamSocketDelegate>
+@protocol OFUNIXSequencedPacketSocketDelegate <OFSequencedPacketSocketDelegate>
 @end
 
 /**
- * @class OFUNIXStreamSocket OFUNIXStreamSocket.h ObjFW/ObjFW.h
+ * @class OFUNIXSequencedPacketSocket \
+ *	  OFUNIXSequencedPacketSocket.h ObjFW/ObjFW.h
  *
- * @brief A class which provides methods to create and use UNIX stream sockets.
+ * @brief A class which provides methods to create and use UNIX sequenced
+ *	  packet sockets.
  *
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
  */
-@interface OFUNIXStreamSocket: OFStreamSocket
+@interface OFUNIXSequencedPacketSocket: OFSequencedPacketSocket
 {
-	OF_RESERVE_IVARS(OFUNIXStreamSocket, 4)
+	OF_RESERVE_IVARS(OFUNIXSequencedPacketSocket, 4)
 }
 
 /**
@@ -51,10 +52,10 @@ OF_ASSUME_NONNULL_BEGIN
  *	 still ongoing.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    id <OFUNIXStreamSocketDelegate> delegate;
+    id <OFUNIXSequencedPacketSocketDelegate> delegate;
 
 /**
- * @brief Connects the OFUNIXStreamSocket to the specified path.
+ * @brief Connects the OFUNIXSequencedPacketSocket to the specified path.
  *
  * @param path The path to connect to
  * @throw OFConnectUNIXSocketFailedException Connecting failed

@@ -96,6 +96,7 @@
 # endif
 # ifdef OF_HAVE_UNIX_SOCKETS
 #  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXSequencedPacketSocket.h"
 #  import "OFUNIXStreamSocket.h"
 # endif
 # ifdef OF_HAVE_IPX

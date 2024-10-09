@@ -161,7 +161,8 @@ SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
 SRCS_SCTP = OFSCTPSocket.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m		\
+		    OFUNIXSequencedPacketSocket.m	\
 		    OFUNIXStreamSocket.m
 SRCS_SUBPROCESSES = OFSubprocess.m
 SRCS_THREADS = OFCondition.m		\
