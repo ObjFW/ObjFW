@@ -60,6 +60,8 @@
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
 		case EPERM:
+		case EPROTONOSUPPORT:
+		case ESOCKTNOSUPPORT:
 			OTSkip(@"UNIX sequenced packet sockets unsupported");
 		default:
 			@throw e;
