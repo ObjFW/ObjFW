@@ -50,6 +50,12 @@
 		OTAssertNotNil(string);
 		OTAssertEqual(string.length, pageSize - 3);
 		OTAssertEqual(strcmp(string.UTF8String, cString), 0);
+
+		string = [stream readString];
+		OTAssertEqualObjects(string, @"aaa");
+
+		string = [stream readString];
+		OTAssertEqualObjects(string, @"b");
 	} @finally {
 		OFFreeMemory(cString);
 	}
@@ -59,7 +65,7 @@
 @implementation OFTestStream
 - (bool)lowlevelIsAtEndOfStream
 {
-	return (_state > 1);
+	return (_state > 7);
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)size
@@ -84,6 +90,40 @@
 
 		_state++;
 		return pageSize;
+	case 2:
+		if (size < 1)
+			return 0;
+
+		memcpy(buffer, "", 1);
+
+		_state++;
+		return 1;
+	case 3:
+	case 4:
+	case 5:
+		if (size < 1)
+			return 0;
+
+		memcpy(buffer, "a", 1);
+
+		_state++;
+		return 1;
+	case 6:
+		if (size < 1)
+			return 0;
+
+		memcpy(buffer, "", 1);
+
+		_state++;
+		return 1;
+	case 7:
+		if (size < 1)
+			return 0;
+
+		memcpy(buffer, "b", 1);
+
+		_state++;
+		return 1;
 	}
 
 	return 0;

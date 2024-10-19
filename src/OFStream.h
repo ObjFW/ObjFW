@@ -677,6 +677,29 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (OFData *)readDataUntilEndOfStream;
 
 /**
+ * @brief Reads a string until a `\0` appears in the stream or the end of the
+ *	  stream is reached.
+ *
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)readString;
+
+/**
+ * @brief Reads a string with the specified encoding until a `\0` appears in
+ *	  the stream or the end of the stream is reached.
+ *
+ * @param encoding The encoding of the string to read from the stream
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
+
+/**
  * @brief Reads a string with the specified length from the stream.
  *
  * If `\0` appears in the stream, the string will be truncated at the `\0` and
@@ -835,6 +858,29 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 			    block: (OFStreamAsyncReadLineBlock)block;
 # endif
 #endif
+
+/**
+ * @brief Tries to read a string until a `\0` appears in the stream or the end
+ *	  of the stream is reached.
+ *
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)tryReadString;
+
+/**
+ * @brief Tries to read a string with the specified encoding until a `\0`
+ *	  appears in the stream or the end of the stream is reached.
+ *
+ * @param encoding The encoding of the string to read from the stream
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to read a line from the stream (see @ref readLine) and returns

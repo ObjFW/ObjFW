@@ -428,6 +428,22 @@
 	return data;
 }
 
+- (OFString *)readString
+{
+	return [self readStringWithEncoding: OFStringEncodingUTF8];
+}
+
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding
+{
+	OFString *string = nil;
+
+	while ((string = [self tryReadStringWithEncoding: encoding]) == nil)
+		if (self.atEndOfStream)
+			return nil;
+
+	return string;
+}
+
 - (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
@@ -675,6 +691,144 @@
 # endif
 #endif
 
+- (OFString *)tryReadString
+{
+	return [self tryReadStringWithEncoding: OFStringEncodingUTF8];
+}
+
+- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding
+{
+	size_t pageSize, bufferLength;
+	char *buffer, *readBuffer;
+	OFString *ret;
+
+	/* Look if there's something in our buffer */
+	if (!_waitingForDelimiter && _readBuffer != NULL) {
+		for (size_t i = 0; i < _readBufferLength; i++) {
+			if (_readBuffer[i] == '\0') {
+				ret = [OFString
+				    stringWithCString: _readBuffer
+					     encoding: encoding
+					       length: i];
+
+				_readBuffer += i + 1;
+				_readBufferLength -= i + 1;
+
+				_waitingForDelimiter = false;
+				return ret;
+			}
+		}
+	}
+
+	/* Read and see if we got a \0 */
+	pageSize = [OFSystemInfo pageSize];
+	buffer = OFAllocMemory(1, pageSize);
+
+	@try {
+		if ([self lowlevelIsAtEndOfStream]) {
+			if (_readBuffer == NULL) {
+				_waitingForDelimiter = false;
+				return nil;
+			}
+
+			ret = [OFString stringWithCString: _readBuffer
+						 encoding: encoding
+						   length: _readBufferLength];
+
+			OFFreeMemory(_readBufferMemory);
+			_readBuffer = _readBufferMemory = NULL;
+			_readBufferLength = 0;
+
+			_waitingForDelimiter = false;
+			return ret;
+		}
+
+		bufferLength = [self lowlevelReadIntoBuffer: buffer
+						     length: pageSize];
+
+		/* Look if there's a \0 */
+		for (size_t i = 0; i < bufferLength; i++) {
+			if (buffer[i] == '\0') {
+				size_t retLength;
+				char *retCString;
+
+				retLength = _readBufferLength + i;
+				retCString = OFAllocMemory(retLength, 1);
+
+				memcpy(retCString, _readBuffer,
+				    _readBufferLength);
+				memcpy(retCString + _readBufferLength,
+				    buffer, i);
+
+				@try {
+					ret = [OFString
+					    stringWithCString: retCString
+						     encoding: encoding
+						       length: retLength];
+				} @catch (id e) {
+					if (bufferLength > 0) {
+						/*
+						 * Append data to _readBuffer
+						 * to prevent loss of data.
+						 */
+						readBuffer = OFAllocMemory(
+						    _readBufferLength +
+						    bufferLength, 1);
+
+						memcpy(readBuffer, _readBuffer,
+						    _readBufferLength);
+						memcpy(readBuffer +
+						    _readBufferLength,
+						    buffer, bufferLength);
+
+						OFFreeMemory(_readBufferMemory);
+						_readBuffer = readBuffer;
+						_readBufferMemory = readBuffer;
+						_readBufferLength +=
+						    bufferLength;
+					}
+
+					@throw e;
+				} @finally {
+					OFFreeMemory(retCString);
+				}
+
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
+				if (readBuffer != NULL)
+					memcpy(readBuffer, buffer + i + 1,
+					    bufferLength - i - 1);
+
+				OFFreeMemory(_readBufferMemory);
+				_readBuffer = _readBufferMemory = readBuffer;
+				_readBufferLength = bufferLength - i - 1;
+
+				_waitingForDelimiter = false;
+				return ret;
+			}
+		}
+
+		/* No \0 was found */
+		if (bufferLength > 0) {
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
+
+			memcpy(readBuffer, _readBuffer, _readBufferLength);
+			memcpy(readBuffer + _readBufferLength,
+			    buffer, bufferLength);
+
+			OFFreeMemory(_readBufferMemory);
+			_readBuffer = _readBufferMemory = readBuffer;
+			_readBufferLength += bufferLength;
+		}
+	} @finally {
+		OFFreeMemory(buffer);
+	}
+
+	_waitingForDelimiter = true;
+	return nil;
+}
+
 - (OFString *)tryReadLine
 {
 	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
@@ -840,7 +994,6 @@
 	_waitingForDelimiter = true;
 	return nil;
 }
-
 
 - (OFString *)readUntilDelimiter: (OFString *)delimiter
 {
