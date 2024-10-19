@@ -114,6 +114,16 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+@interface OFRunLoopReadStringQueueItem: OFRunLoopQueueItem
+{
+@public
+# ifdef OF_HAVE_BLOCKS
+	OFStreamAsyncReadStringBlock _block;
+# endif
+	OFStringEncoding _encoding;
+}
+@end
+
 @interface OFRunLoopReadLineQueueItem: OFRunLoopQueueItem
 {
 @public
@@ -529,6 +539,49 @@ static OFRunLoop *mainRunLoop = nil;
 
 		_readLength = 0;
 		return true;
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
+# ifdef OF_HAVE_BLOCKS
+- (void)dealloc
+{
+	[_block release];
+
+	[super dealloc];
+}
+# endif
+@end
+
+@implementation OFRunLoopReadStringQueueItem
+- (bool)handleObject: (id)object
+{
+	OFString *string;
+	id exception = nil;
+
+	@try {
+		string = [object tryReadStringWithEncoding: _encoding];
+	} @catch (id e) {
+		string = nil;
+		exception = e;
+	}
+
+	if (string == nil && ![object isAtEndOfStream] && exception == nil)
+		return true;
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(string, exception);
+	else {
+# endif
+		if (![_delegate respondsToSelector:
+		    @selector(stream:didReadString:exception:)])
+			return false;
+
+		return [_delegate stream: object
+			   didReadString: string
+			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -1282,6 +1335,26 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_buffer = buffer;
 	queueItem->_exactLength = exactLength;
+
+	QUEUE_ITEM
+}
+
++ (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
+					    > *)stream
+			      encoding: (OFStringEncoding)encoding
+				  mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+				 block: (OFStreamAsyncReadStringBlock)block
+# endif
+			      delegate: (id <OFStreamDelegate>)delegate
+{
+	NEW_READ(OFRunLoopReadStringQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_encoding = encoding;
 
 	QUEUE_ITEM
 }

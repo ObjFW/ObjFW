@@ -53,6 +53,19 @@ OF_ASSUME_NONNULL_BEGIN
 typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception);
 
 /**
+ * @brief A block which is called when a string was read asynchronously from a
+ *	  stream.
+ *
+ * @param string The string which has been read or `nil` when the end of stream
+ *		 occurred
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return A bool whether the same block should be used for the next read
+ */
+typedef bool (^OFStreamAsyncReadStringBlock)(OFString *_Nullable string,
+    id _Nullable exception);
+
+/**
  * @brief A block which is called when a line was read asynchronously from a
  *	  stream.
  *
@@ -115,6 +128,20 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
 	  exception: (nullable id)exception;
+
+/**
+ * @brief This method is called when a string was read asynchronously from a
+ *	  stream.
+ *
+ * @param stream The stream on which a line was read
+ * @param string The string which has been read or `nil` when the end of stream
+ *	       occurred
+ * @param exception An exception that occurred while reading, or nil on success
+ * @return A bool whether the read should be repeated
+ */
+-  (bool)stream: (OFStream *)stream
+  didReadString: (nullable OFString *)string
+      exception: (nullable id)exception;
 
 /**
  * @brief This method is called when a line was read asynchronously from a
@@ -773,6 +800,39 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 #ifdef OF_HAVE_SOCKETS
 /**
+ * @brief Asynchronously reads until a `\0`, end of stream or an exception
+ *	  occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ */
+- (void)asyncReadString;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode;
+
+/**
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
@@ -806,6 +866,57 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 		      runLoopMode: (OFRunLoopMode)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
+/**
+ * @brief Asynchronously reads until a `\0`, end of stream or an exception
+ *	  occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again when the
+ *		next string has been received. If you want the next block in
+ *		the queue to handle the next string, you need to return false
+ *		from the block.
+ */
+- (void)asyncReadStringWithBlock: (OFStreamAsyncReadStringBlock)block;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again when the
+ *		next string has been received. If you want the next block in
+ *		the queue to handle the next string, you need to return false
+ *		from the block.
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			      block: (OFStreamAsyncReadStringBlock)block;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again when the
+ *		next string has been received. If you want the next block in
+ *		the queue to handle the next string, you need to return false
+ *		from the block.
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+			      block: (OFStreamAsyncReadStringBlock)block;
+
 /**
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.

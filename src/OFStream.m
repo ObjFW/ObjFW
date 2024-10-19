@@ -632,6 +632,33 @@
 }
 
 #ifdef OF_HAVE_SOCKETS
+- (void)asyncReadString
+{
+	[self asyncReadStringWithEncoding: OFStringEncodingUTF8
+			      runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+{
+	[self asyncReadStringWithEncoding: encoding
+			      runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	OFStream <OFReadyForReadingObserving> *stream =
+	    (OFStream <OFReadyForReadingObserving> *)self;
+
+	[OFRunLoop of_addAsyncReadStringForStream: stream
+					 encoding: encoding
+					     mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					    block: NULL
+# endif
+					 delegate: _delegate];
+}
+
 - (void)asyncReadLine
 {
 	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
@@ -660,6 +687,35 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
+- (void)asyncReadStringWithBlock: (OFStreamAsyncReadStringBlock)block
+{
+	[self asyncReadStringWithEncoding: OFStringEncodingUTF8
+			      runLoopMode: OFDefaultRunLoopMode
+				    block: block];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			      block: (OFStreamAsyncReadStringBlock)block
+{
+	[self asyncReadStringWithEncoding: encoding
+			      runLoopMode: OFDefaultRunLoopMode
+				    block: block];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+			      block: (OFStreamAsyncReadStringBlock)block
+{
+	OFStream <OFReadyForReadingObserving> *stream =
+	    (OFStream <OFReadyForReadingObserving> *)self;
+
+	[OFRunLoop of_addAsyncReadStringForStream: stream
+					 encoding: encoding
+					     mode: runLoopMode
+					    block: block
+					 delegate: nil];
+}
+
 - (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
 {
 	[self asyncReadLineWithEncoding: OFStringEncodingUTF8

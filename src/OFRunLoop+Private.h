@@ -60,6 +60,16 @@ OF_DIRECT_MEMBERS
 			   block: (nullable OFStreamAsyncReadBlock)block
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
++ (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
+					    > *)stream
+			      encoding: (OFStringEncoding)encoding
+				  mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+				 block: (nullable OFStreamAsyncReadStringBlock)
+					    block
+# endif
+			      delegate: (nullable id <OFStreamDelegate>)
+					    delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (OFStringEncoding)encoding
