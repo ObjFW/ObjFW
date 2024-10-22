@@ -101,7 +101,7 @@ scale(float value, float min, float max, float center)
 		else
 			_profile = [[OHWiimote alloc] init];
 
-		[self retrieveState];
+		[self updateState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -117,7 +117,7 @@ scale(float value, float min, float max, float center)
 	[super dealloc];
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	OFDictionary *buttons = _profile.buttons;
 	OFDictionary *directionalPads = _profile.directionalPads;

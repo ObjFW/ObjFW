@@ -144,7 +144,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 		_extendedGamepad = [[OHXboxGamepad alloc]
 		    initWithHasGuideButton: (XInputVersion != 910)];
 
-		[self retrieveState];
+		[self updateState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -162,7 +162,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	[super dealloc];
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	XINPUT_STATE state = { 0 };
 

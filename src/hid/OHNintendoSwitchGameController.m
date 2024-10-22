@@ -87,7 +87,7 @@ static const size_t maxControllers = 8;
 		_extendedGamepad =
 		    [[OHNintendoSwitchExtendedGamepad alloc] init];
 
-		[self retrieveState];
+		[self updateState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -103,7 +103,7 @@ static const size_t maxControllers = 8;
 	[super dealloc];
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *)

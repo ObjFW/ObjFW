@@ -294,7 +294,7 @@ isSubclassOfClass(Class class, Class superclass)
 			OHGameControllerButton *button =
 			    [controller.profile.buttons objectForKey: @"A"];
 
-			[controller retrieveState];
+			[controller updateState];
 
 			if (button.pressed)
 				break;
@@ -552,7 +552,7 @@ isSubclassOfClass(Class class, Class superclass)
 		    [controller.profile.buttons objectForKey: @"Start"];
 # endif
 
-		[controller retrieveState];
+		[controller updateState];
 
 		if (button.pressed)
 			break;

@@ -330,7 +330,7 @@ scale(float value, float min, float max)
 	}
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct input_event event;

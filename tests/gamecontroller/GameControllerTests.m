@@ -221,7 +221,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			[OFStdOut writeLine: controller.description];
 
 			@try {
-				[controller retrieveState];
+				[controller updateState];
 			} @catch (OFReadFailedException *e) {
 				[OFStdOut setForegroundColor: [OFColor red]];
 				[OFStdOut writeString: e.description];

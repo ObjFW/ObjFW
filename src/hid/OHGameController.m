@@ -101,7 +101,7 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 	return nil;
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

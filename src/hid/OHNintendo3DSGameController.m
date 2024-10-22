@@ -64,7 +64,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	@try {
 		_extendedGamepad = [[OHNintendo3DSExtendedGamepad alloc] init];
 
-		[self retrieveState];
+		[self updateState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -80,7 +80,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	[super dealloc];
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *)

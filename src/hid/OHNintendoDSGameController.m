@@ -63,7 +63,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	@try {
 		_gamepad = [[OHNintendoDSGamepad alloc] init];
 
-		[self retrieveState];
+		[self updateState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -79,7 +79,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	[super dealloc];
 }
 
-- (void)retrieveState
+- (void)updateState
 {
 	OFDictionary *buttons = _gamepad.buttons;
 	OHGameControllerDirectionalPad *dPad =

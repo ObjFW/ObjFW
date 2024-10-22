@@ -94,14 +94,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFArray OF_GENERIC(OHGameController *) *)controllers;
 
 /**
- * @brief Retrieves the current state from the game controller.
+ * @brief Updates the current state from the game controller.
  *
  * The state returned by @ref OHGameController's methods does not change until
  * this method is called.
  *
  * @throw OFReadFailedException The controller's state could not be read
  */
-- (void)retrieveState;
+- (void)updateState;
 @end
 
 #ifdef __cplusplus
