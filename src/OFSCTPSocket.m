@@ -363,24 +363,37 @@ static const OFRunLoopMode connectRunLoopMode =
 		.iov_base = buffer,
 		.iov_len = length
 	};
-	struct sctp_rcvinfo rcvinfo;
-	socklen_t rcvinfoSize = (socklen_t)sizeof(rcvinfo);
-	unsigned int infotype = SCTP_RECVV_RCVINFO;
-	int flags = 0;
+	char cmsgBuffer[CMSG_SPACE(sizeof(struct sctp_rcvinfo))];
+	struct msghdr msg = {
+		.msg_iov = &iov,
+		.msg_iovlen = 1,
+		.msg_control = cmsgBuffer,
+		.msg_controllen = sizeof(cmsgBuffer)
+	};
+	struct cmsghdr *cmsg;
 
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = sctp_recvv(_socket, &iov, 1, NULL, NULL,
-	    &rcvinfo, &rcvinfoSize, &infotype, &flags)) < 0)
+	if ((ret = recvmsg(_socket, &msg, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: _OFSocketErrNo()];
 
-	if (info != NULL) {
-		if (infotype == SCTP_RECVV_RCVINFO &&
-		    rcvinfoSize >= (socklen_t)sizeof(rcvinfo)) {
+	if (info == NULL)
+		return ret;
+
+	*info = nil;
+
+	for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL;
+	    cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+		if (cmsg->cmsg_level != IPPROTO_SCTP)
+			continue;
+
+		if (cmsg->cmsg_type == SCTP_RCVINFO) {
+			struct sctp_rcvinfo rcvinfo;
+			memcpy(&rcvinfo, CMSG_DATA(cmsg), sizeof(rcvinfo));
 			OFNumber *streamID = [OFNumber numberWithUnsignedShort:
 			    rcvinfo.rcv_sid];
 			OFNumber *PPID = [OFNumber numberWithUnsignedLong:
@@ -392,8 +405,9 @@ static const OFRunLoopMode connectRunLoopMode =
 			    OFSCTPStreamID, streamID,
 			    OFSCTPPPID, PPID,
 			    OFSCTPUnordered, unordered, nil];
-		} else
-			*info = [OFDictionary dictionary];
+
+			break;
+		}
 	}
 
 	return ret;
@@ -469,6 +483,14 @@ static const OFRunLoopMode connectRunLoopMode =
 		.snd_flags = ([[info objectForKey: OFSCTPUnordered] boolValue]
 		    ? SCTP_UNORDERED : 0)
 	};
+	char cmsgBuffer[CMSG_SPACE(sizeof(sndinfo))];
+	struct cmsghdr *cmsg = (struct cmsghdr *)(void *)&cmsgBuffer;
+	struct msghdr msg = {
+		.msg_iov = &iov,
+		.msg_iovlen = 1,
+		.msg_control = &cmsgBuffer,
+		.msg_controllen = sizeof(cmsgBuffer)
+	};
 
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -476,8 +498,12 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = sctp_sendv(_socket, &iov, 1, NULL, 0, &sndinfo,
-	    (socklen_t)sizeof(sndinfo), SCTP_SENDV_SNDINFO, 0)) < 0)
+	cmsg->cmsg_level = IPPROTO_SCTP;
+	cmsg->cmsg_type = SCTP_SNDINFO;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(sndinfo));
+	memcpy(CMSG_DATA(cmsg), &sndinfo, sizeof(sndinfo));
+
+	if ((bytesWritten = sendmsg(_socket, &msg, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length

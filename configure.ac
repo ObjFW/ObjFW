@@ -1491,16 +1491,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADER(netinet/sctp.h, [
-		AC_SEARCH_LIBS(sctp_recvv, sctp, [
-			AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
-			AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
-				[Whether we have netinet/sctp.h])
-			AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
-
-			AS_IF([test x"$ac_lib" != x""], [
-				OBJFW_LIBS="$OBJFW_LIBS -l$ac_lib"
-			])
-		])
+		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
+		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
+			[Whether we have netinet/sctp.h])
+		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
 	AC_CHECK_HEADERS([net/if.h], [], [], [
