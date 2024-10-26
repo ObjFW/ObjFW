@@ -1495,6 +1495,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
 			[Whether we have netinet/sctp.h])
 		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
+	], [], [
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
 	AC_CHECK_HEADERS([net/if.h], [], [], [

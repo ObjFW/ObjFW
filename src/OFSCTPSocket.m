@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#define _XPG4_2
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,6 +53,10 @@
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#ifdef OF_SOLARIS
+# define SCTP_UNORDERED MSG_UNORDERED
+#endif
 
 const OFSCTPMessageInfoKey OFSCTPStreamID = @"OFSCTPStreamID";
 const OFSCTPMessageInfoKey OFSCTPPPID = @"OFSCTPPPID";
@@ -94,11 +100,11 @@ static const OFRunLoopMode connectRunLoopMode =
 - (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
+	const struct sctp_event_subscribe events = {
+		.sctp_data_io_event = 1
+	};
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
-#endif
-#ifdef SCTP_RECVRCVINFO
-	int one = 1;
 #endif
 
 	if (_socket != OFInvalidSocketHandle)
@@ -117,9 +123,8 @@ static const OFRunLoopMode connectRunLoopMode =
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-#ifdef SCTP_RECVRCVINFO
-	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_RECVRCVINFO, &one,
-	    sizeof(one)) != 0) {
+	if (setsockopt(_socket, IPPROTO_SCTP, SCTP_EVENTS, &events,
+	    sizeof(events)) != 0) {
 		*errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
@@ -127,7 +132,6 @@ static const OFRunLoopMode connectRunLoopMode =
 
 		return false;
 	}
-#endif
 
 	return true;
 }
@@ -333,21 +337,21 @@ static const OFRunLoopMode connectRunLoopMode =
 	return address;
 }
 
-#ifdef SCTP_RECVRCVINFO
 - (instancetype)accept
 {
+	const struct sctp_event_subscribe events = {
+		.sctp_data_io_event = 1
+	};
 	OFSCTPSocket *accepted = [super accept];
-	int one = 1;
 
-	if (setsockopt(accepted->_socket, IPPROTO_SCTP, SCTP_RECVRCVINFO, &one,
-	    sizeof(one)) != 0)
+	if (setsockopt(accepted->_socket, IPPROTO_SCTP, SCTP_EVENTS, &events,
+	    sizeof(events)) != 0)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: _OFSocketErrNo()];
 
 	return accepted;
 }
-#endif
 
 - (size_t)receiveIntoBuffer: (void *)buffer length: (size_t)length
 {
@@ -363,7 +367,7 @@ static const OFRunLoopMode connectRunLoopMode =
 		.iov_base = buffer,
 		.iov_len = length
 	};
-	char cmsgBuffer[CMSG_SPACE(sizeof(struct sctp_rcvinfo))];
+	char cmsgBuffer[CMSG_SPACE(sizeof(struct sctp_sndrcvinfo))];
 	struct msghdr msg = {
 		.msg_iov = &iov,
 		.msg_iovlen = 1,
@@ -391,15 +395,15 @@ static const OFRunLoopMode connectRunLoopMode =
 		if (cmsg->cmsg_level != IPPROTO_SCTP)
 			continue;
 
-		if (cmsg->cmsg_type == SCTP_RCVINFO) {
-			struct sctp_rcvinfo rcvinfo;
-			memcpy(&rcvinfo, CMSG_DATA(cmsg), sizeof(rcvinfo));
+		if (cmsg->cmsg_type == SCTP_SNDRCV) {
+			struct sctp_sndrcvinfo sndrcv;
+			memcpy(&sndrcv, CMSG_DATA(cmsg), sizeof(sndrcv));
 			OFNumber *streamID = [OFNumber numberWithUnsignedShort:
-			    rcvinfo.rcv_sid];
+			    sndrcv.sinfo_stream];
 			OFNumber *PPID = [OFNumber numberWithUnsignedLong:
-			    rcvinfo.rcv_ppid];
+			    OFFromBigEndian32(sndrcv.sinfo_ppid)];
 			OFNumber *unordered = [OFNumber numberWithBool:
-			    (rcvinfo.rcv_flags & SCTP_UNORDERED)];
+			    (sndrcv.sinfo_flags & SCTP_UNORDERED)];
 
 			*info = [OFDictionary dictionaryWithKeysAndObjects:
 			    OFSCTPStreamID, streamID,
@@ -475,15 +479,15 @@ static const OFRunLoopMode connectRunLoopMode =
 		.iov_base = (void *)buffer,
 		.iov_len = length
 	};
-	struct sctp_sndinfo sndinfo = {
-		.snd_sid = (uint16_t)
+	struct sctp_sndrcvinfo sndrcv = {
+		.sinfo_stream = (uint16_t)
 		    [[info objectForKey: OFSCTPStreamID] unsignedShortValue],
-		.snd_ppid = (uint32_t)
-		    [[info objectForKey: OFSCTPPPID] unsignedLongValue],
-		.snd_flags = ([[info objectForKey: OFSCTPUnordered] boolValue]
+		.sinfo_ppid = OFToBigEndian32((uint32_t)
+		    [[info objectForKey: OFSCTPPPID] unsignedLongValue]),
+		.sinfo_flags = ([[info objectForKey: OFSCTPUnordered] boolValue]
 		    ? SCTP_UNORDERED : 0)
 	};
-	char cmsgBuffer[CMSG_SPACE(sizeof(sndinfo))];
+	char cmsgBuffer[CMSG_SPACE(sizeof(sndrcv))];
 	struct cmsghdr *cmsg = (struct cmsghdr *)(void *)&cmsgBuffer;
 	struct msghdr msg = {
 		.msg_iov = &iov,
@@ -499,9 +503,9 @@ static const OFRunLoopMode connectRunLoopMode =
 		@throw [OFOutOfRangeException exception];
 
 	cmsg->cmsg_level = IPPROTO_SCTP;
-	cmsg->cmsg_type = SCTP_SNDINFO;
-	cmsg->cmsg_len = CMSG_LEN(sizeof(sndinfo));
-	memcpy(CMSG_DATA(cmsg), &sndinfo, sizeof(sndinfo));
+	cmsg->cmsg_type = SCTP_SNDRCV;
+	cmsg->cmsg_len = CMSG_LEN(sizeof(sndrcv));
+	memcpy(CMSG_DATA(cmsg), &sndrcv, sizeof(sndrcv));
 
 	if ((bytesWritten = sendmsg(_socket, &msg, 0)) < 0)
 		@throw [OFWriteFailedException
