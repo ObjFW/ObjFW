@@ -109,7 +109,7 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFDatagramSocketAsyncReceiveBlock)block
+   handler: (nullable OFDatagramSocketPacketReceivedHandler)handler
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
@@ -117,7 +117,7 @@ OF_DIRECT_MEMBERS
   receiver: (const OFSocketAddress *)receiver
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFDatagramSocketAsyncSendDataBlock)block
+   handler: (nullable OFDatagramSocketDataSentHandler)handler
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncReceiveForSequencedPacketSocket:

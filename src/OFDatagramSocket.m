@@ -259,7 +259,7 @@
 						length: length
 						  mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-						 block: NULL
+					       handler: NULL
 # endif
 					      delegate: _delegate];
 }
@@ -269,10 +269,26 @@
 			length: (size_t)length
 			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
+	OFDatagramSocketPacketReceivedHandler handler = ^ bool (
+	    OFDatagramSocket *socket, void *buffer_, size_t length_,
+	    const OFSocketAddress *sender, id exception) {
+		return block(length_, sender, exception);
+	};
+
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
 			 runLoopMode: OFDefaultRunLoopMode
-			       block: block];
+			     handler: handler];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler
+{
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: OFDefaultRunLoopMode
+			     handler: handler];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
@@ -280,11 +296,30 @@
 		   runLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
+	OFDatagramSocketPacketReceivedHandler handler = ^ bool (
+	    OFDatagramSocket *socket, void *buffer_, size_t length_,
+	    const OFSocketAddress *sender, id exception) {
+		return block(length_, sender, exception);
+	};
+
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
 						length: length
 						  mode: runLoopMode
-						 block: block
+					       handler: handler
+					      delegate: nil];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler
+{
+	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
+						buffer: buffer
+						length: length
+						  mode: runLoopMode
+					       handler: handler
 					      delegate: nil];
 }
 #endif
@@ -348,7 +383,7 @@
 					   receiver: receiver
 					       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					      block: NULL
+					    handler: NULL
 # endif
 					   delegate: _delegate];
 }
@@ -358,10 +393,26 @@
 	     receiver: (const OFSocketAddress *)receiver
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
+	OFDatagramSocketDataSentHandler handler = ^ OFData *(
+	    OFDatagramSocket *socket, OFData *data_,
+	    const OFSocketAddress *receiver_, id exception) {
+		return block(exception);
+	};
+
 	[self asyncSendData: data
 		   receiver: receiver
 		runLoopMode: OFDefaultRunLoopMode
-		      block: block];
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	      handler: (OFDatagramSocketDataSentHandler)handler
+{
+	[self asyncSendData: data
+		   receiver: receiver
+		runLoopMode: OFDefaultRunLoopMode
+		    handler: handler];
 }
 
 - (void)asyncSendData: (OFData *)data
@@ -369,11 +420,30 @@
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
+	OFDatagramSocketDataSentHandler handler = ^ OFData *(
+	    OFDatagramSocket *socket, OFData *data_,
+	    const OFSocketAddress *receiver_, id exception) {
+		return block(exception);
+	};
+
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data
 					   receiver: receiver
 					       mode: runLoopMode
-					      block: block
+					    handler: handler
+					   delegate: nil];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFDatagramSocketDataSentHandler)handler
+{
+	[OFRunLoop of_addAsyncSendForDatagramSocket: self
+					       data: data
+					   receiver: receiver
+					       mode: runLoopMode
+					    handler: handler
 					   delegate: nil];
 }
 #endif

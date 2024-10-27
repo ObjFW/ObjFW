@@ -175,7 +175,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFDatagramSocketAsyncReceiveBlock _block;
+	OFDatagramSocketPacketReceivedHandler _handler;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -186,7 +186,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFDatagramSocketAsyncSendDataBlock _block;
+	OFDatagramSocketDataSentHandler _handler;
 # endif
 	OFData *_data;
 	OFSocketAddress _receiver;
@@ -897,8 +897,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(length, &address, exception);
+	if (_handler != NULL)
+		return _handler(object, _buffer, length, &address, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector: @selector(
@@ -918,7 +918,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -940,8 +940,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		newData = _block(exception);
+	if (_handler != NULL) {
+		newData = _handler(object, _data, &_receiver, exception);
 
 		if (newData == nil)
 			return false;
@@ -978,7 +978,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 # endif
 	[_data release];
 
@@ -1454,7 +1454,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (OFDatagramSocketAsyncReceiveBlock)block
+   handler: (OFDatagramSocketPacketReceivedHandler)handler
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1462,7 +1462,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
@@ -1475,7 +1475,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
   receiver: (const OFSocketAddress *)receiver
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (OFDatagramSocketAsyncSendDataBlock)block
+   handler: (OFDatagramSocketDataSentHandler)handler
 # endif
   delegate: (id <OFDatagramSocketDelegate>)delegate
 {
@@ -1483,7 +1483,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_data = [data copy];
 	queueItem->_receiver = *receiver;

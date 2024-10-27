@@ -33,6 +33,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when a packet has been received.
  *
+ * @deprecated Use @ref OFDatagramSocketPacketReceivedHandler instead.
+ *
  * @param length The length of the packet
  * @param sender The address of the sender of the packet
  * @param exception An exception which occurred while receiving or `nil` on
@@ -40,17 +42,52 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
-    const OFSocketAddress *_Nonnull sender, id _Nullable exception);
+    const OFSocketAddress *_Nonnull sender, id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use OFDatagramSocketPacketReceivedHandler instead");
+
+/**
+ * @brief A handler which is called when a packet has been received.
+ *
+ * @param socket The socket that received a packet
+ * @param buffer The buffer the packet was stored in
+ * @param length The length of the packet
+ * @param sender The address of the sender of the packet
+ * @param exception An exception which occurred while receiving or `nil` on
+ *		    success
+ * @return A bool whether the same block should be used for the next receive
+ */
+typedef bool (^OFDatagramSocketPacketReceivedHandler)(OFDatagramSocket *socket,
+    void *buffer, size_t length, const OFSocketAddress *_Nonnull sender,
+    id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
+ *
+ * @deprecated Use @ref OFDatagramSocketDataSentHandler instead.
  *
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
-    id _Nullable exception);
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use OFDatagramSocketDataSentHandler instead");
+
+/**
+ * @brief A handler which is called when a packet has been sent.
+ *
+ * @param socket The datagram socket which sent a packet
+ * @param data The data which was sent
+ * @param receiver The receiver for the packet
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return The data to repeat the send with or nil if it should not repeat
+ */
+typedef OFData *_Nullable (^OFDatagramSocketDataSentHandler)(
+    OFDatagramSocket *socket, OFData *data,
+    const OFSocketAddress *_Nonnull receiver, id _Nullable exception);
 #endif
 
 /**
@@ -202,6 +239,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
  *
+ * @deprecated Use @ref asyncReceiveIntoBuffer:length:handler: instead.
+ *
  * If the buffer is too small, the datagram is truncated.
  *
  * @param buffer The buffer to write the datagram to
@@ -215,11 +254,35 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (OFDatagramSocketAsyncReceiveBlock)block;
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReceiveIntoBuffer:length:handler:] instead");
 
 /**
  * @brief Asynchronously receives a datagram and stores it into the specified
  *	  buffer.
+ *
+ * If the buffer is too small, the datagram is truncated.
+ *
+ * @param buffer The buffer to write the datagram to
+ * @param length The length of the buffer
+ * @param handler The handler to call when the datagram has been received. If
+ *		  the handler returns true, it will be called again with the
+ *		  same buffer and maximum length when more datagrams have been
+ *		  received. If you want the next method in the queue to handle
+ *		  the datagram received next, you need to return false from the
+ *		  method.
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler;
+
+/**
+ * @brief Asynchronously receives a datagram and stores it into the specified
+ *	  buffer.
+ *
+ * @deprecated Use @ref asyncReceiveIntoBuffer:length:runLoopMode:handler:
+ *	       instead.
  *
  * If the buffer is too small, the datagram is truncated.
  *
@@ -237,7 +300,31 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 		   runLoopMode: (OFRunLoopMode)runLoopMode
-			 block: (OFDatagramSocketAsyncReceiveBlock)block;
+			 block: (OFDatagramSocketAsyncReceiveBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReceiveIntoBuffer:length:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously receives a datagram and stores it into the specified
+ *	  buffer.
+ *
+ * If the buffer is too small, the datagram is truncated.
+ *
+ * @param buffer The buffer to write the datagram to
+ * @param length The length of the buffer
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
+ * @param handler The handler to call when the datagram has been received. If
+ *		the handler returns true, it will be called again with the same
+ *		buffer and maximum length when more datagrams have been
+ *		received. If you want the next method in the queue to handle
+ *		the datagram received next, you need to return false from the
+ *		method.
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler;
 #endif
 
 /**
@@ -281,6 +368,8 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
+ * @deprecated Use @ref asyncSendData:receiver:handler: instead.
+ *
  * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
  *		   should be sent. The receiver is copied.
@@ -290,10 +379,28 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
  */
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const OFSocketAddress *)receiver
-		block: (OFDatagramSocketAsyncSendDataBlock)block;
+		block: (OFDatagramSocketAsyncSendDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncSendData:receiver:handler:] instead");
 
 /**
  * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param data The data to send as a datagram
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
+ * @param handler The handler to call when the packet has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  `nil` if it should not repeat.
+ */
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	      handler: (OFDatagramSocketDataSentHandler)handler;
+
+/**
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @deprecated Use @ref asyncSendData:receiver:runLoopMode:handler: instead.
  *
  * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
@@ -307,7 +414,26 @@ typedef OFData *_Nullable (^OFDatagramSocketAsyncSendDataBlock)(
 - (void)asyncSendData: (OFData *)data
 	     receiver: (const OFSocketAddress *)receiver
 	  runLoopMode: (OFRunLoopMode)runLoopMode
-		block: (OFDatagramSocketAsyncSendDataBlock)block;
+		block: (OFDatagramSocketAsyncSendDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncSendData:receiver:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param data The data to send as a datagram
+ * @param receiver A pointer to an @ref OFSocketAddress to which the datagram
+ *		   should be sent. The receiver is copied.
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
+ * @param handler The handler to call when the packet has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  `nil` if it should not repeat.
+ */
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFDatagramSocketDataSentHandler)handler;
 #endif
 
 /**
