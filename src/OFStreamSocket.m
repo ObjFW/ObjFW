@@ -340,15 +340,39 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
+	OFStreamSocketAcceptedHandler handler = ^ (OFStreamSocket *socket,
+	    OFStreamSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithHandler: (OFStreamSocketAcceptedHandler)handler
+{
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
 }
 
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			     block: (OFStreamSocketAsyncAcceptBlock)block
 {
+	OFStreamSocketAcceptedHandler handler = ^ (OFStreamSocket *socket,
+	    OFStreamSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: runLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			   handler: (OFStreamSocketAcceptedHandler)handler
+{
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-				      handler: block
+				      handler: handler
 				     delegate: nil];
 }
 #endif

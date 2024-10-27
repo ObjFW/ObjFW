@@ -44,6 +44,8 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief All sections in the INI file.
+ *
+ * @deprecated Use @ref sections instead.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFINISection *) *categories
     OF_DEPRECATED(ObjFW, 1, 2, "Use -[sections] instead");
@@ -119,6 +121,8 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns an @ref OFINISection for the section with the specified name.
+ *
+ * @deprecated Use @ref sectionForName: instead.
  *
  * @param name The name of the section for which an @ref OFINISection should be
  *	       returned

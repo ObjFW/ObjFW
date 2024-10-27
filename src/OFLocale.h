@@ -150,8 +150,10 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (void)addLocalizationDirectoryIRI: (OFIRI *)IRI;
 
-- (instancetype)init OF_DEPRECATED(ObjFW, 1, 1, "Manually creating an OFLocale "
-    "is no longer necessary. Use +[OFLocale currentLocale] instead.");
+- (instancetype)init
+    OF_DEPRECATED(ObjFW, 1, 1,
+	"Manually creating an OFLocale is no longer necessary. "
+	"Use +[OFLocale currentLocale] instead.");
 
 /**
  * @brief Adds a directory to scan for localizations.

@@ -849,8 +849,8 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	if (_handler != NULL) {
 		if ([object isKindOfClass: [OFStreamSocket class]])
-			return ((OFStreamSocketAsyncAcceptBlock)_handler)(
-			    acceptedSocket, exception);
+			return ((OFStreamSocketAcceptedHandler)
+			    _handler)(object, acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
 			return ((OFSequencedPacketSocketAcceptedHandler)

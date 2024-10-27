@@ -30,6 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when the socket accepted a connection.
  *
+ * @deprecated Use OFStreamSocketAcceptedHandler instead.
+ *
  * @param acceptedSocket The socket which has been accepted
  * @param exception An exception which occurred while accepting the socket or
  *		    `nil` on success
@@ -37,7 +39,21 @@ OF_ASSUME_NONNULL_BEGIN
  *	   connection
  */
 typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
-    id _Nullable exception);
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFStreamSocketAcceptedHandler instead");
+
+/**
+ * @brief A handler which is called when the socket accepted a connection.
+ *
+ * @param socket The socket which accepted the connection
+ * @param acceptedSocket The socket which has been accepted
+ * @param exception An exception which occurred while accepting the socket or
+ *		    `nil` on success
+ * @return A bool whether the same handler should be used for the next incoming
+ *	   connection
+ */
+typedef bool (^OFStreamSocketAcceptedHandler)(OFStreamSocket *socket,
+    OFStreamSocket *acceptedSocket, id _Nullable exception);
 #endif
 
 /**
@@ -152,14 +168,28 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
 /**
  * @brief Asynchronously accept an incoming connection.
  *
+ * @deprecated Use @ref asyncAcceptWithHandler: instead.
+ *
  * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block;
+- (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncAcceptWithHandler:] instead");
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * @param handler The handler to execute when a new connection has been
+ *		  accepted. Returns whether the next incoming connection should
+ *		  be accepted by the specified handler as well.
+ */
+- (void)asyncAcceptWithHandler: (OFStreamSocketAcceptedHandler)handler;
+
+/**
+ * @brief Asynchronously accept an incoming connection.
+ *
+ * @deprecated Use @ref asyncAcceptWithRunLoopMode:handler: instead.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  * @param block The block to execute when a new connection has been accepted.
@@ -167,7 +197,20 @@ typedef bool (^OFStreamSocketAsyncAcceptBlock)(OFStreamSocket *acceptedSocket,
  *		by the specified block as well.
  */
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
-			     block: (OFStreamSocketAsyncAcceptBlock)block;
+			     block: (OFStreamSocketAsyncAcceptBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncAcceptWithRunLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously accept an incoming connection.
+ *
+ * @param runLoopMode The run loop mode in which to perform the async accept
+ * @param handler The handler to execute when a new connection has been
+ *		  accepted. Returns whether the next incoming connection
+ *		  should be accepted by the specified handler as well.
+ */
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			   handler: (OFStreamSocketAcceptedHandler)handler;
 #endif
 
 /**

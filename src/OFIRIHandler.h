@@ -320,7 +320,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
     OF_DEPRECATED(ObjFW, 1, 1,
-    "Use -[getExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
+	"Use -[getExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
 
 /**
  * @brief Gets the extended attribute data and type for the specified name
@@ -371,7 +371,7 @@ OF_ASSUME_NONNULL_BEGIN
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
     OF_DEPRECATED(ObjFW, 1, 1,
-    "Use -[setExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
+	"Use -[setExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
 
 /**
  * @brief Sets the extended attribute data and type for the specified name of
