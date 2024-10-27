@@ -65,10 +65,15 @@ static const uint8_t page20Start = 0xAC;
 
 bool OF_VISIBILITY_HIDDEN
 _OFUnicodeToISO8859_15(const OFUnichar *input, unsigned char *output,
-    size_t length, bool lossy)
+    size_t length, bool lossy, bool insecure)
 {
 	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = input[i];
+		OFUnichar c;
+
+		if OF_UNLIKELY (!insecure && input[i] == 0)
+			return false;
+
+		c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

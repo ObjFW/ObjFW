@@ -92,12 +92,17 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 int
-_OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length)
+_OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length,
+    bool *containsNull)
 {
 	size_t tmpLength = UTF8Length;
 	int isUTF8 = 0;
+	bool tmpContainsNull = false;
 
 	for (size_t i = 0; i < UTF8Length; i++) {
+		if OF_UNLIKELY (UTF8String[i] == '\0')
+			tmpContainsNull = true;
+
 		/* No sign of UTF-8 here */
 		if OF_LIKELY (!(UTF8String[i] & 0x80))
 			continue;
@@ -154,6 +159,9 @@ _OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length)
 
 	if (length != NULL)
 		*length = tmpLength;
+
+	if (containsNull != NULL)
+		*containsNull = tmpContainsNull;
 
 	return isUTF8;
 }
@@ -218,7 +226,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		_s->cStringLength = UTF8StringLength;
 
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    &_s->length)) {
+		    &_s->length, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
@@ -262,7 +270,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		if (encoding == OFStringEncodingUTF8 ||
 		    encoding == OFStringEncodingASCII) {
 			switch (_OFUTF8StringCheck(cString, cStringLength,
-			    &_s->length)) {
+			    &_s->length, &_s->containsNull)) {
 			case 1:
 				if (encoding == OFStringEncodingASCII)
 					@throw [OFInvalidEncodingException
@@ -295,9 +303,12 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 				}
 
 				_s->isUTF8 = true;
+
+				if OF_UNLIKELY (cString[i] == '\0')
+					_s->containsNull = true;
+
 				bytes = _OFUTF8StringEncode(
 				    (uint8_t)cString[i], buffer);
-
 				if (bytes == 0)
 					@throw [OFInvalidEncodingException
 					    exception];
@@ -387,6 +398,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 			_s->isUTF8 = true;
 
+			if OF_UNLIKELY (cString[i] == '\0')
+				_s->containsNull = true;
+
 			byteLength = _OFUTF8StringEncode(unichar, buffer);
 			if (byteLength == 0)
 				@throw [OFInvalidEncodingException exception];
@@ -433,7 +447,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		}
 
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    &_s->length)) {
+		    &_s->length, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
@@ -463,15 +477,19 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		_s->length = string.length;
 
 		_s->cString = OFAllocMemory(_s->cStringLength + 1, 1);
-		memcpy(_s->cString, string.UTF8String, _s->cStringLength + 1);
+		memcpy(_s->cString,
+		    [string insecureCStringWithEncoding: OFStringEncodingUTF8],
+		    _s->cStringLength + 1);
 		_s->freeWhenDone = true;
 
 		if ([string isKindOfClass: [OFUTF8String class]] ||
-		    [string isKindOfClass: [OFMutableUTF8String class]])
+		    [string isKindOfClass: [OFMutableUTF8String class]]) {
 			_s->isUTF8 = ((OFUTF8String *)string)->_s->isUTF8;
-		else {
+			_s->containsNull =
+			    ((OFUTF8String *)string)->_s->containsNull;
+		} else {
 			switch (_OFUTF8StringCheck(_s->cString,
-			    _s->cStringLength, NULL)) {
+			    _s->cStringLength, NULL, &_s->containsNull)) {
 			case 1:
 				_s->isUTF8 = true;
 				break;
@@ -511,6 +529,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 			if (len > 1)
 				_s->isUTF8 = true;
+
+			if OF_UNLIKELY (characters[i] == 0)
+				_s->containsNull = true;
 
 			j += len;
 		}
@@ -597,6 +618,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			if (len > 1)
 				_s->isUTF8 = true;
 
+			if OF_UNLIKELY (character == 0)
+				_s->containsNull = true;
+
 			j += len;
 		}
 
@@ -645,10 +669,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		j = 0;
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = _OFUTF8StringEncode((swap
-			    ? OFByteSwap32(characters[i])
-			    : characters[i]),
-			    buffer);
+			OFUnichar character = (swap
+			    ? OFByteSwap32(characters[i]) : characters[i]);
+			size_t len = _OFUTF8StringEncode(character, buffer);
 
 			switch (len) {
 			case 1:
@@ -666,6 +689,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			default:
 				@throw [OFInvalidEncodingException exception];
 			}
+
+			if OF_UNLIKELY (character == 0)
+				_s->containsNull = true;
 		}
 
 		_s->cString[j] = '\0';
@@ -706,7 +732,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 		@try {
 			switch (_OFUTF8StringCheck(tmp, cStringLength,
-			    &_s->length)) {
+			    &_s->length, &_s->containsNull)) {
 			case 1:
 				_s->isUTF8 = true;
 				break;
@@ -740,6 +766,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	   maxLength: (size_t)maxLength
 	    encoding: (OFStringEncoding)encoding
 {
+	if (_s->containsNull)
+		@throw [OFInvalidEncodingException exception];
+
 	switch (encoding) {
 	case OFStringEncodingASCII:
 		if (_s->isUTF8)
@@ -761,6 +790,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 - (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
+	if (_s->containsNull)
+		@throw [OFInvalidEncodingException exception];
+
 	switch (encoding) {
 	case OFStringEncodingASCII:
 		if (_s->isUTF8)
@@ -773,8 +805,25 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	}
 }
 
+- (const char *)insecureCStringWithEncoding: (OFStringEncoding)encoding
+{
+	switch (encoding) {
+	case OFStringEncodingASCII:
+		if (_s->isUTF8)
+			@throw [OFInvalidEncodingException exception];
+		/* intentional fall-through */
+	case OFStringEncodingUTF8:
+		return _s->cString;
+	default:
+		return [super insecureCStringWithEncoding: encoding];
+	}
+}
+
 - (const char *)UTF8String
 {
+	if (_s->containsNull)
+		@throw [OFInvalidEncodingException exception];
+
 	return _s->cString;
 }
 
@@ -820,7 +869,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	    _s->hasHash && string->_s->hasHash && _s->hash != string->_s->hash)
 		return false;
 
-	if (strcmp(_s->cString, string.UTF8String) != 0)
+	if (memcmp(_s->cString,
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8],
+	    _s->cStringLength) != 0)
 		return false;
 
 	return true;
@@ -841,7 +892,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	minimumCStringLength = (_s->cStringLength > otherCStringLength
 	    ? otherCStringLength : _s->cStringLength);
 
-	if ((compare = memcmp(_s->cString, string.UTF8String,
+	if ((compare = memcmp(_s->cString,
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8],
 	    minimumCStringLength)) == 0) {
 		if (_s->cStringLength > otherCStringLength)
 			return OFOrderedDescending;
@@ -868,7 +920,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	if (string == self)
 		return OFOrderedSame;
 
-	otherCString = string.UTF8String;
+	otherCString =
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	otherCStringLength = string.UTF8StringLength;
 
 #ifdef OF_HAVE_UNICODE_TABLES
@@ -1012,7 +1065,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range
 {
-	const char *cString = string.UTF8String;
+	const char *cString =
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	size_t cStringLength = string.UTF8StringLength;
 	size_t rangeLocation, rangeLength;
 
@@ -1070,7 +1124,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 - (bool)containsString: (OFString *)string
 {
-	const char *cString = string.UTF8String;
+	const char *cString =
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	size_t cStringLength = string.UTF8StringLength;
 
 	if (cStringLength == 0)
@@ -1112,7 +1167,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return (memcmp(_s->cString, prefix.UTF8String, cStringLength) == 0);
+	return (memcmp(_s->cString,
+	    [prefix insecureCStringWithEncoding: OFStringEncodingUTF8],
+	    cStringLength) == 0);
 }
 
 - (bool)hasSuffix: (OFString *)suffix
@@ -1123,7 +1180,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		return false;
 
 	return (memcmp(_s->cString + (_s->cStringLength - cStringLength),
-	    suffix.UTF8String, cStringLength) == 0);
+	    [suffix insecureCStringWithEncoding: OFStringEncodingUTF8],
+	    cStringLength) == 0);
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
@@ -1145,7 +1203,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 	array = [OFMutableArray array];
 	pool = objc_autoreleasePoolPush();
-	cString = delimiter.UTF8String;
+	cString = [delimiter insecureCStringWithEncoding: OFStringEncodingUTF8];
 	cStringLength = delimiter.UTF8StringLength;
 
 	if (cStringLength > _s->cStringLength) {
@@ -1216,9 +1274,14 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 - (const OFChar32 *)UTF32StringWithByteOrder: (OFByteOrder)byteOrder
 {
-	OFChar32 *buffer = OFAllocMemory(_s->length + 1, sizeof(OFChar32));
+	OFChar32 *buffer;
 	size_t i = 0, j = 0;
 	const OFChar32 *ret;
+
+	if (_s->containsNull)
+		@throw [OFInvalidEncodingException exception];
+
+	buffer = OFAllocMemory(_s->length + 1, sizeof(OFChar32));
 
 	while (i < _s->cStringLength) {
 		OFChar32 c;

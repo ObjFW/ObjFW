@@ -190,6 +190,10 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				buffer[i++] = '\t';
 				(*pointer)++;
 				break;
+			case '0':
+				buffer[i++] = '\0';
+				(*pointer)++;
+				break;
 			/* Parse Unicode escape sequence */
 			case 'u':;
 				OFChar16 c1, c2;

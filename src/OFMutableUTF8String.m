@@ -208,6 +208,9 @@
 	if (idx >= _s->cStringLength)
 		@throw [OFOutOfRangeException exception];
 
+	if (character == 0)
+		_s->containsNull = true;
+
 	/* Shortcut if old and new character both are ASCII */
 	if (character < 0x80 && !(_s->cString[idx] & 0x80)) {
 		_s->hasHash = false;
@@ -272,7 +275,8 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
+	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
+	    &_s->containsNull)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -301,7 +305,8 @@
 		UTF8StringLength -= 3;
 	}
 
-	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length)) {
+	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
+	    &_s->containsNull)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -354,7 +359,7 @@
 	if (string == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	UTF8String = string.UTF8String;
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hasHash = false;
@@ -371,9 +376,12 @@
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
+
+		if (((OFMutableUTF8String *)string)->_s->containsNull)
+			_s->containsNull = true;
 	} else {
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    NULL)) {
+		    NULL, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
@@ -389,7 +397,7 @@
 
 	@try {
 		size_t j = 0;
-		bool isUTF8 = false;
+		bool isUTF8 = false, containsNull = false;
 
 		for (size_t i = 0; i < length; i++) {
 			size_t len = _OFUTF8StringEncode(characters[i],
@@ -400,6 +408,9 @@
 
 			if (len > 1)
 				isUTF8 = true;
+
+			if (characters[i] == 0)
+				containsNull = true;
 
 			j += len;
 		}
@@ -416,6 +427,9 @@
 
 		if (isUTF8)
 			_s->isUTF8 = true;
+
+		if (containsNull)
+			_s->containsNull = true;
 	} @finally {
 		OFFreeMemory(tmp);
 	}
@@ -452,7 +466,7 @@
 		idx = _OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
-	UTF8String = string.UTF8String;
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	newCStringLength = _s->cStringLength + UTF8StringLength;
@@ -471,9 +485,12 @@
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
+
+		if (((OFMutableUTF8String *)string)->_s->containsNull)
+			_s->containsNull = true;
 	} else {
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    NULL)) {
+		    NULL, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
@@ -504,6 +521,14 @@
 	_s->length -= range.length;
 	_s->cStringLength -= end - start;
 	_s->cString[_s->cStringLength] = 0;
+
+	if (_s->containsNull) {
+		_s->containsNull = false;
+
+		for (size_t i = 0; i < _s->cStringLength; i++)
+			if (_s->cString[i] == '\0')
+				_s->containsNull = true;
+	}
 
 	@try {
 		_s->cString = OFResizeMemory(_s->cString, _s->cStringLength + 1,
@@ -537,7 +562,8 @@
 		    _s->cStringLength);
 	}
 
-	replacementString = replacement.UTF8String;
+	replacementString =
+	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
 	replacementLength = replacement.UTF8StringLength;
 
 	newCStringLength =
@@ -576,15 +602,26 @@
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
+
+		if (((OFMutableUTF8String *)replacement)->_s->containsNull)
+			_s->containsNull = true;
 	} else {
 		switch (_OFUTF8StringCheck(replacementString, replacementLength,
-		    NULL)) {
+		    NULL, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+	}
+
+	if (_s->containsNull) {
+		_s->containsNull = false;
+
+		for (size_t i = 0; i < _s->cStringLength; i++)
+			if (_s->cString[i] == '\0')
+				_s->containsNull = true;
 	}
 }
 
@@ -593,8 +630,10 @@
 			   options: (int)options
 			     range: (OFRange)range
 {
-	const char *searchString = string.UTF8String;
-	const char *replacementString = replacement.UTF8String;
+	const char *searchString =
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+	const char *replacementString =
+	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
 	size_t searchLength = string.UTF8StringLength;
 	size_t replacementLength = replacement.UTF8StringLength;
 	size_t last, newCStringLength, newLength;
@@ -669,15 +708,26 @@
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
 		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
+
+		if (((OFMutableUTF8String *)replacement)->_s->containsNull)
+			_s->containsNull = true;
 	} else {
 		switch (_OFUTF8StringCheck(replacementString, replacementLength,
-		    NULL)) {
+		    NULL, &_s->containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+	}
+
+	if (_s->containsNull) {
+		_s->containsNull = false;
+
+		for (size_t i = 0; i < _s->cStringLength; i++)
+			if (_s->cString[i] == '\0')
+				_s->containsNull = true;
 	}
 }
 

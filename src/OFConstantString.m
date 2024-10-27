@@ -99,7 +99,7 @@ OF_SINGLETON_METHODS
 		ivars->cStringLength = _cStringLength;
 
 		switch (_OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
-		    &ivars->length)) {
+		    &ivars->length, &ivars->containsNull)) {
 		case 1:
 			ivars->isUTF8 = true;
 			break;

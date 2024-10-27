@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when the socket connected.
  *
- * @deprecated Use @ref OFTCPSocketConnecetedHandler instead.
+ * @deprecated Use @ref OFTCPSocketConnectedHandler instead.
  *
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success

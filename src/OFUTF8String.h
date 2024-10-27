@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	struct OFUTF8StringIvars {
 		char          *cString;
 		size_t        cStringLength;
-		bool          isUTF8;
+		bool          isUTF8, containsNull;
 		size_t        length;
 		bool          hasHash;
 		unsigned long hash;

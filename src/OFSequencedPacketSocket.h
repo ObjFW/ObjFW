@@ -277,7 +277,7 @@ typedef bool (^OFSequencedPacketSocketAcceptedHandler)(
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
- * @deprecated Use @ref asyncReceiveIntoBuffer:lenght:handler: instead.
+ * @deprecated Use @ref asyncReceiveIntoBuffer:length:handler: instead.
  *
  * If the buffer is too small, the receive operation fails.
  *
@@ -293,7 +293,7 @@ typedef bool (^OFSequencedPacketSocketAcceptedHandler)(
 			length: (size_t)length
 			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
     OF_DEPRECATED(ObjFW, 1, 2,
-	"Use -[asyncReceiveIntoBuffer:lenght:handler:] instead");
+	"Use -[asyncReceiveIntoBuffer:length:handler:] instead");
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified

@@ -924,6 +924,19 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 - (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
+ * @brief Returns the OFString as an insecure C string (meaning it can contain
+ *	  `\0`) in the specified encoding.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ *
+ * @param encoding The encoding for the C string
+ * @return The OFString as a C string in the specified encoding
+ */
+- (const char *)insecureCStringWithEncoding: (OFStringEncoding)encoding;
+
+/**
  * @brief Returns the number of bytes the string needs in the specified
  *	  encoding.
  *
