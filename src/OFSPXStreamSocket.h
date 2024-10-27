@@ -31,10 +31,27 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when the socket connected.
  *
+ * @deprecated Use @ref OFSPXStreamSocketConnectedHandler instead.
+ *
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
+typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFSPXStreamSocketConnectedHandler instead");
+
+/**
+ * @brief A handler which is called when the socket connected.
+ *
+ * @param socket The socket which connected
+ * @param network The network of the node the socket connected to
+ * @param node The node the socket connected to
+ * @param port The port of the node to which the socket connected
+ * @param exception An exception which occurred while connecting the socket or
+ *		    `nil` on success
+ */
+typedef void (^OFSPXStreamSocketConnectedHandler)(OFSPXStreamSocket *socket,
+    uint32_t network, const unsigned char node[_Nonnull IPX_NODE_LEN],
+    uint16_t port, id _Nullable exception);
 #endif
 
 /**
@@ -134,6 +151,8 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
  *
+ * @deprecated Use @ref asyncConnectToNetwork:node:port:handler: instead.
+ *
  * @param network The network on which the node to connect to is
  * @param node The node to connect to
  * @param port The port (sometimes also called socket number) on the node to
@@ -143,11 +162,31 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)asyncConnectToNetwork: (uint32_t)network
 			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port
-			block: (OFSPXStreamSocketAsyncConnectBlock)block;
+			block: (OFSPXStreamSocketAsyncConnectBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncConnectToNetwork:node:port:handler:] instead");
 
 /**
  * @brief Asynchronously connect the OFSPXStreamSocket to the specified
  *	  destination.
+ *
+ * @param network The network on which the node to connect to is
+ * @param node The node to connect to
+ * @param port The port (sometimes also called socket number) on the node to
+ *	       connect to
+ * @param handler The handler to call once the connection has been established
+ */
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		      handler: (OFSPXStreamSocketConnectedHandler)handler;
+
+/**
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
+ *
+ * @deprecated Use @ref asyncConnectToNetwork:node:port:runLoopMode:handler:
+ *	       instead.
  *
  * @param network The network on which the node to connect to is
  * @param node The node to connect to
@@ -161,7 +200,27 @@ typedef void (^OFSPXStreamSocketAsyncConnectBlock)(id _Nullable exception);
 			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 			 port: (uint16_t)port
 		  runLoopMode: (OFRunLoopMode)runLoopMode
-			block: (OFSPXStreamSocketAsyncConnectBlock)block;
+			block: (OFSPXStreamSocketAsyncConnectBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncConnectToNetwork:node:port:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously connect the OFSPXStreamSocket to the specified
+ *	  destination.
+ *
+ * @param network The network on which the node to connect to is
+ * @param node The node to connect to
+ * @param port The port (sometimes also called socket number) on the node to
+ *	       connect to
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
+ * @param handler The handler to call once the connection has been established
+ */
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
+		      handler: (OFSPXStreamSocketConnectedHandler)handler;
 #endif
 
 /**

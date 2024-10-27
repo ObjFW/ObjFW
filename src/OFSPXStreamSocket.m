@@ -55,7 +55,7 @@ OF_DIRECT_MEMBERS
 	unsigned char _node[IPX_NODE_LEN];
 	uint16_t _port;
 #ifdef OF_HAVE_BLOCKS
-	OFSPXStreamSocketAsyncConnectBlock _block;
+	OFSPXStreamSocketConnectedHandler _handler;
 #endif
 }
 
@@ -64,7 +64,7 @@ OF_DIRECT_MEMBERS
 			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFSPXStreamSocketAsyncConnectBlock)block
+		       handler: (OFSPXStreamSocketConnectedHandler)handler
 #endif
 ;
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
@@ -76,7 +76,7 @@ OF_DIRECT_MEMBERS
 			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFSPXStreamSocketAsyncConnectBlock)block
+		       handler: (OFSPXStreamSocketConnectedHandler)handler
 #endif
 {
 	self = [super init];
@@ -87,7 +87,7 @@ OF_DIRECT_MEMBERS
 		memcpy(_node, node, IPX_NODE_LEN);
 		_port = port;
 #ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
+		_handler = [handler copy];
 #endif
 	} @catch (id e) {
 		[self release];
@@ -101,7 +101,7 @@ OF_DIRECT_MEMBERS
 {
 	[_socket release];
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 #endif
 
 	[super dealloc];
@@ -154,8 +154,8 @@ inform_delegate:
 		((OFSPXStreamSocket *)sock).canBlock = true;
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(exception);
+	if (_handler != NULL)
+		_handler(_socket, _network, _node, _port, exception);
 	else {
 #endif
 		if ([delegate respondsToSelector:
@@ -279,7 +279,7 @@ inform_delegate:
 		      node: node
 		      port: port
 #ifdef OF_HAVE_BLOCKS
-		     block: NULL
+		   handler: NULL
 #endif
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
@@ -292,11 +292,30 @@ inform_delegate:
 			 port: (uint16_t)port
 			block: (OFSPXStreamSocketAsyncConnectBlock)block
 {
+	OFSPXStreamSocketConnectedHandler handler = ^ (
+	    OFSPXStreamSocket *socket, uint32_t network_,
+	    const unsigned char node_[IPX_NODE_LEN], uint16_t port_,
+	    id exception) {
+		block(exception);
+	};
+
 	[self asyncConnectToNetwork: network
 			       node: node
 			       port: port
 			runLoopMode: OFDefaultRunLoopMode
-			      block: block];
+			    handler: handler];
+}
+
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		      handler: (OFSPXStreamSocketConnectedHandler)handler
+{
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: OFDefaultRunLoopMode
+			    handler: handler];
 }
 
 - (void)asyncConnectToNetwork: (uint32_t)network
@@ -305,6 +324,26 @@ inform_delegate:
 		  runLoopMode: (OFRunLoopMode)runLoopMode
 			block: (OFSPXStreamSocketAsyncConnectBlock)block
 {
+	OFSPXStreamSocketConnectedHandler handler = ^ (
+	    OFSPXStreamSocket *socket, uint32_t network_,
+	    const unsigned char node_[IPX_NODE_LEN], uint16_t port_,
+	    id exception) {
+		block(exception);
+	};
+
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: runLoopMode
+			    handler: handler];
+}
+
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
+		      handler: (OFSPXStreamSocketConnectedHandler)handler
+{
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFSPXStreamSocketAsyncConnectDelegate alloc]
@@ -312,7 +351,7 @@ inform_delegate:
 		   network: network
 		      node: node
 		      port: port
-		     block: block
+		   handler: handler
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
