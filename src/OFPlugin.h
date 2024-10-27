@@ -57,8 +57,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFPlugin by loading the plugin with the specified path.
  *
- * @param path The path to the plugin file. The suffix is appended
- *	       automatically.
+ * @param path The path to the plugin file
  * @return An new, autoreleased OFPlugin
  * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
@@ -68,8 +67,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFPlugin by loading the plugin with
  *	  the specified path.
  *
- * @param path The path to the plugin file. The suffix is appended
- *	       automatically.
+ * @param path The path to the plugin file
  * @return An initialized OFPlugin
  * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
