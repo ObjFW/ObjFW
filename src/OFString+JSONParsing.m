@@ -140,6 +140,34 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 	return ret;
 }
 
+static inline OFChar16
+parseHexEscape(const char *pointer, const char *stop)
+{
+	OFChar16 ret = 0;
+
+	if (pointer + 3 >= stop)
+		return 0xFFFF;
+
+	if (pointer[0] != '\\' || pointer[1] != 'x')
+		return 0xFFFF;
+
+	for (uint8_t i = 0; i < 2; i++) {
+		char c = pointer[i + 2];
+		ret <<= 4;
+
+		if (c >= '0' && c <= '9')
+			ret |= c - '0';
+		else if (c >= 'a' && c <= 'f')
+			ret |= c + 10 - 'a';
+		else if (c >= 'A' && c <= 'F')
+			ret |= c + 10 - 'A';
+		else
+			return 0xFFFF;
+	}
+
+	return ret;
+}
+
 static inline OFString *
 parseString(const char **pointer, const char *stop, size_t *line)
 {
@@ -245,6 +273,23 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				i += l;
 				*pointer += 11;
+
+				break;
+			case 'x':
+				c1 = parseHexEscape(*pointer - 1, stop);
+				if (c1 == 0xFFFF) {
+					OFFreeMemory(buffer);
+					return nil;
+				}
+
+				l = _OFUTF8StringEncode(c1, buffer + i);
+				if (l == 0) {
+					OFFreeMemory(buffer);
+					return nil;
+				}
+
+				i += l;
+				*pointer += 3;
 
 				break;
 			case '\r':

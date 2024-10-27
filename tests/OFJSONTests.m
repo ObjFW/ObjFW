@@ -28,8 +28,8 @@
 }
 @end
 
-static OFString *string = @"{\"f\\0oo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
-    @"null//bar\n,\"fo\\u0000o\",false]}";
+static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
+    @"0xF,null//bar\n,\"f\\x6F\\u0000o\",false]}";
 
 @implementation OFJSONTests
 - (void)setUp
