@@ -48,7 +48,7 @@ OF_DIRECT_MEMBERS
 			  length: (size_t)length
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable OFStreamAsyncReadBlock)block
+			 handler: (nullable OFStreamReadHandler)handler
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -57,7 +57,7 @@ OF_DIRECT_MEMBERS
 		     exactLength: (size_t)length
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable OFStreamAsyncReadBlock)block
+			 handler: (nullable OFStreamReadHandler)handler
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
@@ -65,8 +65,8 @@ OF_DIRECT_MEMBERS
 			      encoding: (OFStringEncoding)encoding
 				  mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-				 block: (nullable OFStreamAsyncReadStringBlock)
-					    block
+			       handler: (nullable OFStreamStringReadHandler)
+					    handler
 # endif
 			      delegate: (nullable id <OFStreamDelegate>)
 					    delegate;
@@ -75,7 +75,8 @@ OF_DIRECT_MEMBERS
 			    encoding: (OFStringEncoding)encoding
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (nullable OFStreamAsyncReadLineBlock)block
+			     handler: (nullable OFStreamStringReadHandler)
+					  handler
 # endif
 			    delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -83,7 +84,7 @@ OF_DIRECT_MEMBERS
 			     data: (OFData *)data
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable OFStreamAsyncWriteDataBlock)block
+			  handler: (nullable OFStreamDataWrittenHandler)handler
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -92,7 +93,8 @@ OF_DIRECT_MEMBERS
 			 encoding: (OFStringEncoding)encoding
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable OFStreamAsyncWriteStringBlock)block
+			  handler: (nullable OFStreamStringWrittenHandler)
+				       handler
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)

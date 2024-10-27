@@ -219,7 +219,7 @@
 				     length: length
 				       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				      block: NULL
+				    handler: NULL
 # endif
 				   delegate: _delegate];
 }
@@ -243,7 +243,7 @@
 				exactLength: length
 				       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				      block: NULL
+				    handler: NULL
 # endif
 				   delegate: _delegate];
 }
@@ -253,16 +253,47 @@
 		     length: (size_t)length
 		      block: (OFStreamAsyncReadBlock)block
 {
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
 	[self asyncReadIntoBuffer: buffer
 			   length: length
 		      runLoopMode: OFDefaultRunLoopMode
-			    block: block];
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		    handler: (OFStreamReadHandler)handler
+{
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: OFDefaultRunLoopMode
+			  handler: handler];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
+{
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: runLoopMode
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		    handler: (OFStreamReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -271,7 +302,7 @@
 				     buffer: buffer
 				     length: length
 				       mode: runLoopMode
-				      block: block
+				    handler: handler
 				   delegate: nil];
 }
 
@@ -279,16 +310,47 @@
 		exactLength: (size_t)length
 		      block: (OFStreamAsyncReadBlock)block
 {
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
 		      runLoopMode: OFDefaultRunLoopMode
-			    block: block];
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		    handler: (OFStreamReadHandler)handler
+{
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: OFDefaultRunLoopMode
+			  handler: handler];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
+{
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: runLoopMode
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		    handler: (OFStreamReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -297,7 +359,7 @@
 				     buffer: buffer
 				exactLength: length
 				       mode: runLoopMode
-				      block: block
+				    handler: handler
 				   delegate: nil];
 }
 # endif
@@ -654,7 +716,7 @@
 					 encoding: encoding
 					     mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					    block: NULL
+					  handler: NULL
 # endif
 					 delegate: _delegate];
 }
@@ -681,30 +743,30 @@
 				       encoding: encoding
 					   mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					  block: NULL
+					handler: NULL
 # endif
 				       delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncReadStringWithBlock: (OFStreamAsyncReadStringBlock)block
+- (void)asyncReadStringWithHandler: (OFStreamStringReadHandler)handler
 {
 	[self asyncReadStringWithEncoding: OFStringEncodingUTF8
 			      runLoopMode: OFDefaultRunLoopMode
-				    block: block];
+				  handler: handler];
 }
 
 - (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
-			      block: (OFStreamAsyncReadStringBlock)block
+			    handler: (OFStreamStringReadHandler)handler
 {
 	[self asyncReadStringWithEncoding: encoding
 			      runLoopMode: OFDefaultRunLoopMode
-				    block: block];
+				  handler: handler];
 }
 
 - (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
 			runLoopMode: (OFRunLoopMode)runLoopMode
-			      block: (OFStreamAsyncReadStringBlock)block
+			    handler: (OFStreamStringReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -712,28 +774,67 @@
 	[OFRunLoop of_addAsyncReadStringForStream: stream
 					 encoding: encoding
 					     mode: runLoopMode
-					    block: block
+					  handler: handler
 					 delegate: nil];
 }
 
 - (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
 {
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
 	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
 			    runLoopMode: OFDefaultRunLoopMode
-				  block: block];
+				handler: handler];
+}
+
+- (void)asyncReadLineWithHandler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+			    runLoopMode: OFDefaultRunLoopMode
+				handler: handler];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 			    block: (OFStreamAsyncReadLineBlock)block
 {
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
 	[self asyncReadLineWithEncoding: encoding
 			    runLoopMode: OFDefaultRunLoopMode
-				  block: block];
+				handler: handler];
+}
+
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+			  handler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: OFDefaultRunLoopMode
+				handler: handler];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (OFRunLoopMode)runLoopMode
 			    block: (OFStreamAsyncReadLineBlock)block
+{
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: runLoopMode
+				handler: handler];
+}
+
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
+			  handler: (OFStreamStringReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -741,7 +842,7 @@
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
 					   mode: runLoopMode
-					  block: block
+					handler: handler
 				       delegate: nil];
 }
 # endif
@@ -1150,7 +1251,7 @@
 					data: data
 					mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				       block: NULL
+				     handler: NULL
 # endif
 				    delegate: _delegate];
 }
@@ -1182,7 +1283,7 @@
 				    encoding: encoding
 					mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				       block: NULL
+				     handler: NULL
 # endif
 				    delegate: _delegate];
 }
@@ -1190,14 +1291,41 @@
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncWriteData: (OFData *)data block: (OFStreamAsyncWriteDataBlock)block
 {
+	OFStreamDataWrittenHandler handler = ^ (OFStream *stream, OFData *data_,
+	    size_t bytesWritten, id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteData: data
 		 runLoopMode: OFDefaultRunLoopMode
-		       block: block];
+		     handler: handler];
+}
+
+- (void)asyncWriteData: (OFData *)data
+	       handler: (OFStreamDataWrittenHandler)handler
+{
+	[self asyncWriteData: data
+		 runLoopMode: OFDefaultRunLoopMode
+		     handler: handler];
 }
 
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (OFRunLoopMode)runLoopMode
 		 block: (OFStreamAsyncWriteDataBlock)block
+{
+	OFStreamDataWrittenHandler handler = ^ (OFStream *stream, OFData *data_,
+	    size_t bytesWritten, id exception) {
+		return block(bytesWritten, exception);
+	};
+
+	[self asyncWriteData: data
+		 runLoopMode: runLoopMode
+		     handler: handler];
+}
+
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (OFRunLoopMode)runLoopMode
+	       handler: (OFStreamDataWrittenHandler)handler
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1205,33 +1333,81 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 					data: data
 					mode: runLoopMode
-				       block: block
+				     handler: handler
 				    delegate: nil];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		   block: (OFStreamAsyncWriteStringBlock)block
 {
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteString: string
 		      encoding: OFStringEncodingUTF8
 		   runLoopMode: OFDefaultRunLoopMode
-			 block: block];
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		 handler: (OFStreamStringWrittenHandler)handler
+{
+	[self asyncWriteString: string
+		      encoding: OFStringEncodingUTF8
+		   runLoopMode: OFDefaultRunLoopMode
+		       handler: handler];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 		   block: (OFStreamAsyncWriteStringBlock)block
 {
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteString: string
 		      encoding: encoding
 		   runLoopMode: OFDefaultRunLoopMode
-			 block: block];
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+		 handler: (OFStreamStringWrittenHandler)handler
+{
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: OFDefaultRunLoopMode
+		       handler: handler];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (OFRunLoopMode)runLoopMode
 		   block: (OFStreamAsyncWriteStringBlock)block
+{
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: runLoopMode
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
+		 handler: (OFStreamStringWrittenHandler)handler
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1240,7 +1416,7 @@
 				      string: string
 				    encoding: encoding
 					mode: runLoopMode
-				       block: block
+				     handler: handler
 				    delegate: nil];
 }
 # endif

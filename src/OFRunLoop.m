@@ -96,7 +96,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncReadBlock _block;
+	OFStreamReadHandler _handler;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -107,7 +107,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncReadBlock _block;
+	OFStreamReadHandler _handler;
 # endif
 	void *_buffer;
 	size_t _exactLength, _readLength;
@@ -118,7 +118,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncReadStringBlock _block;
+	OFStreamStringReadHandler _handler;
 # endif
 	OFStringEncoding _encoding;
 }
@@ -128,7 +128,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncReadLineBlock _block;
+	OFStreamStringReadHandler _handler;
 # endif
 	OFStringEncoding _encoding;
 }
@@ -138,7 +138,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncWriteDataBlock _block;
+	OFStreamDataWrittenHandler _handler;
 # endif
 	OFData *_data;
 	size_t _writtenLength;
@@ -149,7 +149,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFStreamAsyncWriteStringBlock _block;
+	OFStreamStringWrittenHandler _handler;
 # endif
 	OFString *_string;
 	OFStringEncoding _encoding;
@@ -471,8 +471,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(length, exception);
+	if (_handler != NULL)
+		return _handler(object, _buffer, length, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -491,7 +491,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -519,8 +519,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		if (!_block(_readLength, exception))
+	if (_handler != NULL) {
+		if (!_handler(object, _buffer, _readLength, exception))
 			return false;
 
 		_readLength = 0;
@@ -547,7 +547,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -571,8 +571,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(string, exception);
+	if (_handler != NULL)
+		return _handler(object, string, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -590,7 +590,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -614,8 +614,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(line, exception);
+	if (_handler != NULL)
+		return _handler(object, line, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector:
@@ -633,7 +633,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -669,8 +669,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		newData = _block(_writtenLength, exception);
+	if (_handler != NULL) {
+		newData = _handler(object, _data, _writtenLength, exception);
 
 		if (newData == nil)
 			return false;
@@ -709,7 +709,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 # endif
 	[_data release];
 
@@ -746,8 +746,9 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		newString = _block(_writtenLength, exception);
+	if (_handler != NULL) {
+		newString = _handler(object, _string, _encoding, _writtenLength,
+		    exception);
 
 		if (newString == nil)
 			return false;
@@ -788,7 +789,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	[_string release];
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 # endif
 
 	[super dealloc];
@@ -1301,7 +1302,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			  length: (size_t)length
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (OFStreamAsyncReadBlock)block
+			 handler: (OFStreamReadHandler)handler
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1309,7 +1310,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
@@ -1323,7 +1324,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		     exactLength: (size_t)exactLength
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (OFStreamAsyncReadBlock)block
+			 handler: (OFStreamReadHandler)handler
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1331,7 +1332,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_buffer = buffer;
 	queueItem->_exactLength = exactLength;
@@ -1344,7 +1345,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			      encoding: (OFStringEncoding)encoding
 				  mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-				 block: (OFStreamAsyncReadStringBlock)block
+			       handler: (OFStreamStringReadHandler)handler
 # endif
 			      delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1352,7 +1353,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_encoding = encoding;
 
@@ -1364,7 +1365,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			    encoding: (OFStringEncoding)encoding
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (OFStreamAsyncReadLineBlock)block
+			     handler: (OFStreamStringReadHandler)handler
 # endif
 			    delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1372,7 +1373,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_encoding = encoding;
 
@@ -1384,7 +1385,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			     data: (OFData *)data
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (OFStreamAsyncWriteDataBlock)block
+			  handler: (OFStreamDataWrittenHandler)handler
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1392,7 +1393,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_data = [data copy];
 
@@ -1405,7 +1406,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			 encoding: (OFStringEncoding)encoding
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (OFStreamAsyncWriteStringBlock)block
+			  handler: (OFStreamStringWrittenHandler)handler
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
@@ -1413,7 +1414,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_string = [string copy];
 	queueItem->_encoding = encoding;
