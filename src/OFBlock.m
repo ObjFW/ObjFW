@@ -47,8 +47,8 @@ struct Block {
 	struct {
 		unsigned long reserved;
 		unsigned long size;
-		void (*_Nullable copyHelper)(void *dest, void *src);
-		void (*_Nullable disposeHelper)(void *src);
+		void (*copyHelper)(void *dest, void *src);
+		void (*disposeHelper)(void *src);
 		const char *signature;
 	} *descriptor;
 };

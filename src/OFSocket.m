@@ -1052,7 +1052,7 @@ OFSocketAddressIPPort(const OFSocketAddress *address)
 }
 
 OFString *
-OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
+OFSocketAddressUNIXPath(const OFSocketAddress *address)
 {
 	socklen_t length;
 

@@ -37,9 +37,8 @@ OF_DIRECT_MEMBERS
 @interface OFListEnumerator: OFEnumerator
 {
 	OFList *_list;
-	OFListItem _Nullable _current;
-	unsigned long _mutations;
-	unsigned long *_Nullable _mutationsPtr;
+	OFListItem _current;
+	unsigned long _mutations, *_mutationsPtr;
 }
 
 - (instancetype)initWithList: (OFList *)list

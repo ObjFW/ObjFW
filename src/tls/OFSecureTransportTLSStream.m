@@ -259,7 +259,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		OSStatus status = SSLHandshake(_context);

@@ -322,7 +322,7 @@ static SSL_CTX *clientContext;
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		static const OFTLSStreamErrorCode unknownErrorCode =

@@ -334,14 +334,14 @@ static OFNotificationCenter *defaultCenter;
 }
 
 - (void)postNotificationName: (OFNotificationName)name
-		      object: (nullable id)object
+		      object: (id)object
 {
 	[self postNotificationName: name object: object userInfo: nil];
 }
 
 - (void)postNotificationName: (OFNotificationName)name
-		      object: (nullable id)object
-		    userInfo: (nullable OFDictionary *)userInfo
+		      object: (id)object
+		    userInfo: (OFDictionary *)userInfo
 {
 	void *pool = objc_autoreleasePoolPush();
 

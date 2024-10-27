@@ -35,7 +35,7 @@
 
 + (instancetype)
     exceptionWithNetwork: (uint32_t)network
-		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+		    node: (const unsigned char [IPX_NODE_LEN])node
 		    port: (uint16_t)port
 	      packetType: (uint8_t)packetType
 		  socket: (id)sock
@@ -56,7 +56,7 @@
 
 - (instancetype)
     initWithNetwork: (uint32_t)network
-	       node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	       node: (const unsigned char [IPX_NODE_LEN])node
 	       port: (uint16_t)port
 	 packetType: (uint8_t)packetType
 	     socket: (id)sock

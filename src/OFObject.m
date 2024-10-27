@@ -74,7 +74,7 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+extern id _objc_rootAutorelease(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id OFForward(id, SEL, ...);
