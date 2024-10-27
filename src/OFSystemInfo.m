@@ -808,6 +808,9 @@ cpucfg(uint32_t word)
 	    NULL, 0) != 0)
 		return nil;
 
+	if (length > 0 && buffer[length - 1] == '\0')
+		length--;
+
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]
 				    length: length];
