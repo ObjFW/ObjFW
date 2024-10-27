@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _port;
 	id <OFTCPSocketDelegate> _Nullable _delegate;
 #ifdef OF_HAVE_BLOCKS
-	OFTCPSocketAsyncConnectBlock _Nullable _block;
+	OFTCPSocketConnectedHandler _Nullable _handler;
 #endif
 	id _Nullable _exception;
 	uint_least8_t _SOCKS5State;
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  port: (uint16_t)port
 		      delegate: (nullable id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (nullable OFTCPSocketAsyncConnectBlock)block
+		       handler: (nullable OFTCPSocketConnectedHandler)handler
 #endif
 ;
 - (void)didConnect;

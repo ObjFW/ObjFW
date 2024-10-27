@@ -76,7 +76,8 @@
 #ifdef OF_HAVE_BLOCKS
 	if (_handler != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((OFTCPSocketAsyncConnectBlock)_handler)(_exception);
+			((OFTCPSocketConnectedHandler)_handler)(_socket, _host,
+			    _port, _exception);
 # ifdef OF_HAVE_SCTP
 		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
 			((OFSCTPSocketConnectedHandler)_handler)(_socket, _host,

@@ -43,7 +43,7 @@ enum {
 			  port: (uint16_t)port
 		      delegate: (id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFTCPSocketAsyncConnectBlock)block
+		       handler: (OFTCPSocketConnectedHandler)handler
 #endif
 {
 	self = [super init];
@@ -54,7 +54,7 @@ enum {
 		_port = port;
 		_delegate = [delegate retain];
 #ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
+		_handler = [handler copy];
 #endif
 
 		_socket.delegate = self;
@@ -75,7 +75,7 @@ enum {
 	[_host release];
 	[_delegate release];
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 #endif
 	[_exception release];
 	[_request release];
@@ -88,8 +88,8 @@ enum {
 	_socket.delegate = _delegate;
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(_exception);
+	if (_handler != NULL)
+		_handler(_socket, _host, _port, _exception);
 	else {
 #endif
 		if ([_delegate respondsToSelector:

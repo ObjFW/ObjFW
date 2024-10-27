@@ -231,7 +231,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			      port: port
 			  delegate: _delegate
 #ifdef OF_HAVE_BLOCKS
-			     block: NULL
+			   handler: NULL
 #endif
 		    ] autorelease];
 		host = _SOCKS5Host;
@@ -255,16 +255,47 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      port: (uint16_t)port
 		     block: (OFTCPSocketAsyncConnectBlock)block
 {
+	OFTCPSocketConnectedHandler handler = ^ (OFTCPSocket *socket,
+	    OFString *host_, uint16_t port_, id exception) {
+		block(exception);
+	};
+
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: OFDefaultRunLoopMode
-			   block: block];
+			 handler: handler];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+		   handler: (OFTCPSocketConnectedHandler)handler
+{
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: OFDefaultRunLoopMode
+			 handler: handler];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFTCPSocketAsyncConnectBlock)block
+{
+	OFTCPSocketConnectedHandler handler = ^ (OFTCPSocket *socket,
+	    OFString *host_, uint16_t port_, id exception) {
+		block(exception);
+	};
+
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: runLoopMode
+			 handler: handler];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		   handler: (OFTCPSocketConnectedHandler)handler
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
@@ -275,7 +306,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			      host: host
 			      port: port
 			  delegate: nil
-			     block: block] autorelease];
+			   handler: handler] autorelease];
 		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	}
@@ -285,7 +316,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    host: host
 			    port: port
 			delegate: delegate
-			 handler: (delegate == nil ? block : NULL)] autorelease]
+			 handler: (delegate == nil
+				      ? handler : NULL)] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
