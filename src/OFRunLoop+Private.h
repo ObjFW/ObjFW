@@ -143,7 +143,7 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 #  ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSCTPSocketAsyncReceiveBlock)block
+   handler: (nullable OFSCTPSocketMessageReceivedHandler)handler
 #  endif
   delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
 + (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)socket
@@ -151,7 +151,7 @@ OF_DIRECT_MEMBERS
       info: (OFSCTPMessageInfo)info
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSCTPSocketAsyncSendDataBlock)block
+   handler: (nullable OFSCTPSocketDataSentHandler)handler
 # endif
   delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
 # endif

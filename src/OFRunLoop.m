@@ -219,7 +219,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 #  ifdef OF_HAVE_BLOCKS
-	OFSCTPSocketAsyncReceiveBlock _block;
+	OFSCTPSocketMessageReceivedHandler _handler;
 #  endif
 	void *_buffer;
 	size_t _length;
@@ -230,7 +230,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 #  ifdef OF_HAVE_BLOCKS
-	OFSCTPSocketAsyncSendDataBlock _block;
+	OFSCTPSocketDataSentHandler _handler;
 #  endif
 	OFData *_data;
 	OFSCTPMessageInfo _info;
@@ -1104,8 +1104,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 #  ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(length, info, exception);
+	if (_handler != NULL)
+		return _handler(object, _buffer, length, info, exception);
 	else {
 #  endif
 		if (![_delegate respondsToSelector: @selector(
@@ -1125,7 +1125,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -1147,8 +1147,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 #  ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		newData = _block(exception);
+	if (_handler != NULL) {
+		newData = _handler(object, _data, _info, exception);
 
 		if (newData == nil)
 			return false;
@@ -1185,7 +1185,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 # endif
 	[_data release];
 	[_info release];
@@ -1533,20 +1533,21 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 }
 
 # ifdef OF_HAVE_SCTP
-+ (void)of_addAsyncReceiveForSCTPSocket: (OFSCTPSocket *)sock
-				 buffer: (void *)buffer
-				 length: (size_t)length
-				   mode: (OFRunLoopMode)mode
++ (void)
+    of_addAsyncReceiveForSCTPSocket: (OFSCTPSocket *)sock
+			     buffer: (void *)buffer
+			     length: (size_t)length
+			       mode: (OFRunLoopMode)mode
 #  ifdef OF_HAVE_BLOCKS
-				  block: (OFSCTPSocketAsyncReceiveBlock)block
+			    handler: (OFSCTPSocketMessageReceivedHandler)handler
 #  endif
-			       delegate: (id <OFSCTPSocketDelegate>)delegate
+			   delegate: (id <OFSCTPSocketDelegate>)delegate
 {
 	NEW_READ(OFRunLoopSCTPReceiveQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 #  ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 #  endif
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
@@ -1559,7 +1560,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				info: (OFSCTPMessageInfo)info
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (OFSCTPSocketAsyncSendDataBlock)block
+			     handler: (OFSCTPSocketDataSentHandler)handler
 # endif
 			    delegate: (id <OFSCTPSocketDelegate>)delegate
 {
@@ -1567,7 +1568,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_data = [data copy];
 	queueItem->_info = [info copy];

@@ -55,7 +55,7 @@ typedef bool (^OFDatagramSocketAsyncReceiveBlock)(size_t length,
  * @param sender The address of the sender of the packet
  * @param exception An exception which occurred while receiving or `nil` on
  *		    success
- * @return A bool whether the same block should be used for the next receive
+ * @return A bool whether the same handler should be used for the next receive
  */
 typedef bool (^OFDatagramSocketPacketReceivedHandler)(OFDatagramSocket *socket,
     void *buffer, size_t length, const OFSocketAddress *_Nonnull sender,
@@ -106,7 +106,7 @@ typedef OFData *_Nullable (^OFDatagramSocketDataSentHandler)(
  * @param sender The address of the sender of the packet
  * @param exception An exception that occurred while receiving, or nil on
  *		    success
- * @return A bool whether the same block should be used for the next receive
+ * @return A bool whether the same handler should be used for the next receive
  */
 -	  (bool)socket: (OFDatagramSocket *)socket
   didReceiveIntoBuffer: (void *)buffer

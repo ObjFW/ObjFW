@@ -244,7 +244,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    host: host
 			    port: port
 			delegate: delegate
-			   block: NULL
+			 handler: NULL
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -285,7 +285,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    host: host
 			    port: port
 			delegate: delegate
-			   block: (delegate == nil ? block : NULL)] autorelease]
+			 handler: (delegate == nil ? block : NULL)] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);

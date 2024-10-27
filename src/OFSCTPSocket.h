@@ -74,34 +74,44 @@ extern const OFSCTPMessageInfoKey OFSCTPUnordered;
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * @brief A block which is called when the socket connected.
+ * @brief A handler which is called when the socket connected.
  *
+ * @param socket The socket which connected
+ * @param host The host connected to
+ * @param port The port on the host connected to
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^OFSCTPSocketAsyncConnectBlock)(id _Nullable exception);
+typedef void (^OFSCTPSocketConnectedHandler)(OFSCTPSocket *socket,
+    OFString *host, uint16_t port, id _Nullable exception);
 
 /**
- * @brief A block which is called when a message has been received.
+ * @brief A handler which is called when a message has been received.
  *
+ * @param socket The SCTP socket which received a message
+ * @param buffer The buffer the message has been written to
  * @param length The length of the message
  * @param info Information about the message, see @ref OFSCTPMessageInfo
  * @param exception An exception which occurred while receiving or `nil` on
  *		    success
- * @return A bool whether the same block should be used for the next receive
+ * @return A bool whether the same handler should be used for the next receive
  */
-typedef bool (^OFSCTPSocketAsyncReceiveBlock)(size_t length,
-    OFSCTPMessageInfo info, id _Nullable exception);
+typedef bool (^OFSCTPSocketMessageReceivedHandler)(OFSCTPSocket *socket,
+    void *buffer, size_t length, OFSCTPMessageInfo _Nullable info,
+    id _Nullable exception);
 
 /**
- * @brief A block which is called when a message has been sent.
+ * @brief A handler which is called when a message has been sent.
  *
+ * @param socket The SCTP socket which sent a message
+ * @param data The data which was sent
+ * @param info Information about the message, see @ref OFSCTPMessageInfo
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
-    id _Nullable exception);
+typedef OFData *_Nullable (^OFSCTPSocketDataSentHandler)(OFSCTPSocket *socket,
+    OFData *data, OFSCTPMessageInfo _Nullable info, id _Nullable exception);
 #endif
 
 /**
@@ -134,7 +144,7 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param info Information about the message, see @ref OFSCTPMessageInfo
  * @param exception An exception that occurred while receiving, or nil on
  *		    success
- * @return A bool whether the same block should be used for the next receive
+ * @return A bool whether the same handler should be used for the next receive
  */
 -	  (bool)socket: (OFSCTPSocket *)socket
   didReceiveIntoBuffer: (void *)buffer
@@ -224,11 +234,12 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param block The block to execute once the connection has been established
+ * @param handler The handler to execute once the connection has been
+ *		  established
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (OFSCTPSocketAsyncConnectBlock)block;
+		   handler: (OFSCTPSocketConnectedHandler)handler;
 
 /**
  * @brief Asynchronously connect the OFSCTPSocket to the specified destination.
@@ -236,12 +247,13 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param host The host to connect to
  * @param port The port on the host to connect to
  * @param runLoopMode The run loop mode in which to perform the async connect
- * @param block The block to execute once the connection has been established
+ * @param handler The handler to execute once the connection has been
+ *		  established
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (OFRunLoopMode)runLoopMode
-		     block: (OFSCTPSocketAsyncConnectBlock)block;
+		   handler: (OFSCTPSocketConnectedHandler)handler;
 #endif
 
 /**
@@ -311,15 +323,17 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  *
  * @param buffer The buffer to write the message to
  * @param length The length of the buffer
- * @param block The block to call when the message has been received. If the
- *		block returns true, it will be called again with the same
- *		buffer and maximum length when more messages have been received.
- *		If you want the next method in the queue to handle the message
- *		received next, you need to return false from the method.
+ * @param handler The handler to call when the message has been received. If the
+ *		  handler returns true, it will be called again with the same
+ *		  buffer and maximum length when more messages have been
+ *		  received. If you want the next method in the queue to handle
+ *		  the message received next, you need to return false from the
+ *		  method.
  */
-- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
-				length: (size_t)length
-				 block: (OFSCTPSocketAsyncReceiveBlock)block;
+- (void)
+    asyncReceiveWithInfoIntoBuffer: (void *)buffer
+			    length: (size_t)length
+			   handler: (OFSCTPSocketMessageReceivedHandler)handler;
 
 /**
  * @brief Asynchronously receives a message and stores it into the specified
@@ -331,16 +345,18 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param length The length of the buffer
  * @param runLoopMode The run loop mode in which to perform the asynchronous
  *		      receive
- * @param block The block to call when the message has been received. If the
- *		block returns true, it will be called again with the same
- *		buffer and maximum length when more messages have been received.
- *		If you want the next method in the queue to handle the message
- *		received next, you need to return false from the method.
+ * @param handler The handler to call when the message has been received. If the
+ *		  handler returns true, it will be called again with the same
+ *		  buffer and maximum length when more messages have been
+ *		  received. If you want the next method in the queue to handle
+ *		  the message received next, you need to return false from the
+ *		  method.
  */
-- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
-				length: (size_t)length
-			   runLoopMode: (OFRunLoopMode)runLoopMode
-				 block: (OFSCTPSocketAsyncReceiveBlock)block;
+- (void)
+    asyncReceiveWithInfoIntoBuffer: (void *)buffer
+			    length: (size_t)length
+		       runLoopMode: (OFRunLoopMode)runLoopMode
+			   handler: (OFSCTPSocketMessageReceivedHandler)handler;
 #endif
 
 /**
@@ -382,13 +398,13 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  *
  * @param data The data to send as a message
  * @param info Information about the message, see @ref OFSCTPMessageInfo
- * @param block The block to call when the message has been sent. It should
- *		return the data for the next send with the same callback or nil
- *		if it should not repeat.
+ * @param handler The handler to call when the message has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  nil if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
 		 info: (nullable OFSCTPMessageInfo)info
-		block: (OFSCTPSocketAsyncSendDataBlock)block;
+	      handler: (OFSCTPSocketDataSentHandler)handler;
 
 /**
  * @brief Asynchronously sends the specified message on the specified stream.
@@ -397,14 +413,14 @@ typedef OFData *_Nullable (^OFSCTPSocketAsyncSendDataBlock)(
  * @param info Information about the message, see @ref OFSCTPMessageInfo
  * @param runLoopMode The run loop mode in which to perform the asynchronous
  *		      send
- * @param block The block to call when the message has been sent. It should
- *		return the data for the next send with the same callback or nil
- *		if it should not repeat.
+ * @param handler The handler to call when the message has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  nil if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
 		 info: (nullable OFSCTPMessageInfo)info
 	  runLoopMode: (OFRunLoopMode)runLoopMode
-		block: (OFSCTPSocketAsyncSendDataBlock)block;
+	      handler: (OFSCTPSocketDataSentHandler)handler;
 #endif
 @end
 

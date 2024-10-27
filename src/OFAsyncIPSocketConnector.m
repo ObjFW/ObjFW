@@ -38,7 +38,7 @@
 			  host: (OFString *)host
 			  port: (uint16_t)port
 		      delegate: (id)delegate
-			 block: (id)block
+		       handler: (id)handler
 {
 	self = [super init];
 
@@ -47,7 +47,7 @@
 		_host = [host copy];
 		_port = port;
 		_delegate = [delegate retain];
-		_block = [block copy];
+		_handler = [handler copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,7 +61,7 @@
 	[_socket release];
 	[_host release];
 	[_delegate release];
-	[_block release];
+	[_handler release];
 	[_exception release];
 	[_socketAddresses release];
 
@@ -74,12 +74,13 @@
 		[_socket setCanBlock: true];
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
+	if (_handler != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
+			((OFTCPSocketAsyncConnectBlock)_handler)(_exception);
 # ifdef OF_HAVE_SCTP
 		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
-			((OFSCTPSocketAsyncConnectBlock)_block)(_exception);
+			((OFSCTPSocketConnectedHandler)_handler)(_socket, _host,
+			    _port, _exception);
 # endif
 		else
 			OFEnsure(0);

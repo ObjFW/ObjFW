@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_host;
 	uint16_t _port;
 	id _Nullable _delegate;
-	id _Nullable _block;
+	id _Nullable _handler;
 	id _Nullable _exception;
 	OFData *_Nullable _socketAddresses;
 	size_t _socketAddressesIndex;
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  host: (OFString *)host
 			  port: (uint16_t)port
 		      delegate: (nullable id)delegate
-			 block: (nullable id)block;
+		       handler: (nullable id)handler;
 - (void)didConnect;
 - (void)tryNextAddressWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;

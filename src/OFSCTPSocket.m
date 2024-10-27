@@ -205,7 +205,7 @@ static const OFRunLoopMode connectRunLoopMode =
 			    host: host
 			    port: port
 			delegate: _delegate
-			   block: NULL
+			 handler: NULL
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -214,18 +214,18 @@ static const OFRunLoopMode connectRunLoopMode =
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (OFSCTPSocketAsyncConnectBlock)block
+		   handler: (OFSCTPSocketConnectedHandler)handler
 {
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: OFDefaultRunLoopMode
-			   block: block];
+			 handler: handler];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (OFRunLoopMode)runLoopMode
-		     block: (OFSCTPSocketAsyncConnectBlock)block
+		   handler: (OFSCTPSocketConnectedHandler)handler
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -237,7 +237,7 @@ static const OFRunLoopMode connectRunLoopMode =
 			    host: host
 			    port: port
 			delegate: nil
-			   block: block] autorelease]
+			 handler: handler] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -434,33 +434,34 @@ static const OFRunLoopMode connectRunLoopMode =
 					    length: length
 					      mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					     block: NULL
+					   handler: NULL
 # endif
 					  delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncReceiveWithInfoIntoBuffer: (void *)buffer
-				length: (size_t)length
-				 block: (OFSCTPSocketAsyncReceiveBlock)block
+- (void)
+    asyncReceiveWithInfoIntoBuffer: (void *)buffer
+			    length: (size_t)length
+			   handler: (OFSCTPSocketMessageReceivedHandler)handler
 {
 	[self asyncReceiveWithInfoIntoBuffer: buffer
 				      length: length
 				 runLoopMode: OFDefaultRunLoopMode
-				       block: block];
+				     handler: handler];
 }
 
 - (void)
     asyncReceiveWithInfoIntoBuffer: (void *)buffer
 			    length: (size_t)length
 		       runLoopMode: (OFRunLoopMode)runLoopMode
-			     block: (OFSCTPSocketAsyncReceiveBlock)block
+			   handler: (OFSCTPSocketMessageReceivedHandler)handler
 {
 	[OFRunLoop of_addAsyncReceiveForSCTPSocket: self
 					    buffer: buffer
 					    length: length
 					      mode: runLoopMode
-					     block: block
+					   handler: handler
 					  delegate: nil];
 }
 #endif
@@ -538,7 +539,7 @@ static const OFRunLoopMode connectRunLoopMode =
 					   info: info
 					   mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					  block: NULL
+					handler: NULL
 # endif
 				       delegate: _delegate];
 }
@@ -546,24 +547,24 @@ static const OFRunLoopMode connectRunLoopMode =
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncSendData: (OFData *)data
 		 info: (OFSCTPMessageInfo)info
-		block: (OFSCTPSocketAsyncSendDataBlock)block
+	      handler: (OFSCTPSocketDataSentHandler)handler
 {
 	[self asyncSendData: data
 		       info: info
 		runLoopMode: OFDefaultRunLoopMode
-		      block: block];
+		    handler: handler];
 }
 
 - (void)asyncSendData: (OFData *)data
 		 info: (OFSCTPMessageInfo)info
 	  runLoopMode: (OFRunLoopMode)runLoopMode
-		block: (OFSCTPSocketAsyncSendDataBlock)block
+	      handler: (OFSCTPSocketDataSentHandler)handler
 {
 	[OFRunLoop of_addAsyncSendForSCTPSocket: self
 					   data: data
 					   info: info
 					   mode: runLoopMode
-					  block: block
+					handler: handler
 				       delegate: nil];
 }
 #endif
