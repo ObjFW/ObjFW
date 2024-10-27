@@ -102,7 +102,7 @@ OF_DIRECT_MEMBERS
 # endif
 + (void)of_addAsyncAcceptForSocket: (id)socket
 			      mode: (OFRunLoopMode)mode
-			     block: (nullable id)block
+			   handler: (nullable id)handler
 			  delegate: (nullable id)delegate;
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
     buffer: (void *)buffer
@@ -126,7 +126,7 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSequencedPacketSocketAsyncReceiveBlock)block
+   handler: (nullable OFSequencedPacketSocketPacketReceivedHandler)handler
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_addAsyncSendForSequencedPacketSocket:
@@ -134,7 +134,7 @@ OF_DIRECT_MEMBERS
       data: (OFData *)data
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSequencedPacketSocketAsyncSendDataBlock)block
+   handler: (nullable OFSequencedPacketSocketDataSentHandler)handler
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 # ifdef OF_HAVE_SCTP

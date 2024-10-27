@@ -333,7 +333,7 @@
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: NULL
+				      handler: NULL
 				     delegate: _delegate];
 }
 
@@ -348,7 +348,7 @@
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: block
+				      handler: block
 				     delegate: nil];
 }
 #endif

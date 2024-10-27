@@ -188,7 +188,7 @@
 						       length: length
 							 mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-							block: NULL
+						      handler: NULL
 # endif
 						     delegate: _delegate];
 }
@@ -198,10 +198,27 @@
 			length: (size_t)length
 			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
+	OFSequencedPacketSocketPacketReceivedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, void *buffer_, size_t length_,
+	    id exception) {
+		return block(length_, exception);
+	};
+
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
 			 runLoopMode: OFDefaultRunLoopMode
-			       block: block];
+			     handler: handler];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler
+{
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: OFDefaultRunLoopMode
+			     handler: handler];
 }
 
 - (void)
@@ -210,11 +227,32 @@
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
+	OFSequencedPacketSocketPacketReceivedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, void *buffer_, size_t length_,
+	    id exception) {
+		return block(length_, exception);
+	};
+
 	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
 						       buffer: buffer
 						       length: length
 							 mode: runLoopMode
-							block: block
+						      handler: handler
+						     delegate: nil];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler
+
+{
+	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
+						       buffer: buffer
+						       length: length
+							 mode: runLoopMode
+						      handler: handler
 						     delegate: nil];
 }
 #endif
@@ -268,7 +306,7 @@
 						      data: data
 						      mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-						     block: NULL
+						   handler: NULL
 # endif
 						  delegate: _delegate];
 }
@@ -277,19 +315,46 @@
 - (void)asyncSendData: (OFData *)data
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
+	OFSequencedPacketSocketDataSentHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, OFData *data_, id exception) {
+		return block(exception);
+	};
+
 	[self asyncSendData: data
 		runLoopMode: OFDefaultRunLoopMode
-		      block: block];
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+		handler: (OFSequencedPacketSocketDataSentHandler)handler
+{
+	[self asyncSendData: data
+		runLoopMode: OFDefaultRunLoopMode
+		    handler: handler];
 }
 
 - (void)asyncSendData: (OFData *)data
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
+	OFSequencedPacketSocketDataSentHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, OFData *data_, id exception) {
+		return block(exception);
+	};
+
+	[self asyncSendData: data
+		runLoopMode: runLoopMode
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFSequencedPacketSocketDataSentHandler)handler
+{
 	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
 						      data: data
 						      mode: runLoopMode
-						     block: block
+						   handler: handler
 						  delegate: nil];
 }
 #endif
@@ -399,23 +464,50 @@
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: NULL
+				      handler: NULL
 				     delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
+	OFSequencedPacketSocketAcceptedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket,
+	    OFSequencedPacketSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithHandler: (OFSequencedPacketSocketAcceptedHandler)handler
+{
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
 }
 
 - (void)
     asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
+	OFSequencedPacketSocketAcceptedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket,
+	    OFSequencedPacketSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: runLoopMode
+				 handler: handler];
+}
+
+- (void)
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketAcceptedHandler)handler
+{
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: block
+				      handler: handler
 				     delegate: nil];
 }
 #endif

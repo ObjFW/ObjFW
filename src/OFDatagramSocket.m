@@ -302,12 +302,10 @@
 		return block(length_, sender, exception);
 	};
 
-	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
-						buffer: buffer
-						length: length
-						  mode: runLoopMode
-					       handler: handler
-					      delegate: nil];
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: runLoopMode
+			     handler: handler];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer

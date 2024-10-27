@@ -166,7 +166,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	id _block;
+	id _handler;
 # endif
 }
 @end
@@ -197,7 +197,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFSequencedPacketSocketAsyncReceiveBlock _block;
+	OFSequencedPacketSocketPacketReceivedHandler _handler;
 # endif
 	void *_buffer;
 	size_t _length;
@@ -208,7 +208,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	OFSequencedPacketSocketAsyncSendDataBlock _block;
+	OFSequencedPacketSocketDataSentHandler _handler;
 # endif
 	OFData *_data;
 }
@@ -846,14 +846,14 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
+	if (_handler != NULL) {
 		if ([object isKindOfClass: [OFStreamSocket class]])
-			return ((OFStreamSocketAsyncAcceptBlock)_block)(
+			return ((OFStreamSocketAsyncAcceptBlock)_handler)(
 			    acceptedSocket, exception);
 		else if ([object isKindOfClass:
 		    [OFSequencedPacketSocket class]])
-			return ((OFSequencedPacketSocketAsyncAcceptBlock)
-			    _block)(acceptedSocket, exception);
+			return ((OFSequencedPacketSocketAcceptedHandler)
+			    _handler)(object, acceptedSocket, exception);
 		else
 			OFEnsure(0);
 	} else {
@@ -873,7 +873,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -1000,8 +1000,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		return _block(length, exception);
+	if (_handler != NULL)
+		return _handler(object, _buffer, length, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector: @selector(
@@ -1020,7 +1020,7 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
-	[_block release];
+	[_handler release];
 
 	[super dealloc];
 }
@@ -1041,8 +1041,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
-		newData = _block(exception);
+	if (_handler != NULL) {
+		newData = _handler(object, _data, exception);
 
 		if (newData == nil)
 			return false;
@@ -1078,7 +1078,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	[_handler release];
 # endif
 	[_data release];
 
@@ -1436,14 +1436,14 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 + (void)of_addAsyncAcceptForSocket: (id)sock
 			      mode: (OFRunLoopMode)mode
-			     block: (id)block
+			   handler: (id)handler
 			  delegate: (id)delegate
 {
 	NEW_READ(OFRunLoopAcceptQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 
 	QUEUE_ITEM
@@ -1497,7 +1497,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
+   handler: (OFSequencedPacketSocketPacketReceivedHandler)handler
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {
@@ -1505,7 +1505,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
@@ -1517,7 +1517,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
       data: (OFData *)data
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+   handler: (OFSequencedPacketSocketDataSentHandler)handler
 # endif
   delegate: (id <OFSequencedPacketSocketDelegate>)delegate
 {
@@ -1525,7 +1525,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-	queueItem->_block = [block copy];
+	queueItem->_handler = [handler copy];
 # endif
 	queueItem->_data = [data copy];
 
