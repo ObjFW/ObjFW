@@ -29,7 +29,7 @@
 @end
 
 static OFString *string = @"{\"f\\0oo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
-    @"null//bar\n,\"foo\",false]}";
+    @"null//bar\n,\"fo\\u0000o\",false]}";
 
 @implementation OFJSONTests
 - (void)setUp
@@ -42,7 +42,7 @@ static OFString *string = @"{\"f\\0oo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 		[OFNumber numberWithFloat: .5f],
 		[OFNumber numberWithInt: 0xF],
 		[OFNull null],
-		@"foo",
+		@"fo\0o",
 		[OFNumber numberWithBool: false],
 		nil],
 	    nil];
@@ -63,7 +63,8 @@ static OFString *string = @"{\"f\\0oo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 - (void)testJSONRepresentation
 {
 	OTAssert(_dictionary.JSONRepresentation,
-	    @"{\"f\\u0000oo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"foo\",false]}");
+	    @"{\"f\\u0000oo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"fo\\u0000o\","
+	    @"false]}");
 }
 
 - (void)testSortedJSONRepresentation
@@ -80,14 +81,14 @@ static OFString *string = @"{\"f\\0oo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,"
 	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
 	    OFJSONRepresentationOptionPretty],
 	    @"{\n\t\"f\\u0000oo\": \"b\\na\\r\",\n\t\"x\": [\n\t\t0.5,\n\t\t15,"
-	    @"\n\t\tnull,\n\t\t\"foo\",\n\t\tfalse\n\t]\n}");
+	    @"\n\t\tnull,\n\t\t\"fo\\u0000o\",\n\t\tfalse\n\t]\n}");
 }
 
 - (void)testJSON5Representation
 {
 	OTAssertEqualObjects([_dictionary JSONRepresentationWithOptions:
 	    OFJSONRepresentationOptionJSON5],
-	    @"{\"f\\0oo\":\"b\\\na\\r\",x:[0.5,15,null,\"foo\",false]}");
+	    @"{\"f\\0oo\":\"b\\\na\\r\",x:[0.5,15,null,\"fo\\0o\",false]}");
 }
 
 - (void)testObjectByParsingJSONFailsWithInvalidJSON

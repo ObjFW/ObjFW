@@ -137,9 +137,6 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 			return 0xFFFF;
 	}
 
-	if (ret == 0)
-		return 0xFFFF;
-
 	return ret;
 }
 
