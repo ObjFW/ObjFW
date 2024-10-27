@@ -74,11 +74,14 @@
 		_handle = dlopen(
 		    [path cStringWithEncoding: [OFLocale encoding]], RTLD_LAZY);
 #else
-		if ([OFSystemInfo isWindowsNT])
-			_handle = LoadLibraryW(path.UTF16String);
-		else
-			_handle = LoadLibraryA(
-			    [path cStringWithEncoding: [OFLocale encoding]]);
+		if (path != nil) {
+			if ([OFSystemInfo isWindowsNT])
+				_handle = LoadLibraryW(path.UTF16String);
+			else
+				_handle = LoadLibraryA([path
+				    cStringWithEncoding: [OFLocale encoding]]);
+		} else
+			_handle = GetModuleHandle(NULL);
 #endif
 
 		if (_handle == NULL) {

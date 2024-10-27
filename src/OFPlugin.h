@@ -60,23 +60,23 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Creates a new OFPlugin by loading the plugin with the specified path.
  *
- * @param path The path to the plugin file. The suffix is appended
- *	       automatically.
+ * @param path The path to the plugin file. If `nil` is specified, the main
+ *	       binary is returned as a plugin.
  * @return An new, autoreleased OFPlugin
  * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
-+ (instancetype)pluginWithPath: (OFString *)path;
++ (instancetype)pluginWithPath: (nullable OFString *)path;
 
 /**
  * @brief Initializes an already allocated OFPlugin by loading the plugin with
  *	  the specified path.
  *
- * @param path The path to the plugin file. The suffix is appended
- *	       automatically.
+ * @param path The path to the plugin file. If `nil` is specified, the main
+ *	       binary is returned as a plugin.
  * @return An initialized OFPlugin
  * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
-- (instancetype)initWithPath: (OFString *)path;
+- (instancetype)initWithPath: (nullable OFString *)path;
 
 /**
  * @brief Returns the address for the specified symbol, or `nil` if not found.
