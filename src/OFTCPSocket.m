@@ -57,6 +57,17 @@
 # include <linux/mptcp.h>
 #endif
 
+#if defined(OF_MACOS) || defined(OF_IOS)
+# ifndef AF_MULTIPATH
+#  define AF_MULTIPATH 39
+# endif
+#endif
+
+enum {
+	flagUseMPTCP = 1,
+	flagUseConnectX = 2
+};
+
 static const OFRunLoopMode connectRunLoopMode =
     @"OFTCPSocketConnectRunLoopMode";
 
@@ -151,8 +162,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 	}
 
-#ifdef OF_LINUX
-	if (_usesMPTCP) {
+#if defined(OF_LINUX)
+	if (_flags & flagUseMPTCP) {
 		if ((_socket = socket(
 		    ((struct sockaddr *)&address->sockaddr)->sa_family,
 		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
@@ -164,6 +175,23 @@ static uint16_t defaultSOCKS5Port = 1080;
 				*errNo = _OFSocketErrNo();
 				return false;
 			}
+		}
+	} else
+#elif defined(OF_MACOS) || defined(OF_IOS)
+	if (_flags & flagUseMPTCP) {
+		if ((_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_TCP)) != OFInvalidSocketHandle)
+			_flags |= flagUseConnectX;
+		else {
+			if ((_socket = socket(
+			    ((struct sockaddr *)&address->sockaddr)->sa_family,
+			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
+			    OFInvalidSocketHandle) {
+				*errNo = _OFSocketErrNo();
+				return false;
+			}
+
+			_flags &= ~flagUseConnectX;
 		}
 	} else
 #endif
@@ -185,15 +213,33 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == OFInvalidSocketHandle)
+	if (_socket == OFInvalidSocketHandle) {
 		@throw [OFNotOpenException exceptionWithObject: self];
-
-	/* Cast needed for AmigaOS, where the argument is declared non-const */
-	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
-	    address->length) != 0) {
-		*errNo = _OFSocketErrNo();
-		return false;
 	}
+
+#if defined(OF_MACOS) || defined(OF_IOS)
+	if (_flags & flagUseConnectX) {
+		sa_endpoints_t endpoints = {
+			.sae_dstaddr = (struct sockaddr *)&address->sockaddr,
+			.sae_dstaddrlen = address->length
+		};
+
+		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
+		    NULL, NULL) != 0) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
+	} else
+#endif
+		/*
+		 * Cast needed for AmigaOS, where the argument is declared
+		 * non-const.
+		 */
+		if (connect(_socket, (struct sockaddr *)&address->sockaddr,
+		    address->length) != 0) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
 
 	return true;
 }
@@ -370,7 +416,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	OFSocketAddressSetIPPort(&address, port);
 
 #ifdef OF_LINUX
-	if (_usesMPTCP) {
+	if (_flags & flagUseMPTCP) {
 		if ((_socket = socket(
 		    ((struct sockaddr *)&address.sockaddr)->sa_family,
 		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
@@ -553,7 +599,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)setUsesMPTCP: (bool)usesMPTCP
 {
-	_usesMPTCP = usesMPTCP;
+	if (usesMPTCP)
+		_flags |= flagUseMPTCP;
+	else
+		_flags &= ~flagUseMPTCP;
 }
 
 - (bool)usesMPTCP

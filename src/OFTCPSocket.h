@@ -89,7 +89,7 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	uintptr_t _usesMPTCP;	/* Change to bool on ABI bump */
+	uintptr_t _flags;	/* Change to a smaller type on ABI bump */
 	OF_RESERVE_IVARS(OFTCPSocket, 3)
 }
 
