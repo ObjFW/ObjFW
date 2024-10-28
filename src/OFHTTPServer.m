@@ -866,6 +866,7 @@ normalizedKey(OFString *key)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
+	_listeningSocket.usesMPTCP = true;
 	address = [_listeningSocket bindToHost: _host port: _port];
 	_port = OFSocketAddressIPPort(&address);
 	[_listeningSocket listen];
