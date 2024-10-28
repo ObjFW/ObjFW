@@ -89,7 +89,8 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	OF_RESERVE_IVARS(OFTCPSocket, 4)
+	uintptr_t _usesMPTCP;	/* Change to bool on ABI bump */
+	OF_RESERVE_IVARS(OFTCPSocket, 3)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -121,6 +122,14 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
  */
 @property (nonatomic) bool canDelaySendingSegments;
 #endif
+
+/**
+ * @brief Whether the socket uses MPTCP.
+ *
+ * If you want to use MPTCP, set this to true before connecting or binding.
+ * After connecting or binding, this returns whether MPTCP was used.
+ */
+@property (nonatomic) bool usesMPTCP;
 
 /**
  * @brief The host to use as a SOCKS5 proxy.

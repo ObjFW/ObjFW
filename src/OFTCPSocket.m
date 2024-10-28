@@ -53,6 +53,10 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
+#ifdef OF_LINUX
+# include <linux/mptcp.h>
+#endif
+
 static const OFRunLoopMode connectRunLoopMode =
     @"OFTCPSocketConnectRunLoopMode";
 
@@ -143,15 +147,32 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int flags;
 #endif
 
-	if (_socket != OFInvalidSocketHandle)
+	if (_socket != OFInvalidSocketHandle) {
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
-
-	if ((_socket = socket(
-	    ((struct sockaddr *)&address->sockaddr)->sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
-		*errNo = _OFSocketErrNo();
-		return false;
 	}
+
+#ifdef OF_LINUX
+	if (_usesMPTCP) {
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address->sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
+		    OFInvalidSocketHandle) {
+			if ((_socket = socket(
+			    ((struct sockaddr *)&address->sockaddr)->sa_family,
+			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
+			    OFInvalidSocketHandle) {
+				*errNo = _OFSocketErrNo();
+				return false;
+			}
+		}
+	} else
+#endif
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address->sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -348,14 +369,32 @@ static uint16_t defaultSOCKS5Port = 1080;
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
 
-	if ((_socket = socket(
-	    ((struct sockaddr *)&address.sockaddr)->sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindIPSocketFailedException
-		    exceptionWithHost: host
-				 port: port
-			       socket: self
-				errNo: _OFSocketErrNo()];
+#ifdef OF_LINUX
+	if (_usesMPTCP) {
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address.sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
+		    OFInvalidSocketHandle) {
+			if ((_socket = socket(
+			    ((struct sockaddr *)&address.sockaddr)->sa_family,
+			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
+			    OFInvalidSocketHandle)
+				@throw [OFBindIPSocketFailedException
+				    exceptionWithHost: host
+						 port: port
+					       socket: self
+						errNo: _OFSocketErrNo()];
+		}
+	} else
+#endif
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address.sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -511,6 +550,24 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return !v;
 }
 #endif
+
+- (void)setUsesMPTCP: (bool)usesMPTCP
+{
+	_usesMPTCP = usesMPTCP;
+}
+
+- (bool)usesMPTCP
+{
+#ifdef OF_LINUX
+	struct mptcp_info info;
+	socklen_t infoLen = (socklen_t)sizeof(info);
+
+	if (getsockopt(_socket, SOL_MPTCP, MPTCP_INFO, &info, &infoLen) != -1)
+		return true;
+#endif
+
+	return false;
+}
 
 - (void)close
 {
