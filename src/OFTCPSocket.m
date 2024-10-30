@@ -53,7 +53,7 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
-#ifdef OF_LINUX
+#ifdef HAVE_LINUX_MPTCP_H
 # include <linux/mptcp.h>
 #endif
 
