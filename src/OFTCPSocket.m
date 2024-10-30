@@ -65,7 +65,8 @@
 
 enum {
 	flagUseMPTCP = 1,
-	flagUseConnectX = 2
+	flagMapIPv4 = 2,
+	flagUseConnectX = 4
 };
 
 static const OFRunLoopMode connectRunLoopMode =
@@ -73,6 +74,26 @@ static const OFRunLoopMode connectRunLoopMode =
 
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
+
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+static OFSocketAddress
+mapIPv4(const OFSocketAddress *IPv4Address)
+{
+	OFSocketAddress IPv6Address = {
+		.family = OFSocketAddressFamilyIPv6,
+		.length = sizeof(struct sockaddr_in6)
+	};
+
+	IPv6Address.sockaddr.in6.sin6_family = AF_INET6;
+	IPv6Address.sockaddr.in6.sin6_port = IPv4Address->sockaddr.in.sin_port;
+	memcpy(&IPv6Address.sockaddr.in6.sin6_addr.s6_addr[12],
+	    &IPv4Address->sockaddr.in.sin_addr.s_addr, 4);
+	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[10] = 0xFF;
+	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[11] = 0xFF;
+
+	return IPv6Address;
+}
+#endif
 
 @interface OFTCPSocket () <OFAsyncIPSocketConnecting>
 @end
@@ -158,49 +179,44 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int flags;
 #endif
 
-	if (_socket != OFInvalidSocketHandle) {
+	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
-	}
 
-#if defined(OF_LINUX)
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
 	if (_flags & flagUseMPTCP) {
-		if ((_socket = socket(
-		    ((struct sockaddr *)&address->sockaddr)->sa_family,
-		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
-		    OFInvalidSocketHandle) {
-			if ((_socket = socket(
-			    ((struct sockaddr *)&address->sockaddr)->sa_family,
-			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
-			    OFInvalidSocketHandle) {
-				*errNo = _OFSocketErrNo();
-				return false;
-			}
-		}
-	} else
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		_socket = socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
+
+		if (_socket != OFInvalidSocketHandle &&
+		    address->family == OFSocketAddressFamilyIPv4)
+			_flags |= flagMapIPv4;
+		else
+			_flags &= ~flagMapIPv4;
+	}
 #elif defined(OF_MACOS) || defined(OF_IOS)
 	if (_flags & flagUseMPTCP) {
-		if ((_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
-		    IPPROTO_TCP)) != OFInvalidSocketHandle)
-			_flags |= flagUseConnectX;
-		else {
-			if ((_socket = socket(
-			    ((struct sockaddr *)&address->sockaddr)->sa_family,
-			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
-			    OFInvalidSocketHandle) {
-				*errNo = _OFSocketErrNo();
-				return false;
-			}
+		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_TCP);
 
+		if (_socket != OFInvalidSocketHandle)
+			_flags |= flagUseConnectX;
+		else
 			_flags &= ~flagUseConnectX;
-		}
-	} else
+	}
 #endif
+
+	if (_socket == OFInvalidSocketHandle) {
 		if ((_socket = socket(
 		    ((struct sockaddr *)&address->sockaddr)->sa_family,
 		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
 			*errNo = _OFSocketErrNo();
 			return false;
 		}
+	}
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -213,9 +229,24 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	OFSocketAddress mappedIPv4;
+#endif
+
 	if (_socket == OFInvalidSocketHandle) {
 		@throw [OFNotOpenException exceptionWithObject: self];
 	}
+
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	if (_flags & flagMapIPv4) {
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		mappedIPv4 = mapIPv4(address);
+		address = &mappedIPv4;
+	}
+#endif
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 	if (_flags & flagUseConnectX) {
@@ -415,24 +446,22 @@ static uint16_t defaultSOCKS5Port = 1080;
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
 	if (_flags & flagUseMPTCP) {
-		if ((_socket = socket(
-		    ((struct sockaddr *)&address.sockaddr)->sa_family,
-		    SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_MPTCP)) ==
-		    OFInvalidSocketHandle) {
-			if ((_socket = socket(
-			    ((struct sockaddr *)&address.sockaddr)->sa_family,
-			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
-			    OFInvalidSocketHandle)
-				@throw [OFBindIPSocketFailedException
-				    exceptionWithHost: host
-						 port: port
-					       socket: self
-						errNo: _OFSocketErrNo()];
-		}
-	} else
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		_socket = socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
+
+		if (_socket != OFInvalidSocketHandle &&
+		    address.family == OFSocketAddressFamilyIPv4)
+			address = mapIPv4(&address);
+	}
 #endif
+
+	if (_socket == OFInvalidSocketHandle)
 		if ((_socket = socket(
 		    ((struct sockaddr *)&address.sockaddr)->sa_family,
 		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
@@ -607,7 +636,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (bool)usesMPTCP
 {
-#ifdef OF_LINUX
+#if defined(OF_LINUX) && defined(SOL_MPTCP) && defined(MPTCP_INFO)
 	struct mptcp_info info;
 	socklen_t infoLen = (socklen_t)sizeof(info);
 
