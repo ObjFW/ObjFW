@@ -38,7 +38,7 @@
 #endif
 
 #if defined(__SEH__)
-# define PERSONALITY	 gnu_objc_personality
+# define PERSONALITY gnu_objc_personality
 #elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"

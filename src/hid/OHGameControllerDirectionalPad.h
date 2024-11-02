@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OHGameControllerDirectionalPad OHGameControllerDirectionalPad.h
  *	  ObjFWHID/ObjFWID.h
  *
- * @brief An directional pad or thumb stick of a game controller.
+ * @brief A directional pad or thumb stick of a game controller.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OHGameControllerDirectionalPad: OHGameControllerElement
