@@ -4,6 +4,40 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.1.7 -> ObjFW 1.2, 2024-11-02
+ + Adds a new framework for game controllers called ObjFWHID.
+ + Adds support for tagged pointer strings.
+ + Strings are now allowed to contain `\0`, while preventing such strings from
+   being passed to anything that expects a C string.
+ * `\u0000` and `\x??` are now allowed in JSON.
+ + Adds a new option `OFJSONRepresentationOptionSorted` to create sorted,
+   reproducible JSON representations.
+ * Socket initialization is now delayed until sockets are used for the first
+   time to significantly speed up startup on some systems, in particular game
+   consoles.
+ + Adds -[readString], -[tryReadString] and -[asyncReadString] to OFStream to
+   read until a `\0` is found.
+ + Adds support for SCTP sockets.
+ + Adds support for UNIX sequenced packet sockets.
+ + Adds assembly lookup for the following platforms: ARM64/Win64, RISC-V 64/ELF,
+   LoongArch 64/ELF.
+ + Adds -[forwardingTargetForSelector:] for the following platforms:
+   MIPS64-N64/ELF, RISC-V 64/ELF, LoongArch 64/ELF, PowerPC 64/ELF v1,
+   PowerPC 64/ELF v2, ARM64/Win64
+ + Adds support for the following encodings: Windows-1250, Codepage 852.
+ + Adds support for extended attributes on Solaris.
+ * OFPlugin now falls back to loading .dylibs on macOS/iOS when no .bundle was
+   found.
+ * OFINICategory was renamed to OFINISection.
+ * The API for async I/O handlers was changed to contain more arguments, which
+   results in new methods that take a handler instead of a block and deprecating
+   the old ones.
+ * -[attributesOfItemAtIRI:] now works for embedded files.
+ * `OF_APPLICATION_DELEGATE()` now works with `-mwindows`.
+ + Adds man pages for all utilities.
+ * ofdns now defaults to query AAAA and A, not ALL.
+ * ofhash now accepts --rmd160 as an alias for --ripemd160.
+
 ObjFW 1.1.6 -> ObjFW 1.1.7, 2024-08-25
  * Fixes creating OFStrings from C strings with some encodings.
  * Fixes creating an ASCII C string from an OFString that has been initialized
