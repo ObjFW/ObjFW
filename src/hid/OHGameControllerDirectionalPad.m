@@ -27,7 +27,7 @@
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
 @synthesize up = _up, down = _down, left = _left, right = _right;
 
-- (instancetype)initWithName: (OFString *)name
+- (instancetype)initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -35,8 +35,9 @@
 - (instancetype)initWithName: (OFString *)name
 		       xAxis: (OHGameControllerAxis *)xAxis
 		       yAxis: (OHGameControllerAxis *)yAxis
+		      analog: (bool)analog
 {
-	self = [super initWithName: name];
+	self = [super initWithName: name analog: analog];
 
 	@try {
 		_xAxis = [xAxis retain];
@@ -67,8 +68,9 @@
 			down: (OHGameControllerButton *)down
 			left: (OHGameControllerButton *)left
 		       right: (OHGameControllerButton *)right
+		      analog: (bool)analog
 {
-	self = [super initWithName: name];
+	self = [super initWithName: name analog: analog];
 
 	@try {
 		_up = [up retain];

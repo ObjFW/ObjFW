@@ -30,9 +30,10 @@ OF_SUBCLASSING_RESTRICTED
 	bool _positive;
 }
 
-- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
+- (instancetype)initWithName: (OFString *)name
+		      analog: (bool)analog OF_UNAVAILABLE;
 - (instancetype)initWithAxis: (OHGameControllerAxis *)axis
-		    positive: (bool)positive;
+		    positive: (bool)positive OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -25,7 +25,7 @@
 @implementation OHEmulatedGameControllerTriggerButton
 @synthesize axis = _axis;
 
-- (instancetype)initWithName: (OFString *)name
+- (instancetype)initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -33,7 +33,7 @@
 - (instancetype)initWithName: (OFString *)name
 			axis: (OHGameControllerAxis *)axis
 {
-	self = [super initWithName: name];
+	self = [super initWithName: name analog: true];
 
 	_axis = [axis retain];
 

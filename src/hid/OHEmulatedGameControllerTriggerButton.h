@@ -31,9 +31,11 @@ OF_SUBCLASSING_RESTRICTED
 
 @property (readonly, nonatomic) OHGameControllerAxis *axis;
 
-- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
 - (instancetype)initWithName: (OFString *)name
-			axis: (OHGameControllerAxis *)axis;
+		      analog: (bool)analog OF_UNAVAILABLE;
+- (instancetype)initWithName: (OFString *)name
+			axis: (OHGameControllerAxis *)axis
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

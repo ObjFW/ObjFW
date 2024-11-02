@@ -200,7 +200,8 @@
 	return [[[OHGameControllerDirectionalPad alloc]
 	    initWithName: @"Left Thumbstick"
 		   xAxis: xAxis
-		   yAxis: yAxis] autorelease];
+		   yAxis: yAxis
+		  analog: true] autorelease];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
@@ -214,7 +215,8 @@
 	return [[[OHGameControllerDirectionalPad alloc]
 	    initWithName: @"Right Thumbstick"
 		   xAxis: xAxis
-		   yAxis: yAxis] autorelease];
+		   yAxis: yAxis
+		  analog: true] autorelease];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
@@ -227,7 +229,8 @@
 		return [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
 			   xAxis: xAxis
-			   yAxis: yAxis] autorelease];
+			   yAxis: yAxis
+			  analog: false] autorelease];
 
 	up = [_buttons objectForKey: @"D-Pad Up"];
 	down = [_buttons objectForKey: @"D-Pad Down"];
@@ -240,7 +243,8 @@
 			      up: up
 			    down: down
 			    left: left
-			   right: right] autorelease];
+			   right: right
+			  analog: false] autorelease];
 
 	return nil;
 }

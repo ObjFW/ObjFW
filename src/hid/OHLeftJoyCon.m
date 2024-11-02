@@ -55,7 +55,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		for (size_t i = 0; i < numButtons; i++) {
 			OHGameControllerButton *button =
 			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
+			    initWithName: buttonNames[i]
+				  analog: false] autorelease];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
@@ -65,30 +66,38 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [OFMutableDictionary dictionaryWithCapacity: 2];
 
 		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"X"] autorelease];
+		    initWithName: @"X"
+			  analog: true] autorelease];
 		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"Y"] autorelease];
+		    initWithName: @"Y"
+			  analog: true] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"Left Thumbstick"
 			   xAxis: xAxis
-			   yAxis: yAxis] autorelease];
+			   yAxis: yAxis
+			  analog: true] autorelease];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Left Thumbstick"];
 
 		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
+		    initWithName: @"D-Pad Up"
+			  analog: false] autorelease];
 		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
+		    initWithName: @"D-Pad Down"
+			  analog: false] autorelease];
 		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
+		    initWithName: @"D-Pad Left"
+			  analog: false] autorelease];
 		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
+		    initWithName: @"D-Pad Right"
+			  analog: false] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
 			      up: up
 			    down: down
 			    left: left
-			   right: right] autorelease];
+			   right: right
+			  analog: false] autorelease];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];

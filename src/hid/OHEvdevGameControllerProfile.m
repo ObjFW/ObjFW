@@ -229,7 +229,8 @@ axisToName(uint16_t axis)
 					continue;
 
 				button = [[[OHGameControllerButton alloc]
-				    initWithName: buttonName] autorelease];
+				    initWithName: buttonName
+					  analog: false] autorelease];
 
 				[buttons setObject: button forKey: buttonName];
 			}
@@ -249,8 +250,9 @@ axisToName(uint16_t axis)
 						continue;
 
 					axis = [[[OHGameControllerAxis
-					    alloc] initWithName: axisName]
-					    autorelease];
+					    alloc]
+					    initWithName: axisName
+						  analog: true] autorelease];
 
 					[axes setObject: axis forKey: axisName];
 				}

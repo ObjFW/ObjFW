@@ -56,7 +56,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 
-- (instancetype)initWithName: (OFString *)name OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName: (OFString *)name
+		      analog: (bool)analog OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

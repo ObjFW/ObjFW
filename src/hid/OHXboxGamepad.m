@@ -53,6 +53,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
+			bool analog = ([buttonNames[i] isEqual: @"LT"] ||
+			    [buttonNames[i] isEqual: @"RT"]);
 			OHGameControllerButton *button;
 
 			if ([buttonNames[i] isEqual: @"Guide"] &&
@@ -60,7 +62,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 				continue;
 
 			button = [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
+			    initWithName: buttonNames[i]
+				  analog: analog] autorelease];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
@@ -70,41 +73,52 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
 		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"X"] autorelease];
+		    initWithName: @"X"
+			  analog: true] autorelease];
 		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"Y"] autorelease];
+		    initWithName: @"Y"
+			  analog: true] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"Left Thumbstick"
 			   xAxis: xAxis
-			   yAxis: yAxis] autorelease];
+			   yAxis: yAxis
+			  analog: true] autorelease];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Left Thumbstick"];
 
 		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"RX"] autorelease];
+		    initWithName: @"RX"
+			  analog: true] autorelease];
 		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"RY"] autorelease];
+		    initWithName: @"RY"
+			  analog: true] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"Right Thumbstick"
 			   xAxis: xAxis
-			   yAxis: yAxis] autorelease];
+			   yAxis: yAxis
+			  analog: true] autorelease];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Right Thumbstick"];
 
 		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
+		    initWithName: @"D-Pad Up"
+			  analog: false] autorelease];
 		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
+		    initWithName: @"D-Pad Down"
+			  analog: false] autorelease];
 		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
+		    initWithName: @"D-Pad Left"
+			  analog: false] autorelease];
 		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
+		    initWithName: @"D-Pad Right"
+			  analog: false] autorelease];
 		directionalPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
 			      up: up
 			    down: down
 			    left: left
-			   right: right] autorelease];
+			   right: right
+			  analog: false] autorelease];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];

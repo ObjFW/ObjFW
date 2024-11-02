@@ -30,11 +30,13 @@
 }
 
 - (instancetype)initWithName: (OFString *)name
+		      analog: (bool)analog
 {
 	self = [super init];
 
 	@try {
 		_name = [name copy];
+		_analog = analog;
 	} @catch (id e) {
 		[self release];
 		@throw e;

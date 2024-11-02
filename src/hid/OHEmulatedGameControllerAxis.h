@@ -29,10 +29,12 @@ OF_SUBCLASSING_RESTRICTED
 	OHGameControllerButton *_negativeButton, *_positiveButton;
 }
 
-- (instancetype)initWithName: (OFString *)name OF_UNAVAILABLE;
+- (instancetype)initWithName: (OFString *)name
+		      analog: (bool)analog OF_UNAVAILABLE;
 - (instancetype)
     initWithNegativeButton: (OHGameControllerButton *)negativeButton
-	    positiveButton: (OHGameControllerButton *)positiveButton;
+	    positiveButton: (OHGameControllerButton *)positiveButton
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

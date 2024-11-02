@@ -23,7 +23,7 @@
 #import "OHGameControllerButton.h"
 
 @implementation OHEmulatedGameControllerAxis
-- (instancetype)initWithName: (OFString *)name
+- (instancetype)initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -43,7 +43,7 @@
 		@throw e;
 	}
 
-	self = [super initWithName: name];
+	self = [super initWithName: name analog: false];
 
 	objc_autoreleasePoolPop(pool);
 

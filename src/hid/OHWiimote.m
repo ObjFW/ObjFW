@@ -48,26 +48,32 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		for (size_t i = 0; i < numButtons; i++) {
 			OHGameControllerButton *button =
 			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]] autorelease];
+			    initWithName: buttonNames[i]
+				  analog: false] autorelease];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
 
 		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"] autorelease];
+		    initWithName: @"D-Pad Up"
+			  analog: false] autorelease];
 		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"] autorelease];
+		    initWithName: @"D-Pad Down"
+			  analog: false] autorelease];
 		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"] autorelease];
+		    initWithName: @"D-Pad Left"
+			  analog: false] autorelease];
 		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"] autorelease];
+		    initWithName: @"D-Pad Right"
+			  analog: false] autorelease];
 		dPad = [[[OHGameControllerDirectionalPad alloc]
 		    initWithName: @"D-Pad"
 			      up: up
 			    down: down
 			    left: left
-			   right: right] autorelease];
+			   right: right
+			  analog: false] autorelease];
 
 		_directionalPads = [[OFDictionary alloc]
 		    initWithObject: dPad
