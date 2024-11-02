@@ -1,13 +1,13 @@
-AC_INIT(ObjFW, 1.2dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.3-dev, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 AC_DEFINE(OBJFW_VERSION_MAJOR, 1, [The major version of ObjFW])
-AC_DEFINE(OBJFW_VERSION_MINOR, 2, [The minor version of ObjFW])
-dnl This may only be set to 1.2 once 1.2 is released
-AC_SUBST(BUNDLE_VERSION, 1.1.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.1)
+AC_DEFINE(OBJFW_VERSION_MINOR, 3, [The minor version of ObjFW])
+dnl This may only be set to 1.3 once 1.3 is released
+AC_SUBST(BUNDLE_VERSION, 1.2.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.2)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
