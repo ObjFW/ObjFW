@@ -29,7 +29,6 @@
 #import "OHWiimote.h"
 #import "OHWiimote+Private.h"
 #import "OHWiimoteWithNunchuk.h"
-#import "OHWiimoteWithNunchuk+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
