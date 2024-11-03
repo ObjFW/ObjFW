@@ -237,7 +237,7 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
-#ifdef CXX_PERSONALITY
+#ifdef CXX_PERSONALITY_STR
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
@@ -615,7 +615,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	if (foreign) {
 		switch (exClass) {
-#ifdef CXX_PERSONALITY
+#ifdef CXX_PERSONALITY_STR
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (cxx_personality != NULL)
