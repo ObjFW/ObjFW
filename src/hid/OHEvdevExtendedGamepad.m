@@ -24,21 +24,22 @@
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHEvdevGameController.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
 
 #import "OFInvalidArgumentException.h"
 
 @implementation OHEvdevExtendedGamepad
-- (instancetype)initWithKeyBits: (unsigned long *)keyBits
-			 evBits: (unsigned long *)evBits
-			absBits: (unsigned long *)absBits
-		       vendorID: (uint16_t)vendorID
-		      productID: (uint16_t)productID
+- (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
+			    evBits: (unsigned long *)evBits
+			   absBits: (unsigned long *)absBits
+			  vendorID: (uint16_t)vendorID
+			 productID: (uint16_t)productID
 {
-	self = [super initWithKeyBits: keyBits
-			       evBits: evBits
-			      absBits: absBits
-			     vendorID: vendorID
-			    productID: productID];
+	self = [super oh_initWithKeyBits: keyBits
+				  evBits: evBits
+				 absBits: absBits
+				vendorID: vendorID
+			       productID: productID];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -145,9 +146,9 @@
 	OHGameControllerAxis *axis = [_axes objectForKey: @"Z"];
 
 	if (axis != nil)
-		return [[[OHEmulatedGameControllerTriggerButton alloc]
-		    initWithName: @"LT"
-			    axis: axis] autorelease];
+		return [OHEmulatedGameControllerTriggerButton
+		    oh_buttonWithName: @"LT"
+				 axis: axis];
 
 	return [_buttons objectForKey: @"LT"];
 }
@@ -157,9 +158,9 @@
 	OHGameControllerAxis *axis = [_axes objectForKey: @"RZ"];
 
 	if (axis != nil)
-		return [[[OHEmulatedGameControllerTriggerButton alloc]
-		    initWithName: @"RT"
-			    axis: axis] autorelease];
+		return [OHEmulatedGameControllerTriggerButton
+		    oh_buttonWithName: @"RT"
+				 axis: axis];
 
 	return [_buttons objectForKey: @"RT"];
 }
@@ -197,11 +198,11 @@
 	if (xAxis == nil || yAxis == nil)
 		return nil;
 
-	return [[[OHGameControllerDirectionalPad alloc]
-	    initWithName: @"Left Thumbstick"
-		   xAxis: xAxis
-		   yAxis: yAxis
-		  analog: true] autorelease];
+	return [OHGameControllerDirectionalPad
+	    oh_padWithName: @"Left Thumbstick"
+		     xAxis: xAxis
+		     yAxis: yAxis
+		    analog: true];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
@@ -212,11 +213,11 @@
 	if (xAxis == nil || yAxis == nil)
 		return nil;
 
-	return [[[OHGameControllerDirectionalPad alloc]
-	    initWithName: @"Right Thumbstick"
-		   xAxis: xAxis
-		   yAxis: yAxis
-		  analog: true] autorelease];
+	return [OHGameControllerDirectionalPad
+	    oh_padWithName: @"Right Thumbstick"
+		     xAxis: xAxis
+		     yAxis: yAxis
+		    analog: true];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
@@ -226,11 +227,11 @@
 	OHGameControllerButton *up, *down, *left, *right;
 
 	if (xAxis != nil && yAxis != nil)
-		return [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: false] autorelease];
+		return [OHGameControllerDirectionalPad
+		    oh_padWithName: @"D-Pad"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: false];
 
 	up = [_buttons objectForKey: @"D-Pad Up"];
 	down = [_buttons objectForKey: @"D-Pad Down"];
@@ -238,13 +239,13 @@
 	right = [_buttons objectForKey: @"D-Pad Right"];
 
 	if (up != nil && down != nil && left != nil && right != nil)
-		return [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right
-			  analog: false] autorelease];
+		return [OHGameControllerDirectionalPad
+		    oh_padWithName: @"D-Pad"
+				up: up
+			      down: down
+			      left: left
+			     right: right
+			    analog: false];
 
 	return nil;
 }

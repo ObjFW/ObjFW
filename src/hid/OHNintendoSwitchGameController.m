@@ -22,10 +22,13 @@
 #import "OHNintendoSwitchGameController.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHNintendoSwitchExtendedGamepad.h"
+#import "OHNintendoSwitchExtendedGamepad+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -55,7 +58,7 @@ static const size_t maxControllers = 8;
 
 		@try {
 			controller = [[[OHNintendoSwitchGameController alloc]
-			    initWithIndex: i] autorelease];
+			    oh_initWithIndex: i] autorelease];
 		} @catch (OFInitializationFailedException *e) {
 			/* Controller does not exist. */
 			continue;
@@ -71,9 +74,14 @@ static const size_t maxControllers = 8;
 	return controllers;
 }
 
-- (instancetype)initWithIndex: (size_t)index
+- (instancetype)oh_init
 {
-	self = [super init];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithIndex: (size_t)index
+{
+	self = [super oh_init];
 
 	@try {
 		padInitialize(&_pad, HidNpadIdType_No1 + index,
@@ -85,7 +93,7 @@ static const size_t maxControllers = 8;
 			    exceptionWithClass: self.class];
 
 		_extendedGamepad =
-		    [[OHNintendoSwitchExtendedGamepad alloc] init];
+		    [[OHNintendoSwitchExtendedGamepad alloc] oh_init];
 
 		[self updateState];
 	} @catch (id e) {

@@ -17,29 +17,33 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameControllerButton.h"
+#import "OHGameControllerDirectionalPad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHGameControllerAxis;
-
-OF_SUBCLASSING_RESTRICTED
-@interface OHEmulatedGameControllerTriggerButton: OHGameControllerButton
-{
-	OHGameControllerAxis *_axis;
-}
-
-@property (readonly, nonatomic) OHGameControllerAxis *oh_axis;
-
-+ (instancetype)oh_buttonWithName: (OFString *)name
-			   analog: (bool)analog OF_UNAVAILABLE;
-+ (instancetype)oh_buttonWithName: (OFString *)name
-			     axis: (OHGameControllerAxis *)axis;
+@interface OHGameControllerDirectionalPad ()
++ (instancetype)oh_padWithName: (OFString *)name
+			 xAxis: (OHGameControllerAxis *)xAxis
+			 yAxis: (OHGameControllerAxis *)yAxis
+			analog: (bool)analog;
++ (instancetype)oh_padWithName: (OFString *)name
+			    up: (OHGameControllerButton *)up
+			  down: (OHGameControllerButton *)down
+			  left: (OHGameControllerButton *)left
+			 right: (OHGameControllerButton *)right
+			analog: (bool)analog;
 - (instancetype)oh_initWithName: (OFString *)name
 			 analog: (bool)analog OF_UNAVAILABLE;
 - (instancetype)oh_initWithName: (OFString *)name
-			   axis: (OHGameControllerAxis *)axis
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+			  xAxis: (OHGameControllerAxis *)xAxis
+			  yAxis: (OHGameControllerAxis *)yAxis
+			 analog: (bool)analog OF_METHOD_FAMILY(init);
+- (instancetype)oh_initWithName: (OFString *)name
+			     up: (OHGameControllerButton *)up
+			   down: (OHGameControllerButton *)down
+			   left: (OHGameControllerButton *)left
+			  right: (OHGameControllerButton *)right
+			 analog: (bool)analog OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

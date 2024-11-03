@@ -22,10 +22,13 @@
 #import "OHNintendo3DSGameController.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHNintendo3DSExtendedGamepad.h"
+#import "OHNintendo3DSExtendedGamepad+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -48,7 +51,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 	pool = objc_autoreleasePoolPush();
 	controllers = [[OFArray alloc] initWithObject:
-	    [[[OHNintendo3DSGameController alloc] init] autorelease]];
+	    [[[OHNintendo3DSGameController alloc] oh_init] autorelease]];
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -57,12 +60,13 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 	return controllers;
 }
 
-- (instancetype)init
+- (instancetype)oh_init
 {
-	self = [super init];
+	self = [super oh_init];
 
 	@try {
-		_extendedGamepad = [[OHNintendo3DSExtendedGamepad alloc] init];
+		_extendedGamepad =
+		    [[OHNintendo3DSExtendedGamepad alloc] oh_init];
 
 		[self updateState];
 	} @catch (id e) {

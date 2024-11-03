@@ -38,7 +38,9 @@ OF_ASSUME_NONNULL_BEGIN
 	id <OHGameControllerProfile, OHEvdevMapping> _profile;
 }
 
-- (instancetype)initWithPath: (OFString *)path;
+- (instancetype)oh_init OF_UNAVAILABLE;
+- (instancetype)oh_initWithPath: (OFString *)path
+    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
 - (void)oh_pollState;
 @end
 

@@ -25,8 +25,11 @@
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHWiiClassicController.h"
+#import "OHWiiClassicController+Private.h"
 #import "OHWiimote.h"
+#import "OHWiimote+Private.h"
 #import "OHWiimoteWithNunchuk.h"
+#import "OHWiimoteWithNunchuk+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -75,8 +78,8 @@ scale(float value, float min, float max, float center)
 		    (type == WPAD_EXP_NONE || type == WPAD_EXP_NUNCHUK ||
 		    type == WPAD_EXP_CLASSIC))
 			[controllers addObject: [[[OHWiiGameController alloc]
-			    initWithIndex: i
-				     type: type] autorelease]];
+			    oh_initWithIndex: i
+					type: type] autorelease]];
 	}
 
 	[controllers makeImmutable];
@@ -86,20 +89,25 @@ scale(float value, float min, float max, float center)
 	return controllers;
 }
 
-- (instancetype)initWithIndex: (int32_t)index type: (uint32_t)type
+- (instancetype)oh_init
 {
-	self = [super init];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithIndex: (int32_t)index type: (uint32_t)type
+{
+	self = [super oh_init];
 
 	@try {
 		_index = index;
 		_type = type;
 
 		if (type == WPAD_EXP_CLASSIC)
-			_profile = [[OHWiiClassicController alloc] init];
+			_profile = [[OHWiiClassicController alloc] oh_init];
 		else if (type == WPAD_EXP_NUNCHUK)
-			_profile = [[OHWiimoteWithNunchuk alloc] init];
+			_profile = [[OHWiimoteWithNunchuk alloc] oh_init];
 		else
-			_profile = [[OHWiimote alloc] init];
+			_profile = [[OHWiimote alloc] oh_init];
 
 		[self updateState];
 	} @catch (id e) {

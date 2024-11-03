@@ -65,21 +65,6 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The right button of the directional pad.
  */
 @property (readonly, nonatomic) OHGameControllerButton *right;
-
-- (instancetype)initWithName: (OFString *)name
-		      analog: (bool)analog OF_UNAVAILABLE;
-
-- (instancetype)initWithName: (OFString *)name
-		       xAxis: (OHGameControllerAxis *)xAxis
-		       yAxis: (OHGameControllerAxis *)yAxis
-		      analog: (bool)analog;
-
-- (instancetype)initWithName: (OFString *)name
-			  up: (OHGameControllerButton *)up
-			down: (OHGameControllerButton *)down
-			left: (OHGameControllerButton *)left
-		       right: (OHGameControllerButton *)right
-		      analog: (bool)analog;
 @end
 
 OF_ASSUME_NONNULL_END

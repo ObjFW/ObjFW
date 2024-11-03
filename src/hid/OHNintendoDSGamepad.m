@@ -20,9 +20,15 @@
 #include "config.h"
 
 #import "OHNintendoDSGamepad.h"
+#import "OHNintendoDSGamepad+Private.h"
 #import "OFDictionary.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"Start", @"Select"
@@ -34,6 +40,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (instancetype)init
 {
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_init
+{
 	self = [super init];
 
 	@try {
@@ -44,34 +55,29 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerDirectionalPad *dPad;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]
-				  analog: false] autorelease];
+			OHGameControllerButton *button = [OHGameControllerButton
+			    oh_elementWithName: buttonNames[i]
+					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
 		_buttons = [buttons retain];
 
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"
-			  analog: false] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"
-			  analog: false] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"
-			  analog: false] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"
-			  analog: false] autorelease];
-		dPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right
-			  analog: false] autorelease];
+		up = [OHGameControllerButton oh_elementWithName: @"D-Pad Up"
+							 analog: false];
+		down = [OHGameControllerButton oh_elementWithName: @"D-Pad Down"
+							   analog: false];
+		left = [OHGameControllerButton oh_elementWithName: @"D-Pad Left"
+							   analog: false];
+		right = [OHGameControllerButton
+		    oh_elementWithName: @"D-Pad Right"
+				analog: false];
+		dPad = [OHGameControllerDirectionalPad oh_padWithName: @"D-Pad"
+								   up: up
+								 down: down
+								 left: left
+								right: right
+							       analog: false];
 
 		_directionalPads = [[OFDictionary alloc]
 		    initWithObject: dPad

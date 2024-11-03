@@ -33,7 +33,9 @@ OF_ASSUME_NONNULL_BEGIN
 	OHNintendoSwitchExtendedGamepad *_extendedGamepad;
 }
 
-- (instancetype)initWithIndex: (size_t)index;
+- (instancetype)oh_init OF_UNAVAILABLE;
+- (instancetype)oh_initWithIndex: (size_t)index
+    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

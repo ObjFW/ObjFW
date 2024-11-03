@@ -20,17 +20,23 @@
 #include "config.h"
 
 #import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 @implementation OHGameControllerElement
 @synthesize name = _name, analog = _analog;
+
++ (instancetype)oh_elementWithName: (OFString *)name analog: (bool)analog
+{
+	return [[[self alloc] oh_initWithName: name
+				       analog: analog] autorelease];
+}
 
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithName: (OFString *)name
-		      analog: (bool)analog
+- (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
 {
 	self = [super init];
 

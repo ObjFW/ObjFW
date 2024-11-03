@@ -24,6 +24,10 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
+#import "OHWiimote+Private.h"
 
 static OFString *const buttonNames[] = {
 	@"C", @"Z"
@@ -31,9 +35,9 @@ static OFString *const buttonNames[] = {
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 @implementation OHWiimoteWithNunchuk
-- (instancetype)init
+- (instancetype)oh_init
 {
-	self = [super init];
+	self = [super oh_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -45,25 +49,22 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerDirectionalPad *directionalPad;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]
-				  analog: false] autorelease];
+			OHGameControllerButton *button = [OHGameControllerButton
+			    oh_elementWithName: buttonNames[i]
+					analog: false];
 
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 
-		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"X"
-			  analog: true] autorelease];
-		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"Y"
-			  analog: true] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Analog Stick"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: true] autorelease];
+		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
+							  analog: true];
+		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
+							  analog: true];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"Analog Stick"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: true];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Analog Stick"];
 

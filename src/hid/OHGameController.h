@@ -93,6 +93,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFArray OF_GENERIC(OHGameController *) *)controllers;
 
+- (instancetype)init OF_UNAVAILABLE;
+
 /**
  * @brief Updates the current state from the game controller.
  *

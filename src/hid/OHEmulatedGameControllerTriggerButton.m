@@ -21,19 +21,32 @@
 
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 @implementation OHEmulatedGameControllerTriggerButton
-@synthesize axis = _axis;
+@synthesize oh_axis = _axis;
 
-- (instancetype)initWithName: (OFString *)name analog: (bool)analog
++ (instancetype)oh_buttonWithName: (OFString *)name analog: (bool)analog
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)oh_buttonWithName: (OFString *)name
+			     axis: (OHGameControllerAxis *)axis
+{
+	return [[[self alloc] oh_initWithName: name axis: axis] autorelease];
+}
+
+- (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithName: (OFString *)name
-			axis: (OHGameControllerAxis *)axis
+- (instancetype)oh_initWithName: (OFString *)name
+			   axis: (OHGameControllerAxis *)axis
 {
-	self = [super initWithName: name analog: true];
+	self = [super oh_initWithName: name analog: true];
 
 	_axis = [axis retain];
 

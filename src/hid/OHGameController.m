@@ -77,17 +77,11 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OHGameController class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
+	OF_INVALID_INIT_METHOD
+}
 
-		abort();
-	}
-
+- (instancetype)oh_init
+{
 	return [super init];
 }
 
