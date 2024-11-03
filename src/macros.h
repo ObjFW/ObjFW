@@ -99,7 +99,7 @@
 # define OF_CONST_FUNC __attribute__((__const__))
 # define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
-# ifndef OF_DJGPP
+# if defined(OF_ELF) || defined(OF_MACHO)
 #  define OF_VISIBILITY_HIDDEN __attribute__((__visibility__("hidden")))
 # else
 #  define OF_VISIBILITY_HIDDEN
