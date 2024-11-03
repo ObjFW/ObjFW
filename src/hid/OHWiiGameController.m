@@ -22,6 +22,8 @@
 #import "OHWiiGameController.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHWiiClassicController.h"
