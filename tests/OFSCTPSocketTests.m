@@ -53,8 +53,21 @@
 
 	[server listen];
 
-	[client connectToHost: @"127.0.0.1"
-			 port: OFSocketAddressIPPort(&address)];
+	@try {
+		[client connectToHost: @"127.0.0.1"
+				 port: OFSocketAddressIPPort(&address)];
+	} @catch (OFConnectSocketFailedException *e) {
+		switch (e.errNo) {
+		case ENOPROTOOPT:
+			/*
+			 * When running in qemu-user, binding works but
+			 * connecting fails?!
+			 */
+			OTSkip(@"SCTP unsupported");
+		default:
+			@throw e;
+		}
+	}
 
 	accepted = [server accept];
 	OTAssertEqualObjects(OFSocketAddressString(accepted.remoteAddress),
