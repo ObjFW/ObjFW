@@ -158,7 +158,9 @@
 #import "OFAllocFailedException.h"
 #import "OFAlreadyOpenException.h"
 #import "OFException.h"
-#import "OFChangeCurrentDirectoryFailedException.h"
+#ifdef OF_HAVE_FILES
+# import "OFChangeCurrentDirectoryFailedException.h"
+#endif
 #import "OFChecksumMismatchException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
