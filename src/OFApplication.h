@@ -104,7 +104,8 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 # ifdef __cplusplus
 extern "C" {
 # endif
-extern void __getmainargs(int *, char ***, char ***, int, int *);
+extern void __getmainargs(int *_Nonnull, char *_Nonnull *_Nullable *_Nullable,
+    char *_Nonnull *_Nullable *_Nullable, int, int *_Nonnull);
 extern int _CRT_glob;
 # ifdef __cplusplus
 }
