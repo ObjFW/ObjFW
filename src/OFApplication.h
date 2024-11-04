@@ -93,9 +93,6 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 	WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,		\
 	    LPSTR lpCmdLine, int nShowCmd)				\
 	{								\
-		extern void __getmainargs(int *, char ***, char ***,	\
-		    int, int *);					\
-		extern int _CRT_glob;					\
 		int argc = 0, si = 0;					\
 		char **argv = NULL, **envp = NULL;			\
 									\
@@ -104,6 +101,14 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 		return OFApplicationMain(&argc, &argv,			\
 		    (class_ *)[[class_ alloc] init]);			\
 	}
+# ifdef __cplusplus
+extern "C" {
+# endif
+extern void __getmainargs(int *, char ***, char ***, int, int *);
+extern int _CRT_glob;
+# ifdef __cplusplus
+}
+# endif
 #endif
 
 #ifdef OF_HAVE_PLEDGE
