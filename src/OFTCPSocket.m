@@ -197,7 +197,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		else
 			_flags &= ~flagMapIPv4;
 	}
-#elif defined(OF_MACOS) || defined(OF_IOS)
+#elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
 	if (_flags & flagUseMPTCP) {
 		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_TCP);
@@ -248,7 +248,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	}
 #endif
 
-#if defined(OF_MACOS) || defined(OF_IOS)
+#if (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
 	if (_flags & flagUseConnectX) {
 		sa_endpoints_t endpoints = {
 			.sae_dstaddr = (struct sockaddr *)&address->sockaddr,
