@@ -32,7 +32,9 @@ OF_ASSUME_NONNULL_BEGIN
 	OHXboxGamepad *_extendedGamepad;
 }
 
-- (instancetype)initWithIndex: (DWORD)index;
+- (instancetype)oh_init OF_UNAVAILABLE;
+- (instancetype)oh_initWithIndex: (DWORD)index
+    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

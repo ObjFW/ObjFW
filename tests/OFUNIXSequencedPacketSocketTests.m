@@ -61,7 +61,9 @@
 		case EAFNOSUPPORT:
 		case EPERM:
 		case EPROTONOSUPPORT:
+#ifdef ESOCKTNOSUPPORT
 		case ESOCKTNOSUPPORT:
+#endif
 			OTSkip(@"UNIX sequenced packet sockets unsupported");
 		default:
 			@throw e;

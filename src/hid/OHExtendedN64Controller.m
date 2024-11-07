@@ -20,9 +20,12 @@
 #include "config.h"
 
 #import "OHExtendedN64Controller.h"
+#import "OHN64Controller.h"
 #import "OHN64Controller+Private.h"
 #import "OFDictionary.h"
 #import "OHGameControllerButton.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include <linux/input.h>
@@ -34,9 +37,9 @@ static OFString *const buttonNames[] = {
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 @implementation OHExtendedN64Controller
-- (instancetype)init
+- (instancetype)oh_init
 {
-	self = [super init];
+	self = [super oh_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -44,10 +47,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [[_buttons mutableCopy] autorelease];
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]
-				  analog: false] autorelease];
+			OHGameControllerButton *button = [OHGameControllerButton
+			    oh_elementWithName: buttonNames[i]
+					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];

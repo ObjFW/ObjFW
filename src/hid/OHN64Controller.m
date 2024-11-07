@@ -25,6 +25,9 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # include <linux/input.h>
@@ -40,6 +43,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (instancetype)init
 {
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_init
+{
 	self = [super init];
 
 	@try {
@@ -52,10 +60,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button =
-			    [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]
-				  analog: false] autorelease];
+			OHGameControllerButton *button = [OHGameControllerButton
+			    oh_elementWithName: buttonNames[i]
+					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
@@ -64,52 +71,44 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
-		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"X"
-			  analog: true] autorelease];
-		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"Y"
-			  analog: true] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Thumbstick"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: true] autorelease];
+		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
+							  analog: true];
+		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
+							  analog: true];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"Thumbstick"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: true];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Thumbstick"];
 
-		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"D-Pad X"
-			  analog: false] autorelease];
-		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"D-Pad Y"
-			  analog: false] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: false] autorelease];
+		xAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad X"
+							  analog: false];
+		yAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad Y"
+							  analog: false];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"D-Pad"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: false];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Up"
-			  analog: false] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Down"
-			  analog: false] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Left"
-			  analog: false] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"C-Right"
-			  analog: false] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"C-Buttons"
-			      up: up
-			    down: down
-			    left: left
-			   right: right
-			  analog: false] autorelease];
+		up = [OHGameControllerButton oh_elementWithName: @"C-Up"
+							 analog: false];
+		down = [OHGameControllerButton oh_elementWithName: @"C-Down"
+							   analog: false];
+		left = [OHGameControllerButton oh_elementWithName: @"C-Left"
+							   analog: false];
+		right = [OHGameControllerButton oh_elementWithName: @"C-Right"
+							    analog: false];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"C-Buttons"
+				up: up
+			      down: down
+			      left: left
+			     right: right
+			    analog: false];
 		[directionalPads setObject: directionalPad
 				    forKey: @"C-Buttons"];
 

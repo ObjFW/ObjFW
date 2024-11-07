@@ -21,15 +21,18 @@
 
 #import "OHEmulatedGameControllerAxis.h"
 #import "OHGameControllerButton.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 @implementation OHEmulatedGameControllerAxis
-- (instancetype)initWithName: (OFString *)name analog: (bool)analog
+- (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithNegativeButton: (OHGameControllerButton *)negativeButton
-			positiveButton: (OHGameControllerButton *)positiveButton
+- (instancetype)
+    oh_initWithNegativeButton: (OHGameControllerButton *)negativeButton
+	       positiveButton: (OHGameControllerButton *)positiveButton
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *name;
@@ -43,7 +46,7 @@
 		@throw e;
 	}
 
-	self = [super initWithName: name analog: false];
+	self = [super oh_initWithName: name analog: false];
 
 	objc_autoreleasePoolPop(pool);
 

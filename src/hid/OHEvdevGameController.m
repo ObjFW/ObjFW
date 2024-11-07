@@ -38,6 +38,8 @@
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
 #import "OHExtendedN64Controller.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerAxis+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -122,7 +124,7 @@ scale(float value, float min, float max)
 
 		@try {
 			controller = [[[OHEvdevGameController alloc]
-			    initWithPath: path] autorelease];
+			    oh_initWithPath: path] autorelease];
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
 				continue;
@@ -144,9 +146,14 @@ scale(float value, float min, float max)
 	return controllers;
 }
 
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)oh_init
 {
-	self = [super init];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithPath: (OFString *)path
+{
+	self = [super oh_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -212,29 +219,29 @@ scale(float value, float min, float max)
 
 		if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualSense)
-			_profile = [[OHDualSenseGamepad alloc] init];
+			_profile = [[OHDualSenseGamepad alloc] oh_init];
 		else if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualShock4)
-			_profile = [[OHDualShock4Gamepad alloc] init];
+			_profile = [[OHDualShock4Gamepad alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDN64Controller)
-			_profile = [[OHExtendedN64Controller alloc] init];
+			_profile = [[OHExtendedN64Controller alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDLeftJoyCon)
-			_profile = [[OHLeftJoyCon alloc] init];
+			_profile = [[OHLeftJoyCon alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDRightJoyCon)
-			_profile = [[OHRightJoyCon alloc] init];
+			_profile = [[OHRightJoyCon alloc] oh_init];
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
-			_profile = [[OHStadiaGamepad alloc] init];
+			_profile = [[OHStadiaGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
-			    initWithKeyBits: _keyBits
-				     evBits: _evBits
-				    absBits: _absBits
-				   vendorID: _vendorID
-				  productID: _productID];
+			    oh_initWithKeyBits: _keyBits
+					evBits: _evBits
+				       absBits: _absBits
+				      vendorID: _vendorID
+				     productID: _productID];
 
 		[self oh_pollState];
 

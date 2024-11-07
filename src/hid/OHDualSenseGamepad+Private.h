@@ -25,9 +25,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@interface OHDualSenseGamepad ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-@interface OHDualSenseGamepad () <OHEvdevMapping>
-@end
+    <OHEvdevMapping>
 #endif
+- (instancetype)oh_init OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+@end
 
 OF_ASSUME_NONNULL_END

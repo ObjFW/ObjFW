@@ -20,41 +20,70 @@
 #include "config.h"
 
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
 #import "OHEmulatedGameControllerAxis.h"
 #import "OHEmulatedGameControllerButton.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 @implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
 @synthesize up = _up, down = _down, left = _left, right = _right;
 
-- (instancetype)initWithName: (OFString *)name analog: (bool)analog
++ (instancetype)oh_padWithName: (OFString *)name
+			 xAxis: (OHGameControllerAxis *)xAxis
+			 yAxis: (OHGameControllerAxis *)yAxis
+			analog: (bool)analog
+{
+	return [[[self alloc] oh_initWithName: name
+					xAxis: xAxis
+					yAxis: yAxis
+				       analog: analog] autorelease];
+}
+
++ (instancetype)oh_padWithName: (OFString *)name
+			    up: (OHGameControllerButton *)up
+			  down: (OHGameControllerButton *)down
+			  left: (OHGameControllerButton *)left
+			 right: (OHGameControllerButton *)right
+			analog: (bool)analog
+{
+	return [[[self alloc] oh_initWithName: name
+					   up: up
+					 down: down
+					 left: left
+					right: right
+				       analog: analog] autorelease];
+}
+
+- (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithName: (OFString *)name
-		       xAxis: (OHGameControllerAxis *)xAxis
-		       yAxis: (OHGameControllerAxis *)yAxis
-		      analog: (bool)analog
+- (instancetype)oh_initWithName: (OFString *)name
+			  xAxis: (OHGameControllerAxis *)xAxis
+			  yAxis: (OHGameControllerAxis *)yAxis
+			 analog: (bool)analog
 {
-	self = [super initWithName: name analog: analog];
+	self = [super oh_initWithName: name analog: analog];
 
 	@try {
 		_xAxis = [xAxis retain];
 		_yAxis = [yAxis retain];
 
 		_up = [[OHEmulatedGameControllerButton alloc]
-		    initWithAxis: _yAxis
-			positive: false];
+		    oh_initWithAxis: _yAxis
+			   positive: false];
 		_down = [[OHEmulatedGameControllerButton alloc]
-		    initWithAxis: _yAxis
-			positive: true];
+		    oh_initWithAxis: _yAxis
+			   positive: true];
 		_left = [[OHEmulatedGameControllerButton alloc]
-		    initWithAxis: _xAxis
-			positive: false];
+		    oh_initWithAxis: _xAxis
+			   positive: false];
 		_right = [[OHEmulatedGameControllerButton alloc]
-		    initWithAxis: _xAxis
-			positive: true];
+		    oh_initWithAxis: _xAxis
+			   positive: true];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -63,14 +92,14 @@
 	return self;
 }
 
-- (instancetype)initWithName: (OFString *)name
-			  up: (OHGameControllerButton *)up
-			down: (OHGameControllerButton *)down
-			left: (OHGameControllerButton *)left
-		       right: (OHGameControllerButton *)right
-		      analog: (bool)analog
+- (instancetype)oh_initWithName: (OFString *)name
+			     up: (OHGameControllerButton *)up
+			   down: (OHGameControllerButton *)down
+			   left: (OHGameControllerButton *)left
+			  right: (OHGameControllerButton *)right
+			 analog: (bool)analog
 {
-	self = [super initWithName: name analog: analog];
+	self = [super oh_initWithName: name analog: analog];
 
 	@try {
 		_up = [up retain];
@@ -79,11 +108,11 @@
 		_right = [right retain];
 
 		_xAxis = [[OHEmulatedGameControllerAxis alloc]
-		    initWithNegativeButton: _left
-			    positiveButton: _right];
+		    oh_initWithNegativeButton: _left
+			       positiveButton: _right];
 		_yAxis = [[OHEmulatedGameControllerAxis alloc]
-		    initWithNegativeButton: _up
-			    positiveButton: _down];
+		    oh_initWithNegativeButton: _up
+			       positiveButton: _down];
 	} @catch (id e) {
 		[self release];
 		@throw e;

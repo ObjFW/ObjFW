@@ -23,10 +23,13 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OHNintendo3DSExtendedGamepad: OFObject <OHExtendedGamepad>
 {
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
+	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
 }
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

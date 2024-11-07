@@ -23,6 +23,8 @@
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 #include <linux/input.h>
 
@@ -205,11 +207,16 @@ axisToName(uint16_t axis)
 @implementation OHEvdevGameControllerProfile
 @synthesize buttons = _buttons, axes = _axes;
 
-- (instancetype)initWithKeyBits: (unsigned long *)keyBits
-			 evBits: (unsigned long *)evBits
-			absBits: (unsigned long *)absBits
-		       vendorID: (uint16_t)vendorID
-		      productID: (uint16_t)productID
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
+			    evBits: (unsigned long *)evBits
+			   absBits: (unsigned long *)absBits
+			  vendorID: (uint16_t)vendorID
+			 productID: (uint16_t)productID
 {
 	self = [super init];
 
@@ -228,9 +235,9 @@ axisToName(uint16_t axis)
 				if (buttonName == nil)
 					continue;
 
-				button = [[[OHGameControllerButton alloc]
-				    initWithName: buttonName
-					  analog: false] autorelease];
+				button = [OHGameControllerButton
+				    oh_elementWithName: buttonName
+						analog: false];
 
 				[buttons setObject: button forKey: buttonName];
 			}
@@ -249,10 +256,9 @@ axisToName(uint16_t axis)
 					if (axisName == nil)
 						continue;
 
-					axis = [[[OHGameControllerAxis
-					    alloc]
-					    initWithName: axisName
-						  analog: true] autorelease];
+					axis = [OHGameControllerAxis
+					    oh_elementWithName: axisName
+							analog: true];
 
 					[axes setObject: axis forKey: axisName];
 				}

@@ -38,7 +38,7 @@
 #endif
 
 #if defined(__SEH__)
-# define PERSONALITY	 gnu_objc_personality
+# define PERSONALITY gnu_objc_personality
 #elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"
@@ -237,7 +237,7 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
-#ifdef CXX_PERSONALITY
+#if defined(CXX_PERSONALITY_STR) && !defined(OF_AMIGAOS_M68K)
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
@@ -615,7 +615,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	if (foreign) {
 		switch (exClass) {
-#ifdef CXX_PERSONALITY
+#if defined(CXX_PERSONALITY_STR) && !defined(OF_AMIGAOS_M68K)
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (cxx_personality != NULL)

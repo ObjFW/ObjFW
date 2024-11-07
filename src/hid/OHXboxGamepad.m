@@ -20,10 +20,14 @@
 #include "config.h"
 
 #import "OHXboxGamepad.h"
+#import "OHXboxGamepad+Private.h"
 #import "OFDictionary.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameControllerDirectionalPad+Private.h"
+#import "OHGameControllerElement.h"
+#import "OHGameControllerElement+Private.h"
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"LB", @"RB", @"LT", @"RT", @"LSB", @"RSB",
@@ -36,10 +40,10 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (instancetype)init
 {
-	return [self initWithHasGuideButton: true];
+	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithHasGuideButton: (bool)hasGuideButton
+- (instancetype)oh_initWithHasGuideButton: (bool)hasGuideButton
 {
 	self = [super init];
 
@@ -61,9 +65,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			    !hasGuideButton)
 				continue;
 
-			button = [[[OHGameControllerButton alloc]
-			    initWithName: buttonNames[i]
-				  analog: analog] autorelease];
+			button = [OHGameControllerButton
+			    oh_elementWithName: buttonNames[i]
+					analog: analog];
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
@@ -72,53 +76,46 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
-		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"X"
-			  analog: true] autorelease];
-		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"Y"
-			  analog: true] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Left Thumbstick"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: true] autorelease];
+		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
+							  analog: true];
+		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
+							  analog: true];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"Left Thumbstick"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: true];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Left Thumbstick"];
 
-		xAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"RX"
-			  analog: true] autorelease];
-		yAxis = [[[OHGameControllerAxis alloc]
-		    initWithName: @"RY"
-			  analog: true] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"Right Thumbstick"
-			   xAxis: xAxis
-			   yAxis: yAxis
-			  analog: true] autorelease];
+		xAxis = [OHGameControllerAxis oh_elementWithName: @"RX"
+							  analog: true];
+		yAxis = [OHGameControllerAxis oh_elementWithName: @"RY"
+							  analog: true];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"Right Thumbstick"
+			     xAxis: xAxis
+			     yAxis: yAxis
+			    analog: true];
 		[directionalPads setObject: directionalPad
 				    forKey: @"Right Thumbstick"];
 
-		up = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Up"
-			  analog: false] autorelease];
-		down = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Down"
-			  analog: false] autorelease];
-		left = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Left"
-			  analog: false] autorelease];
-		right = [[[OHGameControllerButton alloc]
-		    initWithName: @"D-Pad Right"
-			  analog: false] autorelease];
-		directionalPad = [[[OHGameControllerDirectionalPad alloc]
-		    initWithName: @"D-Pad"
-			      up: up
-			    down: down
-			    left: left
-			   right: right
-			  analog: false] autorelease];
+		up = [OHGameControllerButton oh_elementWithName: @"D-Pad Up"
+							 analog: false];
+		down = [OHGameControllerButton oh_elementWithName: @"D-Pad Down"
+							   analog: false];
+		left = [OHGameControllerButton oh_elementWithName: @"D-Pad Left"
+							   analog: false];
+		right = [OHGameControllerButton
+		    oh_elementWithName: @"D-Pad Right"
+				analog: false];
+		directionalPad = [OHGameControllerDirectionalPad
+		    oh_padWithName: @"D-Pad"
+				up: up
+			      down: down
+			      left: left
+			     right: right
+			    analog: false];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];

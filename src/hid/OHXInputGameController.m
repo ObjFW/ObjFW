@@ -23,10 +23,13 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
+#import "OHGameController.h"
+#import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHXboxGamepad.h"
+#import "OHXboxGamepad+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFReadFailedException.h"
@@ -95,7 +98,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 			@try {
 				controller = [[[OHXInputGameController alloc]
-				    initWithIndex: i] autorelease];
+				    oh_initWithIndex: i] autorelease];
 			} @catch (OFInitializationFailedException *e) {
 				/* Controller does not exist. */
 				continue;
@@ -112,9 +115,14 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	return controllers;
 }
 
-- (instancetype)initWithIndex: (DWORD)index
+- (instancetype)oh_init
 {
-	self = [super init];
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithIndex: (DWORD)index
+{
+	self = [super oh_init];
 
 	@try {
 		XINPUT_STATE state = { 0 };
@@ -142,7 +150,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 		}
 
 		_extendedGamepad = [[OHXboxGamepad alloc]
-		    initWithHasGuideButton: (XInputVersion != 910)];
+		    oh_initWithHasGuideButton: (XInputVersion != 910)];
 
 		[self updateState];
 	} @catch (id e) {
@@ -171,56 +179,56 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 						  requestedLength: sizeof(state)
 							    errNo: 0];
 
-	_extendedGamepad.northButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_Y);
-	_extendedGamepad.southButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
-	_extendedGamepad.westButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_X);
-	_extendedGamepad.eastButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_B);
-	_extendedGamepad.leftShoulderButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
-	_extendedGamepad.rightShoulderButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
-	_extendedGamepad.leftThumbstickButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB);
-	_extendedGamepad.rightThumbstickButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB);
-	_extendedGamepad.menuButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_START);
-	_extendedGamepad.optionsButton.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
+	[_extendedGamepad.northButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)];
+	[_extendedGamepad.southButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_A)];
+	[_extendedGamepad.westButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_X)];
+	[_extendedGamepad.eastButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_B)];
+	[_extendedGamepad.leftShoulderButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)];
+	[_extendedGamepad.rightShoulderButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)];
+	[_extendedGamepad.leftThumbstickButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)];
+	[_extendedGamepad.rightThumbstickButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)];
+	[_extendedGamepad.menuButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_START)];
+	[_extendedGamepad.optionsButton setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK)];
 	if (XInputVersion != 910)
-		_extendedGamepad.homeButton.value =
-		    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE);
+		[_extendedGamepad.homeButton setValue:
+		    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_GUIDE)];
 
-	_extendedGamepad.leftTriggerButton.value =
-	    (float)state.Gamepad.bLeftTrigger / 255;
-	_extendedGamepad.rightTriggerButton.value =
-	    (float)state.Gamepad.bRightTrigger / 255;
+	[_extendedGamepad.leftTriggerButton setValue:
+	    (float)state.Gamepad.bLeftTrigger / 255];
+	[_extendedGamepad.rightTriggerButton setValue:
+	    (float)state.Gamepad.bRightTrigger / 255];
 
-	_extendedGamepad.leftThumbstick.xAxis.value =
+	[_extendedGamepad.leftThumbstick.xAxis setValue:
 	    (float)state.Gamepad.sThumbLX /
-	    (state.Gamepad.sThumbLX < 0 ? -INT16_MIN : INT16_MAX);
-	_extendedGamepad.leftThumbstick.yAxis.value =
+	    (state.Gamepad.sThumbLX < 0 ? -INT16_MIN : INT16_MAX)];
+	[_extendedGamepad.leftThumbstick.yAxis setValue:
 	    -(float)state.Gamepad.sThumbLY /
-	    (state.Gamepad.sThumbLY < 0 ? -INT16_MIN : INT16_MAX);
-	_extendedGamepad.rightThumbstick.xAxis.value =
+	    (state.Gamepad.sThumbLY < 0 ? -INT16_MIN : INT16_MAX)];
+	[_extendedGamepad.rightThumbstick.xAxis setValue:
 	    (float)state.Gamepad.sThumbRX /
-	    (state.Gamepad.sThumbRX < 0 ? -INT16_MIN : INT16_MAX);
-	_extendedGamepad.rightThumbstick.yAxis.value =
+	    (state.Gamepad.sThumbRX < 0 ? -INT16_MIN : INT16_MAX)];
+	[_extendedGamepad.rightThumbstick.yAxis setValue:
 	    -(float)state.Gamepad.sThumbRY /
-	    (state.Gamepad.sThumbRY < 0 ? -INT16_MIN : INT16_MAX);
+	    (state.Gamepad.sThumbRY < 0 ? -INT16_MIN : INT16_MAX)];
 
-	_extendedGamepad.dPad.up.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP);
-	_extendedGamepad.dPad.down.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-	_extendedGamepad.dPad.left.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-	_extendedGamepad.dPad.right.value =
-	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
+	[_extendedGamepad.dPad.up setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)];
+	[_extendedGamepad.dPad.down setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)];
+	[_extendedGamepad.dPad.left setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)];
+	[_extendedGamepad.dPad.right setValue:
+	    !!(state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)];
 }
 
 - (OFString *)name

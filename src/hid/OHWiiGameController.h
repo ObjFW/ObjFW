@@ -28,7 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
 	id <OHGameControllerProfile> _profile;
 }
 
-- (instancetype)initWithIndex: (int32_t)index type: (uint32_t)type;
+- (instancetype)oh_init OF_UNAVAILABLE;
+- (instancetype)oh_initWithIndex: (int32_t)index
+			    type: (uint32_t)type
+    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END
