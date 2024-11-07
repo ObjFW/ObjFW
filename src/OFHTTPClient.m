@@ -732,6 +732,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		[_client close];
 
 		sock = [OFTCPSocket socket];
+		sock.usesMPTCP = true;
 
 		if ([IRI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame)
