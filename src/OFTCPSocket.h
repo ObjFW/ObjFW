@@ -128,6 +128,9 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
  *
  * If you want to use MPTCP, set this to true before connecting or binding.
  * After connecting or binding, this returns whether MPTCP was used.
+ *
+ * @note After connecting, this method may return `false` even when MPTCP was
+ *	 used. This is an OS limitation.
  */
 @property (nonatomic) bool usesMPTCP;
 
