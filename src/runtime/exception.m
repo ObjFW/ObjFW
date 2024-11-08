@@ -792,17 +792,21 @@ static seh_personality_fn __gxx_personality_seh0;
 OF_CONSTRUCTOR()
 {
 	/*
-	 * This only works if the application uses libstdc++-6.dll.
-	 * There is unfortunately no other way, as Windows does not support
-	 * proper weak linking.
+	 * This only works if the application uses libc++.dll or
+	 * libstdc++-6.dll. There is unfortunately no other way, as Windows
+	 * does not support proper weak linking.
 	 */
 
 	HMODULE module;
-	if ((module = GetModuleHandle("libstdc++-6")) == NULL)
-		return;
 
-	__gxx_personality_seh0 = (seh_personality_fn)
-	    GetProcAddress(module, "__gxx_personality_seh0");
+	module = GetModuleHandle("libc++");
+
+	if (module == NULL)
+		module = GetModuleHandle("libstdc++-6");
+
+	if (module != NULL)
+		__gxx_personality_seh0 = (seh_personality_fn)
+		    GetProcAddress(module, "__gxx_personality_seh0");
 }
 
 EXCEPTION_DISPOSITION
