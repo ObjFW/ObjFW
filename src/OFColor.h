@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) OFColor *silver;
 @property (class, readonly, nonatomic) OFColor *gray;
 @property (class, readonly, nonatomic) OFColor *grey
-    OF_DEPRECATED(ObjFW, 1, 1, "Use gray instead");
+    OF_DEPRECATED(ObjFW, 1, 1, "Use +[gray] instead");
 @property (class, readonly, nonatomic) OFColor *white;
 @property (class, readonly, nonatomic) OFColor *maroon;
 @property (class, readonly, nonatomic) OFColor *red;
@@ -99,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The HTML color `gray`
  */
-+ (OFColor *)grey OF_DEPRECATED(ObjFW, 1, 1, "Use gray instead");
++ (OFColor *)grey OF_DEPRECATED(ObjFW, 1, 1, "Use +[gray] instead");
 
 /**
  * @brief Returns the HTML color `white`.
