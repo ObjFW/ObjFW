@@ -36,3 +36,8 @@ jobs:
       - name: make install
         shell: msys2 {0}
         run: make install
+      - name: C++ test
+        shell: msys2 {0}
+        run: |
+          objfw-compile -o cxxtest .github/workflows/CXXTest.mm
+          ./cxxtest.exe
