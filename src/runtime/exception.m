@@ -39,6 +39,7 @@
 
 #if defined(__SEH__)
 # define PERSONALITY gnu_objc_personality
+# define CXX_PERSONALITY_STR "__gxx_personality_seh0"
 #elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"
@@ -237,7 +238,34 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
-#if defined(CXX_PERSONALITY_STR) && !defined(OF_AMIGAOS_M68K)
+#if defined(OF_WINDOWS)
+# ifdef __SEH__
+static EXCEPTION_DISPOSITION (*cxx_personality)(PEXCEPTION_RECORD, void *,
+    PCONTEXT, PDISPATCHER_CONTEXT);
+# else
+static PERSONALITY_FUNC((*cxx_personality));
+# endif
+
+OF_CONSTRUCTOR()
+{
+	/*
+	 * This only works if the application uses libc++.dll or
+	 * libstdc++-6.dll. There is unfortunately no other way, as Windows
+	 * does not support proper weak linking.
+	 */
+
+	HMODULE module;
+
+	module = GetModuleHandle("libc++");
+
+	if (module == NULL)
+		module = GetModuleHandle("libstdc++-6");
+
+	if (module != NULL)
+		cxx_personality = (__typeof__(cxx_personality))
+		    GetProcAddress(module, CXX_PERSONALITY_STR);
+}
+#elif !defined(OF_AMIGAOS_M68K)
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
@@ -615,7 +643,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	if (foreign) {
 		switch (exClass) {
-#if defined(CXX_PERSONALITY_STR) && !defined(OF_AMIGAOS_M68K)
+#if !defined(__SEH__) && !defined(OF_AMIGAOS_M68K)
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (cxx_personality != NULL)
@@ -785,30 +813,6 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 }
 
 #ifdef __SEH__
-typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void *,
-    PCONTEXT, PDISPATCHER_CONTEXT);
-static seh_personality_fn __gxx_personality_seh0;
-
-OF_CONSTRUCTOR()
-{
-	/*
-	 * This only works if the application uses libc++.dll or
-	 * libstdc++-6.dll. There is unfortunately no other way, as Windows
-	 * does not support proper weak linking.
-	 */
-
-	HMODULE module;
-
-	module = GetModuleHandle("libc++");
-
-	if (module == NULL)
-		module = GetModuleHandle("libstdc++-6");
-
-	if (module != NULL)
-		__gxx_personality_seh0 = (seh_personality_fn)
-		    GetProcAddress(module, "__gxx_personality_seh0");
-}
-
 EXCEPTION_DISPOSITION
 __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
     PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
@@ -819,8 +823,8 @@ __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
 	switch (ex->class) {
 	case GNUCCXX0_EXCEPTION_CLASS:
 	case CLNGCXX0_EXCEPTION_CLASS:
-		if (__gxx_personality_seh0 != NULL)
-			return __gxx_personality_seh0(ms_exc, this_frame,
+		if (cxx_personality != NULL)
+			return cxx_personality(ms_exc, this_frame,
 			    ms_orig_context, ms_disp);
 	}
 
