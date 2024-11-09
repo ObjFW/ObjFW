@@ -4,6 +4,12 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.2 -> ObjFW 1.2.1, 2024-11-09
+ * Fixes exceptions in ObjC++.
+ * Fixes compiling ObjC++ on Windows.
+ * Fixes compiling tests on Haiku.
+ * Properly hides private methods in ObjFWHID.
+
 ObjFW 1.1.7 -> ObjFW 1.2, 2024-11-02
  + Adds a new framework for game controllers called ObjFWHID.
  + Adds support for tagged pointer strings.
