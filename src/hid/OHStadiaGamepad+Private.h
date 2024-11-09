@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
 #endif
-- (instancetype)oh_init OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+- (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

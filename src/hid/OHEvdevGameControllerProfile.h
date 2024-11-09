@@ -37,8 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 			    evBits: (unsigned long *)evBits
 			   absBits: (unsigned long *)absBits
 			  vendorID: (uint16_t)vendorID
-			 productID: (uint16_t)productID
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+			 productID: (uint16_t)productID OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

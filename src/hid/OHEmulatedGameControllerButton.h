@@ -33,8 +33,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)oh_initWithName: (OFString *)name
 			 analog: (bool)analog OF_UNAVAILABLE;
 - (instancetype)oh_initWithAxis: (OHGameControllerAxis *)axis
-		       positive: (bool)positive
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+		       positive: (bool)positive OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

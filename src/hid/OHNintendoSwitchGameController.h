@@ -34,8 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;
-- (instancetype)oh_initWithIndex: (size_t)index
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+- (instancetype)oh_initWithIndex: (size_t)index OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END
