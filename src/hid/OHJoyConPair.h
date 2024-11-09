@@ -63,8 +63,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized Joy-Con pair
  */
 - (instancetype)initWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
-		       rightJoyCon: (OHRightJoyCon *)rightJoyCon
-    OF_DESIGNATED_INITIALIZER;
+		       rightJoyCon: (OHRightJoyCon *)rightJoyCon;
 @end
 
 OF_ASSUME_NONNULL_END

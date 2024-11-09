@@ -30,8 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)oh_init OF_UNAVAILABLE;
 - (instancetype)oh_initWithIndex: (int32_t)index
-			    type: (uint32_t)type
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+			    type: (uint32_t)type OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

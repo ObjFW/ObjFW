@@ -34,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)
     oh_initWithNegativeButton: (OHGameControllerButton *)negativeButton
 	       positiveButton: (OHGameControllerButton *)positiveButton
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+    OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

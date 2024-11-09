@@ -24,8 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OHGameControllerElement ()
 + (instancetype)oh_elementWithName: (OFString *)name analog: (bool)analog;
 - (instancetype)oh_initWithName: (OFString *)name
-			 analog: (bool)analog
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+			 analog: (bool)analog OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

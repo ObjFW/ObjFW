@@ -39,8 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;
-- (instancetype)oh_initWithPath: (OFString *)path
-    OF_METHOD_FAMILY(init) OF_DESIGNATED_INITIALIZER;
+- (instancetype)oh_initWithPath: (OFString *)path OF_METHOD_FAMILY(init);
 - (void)oh_pollState;
 @end
 
