@@ -33,7 +33,17 @@ typedef enum {
 	/** @brief An unknown error. */
 	OFTLSStreamErrorCodeUnknown,
 	/** @brief Initialization of the TLS context failed. */
-	OFTLSStreamErrorCodeInitializationFailed
+	OFTLSStreamErrorCodeInitializationFailed,
+	/** @brief Verification of the certificate failed. */
+	OFTLSStreamErrorCodeCertificateVerificationFailed,
+	/** @brief The certificate has an untrusted or unknown issuer. */
+	OFTLSStreamErrorCodeCertificateIssuerUntrusted,
+	/** @brief The certificate is for a different name. */
+	OFTLSStreamErrorCodeCertificateNameMismatch,
+	/** @brief The certificate has expired or is not yet valid. */
+	OFTLSStreamErrorCodeCertificatedExpired,
+	/** @brief The certificate has been revoked. */
+	OFTLSStreamErrorCodeCertificateRevoked
 } OFTLSStreamErrorCode;
 
 /**

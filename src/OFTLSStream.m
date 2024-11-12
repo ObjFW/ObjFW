@@ -53,6 +53,16 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	switch (errorCode) {
 	case OFTLSStreamErrorCodeInitializationFailed:
 		return @"Initialization of TLS context failed";
+	case OFTLSStreamErrorCodeCertificateVerificationFailed:
+		return @"Verification of the certificate failed";
+	case OFTLSStreamErrorCodeCertificateIssuerUntrusted:
+		return @"The certificate has an untrusted or unknown issuer";
+	case OFTLSStreamErrorCodeCertificateNameMismatch:
+		return @"The certificate is for a different name";
+	case OFTLSStreamErrorCodeCertificatedExpired:
+		return @"The certificate has expired or is not yet valid";
+	case OFTLSStreamErrorCodeCertificateRevoked:
+		return @"The certificate has been revoked";
 	default:
 		return @"Unknown error";
 	}
