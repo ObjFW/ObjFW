@@ -80,6 +80,21 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	return length;
 }
 
+static OFTLSStreamErrorCode
+certificateStatusToErrorCode(gnutls_certificate_status_t status)
+{
+	if (status & GNUTLS_CERT_UNEXPECTED_OWNER)
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	if (status & GNUTLS_CERT_REVOKED)
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	if (status & (GNUTLS_CERT_EXPIRED | GNUTLS_CERT_NOT_ACTIVATED))
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
 + (void)load
 {
 	if (OFTLSStreamImplementation == Nil)
@@ -258,12 +273,19 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 	if (status == GNUTLS_E_SUCCESS)
 		_handshakeDone = true;
-	else
+	else {
+		OFTLSStreamErrorCode errorCode = OFTLSStreamErrorCodeUnknown;
+
+		if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+			errorCode = certificateStatusToErrorCode(
+			    gnutls_session_get_verify_cert_status(_session));
+
 		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: errorCode];
+	}
 
 	if ([_delegate respondsToSelector:
 	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
