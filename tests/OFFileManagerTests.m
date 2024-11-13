@@ -24,6 +24,10 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
+#ifdef OF_HAIKU
+# include <TypeConstants.h>
+#endif
+
 @interface OFFileManagerTests: OTTestCase
 {
 	OFFileManager *_fileManager;

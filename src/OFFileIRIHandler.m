@@ -43,6 +43,7 @@
 # include <sys/extattr.h>
 #endif
 #ifdef OF_HAIKU
+# include <TypeConstants.h>
 # include <kernel/fs_attr.h>
 #endif
 #ifdef OF_DJGPP
