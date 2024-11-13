@@ -54,7 +54,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	case OFTLSStreamErrorCodeInitializationFailed:
 		return @"Initialization of TLS context failed";
 	case OFTLSStreamErrorCodeCertificateVerificationFailed:
-		return @"Verification of the certificate failed";
+		return @"Failed to verify certificate";
 	case OFTLSStreamErrorCodeCertificateIssuerUntrusted:
 		return @"The certificate has an untrusted or unknown issuer";
 	case OFTLSStreamErrorCodeCertificateNameMismatch:

@@ -24,6 +24,8 @@
 #import "OFOpenSSLTLSStream.h"
 #import "OFData.h"
 
+#include <openssl/err.h>
+
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
@@ -35,6 +37,44 @@
 
 int _ObjFWTLS_reference;
 static SSL_CTX *clientContext;
+
+static OFTLSStreamErrorCode
+verifyResultToErrorCode(const SSL *SSL_)
+{
+	switch (SSL_get_verify_result(SSL_)) {
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+	case X509_V_ERR_CERT_UNTRUSTED:
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+	case X509_V_ERR_HOSTNAME_MISMATCH:
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	case X509_V_ERR_CERT_NOT_YET_VALID:
+	case X509_V_ERR_CERT_HAS_EXPIRED:
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	case X509_V_ERR_CERT_REVOKED:
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	}
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
+static OFTLSStreamErrorCode
+errToErrorCode(const SSL *SSL_)
+{
+	unsigned long err = ERR_get_error();
+
+	switch (ERR_GET_LIB(err)) {
+	case ERR_LIB_SSL:
+		switch (ERR_GET_REASON(err)) {
+		case SSL_R_CERTIFICATE_VERIFY_FAILED:
+			return verifyResultToErrorCode(SSL_);
+		}
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
 
 @implementation OFOpenSSLTLSStream
 + (void)load
@@ -114,6 +154,7 @@ static SSL_CTX *clientContext;
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	ERR_clear_error();
 	ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
 
 	while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -145,6 +186,7 @@ static SSL_CTX *clientContext;
 			}
 		}
 
+		ERR_clear_error();
 		ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
 
 		while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -176,6 +218,8 @@ static SSL_CTX *clientContext;
 
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
+
+	ERR_clear_error();
 
 	if ((ret = SSL_write_ex(_SSL, buffer, length, &bytesWritten)) != 1) {
 		/* FIXME: Translate error to errNo */
@@ -272,6 +316,7 @@ static SSL_CTX *clientContext;
 				      errorCode: initFailedErrorCode];
 	}
 
+	ERR_clear_error();
 	status = SSL_do_handshake(_SSL);
 
 	while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -300,8 +345,13 @@ static SSL_CTX *clientContext;
 			[_delegate retain];
 			objc_autoreleasePoolPop(pool);
 			return;
+		case SSL_ERROR_SSL:
+			exception = [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: errToErrorCode(_SSL)];
+			break;
 		default:
-			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
@@ -333,6 +383,7 @@ static SSL_CTX *clientContext;
 		OFEnsure(BIO_write(_readBIO, buffer, (int)length) ==
 		    (int)length);
 
+		ERR_clear_error();
 		status = SSL_do_handshake(_SSL);
 
 		while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -356,6 +407,12 @@ static SSL_CTX *clientContext;
 				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
+			case SSL_ERROR_SSL:
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: errToErrorCode(_SSL)];
+				break;
 			default:
 				exception = [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
@@ -397,6 +454,7 @@ static SSL_CTX *clientContext;
 			[_underlyingStream flushWriteBuffer];
 		}
 
+		ERR_clear_error();
 		status = SSL_do_handshake(_SSL);
 
 		while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -422,6 +480,12 @@ static SSL_CTX *clientContext;
 				return nil;
 			case SSL_ERROR_WANT_WRITE:
 				return data;
+			case SSL_ERROR_SSL:
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: errToErrorCode(_SSL)];
+				break;
 			default:
 				exception = [OFTLSHandshakeFailedException
 				    exceptionWithStream: self

@@ -34,7 +34,7 @@ typedef enum {
 	OFTLSStreamErrorCodeUnknown,
 	/** @brief Initialization of the TLS context failed. */
 	OFTLSStreamErrorCodeInitializationFailed,
-	/** @brief Verification of the certificate failed. */
+	/** @brief Failed to verify certificate. */
 	OFTLSStreamErrorCodeCertificateVerificationFailed,
 	/** @brief The certificate has an untrusted or unknown issuer. */
 	OFTLSStreamErrorCodeCertificateIssuerUntrusted,
