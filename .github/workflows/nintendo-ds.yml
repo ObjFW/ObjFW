@@ -15,7 +15,7 @@ jobs:
           -e DEVKITPRO=/opt/devkitpro \
           -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm \
+          devkitpro/devkitarm:20241104 \
           sh -c 'cd /objfw && ./configure --host=arm-none-eabi --with-nds'
     - name: make
       run: |
@@ -23,7 +23,7 @@ jobs:
           -e DEVKITPRO=/opt/devkitpro \
           -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm \
+          devkitpro/devkitarm:20241104 \
           sh -c "cd /objfw && make -j$(nproc)"
     - name: make install
       run: |
@@ -31,5 +31,5 @@ jobs:
           -e DEVKITPRO=/opt/devkitpro \
           -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm \
+          devkitpro/devkitarm:20241104 \
           sh -c "cd /objfw && make install"
