@@ -42,6 +42,35 @@ int _ObjFWTLS_reference;
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
 
+static OFTLSStreamErrorCode
+verifyResultToErrorCode(const mbedtls_ssl_context *SSL)
+{
+	switch (mbedtls_ssl_get_verify_result(SSL)) {
+	case MBEDTLS_X509_BADCERT_NOT_TRUSTED:
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+	case MBEDTLS_X509_BADCERT_CN_MISMATCH:
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	case MBEDTLS_X509_BADCERT_EXPIRED:
+	case MBEDTLS_X509_BADCERT_FUTURE:
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	case MBEDTLS_X509_BADCERT_REVOKED:
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	}
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
+static OFTLSStreamErrorCode
+statusToErrorCode(const mbedtls_ssl_context *SSL, int status)
+{
+	switch (status) {
+	case MBEDTLS_ERR_X509_CERT_VERIFY_FAILED:
+		return verifyResultToErrorCode(SSL);
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
+
 @implementation OFMbedTLSTLSStream
 static int
 readFunc(void *ctx, unsigned char *buffer, size_t length)
@@ -289,11 +318,10 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (status == 0)
 		_handshakeDone = true;
 	else
-		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: statusToErrorCode(&_SSL, status)];
 
 	if ([_delegate respondsToSelector:
 	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
@@ -328,7 +356,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(
+						     &_SSL, status)];
 	}
 
 	if ([_delegate respondsToSelector:
@@ -367,7 +396,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(
+						     &_SSL, status)];
 	}
 
 	if ([_delegate respondsToSelector:
