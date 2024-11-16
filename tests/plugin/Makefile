@@ -2,7 +2,7 @@ include ../../extra.mk
 
 DISTCLEAN = Info.plist
 
-PLUGIN_NOINST = TestPlugin${PLUGIN_SUFFIX}
+PLUGIN_NOINST = ${TESTPLUGIN_PLUGIN}
 BUNDLE_NOINST = ${TESTPLUGIN_BUNDLE}
 SRCS = TestPlugin.m
 

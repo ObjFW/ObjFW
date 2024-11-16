@@ -466,6 +466,8 @@ AS_IF([test x"$enable_shared" != x"no"], [
 
 	BUILDSYS_BUNDLE([
 		AC_SUBST(TESTPLUGIN_BUNDLE, "TestPlugin.bundle")
+	], [
+		AC_SUBST(TESTPLUGIN_PLUGIN, 'TestPlugin${PLUGIN_SUFFIX}')
 	])
 ], [
 	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
