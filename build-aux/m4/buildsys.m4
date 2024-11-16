@@ -328,6 +328,9 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 
 		$1
 		;;
+	*)
+		$2
+		;;
 	esac
 ])
 
@@ -384,6 +387,9 @@ AC_DEFUN([BUILDSYS_BUNDLE], [
 		AC_SUBST(LINK_BUNDLE)
 
 		$1
+		;;
+	*)
+		$2
 		;;
 	esac
 ])
