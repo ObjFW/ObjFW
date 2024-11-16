@@ -1889,8 +1889,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				TLS_LIBS="-framework Foundation $TLS_LIBS"
 				TLS_LIBS="-framework Security $TLS_LIBS"
 
-				AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
-					"OFSecureTransportTLSStream.m")
+				AC_SUBST(USE_SRCS_SECURETRANSPORT,
+					'${SRCS_SECURETRANSPORT}')
 
 				AC_CHECK_FUNCS(SSLCreateContext)
 			], [])
@@ -1917,8 +1917,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				tls_support="OpenSSL"
 				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
 
-				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
-					"OFOpenSSLTLSStream.m")
+				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
 
 				old_LIBS="$LIBS"
 				LIBS="$TLS_LIBS $LIBS"
@@ -1935,7 +1934,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
 			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
 
-			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+			AC_SUBST(USE_SRCS_GNUTLS, '${SRCS_GNUTLS}')
 		], [
 			dnl Disable default action-if-not-found, which exits
 			dnl configure with an error.
@@ -1950,8 +1949,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				TLS_LIBS="-lmbedx509 -lmbedcrypto $TLS_LIBS"
 				TLS_LIBS="-lmbedtls $TLS_LIBS"
 
-				AC_SUBST(OF_MBEDTLS_TLS_STREAM_M,
-					"OFMbedTLSTLSStream.m")
+				AC_SUBST(USE_SRCS_MBEDTLS, '${SRCS_MBEDTLS}')
 			])
 		], [], [-lmbedx509 -lmbedcrypto])
 	])

@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFTLSStream.h"
+#import "OFArray.h"
 #import "OFDate.h"
 
 #import "OFNotImplementedException.h"
@@ -79,6 +80,13 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 -		       (void)stream: (OFTLSStream *)stream
   didPerformClientHandshakeWithHost: (OFString *)host
 			  exception: (id)exception
+{
+	_done = true;
+	_exception = [exception retain];
+}
+
+- (void)streamDidPerformServerHandshake: (OFTLSStream *)stream
+			      exception: (id)exception
 {
 	_done = true;
 	_exception = [exception retain];
@@ -145,6 +153,19 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	[super close];
 }
 
+- (void)setCertificateChain:
+    (OFArray OF_GENERIC(OFX509Certificate *) *)certificateChain
+{
+	OFArray OF_GENERIC(OFX509Certificate *) *old = _certificateChain;
+	_certificateChain = [certificateChain copy];
+	[old release];
+}
+
+- (OFArray OF_GENERIC(OFX509Certificate *) *)certificateChain
+{
+	return _certificateChain;
+}
+
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -193,6 +214,41 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	_delegate = handshakeDelegate;
 	[self asyncPerformClientHandshakeWithHost: host
 				      runLoopMode: handshakeRunLoopMode];
+
+	while (!handshakeDelegate->_done)
+		[runLoop runMode: handshakeRunLoopMode beforeDate: nil];
+
+	/* Cleanup */
+	[runLoop runMode: handshakeRunLoopMode beforeDate: [OFDate date]];
+
+	_delegate = delegate;
+
+	if (handshakeDelegate->_exception != nil)
+		@throw handshakeDelegate->_exception;
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformServerHandshake
+{
+	[self asyncPerformServerHandshakeWithRunLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)performServerHandshake
+{
+	void *pool = objc_autoreleasePoolPush();
+	id <OFTLSStreamDelegate> delegate = _delegate;
+	OFTLSStreamHandshakeDelegate *handshakeDelegate =
+	    [[[OFTLSStreamHandshakeDelegate alloc] init] autorelease];
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+
+	_delegate = handshakeDelegate;
+	[self asyncPerformServerHandshakeWithRunLoopMode: handshakeRunLoopMode];
 
 	while (!handshakeDelegate->_done)
 		[runLoop runMode: handshakeRunLoopMode beforeDate: nil];
