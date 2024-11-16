@@ -39,6 +39,21 @@ static gnutls_certificate_credentials_t systemTrustCreds;
 # define GNUTLS_SAFE_PADDING_CHECK 0
 #endif
 
+static OFTLSStreamErrorCode
+certificateStatusToErrorCode(gnutls_certificate_status_t status)
+{
+	if (status & GNUTLS_CERT_UNEXPECTED_OWNER)
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	if (status & GNUTLS_CERT_REVOKED)
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	if (status & (GNUTLS_CERT_EXPIRED | GNUTLS_CERT_NOT_ACTIVATED))
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
 @implementation OFGnuTLSTLSStream
 static ssize_t
 readFunc(gnutls_transport_ptr_t transport, void *buffer, size_t length)
@@ -78,21 +93,6 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	}
 
 	return length;
-}
-
-static OFTLSStreamErrorCode
-certificateStatusToErrorCode(gnutls_certificate_status_t status)
-{
-	if (status & GNUTLS_CERT_UNEXPECTED_OWNER)
-		return OFTLSStreamErrorCodeCertificateNameMismatch;
-	if (status & GNUTLS_CERT_REVOKED)
-		return OFTLSStreamErrorCodeCertificateRevoked;
-	if (status & (GNUTLS_CERT_EXPIRED | GNUTLS_CERT_NOT_ACTIVATED))
-		return OFTLSStreamErrorCodeCertificatedExpired;
-	if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
-
-	return OFTLSStreamErrorCodeCertificateVerificationFailed;
 }
 
 + (void)load

@@ -31,6 +31,17 @@
 
 int _ObjFWTLS_reference;
 
+static OFTLSStreamErrorCode
+statusToErrorCode(OSStatus status)
+{
+	switch (status) {
+	case errSSLXCertChainInvalid:
+		return OFTLSStreamErrorCodeCertificateVerificationFailed;
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
+
 static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
@@ -245,7 +256,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: _host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: statusToErrorCode(status)];
 
 	if ([_delegate respondsToSelector:
 	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
@@ -271,7 +282,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(status)];
 	}
 
 	if ([_delegate respondsToSelector:
