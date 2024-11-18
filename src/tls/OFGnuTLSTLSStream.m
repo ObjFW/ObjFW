@@ -129,11 +129,13 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (void)close
 {
+	if (_session == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (_handshakeDone)
 		gnutls_bye(_session, GNUTLS_SHUT_WR);
 
-	if (_session != NULL)
-		gnutls_deinit(_session);
+	gnutls_deinit(_session);
 
 	if (_credentials != NULL)
 		gnutls_certificate_free_credentials(_credentials);
