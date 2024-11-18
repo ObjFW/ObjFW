@@ -23,10 +23,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFGnuTLSTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	bool _initialized, _handshakeDone;
+	bool _server, _handshakeDone;
 	gnutls_session_t _session;
+	gnutls_certificate_credentials_t _credentials;
 	OFString *_host;
 }
 @end

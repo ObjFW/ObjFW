@@ -17,18 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFX509Certificate.h"
 
-#include <Security/SecureTransport.h>
+#include <gnutls/x509.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
 OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFGnuTLSX509Certificate: OFX509Certificate
 {
-	SSLContextRef _context;
-	OFString *_host;
+	gnutls_x509_crt_t _certificate;
 }
+
+@property (readonly, nonatomic) gnutls_x509_crt_t of_gnuTLSCertificate;
+
+- (instancetype)of_initWithGnuTLSCertificate: (gnutls_x509_crt_t)certificate;
 @end
 
 OF_ASSUME_NONNULL_END

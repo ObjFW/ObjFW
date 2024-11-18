@@ -21,44 +21,44 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFArray OF_GENERIC(ObjectType);
 @class OFIRI;
 
 /**
- * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
+ * @class OFX509CertificatePrivateKey \
+ *	  OFX509CertificatePrivateKey.h ObjFW/ObjFW.h
  *
- * @brief An X.509 certificate.
+ * @brief The private key for an X.509 certificate.
  */
-@interface OFX509Certificate: OFObject
+@interface OFX509CertificatePrivateKey: OFObject
 {
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
 
 /**
- * @brief Returns a certificate chain from the specified IRI.
+ * @brief Returns a private key from the specified IRI.
  *
- * @param IRI The IRI to retrieve the certificate chain from
+ * @param IRI The IRI to retrieve the private key from
  *
+ * @throw OFInitializationFailedException Initializing the private key failed
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  * @throw OFReadFailedException Reading the item failed
  * @throw OFInvalidFormatException The format of the item is invalid
  */
-+ (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromIRI: (OFIRI *)IRI;
++ (instancetype)privateKeyFromIRI: (OFIRI *)IRI;
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /**
- * @brief The implementation for OFX509Certificate to use.
+ * @brief The implementation for OFX509CertificatePrivateKey to use.
  *
- * This can be set to a class that is always used for OFX509Certificate. This
- * is useful to either force a specific implementation or to use one that ObjFW
- * does not know about.
+ * This can be set to a class that is always used for
+ * OFX509CertificatePrivateKey. This is useful to either force a specific
+ * implementation or to use one that ObjFW does not know about.
  */
-extern Class OFX509CertificateImplementation;
+extern Class OFX509CertificatePrivateKeyImplementation;
 #ifdef __cplusplus
 }
 #endif

@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #define OFOpenSSLTLSStreamBufferSize 512
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>
 {
 	bool _handshakeDone;

@@ -15,7 +15,9 @@ SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_OPENSSL}		\
        ${USE_SRCS_SECURETRANSPORT}
 
-SRCS_GNUTLS = OFGnuTLSTLSStream.m
+SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
+	      OFGnuTLSX509Certificate.m			\
+	      OFGnuTLSX509CertificatePrivateKey.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m
 SRCS_SECURETRANSPORT = OFSecureTransportTLSStream.m

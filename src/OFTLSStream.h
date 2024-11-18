@@ -19,6 +19,8 @@
 
 #import "OFStream.h"
 #import "OFRunLoop.h"
+#import "OFX509Certificate.h"
+#import "OFX509CertificatePrivateKey.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +28,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFTLSStream;
-@class OFX509Certificate;
 
 /**
  * @brief An enum representing an error of an OFTLSStream.
@@ -102,8 +103,10 @@ typedef enum {
 	OFStream <OFReadyForReadingObserving, OFReadyForWritingObserving>
 	    *_underlyingStream;
 	bool _verifiesCertificates;
-	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
-	OF_RESERVE_IVARS(OFTLSStream, 3)
+	OFArray OF_GENERIC(OF_KINDOF(OFX509Certificate *)) *_Nullable
+	    _certificateChain;
+	OF_KINDOF(OFX509CertificatePrivateKey *) _Nullable _privateKey;
+	OF_RESERVE_IVARS(OFTLSStream, 2)
 }
 
 /**
@@ -131,6 +134,12 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The private key to use.
+ */
+@property OF_NULLABLE_PROPERTY (retain, nonatomic)
+    OFX509CertificatePrivateKey *privateKey;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -227,8 +236,8 @@ extern "C" {
  * @brief The implementation for OFTLSStream to use.
  *
  * This can be set to a class that is always used for OFTLSStream. This is
- * useful to either force a specific implementation or use one that ObjFW does
- * not know about.
+ * useful to either force a specific implementation or to use one that ObjFW
+ * does not know about.
  */
 extern Class OFTLSStreamImplementation;
 

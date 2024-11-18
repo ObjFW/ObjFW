@@ -97,6 +97,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 @synthesize underlyingStream = _underlyingStream;
 @dynamic delegate;
 @synthesize verifiesCertificates = _verifiesCertificates;
+@synthesize privateKey = _privateKey;
 
 + (instancetype)alloc
 {

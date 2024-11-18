@@ -17,18 +17,35 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#include "config.h"
 
-#include <Security/SecureTransport.h>
+#import "OFX509CertificatePrivateKey.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFNotImplementedException.h"
 
-OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
+Class OFX509CertificatePrivateKeyImplementation = Nil;
+
+@implementation OFX509CertificatePrivateKey
++ (instancetype)alloc
 {
-	SSLContextRef _context;
-	OFString *_host;
+	if (self == [OFX509CertificatePrivateKey class]) {
+		if (OFX509CertificatePrivateKeyImplementation != Nil)
+			return
+			    [OFX509CertificatePrivateKeyImplementation alloc];
+
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+	}
+
+	return [super alloc];
+}
+
++ (instancetype)privateKeyFromIRI: (OFIRI *)IRI
+{
+	if (OFX509CertificatePrivateKeyImplementation != Nil)
+		return [OFX509CertificatePrivateKeyImplementation
+		    privateKeyFromIRI: IRI];
+
+	OF_UNRECOGNIZED_SELECTOR
 }
 @end
-
-OF_ASSUME_NONNULL_END

@@ -38,4 +38,14 @@ Class OFX509CertificateImplementation = Nil;
 
 	return [super alloc];
 }
+
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromIRI: (OFIRI *)IRI
+{
+	if (OFX509CertificateImplementation != Nil)
+		return [OFX509CertificateImplementation
+		    certificateChainFromIRI: IRI];
+
+	OF_UNRECOGNIZED_SELECTOR
+}
 @end
