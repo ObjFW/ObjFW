@@ -18,6 +18,7 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../../src/tls						\
 	    -I../..							\
+	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
 LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
 	-L../../src/runtime ${RUNTIME_LIBS}				\
