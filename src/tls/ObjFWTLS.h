@@ -17,7 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "macros.h"
+#ifdef OBJFWTLS_LOCAL_INCLUDES
+# import "macros.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/macros.h>
+# endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
