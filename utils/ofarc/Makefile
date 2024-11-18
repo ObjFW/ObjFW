@@ -20,7 +20,9 @@ ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 CPPFLAGS += -I../../src							\
 	    -I../../src/runtime						\
 	    -I../../src/exceptions					\
+	    -I../../src/tls						\
 	    -I../..							\
+	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"
 LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
 	-L../../src/runtime ${RUNTIME_LIBS}				\
