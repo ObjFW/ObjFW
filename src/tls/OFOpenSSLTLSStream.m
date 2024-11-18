@@ -92,8 +92,18 @@ static SSL_CTX *clientContext;
 	if (_SSL == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_handshakeDone)
+	if (_handshakeDone) {
 		SSL_shutdown(_SSL);
+
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
+			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
+
+			OFEnsure(tmp >= 0);
+
+			[_underlyingStream writeBuffer: _buffer length: tmp];
+			[_underlyingStream flushWriteBuffer];
+		}
+	}
 
 	SSL_free(_SSL);
 	_SSL = NULL;
