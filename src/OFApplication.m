@@ -501,7 +501,8 @@ SIGNAL_HANDLER(SIGUSR2)
 #ifndef OF_NINTENDO_DS
 	if (*argc > 0) {
 #else
-	if (__system_argv->argvMagic == ARGV_MAGIC && __system_argv->argc > 0) {
+	if (g_envNdsArgvHeader->magic == ENV_NDS_ARGV_MAGIC &&
+	    g_envNdsArgvHeader->argc > 0) {
 #endif
 		_programName = [[OFString alloc] initWithCString: (*argv)[0]
 							encoding: encoding];

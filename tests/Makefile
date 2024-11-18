@@ -248,7 +248,7 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt
 	rm -fr nds-data
 	mkdir -p nds-data
 	cp testfile.txt nds-data
-	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
+	ndstool -c $@ -7 ${DEVKITPRO}/calico/bin/ds7_maine.elf -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
 ${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt

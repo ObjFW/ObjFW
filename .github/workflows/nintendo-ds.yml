@@ -13,23 +13,31 @@ jobs:
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm:20241104 \
+          devkitpro/devkitarm \
           sh -c 'cd /objfw && ./configure --host=arm-none-eabi --with-nds'
     - name: make
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm:20241104 \
+          devkitpro/devkitarm \
           sh -c "cd /objfw && make -j$(nproc)"
+    - name: make tests.nds
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitarm \
+          sh -c "cd /objfw/tests && make tests.nds"
     - name: make install
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
-          devkitpro/devkitarm:20241104 \
+          devkitpro/devkitarm \
           sh -c "cd /objfw && make install"
