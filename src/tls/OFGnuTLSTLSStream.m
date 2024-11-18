@@ -254,6 +254,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	}
 
 	if (_certificateChain != nil) {
+		OFGnuTLSX509CertificatePrivateKey *privateKey =
+		    (OFGnuTLSX509CertificatePrivateKey *)_privateKey;
 		OFMutableData *certs = [OFMutableData
 		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
 			    capacity: _certificateChain.count];
@@ -266,7 +268,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 		if (gnutls_certificate_set_x509_key(_credentials,
 		    (gnutls_x509_crt_t *)certs.items, (unsigned int)certs.count,
-		    [_privateKey of_gnuTLSPrivateKey]) < 0)
+		    privateKey.of_gnuTLSPrivateKey) < 0)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host

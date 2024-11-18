@@ -103,9 +103,8 @@ typedef enum {
 	OFStream <OFReadyForReadingObserving, OFReadyForWritingObserving>
 	    *_underlyingStream;
 	bool _verifiesCertificates;
-	OFArray OF_GENERIC(OF_KINDOF(OFX509Certificate *)) *_Nullable
-	    _certificateChain;
-	OF_KINDOF(OFX509CertificatePrivateKey *) _Nullable _privateKey;
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OFX509CertificatePrivateKey *_Nullable _privateKey;
 	OF_RESERVE_IVARS(OFTLSStream, 2)
 }
 
