@@ -19,7 +19,9 @@ SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
 	      OFGnuTLSX509Certificate.m			\
 	      OFGnuTLSX509CertificatePrivateKey.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m
-SRCS_OPENSSL = OFOpenSSLTLSStream.m
+SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
+	       OFOpenSSLX509Certificate.m		\
+	       OFOpenSSLX509CertificatePrivateKey.m
 SRCS_SECURETRANSPORT = OFSecureTransportTLSStream.m
 
 includesubdir = ObjFWTLS

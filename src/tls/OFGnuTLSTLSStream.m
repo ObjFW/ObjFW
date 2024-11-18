@@ -250,10 +250,11 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 				      errorCode: initFailedErrorCode];
 
 		if (_verifiesCertificates)
-			gnutls_session_set_verify_cert(_session, _host.UTF8String, 0);
+			gnutls_session_set_verify_cert(_session,
+			    _host.UTF8String, 0);
 	}
 
-	if (_certificateChain != nil) {
+	if (_certificateChain.count > 0) {
 		OFGnuTLSX509CertificatePrivateKey *privateKey =
 		    (OFGnuTLSX509CertificatePrivateKey *)_privateKey;
 		OFMutableData *certs = [OFMutableData

@@ -17,24 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFX509Certificate.h"
 
-#include <openssl/bio.h>
 #include <openssl/ssl.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OFOpenSSLTLSStreamBufferSize 512
-
 OF_SUBCLASSING_RESTRICTED
-@interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFOpenSSLX509Certificate: OFX509Certificate
 {
-	BIO *_readBIO, *_writeBIO;
-	SSL *_SSL;
-	bool _server, _handshakeDone;
-	OFString *_host;
-	char _buffer[OFOpenSSLTLSStreamBufferSize];
+	X509 *_certificate;
 }
+
+@property (readonly, nonatomic) X509 *of_openSSLCertificate;
+
+- (instancetype)of_initWithOpenSSLCertificate: (X509 *)certificate;
 @end
 
 OF_ASSUME_NONNULL_END

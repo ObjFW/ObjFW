@@ -22,7 +22,10 @@
 #include <errno.h>
 
 #import "OFOpenSSLTLSStream.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFOpenSSLX509Certificate.h"
+#import "OFOpenSSLX509CertificatePrivateKey.h"
 
 #include <openssl/err.h>
 
@@ -36,7 +39,7 @@
 #define bufferSize OFOpenSSLTLSStreamBufferSize
 
 int _ObjFWTLS_reference;
-static SSL_CTX *clientContext;
+static SSL_CTX *clientContext, *serverContext;
 
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const SSL *SSL_)
@@ -93,6 +96,10 @@ errToErrorCode(const SSL *SSL_)
 
 	if ((clientContext = SSL_CTX_new(TLS_client_method())) == NULL ||
 	    SSL_CTX_set_default_verify_paths(clientContext) != 1)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((serverContext = SSL_CTX_new(TLS_server_method())) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -257,8 +264,9 @@ errToErrorCode(const SSL *SSL_)
 #endif
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -286,7 +294,7 @@ errToErrorCode(const SSL *SSL_)
 	BIO_set_mem_eof_return(_readBIO, -1);
 	BIO_set_mem_eof_return(_writeBIO, -1);
 
-	if ((_SSL = SSL_new(clientContext)) == NULL) {
+	if ((_SSL = SSL_new(server ? serverContext : clientContext)) == NULL) {
 		BIO_free(_readBIO);
 		BIO_free(_writeBIO);
 		@throw [OFTLSHandshakeFailedException
@@ -296,24 +304,62 @@ errToErrorCode(const SSL *SSL_)
 	}
 
 	SSL_set_bio(_SSL, _readBIO, _writeBIO);
-	SSL_set_connect_state(_SSL);
+
+	if (server)
+		SSL_set_accept_state(_SSL);
+	else
+		SSL_set_connect_state(_SSL);
 
 	_host = [host copy];
+	_server = server;
 
-	if (SSL_set_tlsext_host_name(_SSL, _host.UTF8String) != 1)
-		@throw [OFTLSHandshakeFailedException
-		    exceptionWithStream: self
-				   host: host
-			      errorCode: initFailedErrorCode];
-
-	if (_verifiesCertificates) {
-		SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
-
-		if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+	if (!server) {
+		if (SSL_set_tlsext_host_name(_SSL, _host.UTF8String) != 1)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
+
+		if (_verifiesCertificates) {
+			SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
+
+			if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+		}
+	}
+
+	if (_certificateChain.count > 0) {
+		OFOpenSSLX509Certificate *certificate =
+		    (OFOpenSSLX509Certificate *)_certificateChain.firstObject;
+		OFOpenSSLX509CertificatePrivateKey *privateKey =
+		    (OFOpenSSLX509CertificatePrivateKey *)_privateKey;
+		bool first = true;
+
+		if (SSL_use_certificate(_SSL,
+		    certificate.of_openSSLCertificate) != 1 ||
+		    SSL_use_PrivateKey(_SSL,
+		    privateKey.of_openSSLPrivateKey) != 1)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+
+		for (OFOpenSSLX509Certificate *iter in _certificateChain) {
+			if (first) {
+				first = false;
+				continue;
+			}
+
+			if (SSL_add1_chain_cert(_SSL,
+			    iter.of_openSSLCertificate) != 1)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+		}
 	}
 
 	ERR_clear_error();
@@ -360,13 +406,35 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -423,11 +491,18 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 
@@ -496,11 +571,18 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 

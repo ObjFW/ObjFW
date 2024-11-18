@@ -19,15 +19,16 @@
 
 #include "config.h"
 
-#import "OFGnuTLSX509Certificate.h"
+#import "OFOpenSSLX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFGnuTLSX509Certificate
-@synthesize of_gnuTLSCertificate = _certificate;
+@implementation OFOpenSSLX509Certificate
+@synthesize of_openSSLCertificate = _certificate;
 
 + (void)load
 {
@@ -41,43 +42,46 @@
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	gnutls_datum_t datum;
-	gnutls_x509_crt_t *certs;
-	unsigned int i, size;
+	BIO *bio;
 
-	if (data.count * data.itemSize > UINT_MAX)
+	if (data.count * data.itemSize > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	datum.data = (unsigned char *)data.items;
-	datum.size = (unsigned int)(data.count * data.itemSize);
+	bio = BIO_new_mem_buf(data.items, (int)(data.count * data.itemSize));
+	if (bio == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: data.count * data.itemSize];
 
-	if (gnutls_x509_crt_list_import2(&certs, &size, &datum,
-	    GNUTLS_X509_FMT_PEM, 0) != GNUTLS_E_SUCCESS)
-		@throw [OFInvalidFormatException exception];
+	@try {
+		for (;;) {
+			OFOpenSSLX509Certificate *certificate;
+			X509 *cert = X509_new();
 
-	for (i = 0; i < size; i++) {
-		OFGnuTLSX509Certificate *certificate;
+			if (cert == NULL)
+				@throw [OFOutOfMemoryException exception];
 
-		@try {
-			certificate = [[self alloc]
-			    of_initWithGnuTLSCertificate: certs[i]];
-		} @catch (id e) {
-			gnutls_x509_crt_deinit(certs[i]);
-			gnutls_free(certs);
-			@throw e;
+			if (PEM_read_bio_X509(bio, &cert, NULL, NULL) == NULL) {
+				X509_free(cert);
+				break;
+			}
+
+			@try {
+				certificate = [[self alloc]
+				    of_initWithOpenSSLCertificate: cert];
+			} @catch (id e) {
+				X509_free(cert);
+				@throw e;
+			}
+
+			@try {
+				[chain addObject: certificate];
+			} @finally {
+				[certificate release];
+			}
 		}
-
-		@try {
-			[chain addObject: certificate];
-		} @catch (id e) {
-			gnutls_free(certs);
-			@throw e;
-		} @finally {
-			[certificate release];
-		}
+	} @finally {
+		BIO_free(bio);
 	}
-
-	gnutls_free(certs);
 
 	[chain makeImmutable];
 
@@ -86,7 +90,7 @@
 	return chain;
 }
 
-- (instancetype)of_initWithGnuTLSCertificate: (gnutls_x509_crt_t)certificate
+- (instancetype)of_initWithOpenSSLCertificate: (X509 *)certificate
 {
 	self = [super init];
 
@@ -97,7 +101,7 @@
 
 - (void)dealloc
 {
-	gnutls_x509_crt_deinit(_certificate);
+	X509_free(_certificate);
 
 	[super dealloc];
 }

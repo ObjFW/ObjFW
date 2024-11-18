@@ -17,24 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFX509CertificatePrivateKey.h"
 
-#include <openssl/bio.h>
 #include <openssl/ssl.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OFOpenSSLTLSStreamBufferSize 512
-
 OF_SUBCLASSING_RESTRICTED
-@interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFOpenSSLX509CertificatePrivateKey: OFX509CertificatePrivateKey
 {
-	BIO *_readBIO, *_writeBIO;
-	SSL *_SSL;
-	bool _server, _handshakeDone;
-	OFString *_host;
-	char _buffer[OFOpenSSLTLSStreamBufferSize];
+	EVP_PKEY *_privateKey;
 }
+
+@property (readonly, nonatomic) EVP_PKEY *of_openSSLPrivateKey;
+
+- (instancetype)of_initWithOpenSSLPrivateKey: (EVP_PKEY *)privateKey;
 @end
 
 OF_ASSUME_NONNULL_END
