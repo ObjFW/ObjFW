@@ -110,7 +110,7 @@ escapeString(OFString *string)
 		return;
 
 	needsEscapeCharacterSet = [[OFCharacterSet alloc]
-	    initWithCharactersInString: @"\r\n\f\"\\="];
+	    initWithCharactersInString: @"\r\n\f\"\\=;#"];
 }
 
 - (instancetype)of_initWithName: (OFString *)name OF_DIRECT
