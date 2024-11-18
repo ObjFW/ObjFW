@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief Returns a private key from the specified IRI.
+ * @brief Returns the private key from the PEM file at the specified IRI.
  *
  * @param IRI The IRI to retrieve the private key from
  *
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFReadFailedException Reading the item failed
  * @throw OFInvalidFormatException The format of the item is invalid
  */
-+ (instancetype)privateKeyFromIRI: (OFIRI *)IRI;
++ (instancetype)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI;
 @end
 
 #ifdef __cplusplus

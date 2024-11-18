@@ -35,17 +35,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief Returns a certificate chain from the specified IRI.
+ * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
- * @param IRI The IRI to retrieve the certificate chain from
- *
+ * @param IRI The IRI to the PEM file to retrieve the certificate chain from
+ * @return An array of @ref OFX509Certificate
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  * @throw OFReadFailedException Reading the item failed
  * @throw OFInvalidFormatException The format of the item is invalid
  */
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromIRI: (OFIRI *)IRI;
+    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI;
 @end
 
 #ifdef __cplusplus

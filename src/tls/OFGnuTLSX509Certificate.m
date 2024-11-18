@@ -36,7 +36,7 @@
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();

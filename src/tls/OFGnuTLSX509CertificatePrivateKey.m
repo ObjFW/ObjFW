@@ -35,7 +35,7 @@
 		OFX509CertificatePrivateKeyImplementation = self;
 }
 
-+ (instancetype)privateKeyFromIRI: (OFIRI *)IRI
++ (instancetype)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data = [OFData dataWithContentsOfIRI: IRI];

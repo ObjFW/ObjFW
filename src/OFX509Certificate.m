@@ -40,11 +40,11 @@ Class OFX509CertificateImplementation = Nil;
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
 {
 	if (OFX509CertificateImplementation != Nil)
 		return [OFX509CertificateImplementation
-		    certificateChainFromIRI: IRI];
+		    certificateChainFromPEMFileAtIRI: IRI];
 
 	OF_UNRECOGNIZED_SELECTOR
 }
