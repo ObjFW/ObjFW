@@ -39,6 +39,10 @@
 #import "ZIPArchive.h"
 #import "ZooArchive.h"
 
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
+
 #import "OFCreateDirectoryFailedException.h"
 #import "OFGetItemAttributesFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -50,6 +54,14 @@
 #import "OFWriteFailedException.h"
 
 #define bufferSize 4096
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFArc)
 
