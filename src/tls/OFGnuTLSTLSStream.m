@@ -370,11 +370,21 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 		if (status == GNUTLS_E_SUCCESS)
 			_handshakeDone = true;
-		else
+		else {
+			OFTLSStreamErrorCode errorCode =
+			    OFTLSStreamErrorCodeUnknown;
+
+			if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+				errorCode = certificateStatusToErrorCode(
+				    gnutls_session_get_verify_cert_status(
+				    _session));
+
+			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: errorCode];
+		}
 	}
 
 	if (_server) {
@@ -420,11 +430,21 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 		if (status == GNUTLS_E_SUCCESS)
 			_handshakeDone = true;
-		else
+		else {
+			OFTLSStreamErrorCode errorCode =
+			    OFTLSStreamErrorCodeUnknown;
+
+			if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+				errorCode = certificateStatusToErrorCode(
+				    gnutls_session_get_verify_cert_status(
+				    _session));
+
+			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: errorCode];
+		}
 	}
 
 	if (_server) {

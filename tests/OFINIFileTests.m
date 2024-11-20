@@ -119,6 +119,7 @@
 	    @"foobar=baz\r\n"
 	    @";comment\r\n"
 	    @"new=new\r\n"
+	    @"\"#quoted\"=\";comment\"\r\n"
 	    @"\r\n"
 	    @"[foobar]\r\n"
 	    @"#foobarcomment\r\n"
@@ -145,6 +146,7 @@
 
 	[tests setStringValue: @"baz" forKey: @"foo"];
 	[tests setStringValue: @"new" forKey: @"new"];
+	[tests setStringValue: @";comment" forKey: @"#quoted"];
 	[foobar setStringValue: @"a\fb" forKey: @"qux3"];
 	[types setLongLongValue: 0x10 forKey: @"integer"];
 	[types setBoolValue: false forKey: @"bool"];
