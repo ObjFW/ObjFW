@@ -117,6 +117,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	@try {
 		_underlyingStream.delegate = self;
 
+		mbedtls_ssl_config_init(&_config);
 		mbedtls_x509_crt_init(&_CAChain);
 	} @catch (id e) {
 		[self release];
@@ -133,6 +134,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	[_host release];
 
+	mbedtls_ssl_config_free(&_config);
 	mbedtls_x509_crt_free(&_CAChain);
 
 	[super dealloc];
@@ -147,7 +149,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		mbedtls_ssl_close_notify(&_SSL);
 
 	mbedtls_ssl_free(&_SSL);
-	mbedtls_ssl_config_free(&_config);
 	_initialized = _handshakeDone = false;
 
 	[_host release];
@@ -253,6 +254,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
 
 	mbedtls_ssl_init(&_SSL);
+	_initialized = true;
+
 	if (mbedtls_ssl_setup(&_SSL, &_config) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
