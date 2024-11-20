@@ -18,7 +18,9 @@ SRCS = ${USE_SRCS_GNUTLS}		\
 SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
 	      OFGnuTLSX509Certificate.m			\
 	      OFGnuTLSX509CertificatePrivateKey.m
-SRCS_MBEDTLS = OFMbedTLSTLSStream.m
+SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
+	       OFMbedTLSX509Certificate.m		\
+	       OFMbedTLSX509CertificatePrivateKey.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
 	       OFOpenSSLX509Certificate.m		\
 	       OFOpenSSLX509CertificatePrivateKey.m

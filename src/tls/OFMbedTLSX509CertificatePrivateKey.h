@@ -17,21 +17,19 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFX509CertificatePrivateKey.h"
 
-#include <mbedtls/ssl.h>
+#include <mbedtls/pk.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
 OF_SUBCLASSING_RESTRICTED
-@interface OFMbedTLSTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFMbedTLSX509CertificatePrivateKey: OFX509CertificatePrivateKey
 {
-	bool _initialized, _server, _handshakeDone;
-	mbedtls_ssl_config _config;
-	mbedtls_ssl_context _SSL;
-	mbedtls_x509_crt _CAChain;
-	OFString *_host;
+	mbedtls_pk_context _privateKey;
 }
+
+@property (readonly, nonatomic) mbedtls_pk_context *of_mbedTLSPrivateKey;
 @end
 
 OF_ASSUME_NONNULL_END
