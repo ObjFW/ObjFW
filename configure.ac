@@ -1891,6 +1891,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 				AC_SUBST(USE_SRCS_SECURETRANSPORT,
 					'${SRCS_SECURETRANSPORT}')
+
+				AC_CHECK_FUNCS(SSLCreateContext)
 			], [])
 
 			LIBS="$old_LIBS"
