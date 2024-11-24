@@ -39,8 +39,11 @@
 - (void)setUp
 {
 	_fileManager = [[OFFileManager defaultManager] retain];
+
 	_testsDirectoryIRI = [[[OFSystemInfo temporaryDirectoryIRI]
 	    IRIByAppendingPathComponent: @"objfw-tests"] retain];
+	OTAssertNotNil(_testsDirectoryIRI);
+
 	_testFileIRI = [[_testsDirectoryIRI
 	    IRIByAppendingPathComponent: @"test.txt"] retain];
 
@@ -54,7 +57,8 @@
 
 - (void)tearDown
 {
-	[_fileManager removeItemAtIRI: _testsDirectoryIRI];
+	if (_testsDirectoryIRI != nil)
+		[_fileManager removeItemAtIRI: _testsDirectoryIRI];
 }
 
 - (void)dealloc

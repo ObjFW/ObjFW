@@ -39,6 +39,7 @@
 	path = [[OFSystemInfo temporaryDirectoryIRI]
 	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
 	    .fileSystemRepresentation;
+	OTAssertNotNil(path);
 #else
 	/*
 	 * We can have sockets, including UNIX sockets, while file support is
