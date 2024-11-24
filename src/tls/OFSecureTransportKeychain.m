@@ -95,9 +95,13 @@ cleanup(void)
 			pool = objc_autoreleasePoolPush();
 			filename = [OFString stringWithFormat:
 			    @"%@.keychain", [OFUUID UUID]];
+#ifdef OF_HAVE_FILES
 			path = [[OFSystemInfo temporaryDirectoryIRI]
 			    IRIByAppendingPathComponent: filename]
 			    .fileSystemRepresentation;
+#else
+			path = [@"/tmp/" stringByAppendingString: filename];
+#endif
 			password = [OFString stringWithFormat:
 			    @"%08X%08X", OFRandom64(), OFRandom64()];
 
