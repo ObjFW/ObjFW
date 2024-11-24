@@ -47,19 +47,18 @@
 + (instancetype)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFSecureTransportKeychain *keychain =
+	    [OFSecureTransportKeychain temporaryKeychain];
 	OFData *data = [OFData dataWithContentsOfIRI: IRI];
 	CFDataRef dataCF = CFDataCreate(kCFAllocatorDefault,
 	    data.items, data.count * data.itemSize);
 	SecExternalFormat format = kSecFormatOpenSSL;
 	SecExternalItemType type = kSecItemTypePrivateKey;
-	OFSecureTransportKeychain *keychain;
 	CFArrayRef items;
 	OFSecureTransportX509CertificatePrivateKey *privateKey;
 
 	if (dataCF == NULL)
 		@throw [OFOutOfMemoryException exception];
-
-	keychain = [OFSecureTransportKeychain temporaryKeychain];
 
 	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, NULL,
 	    keychain.keychain, &items) != noErr) {

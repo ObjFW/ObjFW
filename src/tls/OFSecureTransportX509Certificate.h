@@ -28,8 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureTransportX509Certificate: OFX509Certificate
 {
-	OFSecureTransportKeychain *_keychain;
 	SecCertificateRef _certificate;
+	OFSecureTransportKeychain *_keychain;
 }
 
 @property (readonly, nonatomic) SecCertificateRef of_secCertificate;

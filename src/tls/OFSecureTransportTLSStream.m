@@ -143,11 +143,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	_host = nil;
 
 	SSLClose(_context);
-#ifdef HAVE_SSLCREATECONTEXT
-	CFRelease(_context);
-#else
 	SSLDisposeContext(_context);
-#endif
 	_context = NULL;
 
 	[super close];
@@ -212,13 +208,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context != NULL)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-#ifdef HAVE_SSLCREATECONTEXT
-	if ((_context = SSLCreateContext(kCFAllocatorDefault,
-	    (server ? kSSLServerSide : kSSLClientSide),
-	    kSSLStreamType)) == NULL)
-#else
 	if (SSLNewContext(server, &_context) != noErr)
-#endif
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
