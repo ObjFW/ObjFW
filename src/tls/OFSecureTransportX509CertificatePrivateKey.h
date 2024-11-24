@@ -17,19 +17,25 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFX509CertificatePrivateKey.h"
 
-#include <Security/SecureTransport.h>
+#include <Security/SecKeychainItem.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFSecureTransportKeychain;
+
 OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFSecureTransportX509CertificatePrivateKey:
+    OFX509CertificatePrivateKey
 {
-	SSLContextRef _context;
-	bool _server;
-	OFString *_host;
+	SecKeychainItemRef _keychainItem;
+	OFSecureTransportKeychain *_keychain;
 }
+
+- (instancetype)
+    of_initWithSecKeychainItem: (SecKeychainItemRef)keychainItem
+		      keychain: (OFSecureTransportKeychain *)keychain;
 @end
 
 OF_ASSUME_NONNULL_END

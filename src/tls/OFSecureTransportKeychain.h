@@ -17,19 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFObject.h"
 
-#include <Security/SecureTransport.h>
+#include <Security/SecKeychain.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
 OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFSecureTransportKeychain: OFObject
 {
-	SSLContextRef _context;
-	bool _server;
-	OFString *_host;
+	SecKeychainRef _keychain;
 }
+
+@property (readonly, nonatomic) SecKeychainRef keychain;
+
++ (instancetype)temporaryKeychain;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -24,7 +24,10 @@ SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
 	       OFOpenSSLX509Certificate.m		\
 	       OFOpenSSLX509CertificatePrivateKey.m
-SRCS_SECURETRANSPORT = OFSecureTransportTLSStream.m
+SRCS_SECURETRANSPORT = OFSecureTransportKeychain.m			\
+		       OFSecureTransportTLSStream.m			\
+		       OFSecureTransportX509Certificate.m		\
+		       OFSecureTransportX509CertificatePrivateKey.m
 
 includesubdir = ObjFWTLS
 
