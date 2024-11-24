@@ -19,7 +19,8 @@
 
 #import "OFObject.h"
 
-#include <Security/SecKeychain.h>
+#ifndef OF_IOS
+# include <Security/SecKeychain.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -35,3 +36,4 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 OF_ASSUME_NONNULL_END
+#endif

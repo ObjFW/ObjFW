@@ -19,7 +19,8 @@
 
 #import "OFX509CertificatePrivateKey.h"
 
-#include <Security/SecKeychainItem.h>
+#ifndef OF_IOS
+# include <Security/SecKeychainItem.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -39,3 +40,4 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 OF_ASSUME_NONNULL_END
+#endif

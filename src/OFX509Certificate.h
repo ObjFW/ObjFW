@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
 
+#ifndef OF_IOS
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
@@ -46,6 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)IRI;
+#endif
 @end
 
 #ifdef __cplusplus

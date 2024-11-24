@@ -20,22 +20,24 @@
 #include "config.h"
 
 #import "OFSecureTransportX509CertificatePrivateKey.h"
-#import "OFData.h"
-#import "OFSecureTransportKeychain.h"
 
-#include <Security/SecImportExport.h>
+#ifndef OF_IOS
+# import "OFData.h"
+# import "OFSecureTransportKeychain.h"
 
-#import "OFInvalidFormatException.h"
-#import "OFOutOfMemoryException.h"
+# include <Security/SecImportExport.h>
+
+# import "OFInvalidFormatException.h"
+# import "OFOutOfMemoryException.h"
 
 /*
  * Apple deprecated Secure Transport without providing a replacement that can
  * work with any socket. On top of that, their replacement, Network.framework,
  * doesn't support STARTTLS at all.
  */
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
+# if OF_GCC_VERSION >= 402
+#  pragma GCC diagnostic ignored "-Wdeprecated"
+# endif
 
 @implementation OFSecureTransportX509CertificatePrivateKey
 + (void)load
@@ -109,3 +111,4 @@
 	[super dealloc];
 }
 @end
+#endif

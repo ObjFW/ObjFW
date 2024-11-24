@@ -20,30 +20,32 @@
 #include "config.h"
 
 #import "OFSecureTransportKeychain.h"
-#import "OFIRI.h"
-#import "OFLocale.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
-#import "OFString.h"
-#import "OFSystemInfo.h"
-#import "OFUUID.h"
 
-#import "OFInitializationFailedException.h"
+#ifndef OF_IOS
+# import "OFIRI.h"
+# import "OFLocale.h"
+# ifdef OF_HAVE_THREADS
+#  import "OFMutex.h"
+# endif
+# import "OFString.h"
+# import "OFSystemInfo.h"
+# import "OFUUID.h"
+
+# import "OFInitializationFailedException.h"
 
 /*
  * Apple deprecated Secure Transport without providing a replacement that can
  * work with any socket. On top of that, their replacement, Network.framework,
  * doesn't support STARTTLS at all.
  */
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
+# if OF_GCC_VERSION >= 402
+#  pragma GCC diagnostic ignored "-Wdeprecated"
+# endif
 
 static OFSecureTransportKeychain *temporaryKeychain;
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 static OFMutex *temporaryKeychainMutex;
-#endif
+# endif
 
 @implementation OFSecureTransportKeychain
 @synthesize keychain = _keychain;
@@ -51,18 +53,18 @@ static OFMutex *temporaryKeychainMutex;
 static void
 cleanup(void)
 {
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	[temporaryKeychainMutex lock];
 	@try {
-#endif
+# endif
 		if (temporaryKeychain != nil &&
 		    temporaryKeychain->_keychain != NULL)
 			SecKeychainDelete(temporaryKeychain->_keychain);
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[temporaryKeychainMutex unlock];
 	}
-#endif
+# endif
 }
 
 + (void)initialize
@@ -70,9 +72,9 @@ cleanup(void)
 	if (self != [OFSecureTransportKeychain class])
 		return;
 
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	temporaryKeychainMutex = [[OFMutex alloc] init];
-#endif
+# endif
 
 	atexit(cleanup);
 }
@@ -81,10 +83,10 @@ cleanup(void)
 {
 	OFSecureTransportKeychain *keychain;
 
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	[temporaryKeychainMutex lock];
 	@try {
-#endif
+# endif
 		if (temporaryKeychain != nil)
 			keychain = temporaryKeychain;
 		else {
@@ -95,13 +97,13 @@ cleanup(void)
 			pool = objc_autoreleasePoolPush();
 			filename = [OFString stringWithFormat:
 			    @"%@.keychain", [OFUUID UUID]];
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 			path = [[OFSystemInfo temporaryDirectoryIRI]
 			    IRIByAppendingPathComponent: filename]
 			    .fileSystemRepresentation;
-#else
+# else
 			path = [@"/tmp/" stringByAppendingString: filename];
-#endif
+# endif
 			password = [OFString stringWithFormat:
 			    @"%08X%08X", OFRandom64(), OFRandom64()];
 
@@ -117,28 +119,28 @@ cleanup(void)
 
 			temporaryKeychain = keychain;
 		}
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[temporaryKeychainMutex unlock];
 	}
-#endif
+# endif
 
 	return [[keychain retain] autorelease];
 }
 
 - (void)dealloc
 {
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	[temporaryKeychainMutex lock];
 	@try {
-#endif
+# endif
 		if (self == temporaryKeychain)
 			temporaryKeychain = nil;
-#ifdef OF_HAVE_THREADS
+# ifdef OF_HAVE_THREADS
 	} @finally {
 		[temporaryKeychainMutex unlock];
 	}
-#endif
+# endif
 
 	if (_keychain != NULL) {
 		SecKeychainDelete(_keychain);
@@ -148,3 +150,4 @@ cleanup(void)
 	[super dealloc];
 }
 @end
+#endif

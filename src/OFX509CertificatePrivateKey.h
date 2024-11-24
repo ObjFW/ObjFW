@@ -34,11 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
 
+#ifndef OF_IOS
 /**
  * @brief Returns the private key from the PEM file at the specified IRI.
  *
  * @param IRI The IRI to retrieve the private key from
- *
+ * @return A private key
  * @throw OFInitializationFailedException Initializing the private key failed
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
@@ -46,6 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFInvalidFormatException The format of the item is invalid
  */
 + (instancetype)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI;
+#endif
 @end
 
 #ifdef __cplusplus

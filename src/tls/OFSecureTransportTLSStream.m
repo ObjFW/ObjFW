@@ -242,6 +242,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 					   host: _host
 				      errorCode: initFailedErrorCode];
 
+#ifndef OF_IOS
 	if (_certificateChain.count > 0) {
 		bool first = true;
 		CFMutableArrayRef array;
@@ -289,6 +290,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			CFRelease(array);
 		}
 	}
+#endif
 
 	status = SSLHandshake(_context);
 

@@ -39,6 +39,7 @@ Class OFX509CertificateImplementation = Nil;
 	return [super alloc];
 }
 
+#ifndef OF_IOS
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
 {
@@ -48,4 +49,5 @@ Class OFX509CertificateImplementation = Nil;
 
 	OF_UNRECOGNIZED_SELECTOR
 }
+#endif
 @end
