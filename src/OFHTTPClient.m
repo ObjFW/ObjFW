@@ -121,26 +121,26 @@ constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequestMethod method = request.method;
-	OFIRI *IRI = request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
+	OFIRI *URI = request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 	OFString *path;
-	OFString *user = IRI.user, *password = IRI.password;
+	OFString *user = URI.user, *password = URI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	bool hasContentLength, chunked;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if (IRI.path.length > 0)
-		path = IRI.percentEncodedPath;
+	if (URI.path.length > 0)
+		path = URI.percentEncodedPath;
 	else
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
 	    @"%@ %@", OFHTTPRequestMethodString(method), path];
 
-	if (IRI.query != nil) {
+	if (URI.query != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: IRI.percentEncodedQuery];
+		[requestString appendString: URI.percentEncodedQuery];
 	}
 
 	[requestString appendString: @" HTTP/"];
@@ -152,15 +152,15 @@ constructRequestString(OFHTTPRequest *request)
 		headers = [OFMutableDictionary dictionary];
 
 	if ([headers objectForKey: @"Host"] == nil) {
-		OFNumber *port = IRI.port;
+		OFNumber *port = URI.port;
 
 		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%@", IRI.percentEncodedHost, port];
+			    @"%@:%@", URI.percentEncodedHost, port];
 
 			[headers setObject: host forKey: @"Host"];
 		} else
-			[headers setObject: IRI.percentEncodedHost
+			[headers setObject: URI.percentEncodedHost
 				    forKey: @"Host"];
 	}
 
@@ -723,29 +723,29 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)closeAndReconnect
 {
 	@try {
-		OFIRI *IRI =
+		OFIRI *URI =
 		    _request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 		OFTCPSocket *sock;
 		uint16_t port;
-		OFNumber *IRIPort;
+		OFNumber *URIPort;
 
 		[_client close];
 
 		sock = [OFTCPSocket socket];
 		sock.usesMPTCP = true;
 
-		if ([IRI.scheme caseInsensitiveCompare: @"https"] ==
+		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame)
 			port = 443;
 		else
 			port = 80;
 
-		IRIPort = IRI.port;
-		if (IRIPort != nil)
-			port = IRIPort.unsignedShortValue;
+		URIPort = URI.port;
+		if (URIPort != nil)
+			port = URIPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: IRI.host port: port];
+		[sock asyncConnectToHost: URI.host port: port];
 	} @catch (id e) {
 		[self raiseException: e];
 	}
