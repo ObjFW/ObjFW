@@ -40,6 +40,7 @@ Class OFX509CertificatePrivateKeyImplementation = Nil;
 	return [super alloc];
 }
 
+#ifndef OF_IOS
 + (instancetype)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI
 {
 	if (OFX509CertificatePrivateKeyImplementation != Nil)
@@ -48,4 +49,5 @@ Class OFX509CertificatePrivateKeyImplementation = Nil;
 
 	OF_UNRECOGNIZED_SELECTOR
 }
+#endif
 @end
