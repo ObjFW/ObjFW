@@ -51,6 +51,22 @@ OF_ASSUME_NONNULL_BEGIN
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (nullable OFIRI *)privateKeyIRI;
 #endif
+
+/**
+ * @brief Returns the certificate chain from the PKCS #12 file at the specified
+ *	  IRI.
+ *
+ * @param IRI The IRI to the PKCS #12 file with the certificate chain
+ * @param passphrase The passphrase for the PKCS #12 file
+ * @return An array of @ref OFX509Certificate
+ * @throw OFOpenItemFailedException Opening the item failed
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported
+ * @throw OFReadFailedException Reading the item failed
+ * @throw OFInvalidFormatException The format of the item is invalid
+ */
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
+			     passphrase: (nullable OFString *)passphrase;
 @end
 
 #ifdef __cplusplus

@@ -52,4 +52,16 @@ Class OFX509CertificateImplementation = Nil;
 	OF_UNRECOGNIZED_SELECTOR
 }
 #endif
+
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
+			     passphrase: (OFString *)passphrase
+{
+	if (OFX509CertificateImplementation != Nil)
+		return [OFX509CertificateImplementation
+		    certificateChainFromPKCS12FileAtIRI: IRI
+					     passphrase: passphrase];
+
+	OF_UNRECOGNIZED_SELECTOR
+}
 @end
