@@ -154,8 +154,8 @@ privateKeyFromFile(OFIRI *IRI)
 	EVP_PKEY *key = NULL;
 	STACK_OF(X509) *ca = NULL;
 	int i = 0;
+	PKCS12 *p12 = NULL;
 	BIO *bio;
-	PKCS12 *p12;
 
 	if (data.count * data.itemSize > INT_MAX)
 		@throw [OFOutOfRangeException exception];
