@@ -31,6 +31,7 @@
 	self = [super init];
 
 	mbedtls_x509_crt_init(&_certificate);
+	mbedtls_pk_init(&_privateKey);
 
 	return self;
 }
@@ -38,6 +39,7 @@
 - (void)dealloc
 {
 	mbedtls_x509_crt_free(&_certificate);
+	mbedtls_pk_free(&_privateKey);
 
 	[super dealloc];
 }
@@ -46,10 +48,15 @@
 {
 	return &_certificate;
 }
+
+- (mbedtls_pk_context *)privateKey
+{
+	return &_privateKey;
+}
 @end
 
 @implementation OFMbedTLSX509Certificate
-@synthesize of_mbedTLSCertificate = _certificate, of_mbedTLSChain = _chain;
+@synthesize of_certificate = _certificate, of_chain = _chain;
 
 + (void)load
 {
@@ -58,11 +65,13 @@
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableData *data = [OFMutableData dataWithContentsOfIRI: IRI];
+	OFMutableData *data =
+	    [OFMutableData dataWithContentsOfIRI: certificatesIRI];
 	OFMbedTLSX509CertificateChain *chain =
 	    [[[OFMbedTLSX509CertificateChain alloc] init] autorelease];
 
@@ -73,20 +82,30 @@
 	    data.count * data.itemSize) != 0)
 		@throw [OFInvalidFormatException exception];
 
+	if (privateKeyIRI != nil) {
+		data = [OFMutableData dataWithContentsOfIRI: privateKeyIRI];
+
+		/* Terminating zero byte required for PEM. */
+		[data addItem: ""];
+
+		if (mbedtls_pk_parse_key(chain.privateKey,
+		    data.items, data.count * data.itemSize, NULL, 0) != 0)
+			@throw [OFInvalidFormatException exception];
+	}
+
 	for (mbedtls_x509_crt *iter = chain.certificate; iter != NULL;
 	    iter = iter->next)
-		[ret addObject: [[[self alloc]
-		    of_initWithMbedTLSCertificate: iter
-					    chain: chain] autorelease]];
+		[ret addObject:
+		    [[[self alloc] of_initWithCertificate: iter
+						    chain: chain] autorelease]];
 
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
 
-- (instancetype)
-    of_initWithMbedTLSCertificate: (mbedtls_x509_crt *)certificate
-			    chain: (OFMbedTLSX509CertificateChain *)chain
+- (instancetype)of_initWithCertificate: (mbedtls_x509_crt *)certificate
+				 chain: (OFMbedTLSX509CertificateChain *)chain
 {
 	self = [super init];
 

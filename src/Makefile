@@ -153,7 +153,6 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFUDPSocket.m			\
 	       OFURIDNSResourceRecord.m		\
 	       OFX509Certificate.m		\
-	       OFX509CertificatePrivateKey.m	\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_SCTP}			\

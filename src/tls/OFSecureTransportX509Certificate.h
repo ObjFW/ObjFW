@@ -30,14 +30,17 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFSecureTransportX509Certificate: OFX509Certificate
 {
 	SecCertificateRef _certificate;
+	SecKeychainItemRef _Nullable _privateKey;
 	OFSecureTransportKeychain *_keychain;
 }
 
-@property (readonly, nonatomic) SecCertificateRef of_secCertificate;
+@property (readonly, nonatomic) SecCertificateRef of_certificate;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    SecKeychainItemRef of_privateKey;
 
-- (instancetype)
-    of_initWithSecCertificate: (SecCertificateRef)certificate
-		     keychain: (OFSecureTransportKeychain *)keychain;
+- (instancetype)of_initWithCertificate: (SecCertificateRef)certificate
+			    privateKey: (nullable SecKeychainItemRef)privateKey
+			      keychain: (OFSecureTransportKeychain *)keychain;
 @end
 
 OF_ASSUME_NONNULL_END

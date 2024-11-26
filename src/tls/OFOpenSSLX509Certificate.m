@@ -27,8 +27,42 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+static EVP_PKEY *
+privateKeyFromFile(OFIRI *IRI)
+{
+	void *pool;
+	OFData *data;
+	BIO *bio;
+	EVP_PKEY *key;
+
+	if (IRI == nil)
+		return NULL;
+
+	pool = objc_autoreleasePoolPush();
+	data = [OFData dataWithContentsOfIRI: IRI];
+
+	if (data.count * data.itemSize > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	bio = BIO_new_mem_buf(data.items, (int)(data.count * data.itemSize));
+	if (bio == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: data.count * data.itemSize];
+
+	key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+	if (key == NULL) {
+		BIO_free(bio);
+		@throw [OFInvalidFormatException exception];
+	}
+
+	BIO_free(bio);
+	objc_autoreleasePoolPop(pool);
+
+	return key;
+}
+
 @implementation OFOpenSSLX509Certificate
-@synthesize of_openSSLCertificate = _certificate;
+@synthesize of_certificate = _certificate, of_privateKey = _privateKey;
 
 + (void)load
 {
@@ -37,11 +71,12 @@
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
+	OFData *data = [OFData dataWithContentsOfIRI: certificatesIRI];
 	BIO *bio;
 
 	if (data.count * data.itemSize > INT_MAX)
@@ -53,9 +88,12 @@
 		    exceptionWithRequestedSize: data.count * data.itemSize];
 
 	@try {
+		bool first = true;
+
 		for (;;) {
 			OFOpenSSLX509Certificate *certificate;
 			X509 *cert = X509_new();
+			EVP_PKEY *key = NULL;
 
 			if (cert == NULL)
 				@throw [OFOutOfMemoryException exception];
@@ -66,10 +104,22 @@
 			}
 
 			@try {
-				certificate = [[self alloc]
-				    of_initWithOpenSSLCertificate: cert];
+				if (first) {
+					key = privateKeyFromFile(privateKeyIRI);
+					certificate = [[self alloc]
+					    of_initWithCertificate: cert
+							privateKey: key];
+					first = false;
+				} else
+					certificate = [[self alloc]
+					    of_initWithCertificate: cert
+							privateKey: NULL];
 			} @catch (id e) {
 				X509_free(cert);
+
+				if (key != NULL)
+					EVP_PKEY_free(key);
+
 				@throw e;
 			}
 
@@ -90,11 +140,13 @@
 	return chain;
 }
 
-- (instancetype)of_initWithOpenSSLCertificate: (X509 *)certificate
+- (instancetype)of_initWithCertificate: (X509 *)certificate
+			    privateKey: (EVP_PKEY *)privateKey
 {
 	self = [super init];
 
 	_certificate = certificate;
+	_privateKey = privateKey;
 
 	return self;
 }
@@ -102,6 +154,9 @@
 - (void)dealloc
 {
 	X509_free(_certificate);
+
+	if (_privateKey != NULL)
+		EVP_PKEY_free(_privateKey);
 
 	[super dealloc];
 }

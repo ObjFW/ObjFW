@@ -41,11 +41,13 @@ Class OFX509CertificateImplementation = Nil;
 
 #ifndef OF_IOS
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
 	if (OFX509CertificateImplementation != Nil)
 		return [OFX509CertificateImplementation
-		    certificateChainFromPEMFileAtIRI: IRI];
+		    certificateChainFromPEMFileAtIRI: certificatesIRI
+				       privateKeyIRI: privateKeyIRI];
 
 	OF_UNRECOGNIZED_SELECTOR
 }

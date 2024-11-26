@@ -20,6 +20,7 @@
 #import "OFX509Certificate.h"
 
 #include <mbedtls/x509_crt.h>
+#include <mbedtls/pk.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -33,9 +34,12 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMbedTLSX509CertificateChain: OFObject
 {
 	mbedtls_x509_crt _certificate;
+	mbedtls_pk_context _privateKey;
 }
 
 @property (readonly, nonatomic) mbedtls_x509_crt *certificate;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    mbedtls_pk_context *privateKey;
 @end
 
 OF_SUBCLASSING_RESTRICTED
@@ -45,13 +49,11 @@ OF_SUBCLASSING_RESTRICTED
 	OFMbedTLSX509CertificateChain *_chain;
 }
 
-@property (readonly, nonatomic) mbedtls_x509_crt *of_mbedTLSCertificate;
-@property (readonly, retain, nonatomic)
-    OFMbedTLSX509CertificateChain *of_mbedTLSChain;
+@property (readonly, nonatomic) mbedtls_x509_crt *of_certificate;
+@property (readonly, retain, nonatomic) OFMbedTLSX509CertificateChain *of_chain;
 
-- (instancetype)
-    of_initWithMbedTLSCertificate: (mbedtls_x509_crt *)certificate
-			    chain: (OFMbedTLSX509CertificateChain *)chain;
+- (instancetype)of_initWithCertificate: (mbedtls_x509_crt *)certificate
+				 chain: (OFMbedTLSX509CertificateChain *)chain;
 @end
 
 OF_ASSUME_NONNULL_END

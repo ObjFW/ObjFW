@@ -25,7 +25,6 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFOpenSSLX509Certificate.h"
-#import "OFOpenSSLX509CertificatePrivateKey.h"
 
 #include <openssl/err.h>
 
@@ -344,14 +343,11 @@ errToErrorCode(const SSL *SSL_)
 	if (_certificateChain.count > 0) {
 		OFOpenSSLX509Certificate *certificate =
 		    (OFOpenSSLX509Certificate *)_certificateChain.firstObject;
-		OFOpenSSLX509CertificatePrivateKey *privateKey =
-		    (OFOpenSSLX509CertificatePrivateKey *)_privateKey;
 		bool first = true;
 
 		if (SSL_use_certificate(_SSL,
-		    certificate.of_openSSLCertificate) != 1 ||
-		    SSL_use_PrivateKey(_SSL,
-		    privateKey.of_openSSLPrivateKey) != 1)
+		    certificate.of_certificate) != 1 ||
+		    SSL_use_PrivateKey(_SSL, certificate.of_privateKey) != 1)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
@@ -363,8 +359,7 @@ errToErrorCode(const SSL *SSL_)
 				continue;
 			}
 
-			if (SSL_add1_chain_cert(_SSL,
-			    iter.of_openSSLCertificate) != 1)
+			if (SSL_add1_chain_cert(_SSL, iter.of_certificate) != 1)
 				@throw [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
 						   host: host

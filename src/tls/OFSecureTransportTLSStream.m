@@ -25,7 +25,6 @@
 #import "OFArray.h"
 #import "OFSecureTransportKeychain.h"
 #import "OFSecureTransportX509Certificate.h"
-#import "OFSecureTransportX509CertificatePrivateKey.h"
 
 #include <Security/SecCertificate.h>
 #include <Security/SecIdentity.h>
@@ -261,7 +260,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (SecIdentityCreateWithCertificate(keychain,
 		    ((OFSecureTransportX509Certificate *)
-		    _certificateChain.firstObject).of_secCertificate,
+		    _certificateChain.firstObject).of_certificate,
 		    &identity) != noErr) {
 			CFRelease(array);
 			@throw [OFTLSHandshakeFailedException
@@ -282,7 +281,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 				}
 
 				CFArrayAppendValue(array,
-				    certificate.of_secCertificate);
+				    certificate.of_certificate);
 			}
 
 			SSLSetCertificate(_context, array);

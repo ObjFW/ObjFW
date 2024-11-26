@@ -16,18 +16,14 @@ SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_SECURETRANSPORT}
 
 SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
-	      OFGnuTLSX509Certificate.m			\
-	      OFGnuTLSX509CertificatePrivateKey.m
+	      OFGnuTLSX509Certificate.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
-	       OFMbedTLSX509Certificate.m		\
-	       OFMbedTLSX509CertificatePrivateKey.m
+	       OFMbedTLSX509Certificate.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
-	       OFOpenSSLX509Certificate.m		\
-	       OFOpenSSLX509CertificatePrivateKey.m
+	       OFOpenSSLX509Certificate.m
 SRCS_SECURETRANSPORT = OFSecureTransportKeychain.m			\
 		       OFSecureTransportTLSStream.m			\
-		       OFSecureTransportX509Certificate.m		\
-		       OFSecureTransportX509CertificatePrivateKey.m
+		       OFSecureTransportX509Certificate.m
 
 includesubdir = ObjFWTLS
 

@@ -27,11 +27,14 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFOpenSSLX509Certificate: OFX509Certificate
 {
 	X509 *_certificate;
+	EVP_PKEY *_Nullable _privateKey;
 }
 
-@property (readonly, nonatomic) X509 *of_openSSLCertificate;
+@property (readonly, nonatomic) X509 *of_certificate;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) EVP_PKEY *of_privateKey;
 
-- (instancetype)of_initWithOpenSSLCertificate: (X509 *)certificate;
+- (instancetype)of_initWithCertificate: (X509 *)certificate
+			    privateKey: (nullable EVP_PKEY *)privateKey;
 @end
 
 OF_ASSUME_NONNULL_END

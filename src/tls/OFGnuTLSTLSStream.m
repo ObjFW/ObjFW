@@ -25,7 +25,6 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFGnuTLSX509Certificate.h"
-#import "OFGnuTLSX509CertificatePrivateKey.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -257,21 +256,21 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	}
 
 	if (_certificateChain.count > 0) {
-		OFGnuTLSX509CertificatePrivateKey *privateKey =
-		    (OFGnuTLSX509CertificatePrivateKey *)_privateKey;
 		OFMutableData *certs = [OFMutableData
 		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
 			    capacity: _certificateChain.count];
+		gnutls_x509_privkey_t key =
+		    ((OFGnuTLSX509Certificate *)_certificateChain.firstObject)
+		    .of_privateKey;
 
 		for (OFGnuTLSX509Certificate *cert in _certificateChain) {
-			gnutls_x509_crt_t gnuTLSCert =
-			    cert.of_gnuTLSCertificate;
+			gnutls_x509_crt_t gnuTLSCert = cert.of_certificate;
 			[certs addItem: &gnuTLSCert];
 		}
 
 		if (gnutls_certificate_set_x509_key(_credentials,
 		    (gnutls_x509_crt_t *)certs.items, (unsigned int)certs.count,
-		    privateKey.of_gnuTLSPrivateKey) < 0)
+		    key) < 0)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host

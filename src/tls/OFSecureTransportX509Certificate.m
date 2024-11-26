@@ -43,8 +43,54 @@
 #  pragma GCC diagnostic ignored "-Wdeprecated"
 # endif
 
+static SecKeychainItemRef
+privateKeyFromFile(OFIRI *IRI)
+{
+	void *pool;
+	SecExternalFormat format = kSecFormatOpenSSL;
+	SecExternalItemType type = kSecItemTypePrivateKey;
+	OFSecureTransportKeychain *keychain;
+	OFData *data;
+	CFDataRef dataCF;
+	CFArrayRef items;
+	SecKeychainItemRef key;
+
+	if (IRI == nil)
+		return NULL;
+
+	pool = objc_autoreleasePoolPush();
+	keychain = [OFSecureTransportKeychain temporaryKeychain];
+
+	data = [OFData dataWithContentsOfIRI: IRI];
+
+	dataCF = CFDataCreate(kCFAllocatorDefault,
+	    data.items, data.count * data.itemSize);
+	if (dataCF == NULL)
+		@throw [OFOutOfMemoryException exception];
+
+	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, NULL,
+	    keychain.keychain, &items) != noErr) {
+		CFRelease(dataCF);
+		@throw [OFInvalidFormatException exception];
+	}
+
+	CFRelease(dataCF);
+
+	if (CFArrayGetCount(items) != 1) {
+		CFRelease(items);
+		@throw [OFInvalidFormatException exception];
+	}
+
+	key = (SecKeychainItemRef)CFRetain(CFArrayGetValueAtIndex(items, 0));
+
+	CFRelease(items);
+	objc_autoreleasePoolPop(pool);
+
+	return key;
+}
+
 @implementation OFSecureTransportX509Certificate
-@synthesize of_secCertificate = _certificate;
+@synthesize of_certificate = _certificate, of_privateKey = _privateKey;
 
 + (void)load
 {
@@ -53,60 +99,76 @@
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
+	OFSecureTransportKeychain *keychain =
+	    [OFSecureTransportKeychain temporaryKeychain];
+	OFData *data = [OFData dataWithContentsOfIRI: certificatesIRI];
 	CFDataRef dataCF = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
 	    data.items, data.count * data.itemSize, kCFAllocatorNull);
 	SecExternalFormat format = kSecFormatPEMSequence;
 	SecExternalItemType type = kSecItemTypeCertificate;
+	CFArrayRef items;
+	CFIndex count;
 
 	if (dataCF == NULL)
 		@throw [OFOutOfMemoryException exception];
 
-	@try {
-		OFSecureTransportKeychain *keychain =
-		    [OFSecureTransportKeychain temporaryKeychain];
-		CFArrayRef items;
-
-		if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0,
-		    NULL, keychain.keychain, &items) != noErr)
-			@throw [OFInvalidFormatException exception];
-
-		@try {
-			CFIndex count = CFArrayGetCount(items);
-
-			for (CFIndex i = 0; i < count; i++) {
-				SecCertificateRef item = (SecCertificateRef)
-				    CFArrayGetValueAtIndex(items, i);
-
-				[chain addObject: [[[self alloc]
-				    of_initWithSecCertificate: item
-						     keychain: keychain]
-				    autorelease]];
-			}
-		} @finally {
-			CFRelease(items);
-		}
-	} @finally {
+	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, NULL,
+	    keychain.keychain, &items) != noErr) {
 		CFRelease(dataCF);
+		@throw [OFInvalidFormatException exception];
 	}
 
-	[chain makeImmutable];
+	CFRelease(dataCF);
 
+	count = CFArrayGetCount(items);
+	for (CFIndex i = 0; i < count; i++)  {
+		SecKeychainItemRef key;
+
+		@try {
+			SecCertificateRef item =
+			    (SecCertificateRef)CFArrayGetValueAtIndex(items, i);
+
+			if (i == 0)
+				key = privateKeyFromFile(privateKeyIRI);
+
+			[chain addObject:
+			    [[[self alloc] of_initWithCertificate: item
+						       privateKey: key
+							 keychain: keychain]
+			    autorelease]];
+		} @catch (id e) {
+			CFRelease(items);
+
+			if (key != NULL)
+				CFRelease(key);
+
+			@throw e;
+		}
+	}
+
+	CFRelease(items);
+	[chain makeImmutable];
 	objc_autoreleasePoolPop(pool);
 
 	return chain;
 }
 
-- (instancetype)of_initWithSecCertificate: (SecCertificateRef)certificate
-				 keychain: (OFSecureTransportKeychain *)keychain
+- (instancetype)of_initWithCertificate: (SecCertificateRef)certificate
+			    privateKey: (SecKeychainItemRef)privateKey
+			      keychain: (OFSecureTransportKeychain *)keychain
 {
 	self = [super init];
 
 	_certificate = (SecCertificateRef)CFRetain(certificate);
+
+	if (privateKey != NULL)
+		_privateKey = (SecKeychainItemRef)CFRetain(privateKey);
+
 	_keychain = [keychain retain];
 
 	return self;
@@ -115,6 +177,10 @@
 - (void)dealloc
 {
 	CFRelease(_certificate);
+
+	if (_privateKey != NULL)
+		CFRelease(_privateKey);
+
 	[_keychain release];
 
 	[super dealloc];

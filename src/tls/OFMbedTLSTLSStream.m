@@ -28,7 +28,6 @@
 #import "OFDictionary.h"
 #import "OFLocale.h"
 #import "OFMbedTLSX509Certificate.h"
-#import "OFMbedTLSX509CertificatePrivateKey.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -296,16 +295,15 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		 * can just get the first certificate and get the entire chain
 		 * from it.
 		 */
-		mbedtls_x509_crt *chain =
+		OFMbedTLSX509CertificateChain *chain =
 		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
-		    .of_mbedTLSChain.certificate;
-		mbedtls_pk_context *privateKey =
-		    ((OFMbedTLSX509CertificatePrivateKey *)_privateKey)
-		    .of_mbedTLSPrivateKey;
+		    .of_chain;
 
-		mbedtls_ssl_conf_ca_chain(&_config, chain->next, NULL);
+		mbedtls_ssl_conf_ca_chain(&_config,
+		    chain.certificate->next, NULL);
 
-		if (mbedtls_ssl_conf_own_cert(&_config, chain, privateKey) != 0)
+		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
+		    chain.privateKey) != 0)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host

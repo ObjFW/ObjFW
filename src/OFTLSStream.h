@@ -20,7 +20,6 @@
 #import "OFStream.h"
 #import "OFRunLoop.h"
 #import "OFX509Certificate.h"
-#import "OFX509CertificatePrivateKey.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -104,8 +103,7 @@ typedef enum {
 	    *_underlyingStream;
 	bool _verifiesCertificates;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
-	OFX509CertificatePrivateKey *_Nullable _privateKey;
-	OF_RESERVE_IVARS(OFTLSStream, 2)
+	OF_RESERVE_IVARS(OFTLSStream, 3)
 }
 
 /**
@@ -133,12 +131,6 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
-
-/**
- * @brief The private key to use.
- */
-@property OF_NULLABLE_PROPERTY (retain, nonatomic)
-    OFX509CertificatePrivateKey *privateKey;
 
 - (instancetype)init OF_UNAVAILABLE;
 

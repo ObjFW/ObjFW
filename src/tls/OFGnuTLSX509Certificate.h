@@ -27,11 +27,16 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFGnuTLSX509Certificate: OFX509Certificate
 {
 	gnutls_x509_crt_t _certificate;
+	gnutls_x509_privkey_t _Nullable _privateKey;
 }
 
-@property (readonly, nonatomic) gnutls_x509_crt_t of_gnuTLSCertificate;
+@property (readonly, nonatomic) gnutls_x509_crt_t of_certificate;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    gnutls_x509_privkey_t of_privateKey;
 
-- (instancetype)of_initWithGnuTLSCertificate: (gnutls_x509_crt_t)certificate;
+- (instancetype)
+    of_initWithCertificate: (gnutls_x509_crt_t)certificate
+		privateKey: (nullable gnutls_x509_privkey_t)privateKey;
 @end
 
 OF_ASSUME_NONNULL_END

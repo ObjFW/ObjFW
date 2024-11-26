@@ -24,10 +24,45 @@
 #import "OFData.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+static gnutls_x509_privkey_t
+privateKeyFromFile(OFIRI *IRI)
+{
+	void *pool;
+	OFData *data;
+	gnutls_datum_t datum;
+	gnutls_x509_privkey_t key;
+
+	if (IRI == nil)
+		return NULL;
+
+	pool = objc_autoreleasePoolPush();
+	data = [OFData dataWithContentsOfIRI: IRI];
+
+	if (data.count * data.itemSize > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	datum.data = (unsigned char *)data.items;
+	datum.size = (unsigned int)(data.count * data.itemSize);
+
+	if (gnutls_x509_privkey_init(&key) != GNUTLS_E_SUCCESS)
+		@throw [OFOutOfMemoryException exception];
+
+	if (gnutls_x509_privkey_import(key, &datum,
+	    GNUTLS_X509_FMT_PEM) != GNUTLS_E_SUCCESS) {
+		gnutls_x509_privkey_deinit(key);
+		@throw [OFInvalidFormatException exception];
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return key;
+}
+
 @implementation OFGnuTLSX509Certificate
-@synthesize of_gnuTLSCertificate = _certificate;
+@synthesize of_certificate = _certificate, of_privateKey = _privateKey;
 
 + (void)load
 {
@@ -36,11 +71,12 @@
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
+	OFData *data = [OFData dataWithContentsOfIRI: certificatesIRI];
 	gnutls_datum_t datum;
 	gnutls_x509_crt_t *certs;
 	unsigned int i, size;
@@ -56,14 +92,25 @@
 		@throw [OFInvalidFormatException exception];
 
 	for (i = 0; i < size; i++) {
+		gnutls_x509_privkey_t key = NULL;
 		OFGnuTLSX509Certificate *certificate;
 
 		@try {
+			if (i == 0)
+				key = privateKeyFromFile(privateKeyIRI);
+
 			certificate = [[self alloc]
-			    of_initWithGnuTLSCertificate: certs[i]];
+			    of_initWithCertificate: certs[i]
+					privateKey: key];
 		} @catch (id e) {
-			gnutls_x509_crt_deinit(certs[i]);
+			for (; i < size; i++)
+				gnutls_x509_crt_deinit(certs[i]);
+
 			gnutls_free(certs);
+
+			if (key != NULL)
+				gnutls_x509_privkey_deinit(key);
+
 			@throw e;
 		}
 
@@ -86,11 +133,13 @@
 	return chain;
 }
 
-- (instancetype)of_initWithGnuTLSCertificate: (gnutls_x509_crt_t)certificate
+- (instancetype)of_initWithCertificate: (gnutls_x509_crt_t)certificate
+			    privateKey: (gnutls_x509_privkey_t)privateKey
 {
 	self = [super init];
 
 	_certificate = certificate;
+	_privateKey = privateKey;
 
 	return self;
 }
@@ -98,6 +147,9 @@
 - (void)dealloc
 {
 	gnutls_x509_crt_deinit(_certificate);
+
+	if (_privateKey != NULL)
+		gnutls_x509_privkey_deinit(_privateKey);
 
 	[super dealloc];
 }
