@@ -127,7 +127,7 @@ privateKeyFromFile(OFIRI *IRI)
 
 	count = CFArrayGetCount(items);
 	for (CFIndex i = 0; i < count; i++)  {
-		SecKeychainItemRef key;
+		SecKeychainItemRef key = NULL;
 
 		@try {
 			SecCertificateRef item =
