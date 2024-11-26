@@ -22,6 +22,9 @@
 #import "OFGnuTLSX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFString.h"
+
+#include <gnutls/pkcs12.h>
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
@@ -125,6 +128,70 @@ privateKeyFromFile(OFIRI *IRI)
 	}
 
 	gnutls_free(certs);
+
+	[chain makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return chain;
+}
+
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
+			     passphrase: (OFString *)passphrase
+{
+	OFMutableArray *chain = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithContentsOfIRI: IRI];
+	gnutls_x509_crt_t *certs = NULL;
+	gnutls_x509_privkey_t key = NULL;
+	unsigned int i = 0, certsCount = 0;
+	gnutls_pkcs12_t p12;
+
+	if (gnutls_pkcs12_init(&p12) != 0)
+		@throw [OFOutOfMemoryException exception];
+
+	@try {
+		gnutls_datum_t datum;
+
+		if (data.count * data.itemSize > UINT_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		datum.data = (unsigned char *)data.items;
+		datum.size = (unsigned int)(data.count * data.itemSize);
+
+		if (gnutls_pkcs12_import(p12, &datum,
+		    GNUTLS_X509_FMT_DER, 0) != 0)
+			@throw [OFInvalidFormatException exception];
+
+		if (passphrase != nil)
+			if (gnutls_pkcs12_verify_mac(p12,
+			    passphrase.UTF8String) != 0)
+				@throw [OFInvalidFormatException exception];
+
+		if (gnutls_pkcs12_simple_parse(p12, passphrase.UTF8String,
+		    &key, &certs, &certsCount, NULL, NULL, NULL, 0) != 0)
+			@throw [OFInvalidFormatException exception];
+
+		for (i = 0; i < certsCount; i++) {
+			[chain addObject: [[[OFGnuTLSX509Certificate alloc]
+			    of_initWithCertificate: certs[i]
+					privateKey: key] autorelease]];
+			key = NULL;
+		}
+	} @finally {
+		gnutls_pkcs12_deinit(p12);
+
+		if (certs != NULL) {
+			for (; i < certsCount; i++)
+				gnutls_x509_crt_deinit(certs[i]);
+
+			gnutls_free(certs);
+		}
+
+		if (key != NULL)
+			gnutls_x509_privkey_deinit(key);
+	}
 
 	[chain makeImmutable];
 
