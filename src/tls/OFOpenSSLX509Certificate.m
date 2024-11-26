@@ -187,23 +187,21 @@ privateKeyFromFile(OFIRI *IRI)
 			[chain addObject: [[[self alloc]
 			    of_initWithCertificate: sk_X509_value(ca, i)
 					privateKey: key] autorelease]];
-	} @catch (id e) {
-		if (cert != NULL)
-			X509_free(cert);
-		if (key != NULL)
-			EVP_PKEY_free(key);
-
-		for (; i < sk_X509_num(ca); i++)
-			X509_free(sk_X509_value(ca, i));
-
-		@throw e;
 	} @finally {
 		BIO_free(bio);
 
 		if (p12 != NULL)
 			PKCS12_free(p12);
-		if (ca != NULL)
+		if (cert != NULL)
+			X509_free(cert);
+		if (key != NULL)
+			EVP_PKEY_free(key);
+		if (ca != NULL) {
+			for (; i < sk_X509_num(ca); i++)
+				X509_free(sk_X509_value(ca, i));
+
 			sk_X509_free(ca);
+		}
 	}
 
 	[chain makeImmutable];
