@@ -41,3 +41,12 @@ jobs:
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c "cd /objfw && make install"
+    - name: Create objfw-tests
+      run: |
+        mkdir -p objfw-tests/objfw-tests
+        cp tests/tests.nds tests/testfile.txt objfw-tests/objfw-tests
+    - name: Upload objfw-tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nintendo DS Tests
+        path: objfw-tests

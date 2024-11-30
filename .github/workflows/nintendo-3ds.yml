@@ -13,7 +13,7 @@ jobs:
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c 'cd /objfw && ./configure --host=arm-none-eabi --with-3ds'
@@ -21,15 +21,32 @@ jobs:
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c "cd /objfw && make -j$(nproc)"
+    - name: make tests.3dsx
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitarm \
+          sh -c "cd /objfw/tests && make tests.3dsx"
     - name: make install
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c "cd /objfw && make install"
+    - name: Create objfw-tests
+      run: |
+        mkdir -p objfw-tests/objfw-tests
+        cp tests/tests.3dsx tests/testfile.txt objfw-tests/objfw-tests
+    - name: Upload objfw-tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nintendo 3DS Tests
+        path: objfw-tests
