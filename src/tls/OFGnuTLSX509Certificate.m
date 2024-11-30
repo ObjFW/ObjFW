@@ -73,6 +73,16 @@ privateKeyFromFile(OFIRI *IRI)
 		OFX509CertificateImplementation = self;
 }
 
++ (bool)supportsPEMFiles
+{
+	return true;
+}
+
++ (bool)supportsPKCS12Files
+{
+	return true;
+}
+
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI

@@ -39,25 +39,33 @@ Class OFX509CertificateImplementation = Nil;
 	return [super alloc];
 }
 
-#ifndef OF_IOS
++ (bool)supportsPEMFiles
+{
+	return [OFX509CertificateImplementation supportsPEMFiles];
+}
+
++ (bool)supportsPKCS12Files
+{
+	return [OFX509CertificateImplementation supportsPKCS12Files];
+}
+
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
-	if (OFX509CertificateImplementation != Nil)
+	if ([OFX509CertificateImplementation supportsPEMFiles])
 		return [OFX509CertificateImplementation
 		    certificateChainFromPEMFileAtIRI: certificatesIRI
 				       privateKeyIRI: privateKeyIRI];
 
 	OF_UNRECOGNIZED_SELECTOR
 }
-#endif
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
 			     passphrase: (OFString *)passphrase
 {
-	if (OFX509CertificateImplementation != Nil)
+	if ([OFX509CertificateImplementation supportsPKCS12Files])
 		return [OFX509CertificateImplementation
 		    certificateChainFromPKCS12FileAtIRI: IRI
 					     passphrase: passphrase];

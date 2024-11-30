@@ -34,11 +34,32 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
 
-#ifndef OF_IOS
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) bool supportsPEMFiles;
+@property (class, readonly, nonatomic) bool supportsPKCS12Files;
+#endif
+
+/**
+ * @brief Returns whether creating a certificate chain from PEM files is
+ *	  supported.
+ *
+ * @return Whether creating a certificate chain from PEM files is supported
+ */
++ (bool)supportsPEMFiles;
+
+/**
+ * @brief Returns whether creating a certificate chain from a PKCS #12 file is
+ *	  supported.
+ *
+ * @return Whether creating a certificate chain from a PKCS #12 file is
+ *	   supported
+ */
++ (bool)supportsPKCS12Files;
+
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
- * @note This is not available on iOS! Use
+ * @note This is not available on iOS when using Secure Transport! Use
  *	 @ref certificateChainFromPKCS12FileAtIRI:passphrase: instead!
  *
  * @param certificatesIRI The IRI to the PEM file with the certificate chain
@@ -53,11 +74,13 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (nullable OFIRI *)privateKeyIRI;
-#endif
 
 /**
  * @brief Returns the certificate chain from the PKCS #12 file at the specified
  *	  IRI.
+ *
+ * @note This is not available when using mbedTLS! Use
+ *	 @ref certificateChainFromPEMFileAtIRI:privateKeyIRI: instead!
  *
  * @param IRI The IRI to the PKCS #12 file with the certificate chain
  * @param passphrase The passphrase for the PKCS #12 file
