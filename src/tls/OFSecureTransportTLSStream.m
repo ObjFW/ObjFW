@@ -245,8 +245,10 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_certificateChain.count > 0) {
 		bool first = true;
 		CFMutableArrayRef array;
-		SecKeychainRef keychain;
-		SecIdentityRef identity;
+		SecCertificateRef firstCertificate;
+
+		firstCertificate = ((OFSecureTransportX509Certificate *)
+		    _certificateChain.firstObject).of_certificate;
 
 		if ((array = CFArrayCreateMutable(kCFAllocatorDefault,
 		    _certificateChain.count, &kCFTypeArrayCallBacks)) == NULL)
@@ -255,22 +257,25 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 					   host: _host
 				      errorCode: initFailedErrorCode];
 
-		keychain =
-		    [[OFSecureTransportKeychain temporaryKeychain] keychain];
+		if (CFGetTypeID(firstCertificate) == SecIdentityGetTypeID())
+			CFArrayAppendValue(array, firstCertificate);
+		else {
+			SecKeychainRef keychain = [[OFSecureTransportKeychain
+			    temporaryKeychain] keychain];
+			SecIdentityRef identity;
 
-		if (SecIdentityCreateWithCertificate(keychain,
-		    ((OFSecureTransportX509Certificate *)
-		    _certificateChain.firstObject).of_certificate,
-		    &identity) != noErr) {
-			CFRelease(array);
-			@throw [OFTLSHandshakeFailedException
-			    exceptionWithStream: self
-					   host: _host
-				      errorCode: initFailedErrorCode];
+			if (SecIdentityCreateWithCertificate(keychain,
+			    firstCertificate, &identity) != noErr) {
+				CFRelease(array);
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: initFailedErrorCode];
+			}
+
+			CFArrayAppendValue(array, identity);
+			CFRelease(identity);
 		}
-
-		CFArrayAppendValue(array, identity);
-		CFRelease(identity);
 
 		@try {
 			for (OFSecureTransportX509Certificate *certificate in

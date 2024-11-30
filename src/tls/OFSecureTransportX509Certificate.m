@@ -28,11 +28,13 @@
 # import "OFArray.h"
 # import "OFData.h"
 # import "OFSecureTransportKeychain.h"
+# import "OFString.h"
 
 # include <Security/SecImportExport.h>
 
 # import "OFInvalidFormatException.h"
 # import "OFOutOfMemoryException.h"
+# import "OFOutOfRangeException.h"
 
 /*
  * Apple deprecated Secure Transport without providing a replacement that can
@@ -99,31 +101,57 @@ privateKeyFromFile(OFIRI *IRI)
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+    of_certificateChainFromFileAtIRI: (OFIRI *)IRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
+			  passphrase: (OFString *)passphrase
+			      format: (SecExternalFormat)format
+				type: (SecExternalItemType)type
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFSecureTransportKeychain *keychain =
 	    [OFSecureTransportKeychain temporaryKeychain];
-	OFData *data = [OFData dataWithContentsOfIRI: certificatesIRI];
+	OFData *data = [OFData dataWithContentsOfIRI: IRI];
 	CFDataRef dataCF = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
 	    data.items, data.count * data.itemSize, kCFAllocatorNull);
-	SecExternalFormat format = kSecFormatPEMSequence;
-	SecExternalItemType type = kSecItemTypeCertificate;
+	SecKeyImportExportParameters params;
 	CFArrayRef items;
 	CFIndex count;
 
 	if (dataCF == NULL)
 		@throw [OFOutOfMemoryException exception];
 
-	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, NULL,
+	memset(&params, 0, sizeof(params));
+
+	if (passphrase != nil) {
+		if (passphrase.UTF8StringLength > LONG_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		params.passphrase = CFStringCreateWithBytes(kCFAllocatorDefault,
+		    (const UInt8 *)passphrase.UTF8String,
+		    (CFIndex)passphrase.UTF8StringLength,
+		    kCFStringEncodingUTF8, false);
+
+		if (params.passphrase == NULL) {
+			CFRelease(dataCF);
+			@throw [OFOutOfMemoryException exception];
+		}
+	}
+
+	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, &params,
 	    keychain.keychain, &items) != noErr) {
 		CFRelease(dataCF);
+
+		if (params.passphrase != NULL)
+			CFRelease(params.passphrase);
+
 		@throw [OFInvalidFormatException exception];
 	}
 
 	CFRelease(dataCF);
+
+	if (params.passphrase != NULL)
+		CFRelease(params.passphrase);
 
 	count = CFArrayGetCount(items);
 	for (CFIndex i = 0; i < count; i++)  {
@@ -133,7 +161,7 @@ privateKeyFromFile(OFIRI *IRI)
 			SecCertificateRef item =
 			    (SecCertificateRef)CFArrayGetValueAtIndex(items, i);
 
-			if (i == 0)
+			if (privateKeyIRI != nil && i == 0)
 				key = privateKeyFromFile(privateKeyIRI);
 
 			[chain addObject:
@@ -156,6 +184,28 @@ privateKeyFromFile(OFIRI *IRI)
 	objc_autoreleasePoolPop(pool);
 
 	return chain;
+}
+
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
+		       privateKeyIRI: (OFIRI *)privateKeyIRI
+{
+	return [self of_certificateChainFromFileAtIRI: certificatesIRI
+					privateKeyIRI: privateKeyIRI
+					   passphrase: nil
+					       format: kSecFormatPEMSequence
+						 type: kSecItemTypeCertificate];
+}
+
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
+			     passphrase: (OFString *)passphrase
+{
+	return [self of_certificateChainFromFileAtIRI: IRI
+					privateKeyIRI: nil
+					   passphrase: passphrase
+					       format: kSecFormatPKCS12
+						 type: kSecItemTypeAggregate];
 }
 
 - (instancetype)of_initWithCertificate: (SecCertificateRef)certificate
