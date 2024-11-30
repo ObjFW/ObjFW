@@ -24,27 +24,29 @@
 
 #import "OFSecureTransportX509Certificate.h"
 
+#import "OFArray.h"
+#import "OFData.h"
 #ifndef OF_IOS
-# import "OFArray.h"
-# import "OFData.h"
 # import "OFSecureTransportKeychain.h"
-# import "OFString.h"
+#endif
+#import "OFString.h"
 
-# include <Security/SecImportExport.h>
+#include <Security/SecImportExport.h>
 
-# import "OFInvalidFormatException.h"
-# import "OFOutOfMemoryException.h"
-# import "OFOutOfRangeException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 /*
  * Apple deprecated Secure Transport without providing a replacement that can
  * work with any socket. On top of that, their replacement, Network.framework,
  * doesn't support STARTTLS at all.
  */
-# if OF_GCC_VERSION >= 402
-#  pragma GCC diagnostic ignored "-Wdeprecated"
-# endif
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
 
+#ifndef OF_IOS
 static SecKeychainItemRef
 privateKeyFromFile(OFIRI *IRI)
 {
@@ -90,9 +92,13 @@ privateKeyFromFile(OFIRI *IRI)
 
 	return key;
 }
+#endif
 
 @implementation OFSecureTransportX509Certificate
-@synthesize of_certificate = _certificate, of_privateKey = _privateKey;
+@synthesize of_certificate = _certificate;
+#ifndef OF_IOS
+@synthesize of_privateKey = _privateKey;
+#endif
 
 + (void)load
 {
@@ -100,6 +106,7 @@ privateKeyFromFile(OFIRI *IRI)
 		OFX509CertificateImplementation = self;
 }
 
+#ifndef OF_IOS
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     of_certificateChainFromFileAtIRI: (OFIRI *)IRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
@@ -207,19 +214,122 @@ privateKeyFromFile(OFIRI *IRI)
 					       format: kSecFormatPKCS12
 						 type: kSecItemTypeAggregate];
 }
+#else
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
+			     passphrase: (OFString *)passphrase
+{
+	OFMutableArray *chain = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithContentsOfIRI: IRI];
+	CFDataRef dataCF = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
+	    data.items, data.count * data.itemSize, kCFAllocatorNull);
+	CFDictionaryRef options = NULL;
+	CFArrayRef items;
+	CFIndex count;
+
+	if (dataCF == NULL)
+		@throw [OFOutOfMemoryException exception];
+
+	if (passphrase != nil) {
+		CFStringRef passphraseCF =
+		    CFStringCreateWithBytes(kCFAllocatorDefault,
+		    (const UInt8 *)passphrase.UTF8String,
+		    (CFIndex)passphrase.UTF8StringLength,
+		    kCFStringEncodingUTF8, false);
+
+		if (passphraseCF == NULL) {
+			CFRelease(dataCF);
+			@throw [OFOutOfMemoryException exception];
+		}
+
+		options = CFDictionaryCreate(kCFAllocatorDefault,
+		    (const void **)&kSecImportExportPassphrase,
+		    (const void **)&passphraseCF, 1,
+		    &kCFTypeDictionaryKeyCallBacks,
+		    &kCFTypeDictionaryValueCallBacks);
+
+		CFRelease(passphraseCF);
+
+		if (options == NULL) {
+			CFRelease(dataCF);
+			@throw [OFOutOfMemoryException exception];
+		}
+	}
+
+	if (SecPKCS12Import(dataCF, options, &items) != noErr) {
+		CFRelease(dataCF);
+
+		if (options != NULL)
+			CFRelease(options);
+
+		@throw [OFInvalidFormatException exception];
+	}
+
+	CFRelease(dataCF);
+
+	if (options != NULL)
+		CFRelease(options);
+
+	count = CFArrayGetCount(items);
+	@try {
+		for (CFIndex i = 0; i < count; i++) {
+			CFDictionaryRef item = CFArrayGetValueAtIndex(items, i);
+			bool hasIdentity = false;
+			SecCertificateRef cert;
+			CFArrayRef certs;
+			CFIndex certsCount;
+
+			if ((cert = (SecCertificateRef)CFDictionaryGetValue(
+			    item, kSecImportItemIdentity)) != NULL) {
+				[chain addObject: [[[self alloc]
+				    of_initWithCertificate: cert] autorelease]];
+				hasIdentity = true;
+			}
+
+			if ((certs = CFDictionaryGetValue(item,
+			    kSecImportItemCertChain)) == NULL)
+				continue;
+
+			certsCount = CFArrayGetCount(certs);
+			for (CFIndex j = 0; j < certsCount; j++) {
+				if (hasIdentity && j == 0)
+					continue;
+
+				cert = (SecCertificateRef)
+				    CFArrayGetValueAtIndex(certs, j);
+
+				[chain addObject: [[[self alloc]
+				    of_initWithCertificate: cert] autorelease]];
+			}
+		}
+	} @finally {
+		CFRelease(items);
+	}
+
+	[chain makeImmutable];
+	objc_autoreleasePoolPop(pool);
+
+	return chain;
+}
+#endif
 
 - (instancetype)of_initWithCertificate: (SecCertificateRef)certificate
+#ifndef OF_IOS
 			    privateKey: (SecKeychainItemRef)privateKey
 			      keychain: (OFSecureTransportKeychain *)keychain
+#endif
 {
 	self = [super init];
 
 	_certificate = (SecCertificateRef)CFRetain(certificate);
 
+#ifndef OF_IOS
 	if (privateKey != NULL)
 		_privateKey = (SecKeychainItemRef)CFRetain(privateKey);
 
 	_keychain = [keychain retain];
+#endif
 
 	return self;
 }
@@ -228,12 +338,13 @@ privateKeyFromFile(OFIRI *IRI)
 {
 	CFRelease(_certificate);
 
+#ifndef OF_IOS
 	if (_privateKey != NULL)
 		CFRelease(_privateKey);
 
 	[_keychain release];
+#endif
 
 	[super dealloc];
 }
 @end
-#endif

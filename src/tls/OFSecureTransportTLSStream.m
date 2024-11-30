@@ -30,6 +30,7 @@
 #include <Security/SecIdentity.h>
 
 #import "OFAlreadyOpenException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
@@ -241,7 +242,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 					   host: _host
 				      errorCode: initFailedErrorCode];
 
-#ifndef OF_IOS
 	if (_certificateChain.count > 0) {
 		bool first = true;
 		CFMutableArrayRef array;
@@ -259,6 +259,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (CFGetTypeID(firstCertificate) == SecIdentityGetTypeID())
 			CFArrayAppendValue(array, firstCertificate);
+#ifndef OF_IOS
 		else {
 			SecKeychainRef keychain = [[OFSecureTransportKeychain
 			    temporaryKeychain] keychain];
@@ -276,6 +277,10 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			CFArrayAppendValue(array, identity);
 			CFRelease(identity);
 		}
+#else
+		else
+			@throw [OFInvalidArgumentException exception];
+#endif
 
 		@try {
 			for (OFSecureTransportX509Certificate *certificate in
@@ -294,7 +299,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			CFRelease(array);
 		}
 	}
-#endif
 
 	status = SSLHandshake(_context);
 
