@@ -231,8 +231,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 	if (gnutls_set_default_priority(_session) != GNUTLS_E_SUCCESS ||
 	    gnutls_certificate_allocate_credentials(&_credentials) !=
-	    GNUTLS_E_SUCCESS ||
-	    gnutls_certificate_set_x509_system_trust(_credentials) < 0)
+	    GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
@@ -242,7 +241,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	_server = server;
 
 	if (!server) {
-		if (gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
+		if (gnutls_certificate_set_x509_system_trust(_credentials) <
+		    0 || gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
 		    _host.UTF8String, _host.UTF8StringLength) !=
 		    GNUTLS_E_SUCCESS)
 			@throw [OFTLSHandshakeFailedException
