@@ -23,6 +23,7 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
+       OFEmbeddedIRIHandler.m		\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
@@ -216,7 +217,6 @@ SRCS += OFASPrintF.m			\
 	OFConcreteSet.m			\
 	OFConcreteSubarray.m		\
 	OFConcreteValue.m		\
-	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\

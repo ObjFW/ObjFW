@@ -32,7 +32,11 @@ cat <<EOF
 #ifdef OF_COMPILING_OBJFW
 # import "OFEmbeddedIRIHandler.h"
 #else
-# import <ObjFW/OFEmbeddedIRIHandler.h>
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFEmbeddedIRIHandler.h>
+# endif
 #endif
 
 static const uint8_t bytes[] = {
