@@ -10,10 +10,20 @@ LIB_MINOR = ${OBJFWTLS_LIB_MINOR}
 LIB_PATCH = ${OBJFWTLS_LIB_PATCH}
 
 INCLUDES := ObjFWTLS.h
-SRCS = ${OF_GNUTLS_TLS_STREAM_M}		\
-       ${OF_MBEDTLS_TLS_STREAM_M}		\
-       ${OF_OPENSSL_TLS_STREAM_M}		\
-       ${OF_SECURE_TRANSPORT_TLS_STREAM_M}
+SRCS = ${USE_SRCS_GNUTLS}		\
+       ${USE_SRCS_MBEDTLS}		\
+       ${USE_SRCS_OPENSSL}		\
+       ${USE_SRCS_SECURETRANSPORT}
+
+SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
+	      OFGnuTLSX509Certificate.m
+SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
+	       OFMbedTLSX509Certificate.m
+SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
+	       OFOpenSSLX509Certificate.m
+SRCS_SECURETRANSPORT = OFSecureTransportKeychain.m			\
+		       OFSecureTransportTLSStream.m			\
+		       OFSecureTransportX509Certificate.m
 
 includesubdir = ObjFWTLS
 

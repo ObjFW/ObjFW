@@ -19,11 +19,13 @@
 
 #import "OFStream.h"
 #import "OFRunLoop.h"
+#import "OFX509Certificate.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+@class OFArray OF_GENERIC(ObjectType);
 @class OFTLSStream;
 
 /**
@@ -52,6 +54,7 @@ typedef enum {
  * A delegate for OFTLSStream.
  */
 @protocol OFTLSStreamDelegate <OFStreamDelegate>
+@optional
 /**
  * @brief A method which is called when a TLS stream performed the client
  *	  handshake.
@@ -64,6 +67,17 @@ typedef enum {
 -		       (void)stream: (OFTLSStream *)stream
   didPerformClientHandshakeWithHost: (OFString *)host
 			  exception: (nullable id)exception;
+
+/**
+ * @brief A method which is called when a TLS stream performed the server
+ *	  handshake.
+ *
+ * @param stream The TLS stream which performed the handshake
+ * @param exception An exception that occurred during the handshake, or nil on
+ *		    success
+ */
+- (void)streamDidPerformServerHandshake: (OFTLSStream *)stream
+			      exception: (nullable id)exception;
 @end
 
 /**
@@ -88,7 +102,8 @@ typedef enum {
 	OFStream <OFReadyForReadingObserving, OFReadyForWritingObserving>
 	    *_underlyingStream;
 	bool _verifiesCertificates;
-	OF_RESERVE_IVARS(OFTLSStream, 4)
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OF_RESERVE_IVARS(OFTLSStream, 3)
 }
 
 /**
@@ -110,6 +125,12 @@ typedef enum {
  * @brief Whether certificates are verified. Default is true.
  */
 @property (nonatomic) bool verifiesCertificates;
+
+/**
+ * @brief The certificate chain to use.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -169,6 +190,34 @@ typedef enum {
  * @throw OFAlreadyOpenException The handshake was already performed
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
+
+/**
+ * @brief Asynchronously performs the TLS server handshake and calls the
+ *	  delegate afterwards.
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ */
+- (void)asyncPerformServerHandshake;
+
+/**
+ * @brief Asynchronously performs the TLS server handshake and calls the
+ *	  delegate afterwards.
+ *
+ * @param runLoopMode The run loop mode in which to perform the async handshake
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ */
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode;
+
+/**
+ * @brief Performs the TLS server handshake.
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ */
+- (void)performServerHandshake;
 @end
 
 #ifdef __cplusplus
@@ -178,8 +227,8 @@ extern "C" {
  * @brief The implementation for OFTLSStream to use.
  *
  * This can be set to a class that is always used for OFTLSStream. This is
- * useful to either force a specific implementation or use one that ObjFW does
- * not know about.
+ * useful to either force a specific implementation or to use one that ObjFW
+ * does not know about.
  */
 extern Class OFTLSStreamImplementation;
 

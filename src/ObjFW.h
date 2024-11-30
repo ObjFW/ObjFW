@@ -87,6 +87,7 @@
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 # import "OFTLSStream.h"
+# import "OFX509Certificate.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"

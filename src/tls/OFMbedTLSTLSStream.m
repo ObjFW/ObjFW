@@ -23,9 +23,11 @@
 
 #import "OFMbedTLSTLSStream.h"
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFMbedTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -244,8 +246,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	    mbedtls_ssl_get_bytes_avail(&_SSL));
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -257,7 +260,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_initialized)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if (mbedtls_ssl_config_defaults(&_config, MBEDTLS_SSL_IS_CLIENT,
+	if (mbedtls_ssl_config_defaults(&_config,
+	    (server ? MBEDTLS_SSL_IS_SERVER : MBEDTLS_SSL_IS_CLIENT),
 	    MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
@@ -265,8 +269,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			      errorCode: initFailedErrorCode];
 
 	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
-	mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
-	    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
 
 	/* TODO: Add other ways to add a CA chain */
 	CAFilePath = [[OFApplication environment]
@@ -280,7 +282,33 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				      errorCode: initFailedErrorCode];
 	}
 
-	mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
+	if (!server) {
+		mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
+		mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
+		    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
+	}
+
+	if (_certificateChain.count > 0) {
+		/*
+		 * MbedTLS does not allow storing the certificates
+		 * independently, so the chain has to be kept. This means we
+		 * can just get the first certificate and get the entire chain
+		 * from it.
+		 */
+		OFMbedTLSX509CertificateChain *chain =
+		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
+		    .of_chain;
+
+		mbedtls_ssl_conf_ca_chain(&_config,
+		    chain.certificate->next, NULL);
+
+		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
+		    chain.privateKey) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
 
 	mbedtls_ssl_init(&_SSL);
 	_initialized = true;
@@ -294,12 +322,15 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	mbedtls_ssl_set_bio(&_SSL, self, writeFunc, readFunc, NULL);
 
 	_host = [host copy];
+	_server = server;
 
-	if (mbedtls_ssl_set_hostname(&_SSL, _host.UTF8String) != 0)
-		@throw [OFTLSHandshakeFailedException
-		    exceptionWithStream: self
-				   host: host
-			      errorCode: initFailedErrorCode];
+	if (!server) {
+		if (mbedtls_ssl_set_hostname(&_SSL, _host.UTF8String) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
 
 	status = mbedtls_ssl_handshake(&_SSL);
 
@@ -326,13 +357,35 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				   host: host
 			      errorCode: statusToErrorCode(&_SSL, status)];
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -363,11 +416,18 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 
@@ -403,11 +463,18 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 

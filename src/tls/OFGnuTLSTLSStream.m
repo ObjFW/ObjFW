@@ -22,7 +22,9 @@
 #include <errno.h>
 
 #import "OFGnuTLSTLSStream.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFGnuTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -32,7 +34,6 @@
 #import "OFWriteFailedException.h"
 
 int _ObjFWTLS_reference;
-static gnutls_certificate_credentials_t systemTrustCreds;
 
 #ifndef GNUTLS_SAFE_PADDING_CHECK
 /* Some older versions don't have it. */
@@ -101,17 +102,6 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		OFTLSStreamImplementation = self;
 }
 
-+ (void)initialize
-{
-	if (self != [OFGnuTLSTLSStream class])
-		return;
-
-	if (gnutls_certificate_allocate_credentials(&systemTrustCreds) !=
-	    GNUTLS_E_SUCCESS ||
-	    gnutls_certificate_set_x509_system_trust(systemTrustCreds) < 0)
-		@throw [OFInitializationFailedException exception];
-}
-
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
 				     OFReadyForWritingObserving> *)stream
 {
@@ -129,8 +119,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (void)dealloc
 {
-	if (_initialized)
-		[self close];
+	[self close];
 
 	[_host release];
 
@@ -139,14 +128,20 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (void)close
 {
-	if (!_initialized)
+	if (_session == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_handshakeDone)
 		gnutls_bye(_session, GNUTLS_SHUT_WR);
 
 	gnutls_deinit(_session);
-	_initialized = _handshakeDone = false;
+
+	if (_credentials != NULL)
+		gnutls_certificate_free_credentials(_credentials);
+
+	_session = NULL;
+	_credentials = NULL;
+	_handshakeDone = false;
 
 	[_host release];
 	_host = nil;
@@ -210,8 +205,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	    gnutls_record_check_pending(_session) > 0);
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -219,41 +215,74 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	id exception = nil;
 	int status;
 
-	if (_initialized)
+	if (_handshakeDone)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
-	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
+	if (gnutls_init(&_session, (server ? GNUTLS_SERVER : GNUTLS_CLIENT) |
+	    GNUTLS_NONBLOCK | GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
-
-	_initialized = true;
 
 	gnutls_transport_set_ptr(_session, self);
 	gnutls_transport_set_pull_function(_session, readFunc);
 	gnutls_transport_set_push_function(_session, writeFunc);
 
 	if (gnutls_set_default_priority(_session) != GNUTLS_E_SUCCESS ||
-	    gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
-	    systemTrustCreds) != GNUTLS_E_SUCCESS)
+	    gnutls_certificate_allocate_credentials(&_credentials) !=
+	    GNUTLS_E_SUCCESS ||
+	    gnutls_certificate_set_x509_system_trust(_credentials) < 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
 
 	_host = [host copy];
+	_server = server;
 
-	if (gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
-	    _host.UTF8String, _host.UTF8StringLength) != GNUTLS_E_SUCCESS)
+	if (!server) {
+		if (gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
+		    _host.UTF8String, _host.UTF8StringLength) !=
+		    GNUTLS_E_SUCCESS)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+
+		if (_verifiesCertificates)
+			gnutls_session_set_verify_cert(_session,
+			    _host.UTF8String, 0);
+	}
+
+	if (_certificateChain.count > 0) {
+		OFMutableData *certs = [OFMutableData
+		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
+			    capacity: _certificateChain.count];
+		gnutls_x509_privkey_t key =
+		    ((OFGnuTLSX509Certificate *)_certificateChain.firstObject)
+		    .of_privateKey;
+
+		for (OFGnuTLSX509Certificate *cert in _certificateChain) {
+			gnutls_x509_crt_t gnuTLSCert = cert.of_certificate;
+			[certs addItem: &gnuTLSCert];
+		}
+
+		if (gnutls_certificate_set_x509_key(_credentials,
+		    (gnutls_x509_crt_t *)certs.items, (unsigned int)certs.count,
+		    key) < 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
+
+	if (gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
+	    _credentials) != GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
-
-	if (_verifiesCertificates)
-		gnutls_session_set_verify_cert(_session, _host.UTF8String, 0);
 
 	status = gnutls_handshake(_session);
 
@@ -287,13 +316,35 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			      errorCode: errorCode];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -335,11 +386,18 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 
@@ -388,11 +446,18 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 

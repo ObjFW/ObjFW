@@ -23,9 +23,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
 {
 	SSLContextRef _context;
+	bool _server;
 	OFString *_host;
 }
 @end

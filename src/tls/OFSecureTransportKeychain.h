@@ -17,21 +17,23 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OFObject.h"
 
-#include <mbedtls/ssl.h>
+#ifndef OF_IOS
+# include <Security/SecKeychain.h>
 
 OF_ASSUME_NONNULL_BEGIN
 
 OF_SUBCLASSING_RESTRICTED
-@interface OFMbedTLSTLSStream: OFTLSStream <OFStreamDelegate>
+@interface OFSecureTransportKeychain: OFObject
 {
-	bool _initialized, _server, _handshakeDone;
-	mbedtls_ssl_config _config;
-	mbedtls_ssl_context _SSL;
-	mbedtls_x509_crt _CAChain;
-	OFString *_host;
+	SecKeychainRef _keychain;
 }
+
+@property (readonly, nonatomic) SecKeychainRef keychain;
+
++ (instancetype)temporaryKeychain;
 @end
 
 OF_ASSUME_NONNULL_END
+#endif

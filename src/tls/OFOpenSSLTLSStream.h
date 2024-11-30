@@ -26,11 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
 
 #define OFOpenSSLTLSStreamBufferSize 512
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	bool _handshakeDone;
-	SSL *_SSL;
 	BIO *_readBIO, *_writeBIO;
+	SSL *_SSL;
+	bool _server, _handshakeDone;
 	OFString *_host;
 	char _buffer[OFOpenSSLTLSStreamBufferSize];
 }

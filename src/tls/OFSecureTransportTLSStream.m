@@ -22,12 +22,28 @@
 #include <errno.h>
 
 #import "OFSecureTransportTLSStream.h"
+#import "OFArray.h"
+#import "OFSecureTransportKeychain.h"
+#import "OFSecureTransportX509Certificate.h"
+
+#include <Security/SecCertificate.h>
+#include <Security/SecIdentity.h>
 
 #import "OFAlreadyOpenException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
+
+/*
+ * Apple deprecated Secure Transport without providing a replacement that can
+ * work with any socket. On top of that, their replacement, Network.framework,
+ * doesn't support STARTTLS at all.
+ */
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
 
 int _ObjFWTLS_reference;
 
@@ -85,15 +101,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 	return noErr;
 }
-
-/*
- * Apple deprecated Secure Transport without providing a replacement that can
- * work with any socket. On top of that, their replacement, Network.framework,
- * doesn't support STARTTLS at all.
- */
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
 
 @implementation OFSecureTransportTLSStream
 + (void)load
@@ -192,8 +199,9 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	    bufferSize > 0));
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -205,10 +213,11 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 #ifdef HAVE_SSLCREATECONTEXT
-	if ((_context = SSLCreateContext(kCFAllocatorDefault, kSSLClientSide,
+	if ((_context = SSLCreateContext(kCFAllocatorDefault,
+	    (server ? kSSLServerSide : kSSLClientSide),
 	    kSSLStreamType)) == NULL)
 #else
-	if (SSLNewContext(false, &_context) != noErr)
+	if (SSLNewContext(server, &_context) != noErr)
 #endif
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
@@ -223,14 +232,73 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			      errorCode: initFailedErrorCode];
 
 	_host = [host copy];
+	_server = server;
 
-	if (_verifiesCertificates)
+	if (!server && _verifiesCertificates)
 		if (SSLSetPeerDomainName(_context,
 		    _host.UTF8String, _host.UTF8StringLength) != noErr)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
 				      errorCode: initFailedErrorCode];
+
+	if (_certificateChain.count > 0) {
+		bool first = true;
+		CFMutableArrayRef array;
+		SecCertificateRef firstCertificate;
+
+		firstCertificate = ((OFSecureTransportX509Certificate *)
+		    _certificateChain.firstObject).of_certificate;
+
+		if ((array = CFArrayCreateMutable(kCFAllocatorDefault,
+		    _certificateChain.count, &kCFTypeArrayCallBacks)) == NULL)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: _host
+				      errorCode: initFailedErrorCode];
+
+		if (CFGetTypeID(firstCertificate) == SecIdentityGetTypeID())
+			CFArrayAppendValue(array, firstCertificate);
+#ifndef OF_IOS
+		else {
+			SecKeychainRef keychain = [[OFSecureTransportKeychain
+			    temporaryKeychain] keychain];
+			SecIdentityRef identity;
+
+			if (SecIdentityCreateWithCertificate(keychain,
+			    firstCertificate, &identity) != noErr) {
+				CFRelease(array);
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: initFailedErrorCode];
+			}
+
+			CFArrayAppendValue(array, identity);
+			CFRelease(identity);
+		}
+#else
+		else
+			@throw [OFInvalidArgumentException exception];
+#endif
+
+		@try {
+			for (OFSecureTransportX509Certificate *certificate in
+			    _certificateChain) {
+				if (first) {
+					first = false;
+					continue;
+				}
+
+				CFArrayAppendValue(array,
+				    certificate.of_certificate);
+			}
+
+			SSLSetCertificate(_context, array);
+		} @finally {
+			CFRelease(array);
+		}
+	}
 
 	status = SSLHandshake(_context);
 
@@ -258,13 +326,35 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 				   host: _host
 			      errorCode: statusToErrorCode(status)];
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -285,11 +375,18 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 				      errorCode: statusToErrorCode(status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
 	[_delegate release];
 
