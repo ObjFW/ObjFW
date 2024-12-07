@@ -4,6 +4,16 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.2.1 -> ObjFW 1.2.2, 2024-12-07
+ * Fixes OFTLSSocket not sending shutdown when using OpenSSL.
+ * Fixes OFTLSSocket initialization when using MbedTLS.
+ * Fixes imports in ObjFWTLS.h.
+ * OFINIFile now properly quotes ; and #.
+ * Ensures ofarc and ofhash link ObjFWTLS.
+ * Makes OFEmbeddedIRIHandler public, as it's required for objfw-embed.
+ * Fixes compiling on Haiku r1beta5.
+ * Adds compatibility with latest devkitARM.
+
 ObjFW 1.2 -> ObjFW 1.2.1, 2024-11-09
  * Fixes exceptions in ObjC++.
  * Fixes compiling ObjC++ on Windows.
