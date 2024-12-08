@@ -568,6 +568,15 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	return address;
 }
 
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+- (instancetype)accept
+{
+	OFTCPSocket *sock = [super accept];
+	sock.allowsMPTCP = self.allowsMPTCP;
+	return sock;
+}
+#endif
+
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 - (void)setSendsKeepAlives: (bool)sendsKeepAlives
 {
