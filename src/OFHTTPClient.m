@@ -732,7 +732,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		[_client close];
 
 		sock = [OFTCPSocket socket];
-		sock.usesMPTCP = true;
+		sock.allowsMPTCP = true;
 
 		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame)

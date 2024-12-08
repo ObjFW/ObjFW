@@ -53,10 +53,6 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
-#ifdef HAVE_LINUX_MPTCP_H
-# include <linux/mptcp.h>
-#endif
-
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifndef AF_MULTIPATH
 #  define AF_MULTIPATH 39
@@ -64,7 +60,7 @@
 #endif
 
 enum {
-	flagUseMPTCP = 1,
+	flagAllowsMPTCP = 1,
 	flagMapIPv4 = 2,
 	flagUseConnectX = 4
 };
@@ -183,7 +179,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
-	if (_flags & flagUseMPTCP) {
+	if (_flags & flagAllowsMPTCP) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
 		 * IPv6 can both be used for a single connection.
@@ -198,7 +194,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 			_flags &= ~flagMapIPv4;
 	}
 #elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
-	if (_flags & flagUseMPTCP) {
+	if (_flags & flagAllowsMPTCP) {
 		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_TCP);
 
@@ -447,7 +443,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	OFSocketAddressSetIPPort(&address, port);
 
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
-	if (_flags & flagUseMPTCP) {
+	if (_flags & flagAllowsMPTCP) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
 		 * IPv6 can both be used for a single connection.
@@ -626,25 +622,17 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 }
 #endif
 
-- (void)setUsesMPTCP: (bool)usesMPTCP
+- (void)setAllowsMPTCP: (bool)allowsMPTCP
 {
-	if (usesMPTCP)
-		_flags |= flagUseMPTCP;
+	if (allowsMPTCP)
+		_flags |= flagAllowsMPTCP;
 	else
-		_flags &= ~flagUseMPTCP;
+		_flags &= ~flagAllowsMPTCP;
 }
 
-- (bool)usesMPTCP
+- (bool)allowsMPTCP
 {
-#if defined(OF_LINUX) && defined(SOL_MPTCP) && defined(MPTCP_INFO)
-	struct mptcp_info info;
-	socklen_t infoLen = (socklen_t)sizeof(info);
-
-	if (getsockopt(_socket, SOL_MPTCP, MPTCP_INFO, &info, &infoLen) != -1)
-		return true;
-#endif
-
-	return false;
+	return (_flags & flagAllowsMPTCP);
 }
 
 - (void)close

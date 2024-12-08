@@ -150,7 +150,7 @@
 	[_condition lock];
 
 	listener = [OFTCPSocket socket];
-	listener.usesMPTCP = true;
+	listener.allowsMPTCP = true;
 	address = [listener bindToHost: @"127.0.0.1" port: 0];
 	_port = OFSocketAddressIPPort(&address);
 	[listener listen];

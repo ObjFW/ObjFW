@@ -1497,7 +1497,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
-	AC_CHECK_HEADERS(linux/mptcp.h)
 	AC_CHECK_HEADER(netinet/sctp.h, [
 		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
 		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
