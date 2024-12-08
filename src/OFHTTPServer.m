@@ -99,7 +99,7 @@ OF_DIRECT_MEMBERS
 	OFStream *_requestBody;
 }
 
-- (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving,
+- (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
 				    OFReadyForWritingObserving> *)stream
 			server: (OFHTTPServer *)server;
 - (bool)parseProlog: (OFString *)line;
@@ -278,16 +278,16 @@ normalizedKey(OFString *key)
 	} @catch (OFWriteFailedException *e) {
 		id <OFHTTPServerDelegate> delegate = _server.delegate;
 
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
 		if ([delegate respondsToSelector:
 		    @selector(server:didEncounterException:request:response:)])
 			[delegate	   server: _server
 			    didEncounterException: e
 					  request: _request
 					 response: self];
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
 		else if ([delegate respondsToSelector: @selector(server:
 		  didReceiveExceptionForResponse:request:exception:)])
 			[delegate		    server: _server
