@@ -25,12 +25,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFHTTPServer;
 @class OFStream;
 @class OFTCPSocket;
+@class OFX509Certificate;
 
 /**
  * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/ObjFW.h
@@ -54,8 +55,38 @@ OF_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
+ * @brief This method is called when the server encountered an exception.
+ *
+ * One common situation for this to happen is when the OFHTTPServer tries to
+ * properly close the connection. If no headers have been sent yet, it will
+ * send headers, and if chunked transfer encoding was used, it will send a
+ * chunk of size 0. However, if the other end already closed the connection
+ * before that, this will raise an exception.
+ *
+ * Another common situation is the TLS handshake failing, in which case
+ * `request` and `response` will both be `nil`, as the connection never even
+ * progressed far enough to create those.
+ *
+ * Another possibility is that the server failed to accept a socket. In this
+ * case, the server will no longer accept incoming connections and you need to
+ * call @ref start again.
+ *
+ * @param server The HTTP server which encountered an exception
+ * @param exception The exception which occurred
+ * @param request The request for the response for which the exception
+ *		  occurred, if any
+ * @param response The response for which the exception occurred, if any
+ */
+-	   (void)server: (OFHTTPServer *)server
+  didEncounterException: (id)exception
+		request: (nullable OFHTTPRequest *)request
+	       response: (nullable OFHTTPResponse *)response;
+
+/**
  * @brief This method is called when the HTTP server's listening socket
  *	  encountered an exception.
+ *
+ * @deprecated Use @ref server:didEncounterException:request:response: instead.
  *
  * @param server The HTTP server which encountered an exception
  * @param exception The exception which occurred on the HTTP server's listening
@@ -65,11 +96,15 @@ OF_ASSUME_NONNULL_BEGIN
  *	   connections again by calling @ref OFHTTPServer#start again.
  */
 -			  (bool)server: (OFHTTPServer *)server
-  didReceiveExceptionOnListeningSocket: (id)exception;
+  didReceiveExceptionOnListeningSocket: (id)exception
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use -[server:didEncounterException:request:response:] instead");
 
 /**
  * @brief This method is called when a socket for a client encountered an
- * exception.
+ *	  exception.
+ *
+ * @deprecated Use @ref server:didEncounterException:request:response: instead.
  *
  * This can happen when the OFHTTPServer tries to properly close the
  * connection. If no headers have been sent yet, it will send headers, and if
@@ -85,7 +120,9 @@ OF_ASSUME_NONNULL_BEGIN
 -		    (void)server: (OFHTTPServer *)server
   didReceiveExceptionForResponse: (OFHTTPResponse *)response
 			 request: (OFHTTPRequest *)request
-		       exception: (id)exception;
+		       exception: (id)exception
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use -[server:didEncounterException:request:response:] instead");
 @end
 
 /**
@@ -101,6 +138,8 @@ OF_SUBCLASSING_RESTRICTED
 	id <OFHTTPServerDelegate> _Nullable _delegate;
 	OFString *_Nullable _name;
 	OFTCPSocket *_Nullable _listeningSocket;
+	bool _usesTLS;
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
 #ifdef OF_HAVE_THREADS
 	size_t _numberOfThreads, _nextThreadIndex;
 	OFArray *_threadPool;
@@ -122,6 +161,20 @@ OF_SUBCLASSING_RESTRICTED
  *				 had already been called
  */
 @property (nonatomic) uint16_t port;
+
+/**
+ * @brief Whether the HTTP server uses TLS.
+ *
+ * If the server uses TLS, a certificate chain (see @ref certificateChain)
+ * needs to be set.
+ */
+@property (nonatomic) bool usesTLS;
+
+/**
+ * @brief The certificate chain to use.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
 
 /**
  * @brief The delegate for the HTTP server.
