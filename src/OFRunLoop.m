@@ -1845,8 +1845,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	OFRunLoopMode previousMode = _currentMode;
 	OFRunLoopState *state = stateForMode(self, mode, false, false);
 
-	if (state == nil)
+	if (state == nil) {
+		objc_autoreleasePoolPop(pool);
 		return;
+	}
 
 	_currentMode = mode;
 	@try {
@@ -1886,6 +1888,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			if (timer.valid) {
 				[timer of_reschedule];
 				[timer fire];
+				objc_autoreleasePoolPop(pool);
 				return;
 			}
 		}
