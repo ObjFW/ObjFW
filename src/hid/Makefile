@@ -86,5 +86,9 @@ CPPFLAGS += -I.				\
 	    -I../runtime		\
 	    -DOBJFWHID_LOCAL_INCLUDES
 LD = ${OBJC}
-FRAMEWORK_LIBS := -F.. -framework ObjFW ${RUNTIME_LIBS} ${LIBS}
-LIBS := -L.. -lobjfw -L../runtime ${RUNTIME_LIBS} ${LIBS}
+FRAMEWORK_LIBS := -F..				\
+		  -F../runtime			\
+		  -framework ObjFW		\
+		  ${RUNTIME_FRAMEWORK_LIBS}	\
+		  ${LIBS}
+LIBS := -L.. -L../runtime -lobjfw ${RUNTIME_LIBS} ${LIBS}

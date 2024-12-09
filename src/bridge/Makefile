@@ -64,5 +64,10 @@ uninstall-extra:
 
 CPPFLAGS += -I. -I.. -I../.. -I../exceptions -DOBJFWBRIDGE_LOCAL_INCLUDES
 LD = ${OBJC}
-FRAMEWORK_LIBS := -framework Foundation -F.. -framework ObjFW ${LIBS}
-LIBS := -framework Foundation -L.. -lobjfw ${LIBS}
+FRAMEWORK_LIBS := -F..				\
+		  -F../runtime			\
+		  -framework Foundation		\
+		  -framework ObjFW		\
+		  ${RUNTIME_FRAMEWORK_LIBS}	\
+		  ${LIBS}
+LIBS := -L.. -L../runtime -framework Foundation -lobjfw ${RUNTIME_LIBS} ${LIBS}
