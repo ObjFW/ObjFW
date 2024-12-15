@@ -51,7 +51,7 @@ static SecKeychainItemRef
 privateKeyFromFile(OFIRI *IRI)
 {
 	void *pool;
-	SecExternalFormat format = kSecFormatOpenSSL;
+	SecExternalFormat format = kSecFormatUnknown;
 	SecExternalItemType type = kSecItemTypePrivateKey;
 	OFSecureTransportKeychain *keychain;
 	OFData *data;
