@@ -142,7 +142,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	[_host release];
 	_host = nil;
 
-	SSLClose(_context);
+	@try {
+		SSLClose(_context);
+	} @catch (OFWriteFailedException *e) {
+		if (e.errNo != EPIPE)
+			@throw e;
+	}
+
 #ifdef HAVE_SSLCREATECONTEXT
 	CFRelease(_context);
 #else
