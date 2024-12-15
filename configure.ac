@@ -377,6 +377,21 @@ AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS $flag"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsnumber-literals, [
+	flag="-Xclang -fno-constant-nsnumber-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsarray-literals, [
+	flag="-Xclang -fno-constant-nsarray-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsdictionary-literals, [
+	flag="-Xclang -fno-constant-nsdictionary-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
 
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
