@@ -90,6 +90,12 @@ cleanup(void)
 		if (temporaryKeychain != nil)
 			keychain = temporaryKeychain;
 		else {
+			SecKeychainSettings settings = {
+				.version = SEC_KEYCHAIN_SETTINGS_VERS1,
+				.lockOnSleep = false,
+				.useLockInterval = false,
+				.lockInterval = INT_MAX
+			};
 			void *pool;
 			OFString *filename, *path, *password;
 
@@ -114,6 +120,18 @@ cleanup(void)
 			    &keychain->_keychain) != noErr)
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self];
+
+			/*
+			 * Make sure the keychain never gets locked
+			 * automatically, as on the next time it is being used,
+			 * the user would be asked to enter the keychain's
+			 * password via a popup - a password we randomly
+			 * generated and the user cannot know.
+			 * If setting this fails, ignore it, as having the
+			 * keychain automatically lock and become unusable
+			 * after a while is still better than it never working.
+			 */
+			SecKeychainSetSettings(keychain->_keychain, &settings);
 
 			objc_autoreleasePoolPop(pool);
 
