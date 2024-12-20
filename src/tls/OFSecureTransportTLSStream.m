@@ -21,6 +21,8 @@
 
 #include <errno.h>
 
+#import <Foundation/Foundation.h>
+
 #import "OFSecureTransportTLSStream.h"
 #import "OFArray.h"
 #import "OFSecureTransportKeychain.h"
@@ -150,7 +152,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	}
 
 #ifdef HAVE_SSLCREATECONTEXT
-	CFRelease(_context);
+	[(id)_context release];
 #else
 	SSLDisposeContext(_context);
 #endif
@@ -250,21 +252,22 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 	if (_certificateChain.count > 0) {
 		bool first = true;
-		CFMutableArrayRef array;
+		NSMutableArray *array;
 		SecCertificateRef firstCertificate;
 
-		firstCertificate = ((OFSecureTransportX509Certificate *)
-		    _certificateChain.firstObject).of_certificate;
-
-		if ((array = CFArrayCreateMutable(kCFAllocatorDefault,
-		    _certificateChain.count, &kCFTypeArrayCallBacks)) == NULL)
+		array = [NSMutableArray
+		    arrayWithCapacity: _certificateChain.count];
+		if (array == nil)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
 				      errorCode: initFailedErrorCode];
 
+		firstCertificate = ((OFSecureTransportX509Certificate *)
+		    _certificateChain.firstObject).of_certificate;
+
 		if (CFGetTypeID(firstCertificate) == SecIdentityGetTypeID())
-			CFArrayAppendValue(array, firstCertificate);
+			[array addObject: (id)firstCertificate];
 #ifndef OF_IOS
 		else {
 			SecKeychainRef keychain = [[OFSecureTransportKeychain
@@ -272,38 +275,31 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			SecIdentityRef identity;
 
 			if (SecIdentityCreateWithCertificate(keychain,
-			    firstCertificate, &identity) != noErr) {
-				CFRelease(array);
+			    firstCertificate, &identity) != noErr)
 				@throw [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
 						   host: _host
 					      errorCode: initFailedErrorCode];
-			}
 
-			CFArrayAppendValue(array, identity);
-			CFRelease(identity);
+			[array addObject: (id)identity];
+			[(id)identity release];
 		}
 #else
 		else
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		@try {
-			for (OFSecureTransportX509Certificate *certificate in
-			    _certificateChain) {
-				if (first) {
-					first = false;
-					continue;
-				}
-
-				CFArrayAppendValue(array,
-				    certificate.of_certificate);
+		for (OFSecureTransportX509Certificate *certificate in
+		    _certificateChain) {
+			if (first) {
+				first = false;
+				continue;
 			}
 
-			SSLSetCertificate(_context, array);
-		} @finally {
-			CFRelease(array);
+			[array addObject: (id)certificate.of_certificate];
 		}
+
+		SSLSetCertificate(_context, (CFArrayRef)array);
 	}
 
 	status = SSLHandshake(_context);

@@ -19,8 +19,7 @@
 
 #include "config.h"
 
-/* Needed to avoid the NSArray compatibility alias */
-#include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
 #import "OFSecureTransportX509Certificate.h"
 
@@ -55,7 +54,7 @@ privateKeyFromFile(OFIRI *IRI)
 	SecExternalItemType type = kSecItemTypePrivateKey;
 	OFSecureTransportKeychain *keychain;
 	OFData *data;
-	CFDataRef dataCF;
+	NSData *dataNS;
 	CFArrayRef items;
 	SecKeychainItemRef key;
 
@@ -67,28 +66,25 @@ privateKeyFromFile(OFIRI *IRI)
 
 	data = [OFData dataWithContentsOfIRI: IRI];
 
-	dataCF = CFDataCreate(kCFAllocatorDefault,
-	    data.items, data.count * data.itemSize);
-	if (dataCF == NULL)
+	dataNS = [NSData dataWithBytes: data.items
+				length: data.count * data.itemSize];
+	if (dataNS == nil)
 		@throw [OFOutOfMemoryException exception];
 
-	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, NULL,
-	    keychain.keychain, &items) != noErr) {
-		CFRelease(dataCF);
+	if (SecKeychainItemImport((CFDataRef)dataNS, NULL, &format, &type, 0,
+	    NULL, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
-	}
 
-	CFRelease(dataCF);
+	[(id)items autorelease];
 
-	if (CFArrayGetCount(items) != 1) {
-		CFRelease(items);
+	if ([(id)items count] != 1)
 		@throw [OFInvalidFormatException exception];
-	}
 
-	key = (SecKeychainItemRef)CFRetain(CFArrayGetValueAtIndex(items, 0));
+	key = (SecKeychainItemRef)[[(id)items firstObject] retain];
 
-	CFRelease(items);
 	objc_autoreleasePoolPop(pool);
+
+	[(id)key autorelease];
 
 	return key;
 }
@@ -133,74 +129,48 @@ privateKeyFromFile(OFIRI *IRI)
 	OFSecureTransportKeychain *keychain =
 	    [OFSecureTransportKeychain temporaryKeychain];
 	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	CFDataRef dataCF = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
-	    data.items, data.count * data.itemSize, kCFAllocatorNull);
+	NSData *dataNS = [NSData dataWithBytesNoCopy: (void *)data.items
+					      length: data.count * data.itemSize
+					freeWhenDone: false];
 	SecKeyImportExportParameters params;
 	CFArrayRef items;
-	CFIndex count;
+	size_t i;
 
-	if (dataCF == NULL)
+	if (dataNS == nil)
 		@throw [OFOutOfMemoryException exception];
 
 	memset(&params, 0, sizeof(params));
 
 	if (passphrase != nil) {
-		if (passphrase.UTF8StringLength > LONG_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		params.passphrase = CFStringCreateWithBytes(kCFAllocatorDefault,
-		    (const UInt8 *)passphrase.UTF8String,
-		    (CFIndex)passphrase.UTF8StringLength,
-		    kCFStringEncodingUTF8, false);
-
-		if (params.passphrase == NULL) {
-			CFRelease(dataCF);
+		params.passphrase = [NSString stringWithUTF8String:
+		    passphrase.UTF8String];
+		if (params.passphrase == nil)
 			@throw [OFOutOfMemoryException exception];
-		}
 	}
 
-	if (SecKeychainItemImport(dataCF, NULL, &format, &type, 0, &params,
-	    keychain.keychain, &items) != noErr) {
-		CFRelease(dataCF);
-
-		if (params.passphrase != NULL)
-			CFRelease(params.passphrase);
-
+	if (SecKeychainItemImport((CFDataRef)dataNS, NULL, &format, &type, 0,
+	    &params, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
-	}
 
-	CFRelease(dataCF);
+	[(id)items autorelease];
 
-	if (params.passphrase != NULL)
-		CFRelease(params.passphrase);
-
-	count = CFArrayGetCount(items);
-	for (CFIndex i = 0; i < count; i++)  {
+	i = 0;
+	for (id item_ in (NSArray *)items) {
+		SecCertificateRef item = (SecCertificateRef)item_;
 		SecKeychainItemRef key = NULL;
 
-		@try {
-			SecCertificateRef item =
-			    (SecCertificateRef)CFArrayGetValueAtIndex(items, i);
+		if (privateKeyIRI != nil && i == 0)
+			key = privateKeyFromFile(privateKeyIRI);
 
-			if (privateKeyIRI != nil && i == 0)
-				key = privateKeyFromFile(privateKeyIRI);
+		[chain addObject:
+		    [[[self alloc] of_initWithCertificate: item
+					       privateKey: key
+						 keychain: keychain]
+		    autorelease]];
 
-			[chain addObject:
-			    [[[self alloc] of_initWithCertificate: item
-						       privateKey: key
-							 keychain: keychain]
-			    autorelease]];
-		} @catch (id e) {
-			CFRelease(items);
-
-			if (key != NULL)
-				CFRelease(key);
-
-			@throw e;
-		}
+		i++;
 	}
 
-	CFRelease(items);
 	[chain makeImmutable];
 	objc_autoreleasePoolPop(pool);
 
@@ -236,89 +206,64 @@ privateKeyFromFile(OFIRI *IRI)
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	CFDataRef dataCF = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
-	    data.items, data.count * data.itemSize, kCFAllocatorNull);
-	CFDictionaryRef options = NULL;
+	NSData *dataNS = [NSData dataWithBytesNoCopy: (void *)data.items
+					      length: data.count * data.itemSize
+					freeWhenDone: false];
+	NSDictionary *options = nil;
 	CFArrayRef items;
-	CFIndex count;
 
-	if (dataCF == NULL)
+	if (dataNS == nil)
 		@throw [OFOutOfMemoryException exception];
 
 	if (passphrase != nil) {
-		CFStringRef passphraseCF =
-		    CFStringCreateWithBytes(kCFAllocatorDefault,
-		    (const UInt8 *)passphrase.UTF8String,
-		    (CFIndex)passphrase.UTF8StringLength,
-		    kCFStringEncodingUTF8, false);
-
-		if (passphraseCF == NULL) {
-			CFRelease(dataCF);
+		NSString *passphraseNS = [NSString stringWithUTF8String:
+		    passphrase.UTF8String];
+		if (passphraseNS == nil)
 			@throw [OFOutOfMemoryException exception];
-		}
 
-		options = CFDictionaryCreate(kCFAllocatorDefault,
-		    (const void **)&kSecImportExportPassphrase,
-		    (const void **)&passphraseCF, 1,
-		    &kCFTypeDictionaryKeyCallBacks,
-		    &kCFTypeDictionaryValueCallBacks);
-
-		CFRelease(passphraseCF);
-
-		if (options == NULL) {
-			CFRelease(dataCF);
+		options = [NSDictionary
+		    dictionaryWithObject: passphraseNS
+				  forKey: (NSString *)
+					      kSecImportExportPassphrase];
+		if (options == nil)
 			@throw [OFOutOfMemoryException exception];
-		}
 	}
 
-	if (SecPKCS12Import(dataCF, options, &items) != noErr) {
-		CFRelease(dataCF);
-
-		if (options != NULL)
-			CFRelease(options);
-
+	if (SecPKCS12Import((CFDataRef)dataNS, (CFDictionaryRef)options,
+	    &items) != noErr)
 		@throw [OFInvalidFormatException exception];
-	}
 
-	CFRelease(dataCF);
+	[(id)items autorelease];
 
-	if (options != NULL)
-		CFRelease(options);
+	for (NSDictionary *item in (NSArray *)items) {
+		bool hasIdentity = false;
+		SecCertificateRef cert;
+		NSArray *certs;
+		size_t i;
 
-	count = CFArrayGetCount(items);
-	@try {
-		for (CFIndex i = 0; i < count; i++) {
-			CFDictionaryRef item = CFArrayGetValueAtIndex(items, i);
-			bool hasIdentity = false;
-			SecCertificateRef cert;
-			CFArrayRef certs;
-			CFIndex certsCount;
+		cert = (SecCertificateRef)
+		    [item objectForKey: (NSString *)kSecImportItemIdentity];
+		if (cert != NULL) {
+			[chain addObject: [[[self alloc]
+			    of_initWithCertificate: cert] autorelease]];
+			hasIdentity = true;
+		}
 
-			if ((cert = (SecCertificateRef)CFDictionaryGetValue(
-			    item, kSecImportItemIdentity)) != NULL) {
-				[chain addObject: [[[self alloc]
-				    of_initWithCertificate: cert] autorelease]];
-				hasIdentity = true;
-			}
+		certs = [item objectForKey:
+		    (NSString *)kSecImportItemCertChain];
+		if (certs == nil)
+			continue;
 
-			if ((certs = CFDictionaryGetValue(item,
-			    kSecImportItemCertChain)) == NULL)
+		i = 0;
+		for (id cert_ in certs) {
+			cert = (SecCertificateRef)cert_;
+
+			if (hasIdentity && i == 0)
 				continue;
 
-			certsCount = CFArrayGetCount(certs);
-			for (CFIndex j = 0; j < certsCount; j++) {
-				if (hasIdentity && j == 0)
-					continue;
-
-				cert = (SecCertificateRef)
-				    CFArrayGetValueAtIndex(certs, j);
-
-				[chain addObject: [[[self alloc]
-				    of_initWithCertificate: cert] autorelease]];
-			}
+			[chain addObject: [[[self alloc]
+			    of_initWithCertificate: cert] autorelease]];
 		}
-	} @finally {
-		CFRelease(items);
 	}
 
 	[chain makeImmutable];
@@ -336,11 +281,11 @@ privateKeyFromFile(OFIRI *IRI)
 {
 	self = [super init];
 
-	_certificate = (SecCertificateRef)CFRetain(certificate);
+	_certificate = (SecCertificateRef)[(id)certificate retain];
 
 #ifndef OF_IOS
 	if (privateKey != NULL)
-		_privateKey = (SecKeychainItemRef)CFRetain(privateKey);
+		_privateKey = (SecKeychainItemRef)[(id)privateKey retain];
 
 	_keychain = [keychain retain];
 #endif
@@ -350,11 +295,11 @@ privateKeyFromFile(OFIRI *IRI)
 
 - (void)dealloc
 {
-	CFRelease(_certificate);
+	[(id)_certificate release];
 
 #ifndef OF_IOS
 	if (_privateKey != NULL)
-		CFRelease(_privateKey);
+		[(id)_privateKey release];
 
 	[_keychain release];
 #endif

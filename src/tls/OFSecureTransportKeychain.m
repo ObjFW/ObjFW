@@ -162,7 +162,7 @@ cleanup(void)
 
 	if (_keychain != NULL) {
 		SecKeychainDelete(_keychain);
-		CFRelease(_keychain);
+		[(id)_keychain release];
 	}
 
 	[super dealloc];
