@@ -22,27 +22,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef OF_OBJFW_RUNTIME
-# import "ObjFWRT.h"
-# import "private.h"
-#else
-# import <objc/runtime.h>
-#endif
+#import "ObjFWRT.h"
+#import "private.h"
 
 #import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "OFTLSKey.h"
-#endif
-
-#ifndef OF_OBJFW_RUNTIME
-@interface DummyObject
-- (void)release;
-@end
-#endif
-
-#ifndef OBJC_ERROR
-/* This is also used with old Apple runtimes that lack autorelease pools. */
-# define OBJC_ERROR(...) abort()
 #endif
 
 #if defined(OF_HAVE_COMPILER_TLS)

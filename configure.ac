@@ -710,7 +710,14 @@ case "$objc_runtime" in
 	OBJCFLAGS="$OBJCFLAGS -lobjc"
 
 	AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-		AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
+		dnl If we're using the Apple runtime and it doesn't have
+		dnl autorelease pools, we need to use the implementation from
+		dnl Foundation to make ObjFWBridge work. We can't use the
+		dnl ObjFWRT implementation as that would result in two parallel
+		dnl autorelease pool chains.
+		AC_SUBST(AUTORELEASE_FOUNDATION_M, "autorelease-foundation.m")
+		LIBS="-framework Foundation"
+		FRAMEWORK_LIBS="-framework Foundation"
 	])
 	AC_CHECK_FUNC(objc_constructInstance, [], [
 		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
