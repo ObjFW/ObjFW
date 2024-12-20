@@ -37,6 +37,7 @@ src/runtime/Info.plist
 src/runtime/libobjfwrt.*
 src/test/libobjfwtest.a
 src/tls/Info.plist
+src/tls/ObjFWTLS.oc
 src/tls/libobjfwtls.*
 tests/DerivedData
 tests/EBOOT.PBP

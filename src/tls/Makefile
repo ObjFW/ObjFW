@@ -50,12 +50,26 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I. -I.. -I../.. -I../exceptions -I../runtime ${TLS_CPPFLAGS}
+CPPFLAGS += -I.					\
+	    -I..				\
+	    -I../..				\
+	    -I../exceptions			\
+	    -I../runtime			\
+	    -I../bridge				\
+	    -DOBJFWBRIDGE_LOCAL_INCLUDES	\
+	    ${TLS_CPPFLAGS}
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\
-		  ${TLS_LIBS}			\
+		  -F../bridge			\
+		  ${TLS_FRAMEWORK_LIBS}		\
 		  -framework ObjFW		\
 		  ${RUNTIME_FRAMEWORK_LIBS}	\
 		  ${LIBS}
-LIBS := -L.. -L../runtime ${TLS_LIBS} -lobjfw ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L..		\
+	-L../runtime	\
+	-L../bridge	\
+	${TLS_LIBS}	\
+	-lobjfw		\
+	${RUNTIME_LIBS}	\
+	${LIBS}

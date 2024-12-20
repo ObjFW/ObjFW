@@ -29,6 +29,7 @@
 # import "OFSecureTransportKeychain.h"
 #endif
 #import "OFString.h"
+#import "OFString+NSObject.h"
 
 #include <Security/SecImportExport.h>
 
@@ -141,12 +142,8 @@ privateKeyFromFile(OFIRI *IRI)
 	if (dataNS == nil)
 		@throw [OFOutOfMemoryException exception];
 
-	if (passphrase != nil) {
-		params.passphrase = [NSString stringWithUTF8String:
-		    passphrase.UTF8String];
-		if (params.passphrase == nil)
-			@throw [OFOutOfMemoryException exception];
-	}
+	if (passphrase != nil)
+		params.passphrase = passphrase.NSObject;
 
 	if (SecKeychainItemImport((CFDataRef)dataNS, NULL, &format, &type, 0,
 	    &params, keychain.keychain, &items) != noErr)
@@ -216,13 +213,8 @@ privateKeyFromFile(OFIRI *IRI)
 		@throw [OFOutOfMemoryException exception];
 
 	if (passphrase != nil) {
-		NSString *passphraseNS = [NSString stringWithUTF8String:
-		    passphrase.UTF8String];
-		if (passphraseNS == nil)
-			@throw [OFOutOfMemoryException exception];
-
 		options = [NSDictionary
-		    dictionaryWithObject: passphraseNS
+		    dictionaryWithObject: passphrase.NSObject
 				  forKey: (NSString *)
 					      kSecImportExportPassphrase];
 		if (options == nil)

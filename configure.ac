@@ -1900,11 +1900,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			AC_CHECK_FUNC(SSLHandshake, [
 				tls_support="Secure Transport"
-				TLS_LIBS="-framework Foundation $TLS_LIBS"
-				TLS_LIBS="-framework Security $TLS_LIBS"
+				tmp="-framework Security -framework Foundation"
+				TLS_LIBS="-lobjfwbridge $tmp $TLS_LIBS"
+				tmp="-framework ObjFWBridge $tmp"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
 				AC_SUBST(USE_SRCS_SECURETRANSPORT,
 					'${SRCS_SECURETRANSPORT}')
+				AC_SUBST(OBJFWTLS_PACKAGE_DEPENDS_ON,
+					"package_depends_on ObjFWBridge")
 
 				AC_CHECK_FUNCS(SSLCreateContext)
 			], [])
@@ -1929,7 +1933,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
 				tls_support="OpenSSL"
-				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
+				tmp="-l$ssl -l$crypto"
+				TLS_LIBS="$tmp $TLS_LIBS"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
 				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
 
@@ -1947,6 +1953,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			tls_support="GnuTLS"
 			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
 			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+			TLS_FRAMEWORK_LIBS="$gnutls_LIBS $TLS_FRAMEWORK_LIBS"
 
 			AC_SUBST(USE_SRCS_GNUTLS, '${SRCS_GNUTLS}')
 		], [
@@ -1960,8 +1967,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_CHECK_LIB(mbedtls, mbedtls_net_init, [
 			AC_CHECK_HEADER(mbedtls/ssl.h, [
 				tls_support="Mbed TLS"
-				TLS_LIBS="-lmbedx509 -lmbedcrypto $TLS_LIBS"
-				TLS_LIBS="-lmbedtls $TLS_LIBS"
+				tmp="-lmbedtls -lmbedx509 -lmbedcrypto"
+				TLS_LIBS="$tmp $TLS_LIBS"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
 				AC_SUBST(USE_SRCS_MBEDTLS, '${SRCS_MBEDTLS}')
 			])
@@ -1972,9 +1980,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_SUBST(TLS, "tls")
 		AC_SUBST(TLS_CPPFLAGS)
 		AC_SUBST(TLS_LIBS)
+		AC_SUBST(TLS_FRAMEWORK_LIBS)
 		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
 			[Whether we have an implementation for TLS])
-		AC_CONFIG_FILES(src/tls/Info.plist)
+		AC_CONFIG_FILES([src/tls/ObjFWTLS.oc src/tls/Info.plist])
 
 		OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
 		OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"

@@ -263,6 +263,8 @@ LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 
 include ../buildsys.mk
 
+${TLS}: ${BRIDGE}
+
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
