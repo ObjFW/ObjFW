@@ -25,6 +25,7 @@
 
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFData+NSObject.h"
 #ifndef OF_IOS
 # import "OFSecureTransportKeychain.h"
 #endif
@@ -54,8 +55,7 @@ privateKeyFromFile(OFIRI *IRI)
 	SecExternalFormat format = kSecFormatUnknown;
 	SecExternalItemType type = kSecItemTypePrivateKey;
 	OFSecureTransportKeychain *keychain;
-	OFData *data;
-	NSData *dataNS;
+	NSData *data;
 	CFArrayRef items;
 	SecKeychainItemRef key;
 
@@ -65,14 +65,11 @@ privateKeyFromFile(OFIRI *IRI)
 	pool = objc_autoreleasePoolPush();
 	keychain = [OFSecureTransportKeychain temporaryKeychain];
 
-	data = [OFData dataWithContentsOfIRI: IRI];
-
-	dataNS = [NSData dataWithBytes: data.items
-				length: data.count * data.itemSize];
-	if (dataNS == nil)
+	data = [[OFData dataWithContentsOfIRI: IRI] NSObject];
+	if (data == nil)
 		@throw [OFOutOfMemoryException exception];
 
-	if (SecKeychainItemImport((CFDataRef)dataNS, NULL, &format, &type, 0,
+	if (SecKeychainItemImport((CFDataRef)data, NULL, &format, &type, 0,
 	    NULL, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 
@@ -129,23 +126,20 @@ privateKeyFromFile(OFIRI *IRI)
 	void *pool = objc_autoreleasePoolPush();
 	OFSecureTransportKeychain *keychain =
 	    [OFSecureTransportKeychain temporaryKeychain];
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	NSData *dataNS = [NSData dataWithBytesNoCopy: (void *)data.items
-					      length: data.count * data.itemSize
-					freeWhenDone: false];
+	NSData *data = [[OFData dataWithContentsOfIRI: IRI] NSObject];
 	SecKeyImportExportParameters params = {
 		.version = SEC_KEY_IMPORT_EXPORT_PARAMS_VERSION
 	};
 	CFArrayRef items;
 	size_t i;
 
-	if (dataNS == nil)
+	if (data == nil)
 		@throw [OFOutOfMemoryException exception];
 
 	if (passphrase != nil)
 		params.passphrase = passphrase.NSObject;
 
-	if (SecKeychainItemImport((CFDataRef)dataNS, NULL, &format, &type, 0,
+	if (SecKeychainItemImport((CFDataRef)data, NULL, &format, &type, 0,
 	    &params, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 
@@ -202,14 +196,11 @@ privateKeyFromFile(OFIRI *IRI)
 {
 	OFMutableArray *chain = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	NSData *dataNS = [NSData dataWithBytesNoCopy: (void *)data.items
-					      length: data.count * data.itemSize
-					freeWhenDone: false];
+	NSData *data = [[OFData dataWithContentsOfIRI: IRI] NSObject];
 	NSDictionary *options = nil;
 	CFArrayRef items;
 
-	if (dataNS == nil)
+	if (data == nil)
 		@throw [OFOutOfMemoryException exception];
 
 	if (passphrase != nil) {
@@ -221,7 +212,7 @@ privateKeyFromFile(OFIRI *IRI)
 			@throw [OFOutOfMemoryException exception];
 	}
 
-	if (SecPKCS12Import((CFDataRef)dataNS, (CFDictionaryRef)options,
+	if (SecPKCS12Import((CFDataRef)data, (CFDictionaryRef)options,
 	    &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 

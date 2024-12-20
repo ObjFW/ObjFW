@@ -18,6 +18,8 @@
  */
 
 #import "NSArray+OFObject.h"
+#import "NSData+OFObject.h"
+#import "NSDate+OFObject.h"
 #import "NSDictionary+OFObject.h"
 #import "NSEnumerator+OFObject.h"
 #import "NSNumber+OFObject.h"
@@ -25,9 +27,11 @@
 #import "NSString+OFObject.h"
 
 #import "OFArray+NSObject.h"
-#import "OFException+Swift.h"
+#import "OFData+NSObject.h"
+#import "OFDate+NSObject.h"
 #import "OFDictionary+NSObject.h"
 #import "OFEnumerator+NSObject.h"
+#import "OFException+Swift.h"
 #import "OFNumber+NSObject.h"
 #import "OFSet+NSObject.h"
 #import "OFString+NSObject.h"

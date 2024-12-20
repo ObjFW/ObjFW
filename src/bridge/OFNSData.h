@@ -17,29 +17,26 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import <Foundation/NSArray.h>
-
-#import "NSBridging.h"
+#ifdef OBJFWBRIDGE_LOCAL_INCLUDES
+# import "OFData.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFData.h>
+# endif
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFArray OF_GENERIC(ObjectType);
+@class NSData;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _NSArray_OFObject_reference OF_VISIBILITY_HIDDEN;
-#ifdef __cplusplus
+@interface OFNSData: OFData
+{
+	NSData *_data;
 }
-#endif
 
-/**
- * @category NSArray (OFObject) NSArray+OFObject.h ObjFWBridge/ObjFWBridge.h
- *
- * @brief Support for bridging an NSArray to an @ref OFArray.
- */
-@interface NSArray (OFObject) <NSBridging>
-@property (readonly, nonatomic) OFArray *OFObject;
+- (instancetype)initWithNSData: (NSData *)data;
 @end
 
 OF_ASSUME_NONNULL_END
