@@ -40,9 +40,9 @@ extern int _OFArray_NSObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category OFArray (NSObject) \
- *	     OFArray+NSObject.h ObjFWBridge/OFArray+NSObject.h
- * @brief Support for bridging OFArrays to NSArrays.
+ * @category OFArray (NSObject) OFArray+NSObject.h ObjFWBridge/ObjFWBridge.h
+ *
+ * @brief Support for bridging an @ref OFArray to an NSArray.
  */
 @interface OFArray (NSObject) <OFBridging>
 @property (readonly, nonatomic) NSArray *NSObject;

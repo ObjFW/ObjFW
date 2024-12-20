@@ -40,9 +40,9 @@ extern int _OFSet_NSObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category OFSet (NSObject) \
- *	     OFSet+NSObject.h ObjFWBridge/OFSet+NSObject.h
- * @brief Support for bridging OFSets to NSSets.
+ * @category OFSet (NSObject) OFSet+NSObject.h ObjFWBridge/ObjFWBridge.h
+ *
+ * @brief Support for bridging an @ref OFSet to an NSSet.
  */
 @interface OFSet (NSObject) <OFBridging>
 @property (readonly, nonatomic) NSSet *NSObject;

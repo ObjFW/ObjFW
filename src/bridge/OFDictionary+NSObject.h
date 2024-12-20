@@ -40,10 +40,10 @@ extern int _OFDictionary_NSObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category OFDictionary (NSObject) \
- *	     OFDictionary+NSObject.h ObjFWBridge/OFDictionary+NSObject.h
+ * @category OFDictionary (NSObject)
+ *	     OFDictionary+NSObject.h ObjFWBridge/ObjFWBridge.h
  *
- * @brief Support for bridging OFDictionaries to NSDictionaries.
+ * @brief Support for bridging an @ref OFDictionary to an NSDictionary.
  */
 @interface OFDictionary (NSObject) <OFBridging>
 @property (readonly, nonatomic) NSDictionary *NSObject;

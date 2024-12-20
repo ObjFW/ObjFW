@@ -40,9 +40,10 @@ extern int _OFEnumerator_NSObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category OFEnumerator (NSObject) \
- *	     OFEnumerator+NSObject.h ObjFWBridge/OFEnumerator+NSObject.h
- * @brief Support for bridging OFEnumerators to NSEnumerators.
+ * @category OFEnumerator (NSObject)
+ *	     OFEnumerator+NSObject.h ObjFWBridge/ObjFWBridge.h
+ *
+ * @brief Support for bridging an @ref OFEnumerator to an NSEnumerator.
  */
 @interface OFEnumerator (NSObject) <OFBridging>
 @property (readonly, nonatomic) NSEnumerator *NSObject;

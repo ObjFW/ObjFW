@@ -35,9 +35,9 @@ extern int _NSNumber_OFObject_reference OF_VISIBILITY_HIDDEN;
 
 /**
  * @category NSNumber (OFObject)
- *	     NSNumber+OFObject.h ObjFWBridge/NSNumber+OFObject.h
+ *	     NSNumber+OFObject.h ObjFWBridge/ObjFWBridge.h
  *
- * @brief Support for bridging NSNumbers to OFNumbers.
+ * @brief Support for bridging an NSNumber to an @ref OFNumber.
  */
 @interface NSNumber (OFObject) <NSBridging>
 @property (readonly, nonatomic) OFNumber *OFObject;

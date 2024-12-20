@@ -40,10 +40,9 @@ extern int _OFString_NSObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category OFString (NSObject) \
- *	     OFString+NSObject.h ObjFWBridge/OFString+NSObject.h
+ * @category OFString (NSObject) OFString+NSObject.h ObjFWBridge/ObjFWBridge.h
  *
- * @brief Support for bridging OFStrings to NSStrings.
+ * @brief Support for bridging an @ref OFString to an NSString.
  *
  * Unfortunately, they need to be copied, as NSString is not capable of
  * handling UCS-4 properly (a character of NSString is only 2 bytes, while a

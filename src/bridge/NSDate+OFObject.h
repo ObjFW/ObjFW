@@ -34,10 +34,9 @@ extern int _NSDate_OFObject_reference OF_VISIBILITY_HIDDEN;
 #endif
 
 /**
- * @category NSDate (OFObject)
- *	     NSDate+OFObject.h ObjFWBridge/NSDate+OFObject.h
+ * @category NSDate (OFObject) NSDate+OFObject.h ObjFWBridge/ObjFWBridge.h
  *
- * @brief Support for bridging NSDates to OFDates.
+ * @brief Support for bridging an NSDate to an @ref OFDate.
  */
 @interface NSDate (OFObject) <NSBridging>
 @property (readonly, nonatomic) OFDate *OFObject;
