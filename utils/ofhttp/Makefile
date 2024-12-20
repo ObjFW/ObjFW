@@ -20,8 +20,13 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
-LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
-	-L../../src/runtime ${RUNTIME_LIBS}				\
+LIBS := -L../../src		\
+	-L../../src/runtime	\
+	-L../../src/tls		\
+	-L../../src/bridge	\
+	${OFHTTP_LIBS}		\
+	-lobjfw			\
+	${RUNTIME_LIBS}		\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}

@@ -19,8 +19,13 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofhash/localization\"
-LIBS := -L../../src -L../../src/tls ${OFHASH_LIBS} -lobjfw		\
-	-L../../src/runtime ${RUNTIME_LIBS}				\
+LIBS := -L../../src		\
+	-L../../src/runtime	\
+	-L../../src/tls		\
+	-L../../src/bridge	\
+	${OFHASH_LIBS}		\
+	-lobjfw			\
+	${RUNTIME_LIBS}		\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}
