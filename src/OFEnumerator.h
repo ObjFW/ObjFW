@@ -64,7 +64,9 @@ typedef struct {
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } OFFastEnumerationState;
-#ifndef NSINTEGER_DEFINED
+#ifdef NSINTEGER_DEFINED
+# define OFFastEnumerationState NSFastEnumerationState
+#else
 typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 

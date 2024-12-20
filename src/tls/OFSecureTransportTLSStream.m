@@ -329,13 +329,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			      errorCode: statusToErrorCode(status)];
 
 	if (server) {
-		if ([_delegate respondsToSelector: @selector(
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
 			[_delegate streamDidPerformServerHandshake: self
 							 exception: exception];
 	} else {
-		if ([_delegate respondsToSelector: @selector(stream:
-		    didPerformClientHandshakeWithHost:exception:)])
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
 			[_delegate		       stream: self
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
@@ -378,13 +378,13 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	}
 
 	if (_server) {
-		if ([_delegate respondsToSelector: @selector(
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
 			[_delegate streamDidPerformServerHandshake: self
 							 exception: exception];
 	} else {
-		if ([_delegate respondsToSelector: @selector(stream:
-		    didPerformClientHandshakeWithHost:exception:)])
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
 			[_delegate		       stream: self
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
