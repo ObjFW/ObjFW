@@ -132,14 +132,14 @@ privateKeyFromFile(OFIRI *IRI)
 	NSData *dataNS = [NSData dataWithBytesNoCopy: (void *)data.items
 					      length: data.count * data.itemSize
 					freeWhenDone: false];
-	SecKeyImportExportParameters params;
+	SecKeyImportExportParameters params = {
+		.version = SEC_KEY_IMPORT_EXPORT_PARAMS_VERSION
+	};
 	CFArrayRef items;
 	size_t i;
 
 	if (dataNS == nil)
 		@throw [OFOutOfMemoryException exception];
-
-	memset(&params, 0, sizeof(params));
 
 	if (passphrase != nil) {
 		params.passphrase = [NSString stringWithUTF8String:
