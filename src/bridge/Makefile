@@ -10,6 +10,7 @@ LIB_MINOR = ${OBJFWBRIDGE_LIB_MINOR}
 LIB_PATCH = ${OBJFWBRIDGE_LIB_PATCH}
 
 SRCS = OFArray+NSObject.m	\
+       OFDate+NSObject.m	\
        OFEnumerator+NSObject.m	\
        OFException+Swift.m	\
        OFDictionary+NSObject.m	\
@@ -17,6 +18,7 @@ SRCS = OFArray+NSObject.m	\
        OFSet+NSObject.m		\
        OFString+NSObject.m	\
        NSArray+OFObject.m	\
+       NSDate+OFObject.m	\
        NSDictionary+OFObject.m	\
        NSEnumerator+OFObject.m	\
        NSNumber+OFObject.m	\
