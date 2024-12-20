@@ -1,6 +1,7 @@
 include ../../extra.mk
 
-DISTCLEAN = Info.plist
+DISTCLEAN = Info.plist	\
+	    ObjFWHID.oc
 
 SHARED_LIB = ${OBJFWHID_SHARED_LIB}
 STATIC_LIB = ${OBJFWHID_STATIC_LIB}

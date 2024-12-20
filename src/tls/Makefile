@@ -1,6 +1,7 @@
 include ../../extra.mk
 
-DISTCLEAN = Info.plist
+DISTCLEAN = Info.plist	\
+	    ObjFWTLS.oc
 
 SHARED_LIB = ${OBJFWTLS_SHARED_LIB}
 STATIC_LIB = ${OBJFWTLS_STATIC_LIB}
