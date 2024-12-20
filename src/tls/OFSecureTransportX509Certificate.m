@@ -81,7 +81,7 @@ privateKeyFromFile(OFIRI *IRI)
 	if ([(id)items count] != 1)
 		@throw [OFInvalidFormatException exception];
 
-	key = (SecKeychainItemRef)[[(id)items firstObject] retain];
+	key = (SecKeychainItemRef)[[(id)items objectAtIndex: 0] retain];
 
 	objc_autoreleasePoolPop(pool);
 
