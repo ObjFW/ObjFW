@@ -127,11 +127,11 @@ cleanup(void)
 			 * the user would be asked to enter the keychain's
 			 * password via a popup - a password we randomly
 			 * generated and the user cannot know.
-			 * If setting this fails, ignore it, as having the
-			 * keychain automatically lock and become unusable
-			 * after a while is still better than it never working.
 			 */
-			SecKeychainSetSettings(keychain->_keychain, &settings);
+			if (SecKeychainSetSettings(keychain->_keychain,
+			    &settings) != noErr)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: self];
 
 			objc_autoreleasePoolPop(pool);
 
