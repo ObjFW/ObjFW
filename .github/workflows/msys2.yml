@@ -6,12 +6,8 @@ jobs:
     strategy:
       matrix:
         sys:
-          # Broken: Exceptions with ARC fail. Works with other mingw-w64
-          # distributions.
-          #- mingw32
           - mingw64
           - ucrt64
-          - clang32
           - clang64
     steps:
       - uses: actions/checkout@v4
