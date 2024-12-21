@@ -19,7 +19,7 @@
 
 #import <Foundation/NSEnumerator.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -39,7 +39,7 @@ extern int _NSEnumerator_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an NSEnumerator to an @ref OFEnumerator.
  */
-@interface NSEnumerator (OFObject) <NSBridging>
+@interface NSEnumerator (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFEnumerator *OFObject;
 @end
 

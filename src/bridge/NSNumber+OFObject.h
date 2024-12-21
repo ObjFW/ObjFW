@@ -19,7 +19,7 @@
 
 #import <Foundation/NSValue.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -39,7 +39,7 @@ extern int _NSNumber_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an NSNumber to an @ref OFNumber.
  */
-@interface NSNumber (OFObject) <NSBridging>
+@interface NSNumber (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFNumber *OFObject;
 @end
 

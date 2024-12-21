@@ -19,7 +19,7 @@
 
 #import <Foundation/NSString.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -42,7 +42,7 @@ extern int _NSString_OFObject_reference OF_VISIBILITY_HIDDEN;
  * handling UCS-4 properly (a character of NSString is only 2 bytes, while a
  * character of OFString is 4).
  */
-@interface NSString (OFObject) <NSBridging>
+@interface NSString (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFString *OFObject;
 @end
 

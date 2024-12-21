@@ -28,8 +28,8 @@ SRCS = OFArray+NSObject.m	\
        NSString+OFObject.m
 
 INCLUDES := ${SRCS:.m=.h}	\
-	    NSBridging.h	\
-	    OFBridging.h	\
+	    OFNSToOFBridging.h	\
+	    OFOFToNSBridging.h	\
 	    ObjFWBridge.h
 
 SRCS += NSOFArray.m		\

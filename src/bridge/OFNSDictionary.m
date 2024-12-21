@@ -22,8 +22,8 @@
 #import "OFNSDictionary.h"
 #import "NSEnumerator+OFObject.h"
 
-#import "NSBridging.h"
-#import "OFBridging.h"
+#import "OFNSToOFBridging.h"
+#import "OFOFToNSBridging.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -56,12 +56,14 @@
 {
 	id object;
 
-	if ([(OFObject *)key conformsToProtocol: @protocol(OFBridging)])
+	if ([(id <OFObject>)key conformsToProtocol:
+	    @protocol(OFOFToNSBridging)])
 		key = [key NSObject];
 
 	object = [_dictionary objectForKey: key];
 
-	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
+	if ([(id <NSObject>)object conformsToProtocol:
+	    @protocol(OFNSToOFBridging)])
 		return [object OFObject];
 
 	return object;

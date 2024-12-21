@@ -30,19 +30,19 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @protocol OFBridging OFBridging.h ObjFWBridge/ObjFWBridge.h
+ * @protocol OFNSToOFBridging OFNSToOFBridging.h ObjFWBridge/ObjFWBridge.h
  *
- * @brief A protocol implemented by classes supporting bridging ObjFW objects
- *	  to Foundation objects.
+ * @brief A protocol implemented by classes supporting bridging Foundation
+ *	  objects to ObjFW objects.
  */
-@protocol OFBridging
+@protocol OFNSToOFBridging
 /**
- * @brief An instance of a Foundation object corresponding to the object.
+ * @brief An instance of an ObjFW object corresponding to the object.
  *
  * If possible, the original object is wrapped. If this is not possible, an
  * autoreleased copy is created.
  */
-@property (readonly, nonatomic) id NSObject;
+@property (readonly, nonatomic) id OFObject;
 @end
 
 OF_ASSUME_NONNULL_END

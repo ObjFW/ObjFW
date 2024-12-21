@@ -21,8 +21,8 @@
 #import "OFEnumerator+NSObject.h"
 #import "OFSet.h"
 
-#import "OFBridging.h"
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
+#import "OFOFToNSBridging.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -46,7 +46,8 @@
 {
 	id originalObject = object;
 
-	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
+	if ([(id <NSObject>)object conformsToProtocol:
+	    @protocol(OFNSToOFBridging)])
 		object = [object OFObject];
 
 	if ([_set containsObject: object])

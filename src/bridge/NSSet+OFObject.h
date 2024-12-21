@@ -19,7 +19,7 @@
 
 #import <Foundation/NSSet.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -38,7 +38,7 @@ extern int _NSSet_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an NSSet to an @ref OFSet.
  */
-@interface NSSet (OFObject) <NSBridging>
+@interface NSSet (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFSet *OFObject;
 @end
 

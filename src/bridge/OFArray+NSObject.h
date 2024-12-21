@@ -27,7 +27,7 @@
 # endif
 #endif
 
-#import "OFBridging.h"
+#import "OFOFToNSBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -44,7 +44,7 @@ extern int _OFArray_NSObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an @ref OFArray to an NSArray.
  */
-@interface OFArray (NSObject) <OFBridging>
+@interface OFArray (NSObject) <OFOFToNSBridging>
 @property (readonly, nonatomic) NSArray *NSObject;
 @end
 

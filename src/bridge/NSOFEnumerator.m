@@ -20,8 +20,8 @@
 #import "NSOFEnumerator.h"
 #import "OFEnumerator.h"
 
-#import "NSBridging.h"
-#import "OFBridging.h"
+#import "OFNSToOFBridging.h"
+#import "OFOFToNSBridging.h"
 
 @implementation NSOFEnumerator
 - (instancetype)initWithOFEnumerator: (OFEnumerator *)enumerator
@@ -43,7 +43,8 @@
 {
 	id object = [_enumerator nextObject];
 
-	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
+	if ([(id <OFObject>)object conformsToProtocol:
+	    @protocol(OFOFToNSBridging)])
 		return [object NSObject];
 
 	return object;

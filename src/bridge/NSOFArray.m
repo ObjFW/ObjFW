@@ -19,7 +19,7 @@
 
 #import "NSOFArray.h"
 #import "OFArray.h"
-#import "OFBridging.h"
+#import "OFOFToNSBridging.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -43,7 +43,8 @@
 {
 	id object = [_array objectAtIndex: idx];
 
-	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
+	if ([(id <OFObject>)object conformsToProtocol:
+	    @protocol(OFOFToNSBridging)])
 		return [object NSObject];
 
 	return object;

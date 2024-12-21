@@ -22,8 +22,7 @@
 #import "OFNSSet.h"
 #import "NSEnumerator+OFObject.h"
 
-#import "OFBridging.h"
-#import "NSBridging.h"
+#import "OFOFToNSBridging.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -58,7 +57,8 @@
 	void *pool = objc_autoreleasePoolPush();
 	bool ret;
 
-	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
+	if ([(id <OFObject>)object conformsToProtocol:
+	    @protocol(OFOFToNSBridging)])
 		object = [object NSObject];
 
 	ret = [_set containsObject: object];

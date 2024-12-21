@@ -19,7 +19,7 @@
 
 #import <Foundation/NSData.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -38,7 +38,7 @@ extern int _NSData_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging NSData to @ref OFData.
  */
-@interface NSData (OFObject) <NSBridging>
+@interface NSData (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFData *OFObject;
 @end
 

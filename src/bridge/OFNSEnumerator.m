@@ -21,8 +21,8 @@
 
 #import "OFNSEnumerator.h"
 
-#import "NSBridging.h"
-#import "OFBridging.h"
+#import "OFNSToOFBridging.h"
+#import "OFOFToNSBridging.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -55,7 +55,8 @@
 {
 	id object = [_enumerator nextObject];
 
-	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
+	if ([(id <NSObject>)object conformsToProtocol:
+	    @protocol(OFNSToOFBridging)])
 		return [object OFObject];
 
 	return object;

@@ -19,7 +19,7 @@
 
 #import <Foundation/NSDate.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -38,7 +38,7 @@ extern int _NSDate_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an NSDate to an @ref OFDate.
  */
-@interface NSDate (OFObject) <NSBridging>
+@interface NSDate (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFDate *OFObject;
 @end
 

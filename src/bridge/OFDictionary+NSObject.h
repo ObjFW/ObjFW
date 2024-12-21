@@ -27,7 +27,7 @@
 # endif
 #endif
 
-#import "OFBridging.h"
+#import "OFOFToNSBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -45,7 +45,7 @@ extern int _OFDictionary_NSObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an @ref OFDictionary to an NSDictionary.
  */
-@interface OFDictionary (NSObject) <OFBridging>
+@interface OFDictionary (NSObject) <OFOFToNSBridging>
 @property (readonly, nonatomic) NSDictionary *NSObject;
 @end
 

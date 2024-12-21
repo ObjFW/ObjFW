@@ -19,7 +19,7 @@
 
 #import <Foundation/NSDictionary.h>
 
-#import "NSBridging.h"
+#import "OFNSToOFBridging.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -39,7 +39,7 @@ extern int _NSDictionary_OFObject_reference OF_VISIBILITY_HIDDEN;
  *
  * @brief Support for bridging an NSDictionary to an @ref OFDictionary.
  */
-@interface NSDictionary (OFObject) <NSBridging>
+@interface NSDictionary (OFObject) <OFNSToOFBridging>
 @property (readonly, nonatomic) OFDictionary *OFObject;
 @end
 
