@@ -20,6 +20,8 @@
 #import "NSOFData.h"
 #import "OFData.h"
 
+#import "OFOutOfRangeException.h"
+
 @implementation NSOFData
 - (instancetype)initWithOFData: (OFData *)data
 {
@@ -43,6 +45,11 @@
 
 - (NSUInteger)length
 {
-	return _data.count * _data.itemSize;
+	size_t length = _data.count * _data.itemSize;
+
+	if (length > NSUIntegerMax)
+		@throw [OFOutOfRangeException exception];
+
+	return length;
 }
 @end
