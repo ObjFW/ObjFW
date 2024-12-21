@@ -1,6 +1,6 @@
 PROJECT_NAME = "ObjFW"
 OUTPUT_DIRECTORY = docs/
-INPUT = src src/exceptions src/runtime src/test src/hid
+INPUT = src src/exceptions src/runtime src/test src/bridge src/hid
 FILE_PATTERNS = *.h *.m
 HTML_OUTPUT = .
 HAVE_DOT = NO
