@@ -27,6 +27,7 @@
 #import "OFNumber.h"
 #import "OFStdIOStream.h"
 #import "OFThread.h"
+#import "OFTimer.h"
 
 #import "OHExtendedGamepad.h"
 #import "OHGameController.h"
@@ -184,6 +185,64 @@ static void printProfile(id <OHGameControllerProfile> profile)
 }
 
 @implementation GameControllerTests
+- (void)updateOutput
+{
+	OHLeftJoyCon *leftJoyCon = nil;
+	OHRightJoyCon *rightJoyCon = nil;
+
+	if (_lastControllersUpdate == nil ||
+	    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
+		[_controllers release];
+		[_lastControllersUpdate release];
+
+		_controllers = [[OHGameController controllers] retain];
+		_lastControllersUpdate = [[OFDate alloc] init];
+
+		[OFStdOut clear];
+	}
+
+	[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
+
+	for (OHGameController *controller in _controllers) {
+		id <OHGameControllerProfile> profile = controller.profile;
+
+		[OFStdOut setForegroundColor: [OFColor green]];
+		[OFStdOut writeLine: controller.description];
+
+		@try {
+			[controller updateState];
+		} @catch (OFReadFailedException *e) {
+			[OFStdOut setForegroundColor: [OFColor red]];
+			[OFStdOut writeString: e.description];
+			continue;
+		}
+
+		printProfile(profile);
+
+		if ([profile isKindOfClass: [OHLeftJoyCon class]])
+			leftJoyCon = (OHLeftJoyCon *)profile;
+		else if ([profile isKindOfClass: [OHRightJoyCon class]])
+			rightJoyCon = (OHRightJoyCon *)profile;
+	}
+
+	if (leftJoyCon != nil && rightJoyCon != nil) {
+		OHJoyConPair *joyConPair = [OHJoyConPair
+		    gamepadWithLeftJoyCon: leftJoyCon
+			      rightJoyCon: rightJoyCon];
+
+		[OFStdOut setForegroundColor: [OFColor green]];
+		[OFStdOut writeLine: @"Joy-Con Pair"];
+
+		printProfile(joyConPair);
+	}
+
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	[OFThread waitForVerticalBlank];
+#elif defined(OF_NINTENDO_SWITCH)
+	consoleUpdate(NULL);
+#endif
+}
+
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
@@ -193,69 +252,17 @@ static void printProfile(id <OHGameControllerProfile> profile)
 	consoleInit(NULL);
 
 	while (appletMainLoop()) {
-#else
-	for (;;) {
-#endif
 		void *pool = objc_autoreleasePoolPush();
-		OHLeftJoyCon *leftJoyCon = nil;
-		OHRightJoyCon *rightJoyCon = nil;
 
-		if (_lastControllersUpdate == nil ||
-		    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
-			[_controllers release];
-			[_lastControllersUpdate release];
-
-			_controllers = [[OHGameController controllers] retain];
-			_lastControllersUpdate = [[OFDate alloc] init];
-
-			[OFStdOut clear];
-		}
-
-		[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
-
-		for (OHGameController *controller in _controllers) {
-			id <OHGameControllerProfile> profile =
-			    controller.profile;
-
-			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeLine: controller.description];
-
-			@try {
-				[controller updateState];
-			} @catch (OFReadFailedException *e) {
-				[OFStdOut setForegroundColor: [OFColor red]];
-				[OFStdOut writeString: e.description];
-				continue;
-			}
-
-			printProfile(profile);
-
-			if ([profile isKindOfClass: [OHLeftJoyCon class]])
-				leftJoyCon = (OHLeftJoyCon *)profile;
-			else if ([profile isKindOfClass: [OHRightJoyCon class]])
-				rightJoyCon = (OHRightJoyCon *)profile;
-		}
-
-		if (leftJoyCon != nil && rightJoyCon != nil) {
-			OHJoyConPair *joyConPair = [OHJoyConPair
-			    gamepadWithLeftJoyCon: leftJoyCon
-				      rightJoyCon: rightJoyCon];
-
-			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeLine: @"Joy-Con Pair"];
-
-			printProfile(joyConPair);
-		}
-
-#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
-		[OFThread waitForVerticalBlank];
-#elif defined(OF_NINTENDO_SWITCH)
-		consoleUpdate(NULL);
-#else
-		[OFThread sleepForTimeInterval: 1.f / 60.f];
-#endif
+		[self updateOutput];
 
 		objc_autoreleasePoolPop(pool);
 	}
+#else
+	[OFTimer scheduledTimerWithTimeInterval: 1.f / 60.f
+					 target: self
+				       selector: @selector(updateOutput)
+					repeats: true];
+#endif
 }
 @end
