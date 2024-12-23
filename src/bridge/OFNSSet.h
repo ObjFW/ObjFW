@@ -17,15 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifdef OBJFWBRIDGE_LOCAL_INCLUDES
-# import "OFSet.h"
-#else
-# if defined(__has_feature) && __has_feature(modules)
-@import ObjFW;
-# else
-#  import <ObjFW/OFSet.h>
-# endif
-#endif
+#import "OFSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

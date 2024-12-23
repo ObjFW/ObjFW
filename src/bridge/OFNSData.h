@@ -17,15 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifdef OBJFWBRIDGE_LOCAL_INCLUDES
-# import "OFData.h"
-#else
-# if defined(__has_feature) && __has_feature(modules)
-@import ObjFW;
-# else
-#  import <ObjFW/OFData.h>
-# endif
-#endif
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
