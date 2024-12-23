@@ -33,6 +33,7 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFInitializationFailedException.h"
@@ -51,9 +52,9 @@
 #endif
 
 @implementation OFSelectKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		FD_ZERO(&_readFDs);
@@ -188,7 +189,7 @@
 #endif
 	void *pool;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 #ifdef FD_COPY

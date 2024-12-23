@@ -27,6 +27,7 @@
 
 #import "OFPollKernelEventObserver.h"
 #import "OFData.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFObserveKernelEventsFailedException.h"
@@ -38,9 +39,9 @@
 #endif
 
 @implementation OFPollKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
@@ -171,7 +172,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	int events;
 	size_t nFDs;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 	pool = objc_autoreleasePoolPush();

@@ -21,8 +21,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMutableArray OF_GENERIC(ObjectType);
-
 @interface OFKqueueKernelEventObserver: OFKernelEventObserver
 {
 	int _kernelQueue;

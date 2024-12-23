@@ -41,9 +41,9 @@
 static const OFMapTableFunctions mapFunctions = { NULL };
 
 @implementation OFEpollKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct epoll_event event;
@@ -197,7 +197,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	struct epoll_event eventList[eventListSize];
 	int events;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 	events = epoll_wait(_epfd, eventList, eventListSize,

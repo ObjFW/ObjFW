@@ -80,6 +80,9 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 #endif
 }
+
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)initWithMode: (OFRunLoopMode)mode;
 @end
 
 #ifdef OF_HAVE_SOCKETS
@@ -242,6 +245,11 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoopState
 - (instancetype)init
 {
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithMode: (OFRunLoopMode)mode
+{
 	self = [super init];
 
 	@try {
@@ -253,6 +261,10 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_SOCKETS
 		_readQueues = [[OFMutableDictionary alloc] init];
 		_writeQueues = [[OFMutableDictionary alloc] init];
+
+		if ([OFKernelEventObserver handlesForeignEvents])
+			_kernelEventObserver = [[OFKernelEventObserver alloc]
+			    initWithRunLoopMode: mode];
 #endif
 #if defined(OF_HAVE_THREADS)
 		_condition = [[OFCondition alloc] init];
@@ -1232,7 +1244,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		state = [self->_states objectForKey: mode];
 
 		if (create && state == nil) {
-			state = [[OFRunLoopState alloc] init];
+			state = [[OFRunLoopState alloc] initWithMode: mode];
 			@try {
 				[self->_states setObject: state forKey: mode];
 			} @finally {
@@ -1243,7 +1255,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 #ifdef OF_HAVE_SOCKETS
 		if (createObserver && state->_kernelEventObserver == nil) {
 			state->_kernelEventObserver =
-			    [[OFKernelEventObserver alloc] init];
+			    [[OFKernelEventObserver alloc]
+			    initWithRunLoopMode: mode];
 			state->_kernelEventObserver.delegate = state;
 		}
 #endif
@@ -1630,7 +1643,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 		_states = [[OFMutableDictionary alloc] init];
 
-		state = [[OFRunLoopState alloc] init];
+		state = [[OFRunLoopState alloc]
+		    initWithMode: OFDefaultRunLoopMode];
 		@try {
 			[_states setObject: state forKey: OFDefaultRunLoopMode];
 		} @finally {

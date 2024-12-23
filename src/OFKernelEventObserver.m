@@ -84,7 +84,17 @@
 	return [super alloc];
 }
 
++ (bool)handlesForeignEvents
+{
+	return false;
+}
+
 - (instancetype)init
+{
+	return [self initWithRunLoopMode: nil];
+}
+
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	self = [super init];
 
@@ -198,7 +208,7 @@
 	[_writeObjects removeObjectIdenticalTo: object];
 }
 
-- (bool)of_processReadBuffers
+- (bool)processReadBuffers
 {
 	void *pool = objc_autoreleasePoolPush();
 	bool foundInReadBuffer = false;

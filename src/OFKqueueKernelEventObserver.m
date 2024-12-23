@@ -40,9 +40,9 @@
 #define eventListSize 64
 
 @implementation OFKqueueKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct kevent event;
@@ -166,7 +166,7 @@
 	struct kevent eventList[eventListSize];
 	int events;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 	timeout.tv_sec = (time_t)timeInterval;

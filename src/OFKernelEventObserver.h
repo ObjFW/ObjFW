@@ -21,6 +21,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFSocket.h"
 #endif
+#import "OFRunLoop.h"
 
 #ifdef OF_AMIGAOS
 # include <exec/types.h>
@@ -148,12 +149,49 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic) ULONG execSignalMask;
 # endif
 
+# ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) bool handlesForeignEvents;
+# endif
+
 /**
  * @brief Creates a new OFKernelEventObserver.
  *
  * @return A new, autoreleased OFKernelEventObserver
  */
 + (instancetype)observer;
+
+/**
+ * @brief Whether the kernel event observer handles foreign events.
+ *
+ * This is the case if the kernel event observer also handles events from a
+ * foreign run loop and used by @ref OFRunLoop to determine whether the kernel
+ * event observer should also be called even when there are currently no
+ * sockets being observed.
+ */
++ (bool)handlesForeignEvents;
+
+/**
+ * @brief Initializes the @ref OFKernelEventObserver.
+ *
+ * @return An initialized @ref OFKernelEventObserver
+ */
+- (instancetype)init;
+
+/**
+ * @brief Initializes the @ref OFKernelEventObserver.
+ *
+ * @note Subclasses must override this method, but it must not be called!
+ *	 Instead, @ref init should be called.
+ *
+ * @param runLoopMode This is used by @ref OFRunLoop if the kernel event
+ *		      observer being created is for a run loop mode. This can
+ *		      be used by subclasses of @ref OFKernelEventObserver to
+ *		      integrate @ref OFRunLoop with a foreign run loop. If the
+ *		      @ref OFKernelEventObserver is not being created by
+ *		      @ref OFRunLoop, it is `nil`.
+ * @return An initialized @ref OFKernelEventObserver
+ */
+- (instancetype)initWithRunLoopMode: (nullable OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Adds an object to observe for reading.
@@ -245,9 +283,14 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief This method should be called by subclasses in @ref observeUntilDate:
  *	  as the first thing to handle all sockets that currently have data in
- *	  the read buffer.
+ *	  the read buffer and should return early if @ref processReadBuffers
+ *	  returned true.
+ *
+ * @note You should not call this manually!
+ *
+ * @return Whether at least one read buffer was handled
  */
-- (bool)of_processReadBuffers;
+- (bool)processReadBuffers;
 @end
 #endif
 
