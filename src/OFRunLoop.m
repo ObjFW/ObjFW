@@ -262,9 +262,11 @@ static OFRunLoop *mainRunLoop = nil;
 		_readQueues = [[OFMutableDictionary alloc] init];
 		_writeQueues = [[OFMutableDictionary alloc] init];
 
-		if ([OFKernelEventObserver handlesForeignEvents])
+		if ([OFKernelEventObserver handlesForeignEvents]) {
 			_kernelEventObserver = [[OFKernelEventObserver alloc]
 			    initWithRunLoopMode: mode];
+			_kernelEventObserver.delegate = self;
+		}
 #endif
 #if defined(OF_HAVE_THREADS)
 		_condition = [[OFCondition alloc] init];
