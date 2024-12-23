@@ -216,6 +216,13 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	       addTypes: (CFOptionFlags)addTypes
 	    removeTypes: (CFOptionFlags)removeTypes
 {
+	/*
+	 * This method destroys the old CFSocket and CFRunLoopSource and creates
+	 * new ones. While this might sound inefficient, there is unfortunately
+	 * no other way, as using CFSocket{Enable,Disable}CallBacks from a
+	 * callback does not work as expected.
+	 */
+
 	void *pool = objc_autoreleasePoolPush();
 	CFSocketContext context = {
 		.version = 0,

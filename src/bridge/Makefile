@@ -32,16 +32,16 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    OFOFToNSBridging.h	\
 	    ObjFWBridge.h
 
-SRCS += NSOFArray.m				\
-	NSOFData.m				\
-	NSOFDictionary.m			\
-	NSOFEnumerator.m			\
-	NSOFSet.m				\
-	OFNSArray.m				\
-	OFNSData.m				\
-	OFNSDictionary.m			\
-	OFNSEnumerator.m			\
-	OFNSSet.m				\
+SRCS += NSOFArray.m		\
+	NSOFData.m		\
+	NSOFDictionary.m	\
+	NSOFEnumerator.m	\
+	NSOFSet.m		\
+	OFNSArray.m		\
+	OFNSData.m		\
+	OFNSDictionary.m	\
+	OFNSEnumerator.m	\
+	OFNSSet.m		\
 	${USE_SRCS_SOCKETS}
 SRCS_SOCKETS = OFCFRunLoopKernelEventObserver.m
 
