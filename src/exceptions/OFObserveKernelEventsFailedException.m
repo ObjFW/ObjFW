@@ -68,8 +68,13 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"An observer of class %@ failed to observe: %@",
-	    _observer.class, OFStrError(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"An observer of class %@ failed to observe: %@",
+		    _observer.class, OFStrError(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"An observer of class %@ failed to observe",
+		    _observer.class];
 }
 @end
