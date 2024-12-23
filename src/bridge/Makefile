@@ -37,12 +37,13 @@ SRCS += NSOFArray.m				\
 	NSOFDictionary.m			\
 	NSOFEnumerator.m			\
 	NSOFSet.m				\
-	OFCFRunLoopKernelEventObserver.m	\
 	OFNSArray.m				\
 	OFNSData.m				\
 	OFNSDictionary.m			\
 	OFNSEnumerator.m			\
-	OFNSSet.m
+	OFNSSet.m				\
+	${USE_SRCS_SOCKETS}
+SRCS_SOCKETS = OFCFRunLoopKernelEventObserver.m
 
 includesubdir = ObjFWBridge
 
