@@ -21,6 +21,8 @@
 
 #include "unistd_wrapper.h"
 
+#include <float.h>
+
 #import "OFCFRunLoopKernelEventObserver.h"
 #import "OFMapTable.h"
 #import "OFPair.h"
@@ -323,6 +325,10 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 {
 	if ([self processReadBuffers])
 		return;
+
+	if (timeInterval == -1)
+		/* There is no value for infinite, so make it really long. */
+		timeInterval = DBL_MAX;
 
 	CFRunLoopRunInMode(_runLoopMode, timeInterval, true);
 }
