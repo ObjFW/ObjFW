@@ -97,6 +97,7 @@ static void
 callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
     const void *data, void *info_)
 {
+	void *pool = objc_autoreleasePoolPush();
 	OFPair *info = info_;
 	id object;
 	OFCFRunLoopKernelEventObserver *observer;
@@ -120,6 +121,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		[observer->_delegate objectIsReadyForReading: object];
 	if (type & kCFSocketWriteCallBack)
 		[observer->_delegate objectIsReadyForWriting: object];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 + (unsigned int)of_createID
