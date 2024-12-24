@@ -33,6 +33,7 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFIRI.h"
+#import "OFIRI+Private.h"
 #import "OFNumber.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
@@ -480,8 +481,19 @@ normalizedKey(OFString *key)
 				   options: OFStringSearchBackwards].location;
 
 		if (pos != OFNotFound) {
+			OFString *host = [value substringToIndex: pos];
+
+			if ([host hasPrefix: @"["] && [host hasSuffix: @"]"]) {
+				OFString *IPv6 = [host substringWithRange:
+				    OFMakeRange(1, host.length - 2)];
+
+				if (_OFIRIIsIPv6Host(IPv6))
+					host = IPv6;
+
+			}
+
 			[_host release];
-			_host = [[value substringToIndex: pos] retain];
+			_host = [host retain];
 
 			@try {
 				unsigned long long portTmp =
