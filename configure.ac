@@ -494,12 +494,14 @@ AS_IF([test x"$enable_shared" != x"no"], [
 
 AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-framework ObjFWHID $TESTS_LIBS"
-	TESTS_LIBS="-F../src -F../src/runtime -F../src/hid $TESTS_LIBS"
+	TESTS_LIBS="-framework ObjFWHID \${HID_FRAMEWORK_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
+	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="-L../src/runtime \${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
-	TESTS_LIBS="-L../src/hid -lobjfwhid $HID_LIBS $TESTS_LIBS"
+	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
+	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
@@ -2461,6 +2463,15 @@ linux*)
 mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
 	;;
+darwin*)
+	AC_CHECK_HEADERS(GameController/GameController.h, [
+		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
+		tmp="-framework GameController"
+		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
+		tmp="$tmp -framework ObjFWBridge"
+		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
+	])
+	;;
 esac
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
@@ -2503,6 +2514,7 @@ AC_SUBST(OBJFW_LDFLAGS)
 AC_SUBST(OBJFW_LIBS)
 
 AC_SUBST(HID_LIBS)
+AC_SUBST(HID_FRAMEWORK_LIBS)
 AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([

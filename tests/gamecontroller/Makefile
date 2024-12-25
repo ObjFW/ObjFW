@@ -24,6 +24,7 @@ run:
 	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}
 	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll
 	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib
+	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib
 	if test -f ../../src/libobjfw.so; then \
 		${LN_S} ../../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../../src/libobjfw.so \
@@ -76,8 +77,11 @@ run:
 		${LN_S} ../../src/hid/libobjfwhid.dylib \
 		    libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
 	fi
+	if test -f ../../src/bridge/libobjfwbridge.dylib; then \
+		${LN_S} ../../src/bridge/libobjfwbridge.dylib \
+		    libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib; \
+	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
-	DYLD_FRAMEWORK_PATH=../../src:../../src/runtime:../../src/hid$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
@@ -94,6 +98,7 @@ run:
 	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
 	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll; \
 	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
+	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
 boot.dol: ${PROG_NOINST}
@@ -120,8 +125,8 @@ CPPFLAGS += -I../../src			\
 	    -I../../src/runtime		\
 	    -I../..			\
 	    -DOBJFWHID_LOCAL_INCLUDES
-LIBS := -L../../src/hid -lobjfwhid ${HID_LIBS}	\
-	-L../../src -lobjfw			\
-	-L../../src/runtime ${RUNTIME_LIBS}	\
+LIBS := -L../../src/hid -L../../src/bridge -lobjfwhid ${HID_LIBS}	\
+	-L../../src -lobjfw						\
+	-L../../src/runtime ${RUNTIME_LIBS}				\
 	${LIBS}
 LD = ${OBJC}

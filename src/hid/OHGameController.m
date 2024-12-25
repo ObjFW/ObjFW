@@ -42,6 +42,9 @@
 #ifdef OF_NINTENDO_SWITCH
 # import "OHNintendoSwitchGameController.h"
 #endif
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OHGCFGameController.h"
+#endif
 
 const uint16_t OHVendorIDSony = 0x054C;
 const uint16_t OHVendorIDNintendo = 0x057E;
@@ -70,6 +73,8 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 	return [OHWiiGameController controllers];
 #elif defined(OF_NINTENDO_SWITCH)
 	return [OHNintendoSwitchGameController controllers];
+#elif defined(HAVE_GAMECONTROLLER_GAMECONTROLLER_H)
+	return [OHGCFGameController controllers];
 #else
 	return [OFArray array];
 #endif

@@ -35,6 +35,7 @@ SRCS += OHEmulatedGameControllerAxis.m		\
 	OHEmulatedGameControllerButton.m	\
 	OHEmulatedGameControllerTriggerButton.m	\
 	${USE_SRCS_EVDEV}			\
+	${USE_SRCS_GCF}				\
 	${USE_SRCS_NINTENDO_3DS}		\
 	${USE_SRCS_NINTENDO_DS}			\
 	${USE_SRCS_NINTENDO_SWITCH}		\
@@ -43,6 +44,8 @@ SRCS += OHEmulatedGameControllerAxis.m		\
 SRCS_EVDEV = OHEvdevExtendedGamepad.m			\
 	     OHEvdevGameController.m			\
 	     OHEvdevGameControllerProfile.m
+SRCS_GCF = OHGCFGameController.m	\
+	   OHGCFGameControllerProfile.m
 SRCS_NINTENDO_3DS = OHNintendo3DSExtendedGamepad.m	\
 		    OHNintendo3DSGameController.m
 SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
@@ -85,11 +88,20 @@ CPPFLAGS += -I.				\
 	    -I../..			\
 	    -I../exceptions		\
 	    -I../runtime		\
+	    -I../bridge			\
 	    -DOBJFWHID_LOCAL_INCLUDES
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\
+		  -F../bridge			\
+		  ${HID_FRAMEWORK_LIBS}		\
 		  -framework ObjFW		\
 		  ${RUNTIME_FRAMEWORK_LIBS}	\
 		  ${LIBS}
-LIBS := -L.. -L../runtime -lobjfw ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L..		\
+	-L../runtime	\
+	-L../bridge	\
+	${HID_LIBS}	\
+	-lobjfw		\
+	${RUNTIME_LIBS}	\
+	${LIBS}
