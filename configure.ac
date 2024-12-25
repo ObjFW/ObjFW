@@ -500,8 +500,8 @@ AS_IF([test x"$build_framework" = x"yes"], [
 ], [
 	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
-	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
+	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
+	TESTS_LIBS="-L../src -L../src/runtime $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
