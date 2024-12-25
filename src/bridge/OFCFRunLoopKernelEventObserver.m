@@ -43,6 +43,18 @@ struct MapTableEntry {
 	CFOptionFlags types;
 };
 
+static void *
+retainObject(void *object)
+{
+	return [(id)object retain];
+}
+
+static void
+releaseObject(void *object)
+{
+	[(id)object release];
+}
+
 static void
 freeMapTableEntry(void *object)
 {
@@ -62,8 +74,8 @@ freeMapTableEntry(void *object)
 }
 
 static OFMapTableFunctions objectFunctions = {
-	.retain = (void *(*)(void *))objc_retain,
-	.release = (void (*)(void *))objc_release
+	.retain = retainObject,
+	.release = releaseObject
 };
 static OFMapTableFunctions mapTableEntryFunctions = {
 	.release = freeMapTableEntry
@@ -127,11 +139,14 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 + (unsigned int)of_createID
 {
-	@synchronized (self) {
-		static unsigned int ID = 0;
+	unsigned int ID;
 
-		return ID++;
+	@synchronized (self) {
+		static unsigned int currentID = 0;
+		ID = currentID++;
 	}
+
+	return ID;
 }
 
 - (instancetype)initWithRunLoopMode: (OFRunLoopMode)mode
@@ -144,8 +159,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 			.version = 0,
 			.info = [OFPair pairWithFirstObject: nil
 					       secondObject: self],
-			.retain = (const void *(*)(const void *))objc_retain,
-			.release = (void (*)(const void *))objc_release
+			.retain = (const void *(*)(const void *))retainObject,
+			.release = (void (*)(const void *))releaseObject
 		};
 		CFOptionFlags flags;
 
@@ -252,8 +267,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 		context.info = [OFPair pairWithFirstObject: object
 					      secondObject: self];
-		context.retain = (const void *(*)(const void *))objc_retain;
-		context.release = (void (*)(const void *))objc_release;
+		context.retain = (const void *(*)(const void *))retainObject;
+		context.release = (void (*)(const void *))releaseObject;
 
 		if ((newEntry->socket = CFSocketCreateWithNative(
 		    kCFAllocatorDefault, fd, types, callback,

@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFCFRunLoopKernelEventObserver: OFKernelEventObserver
 {
 	CFRunLoopRef _runLoop;
-	CFRunLoopMode _runLoopMode;
+	CFStringRef _runLoopMode;
 	OFMapTable *_mapTable;
 	CFSocketRef _cancelSocket;
 	CFRunLoopSourceRef _cancelSource;
