@@ -74,7 +74,10 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 #elif defined(OF_NINTENDO_SWITCH)
 	return [OHNintendoSwitchGameController controllers];
 #elif defined(HAVE_GAMECONTROLLER_GAMECONTROLLER_H)
-	return [OHGCFGameController controllers];
+	if (@available(macOS 14.0, iOS 17.0, *))
+		return [OHGCFGameController controllers];
+	else
+		return [OFArray array];
 #else
 	return [OFArray array];
 #endif

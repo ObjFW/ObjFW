@@ -30,6 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 @class GCControllerLiveInput;
 @protocol GCGameControllerPhysicalElement;
 
+__attribute__((__availability__(macOS, introduced=14.0)))
+__attribute__((__availability__(iOS, introduced=17.0)))
 @interface OHGCFGameControllerProfile: OFObject <OHGameControllerProfile>
 {
 	OFDictionary<OFString *, OHGameControllerButton *> *_buttons;
