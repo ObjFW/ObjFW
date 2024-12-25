@@ -83,13 +83,14 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I.				\
-	    -I..			\
-	    -I../..			\
-	    -I../exceptions		\
-	    -I../runtime		\
-	    -I../bridge			\
-	    -DOBJFWHID_LOCAL_INCLUDES
+CPPFLAGS += -I.					\
+	    -I..				\
+	    -I../..				\
+	    -I../exceptions			\
+	    -I../runtime			\
+	    -I../bridge				\
+	    -DOBJFWHID_LOCAL_INCLUDES		\
+	    -DOBJFWBRIDGE_LOCAL_INCLUDES
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\
