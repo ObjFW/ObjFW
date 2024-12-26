@@ -17,8 +17,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #import <GameController/GameController.h>
 
 #import "OHGameControllerProfile.h"
@@ -40,7 +38,7 @@ __attribute__((__availability__(iOS, introduced=17.0)))
 	OFDictionary<OFString *, OHGameControllerAxis *> *_axes;
 	OFDictionary<OFString *, OHGameControllerDirectionalPad *>
 	    *_directionalPads;
-	OFDictionary<NSString *, OHGameControllerButton *> *_buttonMap;
+	OFDictionary<NSString *, OHGameControllerButton *> *_buttonsMap;
 	OFDictionary<NSString *, OHGameControllerAxis *> *_axesMap;
 	OFDictionary<NSString *, OHGameControllerDirectionalPad *>
 	    *_directionalPadsMap;
