@@ -64,6 +64,7 @@
 
 			if ([element conformsToProtocol:
 			    @protocol(GCButtonElement)]) {
+				OFString *buttonName = name;
 				bool analog = ((id <GCButtonElement>)element)
 				    .pressedInput.analog;
 				OHGameControllerButton *button;
@@ -73,15 +74,16 @@
 				 * name, but GameController.framework likes to
 				 * do this.
 				 */
-				if ([name hasSuffix: @" Button"])
-					name = [name substringToIndex:
-					    name.length - 7];
+				if ([buttonName hasSuffix: @" Button"])
+					buttonName = [buttonName
+					    substringToIndex:
+					    buttonName.length - 7];
 
 				button = [OHGameControllerButton
-				    oh_elementWithName: name
+				    oh_elementWithName: buttonName
 						analog: analog];
 
-				buttons[name] = button;
+				buttons[buttonName] = button;
 				buttonsMap[element.localizedName] = button;
 			}
 

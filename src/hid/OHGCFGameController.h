@@ -26,10 +26,22 @@ OF_ASSUME_NONNULL_BEGIN
 
 __attribute__((__availability__(macOS, introduced=14.0)))
 __attribute__((__availability__(iOS, introduced=17.0)))
+@protocol OHGCFMapping <OFObject>
+@property (readonly, nonatomic)
+    OFDictionary<NSString *, OHGameControllerButton *> *oh_buttonsMap;
+@property (readonly, nonatomic)
+    OFDictionary<NSString *, OHGameControllerAxis *> *oh_axesMap;
+@property (readonly, nonatomic) OFDictionary<NSString *,
+    OHGameControllerDirectionalPad *> *oh_directionalPadsMap;
+@end
+
+__attribute__((__availability__(macOS, introduced=14.0)))
+__attribute__((__availability__(iOS, introduced=17.0)))
 @interface OHGCFGameController: OHGameController
 {
 	GCController *_controller;
-	OHGCFGameControllerProfile *_profile;
+	OFString *_name;
+	id <OHGameControllerProfile, OHGCFMapping> _profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

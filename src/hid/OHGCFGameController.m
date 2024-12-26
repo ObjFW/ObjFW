@@ -25,6 +25,8 @@
 #import "NSString+OFObject.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OHDualSenseGamepad.h"
+#import "OHDualSenseGamepad+Private.h"
 #import "OHGCFGameControllerProfile.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
@@ -33,6 +35,8 @@
 #import "OHGameControllerDirectionalPad.h"
 
 @implementation OHGCFGameController
+@synthesize name = _name;
+
 + (void)initialize
 {
 	if (self != OHGCFGameController.class)
@@ -68,8 +72,16 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		_controller = [controller retain];
-		_profile = [[OHGCFGameControllerProfile alloc]
-		    oh_initWithLiveInput: _controller.input.unmappedInput];
+		_name = [_controller.vendorName.OFObject copy];
+
+		if ([_name isEqual: @"DualSense Wireless Controller"])
+			_profile = [[OHDualSenseGamepad alloc]
+			    oh_initWithLiveInput:
+			    _controller.input.unmappedInput];
+		else
+			_profile = [[OHGCFGameControllerProfile alloc]
+			    oh_initWithLiveInput:
+			    _controller.input.unmappedInput];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -132,11 +144,6 @@
 	}
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFString *)name
-{
-	return _controller.vendorName.OFObject;
 }
 
 - (OFNumber *)vendorID

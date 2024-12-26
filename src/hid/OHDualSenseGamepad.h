@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class NSString;
+
 /**
  * @class OHDualSenseGamepad OHDualSenseGamepad.h ObjFWHID/ObjFWHID.h
  *
@@ -32,6 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
+	/* Only used with GameController.framework */
+	OFDictionary OF_GENERIC(NSString *, OHGameControllerButton *)
+	    *_buttonsMap;
+	OFDictionary OF_GENERIC(NSString *, OHGameControllerDirectionalPad *)
+	    *_directionalPadsMap;
+	OF_RESERVE_IVARS(OHDualSenseGamepad, 4)
 }
 
 - (instancetype)init OF_UNAVAILABLE;

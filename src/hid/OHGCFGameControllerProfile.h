@@ -22,6 +22,7 @@
 #import <GameController/GameController.h>
 
 #import "OHGameControllerProfile.h"
+#import "OHGCFGameController.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +33,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 __attribute__((__availability__(macOS, introduced=14.0)))
 __attribute__((__availability__(iOS, introduced=17.0)))
-@interface OHGCFGameControllerProfile: OFObject <OHGameControllerProfile>
+@interface OHGCFGameControllerProfile: OFObject <OHGameControllerProfile,
+    OHGCFMapping>
 {
 	OFDictionary<OFString *, OHGameControllerButton *> *_buttons;
 	OFDictionary<OFString *, OHGameControllerAxis *> *_axes;
@@ -43,13 +45,6 @@ __attribute__((__availability__(iOS, introduced=17.0)))
 	OFDictionary<NSString *, OHGameControllerDirectionalPad *>
 	    *_directionalPadsMap;
 }
-
-@property (readonly, nonatomic)
-    OFDictionary<NSString *, OHGameControllerButton *> *oh_buttonsMap;
-@property (readonly, nonatomic)
-    OFDictionary<NSString *, OHGameControllerAxis *> *oh_axesMap;
-@property (readonly, nonatomic) OFDictionary<NSString *,
-    OHGameControllerDirectionalPad *> *oh_directionalPadsMap;
 
 - (instancetype)init OF_UNAVAILABLE;
 - (instancetype)oh_initWithLiveInput: (GCControllerLiveInput *)liveInput
