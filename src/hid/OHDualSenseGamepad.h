@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A Sony DualSense gamepad.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OHDualSenseGamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
@@ -39,7 +40,6 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_buttonsMap;
 	OFDictionary OF_GENERIC(NSString *, OHGameControllerDirectionalPad *)
 	    *_directionalPadsMap;
-	OF_RESERVE_IVARS(OHDualSenseGamepad, 4)
 }
 
 - (instancetype)init OF_UNAVAILABLE;

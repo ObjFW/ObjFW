@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A Sony DualShock 4 gamepad.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OHDualShock4Gamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))

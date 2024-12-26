@@ -17,25 +17,27 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameControllerProfile.h"
+#import "OHJoyConPair.h"
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OHGCFGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-/**
- * @class OHN64Controller OHN64Controller.h ObjFWHID/ObjFWHID.h
- *
- * @brief A Nintendo 64 controller.
- */
-@interface OHN64Controller: OFObject <OHGameControllerProfile>
-{
-	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
-	    *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
-	    *_directionalPads;
-	OF_RESERVE_IVARS(OHN64Controller, 4)
-}
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+@class GCGameControllerLiveInput;
+#endif
 
-- (instancetype)init OF_UNAVAILABLE;
+@interface OHJoyConPair ()
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+    <OHGCFMapping>
+
+- (instancetype)oh_initWithLiveInput: (GCGameControllerLiveInput *)liveInput
+    OF_METHOD_FAMILY(init)
+    __attribute__((__availability__(macOS, introduced=14.0)))
+    __attribute__((__availability__(iOS, introduced=17.0)));
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

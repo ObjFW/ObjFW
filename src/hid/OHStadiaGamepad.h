@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A Stadia gamepad.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OHStadiaGamepad: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))

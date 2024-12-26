@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  * An extended Nintendo 64 controller has extra buttons, such as the Nintendo
  * Switch Online N64 controller.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OHExtendedN64Controller: OHN64Controller
 @end
 

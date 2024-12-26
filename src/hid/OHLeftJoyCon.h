@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A left Nintendo Switch Joy-Con.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OHLeftJoyCon: OFObject <OHGameControllerProfile>
 {
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))

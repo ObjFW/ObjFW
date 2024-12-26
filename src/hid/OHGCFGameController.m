@@ -33,6 +33,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHJoyConPair.h"
+#import "OHJoyConPair+Private.h"
 
 @implementation OHGCFGameController
 @synthesize name = _name;
@@ -70,18 +72,20 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		Class profileClass;
 
 		_controller = [controller retain];
 		_name = [_controller.vendorName.OFObject copy];
 
 		if ([_name isEqual: @"DualSense Wireless Controller"])
-			_profile = [[OHDualSenseGamepad alloc]
-			    oh_initWithLiveInput:
-			    _controller.input.unmappedInput];
+			profileClass = [OHDualSenseGamepad class];
+		else if ([_name isEqual: @"Joy-Con (L/R)"])
+			profileClass = [OHJoyConPair class];
 		else
-			_profile = [[OHGCFGameControllerProfile alloc]
-			    oh_initWithLiveInput:
-			    _controller.input.unmappedInput];
+			profileClass = [OHGCFGameControllerProfile class];
+
+		_profile = [[profileClass alloc]
+		    oh_initWithLiveInput: _controller.input.unmappedInput];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
