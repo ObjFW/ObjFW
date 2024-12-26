@@ -25,6 +25,7 @@
 #import "NSString+OFObject.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFSet.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
 #import "OHGCFGameControllerProfile.h"
@@ -109,9 +110,13 @@
 	void *pool = objc_autoreleasePoolPush();
 	id <GCDevicePhysicalInputState> snapshot =
 	    [_controller.input.unmappedInput capture];
+	OFSet *filteredButtons =
+	    ([_profile respondsToSelector: @selector(oh_filteredButtons)]
+	    ? _profile.oh_filteredButtons : [OFSet set]);
 
 	for (id <GCPhysicalInputElement> element in snapshot.elements) {
-		if ([element conformsToProtocol: @protocol(GCButtonElement)]) {
+		if ([element conformsToProtocol: @protocol(GCButtonElement)] &&
+		    ![filteredButtons containsObject: element.localizedName]) {
 			OHGameControllerButton *button =
 			    _profile.oh_buttonsMap[element.localizedName];
 

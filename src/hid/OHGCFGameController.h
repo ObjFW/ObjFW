@@ -22,6 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class GCController;
+@class OFSet<ObjectType>;
 @class OHGCFGameControllerProfile;
 
 __attribute__((__availability__(macOS, introduced=14.0)))
@@ -33,6 +34,8 @@ __attribute__((__availability__(iOS, introduced=17.0)))
     OFDictionary<NSString *, OHGameControllerAxis *> *oh_axesMap;
 @property (readonly, nonatomic) OFDictionary<NSString *,
     OHGameControllerDirectionalPad *> *oh_directionalPadsMap;
+@optional
+@property (readonly, nonatomic) OFSet<NSString *> *oh_filteredButtons;
 @end
 
 __attribute__((__availability__(macOS, introduced=14.0)))

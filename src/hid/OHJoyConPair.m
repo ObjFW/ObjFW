@@ -29,7 +29,7 @@
 # import "NSString+OFObject.h"
 #endif
 #import "OFDictionary.h"
-#import "OFNumber.h"
+#import "OFSet.h"
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerDirectionalPad.h"
@@ -54,6 +54,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 @synthesize oh_buttonsMap = _buttonsMap;
 @synthesize oh_directionalPadsMap = _directionalPadsMap;
+@synthesize oh_filteredButtons = _filteredButtons;
 #endif
 
 + (instancetype)gamepadWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
@@ -84,7 +85,16 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 #endif
 
 		for (size_t i = 0; i < numButtons; i++) {
-			OHGameControllerButton *button = [OHGameControllerButton
+			OHGameControllerButton *button;
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+			/* These don't work with GameController.framework */
+			if ([buttonNames[i] isEqual: @"Home"] ||
+			    [buttonNames[i] isEqual: @"Capture"])
+				continue;
+#endif
+
+			button = [OHGameControllerButton
 			    oh_elementWithName: buttonNames[i]
 					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
@@ -183,6 +193,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [OFMutableDictionary dictionary];
 		OFMutableDictionary *directionalPadsMap =
 		    [OFMutableDictionary dictionary];
+		OFMutableSet *filteredButtons = [OFMutableSet set];
 
 		for (id <GCPhysicalInputElement> element in
 		    liveInput.elements) {
@@ -196,6 +207,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			if ([element conformsToProtocol:
 			    @protocol(GCButtonElement)]) {
 				OFString *buttonName = name;
+				bool filter = false;
 
 				/*
 				 * We don't use "Button" as part of a button
@@ -207,18 +219,24 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 					    substringToIndex:
 					    buttonName.length - 7];
 
+				/* These buttons don't work - filter them. */
+				if ([buttonName isEqual: @"HOME"])
+					filter = true;
+				else if ([buttonName isEqual: @"Share"])
+					filter = true;
+
 				/* Replace these names */
-				if ([buttonName isEqual: @"Left Stick"])
+				else if ([buttonName isEqual: @"Left Stick"])
 					buttonName = @"Left Thumbstick";
 				else if ([buttonName isEqual: @"Right Stick"])
 					buttonName = @"Right Thumbstick";
-				else if ([buttonName isEqual: @"HOME"])
-					buttonName = @"Home";
-				else if ([buttonName isEqual: @"Share"])
-					buttonName = @"Capture";
 
-				buttonsMap[element.localizedName] =
-				    _buttons[buttonName];
+				if (filter)
+					[filteredButtons addObject:
+					    element.localizedName];
+				else
+					buttonsMap[element.localizedName] =
+					    _buttons[buttonName];
 			}
 
 			if ([element conformsToProtocol:
@@ -240,9 +258,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 		[buttonsMap makeImmutable];
 		[directionalPadsMap makeImmutable];
+		[filteredButtons makeImmutable];
 
 		_buttonsMap = [buttonsMap copy];
 		_directionalPadsMap = [directionalPadsMap copy];
+		_filteredButtons = [filteredButtons copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
