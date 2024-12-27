@@ -1,5 +1,5 @@
 package_format 1
 @OBJFWTLS_PACKAGE_DEPENDS_ON@
-LIBS="-lobjfwtls $LIBS"
-FRAMEWORK_LIBS="-framework ObjFWTLS $FRAMEWORK_LIBS"
-STATIC_LIBS="${libdir}/libobjfwtls.a $STATIC_LIBS"
+LIBS="-lobjfwtls @TLS_LIBS@ $LIBS"
+FRAMEWORK_LIBS="-framework ObjFWTLS @TLS_FRAMEWORK_LIBS@ $FRAMEWORK_LIBS"
+STATIC_LIBS="${libdir}/libobjfwtls.a @TLS_STATIC_LIBS@ $STATIC_LIBS"

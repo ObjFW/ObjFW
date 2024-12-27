@@ -1993,6 +1993,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_SUBST(TLS_CPPFLAGS)
 		AC_SUBST(TLS_LIBS)
 		AC_SUBST(TLS_FRAMEWORK_LIBS)
+		AC_SUBST(TLS_STATIC_LIBS)
 		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
 			[Whether we have an implementation for TLS])
 		AC_CONFIG_FILES([src/tls/ObjFWTLS.oc src/tls/Info.plist])
