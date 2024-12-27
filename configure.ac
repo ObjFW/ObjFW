@@ -185,7 +185,8 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
-	HID_LIBS="$HID_LIBS -lwiiuse -lbte"
+	HID_STATIC_LIBS="-lwiiuse -lbte $HID_LIBS"
+	HID_LIBS="-lwiiuse -lbte $HID_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
@@ -2469,6 +2470,7 @@ darwin*)
 	AC_CHECK_HEADERS(GameController/GameController.h, [
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
 		tmp="-framework GameController"
+		HID_STATIC_LIBS="$tmp \${libdir}/libobjfwbridge.a $HID_LIBS"
 		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
 		tmp="$tmp -framework ObjFWBridge"
 		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
@@ -2517,6 +2519,7 @@ AC_SUBST(OBJFW_LIBS)
 
 AC_SUBST(HID_LIBS)
 AC_SUBST(HID_FRAMEWORK_LIBS)
+AC_SUBST(HID_STATIC_LIBS)
 AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([
