@@ -651,6 +651,7 @@ case "$objc_runtime" in
 	])
 
 	AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	AC_SUBST(RUNTIME_STATIC_LIBS, '${libdir}/libobjfwrt.a')
 
 	AS_IF([test x"$enable_shared" = x"no"], [
 		AC_SUBST(LIBOBJFWRT_DEP, "../src/runtime/libobjfwrt.a")
@@ -704,6 +705,7 @@ case "$objc_runtime" in
 	AC_CHECK_LIB(objc, objc_msgSend, [
 		AC_SUBST(RUNTIME_LIBS, "-lobjc")
 		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-lobjc")
+		AC_SUBST(RUNTIME_STATIC_LIBS, "-lobjc")
 	], [
 		AC_MSG_ERROR([libobjc not found!])
 	])
