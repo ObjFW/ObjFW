@@ -44,6 +44,21 @@ parse_packages() {
 }
 parse_packages "$@"
 
+parse_static_libs() {
+	static_libs="no"
+
+	while test x"$1" != "x"; do
+		case "$1" in
+		--static-libs)
+			static_libs="yes"
+			break
+			;;
+		esac
+		shift
+	done
+}
+parse_static_libs "$@"
+
 show_help() {
 	cat >&2 <<__EOF__
 Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
@@ -55,6 +70,7 @@ Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
     --plugin        Compile a plugin instead of an application
     --package name  Use the specified package
     --builddir dir  Place built objects into the specified directory
+    --static-libs   Link ObjFW and packages statically
     -D*  -D *       Pass the specified define to the compiler
     -framework *    Pass the specified -framework argument to the linker
                     (macOS / iOS only)
@@ -77,7 +93,11 @@ __EOF__
 CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG $packages --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
 OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG $packages --objcflags) -Wall -g"
-LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
+if test x"$static_libs" = x"yes"; then
+	LIBS="$LIBS $($OBJFW_CONFIG $packages --static-libs)"
+else
+	LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
+fi
 LDFLAGS="$LDFLAGS $($OBJFW_CONFIG $packages --ldflags --rpath)"
 
 if test x"$1" = "x"; then
@@ -121,6 +141,7 @@ link="no"
 link_stdcpp="no"
 lib="no"
 plugin="no"
+static="no"
 out_prefix=""
 out_suffix=""
 
@@ -172,6 +193,9 @@ while test x"$1" != "x"; do
 	--builddir)
 		shift
 		builddir="$1"
+		;;
+	--static-libs)
+		# Already handled separately.
 		;;
 	-D)
 		shift
