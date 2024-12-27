@@ -24,6 +24,7 @@
 #include <float.h>
 
 #import "OFCFRunLoopKernelEventObserver.h"
+#import "OFDatagramSocket.h"
 #import "OFMapTable.h"
 #import "OFPair.h"
 #import "OFRunLoop.h"
@@ -311,10 +312,11 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self of_updateObject: object
-	       fileDescriptor: [object fileDescriptorForWriting]
-		     addTypes: kCFSocketWriteCallBack
-		  removeTypes: 0];
+	if (![object isKindOfClass: [OFDatagramSocket class]])
+		[self of_updateObject: object
+		       fileDescriptor: [object fileDescriptorForWriting]
+			     addTypes: kCFSocketWriteCallBack
+			  removeTypes: 0];
 
 	[super addObjectForWriting: object];
 }
@@ -331,10 +333,11 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 - (void)removeObjectForWriting: (id< OFReadyForWritingObserving>)object
 {
-	[self of_updateObject: object
-	       fileDescriptor: [object fileDescriptorForWriting]
-		     addTypes: 0
-		  removeTypes: kCFSocketWriteCallBack];
+	if (![object isKindOfClass: [OFDatagramSocket class]])
+		[self of_updateObject: object
+		       fileDescriptor: [object fileDescriptorForWriting]
+			     addTypes: 0
+			  removeTypes: kCFSocketWriteCallBack];
 
 	[super removeObjectForWriting: object];
 }
@@ -343,6 +346,15 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 {
 	if ([self processReadBuffers])
 		return;
+
+	/*
+	 * It seems CFRunLoop never fires for an UDP socket ready for writing,
+	 * so instead always manually fire all UDP sockets that are being
+	 * observed as ready for writing.
+	 */
+	for (id object in [[_writeObjects copy] autorelease])
+		if ([object isKindOfClass: [OFDatagramSocket class]])
+			[_delegate objectIsReadyForWriting: object];
 
 	if (timeInterval == -1)
 		/* There is no value for infinite, so make it really long. */
