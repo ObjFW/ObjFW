@@ -23,8 +23,8 @@
 # import <GameController/GameController.h>
 #endif
 
-#import "OHNintendoSwitchProController.h"
-#import "OHNintendoSwitchProController+Private.h"
+#import "OHSwitchProController.h"
+#import "OHSwitchProController+Private.h"
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 # import "NSString+OFObject.h"
 #endif
@@ -47,7 +47,7 @@ static OFString *const buttonNames[] = {
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-@implementation OHNintendoSwitchProController
+@implementation OHSwitchProController
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 @synthesize oh_buttonsMap = _buttonsMap;

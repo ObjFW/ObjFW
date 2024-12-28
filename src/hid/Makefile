@@ -21,9 +21,9 @@ SRCS = OHDualSenseGamepad.m		\
        OHJoyConPair.m			\
        OHLeftJoyCon.m			\
        OHN64Controller.m		\
-       OHNintendoSwitchProController.m	\
        OHRightJoyCon.m			\
        OHStadiaGamepad.m		\
+       OHSwitchProController.m		\
        OHXboxGamepad.m
 
 INCLUDES := ${SRCS:.m=.h}		\

@@ -24,13 +24,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class NSString;
 
 /**
- * @class OHNintendoSwitchProController OHNintendoSwitchProController.h
- *	  ObjFWHID/ObjFWHID.h
+ * @class OHSwitchProController OHSwitchProController.h ObjFWHID/ObjFWHID.h
  *
  * @brief A Nintendo Switch Pro Controller.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OHNintendoSwitchProController: OFObject <OHExtendedGamepad>
+@interface OHSwitchProController: OFObject <OHExtendedGamepad>
 {
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
 	    *_buttons;

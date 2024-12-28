@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHNintendoSwitchProController.h"
+#import "OHSwitchProController.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class GCGameControllerLiveInput;
 #endif
 
-@interface OHNintendoSwitchProController ()
+@interface OHSwitchProController ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
 #endif

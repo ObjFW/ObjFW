@@ -36,8 +36,8 @@
 #import "OHGameControllerDirectionalPad.h"
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
-#import "OHNintendoSwitchProController.h"
-#import "OHNintendoSwitchProController+Private.h"
+#import "OHSwitchProController.h"
+#import "OHSwitchProController+Private.h"
 
 @implementation OHGCFGameController
 @synthesize name = _name;
@@ -85,7 +85,7 @@
 		else if ([_name isEqual: @"Joy-Con (L/R)"])
 			profileClass = [OHJoyConPair class];
 		else if ([_name isEqual: @"Pro Controller"])
-			profileClass = [OHNintendoSwitchProController class];
+			profileClass = [OHSwitchProController class];
 		else
 			profileClass = [OHGCFGameControllerProfile class];
 
