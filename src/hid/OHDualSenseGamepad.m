@@ -197,7 +197,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 				/* Replace these names */
 				if ([buttonName isEqual: @"Left Stick"])
 					buttonName = @"L3";
-				else if ([name isEqual: @"Right Stick"])
+				else if ([buttonName isEqual: @"Right Stick"])
 					buttonName = @"R3";
 
 				buttonsMap[element.localizedName] =
