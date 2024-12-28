@@ -52,6 +52,8 @@
 #import "OHRightJoyCon+Private.h"
 #import "OHStadiaGamepad.h"
 #import "OHStadiaGamepad+Private.h"
+#import "OHNintendoSwitchProController.h"
+#import "OHNintendoSwitchProController+Private.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -232,6 +234,10 @@ scale(float value, float min, float max)
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDRightJoyCon)
 			_profile = [[OHRightJoyCon alloc] oh_init];
+		else if (_vendorID == OHVendorIDNintendo &&
+		    _productID == OHProductIDProController)
+			_profile =
+			    [[OHNintendoSwitchProController alloc] oh_init];
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
 			_profile = [[OHStadiaGamepad alloc] oh_init];

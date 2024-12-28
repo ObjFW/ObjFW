@@ -116,6 +116,7 @@ extern const uint16_t OHProductIDDualShock4;
 extern const uint16_t OHProductIDDualSense;
 extern const uint16_t OHProductIDLeftJoyCon;
 extern const uint16_t OHProductIDRightJoyCon;
+extern const uint16_t OHProductIDProController;
 extern const uint16_t OHProductIDN64Controller;
 extern const uint16_t OHProductIDStadiaController;
 #ifdef __cplusplus

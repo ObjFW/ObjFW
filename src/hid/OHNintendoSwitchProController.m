@@ -36,6 +36,11 @@
 #import "OHGameControllerElement.h"
 #import "OHGameControllerElement+Private.h"
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include <linux/input.h>
+# import "evdev_compat.h"
+#endif
+
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Thumbstick",
 	@"Right Thumbstick", @"+", @"-", @"Home", @"Capture"
@@ -305,6 +310,86 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	return [_directionalPads objectForKey: @"D-Pad"];
 }
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+- (OHGameControllerButton *)oh_buttonForEvdevButton: (uint16_t)button
+{
+	OFString *name;
+
+	switch (button) {
+	case BTN_NORTH:
+		name = @"X";
+		break;
+	case BTN_SOUTH:
+		name = @"B";
+		break;
+	case BTN_WEST:
+		name = @"Y";
+		break;
+	case BTN_EAST:
+		name = @"A";
+		break;
+	case BTN_TL2:
+		name = @"ZL";
+		break;
+	case BTN_TR2:
+		name = @"ZR";
+		break;
+	case BTN_TL:
+		name = @"L";
+		break;
+	case BTN_TR:
+		name = @"R";
+		break;
+	case BTN_THUMBL:
+		name = @"Left Thumbstick";
+		break;
+	case BTN_THUMBR:
+		name = @"Right Thumbstick";
+		break;
+	case BTN_START:
+		name = @"+";
+		break;
+	case BTN_SELECT:
+		name = @"-";
+		break;
+	case BTN_MODE:
+		name = @"Home";
+		break;
+	case BTN_Z:
+		name = @"Capture";
+		break;
+	default:
+		return nil;
+	}
+
+	return [_buttons objectForKey: name];
+}
+
+- (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis
+{
+	switch (axis) {
+	case ABS_X:
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    xAxis];
+	case ABS_Y:
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    yAxis];
+	case ABS_RX:
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    xAxis];
+	case ABS_RY:
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    yAxis];
+	case ABS_HAT0X:
+		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
+	case ABS_HAT0Y:
+		return [[_directionalPads objectForKey: @"D-Pad"] yAxis];
+	default:
+		return nil;
+	}
+}
+#endif
 
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 - (OFDictionary<NSString *, OHGameControllerAxis *> *)oh_axesMap

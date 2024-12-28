@@ -39,6 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
     <OHGCFMapping>
 #endif
+
 - (instancetype)oh_init OF_METHOD_FAMILY(init);
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 - (instancetype)oh_initWithLiveInput: (GCControllerLiveInput *)liveInput
