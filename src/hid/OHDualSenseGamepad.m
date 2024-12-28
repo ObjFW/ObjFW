@@ -107,7 +107,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 #endif
 
 		[buttons makeImmutable];
-		_buttons = [buttons retain];
+		_buttons = [buttons copy];
 
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
@@ -148,7 +148,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];
-		_directionalPads = [directionalPads retain];
+		_directionalPads = [directionalPads copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

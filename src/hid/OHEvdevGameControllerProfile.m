@@ -266,8 +266,8 @@ axisToName(uint16_t axis)
 		}
 		[axes makeImmutable];
 
-		_buttons = [buttons retain];
-		_axes = [axes retain];
+		_buttons = [buttons copy];
+		_axes = [axes copy];
 		_vendorID = vendorID;
 		_productID = productID;
 
