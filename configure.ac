@@ -1919,8 +1919,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 				AC_SUBST(USE_SRCS_SECURETRANSPORT,
 					'${SRCS_SECURETRANSPORT}')
-				AC_SUBST(OBJFWTLS_PACKAGE_DEPENDS_ON,
-					"package_depends_on ObjFWBridge")
 
 				AC_CHECK_FUNCS(SSLCreateContext)
 			], [])
