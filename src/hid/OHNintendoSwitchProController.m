@@ -64,9 +64,6 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
 		OHGameControllerButton *button;
 		OFMutableDictionary *directionalPads;
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-		OHGameControllerAxis *axis;
-#endif
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
 
