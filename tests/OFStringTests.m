@@ -1389,8 +1389,8 @@ static const char *range80ToFF =
 
 	OTAssertEqualObjects([[self.stringClass stringWithString: @""]
 	    pathComponents], [OFArray array]);
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
-    defined(OF_NINTENDO_SWITCH)
+# elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_WII) || defined(OF_NINTENDO_SWITCH)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"sdmc:/tmp"] pathComponents],
 	    ([OFArray arrayWithObjects: @"sdmc:", @"tmp", nil]));
@@ -1565,8 +1565,8 @@ static const char *range80ToFF =
 	    @"foo/bar"] stringByDeletingLastPathComponent], @"foo");
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"foo"] stringByDeletingLastPathComponent], @"");
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
-    defined(OF_NINTENDO_SWITCH)
+# elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_WII) || defined(OF_NINTENDO_SWITCH)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"/tmp/"] stringByDeletingLastPathComponent], @"");
 	OTAssertEqualObjects([[self.stringClass stringWithString:
