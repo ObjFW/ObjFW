@@ -19,7 +19,14 @@
 
 #import "OFTLSStream.h"
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation-deprecated-sync"
+#endif
 #include <mbedtls/ssl.h>
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 

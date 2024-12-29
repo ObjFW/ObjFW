@@ -19,8 +19,15 @@
 
 #import "OFX509Certificate.h"
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation-deprecated-sync"
+#endif
 #include <mbedtls/x509_crt.h>
 #include <mbedtls/pk.h>
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
