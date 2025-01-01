@@ -268,6 +268,7 @@
 {
 	size_t UTF8StringLength = strlen(UTF8String);
 	size_t length;
+	bool containsNull;
 
 	if (UTF8StringLength >= 3 &&
 	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
@@ -276,7 +277,7 @@
 	}
 
 	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
-	    &_s->containsNull)) {
+	    &containsNull)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -292,12 +293,16 @@
 
 	_s->cStringLength += UTF8StringLength;
 	_s->length += length;
+
+	if (containsNull)
+		_s->containsNull = containsNull;
 }
 
 - (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength
 {
 	size_t length;
+	bool containsNull;
 
 	if (UTF8StringLength >= 3 &&
 	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
@@ -306,7 +311,7 @@
 	}
 
 	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
-	    &_s->containsNull)) {
+	    &containsNull)) {
 	case 1:
 		_s->isUTF8 = true;
 		break;
@@ -323,6 +328,9 @@
 	_s->length += length;
 
 	_s->cString[_s->cStringLength] = 0;
+
+	if (containsNull)
+		_s->containsNull = true;
 }
 
 - (void)appendCString: (const char *)cString
@@ -380,14 +388,19 @@
 		if (((OFMutableUTF8String *)string)->_s->containsNull)
 			_s->containsNull = true;
 	} else {
+		bool containsNull;
+
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    NULL, &_s->containsNull)) {
+		    NULL, &containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		if (containsNull)
+			_s->containsNull = true;
 	}
 }
 
@@ -489,14 +502,19 @@
 		if (((OFMutableUTF8String *)string)->_s->containsNull)
 			_s->containsNull = true;
 	} else {
+		bool containsNull;
+
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
-		    NULL, &_s->containsNull)) {
+		    NULL, &containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		if (containsNull)
+			_s->containsNull = true;
 	}
 }
 
@@ -606,14 +624,19 @@
 		if (((OFMutableUTF8String *)replacement)->_s->containsNull)
 			_s->containsNull = true;
 	} else {
+		bool containsNull;
+
 		switch (_OFUTF8StringCheck(replacementString, replacementLength,
-		    NULL, &_s->containsNull)) {
+		    NULL, &containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		if (containsNull)
+			_s->containsNull = containsNull;
 	}
 
 	if (_s->containsNull) {
@@ -712,14 +735,19 @@
 		if (((OFMutableUTF8String *)replacement)->_s->containsNull)
 			_s->containsNull = true;
 	} else {
+		bool containsNull;
+
 		switch (_OFUTF8StringCheck(replacementString, replacementLength,
-		    NULL, &_s->containsNull)) {
+		    NULL, &containsNull)) {
 		case 1:
 			_s->isUTF8 = true;
 			break;
 		case -1:
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		if (containsNull)
+			_s->containsNull = true;
 	}
 
 	if (_s->containsNull) {
