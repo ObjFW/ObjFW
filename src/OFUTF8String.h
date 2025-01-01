@@ -35,8 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t        cStringLength;
 		size_t        length;
 		unsigned long hash;
-		bool          isUTF8: 1, containsNull: 1, hasHash: 1;
-		bool          freeWhenDone: 1;
+		unsigned      isUTF8: 1, containsNull: 1, hasHash: 1;
+		unsigned      freeWhenDone: 1;
 	} *restrict _s;
 	struct OFUTF8StringIvars _storage;
 }
