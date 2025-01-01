@@ -90,6 +90,7 @@ OF_SINGLETON_METHODS
 {
 	@synchronized (self) {
 		struct OFUTF8StringIvars *ivars;
+		bool containsNull;
 
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
@@ -99,7 +100,7 @@ OF_SINGLETON_METHODS
 		ivars->cStringLength = _cStringLength;
 
 		switch (_OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
-		    &ivars->length, &ivars->containsNull)) {
+		    &ivars->length, &containsNull)) {
 		case 1:
 			ivars->isUTF8 = true;
 			break;
@@ -107,6 +108,8 @@ OF_SINGLETON_METHODS
 			OFFreeMemory(ivars);
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		ivars->containsNull = containsNull;
 
 		_cString = (char *)ivars;
 		object_setClass(self, [OFConstantUTF8String class]);
