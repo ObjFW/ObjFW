@@ -25,18 +25,19 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 #ifdef OF_HAVE_FILES
-# if (defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
+# if (defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS) && \
+    !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 # endif
 # if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
-# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && !defined(OF_HAIKU)) || \
-    defined(OF_WINDOWS) || defined(DOXYGEN)
+# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && !defined(OF_HAIKU) && \
+    !defined(OF_NINTENDO_DS)) || defined(OF_WINDOWS) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_LINKS
 # endif
-# if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS)) || \
-    defined(OF_WINDOWS) || defined(DOXYGEN)
+# if (defined(OF_HAVE_SYMLINK) && !defined(OF_AMIGAOS) && \
+    !defined(OF_NINTENDO_DS)) || defined(OF_WINDOWS) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 # endif
 # if defined(OF_LINUX) || defined(OF_MACOS) || defined(OF_FREEBSD) || \

@@ -98,8 +98,16 @@
 	attributes = [OFDictionary
 	    dictionaryWithObject: date
 			  forKey: OFFileModificationDate];
-	[_fileManager setAttributes: attributes
-		       ofItemAtPath: _testFileIRI.fileSystemRepresentation];
+	@try {
+		[_fileManager
+		    setAttributes: attributes
+		     ofItemAtPath: _testFileIRI.fileSystemRepresentation];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo == ENOSYS)
+			OTSkip(@"Setting modification time not supported");
+
+		@throw e;
+	}
 
 	attributes = [_fileManager attributesOfItemAtPath:
 	    _testFileIRI.fileSystemRepresentation];
