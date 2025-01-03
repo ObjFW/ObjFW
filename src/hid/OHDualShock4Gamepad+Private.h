@@ -22,6 +22,9 @@
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
 #endif
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OHGCFGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +32,17 @@ OF_ASSUME_NONNULL_BEGIN
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
 #endif
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+    <OHGCFMapping>
+#endif
+
 - (instancetype)oh_init OF_METHOD_FAMILY(init);
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+- (instancetype)oh_initWithLiveInput: (GCControllerLiveInput *)liveInput
+    OF_METHOD_FAMILY(init)
+    __attribute__((__availability__(macOS, introduced=14.0)))
+    __attribute__((__availability__(iOS, introduced=17.0)));
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

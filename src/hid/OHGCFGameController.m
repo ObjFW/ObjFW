@@ -26,6 +26,8 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFSet.h"
+#import "OHDualShock4Gamepad.h"
+#import "OHDualShock4Gamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
 #import "OHGCFGameControllerProfile.h"
@@ -82,6 +84,8 @@
 
 		if ([_name isEqual: @"DualSense Wireless Controller"])
 			profileClass = [OHDualSenseGamepad class];
+		else if ([_name isEqual: @"DUALSHOCK 4 Wireless Controller"])
+			profileClass = [OHDualShock4Gamepad class];
 		else if ([_name isEqual: @"Joy-Con (L/R)"])
 			profileClass = [OHJoyConPair class];
 		else if ([_name isEqual: @"Pro Controller"])
