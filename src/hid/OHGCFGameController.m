@@ -38,6 +38,8 @@
 #import "OHGameControllerDirectionalPad.h"
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
+#import "OHNESGamepad.h"
+#import "OHNESGamepad+Private.h"
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
 
@@ -90,6 +92,8 @@
 			profileClass = [OHJoyConPair class];
 		else if ([_name isEqual: @"Pro Controller"])
 			profileClass = [OHSwitchProController class];
+		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
+			profileClass = [OHNESGamepad class];
 		else
 			profileClass = [OHGCFGameControllerProfile class];
 

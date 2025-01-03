@@ -21,6 +21,7 @@ SRCS = OHDualSenseGamepad.m		\
        OHJoyConPair.m			\
        OHLeftJoyCon.m			\
        OHN64Controller.m		\
+       OHNESGamepad.m			\
        OHRightJoyCon.m			\
        OHStadiaGamepad.m		\
        OHSwitchProController.m		\
