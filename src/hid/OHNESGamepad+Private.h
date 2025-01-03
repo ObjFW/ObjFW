@@ -19,6 +19,9 @@
 
 #import "OHNESGamepad.h"
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# import "OHEvdevGameController.h"
+#endif
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 # import "OHGCFGameController.h"
 #endif
@@ -30,6 +33,9 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 @interface OHNESGamepad ()
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+    <OHEvdevMapping>
+#endif
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
     <OHGCFMapping>
 #endif

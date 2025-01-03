@@ -48,6 +48,8 @@
 #import "OHLeftJoyCon+Private.h"
 #import "OHN64Controller.h"
 #import "OHN64Controller+Private.h"
+#import "OHNESGamepad.h"
+#import "OHNESGamepad+Private.h"
 #import "OHRightJoyCon.h"
 #import "OHRightJoyCon+Private.h"
 #import "OHStadiaGamepad.h"
@@ -240,6 +242,9 @@ scale(float value, float min, float max)
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
 			_profile = [[OHStadiaGamepad alloc] oh_init];
+		else if (_vendorID == OHVendorID8BitDo &&
+		    _productID == OHProductIDNES30Gamepad)
+			_profile = [[OHNESGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits

@@ -37,6 +37,11 @@
 #import "OHGameControllerElement.h"
 #import "OHGameControllerElement+Private.h"
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# include <linux/input.h>
+# import "evdev_compat.h"
+#endif
+
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"Start", @"Select"
 };
@@ -246,6 +251,56 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	return [_directionalPads objectForKey: @"D-Pad"];
 }
+
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+- (OHGameControllerButton *)oh_buttonForEvdevButton: (uint16_t)button
+{
+	OFString *name;
+
+	switch (button) {
+	case BTN_A:
+		name = @"A";
+		break;
+	case BTN_B:
+		name = @"B";
+		break;
+	case BTN_X:
+		name = @"X";
+		break;
+	case BTN_Y:
+		name = @"Y";
+		break;
+	case BTN_TL:
+		name = @"L";
+		break;
+	case BTN_TR:
+		name = @"R";
+		break;
+	case BTN_START:
+		name = @"Start";
+		break;
+	case BTN_SELECT:
+		name = @"Select";
+		break;
+	default:
+		return nil;
+	}
+
+	return [_buttons objectForKey: name];
+}
+
+- (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis
+{
+	switch (axis) {
+	case ABS_X:
+		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
+	case ABS_Y:
+		return [[_directionalPads objectForKey: @"D-Pad"] yAxis];
+	default:
+		return nil;
+	}
+}
+#endif
 
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 - (OFDictionary<NSString *, OHGameControllerAxis *> *)oh_axesMap
