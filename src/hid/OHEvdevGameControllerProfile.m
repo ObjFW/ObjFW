@@ -33,6 +33,21 @@
 static OFString *
 buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
 {
+	if (vendorID == OHVendorIDMicrosoft &&
+	    productID == OHProductIDXbox360WirelessReceiver) {
+		/*
+		 * D-Pad is reported as both HAT0X/HAT0Y and Trigger Happy 1-4.
+		 * Filter out Trigger Happy.
+		 */
+		switch (button) {
+		case BTN_TRIGGER_HAPPY1:
+		case BTN_TRIGGER_HAPPY2:
+		case BTN_TRIGGER_HAPPY3:
+		case BTN_TRIGGER_HAPPY4:
+			return nil;
+		}
+	}
+
 	switch (button) {
 	case BTN_A:
 		return @"A";
