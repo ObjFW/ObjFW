@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+__attribute__((__availability__(macOS, introduced=14.0)))
+__attribute__((__availability__(iOS, introduced=17.0)))
 @interface OHGCFExtendedGamepad: OHGCFGameControllerProfile <OHExtendedGamepad>
 @end
 
