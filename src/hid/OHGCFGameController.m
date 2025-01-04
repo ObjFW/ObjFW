@@ -30,7 +30,7 @@
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
-#import "OHGCFGameControllerProfile.h"
+#import "OHGCFExtendedGamepad.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
@@ -94,7 +94,7 @@
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
 		else
-			_profile = [[OHGCFGameControllerProfile alloc]
+			_profile = [[OHGCFExtendedGamepad alloc]
 			    oh_initWithLiveInput:
 			    _controller.input.unmappedInput];
 

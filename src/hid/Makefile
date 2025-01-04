@@ -46,7 +46,8 @@ SRCS += OHEmulatedGameControllerAxis.m		\
 SRCS_EVDEV = OHEvdevExtendedGamepad.m			\
 	     OHEvdevGameController.m			\
 	     OHEvdevGameControllerProfile.m
-SRCS_GCF = OHGCFGameController.m	\
+SRCS_GCF = OHGCFExtendedGamepad.m	\
+	   OHGCFGameController.m	\
 	   OHGCFGameControllerProfile.m
 SRCS_NINTENDO_3DS = OHNintendo3DSExtendedGamepad.m	\
 		    OHNintendo3DSGameController.m
