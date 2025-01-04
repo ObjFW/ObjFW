@@ -56,7 +56,9 @@
 
 		for (id <GCPhysicalInputElement> element in
 		    liveInput.elements) {
-			NSSet<NSString *> *aliases = element.aliases;
+			NSArray<NSString *> *aliases =
+			    [element.aliases.allObjects
+			    sortedArrayUsingSelector: @selector(compare:)];
 			NSString *nameGC = nil;
 			OFString *name;
 
@@ -75,15 +77,15 @@
 
 			/*
 			 * If we only have one or if all of them end in
-			 * "Button", pick a random one.
+			 * "Button", pick the first.
 			 */
 			if (nameGC == nil)
-				nameGC = aliases.anyObject;
+				nameGC = aliases[0];
 
 			name = nameGC.OFObject;
 
 			/*
-			 * GameController.frameworks likes to use "Button" as a
+			 * GameController.framework likes to use "Button" as a
 			 * prefix, which we don't.
 			 */
 			if ([name hasPrefix: @"Button "])
