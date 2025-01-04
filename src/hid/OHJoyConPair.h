@@ -23,7 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class NSString;
 @class OFSet OF_GENERIC(ObjectType);
-@class OHGameController;
 @class OHGameControllerButton;
 @class OHGameControllerDirectionalPad;
 @class OHLeftJoyCon;
@@ -42,12 +41,6 @@ OF_SUBCLASSING_RESTRICTED
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
-	/* Only used with GameController.framework */
-	OFDictionary OF_GENERIC(NSString *, OHGameControllerButton *)
-	    *_buttonsMap;
-	OFDictionary OF_GENERIC(NSString *, OHGameControllerDirectionalPad *)
-	    *_directionalPadsMap;
-	OFSet OF_GENERIC(NSString *) *_filteredButtons;
 }
 
 /**

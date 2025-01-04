@@ -28,10 +28,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
-@class GCControllerLiveInput;
-#endif
-
 @interface OHDualSenseGamepad ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
@@ -41,12 +37,6 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 - (instancetype)oh_init OF_METHOD_FAMILY(init);
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
-- (instancetype)oh_initWithLiveInput: (GCControllerLiveInput *)liveInput
-    OF_METHOD_FAMILY(init)
-    __attribute__((__availability__(macOS, introduced=14.0)))
-    __attribute__((__availability__(iOS, introduced=17.0)));
-#endif
 @end
 
 OF_ASSUME_NONNULL_END

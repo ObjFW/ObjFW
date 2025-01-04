@@ -22,6 +22,7 @@
 #import "OHGCFGameControllerProfile.h"
 #import "NSString+OFObject.h"
 #import "OFDictionary.h"
+#import "OFString+NSObject.h"
 #import "OHGameControllerDirectionalPad+Private.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerElement+Private.h"
@@ -55,36 +56,51 @@
 
 		for (id <GCPhysicalInputElement> element in
 		    liveInput.elements) {
+			NSSet<NSString *> *aliases = element.aliases;
+			NSString *nameGC = nil;
+			OFString *name;
+
+			if (aliases.count > 1) {
+				/*
+				 * Pick the first that doesn't end in "Button".
+				 */
+				for (NSString *alias in aliases) {
+					if (![alias hasSuffix:
+					    @" Button".NSObject]) {
+						nameGC = alias;
+						break;
+					}
+				}
+			}
+
 			/*
-			 * Unfortunately there is no way to get the unlocalized
-			 * name or an identifier, but it seems in practice this
-			 * is not localized. Let's hope it stays this way.
+			 * If we only have one or if all of them end in
+			 * "Button", pick a random one.
 			 */
-			OFString *name = element.localizedName.OFObject;
+			if (nameGC == nil)
+				nameGC = aliases.anyObject;
+
+			name = nameGC.OFObject;
+
+			/*
+			 * GameController.frameworks likes to use "Button" as a
+			 * prefix, which we don't.
+			 */
+			if ([name hasPrefix: @"Button "])
+				name = [name substringFromIndex: 7];
 
 			if ([element conformsToProtocol:
 			    @protocol(GCButtonElement)]) {
-				OFString *buttonName = name;
 				bool analog = ((id <GCButtonElement>)element)
 				    .pressedInput.analog;
 				OHGameControllerButton *button;
 
-				/*
-				 * We don't use "Button" as part of a button
-				 * name, but GameController.framework likes to
-				 * do this.
-				 */
-				if ([buttonName hasSuffix: @" Button"])
-					buttonName = [buttonName
-					    substringToIndex:
-					    buttonName.length - 7];
-
 				button = [OHGameControllerButton
-				    oh_elementWithName: buttonName
+				    oh_elementWithName: name
 						analog: analog];
 
-				buttons[buttonName] = button;
-				buttonsMap[element.localizedName] = button;
+				buttons[name] = button;
+				buttonsMap[name] = nameGC;
 			}
 
 			if ([element conformsToProtocol:
@@ -97,7 +113,7 @@
 						analog: analog];
 
 				axes[name] = axis;
-				axesMap[element.localizedName] = axis;
+				axesMap[name] = nameGC;
 			}
 
 			if ([element conformsToProtocol:
@@ -125,7 +141,7 @@
 						    padGC.yAxis.analog];
 
 				directionalPads[name] = pad;
-				directionalPadsMap[element.localizedName] = pad;
+				directionalPadsMap[name] = nameGC;
 			}
 		}
 

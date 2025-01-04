@@ -33,11 +33,6 @@ OF_SUBCLASSING_RESTRICTED
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
-	/* Only used with GameController.framework */
-	OFDictionary OF_GENERIC(NSString *, OHGameControllerButton *)
-	    *_buttonsMap;
-	OFDictionary OF_GENERIC(NSString *, OHGameControllerDirectionalPad *)
-	    *_directionalPadsMap;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

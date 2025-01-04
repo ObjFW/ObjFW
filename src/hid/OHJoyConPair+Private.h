@@ -25,19 +25,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
-@class GCGameControllerLiveInput;
-#endif
-
 @interface OHJoyConPair ()
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
     <OHGCFMapping>
-
-- (instancetype)oh_initWithLiveInput: (GCGameControllerLiveInput *)liveInput
-    OF_METHOD_FAMILY(init)
-    __attribute__((__availability__(macOS, introduced=14.0)))
-    __attribute__((__availability__(iOS, introduced=17.0)));
 #endif
+
+- (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

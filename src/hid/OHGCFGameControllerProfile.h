@@ -24,10 +24,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OHGameControllerElement;
-@class GCControllerInputState;
 @class GCControllerLiveInput;
-@protocol GCGameControllerPhysicalElement;
 
 __attribute__((__availability__(macOS, introduced=14.0)))
 __attribute__((__availability__(iOS, introduced=17.0)))
@@ -38,10 +35,9 @@ __attribute__((__availability__(iOS, introduced=17.0)))
 	OFDictionary<OFString *, OHGameControllerAxis *> *_axes;
 	OFDictionary<OFString *, OHGameControllerDirectionalPad *>
 	    *_directionalPads;
-	OFDictionary<NSString *, OHGameControllerButton *> *_buttonsMap;
-	OFDictionary<NSString *, OHGameControllerAxis *> *_axesMap;
-	OFDictionary<NSString *, OHGameControllerDirectionalPad *>
-	    *_directionalPadsMap;
+	OFDictionary<OFString *, NSString *> *_buttonsMap;
+	OFDictionary<OFString *, NSString *> *_axesMap;
+	OFDictionary<OFString *, NSString *> *_directionalPadsMap;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

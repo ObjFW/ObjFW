@@ -79,26 +79,24 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		Class profileClass;
 
 		_controller = [controller retain];
 		_name = [_controller.vendorName.OFObject copy];
 
 		if ([_name isEqual: @"DualSense Wireless Controller"])
-			profileClass = [OHDualSenseGamepad class];
+			_profile = [[OHDualSenseGamepad alloc] oh_init];
 		else if ([_name isEqual: @"DUALSHOCK 4 Wireless Controller"])
-			profileClass = [OHDualShock4Gamepad class];
+			_profile = [[OHDualShock4Gamepad alloc] oh_init];
 		else if ([_name isEqual: @"Joy-Con (L/R)"])
-			profileClass = [OHJoyConPair class];
+			_profile = [[OHJoyConPair alloc] oh_init];
 		else if ([_name isEqual: @"Pro Controller"])
-			profileClass = [OHSwitchProController class];
+			_profile = [[OHSwitchProController alloc] oh_init];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
-			profileClass = [OHNESGamepad class];
+			_profile = [[OHNESGamepad alloc] oh_init];
 		else
-			profileClass = [OHGCFGameControllerProfile class];
-
-		_profile = [[profileClass alloc]
-		    oh_initWithLiveInput: _controller.input.unmappedInput];
+			_profile = [[OHGCFGameControllerProfile alloc]
+			    oh_initWithLiveInput:
+			    _controller.input.unmappedInput];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -122,47 +120,51 @@
 	void *pool = objc_autoreleasePoolPush();
 	id <GCDevicePhysicalInputState> snapshot =
 	    [_controller.input.unmappedInput capture];
-	OFSet *filteredButtons =
-	    ([_profile respondsToSelector: @selector(oh_filteredButtons)]
-	    ? _profile.oh_filteredButtons : [OFSet set]);
 
-	for (id <GCPhysicalInputElement> element in snapshot.elements) {
-		if ([element conformsToProtocol: @protocol(GCButtonElement)] &&
-		    ![filteredButtons containsObject: element.localizedName]) {
-			OHGameControllerButton *button =
-			    _profile.oh_buttonsMap[element.localizedName];
+	[_profile.buttons enumerateKeysAndObjectsUsingBlock:
+	    ^ (OFString *name, OHGameControllerButton *button, bool *stop) {
+		NSString *nameGC;
+		id <GCButtonElement> buttonGC;
 
-			OFAssert(button != nil);
+		nameGC = _profile.oh_buttonsMap[name];
+		OFAssert(nameGC != nil);
 
-			button.value = ((id <GCButtonElement>)element)
-			    .pressedInput.value;
-		}
+		buttonGC = (id <GCButtonElement>)snapshot[nameGC];
+		OFAssert(buttonGC != nil);
 
-		if ([element conformsToProtocol: @protocol(GCAxisElement)]) {
-			OHGameControllerAxis *axis =
-			    _profile.oh_axesMap[element.localizedName];
+		button.value = buttonGC.pressedInput.value;
+	}];
 
-			OFAssert(axis != nil);
+	[_profile.axes enumerateKeysAndObjectsUsingBlock:
+	    ^ (OFString *name, OHGameControllerAxis *axis, bool *stop) {
+		NSString *nameGC;
+		id <GCAxisElement> axisGC;
 
-			axis.value = ((id <GCAxisElement>)element)
-			    .absoluteInput.value;
-		}
+		nameGC = _profile.oh_axesMap[name];
+		OFAssert(nameGC != nil);
 
-		if ([element conformsToProtocol:
-		    @protocol(GCDirectionPadElement)]) {
-			OHGameControllerDirectionalPad *pad =
-			    _profile.oh_directionalPadsMap[
-			    element.localizedName];
-			id <GCDirectionPadElement> padGC =
-			    (id <GCDirectionPadElement>)element;
+		axisGC = (id <GCAxisElement>)snapshot[nameGC];
+		OFAssert(axisGC != nil);
 
-			OFAssert(pad != nil);
+		axis.value = axisGC.absoluteInput.value;
+	}];
 
-			pad.xAxis.value = padGC.xAxis.value;
-			pad.yAxis.value =
-			    (padGC.yAxis.value != 0 ? -padGC.yAxis.value : 0);
-		}
-	}
+	[_profile.directionalPads enumerateKeysAndObjectsUsingBlock:
+	    ^ (OFString *name, OHGameControllerDirectionalPad *directionalPad,
+	    bool *stop) {
+		NSString *nameGC;
+		id <GCDirectionPadElement> directionalPadGC;
+
+		nameGC = _profile.oh_directionalPadsMap[name];
+		OFAssert(nameGC != nil);
+
+		directionalPadGC = (id <GCDirectionPadElement>)snapshot[nameGC];
+		OFAssert(directionalPadGC != nil);
+
+		directionalPad.xAxis.value = directionalPadGC.xAxis.value;
+		directionalPad.yAxis.value = (directionalPadGC.yAxis.value != 0
+		    ? -directionalPadGC.yAxis.value : 0);
+	}];
 
 	objc_autoreleasePoolPop(pool);
 }
