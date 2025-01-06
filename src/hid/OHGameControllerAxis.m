@@ -30,6 +30,7 @@ const OFNotificationName OHGameControllerAxisValueDidChangeNotification =
 @implementation OHGameControllerAxis
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 @synthesize oh_minRawValue = _minRawValue, oh_maxRawValue = _maxRawValue;
+#endif
 
 - (float)value
 {
@@ -56,6 +57,7 @@ const OFNotificationName OHGameControllerAxisValueDidChangeNotification =
 	objc_autoreleasePoolPop(pool);
 }
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 /* Change to a smaller type on ABI bump and switch to @synthesize */
 - (bool)oh_isInverted
 {
