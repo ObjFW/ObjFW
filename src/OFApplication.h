@@ -37,6 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSandbox;
 @class OFString;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * @brief A notification that will be sent when the application did finish
  *	  launching.
@@ -47,6 +50,9 @@ extern const OFNotificationName OFApplicationDidFinishLaunchingNotification;
  * @brief A notification that will be sent when the application will terminate.
  */
 extern const OFNotificationName OFApplicationWillTerminateNotification;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @brief Specify the class to be used as the application delegate.
