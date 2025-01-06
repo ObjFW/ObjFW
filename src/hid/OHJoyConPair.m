@@ -37,10 +37,12 @@
 #import "OFInvalidArgumentException.h"
 
 static OFString *const buttonNames[] = {
-	/* Left JoyCon */
-	@"L", @"ZL", @"Left Thumbstick", @"-", @"Capture",
-	/* Right JoyCon */
-	@"X", @"B", @"A", @"Y", @"R", @"ZR", @"Right Thumbstick", @"+", @"Home"
+	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Thumbstick",
+	@"Right Thumbstick", @"+", @"-",
+	/* GameController.framework doesn't expose a lot of buttons. */
+#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+	@"Home", @"Capture",
+#endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
@@ -63,22 +65,18 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	pool = objc_autoreleasePoolPush();
 
 	buttonsMap = [[OFDictionary alloc] initWithKeysAndObjects:
-	    /* Left JoyCon */
-	    @"L", @"Left Shoulder".NSObject,
-	    @"ZL", @"Left Trigger".NSObject,
-	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
-	    @"-", @"Button Options".NSObject,
-	    @"Capture", @"Button Share".NSObject,
-	    /* Right JoyCon */
-	    @"X", @"Button X".NSObject,
-	    @"B", @"Button B".NSObject,
 	    @"A", @"Button A".NSObject,
+	    @"B", @"Button B".NSObject,
+	    @"X", @"Button X".NSObject,
 	    @"Y", @"Button Y".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
 	    @"R", @"Right Shoulder".NSObject,
+	    @"ZL", @"Left Trigger".NSObject,
 	    @"ZR", @"Right Trigger".NSObject,
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
 	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
 	    @"+", @"Button Menu".NSObject,
-	    @"Home", @"Button Home".NSObject,
+	    @"-", @"Button Options".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
 	    @"Left Thumbstick", @"Left Thumbstick".NSObject,

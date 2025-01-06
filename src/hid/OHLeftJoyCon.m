@@ -22,7 +22,11 @@
 #import "OHLeftJoyCon.h"
 #import "OHLeftJoyCon+Private.h"
 #import "OFDictionary.h"
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OFString+NSObject.h"
+#endif
 #import "OHGameControllerAxis.h"
+#import "OHGameControllerAxis+Private.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerDirectionalPad+Private.h"
@@ -35,12 +39,48 @@
 #endif
 
 static OFString *const buttonNames[] = {
-	@"L", @"ZL", @"Left Thumbstick", @"-", @"Capture", @"SL", @"SR"
+	@"North", @"South", @"West", @"East", @"SL", @"SR", @"-",
+#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+	/* GameController.framework doesn't expose a lot of buttons. */
+	@"L", @"ZL", @"Left Thumbstick", @"Capture"
+#endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+static OFDictionary<OFString *, NSString *> *buttonsMap;
+static OFDictionary<OFString *, NSString *> *directionalPadsMap;
+#endif
+
 @implementation OHLeftJoyCon
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
++ (void)initialize
+{
+	void *pool;
+
+	if (self != [OHLeftJoyCon class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+
+	buttonsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"North", @"Button Y".NSObject,
+	    @"South", @"Button A".NSObject,
+	    @"West", @"Button B".NSObject,
+	    @"East", @"Button X".NSObject,
+	    @"SL", @"Left Shoulder".NSObject,
+	    @"SR", @"Right Shoulder".NSObject,
+	    @"-", @"Button Menu".NSObject,
+	    nil];
+	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Left Thumbstick", @"Direction Pad".NSObject,
+	    nil];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (instancetype)init
 {
@@ -55,10 +95,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableDictionary *buttons =
 		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
-		OFMutableDictionary *directionalPads;
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
-		OHGameControllerButton *up, *down, *left, *right;
 
 		for (size_t i = 0; i < numButtons; i++) {
 			OHGameControllerButton *button = [OHGameControllerButton
@@ -69,11 +107,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[buttons makeImmutable];
 		_buttons = [buttons copy];
 
-		directionalPads =
-		    [OFMutableDictionary dictionaryWithCapacity: 2];
-
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
 							  analog: true];
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+		xAxis.oh_inverted = true;
+#endif
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
@@ -81,29 +119,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
-		[directionalPads setObject: directionalPad
-				    forKey: @"Left Thumbstick"];
-
-		up = [OHGameControllerButton oh_elementWithName: @"D-Pad Up"
-							 analog: false];
-		down = [OHGameControllerButton oh_elementWithName: @"D-Pad Down"
-							   analog: false];
-		left = [OHGameControllerButton oh_elementWithName: @"D-Pad Left"
-							   analog: false];
-		right = [OHGameControllerButton
-		    oh_elementWithName: @"D-Pad Right"
-				analog: false];
-		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"D-Pad"
-				up: up
-			      down: down
-			      left: left
-			     right: right
-			    analog: false];
-		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
-
-		[directionalPads makeImmutable];
-		_directionalPads = [directionalPads copy];
+		_directionalPads = [[OFDictionary alloc]
+		    initWithObject: directionalPad
+			    forKey: @"Left Thumbstick"];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -132,13 +150,13 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	switch (button) {
 	case BTN_DPAD_UP:
-		return [[_directionalPads objectForKey: @"D-Pad"] up];
+		return [_buttons objectForKey: @"West"];
 	case BTN_DPAD_DOWN:
-		return [[_directionalPads objectForKey: @"D-Pad"] down];
+		return [_buttons objectForKey: @"East"];
 	case BTN_DPAD_LEFT:
-		return [[_directionalPads objectForKey: @"D-Pad"] left];
+		return [_buttons objectForKey: @"South"];
 	case BTN_DPAD_RIGHT:
-		return [[_directionalPads objectForKey: @"D-Pad"] right];
+		return [_buttons objectForKey: @"North"];
 	case BTN_TL:
 		return [_buttons objectForKey: @"L"];
 	case BTN_TL2:
@@ -162,14 +180,31 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	switch (axis) {
 	case ABS_X:
-		return [[_directionalPads
-		    objectForKey: @"Left Thumbstick"] xAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    yAxis];
 	case ABS_Y:
-		return [[_directionalPads
-		    objectForKey: @"Left Thumbstick"] yAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    xAxis];
 	}
 
 	return nil;
+}
+#endif
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+- (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
+{
+	return buttonsMap;
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_axesMap
+{
+	return [OFDictionary dictionary];
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_directionalPadsMap
+{
+	return directionalPadsMap;
 }
 #endif
 @end

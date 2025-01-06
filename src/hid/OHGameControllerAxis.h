@@ -31,8 +31,9 @@ OF_ASSUME_NONNULL_BEGIN
 	float _value;
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 	int32_t _minRawValue, _maxRawValue;
+	uintptr_t _inverted;	/* Change to a smaller type on ABI bump */
 #endif
-	OF_RESERVE_IVARS(OHGameControllerButton, 4)
+	OF_RESERVE_IVARS(OHGameControllerButton, 3)
 }
 
 /**

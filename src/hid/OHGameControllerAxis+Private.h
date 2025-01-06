@@ -25,6 +25,8 @@ OF_ASSUME_NONNULL_BEGIN
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 @property (nonatomic, setter=oh_setMinRawValue:) int32_t oh_minRawValue;
 @property (nonatomic, setter=oh_setMaxRawValue:) int32_t oh_maxRawValue;
+@property (nonatomic, getter=oh_isInverted, setter=oh_setInverted:)
+    bool oh_inverted;
 #endif
 @end
 

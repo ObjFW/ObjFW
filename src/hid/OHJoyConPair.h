@@ -21,8 +21,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class NSString;
-@class OFSet OF_GENERIC(ObjectType);
 @class OHGameControllerButton;
 @class OHGameControllerDirectionalPad;
 @class OHLeftJoyCon;

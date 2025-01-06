@@ -26,6 +26,17 @@
 @synthesize value = _value;
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 @synthesize oh_minRawValue = _minRawValue, oh_maxRawValue = _maxRawValue;
+
+/* Change to a smaller type on ABI bump and switch to @synthesize */
+- (bool)oh_isInverted
+{
+	return _inverted;
+}
+
+- (void)oh_setIsInverted: (bool)inverted
+{
+	_inverted = inverted;
+}
 #endif
 
 - (OFString *)description

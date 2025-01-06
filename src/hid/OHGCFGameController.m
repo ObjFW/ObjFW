@@ -38,8 +38,12 @@
 #import "OHGameControllerDirectionalPad.h"
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
+#import "OHLeftJoyCon.h"
+#import "OHLeftJoyCon+Private.h"
 #import "OHNESGamepad.h"
 #import "OHNESGamepad+Private.h"
+#import "OHRightJoyCon.h"
+#import "OHRightJoyCon+Private.h"
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
 
@@ -89,6 +93,10 @@
 			_profile = [[OHDualShock4Gamepad alloc] oh_init];
 		else if ([_name isEqual: @"Joy-Con (L/R)"])
 			_profile = [[OHJoyConPair alloc] oh_init];
+		else if ([_name isEqual: @"Joy-Con (L)"])
+			_profile = [[OHLeftJoyCon alloc] oh_init];
+		else if ([_name isEqual: @"Joy-Con (R)"])
+			_profile = [[OHRightJoyCon alloc] oh_init];
 		else if ([_name isEqual: @"Pro Controller"])
 			_profile = [[OHSwitchProController alloc] oh_init];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])

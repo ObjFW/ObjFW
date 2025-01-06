@@ -98,14 +98,16 @@ const size_t OHNumEvdevAxisIDs =
     sizeof(OHEvdevAxisIDs) / sizeof(*OHEvdevAxisIDs);
 
 static float
-scale(float value, float min, float max)
+scale(float value, float min, float max, bool inverted)
 {
+	float invert = (inverted ? -1 : 1);
+
 	if (value < min)
 		value = min;
 	if (value > max)
 		value = max;
 
-	return ((value - min) / (max - min) * 2) - 1;
+	return (((value - min) / (max - min) * 2) - 1) * invert;
 }
 
 @implementation OHEvdevGameController
@@ -342,7 +344,7 @@ scale(float value, float min, float max)
 			axis.oh_minRawValue = info.minimum;
 			axis.oh_maxRawValue = info.maximum;
 			axis.value = scale(info.value,
-			    info.minimum, info.maximum);
+			    info.minimum, info.maximum, axis.oh_inverted);
 		}
 	}
 }
@@ -402,8 +404,8 @@ scale(float value, float min, float max)
 			if (axis == nil)
 				continue;
 
-			axis.value = scale(event.value,
-			   axis.oh_minRawValue, axis.oh_maxRawValue);
+			axis.value = scale(event.value, axis.oh_minRawValue,
+			    axis.oh_maxRawValue, axis.oh_inverted);
 
 			break;
 		}
