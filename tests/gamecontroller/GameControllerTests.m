@@ -67,6 +67,7 @@ static size_t buttonsPerLine = 5;
 {
 	OFArray OF_GENERIC(OHGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
+	OHJoyConPair *_joyConPair;
 }
 @end
 
@@ -192,9 +193,11 @@ static void printProfile(id <OHGameControllerProfile> profile)
 
 	if (_lastControllersUpdate == nil ||
 	    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
+		[_joyConPair release];
 		[_controllers release];
 		[_lastControllersUpdate release];
 
+		_joyConPair = nil;
 		_controllers = [[OHGameController controllers] retain];
 		_lastControllersUpdate = [[OFDate alloc] init];
 
@@ -223,17 +226,19 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			leftJoyCon = (OHLeftJoyCon *)profile;
 		else if ([profile isKindOfClass: [OHRightJoyCon class]])
 			rightJoyCon = (OHRightJoyCon *)profile;
+
+		if (_joyConPair == nil && leftJoyCon != nil &&
+		    rightJoyCon != nil)
+			_joyConPair = [[OHJoyConPair
+			    gamepadWithLeftJoyCon: leftJoyCon
+				      rightJoyCon: rightJoyCon] retain];
 	}
 
-	if (leftJoyCon != nil && rightJoyCon != nil) {
-		OHJoyConPair *joyConPair = [OHJoyConPair
-		    gamepadWithLeftJoyCon: leftJoyCon
-			      rightJoyCon: rightJoyCon];
-
+	if (_joyConPair) {
 		[OFStdOut setForegroundColor: [OFColor green]];
 		[OFStdOut writeLine: @"Joy-Con Pair"];
 
-		printProfile(joyConPair);
+		printProfile(_joyConPair);
 	}
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)

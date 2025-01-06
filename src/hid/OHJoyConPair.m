@@ -22,6 +22,8 @@
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
 #import "OFDictionary.h"
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
 #ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
 # import "OFString+NSObject.h"
 #endif
@@ -35,6 +37,15 @@
 #import "OHRightJoyCon.h"
 
 #import "OFInvalidArgumentException.h"
+
+@interface OHJoyConPair ()
+- (void)oh_leftJoyConButtonValueDidChange: (OFNotification *)notification;
+- (void)oh_leftJoyConDirectionalPadValueDidChange:
+    (OFNotification *)notification;
+- (void)oh_rightJoyConButtonValueDidChange: (OFNotification *)notification;
+- (void)oh_rightJoyConDirectionalPadValueDidChange:
+    (OFNotification *)notification;
+@end
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Thumbstick",
@@ -50,6 +61,112 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
+
+static void
+addObserverForButtons(id observer, SEL selector,
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *buttons)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenter *notificationCenter =
+	    [OFNotificationCenter defaultCenter];
+	OFNotificationName notificationName =
+	    OHGameControllerButtonValueDidChangeNotification;
+
+	for (OFString *name in buttons) {
+		OHGameControllerButton *button = [buttons objectForKey: name];
+		OFNotification *notification;
+
+		[notificationCenter addObserver: observer
+				       selector: selector
+					   name: notificationName
+					 object: button];
+
+		/* Manually trigger it once to get the initial state. */
+		notification = [OFNotification
+		    notificationWithName: notificationName
+				  object: button];
+		[notificationCenter postNotification: notification];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+static void
+addObserverForDirectionalPads(id observer, SEL selector,
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+    *directionalPads)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenter *notificationCenter =
+	    [OFNotificationCenter defaultCenter];
+	OFNotificationName notificationName =
+	    OHGameControllerDirectionalPadValueDidChangeNotification;
+
+	for (OFString *name in directionalPads) {
+		OHGameControllerDirectionalPad *directionalPad =
+		    [directionalPads objectForKey: name];
+		OFNotification *notification;
+
+		[notificationCenter addObserver: observer
+				       selector: selector
+					   name: notificationName
+					 object: directionalPad];
+
+		/* Manually trigger it once to get the initial state. */
+		notification = [OFNotification
+		    notificationWithName: notificationName
+				  object: directionalPad];
+		[notificationCenter postNotification: notification];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+static void
+removeObserverForButtons(id observer, SEL selector,
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *buttons)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenter *notificationCenter =
+	    [OFNotificationCenter defaultCenter];
+	OFNotificationName notificationName =
+	    OHGameControllerButtonValueDidChangeNotification;
+
+	for (OFString *name in buttons) {
+		OHGameControllerButton *button = [buttons objectForKey: name];
+
+		[notificationCenter removeObserver: observer
+					  selector: selector
+					      name: notificationName
+					    object: button];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+static void
+removeObserverForDirectionalPads(id observer, SEL selector,
+    OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+    *directionalPads)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenter *notificationCenter =
+	    [OFNotificationCenter defaultCenter];
+	OFNotificationName notificationName =
+	    OHGameControllerDirectionalPadValueDidChangeNotification;
+
+	for (OFString *name in directionalPads) {
+		OHGameControllerDirectionalPad *directionalPad =
+		    [directionalPads objectForKey: name];
+
+		[notificationCenter removeObserver: observer
+					  selector: selector
+					      name: notificationName
+					    object: directionalPad];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
 
 @implementation OHJoyConPair
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
@@ -198,20 +315,117 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 {
 	self = [self oh_init];
 
-	_leftJoyCon = [leftJoyCon retain];
-	_rightJoyCon = [rightJoyCon retain];
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		_leftJoyCon = [leftJoyCon retain];
+		_rightJoyCon = [rightJoyCon retain];
+
+		addObserverForButtons(self,
+		    @selector(oh_leftJoyConButtonValueDidChange:),
+		    _leftJoyCon.buttons);
+		addObserverForDirectionalPads(self,
+		    @selector(oh_leftJoyConDirectionalPadValueDidChange:),
+		    _leftJoyCon.directionalPads);
+		addObserverForButtons(self,
+		    @selector(oh_rightJoyConButtonValueDidChange:),
+		    _rightJoyCon.buttons);
+		addObserverForDirectionalPads(self,
+		    @selector(oh_rightJoyConDirectionalPadValueDidChange:),
+		    _rightJoyCon.directionalPads);
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
 
 - (void)dealloc
 {
+	removeObserverForButtons(self,
+	    @selector(oh_leftJoyConButtonValueDidChange:),
+	    _leftJoyCon.buttons);
+	removeObserverForDirectionalPads(self,
+	    @selector(oh_leftJoyConDirectionalPadValueDidChange:),
+	    _leftJoyCon.directionalPads);
+	removeObserverForButtons(self,
+	    @selector(oh_rightJoyConButtonValueDidChange:),
+	    _rightJoyCon.buttons);
+	removeObserverForDirectionalPads(self,
+	    @selector(oh_rightJoyConDirectionalPadValueDidChange:),
+	    _rightJoyCon.directionalPads);
+
 	[_leftJoyCon release];
 	[_rightJoyCon release];
 	[_buttons release];
 	[_directionalPads release];
 
 	[super dealloc];
+}
+
+- (void)oh_leftJoyConButtonValueDidChange: (OFNotification *)notification
+{
+	OHGameControllerButton *triggeringButton = notification.object;
+	OFString *name = triggeringButton.name;
+	OHGameControllerButton *button = nil;
+
+	if ([name isEqual: @"North"])
+		button = [[_directionalPads objectForKey: @"D-Pad"] right];
+	else if ([name isEqual: @"South"])
+		button = [[_directionalPads objectForKey: @"D-Pad"] left];
+	else if ([name isEqual: @"West"])
+		button = [[_directionalPads objectForKey: @"D-Pad"] up];
+	else if ([name isEqual: @"East"])
+		button = [[_directionalPads objectForKey: @"D-Pad"] down];
+	else
+		button = [_buttons objectForKey: name];
+
+	button.value = triggeringButton.value;
+}
+
+- (void)oh_leftJoyConDirectionalPadValueDidChange:
+    (OFNotification *)notification
+{
+	OHGameControllerDirectionalPad *triggeringPad = notification.object;
+	OFString *name = triggeringPad.name;
+	OHGameControllerDirectionalPad *pad = nil;
+
+	if ([name isEqual: @"Left Thumbstick"])
+		pad = [_directionalPads objectForKey: @"Left Thumbstick"];
+
+	pad.xAxis.value = -triggeringPad.yAxis.value;
+	pad.yAxis.value = triggeringPad.xAxis.value;
+}
+
+- (void)oh_rightJoyConButtonValueDidChange: (OFNotification *)notification
+{
+	OHGameControllerButton *triggeringButton = notification.object;
+	OFString *name = triggeringButton.name;
+	OHGameControllerButton *button = nil;
+
+	if ([name isEqual: @"Left Thumbstick"])
+		button = [_buttons objectForKey: @"Right Thumbstick"];
+	else
+		button = [_buttons objectForKey: name];
+
+	button.value = triggeringButton.value;
+}
+
+- (void)oh_rightJoyConDirectionalPadValueDidChange:
+    (OFNotification *)notification
+{
+	OHGameControllerDirectionalPad *triggeringPad = notification.object;
+	OFString *name = triggeringPad.name;
+	OHGameControllerDirectionalPad *pad = nil;
+
+	if ([name isEqual: @"Left Thumbstick"])
+		pad = [_directionalPads objectForKey: @"Right Thumbstick"];
+
+	pad.xAxis.value = triggeringPad.yAxis.value;
+	pad.yAxis.value = -triggeringPad.xAxis.value;
 }
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
