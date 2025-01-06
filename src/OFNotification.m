@@ -82,4 +82,28 @@
 {
 	return [self retain];
 }
+
+- (OFString *)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *object = [[_object description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	OFString *userInfo = [_userInfo.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	OFString *ret = [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tObject = %@\n"
+	    @"\tUser info = %@\n"
+	    @">",
+	    self.class, _name, object, userInfo];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
 @end
