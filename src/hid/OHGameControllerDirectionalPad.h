@@ -18,6 +18,15 @@
  */
 
 #import "OHGameControllerElement.h"
+#ifdef OBJFWHID_LOCAL_INCLUDES
+# import "OFNotification.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFNotification.h>
+# endif
+#endif
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 
@@ -34,6 +43,10 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OHGameControllerAxis *_xAxis, *_yAxis;
 	OHGameControllerButton *_up, *_down, *_left, *_right;
+	enum {
+		OHGameControllerDirectionalPadTypeAxes = 1,
+		OHGameControllerDirectionalPadTypeButtons = 2
+	} _type;
 }
 
 /**
@@ -66,5 +79,17 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) OHGameControllerButton *right;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+* @brief A notification that will be sent when a directional pad value changed.
+*/
+extern const OFNotificationName
+    OHGameControllerDirectionalPadValueDidChangeNotification;
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

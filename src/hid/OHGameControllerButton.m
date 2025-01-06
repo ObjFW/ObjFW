@@ -20,9 +20,38 @@
 #include "config.h"
 
 #import "OHGameControllerButton.h"
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
+
+const OFNotificationName OHGameControllerButtonValueDidChangeNotification =
+    @"OHGameControllerButtonValueDidChangeNotification";
 
 @implementation OHGameControllerButton
-@synthesize value = _value;
+- (float)value
+{
+	return _value;
+}
+
+- (void)setValue: (float)value
+{
+	void *pool;
+	OFNotificationName name;
+	OFNotification *notification;
+
+	if (value == _value)
+		return;
+
+	_value = value;
+
+	pool = objc_autoreleasePoolPush();
+
+	name = OHGameControllerButtonValueDidChangeNotification;
+	notification = [OFNotification notificationWithName: name
+						     object: self];
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
+
+	objc_autoreleasePoolPop(pool);
+}
 
 - (bool)isPressed
 {

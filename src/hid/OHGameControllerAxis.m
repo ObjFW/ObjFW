@@ -21,11 +21,40 @@
 
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerAxis+Private.h"
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
+
+const OFNotificationName OHGameControllerAxisValueDidChangeNotification =
+    @"OHGameControllerAxisValueDidChangeNotification";
 
 @implementation OHGameControllerAxis
-@synthesize value = _value;
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 @synthesize oh_minRawValue = _minRawValue, oh_maxRawValue = _maxRawValue;
+
+- (float)value
+{
+	return _value;
+}
+
+- (void)setValue: (float)value
+{
+	void *pool;
+	OFNotification *notification;
+
+	if (value == _value)
+		return;
+
+	_value = value;
+
+	pool = objc_autoreleasePoolPush();
+
+	notification = [OFNotification
+	    notificationWithName: OHGameControllerAxisValueDidChangeNotification
+			  object: self];
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
+
+	objc_autoreleasePoolPop(pool);
+}
 
 /* Change to a smaller type on ABI bump and switch to @synthesize */
 - (bool)oh_isInverted

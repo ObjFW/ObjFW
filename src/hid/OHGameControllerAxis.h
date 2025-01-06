@@ -19,6 +19,16 @@
 
 #import "OHGameControllerElement.h"
 
+#ifdef OBJFWHID_LOCAL_INCLUDES
+# import "OFNotification.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFNotification.h>
+# endif
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /**
@@ -41,5 +51,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) float value;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+* @brief A notification that will be sent when an axis value changed.
+*/
+extern const OFNotificationName OHGameControllerAxisValueDidChangeNotification;
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

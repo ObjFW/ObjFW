@@ -21,10 +21,20 @@
 
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerDirectionalPad+Private.h"
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
 #import "OHEmulatedGameControllerAxis.h"
 #import "OHEmulatedGameControllerButton.h"
 #import "OHGameControllerElement.h"
 #import "OHGameControllerElement+Private.h"
+
+const OFNotificationName
+    OHGameControllerDirectionalPadValueDidChangeNotification =
+    @"OHGameControllerDirectionalPadValueDidChangeNotification";
+
+@interface OHGameControllerDirectionalPad ()
+- (void)oh_valueDidChange: (OFNotification *)notification;
+@end
 
 @implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
@@ -69,8 +79,13 @@
 	self = [super oh_initWithName: name analog: analog];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFNotificationCenter *notificationCenter;
+		OFNotificationName notificationName;
+
 		_xAxis = [xAxis retain];
 		_yAxis = [yAxis retain];
+		_type = OHGameControllerDirectionalPadTypeAxes;
 
 		_up = [[OHEmulatedGameControllerButton alloc]
 		    oh_initWithAxis: _yAxis
@@ -84,6 +99,20 @@
 		_right = [[OHEmulatedGameControllerButton alloc]
 		    oh_initWithAxis: _xAxis
 			   positive: true];
+
+		notificationCenter = [OFNotificationCenter defaultCenter];
+		notificationName =
+		    OHGameControllerAxisValueDidChangeNotification;
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _xAxis];
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _yAxis];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -102,10 +131,15 @@
 	self = [super oh_initWithName: name analog: analog];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFNotificationCenter *notificationCenter;
+		OFNotificationName notificationName;
+
 		_up = [up retain];
 		_down = [down retain];
 		_left = [left retain];
 		_right = [right retain];
+		_type = OHGameControllerDirectionalPadTypeButtons;
 
 		_xAxis = [[OHEmulatedGameControllerAxis alloc]
 		    oh_initWithNegativeButton: _left
@@ -113,6 +147,28 @@
 		_yAxis = [[OHEmulatedGameControllerAxis alloc]
 		    oh_initWithNegativeButton: _up
 			       positiveButton: _down];
+
+		notificationCenter = [OFNotificationCenter defaultCenter];
+		notificationName =
+		    OHGameControllerButtonValueDidChangeNotification;
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _up];
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _down];
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _left];
+		[notificationCenter addObserver: self
+				       selector: @selector(oh_valueDidChange:)
+					   name: notificationName
+					 object: _right];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -123,6 +179,45 @@
 
 - (void)dealloc
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenter *center = [OFNotificationCenter defaultCenter];
+	OFNotificationName name;
+
+	switch (_type) {
+	case OHGameControllerDirectionalPadTypeAxes:
+		name = OHGameControllerAxisValueDidChangeNotification;
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _xAxis];
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _yAxis];
+		break;
+	case OHGameControllerDirectionalPadTypeButtons:
+		name = OHGameControllerButtonValueDidChangeNotification;
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _up];
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _down];
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _left];
+		[center removeObserver: self
+			      selector: @selector(oh_valueDidChange:)
+				  name: name
+				object: _right];
+		break;
+	}
+
+	objc_autoreleasePoolPop(pool);
+
 	[_xAxis release];
 	[_yAxis release];
 	[_up release];
@@ -131,6 +226,16 @@
 	[_right release];
 
 	[super dealloc];
+}
+
+- (void)oh_valueDidChange: (OFNotification *)notification
+{
+	OFNotificationName name =
+	    OHGameControllerDirectionalPadValueDidChangeNotification;
+
+	notification = [OFNotification notificationWithName: name
+						     object: self];
+	[[OFNotificationCenter defaultCenter] postNotification: notification];
 }
 
 - (OFString *)description
