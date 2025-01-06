@@ -33,7 +33,7 @@
 	return _inverted;
 }
 
-- (void)oh_setIsInverted: (bool)inverted
+- (void)oh_setInverted: (bool)inverted
 {
 	_inverted = inverted;
 }

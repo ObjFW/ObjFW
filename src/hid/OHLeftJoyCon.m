@@ -109,11 +109,11 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
 							  analog: true];
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-		xAxis.oh_inverted = true;
-#endif
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
 							  analog: true];
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+		yAxis.oh_inverted = true;
+#endif
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
