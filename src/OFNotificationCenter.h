@@ -105,7 +105,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Removes an observer. The specified observer must be one returned by
- *	  @ref addObserver:selector:name:object:.
+ *	  @ref addObserverForName:object:usingBlock:.
  *
  * @param observer The object that was returned when adding the observer
  */
