@@ -66,8 +66,8 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	    @"B", @"Button B".NSObject,
 	    @"X", @"Button X".NSObject,
 	    @"Y", @"Button Y".NSObject,
-	    @"L", @"Button L".NSObject,
-	    @"R", @"Button R".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
+	    @"R", @"Right Shoulder".NSObject,
 	    /*
 	     * Weird mapping on the 8Bitdo NES30 GamePad, which is currently
 	     * the only controller supported for OHNESGamepad with GCF.

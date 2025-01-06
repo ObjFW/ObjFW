@@ -64,20 +64,20 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 	buttonsMap = [[OFDictionary alloc] initWithKeysAndObjects:
 	    /* Left JoyCon */
-	    @"L", @"Button L".NSObject,
-	    @"ZL", @"Button ZL".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
+	    @"ZL", @"Left Trigger".NSObject,
 	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
-	    @"-", @"Button -".NSObject,
+	    @"-", @"Button Options".NSObject,
 	    @"Capture", @"Button Share".NSObject,
 	    /* Right JoyCon */
 	    @"X", @"Button X".NSObject,
-	    @"B", @"Button Y".NSObject,
+	    @"B", @"Button B".NSObject,
 	    @"A", @"Button A".NSObject,
 	    @"Y", @"Button Y".NSObject,
-	    @"R", @"Button R".NSObject,
-	    @"ZR", @"Button ZR".NSObject,
+	    @"R", @"Right Shoulder".NSObject,
+	    @"ZR", @"Right Trigger".NSObject,
 	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
-	    @"+", @"Button +".NSObject,
+	    @"+", @"Button Menu".NSObject,
 	    @"Home", @"Button Home".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
