@@ -56,10 +56,12 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Analog Stick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Analog Stick Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Analog Stick"
 			     xAxis: xAxis

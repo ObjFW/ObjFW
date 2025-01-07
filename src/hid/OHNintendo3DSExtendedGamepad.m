@@ -67,10 +67,12 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Circle Pad X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Circle Pad Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Circle Pad"
 			     xAxis: xAxis
@@ -79,10 +81,12 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[directionalPads setObject: directionalPad
 				    forKey: @"Circle Pad"];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"CX"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"CY"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"C-Stick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"C-Stick Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"C-Stick"
 			     xAxis: xAxis

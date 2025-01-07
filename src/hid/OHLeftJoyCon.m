@@ -107,10 +107,12 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 		[buttons makeImmutable];
 		_buttons = [buttons copy];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick Y"
+				analog: true];
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 		yAxis.oh_inverted = true;
 #endif

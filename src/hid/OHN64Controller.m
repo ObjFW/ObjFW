@@ -71,10 +71,12 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 3];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Thumbstick"
 			     xAxis: xAxis

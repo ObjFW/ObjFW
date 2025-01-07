@@ -244,10 +244,12 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 		directionalPads =
 		    [OFMutableDictionary dictionaryWithCapacity: 2];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Left Thumbstick Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
@@ -256,10 +258,12 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 		[directionalPads setObject: directionalPad
 				    forKey: @"Left Thumbstick"];
 
-		xAxis = [OHGameControllerAxis oh_elementWithName: @"X"
-							  analog: true];
-		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
-							  analog: true];
+		xAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Right Thumbstick X"
+				analog: true];
+		yAxis = [OHGameControllerAxis
+		    oh_elementWithName: @"Right Thumbstick Y"
+				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
 		    oh_padWithName: @"Right Thumbstick"
 			     xAxis: xAxis
