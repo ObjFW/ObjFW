@@ -217,16 +217,14 @@ isSubclassOfClass(Class class, Class superclass)
 {
 	switch (status) {
 	case StatusRunning:
-		if (OFStdOut.hasTerminal) {
-			OFStdOut.foregroundColor = [OFColor olive];
-			[OFStdOut writeFormat: @"-[%@ ", class];
-			OFStdOut.foregroundColor = [OFColor yellow];
-			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			OFStdOut.foregroundColor = [OFColor olive];
-			[OFStdOut writeString: @"]: "];
-		} else
-			[OFStdOut writeFormat: @"-[%@ %s]: ",
-					       class, sel_getName(test)];
+		OFStdOut.foregroundColor = [OFColor olive];
+		[OFStdOut writeFormat: @"-[%@ ", class];
+		OFStdOut.bold = true;
+		OFStdOut.foregroundColor = [OFColor yellow];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		OFStdOut.bold = false;
+		OFStdOut.foregroundColor = [OFColor olive];
+		[OFStdOut writeString: @"]: "];
 		break;
 	case StatusOk:
 		if (OFStdOut.hasTerminal) {
@@ -234,8 +232,10 @@ isSubclassOfClass(Class class, Class superclass)
 			[OFStdOut eraseLine];
 			OFStdOut.foregroundColor = [OFColor green];
 			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
 			OFStdOut.foregroundColor = [OFColor lime];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			OFStdOut.bold = false;
 			OFStdOut.foregroundColor = [OFColor green];
 			[OFStdOut writeLine: @"]: ok"];
 		} else
@@ -247,8 +247,10 @@ isSubclassOfClass(Class class, Class superclass)
 			[OFStdOut eraseLine];
 			OFStdOut.foregroundColor = [OFColor maroon];
 			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
 			OFStdOut.foregroundColor = [OFColor red];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			OFStdOut.bold = false;
 			OFStdOut.foregroundColor = [OFColor maroon];
 			[OFStdOut writeLine: @"]: failed"];
 		} else
@@ -264,8 +266,10 @@ isSubclassOfClass(Class class, Class superclass)
 			[OFStdOut eraseLine];
 			OFStdOut.foregroundColor = [OFColor gray];
 			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
 			OFStdOut.foregroundColor = [OFColor silver];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
+			OFStdOut.bold = false;
 			OFStdOut.foregroundColor = [OFColor gray];
 			[OFStdOut writeLine: @"]: skipped"];
 		} else
@@ -389,8 +393,10 @@ isSubclassOfClass(Class class, Class superclass)
 
 	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeString: @"Running "];
+	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
+	OFStdOut.bold = false;
 	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test case%s\n",
 			       (testClasses.count != 1 ? "s" : "")];
@@ -400,8 +406,10 @@ isSubclassOfClass(Class class, Class superclass)
 
 		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeFormat: @"Running ", class];
+		OFStdOut.bold = true;
 		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
+		OFStdOut.bold = false;
 
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
@@ -505,29 +513,39 @@ isSubclassOfClass(Class class, Class superclass)
 
 		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeString: @"Summary for "];
+		OFStdOut.bold = true;
 		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
+		OFStdOut.bold = false;
 
 		for (OFPair *line in summary) {
 			OFStdOut.foregroundColor = [OFColor navy];
 			[OFStdOut writeFormat: @"%@: ", line.firstObject];
+			OFStdOut.bold = true;
 			OFStdOut.foregroundColor = [OFColor blue];
 			[OFStdOut writeFormat: @"%@\n", line.secondObject];
+			OFStdOut.bold = false;
 		}
 	}
 
+	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
+	OFStdOut.bold = false;
 	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
+	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numFailed];
+	OFStdOut.bold = false;
 	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
+	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSkipped];
+	OFStdOut.bold = false;
 	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s skipped\n",
 			       (numSkipped != 1 ? "s" : "")];

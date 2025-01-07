@@ -54,6 +54,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 	bool _atEndOfStream;
 	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
+	bool _bold;
 }
 
 /**
@@ -74,7 +75,7 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) int rows;
 
 /**
- * @brief The foreground color on the underlying terminal.
+ * @brief The current foreground color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
  * unsupported.
@@ -82,12 +83,20 @@ OF_SUBCLASSING_RESTRICTED
 @property (retain, nonatomic) OFColor *foregroundColor;
 
 /**
- * @brief The background color on the underlying terminal.
+ * @brief The current background color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
  * unsupported.
  */
 @property (retain, nonatomic) OFColor *backgroundColor;
+
+/**
+ * @brief Whether bold is on on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or bold is
+ * unsupported.
+ */
+@property (nonatomic, getter=isBold) bool bold;
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(DOXYGEN)

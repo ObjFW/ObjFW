@@ -543,6 +543,11 @@ codepageToEncoding(UINT codepage)
 	}
 }
 
+- (void)setBold: (bool)bold
+{
+	/* No support for bold. */
+}
+
 - (void)reset
 {
 	if (SetConsoleTextAttribute(_handle, _attributes)) {

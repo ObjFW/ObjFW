@@ -675,6 +675,26 @@ colorToANSI(OFColor *color)
 	_backgroundColor = [color retain];
 }
 
+- (bool)isBold
+{
+	return _bold;
+}
+
+- (void)setBold: (bool)bold
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (bold == _bold)
+		return;
+
+	[self writeString: (bold ? @"\033[1m" : @"\033[22m")];
+
+	_bold = bold;
+#endif
+}
+
 - (void)reset
 {
 	if (!self.hasTerminal)
@@ -689,6 +709,7 @@ colorToANSI(OFColor *color)
 	[_foregroundColor release];
 	[_backgroundColor release];
 	_foregroundColor = _backgroundColor = nil;
+	_bold = false;
 }
 
 - (void)clear
