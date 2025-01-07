@@ -38,8 +38,8 @@
 #endif
 
 static OFString *const buttonNames[] = {
-	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Stick",
-	@"Right Stick", @"+", @"-", @"Home", @"Capture"
+	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Thumbstick",
+	@"Right Thumbstick", @"+", @"-", @"Home", @"Capture"
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
@@ -70,16 +70,16 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	    @"R", @"Right Shoulder".NSObject,
 	    @"ZL", @"Left Trigger".NSObject,
 	    @"ZR", @"Right Trigger".NSObject,
-	    @"Left Stick", @"Left Thumbstick".NSObject,
-	    @"Right Stick", @"Right Thumbstick".NSObject,
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
+	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
 	    @"+", @"Button +".NSObject,
 	    @"-", @"Button -".NSObject,
 	    @"Home", @"Button Home".NSObject,
 	    @"Capture", @"Button Share".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
-	    @"Left Stick", @"Left Thumbstick".NSObject,
-	    @"Right Stick", @"Right Thumbstick".NSObject,
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
+	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
 	    @"D-Pad", @"Directional Buttons".NSObject,
 	    nil];
 
@@ -127,19 +127,19 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Left Stick"];
+				    forKey: @"Left Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"RX"
 							  analog: true];
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"RY"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Right Stick"
+		    oh_padWithName: @"Right Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Right Stick"];
+				    forKey: @"Right Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad X"
 							  analog: false];
@@ -219,12 +219,12 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 - (OHGameControllerButton *)leftThumbstickButton
 {
-	return [_buttons objectForKey: @"Left Stick"];
+	return [_buttons objectForKey: @"Left Thumbstick"];
 }
 
 - (OHGameControllerButton *)rightThumbstickButton
 {
-	return [_buttons objectForKey: @"Right Stick"];
+	return [_buttons objectForKey: @"Right Thumbstick"];
 }
 
 - (OHGameControllerButton *)menuButton
@@ -244,12 +244,12 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	return [_directionalPads objectForKey: @"Left Stick"];
+	return [_directionalPads objectForKey: @"Left Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	return [_directionalPads objectForKey: @"Right Stick"];
+	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
@@ -288,10 +288,10 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 		name = @"R";
 		break;
 	case BTN_THUMBL:
-		name = @"Left Stick";
+		name = @"Left Thumbstick";
 		break;
 	case BTN_THUMBR:
-		name = @"Right Stick";
+		name = @"Right Thumbstick";
 		break;
 	case BTN_START:
 		name = @"+";
@@ -316,13 +316,17 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 {
 	switch (axis) {
 	case ABS_X:
-		return [[_directionalPads objectForKey: @"Left Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    xAxis];
 	case ABS_Y:
-		return [[_directionalPads objectForKey: @"Left Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    yAxis];
 	case ABS_RX:
-		return [[_directionalPads objectForKey: @"Right Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    xAxis];
 	case ABS_RY:
-		return [[_directionalPads objectForKey: @"Right Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    yAxis];
 	case ABS_HAT0X:
 		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
 	case ABS_HAT0Y:

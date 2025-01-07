@@ -78,8 +78,8 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	    @"PS", @"Button Home".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
-	    @"Left Stick", @"Left Thumbstick".NSObject,
-	    @"Right Stick", @"Right Thumbstick".NSObject,
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
+	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
 	    @"D-Pad", @"Direction Pad".NSObject,
 	    nil];
 
@@ -149,24 +149,24 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Left Stick"
+		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Left Stick"];
+				    forKey: @"Left Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"RX"
 							  analog: true];
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"RY"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Right Stick"
+		    oh_padWithName: @"Right Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Right Stick"];
+				    forKey: @"Right Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad X"
 							  analog: false];
@@ -271,12 +271,12 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	return [_directionalPads objectForKey: @"Left Stick"];
+	return [_directionalPads objectForKey: @"Left Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	return [_directionalPads objectForKey: @"Right Stick"];
+	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
@@ -334,13 +334,17 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 {
 	switch (axis) {
 	case ABS_X:
-		return [[_directionalPads objectForKey: @"Left Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    xAxis];
 	case ABS_Y:
-		return [[_directionalPads objectForKey: @"Left Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    yAxis];
 	case ABS_RX:
-		return [[_directionalPads objectForKey: @"Right Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    xAxis];
 	case ABS_RY:
-		return [[_directionalPads objectForKey: @"Right Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    yAxis];
 	case ABS_HAT0X:
 		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
 	case ABS_HAT0Y:

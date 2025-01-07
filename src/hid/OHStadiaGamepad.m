@@ -93,24 +93,24 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"Y"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Left Stick"
+		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Left Stick"];
+				    forKey: @"Left Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"RX"
 							  analog: true];
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"RY"
 							  analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Right Stick"
+		    oh_padWithName: @"Right Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];
 		[directionalPads setObject: directionalPad
-				    forKey: @"Right Stick"];
+				    forKey: @"Right Thumbstick"];
 
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad X"
 							  analog: false];
@@ -215,12 +215,12 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
 {
-	return [_directionalPads objectForKey: @"Left Stick"];
+	return [_directionalPads objectForKey: @"Left Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)rightThumbstick
 {
-	return [_directionalPads objectForKey: @"Right Stick"];
+	return [_directionalPads objectForKey: @"Right Thumbstick"];
 }
 
 - (OHGameControllerDirectionalPad *)dPad
@@ -284,13 +284,17 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	switch (axis) {
 	case ABS_X:
-		return [[_directionalPads objectForKey: @"Left Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    xAxis];
 	case ABS_Y:
-		return [[_directionalPads objectForKey: @"Left Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Left Thumbstick"]
+		    yAxis];
 	case ABS_Z:
-		return [[_directionalPads objectForKey: @"Right Stick"] xAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    xAxis];
 	case ABS_RZ:
-		return [[_directionalPads objectForKey: @"Right Stick"] yAxis];
+		return [[_directionalPads objectForKey: @"Right Thumbstick"]
+		    yAxis];
 	case ABS_HAT0X:
 		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
 	case ABS_HAT0Y:
