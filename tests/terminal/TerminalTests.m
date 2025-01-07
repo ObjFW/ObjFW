@@ -46,7 +46,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[OFStdOut setForegroundColor: color];
+		OFStdOut.foregroundColor = color;
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -54,7 +54,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[OFStdOut setBackgroundColor: color];
+		OFStdOut.backgroundColor = color;
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -63,8 +63,8 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	i = 0;
 	reverseEnumerator = [colors.reversedArray objectEnumerator];
 	for (OFColor *color in colors) {
-		[OFStdOut setForegroundColor: color];
-		[OFStdOut setBackgroundColor: [reverseEnumerator nextObject]];
+		OFStdOut.foregroundColor = color;
+		OFStdOut.backgroundColor = [reverseEnumerator nextObject];
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -72,11 +72,11 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	for (i = 0; i < colors.count * 2; i++) {
 		if (i % 2)
-			[OFStdOut setBackgroundColor: [colors objectAtIndex:
-			    ((i / 2) + 2) % colors.count]];
+			OFStdOut.backgroundColor = [colors objectAtIndex:
+			    ((i / 2) + 2) % colors.count];
 		else
-			[OFStdOut setForegroundColor:
-			    [colors objectAtIndex: i / 2]];
+			OFStdOut.foregroundColor =
+			    [colors objectAtIndex: i / 2];
 
 		[OFStdOut writeFormat: @"%zx", i / 2];
 	}
@@ -86,7 +86,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[OFStdOut writeLine: @"Press return"];
 	[OFStdIn readLine];
 
-	[OFStdOut setBackgroundColor: [OFColor green]];
+	OFStdOut.backgroundColor = [OFColor green];
 	[OFStdOut writeString: @"Hello!"];
 	[OFThread sleepForTimeInterval: 2];
 	[OFStdOut eraseLine];

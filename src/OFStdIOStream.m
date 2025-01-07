@@ -613,9 +613,17 @@ colorToANSI(OFColor *color)
 #endif
 }
 
+- (OFColor *)foregroundColor
+{
+	return _foregroundColor;
+}
+
 - (void)setForegroundColor: (OFColor *)color
 {
 	int code;
+
+	if ([color isEqual: _foregroundColor])
+		return;
 
 	if (!self.hasTerminal)
 		return;
@@ -631,11 +639,22 @@ colorToANSI(OFColor *color)
 
 	[self writeFormat: @"\033[%um", code];
 #endif
+
+	[_foregroundColor release];
+	_foregroundColor = [color retain];
+}
+
+- (OFColor *)backgroundColor
+{
+	return _backgroundColor;
 }
 
 - (void)setBackgroundColor: (OFColor *)color
 {
 	int code;
+
+	if ([color isEqual: _backgroundColor])
+		return;
 
 	if (!self.hasTerminal)
 		return;
@@ -651,6 +670,9 @@ colorToANSI(OFColor *color)
 
 	[self writeFormat: @"\033[%um", code + 10];
 #endif
+
+	[_backgroundColor release];
+	_backgroundColor = [color retain];
 }
 
 - (void)reset
@@ -663,6 +685,10 @@ colorToANSI(OFColor *color)
 #else
 	[self writeString: @"\033[0m"];
 #endif
+
+	[_foregroundColor release];
+	[_backgroundColor release];
+	_foregroundColor = _backgroundColor = nil;
 }
 
 - (void)clear

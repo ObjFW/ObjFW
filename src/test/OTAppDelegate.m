@@ -218,11 +218,11 @@ isSubclassOfClass(Class class, Class superclass)
 	switch (status) {
 	case StatusRunning:
 		if (OFStdOut.hasTerminal) {
-			[OFStdOut setForegroundColor: [OFColor olive]];
+			OFStdOut.foregroundColor = [OFColor olive];
 			[OFStdOut writeFormat: @"-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor yellow]];
+			OFStdOut.foregroundColor = [OFColor yellow];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor olive]];
+			OFStdOut.foregroundColor = [OFColor olive];
 			[OFStdOut writeString: @"]: "];
 		} else
 			[OFStdOut writeFormat: @"-[%@ %s]: ",
@@ -232,11 +232,11 @@ isSubclassOfClass(Class class, Class superclass)
 		if (OFStdOut.hasTerminal) {
 			[OFStdOut setCursorColumn: 0];
 			[OFStdOut eraseLine];
-			[OFStdOut setForegroundColor: [OFColor green]];
+			OFStdOut.foregroundColor = [OFColor green];
 			[OFStdOut writeFormat: @"-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor lime]];
+			OFStdOut.foregroundColor = [OFColor lime];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor green]];
+			OFStdOut.foregroundColor = [OFColor green];
 			[OFStdOut writeLine: @"]: ok"];
 		} else
 			[OFStdOut writeLine: @"ok"];
@@ -245,11 +245,11 @@ isSubclassOfClass(Class class, Class superclass)
 		if (OFStdOut.hasTerminal) {
 			[OFStdOut setCursorColumn: 0];
 			[OFStdOut eraseLine];
-			[OFStdOut setForegroundColor: [OFColor maroon]];
+			OFStdOut.foregroundColor = [OFColor maroon];
 			[OFStdOut writeFormat: @"-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor red]];
+			OFStdOut.foregroundColor = [OFColor red];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor maroon]];
+			OFStdOut.foregroundColor = [OFColor maroon];
 			[OFStdOut writeLine: @"]: failed"];
 		} else
 			[OFStdOut writeLine: @"failed"];
@@ -262,11 +262,11 @@ isSubclassOfClass(Class class, Class superclass)
 		if (OFStdOut.hasTerminal) {
 			[OFStdOut setCursorColumn: 0];
 			[OFStdOut eraseLine];
-			[OFStdOut setForegroundColor: [OFColor gray]];
+			OFStdOut.foregroundColor = [OFColor gray];
 			[OFStdOut writeFormat: @"-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor silver]];
+			OFStdOut.foregroundColor = [OFColor silver];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor gray]];
+			OFStdOut.foregroundColor = [OFColor gray];
 			[OFStdOut writeLine: @"]: skipped"];
 		} else
 			[OFStdOut writeLine: @"skipped"];
@@ -280,7 +280,7 @@ isSubclassOfClass(Class class, Class superclass)
 	if (status == StatusFailed) {
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(OF_NINTENDO_SWITCH)
-		[OFStdOut setForegroundColor: [OFColor silver]];
+		OFStdOut.foregroundColor = [OFColor silver];
 		[OFStdOut writeLine: @"Press A to continue"];
 
 # ifdef OF_NINTENDO_SWITCH
@@ -387,20 +387,20 @@ isSubclassOfClass(Class class, Class superclass)
 	} else
 		testClasses = [self testClasses];
 
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeString: @"Running "];
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test case%s\n",
 			       (testClasses.count != 1 ? "s" : "")];
 
 	for (Class class in testClasses) {
 		OFArray *summary;
 
-		[OFStdOut setForegroundColor: [OFColor teal]];
+		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeFormat: @"Running ", class];
-		[OFStdOut setForegroundColor: [OFColor aqua]];
+		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
 
 		for (OFValue *test in [self testsInClass: class]) {
@@ -503,38 +503,38 @@ isSubclassOfClass(Class class, Class superclass)
 	for (Class class in summaries) {
 		OFArray *summary = [summaries objectForKey: class];
 
-		[OFStdOut setForegroundColor: [OFColor teal]];
+		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeString: @"Summary for "];
-		[OFStdOut setForegroundColor: [OFColor aqua]];
+		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
 
 		for (OFPair *line in summary) {
-			[OFStdOut setForegroundColor: [OFColor navy]];
+			OFStdOut.foregroundColor = [OFColor navy];
 			[OFStdOut writeFormat: @"%@: ", line.firstObject];
-			[OFStdOut setForegroundColor: [OFColor blue]];
+			OFStdOut.foregroundColor = [OFColor blue];
 			[OFStdOut writeFormat: @"%@\n", line.secondObject];
 		}
 	}
 
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numFailed];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSkipped];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s skipped\n",
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
+	OFStdOut.foregroundColor = [OFColor silver];
 # ifdef OF_WII
 	[OFStdOut writeLine: @"Press Home button to exit"];
 # else

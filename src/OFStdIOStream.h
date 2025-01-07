@@ -53,6 +53,7 @@ OF_SUBCLASSING_RESTRICTED
 	int _fd;
 #endif
 	bool _atEndOfStream;
+	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
 }
 
 /**
@@ -72,6 +73,22 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) int rows;
 
+/**
+ * @brief The foreground color on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or colors are
+ * unsupported.
+ */
+@property (retain, nonatomic) OFColor *foregroundColor;
+
+/**
+ * @brief The background color on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or colors are
+ * unsupported.
+ */
+@property (retain, nonatomic) OFColor *backgroundColor;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(DOXYGEN)
 /**
@@ -84,22 +101,6 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Sets the foreground color on the underlying terminal. Does nothing if
- *	  there is no underlying terminal or colors are unsupported.
- *
- * @param color The foreground color to set
- */
-- (void)setForegroundColor: (OFColor *)color;
-
-/**
- * @brief Sets the background color on the underlying terminal. Does nothing if
- *	  there is no underlying terminal or colors are unsupported.
- *
- * @param color The background color to set
- */
-- (void)setBackgroundColor: (OFColor *)color;
 
 /**
  * @brief Resets all attributes (color, bold, etc.). Does nothing if there is

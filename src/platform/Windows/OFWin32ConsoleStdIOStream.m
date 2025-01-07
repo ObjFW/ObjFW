@@ -484,6 +484,9 @@ codepageToEncoding(UINT codepage)
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
 
+	if ([color isEqual: _foregroundColor])
+		return;
+
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
 		return;
 
@@ -502,13 +505,19 @@ codepageToEncoding(UINT codepage)
 	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
 		csbi.wAttributes |= FOREGROUND_INTENSITY;
 
-	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
+		[_foregroundColor release];
+		_foregroundColor = [color retain];
+	}
 }
 
 - (void)setBackgroundColor: (OFColor *)color
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
+
+	if ([color isEqual: _backgroundColor])
+		return;
 
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
 		return;
@@ -528,12 +537,19 @@ codepageToEncoding(UINT codepage)
 	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
 		csbi.wAttributes |= BACKGROUND_INTENSITY;
 
-	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
+		[_backgroundColor release];
+		_backgroundColor = [color retain];
+	}
 }
 
 - (void)reset
 {
-	SetConsoleTextAttribute(_handle, _attributes);
+	if (SetConsoleTextAttribute(_handle, _attributes)) {
+		[_foregroundColor release];
+		[_backgroundColor release];
+		_foregroundColor = _backgroundColor = nil;
+	}
 }
 
 - (void)clear

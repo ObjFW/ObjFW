@@ -93,17 +93,17 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		}
 
 		if (button.value == 1)
-			[OFStdOut setForegroundColor: [OFColor red]];
+			OFStdOut.foregroundColor = [OFColor red];
 		else if (button.value > 0.5)
-			[OFStdOut setForegroundColor: [OFColor yellow]];
+			OFStdOut.foregroundColor = [OFColor yellow];
 		else if (button.value > 0)
-			[OFStdOut setForegroundColor: [OFColor green]];
+			OFStdOut.foregroundColor = [OFColor green];
 		else
-			[OFStdOut setForegroundColor: [OFColor gray]];
+			OFStdOut.foregroundColor = [OFColor gray];
 
 		[OFStdOut writeFormat: @"[%@] ", name];
 	}
-	[OFStdOut setForegroundColor: [OFColor gray]];
+	OFStdOut.foregroundColor = [OFColor gray];
 	[OFStdOut writeString: @"\n"];
 
 	i = 0;
@@ -209,13 +209,13 @@ static void printProfile(id <OHGameControllerProfile> profile)
 	for (OHGameController *controller in _controllers) {
 		id <OHGameControllerProfile> profile = controller.profile;
 
-		[OFStdOut setForegroundColor: [OFColor green]];
+		OFStdOut.foregroundColor = [OFColor green];
 		[OFStdOut writeLine: controller.description];
 
 		@try {
 			[controller updateState];
 		} @catch (OFReadFailedException *e) {
-			[OFStdOut setForegroundColor: [OFColor red]];
+			OFStdOut.foregroundColor = [OFColor red];
 			[OFStdOut writeString: e.description];
 			continue;
 		}
@@ -235,7 +235,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 	}
 
 	if (_joyConPair) {
-		[OFStdOut setForegroundColor: [OFColor green]];
+		OFStdOut.foregroundColor = [OFColor green];
 		[OFStdOut writeLine: @"Joy-Con Pair"];
 
 		printProfile(_joyConPair);
