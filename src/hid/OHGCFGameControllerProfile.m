@@ -86,10 +86,12 @@
 
 			/*
 			 * GameController.framework likes to use "Button" as a
-			 * prefix, which we don't.
+			 * prefix or suffix, which we don't.
 			 */
 			if ([name hasPrefix: @"Button "])
 				name = [name substringFromIndex: 7];
+			if ([name hasSuffix: @" Button"])
+				name = [name substringToIndex: name.length - 7];
 
 			if ([element conformsToProtocol:
 			    @protocol(GCButtonElement)]) {
