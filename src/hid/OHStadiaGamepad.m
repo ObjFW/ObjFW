@@ -22,6 +22,9 @@
 #import "OHStadiaGamepad.h"
 #import "OHStadiaGamepad+Private.h"
 #import "OFDictionary.h"
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OFString+NSObject.h"
+#endif
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -36,12 +39,56 @@
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L1", @"R1", @"L3", @"R3", @"Menu", @"Options",
-	@"Capture", @"Stadia", @"Assistant"
+	@"Capture", @"Stadia",
+#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+	/* Not supported by GameController.framework */
+	@"Assistant"
+#endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+static OFDictionary<OFString *, NSString *> *buttonsMap;
+static OFDictionary<OFString *, NSString *> *directionalPadsMap;
+#endif
+
 @implementation OHStadiaGamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
++ (void)initialize
+{
+	void *pool;
+
+	if (self != [OHStadiaGamepad class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	buttonsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Y", @"Button Y".NSObject,
+	    @"A", @"Button A".NSObject,
+	    @"X", @"Button X".NSObject,
+	    @"B", @"Button B".NSObject,
+	    @"L1", @"Left Shoulder".NSObject,
+	    @"R1", @"Right Shoulder".NSObject,
+	    @"L2", @"Left Trigger".NSObject,
+	    @"R2", @"Right Trigger".NSObject,
+	    @"L3", @"Left Thumbstick Button".NSObject,
+	    @"R3", @"Right Thumbstick Button".NSObject,
+	    @"Options", @"Button Options".NSObject,
+	    @"Menu", @"Button Menu".NSObject,
+	    @"Capture", @"Button Share".NSObject,
+	    @"Stadia", @"Button Home".NSObject,
+	    nil];
+	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
+	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
+	    @"D-Pad", @"Direction Pad".NSObject,
+	    nil];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (instancetype)init
 {
@@ -58,7 +105,10 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    [OFMutableDictionary dictionaryWithCapacity: numButtons];
 		OHGameControllerButton *button;
 		OFMutableDictionary *directionalPads;
-		OHGameControllerAxis *axis, *xAxis, *yAxis;
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+		OHGameControllerAxis *axis;
+#endif
+		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
 
 		for (size_t i = 0; i < numButtons; i++) {
@@ -68,6 +118,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 		axis = [OHGameControllerAxis oh_elementWithName: @"L2"
 							 analog: true];
 		button = [OHEmulatedGameControllerTriggerButton
@@ -81,6 +132,14 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		    oh_buttonWithName: @"R2"
 				 axis: axis];
 		[buttons setObject: button forKey: @"R2"];
+#else
+		button = [OHGameControllerButton oh_elementWithName: @"L2"
+							     analog: true];
+		[buttons setObject: button forKey: @"L2"];
+		button = [OHGameControllerButton oh_elementWithName: @"R2"
+							     analog: true];
+		[buttons setObject: button forKey: @"R2"];
+#endif
 
 		[buttons makeImmutable];
 		_buttons = [buttons copy];
@@ -310,6 +369,23 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	default:
 		return nil;
 	}
+}
+#endif
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+- (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
+{
+	return buttonsMap;
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_axesMap
+{
+	return [OFDictionary dictionary];
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_directionalPadsMap
+{
+	return directionalPadsMap;
 }
 #endif
 @end

@@ -44,6 +44,8 @@
 #import "OHNESGamepad+Private.h"
 #import "OHRightJoyCon.h"
 #import "OHRightJoyCon+Private.h"
+#import "OHStadiaGamepad.h"
+#import "OHStadiaGamepad+Private.h"
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
 
@@ -99,6 +101,8 @@
 			_profile = [[OHRightJoyCon alloc] oh_init];
 		else if ([_name isEqual: @"Pro Controller"])
 			_profile = [[OHSwitchProController alloc] oh_init];
+		else if ([_name isEqual: @"Stadia Controller rev. A"])
+			_profile = [[OHStadiaGamepad alloc] oh_init];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
 		else

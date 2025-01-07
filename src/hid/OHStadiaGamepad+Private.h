@@ -22,6 +22,9 @@
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
 #endif
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OHGCFGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
 #endif
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+    <OHGCFMapping>
+#endif
+
 - (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
