@@ -34,10 +34,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
 @interface OFArray ()
 - (OFString *)
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
@@ -46,6 +42,21 @@ static struct {
 
 @interface OFPlaceholderArray: OFArray
 @end
+
+@interface OFConcreteArraySingleton: OFConcreteArray
+@end
+
+static struct {
+	Class isa;
+} placeholder;
+
+static OFConcreteArraySingleton *emptyArray;
+
+static void
+emptyArrayInit(void)
+{
+	emptyArray = [[OFConcreteArraySingleton alloc] init];
+}
 
 @implementation OFPlaceholderArray
 #ifdef __clang__
@@ -56,7 +67,9 @@ static struct {
 #endif
 - (instancetype)init
 {
-	return (id)[[OFConcreteArray alloc] init];
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, emptyArrayInit);
+	return (id)emptyArray;
 }
 
 - (instancetype)initWithObject: (id)object
@@ -99,6 +112,10 @@ static struct {
 # pragma clang diagnostic pop
 #endif
 
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFConcreteArraySingleton
 OF_SINGLETON_METHODS
 @end
 
