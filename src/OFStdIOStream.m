@@ -30,14 +30,16 @@
 # include <sys/ttycom.h>
 #endif
 
+#import "platform.h"
+
+#ifdef OF_WINDOWS
+# import "OFWin32ConsoleStdIOStream.h"
+#endif
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
 #import "OFColor.h"
 #import "OFDate.h"
 #import "OFApplication.h"
-#ifdef OF_WINDOWS
-# import "OFWin32ConsoleStdIOStream.h"
-#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
