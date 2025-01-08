@@ -1,6 +1,6 @@
 dnl
 dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
-dnl               2018, 2020, 2021, 2022, 2023, 2024
+dnl               2018, 2020, 2021, 2022, 2023, 2024, 2025
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
 dnl https://fl.nil.im/buildsys
@@ -100,6 +100,16 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT setaf 4 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT setaf 6 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT setaf 9 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT setaf 10 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT setaf 11 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT setaf 12 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT setaf 14 2>/dev/null)")
 			dnl OpenBSD seems to want 3 parameters for terminals
 			dnl ending in -256color, but the additional two
 			dnl parameters don't seem to do anything, so we set
@@ -114,6 +124,16 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT setaf 4 0 0 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT setaf 6 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT setaf 9 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT setaf 10 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT setaf 11 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT setaf 12 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT setaf 14 0 0 2>/dev/null)")
 			else
 				AC_SUBST(TERM_SETAF1,
 					"$($TPUT AF 1 2>/dev/null)")
@@ -125,6 +145,16 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT AF 4 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT AF 6 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT AF 9 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT AF 10 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT AF 11 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT AF 12 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT AF 14 2>/dev/null)")
 			fi
 		])
 
