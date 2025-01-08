@@ -31,10 +31,10 @@
 #endif
 
 #import "platform.h"
-
 #ifdef OF_WINDOWS
-# import "OFWin32ConsoleStdIOStream.h"
+# import "platform/Windows/OFWin32ConsoleStdIOStream.h"
 #endif
+
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
 #import "OFColor.h"
