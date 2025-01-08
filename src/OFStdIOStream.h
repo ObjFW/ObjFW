@@ -38,9 +38,6 @@ OF_ASSUME_NONNULL_BEGIN
  * The global variables @ref OFStdIn, @ref OFStdOut and @ref OFStdErr are
  * instances of this class and need no initialization.
  */
-#ifndef OF_WIN32_CONSOLE_STDIO_STREAM_H
-OF_SUBCLASSING_RESTRICTED
-#endif
 @interface OFStdIOStream: OFStream
 #if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && !defined(OF_WII_U)
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
@@ -55,6 +52,7 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
 	bool _bold;
+	OF_RESERVE_IVARS(OFStdIOStream, 4)
 }
 
 /**
