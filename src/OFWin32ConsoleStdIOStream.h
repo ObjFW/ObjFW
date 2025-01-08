@@ -17,9 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#define OF_WIN32_CONSOLE_STDIO_STREAM_H
 #import "OFStdIOStream.h"
-#undef OF_WIN32_CONSOLE_STDIO_STREAM_H
 
 OF_ASSUME_NONNULL_BEGIN
 
