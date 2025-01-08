@@ -33,10 +33,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFUndefinedKeyException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
 @interface OFDictionary ()
 - (OFString *)
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
@@ -44,6 +40,9 @@ static struct {
 @end
 
 @interface OFPlaceholderDictionary: OFDictionary
+@end
+
+@interface OFConcreteDictionarySingleton: OFConcreteDictionary
 @end
 
 OF_DIRECT_MEMBERS
@@ -56,6 +55,18 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
+static struct {
+	Class isa;
+} placeholder;
+
+static OFConcreteDictionarySingleton *emptyDictionary;
+
+static void
+emptyDictionaryInit(void)
+{
+	emptyDictionary = [[OFConcreteDictionarySingleton alloc] init];
+}
+
 @implementation OFPlaceholderDictionary
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
@@ -65,7 +76,9 @@ OF_DIRECT_MEMBERS
 #endif
 - (instancetype)init
 {
-	return (id)[[OFConcreteDictionary alloc] init];
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, emptyDictionaryInit);
+	return (id)emptyDictionary;
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
@@ -118,6 +131,10 @@ OF_DIRECT_MEMBERS
 # pragma clang diagnostic pop
 #endif
 
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFConcreteDictionarySingleton
 OF_SINGLETON_METHODS
 @end
 
