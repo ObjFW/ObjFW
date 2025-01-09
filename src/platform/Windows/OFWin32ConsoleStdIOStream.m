@@ -548,6 +548,21 @@ codepageToEncoding(UINT codepage)
 	/* No support for bold. */
 }
 
+- (void)setItalic: (bool)italic
+{
+	/* No support for italic. */
+}
+
+- (void)setUnderlined: (bool)underlined
+{
+	/* No support for underlined. */
+}
+
+- (void)setBlinking: (bool)blinking
+{
+	/* No support for blinking. */
+}
+
 - (void)reset
 {
 	if (SetConsoleTextAttribute(_handle, _attributes)) {

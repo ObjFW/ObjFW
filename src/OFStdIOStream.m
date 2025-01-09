@@ -695,6 +695,66 @@ colorToANSI(OFColor *color)
 #endif
 }
 
+- (bool)isItalic
+{
+	return _italic;
+}
+
+- (void)setItalic: (bool)italic
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (italic == _italic)
+		return;
+
+	[self writeString: (italic ? @"\033[3m" : @"\033[23m")];
+
+	_italic = italic;
+#endif
+}
+
+- (bool)isUnderlined
+{
+	return _underlined;
+}
+
+- (void)setUnderlined: (bool)underlined
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (underlined == _underlined)
+		return;
+
+	[self writeString: (underlined ? @"\033[4m" : @"\033[24m")];
+
+	_underlined = underlined;
+#endif
+}
+
+- (bool)isBlinking
+{
+	return _blinking;
+}
+
+- (void)setBlinking: (bool)blinking
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (blinking == _blinking)
+		return;
+
+	[self writeString: (blinking ? @"\033[5m" : @"\033[25m")];
+
+	_blinking = blinking;
+#endif
+}
+
 - (void)reset
 {
 	if (!self.hasTerminal)
@@ -710,6 +770,9 @@ colorToANSI(OFColor *color)
 	[_backgroundColor release];
 	_foregroundColor = _backgroundColor = nil;
 	_bold = false;
+	_italic = false;
+	_underlined = false;
+	_blinking = false;
 }
 
 - (void)clear

@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	bool _atEndOfStream;
 	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
-	bool _bold;
+	bool _bold, _italic, _underlined, _blinking;
 	OF_RESERVE_IVARS(OFStdIOStream, 4)
 }
 
@@ -95,6 +95,30 @@ OF_ASSUME_NONNULL_BEGIN
  * unsupported.
  */
 @property (nonatomic, getter=isBold) bool bold;
+
+/**
+ * @brief Whether italic is on on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or italic is
+ * unsupported.
+ */
+@property (nonatomic, getter=isItalic) bool italic;
+
+/**
+ * @brief Whether underlined is on on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or underlined is
+ * unsupported.
+ */
+@property (nonatomic, getter=isUnderlined) bool underlined;
+
+/**
+ * @brief Whether blinking is on on the underlying terminal.
+ *
+ * Setting this does nothing if there is no underlying terminal or blinking is
+ * unsupported.
+ */
+@property (nonatomic, getter=isBlinking) bool blinking;
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(DOXYGEN)
