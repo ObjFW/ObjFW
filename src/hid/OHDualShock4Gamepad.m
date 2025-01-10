@@ -73,8 +73,8 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	    @"R2", @"Right Trigger".NSObject,
 	    @"L3", @"Left Thumbstick".NSObject,
 	    @"R3", @"Right Thumbstick".NSObject,
-	    @"Options", @"Button Options".NSObject,
-	    @"Share", @"Button Share".NSObject,
+	    @"Options", @"Button Menu".NSObject,
+	    @"Share", @"Button Options".NSObject,
 	    @"PS", @"Button Home".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
