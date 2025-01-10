@@ -120,6 +120,7 @@ extern const uint16_t OHProductIDLeftJoyCon;
 extern const uint16_t OHProductIDRightJoyCon;
 extern const uint16_t OHProductIDProController;
 extern const uint16_t OHProductIDN64Controller;
+extern const uint16_t OHProductIDSNESController;
 extern const uint16_t OHProductIDXbox360WirelessReceiver;
 extern const uint16_t OHProductIDStadiaController;
 extern const uint16_t OHProductIDNES30Gamepad;

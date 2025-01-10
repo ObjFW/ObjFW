@@ -13,6 +13,7 @@ LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 SRCS = OHDualSenseGamepad.m		\
        OHDualShock4Gamepad.m		\
        OHExtendedN64Controller.m	\
+       OHExtendedSNESGamepad.m		\
        OHGameController.m		\
        OHGameControllerAxis.m		\
        OHGameControllerButton.m		\
@@ -23,6 +24,7 @@ SRCS = OHDualSenseGamepad.m		\
        OHN64Controller.m		\
        OHNESGamepad.m			\
        OHRightJoyCon.m			\
+       OHSNESGamepad.m			\
        OHStadiaGamepad.m		\
        OHSwitchProController.m		\
        OHXboxGamepad.m

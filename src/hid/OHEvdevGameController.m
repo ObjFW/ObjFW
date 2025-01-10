@@ -38,6 +38,7 @@
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
 #import "OHExtendedN64Controller.h"
+#import "OHExtendedSNESGamepad.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
 #import "OHGameControllerAxis+Private.h"
@@ -56,6 +57,8 @@
 #import "OHStadiaGamepad+Private.h"
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
+#import "OSHESGamepad.h"
+#import "OSHESGamepad+Private.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -232,6 +235,9 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDN64Controller)
 			_profile = [[OHExtendedN64Controller alloc] oh_init];
+		else if (_vendorID == OHVendorIDNintendo &&
+		    _productID == OHProductIDSNESController)
+			_profile = [[OHExtendedSNESGamepad alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDLeftJoyCon)
 			_profile = [[OHLeftJoyCon alloc] oh_init];

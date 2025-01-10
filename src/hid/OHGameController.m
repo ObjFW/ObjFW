@@ -57,6 +57,7 @@ const uint16_t OHProductIDLeftJoyCon = 0x2006;
 const uint16_t OHProductIDRightJoyCon = 0x2007;
 const uint16_t OHProductIDProController = 0x2009;
 const uint16_t OHProductIDN64Controller = 0x2019;
+const uint16_t OHProductIDSNESController = 0x2017;
 const uint16_t OHProductIDXbox360WirelessReceiver = 0x02A1;
 const uint16_t OHProductIDStadiaController = 0x9400;
 const uint16_t OHProductIDNES30Gamepad = 0x2820;
