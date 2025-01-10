@@ -493,17 +493,21 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
 	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
-	[color getRed: &red green: &green blue: &blue alpha: NULL];
+	if (color != nil) {
+		[color getRed: &red green: &green blue: &blue alpha: NULL];
 
-	if (red >= 0.25)
-		csbi.wAttributes |= FOREGROUND_RED;
-	if (green >= 0.25)
-		csbi.wAttributes |= FOREGROUND_GREEN;
-	if (blue >= 0.25)
-		csbi.wAttributes |= FOREGROUND_BLUE;
+		if (red >= 0.25)
+			csbi.wAttributes |= FOREGROUND_RED;
+		if (green >= 0.25)
+			csbi.wAttributes |= FOREGROUND_GREEN;
+		if (blue >= 0.25)
+			csbi.wAttributes |= FOREGROUND_BLUE;
 
-	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
-		csbi.wAttributes |= FOREGROUND_INTENSITY;
+		if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+			csbi.wAttributes |= FOREGROUND_INTENSITY;
+	} else
+		csbi.wAttributes |= _attributes & (FOREGROUND_RED |
+		    FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
 	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
 		[_foregroundColor release];
@@ -525,17 +529,21 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
 	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-	[color getRed: &red green: &green blue: &blue alpha: NULL];
+	if (color != nil) {
+		[color getRed: &red green: &green blue: &blue alpha: NULL];
 
-	if (red >= 0.25)
-		csbi.wAttributes |= BACKGROUND_RED;
-	if (green >= 0.25)
-		csbi.wAttributes |= BACKGROUND_GREEN;
-	if (blue >= 0.25)
-		csbi.wAttributes |= BACKGROUND_BLUE;
+		if (red >= 0.25)
+			csbi.wAttributes |= BACKGROUND_RED;
+		if (green >= 0.25)
+			csbi.wAttributes |= BACKGROUND_GREEN;
+		if (blue >= 0.25)
+			csbi.wAttributes |= BACKGROUND_BLUE;
 
-	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
-		csbi.wAttributes |= BACKGROUND_INTENSITY;
+		if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+			csbi.wAttributes |= BACKGROUND_INTENSITY;
+	} else
+		csbi.wAttributes |= _attributes & (BACKGROUND_RED |
+		    BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
 	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
 		[_backgroundColor release];

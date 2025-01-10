@@ -189,6 +189,8 @@ colorToMSDOS(OFColor *color)
 static int
 colorToANSI(OFColor *color)
 {
+	if (color == nil)
+		return 39;
 	if ([color isEqual: [OFColor black]])
 		return 30;
 	if ([color isEqual: [OFColor maroon]])

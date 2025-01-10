@@ -78,7 +78,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Setting this does nothing if there is no underlying terminal or colors are
  * unsupported.
  */
-@property (retain, nonatomic) OFColor *foregroundColor;
+@property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *foregroundColor;
 
 /**
  * @brief The current background color on the underlying terminal.
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Setting this does nothing if there is no underlying terminal or colors are
  * unsupported.
  */
-@property (retain, nonatomic) OFColor *backgroundColor;
+@property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *backgroundColor;
 
 /**
  * @brief Whether bold is on on the underlying terminal.
