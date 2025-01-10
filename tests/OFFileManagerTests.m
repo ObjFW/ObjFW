@@ -328,6 +328,11 @@
 		[_fileManager
 		    linkItemAtPath: sourceIRI.fileSystemRepresentation
 			    toPath: destinationIRI.fileSystemRepresentation];
+	} @catch (OFLinkItemFailedException *e) {
+		if (e.errNo == EPERM)
+			OTSkip(@"Links not supported");
+
+		@throw e;
 	} @catch (OFNotImplementedException *e) {
 		OTSkip(@"Links not supported");
 	}

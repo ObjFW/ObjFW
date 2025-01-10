@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 # if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
-# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && !defined(OF_HAIKU) && \
+# if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && \
     !defined(OF_NINTENDO_DS)) || defined(OF_WINDOWS) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_LINKS
 # endif
