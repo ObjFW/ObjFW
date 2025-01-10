@@ -53,12 +53,12 @@
 #import "OHNESGamepad+Private.h"
 #import "OHRightJoyCon.h"
 #import "OHRightJoyCon+Private.h"
+#import "OHSNESGamepad.h"
+#import "OHSNESGamepad+Private.h"
 #import "OHStadiaGamepad.h"
 #import "OHStadiaGamepad+Private.h"
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
-#import "OSHESGamepad.h"
-#import "OSHESGamepad+Private.h"
 
 #include <sys/ioctl.h>
 #include <linux/input.h>
