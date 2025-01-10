@@ -484,7 +484,7 @@ codepageToEncoding(UINT codepage)
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
 
-	if ([color isEqual: _foregroundColor])
+	if (color == _foregroundColor)
 		return;
 
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
@@ -520,7 +520,7 @@ codepageToEncoding(UINT codepage)
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
 
-	if ([color isEqual: _backgroundColor])
+	if (color == _backgroundColor)
 		return;
 
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))

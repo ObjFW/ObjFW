@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <errno.h>
+#include <math.h>
 
 #include "unistd_wrapper.h"
 
@@ -150,37 +151,37 @@ OFLogV(OFConstantString *format, va_list arguments)
 int
 colorToMSDOS(OFColor *color)
 {
-	if ([color isEqual: [OFColor black]])
+	if (color == [OFColor black])
 		return BLACK;
-	if ([color isEqual: [OFColor navy]])
+	if (color == [OFColor navy])
 		return BLUE;
-	if ([color isEqual: [OFColor green]])
+	if (color == [OFColor green])
 		return GREEN;
-	if ([color isEqual: [OFColor teal]])
+	if (color == [OFColor teal])
 		return CYAN;
-	if ([color isEqual: [OFColor maroon]])
+	if (color == [OFColor maroon])
 		return RED;
-	if ([color isEqual: [OFColor purple]])
+	if (color == [OFColor purple])
 		return MAGENTA;
-	if ([color isEqual: [OFColor olive]])
+	if (color == [OFColor olive])
 		return BROWN;
-	if ([color isEqual: [OFColor silver]])
+	if (color == [OFColor silver])
 		return LIGHTGRAY;
-	if ([color isEqual: [OFColor gray]])
+	if (color == [OFColor gray])
 		return DARKGRAY;
-	if ([color isEqual: [OFColor blue]])
+	if (color == [OFColor blue])
 		return LIGHTBLUE;
-	if ([color isEqual: [OFColor lime]])
+	if (color == [OFColor lime])
 		return LIGHTGREEN;
-	if ([color isEqual: [OFColor aqua]])
+	if (color == [OFColor aqua])
 		return LIGHTCYAN;
-	if ([color isEqual: [OFColor red]])
+	if (color == [OFColor red])
 		return LIGHTRED;
-	if ([color isEqual: [OFColor fuchsia]])
+	if (color == [OFColor fuchsia])
 		return LIGHTMAGENTA;
-	if ([color isEqual: [OFColor yellow]])
+	if (color == [OFColor yellow])
 		return YELLOW;
-	if ([color isEqual: [OFColor white]])
+	if (color == [OFColor white])
 		return WHITE;
 
 	return -1;
@@ -191,40 +192,129 @@ colorToANSI(OFColor *color)
 {
 	if (color == nil)
 		return 39;
-	if ([color isEqual: [OFColor black]])
+	if (color == [OFColor black])
 		return 30;
-	if ([color isEqual: [OFColor maroon]])
+	if (color == [OFColor maroon])
 		return 31;
-	if ([color isEqual: [OFColor green]])
+	if (color == [OFColor green])
 		return 32;
-	if ([color isEqual: [OFColor olive]])
+	if (color == [OFColor olive])
 		return 33;
-	if ([color isEqual: [OFColor navy]])
+	if (color == [OFColor navy])
 		return 34;
-	if ([color isEqual: [OFColor purple]])
+	if (color == [OFColor purple])
 		return 35;
-	if ([color isEqual: [OFColor teal]])
+	if (color == [OFColor teal])
 		return 36;
-	if ([color isEqual: [OFColor silver]])
+	if (color == [OFColor silver])
 		return 37;
-	if ([color isEqual: [OFColor gray]])
+	if (color == [OFColor gray])
 		return 90;
-	if ([color isEqual: [OFColor red]])
+	if (color == [OFColor red])
 		return 91;
-	if ([color isEqual: [OFColor lime]])
+	if (color == [OFColor lime])
 		return 92;
-	if ([color isEqual: [OFColor yellow]])
+	if (color == [OFColor yellow])
 		return 93;
-	if ([color isEqual: [OFColor blue]])
+	if (color == [OFColor blue])
 		return 94;
-	if ([color isEqual: [OFColor fuchsia]])
+	if (color == [OFColor fuchsia])
 		return 95;
-	if ([color isEqual: [OFColor aqua]])
+	if (color == [OFColor aqua])
 		return 96;
-	if ([color isEqual: [OFColor white]])
+	if (color == [OFColor white])
 		return 97;
 
 	return -1;
+}
+
+static int
+channelTo6Values(uint8_t channel)
+{
+	switch (channel) {
+	case 0x00:
+		return 0;
+	case 0x5F:
+		return 1;
+	case 0x87:
+		return 2;
+	case 0xAF:
+		return 3;
+	case 0xD7:
+		return 4;
+	case 0xFF:
+		return 5;
+	}
+
+	return -1;
+}
+
+static int
+colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
+{
+	int redIndex, greenIndex, blueIndex;
+
+	if (red == green && green == blue) {
+		switch (red) {
+		case 0x08:
+			return 232;
+		case 0x12:
+			return 233;
+		case 0x1C:
+			return 234;
+		case 0x26:
+			return 235;
+		case 0x30:
+			return 236;
+		case 0x3A:
+			return 237;
+		case 0x44:
+			return 238;
+		case 0x4E:
+			return 239;
+		case 0x58:
+			return 240;
+		case 0x62:
+			return 241;
+		case 0x6C:
+			return 242;
+		case 0x76:
+			return 243;
+		case 0x80:
+			return 244;
+		case 0x8A:
+			return 245;
+		case 0x94:
+			return 246;
+		case 0x9E:
+			return 247;
+		case 0xA8:
+			return 248;
+		case 0xB2:
+			return 249;
+		case 0xBC:
+			return 250;
+		case 0xC6:
+			return 251;
+		case 0xD0:
+			return 252;
+		case 0xDA:
+			return 253;
+		case 0xE4:
+			return 254;
+		case 0xEE:
+			return 255;
+		}
+	}
+
+	if ((redIndex = channelTo6Values(red)) == -1)
+		return -1;
+	if ((greenIndex = channelTo6Values(green)) == -1)
+		return -1;
+	if ((blueIndex = channelTo6Values(blue)) == -1)
+		return -1;
+
+	return 16 + 36 * redIndex + 6 * greenIndex + blueIndex;
 }
 #endif
 
@@ -624,7 +714,7 @@ colorToANSI(OFColor *color)
 {
 	int code;
 
-	if ([color isEqual: _foregroundColor])
+	if (color == _foregroundColor)
 		return;
 
 	if (!self.hasTerminal)
@@ -636,10 +726,27 @@ colorToANSI(OFColor *color)
 
 	textcolor(code);
 #else
-	if ((code = colorToANSI(color)) == -1)
-		return;
+	if ((code = colorToANSI(color)) != -1)
+		[self writeFormat: @"\033[%um", code];
+	else {
+		float red, green, blue, alpha;
+		uint8_t redInt, greenInt, blueInt;
 
-	[self writeFormat: @"\033[%um", code];
+		[color getRed: &red green: &green blue: &blue alpha: &alpha];
+		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
+		    green > 1 || blue < 0 || blue > 1)
+			return;
+
+		redInt = roundf(red * 255);
+		greenInt = roundf(green * 255);
+		blueInt = roundf(blue * 255);
+
+		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
+			[self writeFormat: @"\033[38;5;%um", code];
+		else
+			[self writeFormat: @"\033[38;2;%u;%u;%um",
+					   redInt, greenInt, blueInt];
+	}
 #endif
 
 	[_foregroundColor release];
@@ -655,7 +762,7 @@ colorToANSI(OFColor *color)
 {
 	int code;
 
-	if ([color isEqual: _backgroundColor])
+	if (color == _backgroundColor)
 		return;
 
 	if (!self.hasTerminal)
@@ -667,10 +774,27 @@ colorToANSI(OFColor *color)
 
 	textbackground(code);
 #else
-	if ((code = colorToANSI(color)) == -1)
-		return;
+	if ((code = colorToANSI(color)) != -1)
+		[self writeFormat: @"\033[%um", code + 10];
+	else {
+		float red, green, blue, alpha;
+		uint8_t redInt, greenInt, blueInt;
 
-	[self writeFormat: @"\033[%um", code + 10];
+		[color getRed: &red green: &green blue: &blue alpha: &alpha];
+		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
+		    green > 1 || blue < 0 || blue > 1)
+			return;
+
+		redInt = roundf(red * 255);
+		greenInt = roundf(green * 255);
+		blueInt = roundf(blue * 255);
+
+		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
+			[self writeFormat: @"\033[48;5;%um", code];
+		else
+			[self writeFormat: @"\033[48;2;%u;%u;%um",
+					   redInt, greenInt, blueInt];
+	}
 #endif
 
 	[_backgroundColor release];
