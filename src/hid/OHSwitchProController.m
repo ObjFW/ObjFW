@@ -72,15 +72,15 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	    @"ZR", @"Right Trigger".NSObject,
 	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
 	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
-	    @"+", @"Button +".NSObject,
-	    @"-", @"Button -".NSObject,
+	    @"+", @"Button Menu".NSObject,
+	    @"-", @"Button Options".NSObject,
 	    @"Home", @"Button Home".NSObject,
 	    @"Capture", @"Button Share".NSObject,
 	    nil];
 	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
 	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
 	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
-	    @"D-Pad", @"Directional Buttons".NSObject,
+	    @"D-Pad", @"Direction Pad".NSObject,
 	    nil];
 
 	objc_autoreleasePoolPop(pool);
