@@ -50,6 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 	int _fd;
 #endif
 	bool _atEndOfStream;
+	int _colors;
 	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
 	bool _bold, _italic, _underlined, _blinking;
 	OF_RESERVE_IVARS(OFStdIOStream, 4)
@@ -71,6 +72,12 @@ OF_ASSUME_NONNULL_BEGIN
  *	  number of rows could not be queried.
  */
 @property (readonly, nonatomic) int rows;
+
+/**
+ * @brief The number of colors supported by the underyling terminal or -1 if
+ *	  there is no underlying terminal.
+ */
+@property (readonly, nonatomic) int colors;
 
 /**
  * @brief The current foreground color on the underlying terminal.

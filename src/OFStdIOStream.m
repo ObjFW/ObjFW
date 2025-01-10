@@ -36,6 +36,7 @@
 #import "OFApplication.h"
 #import "OFColor.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #ifdef OF_WINDOWS
 # import "platform/Windows/OFWin32ConsoleStdIOStream.h"
 #endif
@@ -422,13 +423,18 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 
 	_handle = handle;
 	_closable = closable;
+	_colors = 16;
 
 	return self;
 }
 #elif defined(OF_WII_U)
 - (instancetype)of_init
 {
-	return [super init];
+	self = [super init];
+
+	_colors = -1;
+
+	return self;
 }
 #else
 - (instancetype)of_initWithFileDescriptor: (int)fd
@@ -436,6 +442,11 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	self = [super init];
 
 	_fd = fd;
+# ifdef OF_MSDOS
+	_colors = 16;
+# else
+	_colors = -1;
+# endif
 
 	return self;
 }
@@ -703,6 +714,41 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 #else
 	return -1;
 #endif
+}
+
+- (int)colors
+{
+	void *pool;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
+	OFString *var;
+
+	if (_colors != -1)
+		return _colors;
+
+	if (!self.hasTerminal)
+		return -1;
+
+	pool = objc_autoreleasePoolPush();
+	environment = [OFApplication environment];
+
+	var = [environment objectForKey: @"COLORTERM"];
+	if ([var isEqual: @"24bit"] || [var isEqual: @"truecolor"] ||
+	    [var isEqual: @"16777216"]) {
+		_colors = 16777216;
+		objc_autoreleasePoolPop(pool);
+		return _colors;
+	}
+
+	var = [environment objectForKey: @"TERM"];
+	if ([var hasSuffix: @"-256color"]) {
+		_colors = 256;
+		objc_autoreleasePoolPop(pool);
+		return _colors;
+	}
+
+	_colors = 16;
+	objc_autoreleasePoolPop(pool);
+	return _colors;
 }
 
 - (OFColor *)foregroundColor

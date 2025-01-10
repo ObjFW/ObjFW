@@ -479,6 +479,11 @@ codepageToEncoding(UINT codepage)
 	return -1;
 }
 
+- (int)colors
+{
+	return 16;
+}
+
 - (void)setForegroundColor: (OFColor *)color
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
