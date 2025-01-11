@@ -211,6 +211,8 @@ static void printProfile(id <OHGameControllerProfile> profile)
 
 		OFStdOut.foregroundColor = [OFColor green];
 		[OFStdOut writeLine: controller.description];
+		OFStdOut.foregroundColor = [OFColor teal];
+		[OFStdOut writeFormat: @"Profile: %@\n", profile];
 
 		@try {
 			[controller updateState];
