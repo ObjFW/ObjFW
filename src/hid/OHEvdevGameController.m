@@ -32,6 +32,8 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OH8BitDoUltimate2CWirelessGamepad.h"
+#import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
@@ -250,6 +252,11 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDGoogle &&
 		    _productID == OHProductIDStadiaController)
 			_profile = [[OHStadiaGamepad alloc] oh_init];
+		else if (_vendorID == OHVendorID8BitDo &&
+		    (_productID == OHProductIDUltimate2CWirelessBT ||
+		    _productID == OHProductIDUltimate2CWirelessUSB))
+			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
+			    oh_initWithProductID: _productID];
 		else if (_vendorID == OHVendorID8BitDo &&
 		    _productID == OHProductIDNES30Gamepad)
 			_profile = [[OHNESGamepad alloc] oh_init];

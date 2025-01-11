@@ -124,6 +124,8 @@ extern const uint16_t OHProductIDSNESController;
 extern const uint16_t OHProductIDXbox360WirelessReceiver;
 extern const uint16_t OHProductIDStadiaController;
 extern const uint16_t OHProductIDNES30Gamepad;
+extern const uint16_t OHProductIDUltimate2CWirelessBT;
+extern const uint16_t OHProductIDUltimate2CWirelessUSB;
 #ifdef __cplusplus
 }
 #endif

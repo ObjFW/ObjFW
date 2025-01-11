@@ -61,6 +61,8 @@ const uint16_t OHProductIDSNESController = 0x2017;
 const uint16_t OHProductIDXbox360WirelessReceiver = 0x02A1;
 const uint16_t OHProductIDStadiaController = 0x9400;
 const uint16_t OHProductIDNES30Gamepad = 0x2820;
+const uint16_t OHProductIDUltimate2CWirelessBT = 0x301B;
+const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
 
 @implementation OHGameController
 @dynamic name, profile;
