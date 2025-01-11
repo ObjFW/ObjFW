@@ -17,22 +17,31 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSData+OFObject.h"
-#import "NSDate+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
 #import "NSObject+OFObject.h"
-#import "NSSet+OFObject.h"
-#import "NSString+OFObject.h"
 
-#import "OFArray+NSObject.h"
-#import "OFData+NSObject.h"
-#import "OFDate+NSObject.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFNumber+NSObject.h"
-#import "OFSet+NSObject.h"
-#import "OFString+NSObject.h"
+int _NSObject_OFObject_reference;
+
+@implementation NSObject (OFObject)
+- (id)performSelector: (SEL)selector
+	   withObject: (id)object1
+	   withObject: (id)object2
+	   withObject: (id)object3
+{
+	id (*msgSend)(id, SEL, id, id, id) =
+	    (id (*)(id, SEL, id, id, id))objc_msgSend;
+
+	return msgSend(self, selector, object1, object2, object3);
+}
+
+- (id)performSelector: (SEL)selector
+	   withObject: (id)object1
+	   withObject: (id)object2
+	   withObject: (id)object3
+	   withObject: (id)object4
+{
+	id (*msgSend)(id, SEL, id, id, id, id) =
+	    (id (*)(id, SEL, id, id, id, id))objc_msgSend;
+
+	return msgSend(self, selector, object1, object2, object3, object4);
+}
+@end

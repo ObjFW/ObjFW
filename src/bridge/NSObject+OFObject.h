@@ -17,22 +17,34 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSData+OFObject.h"
-#import "NSDate+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
-#import "NSObject+OFObject.h"
-#import "NSSet+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSObject.h>
 
-#import "OFArray+NSObject.h"
-#import "OFData+NSObject.h"
-#import "OFDate+NSObject.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFNumber+NSObject.h"
-#import "OFSet+NSObject.h"
-#import "OFString+NSObject.h"
+#ifdef OBJFWBRIDGE_LOCAL_INCLUDES
+# import "OFObject.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFObject.h>
+# endif
+#endif
+
+OF_ASSUME_NONNULL_BEGIN
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _NSObject_OFObject_reference OF_VISIBILITY_HIDDEN;
+#ifdef __cplusplus
+}
+#endif
+
+/**
+ * @category NSObject (OFObject) NSObject+OFObject.h ObjFWBridge/ObjFWBridge.h
+ *
+ * @brief OFObject-conformance for NSObject
+ */
+@interface NSObject (OFObject) <OFObject>
+@end
+
+OF_ASSUME_NONNULL_END

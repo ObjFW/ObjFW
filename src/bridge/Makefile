@@ -9,23 +9,24 @@ LIB_MAJOR = ${OBJFWBRIDGE_LIB_MAJOR}
 LIB_MINOR = ${OBJFWBRIDGE_LIB_MINOR}
 LIB_PATCH = ${OBJFWBRIDGE_LIB_PATCH}
 
-SRCS = OFArray+NSObject.m	\
-       OFData+NSObject.m	\
-       OFDate+NSObject.m	\
-       OFEnumerator+NSObject.m	\
-       OFException+Swift.m	\
-       OFDictionary+NSObject.m	\
-       OFNumber+NSObject.m	\
-       OFSet+NSObject.m		\
-       OFString+NSObject.m	\
-       NSArray+OFObject.m	\
-       NSDate+OFObject.m	\
+SRCS = NSArray+OFObject.m	\
        NSData+OFObject.m	\
+       NSDate+OFObject.m	\
        NSDictionary+OFObject.m	\
        NSEnumerator+OFObject.m	\
        NSNumber+OFObject.m	\
+       NSObject+OFObject.m	\
        NSSet+OFObject.m		\
-       NSString+OFObject.m
+       NSString+OFObject.m	\
+       OFArray+NSObject.m	\
+       OFData+NSObject.m	\
+       OFDate+NSObject.m	\
+       OFDictionary+NSObject.m	\
+       OFEnumerator+NSObject.m	\
+       OFException+Swift.m	\
+       OFNumber+NSObject.m	\
+       OFSet+NSObject.m		\
+       OFString+NSObject.m
 
 INCLUDES := ${SRCS:.m=.h}	\
 	    OFNSToOFBridging.h	\
