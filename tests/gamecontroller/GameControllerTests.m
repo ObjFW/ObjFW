@@ -159,11 +159,27 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			i = 0;
 		}
 
+		if (OFStdOut.colors == 16777216) {
+			float red = 0.5 + directionalPad.xAxis.value / 2;
+			float blue = 0.5 + directionalPad.yAxis.value / 2;
+			float green = 1 - (red / 2 + blue / 2);
+
+			OFStdOut.foregroundColor = [OFColor colorWithRed: red
+								   green: green
+								    blue: blue
+								   alpha: 1];
+		}
+
 		[OFStdOut writeFormat:
 		    @"%@: (%5.2f, %5.2f)  ",
 		    name,
 		    directionalPad.xAxis.value, directionalPad.yAxis.value];
 	}
+	if (OFStdOut.colors == 16777216)
+		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
+							   green: 0.5
+							    blue: 0.5
+							   alpha: 1];
 	if (directionalPads.count > 0)
 		[OFStdOut writeString: @"\n"];
 
