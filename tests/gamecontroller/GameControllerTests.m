@@ -92,18 +92,47 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			i = 0;
 		}
 
-		if (button.value == 1)
-			OFStdOut.foregroundColor = [OFColor red];
-		else if (button.value > 0.5)
-			OFStdOut.foregroundColor = [OFColor yellow];
-		else if (button.value > 0)
-			OFStdOut.foregroundColor = [OFColor green];
-		else
-			OFStdOut.foregroundColor = [OFColor gray];
+		if (OFStdOut.colors == 16777216) {
+			float red, green, blue;
+
+			if (button.value < 0.25) {
+				red = 0.5 - 2 * button.value;
+				green = 0.5 + 2 * button.value;
+				blue = 0.5 - 2 * button.value;
+			} else if (button.value < 0.5) {
+				red = 2 * button.value;
+				green = 1;
+				blue = 0;
+			} else {
+				red = 1;
+				green = 1 - 2 * (button.value - 0.5);
+				blue = 0;
+			}
+
+			OFStdOut.foregroundColor = [OFColor colorWithRed: red
+								   green: green
+								    blue: blue
+								   alpha: 1];
+		} else {
+			if (button.value == 1)
+				OFStdOut.foregroundColor = [OFColor red];
+			else if (button.value > 0.5)
+				OFStdOut.foregroundColor = [OFColor yellow];
+			else if (button.value > 0)
+				OFStdOut.foregroundColor = [OFColor green];
+			else
+				OFStdOut.foregroundColor = [OFColor gray];
+		}
 
 		[OFStdOut writeFormat: @"[%@] ", name];
 	}
-	OFStdOut.foregroundColor = [OFColor gray];
+	if (OFStdOut.colors == 16777216)
+		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
+							   green: 0.5
+							    blue: 0.5
+							   alpha: 1];
+	else
+		OFStdOut.foregroundColor = [OFColor gray];
 	[OFStdOut writeString: @"\n"];
 
 	i = 0;
