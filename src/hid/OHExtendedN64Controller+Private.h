@@ -17,20 +17,18 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHN64Controller.h"
+#import "OHExtendedN64Controller.h"
 
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-# import "OHEvdevGameController.h"
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OHGCFGameController.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHN64Controller ()
-#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
-    <OHEvdevMapping>
+@interface OHExtendedN64Controller ()
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+    <OHGCFMapping>
 #endif
-
-- (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

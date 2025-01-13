@@ -30,6 +30,8 @@
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
+#import "OHExtendedN64Controller.h"
+#import "OHExtendedN64Controller+Private.h"
 #import "OHGCFExtendedGamepad.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
@@ -40,6 +42,8 @@
 #import "OHJoyConPair+Private.h"
 #import "OHLeftJoyCon.h"
 #import "OHLeftJoyCon+Private.h"
+#import "OHN64Controller.h"
+#import "OHN64Controller+Private.h"
 #import "OHNESGamepad.h"
 #import "OHNESGamepad+Private.h"
 #import "OHRightJoyCon.h"
@@ -103,6 +107,8 @@
 			_profile = [[OHRightJoyCon alloc] oh_init];
 		else if ([_name isEqual: @"Pro Controller"])
 			_profile = [[OHSwitchProController alloc] oh_init];
+		else if ([_name isEqual: @"N64 Controller"])
+			_profile = [[OHExtendedN64Controller alloc] oh_init];
 		else if ([_name isEqual: @"SNES Controller"])
 			_profile = [[OHSNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"Stadia Controller rev. A"])

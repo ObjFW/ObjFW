@@ -23,6 +23,9 @@
 #import "OHN64Controller.h"
 #import "OHN64Controller+Private.h"
 #import "OFDictionary.h"
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+# import "OFString+NSObject.h"
+#endif
 #import "OHGameControllerButton.h"
 #import "OHGameControllerElement.h"
 #import "OHGameControllerElement+Private.h"
@@ -36,7 +39,43 @@ static OFString *const buttonNames[] = {
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+static OFDictionary<OFString *, NSString *> *buttonsMap;
+static OFDictionary<OFString *, NSString *> *directionalPadsMap;
+#endif
+
 @implementation OHExtendedN64Controller
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
++ (void)initialize
+{
+	void *pool;
+
+	if (self != [OHExtendedN64Controller class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+
+	buttonsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"A", @"Button A".NSObject,
+	    @"B", @"Button B".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
+	    @"R", @"Right Shoulder".NSObject,
+	    @"Z", @"Left Trigger".NSObject,
+	    @"Start", @"Button Menu".NSObject,
+	    @"ZR", @"Right Trigger".NSObject,
+	    @"Home", @"Button Home".NSObject,
+	    @"Capture", @"Button Share".NSObject,
+	    nil];
+	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Thumbstick", @"Left Thumbstick".NSObject,
+	    @"C-Buttons", @"Right Thumbstick".NSObject,
+	    @"D-Pad", @"Direction Pad".NSObject,
+	    nil];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
+
 - (instancetype)oh_init
 {
 	self = [super oh_init];
@@ -78,6 +117,23 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	}
 
 	return [super oh_buttonForEvdevButton: button];
+}
+#endif
+
+#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+- (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
+{
+	return buttonsMap;
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_axesMap
+{
+	return [OFDictionary dictionary];
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_directionalPadsMap
+{
+	return directionalPadsMap;
 }
 #endif
 @end
