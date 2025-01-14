@@ -92,7 +92,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			i = 0;
 		}
 
-		if (OFStdOut.colors == 16777216) {
+		if (OFStdOut.colors >= 256) {
 			float red, green, blue;
 
 			if (button.value < 0.25) {
@@ -126,7 +126,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 
 		[OFStdOut writeFormat: @"[%@] ", name];
 	}
-	if (OFStdOut.colors == 16777216)
+	if (OFStdOut.colors >= 256)
 		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
 							   green: 0.5
 							    blue: 0.5
@@ -159,7 +159,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 			i = 0;
 		}
 
-		if (OFStdOut.colors == 16777216) {
+		if (OFStdOut.colors >= 256) {
 			float red = 0.5 + directionalPad.xAxis.value / 2;
 			float blue = 0.5 + directionalPad.yAxis.value / 2;
 			float green = 1 - (red / 2 + blue / 2);
@@ -175,7 +175,7 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		    name,
 		    directionalPad.xAxis.value, directionalPad.yAxis.value];
 	}
-	if (OFStdOut.colors == 16777216)
+	if (OFStdOut.colors >= 256)
 		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
 							   green: 0.5
 							    blue: 0.5

@@ -229,91 +229,86 @@ colorToANSI(OFColor *color)
 	return -1;
 }
 
-static int
+static unsigned int
 channelTo6Values(uint8_t channel)
 {
-	switch (channel) {
-	case 0x00:
-		return 0;
-	case 0x5F:
-		return 1;
-	case 0x87:
-		return 2;
-	case 0xAF:
-		return 3;
-	case 0xD7:
-		return 4;
-	case 0xFF:
+	if (channel >= 235)
 		return 5;
-	}
+	if (channel >= 195)
+		return 4;
+	if (channel >= 155)
+		return 3;
+	if (channel >= 115)
+		return 2;
+	if (channel >= 75)
+		return 1;
 
-	return -1;
+	return 0;
 }
 
-static int
+static unsigned int
 colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 {
 	int redIndex, greenIndex, blueIndex;
 
 	if (red == green && green == blue) {
-		switch (red) {
-		case 0x08:
-			return 232;
-		case 0x12:
-			return 233;
-		case 0x1C:
-			return 234;
-		case 0x26:
-			return 235;
-		case 0x30:
-			return 236;
-		case 0x3A:
-			return 237;
-		case 0x44:
-			return 238;
-		case 0x4E:
-			return 239;
-		case 0x58:
-			return 240;
-		case 0x62:
-			return 241;
-		case 0x6C:
-			return 242;
-		case 0x76:
-			return 243;
-		case 0x80:
-			return 244;
-		case 0x8A:
-			return 245;
-		case 0x94:
-			return 246;
-		case 0x9E:
-			return 247;
-		case 0xA8:
-			return 248;
-		case 0xB2:
-			return 249;
-		case 0xBC:
-			return 250;
-		case 0xC6:
-			return 251;
-		case 0xD0:
-			return 252;
-		case 0xDA:
-			return 253;
-		case 0xE4:
-			return 254;
-		case 0xEE:
+		if (red >= 244)
+			return 231;
+		if (red >= 234)
 			return 255;
-		}
+		if (red >= 224)
+			return 254;
+		if (red >= 214)
+			return 253;
+		if (red >= 204)
+			return 252;
+		if (red >= 194)
+			return 251;
+		if (red >= 184)
+			return 250;
+		if (red >= 174)
+			return 249;
+		if (red >= 164)
+			return 248;
+		if (red >= 154)
+			return 247;
+		if (red >= 144)
+			return 246;
+		if (red >= 134)
+			return 245;
+		if (red >= 124)
+			return 244;
+		if (red >= 114)
+			return 243;
+		if (red >= 104)
+			return 242;
+		if (red >= 94)
+			return 241;
+		if (red >= 84)
+			return 240;
+		if (red >= 74)
+			return 239;
+		if (red >= 64)
+			return 238;
+		if (red >= 54)
+			return 237;
+		if (red >= 44)
+			return 236;
+		if (red >= 34)
+			return 235;
+		if (red >= 24)
+			return 234;
+		if (red >= 14)
+			return 233;
+		if (red >= 4)
+			return 232;
+
+		return 16;
 	}
 
-	if ((redIndex = channelTo6Values(red)) == -1)
-		return -1;
-	if ((greenIndex = channelTo6Values(green)) == -1)
-		return -1;
-	if ((blueIndex = channelTo6Values(blue)) == -1)
-		return -1;
+	redIndex = channelTo6Values(red);
+	greenIndex = channelTo6Values(green);
+	blueIndex = channelTo6Values(blue);
 
 	return 16 + 36 * redIndex + 6 * greenIndex + blueIndex;
 }
@@ -774,7 +769,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 #else
 	if ((code = colorToANSI(color)) != -1)
 		[self writeFormat: @"\033[%um", code];
-	else {
+	else if (self.colors >= 256) {
 		float red, green, blue, alpha;
 		uint8_t redInt, greenInt, blueInt;
 
@@ -787,11 +782,13 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		greenInt = roundf(green * 255);
 		blueInt = roundf(blue * 255);
 
-		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
-			[self writeFormat: @"\033[38;5;%um", code];
-		else
+		if (self.colors == 16777216)
 			[self writeFormat: @"\033[38;2;%u;%u;%um",
 					   redInt, greenInt, blueInt];
+		else
+			[self writeFormat: @"\033[38;5;%um",
+					   colorTo256Color(redInt, greenInt,
+					       blueInt)];
 	}
 #endif
 
