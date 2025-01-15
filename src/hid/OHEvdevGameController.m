@@ -374,7 +374,7 @@ scale(float value, float min, float max, bool inverted)
 		errno = 0;
 
 		if (read(_fd, &event, sizeof(event)) < (int)sizeof(event)) {
-			if (errno == EWOULDBLOCK) {
+			if (errno == EWOULDBLOCK || errno == EINTR) {
 				objc_autoreleasePoolPop(pool);
 				return;
 			}

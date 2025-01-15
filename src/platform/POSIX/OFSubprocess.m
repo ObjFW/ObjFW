@@ -329,10 +329,15 @@ extern char **environ;
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = read(_readPipe[0], buffer, length)) < 0)
+retry:
+	if ((ret = read(_readPipe[0], buffer, length)) < 0) {
+		if (errno == EINTR)
+			goto retry;
+
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
+	}
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -350,11 +355,16 @@ extern char **environ;
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0)
+retry:
+	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0) {
+		if (errno == EINTR)
+			goto retry;
+
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: 0
 							     errNo: errno];
+	}
 
 	return (size_t)bytesWritten;
 }

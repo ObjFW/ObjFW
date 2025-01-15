@@ -387,10 +387,15 @@ parseMode(const char *mode, bool *append)
 						  requestedLength: length
 							    errNo: EIO];
 #else
-	if ((ret = read(_handle, buffer, length)) < 0)
+retry:
+	if ((ret = read(_handle, buffer, length)) < 0) {
+		if (errno == EINTR)
+			goto retry;
+
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
+	}
 #endif
 
 	if (ret == 0)
@@ -447,11 +452,16 @@ parseMode(const char *mode, bool *append)
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = write(_handle, buffer, length)) < 0)
+retry:
+	if ((bytesWritten = write(_handle, buffer, length)) < 0) {
+		if (errno == EINTR)
+			goto retry;
+
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: 0
 							     errNo: errno];
+	}
 #endif
 
 	return (size_t)bytesWritten;
