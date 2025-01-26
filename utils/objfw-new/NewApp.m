@@ -31,10 +31,12 @@
 void
 newApp(OFString *name)
 {
-	OFString *path = [name stringByAppendingPathExtension: @"m"];
-	OFFile *file = nil;
+	OFString *headerPath = [name stringByAppendingPathExtension: @"h"];
+	OFString *implPath = [name stringByAppendingPathExtension: @"m"];
+	OFFile *headerFile = nil, *implFile = nil;
 	@try {
-		file = [OFFile fileWithPath: path mode: @"wx"];
+		headerFile = [OFFile fileWithPath: headerPath mode: @"wx"];
+		implFile = [OFFile fileWithPath: implPath mode: @"wx"];
 	} @catch (OFOpenItemFailedException *e) {
 		if (e.errNo != EEXIST)
 			@throw e;
@@ -44,21 +46,31 @@ newApp(OFString *name)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	[file writeFormat: @"#import <ObjFW/ObjFW.h>\n"
-			   @"\n"
-			   @"@interface %@: OFObject <OFApplicationDelegate>\n"
-			   @"@end\n"
-			   @"\n"
-			   @"OF_APPLICATION_DELEGATE(%@)\n"
-			   @"\n"
-			   @"@implementation %@\n"
-			   @"- (void)applicationDidFinishLaunching: "
-			   @"(OFNotification *)notification\n"
-			   @"{\n"
-			   @"	[OFApplication terminate];\n"
-			   @"}\n"
-			   @"@end\n",
-			   name, name, name];
+	[headerFile writeFormat:
+	    @"#import <ObjFW/ObjFW.h>\n"
+	    @"\n"
+	    @"OF_ASSUME_NONNULL_BEGIN\n"
+	    @"\n"
+	    @"@interface %@: OFObject <OFApplicationDelegate>\n"
+	    @"@end\n"
+	    @"\n"
+	    @"OF_ASSUME_NONNULL_END\n",
+	    name];
 
-	[file close];
+	[implFile writeFormat:
+	    @"#import \"%@.h\"\n"
+	    @"\n"
+	    @"OF_APPLICATION_DELEGATE(%@)\n"
+	    @"\n"
+	    @"@implementation %@\n"
+	    @"- (void)applicationDidFinishLaunching: "
+	    @"(OFNotification *)notification\n"
+	    @"{\n"
+	    @"\t[OFApplication terminate];\n"
+	    @"}\n"
+	    @"@end\n",
+	    name, name, name];
+
+	[headerFile close];
+	[implFile close];
 }
