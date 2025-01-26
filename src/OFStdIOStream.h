@@ -92,9 +92,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFColor#navy, @ref OFColor#blue, @ref OFColor#teal or @ref OFColor#aqua,
  * one of the 16 terminal colors will be used which doesn't necessarily match
  * the RGB value of the color. If you want an exact color, create a new
- * @ref OFColor with the RGB values you want. In that case, it will either be
- * represented as one of the 256 terminal colors, if one matches exactly, or by
- * a truecolor terminal color.
+ * @ref OFColor with the RGB value you want. In that case, it will be
+ * represented exactly on a truecolor terminal or by the closest color on a 256
+ * color terminal.
  */
 @property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *foregroundColor;
 
@@ -111,9 +111,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref OFColor#navy, @ref OFColor#blue, @ref OFColor#teal or @ref OFColor#aqua,
  * one of the 16 terminal colors will be used which doesn't necessarily match
  * the RGB value of the color. If you want an exact color, create a new
- * @ref OFColor with the RGB values you want. In that case, it will either be
- * represented as one of the 256 terminal colors, if one matches exactly, or by
- * a truecolor terminal color.
+ * @ref OFColor with the RGB value you want. In that case, it will be
+ * represented exactly on a truecolor terminal or by the closest color on a 256
+ * color terminal.
  */
 @property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *backgroundColor;
 
