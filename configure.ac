@@ -3,8 +3,12 @@ AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
-AC_DEFINE(OBJFW_VERSION_MAJOR, 1, [The major version of ObjFW])
-AC_DEFINE(OBJFW_VERSION_MINOR, 3, [The minor version of ObjFW])
+objfw_version_major=1
+objfw_version_minor=3
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
+	[The major version of ObjFW])
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
+	[The minor version of ObjFW])
 dnl This may only be set to 1.3 once 1.3 is released
 AC_SUBST(BUNDLE_VERSION, 1.2.0)
 AC_SUBST(BUNDLE_SHORT_VERSION, 1.2)
@@ -590,10 +594,12 @@ case "$objc_runtime" in
 	AC_DEFINE(OF_OBJFW_RUNTIME, 1, [Whether we use the ObjFW runtime])
 	AC_SUBST(USE_SRCS_TAGGED_POINTERS, '${SRCS_TAGGED_POINTERS}')
 
-	AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
+	runtime_name="objfw-${objfw_version_major}.${objfw_version_minor}"
+	runtime_flag="-fobjc-runtime=$runtime_name"
+	AC_MSG_CHECKING([whether $runtime_flag is supported])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+	OBJCFLAGS="$OBJCFLAGS -Xclang $runtime_flag"
 	AC_LINK_IFELSE([
 		AC_LANG_PROGRAM([
 			#ifdef __has_attribute
@@ -625,7 +631,7 @@ case "$objc_runtime" in
 			[Test test];
 		]])
 	], [
-		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang $runtime_flag"
 		AC_MSG_RESULT(yes)
 	], [
 		OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
