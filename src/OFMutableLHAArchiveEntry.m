@@ -40,7 +40,7 @@
 
 - (instancetype)initWithFileName: (OFString *)fileName
 {
-	self = [super of_init];
+	self = [self of_init];
 
 	@try {
 		_fileName = [fileName copy];

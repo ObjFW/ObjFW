@@ -47,7 +47,7 @@
 
 - (instancetype)initWithScheme: (OFString *)scheme
 {
-	self = [super of_init];
+	self = [self of_init];
 
 	@try {
 		self.scheme = scheme;

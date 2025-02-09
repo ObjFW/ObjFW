@@ -38,6 +38,7 @@
 
 #include <windows.h>
 
+OF_DIRECT_MEMBERS
 @interface OFSubprocess ()
 - (OFChar16 *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
 - (char *)of_environmentForDictionary: (OFDictionary *)environment;

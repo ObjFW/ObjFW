@@ -28,6 +28,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OHDualShock4Gamepad ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>

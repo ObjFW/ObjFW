@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFIRI ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 @end

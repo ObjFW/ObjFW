@@ -44,7 +44,7 @@
 
 - (instancetype)initWithFileName: (OFString *)fileName
 {
-	self = [super of_init];
+	self = [self of_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

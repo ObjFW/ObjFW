@@ -52,6 +52,7 @@ extern char **environ;
 # define environ (*_NSGetEnviron())
 #endif
 
+OF_DIRECT_MEMBERS
 @interface OFSubprocess ()
 - (void)of_getArgv: (char ***)argv
     forProgramName: (OFString *)programName

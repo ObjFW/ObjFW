@@ -27,6 +27,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+OF_DIRECT_MEMBERS
 @interface Property ()
 - (void)parseString: (OFString *)string;
 @end

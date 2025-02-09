@@ -44,6 +44,7 @@
 # undef Class
 #endif
 
+OF_DIRECT_MEMBERS
 @interface OFLocale ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 @end

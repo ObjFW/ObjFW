@@ -21,8 +21,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFFileIRIHandler: OFIRIHandler
-+ (bool)of_directoryExistsAtPath: (OFString *)path OF_DIRECT;
++ (bool)of_directoryExistsAtPath: (OFString *)path;
 @end
 
 OF_ASSUME_NONNULL_END

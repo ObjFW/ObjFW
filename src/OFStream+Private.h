@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFStream ()
 @property (readonly, nonatomic, getter=of_isWaitingForDelimiter)
     bool of_waitingForDelimiter;

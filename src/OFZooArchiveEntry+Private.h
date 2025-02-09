@@ -22,11 +22,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFZooArchiveEntry ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 - (nullable instancetype)of_initWithStream: (OFSeekableStream *)stream
 				  encoding: (OFStringEncoding)encoding
-    OF_METHOD_FAMILY(init) OF_DIRECT;
+    OF_METHOD_FAMILY(init);
 - (size_t)of_writeToStream: (OFSeekableStream *)stream
 		  encoding: (OFStringEncoding)encoding;
 @end

@@ -38,6 +38,7 @@
 
 static const uint8_t SPXPacketType = 5;
 
+OF_DIRECT_MEMBERS
 @interface OFSPXStreamSocket ()
 - (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo;

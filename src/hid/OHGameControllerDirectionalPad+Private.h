@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OHGameControllerDirectionalPad ()
 + (instancetype)oh_padWithName: (OFString *)name
 			 xAxis: (OHGameControllerAxis *)xAxis

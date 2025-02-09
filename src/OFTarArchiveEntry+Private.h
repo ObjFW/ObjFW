@@ -24,13 +24,14 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
+OF_DIRECT_MEMBERS
 @interface OFTarArchiveEntry ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 - (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
 			 encoding: (OFStringEncoding)encoding
-    OF_METHOD_FAMILY(init) OF_DIRECT;
+    OF_METHOD_FAMILY(init);
 - (void)of_writeToStream: (OFStream *)stream
-		encoding: (OFStringEncoding)encoding OF_DIRECT;
+		encoding: (OFStringEncoding)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

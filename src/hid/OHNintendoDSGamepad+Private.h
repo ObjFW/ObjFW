@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OHNintendoDSGamepad ()
 - (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end

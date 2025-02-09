@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OHGameControllerAxis ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 @property (nonatomic, setter=oh_setMinRawValue:) int32_t oh_minRawValue;

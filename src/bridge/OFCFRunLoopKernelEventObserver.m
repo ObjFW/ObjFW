@@ -138,7 +138,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (unsigned int)of_createID
++ (unsigned int)of_createID OF_DIRECT
 {
 	unsigned int ID;
 
@@ -235,7 +235,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 - (void)of_updateObject: (id)object
 	 fileDescriptor: (int)fd
 	       addTypes: (CFOptionFlags)addTypes
-	    removeTypes: (CFOptionFlags)removeTypes
+	    removeTypes: (CFOptionFlags)removeTypes OF_DIRECT
 {
 	/*
 	 * This method destroys the old CFSocket and CFRunLoopSource and creates

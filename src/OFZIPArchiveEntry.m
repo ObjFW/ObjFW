@@ -420,9 +420,22 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _startDiskNumber;
 }
 
+- (void)of_setStartDiskNumber: (uint32_t)startDiskNumber
+{
+	_startDiskNumber = startDiskNumber;
+}
+
 - (int64_t)of_localFileHeaderOffset
 {
 	return _localFileHeaderOffset;
+}
+
+- (void)of_setLocalFileHeaderOffset: (int64_t)localFileHeaderOffset
+{
+	if (localFileHeaderOffset < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	_localFileHeaderOffset = localFileHeaderOffset;
 }
 
 - (OFString *)description

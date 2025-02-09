@@ -23,6 +23,7 @@
 #include <string.h>
 
 #import "OFIRI.h"
+#import "OFIRI+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES

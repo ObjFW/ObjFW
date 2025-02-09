@@ -21,23 +21,18 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_DIRECT_MEMBERS
 @interface OFZIPArchiveEntry ()
 @property (readonly, nonatomic)
     uint16_t of_lastModifiedFileTime, of_lastModifiedFileDate;
-@property (readonly, nonatomic) uint32_t of_startDiskNumber;
-@property (readonly, nonatomic) int64_t of_localFileHeaderOffset;
+@property (nonatomic, setter=of_setStartDiskNumber:)
+    uint32_t of_startDiskNumber;
+@property (nonatomic, setter=of_setLocalFileHeaderOffset:)
+    int64_t of_localFileHeaderOffset;
 
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (instancetype)of_initWithStream: (OFStream *)stream
-    OF_METHOD_FAMILY(init) OF_DIRECT;
-- (uint64_t)of_writeToStream: (OFStream *)stream OF_DIRECT;
-@end
-
-@interface OFMutableZIPArchiveEntry ()
-@property (readwrite, nonatomic, setter=of_setStartDiskNumber:)
-    uint32_t of_startDiskNumber;
-@property (readwrite, nonatomic, setter=of_setLocalFileHeaderOffset:)
-    int64_t of_localFileHeaderOffset;
+- (instancetype)of_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
+- (uint64_t)of_writeToStream: (OFStream *)stream;
 @end
 
 OF_ASSUME_NONNULL_END

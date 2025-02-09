@@ -213,20 +213,20 @@
 	void *pool = objc_autoreleasePoolPush();
 	bool foundInReadBuffer = false;
 
-	for (id object in [[_readObjects copy] autorelease]) {
+	for (OFStream *stream in [[_readObjects copy] autorelease]) {
 		void *pool2;
 
-		if (![object isKindOfClass: [OFStream class]])
+		if (![stream isKindOfClass: [OFStream class]])
 			continue;
 
 		pool2 = objc_autoreleasePoolPush();
 
-		if ([object hasDataInReadBuffer] &&
-		    (![object of_isWaitingForDelimiter] ||
-		    [object lowlevelHasDataInReadBuffer])) {
+		if (stream.hasDataInReadBuffer &&
+		    (!stream.of_waitingForDelimiter ||
+		    [stream lowlevelHasDataInReadBuffer])) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading: object];
+				[_delegate objectIsReadyForReading: stream];
 
 			foundInReadBuffer = true;
 		}
