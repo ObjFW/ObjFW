@@ -26,6 +26,7 @@
 #import "OFArray+Private.h"
 #import "OFConcreteArray.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFSubarray.h"
@@ -34,10 +35,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFArray ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFArray () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderArray: OFArray

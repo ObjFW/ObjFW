@@ -46,6 +46,7 @@
 #endif
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
@@ -99,18 +100,16 @@ static locale_t cLocale;
 # endif
 #endif
 
-@interface OFString ()
+OF_DIRECT_MEMBERS
+@interface OFString () <OFJSONRepresentationPrivate>
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (OFStringEncoding)encoding
 		  lossy: (bool)lossy
-	       insecure: (bool)insecure OF_DIRECT;
+	       insecure: (bool)insecure;
 - (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
 				 lossy: (bool)lossy
-			      insecure: (bool)insecure OF_DIRECT;
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+			      insecure: (bool)insecure;
 @end
 
 @interface OFPlaceholderString: OFString

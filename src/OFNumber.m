@@ -24,6 +24,7 @@
 #import "OFNumber.h"
 #import "OFConcreteNumber.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFString.h"
 #import "OFTaggedPointerNumber.h"
 
@@ -31,10 +32,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFNumber ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFNumber () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderNumber: OFNumber

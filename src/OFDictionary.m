@@ -27,16 +27,14 @@
 #import "OFConcreteDictionary.h"
 #import "OFData.h"
 #import "OFEnumerator.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 #import "OFUndefinedKeyException.h"
 
-@interface OFDictionary ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFDictionary () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderDictionary: OFDictionary

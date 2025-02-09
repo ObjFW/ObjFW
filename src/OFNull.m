@@ -21,14 +21,12 @@
 
 #import "OFNull.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
-@interface OFNull ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFNull () <OFJSONRepresentationPrivate>
 @end
 
 static OFNull *null = nil;
