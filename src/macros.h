@@ -335,8 +335,10 @@
 
 #if __has_attribute(__objc_direct__) && defined(OF_APPLE_RUNTIME)
 # define OF_DIRECT __attribute__((__objc_direct__))
+# define OF_DIRECT_PROPERTY(...) (__VA_ARGS__, direct)
 #else
 # define OF_DIRECT
+# define OF_DIRECT_PROPERTY
 #endif
 #if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
 # define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
