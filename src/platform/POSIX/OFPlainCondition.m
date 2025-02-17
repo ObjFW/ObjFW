@@ -51,6 +51,11 @@ OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
 {
 	struct timespec ts;
 
+	if (clock_gettime(CLOCK_REALTIME, &ts) == -1)
+		return errno;
+
+	timeout += ts.tv_sec + (OFTimeInterval)ts.tv_nsec / 1000000000;
+
 	ts.tv_sec = (time_t)timeout;
 	ts.tv_nsec = (long)((timeout - ts.tv_sec) * 1000000000);
 
