@@ -4,6 +4,12 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.2.3 -> ObjFW 1.2.4, 2025-02-20
+ * Fixes OFPlainConditionTimedWait(), which as a result fixes OFRunLoop
+   spinning in some situations.
+ * Fixes OFMutableUTF8Strings containing `\0`.
+ * Fixes OFHTTPServer using an IPv6 address as host.
+
 ObjFW 1.2.2 -> ObjFW 1.2.3, 2024-12-15
  * Fixes OFRunLoop not draining the autorelease pool after firing a timer.
  * Adds -fno-constant-ns{number,array,dictionary}-literals to OBJCFLAGS, which
