@@ -22,14 +22,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A dictionary describing a network interface, as returned by
- *	  @ref networkInterfaces.
- *
- * Keys are of type @ref OFNetworkInterfaceKey.
- */
-typedef OFDictionary OF_GENERIC(OFString *, id) *OFNetworkInterface;
-
-/**
  * @brief A key of an @ref OFNetworkInterface.
  *
  * Possible values are:
@@ -38,6 +30,17 @@ typedef OFDictionary OF_GENERIC(OFString *, id) *OFNetworkInterface;
  */
 typedef OFConstantString *OFNetworkInterfaceKey;
 
+/**
+ * @brief A dictionary describing a network interface, as returned by
+ *	  @ref networkInterfaces.
+ *
+ * Keys are of type @ref OFNetworkInterfaceKey.
+ */
+typedef OFDictionary OF_GENERIC(OFNetworkInterfaceKey, id) *OFNetworkInterface;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * @brief The index of a network interface.
  *
@@ -84,6 +87,9 @@ extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
 extern OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
+#endif
+#ifdef __cplusplus
+}
 #endif
 
 @interface OFSystemInfo (NetworkInterfaces)
