@@ -22,6 +22,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "unistd_wrapper.h"
+
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
@@ -68,6 +70,8 @@
 	}
 
 	@try {
+		struct ucred peerCredentials;
+
 		[sockServer listen];
 
 		[sockClient connectToPath: path];
@@ -80,6 +84,11 @@
 
 		OTAssertEqual(OFSocketAddressUNIXPath(
 		    sockAccepted.remoteAddress).length, 0);
+
+		peerCredentials = sockAccepted.peerCredentials;
+		OTAssertEqual(peerCredentials.pid, getpid());
+		OTAssertEqual(peerCredentials.uid, getuid());
+		OTAssertEqual(peerCredentials.gid, getgid());
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];

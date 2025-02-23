@@ -31,6 +31,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFBindUNIXSocketFailedException.h"
 #import "OFConnectUNIXSocketFailedException.h"
+#import "OFGetOptionFailedException.h"
 
 @implementation OFUNIXStreamSocket
 @dynamic delegate;
@@ -113,5 +114,19 @@
 			       socket: self
 				errNo: errNo];
 	}
+}
+
+- (struct ucred)peerCredentials
+{
+	struct ucred ucred;
+	socklen_t len = (socklen_t)sizeof(ucred);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_PEERCRED, &ucred, &len) != 0 ||
+	    len != sizeof(ucred))
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: _OFSocketErrNo()];
+
+	return ucred;
 }
 @end

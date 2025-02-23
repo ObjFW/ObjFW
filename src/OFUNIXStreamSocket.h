@@ -54,6 +54,11 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFUNIXStreamSocketDelegate> delegate;
 
 /**
+ * @brief The credentials of the peer the socket is connected to.
+ */
+@property (readonly, nonatomic) struct ucred peerCredentials;
+
+/**
  * @brief Connects the OFUNIXStreamSocket to the specified path.
  *
  * @param path The path to connect to
