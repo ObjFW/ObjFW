@@ -89,15 +89,19 @@ initDistantPast(void)
 static OFTimeInterval
 now(void)
 {
+#ifdef HAVE_CLOCK_GETTIME
+	struct timespec ts;
+
+	OFEnsure(clock_gettime(CLOCK_REALTIME, &ts) == 0);
+
+	return ts.tv_sec + (OFTimeInterval)ts.tv_nsec / 1000000000;
+#else
 	struct timeval tv;
-	OFTimeInterval seconds;
 
 	OFEnsure(gettimeofday(&tv, NULL) == 0);
 
-	seconds = tv.tv_sec;
-	seconds += (OFTimeInterval)tv.tv_usec / 1000000;
-
-	return seconds;
+	return tv.tv_sec + (OFTimeInterval)tv.tv_usec / 1000000;
+#endif
 }
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \

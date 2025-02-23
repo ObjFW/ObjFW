@@ -1389,7 +1389,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 ])
 
 AC_CHECK_HEADERS(dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r])
+AC_CHECK_FUNCS([sysconf clock_gettime gmtime_r localtime_r])
 
 case "$host_os" in
 amigaos* | morphos*)
