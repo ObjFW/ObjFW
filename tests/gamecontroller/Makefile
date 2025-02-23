@@ -109,7 +109,7 @@ ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
 ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
-	ndstool -c $@ -9 ${PROG_NOINST}
+	ndstool -c $@ -7 ${DEVKITPRO}/calico/bin/ds7_maine.elf -9 ${PROG_NOINST}
 
 ${PROG_NOINST}.nro: ${PROG_NOINST}
 	elf2nro ${PROG_NOINST} $@
