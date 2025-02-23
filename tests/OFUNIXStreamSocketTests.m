@@ -70,8 +70,10 @@
 	}
 
 	@try {
+#ifndef OF_WINDOWS
 		OFUNIXSocketCredentials peerCredentials;
 		OFNumber *number;
+#endif
 
 		[sockServer listen];
 
@@ -86,6 +88,7 @@
 		OTAssertEqual(OFSocketAddressUNIXPath(
 		    sockAccepted.remoteAddress).length, 0);
 
+#ifndef OF_WINDOWS
 		peerCredentials = sockAccepted.peerCredentials;
 
 		number = [peerCredentials objectForKey:
@@ -103,6 +106,7 @@
 		if (number != nil)
 			OTAssertEqualObjects(number,
 			    [OFNumber numberWithUnsignedLong: getpid()]);
+#endif
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];
