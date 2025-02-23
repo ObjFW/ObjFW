@@ -160,6 +160,8 @@ OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID =
 	    OFUNIXSocketCredentialsGroupID,
 	    [OFNumber numberWithUnsignedLong: GID],
 	    nil];
+#else
+	return [OFDictionary dictionary];
 #endif
 }
 @end
