@@ -70,7 +70,8 @@
 	}
 
 	@try {
-		struct ucred peerCredentials;
+		OFUNIXSocketCredentials peerCredentials;
+		OFNumber *number;
 
 		[sockServer listen];
 
@@ -86,9 +87,22 @@
 		    sockAccepted.remoteAddress).length, 0);
 
 		peerCredentials = sockAccepted.peerCredentials;
-		OTAssertEqual(peerCredentials.pid, getpid());
-		OTAssertEqual(peerCredentials.uid, getuid());
-		OTAssertEqual(peerCredentials.gid, getgid());
+
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsUserID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getuid()]);
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsGroupID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getgid()]);
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsProcessID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getpid()]);
 	} @finally {
 #ifdef OF_HAVE_FILES
 		[[OFFileManager defaultManager] removeItemAtPath: path];

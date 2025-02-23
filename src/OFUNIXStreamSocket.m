@@ -24,6 +24,8 @@
 #endif
 
 #import "OFUNIXStreamSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
@@ -32,6 +34,13 @@
 #import "OFBindUNIXSocketFailedException.h"
 #import "OFConnectUNIXSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
+
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsUserID =
+    @"OFUNIXSocketCredentialsUserID";
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsGroupID =
+    @"OFUNIXSocketCredentialsGroupID";
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID =
+    @"OFUNIXSocketCredentialsProcessID";
 
 @implementation OFUNIXStreamSocket
 @dynamic delegate;
@@ -116,8 +125,9 @@
 	}
 }
 
-- (struct ucred)peerCredentials
+- (OFUNIXSocketCredentials)peerCredentials
 {
+#if defined(OF_LINUX)
 	struct ucred ucred;
 	socklen_t len = (socklen_t)sizeof(ucred);
 
@@ -127,6 +137,29 @@
 		    exceptionWithObject: self
 				  errNo: _OFSocketErrNo()];
 
-	return ucred;
+	return [OFDictionary dictionaryWithKeysAndObjects:
+	    OFUNIXSocketCredentialsProcessID,
+	    [OFNumber numberWithUnsignedLong: ucred.pid],
+	    OFUNIXSocketCredentialsUserID,
+	    [OFNumber numberWithUnsignedLong: ucred.uid],
+	    OFUNIXSocketCredentialsGroupID,
+	    [OFNumber numberWithUnsignedLong: ucred.gid],
+	    nil];
+#elif defined(HAVE_GETPEEREID)
+	uid_t UID;
+	gid_t GID;
+
+	if (getpeereid(_socket, &UID, &GID) != 0)
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: _OFSocketErrNo()];
+
+	return [OFDictionary dictionaryWithKeysAndObjects:
+	    OFUNIXSocketCredentialsUserID,
+	    [OFNumber numberWithUnsignedLong: UID],
+	    OFUNIXSocketCredentialsGroupID,
+	    [OFNumber numberWithUnsignedLong: GID],
+	    nil];
+#endif
 }
 @end

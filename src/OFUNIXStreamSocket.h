@@ -21,7 +21,52 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFString;
+
+/**
+ * @brief A key for UNIX socket credentials.
+ *
+ * Possible keys are:
+ *
+ *  * OFUNIXSocketCredentialsUserID
+ *  * OFUNIXSocketCredentialsGroupID
+ *  * OFUNIXSocketCredentialsProcessID
+ */
+typedef OFConstantString *OFUNIXSocketCredentialsKey;
+
+/**
+ * @brief Credentials for a UNIX socket.
+ */
+typedef OFDictionary OF_GENERIC(OFUNIXSocketCredentialsKey, id)
+    *OFUNIXSocketCredentials;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief The user ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsUserID;
+
+/**
+ * @brief The group ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsGroupID;
+
+/**
+ * @brief The process ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h ObjFW/ObjFW.h
@@ -56,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The credentials of the peer the socket is connected to.
  */
-@property (readonly, nonatomic) struct ucred peerCredentials;
+@property (readonly, nonatomic) OFUNIXSocketCredentials peerCredentials;
 
 /**
  * @brief Connects the OFUNIXStreamSocket to the specified path.

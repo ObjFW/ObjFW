@@ -1647,6 +1647,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			# include <afunix.h>
 			#endif
 		])
+
+		AC_CHECK_FUNCS(getpeereid)
 	], [], [
 		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>
