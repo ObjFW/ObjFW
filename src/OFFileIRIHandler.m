@@ -1034,6 +1034,30 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			  attributes: attributes
 		     failedAttribute: attributeKey
 			       errNo: lastError()];
+#elif defined(HAVE_UTIMENSAT)
+	OFTimeInterval lastAccessTime = lastAccessDate.timeIntervalSince1970;
+	OFTimeInterval modificationTime =
+	    modificationDate.timeIntervalSince1970;
+	struct timespec times[2] = {
+		{
+			.tv_sec = (time_t)lastAccessTime,
+			.tv_nsec = (int)((lastAccessTime -
+			    (time_t)lastAccessTime) * 1000000000)
+		},
+		{
+			.tv_sec = (time_t)modificationTime,
+			.tv_nsec = (long)((modificationTime -
+			    (time_t)modificationTime) * 1000000000)
+		},
+	};
+
+	if (utimensat(AT_FDCWD, [path cStringWithEncoding: [OFLocale encoding]],
+	    times, AT_SYMLINK_NOFOLLOW) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: attributeKey
+			       errNo: errno];
 #else
 	OFTimeInterval lastAccessTime = lastAccessDate.timeIntervalSince1970;
 	OFTimeInterval modificationTime =
@@ -1051,7 +1075,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		},
 	};
 
+# ifdef HAVE_LUTIMES
+	if (lutimes([path cStringWithEncoding: [OFLocale encoding]], times) !=
+	    0)
+# else
 	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
+# endif
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
