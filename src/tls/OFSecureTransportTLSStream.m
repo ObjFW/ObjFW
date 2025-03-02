@@ -34,26 +34,33 @@ int _ObjFWTLS_reference;
 static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
-	bool incomplete;
+	OFStream *underlyingStream =
+	    ((OFTLSStream *)connection).underlyingStream;
 	size_t length;
 
 	@try {
-		length = [((OFTLSStream *)connection).underlyingStream
-		    readIntoBuffer: data
-			    length: *dataLength];
+		length = [underlyingStream readIntoBuffer: data
+						   length: *dataLength];
 	} @catch (OFReadFailedException *e) {
-		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN) {
-			*dataLength = 0;
+		*dataLength = 0;
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
-		}
+		if (e.errNo == ECONNRESET)
+			return errSSLClosedAbort;
 
 		@throw e;
 	}
 
-	incomplete = (length < *dataLength);
 	*dataLength = length;
 
-	return (incomplete ? errSSLWouldBlock : noErr);
+	if (length == 0 && underlyingStream.atEndOfStream)
+		return errSSLClosedAbort;
+
+	if (length < *dataLength)
+		return errSSLWouldBlock;
+
+	return noErr;
 }
 
 static OSStatus
@@ -68,6 +75,8 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
+		if (e.errNo == ECONNRESET)
+			return errSSLClosedAbort;
 
 		@throw e;
 	}
