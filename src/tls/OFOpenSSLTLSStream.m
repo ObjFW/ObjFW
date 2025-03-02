@@ -384,12 +384,21 @@ errToErrorCode(const SSL *SSL_)
 	else {
 		switch (SSL_get_error(_SSL, status)) {
 		case SSL_ERROR_WANT_READ:
-			[_underlyingStream asyncReadIntoBuffer: _buffer
-							length: bufferSize
-						   runLoopMode: runLoopMode];
-			[_delegate retain];
-			objc_autoreleasePoolPop(pool);
-			return;
+			if (!_underlyingStream.atEndOfStream) {
+				[_underlyingStream
+				    asyncReadIntoBuffer: _buffer
+						 length: bufferSize
+					    runLoopMode: runLoopMode];
+				[_delegate retain];
+				objc_autoreleasePoolPop(pool);
+				return;
+			}
+
+			exception = [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: OFTLSStreamErrorCodeUnknown];
+			break;
 		case SSL_ERROR_WANT_WRITE:
 			[_underlyingStream asyncWriteData: [OFData data]
 					      runLoopMode: runLoopMode];
@@ -473,7 +482,14 @@ errToErrorCode(const SSL *SSL_)
 		else {
 			switch (SSL_get_error(_SSL, status)) {
 			case SSL_ERROR_WANT_READ:
-				return true;
+				if (!_underlyingStream.atEndOfStream)
+					return true;
+
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: unknownErrorCode];
+				break;
 			case SSL_ERROR_WANT_WRITE:;
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
