@@ -738,6 +738,10 @@ OF_ROOT_CLASS
  *
  * Derived classes can override this to execute their own code when the class
  * is loaded.
+ *
+ * @warning You cannot make use of other classes from inside this method! Only
+ *	    the class itself, its superclasses and instances of the class or
+ *	    its superclassses can be messaged!
  */
 + (void)load;
 
