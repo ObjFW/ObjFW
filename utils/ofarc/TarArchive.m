@@ -43,6 +43,8 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = [OFNumber numberWithUnsignedLongLong:
 	    entry.POSIXPermissions.longLongValue & 0777];
@@ -53,8 +55,6 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 #endif
-
-	[app quarantineFile: path];
 }
 
 static void

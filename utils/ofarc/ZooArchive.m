@@ -42,6 +42,8 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFZooArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
@@ -58,8 +60,6 @@ setPermissions(OFString *path, OFZooArchiveEntry *entry)
 						 ofItemAtPath: path];
 	}
 #endif
-
-	[app quarantineFile: path];
 }
 
 static void
