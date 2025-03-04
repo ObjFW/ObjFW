@@ -35,6 +35,8 @@ static OFArc *app;
 static void
 setPermissions(OFString *destination, OFIRI *source)
 {
+	[app quarantineFile: destination];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFFileAttributes attributes = [fileManager
@@ -47,8 +49,6 @@ setPermissions(OFString *destination, OFIRI *source)
 	[fileManager setAttributes: destinationAttributes
 		      ofItemAtPath: destination];
 #endif
-
-	[app quarantineFile: destination];
 }
 
 static void

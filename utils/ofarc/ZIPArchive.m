@@ -49,6 +49,8 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
@@ -62,8 +64,6 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 						 ofItemAtPath: path];
 	}
 #endif
-
-	[app quarantineFile: path];
 }
 
 static void
