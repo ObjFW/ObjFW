@@ -63,33 +63,26 @@ statusToErrorCode(OSStatus status)
 static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
-	OFStream *underlyingStream =
-	    ((OFTLSStream *)connection).underlyingStream;
+	bool incomplete;
 	size_t length;
 
 	@try {
-		length = [underlyingStream readIntoBuffer: data
-						   length: *dataLength];
+		length = [((OFTLSStream *)connection).underlyingStream
+		    readIntoBuffer: data
+			    length: *dataLength];
 	} @catch (OFReadFailedException *e) {
-		*dataLength = 0;
-
-		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN) {
+			*dataLength = 0;
 			return errSSLWouldBlock;
-		if (e.errNo == ECONNRESET)
-			return errSSLClosedAbort;
+		}
 
 		@throw e;
 	}
 
+	incomplete = (length < *dataLength);
 	*dataLength = length;
 
-	if (length == 0 && underlyingStream.atEndOfStream)
-		return errSSLClosedAbort;
-
-	if (length < *dataLength)
-		return errSSLWouldBlock;
-
-	return noErr;
+	return (incomplete ? errSSLWouldBlock : noErr);
 }
 
 static OSStatus
@@ -104,8 +97,6 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
-		if (e.errNo == ECONNRESET)
-			return errSSLClosedAbort;
 
 		@throw e;
 	}
