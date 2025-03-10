@@ -1941,22 +1941,25 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		morphos*)
 			ssl="ssl_shared"
 			crypto="crypto_shared"
+			z="z_shared"
 			;;
 		mingw*)
 			ssl="ssl"
 			crypto="crypto"
+			z="z"
 			TLS_LIBS="-lcrypt32 -lpathcch $TLS_LIBS"
 			;;
 		*)
 			ssl="ssl"
 			crypto="crypto"
+			z="z"
 			;;
 		esac
 
 		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
 				tls_support="OpenSSL"
-				tmp="-l$ssl -l$crypto -lz"
+				tmp="-l$ssl -l$crypto -l$z"
 				TLS_LIBS="$tmp $TLS_LIBS"
 				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
@@ -1967,7 +1970,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				AC_CHECK_FUNCS(SSL_has_pending)
 				LIBS="$old_LIBS"
 			])
-		], [], [-l$crypto -lz $TLS_LIBS])
+		], [], [-l$crypto -l$z $TLS_LIBS])
 	])
 
 	AS_IF([test x"$with_tls" = x"gnutls" \
