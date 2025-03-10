@@ -1477,17 +1477,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	amigaos* | morphos*)
 		;;
 	haiku*)
-		LIBS="$LIBS -lnetwork"
-		OBJFW_LIBS="$OBJFW_LIBS -lnetwork"
+		LIBS="-lnetwork $LIBS"
+		OBJFW_LIBS="-lnetwork $OBJFW_LIBS"
 		;;
 	mingw*)
-		LIBS="$LIBS -lws2_32 -liphlpapi"
-		OBJFW_LIBS="$OBJFW_LIBS -lws2_32 -liphlpapi"
+		LIBS="-lws2_32 -liphlpapi $LIBS"
+		OBJFW_LIBS="-lws2_32 -liphlpapi $OBJFW_LIBS"
 		;;
 	*)
 		AC_CHECK_LIB(socket, socket, [
-			LIBS="$LIBS -lsocket"
-			OBJFW_LIBS="$OBJFW_LIBS -lsocket"
+			LIBS="-lsocket $LIBt"
+			OBJFW_LIBS="-lsocket $OBJFW_LIBS"
 		])
 		;;
 	esac
@@ -1942,6 +1942,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			ssl="ssl_shared"
 			crypto="crypto_shared"
 			;;
+		mingw*)
+			ssl="ssl"
+			crypto="crypto"
+			TLS_LIBS="-lcrypt32 -lpathcch $TLS_LIBS"
+			;;
 		*)
 			ssl="ssl"
 			crypto="crypto"
@@ -1951,7 +1956,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_CHECK_LIB($ssl, SSL_set1_host, [
 			AC_CHECK_HEADER(openssl/ssl.h, [
 				tls_support="OpenSSL"
-				tmp="-l$ssl -l$crypto"
+				tmp="-l$ssl -l$crypto -lz"
 				TLS_LIBS="$tmp $TLS_LIBS"
 				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
@@ -1962,7 +1967,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				AC_CHECK_FUNCS(SSL_has_pending)
 				LIBS="$old_LIBS"
 			])
-		], [], [-l$crypto])
+		], [], [-l$crypto -lz $TLS_LIBS])
 	])
 
 	AS_IF([test x"$with_tls" = x"gnutls" \
