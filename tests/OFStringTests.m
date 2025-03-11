@@ -749,6 +749,10 @@ static const char *range80ToFF =
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"\t\t\r\n"] longLongValueWithBase: 8], 0);
+
+	OTAssertEqual([[self.stringClass stringWithString:
+	    ([OFString stringWithFormat: @"%lld", LLONG_MIN])] longLongValue],
+	    LLONG_MIN);
 }
 
 - (void)testLongLongValueThrowsOnInvalidFormat

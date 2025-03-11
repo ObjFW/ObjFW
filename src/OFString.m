@@ -2385,7 +2385,7 @@ OF_SINGLETON_METHODS
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
 	bool negative = false;
-	long long value = 0;
+	unsigned long long value = 0;
 
 	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
@@ -2437,18 +2437,26 @@ OF_SINGLETON_METHODS
 		if (c >= base)
 			@throw [OFInvalidFormatException exception];
 
-		if (LLONG_MAX / base < value || LLONG_MAX - (value * base) < c)
+		if (ULLONG_MAX / base < value ||
+		    ULLONG_MAX - (value * base) < c)
 			@throw [OFOutOfRangeException exception];
 
 		value = (value * base) + c;
 	}
 
-	if (negative)
-		value *= -1;
-
 	objc_autoreleasePoolPop(pool);
 
-	return value;
+	if (negative) {
+		if (value > -(unsigned long long)LLONG_MIN)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)-value;
+	} else {
+		if (value > (unsigned long long)LLONG_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)value;
+	}
 }
 
 - (unsigned long long)unsignedLongLongValue
