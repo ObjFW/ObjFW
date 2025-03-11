@@ -56,7 +56,12 @@
 
 - (void)testCharValue
 {
-	OTAssertEqual(_number.charValue, 21);
+	OTAssertEqual([[OFNumber numberWithChar: -127] charValue], -127);
+}
+
+- (void)testCharValueOutOfRange
+{
+	OTAssertThrowsSpecific([_number charValue], OFOutOfRangeException);
 }
 
 - (void)testDoubleValue

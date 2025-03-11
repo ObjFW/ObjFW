@@ -546,42 +546,82 @@ OF_SINGLETON_METHODS
 
 - (signed char)charValue
 {
-	return (signed char)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SCHAR_MIN || value > SCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (signed char)value;
 }
 
 - (short)shortValue
 {
-	return (short)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SHRT_MIN || value > SHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (short)value;
 }
 
 - (int)intValue
 {
-	return (int)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < INT_MIN || value > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)value;
 }
 
 - (long)longValue
 {
-	return (long)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < LONG_MIN || value > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (long)value;
 }
 
 - (unsigned char)unsignedCharValue
 {
-	return (unsigned char)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned char)value;
 }
 
 - (unsigned short)unsignedShortValue
 {
-	return (unsigned short)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > USHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned short)value;
 }
 
 - (unsigned int)unsignedIntValue
 {
-	return (unsigned int)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned int)value;
 }
 
 - (unsigned long)unsignedLongValue
 {
-	return (unsigned long)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > ULONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned long)value;
 }
 
 - (float)floatValue
