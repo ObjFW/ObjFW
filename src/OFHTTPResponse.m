@@ -275,20 +275,13 @@ encodingForContentType(OFString *contentType)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	unsigned int major, minor;
 	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject unsignedIntValue];
-	minor = [components.lastObject unsignedIntValue];
-
-	if (major > UCHAR_MAX || minor > UCHAR_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	protocolVersion.major = (unsigned char)major;
-	protocolVersion.minor = (unsigned char)minor;
+	protocolVersion.major = [components.firstObject unsignedCharValue];
+	protocolVersion.minor = [components.lastObject unsignedCharValue];
 
 	self.protocolVersion = protocolVersion;
 

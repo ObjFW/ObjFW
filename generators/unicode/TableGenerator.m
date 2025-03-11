@@ -119,17 +119,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
-		    unsignedLongLongValueWithBase: 16];
+		    unsignedLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
 		_uppercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 12] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 12] unsignedLongValueWithBase: 16];
 		_lowercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 13] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 13] unsignedLongValueWithBase: 16];
 		_titlecaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 14] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 14] unsignedLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -170,13 +170,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			continue;
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
-		    unsignedLongLongValueWithBase: 16];
+		    unsignedLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
 		_caseFoldingTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 2] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 2] unsignedLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}

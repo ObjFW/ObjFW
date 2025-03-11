@@ -2455,6 +2455,28 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 	}
 }
 
+- (signed char)charValue
+{
+	return (signed char)longLongValueWithBase(
+	    self, 10, SCHAR_MIN, SCHAR_MAX);
+}
+
+- (signed char)charValueWithBase: (unsigned char)base
+{
+	return (signed char)longLongValueWithBase(
+	    self, base, SCHAR_MIN, SCHAR_MAX);
+}
+
+- (short)shortValue
+{
+	return (short)longLongValueWithBase(self, 10, SHRT_MIN, SHRT_MAX);
+}
+
+- (short)shortValueWithBase: (unsigned char)base
+{
+	return (short)longLongValueWithBase(self, base, SHRT_MIN, SHRT_MAX);
+}
+
 - (int)intValue
 {
 	return (int)longLongValueWithBase(self, 10, INT_MIN, INT_MAX);
@@ -2463,6 +2485,16 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 - (int)intValueWithBase: (unsigned char)base
 {
 	return (int)longLongValueWithBase(self, base, INT_MIN, INT_MAX);
+}
+
+- (long)longValue
+{
+	return (long)longLongValueWithBase(self, 10, LONG_MIN, LONG_MAX);
+}
+
+- (long)longValueWithBase: (unsigned char)base
+{
+	return (long)longLongValueWithBase(self, base, LONG_MIN, LONG_MAX);
 }
 
 - (long long)longLongValue
@@ -2544,6 +2576,30 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	return value;
 }
 
+- (unsigned char)unsignedCharValue
+{
+	return (unsigned char)unsignedLongLongValueWithBase(
+	    self, 10, UCHAR_MAX);
+}
+
+- (unsigned char)unsignedCharValueWithBase: (unsigned char)base
+{
+	return (unsigned char)unsignedLongLongValueWithBase(
+	    self, base, UCHAR_MAX);
+}
+
+- (unsigned short)unsignedShortValue
+{
+	return (unsigned short)unsignedLongLongValueWithBase(
+	    self, 10, USHRT_MAX);
+}
+
+- (unsigned short)unsignedShortValueWithBase: (unsigned char)base
+{
+	return (unsigned short)unsignedLongLongValueWithBase(
+	    self, base, USHRT_MAX);
+}
+
 - (unsigned int)unsignedIntValue
 {
 	return (unsigned int)unsignedLongLongValueWithBase(self, 10, UINT_MAX);
@@ -2553,6 +2609,18 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 {
 	return (unsigned int)unsignedLongLongValueWithBase(
 	    self, base, UINT_MAX);
+}
+
+- (unsigned long)unsignedLongValue
+{
+	return (unsigned long)unsignedLongLongValueWithBase(
+	    self, 10, ULONG_MAX);
+}
+
+- (unsigned long)unsignedLongValueWithBase: (unsigned char)base
+{
+	return (unsigned long)unsignedLongLongValueWithBase(
+	    self, base, ULONG_MAX);
 }
 
 - (unsigned long long)unsignedLongLongValue

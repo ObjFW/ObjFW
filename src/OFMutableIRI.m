@@ -118,7 +118,7 @@
 {
 	OFNumber *old = _port;
 
-	if (port.longLongValue < 0 || port.longLongValue > 65535)
+	if (port.unsignedShortValue > 65535)
 		@throw [OFInvalidArgumentException exception];
 
 	_port = [port copy];

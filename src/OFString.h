@@ -180,6 +180,28 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @property (readonly, nonatomic) OFString *capitalizedString;
 
 /**
+ * @brief The decimal value of the string as a `char`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `char`
+ */
+@property (readonly, nonatomic) signed char charValue;
+
+/**
+ * @brief The decimal value of the string as a `short`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `short`
+ */
+@property (readonly, nonatomic) short shortValue;
+
+/**
  * @brief The decimal value of the string as an `int`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -189,6 +211,17 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				an `int`
  */
 @property (readonly, nonatomic) int intValue;
+
+/**
+ * @brief The decimal value of the string as a `long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `long`
+ */
+@property (readonly, nonatomic) long longValue;
 
 /**
  * @brief The decimal value of the string as a `long long`.
@@ -202,6 +235,28 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
+ * @brief The decimal value of the string as an `unsigned char`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned char`
+ */
+@property (readonly, nonatomic) unsigned char unsignedCharValue;
+
+/**
+ * @brief The decimal value of the string as an `unsigned short`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned short`
+ */
+@property (readonly, nonatomic) unsigned short unsignedShortValue;
+
+/**
  * @brief The decimal value of the string as an `unsigned int`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -211,6 +266,17 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				`unsigned int`
  */
 @property (readonly, nonatomic) unsigned int unsignedIntValue;
+
+/**
+ * @brief The decimal value of the string as an `unsigned long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned long`
+ */
+@property (readonly, nonatomic) unsigned long unsignedLongValue;
 
 /**
  * @brief The decimal value of the string as an `unsigned long long`.
@@ -1097,6 +1163,38 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 - (OFString *)substringWithRange: (OFRange)range;
 
 /**
+ * @brief The value of the string in the specified base as a `char`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `char`
+ */
+- (signed char)charValueWithBase: (unsigned char)base;
+
+/**
+ * @brief The value of the string in the specified base as a `short`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `short`
+ */
+- (short)shortValueWithBase: (unsigned char)base;
+
+/**
  * @brief The value of the string in the specified base as an `int`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -1111,6 +1209,22 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				an `int`
  */
 - (int)intValueWithBase: (unsigned char)base;
+
+/**
+ * @brief The value of the string in the specified base as a `long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `long`
+ */
+- (long)longValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as a `long long`.
@@ -1129,6 +1243,38 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 - (long long)longLongValueWithBase: (unsigned char)base;
 
 /**
+ * @brief The value of the string in the specified base as an `unsigned char`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned char`
+ */
+- (unsigned char)unsignedCharValueWithBase: (unsigned char)base;
+
+/**
+ * @brief The value of the string in the specified base as an `unsigned short`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned short`
+ */
+- (unsigned short)unsignedShortValueWithBase: (unsigned char)base;
+
+/**
  * @brief The value of the string in the specified base as an `unsigned int`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -1143,6 +1289,22 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				`unsigned int`
  */
 - (unsigned int)unsignedIntValueWithBase: (unsigned char)base;
+
+/**
+ * @brief The value of the string in the specified base as an `unsigned long`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned long`
+ */
+- (unsigned long)unsignedLongValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as an

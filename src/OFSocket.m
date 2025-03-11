@@ -397,7 +397,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 	addr = 0;
 
 	for (OFString *component in components) {
-		unsigned int number;
+		unsigned char number;
 
 		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
@@ -406,10 +406,11 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 		    whitespaceCharacterSet] != OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
-		number = component.unsignedIntValue;
-
-		if (number > UINT8_MAX)
+		@try {
+			number = component.unsignedCharValue;
+		} @catch (OFOutOfRangeException *e) {
 			@throw [OFInvalidFormatException exception];
+		}
 
 		addr = (addr << 8) | ((uint32_t)number & 0xFF);
 	}
@@ -424,13 +425,17 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 static uint16_t
 parseIPv6Component(OFString *component)
 {
-	unsigned int number;
+	unsigned short number;
 
 	if ([component indexOfCharacterFromSet:
 	    [OFCharacterSet whitespaceCharacterSet]] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
-	number = [component unsignedIntValueWithBase: 16];
+	@try {
+		number = [component unsignedShortValueWithBase: 16];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFInvalidFormatException exception];
+	}
 
 	if (number > UINT16_MAX)
 		@throw [OFInvalidFormatException exception];
@@ -489,8 +494,8 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 		IPv6 = [IPv6 substringToIndex: percent];
 
 		@try {
-			addrIn6->sin6_scope_id = (uint32_t)[interface
-			    unsignedLongLongValueWithBase: 10];
+			addrIn6->sin6_scope_id = [interface
+			    unsignedIntValueWithBase: 10];
 		} @catch (OFInvalidFormatException *e) {
 #if defined(HAVE_IF_NAMETOINDEX) && !defined(OF_WINDOWS)
 			addrIn6->sin6_scope_id = if_nametoindex([interface

@@ -57,6 +57,7 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFSystemInfo (NetworkInterfaces)
 static bool
@@ -329,18 +330,17 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 		address.sockaddr.in6.sin6_family = AF_INET6;
 
 		for (size_t i = 0; i < 32; i += 2) {
-			unsigned int byte;
+			unsigned char byte;
 
 			@try {
 				byte = [[addressString
 				    substringWithRange: OFMakeRange(i, 2)]
-				    unsignedIntValueWithBase: 16];
+				    unsignedCharValueWithBase: 16];
 			} @catch (OFInvalidFormatException *e) {
 				goto next_line;
-			}
-
-			if (byte > 0xFF)
+			} @catch (OFOutOfRangeException *e) {
 				goto next_line;
+			}
 
 			address.sockaddr.in6.sin6_addr.s6_addr[i / 2] =
 			    (unsigned char)byte;
@@ -409,7 +409,8 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 		    componentsSeparatedByString: @" "
 					options: OFStringSkipEmptyComponents];
 		OFString *name;
-		unsigned long long network, nodeLong;
+		unsigned long network;
+		unsigned long long nodeLong;
 		unsigned char node[IPX_NODE_LEN];
 		OFSocketAddress address;
 		OFMutableData *addresses;
@@ -426,7 +427,7 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 
 		@try {
 			network = [[components objectAtIndex: 0]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedLongValueWithBase: 16];
 			nodeLong = [[components objectAtIndex: 1]
 			    unsignedLongLongValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
@@ -498,7 +499,8 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		    componentsSeparatedByString: @" "
 					options: OFStringSkipEmptyComponents];
 		OFString *addressString, *name;
-		unsigned int network, node;
+		unsigned short network;
+		unsigned char node;
 		OFSocketAddress address;
 		OFMutableData *addresses;
 
@@ -520,10 +522,10 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		@try {
 			network = [[addressString
 			    substringWithRange: OFMakeRange(0, 4)]
-			    unsignedIntValueWithBase: 16];
+			    unsignedShortValueWithBase: 16];
 			node = [[addressString
 			    substringWithRange: OFMakeRange(5, 2)]
-			    unsignedIntValueWithBase: 16];
+			    unsignedCharValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
 			continue;
 		}

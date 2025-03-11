@@ -85,9 +85,8 @@ OFDNSClassParseName(OFString *string)
 
 	if ([string isEqual: @"IN"])
 		DNSClass = OFDNSClassIN;
-	else {
+	else
 		DNSClass = [string intValueWithBase: 0];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -130,9 +129,8 @@ OFDNSRecordTypeParseName(OFString *string)
 		recordType = OFDNSRecordTypeAll;
 	else if ([string isEqual: @"URI"])
 		recordType = OFDNSRecordTypeURI;
-	else {
+	else
 		recordType = [string intValueWithBase: 0];
-	}
 
 	objc_autoreleasePoolPop(pool);
 

@@ -435,6 +435,30 @@ OF_SINGLETON_METHODS
 	return self.stringByDeletingLastPathComponent;
 }
 
+- (signed char)charValue
+{
+	[self finishInitialization];
+	return self.charValue;
+}
+
+- (signed char)charValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self charValueWithBase: base];
+}
+
+- (short)shortValue
+{
+	[self finishInitialization];
+	return self.shortValue;
+}
+
+- (short)shortValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self shortValueWithBase: base];
+}
+
 - (int)intValue
 {
 	[self finishInitialization];
@@ -445,6 +469,18 @@ OF_SINGLETON_METHODS
 {
 	[self finishInitialization];
 	return [self intValueWithBase: base];
+}
+
+- (long)longValue
+{
+	[self finishInitialization];
+	return self.longValue;
+}
+
+- (long)longValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self longValueWithBase: base];
 }
 
 - (long long)longLongValue
@@ -459,6 +495,30 @@ OF_SINGLETON_METHODS
 	return [self longLongValueWithBase: base];
 }
 
+- (unsigned char)unsignedCharValue
+{
+	[self finishInitialization];
+	return self.unsignedCharValue;
+}
+
+- (unsigned char)unsignedCharValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedCharValueWithBase: base];
+}
+
+- (unsigned short)unsignedShortValue
+{
+	[self finishInitialization];
+	return self.unsignedShortValue;
+}
+
+- (unsigned short)unsignedShortValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedShortValueWithBase: base];
+}
+
 - (unsigned int)unsignedIntValue
 {
 	[self finishInitialization];
@@ -469,6 +529,18 @@ OF_SINGLETON_METHODS
 {
 	[self finishInitialization];
 	return [self unsignedIntValueWithBase: base];
+}
+
+- (unsigned long)unsignedLongValue
+{
+	[self finishInitialization];
+	return self.unsignedLongValue;
+}
+
+- (unsigned long)unsignedLongValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedLongValueWithBase: base];
 }
 
 - (unsigned long long)unsignedLongLongValue

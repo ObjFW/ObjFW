@@ -560,7 +560,7 @@ static void
 parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 {
 	OFString *portString;
-	unsigned int port;
+	unsigned short port;
 
 	if (*UTF8String == '[') {
 		const char *end = memchr(UTF8String, ']', length);
@@ -617,13 +617,12 @@ parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 			@throw [OFInvalidFormatException exception];
 
 	portString = [OFString stringWithUTF8String: UTF8String length: length];
-	port = portString.unsignedIntValue;
+	port = portString.unsignedShortValue;
 
 	if (port > 65535)
 		@throw [OFInvalidFormatException exception];
 
-	self->_port = [[OFNumber alloc] initWithUnsignedShort:
-	    (unsigned short)port];
+	self->_port = [[OFNumber alloc] initWithUnsignedShort: port];
 }
 
 static size_t
