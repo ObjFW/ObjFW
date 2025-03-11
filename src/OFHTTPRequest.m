@@ -231,14 +231,14 @@ OFHTTPRequestMethodParseName(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	unsigned long long major, minor;
+	unsigned int major, minor;
 	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject unsignedLongLongValue];
-	minor = [components.lastObject unsignedLongLongValue];
+	major = [components.firstObject unsignedIntValue];
+	minor = [components.lastObject unsignedIntValue];
 
 	if (major > UCHAR_MAX || minor > UCHAR_MAX)
 		@throw [OFOutOfRangeException exception];

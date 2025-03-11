@@ -2476,7 +2476,8 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 }
 
 static unsigned long long
-unsignedLongLongValueWithBase(OFString *self, unsigned char base)
+unsignedLongLongValueWithBase(OFString *self, unsigned char base,
+    unsigned long long max)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
@@ -2532,8 +2533,7 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base)
 		if (c >= base)
 			@throw [OFInvalidFormatException exception];
 
-		if (ULLONG_MAX / base < value ||
-		    ULLONG_MAX - (value * base) < c)
+		if (max / base < value || max - (value * base) < c)
 			@throw [OFOutOfRangeException exception];
 
 		value = (value * base) + c;
@@ -2544,14 +2544,25 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base)
 	return value;
 }
 
+- (unsigned int)unsignedIntValue
+{
+	return (unsigned int)unsignedLongLongValueWithBase(self, 10, UINT_MAX);
+}
+
+- (unsigned int)unsignedIntValueWithBase: (unsigned char)base
+{
+	return (unsigned int)unsignedLongLongValueWithBase(
+	    self, base, UINT_MAX);
+}
+
 - (unsigned long long)unsignedLongLongValue
 {
-	return unsignedLongLongValueWithBase(self, 10);
+	return unsignedLongLongValueWithBase(self, 10, ULLONG_MAX);
 }
 
 - (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
 {
-	return unsignedLongLongValueWithBase(self, base);
+	return unsignedLongLongValueWithBase(self, base, ULLONG_MAX);
 }
 
 - (float)floatValue

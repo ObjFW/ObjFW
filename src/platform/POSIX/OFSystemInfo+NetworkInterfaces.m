@@ -329,12 +329,12 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 		address.sockaddr.in6.sin6_family = AF_INET6;
 
 		for (size_t i = 0; i < 32; i += 2) {
-			unsigned long long byte;
+			unsigned int byte;
 
 			@try {
 				byte = [[addressString
 				    substringWithRange: OFMakeRange(i, 2)]
-				    unsignedLongLongValueWithBase: 16];
+				    unsignedIntValueWithBase: 16];
 			} @catch (OFInvalidFormatException *e) {
 				goto next_line;
 			}
@@ -498,7 +498,7 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		    componentsSeparatedByString: @" "
 					options: OFStringSkipEmptyComponents];
 		OFString *addressString, *name;
-		unsigned long long network, node;
+		unsigned int network, node;
 		OFSocketAddress address;
 		OFMutableData *addresses;
 
@@ -520,10 +520,10 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		@try {
 			network = [[addressString
 			    substringWithRange: OFMakeRange(0, 4)]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedIntValueWithBase: 16];
 			node = [[addressString
 			    substringWithRange: OFMakeRange(5, 2)]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedIntValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
 			continue;
 		}

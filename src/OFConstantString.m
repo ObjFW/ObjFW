@@ -459,6 +459,18 @@ OF_SINGLETON_METHODS
 	return [self longLongValueWithBase: base];
 }
 
+- (unsigned int)unsignedIntValue
+{
+	[self finishInitialization];
+	return self.unsignedIntValue;
+}
+
+- (unsigned int)unsignedIntValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedIntValueWithBase: base];
+}
+
 - (unsigned long long)unsignedLongLongValue
 {
 	[self finishInitialization];

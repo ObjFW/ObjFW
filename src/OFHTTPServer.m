@@ -514,9 +514,9 @@ normalizedKey(OFString *key)
 			_host = [host retain];
 
 			@try {
-				unsigned long long portTmp =
+				unsigned int portTmp =
 				    [value substringFromIndex: pos + 1]
-				    .unsignedLongLongValue;
+				    .unsignedIntValue;
 
 				if (portTmp < 1 || portTmp > UINT16_MAX)
 					return [self sendErrorAndClose: 400];

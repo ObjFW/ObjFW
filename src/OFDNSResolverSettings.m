@@ -341,32 +341,17 @@ parseNetStackArray(OFString *string)
 {
 	@try {
 		if ([option hasPrefix: @"ndots:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 6];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_minNumberOfDotsInAbsoluteName = (unsigned int)number;
+			_minNumberOfDotsInAbsoluteName =
+			    option.unsignedIntValue;
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringFromIndex: 8];
-
 			_timeout = option.unsignedLongLongValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 9];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_maxAttempts = (unsigned int)number;
+			_maxAttempts = option.unsignedIntValue;
 		} else if ([option hasPrefix: @"reload-period:"]) {
 			option = [option substringFromIndex: 14];
-
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
 			_forcesTCP = true;

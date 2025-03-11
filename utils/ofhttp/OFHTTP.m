@@ -396,14 +396,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    rangeOfString: @":"
 			  options: OFStringSearchBackwards].location;
 		OFString *host;
-		unsigned long long port;
+		unsigned int port;
 
 		if (pos == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringToIndex: pos];
-		port = [proxy substringFromIndex: pos + 1]
-		    .unsignedLongLongValue;
+		port = [proxy substringFromIndex: pos + 1].unsignedIntValue;
 
 		if (port > UINT16_MAX)
 			@throw [OFOutOfRangeException exception];

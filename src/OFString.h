@@ -202,6 +202,17 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
+ * @brief The decimal value of the string as an `unsigned int`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned int`
+ */
+@property (readonly, nonatomic) unsigned int unsignedIntValue;
+
+/**
  * @brief The decimal value of the string as an `unsigned long long`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -1116,6 +1127,22 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *				a `long long`
  */
 - (long long)longLongValueWithBase: (unsigned char)base;
+
+/**
+ * @brief The value of the string in the specified base as an `unsigned int`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned int`
+ */
+- (unsigned int)unsignedIntValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as an

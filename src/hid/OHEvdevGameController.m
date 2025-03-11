@@ -443,14 +443,14 @@ scale(float value, float min, float max, bool inverted)
 
 - (OFComparisonResult)compare: (OHEvdevGameController *)otherController
 {
-	unsigned long long selfIndex, otherIndex;
+	unsigned int selfIndex, otherIndex;
 
 	if (![otherController isKindOfClass: [OHEvdevGameController class]])
 		@throw [OFInvalidArgumentException exception];
 
-	selfIndex = [_path substringFromIndex: 16].unsignedLongLongValue;
+	selfIndex = [_path substringFromIndex: 16].unsignedIntValue;
 	otherIndex = [otherController->_path substringFromIndex: 16]
-	    .unsignedLongLongValue;
+	    .unsignedIntValue;
 
 	if (selfIndex > otherIndex)
 		return OFOrderedDescending;

@@ -397,7 +397,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 	addr = 0;
 
 	for (OFString *component in components) {
-		unsigned long long number;
+		unsigned int number;
 
 		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
@@ -406,7 +406,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 		    whitespaceCharacterSet] != OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
-		number = component.unsignedLongLongValue;
+		number = component.unsignedIntValue;
 
 		if (number > UINT8_MAX)
 			@throw [OFInvalidFormatException exception];
@@ -424,13 +424,13 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 static uint16_t
 parseIPv6Component(OFString *component)
 {
-	unsigned long long number;
+	unsigned int number;
 
 	if ([component indexOfCharacterFromSet:
 	    [OFCharacterSet whitespaceCharacterSet]] != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
-	number = [component unsignedLongLongValueWithBase: 16];
+	number = [component unsignedIntValueWithBase: 16];
 
 	if (number > UINT16_MAX)
 		@throw [OFInvalidFormatException exception];

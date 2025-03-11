@@ -2007,15 +2007,13 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 # elif defined(OF_HAIKU)
 	const char *cName = [name cStringWithEncoding: encoding];
-	unsigned long long typeInt;
+	unsigned int typeInt;
 	int fd;
 
 	if (type != nil && ![type isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException exception];
 
-	typeInt = (type != nil ? [type unsignedLongLongValue] : 0);
-	if (typeInt > UINT32_MAX)
-		@throw [OFInvalidArgumentException exception];
+	typeInt = (type != nil ? [type unsignedIntValue] : 0);
 
 	if (size > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
