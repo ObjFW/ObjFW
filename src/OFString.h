@@ -184,11 +184,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * Leading and trailing whitespaces are ignored.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
- *
- * If the number is too big to fit into a `long long`, an
- * @ref OFOutOfRangeException is thrown.
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `long long`
  */
 @property (readonly, nonatomic) long long longLongValue;
 
@@ -197,11 +195,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * Leading and trailing whitespaces are ignored.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
- *
- * If the number is too big to fit into an `unsigned long long`, an
- * @ref OFOutOfRangeException is thrown.
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
+ *				`unsigned long long`
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
@@ -1083,19 +1079,14 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * Leading and trailing whitespaces are ignored.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
- *
- * If the number is too big to fit into a `long long`, an
- * @ref OFOutOfRangeException is thrown.
- *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
  * 	       string starts with 0x (after stripping white spaces). If the
  * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
  * 	       assumed.
  * @return The value of the string in the specified base
- * @throw OFInvalidFormatException The string cannot be parsed as a `long long`
- * @throw OFOutOfRangeException The value cannot be represented as a `long long`
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				a `long long`
  */
 - (long long)longLongValueWithBase: (unsigned char)base;
 
@@ -1105,20 +1096,13 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * Leading and trailing whitespaces are ignored.
  *
- * If the string contains any non-number characters, an
- * @ref OFInvalidFormatException is thrown.
- *
- * If the number is too big to fit into an `unsigned long long`, an
- * @ref OFOutOfRangeException is thrown.
- *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
  * 	       string starts with 0x (after stripping white spaces). If the
  * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
  * 	       assumed.
  * @return The value of the string in the specified base
- * @throw OFInvalidFormatException The string cannot be parsed as an
- *				   `unsigned long long`
- * @throw OFOutOfRangeException The value cannot be represented as an
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big to fit into an
  *				`unsigned long long`
  */
 - (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
