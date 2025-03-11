@@ -2374,17 +2374,14 @@ OF_SINGLETON_METHODS
 	return array;
 }
 
-- (long long)longLongValue
-{
-	return [self longLongValueWithBase: 10];
-}
-
-- (long long)longLongValueWithBase: (unsigned char)base
+static long long
+longLongValueWithBase(OFString *self, unsigned char base, long long min,
+    long long max)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
 	bool negative = false;
-	long long value = 0;
+	unsigned long long value = 0;
 
 	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
@@ -2436,26 +2433,50 @@ OF_SINGLETON_METHODS
 		if (c >= base)
 			@throw [OFInvalidFormatException exception];
 
-		if (LLONG_MAX / base < value || LLONG_MAX - (value * base) < c)
+		if (ULLONG_MAX / base < value ||
+		    ULLONG_MAX - (value * base) < c)
 			@throw [OFOutOfRangeException exception];
 
 		value = (value * base) + c;
 	}
 
-	if (negative)
-		value *= -1;
-
 	objc_autoreleasePoolPop(pool);
 
-	return value;
+	if (negative) {
+		if (value > -(unsigned long long)min)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)-value;
+	} else {
+		if (value > (unsigned long long)max)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)value;
+	}
 }
 
-- (unsigned long long)unsignedLongLongValue
+- (int)intValue
 {
-	return [self unsignedLongLongValueWithBase: 10];
+	return (int)longLongValueWithBase(self, 10, INT_MIN, INT_MAX);
 }
 
-- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
+- (int)intValueWithBase: (unsigned char)base
+{
+	return (int)longLongValueWithBase(self, base, INT_MIN, INT_MAX);
+}
+
+- (long long)longLongValue
+{
+	return longLongValueWithBase(self, 10, LLONG_MIN, LLONG_MAX);
+}
+
+- (long long)longLongValueWithBase: (unsigned char)base
+{
+	return longLongValueWithBase(self, base, LLONG_MIN, LLONG_MAX);
+}
+
+static unsigned long long
+unsignedLongLongValueWithBase(OFString *self, unsigned char base)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
@@ -2521,6 +2542,16 @@ OF_SINGLETON_METHODS
 	objc_autoreleasePoolPop(pool);
 
 	return value;
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	return unsignedLongLongValueWithBase(self, 10);
+}
+
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
+{
+	return unsignedLongLongValueWithBase(self, base);
 }
 
 - (float)floatValue

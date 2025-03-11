@@ -180,6 +180,17 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @property (readonly, nonatomic) OFString *capitalizedString;
 
 /**
+ * @brief The decimal value of the string as an `int`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				an `int`
+ */
+@property (readonly, nonatomic) int intValue;
+
+/**
  * @brief The decimal value of the string as a `long long`.
  *
  * Leading and trailing whitespaces are ignored.
@@ -1073,6 +1084,22 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @return The substring as a new autoreleased OFString
  */
 - (OFString *)substringWithRange: (OFRange)range;
+
+/**
+ * @brief The value of the string in the specified base as an `int`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * @param base The base to use. If the base is 0, base 16 is assumed if the
+ * 	       string starts with 0x (after stripping white spaces). If the
+ * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ * 	       assumed.
+ * @return The value of the string in the specified base
+ * @throw OFInvalidFormatException The string contains non-number characters
+ * @throw OFOutOfRangeException The value is too big or too small to fit into
+ *				an `int`
+ */
+- (int)intValueWithBase: (unsigned char)base;
 
 /**
  * @brief The value of the string in the specified base as a `long long`.

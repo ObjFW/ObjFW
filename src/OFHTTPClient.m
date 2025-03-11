@@ -440,7 +440,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)handleFirstLine: (OFString *)line
 {
-	long long status;
+	int status;
 
 	/*
 	 * It's possible that the write succeeds on a connection that is
@@ -461,7 +461,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	status = [line substringWithRange: OFMakeRange(9, 3)].longLongValue;
+	status = [line substringWithRange: OFMakeRange(9, 3)].intValue;
 
 	if (status < 0 || status > 599)
 		@throw [OFInvalidServerResponseException exception];

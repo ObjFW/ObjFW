@@ -435,6 +435,18 @@ OF_SINGLETON_METHODS
 	return self.stringByDeletingLastPathComponent;
 }
 
+- (int)intValue
+{
+	[self finishInitialization];
+	return self.intValue;
+}
+
+- (int)intValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self intValueWithBase: base];
+}
+
 - (long long)longLongValue
 {
 	[self finishInitialization];
