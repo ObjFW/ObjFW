@@ -52,8 +52,8 @@ escapeString(OFString *string)
 
 	if (![string hasPrefix: @" "] && ![string hasSuffix: @" "] &&
 	    ![string hasPrefix: @"\t"] && ![string hasSuffix: @"\t"] &&
-	    [string indexOfCharacterFromSet: needsEscapeCharacterSet] ==
-	    OFNotFound)
+	    [string rangeOfCharacterFromSet: needsEscapeCharacterSet]
+	    .location == OFNotFound)
 		return string;
 
 	mutableString = [[string mutableCopy] autorelease];

@@ -101,10 +101,10 @@ domainFromHostname(OFString *hostname)
 		ret = nil;
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
-		size_t pos = [hostname rangeOfString: @"."].location;
+		OFRange range = [hostname rangeOfString: @"."];
 
-		if (pos != OFNotFound)
-			ret = [hostname substringFromIndex: pos + 1];
+		if (range.location != OFNotFound)
+			ret = [hostname substringFromIndex: range.location + 1];
 		else
 			ret = nil;
 	}
@@ -295,12 +295,12 @@ parseNetStackArray(OFString *string)
 	while ((line =
 	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
 		OFArray *components, *hosts;
-		size_t pos;
+		OFRange range;
 		OFString *address;
 
-		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -383,13 +383,13 @@ parseNetStackArray(OFString *string)
 	while ((line =
 	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
-		size_t pos;
+		OFRange range;
 		OFArray *components, *arguments;
 		OFString *option;
 
-		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet

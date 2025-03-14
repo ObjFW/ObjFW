@@ -1098,13 +1098,47 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 		   range: (OFRange)range;
 
 /**
+ * @brief Returns the range of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @return The range of the first occurrence of a character from the set or a
+ *	   range with `OFNotFound` as start position if it was not found
+ */
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet;
+
+/**
+ * @brief Returns the range of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @param options Options modifying search behavior
+ * @return The range of the first occurrence of a character from the set or a
+ *	   range with `OFNotFound` as start position if it was not found
+ */
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options;
+
+/**
+ * @brief Returns the index of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @param options Options modifying search behavior
+ * @param range The range in which to search
+ * @return The range of the first occurrence of a character from the set or a
+ *	   range with `OFNotFound` as start position if it was not found
+ */
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
+			     range: (OFRange)range;
+
+/**
  * @brief Returns the index of the first character from the set.
  *
  * @param characterSet The set of characters to search for
  * @return The index of the first occurrence of a character from the set or
  *	   `OFNotFound` if it was not found
  */
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet;
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+    OF_DEPRECATED(ObjFW, 1, 3, "Use -[rangeOfCharacterFromSet:] instead");
 
 /**
  * @brief Returns the index of the first character from the set.
@@ -1115,7 +1149,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *	   `OFNotFound` if it was not found
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options;
+			  options: (OFStringSearchOptions)options
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use -[rangeOfCharacterFromSet:options:] instead");
 
 /**
  * @brief Returns the index of the first character from the set.
@@ -1128,7 +1164,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 - (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
 			  options: (OFStringSearchOptions)options
-			    range: (OFRange)range;
+			    range: (OFRange)range
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use -[rangeOfCharacterFromSet:options:range:] instead");
 
 /**
  * @brief Returns whether the string contains the specified string.

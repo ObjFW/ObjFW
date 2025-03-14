@@ -402,8 +402,8 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
 
-		if ([component indexOfCharacterFromSet:
-		    whitespaceCharacterSet] != OFNotFound)
+		if ([component rangeOfCharacterFromSet:
+		    whitespaceCharacterSet].location != OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		@try {
@@ -427,8 +427,8 @@ parseIPv6Component(OFString *component)
 {
 	unsigned short number;
 
-	if ([component indexOfCharacterFromSet:
-	    [OFCharacterSet whitespaceCharacterSet]] != OFNotFound)
+	if ([component rangeOfCharacterFromSet:
+	    [OFCharacterSet whitespaceCharacterSet]].location != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	@try {

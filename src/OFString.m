@@ -1985,24 +1985,24 @@ OF_SINGLETON_METHODS
 	return OFMakeRange(OFNotFound, 0);
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: 0
 				       range: OFMakeRange(0, self.length)];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
 {
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: options
 				       range: OFMakeRange(0, self.length)];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
-			    range: (OFRange)range
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
+			     range: (OFRange)range
 {
 	bool (*characterIsMember)(id, SEL, OFUnichar) =
 	    (bool (*)(id, SEL, OFUnichar))[characterSet
@@ -2010,7 +2010,7 @@ OF_SINGLETON_METHODS
 	OFUnichar *characters;
 
 	if (range.length == 0)
-		return OFNotFound;
+		return OFMakeRange(OFNotFound, 0);
 
 	if (range.length > SIZE_MAX / sizeof(OFUnichar))
 		@throw [OFOutOfRangeException exception];
@@ -2024,7 +2024,8 @@ OF_SINGLETON_METHODS
 				if (characterIsMember(characterSet,
 				    @selector(characterIsMember:),
 				    characters[i]))
-					return range.location + i;
+					return OFMakeRange(
+					    range.location + i, 1);
 
 				/* No match and we're at the last character */
 				if (i == 0)
@@ -2035,13 +2036,40 @@ OF_SINGLETON_METHODS
 				if (characterIsMember(characterSet,
 				    @selector(characterIsMember:),
 				    characters[i]))
-					return range.location + i;
+					return OFMakeRange(
+					    range.location + i, 1);
 		}
 	} @finally {
 		OFFreeMemory(characters);
 	}
 
-	return OFNotFound;
+	return OFMakeRange(OFNotFound, 0);
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+{
+	return [self
+	    rangeOfCharacterFromSet: characterSet
+			    options: 0
+			      range: OFMakeRange(0, self.length)].location;
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (OFStringSearchOptions)options
+{
+	return [self
+	    rangeOfCharacterFromSet: characterSet
+			    options: options
+			      range: OFMakeRange(0, self.length)].location;
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (OFStringSearchOptions)options
+			    range: (OFRange)range
+{
+	return [self rangeOfCharacterFromSet: characterSet
+				     options: options
+				       range: range].location;
 }
 
 - (bool)containsString: (OFString *)string

@@ -596,36 +596,45 @@ static const char *range80ToFF =
 	    OFOutOfRangeException);
 }
 
-- (void)testIndexOfCharacterFromSet
+- (void)testRangeOfCharacterFromSet
 {
 	OFCharacterSet *characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
+	OFRange range;
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđe"]
-	    indexOfCharacterFromSet: characterSet], 2);
+	range = [[self.stringClass stringWithString: @"abcđabcđe"]
+	    rangeOfCharacterFromSet: characterSet];
+	OTAssertEqual(range.location, 2);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđë"]
-	    indexOfCharacterFromSet: characterSet
-			    options: OFStringSearchBackwards], 7);
+	range = [[self.stringClass stringWithString: @"abcđabcđë"]
+	    rangeOfCharacterFromSet: characterSet
+			    options: OFStringSearchBackwards];
+	OTAssertEqual(range.location, 7);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđë"]
-	    indexOfCharacterFromSet: characterSet
+	range = [[self.stringClass stringWithString: @"abcđabcđë"]
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFMakeRange(4, 4)], 6);
+			      range: OFMakeRange(4, 4)];
+	OTAssertEqual(range.location, 6);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđëf"]
-	    indexOfCharacterFromSet: characterSet
+	range = [[self.stringClass stringWithString: @"abcđabcđëf"]
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFMakeRange(8, 2)], OFNotFound);
+			      range: OFMakeRange(8, 2)];
+	OTAssertEqual(range.location, OFNotFound);
+	OTAssertEqual(range.length, 0);
 }
 
-- (void)testIndexOfCharacterFromSetFailsWithOutOfRangeRange
+- (void)testRangeOfCharacterFromSetFailsWithOutOfRangeRange
 {
 	OFCharacterSet *characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 
 	OTAssertThrowsSpecific([[self.stringClass stringWithString: @"𝄞öö"]
-	    indexOfCharacterFromSet: characterSet
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
 			      range: OFMakeRange(3, 1)],
 	    OFOutOfRangeException);

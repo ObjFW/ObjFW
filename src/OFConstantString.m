@@ -248,25 +248,25 @@ OF_SINGLETON_METHODS
 	return [self rangeOfString: string options: options range: range];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet];
+	return [self rangeOfCharacterFromSet: characterSet];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet options: options];
+	return [self rangeOfCharacterFromSet: characterSet options: options];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
-			    range: (OFRange)range
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
+			     range: (OFRange)range
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: options
 				       range: range];
 }

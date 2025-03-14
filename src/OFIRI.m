@@ -433,7 +433,8 @@ _OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 	else
 		characterSet = characterSet.invertedSet;
 
-	if ([string indexOfCharacterFromSet: characterSet] != OFNotFound)
+	if ([string rangeOfCharacterFromSet: characterSet].location !=
+	    OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);

@@ -513,7 +513,7 @@ inProcessingInstructionState(OFXMLParser *self)
 
 		whitespaceCS = [OFCharacterSet
 		    characterSetWithCharactersInString: @" \r\n\r"];
-		pos = [PI indexOfCharacterFromSet: whitespaceCS];
+		pos = [PI rangeOfCharacterFromSet: whitespaceCS].location;
 		if (pos != OFNotFound) {
 			target = [PI substringToIndex: pos];
 			text = [[PI substringFromIndex: pos + 1]
