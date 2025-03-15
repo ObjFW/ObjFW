@@ -17,32 +17,23 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-
-@class OFString;
-
-#ifndef OF_WINDOWS
-# include <dlfcn.h>
-typedef void *OFPluginHandle;
-#else
-# include <windows.h>
-typedef HMODULE OFPluginHandle;
-#endif
+#import "OFModule.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+typedef OFModuleHandle OFPluginHandle
+    OF_DEPRECATED(ObjFW, 1, 3, "Use OFModuleHandle instead");
 
 /**
  * @class OFPlugin OFPlugin.h ObjFW/ObjFW.h
  *
- * @brief A class representing a loaded plugin (shared library).
+ * @deprecated Use OFModule instead.
  *
+ * @brief A class representing a loaded plugin (shared library).
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFPlugin: OFObject
-{
-	OFPluginHandle _handle;
-}
-
+OF_DEPRECATED(ObjFW, 1, 3, "Use OFModule instead")
+@interface OFPlugin: OFModule
 /**
  * @brief Returns the plugin path for a plugin with the specified name.
  *
@@ -66,25 +57,6 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFLoadPluginFailedException The plugin could not be loaded
  */
 + (instancetype)pluginWithPath: (nullable OFString *)path;
-
-/**
- * @brief Initializes an already allocated OFPlugin by loading the plugin with
- *	  the specified path.
- *
- * @param path The path to the plugin file. If `nil` is specified, the main
- *	       binary is returned as a plugin.
- * @return An initialized OFPlugin
- * @throw OFLoadPluginFailedException The plugin could not be loaded
- */
-- (instancetype)initWithPath: (nullable OFString *)path;
-
-/**
- * @brief Returns the address for the specified symbol, or `nil` if not found.
- *
- * @param symbol The symbol to return the address for
- * @return The address for the specified symbol, or `nil` if not found
- */
-- (nullable void *)addressForSymbol: (OFString *)symbol;
 @end
 
 OF_ASSUME_NONNULL_END

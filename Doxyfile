@@ -26,7 +26,7 @@ PREDEFINED = _Nonnull=						\
 	     OF_HAVE_FILES					\
 	     OF_HAVE_IPV6					\
 	     OF_HAVE_IPX					\
-	     OF_HAVE_PLUGINS					\
+	     OF_HAVE_MODULES					\
 	     OF_HAVE_SANDBOX					\
 	     OF_HAVE_SOCKETS					\
 	     OF_HAVE_THREADS					\

@@ -524,8 +524,10 @@ AS_IF([test x"$enable_static" = x"yes"], [
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
-	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
+	AC_SUBST(USE_SRCS_MODULES, '${SRCS_MODULES}')
 	AC_SUBST(TESTPLUGIN, "plugin")
+	AC_DEFINE(OF_HAVE_MODULES, 1, [Whether we have support for modules])
+	dnl Deprecated
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
 	AC_CONFIG_FILES(tests/plugin/Info.plist)
 

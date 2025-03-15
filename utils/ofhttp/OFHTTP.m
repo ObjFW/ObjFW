@@ -32,9 +32,6 @@
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
-#ifdef OF_HAVE_PLUGINS
-# import "OFPlugin.h"
-#endif
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"

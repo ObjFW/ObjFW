@@ -74,7 +74,7 @@ SRCS = ForwardingTests.m			\
        ${RUNTIME_ARC_TESTS_M}			\
        RuntimeTests.m				\
        ${USE_SRCS_FILES}			\
-       ${USE_SRCS_PLUGINS}			\
+       ${USE_SRCS_MODULES}			\
        ${USE_SRCS_SOCKETS}			\
        ${USE_SRCS_SUBPROCESSES}			\
        ${USE_SRCS_THREADS}			\
@@ -83,7 +83,7 @@ SRCS = ForwardingTests.m			\
        testfile_bin.m				\
        testfile_ini.m
 SRCS_FILES = OFFileManagerTests.m
-SRCS_PLUGINS = OFPluginTests.m
+SRCS_MODULES = OFModuleTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieManagerTests.m	\

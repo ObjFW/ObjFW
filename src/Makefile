@@ -114,14 +114,15 @@ SRCS = OFApplication.m			\
        OFZooArchive.m			\
        OFZooArchiveEntry.m		\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
+       ${USE_SRCS_MODULES}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_SUBPROCESSES}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
 	     OFString+PathAdditions.m
-SRCS_PLUGINS = OFPlugin.m
+SRCS_MODULES = OFPlugin.m	\
+	       OFModule.m
 SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFADNSResourceRecord.m		\
 	       OFCNAMEDNSResourceRecord.m	\

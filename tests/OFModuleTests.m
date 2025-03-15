@@ -24,28 +24,28 @@
 
 #import "plugin/TestPlugin.h"
 
-@interface OFPluginTests: OTTestCase
+@interface OFModuleTests: OTTestCase
 @end
 
-@implementation OFPluginTests
-- (void)testPlugin
+@implementation OFModuleTests
+- (void)testModule
 {
 	TestPlugin *test = nil;
 	OFString *path;
-	OFPlugin *plugin;
+	OFModule *module;
 	Class (*class)(void);
 
 #ifndef OF_IOS
-	path = [OFPlugin pathForName: @"plugin/TestPlugin"];
+	path = [OFModule pathForPluginWithName: @"plugin/TestPlugin"];
 #else
-	path = [OFPlugin pathForName: @"PlugIns/TestPlugin"];
+	path = [OFModule pathForPluginWithName: @"PlugIns/TestPlugin"];
 #endif
 	OTAssertNotNil(path);
 
-	plugin = [OFPlugin pluginWithPath: path];
-	OTAssertNotNil(plugin);
+	module = [OFModule moduleWithPath: path];
+	OTAssertNotNil(module);
 
-	class = (Class (*)(void))(uintptr_t)[plugin addressForSymbol: @"class"];
+	class = (Class (*)(void))(uintptr_t)[module addressForSymbol: @"class"];
 	OTAssert(class != NULL);
 
 	@try {

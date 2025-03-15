@@ -182,7 +182,8 @@
 #import "OFInvalidJSONException.h"
 #import "OFInvalidServerResponseException.h"
 #import "OFLinkItemFailedException.h"
-#ifdef OF_HAVE_PLUGINS
+#ifdef OF_HAVE_MODULES
+# import "OFLoadModuleFailedException.h"
 # import "OFLoadPluginFailedException.h"
 #endif
 #import "OFLockFailedException.h"
@@ -242,7 +243,8 @@
 # import "OFThreadStillRunningException.h"
 # import "OFWaitForConditionFailedException.h"
 #endif
-#ifdef OF_HAVE_PLUGINS
+#ifdef OF_HAVE_MODULES
+# import "OFModule.h"
 # import "OFPlugin.h"
 #endif
 #ifdef OF_WINDOWS
