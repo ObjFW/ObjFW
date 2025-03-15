@@ -24,6 +24,8 @@
 #include <string.h>
 
 #import "OFEmbeddedIRIHandler.h"
+#import "OFData.h"
+#import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFMemoryStream.h"
 #import "OFNumber.h"
@@ -41,8 +43,9 @@ static struct EmbeddedFile {
 	OFString *path;
 	const uint8_t *bytes;
 	size_t size;
-} *embeddedFiles = NULL;
-static size_t numEmbeddedFiles = 0;
+} *embeddedFilesQueue = NULL;
+static size_t embeddedFilesQueueCount = 0;
+static OFMutableDictionary *embeddedFiles = nil;
 #ifdef OF_HAVE_THREADS
 static OFPlainMutex mutex;
 static OFOnceControl mutexOnceControl = OFOnceControlInitValue;
@@ -63,18 +66,48 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	OFEnsure(OFPlainMutexLock(&mutex) == 0);
 #endif
 
-	embeddedFiles = realloc(embeddedFiles,
-	    sizeof(*embeddedFiles) * (numEmbeddedFiles + 1));
-	OFEnsure(embeddedFiles != NULL);
+	embeddedFilesQueue = realloc(embeddedFilesQueue,
+	    sizeof(*embeddedFilesQueue) * (embeddedFilesQueueCount + 1));
+	OFEnsure(embeddedFilesQueue != NULL);
 
-	embeddedFiles[numEmbeddedFiles].path = path;
-	embeddedFiles[numEmbeddedFiles].bytes = bytes;
-	embeddedFiles[numEmbeddedFiles].size = size;
-	numEmbeddedFiles++;
+	embeddedFilesQueue[embeddedFilesQueueCount].path = path;
+	embeddedFilesQueue[embeddedFilesQueueCount].bytes = bytes;
+	embeddedFilesQueue[embeddedFilesQueueCount].size = size;
+	embeddedFilesQueueCount++;
 
 #ifdef OF_HAVE_THREADS
 	OFEnsure(OFPlainMutexUnlock(&mutex) == 0);
 #endif
+}
+
+static void
+processQueueLocked(void)
+{
+	void *pool;
+
+	if (embeddedFilesQueueCount == 0)
+		return;
+
+	if (embeddedFiles == nil)
+		embeddedFiles = [[OFMutableDictionary alloc] init];
+
+	pool = objc_autoreleasePoolPush();
+
+	for (size_t i = 0; i < embeddedFilesQueueCount; i++) {
+		OFData *data = [OFData
+		    dataWithItemsNoCopy: (void *)embeddedFilesQueue[i].bytes
+				  count: embeddedFilesQueue[i].size
+			   freeWhenDone: false];
+
+		[embeddedFiles setObject: data
+				  forKey: embeddedFilesQueue[i].path];
+	}
+
+	free(embeddedFilesQueue);
+	embeddedFilesQueue = NULL;
+	embeddedFilesQueueCount = 0;
+
+	objc_autoreleasePoolPop(pool);
 }
 
 @implementation OFEmbeddedIRIHandler
@@ -108,16 +141,15 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	OFEnsure(OFPlainMutexLock(&mutex) == 0);
 	@try {
 #endif
-		for (size_t i = 0; i < numEmbeddedFiles; i++) {
-			if (![embeddedFiles[i].path isEqual: path])
-				continue;
+		OFData *data;
 
+		processQueueLocked();
+
+		if ((data = [embeddedFiles objectForKey: path]) != nil)
 			return [OFMemoryStream
-			    streamWithMemoryAddress: (void *)
-							 embeddedFiles[i].bytes
-					       size: embeddedFiles[i].size
+			    streamWithMemoryAddress: (void *)data.items
+					       size: data.count
 					   writable: false];
-		}
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		OFEnsure(OFPlainMutexUnlock(&mutex) == 0);
@@ -146,14 +178,13 @@ OFRegisterEmbeddedFile(OFString *path, const uint8_t *bytes, size_t size)
 	OFEnsure(OFPlainMutexLock(&mutex) == 0);
 	@try {
 #endif
-		for (size_t i = 0; i < numEmbeddedFiles; i++) {
-			OFNumber *fileSize;
+		OFData *data;
 
-			if (![embeddedFiles[i].path isEqual: path])
-				continue;
+		processQueueLocked();
 
-			fileSize = [OFNumber numberWithUnsignedLongLong:
-			    embeddedFiles[i].size];
+		if ((data = [embeddedFiles objectForKey: path]) != nil) {
+			OFNumber *fileSize = [OFNumber
+			    numberWithUnsignedLongLong: data.count];
 
 			return [OFDictionary dictionaryWithKeysAndObjects:
 			    OFFileSize, fileSize,
