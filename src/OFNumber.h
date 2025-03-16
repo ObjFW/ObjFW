@@ -52,51 +52,81 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The OFNumber as a `signed char`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`signed char`
  */
 @property (readonly, nonatomic) signed char charValue;
 
 /**
  * @brief The OFNumber as a `short`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`short`
  */
 @property (readonly, nonatomic) short shortValue;
 
 /**
  * @brief The OFNumber as an `int`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`int`
  */
 @property (readonly, nonatomic) int intValue;
 
 /**
  * @brief The OFNumber as a `long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`long`
  */
 @property (readonly, nonatomic) long longValue;
 
 /**
  * @brief The OFNumber as a `long long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`long long`
  */
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
  * @brief The OFNumber as an `unsigned char`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned char`
  */
 @property (readonly, nonatomic) unsigned char unsignedCharValue;
 
 /**
  * @brief The OFNumber as an `unsigned short`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned short`
  */
 @property (readonly, nonatomic) unsigned short unsignedShortValue;
 
 /**
  * @brief The OFNumber as an `unsigned int`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned int`
  */
 @property (readonly, nonatomic) unsigned int unsignedIntValue;
 
 /**
  * @brief The OFNumber as an `unsigned long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned long`
  */
 @property (readonly, nonatomic) unsigned long unsignedLongValue;
 
 /**
  * @brief The OFNumber as an `unsigned long long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned long long`
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 
