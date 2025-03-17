@@ -23,7 +23,6 @@
 #import "NSDictionary+OFObject.h"
 #import "NSEnumerator+OFObject.h"
 #import "NSNumber+OFObject.h"
-#import "NSObject+OFObject.h"
 #import "NSSet+OFObject.h"
 #import "NSString+OFObject.h"
 
@@ -34,6 +33,5 @@
 #import "OFEnumerator+NSObject.h"
 #import "OFException+Swift.h"
 #import "OFNumber+NSObject.h"
-#import "OFObject+NSObject.h"
 #import "OFSet+NSObject.h"
 #import "OFString+NSObject.h"
