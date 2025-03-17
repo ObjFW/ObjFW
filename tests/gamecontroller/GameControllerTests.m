@@ -95,30 +95,30 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		if (OFStdOut.colors >= 256) {
 			float red, green, blue;
 
-			if (button.value < 0.25) {
-				red = 0.5 - 2 * button.value;
-				green = 0.5 + 2 * button.value;
-				blue = 0.5 - 2 * button.value;
-			} else if (button.value < 0.5) {
-				red = 2 * button.value;
-				green = 1;
-				blue = 0;
+			if (button.value < 0.25f) {
+				red = 0.5f - 2.0f * button.value;
+				green = 0.5f + 2.0f * button.value;
+				blue = 0.5f - 2.0f * button.value;
+			} else if (button.value < 0.5f) {
+				red = 2.0f * button.value;
+				green = 1.0f;
+				blue = 0.0f;
 			} else {
-				red = 1;
-				green = 1 - 2 * (button.value - 0.5);
-				blue = 0;
+				red = 1.0f;
+				green = 1.0f - 2.0f * (button.value - 0.5f);
+				blue = 0.0f;
 			}
 
 			OFStdOut.foregroundColor = [OFColor colorWithRed: red
 								   green: green
 								    blue: blue
-								   alpha: 1];
+								   alpha: 1.0f];
 		} else {
-			if (button.value == 1)
+			if (button.value == 1.0f)
 				OFStdOut.foregroundColor = [OFColor red];
-			else if (button.value > 0.5)
+			else if (button.value > 0.5f)
 				OFStdOut.foregroundColor = [OFColor yellow];
-			else if (button.value > 0)
+			else if (button.value > 0.0f)
 				OFStdOut.foregroundColor = [OFColor green];
 			else
 				OFStdOut.foregroundColor = [OFColor gray];
@@ -127,10 +127,10 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		[OFStdOut writeFormat: @"[%@] ", name];
 	}
 	if (OFStdOut.colors >= 256)
-		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
-							   green: 0.5
-							    blue: 0.5
-							   alpha: 1];
+		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5f
+							   green: 0.5f
+							    blue: 0.5f
+							   alpha: 1.0f];
 	else
 		OFStdOut.foregroundColor = [OFColor gray];
 	[OFStdOut writeString: @"\n"];
@@ -160,14 +160,14 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		}
 
 		if (OFStdOut.colors >= 256) {
-			float red = 0.5 + directionalPad.xAxis.value / 2;
-			float blue = 0.5 + directionalPad.yAxis.value / 2;
-			float green = 1 - (red / 2 + blue / 2);
+			float red = 0.5f + directionalPad.xAxis.value / 2.0f;
+			float blue = 0.5f + directionalPad.yAxis.value / 2.0f;
+			float green = 1.0f - (red / 2.0f + blue / 2.0f);
 
 			OFStdOut.foregroundColor = [OFColor colorWithRed: red
 								   green: green
 								    blue: blue
-								   alpha: 1];
+								   alpha: 1.0f];
 		}
 
 		[OFStdOut writeFormat:
@@ -176,10 +176,10 @@ static void printProfile(id <OHGameControllerProfile> profile)
 		    directionalPad.xAxis.value, directionalPad.yAxis.value];
 	}
 	if (OFStdOut.colors >= 256)
-		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5
-							   green: 0.5
-							    blue: 0.5
-							   alpha: 1];
+		OFStdOut.foregroundColor = [OFColor colorWithRed: 0.5f
+							   green: 0.5f
+							    blue: 0.5f
+							   alpha: 1.0f];
 	if (directionalPads.count > 0)
 		[OFStdOut writeString: @"\n"];
 

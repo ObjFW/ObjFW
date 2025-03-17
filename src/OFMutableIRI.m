@@ -33,6 +33,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFMutableIRI
 @dynamic scheme, host, percentEncodedHost, port, user, percentEncodedUser;
@@ -118,8 +119,17 @@
 {
 	OFNumber *old = _port;
 
-	if (port.unsignedShortValue > 65535)
+	@try {
+#if USHRT_MAX == 65535
+		/* Range check */
+		(void)port.unsignedShortValue;
+#else
+		if (port.unsignedShortValue > 65535)
+			@throw [OFInvalidArgumentException exception];
+#endif
+	} @catch (OFOutOfRangeException *e) {
 		@throw [OFInvalidArgumentException exception];
+	}
 
 	_port = [port copy];
 	[old release];

@@ -518,10 +518,12 @@ normalizedKey(OFString *key)
 				    [value substringFromIndex: pos + 1]
 				    .unsignedShortValue;
 
-				if (portTmp < 1 || portTmp > UINT16_MAX)
+#if USHRT_MAX != 65535
+				if (portTmp > 65535)
 					return [self sendErrorAndClose: 400];
+#endif
 
-				_port = (uint16_t)portTmp;
+				_port = portTmp;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
 			}

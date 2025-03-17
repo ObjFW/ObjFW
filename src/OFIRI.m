@@ -38,6 +38,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 @interface OFIRIAllowedCharacterSetBase: OFCharacterSet
 @end
@@ -618,10 +619,16 @@ parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 			@throw [OFInvalidFormatException exception];
 
 	portString = [OFString stringWithUTF8String: UTF8String length: length];
-	port = portString.unsignedShortValue;
+	@try {
+		port = portString.unsignedShortValue;
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFInvalidFormatException exception];
+	}
 
+#if USHRT_MAX != 65535
 	if (port > 65535)
 		@throw [OFInvalidFormatException exception];
+#endif
 
 	self->_port = [[OFNumber alloc] initWithUnsignedShort: port];
 }

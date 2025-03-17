@@ -437,10 +437,12 @@ parseIPv6Component(OFString *component)
 		@throw [OFInvalidFormatException exception];
 	}
 
-	if (number > UINT16_MAX)
+#if USHRT_MAX != 65535
+	if (number > 65535)
 		@throw [OFInvalidFormatException exception];
+#endif
 
-	return (uint16_t)number;
+	return number;
 }
 
 static OFString *

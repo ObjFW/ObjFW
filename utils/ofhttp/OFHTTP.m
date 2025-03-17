@@ -401,8 +401,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		host = [proxy substringToIndex: pos];
 		port = [proxy substringFromIndex: pos + 1].unsignedShortValue;
 
-		if (port > UINT16_MAX)
+#if USHRT_MAX != 65535
+		if (port > 65535)
 			@throw [OFOutOfRangeException exception];
+#endif
 
 		[OFTCPSocket setSOCKS5Host: host];
 		[OFTCPSocket setSOCKS5Port: (uint16_t)port];
