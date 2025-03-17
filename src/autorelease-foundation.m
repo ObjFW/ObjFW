@@ -29,24 +29,26 @@
 
 #include "config.h"
 
-#import <Foundation/Foundation.h>
+extern void *NSPushAutoreleasePool(unsigned int count);
+extern void NSPopAutoreleasePool(void *pool);
+extern void NSAutoreleaseObject(id object);
 
 void *
 objc_autoreleasePoolPush(void)
 {
-	return [[NSAutoreleasePool alloc] init];
+	return NSPushAutoreleasePool(0);
 }
 
 void
 objc_autoreleasePoolPop(void *pool)
 {
-	return [(id)pool drain];
+	NSPopAutoreleasePool(pool);
 }
 
 id
 _objc_rootAutorelease(id object)
 {
-	[NSAutoreleasePool addObject: object];
+	NSAutoreleaseObject(object);
 
 	return object;
 }
