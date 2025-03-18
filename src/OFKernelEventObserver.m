@@ -274,11 +274,11 @@
 		OFEnsure(errno == EINTR);
 #elif defined(OF_WII)
 	while (sendto(_cancelFD[1], "", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, 8) == 1)
+	    (struct sockaddr *)&_cancelAddr, 8) < 1)
 		OFEnsure(_OFSocketErrNo() == EINTR);
 #else
 	while (sendto(_cancelFD[1], (void *)"", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) == 1)
+	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) < 1)
 		OFEnsure(_OFSocketErrNo() == EINTR);
 #endif
 }
