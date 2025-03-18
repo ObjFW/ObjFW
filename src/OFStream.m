@@ -53,6 +53,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
@@ -143,8 +144,17 @@
 			char tmp[minReadSize], *readBuffer;
 			size_t bytesRead;
 
-			bytesRead = [self lowlevelReadIntoBuffer: tmp
-							  length: minReadSize];
+retry_1:
+			@try {
+				bytesRead = [self
+				    lowlevelReadIntoBuffer: tmp
+						    length: minReadSize];
+			} @catch (OFReadFailedException *e) {
+				if (e.errNo == EINTR)
+					goto retry_1;
+
+				@throw e;
+			}
 
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
@@ -164,7 +174,16 @@
 			}
 		}
 
-		return [self lowlevelReadIntoBuffer: buffer length: length];
+retry_2:
+		@try {
+			return [self lowlevelReadIntoBuffer: buffer
+						     length: length];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry_2;
+
+			@throw e;
+		}
 	}
 
 	if (length >= _readBufferLength) {
@@ -588,8 +607,16 @@
 			return ret;
 		}
 
-		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: pageSize];
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		/* Look if there's a newline or \0 */
 		for (size_t i = 0; i < bufferLength; i++) {
@@ -900,8 +927,16 @@
 			return ret;
 		}
 
-		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: pageSize];
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		/* Look if there's a \0 */
 		for (size_t i = 0; i < bufferLength; i++) {
@@ -1053,8 +1088,16 @@
 			return ret;
 		}
 
-		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: pageSize];
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		/* Look if there's a delimiter or \0 */
 		for (size_t i = 0; i < bufferLength; i++) {
@@ -1184,8 +1227,16 @@
 	if (_writeBuffer == NULL)
 		return true;
 
-	bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
-					  length: _writeBufferLength];
+retry:
+	@try {
+		bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
+						  length: _writeBufferLength];
+	} @catch (OFWriteFailedException *e) {
+		if (e.errNo == EINTR)
+			goto retry;
+
+		@throw e;
+	}
 
 	if (bytesWritten == 0)
 		return false;
@@ -1216,8 +1267,18 @@
 - (void)writeBuffer: (const void *)buffer length: (size_t)length
 {
 	if (!_buffersWrites) {
-		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
-							 length: length];
+		size_t bytesWritten;
+
+retry:
+		@try {
+			bytesWritten = [self lowlevelWriteBuffer: buffer
+							  length: length];
+		} @catch (OFWriteFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		if (bytesWritten < length)
 			@throw [OFWriteFailedException

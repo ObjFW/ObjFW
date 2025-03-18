@@ -200,13 +200,12 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	if ([self processReadBuffers])
 		return;
 
-	events = epoll_wait(_epfd, eventList, eventListSize,
-	    (timeInterval != -1 ? timeInterval * 1000 : -1));
-
-	if (events < 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while ((events = epoll_wait(_epfd, eventList, eventListSize,
+	    (timeInterval != -1 ? timeInterval * 1000 : -1))) < 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {

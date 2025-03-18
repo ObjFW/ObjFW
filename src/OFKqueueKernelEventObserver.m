@@ -64,9 +64,10 @@
 
 		EV_SET(&event, _cancelFD[0], EVFILT_READ, EV_ADD, 0, 0, 0);
 
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: self.class];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -96,10 +97,11 @@
 	 */
 	event.udata = (__typeof__(event.udata))object;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super addObjectForReading: object];
 }
@@ -118,10 +120,11 @@
 	 */
 	event.udata = (__typeof__(event.udata))object;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super addObjectForWriting: object];
 }
@@ -135,10 +138,11 @@
 	event.filter = EVFILT_READ;
 	event.flags = EV_DELETE;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super removeObjectForReading: object];
 }
@@ -152,10 +156,11 @@
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_DELETE;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super removeObjectForWriting: object];
 }
@@ -172,13 +177,12 @@
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
 
-	events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
-	    (timeInterval != -1 ? &timeout : NULL));
-
-	if (events < 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+	while ((events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
+	    (timeInterval != -1 ? &timeout : NULL))) < 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		void *pool;

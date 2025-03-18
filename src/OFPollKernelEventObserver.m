@@ -169,7 +169,6 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
 	void *pool;
 	struct pollfd *FDs;
-	int events;
 	size_t nFDs;
 
 	if ([self processReadBuffers])
@@ -185,13 +184,15 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	events = poll(FDs, (nfds_t)nFDs,
-	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1));
+	while (poll(FDs, (nfds_t)nFDs,
+	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 0) {
+		int errNo = _OFSocketErrNo();
 
-	if (events < 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+		if (errNo != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errNo];
+	}
 
 	for (size_t i = 0; i < nFDs; i++) {
 		OFAssert(FDs[i].fd <= _maxFD);

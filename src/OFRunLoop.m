@@ -1939,14 +1939,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 #ifdef OF_HAVE_SOCKETS
 			if (state->_kernelEventObserver != nil) {
-				@try {
-					[state->_kernelEventObserver
-					    observeForTimeInterval: timeout];
-				} @catch (OFObserveKernelEventsFailedException
-				    *e) {
-					if (e.errNo != EINTR)
-						@throw e;
-				}
+				[state->_kernelEventObserver
+				    observeForTimeInterval: timeout];
 			} else {
 #endif
 #ifdef OF_HAVE_THREADS
@@ -1977,15 +1971,9 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			 * another thread, it cancels the observe.
 			 */
 #ifdef OF_HAVE_SOCKETS
-			if (state->_kernelEventObserver != nil) {
-				@try {
-					[state->_kernelEventObserver observe];
-				} @catch (OFObserveKernelEventsFailedException
-				    *e) {
-					if (e.errNo != EINTR)
-						@throw e;
-				}
-			} else {
+			if (state->_kernelEventObserver != nil)
+				[state->_kernelEventObserver observe];
+			else {
 #endif
 #ifdef OF_HAVE_THREADS
 				[state->_condition lock];

@@ -504,15 +504,10 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 # ifndef OF_WINDOWS
-retry:
-	if ((ret = read(_fd, buffer, length)) < 0) {
-		if (errno == EINTR)
-			goto retry;
-
+	if ((ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-	}
 # else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -588,16 +583,11 @@ retry:
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-retry:
-	if ((bytesWritten = write(_fd, buffer, length)) < 0) {
-		if (errno == EINTR)
-			goto retry;
-
+	if ((bytesWritten = write(_fd, buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: 0
 							     errNo: errno];
-	}
 # else
 	int bytesWritten;
 

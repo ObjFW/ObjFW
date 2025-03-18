@@ -330,15 +330,10 @@ OF_DIRECT_MEMBERS
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-retry:
-	if ((ret = read(_readPipe[0], buffer, length)) < 0) {
-		if (errno == EINTR)
-			goto retry;
-
+	if ((ret = read(_readPipe[0], buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-	}
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -356,16 +351,11 @@ retry:
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-retry:
-	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0) {
-		if (errno == EINTR)
-			goto retry;
-
+	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 						      bytesWritten: 0
 							     errNo: errno];
-	}
 
 	return (size_t)bytesWritten;
 }

@@ -184,18 +184,16 @@
 		sender->length = (socklen_t)sizeof(sender->sockaddr);
 
 #ifndef OF_WINDOWS
-retry:
-	if ((ret = recvfrom(_socket, buffer, length, 0,
+	while ((ret = recvfrom(_socket, buffer, length, 0,
 	    (sender != NULL ? (struct sockaddr *)&sender->sockaddr : NULL),
 	    (sender != NULL ? &sender->length : NULL))) < 0) {
 		int errNo = _OFSocketErrNo();
 
-		if (errNo == EINTR)
-			goto retry;
-
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: errNo];
+		if (errNo != EINTR)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+					  errNo: errNo];
 	}
 #else
 	if (length > INT_MAX)
@@ -341,18 +339,16 @@ retry:
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-retry:
-	if ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
+	while ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
 	    (struct sockaddr *)&receiver->sockaddr, receiver->length)) < 0) {
 		int errNo = _OFSocketErrNo();
 
-		if (errNo == EINTR)
-			goto retry;
-
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: errNo];
+		if (errNo != EINTR)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: 0
+					  errNo: errNo];
 	}
 #else
 	int bytesWritten;

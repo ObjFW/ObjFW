@@ -270,28 +270,16 @@
 
 	Permit();
 #elif defined(OF_HAVE_PIPE)
-	do {
-		if (write(_cancelFD[1], "", 1) == 1)
-			break;
-
+	while (write(_cancelFD[1], "", 1) < 1)
 		OFEnsure(errno == EINTR);
-	} while (true);
 #elif defined(OF_WII)
-	do {
-		if (sendto(_cancelFD[1], "", 1, 0,
-		    (struct sockaddr *)&_cancelAddr, 8) == 1)
-			break;
-
+	while (sendto(_cancelFD[1], "", 1, 0,
+	    (struct sockaddr *)&_cancelAddr, 8) == 1)
 		OFEnsure(_OFSocketErrNo() == EINTR);
-	} while (true);
 #else
-	do {
-		if (sendto(_cancelFD[1], (void *)"", 1, 0,
-		    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) == 1)
-			break;
-
+	while (sendto(_cancelFD[1], (void *)"", 1, 0,
+	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) == 1)
 		OFEnsure(_OFSocketErrNo() == EINTR);
-	} while (true);
 #endif
 }
 @end

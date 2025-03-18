@@ -110,17 +110,11 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
-retry:
-	if ((ret = recv(_socket, buffer, length, 0)) < 0) {
-		int errNo = _OFSocketErrNo();
-
-		if (errNo == EINTR)
-			goto retry;
-
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: errNo];
-	}
+	if ((ret = recv(_socket, buffer, length, 0)) < 0)
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: _OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -149,18 +143,12 @@ retry:
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-retry:
-	if ((bytesWritten = send(_socket, (void *)buffer, length, 0)) < 0) {
-		int errNo = _OFSocketErrNo();
-
-		if (errNo == EINTR)
-			goto retry;
-
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: errNo];
-	}
+	if ((bytesWritten = send(_socket, (void *)buffer, length, 0)) < 0)
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+			   bytesWritten: 0
+				  errNo: _OFSocketErrNo()];
 #else
 	int bytesWritten;
 

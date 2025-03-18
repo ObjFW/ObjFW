@@ -235,21 +235,26 @@
 	FreeSignal(_cancelSignal);
 
 	Permit();
-#else
-	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (timeInterval != -1 ? &timeout : NULL));
-#endif
 
 	if (events < 0)
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
 				    errNo: _OFSocketErrNo()];
 
-#ifdef OF_AMIGAOS
 	if (execSignalMask != 0 &&
 	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
 		[_delegate execSignalWasReceived: execSignalMask];
 #else
+	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (timeInterval != -1 ? &timeout : NULL))) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: _OFSocketErrNo()];
+	}
+
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 
