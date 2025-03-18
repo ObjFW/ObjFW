@@ -73,7 +73,8 @@ static size_t buttonsPerLine = 5;
 
 OF_APPLICATION_DELEGATE(GameControllerTests)
 
-static void printProfile(id <OHGameControllerProfile> profile)
+static void
+printProfile(id <OHGameControllerProfile> profile)
 {
 	OFArray OF_GENERIC(OFString *) *buttons =
 	    profile.buttons.allKeys.sortedArray;
