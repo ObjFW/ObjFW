@@ -130,9 +130,14 @@ test(id self, SEL _cmd)
 /*
  * Don't try fpret on Win64 if we don't have stret forwarding, as long double
  * is handled as a struct there.
+ *
+ * Don't try fpret on macOS on x86_64 with the Apple runtime as a regression
+ * was introduced in either macOS 14 or 15 where objc_msgSend_fpret calls the
+ * stret forwarding handler instead of the regular one.
  */
-# if !defined(OF_WINDOWS) || !defined(OF_AMD64) || \
-    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
+# if !(defined(OF_WINDOWS) && defined(OF_AMD64) && \
+    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
+    !(defined(OF_APPLE_RUNTIME) && defined(OF_AMD64))
 - (void)testForwardingTargetForSelectorFPRet
 {
 	ForwardingTestObject *testObject =
