@@ -2548,7 +2548,7 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 
 	switch (*UTF8String) {
 	case '-':
-		@throw [OFInvalidFormatException exception];
+		@throw [OFOutOfRangeException exception];
 	case '+':
 		UTF8String++;
 	}

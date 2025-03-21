@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
 			    defaultValue: (nullable OFString *)defaultValue;
 
 /**
- * @brief Returns the long long value for the specified key or the specified
+ * @brief Returns the `long long` value for the specified key or the specified
  *	  default value if it does not exist.
  *
  * If the specified key is a multi-key (see @ref arrayValueForKey:), the value
@@ -87,6 +87,24 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (long long)longLongValueForKey: (OFString *)key
 		    defaultValue: (long long)defaultValue;
+
+/**
+ * @brief Returns the `unsigned long long` value for the specified key or the
+ *	  specified default value if it does not exist.
+ *
+ * If the specified key is a multi-key (see @ref arrayValueForKey:), the value
+ * of the first key/value pair found is returned.
+ *
+ * @param key The key for which the long long should be returned
+ * @param defaultValue The value to return if the key does not exist
+ * @return The long long for the specified key or the specified default value
+ *	   if it does not exist
+ * @throw OFInvalidFormatException The specified key is not in the correct
+ *				   format for a long long
+ */
+- (unsigned long long)
+    unsignedLongLongValueForKey: (OFString *)key
+		   defaultValue: (unsigned long long)defaultValue;
 
 /**
  * @brief Returns the bool value for the specified key or the specified default
@@ -161,15 +179,29 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setStringValue: (OFString *)stringValue forKey: (OFString *)key;
 
 /**
- * @brief Sets the value of the specified key to the specified long long.
+ * @brief Sets the value of the specified key to the specified `long long`.
  *
  * If the specified key is a multi-key (see @ref arrayValueForKey:), the value
  * of the first key/value pair found is changed.
  *
- * @param longLongValue The long long to which the key should be set
+ * @param longLongValue The `long long` to which the key should be set
  * @param key The key for which the new value should be set
  */
 - (void)setLongLongValue: (long long)longLongValue forKey: (OFString *)key;
+
+/**
+ * @brief Sets the value of the specified key to the specified
+ *	  `unsigned long long`.
+ *
+ * If the specified key is a multi-key (see @ref arrayValueForKey:), the value
+ * of the first key/value pair found is changed.
+ *
+ * @param unsignedLongLongValue The `unsigned long long` to which the key
+ *				should be set
+ * @param key The key for which the new value should be set
+ */
+- (void)setUnsignedLongLongValue: (unsigned long long)unsignedLongLongValue
+			  forKey: (OFString *)key;
 
 /**
  * @brief Sets the value of the specified key to the specified bool.

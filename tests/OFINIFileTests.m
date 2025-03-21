@@ -72,7 +72,23 @@
 	OTAssertEqual([[_file sectionForName: @"types"]
 	    longLongValueForKey: @"integer"
 		   defaultValue: 2],
+	    -0x20);
+}
+
+- (void)testUnsignedLongLongValueForKeyDefaultValue
+{
+	OTAssertEqual([[_file sectionForName: @"types"]
+	    unsignedLongLongValueForKey: @"unsigned"
+			   defaultValue: 2],
 	    0x20);
+}
+
+- (void)testUnsignedLongLongValueThrowsForNegative
+{
+	OTAssertThrowsSpecific([[_file sectionForName: @"types"]
+	    unsignedLongLongValueForKey: @"integer"
+			   defaultValue: 2],
+	    OFOutOfRangeException);
 }
 
 - (void)testBoolValueForKeyDefaultValue
@@ -130,7 +146,8 @@
 	    @"qux3=\"a\\fb\"\r\n"
 	    @"\r\n"
 	    @"[types]\r\n"
-	    @"integer=16\r\n"
+	    @"integer=-16\r\n"
+	    @"unsigned=16\r\n"
 	    @"bool=false\r\n"
 	    @"float=0.25\r\n"
 	    @"array1=foo\r\n"
@@ -148,7 +165,8 @@
 	[tests setStringValue: @"new" forKey: @"new"];
 	[tests setStringValue: @";comment" forKey: @"#quoted"];
 	[foobar setStringValue: @"a\fb" forKey: @"qux3"];
-	[types setLongLongValue: 0x10 forKey: @"integer"];
+	[types setLongLongValue: -0x10 forKey: @"integer"];
+	[types setUnsignedLongLongValue: 0x10 forKey: @"unsigned"];
 	[types setBoolValue: false forKey: @"bool"];
 	[types setFloatValue: 0.25f forKey: @"float"];
 	[types setDoubleValue: 0.75 forKey: @"double"];

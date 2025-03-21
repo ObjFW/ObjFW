@@ -305,6 +305,24 @@ unescapeMutableString(OFMutableString *string)
 	return ret;
 }
 
+- (unsigned long long)
+    unsignedLongLongValueForKey: (OFString *)key
+		   defaultValue: (unsigned long long)defaultValue
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *value = [self stringValueForKey: key defaultValue: nil];
+	unsigned long long ret;
+
+	if (value != nil)
+		ret = [value unsignedLongLongValueWithBase: 0];
+	else
+		ret = defaultValue;
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 - (bool)boolValueForKey: (OFString *)key defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -428,6 +446,18 @@ unescapeMutableString(OFMutableString *string)
 
 	[self setStringValue: [OFString stringWithFormat:
 				  @"%lld", longLongValue]
+		      forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setUnsignedLongLongValue: (unsigned long long)unsignedLongLongValue
+			  forKey: (OFString *)key
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setStringValue: [OFString stringWithFormat:
+				  @"%llu", unsignedLongLongValue]
 		      forKey: key];
 
 	objc_autoreleasePoolPop(pool);
