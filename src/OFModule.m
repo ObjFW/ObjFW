@@ -119,10 +119,11 @@
 
 - (void)dealloc
 {
+	if (_handle != NULL)
 #ifndef OF_WINDOWS
-	dlclose(_handle);
+		dlclose(_handle);
 #else
-	FreeLibrary(_handle);
+		FreeLibrary(_handle);
 #endif
 
 	[super dealloc];
