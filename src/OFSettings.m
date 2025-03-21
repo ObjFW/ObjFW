@@ -76,6 +76,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (void)setUnsignedLongLong: (unsigned long long)unsignedLongLong
+		    forPath: (OFString *)path
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (void)setBool: (bool)bool_ forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -110,6 +116,12 @@
 
 - (long long)longLongForPath: (OFString *)path
 		defaultValue: (long long)defaultValue
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (unsigned long long)unsignedLongLongForPath: (OFString *)path
+				 defaultValue: (unsigned long long)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

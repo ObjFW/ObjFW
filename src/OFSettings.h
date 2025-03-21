@@ -79,12 +79,21 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setString: (OFString *)string forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified long long.
+ * @brief Sets the specified path to the specified `long long`.
  *
- * @param longLong The long long to set
- * @param path The path to store the long long at
+ * @param longLong The `long long` to set
+ * @param path The path to store the `long long` at
  */
 - (void)setLongLong: (long long)longLong forPath: (OFString *)path;
+
+/**
+ * @brief Sets the specified path to the specified `unsigned long long`.
+ *
+ * @param unsignedLongLong The `unsigned long long` to set
+ * @param path The path to store the `unsigned long long` at
+ */
+- (void)setUnsignedLongLong: (unsigned long long)unsignedLongLong
+		    forPath: (OFString *)path;
 
 /**
  * @brief Sets the specified path to the specified bool.
@@ -140,15 +149,26 @@ OF_ASSUME_NONNULL_BEGIN
 			defaultValue: (nullable OFString *)defaultValue;
 
 /**
- * @brief Returns the long long for the specified path, or the default value if
- *	  the path does not exist.
+ * @brief Returns the `long long` for the specified path, or the default value
+ *	  if the path does not exist.
  *
- * @param path The path for which the long long should be returned
+ * @param path The path for which the `long long` should be returned
  * @param defaultValue The default value to return if the path does not exist
- * @return The long long of the specified path
+ * @return The `long long` of the specified path
  */
 - (long long)longLongForPath: (OFString *)path
 		defaultValue: (long long)defaultValue;
+
+/**
+ * @brief Returns the `unsigned long long` for the specified path, or the
+ *	  default value if the path does not exist.
+ *
+ * @param path The path for which the `unsigned long long` should be returned
+ * @param defaultValue The default value to return if the path does not exist
+ * @return The `unsigned long long` of the specified path
+ */
+- (unsigned long long)unsignedLongLongForPath: (OFString *)path
+				 defaultValue: (unsigned long long)defaultValue;
 
 /**
  * @brief Returns the bool for the specified path, or the default value if the

@@ -97,6 +97,20 @@
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)setUnsignedLongLong: (unsigned long long)unsignedLongLong
+		    forPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *section, *key;
+
+	[self of_getSection: &section andKey: &key forPath: path];
+	[[_INIFile sectionForName: section]
+	    setUnsignedLongLongValue: unsignedLongLong
+			      forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)setBool: (bool)bool_ forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -170,6 +184,23 @@
 	ret = [[_INIFile sectionForName: section]
 	    longLongValueForKey: key
 		   defaultValue: defaultValue];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (unsigned long long)unsignedLongLongForPath: (OFString *)path
+				 defaultValue: (unsigned long long)defaultValue
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *section, *key;
+	unsigned long long ret;
+
+	[self of_getSection: &section andKey: &key forPath: path];
+	ret = [[_INIFile sectionForName: section]
+	    unsignedLongLongValueForKey: key
+			   defaultValue: defaultValue];
 
 	objc_autoreleasePoolPop(pool);
 
