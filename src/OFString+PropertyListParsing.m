@@ -120,7 +120,7 @@ parseFalseElement(OFXMLElement *element)
 static OFNumber *
 parseRealElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithDouble: element.doubleValue];
+	return [OFNumber numberWithDouble: element.stringValue.doubleValue];
 }
 
 static OFNumber *

@@ -42,31 +42,44 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The contents of the receiver as a `long long` value.
  *
+ * @deprecated Use `.stringValue.longLongValue` instead.
+ *
  * @throw OFInvalidFormatException The node cannot be parsed as a `long long`
  */
-@property (readonly, nonatomic) long long longLongValue;
+@property (readonly, nonatomic) long long longLongValue
+    OF_DEPRECATED(ObjFW, 1, 3, "Use .stringValue.longLongValue instead");
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value.
  *
+ * @deprecated Use `.stringValue.unsignedLongLongValue` instead.
+ *
  * @throw OFInvalidFormatException The node cannot be parsed as an
  *				   `unsigned long long`
  */
-@property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
+@property (readonly, nonatomic) unsigned long long unsignedLongLongValue
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use .stringValue.unsignedLongLongValue instead");
 
 /**
  * @brief The contents of the receiver as a float value.
  *
+ * @deprecated Use `.stringValue.floatValue` instead.
+ *
  * @throw OFInvalidFormatException The node cannot be parsed as a `float`
  */
-@property (readonly, nonatomic) float floatValue;
+@property (readonly, nonatomic) float floatValue
+    OF_DEPRECATED(ObjFW, 1, 3, "Use .stringValue.floatValue instead");
 
 /**
  * @brief The contents of the receiver as a double value.
  *
+ * @deprecated Use `.stringValue.doubleValue` instead.
+ *
  * @throw OFInvalidFormatException The node cannot be parsed as a `double`
  */
-@property (readonly, nonatomic) double doubleValue;
+@property (readonly, nonatomic) double doubleValue
+    OF_DEPRECATED(ObjFW, 1, 3, "Use .doubleValue.floatValue instead");
 
 /**
  * @brief A string representing the node as an XML string.
@@ -83,6 +96,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The contents of the receiver as a `long long` value in the specified
  *	  base.
  *
+ * @deprecated Use `[node.stringValue longLongValueWithBase:]` instead.
+ *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
  * 	       string starts with 0x (after stripping white spaces). If the
  * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
@@ -90,11 +105,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as a `long long` value in the specified
  *	   base
  */
-- (long long)longLongValueWithBase: (unsigned char)base;
+- (long long)longLongValueWithBase: (unsigned char)base
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use [node.stringValue longLongValueWithBase:] instead");
 
 /**
  * @brief The contents of the receiver as an `unsigned long long` value in the
  *	  specified base.
+ *
+ * @deprecated Use `[node.stringValue unsignedLongLongValueWithBase:]` instead.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
  * 	       string starts with 0x (after stripping white spaces). If the
@@ -103,7 +122,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The contents of the receiver as an `unsigned long long` value in the
  * 	   specified base
  */
-- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base;
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
+    OF_DEPRECATED(ObjFW, 1, 3,
+	"Use [node.stringValue unsignedLongLongValueWithBase:] instead");
 @end
 
 OF_ASSUME_NONNULL_END
