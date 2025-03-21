@@ -417,12 +417,11 @@ processLoadQueue(void)
 		if (loadQueue[i]->info & OBJC_CLASS_INFO_SETUP) {
 			callLoad(loadQueue[i]);
 
-			loadQueueCount--;
-
-			if (loadQueueCount == 0) {
+			if (--loadQueueCount == 0) {
 				free(loadQueue);
 				loadQueue = NULL;
-				continue;
+				loadQueueCount = 0;
+				break;
 			}
 
 			loadQueue[i] = loadQueue[loadQueueCount];
@@ -470,6 +469,7 @@ objc_registerAllClasses(struct objc_symtab *symtab)
 	}
 
 	processLoadQueue();
+	objc_processCategoriesLoadQueue();
 }
 
 Class
@@ -530,6 +530,7 @@ objc_registerClassPair(Class class)
 		class->info |= OBJC_CLASS_INFO_LOADED;
 
 	processLoadQueue();
+	objc_processCategoriesLoadQueue();
 
 	objc_globalMutex_unlock();
 }

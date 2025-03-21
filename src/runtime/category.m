@@ -27,6 +27,8 @@
 #import "private.h"
 
 static struct objc_hashtable *categoriesMap = NULL;
+static struct objc_category **loadQueue = NULL;
+static size_t loadQueueCount = 0;
 
 static void
 registerSelectors(struct objc_category *category)
@@ -43,9 +45,77 @@ registerSelectors(struct objc_category *category)
 			objc_registerSelector(&iter->methods[i].selector);
 }
 
+static bool
+hasLoad(struct objc_category *category)
+{
+	static SEL loadSel = NULL;
+
+	if (loadSel == NULL)
+		loadSel = sel_registerName("load");
+
+	for (struct objc_method_list *methodList = category->classMethods;
+	    methodList != NULL; methodList = methodList->next)
+		for (unsigned int i = 0; i < methodList->count; i++)
+			if (sel_isEqual((SEL)&methodList->methods[i].selector,
+			    loadSel))
+				return true;
+
+	return false;
+}
+
+static void
+callLoad(Class class, struct objc_category *category)
+{
+	static SEL loadSel = NULL;
+
+	if (loadSel == NULL)
+		loadSel = sel_registerName("load");
+
+	for (struct objc_method_list *methodList = category->classMethods;
+	    methodList != NULL; methodList = methodList->next) {
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			if (sel_isEqual((SEL)&methodList->methods[i].selector,
+			    loadSel)) {
+				void (*load)(id, SEL) = (void (*)(id, SEL))
+				    methodList->methods[i].implementation;
+
+				load(class, loadSel);
+			}
+		}
+	}
+}
+
+void
+objc_processCategoriesLoadQueue(void)
+{
+	for (size_t i = 0; i < loadQueueCount; i++) {
+		Class class = objc_lookUpClass(loadQueue[i]->className);
+
+		if (class != Nil && class->info & OBJC_CLASS_INFO_LOADED) {
+			callLoad(class, loadQueue[i]);
+
+			if (--loadQueueCount == 0) {
+				free(loadQueue);
+				loadQueue = NULL;
+				loadQueueCount = 0;
+				break;
+			}
+
+			loadQueue[i] = loadQueue[loadQueueCount];
+
+			loadQueue = realloc(loadQueue,
+			    sizeof(struct objc_category *) * loadQueueCount);
+
+			if (loadQueue == NULL)
+				OBJC_ERROR("Not enough memory for load queue!");
+		}
+	}
+}
+
 static void
 registerCategory(struct objc_category *category)
 {
+	size_t numCategories = 0;
 	struct objc_category **categories;
 	Class class = objc_classnameToClass(category->className, false);
 
@@ -56,42 +126,51 @@ registerCategory(struct objc_category *category)
 	categories = (struct objc_category **)objc_hashtable_get(
 	    categoriesMap, category->className);
 
-	if (categories != NULL) {
-		struct objc_category **newCategories;
-		size_t i;
-
-		for (i = 0; categories[i] != NULL; i++);
-
-		if ((newCategories = realloc(categories,
-		    (i + 2) * sizeof(*categories))) == NULL)
+	if (categories != NULL)
+		for (; categories[numCategories] != NULL; numCategories++);
+	else {
+		if ((categories = malloc(sizeof(*categories))) == NULL)
 			OBJC_ERROR("Not enough memory for category %s of "
-			    "class %s!", category->categoryName,
-			    category->className);
+			    "class %s!\n",
+			    category->categoryName, category->className);
 
-		newCategories[i] = category;
-		newCategories[i + 1] = NULL;
-		objc_hashtable_set(categoriesMap, category->className,
-		    newCategories);
-
-		if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
-			objc_updateDTable(class);
-			objc_updateDTable(class->isa);
-		}
-
-		return;
+		categories[0] = NULL;
 	}
 
-	if ((categories = malloc(2 * sizeof(*categories))) == NULL)
-		OBJC_ERROR("Not enough memory for category %s of class %s!\n",
+	if ((categories = realloc(categories,
+	    (numCategories + 2) * sizeof(*categories))) == NULL)
+		OBJC_ERROR("Not enough memory for category %s of class %s!",
 		    category->categoryName, category->className);
 
-	categories[0] = category;
-	categories[1] = NULL;
+	categories[numCategories] = category;
+	categories[numCategories + 1] = NULL;
 	objc_hashtable_set(categoriesMap, category->className, categories);
 
 	if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
 		objc_updateDTable(class);
 		objc_updateDTable(class->isa);
+	}
+
+	if (hasLoad(category)) {
+		/*
+		 * objc_classnameToClass does not set up the class, but
+		 * objc_lookUpClass tries to set it up and only returns it if
+		 * it could be set up.
+		 */
+		class = objc_lookUpClass(category->className);
+
+		if (class != Nil && class->info & OBJC_CLASS_INFO_LOADED)
+			callLoad(class, category);
+		else {
+			loadQueue = realloc(loadQueue,
+			    sizeof(struct objc_category *) *
+			    (loadQueueCount + 1));
+
+			if (loadQueue == NULL)
+				OBJC_ERROR("Not enough memory for load queue!");
+
+			loadQueue[loadQueueCount++] = category;
+		}
 	}
 }
 

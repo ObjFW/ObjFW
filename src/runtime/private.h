@@ -223,6 +223,7 @@ extern void objc_registerAllCategories(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_HIDDEN;
 extern struct objc_category *_Nullable *_Nullable
     objc_categoriesForClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
+extern void objc_processCategoriesLoadQueue(void) OF_VISIBILITY_HIDDEN;
 extern void objc_unregisterAllCategories(void) OF_VISIBILITY_HIDDEN;
 extern void objc_initializeClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
 extern void objc_updateDTable(Class _Nonnull) OF_VISIBILITY_HIDDEN;
