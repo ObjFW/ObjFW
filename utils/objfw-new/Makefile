@@ -16,6 +16,7 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
 	    -I../..
+OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

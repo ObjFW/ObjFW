@@ -20,6 +20,7 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
+OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src		\
 	-L../../src/runtime	\
 	-L../../src/tls		\
@@ -29,4 +30,4 @@ LIBS := -L../../src		\
 	${RUNTIME_LIBS}		\
 	${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

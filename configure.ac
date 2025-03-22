@@ -465,6 +465,8 @@ mingw*)
 	;;
 esac
 
+BUILDSYS_PIE
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
