@@ -1488,7 +1488,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		;;
 	*)
 		AC_CHECK_LIB(socket, socket, [
-			LIBS="-lsocket $LIBt"
+			LIBS="-lsocket $LIBS"
 			OBJFW_LIBS="-lsocket $OBJFW_LIBS"
 		])
 		;;
