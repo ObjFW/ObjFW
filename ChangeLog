@@ -4,6 +4,50 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
+ + OFStdIOStream adds support truecolor, 256 colors, bold, italic, underlined
+   and italic.
+ * OFStdIOStream now keeps track of state to reduce the amount of escape codes
+   used.
+ + Adds support for getting peer credentials to UNIX sockets.
+ + Adds support for MPTCP.
+ + Adds more functions to parse integers to OFString.
+ + Adds range checks to OFNumber instead of truncating values.
+ * Deprecates OFPlugin in favor of OFModule.
+ * Deprecates a few methods in various classes, their replacements are
+   specified in the deprecation message.
+ * Optimizes lookup for embedded files.
+ * Improves EINTR handling throughout the entire code base.
+ + ObjFWRT calls +[load] on categories now.
+ * Adds and uses more error codes for OFTLSStream.
+ + Adds OFX509Certificate with support for PKCS #12 and PEM files.
+ + Adds server mode for OFTLSStream.
+ + Adds support for TLS to OFHTTPServer.
+ + Adds support for mbedTLS 3 to ObjFWTLS.
+ * Fixes handling of unexpected stream end in OFOpenSSLTLSStream.
+ + OFRunLoop now supports interacting with foreign run loops.
+ + ObjFWBridge now provides an OFKernelEventObserver implementation that uses
+   CFRunLoop to allow running code that needs a CFRunLoop inside an OFRunLoop.
+ + ObjFWBridge now bridges OFDate/NSDate and OFData/NSData.
+ * Fixes ObjFWBridge on macOS 10.5 (Leopard).
+ + Adds documentation for ObjFWBridge.
+ + Adds support for game controllers on macOS & iOS to ObjFWHID.
+ + Adds OFNotifications for changes values to ObjFWHID.
+ * ObjFWHID now uses more consistent names for game controller elements.
+ + Adds game controller-specific profiles on Linux to ObjFWHID for the following
+   controllers: Switch Pro Controller, Nintendo Switch Online SNES gamepad,
+   8BitDo Ultimate 2C Wireless, 8BitDo NES30.
+ + Adds game controller-specific profiles on macOS & iOS to ObjFWHID for the
+   following controllers: DualSense, DualShock 4, pair of Joy-Cons, Switch Pro
+   Controller, Nintendo Switch Online N64 controller, Nintendo Switch Online
+   SNES gamepad, Stadia gamepad, 8BitDo NES30.
+ * ObjFWHID now filters spurious extra buttons with the Xbox 360 Wireless
+   Receiver on Linux.
+ * ObjFWHID now assumes a single Joy-Con to be rotated and handles it
+   accordingly.
+ * ofarc now quarantines files before setting permissions, preventing an issue
+   where the permissions would no longer allow quarantining files.
+
 ObjFW 1.2.3 -> ObjFW 1.2.4, 2025-02-20
  * Fixes OFPlainConditionTimedWait(), which as a result fixes OFRunLoop
    spinning in some situations.
