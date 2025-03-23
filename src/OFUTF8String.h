@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 	 * it on the first access. Strings created at runtime just set the
 	 * pointer to `&_storage`.
 	 */
-	struct OFUTF8StringIvars {
+	struct _OFUTF8StringIvars {
 		char          *cString;
 		size_t        cStringLength;
 		size_t        length;
@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 		unsigned      isUTF8: 1, containsNull: 1, hasHash: 1;
 		unsigned      freeWhenDone: 1;
 	} *restrict _s;
-	struct OFUTF8StringIvars _storage;
+	struct _OFUTF8StringIvars _storage;
 }
 @end
 
