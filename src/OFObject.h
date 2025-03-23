@@ -356,7 +356,7 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
  * @return The sum of the two vectors
  */
 static OF_INLINE OFVector3D
-OFAddVector3D(OFVector3D vector1, OFVector3D vector2)
+OFAddVectors3D(OFVector3D vector1, OFVector3D vector2)
 {
 	return OFMakeVector3D(vector1.x + vector2.x, vector1.y + vector2.y,
 	    vector1.z + vector2.z);
@@ -370,38 +370,24 @@ OFAddVector3D(OFVector3D vector1, OFVector3D vector2)
  * @return The second vector subtracted from the first vector
  */
 static OF_INLINE OFVector3D
-OFSubtractVector3D(OFVector3D vector1, OFVector3D vector2)
+OFSubtractVectors3D(OFVector3D vector1, OFVector3D vector2)
 {
 	return OFMakeVector3D(vector1.x - vector2.x, vector1.y - vector2.y,
 	    vector1.z - vector2.z);
 }
 
 /**
- * @brief Multiplies the two specified vectors.
+ * @brief Multiplies the specified vector with a scalar.
  *
- * @param vector1 The vector to multiply
- * @param vector2 The vector to multiply with
- * @return The two vectors multiplied
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
  */
 static OF_INLINE OFVector3D
-OFMultiplyVector3D(OFVector3D vector1, OFVector3D vector2)
+OFMultiplyVector3D(OFVector3D vector, float scalar)
 {
-	return OFMakeVector3D(vector1.x * vector2.x, vector1.y * vector2.y,
-	    vector1.z * vector2.z);
-}
-
-/**
- * @brief Divides the first vector by the second vector.
- *
- * @param vector1 The vector to divide
- * @param vector2 The vector to divide by
- * @return The first vector divided by the second vector
- */
-static OF_INLINE OFVector3D
-OFDivideVector3D(OFVector3D vector1, OFVector3D vector2)
-{
-	return OFMakeVector3D(vector1.x / vector2.x, vector1.y / vector2.y,
-	    vector1.z / vector2.z);
+	return OFMakeVector3D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar);
 }
 
 /**
@@ -470,7 +456,7 @@ OFEqualVectors4D(OFVector4D vector1, OFVector4D vector2)
  * @return The sum of the two vectors
  */
 static OF_INLINE OFVector4D
-OFAddVector4D(OFVector4D vector1, OFVector4D vector2)
+OFAddVectors4D(OFVector4D vector1, OFVector4D vector2)
 {
 	return OFMakeVector4D(vector1.x + vector2.x, vector1.y + vector2.y,
 	    vector1.z + vector2.z, vector1.w + vector2.w);
@@ -484,38 +470,24 @@ OFAddVector4D(OFVector4D vector1, OFVector4D vector2)
  * @return The second vector subtracted from the first vector
  */
 static OF_INLINE OFVector4D
-OFSubtractVector4D(OFVector4D vector1, OFVector4D vector2)
+OFSubtractVectors4D(OFVector4D vector1, OFVector4D vector2)
 {
 	return OFMakeVector4D(vector1.x - vector2.x, vector1.y - vector2.y,
 	    vector1.z - vector2.z, vector1.w - vector2.w);
 }
 
 /**
- * @brief Multiplies the two specified vectors.
+ * @brief Multiplies the specified vector with a scalar.
  *
- * @param vector1 The vector to multiply
- * @param vector2 The vector to multiply with
- * @return The two vectors multiplied
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
  */
 static OF_INLINE OFVector4D
-OFMultiplyVector4D(OFVector4D vector1, OFVector4D vector2)
+OFMultiplyVector4D(OFVector4D vector, float scalar)
 {
-	return OFMakeVector4D(vector1.x * vector2.x, vector1.y * vector2.y,
-	    vector1.z * vector2.z, vector1.w * vector2.w);
-}
-
-/**
- * @brief Divides the first vector by the second vector.
- *
- * @param vector1 The vector to divide
- * @param vector2 The vector to divide by
- * @return The first vector divided by the second vector
- */
-static OF_INLINE OFVector4D
-OFDivideVector4D(OFVector4D vector1, OFVector4D vector2)
-{
-	return OFMakeVector4D(vector1.x / vector2.x, vector1.y / vector2.y,
-	    vector1.z / vector2.z, vector1.w / vector2.w);
+	return OFMakeVector4D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar, vector.w * scalar);
 }
 
 /**
