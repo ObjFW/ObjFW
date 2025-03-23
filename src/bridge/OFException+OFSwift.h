@@ -30,11 +30,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @category OFException (Swift) OFException+Swift.h ObjFWBridge/ObjFWBridge.h
+ * @category OFException (OFSwift) OFException+OFSwift.h
+ *	     ObjFWBridge/ObjFWBridge.h
  *
  * @brief Support for throwing and catching an @ref OFException in Swift.
  */
-@interface OFException (Swift)
+@interface OFException (OFSwift)
 #ifdef OF_HAVE_BLOCKS
 /**
  * @brief Execute the specified try block and call the catch block if an

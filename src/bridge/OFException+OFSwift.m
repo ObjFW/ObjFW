@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFException+Swift.h"
+#import "OFException+OFSwift.h"
 
 @implementation OFException (NSError)
 #ifdef OF_HAVE_BLOCKS

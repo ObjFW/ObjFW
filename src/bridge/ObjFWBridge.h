@@ -31,7 +31,7 @@
 #import "OFDate+NSObject.h"
 #import "OFDictionary+NSObject.h"
 #import "OFEnumerator+NSObject.h"
-#import "OFException+Swift.h"
+#import "OFException+OFSwift.h"
 #import "OFNumber+NSObject.h"
 #import "OFSet+NSObject.h"
 #import "OFString+NSObject.h"

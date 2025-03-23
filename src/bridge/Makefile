@@ -22,7 +22,7 @@ SRCS = NSArray+OFObject.m	\
        OFDate+NSObject.m	\
        OFDictionary+NSObject.m	\
        OFEnumerator+NSObject.m	\
-       OFException+Swift.m	\
+       OFException+OFSwift.m	\
        OFNumber+NSObject.m	\
        OFSet+NSObject.m		\
        OFString+NSObject.m
