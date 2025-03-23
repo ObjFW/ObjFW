@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <math.h>
 
 #include "macros.h"
 
@@ -405,6 +406,21 @@ OFDotProductOfVectors3D(OFVector3D vector1, OFVector3D vector2)
 }
 
 /**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	OFVector3D difference = OFSubtractVectors3D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors3D(difference, difference));
+}
+
+/**
  * @struct OFVector4D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 4D space.
@@ -516,6 +532,21 @@ OFDotProductOfVectors4D(OFVector4D vector1, OFVector4D vector2)
 {
 	return vector1.x * vector2.x + vector1.y * vector2.y +
 	    vector1.z * vector2.z + vector1.w * vector2.w;
+}
+
+/**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	OFVector4D difference = OFSubtractVectors4D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors4D(difference, difference));
 }
 
 /**
