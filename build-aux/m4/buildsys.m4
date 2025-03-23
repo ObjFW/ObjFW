@@ -234,7 +234,7 @@ AC_DEFUN([BUILDSYS_PIE], [
 	], [
 		AC_MSG_RESULT(yes)
 		AC_SUBST(PIE_CFLAGS, -fPIE)
-		AC_SUBST(PIE_LDFLAGS, -pie)
+		AC_SUBST(PIE_LDFLAGS, [-Wl,-pie])
 	], [
 		AC_MSG_RESULT(no)
 	])
