@@ -89,7 +89,7 @@ OF_SINGLETON_METHODS
 - (void)finishInitialization
 {
 	@synchronized (self) {
-		struct OFUTF8StringIvars *ivars;
+		struct _OFUTF8StringIvars *ivars;
 		bool containsNull;
 
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
