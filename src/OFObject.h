@@ -391,6 +391,20 @@ OFMultiplyVector3D(OFVector3D vector, float scalar)
 }
 
 /**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z;
+}
+
+/**
  * @struct OFVector4D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 4D space.
@@ -488,6 +502,20 @@ OFMultiplyVector4D(OFVector4D vector, float scalar)
 {
 	return OFMakeVector4D(vector.x * scalar, vector.y * scalar,
 	    vector.z * scalar, vector.w * scalar);
+}
+
+/**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z + vector1.w * vector2.w;
 }
 
 /**
