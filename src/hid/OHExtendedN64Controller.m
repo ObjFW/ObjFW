@@ -23,7 +23,7 @@
 #import "OHN64Controller.h"
 #import "OHN64Controller+Private.h"
 #import "OFDictionary.h"
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OFString+NSObject.h"
 #endif
 #import "OHGameControllerButton.h"
@@ -39,13 +39,13 @@ static OFString *const buttonNames[] = {
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
 
 @implementation OHExtendedN64Controller
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 + (void)initialize
 {
 	void *pool;
@@ -120,7 +120,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 }
 #endif
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 - (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
 {
 	return buttonsMap;

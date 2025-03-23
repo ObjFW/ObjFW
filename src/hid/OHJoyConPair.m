@@ -24,7 +24,7 @@
 #import "OFDictionary.h"
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OFString+NSObject.h"
 #endif
 #import "OHGameController.h"
@@ -51,13 +51,13 @@ static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"ZL", @"ZR", @"Left Thumbstick",
 	@"Right Thumbstick", @"+", @"-",
 	/* GameController.framework doesn't expose a lot of buttons. */
-#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifndef OF_HAVE_GCF
 	@"Home", @"Capture",
 #endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
@@ -171,7 +171,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 @implementation OHJoyConPair
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 + (void)initialize
 {
 	void *pool;
@@ -228,7 +228,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 		OFMutableDictionary *directionalPads;
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
-#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifndef OF_HAVE_GCF
 		OHGameControllerButton *up, *down, *left, *right;
 #endif
 
@@ -272,7 +272,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 		[directionalPads setObject: directionalPad
 				    forKey: @"Right Thumbstick"];
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad X"
 							  analog: false];
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"D-Pad Y"
@@ -517,7 +517,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 	return [_directionalPads objectForKey: @"D-Pad"];
 }
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 - (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
 {
 	return buttonsMap;

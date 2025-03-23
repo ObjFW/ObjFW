@@ -22,7 +22,7 @@
 #import "OHSwitchProController.h"
 #import "OHSwitchProController+Private.h"
 #import "OFDictionary.h"
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OFString+NSObject.h"
 #endif
 #import "OHGameControllerAxis.h"
@@ -43,7 +43,7 @@ static OFString *const buttonNames[] = {
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
@@ -51,7 +51,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 @implementation OHSwitchProController
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 + (void)initialize
 {
 	void *pool;
@@ -341,7 +341,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 }
 #endif
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 - (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
 {
 	return buttonsMap;

@@ -22,7 +22,7 @@
 #import "OHStadiaGamepad.h"
 #import "OHStadiaGamepad+Private.h"
 #import "OFDictionary.h"
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OFString+NSObject.h"
 #endif
 #import "OHEmulatedGameControllerTriggerButton.h"
@@ -40,14 +40,14 @@
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L1", @"R1", @"L3", @"R3", @"Menu", @"Options",
 	@"Capture", @"Stadia",
-#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifndef OF_HAVE_GCF
 	/* Not supported by GameController.framework */
 	@"Assistant"
 #endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
@@ -55,7 +55,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 @implementation OHStadiaGamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 + (void)initialize
 {
 	void *pool;
@@ -372,7 +372,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 }
 #endif
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 - (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
 {
 	return buttonsMap;

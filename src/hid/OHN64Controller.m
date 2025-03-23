@@ -57,7 +57,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OFMutableDictionary *directionalPads;
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
-#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifndef OF_HAVE_GCF
 		OHGameControllerButton *up, *down, *left, *right;
 #endif
 
@@ -98,7 +98,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			    analog: false];
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 		xAxis = [OHGameControllerAxis oh_elementWithName: @"C-Buttons X"
 							  analog: false];
 		yAxis = [OHGameControllerAxis oh_elementWithName: @"C-Buttons Y"
