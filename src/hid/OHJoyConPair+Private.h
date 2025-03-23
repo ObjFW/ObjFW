@@ -19,7 +19,7 @@
 
 #import "OHJoyConPair.h"
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OHGCFGameController.h"
 #endif
 
@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_DIRECT_MEMBERS
 @interface OHJoyConPair ()
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
     <OHGCFMapping>
 #endif
 

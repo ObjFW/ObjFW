@@ -42,7 +42,7 @@
 #ifdef OF_NINTENDO_SWITCH
 # import "OHNintendoSwitchGameController.h"
 #endif
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OHGCFGameController.h"
 #endif
 
@@ -81,7 +81,7 @@ const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
 	return [OHWiiGameController controllers];
 #elif defined(OF_NINTENDO_SWITCH)
 	return [OHNintendoSwitchGameController controllers];
-#elif defined(HAVE_GAMECONTROLLER_GAMECONTROLLER_H)
+#elif defined(OF_HAVE_GCF)
 	if (@available(macOS 14.0, iOS 17.0, *))
 		return [OHGCFGameController controllers];
 	else

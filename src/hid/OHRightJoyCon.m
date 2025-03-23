@@ -22,7 +22,7 @@
 #import "OHRightJoyCon.h"
 #import "OHRightJoyCon+Private.h"
 #import "OFDictionary.h"
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 # import "OFString+NSObject.h"
 #endif
 #import "OHGameControllerAxis.h"
@@ -40,14 +40,14 @@
 
 static OFString *const buttonNames[] = {
 	@"X", @"B", @"A", @"Y", @"SL", @"SR", @"+",
-#ifndef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifndef OF_HAVE_GCF
 	/* GameController.framework doesn't expose a lot of buttons. */
 	@"R", @"ZR", @"Left Thumbstick", @"Home"
 #endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
 static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 #endif
@@ -55,7 +55,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 @implementation OHRightJoyCon
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 + (void)initialize
 {
 	void *pool;
@@ -209,7 +209,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 }
 #endif
 
-#ifdef HAVE_GAMECONTROLLER_GAMECONTROLLER_H
+#ifdef OF_HAVE_GCF
 - (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
 {
 	return buttonsMap;

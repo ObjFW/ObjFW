@@ -2484,13 +2484,29 @@ mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
 	;;
 darwin*)
-	AC_CHECK_HEADERS(GameController/GameController.h, [
+	AC_MSG_CHECKING(new enough GameController.framework)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#import <GameController/GameController.h>
+		], [
+			if (@available(macOS 14.0, iOS 17.0, *)) {
+				GCController *controller =
+				    GCController.controllers[[0]];
+				(void)controller.input;
+			}
+		])
+	], [
+		AC_MSG_RESULT(yes)
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
+		AC_DEFINE(OF_HAVE_GCF, 1,
+			[Whether we have GameController.framework])
 		tmp="-framework GameController"
 		HID_STATIC_LIBS="$tmp \${libdir}/libobjfwbridge.a $HID_LIBS"
 		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
 		tmp="$tmp -framework ObjFWBridge"
 		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
+	], [
+		AC_MSG_RESULT(no)
 	])
 	;;
 esac
