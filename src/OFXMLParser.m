@@ -503,26 +503,26 @@ inProcessingInstructionState(OFXMLParser *self)
 		self->_level = 1;
 	else if (self->_level == 1 && self->_data[self->_i] == '>') {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *PI, *target, *text = nil;
+		OFString *PI_, *target, *text = nil;
 		OFCharacterSet *whitespaceCS;
 		size_t pos;
 
 		appendToBuffer(self->_buffer, self->_data + self->_last,
 		    self->_encoding, self->_i - self->_last);
-		PI = transformString(self, self->_buffer, 1, false);
+		PI_ = transformString(self, self->_buffer, 1, false);
 
 		whitespaceCS = [OFCharacterSet
 		    characterSetWithCharactersInString: @" \r\n\r"];
-		pos = [PI rangeOfCharacterFromSet: whitespaceCS].location;
+		pos = [PI_ rangeOfCharacterFromSet: whitespaceCS].location;
 		if (pos != OFNotFound) {
-			target = [PI substringToIndex: pos];
-			text = [[PI substringFromIndex: pos + 1]
+			target = [PI_ substringToIndex: pos];
+			text = [[PI_ substringFromIndex: pos + 1]
 			    stringByDeletingEnclosingWhitespaces];
 
 			if (text.length == 0)
 				text = nil;
 		} else
-			target = PI;
+			target = PI_;
 
 		if ([target caseInsensitiveCompare: @"xml"] == OFOrderedSame)
 			if (!parseXMLProcessingInstruction(self, text))
