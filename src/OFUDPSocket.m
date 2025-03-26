@@ -45,7 +45,7 @@
 @dynamic delegate;
 
 - (void)of_bindToAddress: (OFSocketAddress *)address
-	       extraType: (int)extraType OF_DIRECT
+	       extraType: (int)extraType
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;

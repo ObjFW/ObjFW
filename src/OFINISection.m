@@ -113,7 +113,7 @@ escapeString(OFString *string)
 	    initWithCharactersInString: @"\r\n\f\"\\=;#"];
 }
 
-- (instancetype)of_initWithName: (OFString *)name OF_DIRECT
+- (instancetype)of_initWithName: (OFString *)name
 {
 	self = [super init];
 
