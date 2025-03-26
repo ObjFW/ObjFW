@@ -333,16 +333,23 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
-#if __has_attribute(__objc_direct__) && defined(OF_APPLE_RUNTIME)
-# define OF_DIRECT __attribute__((__objc_direct__))
-# define OF_DIRECT_PROPERTY(...) (__VA_ARGS__, direct)
-#else
+#if defined(OF_APPLE_RUNTIME) || (defined(OF_OBJFW_RUNTIME) && \
+    defined(__clang_major__) && __clang_major__ >= 21)
+# if __has_attribute(__objc_direct__)
+#  define OF_DIRECT __attribute__((__objc_direct__))
+#  define OF_DIRECT_PROPERTY(...) (__VA_ARGS__, direct)
+# endif
+# if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
+#  define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
+# endif
+#endif
+#ifndef OF_DIRECT
 # define OF_DIRECT
+#endif
+#ifndef OF_DIRECT_PROPERTY
 # define OF_DIRECT_PROPERTY
 #endif
-#if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
-# define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
-#else
+#ifndef OF_DIRECT_MEMBERS
 # define OF_DIRECT_MEMBERS
 #endif
 
