@@ -21,7 +21,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
 @interface OFStdIOStream ()
 #if defined(OF_AMIGAOS)
 - (instancetype)of_initWithHandle: (BPTR)handle
