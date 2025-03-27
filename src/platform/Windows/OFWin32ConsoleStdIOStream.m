@@ -576,6 +576,21 @@ codepageToEncoding(UINT codepage)
 	/* No support for blinking. */
 }
 
+- (void)setCursorVisible: (bool)visible
+{
+	CONSOLE_CURSOR_INFO cci;
+
+	if (!GetConsoleCursorInfo(_handle, &cci))
+		return;
+
+	cci.bVisible = visible;
+
+	if (!SetConsoleCursorInfo(_handle, &cci))
+		return;
+
+	_cursorVisible = visible;
+}
+
 - (void)reset
 {
 	if (SetConsoleTextAttribute(_handle, _attributes)) {

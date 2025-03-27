@@ -53,7 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
 	int _colors;
 	OFColor *_Nullable _foregroundColor, *_Nullable _backgroundColor;
 	bool _bold, _italic, _underlined, _blinking;
-	OF_RESERVE_IVARS(OFStdIOStream, 4)
+	uintptr_t _cursorVisible;  /* Change type on ABI bump */
+	OF_RESERVE_IVARS(OFStdIOStream, 3)
 }
 
 /**
@@ -148,6 +149,14 @@ OF_ASSUME_NONNULL_BEGIN
  * unsupported.
  */
 @property (nonatomic, getter=isBlinking) bool blinking;
+
+/**
+ * @brief Whether the cursor of the underlying terminal is visible.
+ *
+ * Setting this does nothing if there is no underlying terminal or hiding /
+ * showing the cursor is unsupported.
+ */
+@property (nonatomic, getter=isCursorVisible) bool cursorVisible;
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(DOXYGEN)

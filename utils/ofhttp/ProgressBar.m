@@ -101,6 +101,8 @@ static const OFTimeInterval updateInterval = 0.1;
 	float bars, percent;
 	int columns, barWidth;
 
+	OFStdOut.cursorVisible = false;
+
 	if ((columns = OFStdOut.columns) >= 0) {
 		if (columns > 37)
 			barWidth = columns - 37;
@@ -213,6 +215,8 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"%[num] B/s  ",
 		    @"num", num)];
 	}
+
+	OFStdOut.cursorVisible = true;
 }
 
 - (void)_drawReceived

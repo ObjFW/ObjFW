@@ -419,6 +419,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	_handle = handle;
 	_closable = closable;
 	_colors = 16;
+	_cursorVisible = true;
 
 	return self;
 }
@@ -442,6 +443,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 # else
 	_colors = -1;
 # endif
+	_cursorVisible = self.hasTerminal;
 
 	return self;
 }
@@ -922,6 +924,28 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 
 	_blinking = blinking;
 #endif
+}
+
+- (bool)isCursorVisible
+{
+	return _cursorVisible;
+}
+
+- (void)setCursorVisible: (bool)visible
+{
+	if (!self.hasTerminal)
+		return;
+
+	if (visible == _cursorVisible)
+		return;
+
+#ifdef OF_MSDOS
+	_setcursortype(visible ? _NORMALCURSOR : _NOCURSOR);
+#else
+	[self writeString: (visible ? @"\033[?25h" : @"\033[?25l")];
+#endif
+
+	_cursorVisible = visible;
 }
 
 - (void)reset
