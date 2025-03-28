@@ -523,6 +523,9 @@ AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
 
+BUILDSYS_RELRO
+LDFLAGS="$LDFLAGS $RELRO_LDFLAGS"
+
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_MODULES, '${SRCS_MODULES}')
