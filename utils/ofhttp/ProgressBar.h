@@ -42,6 +42,5 @@
 		    useUnicode: (bool)useUnicode OF_DESIGNATED_INITIALIZER;
 - (void)setReceived: (unsigned long long)received;
 - (void)draw;
-- (void)calculateBPSAndETA;
 - (void)stop;
 @end

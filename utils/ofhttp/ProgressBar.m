@@ -43,6 +43,10 @@ static const OFTimeInterval updateInterval = 0.1;
 # define truncf(x) trunc(x)
 #endif
 
+@interface ProgressBar ()
+- (void)_calculateBPSAndETA;
+@end
+
 @implementation ProgressBar
 - (instancetype)initWithLength: (unsigned long long)length
 		   resumedFrom: (unsigned long long)resumedFrom
@@ -67,7 +71,7 @@ static const OFTimeInterval updateInterval = 0.1;
 		    scheduledTimerWithTimeInterval: 1.0
 					    target: self
 					  selector: @selector(
-							calculateBPSAndETA)
+							_calculateBPSAndETA)
 					   repeats: true] retain];
 
 		objc_autoreleasePoolPop(pool);
@@ -100,8 +104,6 @@ static const OFTimeInterval updateInterval = 0.1;
 {
 	float bars, percent;
 	int columns, barWidth;
-
-	OFStdOut.cursorVisible = false;
 
 	if ((columns = OFStdOut.columns) >= 0) {
 		if (columns > 37)
@@ -215,8 +217,6 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"%[num] B/s  ",
 		    @"num", num)];
 	}
-
-	OFStdOut.cursorVisible = true;
 }
 
 - (void)_drawReceived
@@ -289,13 +289,15 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)draw
 {
+	OFStdOut.cursorVisible = false;
+
 	if (_length > 0)
 		[self _drawProgress];
 	else
 		[self _drawReceived];
 }
 
-- (void)calculateBPSAndETA
+- (void)_calculateBPSAndETA
 {
 	_BPSWindow[_BPSWindowIndex++ % BPS_WINDOW_SIZE] =
 	    (float)(_received - _lastReceived) /
@@ -322,5 +324,7 @@ static const OFTimeInterval updateInterval = 0.1;
 	[_BPSTimer invalidate];
 
 	_stopped = true;
+
+	OFStdOut.cursorVisible = true;
 }
 @end

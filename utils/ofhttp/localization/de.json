@@ -92,6 +92,7 @@
         "  %[exception]"
     ],
     download_done: "Fertig!",
+    download_aborted: "Abgebrochen!",
     invalid_iri: "%[prog]: Ungültige IRI: <%[iri]>!",
     invalid_scheme: "%[prog]: Ungültiges Schema: <%[iri]>!",
     type_unknown: "unbekannt",

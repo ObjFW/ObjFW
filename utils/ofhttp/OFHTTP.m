@@ -37,6 +37,7 @@
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
+#import "OFTimer.h"
 
 #ifdef HAVE_TLS_SUPPORT
 # import "ObjFWTLS.h"
@@ -83,6 +84,7 @@
 	ProgressBar *_progressBar;
 }
 
+- (void)SIGINTCheck;
 - (void)downloadNextIRI;
 @end
 
@@ -93,6 +95,8 @@ _reference_to_ObjFWTLS(void)
 	_ObjFWTLS_reference = 1;
 }
 #endif
+
+static volatile sig_atomic_t SIGINTReceived = false;
 
 OF_APPLICATION_DELEGATE(OFHTTP)
 
@@ -591,7 +595,31 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 #endif
 
+	[OFTimer scheduledTimerWithTimeInterval: 0.1
+					 target: self
+				       selector: @selector(SIGINTCheck)
+					repeats: true];
+
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
+}
+
+- (void)applicationDidReceiveSIGINT
+{
+	SIGINTReceived = true;
+}
+
+- (void)SIGINTCheck
+{
+	if (SIGINTReceived) {
+		if (!_quiet) {
+			OFStdOut.cursorVisible = true;
+			[OFStdOut writeString: @"\n  "];
+			[OFStdOut writeLine:
+			    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
+		}
+
+		[OFApplication terminateWithStatus: 1];
+	}
 }
 
 -	(void)client: (OFHTTPClient *)client
