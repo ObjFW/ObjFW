@@ -326,7 +326,7 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 ])
 
 CPP="$OBJCPP"
-CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
+CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW -D_FORTIFY_SOURCE=3"
 flags="-fexceptions -fobjc-exceptions -funwind-tables"
 flags="$flags -fconstant-string-class=OFConstantString"
 OBJCFLAGS="$OBJCFLAGS -Wall $flags"
