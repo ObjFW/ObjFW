@@ -397,13 +397,6 @@ AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsdictionary-literals, [
 	OBJCFLAGS="$OBJCFLAGS $flag"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
-AX_CHECK_COMPILER_FLAGS(-fstack-protector-strong, [
-	OBJCFLAGS="$OBJCFLAGS -fstack-protector-strong"
-], [
-	AX_CHECK_COMPILER_FLAGS(-fstack-protector, [
-		OBJCFLAGS="$OBJCFLAGS -fstack-protector"
-	])
-])
 
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
@@ -472,6 +465,11 @@ mingw*)
 	;;
 esac
 
+BUILDSYS_STACK_PROTECTOR
+BUILDSYS_RELRO
+OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
+LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
@@ -529,9 +527,6 @@ AS_IF([test x"$enable_static" = x"yes"], [
 
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
-
-BUILDSYS_RELRO
-LDFLAGS="$LDFLAGS $RELRO_LDFLAGS"
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
