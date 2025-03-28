@@ -397,6 +397,13 @@ AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsdictionary-literals, [
 	OBJCFLAGS="$OBJCFLAGS $flag"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
+AX_CHECK_COMPILER_FLAGS(-fstack-protector-strong, [
+	OBJCFLAGS="$OBJCFLAGS -fstack-protector-strong"
+], [
+	AX_CHECK_COMPILER_FLAGS(-fstack-protector, [
+		OBJCFLAGS="$OBJCFLAGS -fstack-protector"
+	])
+])
 
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
