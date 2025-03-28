@@ -1002,6 +1002,8 @@ normalizedKey(OFString *key)
 		return false;
 	}
 
+	acceptedSocket.canBlock = false;
+
 #ifdef OF_HAVE_THREADS
 	if (_numberOfThreads > 1) {
 		OFHTTPServerThread *thread =
