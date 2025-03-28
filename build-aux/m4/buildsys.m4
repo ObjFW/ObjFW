@@ -209,6 +209,61 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 	AC_SUBST(PROG_IMPLIB_LDFLAGS)
 ])
 
+AC_DEFUN([BUILDSYS_STACK_PROTECTOR], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_MSG_CHECKING(for Stack Protector)
+
+	old_CFLAGS="$CFLAGS"
+	old_CXXFLAGS="$CXXFLAGS"
+	old_OBJCFLAGS="$OBJCFLAGS"
+	old_OBJCXXFLAGS="$OBJCXXFLAGS"
+	old_LDFLAGS="$LDFLAGS"
+
+	CFLAGS="$CFLAGS -fstack-protector-strong"
+	CXXFLAGS="$CXXFLAGS -fstack-protector-strong"
+	OBJCFLAGS="$OBJCFLAGS -fstack-protector-strong"
+	OBJCXXFLAGS="$OBJCXXFLAGS -fstack-protector-strong"
+	LDFLAGS="$LDFLAGS -fstack-protector-strong"
+
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+		], [
+			puts("Stack Protector test");
+		])
+	], [
+		AC_MSG_RESULT(strong)
+		AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector-strong)
+		AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector-strong)
+	], [
+		CFLAGS="$old_CFLAGS -fstack-protector"
+		CXXFLAGS="$old_CXXFLAGS -fstack-protector"
+		OBJCFLAGS="$old_OBJCFLAGS -fstack-protector"
+		OBJCXXFLAGS="$old_OBJCXXFLAGS -fstack-protector"
+		LDFLAGS="$old_LDFLAGS -fstack-protector"
+		
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <stdio.h>
+			], [
+				puts("Stack Protector test");
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector)
+			AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector)
+		], [	
+			AC_MSG_RESULT(no)
+		])
+	])
+
+	CFLAGS="$old_CFLAGS"
+	CXXFLAGS="$old_CXXFLAGS"
+	OBJCFLAGS="$old_OBJCFLAGS"
+	OBJCXXFLAGS="$old_OBJCXXFLAGS"
+	LDFLAGS="$old_LDFLAGS"
+])
+
 AC_DEFUN([BUILDSYS_PIE], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(for Position Independent Executable support)
