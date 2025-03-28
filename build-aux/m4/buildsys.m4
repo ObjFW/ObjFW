@@ -246,6 +246,29 @@ AC_DEFUN([BUILDSYS_PIE], [
 	LDFLAGS="$old_LDFLAGS"
 ])
 
+AC_DEFUN([BUILDSYS_RELRO], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_MSG_CHECKING(for RELRO support)
+
+	old_LDFLAGS="$LDFLAGS"
+	LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"
+
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+		], [
+			puts("RELRO test");
+		])
+	], [
+		AC_MSG_RESULT(yes)
+		AC_SUBST(RELRO_LDFLAGS, [-Wl,-z,relro,-z,now])
+	], [
+		AC_MSG_RESULT(no)
+	])
+
+	LDFLAGS="$old_LDFLAGS"
+])
+
 AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_REQUIRE([BUILDSYS_CHECK_IOS])
