@@ -54,7 +54,7 @@ static const float allowedImprecision = 0.0000001;
 
 	if (fabsf(red * 255 - redInt) < allowedImprecision &&
 	    fabsf(green * 255 - greenInt) < allowedImprecision &&
-	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1) {
+	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1.0f) {
 		id ret = [OFTaggedPointerColor colorWithRed: redInt
 						      green: greenInt
 						       blue: blueInt];
@@ -102,7 +102,7 @@ OF_SINGLETON_METHODS
 		    initWithRed: redValue				   \
 			  green: greenValue				   \
 			   blue: blueValue				   \
-			  alpha: 1];					   \
+			  alpha: 1.0f];					   \
 	}								   \
 									   \
 	+ (OFColor *)name						   \
