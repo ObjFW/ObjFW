@@ -623,6 +623,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 -	(void)client: (OFHTTPClient *)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+	     request: (OFHTTPRequest *)request
+{
+	TCPSocket.canBlock = false;
+}
+
+-	(void)client: (OFHTTPClient *)client
   didCreateTLSStream: (OFTLSStream *)stream
 	     request: (OFHTTPRequest *)request
 {
