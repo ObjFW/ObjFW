@@ -29,29 +29,11 @@
 @end
 
 @implementation OFUNIXDatagramSocketTests
-- (void)testUNIXDatagramSocket
+- (void)testUNIXDatagramSocketWithPath: (OFString *)path
 {
 	OFUNIXDatagramSocket *sock = [OFUNIXDatagramSocket socket];
-	OFString *path;
 	OFSocketAddress address1, address2;
 	char buffer[5];
-
-#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
-	    .fileSystemRepresentation;
-	OTAssertNotNil(path);
-#else
-	/*
-	 * We can have sockets, including UNIX sockets, while file support is
-	 * disabled.
-	 *
-	 * We also use this code path for iOS, as the temporaryDirectoryIRI is
-	 * too long on the iOS simulator.
-	 */
-	path = [OFString stringWithFormat: @"/tmp/%@",
-					   [[OFUUID UUID] UUIDString]];
-#endif
 
 	@try {
 		address1 = [sock bindToPath: path];
@@ -77,8 +59,40 @@
 		    OFSocketAddressHash(&address2));
 	} @finally {
 #ifdef OF_HAVE_FILES
-		[[OFFileManager defaultManager] removeItemAtPath: path];
+		if (![path hasPrefix: @"@"])
+			[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
 }
+
+- (void)testUNIXDatagramSocket
+{
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	OFString *path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
+#else
+	/*
+	 * We can have sockets, including UNIX sockets, while file support is
+	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectoryIRI is
+	 * too long on the iOS simulator.
+	 */
+	OFString *path = [OFString stringWithFormat:
+	    @"/tmp/%@", [[OFUUID UUID] UUIDString]];
+#endif
+
+	OTAssertNotNil(path);
+
+	[self testUNIXDatagramSocketWithPath: path];
+}
+
+#ifdef OF_LINUX
+- (void)testAbstractUNIXDatagramSocket
+{
+	[self testUNIXDatagramSocketWithPath: [OFString stringWithFormat:
+	    @"@/tmp/%@", [[OFUUID UUID] UUIDString]]];
+}
+#endif
 @end

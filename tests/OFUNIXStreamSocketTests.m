@@ -31,28 +31,10 @@
 @end
 
 @implementation OFUNIXStreamSocketTests
-- (void)testUNIXStreamSocket
+- (void)testUNIXStreamSocketWithPath: (OFString *)path
 {
-	OFString *path;
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
-
-#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
-	    .fileSystemRepresentation;
-	OTAssertNotNil(path);
-#else
-	/*
-	 * We can have sockets, including UNIX sockets, while file support is
-	 * disabled.
-	 *
-	 * We also use this code path for iOS, as the temporaryDirectory:RI is
-	 * too long on the iOS simulator.
-	 */
-	path = [OFString stringWithFormat: @"/tmp/%@",
-					   [[OFUUID UUID] UUIDString]];
-#endif
 
 	sockClient = [OFUNIXStreamSocket socket];
 	sockServer = [OFUNIXStreamSocket socket];
@@ -109,8 +91,40 @@
 #endif
 	} @finally {
 #ifdef OF_HAVE_FILES
-		[[OFFileManager defaultManager] removeItemAtPath: path];
+		if (![path hasPrefix: @"@"])
+			[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
 }
+
+- (void)testUNIXStreamSocket
+{
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	OFString *path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
+#else
+	/*
+	 * We can have sockets, including UNIX sockets, while file support is
+	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectory:RI is
+	 * too long on the iOS simulator.
+	 */
+	path = [OFString stringWithFormat: @"/tmp/%@",
+					   [[OFUUID UUID] UUIDString]];
+#endif
+
+	OTAssertNotNil(path);
+
+	[self testUNIXStreamSocketWithPath: path];
+}
+
+#ifdef OF_LINUX
+- (void)testAbstractUNIXStreamSocket
+{
+	[self testUNIXStreamSocketWithPath: [OFString stringWithFormat:
+	    @"@/tmp/%@", [[OFUUID UUID] UUIDString]]];
+}
+#endif
 @end

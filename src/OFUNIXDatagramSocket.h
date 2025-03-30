@@ -65,7 +65,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Bind the socket to the specified path.
  *
- * @param path The path to bind to or `nil` for an anonymous socket
+ * @param path The path to bind to or `nil` for an anonymous socket. If the
+ *	       path starts with an `@`, an abstract UNIX socket is used on
+ *	       Linux.
  * @return The address on which this socket can be reached, if a path was
  *	   specified
  * @throw OFBindUNIXSocketFailedException Binding failed

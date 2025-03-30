@@ -29,28 +29,10 @@
 @end
 
 @implementation OFUNIXSequencedPacketSocketTests
-- (void)testUNIXSequencedSocket
+- (void)testUNIXSequencedSocketWithPath: (OFString *)path
 {
-	OFString *path;
 	OFUNIXSequencedPacketSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
-
-#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
-	    .fileSystemRepresentation;
-	OTAssertNotNil(path);
-#else
-	/*
-	 * We can have sockets, including UNIX sockets, while file support is
-	 * disabled.
-	 *
-	 * We also use this code path for iOS, as the temporaryDirectory:RI is
-	 * too long on the iOS simulator.
-	 */
-	path = [OFString stringWithFormat: @"/tmp/%@",
-					   [[OFUUID UUID] UUIDString]];
-#endif
 
 	sockClient = [OFUNIXSequencedPacketSocket socket];
 	sockServer = [OFUNIXSequencedPacketSocket socket];
@@ -87,8 +69,40 @@
 		    sockAccepted.remoteAddress).length, 0);
 	} @finally {
 #ifdef OF_HAVE_FILES
-		[[OFFileManager defaultManager] removeItemAtPath: path];
+		if (![path hasPrefix: @"@"])
+			[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
 }
+
+- (void)testUNIXSequencedSocket
+{
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	OFString *path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
+#else
+	/*
+	 * We can have sockets, including UNIX sockets, while file support is
+	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectory:RI is
+	 * too long on the iOS simulator.
+	 */
+	OFString *path = [OFString stringWithFormat:
+	    @"/tmp/%@", [[OFUUID UUID] UUIDString]];
+#endif
+
+	OTAssertNotNil(path);
+
+	[self testUNIXSequencedSocketWithPath: path];
+}
+
+#ifdef OF_LINUX
+- (void)testAbstractUNIXSequencedSocket
+{
+	[self testUNIXSequencedSocketWithPath: [OFString stringWithFormat:
+	    @"@/tmp/%@", [[OFUUID UUID] UUIDString]]];
+}
+#endif
 @end

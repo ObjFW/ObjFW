@@ -106,7 +106,8 @@ extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID;
 /**
  * @brief Connects the OFUNIXStreamSocket to the specified path.
  *
- * @param path The path to connect to
+ * @param path The path to connect to. If the path starts with an `@`, an
+ *	       abstract UNIX socket is used on Linux.
  * @throw OFConnectUNIXSocketFailedException Connecting failed
  * @throw OFAlreadyOpenException The socket is already connected or bound
  */
@@ -115,7 +116,8 @@ extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID;
 /**
  * @brief Binds the socket to the specified path.
  *
- * @param path The path to bind to
+ * @param path The path to bind to. If the path starts with an `@`, an abstract
+ *	       UNIX socket is used on Linux.
  * @throw OFBindUNIXSocketFailedException Binding failed
  * @throw OFAlreadyOpenException The socket is already connected or bound
  */

@@ -612,6 +612,11 @@ OFSocketAddressMakeUNIX(OFString *path)
 	memcpy(ret.sockaddr.un.sun_path,
 	    [path cStringWithEncoding: encoding], length);
 
+#ifdef OF_LINUX
+	if (ret.sockaddr.un.sun_path[0] == '@')
+		ret.sockaddr.un.sun_path[0] = '\0';
+#endif
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
