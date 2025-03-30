@@ -111,8 +111,8 @@
 	 * We also use this code path for iOS, as the temporaryDirectory:RI is
 	 * too long on the iOS simulator.
 	 */
-	path = [OFString stringWithFormat: @"/tmp/%@",
-					   [[OFUUID UUID] UUIDString]];
+	OFString *path = [OFString
+	    stringWithFormat: @"/tmp/%@", [[OFUUID UUID] UUIDString]];
 #endif
 
 	OTAssertNotNil(path);
