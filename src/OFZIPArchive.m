@@ -331,7 +331,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	    _centralDirectoryEntries == 0xFFFF ||
 	    _centralDirectorySize == 0xFFFFFFFF ||
 	    _centralDirectoryOffset == 0xFFFFFFFF) {
-		uint32_t diskNumber;
+		uint32_t diskNumber, numDisks;
 		int64_t offset64;
 		uint64_t size;
 
@@ -348,7 +348,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		 */
 		diskNumber = [_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
-		_diskNumber = _lastDiskNumber = [_stream readLittleEndianInt32];
+		numDisks = [_stream readLittleEndianInt32];
+
+		if (numDisks == 0)
+			numDisks = 1;
+
+		_diskNumber = _lastDiskNumber = numDisks - 1;
 
 		if (offset64 < 0 || (OFStreamOffset)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
