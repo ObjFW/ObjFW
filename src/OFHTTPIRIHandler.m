@@ -24,6 +24,79 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 
+@interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
+{
+	OFIRIHandler *_IRIHandler;
+	OFIRI *_IRI;
+	id <OFIRIHandlerDelegate> _delegate;
+	OFHTTPClient *_client;
+}
+
+- (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
+			       IRI: (OFIRI *)IRI
+			  delegate: (id <OFIRIHandlerDelegate>)delegate;
+- (void)start;
+@end
+
+@implementation OFHTTPIRIHandlerAsyncOpener
+- (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
+			       IRI: (OFIRI *)IRI
+			  delegate: (id <OFIRIHandlerDelegate>)delegate
+{
+	self = [super init];
+
+	@try {
+		_IRIHandler = [IRIHandler retain];
+		_IRI = [IRI copy];
+		_delegate = [delegate retain];
+
+		_client = [[OFHTTPClient alloc] init];
+		_client.delegate = self;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_IRIHandler release];
+	[_IRI release];
+	[_delegate release];
+	[_client release];
+
+	[super dealloc];
+}
+
+- (void)start
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
+
+	[_client asyncPerformRequest: request];
+	[self retain];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response
+	  exception: (id)exception
+{
+	@try {
+		[_delegate IRIHandler: _IRIHandler
+		     didOpenItemAtIRI: _IRI
+			       stream: response
+			    exception: exception];
+	} @finally {
+		[self release];
+	}
+}
+@end
+
 @implementation OFHTTPIRIHandler
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
@@ -37,5 +110,21 @@
 	objc_autoreleasePoolPop(pool);
 
 	return [response autorelease];
+}
+
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFHTTPIRIHandlerAsyncOpener *opener =
+	    [[[OFHTTPIRIHandlerAsyncOpener alloc]
+	    initWithIRIHandler: self
+			   IRI: IRI
+		      delegate: delegate] autorelease];
+
+	[opener start];
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

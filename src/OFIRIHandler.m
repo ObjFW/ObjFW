@@ -101,6 +101,15 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return [[self handlerForIRI: IRI] openItemAtIRI: IRI mode: mode];
 }
 
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+{
+	[[self handlerForIRI: IRI] asyncOpenItemAtIRI: IRI
+						 mode: mode
+					     delegate: delegate];
+}
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
@@ -128,6 +137,13 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 }
 
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

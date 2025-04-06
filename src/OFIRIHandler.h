@@ -27,7 +27,28 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 @class OFDate;
 @class OFIRI;
+@class OFIRIHandler;
 @class OFStream;
+
+/**
+ * @protocol OFIRIHandlerDelegate OFIRIHandlerDelegate.h ObjFW/ObjFW.h
+ *
+ * @brief A delegate for OFIRIHandler operations.
+ */
+@protocol OFIRIHandlerDelegate <OFObject>
+/**
+ * @brief This method is called when an IRI handler opened an item.
+ *
+ * @param IRIHandler The IRI handler which opened an item
+ * @param IRI The IRI of the item the IRI handler opened
+ * @param stream The stream opened for the item, or `nil` on error
+ * @param exception An exception that occurred when opening the item, or `nil`
+ */
+- (void)IRIHandler: (OFIRIHandler *)IRIHandler
+  didOpenItemAtIRI: (OFIRI *)IRI
+	    stream: (nullable OFStream *)stream
+	 exception: (nullable id)exception;
+@end
 
 /**
  * @class OFIRIHandler OFIRIHandler.h ObjFW/ObjFW.h
@@ -92,6 +113,34 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -128,6 +177,34 @@ OF_ASSUME_NONNULL_BEGIN
  *					 the handler
  */
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
+
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate;
 
 /**
  * @brief Returns the attributes for the item at the specified IRI.
