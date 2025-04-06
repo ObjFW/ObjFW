@@ -23,6 +23,7 @@
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFIRI.h"
 
 @interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
 {
