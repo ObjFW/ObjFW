@@ -36,6 +36,11 @@
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
 
+#ifdef OF_WINDOWS
+	if ([OFSystemInfo wineVersion] != nil)
+		OTSkip(@"UNIX stream sockets are broken on Wine");
+#endif
+
 	sockClient = [OFUNIXStreamSocket socket];
 	sockServer = [OFUNIXStreamSocket socket];
 
