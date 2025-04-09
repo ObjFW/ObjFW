@@ -518,7 +518,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	unsigned long long remainder;
+	unsigned long long rest;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -526,14 +526,14 @@ OF_DIRECT_MEMBERS
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
-	remainder = 512 - _entry.uncompressedSize % 512;
+	rest = 512 - _entry.uncompressedSize % 512;
 
-	if (remainder != 512) {
+	if (rest != 512) {
 		bool didBufferWrites = _stream.buffersWrites;
 
 		_stream.buffersWrites = true;
 
-		while (remainder--)
+		while (rest--)
 			[_stream writeInt8: 0];
 
 		[_stream flushWriteBuffer];
