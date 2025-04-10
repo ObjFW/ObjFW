@@ -769,24 +769,13 @@ esac
 case "$host_os" in
 darwin*)
 	AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
+
 	AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK, ["-Wl,-reexport-lobjc"])
-		LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
-		OBJFW_LDFLAGS="$OBJFW_LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
 	])
 
 	AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
-		AS_IF([test x"$exception_type" = x"DWARF"], [
-			tmp="-Wl,-U,___gxx_personality_v0"
-			LDFLAGS="$LDFLAGS $tmp"
-			OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
-		])
-		AS_IF([test x"$exception_type" = x"SjLj"], [
-			tmp="-Wl,-U,___gxx_personality_sj0"
-			LDFLAGS="$LDFLAGS $tmp"
-			OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
-		])
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
 			["-Wl,-reexport_framework,ObjFWRT"])
