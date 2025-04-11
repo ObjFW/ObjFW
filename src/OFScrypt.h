@@ -65,7 +65,7 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* No OF_VISIBILITY_HIDDEN so tests can call it. */
+/* No OF_VISIBILITY_INTERNAL so tests can call it. */
 extern void _OFSalsa20_8Core(uint32_t buffer[_Nonnull 16]);
 extern void _OFScryptBlockMix(uint32_t *output, const uint32_t *input,
     size_t blockSize);

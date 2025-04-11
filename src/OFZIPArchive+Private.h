@@ -25,9 +25,9 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern uint32_t _OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
+    uint16_t *_Nonnull) OF_VISIBILITY_INTERNAL;
 extern uint64_t _OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull) OF_VISIBILITY_HIDDEN;
+    uint16_t *_Nonnull) OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

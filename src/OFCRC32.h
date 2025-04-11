@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 extern uint32_t _OFCRC32(uint32_t crc, const void *_Nonnull bytes,
-    size_t length) OF_VISIBILITY_HIDDEN;
+    size_t length) OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

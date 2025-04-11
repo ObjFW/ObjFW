@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern OFString *_OFDNSResolverErrorCodeDescription(
-    OFDNSResolverErrorCode errorCode) OF_VISIBILITY_HIDDEN;
+    OFDNSResolverErrorCode errorCode) OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

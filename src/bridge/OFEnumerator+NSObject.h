@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFEnumerator_NSObject_reference OF_VISIBILITY_HIDDEN;
+extern int _OFEnumerator_NSObject_reference OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

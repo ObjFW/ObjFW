@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 _OFKOI8RTable[] OF_VISIBILITY_HIDDEN = {
+const OFChar16 _OFKOI8RTable[] OF_VISIBILITY_INTERNAL = {
 	0x2500, 0x2502, 0x250C, 0x2510, 0x2514, 0x2518, 0x251C, 0x2524,
 	0x252C, 0x2534, 0x253C, 0x2580, 0x2584, 0x2588, 0x258C, 0x2590,
 	0x2591, 0x2592, 0x2593, 0x2320, 0x25A0, 0x2219, 0x221A, 0x2248,
@@ -41,7 +41,7 @@ const OFChar16 _OFKOI8RTable[] OF_VISIBILITY_HIDDEN = {
 	0x041F, 0x042F, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412,
 	0x042C, 0x042B, 0x0417, 0x0428, 0x042D, 0x0429, 0x0427, 0x042A
 };
-const size_t _OFKOI8RTableOffset OF_VISIBILITY_HIDDEN =
+const size_t _OFKOI8RTableOffset OF_VISIBILITY_INTERNAL =
     256 - (sizeof(_OFKOI8RTable) / sizeof(*_OFKOI8RTable));
 
 static const unsigned char page0[] = {
@@ -118,7 +118,7 @@ static const unsigned char page25[] = {
 };
 static const uint8_t page25Start = 0x00;
 
-bool OF_VISIBILITY_HIDDEN
+bool OF_VISIBILITY_INTERNAL
 _OFUnicodeToKOI8R(const OFUnichar *input, unsigned char *output, size_t length,
     bool lossy, bool insecure)
 {

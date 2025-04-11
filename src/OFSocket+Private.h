@@ -101,20 +101,20 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool _OFSocketInit(void) OF_VISIBILITY_HIDDEN;
+extern bool _OFSocketInit(void) OF_VISIBILITY_INTERNAL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern void _OFSocketDeinit(void) OF_VISIBILITY_HIDDEN;
+extern void _OFSocketDeinit(void) OF_VISIBILITY_INTERNAL;
 #endif
-extern int _OFSocketErrNo(void) OF_VISIBILITY_HIDDEN;
+extern int _OFSocketErrNo(void) OF_VISIBILITY_INTERNAL;
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen) OF_VISIBILITY_HIDDEN;
+    socklen_t *restrict addrLen) OF_VISIBILITY_INTERNAL;
 #endif
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_HIDDEN;
+extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_INTERNAL;
 # ifdef OF_AMIGAOS4
-extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_HIDDEN;
+extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_INTERNAL;
 # endif
 #endif
 #ifdef __cplusplus

@@ -34,9 +34,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString *_OFBase64Encode(const void *, size_t) OF_VISIBILITY_HIDDEN;
+extern OFString *_OFBase64Encode(const void *, size_t) OF_VISIBILITY_INTERNAL;
 extern bool _OFBase64Decode(OFMutableData *, const char *, size_t)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

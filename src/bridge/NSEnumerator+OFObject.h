@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _NSEnumerator_OFObject_reference OF_VISIBILITY_HIDDEN;
+extern int _NSEnumerator_OFObject_reference OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

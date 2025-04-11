@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 _OFISO8859_2Table[] OF_VISIBILITY_HIDDEN = {
+const OFChar16 _OFISO8859_2Table[] OF_VISIBILITY_INTERNAL = {
 	0x00A0, 0x0104, 0x02D8, 0x0141, 0x00A4, 0x013D, 0x015A, 0x00A7,
 	0x00A8, 0x0160, 0x015E, 0x0164, 0x0179, 0x00AD, 0x017D, 0x017B,
 	0x00B0, 0x0105, 0x02DB, 0x0142, 0x00B4, 0x013E, 0x015B, 0x02C7,
@@ -37,7 +37,7 @@ const OFChar16 _OFISO8859_2Table[] OF_VISIBILITY_HIDDEN = {
 	0x0111, 0x0144, 0x0148, 0x00F3, 0x00F4, 0x0151, 0x00F6, 0x00F7,
 	0x0159, 0x016F, 0x00FA, 0x0171, 0x00FC, 0x00FD, 0x0163, 0x02D9
 };
-const size_t _OFISO8859_2TableOffset OF_VISIBILITY_HIDDEN =
+const size_t _OFISO8859_2TableOffset OF_VISIBILITY_INTERNAL =
     256 - (sizeof(_OFISO8859_2Table) / sizeof(*_OFISO8859_2Table));
 
 static const unsigned char page0[] = {
@@ -83,7 +83,7 @@ static const unsigned char page2[] = {
 };
 static const uint8_t page2Start = 0xC7;
 
-bool OF_VISIBILITY_HIDDEN
+bool OF_VISIBILITY_INTERNAL
 _OFUnicodeToISO8859_2(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy, bool insecure)
 {

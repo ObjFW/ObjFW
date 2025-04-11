@@ -101,8 +101,10 @@
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
 # if defined(OF_ELF) || defined(OF_MACHO)
 #  define OF_VISIBILITY_HIDDEN __attribute__((__visibility__("hidden")))
+#  define OF_VISIBILITY_INTERNAL __attribute__((__visibility__("internal")))
 # else
 #  define OF_VISIBILITY_HIDDEN
+#  define OF_VISIBILITY_INTERNAL
 # endif
 # define OF_MALLOC_FUNC __attribute__((__malloc__))
 #else
@@ -113,6 +115,7 @@
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)
 # define OF_VISIBILITY_HIDDEN
+# define OF_VISIBILITY_INTERNAL
 # define OF_MALLOC_FUNC
 #endif
 

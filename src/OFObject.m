@@ -495,7 +495,7 @@ _NSPrintForDebugger(id object)
 }
 
 /* References for static linking */
-void OF_VISIBILITY_HIDDEN
+void OF_VISIBILITY_INTERNAL
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;

@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 _OFMacRomanTable[] OF_VISIBILITY_HIDDEN = {
+const OFChar16 _OFMacRomanTable[] OF_VISIBILITY_INTERNAL = {
 	0x00C4, 0x00C5, 0x00C7, 0x00C9, 0x00D1, 0x00D6, 0x00DC, 0x00E1,
 	0x00E0, 0x00E2, 0x00E4, 0x00E3, 0x00E5, 0x00E7, 0x00E9, 0x00E8,
 	0x00EA, 0x00EB, 0x00ED, 0x00EC, 0x00EE, 0x00EF, 0x00F1, 0x00F3,
@@ -41,7 +41,7 @@ const OFChar16 _OFMacRomanTable[] OF_VISIBILITY_HIDDEN = {
 	0xF8FF, 0x00D2, 0x00DA, 0x00DB, 0x00D9, 0x0131, 0x02C6, 0x02DC,
 	0x00AF, 0x02D8, 0x02D9, 0x02DA, 0x00B8, 0x02DD, 0x02DB, 0x02C7
 };
-const size_t _OFMacRomanTableOffset OF_VISIBILITY_HIDDEN =
+const size_t _OFMacRomanTableOffset OF_VISIBILITY_INTERNAL =
     256 - (sizeof(_OFMacRomanTable) / sizeof(*_OFMacRomanTable));
 
 static const unsigned char page0[] = {
@@ -152,7 +152,7 @@ static const unsigned char pageFB[] = {
 };
 static const uint8_t pageFBStart = 0x01;
 
-bool OF_VISIBILITY_HIDDEN
+bool OF_VISIBILITY_INTERNAL
 _OFUnicodeToMacRoman(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy, bool insecure)
 {

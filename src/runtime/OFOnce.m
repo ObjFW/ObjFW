@@ -25,6 +25,6 @@
 #import "OFOnce.h"
 
 extern void OFOnce(OFOnceControl *control, OFOnceFunction function)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 
 #include "../OFOnce.m"

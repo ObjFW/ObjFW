@@ -23,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 _OFWindows1250Table[] OF_VISIBILITY_HIDDEN = {
+const OFChar16 _OFWindows1250Table[] OF_VISIBILITY_INTERNAL = {
 	0x20AC, 0xFFFF, 0x201A, 0xFFFF, 0x201E, 0x2026, 0x2020, 0x2021,
 	0xFFFF, 0x2030, 0x0160, 0x2039, 0x015A, 0x0164, 0x017D, 0x0179,
 	0xFFFF, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
@@ -41,7 +41,7 @@ const OFChar16 _OFWindows1250Table[] OF_VISIBILITY_HIDDEN = {
 	0x0111, 0x0144, 0x0148, 0x00F3, 0x00F4, 0x0151, 0x00F6, 0x00F7,
 	0x0159, 0x016F, 0x00FA, 0x0171, 0x00FC, 0x00FD, 0x0163, 0x02D9
 };
-const size_t _OFWindows1250TableOffset OF_VISIBILITY_HIDDEN =
+const size_t _OFWindows1250TableOffset OF_VISIBILITY_INTERNAL =
     256 - (sizeof(_OFWindows1250Table) / sizeof(*_OFWindows1250Table));
 
 static const unsigned char page0[] = {
@@ -116,7 +116,7 @@ static const unsigned char page21[] = {
 };
 static const uint8_t page21Start = 0x22;
 
-bool OF_VISIBILITY_HIDDEN
+bool OF_VISIBILITY_INTERNAL
 _OFUnicodeToWindows1250(const OFUnichar *input, unsigned char *output,
     size_t length, bool lossy, bool insecure)
 {

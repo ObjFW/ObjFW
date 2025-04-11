@@ -24,20 +24,20 @@
 
 #import "OFPlainMutex.h"
 
-extern int OFPlainMutexNew(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
-extern int OFPlainMutexLock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
-extern int OFPlainMutexTryLock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
-extern int OFPlainMutexUnlock(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
-extern int OFPlainMutexFree(OFPlainMutex *mutex) OF_VISIBILITY_HIDDEN;
+extern int OFPlainMutexNew(OFPlainMutex *mutex) OF_VISIBILITY_INTERNAL;
+extern int OFPlainMutexLock(OFPlainMutex *mutex) OF_VISIBILITY_INTERNAL;
+extern int OFPlainMutexTryLock(OFPlainMutex *mutex) OF_VISIBILITY_INTERNAL;
+extern int OFPlainMutexUnlock(OFPlainMutex *mutex) OF_VISIBILITY_INTERNAL;
+extern int OFPlainMutexFree(OFPlainMutex *mutex) OF_VISIBILITY_INTERNAL;
 extern int OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 extern int OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *rmutex)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 extern int OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *rmutex)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 extern int OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *rmutex)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 extern int OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *rmutex)
-    OF_VISIBILITY_HIDDEN;
+    OF_VISIBILITY_INTERNAL;
 
 #include "../OFPlainMutex.m"

@@ -143,7 +143,7 @@ extern bool _OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
     size_t, bool, bool);
 
 /* References for static linking */
-void OF_VISIBILITY_HIDDEN
+void OF_VISIBILITY_INTERNAL
 _references_to_categories_of_OFString(void)
 {
 	_OFString_CryptographicHashing_reference = 1;
@@ -157,7 +157,7 @@ _references_to_categories_of_OFString(void)
 	_OFString_XMLUnescaping_reference = 1;
 }
 
-void OF_VISIBILITY_HIDDEN
+void OF_VISIBILITY_INTERNAL
 _reference_to_OFConstantString(void)
 {
 	[OFConstantString class];

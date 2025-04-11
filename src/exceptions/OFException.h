@@ -208,7 +208,8 @@ extern "C" {
 extern OFString *OFStrError(int errNo);
 
 #ifdef OF_WINDOWS
-extern OFString *_OFWindowsStatusToString(LSTATUS status) OF_VISIBILITY_HIDDEN;
+extern OFString *_OFWindowsStatusToString(LSTATUS status)
+    OF_VISIBILITY_INTERNAL;
 #endif
 #ifdef __cplusplus
 }

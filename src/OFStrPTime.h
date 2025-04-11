@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* No OF_VISIBILITY_HIDDEN so tests can call it. */
+/* No OF_VISIBILITY_INTERNAL so tests can call it. */
 extern const char *_Nullable _OFStrPTime(const char *buffer, const char *format,
     struct tm *tm, short *_Nullable tz);
 #ifdef __cplusplus
