@@ -140,6 +140,9 @@ nilMethod(id self, SEL _cmd)
 }
 
 static OF_INLINE IMP
+# if __has_attribute(__hot__) || OF_GCC_VERSION >= 403
+__attribute__((__hot__))
+# endif
 commonLookup(id object, SEL selector, IMP (*notFound)(id, SEL))
 {
 	IMP imp;
