@@ -1559,7 +1559,7 @@ extern "C" {
  *				address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Allocates memory for the specified number of items of the specified
@@ -1576,7 +1576,7 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  *				address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Resizes memory to the specified number of items of the specified size.

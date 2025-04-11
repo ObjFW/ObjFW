@@ -104,6 +104,7 @@
 # else
 #  define OF_VISIBILITY_HIDDEN
 # endif
+# define OF_MALLOC_FUNC __attribute__((__malloc__))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) (cond)
@@ -112,6 +113,7 @@
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)
 # define OF_VISIBILITY_HIDDEN
+# define OF_MALLOC_FUNC
 #endif
 
 #if __STDC_VERSION__ >= 201112L
