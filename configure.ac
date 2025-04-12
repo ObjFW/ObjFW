@@ -585,7 +585,7 @@ AS_IF([test x"$enable_runtime" != x"yes"], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#import <objc/objc.h>
 
-			#ifdef OBJC_BOOL_DEFINED
+			#ifdef OBJC_EXTERN
 			egrep_cpp_yes
 			#endif
 		], [
