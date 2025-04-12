@@ -25,7 +25,7 @@
 # import "ObjFWRT.h"
 # import "private.h"
 #else
-# import <objc/runtime.h>
+# import <objc/objc-runtime.h>
 #endif
 
 #ifndef OF_OBJFW_RUNTIME

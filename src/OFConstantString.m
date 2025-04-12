@@ -33,7 +33,7 @@
 #import "OFOutOfMemoryException.h"
 
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
-# import <objc/runtime.h>
+# import <objc/objc-runtime.h>
 
 struct {
 	struct class *isa, *superclass;
