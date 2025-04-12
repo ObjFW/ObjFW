@@ -304,7 +304,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -322,8 +322,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -365,8 +365,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeString: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -378,8 +378,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -465,7 +465,7 @@ outer_loop_end:
 		OFStream *output;
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -531,8 +531,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[OFStdOut writeString: @"\r"];
-					[OFStdOut writeString: OF_LOCALIZED(
+					[OFStdErr writeString: @"\r"];
+					[OFStdErr writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -542,8 +542,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

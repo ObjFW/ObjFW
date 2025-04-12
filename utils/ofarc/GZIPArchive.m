@@ -135,7 +135,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	fileName = _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (app->_outputLevel >= 0)
-		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
@@ -160,8 +160,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	setModificationDate(fileName, _stream);
 
 	if (app->_outputLevel >= 0) {
-		[OFStdOut writeString: @"\r"];
-		[OFStdOut writeLine: OF_LOCALIZED(@"extracting_file_done",
+		[OFStdErr writeString: @"\r"];
+		[OFStdErr writeLine: OF_LOCALIZED(@"extracting_file_done",
 		    @"Extracting %[file]... done",
 		    @"file", fileName)];
 	}

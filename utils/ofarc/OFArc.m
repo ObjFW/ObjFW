@@ -724,8 +724,8 @@ error:
 
 	if (_overwrite == -1) {
 		if (_outputLevel >= 0) {
-			[OFStdOut writeString: @" "];
-			[OFStdOut writeLine:
+			[OFStdErr writeString: @" "];
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"file_skipped", @"skipped")];
 		}
 		return false;
@@ -757,7 +757,7 @@ error:
 
 	if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 		if (_outputLevel >= 0)
-			[OFStdOut writeLine: OF_LOCALIZED(@"skipping_file",
+			[OFStdErr writeLine: OF_LOCALIZED(@"skipping_file",
 			    @"Skipping %[file]...",
 			    @"file", fileName)];
 
@@ -765,7 +765,7 @@ error:
 	}
 
 	if (_outputLevel >= 0)
-		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
@@ -782,7 +782,7 @@ error:
 	@try {
 		length = [input readIntoBuffer: buffer length: bufferSize];
 	} @catch (OFReadFailedException *e) {
-		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeString: @"\r"];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", fileName,
@@ -793,7 +793,7 @@ error:
 	@try {
 		[output writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeString: @"\r"];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_write_file",
 		    @"Failed to write file %[file]: %[error]",
 		    @"file", fileName,
