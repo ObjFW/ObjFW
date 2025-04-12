@@ -612,9 +612,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 {
 	if (SIGINTReceived) {
 		if (!_quiet) {
-			OFStdOut.cursorVisible = true;
-			[OFStdOut writeString: @"\n  "];
-			[OFStdOut writeLine:
+			OFStdErr.cursorVisible = true;
+			[OFStdErr writeString: @"\n  "];
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
 		}
 
@@ -665,16 +665,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[OFStdOut writeFormat: @"  %@: %@\n", key, object];
+			[OFStdErr writeFormat: @"  %@: %@\n", key, object];
 
 		objc_autoreleasePoolPop(pool);
 	}
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"☇ %@", IRI.string];
+			[OFStdErr writeFormat: @"☇ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"< %@", IRI.string];
 	}
 
 	_length = 0;
@@ -696,8 +696,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[OFStdOut writeString: @"\n  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"download_error",
+			[OFStdErr writeString: @"\n  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"download_error",
 			    @"Error!")];
 		}
 
@@ -728,8 +728,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[OFStdOut writeString: @"\n  "];
-			[OFStdOut writeLine:
+			[OFStdErr writeString: @"\n  "];
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
@@ -755,9 +755,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
 		if (_useUnicode)
-			[OFStdOut writeFormat: @" ➜ %hd\n", statusCode];
+			[OFStdErr writeFormat: @" ➜ %hd\n", statusCode];
 		else
-			[OFStdOut writeFormat: @" -> %hd\n", statusCode];
+			[OFStdErr writeFormat: @" -> %hd\n", statusCode];
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -811,8 +811,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			OFString *key, *object;
 
 			if (statusCode / 100 == 2 && _currentFileName != nil) {
-				[OFStdOut writeString: @"  "];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"  "];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"info_name_unaligned",
 				    @"Name: %[name]",
 				    @"name", _currentFileName)];
@@ -820,24 +820,24 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil)
-				[OFStdOut writeFormat: @"  %@: %@\n",
+				[OFStdErr writeFormat: @"  %@: %@\n",
 						       key, object];
 
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
-			[OFStdOut writeString: @"  "];
+			[OFStdErr writeString: @"  "];
 
 			if (_currentFileName != nil)
-				[OFStdOut writeLine: OF_LOCALIZED(@"info_name",
+				[OFStdErr writeLine: OF_LOCALIZED(@"info_name",
 				    @"Name: %[name]",
 				    @"name", _currentFileName)];
 
-			[OFStdOut writeString: @"  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"info_type",
+			[OFStdErr writeString: @"  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"info_type",
 			    @"Type: %[type]",
 			    @"type", type)];
-			[OFStdOut writeString: @"  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"info_size",
+			[OFStdErr writeString: @"  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"info_size",
 			    @"Size: %[size]",
 			    @"size", lengthString)];
 		}
@@ -853,7 +853,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		if ([exception isKindOfClass:
 		    [OFResolveHostFailedException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_resolve_host_failed",
@@ -865,7 +865,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFConnectSocketFailedException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_connection_failed",
@@ -877,7 +877,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFInvalidServerResponseException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_invalid_server_response",
@@ -888,7 +888,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFUnsupportedProtocolException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
 			    @"%[prog]: No TLS support in ObjFW!\n"
@@ -904,7 +904,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    .errorCode);
 
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_tls_handshake_failed",
@@ -920,7 +920,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"Read or write failed");
 
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			if ([exception isKindOfClass:
 			    [OFReadFailedException class]])
@@ -990,7 +990,7 @@ after_exception_handling:
 	}
 
 	if ([_outputPath isEqual: @"-"])
-		_output = [OFStdOut copy];
+		_output = OFStdOut;
 	else {
 		if (!_continue && !_force && [[OFFileManager defaultManager]
 		    fileExistsAtPath: _currentFileName]) {
@@ -1123,9 +1123,9 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdOut writeFormat: @"⠒ %@", IRI.string];
+				[OFStdErr writeFormat: @"⠒ %@", IRI.string];
 			else
-				[OFStdOut writeFormat: @"? %@", IRI.string];
+				[OFStdErr writeFormat: @"? %@", IRI.string];
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];
@@ -1178,9 +1178,9 @@ next:
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"⇣ %@", IRI.string];
+			[OFStdErr writeFormat: @"⇣ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"v %@", IRI.string];
 	}
 
 	request = [OFHTTPRequest requestWithIRI: IRI];
