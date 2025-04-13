@@ -34,7 +34,7 @@
 
 + (instancetype)mutex
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -43,7 +43,7 @@
 
 	if (OFPlainRecursiveMutexNew(&_rmutex) != 0) {
 		Class c = self.class;
-		[self release];
+		objc_release(self);
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 
@@ -64,7 +64,7 @@
 		}
 	}
 
-	[_name release];
+	objc_release(_name);
 
 	[super dealloc];
 }

@@ -79,7 +79,7 @@ static const OFRunLoopMode connectRunLoopMode =
 @implementation OFSCTPSocketConnectDelegate
 - (void)dealloc
 {
-	[_exception release];
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -90,7 +90,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	 exception: (id)exception
 {
 	_done = true;
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 }
 @end
 
@@ -162,7 +162,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	void *pool = objc_autoreleasePoolPush();
 	id <OFSCTPSocketDelegate> delegate = _delegate;
 	OFSCTPSocketConnectDelegate *connectDelegate =
-	    [[[OFSCTPSocketConnectDelegate alloc] init] autorelease];
+	    objc_autorelease([[OFSCTPSocketConnectDelegate alloc] init]);
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
@@ -200,13 +200,12 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	[[[[OFAsyncIPSocketConnector alloc]
-		  initWithSocket: self
-			    host: host
-			    port: port
-			delegate: _delegate
-			 handler: NULL
-	    ] autorelease] startWithRunLoopMode: runLoopMode];
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
+	    initWithSocket: self
+		      host: host
+		      port: port
+		  delegate: _delegate
+		   handler: NULL]) startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -232,13 +231,12 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	[[[[OFAsyncIPSocketConnector alloc]
-		  initWithSocket: self
-			    host: host
-			    port: port
-			delegate: nil
-			 handler: handler] autorelease]
-	    startWithRunLoopMode: runLoopMode];
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
+	    initWithSocket: self
+		      host: host
+		      port: port
+		  delegate: nil
+		   handler: handler]) startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }

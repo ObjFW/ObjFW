@@ -40,7 +40,7 @@
 
 		_range = range;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

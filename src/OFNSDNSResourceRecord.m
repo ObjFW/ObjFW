@@ -45,7 +45,7 @@
 	@try {
 		_authoritativeHost = [authoritativeHost copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_authoritativeHost release];
+	objc_release(_authoritativeHost);
 
 	[super dealloc];
 }

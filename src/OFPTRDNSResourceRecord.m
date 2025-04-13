@@ -45,7 +45,7 @@
 	@try {
 		_domainName = [domainName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_domainName release];
+	objc_release(_domainName);
 
 	[super dealloc];
 }

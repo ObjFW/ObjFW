@@ -1084,7 +1084,7 @@ OF_ROOT_CLASS
  * @try {
  *         // Custom initialization code goes here.
  * } @catch (id e) {
- *         [self release];
+ *         objc_release(self);
  *         @throw e;
  * }
  *

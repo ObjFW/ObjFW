@@ -119,11 +119,11 @@ int _OFObject_KeyValueCoding_reference;
 		return [self valueForUndefinedKey: key];
 	}
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (id)valueForKeyPath: (OFString *)keyPath
@@ -134,11 +134,11 @@ int _OFObject_KeyValueCoding_reference;
 	for (OFString *key in [keyPath componentsSeparatedByString: @"."])
 		ret = [ret valueForKey: key];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (id)valueForUndefinedKey: (OFString *)key

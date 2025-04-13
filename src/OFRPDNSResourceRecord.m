@@ -47,7 +47,7 @@
 		_mailbox = [mailbox copy];
 		_TXTDomainName = [TXTDomainName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,8 +56,8 @@
 
 - (void)dealloc
 {
-	[_mailbox release];
-	[_TXTDomainName release];
+	objc_release(_mailbox);
+	objc_release(_TXTDomainName);
 
 	[super dealloc];
 }

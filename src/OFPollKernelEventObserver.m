@@ -53,7 +53,7 @@
 		_maxFD = _cancelFD[0];
 		_FDToObject = OFAllocMemory((size_t)_maxFD + 1, sizeof(id));
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -62,7 +62,7 @@
 
 - (void)dealloc
 {
-	[_FDs release];
+	objc_release(_FDs);
 	OFFreeMemory(_FDToObject);
 
 	[super dealloc];
@@ -176,7 +176,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 	pool = objc_autoreleasePoolPush();
 
-	FDs = [[[_FDs mutableCopy] autorelease] mutableItems];
+	FDs = [objc_autorelease([_FDs mutableCopy]) mutableItems];
 	nFDs = _FDs.count;
 
 #ifdef OPEN_MAX

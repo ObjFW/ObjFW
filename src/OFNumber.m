@@ -395,67 +395,74 @@ OF_SINGLETON_METHODS
 
 + (instancetype)numberWithBool: (bool)value
 {
-	return [[[self alloc] initWithBool: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBool: value]);
 }
 
 + (instancetype)numberWithChar: (signed char)value
 {
-	return [[[self alloc] initWithChar: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithChar: value]);
 }
 
 + (instancetype)numberWithShort: (short)value
 {
-	return [[[self alloc] initWithShort: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithShort: value]);
 }
 
 + (instancetype)numberWithInt: (int)value
 {
-	return [[[self alloc] initWithInt: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithInt: value]);
 }
 
 + (instancetype)numberWithLong: (long)value
 {
-	return [[[self alloc] initWithLong: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithLong: value]);
 }
 
 + (instancetype)numberWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLongLong: value]);
 }
 
 + (instancetype)numberWithUnsignedChar: (unsigned char)value
 {
-	return [[[self alloc] initWithUnsignedChar: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedChar: value]);
 }
 
 + (instancetype)numberWithUnsignedShort: (unsigned short)value
 {
-	return [[[self alloc] initWithUnsignedShort: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedShort: value]);
 }
 
 + (instancetype)numberWithUnsignedInt: (unsigned int)value
 {
-	return [[[self alloc] initWithUnsignedInt: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedInt: value]);
 }
 
 + (instancetype)numberWithUnsignedLong: (unsigned long)value
 {
-	return [[[self alloc] initWithUnsignedLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLong: value]);
 }
 
 + (instancetype)numberWithUnsignedLongLong: (unsigned long long)value
 {
-	return [[[self alloc] initWithUnsignedLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLongLong: value]);
 }
 
 + (instancetype)numberWithFloat: (float)value
 {
-	return [[[self alloc] initWithFloat: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithFloat: value]);
 }
 
 + (instancetype)numberWithDouble: (double)value
 {
-	return [[[self alloc] initWithDouble: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDouble: value]);
 }
 
 - (instancetype)initWithBool: (bool)value
@@ -730,7 +737,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description

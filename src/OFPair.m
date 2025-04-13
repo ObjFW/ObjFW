@@ -26,8 +26,9 @@
 + (instancetype)pairWithFirstObject: (id)firstObject
 		       secondObject: (id)secondObject
 {
-	return [[[self alloc] initWithFirstObject: firstObject
-				     secondObject: secondObject] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFirstObject: firstObject
+				 secondObject: secondObject]);
 }
 
 - (instancetype)initWithFirstObject: (id)firstObject
@@ -36,10 +37,10 @@
 	self = [super init];
 
 	@try {
-		_firstObject = [firstObject retain];
-		_secondObject = [secondObject retain];
+		_firstObject = objc_retain(firstObject);
+		_secondObject = objc_retain(secondObject);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -48,8 +49,8 @@
 
 - (void)dealloc
 {
-	[_firstObject release];
-	[_secondObject release];
+	objc_release(_firstObject);
+	objc_release(_secondObject);
 
 	[super dealloc];
 }
@@ -103,7 +104,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy

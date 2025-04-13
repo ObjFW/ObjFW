@@ -29,16 +29,18 @@
 + (instancetype)notificationWithName: (OFNotificationName)name
 			      object: (id)object
 {
-	return [[[self alloc] initWithName: name object: object] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithName: name
+							       object: object]);
 }
 
 + (instancetype)notificationWithName: (OFNotificationName)name
 			      object: (id)object
 			    userInfo: (OFDictionary *)userInfo
 {
-	return [[[self alloc] initWithName: name
-				    object: object
-				  userInfo: userInfo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+				object: object
+			      userInfo: userInfo]);
 }
 
 - (instancetype)initWithName: (OFNotificationName)name object: (id)object
@@ -54,10 +56,10 @@
 
 	@try {
 		_name = [name copy];
-		_object = [object retain];
+		_object = objc_retain(object);
 		_userInfo = [userInfo copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -71,16 +73,16 @@
 
 - (void)dealloc
 {
-	[_name release];
-	[_object release];
-	[_userInfo release];
+	objc_release(_name);
+	objc_release(_object);
+	objc_release(_userInfo);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description
@@ -100,10 +102,10 @@
 	    @">",
 	    self.class, _name, object, userInfo];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

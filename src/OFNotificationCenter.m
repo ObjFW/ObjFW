@@ -72,14 +72,14 @@ static OFNotificationCenter *defaultCenter;
 		_name = [name copy];
 		_observer = observer;
 		_selector = selector;
-		_object = [object retain];
+		_object = objc_retain(object);
 
 		_selectorHash = [[OFString stringWithUTF8String:
 		    sel_getName(_selector)] hash];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -95,10 +95,10 @@ static OFNotificationCenter *defaultCenter;
 
 	@try {
 		_name = [name copy];
-		_object = [object retain];
+		_object = objc_retain(object);
 		_block = [block copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -108,10 +108,10 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)dealloc
 {
-	[_name release];
-	[_object release];
+	objc_release(_name);
+	objc_release(_object);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_block);
 #endif
 
 	[super dealloc];
@@ -186,7 +186,7 @@ static OFNotificationCenter *defaultCenter;
 	@try {
 		_handles = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -195,7 +195,7 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)dealloc
 {
-	[_handles release];
+	objc_release(_handles);
 
 	[super dealloc];
 }
@@ -223,12 +223,11 @@ static OFNotificationCenter *defaultCenter;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self of_addObserver:
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
-						     observer: observer
-						     selector: selector
-						       object: object]
-	    autorelease]];
+	[self of_addObserver: objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
+						    observer: observer
+						    selector: selector
+						      object: object])];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -239,19 +238,18 @@ static OFNotificationCenter *defaultCenter;
 	      usingBlock: (OFNotificationCenterBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFNotificationCenterHandle *handle =
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
-						       object: object
-							block: block]
-	    autorelease];
+	OFNotificationCenterHandle *handle = objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
+						      object: object
+						       block: block]);
 
 	[self of_addObserver: handle];
 
-	[handle retain];
+	objc_retain(handle);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [handle autorelease];
+	return objc_autoreleaseReturnValue(handle);
 }
 #endif
 
@@ -270,7 +268,8 @@ static OFNotificationCenter *defaultCenter;
 		@throw [OFInvalidArgumentException exception];
 
 	@synchronized (_handles) {
-		OFNotificationName name = [[handle->_name copy] autorelease];
+		OFNotificationName name =
+		    objc_autorelease([handle->_name copy]);
 		OFMutableSet *handlesForName = [_handles objectForKey: name];
 
 		[handlesForName removeObject: handle];
@@ -289,12 +288,11 @@ static OFNotificationCenter *defaultCenter;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self removeObserver:
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
+	[self removeObserver: objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
 						     observer: observer
 						     selector: selector
-						       object: object]
-	    autorelease]];
+						       object: object])];
 
 	objc_autoreleasePoolPop(pool);
 }

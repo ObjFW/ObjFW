@@ -44,7 +44,8 @@ stringEqual(void *object1, void *object2)
 
 + (instancetype)parserWithOptions: (const OFOptionsParserOption *)options
 {
-	return [[[self alloc] initWithOptions: options] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithOptions: options]);
 }
 
 - (instancetype)init
@@ -121,7 +122,7 @@ stringEqual(void *object1, void *object2)
 					 * Make sure we are in a consistent
 					 * state where dealloc works.
 					 */
-					[iter2->longOption release];
+					objc_release(iter2->longOption);
 
 					iter2->shortOption = '\0';
 					iter2->longOption = nil;
@@ -133,9 +134,9 @@ stringEqual(void *object1, void *object2)
 		iter2->shortOption = '\0';
 		iter2->longOption = nil;
 
-		_arguments = [[OFApplication arguments] retain];
+		_arguments = objc_retain([OFApplication arguments]);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -148,13 +149,13 @@ stringEqual(void *object1, void *object2)
 		for (OFOptionsParserOption *iter = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++)
-			[iter->longOption release];
+			objc_release(iter->longOption);
 
 	OFFreeMemory(_options);
-	[_longOptions release];
+	objc_release(_longOptions);
 
-	[_arguments release];
-	[_argument release];
+	objc_release(_arguments);
+	objc_release(_argument);
 
 	[super dealloc];
 }
@@ -167,8 +168,8 @@ stringEqual(void *object1, void *object2)
 	if (_done || _index >= _arguments.count)
 		return '\0';
 
-	[_lastLongOption release];
-	[_argument release];
+	objc_release(_lastLongOption);
+	objc_release(_argument);
 	_lastLongOption = nil;
 	_argument = nil;
 
@@ -220,7 +221,7 @@ stringEqual(void *object1, void *object2)
 				*option->isSpecifiedPtr = true;
 			if (option->argumentPtr != NULL)
 				*option->argumentPtr =
-				    [[_argument copy] autorelease];
+				    objc_autorelease([_argument copy]);
 
 			if (option->shortOption != '\0')
 				_lastOption = option->shortOption;
@@ -260,7 +261,7 @@ stringEqual(void *object1, void *object2)
 				*iter->isSpecifiedPtr = true;
 			if (iter->argumentPtr != NULL)
 				*iter->argumentPtr =
-				    [[_argument copy] autorelease];
+				    objc_autorelease([_argument copy]);
 
 			_index++;
 			_subIndex = 0;

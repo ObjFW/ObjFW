@@ -26,7 +26,7 @@
 @implementation OFPlugin
 + (instancetype)pluginWithPath: (OFString *)path
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path]);
 }
 
 + (OFString *)pathForName: (OFString *)name
