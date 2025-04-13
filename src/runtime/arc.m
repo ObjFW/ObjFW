@@ -44,7 +44,7 @@ typedef struct objc_hashtable objc_hashtable;
 typedef OFMapTable objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };
 
-static objc_hashtable *
+static OF_INLINE objc_hashtable *
 objc_hashtable_new(uint32_t (*hash)(const void *key),
     bool (*equal)(const void *key1, const void *key2), uint32_t size)
 {
@@ -52,20 +52,20 @@ objc_hashtable_new(uint32_t (*hash)(const void *key),
 					objectFunctions: defaultFunctions];
 }
 
-static void
+static OF_INLINE void
 objc_hashtable_set(objc_hashtable *hashtable, const void *key,
     const void *object)
 {
 	return [hashtable setObject: (void *)object forKey: (void *)key];
 }
 
-static void *
+static OF_INLINE void *
 objc_hashtable_get(objc_hashtable *hashtable, const void *key)
 {
 	return [hashtable objectForKey: (void *)key];
 }
 
-static void
+static OF_INLINE void
 objc_hashtable_delete(objc_hashtable *hashtable, const void *key)
 {
 	[hashtable removeObjectForKey: (void *)key];

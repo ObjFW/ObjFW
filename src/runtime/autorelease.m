@@ -76,7 +76,7 @@ objc_autoreleasePoolPop(void *pool)
 	}
 
 	for (uintptr_t i = idx; i < count; i++) {
-		[objects[i] release];
+		objc_release(objects[i]);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		objects = OFTLSKeyGet(objectsKey);

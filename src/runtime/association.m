@@ -44,7 +44,7 @@ typedef struct objc_hashtable objc_hashtable;
 typedef OFMapTable objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };
 
-static objc_hashtable *
+static OF_INLINE objc_hashtable *
 objc_hashtable_new(uint32_t (*hash)(const void *key),
     bool (*equal)(const void *key1, const void *key2), uint32_t size)
 {
@@ -52,29 +52,29 @@ objc_hashtable_new(uint32_t (*hash)(const void *key),
 					objectFunctions: defaultFunctions];
 }
 
-static void
+static OF_INLINE void
 objc_hashtable_set(objc_hashtable *hashtable, const void *key,
     const void *object)
 {
 	return [hashtable setObject: (void *)object forKey: (void *)key];
 }
 
-static void *
+static OF_INLINE void *
 objc_hashtable_get(objc_hashtable *hashtable, const void *key)
 {
 	return [hashtable objectForKey: (void *)key];
 }
 
-static void
+static OF_INLINE void
 objc_hashtable_delete(objc_hashtable *hashtable, const void *key)
 {
 	[hashtable removeObjectForKey: (void *)key];
 }
 
-static void
+static OF_INLINE void
 objc_hashtable_free(objc_hashtable *hashtable)
 {
-	[hashtable release];
+	objc_release(hashtable);
 }
 
 # define OBJC_ERROR(...) abort()
@@ -129,7 +129,7 @@ objc_setAssociatedObject(id object, const void *key, id value,
 		break;
 	case OBJC_ASSOCIATION_RETAIN:
 	case OBJC_ASSOCIATION_RETAIN_NONATOMIC:
-		value = [value retain];
+		value = objc_retain(value);
 		break;
 	case OBJC_ASSOCIATION_COPY:
 	case OBJC_ASSOCIATION_COPY_NONATOMIC:
@@ -171,7 +171,7 @@ objc_setAssociatedObject(id object, const void *key, id value,
 			case OBJC_ASSOCIATION_RETAIN_NONATOMIC:
 			case OBJC_ASSOCIATION_COPY:
 			case OBJC_ASSOCIATION_COPY_NONATOMIC:
-				[association->object release];
+				objc_release(association->object);
 				break;
 			default:
 				break;
@@ -220,7 +220,8 @@ objc_getAssociatedObject(id object, const void *key)
 		switch (association->policy) {
 		case OBJC_ASSOCIATION_RETAIN:
 		case OBJC_ASSOCIATION_COPY:
-			ret = [[association->object retain] autorelease];
+			ret = objc_autoreleaseReturnValue(
+			    objc_retain(association->object));
 			break;
 		default:
 			ret = association->object;
@@ -286,7 +287,7 @@ objc_removeAssociatedObjects(id object)
 			case OBJC_ASSOCIATION_RETAIN_NONATOMIC:
 			case OBJC_ASSOCIATION_COPY:
 			case OBJC_ASSOCIATION_COPY_NONATOMIC:
-				[association->object release];
+				objc_release(association->object);
 				break;
 			default:
 				break;

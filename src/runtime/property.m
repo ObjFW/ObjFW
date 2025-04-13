@@ -54,13 +54,13 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			OBJC_ERROR("Failed to lock spinlock!");
 		@try {
-			return [[*ptr retain] autorelease];
+			return objc_autoreleaseReturnValue(objc_retain(*ptr));
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 				OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #else
-		return [[*ptr retain] autorelease];
+		return objc_autoreleaseReturnValue(objc_retain(*ptr));
 #endif
 	}
 
@@ -84,7 +84,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 
 			switch (copy) {
 			case 0:
-				*ptr = [value retain];
+				*ptr = objc_retain(value);
 				break;
 			case 2:
 				*ptr = [value mutableCopy];
@@ -93,7 +93,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 				*ptr = [value copy];
 			}
 
-			[old release];
+			objc_release(old);
 #ifdef OF_HAVE_THREADS
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
@@ -109,7 +109,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 
 	switch (copy) {
 	case 0:
-		*ptr = [value retain];
+		*ptr = objc_retain(value);
 		break;
 	case 2:
 		*ptr = [value mutableCopy];
@@ -118,7 +118,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 		*ptr = [value copy];
 	}
 
-	[old release];
+	objc_release(old);
 }
 
 /* The following methods are only required for GCC >= 4.6 */
