@@ -57,7 +57,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		_titlecaseTableSize           = SIZE_MAX;
 		_caseFoldingTableSize         = SIZE_MAX;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

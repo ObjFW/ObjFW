@@ -213,11 +213,11 @@ parseNetStackArray(OFString *string)
 @implementation OFDNSResolverSettings
 - (void)dealloc
 {
-	[_staticHosts release];
-	[_nameServers release];
-	[_localDomain release];
-	[_searchDomains release];
-	[_lastConfigReload release];
+	objc_release(_staticHosts);
+	objc_release(_nameServers);
+	objc_release(_localDomain);
+	objc_release(_searchDomains);
+	objc_release(_lastConfigReload);
 
 	[super dealloc];
 }
@@ -239,7 +239,7 @@ parseNetStackArray(OFString *string)
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -248,16 +248,16 @@ parseNetStackArray(OFString *string)
 
 - (void)setDefaults
 {
-	[_staticHosts release];
+	objc_release(_staticHosts);
 	_staticHosts = nil;
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = nil;
 
-	[_localDomain release];
+	objc_release(_localDomain);
 	_localDomain = nil;
 
-	[_searchDomains release];
+	objc_release(_searchDomains);
 	_searchDomains = nil;
 
 	_timeout = 2;
@@ -366,7 +366,8 @@ parseNetStackArray(OFString *string)
 	    [OFCharacterSet whitespaceCharacterSet];
 	OFCharacterSet *commentCharacters = [OFCharacterSet
 	    characterSetWithCharactersInString: @"#;"];
-	OFMutableArray *nameServers = [[_nameServers mutableCopy] autorelease];
+	OFMutableArray *nameServers =
+	    objc_autorelease([_nameServers mutableCopy]);
 	OFFile *file;
 	OFString *line;
 
@@ -417,10 +418,10 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[_localDomain release];
+			objc_release(_localDomain);
 			_localDomain = [arguments.firstObject copy];
 		} else if ([option isEqual: @"search"]) {
-			[_searchDomains release];
+			objc_release(_searchDomains);
 			_searchDomains = [arguments copy];
 		} else if ([option isEqual: @"options"])
 			for (OFString *argument in arguments)
@@ -431,7 +432,7 @@ parseNetStackArray(OFString *string)
 
 	[nameServers makeImmutable];
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = [nameServers copy];
 
 	objc_autoreleasePoolPop(pool);

@@ -110,7 +110,7 @@ atexitHandler(void)
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate:)])
 		[delegate applicationWillTerminate: notification];
 
-	[delegate release];
+	objc_release(delegate);
 
 	[[OFNotificationCenter defaultCenter] postNotification: notification];
 
@@ -149,7 +149,7 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 	[app of_run];
 
-	[delegate release];
+	objc_release(delegate);
 
 	return 0;
 }
@@ -437,33 +437,33 @@ SIGNAL_HANDLER(SIGUSR2)
 		char *env;
 
 		if ((env = getenv("HOME")) != NULL) {
-			OFString *home = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *home =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: home forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
-			OFString *path = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *path =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: path forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
-			OFString *shell = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *shell =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: shell forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
-			OFString *tmpdir = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *tmpdir =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: tmpdir forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
-			OFString *user = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *user =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: user forKey: @"USER"];
 		}
 
@@ -472,7 +472,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 		[_environment makeImmutable];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -481,8 +481,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 - (void)dealloc
 {
-	[_arguments release];
-	[_environment release];
+	objc_release(_arguments);
+	objc_release(_environment);
 
 	[super dealloc];
 }
@@ -599,7 +599,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	[OFThread of_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
 #else
-	runLoop = [[[OFRunLoop alloc] init] autorelease];
+	runLoop = objc_autorelease([[OFRunLoop alloc] init]);
 #endif
 
 	[OFRunLoop of_setMainRunLoop: runLoop];
@@ -683,7 +683,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	objc_autoreleasePoolPop(pool);
 
 	if (_activeSandbox == nil)
-		_activeSandbox = [sandbox retain];
+		_activeSandbox = objc_retain(sandbox);
 # endif
 }
 
@@ -711,7 +711,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	objc_autoreleasePoolPop(pool);
 
 	if (_activeSandboxForChildProcesses == nil)
-		_activeSandboxForChildProcesses = [sandbox retain];
+		_activeSandboxForChildProcesses = objc_retain(sandbox);
 # endif
 }
 #endif

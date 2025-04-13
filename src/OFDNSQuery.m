@@ -30,9 +30,10 @@
 			   DNSClass: (OFDNSClass)DNSClass
 			 recordType: (OFDNSRecordType)recordType
 {
-	return [[[self alloc] initWithDomainName: domainName
-					DNSClass: DNSClass
-				      recordType: recordType] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDomainName: domainName
+				    DNSClass: DNSClass
+				  recordType: recordType]);
 }
 
 - (instancetype)initWithDomainName: (OFString *)domainName
@@ -53,7 +54,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -67,7 +68,7 @@
 
 - (void)dealloc
 {
-	[_domainName release];
+	objc_release(_domainName);
 
 	[super dealloc];
 }
@@ -110,7 +111,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description

@@ -81,13 +81,13 @@ OF_SINGLETON_METHODS
 
 + (instancetype)characterSetWithCharactersInString: (OFString *)characters
 {
-	return [[[self alloc] initWithCharactersInString: characters]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCharactersInString: characters]);
 }
 
 + (instancetype)characterSetWithRange: (OFRange)range
 {
-	return [[[self alloc] initWithRange: range] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithRange: range]);
 }
 
 + (OFCharacterSet *)whitespaceCharacterSet
@@ -104,7 +104,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -131,8 +131,8 @@ OF_SINGLETON_METHODS
 
 - (OFCharacterSet *)invertedSet
 {
-	return [[[OFInvertedCharacterSet alloc]
-	    initWithCharacterSet: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFInvertedCharacterSet alloc] initWithCharacterSet: self]);
 }
 @end
 

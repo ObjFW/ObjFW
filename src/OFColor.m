@@ -140,10 +140,10 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 			blue: (float)blue
 		       alpha: (float)alpha
 {
-	return [[[self alloc] initWithRed: red
-				    green: green
-				     blue: blue
-				    alpha: alpha] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithRed: red
+							       green: green
+								blue: blue
+							       alpha: alpha]);
 }
 
 - (instancetype)initWithRed: (float)red
@@ -155,7 +155,7 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 

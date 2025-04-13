@@ -39,7 +39,7 @@
 	@try {
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -55,9 +55,9 @@
 			@throw [OFInvalidArgumentException exception];
 
 		[_array addItem: &object];
-		[object retain];
+		objc_retain(object);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -72,14 +72,14 @@
 		id object;
 
 		[_array addItem: &firstObject];
-		[firstObject retain];
+		objc_retain(firstObject);
 
 		while ((object = va_arg(arguments, id)) != nil) {
 			[_array addItem: &object];
-			[object retain];
+			objc_retain(object);
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -103,24 +103,24 @@
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
 							capacity: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] retain];
+			objc_retain(objects[i]);
 
 		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] release];
+			objc_release(objects[i]);
 
 		/* Prevent double-release of objects */
-		[_array release];
+		objc_release(_array);
 		_array = nil;
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -138,7 +138,7 @@
 			if (objects[i] == nil)
 				ok = false;
 
-			[objects[i] retain];
+			objc_retain(objects[i]);
 		}
 
 		if (!ok)
@@ -149,9 +149,9 @@
 		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] release];
+			objc_release(objects[i]);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -227,7 +227,6 @@
 	return OFNotFound;
 }
 
-
 - (OFArray *)objectsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
@@ -239,8 +238,9 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [[[OFConcreteSubarray alloc] initWithArray: self
-						    range: range] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFConcreteSubarray alloc] initWithArray: self
+						range: range]);
 }
 
 - (bool)isEqual: (id)object
@@ -333,9 +333,9 @@
 	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] release];
+		objc_release(objects[i]);
 
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

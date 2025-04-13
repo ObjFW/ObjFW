@@ -93,7 +93,7 @@ isFloat(OFNumber *number)
 	CASE(float, initWithFloat:)
 	CASE(double, initWithDouble:)
 
-	[self release];
+	objc_release(self);
 	@throw [OFInvalidFormatException exception];
 }
 

@@ -43,13 +43,13 @@
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 		_handler = [handler copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -58,12 +58,12 @@
 
 - (void)dealloc
 {
-	[_socket release];
-	[_host release];
-	[_delegate release];
-	[_handler release];
-	[_exception release];
-	[_socketAddresses release];
+	objc_release(_socket);
+	objc_release(_host);
+	objc_release(_delegate);
+	objc_release(_handler);
+	objc_release(_exception);
+	objc_release(_socketAddresses);
 
 	[super dealloc];
 }
@@ -105,13 +105,13 @@
 		 * self might be retained only by the pending async requests,
 		 * which we're about to cancel.
 		 */
-		[[self retain] autorelease];
+		objc_autorelease(objc_retain(self));
 
 		[sock cancelAsyncRequests];
 		[sock of_closeSocket];
 
 		if (_socketAddressesIndex >= _socketAddresses.count) {
-			_exception = [exception retain];
+			_exception = objc_retain(exception);
 			[self didConnect];
 		} else {
 			/*
@@ -229,7 +229,7 @@
        exception: (id)exception
 {
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return;
 	}

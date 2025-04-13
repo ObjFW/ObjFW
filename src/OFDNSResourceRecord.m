@@ -154,7 +154,7 @@ OFDNSRecordTypeParseName(OFString *string)
 		_recordType = recordType;
 		_TTL = TTL;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -163,14 +163,14 @@ OFDNSRecordTypeParseName(OFString *string)
 
 - (void)dealloc
 {
-	[_name release];
+	objc_release(_name);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description

@@ -152,11 +152,11 @@ initPathAllowedCharacters(void)
 		@throw [OFInvalidArgumentException exception];
 
 end:
-	stream = [stream retain];
+	stream = objc_retain(stream);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [stream autorelease];
+	return objc_autoreleaseReturnValue(stream);
 }
 @end
 
@@ -166,13 +166,13 @@ end:
 	self = [super init];
 
 	@try {
-		_characterSet =
-		    [[OFCharacterSet IRIPathAllowedCharacterSet] retain];
+		_characterSet = objc_retain(
+		    [OFCharacterSet IRIPathAllowedCharacterSet]);
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -181,7 +181,7 @@ end:
 
 - (void)dealloc
 {
-	[_characterSet release];
+	objc_release(_characterSet);
 
 	[super dealloc];
 }

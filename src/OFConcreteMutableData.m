@@ -49,7 +49,7 @@
 		_capacity = capacity;
 		_freeWhenDone = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

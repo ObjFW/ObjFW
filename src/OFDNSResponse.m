@@ -33,11 +33,11 @@
 		      authorityRecords: (OFDNSResponseRecords)authorityRecords
 		     additionalRecords: (OFDNSResponseRecords)additionalRecords
 {
-	return [[[self alloc]
-	    initWithDomainName: domainName
-		 answerRecords: answerRecords
-	      authorityRecords: authorityRecords
-	     additionalRecords: additionalRecords] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDomainName: domainName
+			       answerRecords: answerRecords
+			    authorityRecords: authorityRecords
+			   additionalRecords: additionalRecords]);
 }
 
 - (instancetype)initWithDomainName: (OFString *)domainName
@@ -53,7 +53,7 @@
 		_authorityRecords = [authorityRecords copy];
 		_additionalRecords = [additionalRecords copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -67,10 +67,10 @@
 
 - (void)dealloc
 {
-	[_domainName release];
-	[_answerRecords release];
-	[_authorityRecords release];
-	[_additionalRecords release];
+	objc_release(_domainName);
+	objc_release(_answerRecords);
+	objc_release(_authorityRecords);
+	objc_release(_additionalRecords);
 
 	[super dealloc];
 }

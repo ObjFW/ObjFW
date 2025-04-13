@@ -190,10 +190,10 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		address.sockaddr.in.sin_family = AF_INET;
 		memcpy(&address.sockaddr.in.sin_addr.s_addr, buffer + i, 4);
 
-		return [[[OFADNSResourceRecord alloc]
-		    initWithName: name
-			 address: &address
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFADNSResourceRecord alloc] initWithName: name
+						       address: &address
+							   TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeNS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
@@ -202,11 +202,11 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFNSDNSResourceRecord alloc]
-			 initWithName: name
-			     DNSClass: DNSClass
-		    authoritativeHost: authoritativeHost
-				  TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue([[OFNSDNSResourceRecord
+		    alloc] initWithName: name
+			       DNSClass: DNSClass
+		      authoritativeHost: authoritativeHost
+				    TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeCNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
@@ -215,11 +215,11 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFCNAMEDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-			   alias: alias
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFCNAMEDNSResourceRecord alloc] initWithName: name
+							  DNSClass: DNSClass
+							     alias: alias
+							       TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeSOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
@@ -250,17 +250,17 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		minTTL = (buffer[j + 16] << 24) | (buffer[j + 17] << 16) |
 		    (buffer[j + 18] << 8) | buffer[j + 19];
 
-		return [[[OFSOADNSResourceRecord alloc]
-			  initWithName: name
-			      DNSClass: DNSClass
-		     primaryNameServer: primaryNameServer
-		     responsiblePerson: responsiblePerson
-			  serialNumber: serialNumber
-		       refreshInterval: refreshInterval
-			 retryInterval: retryInterval
-		    expirationInterval: expirationInterval
-				minTTL: minTTL
-				   TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue([[OFSOADNSResourceRecord
+		    alloc] initWithName: name
+			       DNSClass: DNSClass
+		      primaryNameServer: primaryNameServer
+		      responsiblePerson: responsiblePerson
+			   serialNumber: serialNumber
+			refreshInterval: refreshInterval
+			  retryInterval: retryInterval
+		     expirationInterval: expirationInterval
+				 minTTL: minTTL
+				    TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypePTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
@@ -269,11 +269,11 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFPTRDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-		      domainName: domainName
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFPTRDNSResourceRecord alloc] initWithName: name
+							DNSClass: DNSClass
+						      domainName: domainName
+							     TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeHINFO) {
 		size_t j = i;
 		OFString *CPU = parseString(buffer, length, &j);
@@ -287,12 +287,12 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFHINFODNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-			     CPU: CPU
-			      OS: OS
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFHINFODNSResourceRecord alloc] initWithName: name
+							  DNSClass: DNSClass
+							       CPU: CPU
+								OS: OS
+							       TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeMX) {
 		uint16_t preference;
 		size_t j;
@@ -310,12 +310,12 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFMXDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-		      preference: preference
-		    mailExchange: mailExchange
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFMXDNSResourceRecord alloc] initWithName: name
+						       DNSClass: DNSClass
+						     preference: preference
+						   mailExchange: mailExchange
+							    TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeTXT) {
 		OFMutableArray *textStrings = [OFMutableArray array];
 
@@ -337,11 +337,11 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 
 		[textStrings makeImmutable];
 
-		return [[[OFTXTDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-		     textStrings: textStrings
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFTXTDNSResourceRecord alloc] initWithName: name
+							DNSClass: DNSClass
+						     textStrings: textStrings
+							     TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeRP) {
 		size_t j = i;
 		OFString *mailbox = parseName(buffer, length, &j,
@@ -357,12 +357,12 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFRPDNSResourceRecord alloc]
-		     initWithName: name
-			 DNSClass: DNSClass
-			  mailbox: mailbox
-		    TXTDomainName: TXTDomainName
-			      TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFRPDNSResourceRecord alloc] initWithName: name
+						       DNSClass: DNSClass
+							mailbox: mailbox
+						  TXTDomainName: TXTDomainName
+							    TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeAAAA &&
 	    DNSClass == OFDNSClassIN) {
 		OFSocketAddress address;
@@ -381,10 +381,10 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 #endif
 		memcpy(address.sockaddr.in6.sin6_addr.s6_addr, buffer + i, 16);
 
-		return [[[OFAAAADNSResourceRecord alloc]
-		    initWithName: name
-			 address: &address
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFAAAADNSResourceRecord alloc] initWithName: name
+							  address: &address
+							      TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeLOC) {
 		uint8_t size, horizontalPrecision, verticalPrecision;
 		uint32_t latitude, longitude, altitude;
@@ -402,8 +402,8 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		altitude = (buffer[i + 12] << 24) | (buffer[i + 13] << 16) |
 		    (buffer[i + 14] << 8) | buffer[i + 15];
 
-		return [[[OFLOCDNSResourceRecord alloc]
-			   initWithName: name
+		return objc_autoreleaseReturnValue([[OFLOCDNSResourceRecord
+		    alloc] initWithName: name
 			       DNSClass: DNSClass
 				   size: size
 		    horizontalPrecision: horizontalPrecision
@@ -411,7 +411,7 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 			       latitude: latitude
 			      longitude: longitude
 			       altitude: altitude
-				    TTL: TTL] autorelease];
+				    TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeSRV &&
 	    DNSClass == OFDNSClassIN) {
 		uint16_t priority, weight, port;
@@ -431,13 +431,13 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (j != i + dataLength)
 			@throw [OFInvalidServerResponseException exception];
 
-		return [[[OFSRVDNSResourceRecord alloc]
-		    initWithName: name
-			priority: priority
-			  weight: weight
-			  target: target
-			    port: port
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFSRVDNSResourceRecord alloc] initWithName: name
+							priority: priority
+							  weight: weight
+							  target: target
+							    port: port
+							     TTL: TTL]);
 	} else if (recordType == OFDNSRecordTypeURI) {
 		uint16_t priority, weight;
 		OFString *target;
@@ -451,19 +451,19 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		target = [OFString stringWithUTF8String: (char *)buffer + i + 4
 						 length: dataLength - 4];
 
-		return [[[OFURIDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-			priority: priority
-			  weight: weight
-			  target: target
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFURIDNSResourceRecord alloc] initWithName: name
+							DNSClass: DNSClass
+							priority: priority
+							  weight: weight
+							  target: target
+							     TTL: TTL]);
 	} else
-		return [[[OFDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-		      recordType: recordType
-			     TTL: TTL] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFDNSResourceRecord alloc] initWithName: name
+						     DNSClass: DNSClass
+						   recordType: recordType
+							  TTL: TTL]);
 }
 
 static OFDictionary *
@@ -548,9 +548,9 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		uint16_t tmp;
 
 		_query = [query copy];
-		_ID = [ID retain];
+		_ID = objc_retain(ID);
 		_settings = [settings copy];
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 
 		queryData = [OFMutableData dataWithCapacity: 512];
 
@@ -596,7 +596,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -605,15 +605,15 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (void)dealloc
 {
-	[_query release];
-	[_ID release];
-	[_settings release];
-	[_delegate release];
-	[_queryData release];
-	[_TCPSocket release];
-	[_TCPQueryData release];
+	objc_release(_query);
+	objc_release(_ID);
+	objc_release(_settings);
+	objc_release(_delegate);
+	objc_release(_queryData);
+	objc_release(_TCPSocket);
+	objc_release(_TCPQueryData);
 	OFFreeMemory(_TCPBuffer);
-	[_cancelTimer release];
+	objc_release(_cancelTimer);
 
 	[super dealloc];
 }
@@ -622,7 +622,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 @implementation OFDNSResolver
 + (instancetype)resolver
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -641,7 +641,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 		[_settings reload];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -652,17 +652,17 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	[self close];
 
-	[_settings release];
+	objc_release(_settings);
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket release];
+	objc_release(_IPv4Socket);
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket release];
+	objc_release(_IPv6Socket);
 #endif
-	[_queries release];
-	[_TCPQueries release];
-	[_cache release];
-	[_lastNameServers release];
+	objc_release(_queries);
+	objc_release(_TCPQueries);
+	objc_release(_cache);
+	objc_release(_lastNameServers);
 
 	[super dealloc];
 }
@@ -676,7 +676,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	OFDictionary *old = _settings->_staticHosts;
 	_settings->_staticHosts = [staticHosts copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFArray *)nameServers
@@ -688,7 +688,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	OFArray *old = _settings->_nameServers;
 	_settings->_nameServers = [nameServers copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFString *)localDomain
@@ -705,7 +705,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	OFArray *old = _settings->_searchDomains;
 	_settings->_searchDomains = [searchDomains copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFTimeInterval)timeout
@@ -769,7 +769,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	[_queries setObject: context forKey: context->_ID];
 
 	[context->_cancelTimer invalidate];
-	[context->_cancelTimer release];
+	objc_release(context->_cancelTimer);
 	context->_cancelTimer = nil;
 	context->_cancelTimer = [[OFTimer alloc]
 	    initWithFireDate: [OFDate dateWithTimeIntervalSinceNow:
@@ -860,7 +860,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	    ![_lastNameServers isEqual: _settings->_nameServers]) {
 		OFArray *old = _lastNameServers;
 		_lastNameServers = [_settings->_nameServers copy];
-		[old release];
+		objc_release(old);
 
 		[_cache removeAllObjects];
 
@@ -955,11 +955,11 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return;
 	}
 
-	context = [[[OFDNSResolverContext alloc]
-	    initWithQuery: query
-		       ID: ID
-		 settings: _settings
-		 delegate: delegate] autorelease];
+	context = objc_autorelease(
+	    [[OFDNSResolverContext alloc] initWithQuery: query
+						     ID: ID
+					       settings: _settings
+					       delegate: delegate]);
 	[self of_sendQueryForContext: context runLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -975,7 +975,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		[context->_TCPSocket cancelAsyncRequests];
 
 		[_TCPQueries removeObjectForKey: context->_TCPSocket];
-		[context->_TCPSocket release];
+		objc_release(context->_TCPSocket);
 		context->_TCPSocket = nil;
 		context->_responseLength = 0;
 	}
@@ -993,7 +993,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return;
 	}
 
-	context = [[context retain] autorelease];
+	context = objc_autorelease(objc_retain(context));
 	[_queries removeObjectForKey: context->_ID];
 
 	/*
@@ -1033,7 +1033,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return true;
 
 	ID = [OFNumber numberWithUnsignedShort: (buffer[0] << 8) | buffer[1]];
-	context = [[[_queries objectForKey: ID] retain] autorelease];
+	context = objc_autorelease(objc_retain([_queries objectForKey: ID]));
 
 	if (context == nil)
 		return true;
@@ -1046,7 +1046,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return true;
 
 	[context->_cancelTimer invalidate];
-	[context->_cancelTimer release];
+	objc_release(context->_cancelTimer);
 	context->_cancelTimer = nil;
 	[_queries removeObjectForKey: ID];
 
@@ -1217,7 +1217,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		 *	 timer to try the next nameserver or to retry.
 		 */
 		[_TCPQueries removeObjectForKey: context->_TCPSocket];
-		[context->_TCPSocket release];
+		objc_release(context->_TCPSocket);
 		context->_TCPSocket = nil;
 		context->_responseLength = 0;
 		return;
@@ -1258,7 +1258,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		 *	 timer to try the next nameserver or to retry.
 		 */
 		[_TCPQueries removeObjectForKey: context->_TCPSocket];
-		[context->_TCPSocket release];
+		objc_release(context->_TCPSocket);
 		context->_TCPSocket = nil;
 		context->_responseLength = 0;
 		return nil;
@@ -1318,7 +1318,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 done:
 	[_TCPQueries removeObjectForKey: context->_TCPSocket];
-	[context->_TCPSocket release];
+	objc_release(context->_TCPSocket);
 	context->_TCPSocket = nil;
 	context->_responseLength = 0;
 
@@ -1350,13 +1350,13 @@ done:
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHostAddressResolver *resolver = [[[OFHostAddressResolver alloc]
-	    initWithHost: host
-	   addressFamily: addressFamily
-		resolver: self
-		settings: _settings
-	     runLoopMode: runLoopMode
-		delegate: delegate] autorelease];
+	OFHostAddressResolver *resolver = objc_autorelease(
+	    [[OFHostAddressResolver alloc] initWithHost: host
+					  addressFamily: addressFamily
+					       resolver: self
+					       settings: _settings
+					    runLoopMode: runLoopMode
+					       delegate: delegate]);
 
 	[resolver asyncResolve];
 
@@ -1367,20 +1367,18 @@ done:
 		      addressFamily: (OFSocketAddressFamily)addressFamily
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHostAddressResolver *resolver = [[[OFHostAddressResolver alloc]
-	    initWithHost: host
-	   addressFamily: addressFamily
-		resolver: self
-		settings: _settings
-	     runLoopMode: nil
-		delegate: nil] autorelease];
-	OFData *addresses = [resolver resolve];
-
-	[addresses retain];
+	OFHostAddressResolver *resolver = objc_autorelease(
+	    [[OFHostAddressResolver alloc] initWithHost: host
+					  addressFamily: addressFamily
+					       resolver: self
+					       settings: _settings
+					    runLoopMode: nil
+					       delegate: nil]);
+	OFData *addresses = objc_retain([resolver resolve]);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [addresses autorelease];
+	return objc_autoreleaseReturnValue(addresses);
 }
 
 - (void)close
@@ -1390,12 +1388,12 @@ done:
 	OFDNSResolverContext *context;
 
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket release];
+	objc_release(_IPv4Socket);
 	_IPv4Socket = nil;
 
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket release];
+	objc_release(_IPv6Socket);
 	_IPv6Socket = nil;
 #endif
 

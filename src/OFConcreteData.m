@@ -44,7 +44,7 @@
 		_itemSize = itemSize;
 		_freeWhenDone = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -68,7 +68,7 @@
 
 		memcpy(_items, items, count * itemSize);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -91,7 +91,7 @@
 		_itemSize = itemSize;
 		_freeWhenDone = freeWhenDone;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

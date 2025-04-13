@@ -43,7 +43,7 @@
 		_blue = blue;
 		_alpha = alpha;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

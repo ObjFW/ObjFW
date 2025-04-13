@@ -36,7 +36,7 @@
 		_bytes = OFAllocMemory(1, _size);
 		memcpy(_bytes, bytes, _size);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

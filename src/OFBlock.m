@@ -264,7 +264,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 		break;
 	case OFBlockFieldIsObject:
 		if (!(flags_ & OFBlockByrefCaller))
-			*(id *)dst_ = [(id)src_ retain];
+			*(id *)dst_ = objc_retain((id)src_);
 		break;
 	case OFBlockFieldIsByref:;
 		struct Byref *src = (struct Byref *)src_;
@@ -341,7 +341,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 		break;
 	case OFBlockFieldIsObject:
 		if (!(flags_ & OFBlockByrefCaller))
-			[(id)object_ release];
+			objc_release((id)object_);
 		break;
 	case OFBlockFieldIsByref:;
 		struct Byref *object = (struct Byref *)object_;

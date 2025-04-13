@@ -203,7 +203,7 @@ OF_SINGLETON_METHODS
 - (void)removeAllObjects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSet *copy = [[self copy] autorelease];
+	OFSet *copy = objc_autorelease([self copy]);
 
 	for (id object in copy) {
 		size_t count = [self countForObject: object];

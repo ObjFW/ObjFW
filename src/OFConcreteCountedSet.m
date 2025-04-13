@@ -61,7 +61,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -79,7 +79,7 @@
 		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -94,7 +94,7 @@
 		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -113,7 +113,7 @@
 		while ((object = va_arg(arguments, id)) != nil)
 			[self addObject: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

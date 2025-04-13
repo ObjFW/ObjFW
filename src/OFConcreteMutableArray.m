@@ -45,7 +45,7 @@
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
 							capacity: capacity];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -58,7 +58,7 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[_array addItem: &object];
-	[object retain];
+	objc_retain(object);
 
 	_mutations++;
 }
@@ -73,7 +73,7 @@
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
-	[object retain];
+	objc_retain(object);
 
 	_mutations++;
 }
@@ -90,7 +90,7 @@
 	}
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] retain];
+		objc_retain(objects[i]);
 
 	_mutations++;
 }
@@ -108,8 +108,8 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
-			[newObject retain];
-			[objects[i] release];
+			objc_retain(newObject);
+			objc_release(objects[i]);
 			objects[i] = newObject;
 		}
 	}
@@ -129,8 +129,8 @@
 		@throw [OFOutOfRangeException exception];
 
 	oldObject = objects[idx];
-	objects[idx] = [object retain];
-	[oldObject release];
+	objects[idx] = objc_retain(object);
+	objc_release(oldObject);
 }
 
 - (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
@@ -146,8 +146,8 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
-			[newObject retain];
-			[objects[i] release];
+			objc_retain(newObject);
+			objc_release(objects[i]);
 			objects[i] = newObject;
 
 			return;
@@ -173,7 +173,7 @@
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[tmp release];
+			objc_release(tmp);
 
 			objects = _array.items;
 			i--;
@@ -199,7 +199,7 @@
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			objc_release(object);
 
 			objects = _array.items;
 			i--;
@@ -214,7 +214,7 @@
 #ifndef __clang_analyzer__
 	id object = [self objectAtIndex: idx];
 	[_array removeItemAtIndex: idx];
-	[object release];
+	objc_release(object);
 
 	_mutations++;
 #endif
@@ -226,7 +226,7 @@
 	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] release];
+		objc_release(objects[i]);
 
 	[_array removeAllItems];
 }
@@ -249,7 +249,7 @@
 		_mutations++;
 
 		for (size_t i = 0; i < range.length; i++)
-			[copy[i] release];
+			objc_release(copy[i]);
 	} @finally {
 		OFFreeMemory(copy);
 	}
@@ -266,7 +266,7 @@
 
 	object = [self objectAtIndex: count - 1];
 	[_array removeLastItem];
-	[object release];
+	objc_release(object);
 
 	_mutations++;
 #endif
@@ -332,9 +332,9 @@
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFArrayEnumerator alloc]
-	    initWithArray: self
-	     mutationsPtr: &_mutations] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFArrayEnumerator alloc] initWithArray: self
+					mutationsPtr: &_mutations]);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -373,8 +373,8 @@
 			@throw [OFInvalidArgumentException exception];
 
 		if (new != objects[i]) {
-			[objects[i] release];
-			objects[i] = [new retain];
+			objc_release(objects[i]);
+			objects[i] = objc_retain(new);
 		}
 	}
 }

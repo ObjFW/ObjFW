@@ -34,7 +34,7 @@
 @implementation OFCondition
 + (instancetype)condition
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -43,7 +43,7 @@
 
 	if (OFPlainConditionNew(&_condition) != 0) {
 		Class c = self.class;
-		[self release];
+		objc_release(self);
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
 

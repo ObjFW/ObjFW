@@ -66,7 +66,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 			 objectFunctions: objectFunctions
 				capacity: capacity];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -83,7 +83,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 	@try {
 		count = set.count;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -93,7 +93,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (id object in set)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -110,7 +110,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 	@try {
 		count = array.count;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -120,7 +120,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (id object in array)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -135,7 +135,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (size_t i = 0; i < count; i++)
 			[_mapTable setObject: (void *)1 forKey: objects[i]];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -165,7 +165,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		while ((object = va_arg(arguments, id)) != nil)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -174,7 +174,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 
 - (void)dealloc
 {
-	[_mapTable release];
+	objc_release(_mapTable);
 
 	[super dealloc];
 }
@@ -222,18 +222,18 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		return nil;
 	}
 
-	object = [(id)*objectPtr retain];
+	object = objc_retain((id)*objectPtr);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFMapTableEnumeratorWrapper alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableEnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
-			object: self] autorelease];
+			object: self]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state

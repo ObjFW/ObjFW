@@ -45,7 +45,7 @@
 	@try {
 		_alias = [alias copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_alias release];
+	objc_release(_alias);
 
 	[super dealloc];
 }
