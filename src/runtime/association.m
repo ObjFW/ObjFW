@@ -75,7 +75,7 @@ objc_hashtable_free(objc_hashtable *hashtable)
 #endif
 
 #ifdef OF_HAVE_THREADS
-# define numSlots 8	/* needs to be a power of 2 */
+# define numSlots 16	/* needs to be a power of 2 */
 # import "OFPlainMutex.h"
 static OFSpinlock spinlocks[numSlots];
 #else
