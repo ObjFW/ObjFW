@@ -39,7 +39,8 @@
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
-	return [[[self alloc] initWithFileName: fileName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
 }
 
 - (instancetype)initWithFileName: (OFString *)fileName
@@ -54,7 +55,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -134,7 +135,7 @@
 {
 	OFString *old = _fileComment;
 	_fileComment = [fileComment copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setFileName: (OFString *)fileName
@@ -147,15 +148,15 @@
 				    options: OFStringSearchBackwards].location;
 	if (lastSlash != OFNotFound) {
 		_fileName = [[fileName substringFromIndex: lastSlash + 1] copy];
-		[oldFileName release];
+		objc_release(oldFileName);
 
 		_directoryName = [[fileName substringToIndex: lastSlash] copy];
-		[oldDirectoryName release];
+		objc_release(oldDirectoryName);
 	} else {
 		_fileName = [fileName copy];
-		[oldFileName release];
+		objc_release(oldFileName);
 
-		[_directoryName release];
+		objc_release(_directoryName);
 		_directoryName = nil;
 	}
 
@@ -171,7 +172,7 @@
 {
 	OFNumber *old = _POSIXPermissions;
 	_POSIXPermissions = [POSIXPermissions copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setTimeZone: (OFNumber *)timeZone

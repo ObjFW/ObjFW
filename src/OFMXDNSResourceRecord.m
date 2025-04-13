@@ -47,7 +47,7 @@
 		_preference = preference;
 		_mailExchange = [mailExchange copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,7 +56,7 @@
 
 - (void)dealloc
 {
-	[_mailExchange release];
+	objc_release(_mailExchange);
 
 	[super dealloc];
 }

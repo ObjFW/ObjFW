@@ -396,12 +396,12 @@ OF_SINGLETON_METHODS
 	self = [super init];
 
 	@try {
-		_characterSet = [characterSet retain];
+		_characterSet = objc_retain(characterSet);
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -410,7 +410,7 @@ OF_SINGLETON_METHODS
 
 - (void)dealloc
 {
-	[_characterSet release];
+	objc_release(_characterSet);
 
 	[super dealloc];
 }
@@ -429,8 +429,9 @@ _OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 	void *pool = objc_autoreleasePoolPush();
 
 	if (allowPercent)
-		characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
-		    initWithCharacterSet: characterSet] autorelease];
+		characterSet = objc_autorelease(
+		    [[OFInvertedCharacterSetWithoutPercent alloc]
+		    initWithCharacterSet: characterSet]);
 	else
 		characterSet = characterSet.invertedSet;
 
@@ -507,30 +508,33 @@ _OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 @implementation OFIRI
 + (instancetype)IRI
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)IRIWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 + (instancetype)IRIWithString: (OFString *)string relativeToIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithString: string
-			       relativeToIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithString: string
+							  relativeToIRI: IRI]);
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)fileIRIWithPath: (OFString *)path
 {
-	return [[[self alloc] initFileIRIWithPath: path] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initFileIRIWithPath: path]);
 }
 
 + (instancetype)fileIRIWithPath: (OFString *)path isDirectory: (bool)isDirectory
 {
-	return [[[self alloc] initFileIRIWithPath: path
-				      isDirectory: isDirectory] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initFileIRIWithPath: path
+				  isDirectory: isDirectory]);
 }
 #endif
 
@@ -741,7 +745,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -787,8 +791,8 @@ merge(OFString *base, OFString *path)
 	if (base.length == 0)
 		base = @"/";
 
-	components = [[[base componentsSeparatedByString: @"/"]
-	    mutableCopy] autorelease];
+	components = objc_autorelease(
+	    [[base componentsSeparatedByString: @"/"] mutableCopy]);
 
 	if (components.count == 1)
 		[components addObject: path];
@@ -806,7 +810,7 @@ merge(OFString *base, OFString *path)
 	@try {
 		absolute = isAbsolute(string);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -877,7 +881,7 @@ merge(OFString *base, OFString *path)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -894,7 +898,7 @@ merge(OFString *base, OFString *path)
 		isDirectory = [path of_isDirectoryPath];
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -935,7 +939,7 @@ merge(OFString *base, OFString *path)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -955,14 +959,14 @@ merge(OFString *base, OFString *path)
 
 - (void)dealloc
 {
-	[_scheme release];
-	[_percentEncodedHost release];
-	[_port release];
-	[_percentEncodedUser release];
-	[_percentEncodedPassword release];
-	[_percentEncodedPath release];
-	[_percentEncodedQuery release];
-	[_percentEncodedFragment release];
+	objc_release(_scheme);
+	objc_release(_percentEncodedHost);
+	objc_release(_port);
+	objc_release(_percentEncodedUser);
+	objc_release(_percentEncodedPassword);
+	objc_release(_percentEncodedPath);
+	objc_release(_percentEncodedQuery);
+	objc_release(_percentEncodedFragment);
 
 	[super dealloc];
 }
@@ -1098,14 +1102,14 @@ merge(OFString *base, OFString *path)
 	if (isFile) {
 		OFString *path = [_percentEncodedPath
 		    of_IRIPathToPathWithPercentEncodedHost: nil];
-		ret = [[path.pathComponents mutableCopy] autorelease];
+		ret = objc_autorelease([path.pathComponents mutableCopy]);
 
 		if (![ret.firstObject isEqual: @"/"])
 			[ret insertObject: @"/" atIndex: 0];
 	} else
 #endif
-		ret = [[[_percentEncodedPath componentsSeparatedByString: @"/"]
-		    mutableCopy] autorelease];
+		ret = objc_autorelease([[_percentEncodedPath
+		    componentsSeparatedByString: @"/"] mutableCopy]);
 
 	count = ret.count;
 
@@ -1126,11 +1130,11 @@ merge(OFString *base, OFString *path)
 	}
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)lastPathComponent
@@ -1162,11 +1166,11 @@ merge(OFString *base, OFString *path)
 	ret = [OFString
 	    stringWithUTF8String: lastComponent
 			  length: length - (lastComponent - UTF8String)];
-	ret = [ret.stringByRemovingPercentEncoding retain];
+	ret = objc_retain(ret.stringByRemovingPercentEncoding);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)pathExtension
@@ -1185,9 +1189,9 @@ merge(OFString *base, OFString *path)
 
 	ret = [fileName substringFromIndex: pos + 1];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)query
@@ -1231,11 +1235,11 @@ merge(OFString *base, OFString *path)
 	}
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)fragment
@@ -1250,7 +1254,7 @@ merge(OFString *base, OFString *path)
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -1266,7 +1270,7 @@ merge(OFString *base, OFString *path)
 		copy->_percentEncodedQuery = [_percentEncodedQuery copy];
 		copy->_percentEncodedFragment = [_percentEncodedFragment copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -1323,17 +1327,17 @@ merge(OFString *base, OFString *path)
 	path = [self.path
 	    of_IRIPathToPathWithPercentEncodedHost: _percentEncodedHost];
 
-	[path retain];
+	objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [path autorelease];
+	return objc_autoreleaseReturnValue(path);
 }
 #endif
 
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI appendPathComponent: component];
 	[IRI makeImmutable];
 	return IRI;
@@ -1342,7 +1346,7 @@ merge(OFString *base, OFString *path)
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI appendPathComponent: component isDirectory: isDirectory];
 	[IRI makeImmutable];
 	return IRI;
@@ -1350,7 +1354,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByDeletingLastPathComponent
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI deleteLastPathComponent];
 	[IRI makeImmutable];
 	return IRI;
@@ -1358,7 +1362,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI appendPathExtension: extension];
 	[IRI makeImmutable];
 	return IRI;
@@ -1366,7 +1370,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByDeletingPathExtension
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI deletePathExtension];
 	[IRI makeImmutable];
 	return IRI;
@@ -1374,7 +1378,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByStandardizingPath
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	[IRI standardizePath];
 	[IRI makeImmutable];
 	return IRI;
@@ -1382,7 +1386,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAddingPercentEncodingForUnicodeCharacters
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *ASCII =
 	    [OFCharacterSet characterSetWithRange: OFMakeRange(0, 0x80)];

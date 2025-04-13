@@ -41,7 +41,8 @@
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
-	return [[[self alloc] initWithFileName: fileName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
 }
 
 - (instancetype)initWithFileName: (OFString *)fileName
@@ -58,7 +59,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -82,7 +83,7 @@
 
 	old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -97,7 +98,7 @@
 
 	old = _fileComment;
 	_fileComment = [fileComment copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -115,7 +116,7 @@
 
 	old = _extraField;
 	_extraField = [extraField copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }

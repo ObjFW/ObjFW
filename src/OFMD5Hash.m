@@ -143,8 +143,8 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 + (instancetype)hashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithAllowsSwappableMemory:
-	    allowsSwappableMemory] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithAllowsSwappableMemory: allowsSwappableMemory]);
 }
 
 - (instancetype)initWithAllowsSwappableMemory: (bool)allowsSwappableMemory
@@ -160,7 +160,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 		[self of_resetState];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -179,7 +179,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (void)dealloc
 {
-	[_iVarsData release];
+	objc_release(_iVarsData);
 
 	[super dealloc];
 }

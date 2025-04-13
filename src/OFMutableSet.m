@@ -108,7 +108,8 @@ OF_SINGLETON_METHODS
 
 + (instancetype)setWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 - (instancetype)init
@@ -191,7 +192,7 @@ OF_SINGLETON_METHODS
 - (void)removeAllObjects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSet *copy = [[self copy] autorelease];
+	OFSet *copy = objc_autorelease([self copy]);
 
 	for (id object in copy)
 		[self removeObject: object];

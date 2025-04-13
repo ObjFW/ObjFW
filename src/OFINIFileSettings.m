@@ -42,7 +42,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -51,8 +51,8 @@
 
 - (void)dealloc
 {
-	[_fileIRI release];
-	[_INIFile release];
+	objc_release(_fileIRI);
+	objc_release(_INIFile);
 
 	[super dealloc];
 }
@@ -168,9 +168,9 @@
 	    stringValueForKey: key
 		 defaultValue: defaultValue];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (long long)longLongForPath: (OFString *)path
@@ -264,9 +264,9 @@
 	[self of_getSection: &section andKey: &key forPath: path];
 	ret = [[_INIFile sectionForName: section] arrayValueForKey: key];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)removeValueForPath: (OFString *)path

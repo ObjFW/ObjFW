@@ -35,7 +35,8 @@
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
-	return [[[self alloc] initWithFileName: fileName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
 }
 
 - (instancetype)initWithFileName: (OFString *)fileName
@@ -45,7 +46,7 @@
 	@try {
 		_fileName = [fileName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -65,9 +66,9 @@
 {
 	OFString *old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 
-	[_directoryName release];
+	objc_release(_directoryName);
 	_directoryName = nil;
 }
 
@@ -75,7 +76,7 @@
 {
 	OFString *old = _compressionMethod;
 	_compressionMethod = [compressionMethod copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setCompressedSize: (unsigned long long)compressedSize
@@ -91,8 +92,8 @@
 - (void)setModificationDate: (OFDate *)modificationDate
 {
 	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
-	[old release];
+	_modificationDate = objc_retain(modificationDate);
+	objc_release(old);
 }
 
 - (void)setHeaderLevel: (uint8_t)headerLevel
@@ -114,49 +115,49 @@
 {
 	OFString *old = _fileComment;
 	_fileComment = [fileComment copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
 	OFNumber *old = _POSIXPermissions;
-	_POSIXPermissions = [POSIXPermissions retain];
-	[old release];
+	_POSIXPermissions = objc_retain(POSIXPermissions);
+	objc_release(old);
 }
 
 - (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
 	OFNumber *old = _ownerAccountID;
-	_ownerAccountID = [ownerAccountID retain];
-	[old release];
+	_ownerAccountID = objc_retain(ownerAccountID);
+	objc_release(old);
 }
 
 - (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
 	OFNumber *old = _groupOwnerAccountID;
-	_groupOwnerAccountID = [groupOwnerAccountID retain];
-	[old release];
+	_groupOwnerAccountID = objc_retain(groupOwnerAccountID);
+	objc_release(old);
 }
 
 - (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
 	OFString *old = _ownerAccountName;
 	_ownerAccountName = [ownerAccountName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
 	OFString *old = _groupOwnerAccountName;
 	_groupOwnerAccountName = [groupOwnerAccountName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setExtensions: (OFArray OF_GENERIC(OFData *) *)extensions
 {
 	OFArray OF_GENERIC(OFData *) *old = _extensions;
 	_extensions = [extensions copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)makeImmutable

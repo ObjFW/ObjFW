@@ -593,7 +593,8 @@ OFAlignmentOfTypeEncoding(const char *type)
 @implementation OFMethodSignature
 + (instancetype)signatureWithObjCTypes: (const char*)types
 {
-	return [[[self alloc] initWithObjCTypes: types] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjCTypes: types]);
 }
 
 - (instancetype)init
@@ -682,7 +683,7 @@ OFAlignmentOfTypeEncoding(const char *type)
 		if (last < _types + length)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -692,8 +693,8 @@ OFAlignmentOfTypeEncoding(const char *type)
 - (void)dealloc
 {
 	OFFreeMemory(_types);
-	[_typesPointers release];
-	[_offsets release];
+	objc_release(_typesPointers);
+	objc_release(_offsets);
 
 	[super dealloc];
 }

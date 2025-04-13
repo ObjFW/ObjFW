@@ -33,9 +33,10 @@
 				   size: (size_t)size
 			       writable: (bool)writable
 {
-	return [[[self alloc] initWithMemoryAddress: address
-					       size: size
-					   writable: writable] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithMemoryAddress: address
+					   size: size
+				       writable: writable]);
 }
 
 - (instancetype)init
@@ -57,7 +58,7 @@
 		_size = size;
 		_writable = writable;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

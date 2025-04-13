@@ -42,7 +42,7 @@
 @implementation OFModule
 + (instancetype)moduleWithPath: (OFString *)path
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path]);
 }
 
 + (OFString *)pathForPluginWithName: (OFString *)name
@@ -99,7 +99,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

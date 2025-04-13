@@ -57,7 +57,7 @@
 		_longitude = longitude;
 		_altitude = altitude;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

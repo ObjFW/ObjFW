@@ -63,7 +63,7 @@
 
 + (instancetype)observer
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)alloc
@@ -163,7 +163,7 @@
 # endif
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -182,8 +182,8 @@
 		closesocket(_cancelFD[1]);
 #endif
 
-	[_readObjects release];
-	[_writeObjects release];
+	objc_release(_readObjects);
+	objc_release(_writeObjects);
 
 	[super dealloc];
 }
@@ -213,7 +213,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	bool foundInReadBuffer = false;
 
-	for (OFStream *stream in [[_readObjects copy] autorelease]) {
+	for (OFStream *stream in objc_autorelease([_readObjects copy])) {
 		void *pool2;
 
 		if (![stream isKindOfClass: [OFStream class]])

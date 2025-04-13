@@ -91,12 +91,14 @@ OF_DIRECT_MEMBERS
 
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithStream: stream
+								   mode: mode]);
 }
 
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+								mode: mode]);
 }
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
@@ -114,7 +116,7 @@ OF_DIRECT_MEMBERS
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		if ([mode isEqual: @"r"])
 			_mode = modeRead;
@@ -139,7 +141,7 @@ OF_DIRECT_MEMBERS
 			[(OFSeekableStream *)_stream seekToOffset: -1
 							   whence: OFSeekEnd];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -157,7 +159,7 @@ OF_DIRECT_MEMBERS
 		else
 			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -173,7 +175,7 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil)
 		[self close];
 
-	[_currentEntry release];
+	objc_release(_currentEntry);
 
 	[super dealloc];
 }
@@ -199,7 +201,7 @@ OF_DIRECT_MEMBERS
 		objc_autoreleasePoolPop(pool);
 	}
 
-	[_currentEntry release];
+	objc_release(_currentEntry);
 	_currentEntry = nil;
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
@@ -251,11 +253,12 @@ OF_DIRECT_MEMBERS
 	if (_currentEntry == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	_lastReturnedStream = [[[OFLHAArchiveFileReadStream alloc]
+	_lastReturnedStream = objc_autoreleaseReturnValue(
+	    [[OFLHAArchiveFileReadStream alloc]
 	    of_initWithArchive: self
 			stream: _stream
-			 entry: _currentEntry] autorelease];
-	[_currentEntry release];
+			 entry: _currentEntry]);
+	objc_release(_currentEntry);
 	_currentEntry = nil;
 
 	return _lastReturnedStream;
@@ -282,11 +285,12 @@ OF_DIRECT_MEMBERS
 	}
 	_lastReturnedStream = nil;
 
-	_lastReturnedStream = [[[OFLHAArchiveFileWriteStream alloc]
+	_lastReturnedStream = objc_autoreleaseReturnValue(
+	    [[OFLHAArchiveFileWriteStream alloc]
 	    of_initWithArchive: self
 			stream: (OFSeekableStream *)_stream
 			 entry: entry
-		      encoding: _encoding] autorelease];
+		      encoding: _encoding]);
 	_hasWritten = true;
 
 	return _lastReturnedStream;
@@ -309,7 +313,7 @@ OF_DIRECT_MEMBERS
 
 	_lastReturnedStream = nil;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 }
 @end
@@ -324,8 +328,8 @@ OF_DIRECT_MEMBERS
 	@try {
 		OFString *compressionMethod;
 
-		_archive = [archive retain];
-		_stream = [stream retain];
+		_archive = objc_retain(archive);
+		_stream = objc_retain(stream);
 
 		compressionMethod = entry.compressionMethod;
 
@@ -354,7 +358,7 @@ OF_DIRECT_MEMBERS
 		    [compressionMethod isEqual: @"-lhd-"] ||
 		    [compressionMethod isEqual: @"-lz4-"] ||
 		    [compressionMethod isEqual: @"-pm0-"])
-			_decompressedStream = [stream retain];
+			_decompressedStream = objc_retain(stream);
 		else
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: compressionMethod];
@@ -362,7 +366,7 @@ OF_DIRECT_MEMBERS
 		_entry = [entry copy];
 		_toRead = entry.uncompressedSize;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -374,12 +378,12 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil && _decompressedStream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -498,10 +502,10 @@ OF_DIRECT_MEMBERS
 
 	[self of_skip];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
-	[_decompressedStream release];
+	objc_release(_decompressedStream);
 	_decompressedStream = nil;
 
 	[super close];
@@ -517,7 +521,7 @@ OF_DIRECT_MEMBERS
 	self = [super init];
 
 	@try {
-		_archive = [archive retain];
+		_archive = objc_retain(archive);
 		_entry = [entry mutableCopy];
 		_encoding = encoding;
 
@@ -528,9 +532,9 @@ OF_DIRECT_MEMBERS
 		 * Retain stream last, so that -[close] called by -[dealloc]
 		 * doesn't write in case of an error.
 		 */
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -542,12 +546,12 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -610,7 +614,7 @@ OF_DIRECT_MEMBERS
 	[_entry of_writeToStream: _stream encoding: _encoding];
 	[_stream seekToOffset: offset whence: OFSeekSet];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

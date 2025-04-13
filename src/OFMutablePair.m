@@ -27,15 +27,15 @@
 - (void)setFirstObject: (id)firstObject
 {
 	id old = _firstObject;
-	_firstObject = [firstObject retain];
-	[old release];
+	_firstObject = objc_retain(firstObject);
+	objc_release(old);
 }
 
 - (void)setSecondObject: (id)secondObject
 {
 	id old = _secondObject;
-	_secondObject = [secondObject retain];
-	[old release];
+	_secondObject = objc_retain(secondObject);
+	objc_release(old);
 }
 
 - (id)copy

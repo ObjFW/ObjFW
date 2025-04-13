@@ -69,7 +69,7 @@
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

@@ -174,7 +174,8 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 + (instancetype)streamWithStream: (OFStream *)stream
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream]);
 }
 
 - (instancetype)init
@@ -187,7 +188,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		/* 0-7 address the bit, 8 means fetch next byte */
 		_bitIndex = 8;
@@ -199,7 +200,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 #endif
 		_slidingWindow = OFAllocZeroedMemory(_slidingWindowMask + 1, 1);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -697,7 +698,7 @@ start:
 			   length: _bufferLength - _bufferIndex];
 	_bufferIndex = _bufferLength = 0;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

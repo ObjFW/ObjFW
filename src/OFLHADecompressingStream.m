@@ -101,7 +101,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		/* 0-7 address the bit, 8 means fetch next byte */
 		_bitIndex = 8;
@@ -113,7 +113,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		_slidingWindow = OFAllocMemory(_slidingWindowMask + 1, 1);
 		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -528,7 +528,7 @@ start:
 	_bytesConsumed -= _bufferLength - _bufferIndex;
 	_bufferIndex = _bufferLength = 0;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

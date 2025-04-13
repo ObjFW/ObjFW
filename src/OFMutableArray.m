@@ -158,7 +158,8 @@ OF_SINGLETON_METHODS
 
 + (instancetype)arrayWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 - (instancetype)init
@@ -336,12 +337,12 @@ OF_SINGLETON_METHODS
 	id object1 = [self objectAtIndex: idx1];
 	id object2 = [self objectAtIndex: idx2];
 
-	[object1 retain];
+	objc_retain(object1);
 	@try {
 		[self replaceObjectAtIndex: idx1 withObject: object2];
 		[self replaceObjectAtIndex: idx2 withObject: object1];
 	} @finally {
-		[object1 release];
+		objc_release(object1);
 	}
 }
 

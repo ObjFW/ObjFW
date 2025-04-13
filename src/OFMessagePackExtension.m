@@ -31,7 +31,8 @@
 
 + (instancetype)extensionWithType: (int8_t)type data: (OFData *)data
 {
-	return [[[self alloc] initWithType: type data: data] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithType: type
+								 data: data]);
 }
 
 - (instancetype)init
@@ -50,7 +51,7 @@
 		_type = type;
 		_data = [data copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -59,7 +60,7 @@
 
 - (void)dealloc
 {
-	[_data release];
+	objc_release(_data);
 
 	[super dealloc];
 }
@@ -190,6 +191,6 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 @end

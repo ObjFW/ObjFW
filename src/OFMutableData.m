@@ -139,18 +139,21 @@ OF_SINGLETON_METHODS
 
 + (instancetype)dataWithItemSize: (size_t)itemSize
 {
-	return [[[self alloc] initWithItemSize: itemSize] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItemSize: itemSize]);
 }
 
 + (instancetype)dataWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 + (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity
 {
-	return [[[self alloc] initWithItemSize: itemSize
-				      capacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItemSize: itemSize
+				  capacity: capacity]);
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize

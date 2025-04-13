@@ -43,7 +43,8 @@
 
 + (instancetype)IRIWithScheme: (OFString *)scheme
 {
-	return [[[self alloc] initWithScheme: scheme] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithScheme: scheme]);
 }
 
 - (instancetype)initWithScheme: (OFString *)scheme
@@ -54,7 +55,7 @@
 		self.scheme = scheme;
 		_percentEncodedPath = @"";
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -74,7 +75,7 @@
 
 	_scheme = [scheme.lowercaseString copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -92,7 +93,7 @@
 		    stringByAddingPercentEncodingWithAllowedCharacters:
 		    [OFCharacterSet IRIHostAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -112,7 +113,7 @@
 
 	old = _percentEncodedHost;
 	_percentEncodedHost = [percentEncodedHost copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPort: (OFNumber *)port
@@ -132,7 +133,7 @@
 	}
 
 	_port = [port copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setUser: (OFString *)user
@@ -144,7 +145,7 @@
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet IRIUserAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -159,7 +160,7 @@
 
 	old = _percentEncodedUser;
 	_percentEncodedUser = [percentEncodedUser copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPassword: (OFString *)password
@@ -171,7 +172,7 @@
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet IRIPasswordAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -186,7 +187,7 @@
 
 	old = _percentEncodedPassword;
 	_percentEncodedPassword = [percentEncodedPassword copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPath: (OFString *)path
@@ -198,7 +199,7 @@
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet IRIPathAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -212,7 +213,7 @@
 
 	old = _percentEncodedPath;
 	_percentEncodedPath = [percentEncodedPath copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPathComponents: (OFArray *)components
@@ -224,7 +225,7 @@
 
 	if ([components.firstObject isEqual: @"/"]) {
 		OFMutableArray *mutComponents =
-		    [[components mutableCopy] autorelease];
+		    objc_autorelease([components mutableCopy]);
 		[mutComponents replaceObjectAtIndex: 0 withObject: @""];
 		components = mutComponents;
 	}
@@ -243,7 +244,7 @@
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet IRIQueryAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -258,7 +259,7 @@
 
 	old = _percentEncodedQuery;
 	_percentEncodedQuery = [percentEncodedQuery copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setQueryItems:
@@ -271,7 +272,7 @@
 	OFString *old;
 
 	if (queryItems == nil) {
-		[_percentEncodedQuery release];
+		objc_release(_percentEncodedQuery);
 		_percentEncodedQuery = nil;
 		return;
 	}
@@ -296,7 +297,7 @@
 
 	old = _percentEncodedQuery;
 	_percentEncodedQuery = [percentEncodedQuery copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -310,7 +311,7 @@
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    [OFCharacterSet IRIFragmentAllowedCharacterSet]] copy];
 
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -325,7 +326,7 @@
 
 	old = _percentEncodedFragment;
 	_percentEncodedFragment = [percentEncodedFragment copy];
-	[old release];
+	objc_release(old);
 }
 
 - (id)copy
@@ -345,9 +346,9 @@
 	if ([_scheme isEqual: @"file"] &&
 	    ![_percentEncodedPath hasSuffix: @"/"] &&
 	    [[OFFileManager defaultManager] directoryExistsAtIRI: self]) {
-		OFString *path = [[_percentEncodedPath
-		    stringByAppendingString: @"/"] retain];
-		[_percentEncodedPath release];
+		OFString *path = objc_retain(
+		    [_percentEncodedPath stringByAppendingString: @"/"]);
+		objc_release(_percentEncodedPath);
 		_percentEncodedPath = path;
 	}
 #endif
@@ -382,8 +383,8 @@
 	if (isDirectory && ![path hasSuffix: @"/"])
 		path = [path stringByAppendingString: @"/"];
 
-	[_percentEncodedPath release];
-	_percentEncodedPath = [path retain];
+	objc_release(_percentEncodedPath);
+	_percentEncodedPath = objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -398,7 +399,7 @@
 		return;
 
 	pool = objc_autoreleasePoolPush();
-	path = [[_percentEncodedPath mutableCopy] autorelease];
+	path = objc_autorelease([_percentEncodedPath mutableCopy]);
 
 	extension = [extension
 	    stringByAddingPercentEncodingWithAllowedCharacters:
@@ -415,8 +416,8 @@
 		[path appendString: @"/"];
 
 	[path makeImmutable];
-	[_percentEncodedPath release];
-	_percentEncodedPath = [path retain];
+	objc_release(_percentEncodedPath);
+	_percentEncodedPath = objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -443,8 +444,8 @@
 	}
 
 	path = [path substringToIndex: pos + 1];
-	[_percentEncodedPath release];
-	_percentEncodedPath = [path retain];
+	objc_release(_percentEncodedPath);
+	_percentEncodedPath = objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -452,7 +453,8 @@
 - (void)deletePathExtension
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableString *path = [[_percentEncodedPath mutableCopy] autorelease];
+	OFMutableString *path =
+	    objc_autorelease([_percentEncodedPath mutableCopy]);
 	bool isDirectory = false;
 	size_t pos;
 
@@ -474,8 +476,8 @@
 		[path appendString: @"/"];
 
 	[path makeImmutable];
-	[_percentEncodedPath release];
-	_percentEncodedPath = [path retain];
+	objc_release(_percentEncodedPath);
+	_percentEncodedPath = objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -487,8 +489,8 @@
 	bool done = false, startsWithEmpty, endsWithEmpty;
 	OFString *path;
 
-	array = [[[_percentEncodedPath
-	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
+	array = objc_autorelease([[_percentEncodedPath
+	    componentsSeparatedByString: @"/"] mutableCopy]);
 
 	endsWithEmpty = ([array.lastObject length] == 0);
 	startsWithEmpty = ([array.firstObject length] == 0);

@@ -86,19 +86,19 @@ OF_DIRECT_MEMBERS
 + (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
 			 objectFunctions: (OFMapTableFunctions)objectFunctions
 {
-	return [[[self alloc]
-	    initWithKeyFunctions: keyFunctions
-		  objectFunctions: objectFunctions] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithKeyFunctions: keyFunctions
+			       objectFunctions: objectFunctions]);
 }
 
 + (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
 			 objectFunctions: (OFMapTableFunctions)objectFunctions
 				capacity: (size_t)capacity
 {
-	return [[[self alloc]
-	    initWithKeyFunctions: keyFunctions
-		 objectFunctions: objectFunctions
-			capacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithKeyFunctions: keyFunctions
+			       objectFunctions: objectFunctions
+				      capacity: capacity]);
 }
 
 - (instancetype)init
@@ -163,7 +163,7 @@ OF_DIRECT_MEMBERS
 		if (OFHashSeed != 0)
 			_rotation = OFRandom16() & 31;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -405,7 +405,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 				setObject(copy, _buckets[i]->key,
 				    _buckets[i]->object, _buckets[i]->hash);
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -573,20 +573,20 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (OFMapTableEnumerator *)keyEnumerator
 {
-	return [[[OFMapTableKeyEnumerator alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableKeyEnumerator alloc]
 	    of_initWithMapTable: self
 			buckets: _buckets
 		       capacity: _capacity
-	       mutationsPointer: &_mutations] autorelease];
+	       mutationsPointer: &_mutations]);
 }
 
 - (OFMapTableEnumerator *)objectEnumerator
 {
-	return [[[OFMapTableObjectEnumerator alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableObjectEnumerator alloc]
 	    of_initWithMapTable: self
 			buckets: _buckets
 		       capacity: _capacity
-	       mutationsPointer: &_mutations] autorelease];
+	       mutationsPointer: &_mutations]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
@@ -670,7 +670,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
 	self = [super init];
 
-	_mapTable = [mapTable retain];
+	_mapTable = objc_retain(mapTable);
 	_buckets = buckets;
 	_capacity = capacity;
 	_mutations = *mutationsPtr;
@@ -681,7 +681,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (void)dealloc
 {
-	[_mapTable release];
+	objc_release(_mapTable);
 
 	[super dealloc];
 }
@@ -732,16 +732,16 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
 	self = [super init];
 
-	_enumerator = [enumerator retain];
-	_object = [object retain];
+	_enumerator = objc_retain(enumerator);
+	_object = objc_retain(object);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_enumerator release];
-	[_object release];
+	objc_release(_enumerator);
+	objc_release(_object);
 
 	[super dealloc];
 }

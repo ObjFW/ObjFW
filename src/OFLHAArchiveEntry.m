@@ -61,7 +61,7 @@ static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_fileName release];
+	objc_release(entry->_fileName);
 	entry->_fileName = nil;
 
 	entry->_fileName = [[OFString alloc]
@@ -75,7 +75,7 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableData *data = [[extension mutableCopy] autorelease];
+	OFMutableData *data = objc_autorelease([extension mutableCopy]);
 	char *items = data.mutableItems;
 	size_t count = data.count;
 	OFMutableString *directoryName;
@@ -93,7 +93,7 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 	[directoryName makeImmutable];
 
-	[entry->_directoryName release];
+	objc_release(entry->_directoryName);
 	entry->_directoryName = nil;
 
 	entry->_directoryName = [directoryName copy];
@@ -105,7 +105,7 @@ static void
 parseCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_fileComment release];
+	objc_release(entry->_fileComment);
 	entry->_fileComment = nil;
 
 	entry->_fileComment = [[OFString alloc]
@@ -126,7 +126,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	memcpy(&POSIXPermissions, (char *)extension.items + 1, 2);
 	POSIXPermissions = OFFromLittleEndian16(POSIXPermissions);
 
-	[entry->_POSIXPermissions release];
+	objc_release(entry->_POSIXPermissions);
 	entry->_POSIXPermissions = nil;
 
 	entry->_POSIXPermissions =
@@ -148,10 +148,10 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	memcpy(&ownerAccountID, (char *)extension.items + 3, 2);
 	ownerAccountID = OFFromLittleEndian16(ownerAccountID);
 
-	[entry->_groupOwnerAccountID release];
+	objc_release(entry->_groupOwnerAccountID);
 	entry->_groupOwnerAccountID = nil;
 
-	[entry->_ownerAccountID release];
+	objc_release(entry->_ownerAccountID);
 	entry->_ownerAccountID = nil;
 
 	entry->_groupOwnerAccountID =
@@ -164,7 +164,7 @@ static void
 parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_groupOwnerAccountName release];
+	objc_release(entry->_groupOwnerAccountName);
 	entry->_groupOwnerAccountName = nil;
 
 	entry->_groupOwnerAccountName = [[OFString alloc]
@@ -177,7 +177,7 @@ static void
 parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
-	[entry->_ownerAccountName release];
+	objc_release(entry->_ownerAccountName);
 	entry->_ownerAccountName = nil;
 
 	entry->_ownerAccountName = [[OFString alloc]
@@ -198,7 +198,7 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	memcpy(&modificationDate, (char *)extension.items + 1, 4);
 	modificationDate = OFFromLittleEndian32(modificationDate);
 
-	[entry->_modificationDate release];
+	objc_release(entry->_modificationDate);
 	entry->_modificationDate = nil;
 
 	entry->_modificationDate = [[OFDate alloc]
@@ -359,7 +359,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		_compressionMethod = @"-lh0-";
 		_modificationDate = [[OFDate alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -400,7 +400,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			if (header[0] < (21 - 2) + 1 + 2)
 				@throw [OFInvalidFormatException exception];
 
-			_modificationDate = [parseMSDOSDate(date) retain];
+			_modificationDate = objc_retain(parseMSDOSDate(date));
 
 			fileNameLength = [stream readInt8];
 			tmp = [stream readStringWithLength: fileNameLength
@@ -510,7 +510,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 		[_extensions makeImmutable];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -519,24 +519,24 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 - (void)dealloc
 {
-	[_compressionMethod release];
-	[_fileName release];
-	[_directoryName release];
-	[_modificationDate release];
-	[_fileComment release];
-	[_POSIXPermissions release];
-	[_ownerAccountID release];
-	[_groupOwnerAccountID release];
-	[_ownerAccountName release];
-	[_groupOwnerAccountName release];
-	[_extensions release];
+	objc_release(_compressionMethod);
+	objc_release(_fileName);
+	objc_release(_directoryName);
+	objc_release(_modificationDate);
+	objc_release(_fileComment);
+	objc_release(_POSIXPermissions);
+	objc_release(_ownerAccountID);
+	objc_release(_groupOwnerAccountID);
+	objc_release(_ownerAccountName);
+	objc_release(_groupOwnerAccountName);
+	objc_release(_extensions);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -545,10 +545,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    initWithFileName: _fileName];
 
 	@try {
-		[copy->_compressionMethod release];
+		objc_release(copy->_compressionMethod);
 		copy->_compressionMethod = nil;
 
-		[copy->_modificationDate release];
+		objc_release(copy->_modificationDate);
 		copy->_modificationDate = nil;
 
 		copy->_directoryName = [_directoryName copy];
@@ -560,14 +560,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		copy->_CRC16 = _CRC16;
 		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
 		copy->_fileComment = [_fileComment copy];
-		copy->_POSIXPermissions = [_POSIXPermissions retain];
-		copy->_ownerAccountID = [_ownerAccountID retain];
-		copy->_groupOwnerAccountID = [_groupOwnerAccountID retain];
+		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
+		copy->_ownerAccountID = objc_retain(_ownerAccountID);
+		copy->_groupOwnerAccountID = objc_retain(_groupOwnerAccountID);
 		copy->_ownerAccountName = [_ownerAccountName copy];
 		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
 		copy->_extensions = [_extensions copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -888,10 +888,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    _ownerAccountID, _groupOwnerAccountID, _ownerAccountName,
 	    _groupOwnerAccountName, extensions];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

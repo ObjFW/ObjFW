@@ -75,7 +75,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 		@try {
 			[handlers setObject: handler forKey: scheme];
 		} @finally {
-			[handler release];
+			objc_release(handler);
 		}
 	}
 
@@ -122,7 +122,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	@try {
 		_scheme = [scheme copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -131,7 +131,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 - (void)dealloc
 {
-	[_scheme release];
+	objc_release(_scheme);
 
 	[super dealloc];
 }

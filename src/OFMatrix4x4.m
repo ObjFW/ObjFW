@@ -268,13 +268,14 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 + (OFMatrix4x4 *)identityMatrix
 {
-	return [[[OFMatrix4x4 alloc]
-	    initWithValues: identityValues] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFMatrix4x4 alloc] initWithValues: identityValues]);
 }
 
 + (instancetype)matrixWithValues: (const float [4][4])values
 {
-	return [[[self alloc] initWithValues: values] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithValues: values]);
 }
 
 - (instancetype)init
@@ -351,7 +352,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 		{ 0, 0, 0, 1 }
 	    }];
 	[self multiplyWithMatrix: translation];
-	[translation release];
+	objc_release(translation);
 }
 
 - (void)scaleWithVector: (OFVector3D)vector
@@ -364,7 +365,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 		{ 0, 0, 0, 1 }
 	    }];
 	[self multiplyWithMatrix: scale];
-	[scale release];
+	objc_release(scale);
 }
 
 - (OFVector4D)transformedVector: (OFVector4D)vector

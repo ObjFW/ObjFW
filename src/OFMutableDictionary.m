@@ -111,7 +111,8 @@ OF_SINGLETON_METHODS
 
 + (instancetype)dictionaryWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 - (instancetype)init

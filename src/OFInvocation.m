@@ -31,7 +31,8 @@
 
 + (instancetype)invocationWithMethodSignature: (OFMethodSignature *)signature
 {
-	return [[[self alloc] initWithMethodSignature: signature] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithMethodSignature: signature]);
 }
 
 - (instancetype)initWithMethodSignature: (OFMethodSignature *)signature
@@ -44,7 +45,7 @@
 		const char *typeEncoding;
 		size_t typeSize;
 
-		_methodSignature = [signature retain];
+		_methodSignature = objc_retain(signature);
 		_arguments = [[OFMutableArray alloc] init];
 
 		for (size_t i = 0; i < numberOfArguments; i++) {
@@ -72,7 +73,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -81,9 +82,9 @@
 
 - (void)dealloc
 {
-	[_methodSignature release];
-	[_arguments release];
-	[_returnValue release];
+	objc_release(_methodSignature);
+	objc_release(_arguments);
+	objc_release(_returnValue);
 
 	[super dealloc];
 }

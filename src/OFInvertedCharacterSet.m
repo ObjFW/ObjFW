@@ -35,12 +35,12 @@
 	self = [super init];
 
 	@try {
-		_characterSet = [characterSet retain];
+		_characterSet = objc_retain(characterSet);
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -49,7 +49,7 @@
 
 - (void)dealloc
 {
-	[_characterSet release];
+	objc_release(_characterSet);
 
 	[super dealloc];
 }
@@ -62,6 +62,6 @@
 
 - (OFCharacterSet *)invertedSet
 {
-	return [[_characterSet retain] autorelease];
+	return _characterSet;
 }
 @end

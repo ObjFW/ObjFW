@@ -56,7 +56,7 @@ escapeString(OFString *string)
 	    .location == OFNotFound)
 		return string;
 
-	mutableString = [[string mutableCopy] autorelease];
+	mutableString = objc_autorelease([string mutableCopy]);
 
 	[mutableString replaceOccurrencesOfString: @"\\" withString: @"\\\\"];
 	[mutableString replaceOccurrencesOfString: @"\f" withString: @"\\f"];
@@ -75,8 +75,8 @@ escapeString(OFString *string)
 @implementation OFINISectionPair
 - (void)dealloc
 {
-	[_key release];
-	[_value release];
+	objc_release(_key);
+	objc_release(_value);
 
 	[super dealloc];
 }
@@ -90,14 +90,14 @@ escapeString(OFString *string)
 @implementation OFINISectionComment
 - (void)dealloc
 {
-	[_comment release];
+	objc_release(_comment);
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	return [[_comment copy] autorelease];
+	return objc_autoreleaseReturnValue([_comment copy]);
 }
 @end
 
@@ -121,7 +121,7 @@ escapeString(OFString *string)
 		_name = [name copy];
 		_lines = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -135,8 +135,8 @@ escapeString(OFString *string)
 
 - (void)dealloc
 {
-	[_name release];
-	[_lines release];
+	objc_release(_name);
+	objc_release(_lines);
 
 	[super dealloc];
 }
@@ -196,7 +196,7 @@ unescapeMutableString(OFMutableString *string)
 
 	if (*cString == ';' || *cString == '#') {
 		OFINISectionComment *comment =
-		    [[[OFINISectionComment alloc] init] autorelease];
+		    objc_autorelease([[OFINISectionComment alloc] init]);
 		comment->_comment = [line copy];
 		[_lines addObject: comment];
 		return;
@@ -257,7 +257,7 @@ unescapeMutableString(OFMutableString *string)
 	[key makeImmutable];
 	[value makeImmutable];
 
-	pair = [[[OFINISectionPair alloc] init] autorelease];
+	pair = objc_autorelease([[OFINISectionPair alloc] init]);
 	pair->_key = [key copy];
 	pair->_value = [value copy];
 	[_lines addObject: pair];
@@ -282,7 +282,8 @@ unescapeMutableString(OFMutableString *string)
 		pair = line;
 
 		if ([pair->_key isEqual: key])
-			return [[pair->_value copy] autorelease];
+			return objc_autoreleaseReturnValue(
+			    [pair->_value copy]);
 	}
 
 	return defaultValue;
@@ -390,7 +391,7 @@ unescapeMutableString(OFMutableString *string)
 		pair = line;
 
 		if ([pair->_key isEqual: key])
-			[ret addObject: [[pair->_value copy] autorelease]];
+			[ret addObject: objc_autorelease([pair->_value copy])];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -414,7 +415,7 @@ unescapeMutableString(OFMutableString *string)
 		if ([pair->_key isEqual: key]) {
 			OFString *old = pair->_value;
 			pair->_value = [string copy];
-			[old release];
+			objc_release(old);
 
 			objc_autoreleasePoolPop(pool);
 
@@ -422,7 +423,7 @@ unescapeMutableString(OFMutableString *string)
 		}
 	}
 
-	pair = [[[OFINISectionPair alloc] init] autorelease];
+	pair = objc_autorelease([[OFINISectionPair alloc] init]);
 	pair->_key = nil;
 	pair->_value = nil;
 
@@ -431,8 +432,8 @@ unescapeMutableString(OFMutableString *string)
 		pair->_value = [string copy];
 		[_lines addObject: pair];
 	} @catch (id e) {
-		[pair->_key release];
-		[pair->_value release];
+		objc_release(pair->_key);
+		objc_release(pair->_value);
 
 		@throw e;
 	}
@@ -512,7 +513,7 @@ unescapeMutableString(OFMutableString *string)
 		if (![string isKindOfClass: [OFString class]])
 			@throw [OFInvalidArgumentException exception];
 
-		pair = [[[OFINISectionPair alloc] init] autorelease];
+		pair = objc_autorelease([[OFINISectionPair alloc] init]);
 		pair->_key = [key copy];
 		pair->_value = [string copy];
 

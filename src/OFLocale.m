@@ -109,7 +109,7 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 static bool
 evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
-	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
+	OFMutableString *condition = objc_autorelease([condition_ mutableCopy]);
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -412,7 +412,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	 * break old applications, this method needs to just return the
 	 * singleton now.
 	 */
-	[self release];
+	objc_release(self);
 
 	return [OFLocale currentLocale];
 }
@@ -450,8 +450,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			parseLocale(messagesLocale, &_encoding,
 			    &_languageCode, &_countryCode);
 
-			[_languageCode retain];
-			[_countryCode retain];
+			objc_retain(_languageCode);
+			objc_retain(_countryCode);
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -524,7 +524,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		objc_autoreleasePoolPop(pool);
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
