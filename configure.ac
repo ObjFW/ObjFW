@@ -742,12 +742,15 @@ case "$objc_runtime" in
 	AC_CHECK_FUNC(objc_constructInstance, [], [
 		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
 		AC_DEFINE(OF_DECLARE_CONSTRUCT_INSTANCE, 1,
-			[Whether to declare objc_constructInstance])
+			[Whether to declare objc_constructInstance etc.])
 	])
 	AC_CHECK_FUNCS(objc_setAssociatedObject, [], [
 		AC_SUBST(RUNTIME_ASSOCIATION_M, "runtime/association.m")
 		AC_DEFINE(OF_DECLARE_SET_ASSOCIATED_OBJECT, 1,
-			[Whether to declare objc_setAssociatedObject])
+			[Whether to declare objc_setAssociatedObject etc.])
+	])
+	AC_CHECK_FUNCS(objc_retain, [], [
+		AC_SUBST(RUNTIME_ARC_M, "runtime/arc.m")
 	])
 
 	OBJCFLAGS="$old_OBJCFLAGS"

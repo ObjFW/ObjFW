@@ -27,6 +27,8 @@
 # import "OFMapTable.h"
 #endif
 
+#import "pre_ivar.h"
+
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "OFAtomic.h"
 #endif
@@ -138,7 +140,8 @@ objc_setAssociatedObject(id object, const void *key, id value,
 		return;
 	}
 
-#if defined(OF_OBJFW_RUNTIME) && defined(OF_HAVE_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS) && \
+    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
 	OFAtomicIntOr(&OBJC_PRE_IVARS(object)->info,
 	    OBJC_OBJECT_INFO_ASSOCIATIONS);
 #endif
@@ -238,7 +241,8 @@ objc_removeAssociatedObjects(id object)
 {
 	size_t slot;
 
-#if defined(OF_OBJFW_RUNTIME) && defined(OF_HAVE_ATOMIC_OPS)
+#if defined(OF_HAVE_ATOMIC_OPS) && \
+    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
 	OFReleaseMemoryBarrier();
 
 	if (!(OBJC_PRE_IVARS(object)->info & OBJC_OBJECT_INFO_ASSOCIATIONS))

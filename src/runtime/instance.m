@@ -25,12 +25,12 @@
 # import "ObjFWRT.h"
 # import "private.h"
 #else
-# ifdef OF_MACOS
-#  import <objc/objc-runtime.h>
-# else
-#  import <objc/runtime.h>
-# endif
+# import <objc/objc.h>
+#endif
 
+#import "pre_ivar.h"
+
+#ifdef OF_APPLE_RUNTIME
 @interface DummyObject
 - (void)dealloc;
 @end
