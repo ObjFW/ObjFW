@@ -26,7 +26,7 @@
 
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
-# define numSpinlocks 8	/* needs to be a power of 2 */
+# define numSpinlocks 16	/* needs to be a power of 2 */
 static OFSpinlock spinlocks[numSpinlocks];
 
 static OF_INLINE size_t
