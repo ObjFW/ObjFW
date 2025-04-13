@@ -36,18 +36,6 @@ copy(void *object)
 	return [(id)object copy];
 }
 
-static void *
-retain(void *object)
-{
-	return [(id)object retain];
-}
-
-static void
-release(void *object)
-{
-	[(id)object release];
-}
-
 static unsigned long
 hash(void *object)
 {
@@ -62,13 +50,13 @@ equal(void *object1, void *object2)
 
 static const OFMapTableFunctions keyFunctions = {
 	.retain = copy,
-	.release = release,
+	.release = (void (*)(void *))objc_release,
 	.hash = hash,
 	.equal = equal
 };
 static const OFMapTableFunctions objectFunctions = {
-	.retain = retain,
-	.release = release,
+	.retain = (void *(*)(void *))objc_retain,
+	.release = (void (*)(void *))objc_release,
 	.hash = hash,
 	.equal = equal
 };
