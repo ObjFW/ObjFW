@@ -61,6 +61,12 @@ OF_CONSTRUCTOR()
 id
 objc_retain(id object)
 {
+	if (object_isTaggedPointer(object) || object == nil)
+		return object;
+
+	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootRetain(object);
+
 	return [object retain];
 }
 
@@ -73,18 +79,38 @@ objc_retainBlock(id block)
 id
 objc_retainAutorelease(id object)
 {
+	if (object_isTaggedPointer(object) || object == nil)
+		return object;
+
+	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(_objc_rootRetain(object));
+
 	return [[object retain] autorelease];
 }
 
 void
 objc_release(id object)
 {
+	if (object_isTaggedPointer(object) || object == nil)
+		return;
+
+	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR) {
+		_objc_rootRelease(object);
+		return;
+	}
+
 	[object release];
 }
 
 id
 objc_autorelease(id object)
 {
+	if (object_isTaggedPointer(object) || object == nil)
+		return object;
+
+	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(object);
+
 	return [object autorelease];
 }
 

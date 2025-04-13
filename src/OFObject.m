@@ -1139,6 +1139,10 @@ _references_to_categories_of_OFObject(void)
 							 object: self];
 }
 
+- (void)_usesRuntimeRR
+{
+}
+
 - (instancetype)retain
 {
 	return _objc_rootRetain(self);

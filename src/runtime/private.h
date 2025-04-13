@@ -54,13 +54,14 @@ struct objc_class {
 };
 
 enum objc_class_info {
-	OBJC_CLASS_INFO_CLASS	    = 0x001,
-	OBJC_CLASS_INFO_METACLASS   = 0x002,
-	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,
-	OBJC_CLASS_INFO_SETUP	    = 0x100,
-	OBJC_CLASS_INFO_LOADED	    = 0x200,
-	OBJC_CLASS_INFO_DTABLE	    = 0x400,
-	OBJC_CLASS_INFO_INITIALIZED = 0x800
+	OBJC_CLASS_INFO_CLASS	    = 0x0001,
+	OBJC_CLASS_INFO_METACLASS   = 0x0002,
+	OBJC_CLASS_INFO_NEW_ABI	    = 0x0010,
+	OBJC_CLASS_INFO_SETUP	    = 0x0100,
+	OBJC_CLASS_INFO_LOADED	    = 0x0200,
+	OBJC_CLASS_INFO_DTABLE	    = 0x0400,
+	OBJC_CLASS_INFO_INITIALIZED = 0x0800,
+	OBJC_CLASS_INFO_RUNTIME_RR  = 0x1000
 };
 
 struct objc_object {
@@ -347,4 +348,5 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 - (nonnull id)copy;
 - (nonnull id)mutableCopy;
 - (bool)retainWeakReference;
+- (void)_usesRuntimeRR;
 @end
