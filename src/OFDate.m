@@ -111,7 +111,7 @@ static OFMutex *mutex;
 static void
 releaseMutex(void)
 {
-	[mutex release];
+	objc_release(mutex);
 }
 #endif
 
@@ -341,33 +341,35 @@ OF_SINGLETON_METHODS
 
 + (instancetype)date
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)dateWithTimeIntervalSince1970: (OFTimeInterval)seconds
 {
-	return [[[self alloc]
-	    initWithTimeIntervalSince1970: seconds] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithTimeIntervalSince1970: seconds]);
 }
 
 + (instancetype)dateWithTimeIntervalSinceNow: (OFTimeInterval)seconds
 {
-	return [[[self alloc]
-	    initWithTimeIntervalSinceNow: seconds] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithTimeIntervalSinceNow: seconds]);
 }
 
 + (instancetype)dateWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
-	return [[[self alloc] initWithDateString: string
-					  format: format] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDateString: string
+				      format: format]);
 }
 
 + (instancetype)dateWithLocalDateString: (OFString *)string
 				 format: (OFString *)format
 {
-	return [[[self alloc] initWithLocalDateString: string
-					       format: format] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLocalDateString: string
+					   format: format]);
 }
 
 + (instancetype)distantFuture
@@ -395,7 +397,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -502,7 +504,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFComparisonResult)compare: (OFDate *)date
@@ -570,11 +572,11 @@ OF_SINGLETON_METHODS
 				 data: data] messagePackRepresentation];
 	}
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (unsigned long)microsecond

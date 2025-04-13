@@ -57,7 +57,7 @@
 
 + (instancetype)socket
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -80,7 +80,7 @@
 #endif
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -97,7 +97,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)canBlock

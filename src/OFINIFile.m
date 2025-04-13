@@ -56,12 +56,14 @@ isWhitespaceLine(OFString *line)
 
 + (instancetype)fileWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
 }
 
 + (instancetype)fileWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithIRI: IRI encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			     encoding: encoding]);
 }
 
 - (instancetype)init
@@ -79,12 +81,13 @@ isWhitespaceLine(OFString *line)
 	self = [super init];
 
 	@try {
-		_sections = [[OFMutableArray alloc] initWithObject:
-		    [[[OFINISection alloc] of_initWithName: @""] autorelease]];
+		OFINISection *section = objc_autorelease(
+		    [[OFINISection alloc] of_initWithName: @""]);
+		_sections = [[OFMutableArray alloc] initWithObject: section];
 
 		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -93,7 +96,7 @@ isWhitespaceLine(OFString *line)
 
 - (void)dealloc
 {
-	[_sections release];
+	objc_release(_sections);
 
 	[super dealloc];
 }
@@ -112,7 +115,8 @@ isWhitespaceLine(OFString *line)
 		if ([section.name isEqual: name])
 			return section;
 
-	section = [[[OFINISection alloc] of_initWithName: name] autorelease];
+	section = objc_autorelease(
+	    [[OFINISection alloc] of_initWithName: name]);
 	[_sections addObject: section];
 
 	objc_autoreleasePoolPop(pool);
@@ -160,8 +164,8 @@ isWhitespaceLine(OFString *line)
 			if (sectionName.length == 0)
 				@throw [OFInvalidFormatException exception];
 
-			section = [[[OFINISection alloc]
-			    of_initWithName: sectionName] autorelease];
+			section = objc_autorelease([[OFINISection alloc]
+			    of_initWithName: sectionName]);
 			[_sections addObject: section];
 		} else {
 			if (section == nil)

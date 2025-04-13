@@ -218,14 +218,14 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (OFIRI *)currentDirectoryIRI
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFIRI *ret;
+	OFIRI *ret = [OFIRI fileIRIWithPath: self.currentDirectoryPath
+				isDirectory: true];
 
-	ret = [OFIRI fileIRIWithPath: self.currentDirectoryPath
-			 isDirectory: true];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -250,11 +250,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	ret = [self attributesOfItemAtIRI: [OFIRI fileIRIWithPath: path
 						      isDirectory: false]];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -406,7 +406,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	 * iterate them in reverse order until we find the first existing
 	 * directory, and then create subdirectories from there.
 	 */
-	mutableIRI = [[IRI mutableCopy] autorelease];
+	mutableIRI = objc_autorelease([IRI mutableCopy]);
 	mutableIRI.percentEncodedPath = @"/";
 	components = IRI.pathComponents;
 	componentIRIs = [OFMutableArray arrayWithCapacity: components.count];
@@ -416,7 +416,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 		if (![mutableIRI.percentEncodedPath isEqual: @"/"])
 			[componentIRIs addObject:
-			    [[mutableIRI copy] autorelease]];
+			    objc_autorelease([mutableIRI copy])];
 	}
 
 	componentIRIsCount = componentIRIs.count;
@@ -494,11 +494,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		[ret addObject: IRI.lastPathComponent];
 
 	[ret makeImmutable];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path
@@ -524,11 +524,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	}
 
 	[ret makeImmutable];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)changeCurrentDirectoryPath: (OFString *)path
@@ -968,15 +968,15 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 				     forName: name
 				 ofItemAtIRI: IRI];
 
-	[*data retain];
+	objc_retain(*data);
 	if (type != NULL)
-		[*type retain];
+		objc_retain(*type);
 
 	objc_autoreleasePoolPop(pool);
 
-	[*data autorelease];
+	objc_autorelease(*data);
 	if (type != NULL)
-		[*type autorelease];
+		objc_autorelease(*type);
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
@@ -1006,15 +1006,15 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			   ofItemAtIRI: [OFIRI fileIRIWithPath: path
 						   isDirectory: false]];
 
-	[*data retain];
+	objc_retain(*data);
 	if (type != NULL)
-		[*type retain];
+		objc_retain(*type);
 
 	objc_autoreleasePoolPop(pool);
 
-	[*data autorelease];
+	objc_autorelease(*data);
 	if (type != NULL)
-		[*type autorelease];
+		objc_autorelease(*type);
 }
 #endif
 

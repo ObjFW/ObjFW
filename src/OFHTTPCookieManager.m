@@ -28,7 +28,7 @@
 @implementation OFHTTPCookieManager
 + (instancetype)manager
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -38,7 +38,7 @@
 	@try {
 		_cookies = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -47,14 +47,14 @@
 
 - (void)dealloc
 {
-	[_cookies release];
+	objc_release(_cookies);
 
 	[super dealloc];
 }
 
 - (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
 {
-	return [[_cookies copy] autorelease];
+	return objc_autoreleaseReturnValue([_cookies copy]);
 }
 
 - (void)addCookie: (OFHTTPCookie *)cookie forIRI: (OFIRI *)IRI

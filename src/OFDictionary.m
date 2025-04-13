@@ -154,34 +154,37 @@ OF_SINGLETON_METHODS
 
 + (instancetype)dictionary
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)dictionaryWithDictionary: (OFDictionary *)dictionary
 {
-	return [[(OFDictionary *)[self alloc]
-	    initWithDictionary: dictionary] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [(OFDictionary *)[self alloc] initWithDictionary: dictionary]);
 }
 
 + (instancetype)dictionaryWithObject: (id)object forKey: (id)key
 {
-	return [[[self alloc] initWithObject: object forKey: key] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithObject: object
+								 forKey: key]);
 }
 
 + (instancetype)dictionaryWithObjects: (OFArray *)objects
 			      forKeys: (OFArray *)keys
 {
-	return [[[self alloc] initWithObjects: objects
-				      forKeys: keys] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				  forKeys: keys]);
 }
 
 + (instancetype)dictionaryWithObjects: (id const *)objects
 			      forKeys: (id const *)keys
 				count: (size_t)count
 {
-	return [[[self alloc] initWithObjects: objects
-				      forKeys: keys
-					count: count] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				  forKeys: keys
+				    count: count]);
 }
 
 + (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ...
@@ -190,11 +193,11 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[[self alloc] initWithKey: firstKey
-			       arguments: arguments] autorelease];
+	ret = [[self alloc] initWithKey: firstKey
+			      arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (instancetype)init
@@ -204,7 +207,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -232,7 +235,7 @@ OF_SINGLETON_METHODS
 		objects = objects_.objects;
 		keys = keys_.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -253,7 +256,7 @@ OF_SINGLETON_METHODS
 		if (key == nil || object == nil)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -275,7 +278,7 @@ OF_SINGLETON_METHODS
 		objects = objects_.objects;
 		keys = keys_.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -360,7 +363,7 @@ OF_SINGLETON_METHODS
 		OFFreeMemory(objects);
 		OFFreeMemory(keys);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -411,7 +414,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -540,8 +543,8 @@ OF_SINGLETON_METHODS
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFDictionaryObjectEnumerator alloc]
-	    initWithDictionary: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFDictionaryObjectEnumerator alloc] initWithDictionary: self]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
@@ -838,12 +841,12 @@ OF_SINGLETON_METHODS
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		_dictionary = [dictionary retain];
-		_keyEnumerator = [[_dictionary keyEnumerator] retain];
+		_dictionary = objc_retain(dictionary);
+		_keyEnumerator = objc_retain([_dictionary keyEnumerator]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -852,8 +855,8 @@ OF_SINGLETON_METHODS
 
 - (void)dealloc
 {
-	[_dictionary release];
-	[_keyEnumerator release];
+	objc_release(_dictionary);
+	objc_release(_keyEnumerator);
 
 	[super dealloc];
 }

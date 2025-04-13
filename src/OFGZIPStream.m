@@ -36,7 +36,8 @@
 
 + (instancetype)streamWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream mode: mode]);
 }
 
 - (instancetype)init
@@ -54,11 +55,11 @@
 			    exceptionWithSelector: _cmd
 					   object: nil];
 
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 		_operatingSystemMadeOn = OFGZIPStreamOperatingSystemUnknown;
 		_CRC32 = ~0;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -70,8 +71,8 @@
 	if (_stream != nil)
 		[self close];
 
-	[_inflateStream release];
-	[_modificationDate release];
+	objc_release(_inflateStream);
+	objc_release(_modificationDate);
 
 	[super dealloc];
 }
@@ -128,7 +129,7 @@
 			if (_bytesRead < 4)
 				return 0;
 
-			[_modificationDate release];
+			objc_release(_modificationDate);
 			_modificationDate = nil;
 
 			_modificationDate = [[OFDate alloc]
@@ -254,7 +255,7 @@
 				return bytesRead;
 			}
 
-			[_inflateStream release];
+			objc_release(_inflateStream);
 			_inflateStream = nil;
 
 			_state++;
@@ -342,7 +343,7 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

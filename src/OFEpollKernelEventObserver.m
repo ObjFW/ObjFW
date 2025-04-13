@@ -75,7 +75,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -86,7 +86,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 {
 	close(_epfd);
 
-	[_FDToEvents release];
+	objc_release(_FDToEvents);
 
 	[super dealloc];
 }

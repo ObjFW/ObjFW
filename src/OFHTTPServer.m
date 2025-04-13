@@ -171,9 +171,9 @@ normalizedKey(OFString *key)
 	self = [super init];
 
 	_statusCode = 500;
-	_stream = [stream retain];
-	_server = [server retain];
-	_request = [request retain];
+	_stream = objc_retain(stream);
+	_server = objc_retain(server);
+	_request = objc_retain(request);
 
 	return self;
 }
@@ -183,8 +183,8 @@ normalizedKey(OFString *key)
 	if (_stream != nil)
 		[self close];
 
-	[_server release];
-	[_request release];
+	objc_release(_server);
+	objc_release(_request);
 
 	[super dealloc];
 }
@@ -200,7 +200,7 @@ normalizedKey(OFString *key)
 			      self.protocolVersionString, _statusCode,
 			      OFHTTPStatusCodeString(_statusCode)];
 
-	headers = [[_headers mutableCopy] autorelease];
+	headers = objc_autorelease([_headers mutableCopy]);
 
 	if ([headers objectForKey: @"Date"] == nil) {
 		OFString *date = [[OFDate date]
@@ -300,7 +300,7 @@ normalizedKey(OFString *key)
 #endif
 	}
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -323,17 +323,17 @@ normalizedKey(OFString *key)
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
-		_server = [server retain];
-		_timer = [[OFTimer
+		_stream = objc_retain(stream);
+		_server = objc_retain(server);
+		_timer = objc_retain([OFTimer
 		    scheduledTimerWithTimeInterval: 10
 					    target: _stream
 					  selector: @selector(
 							cancelAsyncRequests)
-					   repeats: false] retain];
+					   repeats: false]);
 		_state = stateAwaitingProlog;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -342,16 +342,16 @@ normalizedKey(OFString *key)
 
 - (void)dealloc
 {
-	[_stream release];
-	[_server release];
+	objc_release(_stream);
+	objc_release(_server);
 
 	[_timer invalidate];
-	[_timer release];
+	objc_release(_timer);
 
-	[_host release];
-	[_path release];
-	[_headers release];
-	[_requestBody release];
+	objc_release(_host);
+	objc_release(_path);
+	objc_release(_headers);
+	objc_release(_requestBody);
 
 	[super dealloc];
 }
@@ -416,8 +416,8 @@ normalizedKey(OFString *key)
 	@try {
 		OFRange range = OFMakeRange(pos + 1, line.length - pos - 10);
 
-		path = [[[line substringWithRange:
-		    range] mutableCopy] autorelease];
+		path = objc_autorelease(
+		    [[line substringWithRange: range] mutableCopy]);
 	} @catch (OFOutOfRangeException *e) {
 		return [self sendErrorAndClose: 400];
 	}
@@ -460,7 +460,7 @@ normalizedKey(OFString *key)
 		}
 
 		if (chunked || contentLengthString != nil) {
-			[_requestBody release];
+			objc_release(_requestBody);
 			_requestBody = nil;
 			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
 			    initWithStream: _stream
@@ -468,7 +468,7 @@ normalizedKey(OFString *key)
 			     contentLength: contentLength];
 
 			[_timer invalidate];
-			[_timer release];
+			objc_release(_timer);
 			_timer = nil;
 		}
 
@@ -510,8 +510,8 @@ normalizedKey(OFString *key)
 
 			}
 
-			[_host release];
-			_host = [host retain];
+			objc_release(_host);
+			_host = objc_retain(host);
 
 			@try {
 				unsigned short portTmp =
@@ -528,8 +528,8 @@ normalizedKey(OFString *key)
 				return [self sendErrorAndClose: 400];
 			}
 		} else {
-			[_host release];
-			_host = [value retain];
+			objc_release(_host);
+			_host = objc_retain(value);
 			_port = 80;
 		}
 	}
@@ -560,7 +560,7 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	[_timer invalidate];
-	[_timer release];
+	objc_release(_timer);
 	_timer = nil;
 
 	if (_host == nil || _port == 0) {
@@ -569,7 +569,7 @@ normalizedKey(OFString *key)
 			return;
 		}
 
-		[_host release];
+		objc_release(_host);
 		_host = [_server.host copy];
 		_port = [_server port];
 	}
@@ -612,10 +612,10 @@ normalizedKey(OFString *key)
 	} else
 		request.remoteAddress = ((OFTCPSocket *)_stream).remoteAddress;
 
-	response = [[[OFHTTPServerResponse alloc]
-	    initWithStream: _stream
-		    server: _server
-		   request: request] autorelease];
+	response = objc_autorelease(
+	    [[OFHTTPServerResponse alloc] initWithStream: _stream
+						  server: _server
+						 request: request]);
 
 	[_server.delegate server: _server
 	       didReceiveRequest: request
@@ -637,14 +637,14 @@ normalizedKey(OFString *key)
 		if (contentLength > LLONG_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 		_chunked = chunked;
 		_toRead = (long long)contentLength;
 
 		if (_chunked && _toRead > 0)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -796,7 +796,7 @@ normalizedKey(OFString *key)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -819,7 +819,7 @@ normalizedKey(OFString *key)
 
 + (instancetype)server
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -839,9 +839,9 @@ normalizedKey(OFString *key)
 {
 	[self stop];
 
-	[_host release];
-	[_listeningSocket release];
-	[_name release];
+	objc_release(_host);
+	objc_release(_listeningSocket);
+	objc_release(_name);
 
 	[super dealloc];
 }
@@ -855,7 +855,7 @@ normalizedKey(OFString *key)
 
 	old = _host;
 	_host = [host copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFString *)host
@@ -939,14 +939,14 @@ normalizedKey(OFString *key)
 - (void)stop
 {
 	[_listeningSocket cancelAsyncRequests];
-	[_listeningSocket release];
+	objc_release(_listeningSocket);
 	_listeningSocket = nil;
 
 #ifdef OF_HAVE_THREADS
 	for (OFHTTPServerThread *thread in _threadPool)
 		[thread stop];
 
-	[_threadPool release];
+	objc_release(_threadPool);
 	_threadPool = nil;
 #endif
 }
@@ -962,11 +962,9 @@ normalizedKey(OFString *key)
 - (void)of_handleStream: (OFStream <OFReadyForReadingObserving,
 			     OFReadyForWritingObserving> *)stream
 {
-	OFHTTPServerConnection *connection =
-	    [[[OFHTTPServerConnection alloc] initWithStream: stream
-						     server: self] autorelease];
-
-	stream.delegate = connection;
+	stream.delegate = objc_autorelease(
+	    [[OFHTTPServerConnection alloc] initWithStream: stream
+						    server: self]);
 	[stream asyncReadLine];
 }
 

@@ -209,12 +209,14 @@ parseMode(const char *mode, bool *append)
 
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+								 mode: mode]);
 }
 
 + (instancetype)fileWithHandle: (OFFileHandle)handle
 {
-	return [[[self alloc] initWithHandle: handle] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithHandle: handle]);
 }
 
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
@@ -326,7 +328,7 @@ parseMode(const char *mode, bool *append)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

@@ -47,7 +47,7 @@
 		_CPU = [CPU copy];
 		_OS = [OS copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,8 +56,8 @@
 
 - (void)dealloc
 {
-	[_CPU release];
-	[_OS release];
+	objc_release(_CPU);
+	objc_release(_OS);
 
 	[super dealloc];
 }

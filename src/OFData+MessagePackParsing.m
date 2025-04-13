@@ -369,7 +369,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[2], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 3;
@@ -386,7 +386,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[3], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 4;
@@ -403,7 +403,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[5], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 6;
@@ -415,7 +415,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 3;
@@ -427,7 +427,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 4;
@@ -439,7 +439,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 6;
@@ -451,7 +451,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 10;
@@ -463,7 +463,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 18;
@@ -556,10 +556,10 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 	if (parseObject(self.items, count, &object, depthLimit) != count)
 		@throw [OFInvalidFormatException exception];
 
-	[object retain];
+	objc_retain(object);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 @end

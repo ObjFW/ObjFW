@@ -241,7 +241,7 @@ encodingForContentType(OFString *contentType)
 		_protocolVersion.minor = 1;
 		_headers = [[OFDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -250,7 +250,7 @@ encodingForContentType(OFString *contentType)
 
 - (void)dealloc
 {
-	[_headers release];
+	objc_release(_headers);
 
 	[super dealloc];
 }
@@ -333,7 +333,7 @@ encodingForContentType(OFString *contentType)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)description
@@ -354,6 +354,6 @@ encodingForContentType(OFString *contentType)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

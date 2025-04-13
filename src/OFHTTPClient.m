@@ -147,7 +147,7 @@ constructRequestString(OFHTTPRequest *request)
 	[requestString appendString: request.protocolVersionString];
 	[requestString appendString: @"\r\n"];
 
-	headers = [[request.headers mutableCopy] autorelease];
+	headers = objc_autorelease([request.headers mutableCopy]);
 	if (headers == nil)
 		headers = [OFMutableDictionary dictionary];
 
@@ -210,11 +210,11 @@ constructRequestString(OFHTTPRequest *request)
 
 	[requestString appendString: @"\r\n"];
 
-	[requestString retain];
+	objc_retain(requestString);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [requestString autorelease];
+	return objc_autoreleaseReturnValue(requestString);
 }
 
 static OF_INLINE void
@@ -268,12 +268,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	self = [super init];
 
 	@try {
-		_client = [client retain];
-		_request = [request retain];
+		_client = objc_retain(client);
+		_request = objc_retain(request);
 		_redirects = redirects;
 		_serverHeaders = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -282,10 +282,10 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)dealloc
 {
-	[_client release];
-	[_request release];
-	[_version release];
-	[_serverHeaders release];
+	objc_release(_client);
+	objc_release(_request);
+	objc_release(_version);
+	objc_release(_serverHeaders);
 
 	[super dealloc];
 }
@@ -310,8 +310,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	OFString *location;
 	id exception;
 
-	response = [[[OFHTTPClientResponse alloc] initWithStream: stream]
-	    autorelease];
+	response = objc_autorelease(
+	    [[OFHTTPClientResponse alloc] initWithStream: stream]);
 	response.protocolVersionString = _version;
 	response.statusCode = _status;
 	response.headers = _serverHeaders;
@@ -333,11 +333,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (keepAlive) {
 		response.of_keepAlive = true;
 
-		_client->_stream = [stream retain];
+		_client->_stream = objc_retain(stream);
 		_client->_lastIRI = [IRI copy];
 		_client->_lastWasHEAD =
 		    (_request.method == OFHTTPRequestMethodHead);
-		_client->_lastResponse = [response retain];
+		_client->_lastResponse = objc_retain(response);
 	}
 
 	if (_redirects > 0 && (_status == 301 || _status == 302 ||
@@ -378,9 +378,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFDictionary OF_GENERIC(OFString *, OFString *)
 			    *headers = _request.headers;
 			OFHTTPRequest *newRequest =
-			    [[_request copy] autorelease];
+			    objc_autorelease([_request copy]);
 			OFMutableDictionary *newHeaders =
-			    [[headers mutableCopy] autorelease];
+			    objc_autorelease([headers mutableCopy]);
 
 			if (![newIRI.host isEqual: IRI.host])
 				[newHeaders removeObjectForKey: @"Host"];
@@ -591,10 +591,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	    isEqual: @"chunked"];
 
 	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
-		stream.delegate = nil;
+		OFStream *requestBody;
 
-		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
-		    initWithHandler: self stream: stream] autorelease];
+		stream.delegate = nil;
+		requestBody = objc_autorelease([[OFHTTPClientRequestBodyStream
+		    alloc] initWithHandler: self
+				    stream: stream]);
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:)])
@@ -702,13 +704,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		 * reused. If everything is successful, we set _stream again
 		 * at the end.
 		 */
-		stream = [_client->_stream autorelease];
+		stream = objc_autorelease(_client->_stream);
 		_client->_stream = nil;
 
-		[_client->_lastIRI release];
+		objc_release(_client->_lastIRI);
 		_client->_lastIRI = nil;
 
-		[_client->_lastResponse release];
+		objc_release(_client->_lastResponse);
 		_client->_lastResponse = nil;
 
 		stream.delegate = self;
@@ -762,8 +764,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 		OFString *transferEncoding, *contentLengthString;
 
-		_handler = [handler retain];
-		_stream = [stream retain];
+		_handler = objc_retain(handler);
+		_stream = objc_retain(stream);
 
 		headers = _handler->_request.headers;
 
@@ -780,7 +782,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		} else if (!_chunked)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -792,7 +794,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (_stream != nil)
 		[self close];
 
-	[_handler release];
+	objc_release(_handler);
 
 	[super dealloc];
 }
@@ -855,7 +857,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	_stream.delegate = _handler;
 	[_stream asyncReadLine];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -875,7 +877,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	_stream = objc_retain(stream);
 
 	return self;
 }
@@ -1082,7 +1084,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	_atEndOfStream = false;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -1095,12 +1097,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	self = [super init];
 
 	@try {
-		_client = [client retain];
+		_client = objc_retain(client);
 		_delegate = client.delegate;
 
 		_client.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1110,7 +1112,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)dealloc
 {
 	_client.delegate = _delegate;
-	[_client release];
+	objc_release(_client);
 
 	[super dealloc];
 }
@@ -1141,8 +1143,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	[[OFRunLoop currentRunLoop] stop];
 
-	[_response release];
-	_response = [response retain];
+	objc_release(_response);
+	_response = objc_retain(response);
 
 	[_delegate     client: client
 	    didPerformRequest: request
@@ -1220,7 +1222,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 + (instancetype)client
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (void)dealloc
@@ -1239,17 +1241,16 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			 redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClientSyncPerformer *syncPerformer =
-	    [[[OFHTTPClientSyncPerformer alloc] initWithClient: self]
-	    autorelease];
+	OFHTTPClientSyncPerformer *syncPerformer = objc_autorelease(
+	    [[OFHTTPClientSyncPerformer alloc] initWithClient: self]);
 	OFHTTPResponse *response = [syncPerformer performRequest: request
 						       redirects: redirects];
 
-	[response retain];
+	objc_retain(response);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [response autorelease];
+	return objc_autoreleaseReturnValue(response);
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
@@ -1283,13 +1284,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)close
 {
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
-	[_lastIRI release];
+	objc_release(_lastIRI);
 	_lastIRI = nil;
 
-	[_lastResponse release];
+	objc_release(_lastResponse);
 	_lastResponse = nil;
 }
 @end

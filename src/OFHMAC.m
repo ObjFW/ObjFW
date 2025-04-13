@@ -33,9 +33,9 @@
 + (instancetype)HMACWithHashClass: (Class <OFCryptographicHash>)class
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithHashClass: class
-			  allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithHashClass: class
+		      allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 - (instancetype)init
@@ -56,10 +56,10 @@
 
 - (void)dealloc
 {
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 
 	[super dealloc];
 }
@@ -77,10 +77,10 @@
 	unsigned char *outerKeyPadItems = outerKeyPad.mutableItems;
 	unsigned char *innerKeyPadItems = innerKeyPad.mutableItems;
 
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
 
 	@try {
@@ -110,10 +110,10 @@
 			innerKeyPadItems[i] ^= 0x36;
 		}
 
-		_outerHash = [[_hashClass hashWithAllowsSwappableMemory:
-		    _allowsSwappableMemory] retain];
-		_innerHash = [[_hashClass hashWithAllowsSwappableMemory:
-		    _allowsSwappableMemory] retain];
+		_outerHash = objc_retain([_hashClass
+		    hashWithAllowsSwappableMemory: _allowsSwappableMemory]);
+		_innerHash = objc_retain([_hashClass
+		    hashWithAllowsSwappableMemory: _allowsSwappableMemory]);
 
 		[_outerHash updateWithBuffer: outerKeyPadItems
 				      length: blockSize];
@@ -177,8 +177,8 @@
 
 - (void)reset
 {
-	[_outerHash release];
-	[_innerHash release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
 	_outerHash = _innerHash = nil;
 
 	_outerHash = [_outerHashCopy copy];
@@ -189,10 +189,10 @@
 
 - (void)zero
 {
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
 
 	_calculated = false;

@@ -47,14 +47,14 @@
 	self = [super init];
 
 	@try {
-		_IRIHandler = [IRIHandler retain];
+		_IRIHandler = objc_retain(IRIHandler);
 		_IRI = [IRI copy];
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 
 		_client = [[OFHTTPClient alloc] init];
 		_client.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -63,10 +63,10 @@
 
 - (void)dealloc
 {
-	[_IRIHandler release];
-	[_IRI release];
-	[_delegate release];
-	[_client release];
+	objc_release(_IRIHandler);
+	objc_release(_IRI);
+	objc_release(_delegate);
+	objc_release(_client);
 
 	[super dealloc];
 }
@@ -77,7 +77,7 @@
 	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
 
 	[_client asyncPerformRequest: request];
-	[self retain];
+	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -93,7 +93,7 @@
 			       stream: response
 			    exception: exception];
 	} @finally {
-		[self release];
+		objc_release(self);
 	}
 }
 @end
@@ -106,11 +106,11 @@
 	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: IRI];
 	OFHTTPResponse *response = [client performRequest: request];
 
-	[response retain];
+	objc_retain(response);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [response autorelease];
+	return objc_autoreleaseReturnValue(response);
 }
 
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
@@ -118,11 +118,10 @@
 		  delegate: (id <OFIRIHandlerDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPIRIHandlerAsyncOpener *opener =
-	    [[[OFHTTPIRIHandlerAsyncOpener alloc]
-	    initWithIRIHandler: self
-			   IRI: IRI
-		      delegate: delegate] autorelease];
+	OFHTTPIRIHandlerAsyncOpener *opener = objc_autorelease(
+	    [[OFHTTPIRIHandlerAsyncOpener alloc] initWithIRIHandler: self
+								IRI: IRI
+							   delegate: delegate]);
 
 	[opener start];
 

@@ -283,16 +283,16 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 + (instancetype)cookieWithName: (OFString *)name
 			 value: (OFString *)value
 			domain: (OFString *)domain
 {
-	return [[[self alloc] initWithName: name
-				     value: value
-				    domain: domain] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithName: name
+								value: value
+							       domain: domain]);
 }
 
 - (instancetype)init
@@ -313,7 +313,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		_path = @"/";
 		_extensions = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -322,12 +322,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 - (void)dealloc
 {
-	[_name release];
-	[_value release];
-	[_domain release];
-	[_path release];
-	[_expires release];
-	[_extensions release];
+	objc_release(_name);
+	objc_release(_value);
+	objc_release(_domain);
+	objc_release(_path);
+	objc_release(_expires);
+	objc_release(_extensions);
 
 	[super dealloc];
 }
@@ -397,7 +397,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		copy->_HTTPOnly = _HTTPOnly;
 		[copy->_extensions addObjectsFromArray: _extensions];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 

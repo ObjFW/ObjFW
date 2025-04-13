@@ -149,35 +149,39 @@ OF_SINGLETON_METHODS
 
 + (instancetype)data
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)dataWithItemSize: (size_t)itemSize
 {
-	return [[[self alloc] initWithItemSize: itemSize] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItemSize: itemSize]);
 }
 
 + (instancetype)dataWithItems: (const void *)items count: (size_t)count
 {
-	return [[[self alloc] initWithItems: items count: count] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithItems: items
+								 count: count]);
 }
 
 + (instancetype)dataWithItems: (const void *)items
 			count: (size_t)count
 		     itemSize: (size_t)itemSize
 {
-	return [[[self alloc] initWithItems: items
-				      count: count
-				   itemSize: itemSize] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItems: items
+				  count: count
+			       itemSize: itemSize]);
 }
 
 + (instancetype)dataWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc] initWithItemsNoCopy: items
-					    count: count
-				     freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItemsNoCopy: items
+					count: count
+				 freeWhenDone: freeWhenDone]);
 }
 
 + (instancetype)dataWithItemsNoCopy: (void *)items
@@ -185,33 +189,37 @@ OF_SINGLETON_METHODS
 			   itemSize: (size_t)itemSize
 		       freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc] initWithItemsNoCopy: items
-					    count: count
-					 itemSize: itemSize
-				     freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithItemsNoCopy: items
+					count: count
+				     itemSize: itemSize
+				 freeWhenDone: freeWhenDone]);
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path
 {
-	return [[[self alloc] initWithContentsOfFile: path] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfFile: path]);
 }
 #endif
 
 + (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfIRI: IRI]);
 }
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
 {
-	return [[[self alloc]
-	    initWithStringRepresentation: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStringRepresentation: string]);
 }
 
 + (instancetype)dataWithBase64EncodedString: (OFString *)string
 {
-	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithBase64EncodedString: string]);
 }
 
 - (instancetype)init
@@ -221,7 +229,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -275,7 +283,7 @@ OF_SINGLETON_METHODS
 	@try {
 		IRI = [OFIRI fileIRIWithPath: path isDirectory: false];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -315,7 +323,7 @@ OF_SINGLETON_METHODS
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		OFFreeMemory(items);
-		[self release];
+		objc_release(self);
 
 		@throw e;
 	} @finally {
@@ -380,7 +388,7 @@ OF_SINGLETON_METHODS
 		}
 	} @catch (id e) {
 		OFFreeMemory(items);
-		[self release];
+		objc_release(self);
 
 		@throw e;
 	}
@@ -410,14 +418,14 @@ OF_SINGLETON_METHODS
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII]))
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	/* Avoid copying if the class already matches. */
 	if (data.class == self.class) {
-		[self release];
-		self = [data retain];
+		objc_release(self);
+		self = objc_retain(data);
 		objc_autoreleasePoolPop(pool);
 		return self;
 	}
@@ -429,13 +437,13 @@ OF_SINGLETON_METHODS
 	@try {
 		[data makeImmutable];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	if (data.class == self.class) {
-		[self release];
-		self = [data retain];
+		objc_release(self);
+		self = objc_retain(data);
 		objc_autoreleasePoolPop(pool);
 		return self;
 	}
@@ -493,7 +501,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -580,8 +588,9 @@ OF_SINGLETON_METHODS
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableData class]])
-		return [[[OFSubdata alloc] initWithData: self
-						  range: range] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFSubdata alloc] initWithData: self
+					      range: range]);
 
 	return [OFData dataWithItems: (const unsigned char *)self.items +
 				      (range.location * self.itemSize)
@@ -681,7 +690,7 @@ OF_SINGLETON_METHODS
 		[file writeBuffer: self.items
 			   length: self.count * self.itemSize];
 	} @finally {
-		[file release];
+		objc_release(file);
 	}
 }
 #endif

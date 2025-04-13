@@ -135,7 +135,7 @@ static OFMutex *passwdMutex;
 static void
 releasePasswdMutex(void)
 {
-	[passwdMutex release];
+	objc_release(passwdMutex);
 }
 #endif
 #if defined(OF_HAVE_THREADS) && !defined(__GLIBC__) && !defined(OF_WINDOWS)
@@ -144,7 +144,7 @@ static OFMutex *readdirMutex;
 static void
 releaseReaddirMutex(void)
 {
-	[readdirMutex release];
+	objc_release(readdirMutex);
 }
 #endif
 
@@ -810,7 +810,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			@try {
 				[names addObject: name];
 			} @finally {
-				[name release];
+				objc_release(name);
 			}
 		}
 	} @finally {
@@ -890,11 +890,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 							     errNo: e.errNo];
 	}
 
-	[file retain];
+	objc_retain(file);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [file autorelease];
+	return objc_autoreleaseReturnValue(file);
 }
 
 - (OFFileAttributes)attributesOfItemAtIRI: (OFIRI *)IRI
@@ -1371,7 +1371,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 					[IRIs addObject: [IRI
 					    IRIByAppendingPathComponent: file]];
 				} @finally {
-					[file release];
+					objc_release(file);
 				}
 			} while (FindNextFileW(handle, &fd));
 
@@ -1410,7 +1410,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 					[IRIs addObject: [IRI
 					    IRIByAppendingPathComponent: file]];
 				} @finally {
-					[file release];
+					objc_release(file);
 				}
 			} while (FindNextFileA(handle, &fd));
 
@@ -1457,7 +1457,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 					[IRIs addObject: [IRI
 					    IRIByAppendingPathComponent: file]];
 				} @finally {
-					[file release];
+					objc_release(file);
 				}
 			}
 		} @finally {
@@ -1480,7 +1480,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 				[IRIs addObject:
 				    [IRI IRIByAppendingPathComponent: file]];
 			} @finally {
-				[file release];
+				objc_release(file);
 			}
 		}
 # endif
@@ -1536,7 +1536,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 				[IRIs addObject:
 				    [IRI IRIByAppendingPathComponent: file]];
 			} @finally {
-				[file release];
+				objc_release(file);
 			}
 		}
 	} @finally {
@@ -1936,15 +1936,15 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		*type = nil;
 # endif
 
-	[*data retain];
+	objc_retain(*data);
 	if (type != NULL)
-		[*type retain];
+		objc_retain(*type);
 
 	objc_autoreleasePoolPop(pool);
 
-	[*data autorelease];
+	objc_autorelease(*data);
 	if (type != NULL)
-		[*type autorelease];
+		objc_autorelease(*type);
 }
 
 - (void)setExtendedAttributeData: (OFData *)data

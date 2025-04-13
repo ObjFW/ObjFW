@@ -100,7 +100,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
@@ -113,7 +113,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		_protocolVersion.major = 1;
 		_protocolVersion.minor = 1;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -127,8 +127,8 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (void)dealloc
 {
-	[_IRI release];
-	[_headers release];
+	objc_release(_IRI);
+	objc_release(_headers);
 
 	[super dealloc];
 }
@@ -159,7 +159,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		copy.headers = _headers;
 		copy.remoteAddress = self.remoteAddress;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -276,6 +276,6 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

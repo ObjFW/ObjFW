@@ -128,12 +128,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	@try {
 		_host = [host copy];
 		_addressFamily = addressFamily;
-		_resolver = [resolver retain];
+		_resolver = objc_retain(resolver);
 		_settings = [settings copy];
 		_runLoopMode = [runLoopMode copy];
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -142,12 +142,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 - (void)dealloc
 {
-	[_host release];
-	[_resolver release];
-	[_settings release];
-	[_runLoopMode release];
-	[_delegate release];
-	[_addresses release];
+	objc_release(_host);
+	objc_release(_resolver);
+	objc_release(_settings);
+	objc_release(_runLoopMode);
+	objc_release(_delegate);
+	objc_release(_addresses);
 
 	[super dealloc];
 }
@@ -243,7 +243,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	[_addresses makeImmutable];
 
 	if (_addresses.count == 0) {
-		[_addresses release];
+		objc_release(_addresses);
 		_addresses = nil;
 
 		if ([exception isKindOfClass:
@@ -350,9 +350,9 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	OFHostAddressResolverDelegate *delegate;
 	OFData *ret;
 
-	delegate = [[[OFHostAddressResolverDelegate alloc] init] autorelease];
+	delegate = [[OFHostAddressResolverDelegate alloc] init];
+	_delegate = delegate;
 	_runLoopMode = [resolveRunLoopMode copy];
-	_delegate = [delegate retain];
 
 	[self asyncResolve];
 
@@ -367,15 +367,15 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 	ret = [delegate->_addresses copy];
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end
 
 @implementation OFHostAddressResolverDelegate
 - (void)dealloc
 {
-	[_addresses release];
-	[_exception release];
+	objc_release(_addresses);
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -386,7 +386,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
        exception: (id)exception
 {
 	_addresses = [addresses copy];
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 	_done = true;
 }
 @end
