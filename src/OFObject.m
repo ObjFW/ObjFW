@@ -61,12 +61,6 @@
 # include <windows.h>
 #endif
 
-#ifdef OF_AMIGAOS
-# define Class IntuitionClass
-# include <proto/exec.h>
-# undef Class
-#endif
-
 #ifdef OF_APPLE_RUNTIME
 extern id _objc_rootRetain(id object);
 extern uintptr_t _objc_rootRetainCount(id object);

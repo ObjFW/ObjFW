@@ -30,6 +30,10 @@
 # else
 #  import <objc/runtime.h>
 # endif
+
+@interface DummyObject
+- (void)dealloc;
+@end
 #endif
 
 #ifdef OF_HAVE_ATOMIC_OPS
@@ -37,6 +41,12 @@
 #endif
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 # import "OFPlainMutex.h"	/* For OFSpinlock */
+#endif
+
+#ifdef OF_AMIGAOS
+# define Class IntuitionClass
+# include <proto/exec.h>
+# undef Class
 #endif
 
 struct PreIvars {
@@ -183,8 +193,8 @@ class_createInstance(Class class, size_t extraBytes)
 	instanceSize = class_getInstanceSize(class);
 
 #if defined(OF_WINDOWS)
-	instance = __mingw_aligned_malloc(
-	    PRE_IVARS_ALIGNED + instanceSize + extraBytes);
+	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGNED + instanceSize +
+	    extraBytes, OF_BIGGEST_ALIGNMENT);
 #elif defined(OF_DJGPP)
 	instance = alignedAlloc(PRE_IVARS_ALIGNED + instanceSize + extraBytes,
 	    OF_BIGGEST_ALIGNMENT, &offset);
@@ -278,10 +288,13 @@ _objc_rootRetain(id object)
 	Permit();
 # endif
 #else
-	OFEnsure(OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+	if (OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
+
 	PRE_IVARS->retainCount++;
-	OFEnsure(
-	    OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+
+	if (OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	return object;
@@ -290,7 +303,6 @@ _objc_rootRetain(id object)
 unsigned int
 _objc_rootRetainCount(id object)
 {
-	OFAssert(PRE_IVARS(object)->retainCount >= 0);
 	return PRE_IVARS(object)->retainCount;
 }
 
@@ -317,10 +329,13 @@ _objc_rootRelease(id object)
 #else
 	int retainCount;
 
-	OFEnsure(OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+	if (OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) != 0)
+		OBJC_ERROR("Failed to lock spinlock!");
+
 	retainCount = --PRE_IVARS(object)->retainCount;
-	OFEnsure(
-	    OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+
+	if (OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) != 0)
+		OBJC_ERROR("Failed to unlock spinlock!");
 
 	if (retainCount == 0)
 		[object dealloc];
