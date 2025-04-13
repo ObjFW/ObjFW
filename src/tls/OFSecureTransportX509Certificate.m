@@ -43,7 +43,7 @@
  * work with any socket. On top of that, their replacement, Network.framework,
  * doesn't support STARTTLS at all.
  */
-#ifdef __GNUC__
+#if OF_GCC_VERSION >= 402
 # pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
 
