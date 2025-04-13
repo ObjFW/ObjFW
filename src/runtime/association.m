@@ -27,6 +27,10 @@
 # import "OFMapTable.h"
 #endif
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+
 struct Association {
 	id object;
 	objc_associationPolicy policy;

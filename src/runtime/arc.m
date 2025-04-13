@@ -22,6 +22,9 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
 #endif
