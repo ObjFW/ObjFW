@@ -37,6 +37,11 @@
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
 
+#ifdef OF_WINDOWS
+	if ([OFSystemInfo wineVersion] != nil)
+		OTSkip(@"UNIX stream sockets are broken on Wine");
+#endif
+
 #if defined(OF_HAVE_FILES) && !defined(OF_IOS)
 	path = [[OFSystemInfo temporaryDirectoryIRI]
 	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
