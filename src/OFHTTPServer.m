@@ -279,7 +279,7 @@ normalizedKey(OFString *key)
 	} @catch (OFWriteFailedException *e) {
 		id <OFHTTPServerDelegate> delegate = _server.delegate;
 
-#if OF_GCC_VERSION >= 402
+#if defined(__clang__) || OF_GCC_VERSION >= 406
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
@@ -295,7 +295,7 @@ normalizedKey(OFString *key)
 			    didReceiveExceptionForResponse: self
 						   request: _request
 						 exception: e];
-#if OF_GCC_VERSION >= 402
+#if defined(__clang__) || OF_GCC_VERSION >= 406
 # pragma GCC diagnostic pop
 #endif
 	}
@@ -987,7 +987,7 @@ normalizedKey(OFString *key)
 			return false;
 		}
 
-#if OF_GCC_VERSION >= 402
+#if defined(__clang__) || OF_GCC_VERSION >= 406
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
@@ -995,7 +995,7 @@ normalizedKey(OFString *key)
 		    @selector(server:didReceiveExceptionOnListeningSocket:)])
 			return [_delegate		  server: self
 			    didReceiveExceptionOnListeningSocket: exception];
-#if OF_GCC_VERSION >= 402
+#if defined(__clang__) || OF_GCC_VERSION >= 406
 # pragma GCC diagnostic pop
 #endif
 
