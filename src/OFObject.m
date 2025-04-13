@@ -34,15 +34,9 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "OFAtomic.h"
-#endif
 #import "OFLocale.h"
 #import "OFMethodSignature.h"
 #import "OFRunLoop.h"
-#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
-# import "OFPlainMutex.h"	/* For OFSpinlock */
-#endif
 #import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFThread.h"
@@ -74,6 +68,9 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
+extern id _objc_rootRetain(id object);
+extern uintptr_t _objc_rootRetainCount(id object);
+extern void _objc_rootRelease(id object);
 extern id _objc_rootAutorelease(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
@@ -87,20 +84,6 @@ extern struct Stret OFForward_stret(id, SEL, ...);
 #ifdef OF_WINDOWS
 static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
 #endif
-
-struct PreIvars {
-#ifdef OF_MSDOS
-	ptrdiff_t offset;
-#endif
-	int retainCount;
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	OFSpinlock retainCountSpinlock;
-#endif
-};
-
-#define PRE_IVARS_ALIGN \
-	OFRoundUpToPowerOf2(sizeof(struct PreIvars), OF_BIGGEST_ALIGNMENT)
-#define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
 	Class isa;
@@ -168,33 +151,6 @@ OFFreeMemory(void *pointer)
 {
 	free(pointer);
 }
-
-#ifdef OF_MSDOS
-/* Unfortunately, DJGPP's memalign() is broken. */
-
-static void *
-alignedAlloc(size_t size, size_t alignment, ptrdiff_t *offset)
-{
-	char *ptr, *aligned;
-
-	if ((ptr = malloc(size + alignment)) == NULL)
-		return NULL;
-
-	aligned = (char *)OFRoundUpToPowerOf2(alignment, (uintptr_t)ptr);
-	*offset = aligned - ptr;
-
-	return aligned;
-}
-
-static void
-alignedFree(void *ptr, ptrdiff_t offset)
-{
-	if (ptr == NULL)
-		return;
-
-	free((void *)((uintptr_t)ptr - offset));
-}
-#endif
 
 #if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
     defined(OF_WINDOWS)
@@ -410,76 +366,19 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 {
 	OFObject *instance;
 	size_t instanceSize;
-#ifdef OF_MSDOS
-	ptrdiff_t offset;
-#endif
 
 	instanceSize = class_getInstanceSize(class);
 
 	if OF_UNLIKELY (extraAlignment > 1)
 		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
-		    PRE_IVARS_ALIGN + instanceSize) -
-		    PRE_IVARS_ALIGN - instanceSize;
+		    instanceSize) - instanceSize;
 
-#if defined(OF_WINDOWS)
-	instance = __mingw_aligned_malloc(PRE_IVARS_ALIGN + instanceSize +
-	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT);
-#elif defined(OF_MSDOS)
-	instance = alignedAlloc(PRE_IVARS_ALIGN + instanceSize +
-	    extraAlignment + extraSize, OF_BIGGEST_ALIGNMENT, &offset);
-#elif defined(OF_SOLARIS)
-	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
-	    PRE_IVARS_ALIGN + instanceSize + extraAlignment + extraSize) != 0)
-		instance = NULL;
-#else
-	instance = malloc(PRE_IVARS_ALIGN + instanceSize +
-	    extraAlignment + extraSize);
-#endif
+	instance = class_createInstance(class, extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
 		object_setClass((id)&allocFailedException,
 		    [OFAllocFailedException class]);
 		@throw (id)&allocFailedException;
-	}
-
-#ifdef OF_MSDOS
-	((struct PreIvars *)instance)->offset = offset;
-#endif
-	((struct PreIvars *)instance)->retainCount = 1;
-
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	if OF_UNLIKELY (OFSpinlockNew(
-	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
-# if defined(OF_WINDOWS)
-		__mingw_aligned_free(instance);
-# elif defined(OF_MSDOS)
-		alignedFree(instance, offset);
-# else
-		free(instance);
-# endif
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: class];
-	}
-#endif
-
-	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
-
-	memset(instance, 0, instanceSize + extraAlignment + extraSize);
-
-	if (!objc_constructInstance(class, instance)) {
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-		OFSpinlockFree(&((struct PreIvars *)(void *)
-		    ((char *)instance - PRE_IVARS_ALIGN))->retainCountSpinlock);
-#endif
-#if defined(OF_WINDOWS)
-		__mingw_aligned_free((char *)instance - PRE_IVARS_ALIGN);
-#elif defined(OF_MSDOS)
-		alignedFree((char *)instance - PRE_IVARS_ALIGN, offset);
-#else
-		free((char *)instance - PRE_IVARS_ALIGN);
-#endif
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: class];
 	}
 
 	if OF_UNLIKELY (extra != NULL)
@@ -547,7 +446,7 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return OFAllocObject(self, 0, 0, NULL);
+	return class_createInstance(self, 0);
 }
 
 + (Class)class
@@ -1248,65 +1147,17 @@ _references_to_categories_of_OFObject(void)
 
 - (instancetype)retain
 {
-#if defined(OF_HAVE_ATOMIC_OPS)
-	OFAtomicIntIncrease(&PRE_IVARS->retainCount);
-#elif defined(OF_AMIGAOS)
-	/*
-	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
-	 * single instruction on M68K, we don't need Forbid() / Permit() on
-	 * M68K.
-	 */
-# ifndef OF_AMIGAOS_M68K
-	Forbid();
-# endif
-	PRE_IVARS->retainCount++;
-# ifndef OF_AMIGAOS_M68K
-	Permit();
-# endif
-#else
-	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
-	PRE_IVARS->retainCount++;
-	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
-#endif
-
-	return self;
+	return _objc_rootRetain(self);
 }
 
 - (unsigned int)retainCount
 {
-	OFAssert(PRE_IVARS->retainCount >= 0);
-	return PRE_IVARS->retainCount;
+	return (unsigned int)_objc_rootRetainCount(self);
 }
 
 - (void)release
 {
-#if defined(OF_HAVE_ATOMIC_OPS)
-	OFReleaseMemoryBarrier();
-
-	if (OFAtomicIntDecrease(&PRE_IVARS->retainCount) <= 0) {
-		OFAcquireMemoryBarrier();
-
-		[self dealloc];
-	}
-#elif defined(OF_AMIGAOS)
-	int retainCount;
-
-	Forbid();
-	retainCount = --PRE_IVARS->retainCount;
-	Permit();
-
-	if (retainCount == 0)
-		[self dealloc];
-#else
-	int retainCount;
-
-	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
-	retainCount = --PRE_IVARS->retainCount;
-	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
-
-	if (retainCount == 0)
-		[self dealloc];
-#endif
+	_objc_rootRelease(self);
 }
 
 - (instancetype)autorelease
@@ -1338,19 +1189,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)dealloc
 {
-	objc_destructInstance(self);
-
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	OFSpinlockFree(&PRE_IVARS->retainCountSpinlock);
-#endif
-
-#if defined(OF_WINDOWS)
-	__mingw_aligned_free((char *)self - PRE_IVARS_ALIGN);
-#elif defined(OF_MSDOS)
-	alignedFree((char *)self - PRE_IVARS_ALIGN, PRE_IVARS->offset);
-#else
-	free((char *)self - PRE_IVARS_ALIGN);
-#endif
+	object_dispose(self);
 }
 
 /* Required to use properties with the Apple runtime */

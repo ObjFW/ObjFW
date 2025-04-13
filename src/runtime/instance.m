@@ -32,8 +32,57 @@
 # endif
 #endif
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
+# import "OFPlainMutex.h"	/* For OFSpinlock */
+#endif
+
+struct PreIvars {
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
+	int retainCount;
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlock retainCountSpinlock;
+#endif
+};
+
+#define PRE_IVARS_ALIGNED \
+	OFRoundUpToPowerOf2(sizeof(struct PreIvars), OF_BIGGEST_ALIGNMENT)
+#define PRE_IVARS(obj) \
+	((struct PreIvars *)(void *)((char *)obj - PRE_IVARS_ALIGNED))
+
 #ifndef OF_OBJFW_RUNTIME
 extern void objc_removeAssociatedObjects(id object);
+#endif
+
+#ifdef OF_DJGPP
+/* Unfortunately, DJGPP's memalign() is broken. */
+
+static void *
+alignedAlloc(size_t size, size_t alignment, ptrdiff_t *offset)
+{
+	char *ptr, *aligned;
+
+	if ((ptr = malloc(size + alignment)) == NULL)
+		return NULL;
+
+	aligned = (char *)OFRoundUpToPowerOf2(alignment, (uintptr_t)ptr);
+	*offset = aligned - ptr;
+
+	return aligned;
+}
+
+static void
+alignedFree(void *ptr, ptrdiff_t offset)
+{
+	if (ptr == NULL)
+		return;
+
+	free((void *)((uintptr_t)ptr - offset));
+}
 #endif
 
 static SEL constructSelector = NULL;
@@ -117,4 +166,163 @@ objc_destructInstance(id object)
 	objc_removeAssociatedObjects(object);
 
 	return object;
+}
+
+id
+class_createInstance(Class class, size_t extraBytes)
+{
+	id instance;
+	size_t instanceSize;
+#ifdef OF_DJGPP
+	ptrdiff_t offset;
+#endif
+
+	if (class == Nil)
+		return nil;
+
+	instanceSize = class_getInstanceSize(class);
+
+#if defined(OF_WINDOWS)
+	instance = __mingw_aligned_malloc(
+	    PRE_IVARS_ALIGNED + instanceSize + extraBytes);
+#elif defined(OF_DJGPP)
+	instance = alignedAlloc(PRE_IVARS_ALIGNED + instanceSize + extraBytes,
+	    OF_BIGGEST_ALIGNMENT, &offset);
+#elif defined(OF_SOLARIS)
+	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
+	    PRE_IVARS_ALIGNED + instanceSize + extraBytes) != 0)
+		instance = NULL;
+#else
+	instance = malloc(PRE_IVARS_ALIGNED + instanceSize + extraBytes);
+#endif
+
+	if OF_UNLIKELY (instance == nil)
+		return nil;
+
+#ifdef OF_DJGPP
+	((struct PreIvars *)instance)->offset = offset;
+#endif
+	((struct PreIvars *)instance)->retainCount = 1;
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	if OF_UNLIKELY (OFSpinlockNew(
+	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
+# if defined(OF_WINDOWS)
+		__mingw_alaigned_free(instance);
+# elif defined(OF_DJGPP)
+		alignedFree(instance, offset);
+# else
+		free(instance);
+# endif
+		return nil;
+	}
+#endif
+
+	instance = (id)(void *)((char *)instance + PRE_IVARS_ALIGNED);
+	memset(instance, 0, instanceSize + extraBytes);
+
+	if (!objc_constructInstance(class, instance)) {
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+		OFSpinlockFree(&PRE_IVARS(instance)->retainCountSpinlock);
+#endif
+#if defined(OF_WINDOWS)
+		__mingw_aligned_free((char *)instance - PRE_IVARS_ALIGNED);
+#elif defined(OF_DJGPP)
+		alignedFree((char *)instance - PRE_IVARS_ALIGNED, offset);
+#else
+		free((char *)instance - PRE_IVARS_ALIGNED);
+#endif
+		return nil;
+	}
+
+	return instance;
+}
+
+id
+object_dispose(id object)
+{
+	objc_destructInstance(object);
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlockFree(&PRE_IVARS(object)->retainCountSpinlock);
+#endif
+
+#if defined(OF_WINDOWS)
+	__mingw_aligned_free((char *)object - PRE_IVARS_ALIGNED);
+#elif defined(OF_DJGPP)
+	alignedFree((char *)object - PRE_IVARS_ALIGNED,
+	    PRE_IVARS(object)->offset);
+#else
+	free((char *)object - PRE_IVARS_ALIGNED);
+#endif
+
+	return nil;
+}
+
+id
+_objc_rootRetain(id object)
+{
+#if defined(OF_HAVE_ATOMIC_OPS)
+	OFAtomicIntIncrease(&PRE_IVARS(object)->retainCount);
+#elif defined(OF_AMIGAOS)
+	/*
+	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
+	 * single instruction on M68K, we don't need Forbid() / Permit() on
+	 * M68K.
+	 */
+# ifndef OF_AMIGAOS_M68K
+	Forbid();
+# endif
+	PRE_IVARS(object)->retainCount++;
+# ifndef OF_AMIGAOS_M68K
+	Permit();
+# endif
+#else
+	OFEnsure(OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+	PRE_IVARS->retainCount++;
+	OFEnsure(
+	    OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+#endif
+
+	return object;
+}
+
+unsigned int
+_objc_rootRetainCount(id object)
+{
+	OFAssert(PRE_IVARS(object)->retainCount >= 0);
+	return PRE_IVARS(object)->retainCount;
+}
+
+void
+_objc_rootRelease(id object)
+{
+#if defined(OF_HAVE_ATOMIC_OPS)
+	OFReleaseMemoryBarrier();
+
+	if (OFAtomicIntDecrease(&PRE_IVARS(object)->retainCount) <= 0) {
+		OFAcquireMemoryBarrier();
+
+		[object dealloc];
+	}
+#elif defined(OF_AMIGAOS)
+	int retainCount;
+
+	Forbid();
+	retainCount = --PRE_IVARS(object)->retainCount;
+	Permit();
+
+	if (retainCount == 0)
+		[object dealloc];
+#else
+	int retainCount;
+
+	OFEnsure(OFSpinlockLock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+	retainCount = --PRE_IVARS(object)->retainCount;
+	OFEnsure(
+	    OFSpinlockUnlock(&PRE_IVARS(object)->retainCountSpinlock) == 0);
+
+	if (retainCount == 0)
+		[object dealloc];
+#endif
 }

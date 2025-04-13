@@ -342,6 +342,7 @@ extern void OF_NO_RETURN_FUNC objc_error(const char *_Nonnull title,
 + (bool)resolveInstanceMethod: (nonnull SEL)selector;
 - (nonnull id)retain;
 - (void)release;
+- (void)dealloc;
 - (nonnull id)autorelease;
 - (nonnull id)copy;
 - (nonnull id)mutableCopy;
