@@ -52,7 +52,12 @@
 #endif
 #ifdef OF_APPLE_RUNTIME
 # include <objc/objc.h>
-# include <objc/objc-runtime.h>
+# ifdef OF_MACOS
+#  include <objc/objc-runtime.h>
+# else
+#  include <objc/runtime.h>
+#  include <objc/message.h>
+# endif
 #endif
 
 #if defined(__GNUC__)

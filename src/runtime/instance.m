@@ -25,7 +25,11 @@
 # import "ObjFWRT.h"
 # import "private.h"
 #else
-# import <objc/objc-runtime.h>
+# ifdef OF_MACOS
+#  import <objc/objc-runtime.h>
+# else
+#  import <objc/runtime.h>
+# endif
 #endif
 
 #ifndef OF_OBJFW_RUNTIME
