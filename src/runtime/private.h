@@ -68,6 +68,28 @@ struct objc_object {
 	Class _Nonnull isa;
 };
 
+enum objc_object_info {
+	OBJC_OBJECT_INFO_WEAK_REFERENCES = 0x1,
+	OBJC_OBJECT_INFO_ASSOCIATIONS = 0x02
+};
+
+struct objc_pre_ivars {
+#ifdef OF_MSDOS
+	ptrdiff_t offset;
+#endif
+	volatile int retainCount;
+	volatile unsigned int info;
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlock retainCountSpinlock;
+#endif
+};
+
+#define OBJC_PRE_IVARS_ALIGNED \
+	OFRoundUpToPowerOf2(sizeof(struct objc_pre_ivars), OF_BIGGEST_ALIGNMENT)
+#define OBJC_PRE_IVARS(obj)					\
+	((struct objc_pre_ivars *)(void *)((char *)obj -	\
+	    OBJC_PRE_IVARS_ALIGNED))
+
 struct objc_selector {
 	uintptr_t UID;
 	const char *_Nullable typeEncoding;

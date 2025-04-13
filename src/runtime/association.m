@@ -134,6 +134,11 @@ objc_setAssociatedObject(id object, const void *key, id value,
 		return;
 	}
 
+#if defined(OF_OBJFW_RUNTIME) && defined(OF_HAVE_ATOMIC_OPS)
+	OFAtomicIntOr(&OBJC_PRE_IVARS(object)->info,
+	    OBJC_OBJECT_INFO_ASSOCIATIONS);
+#endif
+
 	slot = slotForObject(object);
 
 #ifdef OF_HAVE_THREADS
@@ -227,7 +232,16 @@ objc_getAssociatedObject(id object, const void *key)
 void
 objc_removeAssociatedObjects(id object)
 {
-	size_t slot = slotForObject(object);
+	size_t slot;
+
+#if defined(OF_OBJFW_RUNTIME) && defined(OF_HAVE_ATOMIC_OPS)
+	OFReleaseMemoryBarrier();
+
+	if (!(OBJC_PRE_IVARS(object)->info & OBJC_OBJECT_INFO_ASSOCIATIONS))
+		return;
+#endif
+
+	slot = slotForObject(object);
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)

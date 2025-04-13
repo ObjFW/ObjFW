@@ -185,7 +185,14 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct WeakRef *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref;
+
+#ifdef OF_HAVE_ATOMIC_OPS
+		OFAtomicIntOr(&OBJC_PRE_IVARS(value)->info,
+		    OBJC_OBJECT_INFO_WEAK_REFERENCES);
+#endif
+
+		ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -297,6 +304,14 @@ void
 objc_zeroWeakReferences(id value)
 {
 	struct WeakRef *ref;
+
+#ifdef OF_HAVE_ATOMIC_OPS
+	OFReleaseMemoryBarrier();
+
+	if (value != nil && !object_isTaggedPointer(value) &&
+	    !(OBJC_PRE_IVARS(value)->info & OBJC_OBJECT_INFO_WEAK_REFERENCES))
+		return;
+#endif
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
