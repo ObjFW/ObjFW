@@ -39,12 +39,13 @@
 			      socket: (id)sock
 			       errNo: (int)errNo
 {
-	return [[[self alloc] initWithNetwork: network
-					 node: node
-					 port: port
-				 protocolType: protocolType
-				       socket: sock
-					errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithNetwork: network
+				     node: node
+				     port: port
+			     protocolType: protocolType
+				   socket: sock
+				    errNo: errNo]);
 }
 
 - (instancetype)initWithSocket: (id)sock errNo: (int)errNo
@@ -67,7 +68,7 @@
 		_port = port;
 		_protocolType = protocolType;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

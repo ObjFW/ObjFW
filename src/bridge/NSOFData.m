@@ -26,14 +26,14 @@
 - (instancetype)initWithOFData: (OFData *)data
 {
 	if ((self = [super init]) != nil)
-		_data = [data retain];
+		_data = objc_retain(data);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_data release];
+	objc_release(_data);
 
 	[super dealloc];
 }

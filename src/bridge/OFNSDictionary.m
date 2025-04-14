@@ -36,9 +36,9 @@
 		if (dictionary == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		_dictionary = [dictionary retain];
+		_dictionary = objc_retain(dictionary);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -47,7 +47,7 @@
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }

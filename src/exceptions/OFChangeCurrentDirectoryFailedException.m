@@ -27,7 +27,8 @@
 
 + (instancetype)exceptionWithPath: (OFString *)path errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+								errNo: errNo]);
 }
 
 + (instancetype)exception
@@ -43,7 +44,7 @@
 		_path = [path copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -57,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_path release];
+	objc_release(_path);
 
 	[super dealloc];
 }

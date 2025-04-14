@@ -26,6 +26,7 @@ int _OFArray_NSObject_reference;
 @implementation OFArray (NSObject)
 - (NSArray *)NSObject
 {
-	return [[[NSOFArray alloc] initWithOFArray: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[NSOFArray alloc] initWithOFArray: self]);
 }
 @end

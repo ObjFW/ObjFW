@@ -31,8 +31,9 @@
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithCondition: condition
-					  errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCondition: condition
+				      errNo: errNo]);
 }
 
 + (instancetype)exception
@@ -44,7 +45,7 @@
 {
 	self = [super init];
 
-	_condition = [condition retain];
+	_condition = objc_retain(condition);
 	_errNo = errNo;
 
 	return self;
@@ -57,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_condition release];
+	objc_release(_condition);
 
 	[super dealloc];
 }

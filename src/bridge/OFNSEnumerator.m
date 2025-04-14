@@ -35,9 +35,9 @@
 		if (enumerator == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		_enumerator = [enumerator retain];
+		_enumerator = objc_retain(enumerator);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -46,7 +46,7 @@
 
 - (void)dealloc
 {
-	[_enumerator release];
+	objc_release(_enumerator);
 
 	[super dealloc];
 }

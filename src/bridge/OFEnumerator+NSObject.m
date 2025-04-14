@@ -26,7 +26,7 @@ int _OFEnumerator_NSObject_reference;
 @implementation OFEnumerator (NSObject)
 - (NSEnumerator *)NSObject
 {
-	return [[[NSOFEnumerator alloc]
-	    initWithOFEnumerator: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[NSOFEnumerator alloc] initWithOFEnumerator: self]);
 }
 @end

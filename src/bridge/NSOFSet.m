@@ -30,14 +30,14 @@
 - (instancetype)initWithOFSet: (OFSet *)set
 {
 	if ((self = [super init]) != nil)
-		_set = [set retain];
+		_set = objc_retain(set);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_set release];
+	objc_release(_set);
 
 	[super dealloc];
 }

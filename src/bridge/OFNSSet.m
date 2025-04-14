@@ -36,9 +36,9 @@
 		if (set == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		_set = [set retain];
+		_set = objc_retain(set);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -47,7 +47,7 @@
 
 - (void)dealloc
 {
-	[_set release];
+	objc_release(_set);
 
 	[super dealloc];
 }

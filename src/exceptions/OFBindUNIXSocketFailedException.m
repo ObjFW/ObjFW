@@ -34,9 +34,9 @@
 			   socket: (id)sock
 			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path
-				    socket: sock
-				     errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+							       socket: sock
+								errNo: errNo]);
 }
 
 - (instancetype)initWithSocket: (id)sock errNo: (int)errNo
@@ -53,7 +53,7 @@
 	@try {
 		_path = [path copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -62,7 +62,7 @@
 
 - (void)dealloc
 {
-	[_path release];
+	objc_release(_path);
 
 	[super dealloc];
 }

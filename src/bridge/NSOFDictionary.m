@@ -30,14 +30,14 @@
 - (instancetype)initWithOFDictionary: (OFDictionary *)dictionary
 {
 	if ((self = [super init]) != nil)
-		_dictionary = [dictionary retain];
+		_dictionary = objc_retain(dictionary);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }

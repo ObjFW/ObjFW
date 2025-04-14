@@ -35,10 +35,10 @@
 			   socket: (id)sock
 			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithHost: host
-				      port: port
-				    socket: sock
-				     errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithHost: host
+								 port: port
+							       socket: sock
+								errNo: errNo]);
 }
 
 - (instancetype)initWithSocket: (id)sock errNo: (int)errNo
@@ -57,7 +57,7 @@
 		_host = [host copy];
 		_port = port;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,7 +66,7 @@
 
 - (void)dealloc
 {
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }

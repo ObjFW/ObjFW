@@ -27,14 +27,14 @@
 - (instancetype)initWithOFEnumerator: (OFEnumerator *)enumerator
 {
 	if ((self = [super init]) != nil)
-		_enumerator = [enumerator retain];
+		_enumerator = objc_retain(enumerator);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_enumerator release];
+	objc_release(_enumerator);
 
 	[super dealloc];
 }

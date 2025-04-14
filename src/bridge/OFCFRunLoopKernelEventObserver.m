@@ -32,9 +32,6 @@
 #import "OFInitializationFailedException.h"
 #import "OFObserveKernelEventsFailedException.h"
 
-extern id objc_retain(id object);
-extern void objc_release(id object);
-
 @interface OFKernelEventObserver (CFRunLoop)
 @end
 
@@ -43,18 +40,6 @@ struct MapTableEntry {
 	CFRunLoopSourceRef source;
 	CFOptionFlags types;
 };
-
-static void *
-retainObject(void *object)
-{
-	return [(id)object retain];
-}
-
-static void
-releaseObject(void *object)
-{
-	[(id)object release];
-}
 
 static void
 freeMapTableEntry(void *object)
@@ -75,8 +60,8 @@ freeMapTableEntry(void *object)
 }
 
 static OFMapTableFunctions objectFunctions = {
-	.retain = retainObject,
-	.release = releaseObject
+	.retain = (void *(*)(void *))objc_retain,
+	.release = (void (*)(void *))objc_release
 };
 static OFMapTableFunctions mapTableEntryFunctions = {
 	.release = freeMapTableEntry
@@ -160,8 +145,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 			.version = 0,
 			.info = [OFPair pairWithFirstObject: nil
 					       secondObject: self],
-			.retain = (const void *(*)(const void *))retainObject,
-			.release = (void (*)(const void *))releaseObject
+			.retain = (const void *(*)(const void *))objc_retain,
+			.release = (void (*)(const void *))objc_release
 		};
 		CFOptionFlags flags;
 
@@ -203,7 +188,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -227,7 +212,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	if (_runLoopMode != NULL)
 		CFRelease(_runLoopMode);
 
-	[_mapTable release];
+	objc_release(_mapTable);
 
 	[super dealloc];
 }
@@ -268,8 +253,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 		context.info = [OFPair pairWithFirstObject: object
 					      secondObject: self];
-		context.retain = (const void *(*)(const void *))retainObject;
-		context.release = (void (*)(const void *))releaseObject;
+		context.retain = (const void *(*)(const void *))objc_retain;
+		context.release = (void (*)(const void *))objc_release;
 
 		if ((newEntry->socket = CFSocketCreateWithNative(
 		    kCFAllocatorDefault, fd, types, callback,
@@ -352,7 +337,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	 * so instead always manually fire all UDP sockets that are being
 	 * observed as ready for writing.
 	 */
-	for (id object in [[_writeObjects copy] autorelease])
+	for (id object in objc_autorelease([_writeObjects copy]))
 		if ([object isKindOfClass: [OFDatagramSocket class]])
 			[_delegate objectIsReadyForWriting: object];
 

@@ -34,9 +34,9 @@
 + (instancetype)exceptionWithActualChecksum: (OFString *)actualChecksum
 			   expectedChecksum: (OFString *)expectedChecksum
 {
-	return [[[self alloc]
-	    initWithActualChecksum: actualChecksum
-		  expectedChecksum: expectedChecksum] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithActualChecksum: actualChecksum
+				expectedChecksum: expectedChecksum]);
 }
 
 - (instancetype)init
@@ -53,7 +53,7 @@
 		_actualChecksum = [actualChecksum copy];
 		_expectedChecksum = [expectedChecksum copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -62,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_actualChecksum release];
-	[_expectedChecksum release];
+	objc_release(_actualChecksum);
+	objc_release(_expectedChecksum);
 
 	[super dealloc];
 }

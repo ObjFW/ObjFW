@@ -32,7 +32,9 @@
 
 + (instancetype)exceptionWithSocket: (id)sock errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: sock errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSocket: sock
+				   errNo: errNo]);
 }
 
 - (instancetype)init
@@ -44,7 +46,7 @@
 {
 	self = [super init];
 
-	_socket = [sock retain];
+	_socket = objc_retain(sock);
 	_errNo = errNo;
 
 	return self;
@@ -52,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_socket release];
+	objc_release(_socket);
 
 	[super dealloc];
 }

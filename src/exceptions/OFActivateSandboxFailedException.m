@@ -33,8 +33,9 @@
 
 + (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox errNo: (int)errNo
 {
-	return [[[self alloc] initWithSandbox: sandbox
-					errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSandbox: sandbox
+				    errNo: errNo]);
 }
 
 - (instancetype)init
@@ -46,7 +47,7 @@
 {
 	self = [super init];
 
-	_sandbox = [sandbox retain];
+	_sandbox = objc_retain(sandbox);
 	_errNo = errNo;
 
 	return self;
@@ -54,7 +55,7 @@
 
 - (void)dealloc
 {
-	[_sandbox release];
+	objc_release(_sandbox);
 
 	[super dealloc];
 }

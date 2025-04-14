@@ -27,14 +27,14 @@
 - (instancetype)initWithOFArray: (OFArray *)array
 {
 	if ((self = [super init]) != nil)
-		_array = [array retain];
+		_array = objc_retain(array);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

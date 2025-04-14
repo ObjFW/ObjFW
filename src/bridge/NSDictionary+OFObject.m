@@ -25,7 +25,7 @@ int _NSDictionary_OFObject_reference;
 @implementation NSDictionary (OFObject)
 - (OFDictionary *)OFObject
 {
-	return [[[OFNSDictionary alloc]
-	    initWithNSDictionary: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFNSDictionary alloc] initWithNSDictionary: self]);
 }
 @end

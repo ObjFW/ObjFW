@@ -25,6 +25,7 @@ int _NSSet_OFObject_reference;
 @implementation NSSet (OFObject)
 - (OFSet *)OFObject
 {
-	return [[[OFNSSet alloc] initWithNSSet: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFNSSet alloc] initWithNSSet: self]);
 }
 @end

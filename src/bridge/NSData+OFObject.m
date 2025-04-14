@@ -25,6 +25,7 @@ int _NSData_OFObject_reference;
 @implementation NSData (OFObject)
 - (OFData *)OFObject
 {
-	return [[[OFNSData alloc] initWithNSData: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFNSData alloc] initWithNSData: self]);
 }
 @end
