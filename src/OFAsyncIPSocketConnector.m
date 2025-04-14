@@ -105,7 +105,7 @@
 		 * self might be retained only by the pending async requests,
 		 * which we're about to cancel.
 		 */
-		objc_autorelease(objc_retain(self));
+		objc_retainAutorelease(self);
 
 		[sock cancelAsyncRequests];
 		[sock of_closeSocket];

@@ -193,8 +193,7 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[self alloc] initWithKey: firstKey
-			      arguments: arguments];
+	ret = [[self alloc] initWithKey: firstKey arguments: arguments];
 	va_end(arguments);
 
 	return objc_autoreleaseReturnValue(ret);

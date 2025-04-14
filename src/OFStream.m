@@ -84,7 +84,7 @@
 
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -121,7 +121,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)isAtEndOfStream

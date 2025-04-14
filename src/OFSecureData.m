@@ -329,19 +329,19 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 + (instancetype)dataWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithCount: count
-		      allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCount: count
+		  allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 + (instancetype)dataWithCount: (size_t)count
 		     itemSize: (size_t)itemSize
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithCount: count
-				   itemSize: itemSize
-		      allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCount: count
+			       itemSize: itemSize
+		  allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 + (instancetype)dataWithItems: (const void *)items count: (size_t)count
@@ -460,7 +460,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		_itemSize = itemSize;
 		_allowsSwappableMemory = allowsSwappableMemory;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

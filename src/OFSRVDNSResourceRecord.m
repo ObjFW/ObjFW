@@ -51,7 +51,7 @@
 		_target = [target copy];
 		_port = port;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -60,7 +60,7 @@
 
 - (void)dealloc
 {
-	[_target release];
+	objc_release(_target);
 
 	[super dealloc];
 }

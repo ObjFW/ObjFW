@@ -29,7 +29,7 @@
 
 + (instancetype)sandbox
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -39,7 +39,7 @@
 	@try {
 		_unveiledPaths = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -48,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_unveiledPaths release];
+	objc_release(_unveiledPaths);
 
 	[super dealloc];
 }
@@ -583,11 +583,11 @@
 
 	ret = [pledges componentsJoinedByString: @" "];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -603,6 +603,6 @@
 
 - (OFArray OF_GENERIC(OFSandboxUnveilPath) *)unveiledPaths
 {
-	return [[_unveiledPaths copy] autorelease];
+	return objc_autoreleaseReturnValue([_unveiledPaths copy]);
 }
 @end

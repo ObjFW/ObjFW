@@ -105,17 +105,17 @@ OF_SINGLETON_METHODS
 
 + (instancetype)set
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)setWithSet: (OFSet *)set
 {
-	return [[[self alloc] initWithSet: set] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithSet: set]);
 }
 
 + (instancetype)setWithArray: (OFArray *)array
 {
-	return [[[self alloc] initWithArray: array] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithArray: array]);
 }
 
 + (instancetype)setWithObjects: (id)firstObject, ...
@@ -124,17 +124,17 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[[self alloc] initWithObject: firstObject
-				  arguments: arguments] autorelease];
+	ret = [[self alloc] initWithObject: firstObject arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 + (instancetype)setWithObjects: (id const *)objects count: (size_t)count
 {
-	return [[[self alloc] initWithObjects: objects
-					count: count] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				    count: count]);
 }
 
 - (instancetype)init
@@ -145,7 +145,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -176,7 +176,7 @@ OF_SINGLETON_METHODS
 	} @catch (id e) {
 		OFFreeMemory(objects);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -199,7 +199,7 @@ OF_SINGLETON_METHODS
 		count = array.count;
 		objects = array.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -252,7 +252,7 @@ OF_SINGLETON_METHODS
 	@try {
 		objects = OFAllocMemory(count, sizeof(id));
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -410,7 +410,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -438,7 +438,7 @@ OF_SINGLETON_METHODS
 
 - (OFSet *)setByAddingObjectsFromSet: (OFSet *)set
 {
-	OFMutableSet *new = [[self mutableCopy] autorelease];
+	OFMutableSet *new = objc_autorelease([self mutableCopy]);
 	[new unionSet: set];
 	[new makeImmutable];
 	return new;
@@ -447,17 +447,17 @@ OF_SINGLETON_METHODS
 - (OFArray *)allObjects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *ret = [[[self objectEnumerator] allObjects] retain];
+	OFArray *ret = objc_retain([[self objectEnumerator] allObjects]);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (id)anyObject
 {
 	void *pool = objc_autoreleasePoolPush();
-	id ret = [[[self objectEnumerator] nextObject] retain];
+	id ret = objc_retain([[self objectEnumerator] nextObject]);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 #ifdef OF_HAVE_BLOCKS

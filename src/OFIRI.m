@@ -1337,7 +1337,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI appendPathComponent: component];
 	[IRI makeImmutable];
 	return IRI;
@@ -1346,7 +1346,7 @@ merge(OFString *base, OFString *path)
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI appendPathComponent: component isDirectory: isDirectory];
 	[IRI makeImmutable];
 	return IRI;
@@ -1354,7 +1354,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByDeletingLastPathComponent
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI deleteLastPathComponent];
 	[IRI makeImmutable];
 	return IRI;
@@ -1362,7 +1362,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI appendPathExtension: extension];
 	[IRI makeImmutable];
 	return IRI;
@@ -1370,7 +1370,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByDeletingPathExtension
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI deletePathExtension];
 	[IRI makeImmutable];
 	return IRI;
@@ -1378,7 +1378,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByStandardizingPath
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI standardizePath];
 	[IRI makeImmutable];
 	return IRI;
@@ -1386,7 +1386,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAddingPercentEncodingForUnicodeCharacters
 {
-	OFMutableIRI *IRI = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *ASCII =
 	    [OFCharacterSet characterSetWithRange: OFMakeRange(0, 0x80)];

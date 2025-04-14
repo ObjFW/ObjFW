@@ -615,7 +615,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 			number = [OFNumber numberWithUnsignedLongLong:
 			    [string unsignedLongLongValueWithBase: 0]];
 	} @finally {
-		[string release];
+		objc_release(string);
 	}
 
 	return number;
@@ -709,10 +709,10 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
 
-	[object retain];
+	objc_retain(object);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 @end

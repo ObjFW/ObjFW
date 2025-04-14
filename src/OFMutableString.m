@@ -340,8 +340,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	va_list arguments;
 
 	va_start(arguments, format);
-	[self appendFormat: format
-		 arguments: arguments];
+	[self appendFormat: format arguments: arguments];
 	va_end(arguments);
 }
 

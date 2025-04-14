@@ -53,7 +53,7 @@
 
 + (instancetype)socket
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -73,7 +73,7 @@
 		_socket = OFInvalidSocketHandle;
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -104,7 +104,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)canBlock
@@ -398,7 +398,7 @@
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	client = [[[[self class] alloc] init] autorelease];
+	client = objc_autorelease([[self.class alloc] init]);
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 

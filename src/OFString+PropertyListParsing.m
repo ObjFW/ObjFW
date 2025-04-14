@@ -138,11 +138,11 @@ parseIntegerElement(OFXMLElement *element)
 		ret = [OFNumber numberWithUnsignedLongLong:
 		    stringValue.unsignedLongLongValue];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 static id
@@ -206,8 +206,8 @@ parseElement(OFXMLElement *element)
 
 	ret = parseElement(elements.firstObject);
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

@@ -36,8 +36,8 @@
 
 + (instancetype)settingsWithApplicationName: (OFString *)applicationName
 {
-	return [[[self alloc]
-	    initWithApplicationName: applicationName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithApplicationName: applicationName]);
 }
 
 - (instancetype)init
@@ -52,7 +52,7 @@
 	@try {
 		_applicationName = [applicationName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -61,7 +61,7 @@
 
 - (void)dealloc
 {
-	[_applicationName release];
+	objc_release(_applicationName);
 
 	[super dealloc];
 }

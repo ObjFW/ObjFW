@@ -216,8 +216,8 @@ OFScrypt(OFScryptParameters param)
 			.allowsSwappableMemory = param.allowsSwappableMemory
 		});
 	} @finally {
-		[tmp release];
-		[buffer release];
-		[HMAC release];
+		objc_release(tmp);
+		objc_release(buffer);
+		objc_release(HMAC);
 	}
 }

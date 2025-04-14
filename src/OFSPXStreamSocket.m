@@ -83,7 +83,7 @@ OF_DIRECT_MEMBERS
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_network = network;
 		memcpy(_node, node, IPX_NODE_LEN);
 		_port = port;
@@ -91,7 +91,7 @@ OF_DIRECT_MEMBERS
 		_handler = [handler copy];
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -100,9 +100,9 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	[_socket release];
+	objc_release(_socket);
 #ifdef OF_HAVE_BLOCKS
-	[_handler release];
+	objc_release(_handler);
 #endif
 
 	[super dealloc];

@@ -993,7 +993,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return;
 	}
 
-	context = objc_autorelease(objc_retain(context));
+	context = objc_retainAutorelease(context);
 	[_queries removeObjectForKey: context->_ID];
 
 	/*
@@ -1033,7 +1033,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 		return true;
 
 	ID = [OFNumber numberWithUnsignedShort: (buffer[0] << 8) | buffer[1]];
-	context = objc_autorelease(objc_retain([_queries objectForKey: ID]));
+	context = objc_retainAutorelease([_queries objectForKey: ID]);
 
 	if (context == nil)
 		return true;

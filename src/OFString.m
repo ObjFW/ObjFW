@@ -734,129 +734,143 @@ OF_SINGLETON_METHODS
 
 + (instancetype)string
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)stringWithUTF8String: (const char *)UTF8String
 {
-	return [[[self alloc] initWithUTF8String: UTF8String] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8String: UTF8String]);
 }
 
 + (instancetype)stringWithUTF8String: (const char *)UTF8String
 			      length: (size_t)UTF8StringLength
 {
-	return [[[self alloc]
-	    initWithUTF8String: UTF8String
-			length: UTF8StringLength] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8String: UTF8String
+				      length: UTF8StringLength]);
 }
 
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 			      freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc]
-	    initWithUTF8StringNoCopy: UTF8String
-			freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8StringNoCopy: UTF8String
+				      freeWhenDone: freeWhenDone]);
 }
 
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 				    length: (size_t)UTF8StringLength
 			      freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc]
-	    initWithUTF8StringNoCopy: UTF8String
-			      length: UTF8StringLength
-			freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8StringNoCopy: UTF8String
+					    length: UTF8StringLength
+				      freeWhenDone: freeWhenDone]);
 }
 
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithCString: cString
-				     encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCString: cString
+				 encoding: encoding]);
 }
 
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding
 			   length: (size_t)cStringLength
 {
-	return [[[self alloc] initWithCString: cString
-				     encoding: encoding
-				       length: cStringLength] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCString: cString
+				 encoding: encoding
+				   length: cStringLength]);
 }
 
 + (instancetype)stringWithData: (OFData *)data
 		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithData: data
-				  encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithData: data
+			      encoding: encoding]);
 }
 
 + (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 + (instancetype)stringWithCharacters: (const OFUnichar *)string
 			      length: (size_t)length
 {
-	return [[[self alloc] initWithCharacters: string
-					  length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCharacters: string
+				      length: length]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 {
-	return [[[self alloc] initWithUTF16String: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 {
-	return [[[self alloc] initWithUTF16String: string
-					   length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				       length: length]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF16String: string
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF16String: string
-					   length: length
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				       length: length
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 {
-	return [[[self alloc] initWithUTF32String: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 {
-	return [[[self alloc] initWithUTF32String: string
-					   length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				       length: length]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF32String: string
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF32String: string
-					   length: length
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				       length: length
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithFormat: (OFConstantString *)format, ...
@@ -865,37 +879,40 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, format);
-	ret = [[[self alloc] initWithFormat: format
-				  arguments: arguments] autorelease];
+	ret = [[self alloc] initWithFormat: format arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 {
-	return [[[self alloc] initWithContentsOfFile: path] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfFile: path]);
 }
 
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfFile: path
-					    encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfFile: path
+					encoding: encoding]);
 }
 #endif
 
 + (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfIRI: IRI]);
 }
 
 + (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfIRI: IRI
-					   encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfIRI: IRI
+				       encoding: encoding]);
 }
 
 - (instancetype)init
@@ -905,7 +922,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -984,7 +1001,7 @@ OF_SINGLETON_METHODS
 		if (data.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1136,7 +1153,7 @@ OF_SINGLETON_METHODS
 	@try {
 		IRI = [OFIRI fileIRIWithPath: path isDirectory: false];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1163,7 +1180,7 @@ OF_SINGLETON_METHODS
 	@try {
 		data = [OFData dataWithContentsOfIRI: IRI];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1678,7 +1695,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -1811,7 +1828,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)description
 {
-	return [[self copy] autorelease];
+	return objc_autoreleaseReturnValue([self copy]);
 }
 
 - (OFString *)JSONRepresentation
@@ -1829,7 +1846,7 @@ OF_SINGLETON_METHODS
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
 			       depth: (size_t)depth
 {
-	OFMutableString *JSON = [[self mutableCopy] autorelease];
+	OFMutableString *JSON = objc_autorelease([self mutableCopy]);
 
 	/* FIXME: This is slow! Write it in pure C! */
 	[JSON replaceOccurrencesOfString: @"\\" withString: @"\\\\"];
@@ -2127,7 +2144,7 @@ OF_SINGLETON_METHODS
 			length: range.length];
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByAppendingString: (OFString *)string
@@ -2166,7 +2183,7 @@ OF_SINGLETON_METHODS
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new replaceOccurrencesOfString: string withString: replacement];
 	[new makeImmutable];
 	return new;
@@ -2177,7 +2194,7 @@ OF_SINGLETON_METHODS
 					   options: (int)options
 					     range: (OFRange)range
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new replaceOccurrencesOfString: string
 			     withString: replacement
 				options: options
@@ -2188,7 +2205,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)uppercaseString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new uppercase];
 	[new makeImmutable];
 	return new;
@@ -2196,7 +2213,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)lowercaseString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new lowercase];
 	[new makeImmutable];
 	return new;
@@ -2204,7 +2221,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)capitalizedString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new capitalize];
 	[new makeImmutable];
 	return new;
@@ -2212,7 +2229,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingLeadingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteLeadingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -2220,7 +2237,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingTrailingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteTrailingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -2228,7 +2245,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingEnclosingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteEnclosingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -2322,7 +2339,7 @@ OF_SINGLETON_METHODS
 	delimiterCharacters = delimiter.characters;
 
 	if (delimiterLength > length) {
-		[array addObject: [[self copy] autorelease]];
+		[array addObject: objc_autorelease([self copy])];
 		[array makeImmutable];
 
 		objc_autoreleasePoolPop(pool);
@@ -2941,11 +2958,11 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	    [OFData dataWithItems: [self cStringWithEncoding: encoding]
 			    count: [self cStringLengthWithEncoding: encoding]];
 
-	[data retain];
+	objc_retain(data);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [data autorelease];
+	return objc_autoreleaseReturnValue(data);
 }
 
 #ifdef OF_WINDOWS

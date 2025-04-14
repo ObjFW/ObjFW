@@ -282,8 +282,7 @@ unescapeMutableString(OFMutableString *string)
 		pair = line;
 
 		if ([pair->_key isEqual: key])
-			return objc_autoreleaseReturnValue(
-			    [pair->_value copy]);
+			return objc_autoreleaseReturnValue([pair->_value copy]);
 	}
 
 	return defaultValue;

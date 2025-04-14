@@ -149,12 +149,11 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = objc_autoreleaseReturnValue(
-	    [[self alloc] initWithObject: firstObject
-			       arguments: arguments]);
+	ret = [[self alloc] initWithObject: firstObject
+				 arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 + (instancetype)arrayWithArray: (OFArray *)array
@@ -744,7 +743,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)sortedArray
 {
-	OFMutableArray *new = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sort];
 	[new makeImmutable];
 	return new;
@@ -753,7 +752,7 @@ OF_SINGLETON_METHODS
 - (OFArray *)sortedArrayUsingSelector: (SEL)selector
 			      options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingSelector: selector options: options];
 	[new makeImmutable];
 	return new;
@@ -763,7 +762,7 @@ OF_SINGLETON_METHODS
 			      context: (void *)context
 			      options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingFunction: compare context: context options: options];
 	[new makeImmutable];
 	return new;
@@ -773,7 +772,7 @@ OF_SINGLETON_METHODS
 - (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
 				options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingComparator: comparator options: options];
 	[new makeImmutable];
 	return new;
@@ -782,7 +781,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)reversedArray
 {
-	OFMutableArray *new = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new reverse];
 	[new makeImmutable];
 	return new;
@@ -842,7 +841,7 @@ OF_SINGLETON_METHODS
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	ret = objc_autoreleaseReturnValue([self mutableCopy]);
+	ret = objc_autorelease([self mutableCopy]);
 	[ret addObject: object];
 	[ret makeImmutable];
 
@@ -851,7 +850,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)arrayByAddingObjectsFromArray: (OFArray *)array
 {
-	OFMutableArray *ret = objc_autoreleaseReturnValue([self mutableCopy]);
+	OFMutableArray *ret = objc_autorelease([self mutableCopy]);
 	[ret addObjectsFromArray: array];
 	[ret makeImmutable];
 

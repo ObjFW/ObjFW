@@ -34,7 +34,7 @@
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 	}

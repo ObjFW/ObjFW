@@ -343,8 +343,8 @@ static OFRunLoop *mainRunLoop = nil;
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				objc_autorelease(objc_retain(
-				    OFListItemObject(listItem)));
+				objc_retainAutorelease(
+				    OFListItemObject(listItem));
 
 				[queue removeListItem: listItem];
 
@@ -387,8 +387,8 @@ static OFRunLoop *mainRunLoop = nil;
 				 * this is that the target might call
 				 * -[cancelAsyncRequests] in its dealloc.
 				 */
-				objc_autorelease(objc_retain(
-					OFListItemObject(listItem)));
+				objc_retainAutorelease(
+				    OFListItemObject(listItem));
 
 				[queue removeListItem: listItem];
 
@@ -1886,8 +1886,8 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				if (listItem != NULL &&
 				    [OFListItemObject(listItem) fireDate]
 				    .timeIntervalSinceNow <= 0) {
-					timer = objc_autorelease(objc_retain(
-					    OFListItemObject(listItem)));
+					timer = objc_retainAutorelease(
+					    OFListItemObject(listItem));
 
 					[state->_timersQueue
 					    removeListItem: listItem];

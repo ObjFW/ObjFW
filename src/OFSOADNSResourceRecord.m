@@ -61,7 +61,7 @@
 		_expirationInterval = expirationInterval;
 		_minTTL = minTTL;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -70,8 +70,8 @@
 
 - (void)dealloc
 {
-	[_primaryNameServer release];
-	[_responsiblePerson release];
+	objc_release(_primaryNameServer);
+	objc_release(_responsiblePerson);
 
 	[super dealloc];
 }

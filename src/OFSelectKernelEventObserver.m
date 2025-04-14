@@ -77,7 +77,7 @@
 		_maxFD = (int)_cancelFD[0];
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -270,7 +270,7 @@
 	pool = objc_autoreleasePoolPush();
 
 	for (id <OFReadyForReadingObserving> object in
-	    [[_readObjects copy] autorelease]) {
+	    objc_autorelease([_readObjects copy])) {
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForReading;
 
@@ -283,7 +283,7 @@
 	}
 
 	for (id <OFReadyForWritingObserving> object in
-	    [[_writeObjects copy] autorelease]) {
+	    objc_autorelease([_writeObjects copy])) {
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 

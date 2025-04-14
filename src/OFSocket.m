@@ -79,7 +79,7 @@ static OFMutex *mutex;
 static void
 releaseMutex(void)
 {
-	[mutex release];
+	objc_release(mutex);
 }
 #endif
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)

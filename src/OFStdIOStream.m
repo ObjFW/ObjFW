@@ -139,8 +139,8 @@ OFLogV(OFConstantString *format, va_list arguments)
 	if (me == nil)
 		me = @"?";
 
-	msg = [[[OFString alloc] initWithFormat: format
-				      arguments: arguments] autorelease];
+	msg = objc_autorelease([[OFString alloc] initWithFormat: format
+						      arguments: arguments]);
 
 	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 			       date.microsecond / 1000, me, getpid(), msg];
@@ -794,8 +794,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	}
 #endif
 
-	[_foregroundColor release];
-	_foregroundColor = [color retain];
+	objc_release(_foregroundColor);
+	_foregroundColor = objc_retain(color);
 }
 
 - (OFColor *)backgroundColor
@@ -842,8 +842,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	}
 #endif
 
-	[_backgroundColor release];
-	_backgroundColor = [color retain];
+	objc_release(_backgroundColor);
+	_backgroundColor = objc_retain(color);
 }
 
 - (bool)isBold
@@ -959,8 +959,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	[self writeString: @"\033[0m"];
 #endif
 
-	[_foregroundColor release];
-	[_backgroundColor release];
+	objc_release(_foregroundColor);
+	objc_release(_backgroundColor);
 	_foregroundColor = _backgroundColor = nil;
 	_bold = false;
 	_italic = false;
