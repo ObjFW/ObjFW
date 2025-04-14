@@ -178,8 +178,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			@throw [OFInvalidFormatException exception];
 
 		archive->_diskNumber = *diskNumber;
-		archive->_stream = [stream retain];
-		[oldStream release];
+		archive->_stream = objc_retain(stream);
+		objc_release(oldStream);
 	}
 
 	@try {
@@ -194,12 +194,14 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithStream: stream
+								   mode: mode]);
 }
 
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithIRI: IRI mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+								mode: mode]);
 }
 
 + (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
@@ -226,7 +228,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 		_entries = [[OFMutableArray alloc] init];
 		_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
@@ -249,10 +251,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		 * to write anything to it on error - after all, it might not
 		 * be a ZIP file which we would destroy otherwise.
 		 */
-		[_stream release];
+		objc_release(_stream);
 		_stream = nil;
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -270,7 +272,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		else
 			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -286,10 +288,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_stream != nil)
 		[self close];
 
-	[_stream release];
-	[_archiveComment release];
-	[_entries release];
-	[_pathToEntryMap release];
+	objc_release(_stream);
+	objc_release(_archiveComment);
+	objc_release(_entries);
+	objc_release(_pathToEntryMap);
 
 	[super dealloc];
 }
@@ -434,12 +436,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 				@throw [OFInvalidFormatException exception];
 
 			_diskNumber++;
-			_stream = [stream retain];
-			[oldStream release];
+			_stream = objc_retain(stream);
+			objc_release(oldStream);
 		}
 
-		entry = [[[OFZIPArchiveEntry alloc]
-		    of_initWithStream: _stream] autorelease];
+		entry = objc_autorelease(
+		    [[OFZIPArchiveEntry alloc] of_initWithStream: _stream]);
 
 		if ([_pathToEntryMap objectForKey: entry.fileName] != nil)
 			@throw [OFInvalidFormatException exception];
@@ -453,7 +455,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (OFArray *)entries
 {
-	return [[_entries copy] autorelease];
+	return objc_autoreleaseReturnValue([_entries copy]);
 }
 
 - (OFString *)archiveComment
@@ -471,7 +473,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	old = _archiveComment;
 	_archiveComment = [comment copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -509,8 +511,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	seekOrThrowInvalidFormat(self, &startDiskNumber,
 	    (OFStreamOffset)offset64, OFSeekSet);
-	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
-	    initWithStream: _stream] autorelease];
+	localFileHeader = objc_autorelease(
+	    [[OFZIPArchiveLocalFileHeader alloc] initWithStream: _stream]);
 
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
@@ -526,12 +528,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	objc_autoreleasePoolPop(pool);
 
-	_lastReturnedStream = [[[OFZIPArchiveFileReadStream alloc]
+	_lastReturnedStream = [[OFZIPArchiveFileReadStream alloc]
 	    of_initWithArchive: self
 			stream: _stream
-			 entry: entry] autorelease];
+			 entry: entry];
 
-	return _lastReturnedStream;
+	return objc_autoreleaseReturnValue(_lastReturnedStream);
 }
 
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
@@ -552,7 +554,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	entry = [[entry_ mutableCopy] autorelease];
+	entry = objc_autorelease([entry_ mutableCopy]);
 
 	if ([_pathToEntryMap objectForKey: entry.fileName] != nil)
 		@throw [OFOpenItemFailedException
@@ -637,7 +639,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [_lastReturnedStream autorelease];
+	return objc_autoreleaseReturnValue(_lastReturnedStream);
 }
 
 - (void)of_writeCentralDirectory
@@ -704,7 +706,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_mode == modeWrite || _mode == modeAppend)
 		[self of_writeCentralDirectory];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 }
 @end
@@ -741,8 +743,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
 		if (extraFieldLength > 0)
-			extraField = [[[stream readDataWithCount:
-			    extraFieldLength] mutableCopy] autorelease];
+			extraField = objc_autorelease([[stream
+			    readDataWithCount: extraFieldLength] mutableCopy]);
 
 		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
 		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
@@ -773,7 +775,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -782,8 +784,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (void)dealloc
 {
-	[_fileName release];
-	[_extraField release];
+	objc_release(_fileName);
+	objc_release(_extraField);
 
 	[super dealloc];
 }
@@ -816,12 +818,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	self = [super init];
 
 	@try {
-		_archive = [archive retain];
+		_archive = objc_retain(archive);
 		_compressionMethod = entry.compressionMethod;
 
 		switch (_compressionMethod) {
 		case OFZIPArchiveEntryCompressionMethodNone:
-			_decompressedStream = [_archive->_stream retain];
+			_decompressedStream = objc_retain(_archive->_stream);
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate:
 			_decompressedStream = [[OFInflateStream alloc]
@@ -841,7 +843,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		_toRead = entry.uncompressedSize;
 		_CRC32 = ~0;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -853,12 +855,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_decompressedStream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -898,14 +900,14 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			@throw [OFInvalidFormatException exception];
 
 		_archive->_diskNumber++;
-		_archive->_stream = [stream retain];
-		[oldStream release];
+		_archive->_stream = objc_retain(stream);
+		objc_release(oldStream);
 
 		switch (_compressionMethod) {
 		case OFZIPArchiveEntryCompressionMethodNone:
 			oldDecompressedStream = _decompressedStream;
-			_decompressedStream = [_archive->_stream retain];
-			[oldDecompressedStream release];
+			_decompressedStream = objc_retain(_archive->_stream);
+			objc_release(oldDecompressedStream);
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate:
 		case OFZIPArchiveEntryCompressionMethodDeflate64:
@@ -966,7 +968,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_decompressedStream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_decompressedStream release];
+	objc_release(_decompressedStream);
 	_decompressedStream = nil;
 
 	[super close];
@@ -982,9 +984,9 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 {
 	self = [super init];
 
-	_archive = [archive retain];
-	_stream = [stream retain];
-	_entry = [entry retain];
+	_archive = objc_retain(archive);
+	_stream = objc_retain(stream);
+	_entry = objc_retain(entry);
 	_CRC32 = ~0;
 	_CRC32Offset = CRC32Offset;
 	_size64Offset = size64Offset;
@@ -997,12 +999,12 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	if (_stream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
 
 	if (_archive->_lastReturnedStream == self)
 		_archive->_lastReturnedStream = nil;
 
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -1067,7 +1069,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 		[_stream writeLittleEndianInt64: (uint64_t)_bytesWritten];
 	}
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	_entry.CRC32 = ~_CRC32;

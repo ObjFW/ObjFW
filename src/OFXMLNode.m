@@ -85,6 +85,6 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 @end

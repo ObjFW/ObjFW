@@ -152,10 +152,10 @@ callMain(id object)
 	if (setjmp(thread->_exitEnv) == 0) {
 # ifdef OF_HAVE_BLOCKS
 		if (thread->_block != NULL)
-			thread->_returnValue = [thread->_block() retain];
+			thread->_returnValue = objc_retain(thread->_block());
 		else
 # endif
-			thread->_returnValue = [[thread main] retain];
+			thread->_returnValue = objc_retain([thread main]);
 	}
 
 	[thread handleTermination];
@@ -173,7 +173,7 @@ callMain(id object)
 
 	thread->_running = OFThreadStateWaitingForJoin;
 
-	[thread release];
+	objc_release(thread);
 }
 
 @synthesize name = _name;
@@ -193,13 +193,13 @@ callMain(id object)
 
 + (instancetype)thread
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 # ifdef OF_HAVE_BLOCKS
 + (instancetype)threadWithBlock: (OFThreadBlock)block
 {
-	return [[[self alloc] initWithBlock: block] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBlock: block]);
 }
 # endif
 
@@ -365,7 +365,7 @@ callMain(id object)
 
 	OFEnsure(thread != nil);
 
-	thread->_returnValue = [object retain];
+	thread->_returnValue = objc_retain(object);
 	longjmp(thread->_exitEnv, 1);
 
 	OF_UNREACHABLE
@@ -407,7 +407,7 @@ callMain(id object)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -422,7 +422,7 @@ callMain(id object)
 	@try {
 		_block = [block copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -441,13 +441,13 @@ callMain(id object)
 {
 	OFRunLoop *oldRunLoop = _runLoop;
 	_runLoop = nil;
-	[oldRunLoop release];
+	objc_release(oldRunLoop);
 
-	[_threadDictionary release];
+	objc_release(_threadDictionary);
 	_threadDictionary = nil;
 
 # ifdef OF_HAVE_SOCKETS
-	[_DNSResolver release];
+	objc_release(_DNSResolver);
 	_DNSResolver = nil;
 # endif
 }
@@ -462,16 +462,16 @@ callMain(id object)
 
 	if (_running == OFThreadStateWaitingForJoin) {
 		OFPlainThreadDetach(_thread);
-		[_returnValue release];
+		objc_release(_returnValue);
 	}
 
-	[self retain];
+	objc_retain(self);
 
 	_running = OFThreadStateRunning;
 
 	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
-		[self release];
+		objc_release(self);
 		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
@@ -498,7 +498,7 @@ callMain(id object)
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFRunLoop *)runLoop
@@ -509,7 +509,7 @@ callMain(id object)
 
 		if (!OFAtomicPointerCompareAndSwap(
 		    (void **)&_runLoop, nil, tmp))
-			[tmp release];
+			objc_release(tmp);
 	}
 # else
 	@synchronized (self) {
@@ -576,9 +576,9 @@ callMain(id object)
 	if (_running == OFThreadStateWaitingForJoin)
 		OFPlainThreadDetach(_thread);
 
-	[_returnValue release];
+	objc_release(_returnValue);
 # ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_block);
 # endif
 
 	[super dealloc];

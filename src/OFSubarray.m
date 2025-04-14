@@ -33,7 +33,7 @@
 		_array = [array copy];
 		_range = range;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -42,7 +42,7 @@
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

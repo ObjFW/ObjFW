@@ -233,8 +233,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
 		if (extraFieldLength > 0)
-			extraField = [[[stream readDataWithCount:
-			    extraFieldLength] mutableCopy] autorelease];
+			extraField = objc_autorelease([[stream
+			    readDataWithCount: extraFieldLength] mutableCopy]);
 		if (fileCommentLength > 0)
 			_fileComment = [[stream
 			    readStringWithLength: fileCommentLength
@@ -276,7 +276,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -285,16 +285,16 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 - (void)dealloc
 {
-	[_fileName release];
-	[_extraField release];
-	[_fileComment release];
+	objc_release(_fileName);
+	objc_release(_extraField);
+	objc_release(_fileComment);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -319,7 +319,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		copy->_versionSpecificAttributes = _versionSpecificAttributes;
 		copy->_localFileHeaderOffset = _localFileHeaderOffset;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -372,7 +372,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [date autorelease];
+	return objc_autoreleaseReturnValue(date);
 }
 
 - (OFZIPArchiveEntryCompressionMethod)compressionMethod
@@ -459,11 +459,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	    _compressedSize, _uncompressedSize, compressionMethod,
 	    self.modificationDate, _CRC32, _extraField];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (uint64_t)of_writeToStream: (OFStream *)stream

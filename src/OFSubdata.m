@@ -31,7 +31,7 @@
 		_data = [data copy];
 		_range = range;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -40,7 +40,7 @@
 
 - (void)dealloc
 {
-	[_data release];
+	objc_release(_data);
 
 	[super dealloc];
 }

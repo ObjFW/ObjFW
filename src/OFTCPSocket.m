@@ -105,7 +105,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 @implementation OFTCPSocketConnectDelegate
 - (void)dealloc
 {
-	[_exception release];
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -116,7 +116,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	 exception: (id)exception
 {
 	_done = true;
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 }
 @end
 
@@ -128,7 +128,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 {
 	id old = defaultSOCKS5Host;
 	defaultSOCKS5Host = [host copy];
-	[old release];
+	objc_release(old);
 }
 
 + (OFString *)SOCKS5Host
@@ -154,7 +154,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		_SOCKS5Host = [defaultSOCKS5Host copy];
 		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -163,7 +163,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 - (void)dealloc
 {
-	[_SOCKS5Host release];
+	objc_release(_SOCKS5Host);
 
 	[super dealloc];
 }
@@ -282,7 +282,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = _delegate;
 	OFTCPSocketConnectDelegate *connectDelegate =
-	    [[[OFTCPSocketConnectDelegate alloc] init] autorelease];
+	    objc_autorelease([[OFTCPSocketConnectDelegate alloc] init]);
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
@@ -319,7 +319,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	id <OFTCPSocketDelegate> delegate;
 
 	if (_SOCKS5Host != nil) {
-		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
+		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
 			      host: host
 			      port: port
@@ -327,19 +327,19 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 #ifdef OF_HAVE_BLOCKS
 			   handler: NULL
 #endif
-		    ] autorelease];
+		    ]);
 		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	} else
 		delegate = _delegate;
 
-	[[[[OFAsyncIPSocketConnector alloc]
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
 			delegate: delegate
 			 handler: NULL
-	    ] autorelease] startWithRunLoopMode: runLoopMode];
+	    ]) startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -395,23 +395,22 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	id <OFTCPSocketDelegate> delegate = nil;
 
 	if (_SOCKS5Host != nil) {
-		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
+		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
 			      host: host
 			      port: port
 			  delegate: nil
-			   handler: handler] autorelease];
+			   handler: handler]);
 		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	}
 
-	[[[[OFAsyncIPSocketConnector alloc]
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
 			delegate: delegate
-			 handler: (delegate == nil
-				      ? handler : NULL)] autorelease]
+			 handler: (delegate == nil ? handler : NULL)])
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);

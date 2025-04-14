@@ -27,9 +27,10 @@
 			 secondObject: (id)secondObject
 			  thirdObject: (id)thirdObject
 {
-	return [[[self alloc] initWithFirstObject: firstObject
-				     secondObject: secondObject
-				      thirdObject: thirdObject] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFirstObject: firstObject
+				 secondObject: secondObject
+				  thirdObject: thirdObject]);
 }
 
 - (instancetype)initWithFirstObject: (id)firstObject
@@ -39,11 +40,11 @@
 	self = [super init];
 
 	@try {
-		_firstObject = [firstObject retain];
-		_secondObject = [secondObject retain];
-		_thirdObject = [thirdObject retain];
+		_firstObject = objc_retain(firstObject);
+		_secondObject = objc_retain(secondObject);
+		_thirdObject = objc_retain(thirdObject);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -52,9 +53,9 @@
 
 - (void)dealloc
 {
-	[_firstObject release];
-	[_secondObject release];
-	[_thirdObject release];
+	objc_release(_firstObject);
+	objc_release(_secondObject);
+	objc_release(_thirdObject);
 
 	[super dealloc];
 }
@@ -118,7 +119,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy

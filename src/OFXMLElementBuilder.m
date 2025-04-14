@@ -36,7 +36,7 @@
 
 + (instancetype)builder
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -46,7 +46,7 @@
 	@try {
 		_stack = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -55,7 +55,7 @@
 
 - (void)dealloc
 {
-	[_stack release];
+	objc_release(_stack);
 
 	[super dealloc];
 }

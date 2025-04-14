@@ -47,7 +47,7 @@
 	@try {
 		_textStrings = [textStrings copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,7 +56,7 @@
 
 - (void)dealloc
 {
-	[_textStrings release];
+	objc_release(_textStrings);
 
 	[super dealloc];
 }
@@ -149,10 +149,10 @@
 	    @">",
 	    self.className, _name, OFDNSClassName(_DNSClass), text, _TTL];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

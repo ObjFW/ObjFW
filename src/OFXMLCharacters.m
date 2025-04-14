@@ -28,7 +28,8 @@
 @implementation OFXMLCharacters
 + (instancetype)charactersWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -38,7 +39,7 @@
 	@try {
 		_characters = [string copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -47,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_characters release];
+	objc_release(_characters);
 
 	[super dealloc];
 }
@@ -74,14 +75,14 @@
 
 - (OFString *)stringValue
 {
-	return [[_characters copy] autorelease];
+	return objc_autoreleaseReturnValue([_characters copy]);
 }
 
 - (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _characters;
 	_characters = [stringValue copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFString *)XMLString

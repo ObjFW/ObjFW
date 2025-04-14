@@ -49,17 +49,17 @@ enum {
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 #ifdef OF_HAVE_BLOCKS
 		_handler = [handler copy];
 #endif
 
 		_socket.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -71,14 +71,14 @@ enum {
 	if (_socket.delegate == self)
 		_socket.delegate = _delegate;
 
-	[_socket release];
-	[_host release];
-	[_delegate release];
+	objc_release(_socket);
+	objc_release(_host);
+	objc_release(_delegate);
 #ifdef OF_HAVE_BLOCKS
-	[_handler release];
+	objc_release(_handler);
 #endif
-	[_exception release];
-	[_request release];
+	objc_release(_exception);
+	objc_release(_request);
 
 	[super dealloc];
 }
@@ -111,7 +111,7 @@ enum {
 	OFData *data;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return;
 	}
@@ -135,7 +135,7 @@ enum {
 	unsigned char *response, *addressLength;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return false;
 	}
@@ -156,7 +156,7 @@ enum {
 			return false;
 		}
 
-		[_request release];
+		objc_release(_request);
 		_request = [[OFMutableData alloc] init];
 
 		[_request addItems: "\x05\x01\x00\x03" count: 4];
@@ -284,7 +284,7 @@ enum {
 	OFRunLoopMode runLoopMode;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return nil;
 	}
@@ -299,7 +299,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return nil;
 	case stateSendRequest:
-		[_request release];
+		objc_release(_request);
 		_request = nil;
 
 		_SOCKS5State = stateReadResponse;

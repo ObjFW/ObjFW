@@ -100,7 +100,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    [[OFNumber alloc] initWithUnsignedShort: 0644];
 		_modificationDate = [[OFDate alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -159,14 +159,14 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 				OFString *fileName = [OFString
 				    stringWithFormat: @"%@/%@",
 						      prefix, _fileName];
-				[_fileName release];
+				objc_release(_fileName);
 				_fileName = [fileName copy];
 			}
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -175,21 +175,21 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 - (void)dealloc
 {
-	[_fileName release];
-	[_POSIXPermissions release];
-	[_ownerAccountID release];
-	[_groupOwnerAccountID release];
-	[_modificationDate release];
-	[_targetFileName release];
-	[_ownerAccountName release];
-	[_groupOwnerAccountName release];
+	objc_release(_fileName);
+	objc_release(_POSIXPermissions);
+	objc_release(_ownerAccountID);
+	objc_release(_groupOwnerAccountID);
+	objc_release(_modificationDate);
+	objc_release(_targetFileName);
+	objc_release(_ownerAccountName);
+	objc_release(_groupOwnerAccountName);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -198,9 +198,9 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    initWithFileName: _fileName];
 
 	@try {
-		copy->_POSIXPermissions = [_POSIXPermissions retain];
-		copy->_ownerAccountID = [_ownerAccountID retain];
-		copy->_groupOwnerAccountID = [_groupOwnerAccountID retain];
+		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
+		copy->_ownerAccountID = objc_retain(_ownerAccountID);
+		copy->_groupOwnerAccountID = objc_retain(_groupOwnerAccountID);
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
 		copy->_modificationDate = [_modificationDate copy];
@@ -211,7 +211,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		copy->_deviceMajor = _deviceMajor;
 		copy->_deviceMinor = _deviceMinor;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -313,11 +313,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    _ownerAccountName, _groupOwnerAccountName, _deviceMajor,
 	    _deviceMinor];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)of_writeToStream: (OFStream *)stream

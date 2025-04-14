@@ -45,32 +45,37 @@ OF_DIRECT_MEMBERS
 @implementation OFWindowsRegistryKey
 + (instancetype)classesRootKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CLASSES_ROOT
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CLASSES_ROOT
+				    close: false]);
 }
 
 + (instancetype)currentConfigKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CURRENT_CONFIG
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CURRENT_CONFIG
+				    close: false]);
 }
 
 + (instancetype)currentUserKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CURRENT_USER
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CURRENT_USER
+				    close: false]);
 }
 
 + (instancetype)localMachineKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_LOCAL_MACHINE
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_LOCAL_MACHINE
+				    close: false]);
 }
 
 + (instancetype)usersKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_USERS
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_USERS
+				    close: false]);
 }
 
 - (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close
@@ -122,9 +127,9 @@ OF_DIRECT_MEMBERS
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
-							close: true]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
+						    close: true]);
 }
 
 - (OFWindowsRegistryKey *)
@@ -158,9 +163,9 @@ OF_DIRECT_MEMBERS
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
-							close: true]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
+						    close: true]);
 }
 
 - (OFData *)dataForValueNamed: (OFString *)name type: (DWORD *)type
@@ -190,11 +195,11 @@ OF_DIRECT_MEMBERS
 						       count: length];
 			} else {
 				[ret makeImmutable];
-				[ret retain];
+				objc_retain(ret);
 
 				objc_autoreleasePoolPop(pool);
 
-				return [ret autorelease];
+				return objc_autoreleaseReturnValue(ret);
 			}
 		case ERROR_FILE_NOT_FOUND:
 			objc_autoreleasePoolPop(pool);
@@ -313,7 +318,7 @@ OF_DIRECT_MEMBERS
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)setString: (OFString *)string forValueNamed: (OFString *)name

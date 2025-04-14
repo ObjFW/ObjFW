@@ -32,17 +32,19 @@
 @implementation OFUUID
 + (instancetype)UUID
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)UUIDWithUUIDBytes: (const unsigned char [16])bytes
 {
-	return [[[self alloc] initWithUUIDBytes: bytes] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUUIDBytes: bytes]);
 }
 
 + (instancetype)UUIDWithUUIDString: (OFString *)string
 {
-	return [[[self alloc] initWithUUIDString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUUIDString: string]);
 }
 
 - (instancetype)init
@@ -141,7 +143,7 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -176,7 +178,7 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFComparisonResult)compare: (OFUUID *)UUID

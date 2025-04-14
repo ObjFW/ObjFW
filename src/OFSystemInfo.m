@@ -583,7 +583,7 @@ cpucfg(uint32_t word)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [IRI autorelease];
+	return objc_autoreleaseReturnValue(IRI);
 # endif
 #else
 	return nil;

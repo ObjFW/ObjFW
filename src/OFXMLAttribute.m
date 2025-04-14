@@ -33,16 +33,18 @@
 			namespace: (OFString *)namespace
 		      stringValue: (OFString *)stringValue
 {
-	return [[[self alloc] initWithName: name
-				 namespace: namespace
-			       stringValue: stringValue] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+			     namespace: namespace
+			   stringValue: stringValue]);
 }
 
 + (instancetype)attributeWithName: (OFString *)name
 		      stringValue: (OFString *)stringValue
 {
-	return [[[self alloc] initWithName: name
-			       stringValue: stringValue] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+			   stringValue: stringValue]);
 }
 
 - (instancetype)initWithName: (OFString *)name
@@ -64,7 +66,7 @@
 		_namespace = [namespace copy];
 		_stringValue = [stringValue copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -73,23 +75,23 @@
 
 - (void)dealloc
 {
-	[_name release];
-	[_namespace release];
-	[_stringValue release];
+	objc_release(_name);
+	objc_release(_namespace);
+	objc_release(_stringValue);
 
 	[super dealloc];
 }
 
 - (OFString *)stringValue
 {
-	return [[_stringValue copy] autorelease];
+	return objc_autoreleaseReturnValue([_stringValue copy]);
 }
 
 - (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _stringValue;
 	_stringValue = [stringValue copy];
-	[old release];
+	objc_release(old);
 }
 
 - (bool)isEqual: (id)object

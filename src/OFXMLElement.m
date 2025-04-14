@@ -55,12 +55,12 @@
        didBuildElement: (OFXMLElement *)element
 {
 	if (_element == nil)
-		_element = [element retain];
+		_element = objc_retain(element);
 }
 
 - (void)dealloc
 {
-	[_element release];
+	objc_release(_element);
 
 	[super dealloc];
 }
@@ -71,40 +71,45 @@
 
 + (instancetype)elementWithName: (OFString *)name
 {
-	return [[[self alloc] initWithName: name] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithName: name]);
 }
 
 + (instancetype)elementWithName: (OFString *)name
 		    stringValue: (OFString *)stringValue
 {
-	return [[[self alloc] initWithName: name
-			       stringValue: stringValue] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+			   stringValue: stringValue]);
 }
 
 + (instancetype)elementWithName: (OFString *)name
 		      namespace: (OFString *)namespace
 {
-	return [[[self alloc] initWithName: name
-				 namespace: namespace] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+			     namespace: namespace]);
 }
 
 + (instancetype)elementWithName: (OFString *)name
 		      namespace: (OFString *)namespace
 		    stringValue: (OFString *)stringValue
 {
-	return [[[self alloc] initWithName: name
-				 namespace: namespace
-			       stringValue: stringValue] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithName: name
+			     namespace: namespace
+			   stringValue: stringValue]);
 }
 
 + (instancetype)elementWithXMLString: (OFString *)string
 {
-	return [[[self alloc] initWithXMLString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithXMLString: string]);
 }
 
 + (instancetype)elementWithStream: (OFStream *)stream
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream]);
 }
 
 - (instancetype)init
@@ -142,7 +147,7 @@
 		    @"http://www.w3.org/XML/1998/namespace", @"xml",
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -159,7 +164,7 @@
 		if (stringValue != nil)
 			self.stringValue = stringValue;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -183,8 +188,8 @@
 
 		parser = [OFXMLParser parser];
 		builder = [OFXMLElementBuilder builder];
-		delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
-		    autorelease];
+		delegate = objc_autorelease(
+		    [[OFXMLElementElementBuilderDelegate alloc] init]);
 
 		parser.delegate = builder;
 		builder.delegate = delegate;
@@ -197,7 +202,7 @@
 
 		element = delegate->_element;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -205,16 +210,16 @@
 			namespace: element->_namespace];
 
 	@try {
-		[_attributes release];
-		_attributes = [element->_attributes retain];
-		[_namespaces release];
-		_namespaces = [element->_namespaces retain];
-		[_children release];
-		_children = [element->_children retain];
+		objc_release(_attributes);
+		_attributes = objc_retain(element->_attributes);
+		objc_release(_namespaces);
+		_namespaces = objc_retain(element->_namespaces);
+		objc_release(_children);
+		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -235,8 +240,8 @@
 
 		parser = [OFXMLParser parser];
 		builder = [OFXMLElementBuilder builder];
-		delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
-		    autorelease];
+		delegate = objc_autorelease(
+		    [[OFXMLElementElementBuilderDelegate alloc] init]);
 
 		parser.delegate = builder;
 		builder.delegate = delegate;
@@ -249,7 +254,7 @@
 
 		element = delegate->_element;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -257,16 +262,16 @@
 			namespace: element->_namespace];
 
 	@try {
-		[_attributes release];
-		_attributes = [element->_attributes retain];
-		[_namespaces release];
-		_namespaces = [element->_namespaces retain];
-		[_children release];
-		_children = [element->_children retain];
+		objc_release(_attributes);
+		_attributes = objc_retain(element->_attributes);
+		objc_release(_namespaces);
+		_namespaces = objc_retain(element->_namespaces);
+		objc_release(_children);
+		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -275,30 +280,30 @@
 
 - (void)dealloc
 {
-	[_name release];
-	[_namespace release];
-	[_attributes release];
-	[_namespaces release];
-	[_children release];
+	objc_release(_name);
+	objc_release(_namespace);
+	objc_release(_attributes);
+	objc_release(_namespaces);
+	objc_release(_children);
 
 	[super dealloc];
 }
 
 - (OFArray *)attributes
 {
-	return [[_attributes copy] autorelease];
+	return objc_autoreleaseReturnValue([_attributes copy]);
 }
 
 - (void)setChildren: (OFArray *)children
 {
 	OFArray *old = _children;
 	_children = [children mutableCopy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFArray *)children
 {
-	return [[_children copy] autorelease];
+	return objc_autoreleaseReturnValue([_children copy]);
 }
 
 - (void)setStringValue: (OFString *)stringValue
@@ -352,7 +357,7 @@
 		OFMutableDictionary *tmp;
 		OFString *key, *object;
 
-		tmp = [[allNS mutableCopy] autorelease];
+		tmp = objc_autorelease([allNS mutableCopy]);
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
@@ -885,7 +890,7 @@
 		copy->_namespaces = [_namespaces mutableCopy];
 		copy->_children = [_children mutableCopy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 

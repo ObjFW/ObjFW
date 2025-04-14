@@ -32,7 +32,7 @@
 
 + (instancetype)commentWithText: (OFString *)text
 {
-	return [[[self alloc] initWithText: text] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithText: text]);
 }
 
 - (instancetype)initWithText: (OFString *)text
@@ -42,7 +42,7 @@
 	@try {
 		_text = [text copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -51,7 +51,7 @@
 
 - (void)dealloc
 {
-	[_text release];
+	objc_release(_text);
 
 	[super dealloc];
 }

@@ -34,8 +34,8 @@
 + (instancetype)processingInstructionWithTarget: (OFString *)target
 					   text: (OFString *)text
 {
-	return [[[self alloc] initWithTarget: target
-					text: text] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithTarget: target
+								   text: text]);
 }
 
 - (instancetype)initWithTarget: (OFString *)target
@@ -47,7 +47,7 @@
 		_target = [target copy];
 		_text = [text copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,8 +56,8 @@
 
 - (void)dealloc
 {
-	[_target release];
-	[_text release];
+	objc_release(_target);
+	objc_release(_text);
 
 	[super dealloc];
 }

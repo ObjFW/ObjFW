@@ -28,7 +28,8 @@
 @implementation OFXMLCDATA
 + (instancetype)CDATAWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -38,7 +39,7 @@
 	@try {
 		_CDATA = [string copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -47,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_CDATA release];
+	objc_release(_CDATA);
 
 	[super dealloc];
 }
@@ -74,14 +75,14 @@
 
 - (OFString *)stringValue
 {
-	return [[_CDATA copy] autorelease];
+	return objc_autoreleaseReturnValue([_CDATA copy]);
 }
 
 - (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _CDATA;
 	_CDATA = [stringValue copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFString *)XMLString
@@ -92,9 +93,9 @@
 				      withString: @"]]>]]&gt;<![CDATA["];
 	OFString *ret = [OFString stringWithFormat: @"<![CDATA[%@]]>", tmp];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)description

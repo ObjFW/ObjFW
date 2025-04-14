@@ -203,8 +203,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    exceptionWithPrefix: attributePrefix
 				 parser: self];
 
-	[attribute->_namespace release];
-	attribute->_namespace = [attributeNS retain];
+	objc_release(attribute->_namespace);
+	attribute->_namespace = objc_retain(attributeNS);
 }
 
 @implementation OFXMLParser
@@ -212,7 +212,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 + (instancetype)parser
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -241,7 +241,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -250,14 +250,14 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)dealloc
 {
-	[_buffer release];
-	[_name release];
-	[_prefix release];
-	[_namespaces release];
-	[_attributes release];
-	[_attributeName release];
-	[_attributePrefix release];
-	[_previous release];
+	objc_release(_buffer);
+	objc_release(_name);
+	objc_release(_prefix);
+	objc_release(_namespaces);
+	objc_release(_attributes);
+	objc_release(_attributeName);
+	objc_release(_attributePrefix);
+	objc_release(_previous);
 
 	[super dealloc];
 }
@@ -613,8 +613,8 @@ inTagNameState(OFXMLParser *self)
 		} else
 			[self->_previous addObject: bufferString];
 
-		[self->_name release];
-		[self->_prefix release];
+		objc_release(self->_name);
+		objc_release(self->_prefix);
 		self->_name = self->_prefix = nil;
 
 		self->_state = (self->_data[self->_i] == '/'
@@ -692,8 +692,8 @@ inCloseTagNameState(OFXMLParser *self)
 	objc_autoreleasePoolPop(pool);
 
 	[self->_namespaces removeLastObject];
-	[self->_name release];
-	[self->_prefix release];
+	objc_release(self->_name);
+	objc_release(self->_prefix);
 	self->_name = self->_prefix = nil;
 
 	self->_last = self->_i + 1;
@@ -771,8 +771,8 @@ inTagState(OFXMLParser *self)
 
 	objc_autoreleasePoolPop(pool);
 
-	[self->_name release];
-	[self->_prefix release];
+	objc_release(self->_name);
+	objc_release(self->_prefix);
 	[self->_attributes removeAllObjects];
 	self->_name = self->_prefix = nil;
 
@@ -897,8 +897,8 @@ inAttributeValueState(OFXMLParser *self)
 	objc_autoreleasePoolPop(pool);
 
 	[self->_buffer removeAllItems];
-	[self->_attributeName release];
-	[self->_attributePrefix release];
+	objc_release(self->_attributeName);
+	objc_release(self->_attributePrefix);
 	self->_attributeName = self->_attributePrefix = nil;
 
 	self->_last = self->_i + 1;

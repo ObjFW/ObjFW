@@ -200,7 +200,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		_s->cString = OFAllocZeroedMemory(1, 1);
 		_s->freeWhenDone = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -241,7 +241,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 		_s->containsNull = containsNull;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -423,7 +423,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 		_s->cString[_s->cStringLength] = 0;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -470,7 +470,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		_s->containsNull = containsNull;
 		_s->freeWhenDone = freeWhenDone;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -513,7 +513,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			_s->containsNull = containsNull;
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -560,7 +560,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			/* We don't care, as we only tried to make it smaller */
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -648,7 +648,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			/* We don't care, as we only tried to make it smaller */
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -718,7 +718,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			/* We don't care, as we only tried to make it smaller */
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -765,7 +765,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			OFFreeMemory(tmp);
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1225,7 +1225,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	cStringLength = delimiter.UTF8StringLength;
 
 	if (cStringLength > _s->cStringLength) {
-		[array addObject: [[self copy] autorelease]];
+		[array addObject: objc_autorelease([self copy])];
 		objc_autoreleasePoolPop(pool);
 
 		return array;

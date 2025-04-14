@@ -52,7 +52,7 @@
 		_headerType = 2;
 		_minVersionNeeded = 0x100;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -82,7 +82,7 @@
 		_nextHeaderOffset = [stream readLittleEndianInt32];
 
 		if (_nextHeaderOffset == 0) {
-			[self release];
+			objc_release(self);
 			return nil;
 		}
 
@@ -182,14 +182,14 @@
 
 		if (commentOffset != 0) {
 			[stream seekToOffset: commentOffset whence: OFSeekSet];
-			_fileComment = [[stream
-			    readStringWithLength: commentLength
-					encoding: encoding] retain];
+			_fileComment = objc_retain(
+			    [stream readStringWithLength: commentLength
+						encoding: encoding]);
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -198,17 +198,17 @@
 
 - (void)dealloc
 {
-	[_fileComment release];
-	[_fileName release];
-	[_directoryName release];
-	[_POSIXPermissions release];
+	objc_release(_fileComment);
+	objc_release(_fileName);
+	objc_release(_directoryName);
+	objc_release(_POSIXPermissions);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -230,10 +230,10 @@
 		copy->_deleted = _deleted;
 		copy->_fileComment = [_fileComment copy];
 		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
-		copy->_POSIXPermissions = [_POSIXPermissions retain];
+		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
 		copy->_timeZone = _timeZone;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -273,13 +273,13 @@
 	else {
 		date = [OFDate dateWithDateString: dateString
 					   format: @"%Y-%m-%d %H:%M:%S"];
-		date = [[date dateByAddingTimeInterval:
-		    (OFTimeInterval)_timeZone * 900] retain];
+		date = objc_retain([date dateByAddingTimeInterval:
+		    (OFTimeInterval)_timeZone * 900]);
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return [date autorelease];
+	return objc_autoreleaseReturnValue(date);
 }
 
 - (uint16_t)CRC16
@@ -498,10 +498,10 @@
 	    _uncompressedSize, _compressionMethod, self.modificationDate,
 	    _CRC16, _deleted];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

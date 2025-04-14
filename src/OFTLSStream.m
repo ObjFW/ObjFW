@@ -72,7 +72,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 @implementation OFTLSStreamHandshakeDelegate
 - (void)dealloc
 {
-	[_exception release];
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -82,14 +82,14 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 			  exception: (id)exception
 {
 	_done = true;
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 }
 
 - (void)streamDidPerformServerHandshake: (OFTLSStream *)stream
 			      exception: (id)exception
 {
 	_done = true;
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 }
 @end
 
@@ -114,7 +114,8 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 + (instancetype)streamWithStream: (OFStream <OFReadyForReadingObserving,
 				       OFReadyForWritingObserving> *)stream
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream]);
 }
 
 - (instancetype)init
@@ -128,10 +129,10 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	self = [super init];
 
 	@try {
-		_underlyingStream = [stream retain];
+		_underlyingStream = objc_retain(stream);
 		_verifiesCertificates = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -140,14 +141,14 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 
 - (void)dealloc
 {
-	[_underlyingStream release];
+	objc_release(_underlyingStream);
 
 	[super dealloc];
 }
 
 - (void)close
 {
-	[_underlyingStream release];
+	objc_release(_underlyingStream);
 	_underlyingStream = nil;
 
 	[super close];
@@ -158,7 +159,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 {
 	OFArray OF_GENERIC(OFX509Certificate *) *old = _certificateChain;
 	_certificateChain = [certificateChain copy];
-	[old release];
+	objc_release(old);
 }
 
 - (OFArray OF_GENERIC(OFX509Certificate *) *)certificateChain
@@ -208,7 +209,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTLSStreamDelegate> delegate = _delegate;
 	OFTLSStreamHandshakeDelegate *handshakeDelegate =
-	    [[[OFTLSStreamHandshakeDelegate alloc] init] autorelease];
+	    objc_autorelease([[OFTLSStreamHandshakeDelegate alloc] init]);
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = handshakeDelegate;
@@ -244,7 +245,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTLSStreamDelegate> delegate = _delegate;
 	OFTLSStreamHandshakeDelegate *handshakeDelegate =
-	    [[[OFTLSStreamHandshakeDelegate alloc] init] autorelease];
+	    objc_autorelease([[OFTLSStreamHandshakeDelegate alloc] init]);
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = handshakeDelegate;
