@@ -42,9 +42,9 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableDictionary *buttons =
-		    [[_buttons mutableCopy] autorelease];
+		    objc_autorelease([_buttons mutableCopy]);
 		OFMutableDictionary *directionalPads =
-		    [[_directionalPads mutableCopy] autorelease];
+		    objc_autorelease([_directionalPads mutableCopy]);
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
 
@@ -71,16 +71,18 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 				    forKey: @"Analog Stick"];
 
 		[buttons makeImmutable];
-		[_buttons release];
+		objc_release(_buttons);
+		_buttons = nil;
 		_buttons = [buttons copy];
 
 		[directionalPads makeImmutable];
-		[_directionalPads release];
+		objc_release(_directionalPads);
+		_directionalPads = nil;
 		_directionalPads = [directionalPads copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

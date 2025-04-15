@@ -154,7 +154,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		free(*thread);
 		@throw e;
 	} @finally {
-		[tags release];
+		objc_release(tags);
 	}
 
 	return 0;

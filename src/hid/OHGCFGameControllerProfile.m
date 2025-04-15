@@ -165,7 +165,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -174,12 +174,12 @@
 
 - (void)dealloc
 {
-	[_buttons release];
-	[_axes release];
-	[_directionalPads release];
-	[_buttonsMap release];
-	[_axesMap release];
-	[_directionalPadsMap release];
+	objc_release(_buttons);
+	objc_release(_axes);
+	objc_release(_directionalPads);
+	objc_release(_buttonsMap);
+	objc_release(_axesMap);
+	objc_release(_directionalPadsMap);
 
 	[super dealloc];
 }

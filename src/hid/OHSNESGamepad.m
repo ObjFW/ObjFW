@@ -117,7 +117,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -126,8 +126,8 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 
 - (void)dealloc
 {
-	[_buttons release];
-	[_directionalPads release];
+	objc_release(_buttons);
+	objc_release(_directionalPads);
 
 	[super dealloc];
 }

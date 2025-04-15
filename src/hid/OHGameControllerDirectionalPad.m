@@ -45,10 +45,11 @@ const OFNotificationName
 			 yAxis: (OHGameControllerAxis *)yAxis
 			analog: (bool)analog
 {
-	return [[[self alloc] oh_initWithName: name
-					xAxis: xAxis
-					yAxis: yAxis
-				       analog: analog] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] oh_initWithName: name
+				    xAxis: xAxis
+				    yAxis: yAxis
+				   analog: analog]);
 }
 
 + (instancetype)oh_padWithName: (OFString *)name
@@ -58,12 +59,13 @@ const OFNotificationName
 			 right: (OHGameControllerButton *)right
 			analog: (bool)analog
 {
-	return [[[self alloc] oh_initWithName: name
-					   up: up
-					 down: down
-					 left: left
-					right: right
-				       analog: analog] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] oh_initWithName: name
+				       up: up
+				     down: down
+				     left: left
+				    right: right
+				   analog: analog]);
 }
 
 - (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
@@ -83,8 +85,8 @@ const OFNotificationName
 		OFNotificationCenter *notificationCenter;
 		OFNotificationName notificationName;
 
-		_xAxis = [xAxis retain];
-		_yAxis = [yAxis retain];
+		_xAxis = objc_retain(xAxis);
+		_yAxis = objc_retain(yAxis);
 		_type = OHGameControllerDirectionalPadTypeAxes;
 
 		_up = [[OHEmulatedGameControllerButton alloc]
@@ -114,7 +116,7 @@ const OFNotificationName
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -135,10 +137,10 @@ const OFNotificationName
 		OFNotificationCenter *notificationCenter;
 		OFNotificationName notificationName;
 
-		_up = [up retain];
-		_down = [down retain];
-		_left = [left retain];
-		_right = [right retain];
+		_up = objc_retain(up);
+		_down = objc_retain(down);
+		_left = objc_retain(left);
+		_right = objc_retain(right);
 		_type = OHGameControllerDirectionalPadTypeButtons;
 
 		_xAxis = [[OHEmulatedGameControllerAxis alloc]
@@ -170,7 +172,7 @@ const OFNotificationName
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -218,12 +220,12 @@ const OFNotificationName
 
 	objc_autoreleasePoolPop(pool);
 
-	[_xAxis release];
-	[_yAxis release];
-	[_up release];
-	[_down release];
-	[_left release];
-	[_right release];
+	objc_release(_xAxis);
+	objc_release(_yAxis);
+	objc_release(_up);
+	objc_release(_down);
+	objc_release(_left);
+	objc_release(_right);
 
 	[super dealloc];
 }

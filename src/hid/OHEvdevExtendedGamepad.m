@@ -57,7 +57,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,7 +66,7 @@
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerButton *) *)buttons
 {
-	OFMutableDictionary *buttons = [[_buttons mutableCopy] autorelease];
+	OFMutableDictionary *buttons = objc_autorelease([_buttons mutableCopy]);
 
 	[buttons removeObjectForKey: @"D-Pad Up"];
 	[buttons removeObjectForKey: @"D-Pad Down"];
@@ -86,7 +86,7 @@
 
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
 {
-	OFMutableDictionary *axes = [[_axes mutableCopy] autorelease];
+	OFMutableDictionary *axes = objc_autorelease([_axes mutableCopy]);
 
 	[axes removeObjectForKey: @"X"];
 	[axes removeObjectForKey: @"Y"];

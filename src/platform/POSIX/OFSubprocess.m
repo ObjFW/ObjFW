@@ -63,23 +63,26 @@ OF_DIRECT_MEMBERS
 @implementation OFSubprocess
 + (instancetype)subprocessWithProgram: (OFString *)program
 {
-	return [[[self alloc] initWithProgram: program] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			  programName: (OFString *)programName
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
@@ -87,10 +90,11 @@ OF_DIRECT_MEMBERS
 			    arguments: (OFArray *)arguments
 			  environment: (OFDictionary *)environment
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments
-				  environment: environment] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments
+			      environment: environment]);
 }
 
 - (instancetype)init
@@ -227,7 +231,7 @@ OF_DIRECT_MEMBERS
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

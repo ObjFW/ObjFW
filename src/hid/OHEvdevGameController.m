@@ -134,8 +134,8 @@ scale(float value, float min, float max, bool inverted)
 		path = [@"/dev/input" stringByAppendingPathComponent: device];
 
 		@try {
-			controller = [[[OHEvdevGameController alloc]
-			    oh_initWithPath: path] autorelease];
+			controller = objc_autorelease([[OHEvdevGameController
+			    alloc] oh_initWithPath: path]);
 		} @catch (OFOpenItemFailedException *e) {
 			if (e.errNo == EACCES)
 				continue;
@@ -272,7 +272,7 @@ scale(float value, float min, float max, bool inverted)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -281,7 +281,7 @@ scale(float value, float min, float max, bool inverted)
 
 - (void)dealloc
 {
-	[_path release];
+	objc_release(_path);
 
 	if (_fd != -1)
 		close(_fd);
@@ -290,8 +290,8 @@ scale(float value, float min, float max, bool inverted)
 	OFFreeMemory(_keyBits);
 	OFFreeMemory(_absBits);
 
-	[_name release];
-	[_profile release];
+	objc_release(_name);
+	objc_release(_profile);
 
 	[super dealloc];
 }

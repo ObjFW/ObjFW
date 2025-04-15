@@ -40,7 +40,7 @@
 		name = [OFString stringWithFormat:
 		    @"%@%c", axis.name, (positive ? '+' : '-')];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -48,7 +48,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	_axis = [axis retain];
+	_axis = objc_retain(axis);
 	_positive = positive;
 
 	return self;
@@ -56,7 +56,7 @@
 
 - (void)dealloc
 {
-	[_axis release];
+	objc_release(_axis);
 
 	[super dealloc];
 }

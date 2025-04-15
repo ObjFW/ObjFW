@@ -78,9 +78,10 @@ scale(float value, float min, float max, float center)
 		if (WPAD_Probe(i, &type) == WPAD_ERR_NONE &&
 		    (type == WPAD_EXP_NONE || type == WPAD_EXP_NUNCHUK ||
 		    type == WPAD_EXP_CLASSIC))
-			[controllers addObject: [[[OHWiiGameController alloc]
+			[controllers addObject: objc_autorelease(
+			    [[OHWiiGameController alloc]
 			    oh_initWithIndex: i
-					type: type] autorelease]];
+					type: type])];
 	}
 
 	[controllers makeImmutable];
@@ -112,7 +113,7 @@ scale(float value, float min, float max, float center)
 
 		[self updateState];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -121,7 +122,7 @@ scale(float value, float min, float max, float center)
 
 - (void)dealloc
 {
-	[_profile release];
+	objc_release(_profile);
 
 	[super dealloc];
 }

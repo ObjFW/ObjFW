@@ -739,10 +739,10 @@ next:
 		[interface makeImmutable];
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

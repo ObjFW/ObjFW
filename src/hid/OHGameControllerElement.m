@@ -27,8 +27,9 @@
 
 + (instancetype)oh_elementWithName: (OFString *)name analog: (bool)analog
 {
-	return [[[self alloc] oh_initWithName: name
-				       analog: analog] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] oh_initWithName: name
+				   analog: analog]);
 }
 
 - (instancetype)init
@@ -44,7 +45,7 @@
 		_name = [name copy];
 		_analog = analog;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -53,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_name release];
+	objc_release(_name);
 
 	[super dealloc];
 }

@@ -35,7 +35,9 @@
 + (instancetype)oh_buttonWithName: (OFString *)name
 			     axis: (OHGameControllerAxis *)axis
 {
-	return [[[self alloc] oh_initWithName: name axis: axis] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] oh_initWithName: name
+				     axis: axis]);
 }
 
 - (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
@@ -48,14 +50,14 @@
 {
 	self = [super oh_initWithName: name analog: true];
 
-	_axis = [axis retain];
+	_axis = objc_retain(axis);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_axis release];
+	objc_release(_axis);
 
 	[super dealloc];
 }

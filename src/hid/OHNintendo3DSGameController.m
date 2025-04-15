@@ -51,7 +51,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 	pool = objc_autoreleasePoolPush();
 	controllers = [[OFArray alloc] initWithObject:
-	    [[[OHNintendo3DSGameController alloc] oh_init] autorelease]];
+	    objc_autorelease([[OHNintendo3DSGameController alloc] oh_init])];
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -70,7 +70,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 		[self updateState];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -79,7 +79,7 @@ static OFArray OF_GENERIC(OHGameController *) *controllers;
 
 - (void)dealloc
 {
-	[_extendedGamepad release];
+	objc_release(_extendedGamepad);
 
 	[super dealloc];
 }

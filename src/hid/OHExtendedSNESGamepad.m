@@ -44,7 +44,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFMutableDictionary *buttons =
-		    [[_buttons mutableCopy] autorelease];
+		    objc_autorelease([_buttons mutableCopy]);
 
 		for (size_t i = 0; i < numButtons; i++) {
 			OHGameControllerButton *button = [OHGameControllerButton
@@ -53,12 +53,13 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 		[buttons makeImmutable];
-		[_buttons release];
+		objc_release(_buttons);
+		_buttons = nil;
 		_buttons = [buttons copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

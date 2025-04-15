@@ -148,9 +148,9 @@ int _OFString_PathAdditions_reference;
 		return @"";
 	}
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)pathExtension
@@ -169,9 +169,9 @@ int _OFString_PathAdditions_reference;
 
 	ret = [fileName substringFromIndex: pos + 1];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByDeletingLastPathComponent
@@ -197,9 +197,9 @@ int _OFString_PathAdditions_reference;
 		    [firstComponent hasSuffix: @":\\"] ||
 		    [firstComponent hasSuffix: @":/"] ||
 		    [firstComponent hasPrefix: @"\\"]) {
-			ret = [firstComponent retain];
+			ret = objc_retain(firstComponent);
 			objc_autoreleasePoolPop(pool);
-			return [ret autorelease];
+			return objc_autoreleaseReturnValue(ret);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -210,9 +210,9 @@ int _OFString_PathAdditions_reference;
 	    OFMakeRange(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByDeletingPathExtension
@@ -223,17 +223,17 @@ int _OFString_PathAdditions_reference;
 	size_t pos;
 
 	if (self.length == 0)
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 
 	pool = objc_autoreleasePoolPush();
-	components = [[self.pathComponents mutableCopy] autorelease];
+	components = objc_autorelease([self.pathComponents mutableCopy]);
 	fileName = components.lastObject;
 
 	pos = [fileName rangeOfString: @"."
 			      options: OFStringSearchBackwards].location;
 	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 	}
 
 	fileName = [fileName substringToIndex: pos];
@@ -242,9 +242,9 @@ int _OFString_PathAdditions_reference;
 
 	ret = [OFString pathWithComponents: components];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByStandardizingPath
@@ -262,10 +262,10 @@ int _OFString_PathAdditions_reference;
 
 	if (components.count == 1) {
 		objc_autoreleasePoolPop(pool);
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 	}
 
-	array = [[components mutableCopy] autorelease];
+	array = objc_autorelease([components mutableCopy]);
 
 	while (!done) {
 		size_t length = array.count;
@@ -300,11 +300,11 @@ int _OFString_PathAdditions_reference;
 		}
 	}
 
-	ret = [[OFString pathWithComponents: array] retain];
+	ret = objc_retain([OFString pathWithComponents: array]);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
@@ -315,7 +315,7 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @"\\"] || [self hasSuffix: @"/"])
 		return [self stringByAppendingString: component];
 	else {
-		OFMutableString *ret = [[self mutableCopy] autorelease];
+		OFMutableString *ret = objc_autorelease([self mutableCopy]);
 
 		[ret appendString: @"\\"];
 		[ret appendString: component];
@@ -333,16 +333,16 @@ int _OFString_PathAdditions_reference;
 		OFMutableArray *components;
 		OFString *fileName, *ret;
 
-		components =
-		    [[self.pathComponents mutableCopy] autorelease];
+		components = objc_autorelease(
+		    [self.pathComponents mutableCopy]);
 		fileName = [components.lastObject
 		    stringByAppendingFormat: @".%@", extension];
 		[components replaceObjectAtIndex: components.count - 1
 				      withObject: fileName];
 
-		ret = [[OFString pathWithComponents: components] retain];
+		ret = objc_retain([OFString pathWithComponents: components]);
 		objc_autoreleasePoolPop(pool);
-		return [ret autorelease];
+		return objc_autoreleaseReturnValue(ret);
 	} else
 		return [self stringByAppendingFormat: @".%@", extension];
 }

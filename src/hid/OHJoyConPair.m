@@ -208,8 +208,9 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 + (instancetype)gamepadWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
 			  rightJoyCon: (OHRightJoyCon *)rightJoyCon
 {
-	return [[[self alloc] initWithLeftJoyCon: leftJoyCon
-				     rightJoyCon: rightJoyCon] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLeftJoyCon: leftJoyCon
+				 rightJoyCon: rightJoyCon]);
 }
 
 - (instancetype)init
@@ -307,7 +308,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -322,8 +323,8 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		_leftJoyCon = [leftJoyCon retain];
-		_rightJoyCon = [rightJoyCon retain];
+		_leftJoyCon = objc_retain(leftJoyCon);
+		_rightJoyCon = objc_retain(rightJoyCon);
 
 		addObserverForButtons(self,
 		    @selector(oh_leftJoyConButtonValueDidChange:),
@@ -340,7 +341,7 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -362,10 +363,10 @@ removeObserverForDirectionalPads(id observer, SEL selector,
 	    @selector(oh_rightJoyConDirectionalPadValueDidChange:),
 	    _rightJoyCon.directionalPads);
 
-	[_leftJoyCon release];
-	[_rightJoyCon release];
-	[_buttons release];
-	[_directionalPads release];
+	objc_release(_leftJoyCon);
+	objc_release(_rightJoyCon);
+	objc_release(_buttons);
+	objc_release(_directionalPads);
 
 	[super dealloc];
 }

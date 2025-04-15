@@ -121,7 +121,7 @@ codepageToEncoding(UINT codepage)
 		if (GetConsoleScreenBufferInfo(_handle, &csbi))
 			_attributes = csbi.wAttributes;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -515,8 +515,8 @@ codepageToEncoding(UINT codepage)
 		    FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
 	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
-		[_foregroundColor release];
-		_foregroundColor = [color retain];
+		objc_release(_foregroundColor);
+		_foregroundColor = objc_retain(color);
 	}
 }
 
@@ -551,8 +551,8 @@ codepageToEncoding(UINT codepage)
 		    BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
 	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
-		[_backgroundColor release];
-		_backgroundColor = [color retain];
+		objc_release(_backgroundColor);
+		_backgroundColor = objc_retain(color);
 	}
 }
 
@@ -594,8 +594,8 @@ codepageToEncoding(UINT codepage)
 - (void)reset
 {
 	if (SetConsoleTextAttribute(_handle, _attributes)) {
-		[_foregroundColor release];
-		[_backgroundColor release];
+		objc_release(_foregroundColor);
+		objc_release(_backgroundColor);
 		_foregroundColor = _backgroundColor = nil;
 	}
 }

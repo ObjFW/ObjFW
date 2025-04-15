@@ -288,7 +288,7 @@ axisToName(uint16_t axis)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -297,8 +297,8 @@ axisToName(uint16_t axis)
 
 - (void)dealloc
 {
-	[_buttons release];
-	[_axes release];
+	objc_release(_buttons);
+	objc_release(_axes);
 
 	[super dealloc];
 }

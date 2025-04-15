@@ -42,7 +42,7 @@
 		    @"%@ and %@ as emulated axis",
 		    negativeButton.name, positiveButton.name];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -50,16 +50,16 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	_negativeButton = [negativeButton retain];
-	_positiveButton = [positiveButton retain];
+	_negativeButton = objc_retain(negativeButton);
+	_positiveButton = objc_retain(positiveButton);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_negativeButton release];
-	[_positiveButton release];
+	objc_release(_negativeButton);
+	objc_release(_positiveButton);
 
 	[super dealloc];
 }

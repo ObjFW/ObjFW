@@ -441,7 +441,7 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	@try {						\
 		OFMethodNotFound(self, _cmd);		\
 	} @catch (id e) {				\
-		[self release];				\
+		objc_release(self);			\
 		@throw e;				\
 	}						\
 							\

@@ -155,11 +155,11 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[directionalPads setObject: directionalPad forKey: @"D-Pad"];
 
 		[directionalPads makeImmutable];
-		_directionalPads = [directionalPads retain];
+		_directionalPads = objc_retain(directionalPads);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -168,8 +168,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (void)dealloc
 {
-	[_buttons release];
-	[_directionalPads release];
+	objc_release(_buttons);
+	objc_release(_directionalPads);
 
 	[super dealloc];
 }

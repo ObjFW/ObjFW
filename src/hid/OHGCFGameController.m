@@ -72,8 +72,8 @@
 	void *pool = objc_autoreleasePoolPush();
 
 	for (GCController *controller in GCController.controllers)
-		[controllers addObject: [[[self alloc]
-		    oh_initWithGCController: controller] autorelease]];
+		[controllers addObject: objc_autorelease(
+		    [[self alloc] oh_initWithGCController: controller])];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -92,7 +92,7 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		_controller = [controller retain];
+		_controller = objc_retain(controller);
 		_name = [_controller.vendorName.OFObject copy];
 
 		if ([_name isEqual: @"DualSense Wireless Controller"])
@@ -122,7 +122,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -131,8 +131,8 @@
 
 - (void)dealloc
 {
-	[_controller release];
-	[_profile release];
+	objc_release(_controller);
+	objc_release(_profile);
 
 	[super dealloc];
 }

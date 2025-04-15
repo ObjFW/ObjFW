@@ -97,8 +97,9 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 			OHGameController *controller;
 
 			@try {
-				controller = [[[OHXInputGameController alloc]
-				    oh_initWithIndex: i] autorelease];
+				controller = objc_autorelease(
+				    [[OHXInputGameController alloc]
+				    oh_initWithIndex: i]);
 			} @catch (OFInitializationFailedException *e) {
 				/* Controller does not exist. */
 				continue;
@@ -154,7 +155,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 		[self updateState];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -163,9 +164,9 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 - (void)dealloc
 {
-	[_vendorID release];
-	[_productID release];
-	[_extendedGamepad release];
+	objc_release(_vendorID);
+	objc_release(_productID);
+	objc_release(_extendedGamepad);
 
 	[super dealloc];
 }

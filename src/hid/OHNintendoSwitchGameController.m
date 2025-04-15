@@ -57,8 +57,9 @@ static const size_t maxControllers = 8;
 		OHGameController *controller;
 
 		@try {
-			controller = [[[OHNintendoSwitchGameController alloc]
-			    oh_initWithIndex: i] autorelease];
+			controller = objc_autorelease(
+			    [[OHNintendoSwitchGameController alloc]
+			    oh_initWithIndex: i]);
 		} @catch (OFInitializationFailedException *e) {
 			/* Controller does not exist. */
 			continue;
@@ -97,7 +98,7 @@ static const size_t maxControllers = 8;
 
 		[self updateState];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -106,7 +107,7 @@ static const size_t maxControllers = 8;
 
 - (void)dealloc
 {
-	[_extendedGamepad release];
+	objc_release(_extendedGamepad);
 
 	[super dealloc];
 }
