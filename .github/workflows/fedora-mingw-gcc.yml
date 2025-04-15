@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo dnf upgrade --refresh -y
-        sudo dnf install -y ${{matrix.prefix}}-gcc-objc ${{matrix.prefix}}-openssl autoconf automake make wine
+        sudo dnf install -y ${{matrix.prefix}}-gcc-objc ${{matrix.prefix}}-openssl autoconf automake awk make wine
     - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
