@@ -33,11 +33,12 @@
 				    type: (DWORD)type
 				  status: (LSTATUS)status
 {
-	return [[[self alloc] initWithRegistryKey: registryKey
-					valueName: valueName
-					     data: data
-					     type: type
-					   status: status] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRegistryKey: registryKey
+				    valueName: valueName
+					 data: data
+					 type: type
+				       status: status]);
 }
 
 - (instancetype)init
@@ -54,13 +55,13 @@
 	self = [super init];
 
 	@try {
-		_registryKey = [registryKey retain];
+		_registryKey = objc_retain(registryKey);
 		_valueName = [valueName copy];
 		_data = [data copy];
 		_type = type;
 		_status = status;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -69,9 +70,9 @@
 
 - (void)dealloc
 {
-	[_registryKey release];
-	[_valueName release];
-	[_data release];
+	objc_release(_registryKey);
+	objc_release(_valueName);
+	objc_release(_data);
 
 	[super dealloc];
 }

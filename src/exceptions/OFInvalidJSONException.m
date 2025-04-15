@@ -32,7 +32,8 @@
 
 + (instancetype)exceptionWithString: (OFString *)string line: (size_t)line
 {
-	return [[[self alloc] initWithString: string line: line] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithString: string
+								   line: line]);
 }
 
 - (instancetype)init
@@ -48,7 +49,7 @@
 		_string = [string copy];
 		_line = line;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -57,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }

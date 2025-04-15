@@ -28,7 +28,8 @@
 
 + (instancetype)exceptionWithParser: (OFXMLParser *)parser
 {
-	return [[[self alloc] initWithParser: parser] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithParser: parser]);
 }
 
 - (instancetype)init
@@ -40,14 +41,14 @@
 {
 	self = [super init];
 
-	_parser = [parser retain];
+	_parser = objc_retain(parser);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_parser release];
+	objc_release(_parser);
 
 	[super dealloc];
 }

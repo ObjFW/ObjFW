@@ -27,7 +27,7 @@
 
 + (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {
-	return [[[self alloc] initWithLock: lock] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithLock: lock]);
 }
 
 - (instancetype)init
@@ -39,14 +39,14 @@
 {
 	self = [super init];
 
-	_lock = [lock retain];
+	_lock = objc_retain(lock);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_lock release];
+	objc_release(_lock);
 
 	[super dealloc];
 }

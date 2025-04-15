@@ -27,8 +27,8 @@
 
 + (instancetype)exceptionWithRequestedSize: (size_t)requestedSize
 {
-	return [[[self alloc]
-	    initWithRequestedSize: requestedSize] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRequestedSize: requestedSize]);
 }
 
 - (instancetype)init

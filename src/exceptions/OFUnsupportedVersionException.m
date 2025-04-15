@@ -32,7 +32,8 @@
 
 + (instancetype)exceptionWithVersion: (OFString *)version
 {
-	return [[[self alloc] initWithVersion: version] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithVersion: version]);
 }
 
 - (instancetype)init
@@ -47,7 +48,7 @@
 	@try {
 		_version = [version copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,7 +57,7 @@
 
 - (void)dealloc
 {
-	[_version release];
+	objc_release(_version);
 
 	[super dealloc];
 }

@@ -29,9 +29,10 @@
 		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithObject: object
-			     requestedLength: requestedLength
-				       errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object
+			 requestedLength: requestedLength
+				   errNo: errNo]);
 }
 
 + (instancetype)exceptionWithObject: (id)object
@@ -39,10 +40,11 @@
 		       bytesWritten: (size_t)bytesWritten
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithObject: object
-			     requestedLength: requestedLength
-				bytesWritten: bytesWritten
-				       errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object
+			 requestedLength: requestedLength
+			    bytesWritten: bytesWritten
+				   errNo: errNo]);
 }
 
 - (instancetype)initWithObject: (id)object

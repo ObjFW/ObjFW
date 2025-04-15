@@ -31,9 +31,10 @@
 		    addressFamily: (OFSocketAddressFamily)addressFamily
 			errorCode: (OFDNSResolverErrorCode)errorCode
 {
-	return [[[self alloc] initWithHost: host
-			     addressFamily: addressFamily
-				 errorCode: errorCode] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithHost: host
+			 addressFamily: addressFamily
+			     errorCode: errorCode]);
 }
 
 + (instancetype)exception
@@ -52,7 +53,7 @@
 		_addressFamily = addressFamily;
 		_errorCode = errorCode;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,7 +67,7 @@
 
 - (void)dealloc
 {
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }

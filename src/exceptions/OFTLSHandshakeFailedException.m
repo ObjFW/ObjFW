@@ -31,9 +31,10 @@ int _OFTLSHandshakeFailedException_reference;
 			       host: (OFString *)host
 			  errorCode: (OFTLSStreamErrorCode)errorCode
 {
-	return [[[self alloc] initWithStream: stream
-					host: host
-				   errorCode: errorCode] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream
+				    host: host
+			       errorCode: errorCode]);
 }
 
 + (instancetype)exception
@@ -48,11 +49,11 @@ int _OFTLSHandshakeFailedException_reference;
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 		_host = [host copy];
 		_errorCode = errorCode;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,8 +67,8 @@ int _OFTLSHandshakeFailedException_reference;
 
 - (void)dealloc
 {
-	[_stream release];
-	[_host release];
+	objc_release(_stream);
+	objc_release(_host);
 
 	[super dealloc];
 }

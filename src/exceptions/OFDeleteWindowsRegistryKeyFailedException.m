@@ -31,9 +31,10 @@
 			      subkeyPath: (OFString *)subkeyPath
 				  status: (LSTATUS)status
 {
-	return [[[self alloc] initWithRegistryKey: registryKey
-				       subkeyPath: subkeyPath
-					   status: status] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRegistryKey: registryKey
+				   subkeyPath: subkeyPath
+				       status: status]);
 }
 
 - (instancetype)init
@@ -48,11 +49,11 @@
 	self = [super init];
 
 	@try {
-		_registryKey = [registryKey retain];
+		_registryKey = objc_retain(registryKey);
 		_subkeyPath = [subkeyPath copy];
 		_status = status;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -61,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_registryKey release];
-	[_subkeyPath release];
+	objc_release(_registryKey);
+	objc_release(_subkeyPath);
 
 	[super dealloc];
 }

@@ -282,7 +282,7 @@ backtraceCallback(struct _Unwind_Context *ctx, void *data)
 @implementation OFException
 + (instancetype)exception
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 #ifdef HAVE__UNWIND_BACKTRACE

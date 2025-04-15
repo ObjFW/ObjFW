@@ -28,7 +28,8 @@
 
 + (instancetype)exceptionWithThread: (OFThread *)thread
 {
-	return [[[self alloc] initWithThread: thread] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithThread: thread]);
 }
 
 - (instancetype)init
@@ -40,14 +41,14 @@
 {
 	self = [super init];
 
-	_thread = [thread retain];
+	_thread = objc_retain(thread);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_thread release];
+	objc_release(_thread);
 
 	[super dealloc];
 }

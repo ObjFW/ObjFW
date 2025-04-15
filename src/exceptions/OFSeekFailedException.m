@@ -37,10 +37,11 @@
 			     whence: (OFSeekWhence)whence
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithStream: stream
-				      offset: offset
-				      whence: whence
-				       errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream
+				  offset: offset
+				  whence: whence
+				   errNo: errNo]);
 }
 
 - (instancetype)init
@@ -55,7 +56,7 @@
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	_stream = objc_retain(stream);
 	_offset = offset;
 	_whence = whence;
 	_errNo = errNo;
@@ -65,7 +66,7 @@
 
 - (void)dealloc
 {
-	[_stream release];
+	objc_release(_stream);
 
 	[super dealloc];
 }

@@ -32,8 +32,9 @@
 
 + (instancetype)exceptionWithSelector: (SEL)selector object: (id)object
 {
-	return [[[self alloc] initWithSelector: selector
-					object: object] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSelector: selector
+				    object: object]);
 }
 
 - (instancetype)init
@@ -46,14 +47,14 @@
 	self = [super init];
 
 	_selector = selector;
-	_object = [object retain];
+	_object = objc_retain(object);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_object release];
+	objc_release(_object);
 
 	[super dealloc];
 }

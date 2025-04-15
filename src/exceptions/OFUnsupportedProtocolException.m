@@ -28,21 +28,21 @@
 
 + (instancetype)exceptionWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
 {
 	self = [super init];
 
-	_IRI = [IRI retain];
+	_IRI = objc_retain(IRI);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_IRI release];
+	objc_release(_IRI);
 
 	[super dealloc];
 }

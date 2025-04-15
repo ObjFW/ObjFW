@@ -30,8 +30,9 @@
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response
 {
-	return [[[self alloc] initWithRequest: request
-				     response: response] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRequest: request
+				 response: response]);
 }
 
 + (instancetype)exception
@@ -44,8 +45,8 @@
 {
 	self = [super init];
 
-	_request = [request retain];
-	_response = [response retain];
+	_request = objc_retain(request);
+	_response = objc_retain(response);
 
 	return self;
 }
@@ -57,8 +58,8 @@
 
 - (void)dealloc
 {
-	[_request release];
-	[_response release];
+	objc_release(_request);
+	objc_release(_response);
 
 	[super dealloc];
 }

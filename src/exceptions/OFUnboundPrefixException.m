@@ -34,8 +34,9 @@
 + (instancetype)exceptionWithPrefix: (OFString *)prefix
 			     parser: (OFXMLParser *)parser
 {
-	return [[[self alloc] initWithPrefix: prefix
-				      parser: parser] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithPrefix: prefix
+				  parser: parser]);
 }
 
 - (instancetype)init
@@ -49,9 +50,9 @@
 
 	@try {
 		_prefix = [prefix copy];
-		_parser = [parser retain];
+		_parser = objc_retain(parser);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -60,8 +61,8 @@
 
 - (void)dealloc
 {
-	[_prefix release];
-	[_parser release];
+	objc_release(_prefix);
+	objc_release(_parser);
 
 	[super dealloc];
 }

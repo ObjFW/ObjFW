@@ -36,9 +36,10 @@
 			destinationIRI: (OFIRI *)destinationIRI
 				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithSourceIRI: sourceIRI
-				 destinationIRI: destinationIRI
-					  errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSourceIRI: sourceIRI
+			     destinationIRI: destinationIRI
+				      errNo: errNo]);
 }
 
 - (instancetype)init
@@ -57,7 +58,7 @@
 		_destinationIRI = [destinationIRI copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,8 +67,8 @@
 
 - (void)dealloc
 {
-	[_sourceIRI release];
-	[_destinationIRI release];
+	objc_release(_sourceIRI);
+	objc_release(_destinationIRI);
 
 	[super dealloc];
 }

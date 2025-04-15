@@ -32,7 +32,9 @@
 
 + (instancetype)exceptionWithObject: (id)object errNo: (int)errNo
 {
-	return [[[self alloc] initWithObject: object errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object
+				   errNo: errNo]);
 }
 
 - (instancetype)init
@@ -44,7 +46,7 @@
 {
 	self = [super init];
 
-	_object = [object retain];
+	_object = objc_retain(object);
 	_errNo = errNo;
 
 	return self;
@@ -52,7 +54,7 @@
 
 - (void)dealloc
 {
-	[_object release];
+	objc_release(_object);
 
 	[super dealloc];
 }

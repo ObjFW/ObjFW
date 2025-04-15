@@ -27,7 +27,7 @@
 
 + (instancetype)exceptionWithErrNo: (int)errNo
 {
-	return [[[self alloc] initWithErrNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithErrNo: errNo]);
 }
 
 + (instancetype)exception

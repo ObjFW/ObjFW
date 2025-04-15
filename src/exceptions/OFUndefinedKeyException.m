@@ -32,16 +32,18 @@
 
 + (instancetype)exceptionWithObject: (id)object key: (OFString *)key
 {
-	return [[[self alloc] initWithObject: object key: key] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithObject: object
+								    key: key]);
 }
 
 + (instancetype)exceptionWithObject: (id)object
 				key: (OFString *)key
 			      value: (id)value
 {
-	return [[[self alloc] initWithObject: object
-					 key: key
-				       value: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object
+				     key: key
+				   value: value]);
 }
 
 - (instancetype)init
@@ -59,11 +61,11 @@
 	self = [super init];
 
 	@try {
-		_object = [object retain];
+		_object = objc_retain(object);
 		_key = [key copy];
-		_value = [value retain];
+		_value = objc_retain(value);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -72,9 +74,9 @@
 
 - (void)dealloc
 {
-	[_object release];
-	[_key release];
-	[_value release];
+	objc_release(_object);
+	objc_release(_key);
+	objc_release(_value);
 
 	[super dealloc];
 }

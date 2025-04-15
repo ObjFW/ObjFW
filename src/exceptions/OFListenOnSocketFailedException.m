@@ -34,9 +34,10 @@
 			    backlog: (int)backlog
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: sock
-				     backlog: backlog
-				       errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSocket: sock
+				 backlog: backlog
+				   errNo: errNo]);
 }
 
 - (instancetype)init
@@ -48,7 +49,7 @@
 {
 	self = [super init];
 
-	_socket = [sock retain];
+	_socket = objc_retain(sock);
 	_backlog = backlog;
 	_errNo = errNo;
 
@@ -57,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_socket release];
+	objc_release(_socket);
 
 	[super dealloc];
 }

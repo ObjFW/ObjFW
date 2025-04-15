@@ -59,8 +59,9 @@ _OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 + (instancetype)exceptionWithQuery: (OFDNSQuery *)query
 			 errorCode: (OFDNSResolverErrorCode)errorCode
 {
-	return [[[self alloc] initWithQuery: query
-				  errorCode: errorCode] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithQuery: query
+			      errorCode: errorCode]);
 }
 
 + (instancetype)exception
@@ -77,7 +78,7 @@ _OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 		_query = [query copy];
 		_errorCode = errorCode;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -91,7 +92,7 @@ _OFDNSResolverErrorCodeDescription(OFDNSResolverErrorCode errorCode)
 
 - (void)dealloc
 {
-	[_query release];
+	objc_release(_query);
 
 	[super dealloc];
 }

@@ -34,8 +34,9 @@
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo
 {
-	return [[[self alloc] initWithObserver: observer
-					 errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObserver: observer
+				     errNo: errNo]);
 }
 
 - (instancetype)init
@@ -49,10 +50,10 @@
 	self = [super init];
 
 	@try {
-		_observer = [observer retain];
+		_observer = objc_retain(observer);
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -61,7 +62,7 @@
 
 - (void)dealloc
 {
-	[_observer release];
+	objc_release(_observer);
 
 	[super dealloc];
 }

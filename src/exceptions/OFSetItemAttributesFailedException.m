@@ -37,10 +37,11 @@
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithIRI: IRI
-			       attributes: attributes
-			  failedAttribute: failedAttribute
-				    errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			   attributes: attributes
+		      failedAttribute: failedAttribute
+				errNo: errNo]);
 }
 
 - (instancetype)init
@@ -61,7 +62,7 @@
 		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -70,9 +71,9 @@
 
 - (void)dealloc
 {
-	[_IRI release];
-	[_attributes release];
-	[_failedAttribute release];
+	objc_release(_IRI);
+	objc_release(_attributes);
+	objc_release(_failedAttribute);
 
 	[super dealloc];
 }

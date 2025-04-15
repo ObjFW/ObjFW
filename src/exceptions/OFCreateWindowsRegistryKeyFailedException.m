@@ -35,12 +35,13 @@
 		     options: (DWORD)options
 		      status: (LSTATUS)status
 {
-	return [[[self alloc] initWithRegistryKey: registryKey
-					     path: path
-				     accessRights: accessRights
-			       securityAttributes: securityAttributes
-					  options: options
-					   status: status] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRegistryKey: registryKey
+					 path: path
+				 accessRights: accessRights
+			   securityAttributes: securityAttributes
+				      options: options
+				       status: status]);
 }
 
 - (instancetype)init
@@ -58,14 +59,14 @@
 	self = [super init];
 
 	@try {
-		_registryKey = [registryKey retain];
+		_registryKey = objc_retain(registryKey);
 		_path = [path copy];
 		_accessRights = accessRights;
 		_securityAttributes = securityAttributes;
 		_options = options;
 		_status = status;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -74,8 +75,8 @@
 
 - (void)dealloc
 {
-	[_registryKey release];
-	[_path release];
+	objc_release(_registryKey);
+	objc_release(_path);
 
 	[super dealloc];
 }

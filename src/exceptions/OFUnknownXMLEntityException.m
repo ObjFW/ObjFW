@@ -27,7 +27,8 @@
 
 + (instancetype)exceptionWithEntityName: (OFString *)entityName
 {
-	return [[[self alloc] initWithEntityName: entityName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithEntityName: entityName]);
 }
 
 + (instancetype)exception
@@ -42,7 +43,7 @@
 	@try {
 		_entityName = [entityName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -56,7 +57,7 @@
 
 - (void)dealloc
 {
-	[_entityName release];
+	objc_release(_entityName);
 
 	[super dealloc];
 }

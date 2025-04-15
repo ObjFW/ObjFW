@@ -33,7 +33,8 @@
 
 + (instancetype)exceptionWithIRI: (OFIRI *)IRI errNo: (int)errNo
 {
-	return [[[self alloc] initWithIRI: IRI errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+							       errNo: errNo]);
 }
 
 - (instancetype)init
@@ -49,7 +50,7 @@
 		_IRI = [IRI copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -58,7 +59,7 @@
 
 - (void)dealloc
 {
-	[_IRI release];
+	objc_release(_IRI);
 
 	[super dealloc];
 }

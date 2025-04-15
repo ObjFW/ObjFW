@@ -35,9 +35,10 @@
 		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithObject: object
-			     requestedLength: requestedLength
-				       errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object
+			 requestedLength: requestedLength
+				   errNo: errNo]);
 }
 
 - (instancetype)init
@@ -51,7 +52,7 @@
 {
 	self = [super init];
 
-	_object = [object retain];
+	_object = objc_retain(object);
 	_requestedLength = requestedLength;
 	_errNo = errNo;
 
@@ -60,7 +61,7 @@
 
 - (void)dealloc
 {
-	[_object release];
+	objc_release(_object);
 
 	[super dealloc];
 }

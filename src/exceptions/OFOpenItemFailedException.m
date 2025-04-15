@@ -30,18 +30,18 @@
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithIRI: IRI
-				     mode: mode
-				    errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+								mode: mode
+							       errNo: errNo]);
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
 			     mode: (OFString *)mode
 			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode
-				     errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+								 mode: mode
+								errNo: errNo]);
 }
 
 + (instancetype)exception
@@ -60,7 +60,7 @@
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -78,7 +78,7 @@
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -92,9 +92,9 @@
 
 - (void)dealloc
 {
-	[_IRI release];
-	[_path release];
-	[_mode release];
+	objc_release(_IRI);
+	objc_release(_path);
+	objc_release(_mode);
 
 	[super dealloc];
 }

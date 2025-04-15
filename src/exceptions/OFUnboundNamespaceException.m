@@ -34,8 +34,9 @@
 + (instancetype)exceptionWithNamespace: (OFString *)namespace
 			       element: (OFXMLElement *)element
 {
-	return [[[self alloc] initWithNamespace: namespace
-					element: element] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithNamespace: namespace
+				    element: element]);
 }
 
 - (instancetype)init
@@ -50,9 +51,9 @@
 
 	@try {
 		_namespace = [namespace copy];
-		_element = [element retain];
+		_element = objc_retain(element);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -61,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_namespace release];
-	[_element release];
+	objc_release(_namespace);
+	objc_release(_element);
 
 	[super dealloc];
 }

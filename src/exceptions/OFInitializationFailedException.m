@@ -27,7 +27,7 @@
 
 + (instancetype)exceptionWithClass: (Class)class
 {
-	return [[[self alloc] initWithClass: class] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithClass: class]);
 }
 
 - (instancetype)init
