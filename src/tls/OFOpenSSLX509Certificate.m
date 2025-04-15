@@ -139,7 +139,7 @@ privateKeyFromFile(OFIRI *IRI)
 			@try {
 				[chain addObject: certificate];
 			} @finally {
-				[certificate release];
+				objc_release(certificate);
 			}
 		}
 	} @finally {
@@ -185,18 +185,18 @@ privateKeyFromFile(OFIRI *IRI)
 		    &ca) != 1)
 			@throw [OFInvalidFormatException exception];
 
-		certificate = [[[self alloc]
-		    of_initWithCertificate: cert
-				privateKey: key] autorelease];
+		certificate = objc_autorelease(
+		    [[self alloc] of_initWithCertificate: cert
+					      privateKey: key]);
 		cert = NULL;
 		key = NULL;
 
 		[chain addObject: certificate];
 
 		for (i = 0; i < (ca != NULL ? sk_X509_num(ca) : 0); i++)
-			[chain addObject: [[[self alloc]
+			[chain addObject: objc_autorelease([[self alloc]
 			    of_initWithCertificate: sk_X509_value(ca, i)
-					privateKey: key] autorelease]];
+					privateKey: key])];
 	} @finally {
 		BIO_free(bio);
 

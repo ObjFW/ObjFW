@@ -133,7 +133,7 @@ privateKeyFromFile(OFIRI *IRI)
 			gnutls_free(certs);
 			@throw e;
 		} @finally {
-			[certificate release];
+			objc_release(certificate);
 		}
 	}
 
@@ -184,9 +184,10 @@ privateKeyFromFile(OFIRI *IRI)
 			@throw [OFInvalidFormatException exception];
 
 		for (i = 0; i < certsCount; i++) {
-			[chain addObject: [[[OFGnuTLSX509Certificate alloc]
+			[chain addObject: objc_autorelease(
+			    [[OFGnuTLSX509Certificate alloc]
 			    of_initWithCertificate: certs[i]
-					privateKey: key] autorelease]];
+					privateKey: key])];
 			key = NULL;
 		}
 	} @finally {

@@ -116,7 +116,7 @@ errToErrorCode(const SSL *SSL_)
 		 */
 		_underlyingStream.buffersWrites = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -128,7 +128,7 @@ errToErrorCode(const SSL *SSL_)
 	if (_SSL != NULL)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
@@ -156,7 +156,7 @@ errToErrorCode(const SSL *SSL_)
 
 	_handshakeDone = false;
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -389,7 +389,7 @@ errToErrorCode(const SSL *SSL_)
 				    asyncReadIntoBuffer: _buffer
 						 length: bufferSize
 					    runLoopMode: runLoopMode];
-				[_delegate retain];
+				objc_retain(_delegate);
 				objc_autoreleasePoolPop(pool);
 				return;
 			}
@@ -402,7 +402,7 @@ errToErrorCode(const SSL *SSL_)
 		case SSL_ERROR_WANT_WRITE:
 			[_underlyingStream asyncWriteData: [OFData data]
 					      runLoopMode: runLoopMode];
-			[_delegate retain];
+			objc_retain(_delegate);
 			objc_autoreleasePoolPop(pool);
 			return;
 		case SSL_ERROR_SSL:
@@ -525,7 +525,7 @@ errToErrorCode(const SSL *SSL_)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -605,7 +605,7 @@ errToErrorCode(const SSL *SSL_)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

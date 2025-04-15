@@ -123,7 +123,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	@try {
 		_underlyingStream.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -135,7 +135,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context != NULL)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
@@ -145,7 +145,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
 	@try {
@@ -156,7 +156,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	}
 
 #ifdef HAVE_SSLCREATECONTEXT
-	[(id)_context release];
+	objc_release((id)_context);
 #else
 	SSLDisposeContext(_context);
 #endif
@@ -286,7 +286,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 					      errorCode: initFailedErrorCode];
 
 			[array addObject: (id)identity];
-			[(id)identity release];
+			objc_release((id)identity);
 		}
 #else
 		else
@@ -320,7 +320,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		[_underlyingStream asyncReadIntoBuffer: (void *)""
 						length: 0
 					   runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -394,7 +394,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }

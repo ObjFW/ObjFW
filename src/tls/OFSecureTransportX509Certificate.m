@@ -73,18 +73,16 @@ privateKeyFromFile(OFIRI *IRI)
 	    NULL, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 
-	[(id)items autorelease];
+	objc_autorelease((id)items);
 
 	if ([(id)items count] != 1)
 		@throw [OFInvalidFormatException exception];
 
-	key = (SecKeychainItemRef)[[(id)items objectAtIndex: 0] retain];
+	key = (SecKeychainItemRef)objc_retain([(id)items objectAtIndex: 0]);
 
 	objc_autoreleasePoolPop(pool);
 
-	[(id)key autorelease];
-
-	return key;
+	return (SecKeychainItemRef)objc_autoreleaseReturnValue((id)key);
 }
 #endif
 
@@ -143,7 +141,7 @@ privateKeyFromFile(OFIRI *IRI)
 	    &params, keychain.keychain, &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 
-	[(id)items autorelease];
+	objc_autorelease((id)items);
 
 	i = 0;
 	for (id item_ in (NSArray *)items) {
@@ -153,11 +151,10 @@ privateKeyFromFile(OFIRI *IRI)
 		if (privateKeyIRI != nil && i == 0)
 			key = privateKeyFromFile(privateKeyIRI);
 
-		[chain addObject:
-		    [[[self alloc] of_initWithCertificate: item
-					       privateKey: key
-						 keychain: keychain]
-		    autorelease]];
+		[chain addObject: objc_autorelease(
+		    [[self alloc] of_initWithCertificate: item
+					      privateKey: key
+						keychain: keychain])];
 
 		i++;
 	}
@@ -216,7 +213,7 @@ privateKeyFromFile(OFIRI *IRI)
 	    &items) != noErr)
 		@throw [OFInvalidFormatException exception];
 
-	[(id)items autorelease];
+	objc_autorelease((id)items);
 
 	for (NSDictionary *item in (NSArray *)items) {
 		bool hasIdentity = false;
@@ -227,8 +224,8 @@ privateKeyFromFile(OFIRI *IRI)
 		cert = (SecCertificateRef)
 		    [item objectForKey: (NSString *)kSecImportItemIdentity];
 		if (cert != NULL) {
-			[chain addObject: [[[self alloc]
-			    of_initWithCertificate: cert] autorelease]];
+			[chain addObject: objc_autorelease(
+			    [[self alloc] of_initWithCertificate: cert])];
 			hasIdentity = true;
 		}
 
@@ -244,8 +241,8 @@ privateKeyFromFile(OFIRI *IRI)
 			if (hasIdentity && i == 0)
 				continue;
 
-			[chain addObject: [[[self alloc]
-			    of_initWithCertificate: cert] autorelease]];
+			[chain addObject: objc_autorelease(
+			    [[self alloc] of_initWithCertificate: cert])];
 		}
 	}
 
@@ -264,13 +261,13 @@ privateKeyFromFile(OFIRI *IRI)
 {
 	self = [super init];
 
-	_certificate = (SecCertificateRef)[(id)certificate retain];
+	_certificate = (SecCertificateRef)objc_retain((id)certificate);
 
 #ifndef OF_IOS
 	if (privateKey != NULL)
-		_privateKey = (SecKeychainItemRef)[(id)privateKey retain];
+		_privateKey = (SecKeychainItemRef)objc_retain((id)privateKey);
 
-	_keychain = [keychain retain];
+	_keychain = objc_retain(keychain);
 #endif
 
 	return self;
@@ -278,13 +275,13 @@ privateKeyFromFile(OFIRI *IRI)
 
 - (void)dealloc
 {
-	[(id)_certificate release];
+	objc_release((id)_certificate);
 
 #ifndef OF_IOS
 	if (_privateKey != NULL)
-		[(id)_privateKey release];
+		objc_release((id)_privateKey);
 
-	[_keychain release];
+	objc_release(_keychain);
 #endif
 
 	[super dealloc];

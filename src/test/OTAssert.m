@@ -39,9 +39,9 @@ _OTAssertImpl(id testCase, SEL test, bool condition, OFString *check,
 	format = va_arg(arguments, OFConstantString *);
 
 	if (format != nil)
-		message = [[[OFString alloc]
-		    initWithFormat: format
-			 arguments: arguments] autorelease];
+		message = objc_autorelease(
+		    [[OFString alloc] initWithFormat: format
+					   arguments: arguments]);
 
 	va_end(arguments);
 
@@ -60,9 +60,9 @@ _OTSkipImpl(id testCase, SEL test, OFString *file, size_t line, ...)
 	format = va_arg(arguments, OFConstantString *);
 
 	if (format != nil)
-		message = [[[OFString alloc]
-		    initWithFormat: format
-			 arguments: arguments] autorelease];
+		message = objc_autorelease(
+		    [[OFString alloc] initWithFormat: format
+					   arguments: arguments]);
 
 	va_end(arguments);
 

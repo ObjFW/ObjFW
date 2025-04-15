@@ -99,7 +99,7 @@ cleanup(void)
 			void *pool;
 			OFString *filename, *path, *password;
 
-			keychain = [[[self alloc] init] autorelease];
+			keychain = objc_autorelease([[self alloc] init]);
 			pool = objc_autoreleasePoolPush();
 			filename = [OFString stringWithFormat:
 			    @"%@.keychain", [OFUUID UUID]];
@@ -143,7 +143,7 @@ cleanup(void)
 	}
 # endif
 
-	return [[keychain retain] autorelease];
+	return objc_retainAutoreleaseReturnValue(keychain);
 }
 
 - (void)dealloc
@@ -162,7 +162,7 @@ cleanup(void)
 
 	if (_keychain != NULL) {
 		SecKeychainDelete(_keychain);
-		[(id)_keychain release];
+		objc_release((id)_keychain);
 	}
 
 	[super dealloc];

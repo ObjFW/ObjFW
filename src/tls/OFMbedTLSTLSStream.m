@@ -151,7 +151,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		mbedtls_ssl_config_init(&_config);
 		mbedtls_x509_crt_init(&_CAChain);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -163,7 +163,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_initialized)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	mbedtls_ssl_config_free(&_config);
 	mbedtls_x509_crt_free(&_CAChain);
@@ -182,7 +182,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	mbedtls_ssl_free(&_SSL);
 	_initialized = _handshakeDone = false;
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -338,13 +338,13 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		[_underlyingStream asyncReadIntoBuffer: (void *)""
 						length: 0
 					   runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	} else if (status == MBEDTLS_ERR_SSL_WANT_WRITE) {
 		[_underlyingStream asyncWriteData: [OFData data]
 				      runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -429,7 +429,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -476,7 +476,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

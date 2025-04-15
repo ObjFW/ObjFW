@@ -110,7 +110,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	@try {
 		_underlyingStream.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -121,7 +121,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 {
 	[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
@@ -143,7 +143,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	_credentials = NULL;
 	_handshakeDone = false;
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -295,7 +295,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 							length: 0
 						   runLoopMode: runLoopMode];
 
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -399,7 +399,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -459,7 +459,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 						    exception: exception];
 	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

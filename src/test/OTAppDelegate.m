@@ -53,7 +53,8 @@ updateConsole(bool force)
 {
 	if (force || lastConsoleUpdate.timeIntervalSinceNow <= -1.0 / 60) {
 		consoleUpdate(NULL);
-		[lastConsoleUpdate release];
+		objc_release(lastConsoleUpdate);
+		lastConsoleUpdate = nil;
 		lastConsoleUpdate = [[OFDate alloc] init];
 	}
 }
@@ -421,7 +422,7 @@ isSubclassOfClass(Class class, Class superclass)
 					  status: StatusRunning
 				     description: nil];
 
-			instance = [[[class alloc] init] autorelease];
+			instance = objc_autorelease([[class alloc] init]);
 
 			@try {
 				[instance setUp];

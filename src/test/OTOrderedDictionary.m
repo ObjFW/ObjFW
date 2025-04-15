@@ -46,7 +46,7 @@
 		[mutableKeys makeImmutable];
 		[mutableObjects makeImmutable];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -55,8 +55,8 @@
 
 - (void)dealloc
 {
-	[_keys release];
-	[_objects release];
+	objc_release(_keys);
+	objc_release(_objects);
 
 	[super dealloc];
 }

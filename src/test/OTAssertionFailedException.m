@@ -27,8 +27,9 @@
 + (instancetype)exceptionWithCondition: (OFString *)condition
 			       message: (OFString *)message
 {
-	return [[[self alloc] initWithCondition: condition
-					message: message] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCondition: condition
+				    message: message]);
 }
 
 + (instancetype)exception
@@ -45,7 +46,7 @@
 		_condition = [condition copy];
 		_message = [message copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -59,8 +60,8 @@
 
 - (void)dealloc
 {
-	[_condition release];
-	[_message release];
+	objc_release(_condition);
+	objc_release(_message);
 
 	[super dealloc];
 }

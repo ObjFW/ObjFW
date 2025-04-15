@@ -106,7 +106,7 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 	OFMutableData *data =
 	    [OFMutableData dataWithContentsOfIRI: certificatesIRI];
 	OFMbedTLSX509CertificateChain *chain =
-	    [[[OFMbedTLSX509CertificateChain alloc] init] autorelease];
+	    objc_autorelease([[OFMbedTLSX509CertificateChain alloc] init]);
 
 	/* Terminating zero byte required for PEM. */
 	[data addItem: ""];
@@ -135,9 +135,9 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 
 	for (mbedtls_x509_crt *iter = chain.certificate; iter != NULL;
 	    iter = iter->next)
-		[ret addObject:
-		    [[[self alloc] of_initWithCertificate: iter
-						    chain: chain] autorelease]];
+		[ret addObject: objc_autorelease(
+		    [[self alloc] of_initWithCertificate: iter
+						   chain: chain])];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -150,14 +150,14 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 	self = [super init];
 
 	_certificate = certificate;
-	_chain = [chain retain];
+	_chain = objc_retain(chain);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_chain release];
+	objc_release(_chain);
 
 	[super dealloc];
 }
