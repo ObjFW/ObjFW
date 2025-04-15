@@ -330,7 +330,7 @@ int _OFString_PathAdditions_reference;
 		OFString *fileName, *ret;
 
 		components = objc_autorelease(
-		    [self.pathComponents mutableCopy]];
+		    [self.pathComponents mutableCopy]);
 		fileName = [components.lastObject
 		    stringByAppendingFormat: @".%@", extension];
 		[components replaceObjectAtIndex: components.count - 1
