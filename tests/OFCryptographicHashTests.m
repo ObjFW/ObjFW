@@ -62,7 +62,7 @@ const unsigned char testFileSHA512[64] =
 	[super setUp];
 
 	IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
-	_stream = [[OFIRIHandler openItemAtIRI: IRI mode: @"r"] retain];
+	_stream = objc_retain([OFIRIHandler openItemAtIRI: IRI mode: @"r"]);
 }
 
 - (void)tearDown
@@ -74,7 +74,7 @@ const unsigned char testFileSHA512[64] =
 
 - (void)dealloc
 {
-	[_stream release];
+	objc_release(_stream);
 
 	[super dealloc];
 }
@@ -94,7 +94,7 @@ const unsigned char testFileSHA512[64] =
 		[hash updateWithBuffer: buffer length: length];
 	}
 
-	copy = [[hash copy] autorelease];
+	copy = objc_autorelease([hash copy]);
 
 	[hash calculate];
 	[copy calculate];

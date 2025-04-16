@@ -499,9 +499,10 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 				OFString *attributeName =
 				    @"com.apple.quarantine";
 
-				_quarantine = [[[OFFileManager defaultManager]
+				_quarantine = objc_retain(
+				    [[OFFileManager defaultManager]
 				    extendedAttributeDataForName: attributeName
-						     ofItemAtIRI: IRI] retain];
+						     ofItemAtIRI: IRI]);
 			} @catch (OFGetItemAttributesFailedException *e) {
 				if (e.errNo != /*ENOATTR*/ 93)
 					@throw e;
@@ -843,11 +844,11 @@ error:
 		}
 	}
 
-	[path retain];
+	objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [path autorelease];
+	return objc_autoreleaseReturnValue(path);
 }
 
 - (void)quarantineFile: (OFString *)path

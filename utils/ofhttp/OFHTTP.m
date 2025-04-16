@@ -291,9 +291,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	fileName = fileName.lastPathComponent;
 
-	[fileName retain];
+	objc_retain(fileName);
 	objc_autoreleasePoolPop(pool);
-	return [fileName autorelease];
+	return objc_autoreleaseReturnValue(fileName);
 }
 
 @implementation OFHTTP
@@ -313,7 +313,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		_buffer = OFAllocMemory(1, [OFSystemInfo pageSize]);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -345,7 +345,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 {
 	OFString *contentLength = nil;
 
-	[_body release];
+	objc_release(_body);
 	_body = nil;
 
 	if ([path isEqual: @"-"])
@@ -692,7 +692,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		[_progressBar stop];
 		[_progressBar draw];
-		[_progressBar release];
+		objc_release(_progressBar);
 		_progressBar = nil;
 
 		if (!_quiet) {
@@ -724,7 +724,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (response.atEndOfStream) {
 		[_progressBar stop];
 		[_progressBar draw];
-		[_progressBar release];
+		objc_release(_progressBar);
 		_progressBar = nil;
 
 		if (!_quiet) {
@@ -1065,7 +1065,7 @@ after_exception_handling:
 		[_progressBar draw];
 	}
 
-	[_currentFileName release];
+	objc_release(_currentFileName);
 	_currentFileName = nil;
 
 	response.delegate = self;
@@ -1073,7 +1073,7 @@ after_exception_handling:
 	return;
 
 next:
-	[_currentFileName release];
+	objc_release(_currentFileName);
 	_currentFileName = nil;
 
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
@@ -1089,7 +1089,7 @@ next:
 	_received = _length = _resumedFrom = 0;
 
 	if (_output != OFStdOut)
-		[_output release];
+		objc_release(_output);
 	_output = nil;
 
 	if (_IRIIndex >= _IRIs.count)
@@ -1118,7 +1118,7 @@ next:
 		goto next;
 	}
 
-	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
+	clientHeaders = objc_autorelease([_clientHeaders mutableCopy]);
 
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
@@ -1138,7 +1138,7 @@ next:
 	}
 
 	if (!_detectedFileName) {
-		[_currentFileName release];
+		objc_release(_currentFileName);
 		_currentFileName = nil;
 	} else
 		_detectedFileName = false;
@@ -1150,7 +1150,7 @@ next:
 		_currentFileName = [IRI.path.lastPathComponent copy];
 
 	if ([_currentFileName isEqual: @"/"] || _currentFileName.length == 0) {
-		[_currentFileName release];
+		objc_release(_currentFileName);
 		_currentFileName = nil;
 	}
 

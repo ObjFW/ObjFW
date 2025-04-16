@@ -44,7 +44,7 @@
 
 - (void)dealloc
 {
-	[_file release];
+	objc_release(_file);
 
 	[super dealloc];
 }

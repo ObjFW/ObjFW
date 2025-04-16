@@ -52,7 +52,7 @@ static OFString *const cArray[] = {
 
 - (void)dealloc
 {
-	[_mutableArray release];
+	objc_release(_mutableArray);
 
 	[super dealloc];
 }
@@ -86,9 +86,9 @@ static OFString *const cArray[] = {
 
 - (void)testReplaceObjectIdenticalToWithObject
 {
-	[_mutableArray insertObject: [[cArray[1] mutableCopy] autorelease]
+	[_mutableArray insertObject: objc_autorelease([cArray[1] mutableCopy])
 			    atIndex: 1];
-	[_mutableArray insertObject: [[cArray[1] mutableCopy] autorelease]
+	[_mutableArray insertObject: objc_autorelease([cArray[1] mutableCopy])
 			    atIndex: 4];
 	[_mutableArray replaceObjectIdenticalTo: cArray[1]
 				     withObject: cArray[0]];
@@ -189,7 +189,7 @@ static OFString *const cArray[] = {
 		_array = [[OFMutableArray alloc] initWithObjects: objects
 							   count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -198,7 +198,7 @@ static OFString *const cArray[] = {
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

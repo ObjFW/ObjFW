@@ -49,7 +49,7 @@ static OFString *const whitespace[] = {
 
 - (void)dealloc
 {
-	[_mutableString release];
+	objc_release(_mutableString);
 
 	[super dealloc];
 }
@@ -294,7 +294,7 @@ static OFString *const whitespace[] = {
 	@try {
 		_string = [[OFMutableString alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -308,7 +308,7 @@ static OFString *const whitespace[] = {
 	@try {
 		_string = [string mutableCopy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -326,7 +326,7 @@ static OFString *const whitespace[] = {
 							  encoding: encoding
 							    length: length];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -345,7 +345,7 @@ static OFString *const whitespace[] = {
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -364,7 +364,7 @@ static OFString *const whitespace[] = {
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -380,7 +380,7 @@ static OFString *const whitespace[] = {
 		_string = [[OFMutableString alloc] initWithFormat: format
 							arguments: arguments];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -389,7 +389,7 @@ static OFString *const whitespace[] = {
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }

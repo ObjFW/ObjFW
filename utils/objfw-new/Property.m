@@ -37,7 +37,8 @@ OF_DIRECT_MEMBERS
 
 + (instancetype)propertyWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -47,7 +48,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		[self parseString: string];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -74,9 +75,10 @@ OF_DIRECT_MEMBERS
 					OFString *attributesString = [OFString
 					    stringWithUTF8String: UTF8String + 1
 							  length: i - 1];
-					attributes = [[[attributesString
+					attributes = objc_autorelease(
+					    [[attributesString
 					    componentsSeparatedByString: @","]
-					    mutableCopy] autorelease];
+					    mutableCopy]);
 
 					UTF8String += i + 1;
 					length += i + 1;
@@ -124,8 +126,8 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	[_name release];
-	[_type release];
+	objc_release(_name);
+	objc_release(_type);
 
 	[super dealloc];
 }

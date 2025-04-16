@@ -43,7 +43,7 @@
 
 - (void)dealloc
 {
-	[_data release];
+	objc_release(_data);
 
 	[super dealloc];
 }
@@ -116,7 +116,7 @@
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_data copy] autorelease], _data);
+	OTAssertEqualObjects(objc_autorelease([_data copy]), _data);
 }
 
 - (void)testRangeOfDataOptionsRange

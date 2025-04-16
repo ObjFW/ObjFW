@@ -44,15 +44,15 @@
 
 - (void)dealloc
 {
-	[_mutableData release];
+	objc_release(_mutableData);
 
 	[super dealloc];
 }
 
 - (void)testMutableCopy
 {
-	OTAssertEqualObjects([[_data mutableCopy] autorelease], _data);
-	OTAssertNotEqual([[_data mutableCopy] autorelease], _data);
+	OTAssertEqualObjects(objc_autorelease([_data mutableCopy]), _data);
+	OTAssertNotEqual(objc_autorelease([_data mutableCopy]), _data);
 }
 
 - (void)testAddItem

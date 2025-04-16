@@ -79,10 +79,11 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithIRI: IRI
-				   stream: stream
-				     mode: mode
-				 encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
@@ -97,7 +98,7 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 							  mode: mode];
 		_archiveIRI = [IRI copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -106,8 +107,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)dealloc
 {
-	[_stream release];
-	[_archiveIRI release];
+	objc_release(_stream);
+	objc_release(_archiveIRI);
 
 	[super dealloc];
 }

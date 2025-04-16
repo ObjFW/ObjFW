@@ -61,7 +61,7 @@ struct TestStruct {
 
 - (void)dealloc
 {
-	[_invocation release];
+	objc_release(_invocation);
 
 	[super dealloc];
 }

@@ -36,7 +36,7 @@
 #endif
 	OFArray *arguments = [OFArray arrayWithObjects: @"tést", @"123", nil];
 	OFMutableDictionary *environment =
-	    [[[OFApplication environment] mutableCopy] autorelease];
+	    objc_autorelease([[OFApplication environment] mutableCopy]);
 	OFSubprocess *subprocess;
 
 	[environment setObject: @"yés" forKey: @"tëst"];

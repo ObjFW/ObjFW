@@ -58,12 +58,12 @@ static const OFNotificationName otherNotificationName =
 	OFNotificationCenterTestClass *test1, *test2, *test3, *test4;
 	OFNotification *notification;
 
-	test1 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
+	test1 = objc_autorelease([[OFNotificationCenterTestClass alloc] init]);
 	test1->_expectedObject = self;
-	test2 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
-	test3 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
+	test2 = objc_autorelease([[OFNotificationCenterTestClass alloc] init]);
+	test3 = objc_autorelease([[OFNotificationCenterTestClass alloc] init]);
 	test3->_expectedObject = self;
-	test4 = [[[OFNotificationCenterTestClass alloc] init] autorelease];
+	test4 = objc_autorelease([[OFNotificationCenterTestClass alloc] init]);
 
 	/* First one intentionally added twice to test deduplication. */
 	[center addObserver: test1

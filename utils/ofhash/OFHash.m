@@ -161,7 +161,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 

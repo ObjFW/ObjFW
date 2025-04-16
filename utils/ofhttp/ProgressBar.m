@@ -62,21 +62,21 @@ static const OFTimeInterval updateInterval = 0.1;
 		_resumedFrom = resumedFrom;
 		_startDate = [[OFDate alloc] init];
 		_lastReceivedDate = [[OFDate alloc] init];
-		_drawTimer = [[OFTimer
+		_drawTimer = objc_retain([OFTimer
 		    scheduledTimerWithTimeInterval: updateInterval
 					    target: self
 					  selector: @selector(draw)
-					   repeats: true] retain];
-		_BPSTimer = [[OFTimer
+					   repeats: true]);
+		_BPSTimer = objc_retain([OFTimer
 		    scheduledTimerWithTimeInterval: 1.0
 					    target: self
 					  selector: @selector(
 							_calculateBPSAndETA)
-					   repeats: true] retain];
+					   repeats: true]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -87,10 +87,10 @@ static const OFTimeInterval updateInterval = 0.1;
 {
 	[self stop];
 
-	[_startDate release];
-	[_lastReceivedDate release];
-	[_drawTimer release];
-	[_BPSTimer release];
+	objc_release(_startDate);
+	objc_release(_lastReceivedDate);
+	objc_release(_drawTimer);
+	objc_release(_BPSTimer);
 
 	[super dealloc];
 }
@@ -314,7 +314,8 @@ static const OFTimeInterval updateInterval = 0.1;
 	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;
-	[_lastReceivedDate release];
+	objc_release(_lastReceivedDate);
+	_lastReceivedDate = nil;
 	_lastReceivedDate = [[OFDate alloc] init];
 }
 

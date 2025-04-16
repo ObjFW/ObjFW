@@ -65,7 +65,7 @@ static const uint8_t SHA512Digest[] =
 	[super setUp];
 
 	IRI = [OFIRI IRIWithString: @"embedded:testfile.bin"];
-	_stream = [[OFIRIHandler openItemAtIRI: IRI mode: @"r"] retain];
+	_stream = objc_retain([OFIRIHandler openItemAtIRI: IRI mode: @"r"]);
 }
 
 - (void)tearDown
@@ -77,7 +77,7 @@ static const uint8_t SHA512Digest[] =
 
 - (void)dealloc
 {
-	[_stream release];
+	objc_release(_stream);
 
 	[super dealloc];
 }

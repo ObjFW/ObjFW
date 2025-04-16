@@ -45,7 +45,7 @@ static int
 {
 	__block int i = 42;
 
-	return [Block_copy(^ int { return ++i; }) autorelease];
+	return objc_autorelease(Block_copy(^ int { return ++i; }));
 }
 
 static double
@@ -100,7 +100,7 @@ forwardTest(void)
 	};
 	void (^mallocBlock)(void);
 
-	mallocBlock = [[stackBlock copy] autorelease];
+	mallocBlock = objc_autorelease([stackBlock copy]);
 	OTAssertEqual([mallocBlock class], objc_getClass("OFMallocBlock"));
 	OTAssertTrue([mallocBlock isKindOfClass: [OFBlock class]]);
 }
@@ -122,7 +122,7 @@ forwardTest(void)
 #if !defined(OF_WINDOWS) || !defined(__clang__)
 - (void)testCopyGlobalBlock
 {
-	OTAssertEqual([[globalBlock copy] autorelease], (id)globalBlock);
+	OTAssertEqual(objc_autorelease([globalBlock copy]), (id)globalBlock);
 }
 #endif
 
@@ -135,8 +135,8 @@ forwardTest(void)
 	};
 	void (^mallocBlock)(void);
 
-	mallocBlock = [[stackBlock copy] autorelease];
-	OTAssertEqual([[mallocBlock copy] autorelease], (id)mallocBlock);
+	mallocBlock = objc_autorelease([stackBlock copy]);
+	OTAssertEqual(objc_autorelease([mallocBlock copy]), (id)mallocBlock);
 	OTAssertEqual([mallocBlock retainCount], 2);
 }
 @end

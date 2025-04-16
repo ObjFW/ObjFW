@@ -91,7 +91,7 @@ test(id self, SEL _cmd)
 - (void)forwardingMessageAndAddingInstanceMethod
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
 	[testObject test];
 	OTAssertTrue(success);
@@ -105,9 +105,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelector
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertEqual(
 	    [testObject forwardingTargetTest: 0xDEADBEEF
@@ -119,9 +119,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorWithVariableArguments
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertEqualObjects(
 	    ([testObject forwardingTargetVarArgTest: FORMAT, ARGS]), RESULT);
@@ -141,9 +141,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorFPRet
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertEqual([testObject forwardingTargetFPRetTest],
 	    12345678.00006103515625);
@@ -154,9 +154,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorStRet
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertEqual(memcmp([testObject forwardingTargetStRetTest].buffer,
 	    "abcdefghijklmnopqrstuvwxyz", 27), 0);
@@ -166,9 +166,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorReturningNilThrows
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertThrowsSpecific([testObject forwardingTargetNilTest],
 	    OFNotImplementedException);
@@ -177,9 +177,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorReturningSelfThrows
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertThrowsSpecific([testObject forwardingTargetSelfTest],
 	    OFNotImplementedException);
@@ -189,9 +189,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorStRetReturningNilThrows
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertThrowsSpecific([testObject forwardingTargetNilStRetTest],
 	    OFNotImplementedException);
@@ -200,9 +200,9 @@ test(id self, SEL _cmd)
 - (void)testForwardingTargetForSelectorStRetReturningSelfThrows
 {
 	ForwardingTestObject *testObject =
-	    [[[ForwardingTestObject alloc] init] autorelease];
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
 
-	target = [[[ForwardingTarget alloc] init] autorelease];
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
 	OTAssertThrowsSpecific([testObject forwardingTargetSelfStRetTest],
 	    OFNotImplementedException);
@@ -299,11 +299,10 @@ test(id self, SEL _cmd)
 	OFEnsure(self == target);
 
 	va_start(args, format);
-	ret = [[[OFString alloc] initWithFormat: format
-				      arguments: args] autorelease];
+	ret = [[OFString alloc] initWithFormat: format arguments: args];
 	va_end(args);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (long double)forwardingTargetFPRetTest

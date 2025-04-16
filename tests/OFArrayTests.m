@@ -50,7 +50,7 @@ static OFString *const cArray[] = {
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }
@@ -113,12 +113,12 @@ static OFString *const cArray[] = {
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_array copy] autorelease], _array);
+	OTAssertEqualObjects(objc_autorelease([_array copy]), _array);
 }
 
 - (void)testMutableCopy
 {
-	OTAssertEqualObjects([[_array mutableCopy] autorelease], _array);
+	OTAssertEqualObjects(objc_autorelease([_array mutableCopy]), _array);
 }
 
 - (void)testObjectAtIndex
@@ -309,7 +309,7 @@ static OFString *const cArray[] = {
 		_array = [[OFArray alloc] initWithObjects: objects
 						    count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -318,7 +318,7 @@ static OFString *const cArray[] = {
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

@@ -41,7 +41,7 @@
 
 - (void)dealloc
 {
-	[_color release];
+	objc_release(_color);
 
 	[super dealloc];
 }

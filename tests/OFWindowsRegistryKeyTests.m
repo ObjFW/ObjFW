@@ -33,15 +33,15 @@
 {
 	[super setUp];
 
-	_softwareKey = [[[OFWindowsRegistryKey currentUserKey]
+	_softwareKey = objc_retain([[OFWindowsRegistryKey currentUserKey]
 	    openSubkeyAtPath: @"Software"
 		accessRights: KEY_ALL_ACCESS
-		     options: 0] retain];
-	_objFWKey = [[_softwareKey createSubkeyAtPath: @"ObjFW"
-					 accessRights: KEY_ALL_ACCESS
-				   securityAttributes: NULL
-					      options: 0
-					  disposition: NULL] retain];
+		     options: 0]);
+	_objFWKey = objc_retain([_softwareKey createSubkeyAtPath: @"ObjFW"
+						    accessRights: KEY_ALL_ACCESS
+					      securityAttributes: NULL
+							 options: 0
+						     disposition: NULL]);
 }
 
 - (void)tearDown
@@ -53,8 +53,8 @@
 
 - (void)dealloc
 {
-	[_softwareKey release];
-	[_objFWKey release];
+	objc_release(_softwareKey);
+	objc_release(_objFWKey);
 
 	[super dealloc];
 }

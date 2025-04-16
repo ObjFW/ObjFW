@@ -44,7 +44,7 @@
 @implementation OFHTTPClientTests
 - (void)dealloc
 {
-	[_response release];
+	objc_release(_response);
 
 	[super dealloc];
 }
@@ -63,8 +63,8 @@
 {
 	OTAssertNil(exception);
 
-	[_response release];
-	_response = [response_ retain];
+	objc_release(_response);
+	_response = objc_retain(response_);
 
 	[[OFRunLoop mainRunLoop] stop];
 }
@@ -77,7 +77,7 @@
 	OFHTTPClient *client;
 	OFData *data;
 
-	server = [[[HTTPClientTestsServer alloc] init] autorelease];
+	server = objc_autorelease([[HTTPClientTestsServer alloc] init]);
 	server.supportsSockets = true;
 
 	[server.condition lock];
@@ -125,7 +125,7 @@
 	@try {
 		_condition = [[OFCondition alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -134,7 +134,7 @@
 
 - (void)dealloc
 {
-	[_condition release];
+	objc_release(_condition);
 
 	[super dealloc];
 }

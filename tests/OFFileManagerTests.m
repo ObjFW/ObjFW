@@ -38,14 +38,14 @@
 @implementation OFFileManagerTests
 - (void)setUp
 {
-	_fileManager = [[OFFileManager defaultManager] retain];
+	_fileManager = objc_retain([OFFileManager defaultManager]);
 
-	_testsDirectoryIRI = [[[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: @"objfw-tests"] retain];
+	_testsDirectoryIRI = objc_retain([[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: @"objfw-tests"]);
 	OTAssertNotNil(_testsDirectoryIRI);
 
-	_testFileIRI = [[_testsDirectoryIRI
-	    IRIByAppendingPathComponent: @"test.txt"] retain];
+	_testFileIRI = objc_retain(
+	    [_testsDirectoryIRI IRIByAppendingPathComponent: @"test.txt"]);
 
 	/* In case a previous test run failed and left things. */
 	if ([_fileManager directoryExistsAtIRI: _testsDirectoryIRI])
@@ -63,9 +63,9 @@
 
 - (void)dealloc
 {
-	[_fileManager release];
-	[_testsDirectoryIRI release];
-	[_testFileIRI release];
+	objc_release(_fileManager);
+	objc_release(_testsDirectoryIRI);
+	objc_release(_testFileIRI);
 
 	[super dealloc];
 }

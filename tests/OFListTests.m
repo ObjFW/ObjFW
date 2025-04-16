@@ -41,7 +41,7 @@
 
 - (void)dealloc
 {
-	[_list release];
+	objc_release(_list);
 
 	[super dealloc];
 }
@@ -176,8 +176,8 @@
 	OFString *foo = _list.firstObject;
 
 	OTAssertTrue([_list containsObjectIdenticalTo: foo]);
-	OTAssertFalse(
-	    [_list containsObjectIdenticalTo: [[foo mutableCopy] autorelease]]);
+	OTAssertFalse([_list containsObjectIdenticalTo:
+	    objc_autorelease([foo mutableCopy])]);
 }
 
 - (void)testIsEqual
@@ -212,7 +212,7 @@
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_list copy] autorelease], _list);
+	OTAssertEqualObjects(objc_autorelease([_list copy]), _list);
 }
 
 - (void)testDescription

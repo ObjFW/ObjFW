@@ -38,7 +38,7 @@
 
 - (void)dealloc
 {
-	[_number release];
+	objc_release(_number);
 
 	[super dealloc];
 }

@@ -44,8 +44,8 @@
 
 - (void)dealloc
 {
-	[_date[0] release];
-	[_date[1] release];
+	objc_release(_date[0]);
+	objc_release(_date[1]);
 
 	[super dealloc];
 }

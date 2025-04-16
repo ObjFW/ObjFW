@@ -239,12 +239,12 @@ printProfile(id <OHGameControllerProfile> profile)
 
 	if (_lastControllersUpdate == nil ||
 	    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
-		[_joyConPair release];
-		[_controllers release];
-		[_lastControllersUpdate release];
+		objc_release(_joyConPair);
+		objc_release(_controllers);
+		objc_release(_lastControllersUpdate);
 
 		_joyConPair = nil;
-		_controllers = [[OHGameController controllers] retain];
+		_controllers = objc_retain([OHGameController controllers]);
 		_lastControllersUpdate = [[OFDate alloc] init];
 
 		[OFStdOut clear];
@@ -277,9 +277,9 @@ printProfile(id <OHGameControllerProfile> profile)
 
 		if (_joyConPair == nil && leftJoyCon != nil &&
 		    rightJoyCon != nil)
-			_joyConPair = [[OHJoyConPair
-			    gamepadWithLeftJoyCon: leftJoyCon
-				      rightJoyCon: rightJoyCon] retain];
+			_joyConPair = objc_retain(
+			    [OHJoyConPair gamepadWithLeftJoyCon: leftJoyCon
+						    rightJoyCon: rightJoyCon]);
 	}
 
 	if (_joyConPair) {

@@ -42,7 +42,7 @@
 
 - (void)dealloc
 {
-	[_set release];
+	objc_release(_set);
 
 	[super dealloc];
 }
@@ -81,12 +81,12 @@
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_set copy] autorelease], _set);
+	OTAssertEqualObjects(objc_autorelease([_set copy]), _set);
 }
 
 - (void)testMutableCopy
 {
-	OTAssertEqualObjects([[_set mutableCopy] autorelease], _set);
+	OTAssertEqualObjects(objc_autorelease([_set mutableCopy]), _set);
 }
 
 - (void)testIsSubsetOfSet
@@ -204,7 +204,7 @@
 	@try {
 		_set = [[OFSet alloc] initWithObjects: objects count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -213,7 +213,7 @@
 
 - (void)dealloc
 {
-	[_set release];
+	objc_release(_set);
 
 	[super dealloc];
 }

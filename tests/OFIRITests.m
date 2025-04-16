@@ -58,9 +58,9 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 - (void)dealloc
 {
 	for (uint_fast8_t i = 0; i < 11; i++)
-		[_IRI[i] release];
+		objc_release(_IRI[i]);
 
-	[_mutableIRI release];
+	objc_release(_mutableIRI);
 
 	[super dealloc];
 }
@@ -332,7 +332,7 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_IRI[0] copy] autorelease], _IRI[0]);
+	OTAssertEqualObjects(objc_autorelease([_IRI[0] copy]), _IRI[0]);
 }
 
 - (void)testIsEqual

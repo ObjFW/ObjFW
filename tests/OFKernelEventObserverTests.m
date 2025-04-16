@@ -65,10 +65,10 @@ static const size_t numExpectedEvents = 3;
 
 - (void)dealloc
 {
-	[_client release];
-	[_server release];
-	[_accepted release];
-	[_observer release];
+	objc_release(_client);
+	objc_release(_server);
+	objc_release(_accepted);
+	objc_release(_observer);
 
 	[super dealloc];
 }
@@ -105,7 +105,7 @@ static const size_t numExpectedEvents = 3;
 	case 0:
 		OTAssertEqual(object, _server);
 
-		_accepted = [[object accept] retain];
+		_accepted = objc_retain([object accept]);
 		[_observer addObjectForReading: _accepted];
 		break;
 	case 1:

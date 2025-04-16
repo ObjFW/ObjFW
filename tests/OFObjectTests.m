@@ -74,7 +74,7 @@
 
 - (void)dealloc
 {
-	[_myObject release];
+	objc_release(_myObject);
 
 	[super dealloc];
 }
@@ -87,7 +87,7 @@
 
 - (void)testInstanceDescription
 {
-	OFObject *object = [[[OFObject alloc] init] autorelease];
+	OFObject *object = objc_autorelease([[OFObject alloc] init]);
 
 	OTAssertEqualObjects(object.description, @"<OFObject>");
 	OTAssertEqualObjects(_myObject.description, @"<MyObject>");
@@ -223,9 +223,9 @@
 
 - (void)testValueForKeyPath
 {
-	_myObject.objectValue = [[[MyObject alloc] init] autorelease];
+	_myObject.objectValue = objc_autorelease([[MyObject alloc] init]);
 	[_myObject.objectValue setObjectValue:
-	    [[[MyObject alloc] init] autorelease]];
+	    objc_autorelease([[MyObject alloc] init])];
 	[[_myObject.objectValue objectValue] setDoubleValue: 0.5];
 
 	OTAssertEqual([[_myObject valueForKeyPath:
@@ -234,9 +234,9 @@
 
 - (void)testSetValueForKeyPath
 {
-	_myObject.objectValue = [[[MyObject alloc] init] autorelease];
+	_myObject.objectValue = objc_autorelease([[MyObject alloc] init]);
 	[_myObject.objectValue setObjectValue:
-	    [[[MyObject alloc] init] autorelease]];
+	    objc_autorelease([[MyObject alloc] init])];
 	[_myObject setValue: [OFNumber numberWithDouble: 0.75]
 		 forKeyPath: @"objectValue.objectValue.doubleValue"];
 
@@ -258,7 +258,7 @@
 
 - (void)dealloc
 {
-	[_objectValue release];
+	objc_release(_objectValue);
 
 	[super dealloc];
 }

@@ -42,7 +42,7 @@
 
 - (void)dealloc
 {
-	[_mutableDictionary release];
+	objc_release(_mutableDictionary);
 
 	[super dealloc];
 }
@@ -82,7 +82,7 @@
 
 - (void)testMutableCopy
 {
-	OFMutableDictionary *copy = [[_dictionary mutableCopy] autorelease];
+	OFMutableDictionary *copy = objc_autorelease([_dictionary mutableCopy]);
 
 	OTAssertEqualObjects(copy, _dictionary);
 	OTAssertNotEqual(copy, _dictionary);
@@ -92,7 +92,7 @@
 - (void)testReplaceObjectsUsingBlock
 {
 	OFMutableDictionary *mutableDictionary =
-	    [[_dictionary mutableCopy] autorelease];
+	    objc_autorelease([_dictionary mutableCopy]);
 
 	[mutableDictionary replaceObjectsUsingBlock: ^ id (id key, id object) {
 		if ([key isEqual: @"key1"])
@@ -118,7 +118,7 @@
 	@try {
 		_dictionary = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -137,7 +137,7 @@
 			    forKeys: keys_
 			      count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -146,7 +146,7 @@
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }

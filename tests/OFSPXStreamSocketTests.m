@@ -73,7 +73,7 @@
 
 - (void)dealloc
 {
-	[_sockServer release];
+	objc_release(_sockServer);
 
 	[super dealloc];
 }
@@ -132,7 +132,7 @@
 - (void)testAsyncSPXStreamSocket
 {
 	SPXStreamSocketDelegate *delegate =
-	    [[[SPXStreamSocketDelegate alloc] init] autorelease];
+	    objc_autorelease([[SPXStreamSocketDelegate alloc] init]);
 	uint32_t network;
 	unsigned char node[IPX_NODE_LEN];
 	uint16_t port;

@@ -53,7 +53,7 @@ static OFString *objects[] = {
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }
@@ -94,13 +94,13 @@ static OFString *objects[] = {
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_dictionary copy] autorelease], _dictionary);
+	OTAssertEqualObjects(objc_autorelease([_dictionary copy]), _dictionary);
 }
 
 - (void)testMutableCopy
 {
 	OTAssertEqualObjects(
-	    [[_dictionary mutableCopy] autorelease], _dictionary);
+	    objc_autorelease([_dictionary mutableCopy]), _dictionary);
 }
 
 - (void)testValueForKey
@@ -127,7 +127,7 @@ static OFString *objects[] = {
 {
 	OTAssertTrue([_dictionary containsObjectIdenticalTo: objects[0]]);
 	OTAssertFalse([_dictionary containsObjectIdenticalTo:
-	    [[objects[0] mutableCopy] autorelease]]);
+	    objc_autorelease([objects[0] mutableCopy])]);
 }
 
 - (void)testDescription
@@ -274,7 +274,7 @@ static OFString *objects[] = {
 							    forKeys: keys_
 							      count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -283,7 +283,7 @@ static OFString *objects[] = {
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }

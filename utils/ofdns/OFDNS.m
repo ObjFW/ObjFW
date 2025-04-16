@@ -122,7 +122,7 @@ help(OFStream *stream, bool full, int status)
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 

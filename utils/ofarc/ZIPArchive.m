@@ -99,10 +99,11 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithIRI: IRI
-				   stream: stream
-				     mode: mode
-				 encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
@@ -118,7 +119,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 							   mode: mode];
 		_archive.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -127,8 +128,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_archiveIRI release];
-	[_archive release];
+	objc_release(_archiveIRI);
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -149,7 +150,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	if (partNumber == lastPartNumber)
 		IRI = _archiveIRI;
 	else {
-		OFMutableIRI *copy = [[_archiveIRI mutableCopy] autorelease];
+		OFMutableIRI *copy =
+		    objc_autorelease([_archiveIRI mutableCopy]);
 		[copy deletePathExtension];
 		[copy appendPathExtension: [OFString
 		    stringWithFormat: @"z%02u", partNumber + 1]];

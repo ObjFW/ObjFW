@@ -35,7 +35,7 @@
 - (void)testDetectMutationDuringEnumeration
 {
 	OFMutableDictionary *mutableDictionary =
-	    [[_dictionary mutableCopy] autorelease];
+	    objc_autorelease([_dictionary mutableCopy]);
 	OFEnumerator *keyEnumerator = [mutableDictionary keyEnumerator];
 	OFEnumerator *objectEnumerator = [mutableDictionary objectEnumerator];
 	OFString *key;
@@ -58,7 +58,7 @@
 - (void)testDetectMutationDuringFastEnumeration
 {
 	OFMutableDictionary *mutableDictionary =
-	    [[_dictionary mutableCopy] autorelease];
+	    objc_autorelease([_dictionary mutableCopy]);
 	bool detected = false;
 	size_t i;
 
@@ -82,7 +82,7 @@
 - (void)testDetectMutationDuringEnumerateObjectsUsingBlock
 {
 	OFMutableDictionary *mutableDictionary =
-	    [[_dictionary mutableCopy] autorelease];
+	    objc_autorelease([_dictionary mutableCopy]);
 	__block size_t i;
 
 	i = 0;

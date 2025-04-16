@@ -43,7 +43,7 @@
 
 - (void)dealloc
 {
-	[_mutableSet release];
+	objc_release(_mutableSet);
 
 	[super dealloc];
 }
@@ -105,7 +105,7 @@
 		_set = [[OFMutableSet alloc] initWithObjects: objects
 						       count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -114,7 +114,7 @@
 
 - (void)dealloc
 {
-	[_set release];
+	objc_release(_set);
 
 	[super dealloc];
 }

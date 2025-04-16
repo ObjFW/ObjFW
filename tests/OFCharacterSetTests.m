@@ -43,7 +43,7 @@
 - (void)testCustomCharacterSet
 {
 	OFCharacterSet *characterSet =
-	    [[[CustomCharacterSet alloc] init] autorelease];
+	    objc_autorelease([[CustomCharacterSet alloc] init]);
 
 	for (OFUnichar c = 0; c < 65536; c++)
 		if (c % 2 == 0)

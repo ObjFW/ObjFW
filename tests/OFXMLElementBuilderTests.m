@@ -32,8 +32,8 @@
 @implementation OFXMLElementBuilderTests
 - (void)dealloc
 {
-	[_nodes[0] release];
-	[_nodes[1] release];
+	objc_release(_nodes[0]);
+	objc_release(_nodes[1]);
 
 	[super dealloc];
 }
@@ -42,14 +42,14 @@
        didBuildElement: (OFXMLElement *)element
 {
 	OTAssertEqual(_i, 0);
-	_nodes[_i++] = [element retain];
+	_nodes[_i++] = objc_retain(element);
 }
 
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
     didBuildOrphanNode: (OFXMLNode *)node
 {
 	OTAssertEqual(_i, 1);
-	_nodes[_i++] = [node retain];
+	_nodes[_i++] = objc_retain(node);
 }
 
 - (void)testElementBuilder

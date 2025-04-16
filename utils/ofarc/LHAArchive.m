@@ -98,10 +98,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithIRI: IRI
-				   stream: stream
-				     mode: mode
-				 encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
@@ -118,7 +119,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -127,7 +128,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }

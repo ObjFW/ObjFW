@@ -50,7 +50,7 @@ static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
 
 - (void)dealloc
 {
-	[_dictionary release];
+	objc_release(_dictionary);
 
 	[super dealloc];
 }

@@ -35,7 +35,7 @@
 - (void)testStream
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	OFTestStream *stream = [[[OFTestStream alloc] init] autorelease];
+	OFTestStream *stream = objc_autorelease([[OFTestStream alloc] init]);
 	char *cString = OFAllocMemory(pageSize - 2, 1);
 
 	@try {

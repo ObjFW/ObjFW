@@ -132,8 +132,8 @@ newClass(OFString *name, OFString *superclass, OFMutableArray *properties)
 		for (Property *property in properties)
 			if ([property.attributes containsObject: @"retain"] ||
 			    [property.attributes containsObject: @"copy"])
-				[implFile writeFormat: @"\t[_%@ release];\n",
-						       property.name];
+				[implFile writeFormat:
+				    @"\tobjc_release(_%@);\n", property.name];
 
 		[implFile writeString: @"\n"
 				       @"\t[super dealloc];\n"

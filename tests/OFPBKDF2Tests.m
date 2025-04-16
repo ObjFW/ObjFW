@@ -41,7 +41,7 @@
 
 - (void)dealloc
 {
-	[_HMAC release];
+	objc_release(_HMAC);
 
 	[super dealloc];
 }

@@ -83,7 +83,7 @@ static const char *range80ToFF =
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }
@@ -107,12 +107,12 @@ static const char *range80ToFF =
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_string copy] autorelease], _string);
+	OTAssertEqualObjects(objc_autorelease([_string copy]), _string);
 }
 
 - (void)testMutableCopy
 {
-	OTAssertEqualObjects([[_string mutableCopy] autorelease], _string);
+	OTAssertEqualObjects(objc_autorelease([_string mutableCopy]), _string);
 }
 
 - (void)testCompare
@@ -1087,7 +1087,7 @@ static const char *range80ToFF =
 - (void)testStringByXMLUnescapingWithDelegate
 {
 	EntityHandler *entityHandler =
-	    [[[EntityHandler alloc] init] autorelease];
+	    objc_autorelease([[EntityHandler alloc] init]);
 
 	OTAssertEqualObjects([[self.stringClass stringWithString: @"x&foo;y"]
 	    stringByXMLUnescapingWithDelegate: entityHandler],
@@ -1712,7 +1712,7 @@ static const char *range80ToFF =
 	@try {
 		_string = [[OFMutableString alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1726,7 +1726,7 @@ static const char *range80ToFF =
 	@try {
 		_string = [string mutableCopy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1744,7 +1744,7 @@ static const char *range80ToFF =
 							  encoding: encoding
 							    length: length];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1763,7 +1763,7 @@ static const char *range80ToFF =
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1782,7 +1782,7 @@ static const char *range80ToFF =
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1798,7 +1798,7 @@ static const char *range80ToFF =
 		_string = [[OFMutableString alloc] initWithFormat: format
 							arguments: arguments];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1807,7 +1807,7 @@ static const char *range80ToFF =
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }

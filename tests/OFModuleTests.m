@@ -52,7 +52,7 @@
 		test = [[class() alloc] init];
 		OTAssertEqual([test test: 1234], 2468);
 	} @finally {
-		[test release];
+		objc_release(test);
 	}
 }
 @end

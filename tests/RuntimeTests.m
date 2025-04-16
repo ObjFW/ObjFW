@@ -55,7 +55,7 @@ static void *testKey = &testKey;
 
 - (void)dealloc
 {
-	[_test release];
+	objc_release(_test);
 
 	[super dealloc];
 }
@@ -151,8 +151,8 @@ static void *testKey = &testKey;
 
 - (void)dealloc
 {
-	[_foo release];
-	[_bar release];
+	objc_release(_foo);
+	objc_release(_bar);
 
 	[super dealloc];
 }

@@ -43,7 +43,7 @@
 
 - (void)dealloc
 {
-	[_matrix release];
+	objc_release(_matrix);
 
 	[super dealloc];
 }
@@ -95,14 +95,14 @@
 
 - (void)testCopy
 {
-	OTAssertEqualObjects([[_matrix copy] autorelease], _matrix);
+	OTAssertEqualObjects(objc_autorelease([_matrix copy]), _matrix);
 }
 
 - (void)testMultiplyWithMatrix
 {
 	OFMatrix4x4 *matrix;
 
-	matrix = [[_matrix copy] autorelease];
+	matrix = objc_autorelease([_matrix copy]);
 	[matrix multiplyWithMatrix: [OFMatrix4x4 identityMatrix]];
 	OTAssertEqualObjects(matrix, _matrix);
 
