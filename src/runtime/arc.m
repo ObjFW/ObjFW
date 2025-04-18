@@ -40,6 +40,24 @@ struct WeakRef {
 
 #ifdef OF_OBJFW_RUNTIME
 typedef struct objc_hashtable objc_hashtable;
+
+/* Inlined for performance. */
+static OF_INLINE bool
+object_isTaggedPointer_fast(id object)
+{
+	uintptr_t pointer = (uintptr_t)object;
+
+	return pointer & 1;
+}
+
+/* Inlined and unncessary checks dropped for performance. */
+static OF_INLINE Class
+object_getClass_fast(id object_)
+{
+	struct objc_object *object = (struct objc_object *)object_;
+
+	return object->isa;
+}
 #else
 typedef OFMapTable objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };
@@ -107,10 +125,10 @@ id
 objc_retain(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (object_isTaggedPointer(object) || object == nil)
+	if (object_isTaggedPointer_fast(object) || object == nil)
 		return object;
 
-	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
 		return _objc_rootRetain(object);
 #endif
 
@@ -127,10 +145,10 @@ id
 objc_retainAutorelease(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (object_isTaggedPointer(object) || object == nil)
+	if (object_isTaggedPointer_fast(object) || object == nil)
 		return object;
 
-	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
 		return _objc_rootAutorelease(_objc_rootRetain(object));
 #endif
 
@@ -141,10 +159,10 @@ void
 objc_release(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (object_isTaggedPointer(object) || object == nil)
+	if (object_isTaggedPointer_fast(object) || object == nil)
 		return;
 
-	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR) {
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR) {
 		_objc_rootRelease(object);
 		return;
 	}
@@ -157,10 +175,10 @@ id
 objc_autorelease(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (object_isTaggedPointer(object) || object == nil)
+	if (object_isTaggedPointer_fast(object) || object == nil)
 		return object;
 
-	if (object_getClass(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
 		return _objc_rootAutorelease(object);
 #endif
 
@@ -363,7 +381,7 @@ objc_zeroWeakReferences(id value)
     (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
 	OFReleaseMemoryBarrier();
 
-	if (value != nil && !object_isTaggedPointer(value) &&
+	if (value != nil && !object_isTaggedPointer_fast(value) &&
 	    !(OBJC_PRE_IVARS(value)->info & OBJC_OBJECT_INFO_WEAK_REFERENCES))
 		return;
 #endif
