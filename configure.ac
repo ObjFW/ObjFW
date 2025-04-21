@@ -48,8 +48,8 @@ m68k-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 	LDFLAGS="$LDFLAGS -noixemul"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
-	LIBS="$LIBS -ldebug"
-	OBJFW_LIBS="$OBJFW_LIBS -ldebug"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -72,8 +72,8 @@ powerpc-*-amigaos*)
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
-	LIBS="$LIBS -ldebug"
-	OBJFW_LIBS="$OBJFW_LIBS -ldebug"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -88,8 +88,8 @@ powerpc-*-amigaos*)
 *-*-mingw*)
 	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -Wl,--allow-multiple-definition"
-	LIBS="$LIBS -lversion"
-	OBJFW_LIBS="$OBJFW_LIBS -lversion"
+	LIBS="-lversion $LIBS"
+	OBJFW_LIBS="-lversion $OBJFW_LIBS"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
 	;;
@@ -108,8 +108,8 @@ powerpc-*-amigaos*)
 	tmp="$tmp -lpspsdk -lc -lpspnet -lpspnet_inet -lpspnet_apctl"
 	tmp="$tmp -lpspnet_resolver -lpsputility -lpspuser -lpspkernel -lgcc"
 	tmp="$tmp -lpsplibc"
-	LIBS="$LIBS $tmp"
-	OBJFW_LIBS="$OBJFW_LIBS $tmp"
+	LIBS="$tmp $LIBS"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
@@ -129,8 +129,8 @@ hppa*-*-hpux*)
 	dnl also used for .S files.
 	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
 	dnl We need -latomic for GCC's atomics to work.
-	LIBS="$LIBS -latomic"
-	OBJFW_LIBS="$OBJFW_LIBS -latomic"
+	LIBS="-latomic $LIBS"
+	OBJFW_LIBS="-latomic $OBJFW_LIBS"
 	;;
 *-*-mint*)
 	enable_shared="no"
@@ -187,8 +187,8 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
-	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
-	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
+	LIBS="-L$DEVKITPRO/libogc/lib/wii -lfat -logc $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libogc/lib/wii -lfat -logc $OBJFW_LIBS"
 	HID_STATIC_LIBS="-lwiiuse -lbte $HID_LIBS"
 	HID_LIBS="-lwiiuse -lbte $HID_LIBS"
 	enable_shared="no"
@@ -216,8 +216,8 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
 	tmp="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
-	LIBS="$LIBS $tmp"
-	OBJFW_LIBS="$OBJFW_LIBS $tmp"
+	LIBS="$tmp $LIBS"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_files="no"	# TODO
 	enable_shared="no"	# TODO
 	enable_threads="no"	# TODO
@@ -251,11 +251,12 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	ASFLAGS="$ASFLAGS -march=armv5te"
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/calico/share/ds9.specs"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=\$DEVKITPRO/calico/share/ds9.specs"
-	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -L$DEVKITPRO/calico/lib"
-	LIBS="$LIBS -lfilesystem -lfat -lnds9 -lcalico_ds9"
-	OBJFW_LIBS="$OBJFW_LIBS -L\$DEVKITPRO/libnds/lib"
-	OBJFW_LIBS="$OBJFW_LIBS -L\$DEVKITPRO/calico/lib"
-	OBJFW_LIBS="$OBJFW_LIBS -lfilesystem -lfat -lnds9 -lcalico_ds9"
+	tmp="-L$DEVKITPRO/libnds/lib -L$DEVKITPRO/calico/lib"
+	tmp="$tmp -lfilesystem -lfat -lnds9 -lcalico_ds9"
+	LIBS="$tmp $LIBS"
+	tmp="-L\$DEVKITPRO/libnds/lib -L\$DEVKITPRO/calico/lib"
+	tmp="$tmp -lfilesystem -lfat -lnds9 -lcalico_ds9"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
@@ -284,8 +285,8 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	tmp="$tmp -mtp=soft -mword-relocations"
 	LDFLAGS="$LDFLAGS $tmp"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
-	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
-	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libctru/lib -lctru"
+	LIBS="-L$DEVKITPRO/libctru/lib -lctru $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libctru/lib -lctru $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
@@ -313,8 +314,8 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs"
 	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $flags"
-	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
-	OBJFW_LIBS="$OBJFW_LIBS -L$DEVKITPRO/libnx/lib -lnx"
+	LIBS="-L$DEVKITPRO/libnx/lib -lnx $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libnx/lib -lnx $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="yes"
 	enable_sockets="no"	# TODO
@@ -706,8 +707,8 @@ case "$objc_runtime" in
 	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
 		dnl c++abi requires pthread on OpenBSD
 		AS_IF([test x"$ac_lib" = x"c++abi"], [
-			LIBS="$LIBS -lpthread"
-			OBJFW_LIBS="$OBJFW_LIBS -lpthread"
+			LIBS="-lpthread $LIBS"
+			OBJFW_LIBS="-lpthread $OBJFW_LIBS"
 		])
 	], [
 		AC_MSG_ERROR([$raise_exception missing!])
@@ -969,10 +970,10 @@ i?86 | x86_64)
 esac
 
 AC_CHECK_LIB(m, fmod, [
-	LIBS="$LIBS -lm"
-	OBJFW_LIBS="$OBJFW_LIBS -lm"
+	LIBS="-lm $LIBS"
+	OBJFW_LIBS="-lm $OBJFW_LIBS"
 ])
-AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
+AC_CHECK_LIB(complex, creal, TESTS_LIBS="-lcomplex $TESTS_LIBS")
 
 AC_CHECK_FUNCS(strtof truncf)
 
@@ -1046,8 +1047,8 @@ AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
 	AC_CHECK_LIB(dl, dlopen, [
-		LIBS="$LIBS -ldl"
-		OBJFW_LIBS="$OBJFW_LIBS -ldl"
+		LIBS="-ldl $LIBS"
+		OBJFW_LIBS="-ldl $OBJFW_LIBS"
 	])
 ])
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
@@ -1091,8 +1092,8 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		])
 
 		AC_CHECK_LIB(pthread, main, [
-			LIBS="$LIBS -lpthread"
-			OBJFW_LIBS="$OBJFW_LIBS -lpthread"
+			LIBS="-lpthread $LIBS"
+			OBJFW_LIBS="-lpthread $OBJFW_LIBS"
 		])
 
 		AC_LINK_IFELSE([
