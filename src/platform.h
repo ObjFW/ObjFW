@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -25,7 +29,7 @@
 # endif
 #endif
 
-#if defined(__x86_64__) || defined(__amd64__)
+#if (defined(__x86_64__) || defined(__amd64__)) && defined(__LP64__)
 # define OF_AMD64
 #elif defined(__i386__)
 # define OF_X86
@@ -90,15 +94,19 @@
 #  define OF_M68010
 # endif
 #elif defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
-# define OF_RISC_V_64
+# define OF_RISCV64
 #elif defined(__riscv)
-# define OF_RISC_V
+# define OF_RISCV
 #elif defined(__s390x__)
 # define OF_S390X
 #elif defined(__s390__)
 # define OF_S390
+#elif defined(__sh__)
+# define OF_SUPERH
 #elif defined(__e2k__)
 # define OF_ELBRUS_2000
+#elif defined(__loongarch64)
+# define OF_LOONGARCH64
 #endif
 
 #if defined(__APPLE__)
@@ -153,6 +161,8 @@
 # define OF_MINT
 #elif defined(__gnu_hurd__)
 # define OF_HURD
+#elif defined(__serenity__)
+# define OF_SERENITYOS
 #endif
 
 #ifdef __GLIBC__

@@ -1,18 +1,29 @@
+/*
+ * German localization for ofhttp.
+ *
+ * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this localization for
+ * any purpose with or without fee is hereby granted.
+ */
+
+/* vim: se ft=javascript sw=4 et: */
+
 {
-    "usage": "Benutzung: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
-    "full_usage": [
+    usage: "Benutzung: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
+    full_usage: [
         "Optionen:\n",
-        "    -b  --body             Angegebene Datei als Body übergeben\n",
+        "    -b  --body=            Angegebene Datei als Body übergeben\n",
         "                           (- für Standard-Eingabe)\n",
         "    -c  --continue         Download von existierender Datei ",
         "fortsetzen\n",
         "    -f  --force            Existierende Datei überschreiben\n",
         "    -h  --help             Diese Hilfe anzeigen\n",
-        "    -H  --header           Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
-        "    -m  --method           HTTP Request-Methode setzen\n",
-        "    -o  --output           Ausgabe-Dateiname angeben\n",
+        "    -H  --header=          Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
+        "    -m  --method=          HTTP Request-Methode setzen\n",
+        "    -o  --output=          Ausgabe-Dateiname angeben\n",
         "    -O  --detect-filename  Dateiname mittels HEAD-Request ermitteln\n",
-        "    -P  --proxy            SOCKS5-Proxy angeben\n",
+        "    -P  --proxy=           SOCKS5-Proxy angeben\n",
         "    -q  --quiet            Ruhiger Modus (keine Ausgabe außer Fehler)",
         "\n",
         "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",
@@ -20,39 +31,39 @@
         "                           Weiterleitungen erlauben\n",
         "        --ignore-status    HTTP Status-Code ignorieren"
     ],
-    "invalid_input_header": "%[prog]: Header müssen im Format Name:Wert sein!",
-    "invalid_input_method": "%[prog]: Ungültige Request-Methode %[method]!",
-    "invalid_input_proxy": "%[prog]: Proxy muss im Format Host:Port sein!",
-    "long_argument_missing": "%[prog]: Argument für Option --%[opt] fehlt",
-    "argument_missing": "%[prog]: Argument für option -%[opt] fehlt",
-    "option_takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument",
-    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]",
-    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]",
-    "quiet_xor_verbose": [
+    invalid_input_header: "%[prog]: Header müssen im Format Name:Wert sein!",
+    invalid_input_method: "%[prog]: Ungültige Request-Methode %[method]!",
+    invalid_input_proxy: "%[prog]: Proxy muss im Format Host:Port sein!",
+    long_argument_missing: "%[prog]: Argument für Option --%[opt] fehlt",
+    argument_missing: "%[prog]: Argument für option -%[opt] fehlt",
+    option_takes_no_argument: "%[prog]: Option --%[opt] nimmt kein Argument",
+    unknown_long_option: "%[prog]: Unbekannte Option: --%[opt]",
+    unknown_option: "%[prog]: Unbekannte Option: -%[opt]",
+    quiet_xor_verbose: [
         "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
         "aus!"
     ],
-    "output_xor_detect_filename": [
+    output_xor_detect_filename: [
         "%[prog]: -o / --output und -O / --detect-filename schließen sich ",
         "gegenseitig aus!"
     ],
-    "output_only_with_one_iri": [
+    output_only_with_one_iri: [
         "%[prog]: -o / --output kann nicht mit mehr als einer IRI benutzt ",
         "werden!"
     ],
-    "download_resolve_host_failed": [
+    download_resolve_host_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Host auflösen fehlgeschlagen: %[exception]"
     ],
-    "download_failed_connection_failed": [
+    download_failed_connection_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Verbindung fehlgeschlagen: %[exception]"
     ],
-    "download_failed_invalid_server_response": [
+    download_failed_invalid_server_response: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  Ungültige Antwort vom Server!"
     ],
-    "no_tls_support": [
+    no_tls_support: [
         "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
         "  Um via HTTPS runterzuladen müssen Sie entweder ObjFW mit TLS-",
         "Unterstützung\n",
@@ -60,53 +71,54 @@
         "TLS-Support\n",
         "  zu ObjFW hinzufügt!"
     ],
-    "download_failed_tls_handshake_failed": [
+    download_failed_tls_handshake_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  TLS-Handshake fehlgeschlagen: %[error]"
     ],
-    "download_failed_read_or_write_failed_any": "Lesen oder Schreiben",
-    "download_failed_read_or_write_failed_read": "Lesen",
-    "download_failed_read_or_write_failed_write": "Schreiben",
-    "download_failed_read_or_write_failed": [
+    download_failed_read_or_write_failed_any: "Lesen oder Schreiben",
+    download_failed_read_or_write_failed_read: "Lesen",
+    download_failed_read_or_write_failed_write: "Schreiben",
+    download_failed_read_or_write_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  %[error]: %[exception]"
     ],
-    "download_failed": [
+    download_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  HTTP Status-Code: %[code]"
     ],
-    "download_error": "Fehler!",
-    "download_failed_exception": [
+    download_error: "Fehler!",
+    download_failed_exception: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
         "  %[exception]"
     ],
-    "download_done": "Fertig!",
-    "invalid_iri": "%[prog]: Ungültige IRI: <%[iri]>!",
-    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[iri]>!",
-    "type_unknown": "unbekannt",
-    "size_gib": "%[num] GiB",
-    "size_mib": "%[num] MiB",
-    "size_kib": "%[num] KiB",
-    "size_bytes": [
+    download_done: "Fertig!",
+    download_aborted: "Abgebrochen!",
+    invalid_iri: "%[prog]: Ungültige IRI: <%[iri]>!",
+    invalid_scheme: "%[prog]: Ungültiges Schema: <%[iri]>!",
+    type_unknown: "unbekannt",
+    size_gib: "%[num] GiB",
+    size_mib: "%[num] MiB",
+    size_kib: "%[num] KiB",
+    size_bytes: [
         [
             {"num == 1": "1 Byte"},
             {"": "%[num] Bytes"}
         ]
     ],
-    "size_unknown": "unbekannt",
-    "info_name_unaligned": "Name: %[name]",
-    "info_name": "Name:  %[name]",
-    "info_type": "Typ:   %[type]",
-    "info_size": "Größe: %[size]",
-    "output_already_exists": "%[prog]: Datei %[filename] existiert bereits!",
-    "failed_to_open_output": [
+    size_unknown: "unbekannt",
+    info_name_unaligned: "Name: %[name]",
+    info_name: "Name:  %[name]",
+    info_type: "Typ:   %[type]",
+    info_size: "Größe: %[size]",
+    output_already_exists: "%[prog]: Datei %[filename] existiert bereits!",
+    failed_to_open_output: [
         "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]"
     ],
-    "eta_days": "%[num] t ",
-    "progress_bytes": [
+    eta_days: "%[num] t ",
+    progress_bytes: [
         [
             {"num == 1": "1 Byte "},
             {"": "%[num] Bytes"}
         ]
-    ]
+    ],
 }

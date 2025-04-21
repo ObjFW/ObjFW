@@ -1,43 +1,55 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
+
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
 
 .globl _OFForward
 .globl _OFForward_stret
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+Lsel_forwardingTargetForSelector_:
+	.long Lstr_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
 _OFForward:
+	_CET_ENDBR
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	LgetEIP
 0:
 
 	movl	8(%ebp), %eax
@@ -45,7 +57,7 @@ _OFForward:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
@@ -54,7 +66,7 @@ _OFForward:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	12(%ebp), %eax
 	movl	%eax, 8(%esp)
@@ -81,13 +93,15 @@ _OFForward:
 	jmp	_OFMethodNotFound
 
 _OFForward_stret:
+	_CET_ENDBR
+
 	pushl	%ebp
 	movl	%esp, %ebp
 
 	pushl	%ebx
 	subl	$20, %esp
 
-	call	get_eip
+	call	LgetEIP
 0:
 
 	movl	12(%ebp), %eax
@@ -95,7 +109,7 @@ _OFForward_stret:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
@@ -104,7 +118,7 @@ _OFForward_stret:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
+	movl	Lsel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	16(%ebp), %eax
 	movl	%eax, 8(%esp)
@@ -130,6 +144,6 @@ _OFForward_stret:
 
 	jmp	_OFMethodNotFound_stret
 
-get_eip:
+LgetEIP:
 	movl	(%esp), %ebx
 	ret

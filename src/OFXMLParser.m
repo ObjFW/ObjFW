@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -199,8 +203,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    exceptionWithPrefix: attributePrefix
 				 parser: self];
 
-	[attribute->_namespace release];
-	attribute->_namespace = [attributeNS retain];
+	objc_release(attribute->_namespace);
+	attribute->_namespace = objc_retain(attributeNS);
 }
 
 @implementation OFXMLParser
@@ -208,7 +212,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 + (instancetype)parser
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -237,7 +241,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -246,14 +250,14 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)dealloc
 {
-	[_buffer release];
-	[_name release];
-	[_prefix release];
-	[_namespaces release];
-	[_attributes release];
-	[_attributeName release];
-	[_attributePrefix release];
-	[_previous release];
+	objc_release(_buffer);
+	objc_release(_name);
+	objc_release(_prefix);
+	objc_release(_namespaces);
+	objc_release(_attributes);
+	objc_release(_attributeName);
+	objc_release(_attributePrefix);
+	objc_release(_previous);
 
 	[super dealloc];
 }
@@ -499,26 +503,26 @@ inProcessingInstructionState(OFXMLParser *self)
 		self->_level = 1;
 	else if (self->_level == 1 && self->_data[self->_i] == '>') {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *PI, *target, *text = nil;
+		OFString *PI_, *target, *text = nil;
 		OFCharacterSet *whitespaceCS;
 		size_t pos;
 
 		appendToBuffer(self->_buffer, self->_data + self->_last,
 		    self->_encoding, self->_i - self->_last);
-		PI = transformString(self, self->_buffer, 1, false);
+		PI_ = transformString(self, self->_buffer, 1, false);
 
 		whitespaceCS = [OFCharacterSet
 		    characterSetWithCharactersInString: @" \r\n\r"];
-		pos = [PI indexOfCharacterFromSet: whitespaceCS];
+		pos = [PI_ rangeOfCharacterFromSet: whitespaceCS].location;
 		if (pos != OFNotFound) {
-			target = [PI substringToIndex: pos];
-			text = [[PI substringFromIndex: pos + 1]
+			target = [PI_ substringToIndex: pos];
+			text = [[PI_ substringFromIndex: pos + 1]
 			    stringByDeletingEnclosingWhitespaces];
 
 			if (text.length == 0)
 				text = nil;
 		} else
-			target = PI;
+			target = PI_;
 
 		if ([target caseInsensitiveCompare: @"xml"] == OFOrderedSame)
 			if (!parseXMLProcessingInstruction(self, text))
@@ -609,8 +613,8 @@ inTagNameState(OFXMLParser *self)
 		} else
 			[self->_previous addObject: bufferString];
 
-		[self->_name release];
-		[self->_prefix release];
+		objc_release(self->_name);
+		objc_release(self->_prefix);
 		self->_name = self->_prefix = nil;
 
 		self->_state = (self->_data[self->_i] == '/'
@@ -688,8 +692,8 @@ inCloseTagNameState(OFXMLParser *self)
 	objc_autoreleasePoolPop(pool);
 
 	[self->_namespaces removeLastObject];
-	[self->_name release];
-	[self->_prefix release];
+	objc_release(self->_name);
+	objc_release(self->_prefix);
 	self->_name = self->_prefix = nil;
 
 	self->_last = self->_i + 1;
@@ -767,8 +771,8 @@ inTagState(OFXMLParser *self)
 
 	objc_autoreleasePoolPop(pool);
 
-	[self->_name release];
-	[self->_prefix release];
+	objc_release(self->_name);
+	objc_release(self->_prefix);
 	[self->_attributes removeAllObjects];
 	self->_name = self->_prefix = nil;
 
@@ -893,8 +897,8 @@ inAttributeValueState(OFXMLParser *self)
 	objc_autoreleasePoolPop(pool);
 
 	[self->_buffer removeAllItems];
-	[self->_attributeName release];
-	[self->_attributePrefix release];
+	objc_release(self->_attributeName);
+	objc_release(self->_attributePrefix);
 	self->_attributeName = self->_attributePrefix = nil;
 
 	self->_last = self->_i + 1;

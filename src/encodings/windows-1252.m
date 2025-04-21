@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFWindows1252Table[] = {
+const OFChar16 _OFWindows1252Table[] OF_VISIBILITY_INTERNAL = {
 	0x20AC, 0xFFFF, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
 	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0xFFFF, 0x017D, 0xFFFF,
 	0xFFFF, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
@@ -37,8 +41,8 @@ const OFChar16 OFWindows1252Table[] = {
 	0x00F0, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
 };
-const size_t OFWindows1252TableOffset =
-    256 - (sizeof(OFWindows1252Table) / sizeof(*OFWindows1252Table));
+const size_t _OFWindows1252TableOffset OF_VISIBILITY_INTERNAL =
+    256 - (sizeof(_OFWindows1252Table) / sizeof(*_OFWindows1252Table));
 
 static const unsigned char page0[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -97,12 +101,17 @@ static const unsigned char page21[] = {
 };
 static const uint8_t page21Start = 0x22;
 
-bool
-OFUnicodeToWindows1252(const OFUnichar *input, unsigned char *output,
-    size_t length, bool lossy)
+bool OF_VISIBILITY_INTERNAL
+_OFUnicodeToWindows1252(const OFUnichar *input, unsigned char *output,
+    size_t length, bool lossy, bool insecure)
 {
 	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = input[i];
+		OFUnichar c;
+
+		if OF_UNLIKELY (!insecure && input[i] == 0)
+			return false;
+
+		c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

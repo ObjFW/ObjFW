@@ -6,14 +6,14 @@ jobs:
     steps:
     - name: Install dependencies
       run: docker pull devkitpro/devkitarm
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c 'cd /objfw && ./configure --host=arm-none-eabi --with-nds'
@@ -21,15 +21,32 @@ jobs:
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c "cd /objfw && make -j$(nproc)"
+    - name: make tests.nds
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitarm \
+          sh -c "cd /objfw/tests && make tests.nds"
     - name: make install
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitARM/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitARM/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitarm \
           sh -c "cd /objfw && make install"
+    - name: Create objfw-tests
+      run: |
+        mkdir -p objfw-tests/objfw-tests
+        cp tests/tests.nds tests/testfile.txt objfw-tests/objfw-tests
+    - name: Upload objfw-tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nintendo DS Tests
+        path: objfw-tests

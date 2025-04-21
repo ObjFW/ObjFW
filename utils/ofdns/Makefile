@@ -4,6 +4,7 @@ PROG = ofdns${PROG_SUFFIX}
 SRCS = OFDNS.m
 DATA = localization/de.json		\
        localization/localizations.json
+MAN = ofdns.1
 
 include ../../buildsys.mk
 
@@ -16,8 +17,7 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../..							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"
-LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
-	${LIBS}
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src ${OBJFW_LIB} -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

@@ -1,47 +1,66 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFColor";
-
-@implementation TestsAppDelegate (OFColorTests)
-- (void)colorTests
+@interface OFColorTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFColor *color;
-	float red, green, blue, alpha;
+	OFColor *_color;
+}
+@end
 
-	TEST(@"+[colorWithRed:green:blue:alpha:]",
-	    (color = [OFColor colorWithRed: 63.f / 255
-				     green: 127.f / 255
-				      blue: 1
-				     alpha: 1]))
+@implementation OFColorTests
+- (void)setUp
+{
+	[super setUp];
+
+	_color = [[OFColor alloc] initWithRed: 63.f / 255
+					green: 127.f / 255
+					 blue: 1
+					alpha: 1];
+}
+
+- (void)dealloc
+{
+	objc_release(_color);
+
+	[super dealloc];
+}
 
 #ifdef OF_OBJFW_RUNTIME
-	TEST(@"+[colorWithRed:green:blue:alpha:] returns tagged pointer",
-	    object_isTaggedPointer(color))
+- (void)testReturnsTaggedPointer
+{
+	OTAssertTrue(object_isTaggedPointer(_color));
+}
 #endif
 
-	TEST(@"-[getRed:green:blue:alpha:]",
-	    R([color getRed: &red green: &green blue: &blue alpha: &alpha]) &&
-	    red == 63.f / 255 && green == 127.f / 255 && blue == 1 &&
-	    alpha == 1)
+- (void)testGetRedGreenBlueAlpha
+{
+	float red, green, blue, alpha;
 
-	objc_autoreleasePoolPop(pool);
+	[_color getRed: &red green: &green blue: &blue alpha: &alpha];
+	OTAssertEqual(red, 63.f / 255);
+	OTAssertEqual(green, 127.f / 255);
+	OTAssertEqual(blue, 1);
+	OTAssertEqual(alpha, 1);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -29,22 +33,21 @@
 # import "OFPlainMutex.h"
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 # include <windows.h>
 #endif
 
-#if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_v0
-# define CXX_PERSONALITY_STR "__gxx_personality_v0"
-#elif defined(HAVE_SJLJ_EXCEPTIONS)
+#if defined(__SEH__)
+# define PERSONALITY gnu_objc_personality
+# define CXX_PERSONALITY_STR "__gxx_personality_seh0"
+#elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"
 # define _Unwind_RaiseException _Unwind_SjLj_RaiseException
 # define __builtin_eh_return_data_regno(i) (i)
-#elif defined(HAVE_SEH_EXCEPTIONS)
-# define PERSONALITY	 gnu_objc_personality
 #else
-# error Unknown exception type!
+# define PERSONALITY __gnu_objc_personality_v0
+# define CXX_PERSONALITY_STR "__gxx_personality_v0"
 #endif
 
 #if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
@@ -126,7 +129,7 @@ struct objc_exception {
 		void (*cleanup)(
 		    _Unwind_Reason_Code, struct _Unwind_Exception *);
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
-# ifndef HAVE_SEH_EXCEPTIONS
+# ifndef __SEH__
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
@@ -235,11 +238,38 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
-#ifdef CXX_PERSONALITY
+#if defined(OF_WINDOWS)
+# ifdef __SEH__
+static EXCEPTION_DISPOSITION (*cxx_personality)(PEXCEPTION_RECORD, void *,
+    PCONTEXT, PDISPATCHER_CONTEXT);
+# else
+static PERSONALITY_FUNC((*cxx_personality));
+# endif
+
+OF_CONSTRUCTOR()
+{
+	/*
+	 * This only works if the application uses libc++.dll or
+	 * libstdc++-6.dll. There is unfortunately no other way, as Windows
+	 * does not support proper weak linking.
+	 */
+
+	HMODULE module;
+
+	module = GetModuleHandle("libc++");
+
+	if (module == NULL)
+		module = GetModuleHandle("libstdc++-6");
+
+	if (module != NULL)
+		cxx_personality = (__typeof__(cxx_personality))
+		    GetProcAddress(module, CXX_PERSONALITY_STR);
+}
+#elif !defined(OF_AMIGAOS_M68K)
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code (*)(int, int, uint64_t,
     struct _Unwind_Exception *, struct _Unwind_Context *));
@@ -442,7 +472,7 @@ findCallsite(struct _Unwind_Context *ctx, struct LSDA *LSDA,
 	*landingpad = 0;
 	*actionRecords = NULL;
 
-#ifndef HAVE_SJLJ_EXCEPTIONS
+#ifndef __USING_SJLJ_EXCEPTIONS__
 	while (ptr < LSDA->actionTable) {
 		uintptr_t callsiteStart, callsiteLength, callsiteLandingpad;
 		uintptr_t callsiteAction;
@@ -576,7 +606,7 @@ findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
 	return 0;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 static
 #endif
 PERSONALITY_FUNC(PERSONALITY)
@@ -613,7 +643,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	if (foreign) {
 		switch (exClass) {
-#ifdef CXX_PERSONALITY
+#if !defined(__SEH__) && !defined(OF_AMIGAOS_M68K)
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (cxx_personality != NULL)
@@ -782,27 +812,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 	return old;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
-typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void *,
-    PCONTEXT, PDISPATCHER_CONTEXT);
-static seh_personality_fn __gxx_personality_seh0;
-
-OF_CONSTRUCTOR()
-{
-	/*
-	 * This only works if the application uses libstdc++-6.dll.
-	 * There is unfortunately no other way, as Windows does not support
-	 * proper weak linking.
-	 */
-
-	HMODULE module;
-	if ((module = GetModuleHandle("libstdc++-6")) == NULL)
-		return;
-
-	__gxx_personality_seh0 = (seh_personality_fn)
-	    GetProcAddress(module, "__gxx_personality_seh0");
-}
-
+#ifdef __SEH__
 EXCEPTION_DISPOSITION
 __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
     PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
@@ -813,8 +823,8 @@ __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
 	switch (ex->class) {
 	case GNUCCXX0_EXCEPTION_CLASS:
 	case CLNGCXX0_EXCEPTION_CLASS:
-		if (__gxx_personality_seh0 != NULL)
-			return __gxx_personality_seh0(ms_exc, this_frame,
+		if (cxx_personality != NULL)
+			return cxx_personality(ms_exc, this_frame,
 			    ms_orig_context, ms_disp);
 	}
 

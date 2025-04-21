@@ -17,7 +17,7 @@ include buildsys.mk
 utils tests: src
 
 check: tests
-	cd tests && ${MAKE} -s run
+	${MAKE} -C tests -s run
 
 docs:
 	rm -fr docs
@@ -28,7 +28,7 @@ release: docs
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
 	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil*,.git*,objfw.spec' | ofarc -ttgz -xq -
+		--exclude '.fossil-settings*,.github*' | ofarc -ttgz -xq -
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}

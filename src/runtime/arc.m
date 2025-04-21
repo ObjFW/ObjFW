@@ -1,25 +1,36 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
+#ifdef OF_OBJFW_RUNTIME
+# import "ObjFWRT.h"
+# import "private.h"
+#else
+# import "OFObject.h"
+# import "OFMapTable.h"
+#endif
 
-#ifdef OF_HAVE_THREADS
-# import "OFPlainMutex.h"
+#import "pre_ivar.h"
+
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
 #endif
 
 struct WeakRef {
@@ -27,10 +38,66 @@ struct WeakRef {
 	size_t count;
 };
 
-static struct objc_hashtable *hashtable;
+#ifdef OF_OBJFW_RUNTIME
+typedef struct objc_hashtable objc_hashtable;
+
+/* Inlined for performance. */
+static OF_INLINE bool
+object_isTaggedPointer_fast(id object)
+{
+	uintptr_t pointer = (uintptr_t)object;
+
+	return pointer & 1;
+}
+
+/* Inlined and unncessary checks dropped for performance. */
+static OF_INLINE Class
+object_getClass_fast(id object_)
+{
+	struct objc_object *object = (struct objc_object *)object_;
+
+	return object->isa;
+}
+#else
+typedef OFMapTable objc_hashtable;
+static const OFMapTableFunctions defaultFunctions = { NULL };
+
+static OF_INLINE objc_hashtable *
+objc_hashtable_new(uint32_t (*hash)(const void *key),
+    bool (*equal)(const void *key1, const void *key2), uint32_t size)
+{
+	return [[OFMapTable alloc] initWithKeyFunctions: defaultFunctions
+					objectFunctions: defaultFunctions];
+}
+
+static OF_INLINE void
+objc_hashtable_set(objc_hashtable *hashtable, const void *key,
+    const void *object)
+{
+	return [hashtable setObject: (void *)object forKey: (void *)key];
+}
+
+static OF_INLINE void *
+objc_hashtable_get(objc_hashtable *hashtable, const void *key)
+{
+	return [hashtable objectForKey: (void *)key];
+}
+
+static OF_INLINE void
+objc_hashtable_delete(objc_hashtable *hashtable, const void *key)
+{
+	[hashtable removeObjectForKey: (void *)key];
+}
+
+# define OBJC_ERROR(...) abort()
+# define object_isTaggedPointer(obj) 0
+#endif
+
 #ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
 static OFSpinlock spinlock;
 #endif
+static objc_hashtable *hashtable;
 
 static uint32_t
 hash(const void *object)
@@ -57,6 +124,14 @@ OF_CONSTRUCTOR()
 id
 objc_retain(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object_isTaggedPointer_fast(object) || object == nil)
+		return object;
+
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootRetain(object);
+#endif
+
 	return [object retain];
 }
 
@@ -69,18 +144,44 @@ objc_retainBlock(id block)
 id
 objc_retainAutorelease(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object_isTaggedPointer_fast(object) || object == nil)
+		return object;
+
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(_objc_rootRetain(object));
+#endif
+
 	return [[object retain] autorelease];
 }
 
 void
 objc_release(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object_isTaggedPointer_fast(object) || object == nil)
+		return;
+
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR) {
+		_objc_rootRelease(object);
+		return;
+	}
+#endif
+
 	[object release];
 }
 
 id
 objc_autorelease(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object_isTaggedPointer_fast(object) || object == nil)
+		return object;
+
+	if (object_getClass_fast(object)->info & OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(object);
+#endif
+
 	return [object autorelease];
 }
 
@@ -155,7 +256,15 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct WeakRef *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref;
+
+#if defined(OF_HAVE_ATOMIC_OPS) && \
+    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+		OFAtomicIntOr(&OBJC_PRE_IVARS(value)->info,
+		    OBJC_OBJECT_INFO_WEAK_REFERENCES);
+#endif
+
+		ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
@@ -267,6 +376,15 @@ void
 objc_zeroWeakReferences(id value)
 {
 	struct WeakRef *ref;
+
+#if defined(OF_HAVE_ATOMIC_OPS) && \
+    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+	OFReleaseMemoryBarrier();
+
+	if (value != nil && !object_isTaggedPointer(value) &&
+	    !(OBJC_PRE_IVARS(value)->info & OBJC_OBJECT_INFO_WEAK_REFERENCES))
+		return;
+#endif
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)

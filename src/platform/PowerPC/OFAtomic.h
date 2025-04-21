@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 static OF_INLINE int
@@ -22,8 +26,9 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -39,8 +44,9 @@ OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -56,8 +62,9 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "add	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -73,8 +80,9 @@ OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -90,8 +98,9 @@ OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -107,8 +116,9 @@ OFAtomicPointerSubtract(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "sub	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -126,8 +136,8 @@ OFAtomicIntIncrease(volatile int *_Nonnull p)
 	    "addi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -145,8 +155,8 @@ OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
 	    "addi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -164,8 +174,8 @@ OFAtomicIntDecrease(volatile int *_Nonnull p)
 	    "subi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -183,8 +193,8 @@ OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 	    "subi	%0, %0, 1\n\t"
 	    "stwcx.	%0, 0, %1\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(p)
+	    : "=&r" (i)
+	    : "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -200,8 +210,9 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "or		%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -217,8 +228,9 @@ OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "or		%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -234,8 +246,9 @@ OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "and	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -251,8 +264,9 @@ OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "and	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -268,8 +282,9 @@ OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "xor	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -285,8 +300,9 @@ OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "xor	%0, %0, %1\n\t"
 	    "stwcx.	%0, 0, %2\n\t"
 	    "bne-	0b"
-	    : "=&r"(i)
-	    : "r"(i), "r"(p)
+	    : "=&r" (i)
+	    : "r" (i),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -311,8 +327,10 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -337,8 +355,10 @@ OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -364,8 +384,10 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 	    "stwcx.	%0, 0, %3\n\t"
 	    "li		%0, 0\n\t"
 	    "2:"
-	    : "=&r"(r)
-	    : "r"(o), "r"(n), "r"(p)
+	    : "=&r" (r)
+	    : "r" (o),
+	      "r" (n),
+	      "r" (p)
 	    : "cc", "memory"
 	);
 
@@ -376,7 +398,7 @@ static OF_INLINE void
 OFMemoryBarrier(void)
 {
 	__asm__ __volatile__ (
-	    ".long 0x7C2004AC /* lwsync */" ::: "memory"
+	    ".long 0x7C0004AC /* sync */" ::: "memory"
 	);
 }
 

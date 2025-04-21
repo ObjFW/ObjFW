@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -30,6 +34,7 @@
 #endif
 
 #import "OFString.h"
+#import "OFString+Private.h"
 #import "OFASPrintF.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
@@ -41,9 +46,11 @@
 #endif
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFLocale.h"
 #import "OFStream.h"
 #import "OFSystemInfo.h"
+#import "OFTaggedPointerString.h"
 #import "OFUTF8String.h"
 #import "OFUTF8String+Private.h"
 
@@ -85,46 +92,58 @@ static struct {
 static locale_t cLocale;
 #endif
 
-@interface OFString ()
+#ifdef OF_OBJFW_RUNTIME
+# if UINTPTR_MAX == UINT64_MAX
+#  define MAX_TAGGED_POINTER_LENGTH 8
+# else
+#  define MAX_TAGGED_POINTER_LENGTH 4
+# endif
+#endif
+
+OF_DIRECT_MEMBERS
+@interface OFString () <OFJSONRepresentationPrivate>
 - (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (OFStringEncoding)encoding
-		  lossy: (bool)lossy OF_DIRECT;
+		  lossy: (bool)lossy
+	       insecure: (bool)insecure;
 - (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
-				 lossy: (bool)lossy OF_DIRECT;
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+				 lossy: (bool)lossy
+			      insecure: (bool)insecure;
 @end
 
 @interface OFPlaceholderString: OFString
 @end
 
-extern bool OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToKOI8R(const OFUnichar *, unsigned char *,
-    size_t, bool);
-extern bool OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
-    size_t, bool);
+extern bool _OFUnicodeToISO8859_2(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToISO8859_3(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToISO8859_15(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToWindows1250(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToWindows1251(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToWindows1252(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToCodepage437(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToCodepage850(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToCodepage852(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToCodepage858(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToMacRoman(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToKOI8R(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
+extern bool _OFUnicodeToKOI8U(const OFUnichar *, unsigned char *,
+    size_t, bool, bool);
 
 /* References for static linking */
-void
+void OF_VISIBILITY_INTERNAL
 _references_to_categories_of_OFString(void)
 {
 	_OFString_CryptographicHashing_reference = 1;
@@ -138,7 +157,7 @@ _references_to_categories_of_OFString(void)
 	_OFString_XMLUnescaping_reference = 1;
 }
 
-void
+void OF_VISIBILITY_INTERNAL
 _reference_to_OFConstantString(void)
 {
 	[OFConstantString class];
@@ -168,6 +187,10 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"iso-8859-15"] ||
 	    [string isEqual: @"iso_8859-15"])
 		encoding = OFStringEncodingISO8859_15;
+	else if ([string isEqual: @"windows-1250"] ||
+	    [string isEqual: @"cp1250"] || [string isEqual: @"cp-1250"] ||
+	    [string isEqual: @"1250"])
+		encoding = OFStringEncodingWindows1250;
 	else if ([string isEqual: @"windows-1251"] ||
 	    [string isEqual: @"cp1251"] || [string isEqual: @"cp-1251"] ||
 	    [string isEqual: @"1251"])
@@ -182,6 +205,9 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"cp850"] || [string isEqual: @"cp-850"] ||
 	    [string isEqual: @"ibm850"] || [string isEqual: @"850"])
 		encoding = OFStringEncodingCodepage850;
+	else if ([string isEqual: @"cp852"] || [string isEqual: @"cp-852"] ||
+	    [string isEqual: @"ibm852"] || [string isEqual: @"852"])
+		encoding = OFStringEncodingCodepage852;
 	else if ([string isEqual: @"cp858"] || [string isEqual: @"cp-858"] ||
 	    [string isEqual: @"ibm858"] || [string isEqual: @"858"])
 		encoding = OFStringEncodingCodepage858;
@@ -215,6 +241,8 @@ OFStringEncodingName(OFStringEncoding encoding)
 		return @"ISO 8859-3";
 	case OFStringEncodingISO8859_15:
 		return @"ISO 8859-15";
+	case OFStringEncodingWindows1250:
+		return @"Windows-1250";
 	case OFStringEncodingWindows1251:
 		return @"Windows-1251";
 	case OFStringEncodingWindows1252:
@@ -223,6 +251,8 @@ OFStringEncodingName(OFStringEncoding encoding)
 		return @"Codepage 437";
 	case OFStringEncodingCodepage850:
 		return @"Codepage 850";
+	case OFStringEncodingCodepage852:
+		return @"Codepage 852";
 	case OFStringEncodingCodepage858:
 		return @"Codepage 858";
 	case OFStringEncodingMacRoman:
@@ -239,7 +269,7 @@ OFStringEncodingName(OFStringEncoding encoding)
 }
 
 size_t
-OFUTF8StringEncode(OFUnichar character, char *buffer)
+_OFUTF8StringEncode(OFUnichar character, char *buffer)
 {
 	if (character < 0x80) {
 		buffer[0] = character;
@@ -265,7 +295,7 @@ OFUTF8StringEncode(OFUnichar character, char *buffer)
 }
 
 ssize_t
-OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
+_OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 {
 	const unsigned char *buffer = (const unsigned char *)buffer_;
 
@@ -337,7 +367,7 @@ OFUTF32StringLength(const OFChar32 *string)
 }
 
 char *
-OFStrDup(const char *string)
+_OFStrDup(const char *string)
 {
 	size_t length = strlen(string);
 	char *copy = (char *)OFAllocMemory(1, length + 1);
@@ -345,6 +375,24 @@ OFStrDup(const char *string)
 
 	return copy;
 }
+
+#ifdef OF_OBJFW_RUNTIME
+static bool
+isASCIIWithoutNull(const char *string, size_t length)
+{
+	uint8_t combined = 0;
+	bool containsNull = false;
+
+	for (size_t i = 0; i < length; i++) {
+		combined |= string[i];
+
+		if (string[i] == '\0')
+			containsNull = true;
+	}
+
+	return !(combined & ~0x7F) && !containsNull;
+}
+#endif
 
 @implementation OFPlaceholderString
 #ifdef __clang__
@@ -355,16 +403,30 @@ OFStrDup(const char *string)
 #endif
 - (instancetype)init
 {
-	return (id)[[OFUTF8String alloc] init];
+	return (id)@"";
 }
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 {
+	size_t length = strlen(UTF8String);
 	OFUTF8String *string;
-	size_t length;
 	void *storage;
 
-	length = strlen(UTF8String);
+	if (length == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (length <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCIIWithoutNull(UTF8String, length)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: length];
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
+
 	string = OFAllocObject([OFUTF8String class], length + 1, 1, &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
@@ -377,6 +439,21 @@ OFStrDup(const char *string)
 {
 	OFUTF8String *string;
 	void *storage;
+
+	if (UTF8StringLength == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (UTF8StringLength <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCIIWithoutNull(UTF8String, UTF8StringLength)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: UTF8StringLength];
+
+		if (ret != nil)
+			return ret;
+	}
+#endif
 
 	string = OFAllocObject([OFUTF8String class], UTF8StringLength + 1, 1,
 	    &storage);
@@ -407,12 +484,27 @@ OFStrDup(const char *string)
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (OFStringEncoding)encoding
 {
-	if (encoding == OFStringEncodingUTF8) {
+	if (encoding == OFStringEncodingUTF8 ||
+	    encoding == OFStringEncodingASCII) {
+		size_t length = strlen(cString);
 		OFUTF8String *string;
-		size_t length;
 		void *storage;
 
-		length = strlen(cString);
+		if (length == 0)
+			return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+		if (length <= MAX_TAGGED_POINTER_LENGTH &&
+		    isASCIIWithoutNull(cString, length)) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: cString
+					   length: length];
+
+			if (ret != nil)
+				return ret;
+		}
+#endif
+
 		string = OFAllocObject([OFUTF8String class], length + 1, 1,
 		    &storage);
 
@@ -429,9 +521,25 @@ OFStrDup(const char *string)
 		       encoding: (OFStringEncoding)encoding
 			 length: (size_t)cStringLength
 {
-	if (encoding == OFStringEncodingUTF8) {
+	if (encoding == OFStringEncodingUTF8 ||
+	    encoding == OFStringEncodingASCII) {
 		OFUTF8String *string;
 		void *storage;
+
+		if (cStringLength == 0)
+			return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+		if (cStringLength <= MAX_TAGGED_POINTER_LENGTH &&
+		    isASCIIWithoutNull(cString, cStringLength)) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: cString
+					   length: cStringLength];
+
+			if (ret != nil)
+				return ret;
+		}
+#endif
 
 		string = OFAllocObject([OFUTF8String class], cStringLength + 1,
 		    1, &storage);
@@ -461,6 +569,34 @@ OFStrDup(const char *string)
 - (instancetype)initWithCharacters: (const OFUnichar *)string
 			    length: (size_t)length
 {
+	if (length == 0)
+		return (id)@"";
+
+#ifdef OF_OBJFW_RUNTIME
+	if (length <= MAX_TAGGED_POINTER_LENGTH) {
+		char buffer[MAX_TAGGED_POINTER_LENGTH];
+		bool useTaggedPointer = true;
+
+		for (size_t i = 0; i < length; i++) {
+			if (string[i] >= 0x80 || string[i] == 0) {
+				useTaggedPointer = false;
+				break;
+			}
+
+			buffer[i] = (char)string[i];
+		}
+
+		if (useTaggedPointer) {
+			id ret = [OFTaggedPointerString
+			    stringWithASCIIString: buffer
+					   length: length];
+
+			if (ret != nil)
+				return ret;
+		}
+	}
+#endif
+
 	return (id)[[OFUTF8String alloc] initWithCharacters: string
 						     length: length];
 }
@@ -598,129 +734,143 @@ OF_SINGLETON_METHODS
 
 + (instancetype)string
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)stringWithUTF8String: (const char *)UTF8String
 {
-	return [[[self alloc] initWithUTF8String: UTF8String] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8String: UTF8String]);
 }
 
 + (instancetype)stringWithUTF8String: (const char *)UTF8String
 			      length: (size_t)UTF8StringLength
 {
-	return [[[self alloc]
-	    initWithUTF8String: UTF8String
-			length: UTF8StringLength] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8String: UTF8String
+				      length: UTF8StringLength]);
 }
 
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 			      freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc]
-	    initWithUTF8StringNoCopy: UTF8String
-			freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8StringNoCopy: UTF8String
+				      freeWhenDone: freeWhenDone]);
 }
 
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 				    length: (size_t)UTF8StringLength
 			      freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc]
-	    initWithUTF8StringNoCopy: UTF8String
-			      length: UTF8StringLength
-			freeWhenDone: freeWhenDone] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF8StringNoCopy: UTF8String
+					    length: UTF8StringLength
+				      freeWhenDone: freeWhenDone]);
 }
 
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithCString: cString
-				     encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCString: cString
+				 encoding: encoding]);
 }
 
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (OFStringEncoding)encoding
 			   length: (size_t)cStringLength
 {
-	return [[[self alloc] initWithCString: cString
-				     encoding: encoding
-				       length: cStringLength] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCString: cString
+				 encoding: encoding
+				   length: cStringLength]);
 }
 
 + (instancetype)stringWithData: (OFData *)data
 		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithData: data
-				  encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithData: data
+			      encoding: encoding]);
 }
 
 + (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 + (instancetype)stringWithCharacters: (const OFUnichar *)string
 			      length: (size_t)length
 {
-	return [[[self alloc] initWithCharacters: string
-					  length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCharacters: string
+				      length: length]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 {
-	return [[[self alloc] initWithUTF16String: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 {
-	return [[[self alloc] initWithUTF16String: string
-					   length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				       length: length]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF16String: string
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF16String: (const OFChar16 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF16String: string
-					   length: length
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF16String: string
+				       length: length
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 {
-	return [[[self alloc] initWithUTF32String: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 {
-	return [[[self alloc] initWithUTF32String: string
-					   length: length] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				       length: length]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF32String: string
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithUTF32String: (const OFChar32 *)string
 			       length: (size_t)length
 			    byteOrder: (OFByteOrder)byteOrder
 {
-	return [[[self alloc] initWithUTF32String: string
-					   length: length
-					byteOrder: byteOrder] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUTF32String: string
+				       length: length
+				    byteOrder: byteOrder]);
 }
 
 + (instancetype)stringWithFormat: (OFConstantString *)format, ...
@@ -729,37 +879,40 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, format);
-	ret = [[[self alloc] initWithFormat: format
-				  arguments: arguments] autorelease];
+	ret = [[self alloc] initWithFormat: format arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 {
-	return [[[self alloc] initWithContentsOfFile: path] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfFile: path]);
 }
 
 + (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfFile: path
-					    encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfFile: path
+					encoding: encoding]);
 }
 #endif
 
 + (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithContentsOfIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfIRI: IRI]);
 }
 
 + (instancetype)stringWithContentsOfIRI: (OFIRI *)IRI
 			       encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithContentsOfIRI: IRI
-					   encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithContentsOfIRI: IRI
+				       encoding: encoding]);
 }
 
 - (instancetype)init
@@ -769,7 +922,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -848,7 +1001,7 @@ OF_SINGLETON_METHODS
 		if (data.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -998,9 +1151,9 @@ OF_SINGLETON_METHODS
 	OFIRI *IRI;
 
 	@try {
-		IRI = [OFIRI fileIRIWithPath: path];
+		IRI = [OFIRI fileIRIWithPath: path isDirectory: false];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1027,7 +1180,7 @@ OF_SINGLETON_METHODS
 	@try {
 		data = [OFData dataWithContentsOfIRI: IRI];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1048,6 +1201,7 @@ OF_SINGLETON_METHODS
 	      maxLength: (size_t)maxLength
 	       encoding: (OFStringEncoding)encoding
 		  lossy: (bool)lossy
+	       insecure: (bool)insecure
 {
 	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
@@ -1058,7 +1212,12 @@ OF_SINGLETON_METHODS
 
 		for (i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = OFUTF8StringEncode(characters[i], buffer);
+			size_t len;
+
+			if OF_UNLIKELY (!insecure && characters[i] == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			len = _OFUTF8StringEncode(characters[i], buffer);
 
 			/*
 			 * Check for one more than the current index, as we
@@ -1094,6 +1253,9 @@ OF_SINGLETON_METHODS
 			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
+			if OF_UNLIKELY (!insecure && characters[i] == 0)
+				@throw [OFInvalidEncodingException exception];
+
 			if OF_UNLIKELY (characters[i] > 0x80) {
 				if (lossy)
 					cString[i] = '?';
@@ -1112,6 +1274,9 @@ OF_SINGLETON_METHODS
 			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
+			if OF_UNLIKELY (!insecure && characters[i] == 0)
+				@throw [OFInvalidEncodingException exception];
+
 			if OF_UNLIKELY (characters[i] > 0xFF) {
 				if (lossy)
 					cString[i] = '?';
@@ -1130,8 +1295,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_2(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToISO8859_2(characters, (unsigned char *)cString,
+		    length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1143,8 +1308,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_3(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToISO8859_3(characters, (unsigned char *)cString,
+		    length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1156,8 +1321,21 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToISO8859_15(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToISO8859_15(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
+#ifdef HAVE_WINDOWS_1250
+	case OFStringEncodingWindows1250:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!_OFUnicodeToWindows1250(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1169,8 +1347,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToWindows1251(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!_OFUnicodeToWindows1251(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1182,8 +1360,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToWindows1252(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!_OFUnicodeToWindows1252(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1195,8 +1373,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage437(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!_OFUnicodeToCodepage437(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1208,8 +1386,21 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage850(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!_OFUnicodeToCodepage850(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
+#ifdef HAVE_CODEPAGE_852
+	case OFStringEncodingCodepage852:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!_OFUnicodeToCodepage852(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1221,8 +1412,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToCodepage858(characters,
-		    (unsigned char *)cString, length, lossy))
+		if (!_OFUnicodeToCodepage858(characters,
+		    (unsigned char *)cString, length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1234,8 +1425,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToMacRoman(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToMacRoman(characters, (unsigned char *)cString,
+		    length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1247,8 +1438,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToKOI8R(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToKOI8R(characters, (unsigned char *)cString,
+		    length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1260,8 +1451,8 @@ OF_SINGLETON_METHODS
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!OFUnicodeToKOI8U(characters, (unsigned char *)cString,
-		    length, lossy))
+		if (!_OFUnicodeToKOI8U(characters, (unsigned char *)cString,
+		    length, lossy, insecure))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1280,7 +1471,8 @@ OF_SINGLETON_METHODS
 	return [self of_getCString: cString
 			 maxLength: maxLength
 			  encoding: encoding
-			     lossy: false];
+			     lossy: false
+			  insecure: false];
 }
 
 - (size_t)getLossyCString: (char *)cString
@@ -1290,11 +1482,13 @@ OF_SINGLETON_METHODS
 	return [self of_getCString: cString
 			 maxLength: maxLength
 			  encoding: encoding
-			     lossy: true];
+			     lossy: true
+			  insecure: false];
 }
 
 - (const char *)of_cStringWithEncoding: (OFStringEncoding)encoding
 				 lossy: (bool)lossy
+			      insecure: (bool)insecure
 {
 	size_t length = self.length;
 	char *cString;
@@ -1310,7 +1504,8 @@ OF_SINGLETON_METHODS
 			    of_getCString: cString
 				maxLength: (length * 4) + 1
 				 encoding: OFStringEncodingUTF8
-				    lossy: lossy];
+				    lossy: lossy
+				 insecure: insecure];
 		} @catch (id e) {
 			OFFreeMemory(cString);
 			@throw e;
@@ -1328,10 +1523,12 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingISO8859_2:
 	case OFStringEncodingISO8859_3:
 	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1250:
 	case OFStringEncodingWindows1251:
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:
 	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage852:
 	case OFStringEncodingCodepage858:
 	case OFStringEncodingMacRoman:
 	case OFStringEncodingKOI8R:
@@ -1342,7 +1539,8 @@ OF_SINGLETON_METHODS
 			cStringLength = [self of_getCString: cString
 						  maxLength: length + 1
 						   encoding: encoding
-						      lossy: lossy];
+						      lossy: lossy
+						   insecure: insecure];
 		} @catch (id e) {
 			OFFreeMemory(cString);
 			@throw e;
@@ -1367,17 +1565,30 @@ OF_SINGLETON_METHODS
 
 - (const char *)cStringWithEncoding: (OFStringEncoding)encoding
 {
-	return [self of_cStringWithEncoding: encoding lossy: false];
+	return [self of_cStringWithEncoding: encoding
+				      lossy: false
+				   insecure: false];
 }
 
 - (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
 {
-	return [self of_cStringWithEncoding: encoding lossy: true];
+	return [self of_cStringWithEncoding: encoding
+				      lossy: true
+				   insecure: false];
+}
+
+- (const char *)insecureCStringWithEncoding: (OFStringEncoding)encoding
+{
+	return [self of_cStringWithEncoding: encoding
+				      lossy: false
+				   insecure: true];
 }
 
 - (const char *)UTF8String
 {
-	return [self cStringWithEncoding: OFStringEncodingUTF8];
+	return [self of_cStringWithEncoding: OFStringEncodingUTF8
+				      lossy: false
+				   insecure: false];
 }
 
 - (size_t)length
@@ -1397,8 +1608,12 @@ OF_SINGLETON_METHODS
 
 		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
-			size_t len = OFUTF8StringEncode(characters[i], buffer);
+			size_t len;
 
+			if (characters[i] == 0)
+				@throw [OFInvalidArgumentException exception];
+
+			len = _OFUTF8StringEncode(characters[i], buffer);
 			if (len == 0)
 				@throw [OFInvalidEncodingException exception];
 
@@ -1411,10 +1626,12 @@ OF_SINGLETON_METHODS
 	case OFStringEncodingISO8859_2:
 	case OFStringEncodingISO8859_3:
 	case OFStringEncodingISO8859_15:
+	case OFStringEncodingWindows1250:
 	case OFStringEncodingWindows1251:
 	case OFStringEncodingWindows1252:
 	case OFStringEncodingCodepage437:
 	case OFStringEncodingCodepage850:
+	case OFStringEncodingCodepage852:
 	case OFStringEncodingCodepage858:
 	case OFStringEncodingMacRoman:
 	case OFStringEncodingKOI8R:
@@ -1435,8 +1652,7 @@ OF_SINGLETON_METHODS
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getCharacters: (OFUnichar *)buffer
-	      inRange: (OFRange)range
+- (void)getCharacters: (OFUnichar *)buffer inRange: (OFRange)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self characterAtIndex: range.location + i];
@@ -1479,7 +1695,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -1550,16 +1766,16 @@ OF_SINGLETON_METHODS
 		OFUnichar oc = otherCharacters[i];
 
 #ifdef OF_HAVE_UNICODE_TABLES
-		if (c >> 8 < OFUnicodeCaseFoldingTableSize) {
+		if (c >> 8 < _OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    OFUnicodeCaseFoldingTable[c >> 8][c & 0xFF];
+			    _OFUnicodeCaseFoldingTable[c >> 8][c & 0xFF];
 
 			if (tc)
 				c = tc;
 		}
-		if (oc >> 8 < OFUnicodeCaseFoldingTableSize) {
+		if (oc >> 8 < _OFUnicodeCaseFoldingTableSize) {
 			OFUnichar tc =
-			    OFUnicodeCaseFoldingTable[oc >> 8][oc & 0xFF];
+			    _OFUnicodeCaseFoldingTable[oc >> 8][oc & 0xFF];
 
 			if (tc)
 				oc = tc;
@@ -1612,7 +1828,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)description
 {
-	return [[self copy] autorelease];
+	return objc_autoreleaseReturnValue([self copy]);
 }
 
 - (OFString *)JSONRepresentation
@@ -1630,7 +1846,7 @@ OF_SINGLETON_METHODS
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
 			       depth: (size_t)depth
 {
-	OFMutableString *JSON = [[self mutableCopy] autorelease];
+	OFMutableString *JSON = objc_autorelease([self mutableCopy]);
 
 	/* FIXME: This is slow! Write it in pure C! */
 	[JSON replaceOccurrencesOfString: @"\\" withString: @"\\\\"];
@@ -1642,9 +1858,10 @@ OF_SINGLETON_METHODS
 
 	if (options & OFJSONRepresentationOptionJSON5) {
 		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\\n"];
+		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\0"];
 
 		if (options & OFJSONRepresentationOptionIsIdentifier) {
-			const char *cString = self.UTF8String;
+			const char *cString = JSON.UTF8String;
 
 			if ((!OFASCIIIsAlpha(cString[0]) &&
 			    cString[0] != '_' && cString[0] != '$') ||
@@ -1658,6 +1875,7 @@ OF_SINGLETON_METHODS
 		}
 	} else {
 		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\n"];
+		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\u0000"];
 
 		[JSON insertString: @"\"" atIndex: 0];
 		[JSON appendString: @"\""];
@@ -1704,7 +1922,8 @@ OF_SINGLETON_METHODS
 	} else
 		@throw [OFOutOfRangeException exception];
 
-	[data addItems: self.UTF8String count: length];
+	[data addItems: [self insecureCStringWithEncoding: OFStringEncodingUTF8]
+		 count: length];
 
 	return data;
 }
@@ -1783,24 +2002,24 @@ OF_SINGLETON_METHODS
 	return OFMakeRange(OFNotFound, 0);
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: 0
 				       range: OFMakeRange(0, self.length)];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
 {
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: options
 				       range: OFMakeRange(0, self.length)];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
-			    range: (OFRange)range
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
+			     range: (OFRange)range
 {
 	bool (*characterIsMember)(id, SEL, OFUnichar) =
 	    (bool (*)(id, SEL, OFUnichar))[characterSet
@@ -1808,7 +2027,7 @@ OF_SINGLETON_METHODS
 	OFUnichar *characters;
 
 	if (range.length == 0)
-		return OFNotFound;
+		return OFMakeRange(OFNotFound, 0);
 
 	if (range.length > SIZE_MAX / sizeof(OFUnichar))
 		@throw [OFOutOfRangeException exception];
@@ -1822,7 +2041,8 @@ OF_SINGLETON_METHODS
 				if (characterIsMember(characterSet,
 				    @selector(characterIsMember:),
 				    characters[i]))
-					return range.location + i;
+					return OFMakeRange(
+					    range.location + i, 1);
 
 				/* No match and we're at the last character */
 				if (i == 0)
@@ -1833,13 +2053,40 @@ OF_SINGLETON_METHODS
 				if (characterIsMember(characterSet,
 				    @selector(characterIsMember:),
 				    characters[i]))
-					return range.location + i;
+					return OFMakeRange(
+					    range.location + i, 1);
 		}
 	} @finally {
 		OFFreeMemory(characters);
 	}
 
-	return OFNotFound;
+	return OFMakeRange(OFNotFound, 0);
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+{
+	return [self
+	    rangeOfCharacterFromSet: characterSet
+			    options: 0
+			      range: OFMakeRange(0, self.length)].location;
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (OFStringSearchOptions)options
+{
+	return [self
+	    rangeOfCharacterFromSet: characterSet
+			    options: options
+			      range: OFMakeRange(0, self.length)].location;
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (OFStringSearchOptions)options
+			    range: (OFRange)range
+{
+	return [self rangeOfCharacterFromSet: characterSet
+				     options: options
+				       range: range].location;
 }
 
 - (bool)containsString: (OFString *)string
@@ -1897,7 +2144,7 @@ OF_SINGLETON_METHODS
 			length: range.length];
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByAppendingString: (OFString *)string
@@ -1936,7 +2183,7 @@ OF_SINGLETON_METHODS
 - (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
 					withString: (OFString *)replacement
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new replaceOccurrencesOfString: string withString: replacement];
 	[new makeImmutable];
 	return new;
@@ -1947,7 +2194,7 @@ OF_SINGLETON_METHODS
 					   options: (int)options
 					     range: (OFRange)range
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new replaceOccurrencesOfString: string
 			     withString: replacement
 				options: options
@@ -1958,7 +2205,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)uppercaseString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new uppercase];
 	[new makeImmutable];
 	return new;
@@ -1966,7 +2213,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)lowercaseString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new lowercase];
 	[new makeImmutable];
 	return new;
@@ -1974,7 +2221,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)capitalizedString
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new capitalize];
 	[new makeImmutable];
 	return new;
@@ -1982,7 +2229,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingLeadingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteLeadingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -1990,7 +2237,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingTrailingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteTrailingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -1998,7 +2245,7 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByDeletingEnclosingWhitespaces
 {
-	OFMutableString *new = [[self mutableCopy] autorelease];
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteEnclosingWhitespaces];
 	[new makeImmutable];
 	return new;
@@ -2092,7 +2339,7 @@ OF_SINGLETON_METHODS
 	delimiterCharacters = delimiter.characters;
 
 	if (delimiterLength > length) {
-		[array addObject: [[self copy] autorelease]];
+		[array addObject: objc_autorelease([self copy])];
 		[array makeImmutable];
 
 		objc_autoreleasePoolPop(pool);
@@ -2172,91 +2419,13 @@ OF_SINGLETON_METHODS
 	return array;
 }
 
-- (long long)longLongValue
-{
-	return [self longLongValueWithBase: 10];
-}
-
-- (long long)longLongValueWithBase: (unsigned char)base
+static long long
+longLongValueWithBase(OFString *self, unsigned char base, long long min,
+    long long max)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
 	bool negative = false;
-	long long value = 0;
-
-	while (OFASCIIIsSpace(*UTF8String))
-		UTF8String++;
-
-	switch (*UTF8String) {
-	case '-':
-		negative = true;
-	case '+':
-		UTF8String++;
-	}
-
-	if (UTF8String[0] == '0') {
-		if (UTF8String[1] == 'x') {
-			if (base == 0)
-				base = 16;
-
-			if (base != 16 || UTF8String[2] == '\0')
-				@throw [OFInvalidFormatException exception];
-
-			UTF8String += 2;
-		} else {
-			if (base == 0)
-				base = 8;
-
-			UTF8String++;
-		}
-	}
-
-	if (base == 0)
-		base = 10;
-
-	while (*UTF8String != '\0') {
-		unsigned char c = OFASCIIToUpper(*UTF8String++);
-
-		if (c >= '0' && c <= '9')
-			c -= '0';
-		else if (c >= 'A' && c <= 'Z')
-			c -= ('A' - 10);
-		else if (OFASCIIIsSpace(c)) {
-			while (*UTF8String != '\0')
-				if (!OFASCIIIsSpace(*UTF8String++))
-					@throw [OFInvalidFormatException
-					    exception];
-
-			break;
-		} else
-			@throw [OFInvalidFormatException exception];
-
-		if (c >= base)
-			@throw [OFInvalidFormatException exception];
-
-		if (LLONG_MAX / base < value || LLONG_MAX - (value * base) < c)
-			@throw [OFOutOfRangeException exception];
-
-		value = (value * base) + c;
-	}
-
-	if (negative)
-		value *= -1;
-
-	objc_autoreleasePoolPop(pool);
-
-	return value;
-}
-
-- (unsigned long long)unsignedLongLongValue
-{
-	return [self unsignedLongLongValueWithBase: 10];
-}
-
-- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
-{
-	void *pool = objc_autoreleasePoolPush();
-	const char *UTF8String = self.UTF8String;
 	unsigned long long value = 0;
 
 	while (OFASCIIIsSpace(*UTF8String))
@@ -2264,7 +2433,7 @@ OF_SINGLETON_METHODS
 
 	switch (*UTF8String) {
 	case '-':
-		@throw [OFInvalidFormatException exception];
+		negative = true;
 	case '+':
 		UTF8String++;
 	}
@@ -2318,7 +2487,195 @@ OF_SINGLETON_METHODS
 
 	objc_autoreleasePoolPop(pool);
 
+	if (negative) {
+		if (value > -(unsigned long long)min)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)-value;
+	} else {
+		if (value > (unsigned long long)max)
+			@throw [OFOutOfRangeException exception];
+
+		return (long long)value;
+	}
+}
+
+- (signed char)charValue
+{
+	return (signed char)longLongValueWithBase(
+	    self, 10, SCHAR_MIN, SCHAR_MAX);
+}
+
+- (signed char)charValueWithBase: (unsigned char)base
+{
+	return (signed char)longLongValueWithBase(
+	    self, base, SCHAR_MIN, SCHAR_MAX);
+}
+
+- (short)shortValue
+{
+	return (short)longLongValueWithBase(self, 10, SHRT_MIN, SHRT_MAX);
+}
+
+- (short)shortValueWithBase: (unsigned char)base
+{
+	return (short)longLongValueWithBase(self, base, SHRT_MIN, SHRT_MAX);
+}
+
+- (int)intValue
+{
+	return (int)longLongValueWithBase(self, 10, INT_MIN, INT_MAX);
+}
+
+- (int)intValueWithBase: (unsigned char)base
+{
+	return (int)longLongValueWithBase(self, base, INT_MIN, INT_MAX);
+}
+
+- (long)longValue
+{
+	return (long)longLongValueWithBase(self, 10, LONG_MIN, LONG_MAX);
+}
+
+- (long)longValueWithBase: (unsigned char)base
+{
+	return (long)longLongValueWithBase(self, base, LONG_MIN, LONG_MAX);
+}
+
+- (long long)longLongValue
+{
+	return longLongValueWithBase(self, 10, LLONG_MIN, LLONG_MAX);
+}
+
+- (long long)longLongValueWithBase: (unsigned char)base
+{
+	return longLongValueWithBase(self, base, LLONG_MIN, LLONG_MAX);
+}
+
+static unsigned long long
+unsignedLongLongValueWithBase(OFString *self, unsigned char base,
+    unsigned long long max)
+{
+	void *pool = objc_autoreleasePoolPush();
+	const char *UTF8String = self.UTF8String;
+	unsigned long long value = 0;
+
+	while (OFASCIIIsSpace(*UTF8String))
+		UTF8String++;
+
+	switch (*UTF8String) {
+	case '-':
+		@throw [OFOutOfRangeException exception];
+	case '+':
+		UTF8String++;
+	}
+
+	if (UTF8String[0] == '0') {
+		if (UTF8String[1] == 'x') {
+			if (base == 0)
+				base = 16;
+
+			if (base != 16 || UTF8String[2] == '\0')
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
+		} else {
+			if (base == 0)
+				base = 8;
+
+			UTF8String++;
+		}
+	}
+
+	if (base == 0)
+		base = 10;
+
+	while (*UTF8String != '\0') {
+		unsigned char c = OFASCIIToUpper(*UTF8String++);
+
+		if (c >= '0' && c <= '9')
+			c -= '0';
+		else if (c >= 'A' && c <= 'Z')
+			c -= ('A' - 10);
+		else if (OFASCIIIsSpace(c)) {
+			while (*UTF8String != '\0')
+				if (!OFASCIIIsSpace(*UTF8String++))
+					@throw [OFInvalidFormatException
+					    exception];
+
+			break;
+		} else
+			@throw [OFInvalidFormatException exception];
+
+		if (c >= base)
+			@throw [OFInvalidFormatException exception];
+
+		if (max / base < value || max - (value * base) < c)
+			@throw [OFOutOfRangeException exception];
+
+		value = (value * base) + c;
+	}
+
+	objc_autoreleasePoolPop(pool);
+
 	return value;
+}
+
+- (unsigned char)unsignedCharValue
+{
+	return (unsigned char)unsignedLongLongValueWithBase(
+	    self, 10, UCHAR_MAX);
+}
+
+- (unsigned char)unsignedCharValueWithBase: (unsigned char)base
+{
+	return (unsigned char)unsignedLongLongValueWithBase(
+	    self, base, UCHAR_MAX);
+}
+
+- (unsigned short)unsignedShortValue
+{
+	return (unsigned short)unsignedLongLongValueWithBase(
+	    self, 10, USHRT_MAX);
+}
+
+- (unsigned short)unsignedShortValueWithBase: (unsigned char)base
+{
+	return (unsigned short)unsignedLongLongValueWithBase(
+	    self, base, USHRT_MAX);
+}
+
+- (unsigned int)unsignedIntValue
+{
+	return (unsigned int)unsignedLongLongValueWithBase(self, 10, UINT_MAX);
+}
+
+- (unsigned int)unsignedIntValueWithBase: (unsigned char)base
+{
+	return (unsigned int)unsignedLongLongValueWithBase(
+	    self, base, UINT_MAX);
+}
+
+- (unsigned long)unsignedLongValue
+{
+	return (unsigned long)unsignedLongLongValueWithBase(
+	    self, 10, ULONG_MAX);
+}
+
+- (unsigned long)unsignedLongValueWithBase: (unsigned char)base
+{
+	return (unsigned long)unsignedLongLongValueWithBase(
+	    self, base, ULONG_MAX);
+}
+
+- (unsigned long long)unsignedLongLongValue
+{
+	return unsignedLongLongValueWithBase(self, 10, ULLONG_MAX);
+}
+
+- (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
+{
+	return unsignedLongLongValueWithBase(self, base, ULLONG_MAX);
 }
 
 - (float)floatValue
@@ -2340,14 +2697,24 @@ OF_SINGLETON_METHODS
 #if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
-	/*
-	 * If we have no strtof_l, we have no other choice but to replace "."
-	 * with the locale's decimal point.
-	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [self
-	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalSeparator].UTF8String;
+	const char *UTF8String;
+
+	if ([decimalSeparator isEqual: @"."])
+		UTF8String = self.UTF8String;
+	else
+		/*
+		 * If we have no strtof_l, we have no other choice than to
+		 * replace the locale's decimal point with something that will
+		 * be rejected and replacing "." with the locale's decimal
+		 * point.
+		 */
+		UTF8String = [[self
+		    stringByReplacingOccurrencesOfString: decimalSeparator
+					      withString: @"!"]
+		    stringByReplacingOccurrencesOfString: @"."
+					      withString: decimalSeparator]
+		    .UTF8String;
 #endif
 	char *endPtr = NULL;
 	float value;
@@ -2397,14 +2764,24 @@ OF_SINGLETON_METHODS
 #if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
 	const char *UTF8String = self.UTF8String;
 #else
-	/*
-	 * If we have no strtod_l, we have no other choice but to replace "."
-	 * with the locale's decimal point.
-	 */
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
-	const char *UTF8String = [self
-	    stringByReplacingOccurrencesOfString: @"."
-				      withString: decimalSeparator].UTF8String;
+	const char *UTF8String;
+
+	if ([decimalSeparator isEqual: @"."])
+		UTF8String = self.UTF8String;
+	else
+		/*
+		 * If we have no strtod_l, we have no other choice than to
+		 * replace the locale's decimal point with something that will
+		 * be rejected and replacing "." with the locale's decimal
+		 * point.
+		 */
+		UTF8String = [[self
+		    stringByReplacingOccurrencesOfString: decimalSeparator
+					      withString: @"!"]
+		    stringByReplacingOccurrencesOfString: @"."
+					      withString: decimalSeparator]
+		    .UTF8String;
 #endif
 	char *endPtr = NULL;
 	double value;
@@ -2479,7 +2856,7 @@ OF_SINGLETON_METHODS
 	for (size_t i = 0; i < length; i++) {
 		OFUnichar c = characters[i];
 
-		if (c > 0x10FFFF) {
+		if (c > 0x10FFFF || c == 0) {
 			OFFreeMemory(buffer);
 			@throw [OFInvalidEncodingException exception];
 		}
@@ -2554,9 +2931,13 @@ OF_SINGLETON_METHODS
 		[self getCharacters: buffer inRange: OFMakeRange(0, length)];
 		buffer[length] = 0;
 
-		if (byteOrder != OFByteOrderNative)
-			for (size_t i = 0; i < length; i++)
+		for (size_t i = 0; i < length; i++) {
+			if (buffer[i] == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			if (byteOrder != OFByteOrderNative)
 				buffer[i] = OFByteSwap32(buffer[i]);
+		}
 
 		ret = [[OFData dataWithItemsNoCopy: buffer
 					     count: length + 1
@@ -2577,11 +2958,11 @@ OF_SINGLETON_METHODS
 	    [OFData dataWithItems: [self cStringWithEncoding: encoding]
 			    count: [self cStringLengthWithEncoding: encoding]];
 
-	[data retain];
+	objc_retain(data);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [data autorelease];
+	return objc_autoreleaseReturnValue(data);
 }
 
 #ifdef OF_WINDOWS

@@ -1,119 +1,179 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module;
+#import "OFEmbeddedIRIHandler.h"
 
-@implementation TestsAppDelegate (OFINIFileTests)
-- (void)INIFileTests
+@interface OFINIFileTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *output = @"[tests]\r\n"
+	OFINIFile *_file;
+}
+@end
+
+@implementation OFINIFileTests
+- (void)setUp
+{
+	OFIRI *IRI;
+
+	[super setUp];
+
+	IRI = [OFIRI IRIWithString: @"embedded:testfile.ini"];
+	_file = [[OFINIFile alloc] initWithIRI: IRI
+				      encoding: OFStringEncodingISO8859_1];
+}
+
+- (void)dealloc
+{
+	objc_release(_file);
+
+	[super dealloc];
+}
+
+- (void)testSectionForName
+{
+	OTAssertNotNil([_file sectionForName: @"tests"]);
+	OTAssertNotNil([_file sectionForName: @"foobar"]);
+	OTAssertNotNil([_file sectionForName: @"types"]);
+}
+
+- (void)testStringValueForKey
+{
+	OTAssertEqualObjects(
+	    [[_file sectionForName: @"tests"] stringValueForKey: @"foo"],
+	    @"bar");
+
+	OTAssertEqualObjects([[_file sectionForName: @"foobar"]
+	    stringValueForKey: @"quxquxqux"],
+	    @"hello\"wörld");
+}
+
+- (void)testLongLongValueForKeyDefaultValue
+{
+	OTAssertEqual([[_file sectionForName: @"types"]
+	    longLongValueForKey: @"integer"
+		   defaultValue: 2],
+	    -0x20);
+}
+
+- (void)testUnsignedLongLongValueForKeyDefaultValue
+{
+	OTAssertEqual([[_file sectionForName: @"types"]
+	    unsignedLongLongValueForKey: @"unsigned"
+			   defaultValue: 2],
+	    0x20);
+}
+
+- (void)testUnsignedLongLongValueThrowsForNegative
+{
+	OTAssertThrowsSpecific([[_file sectionForName: @"types"]
+	    unsignedLongLongValueForKey: @"integer"
+			   defaultValue: 2],
+	    OFOutOfRangeException);
+}
+
+- (void)testBoolValueForKeyDefaultValue
+{
+	OTAssertTrue([[_file sectionForName: @"types"]
+	    boolValueForKey: @"bool"
+	       defaultValue: false]);
+}
+
+- (void)testFloatValueForKeyDefaultValue
+{
+	OTAssertEqual([[_file sectionForName: @"types"]
+	    floatValueForKey: @"float"
+		defaultValue: 1],
+	    0.5f);
+}
+
+- (void)testDoubleValueForKeyDefaultValue
+{
+	OTAssertEqual([[_file sectionForName: @"types"]
+	    doubleValueForKey: @"double"
+		 defaultValue: 3],
+	    0.25);
+}
+
+- (void)testArrayValueForKey
+{
+	OFINISection *types = [_file sectionForName: @"types"];
+	OFArray *array = [OFArray arrayWithObjects: @"1", @"2", nil];
+
+	OTAssertEqualObjects([types arrayValueForKey: @"array1"], array);
+	OTAssertEqualObjects([types arrayValueForKey: @"array2"], array);
+	OTAssertEqualObjects([types arrayValueForKey: @"array3"],
+	    [OFArray array]);
+}
+
+- (void)testWriteToIRIEncoding
+{
+	OFString *expectedOutput = @"; Comment in global section\r\n"
+	    @"global=yes\r\n"
+	    @"\r\n"
+	    @"[tests]\r\n"
 	    @"foo=baz\r\n"
 	    @"foobar=baz\r\n"
 	    @";comment\r\n"
 	    @"new=new\r\n"
+	    @"\"#quoted\"=\";comment\"\r\n"
 	    @"\r\n"
 	    @"[foobar]\r\n"
-	    @";foobarcomment\r\n"
+	    @"#foobarcomment\r\n"
 	    @"qux=\" asd\"\r\n"
 	    @"quxquxqux=\"hello\\\"wörld\"\r\n"
-	    @"qux2=\"a\\f\"\r\n"
-	    @"qux3=a\fb\r\n"
+	    @"qux2=\"a\\n\"\r\n"
+	    @"\"asd=asd\"=foobar\r\n"
+	    @"qux3=\"a\\fb\"\r\n"
 	    @"\r\n"
 	    @"[types]\r\n"
-	    @"integer=16\r\n"
+	    @"integer=-16\r\n"
+	    @"unsigned=16\r\n"
 	    @"bool=false\r\n"
 	    @"float=0.25\r\n"
 	    @"array1=foo\r\n"
 	    @"array1=bar\r\n"
 	    @"double=0.75\r\n";
-	OFIRI *IRI;
-	OFINIFile *file;
-	OFINICategory *tests, *foobar, *types;
-	OFArray *array;
+	OFINISection *tests = [_file sectionForName: @"tests"];
+	OFINISection *foobar = [_file sectionForName: @"foobar"];
+	OFINISection *types = [_file sectionForName: @"types"];
+	OFArray *array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
 	OFIRI *writeIRI;
 #endif
 
-	module = @"OFINIFile";
+	[tests setStringValue: @"baz" forKey: @"foo"];
+	[tests setStringValue: @"new" forKey: @"new"];
+	[tests setStringValue: @";comment" forKey: @"#quoted"];
+	[foobar setStringValue: @"a\fb" forKey: @"qux3"];
+	[types setLongLongValue: -0x10 forKey: @"integer"];
+	[types setUnsignedLongLongValue: 0x10 forKey: @"unsigned"];
+	[types setBoolValue: false forKey: @"bool"];
+	[types setFloatValue: 0.25f forKey: @"float"];
+	[types setDoubleValue: 0.75 forKey: @"double"];
+	[types setArrayValue: array forKey: @"array1"];
 
-	IRI = [OFIRI IRIWithString: @"embedded:testfile.ini"];
-	TEST(@"+[fileWithIRI:encoding:]",
-	    (file = [OFINIFile fileWithIRI: IRI
-				  encoding: OFStringEncodingCodepage437]))
-
-	tests = [file categoryForName: @"tests"];
-	foobar = [file categoryForName: @"foobar"];
-	types = [file categoryForName: @"types"];
-	TEST(@"-[categoryForName:]",
-	    tests != nil && foobar != nil && types != nil)
-
-	module = @"OFINICategory";
-
-	TEST(@"-[stringValueForKey:]",
-	    [[tests stringValueForKey: @"foo"] isEqual: @"bar"] &&
-	    [[foobar stringValueForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
-
-	TEST(@"-[setStringValue:forKey:]",
-	    R([tests setStringValue: @"baz" forKey: @"foo"]) &&
-	    R([tests setStringValue: @"new" forKey: @"new"]) &&
-	    R([foobar setStringValue: @"a\fb" forKey: @"qux3"]))
-
-	TEST(@"-[longLongValueForKey:defaultValue:]",
-	    [types longLongValueForKey: @"integer" defaultValue: 2] == 0x20)
-
-	TEST(@"-[setLongLongValue:forKey:]",
-	    R([types setLongLongValue: 0x10 forKey: @"integer"]))
-
-	TEST(@"-[boolValueForKey:defaultValue:]",
-	    [types boolValueForKey: @"bool" defaultValue: false] == true)
-
-	TEST(@"-[setBoolValue:forKey:]",
-	    R([types setBoolValue: false forKey: @"bool"]))
-
-	TEST(@"-[floatValueForKey:defaultValue:]",
-	    [types floatValueForKey: @"float" defaultValue: 1] == 0.5f)
-
-	TEST(@"-[setFloatValue:forKey:]",
-	    R([types setFloatValue: 0.25f forKey: @"float"]))
-
-	TEST(@"-[doubleValueForKey:defaultValue:]",
-	    [types doubleValueForKey: @"double" defaultValue: 3] == 0.25)
-
-	TEST(@"-[setDoubleValue:forKey:]",
-	    R([types setDoubleValue: 0.75 forKey: @"double"]))
-
-	array = [OFArray arrayWithObjects: @"1", @"2", nil];
-	TEST(@"-[arrayValueForKey:]",
-	    [[types arrayValueForKey: @"array1"] isEqual: array] &&
-	    [[types arrayValueForKey: @"array2"] isEqual: array] &&
-	    [[types arrayValueForKey: @"array3"] isEqual: [OFArray array]])
-
-	array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
-	TEST(@"-[setArrayValue:forKey:]",
-	    R([types setArrayValue: array forKey: @"array1"]))
-
-	TEST(@"-[removeValueForKey:]",
-	    R([foobar removeValueForKey: @"quxqux "]) &&
-	    R([types removeValueForKey: @"array2"]))
-
-	module = @"OFINIFile";
+	[foobar removeValueForKey: @"quxqux "];
+	[types removeValueForKey: @"array2"];
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_DS)
@@ -122,17 +182,20 @@ static OFString *module;
 		writeIRI = [[OFFileManager defaultManager] currentDirectoryIRI];
 	writeIRI = [writeIRI IRIByAppendingPathComponent: @"objfw-tests.ini"
 					     isDirectory: false];
-	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToIRI: writeIRI
-		      encoding: OFStringEncodingCodepage437]) &&
-	    [[OFString stringWithContentsOfIRI: writeIRI
-				      encoding: OFStringEncodingCodepage437]
-	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtIRI: writeIRI];
-#else
-	(void)output;
-#endif
 
-	objc_autoreleasePoolPop(pool);
+	[_file writeToIRI: writeIRI
+		 encoding: OFStringEncodingISO8859_1];
+
+	@try {
+		OTAssertEqualObjects([OFString
+		    stringWithContentsOfIRI: writeIRI
+				   encoding: OFStringEncodingISO8859_1],
+		    expectedOutput);
+	} @finally {
+		[[OFFileManager defaultManager] removeItemAtIRI: writeIRI];
+	}
+#else
+	(void)expectedOutput;
+#endif
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef OBJFW_MACROS_H
@@ -34,6 +38,8 @@
 #include <string.h>
 
 #include <sys/time.h>
+
+/** @file */
 
 #include "platform.h"
 
@@ -93,6 +99,14 @@
 # define OF_CONST_FUNC __attribute__((__const__))
 # define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
+# if defined(OF_ELF) || defined(OF_MACHO)
+#  define OF_VISIBILITY_HIDDEN __attribute__((__visibility__("hidden")))
+#  define OF_VISIBILITY_INTERNAL __attribute__((__visibility__("internal")))
+# else
+#  define OF_VISIBILITY_HIDDEN
+#  define OF_VISIBILITY_INTERNAL
+# endif
+# define OF_MALLOC_FUNC __attribute__((__malloc__))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) (cond)
@@ -100,25 +114,34 @@
 # define OF_CONST_FUNC
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)
+# define OF_VISIBILITY_HIDDEN
+# define OF_VISIBILITY_INTERNAL
+# define OF_MALLOC_FUNC
 #endif
 
 #if __STDC_VERSION__ >= 201112L
+# define OF_ALIGN(size) _Alignas(size)
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
 #else
+# define OF_ALIGN(size) __attribute__((__aligned__(size)))
 # define OF_ALIGNOF(type) __alignof__(type)
-# define OF_ALIGNAS(type) __attribute__((__aligned__(__alignof__(type))))
+# define OF_ALIGNAS(type) OF_ALIGN(OF_ALIGNOF(type))
 #endif
 
-#if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
-# define OF_BIGGEST_ALIGNMENT _Alignof(max_align_t)
+#ifdef __BIGGEST_ALIGNMENT__
+# define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
 #else
-# ifdef __BIGGEST_ALIGNMENT__
-#  define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
-# else
-#  /* Hopefully no arch needs more than 16 byte alignment */
-#  define OF_BIGGEST_ALIGNMENT 16
-# endif
+/* Hopefully no arch needs more than 16 byte alignment */
+# define OF_BIGGEST_ALIGNMENT 16
+#endif
+/*
+ * We use SSE inline assembly on AMD64 and x86, so it must never be smaller
+ * than 16.
+ */
+#if (defined(OF_AMD64) || defined(OF_X86)) && OF_BIGGEST_ALIGNMENT < 16
+# undef OF_BIGGEST_ALIGNMENT
+# define OF_BIGGEST_ALIGNMENT 16
 #endif
 
 #define OF_PREPROCESSOR_CONCAT2(a, b) a##b
@@ -292,6 +315,17 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
+#if defined(__clang__) || OF_GCC_VERSION >= 405
+# define OF_DEPRECATED(project, major, minor, msg)		\
+    __attribute__((__deprecated__("Deprecated in " #project " "	\
+    #major "." #minor ": " msg)))
+#elif defined(__GNUC__)
+# define OF_DEPRECATED(project, major, minor, msg) \
+    __attribute__((__deprecated__))
+#else
+# define OF_DEPRECATED(project, major, minor, msg)
+#endif
+
 #if __has_attribute(__objc_boxable__)
 # define OF_BOXABLE __attribute__((__objc_boxable__))
 #else
@@ -304,14 +338,23 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
-#if __has_attribute(__objc_direct__) && defined(OF_APPLE_RUNTIME)
-# define OF_DIRECT __attribute__((__objc_direct__))
-#else
+#if defined(OF_APPLE_RUNTIME) || (defined(OF_OBJFW_RUNTIME) && \
+    defined(__clang_major__) && __clang_major__ >= 21)
+# if __has_attribute(__objc_direct__)
+#  define OF_DIRECT __attribute__((__objc_direct__))
+#  define OF_DIRECT_PROPERTY(...) (__VA_ARGS__, direct)
+# endif
+# if __has_attribute(__objc_direct_members__)
+#  define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
+# endif
+#endif
+#ifndef OF_DIRECT
 # define OF_DIRECT
 #endif
-#if __has_attribute(__objc_direct_members__) && defined(OF_APPLE_RUNTIME)
-# define OF_DIRECT_MEMBERS __attribute__((__objc_direct_members__))
-#else
+#ifndef OF_DIRECT_PROPERTY
+# define OF_DIRECT_PROPERTY
+#endif
+#ifndef OF_DIRECT_MEMBERS
 # define OF_DIRECT_MEMBERS
 #endif
 
@@ -330,8 +373,11 @@ extern int *_Nonnull OFErrNo(void);
 #else
 # if defined(OF_ELF)
 #  if defined(OF_AMD64) || defined(OF_X86) || \
-    defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
-    defined(OF_MIPS) || defined(OF_SPARC64) || defined(OF_SPARC)
+    defined(OF_ARM64) || defined(OF_ARM) || \
+    defined(OF_POWERPC) || defined(OF_POWERPC64) || \
+    defined(OF_MIPS64_N64) || defined(OF_MIPS) || \
+    defined(OF_SPARC64) || defined(OF_SPARC) || \
+    defined(OF_RISCV64) || defined(OF_LOONGARCH64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -345,7 +391,7 @@ extern int *_Nonnull OFErrNo(void);
 #   endif
 #  endif
 # elif defined(OF_WINDOWS)
-#  if defined(OF_AMD64) || defined(OF_X86)
+#  if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -366,7 +412,13 @@ extern int *_Nonnull OFErrNo(void);
 	} while(0)
 #else
 @class OFConstantString;
+# ifdef __cplusplus
+extern "C" {
+# endif
 extern void OFLog(OFConstantString *_Nonnull, ...);
+# ifdef __cplusplus
+}
+# endif
 # define OFEnsure(cond)							\
 	do {								\
 		if OF_UNLIKELY (!(cond)) {				\
@@ -391,7 +443,7 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	@try {						\
 		OFMethodNotFound(self, _cmd);		\
 	} @catch (id e) {				\
-		[self release];				\
+		objc_release(self);			\
 		@throw e;				\
 	}						\
 							\
@@ -448,13 +500,13 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16Const(uint16_t i)
+_OFByteSwap16Const(uint16_t i)
 {
 	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32Const(uint32_t i)
+_OFByteSwap32Const(uint32_t i)
 {
 	return (i & UINT32_C(0xFF000000)) >> 24 |
 	    (i & UINT32_C(0x00FF0000)) >> 8 |
@@ -463,7 +515,7 @@ OFByteSwap32Const(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64Const(uint64_t i)
+_OFByteSwap64Const(uint64_t i)
 {
 	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
 	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
@@ -476,27 +528,28 @@ OFByteSwap64Const(uint64_t i)
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC
-OFByteSwap16NonConst(uint16_t i)
+_OFByteSwap16NonConst(uint16_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP16)
 	return __builtin_bswap16(i);
 #elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
-	    "xchgb	%h0, %b0"
-	    : "=Q"(i)
-	    : "0"(i)
+	    "xchg{b}	{ %h0, %b0 | %b0, %h0 }"
+	    : "=Q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lhbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev16	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT16_C(0xFF00)) >> 8 |
@@ -506,27 +559,28 @@ OFByteSwap16NonConst(uint16_t i)
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
-OFByteSwap32NonConst(uint32_t i)
+_OFByteSwap32NonConst(uint32_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP32)
 	return __builtin_bswap32(i);
 #elif (defined(OF_AMD64) || defined(OF_X86)) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=q"(i)
-	    : "0"(i)
+	    : "=q" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_POWERPC) && defined(__GNUC__)
 	__asm__ (
 	    "lwbrx	%0, 0, %1"
-	    : "=r"(i)
-	    : "r"(&i), "m"(i)
+	    : "=r" (i)
+	    : "r" (&i),
+	      "m" (i)
 	);
 #elif defined(OF_ARMV6) && defined(__GNUC__)
 	__asm__ (
 	    "rev	%0, %0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #else
 	i = (i & UINT32_C(0xFF000000)) >> 24 |
@@ -538,101 +592,254 @@ OFByteSwap32NonConst(uint32_t i)
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
-OFByteSwap64NonConst(uint64_t i)
+_OFByteSwap64NonConst(uint64_t i)
 {
 #if defined(OF_HAVE_BUILTIN_BSWAP64)
 	return __builtin_bswap64(i);
 #elif defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "bswap	%0"
-	    : "=r"(i)
-	    : "0"(i)
+	    : "=r" (i)
+	    : "0" (i)
 	);
 #elif defined(OF_X86) && defined(__GNUC__)
 	__asm__ (
-	    "bswap	%%eax\n\t"
-	    "bswap	%%edx\n\t"
-	    "xchgl	%%eax, %%edx"
-	    : "=A"(i)
-	    : "0"(i)
+	    "bswap	{%%}eax\n\t"
+	    "bswap	{%%}edx\n\t"
+	    "xchg{l}	{ %%eax, %%edx | edx, eax }"
+	    : "=A" (i)
+	    : "0" (i)
 	);
 #else
-	i = (uint64_t)OFByteSwap32NonConst(
+	i = (uint64_t)_OFByteSwap32NonConst(
 	    (uint32_t)(i & UINT32_C(0xFFFFFFFF))) << 32 |
-	    OFByteSwap32NonConst((uint32_t)(i >> 32));
+	    _OFByteSwap32NonConst((uint32_t)(i >> 32));
 #endif
 	return i;
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(DOXYGEN)
+/**
+ * @brief Byte swaps the specified 16 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap16(i) \
-    (__builtin_constant_p(i) ? OFByteSwap16Const(i) : OFByteSwap16NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap16Const(i) : _OFByteSwap16NonConst(i))
+
+/**
+ * @brief Byte swaps the specified 32 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap32(i) \
-    (__builtin_constant_p(i) ? OFByteSwap32Const(i) : OFByteSwap32NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap32Const(i) : _OFByteSwap32NonConst(i))
+
+/**
+ * @brief Byte swaps the specified 64 bit integer.
+ *
+ * @param i The integer to byte swap
+ * @return The byte swapped integer
+ */
 # define OFByteSwap64(i) \
-    (__builtin_constant_p(i) ? OFByteSwap64Const(i) : OFByteSwap64NonConst(i))
+    (__builtin_constant_p(i) ? _OFByteSwap64Const(i) : _OFByteSwap64NonConst(i))
 #else
-# define OFByteSwap16(i) OFByteSwap16Const(i)
-# define OFByteSwap32(i) OFByteSwap32Const(i)
-# define OFByteSwap64(i) OFByteSwap64Const(i)
+# define OFByteSwap16(i) _OFByteSwap16Const(i)
+# define OFByteSwap32(i) _OFByteSwap32Const(i)
+# define OFByteSwap64(i) _OFByteSwap64Const(i)
 #endif
 
-static OF_INLINE uint32_t
-OFFloatToRawUInt32(float f)
+/**
+ * @brief Bit-converts the specified float to a uint32_t.
+ *
+ * @param f The float to bit-convert
+ * @return The float bit-converted to a uint32_t
+ */
+static OF_INLINE uint32_t OF_CONST_FUNC
+OFBitConvertFloatToUInt32(float f)
 {
 	uint32_t ret;
 	memcpy(&ret, &f, 4);
 	return ret;
 }
 
-static OF_INLINE float
-OFRawUInt32ToFloat(uint32_t uInt32)
+/**
+ * @brief Bit-converts the specified uint32_t to a float.
+ *
+ * @param uInt32 The uint32_t to bit-convert
+ * @return The uint32_t bit-converted to a float
+ */
+static OF_INLINE float OF_CONST_FUNC
+OFBitConvertUInt32ToFloat(uint32_t uInt32)
 {
 	float ret;
 	memcpy(&ret, &uInt32, 4);
 	return ret;
 }
 
-static OF_INLINE uint64_t
-OFDoubleToRawUInt64(double d)
+/**
+ * @brief Bit-converts the specified double to a uint64_t.
+ *
+ * @param d The double to bit-convert
+ * @return The double bit-converted to a uint64_t
+ */
+static OF_INLINE uint64_t OF_CONST_FUNC
+OFBitConvertDoubleToUInt64(double d)
 {
 	uint64_t ret;
 	memcpy(&ret, &d, 8);
 	return ret;
 }
 
-static OF_INLINE double
-OFRawUInt64ToDouble(uint64_t uInt64)
+/**
+ * @brief Bit-converts the specified uint64_t to a double.
+ *
+ * @param uInt64 The uint64_t to bit-convert
+ * @return The uint64_t bit-converted to a double
+ */
+static OF_INLINE double OF_CONST_FUNC
+OFBitConvertUInt64ToDouble(uint64_t uInt64)
 {
 	double ret;
 	memcpy(&ret, &uInt64, 8);
 	return ret;
 }
 
+/**
+ * @brief Byte swaps the specified float.
+ *
+ * @param f The float to byte swap
+ * @return The byte swapped float
+ */
 static OF_INLINE float OF_CONST_FUNC
 OFByteSwapFloat(float f)
 {
-	return OFRawUInt32ToFloat(OFByteSwap32(OFFloatToRawUInt32(f)));
+	return OFBitConvertUInt32ToFloat(OFByteSwap32(
+	    OFBitConvertFloatToUInt32(f)));
 }
 
+/**
+ * @brief Byte swaps the specified double.
+ *
+ * @param d The double to byte swap
+ * @return The byte swapped double
+ */
 static OF_INLINE double OF_CONST_FUNC
 OFByteSwapDouble(double d)
 {
-	return OFRawUInt64ToDouble(OFByteSwap64(OFDoubleToRawUInt64(d)));
+	return OFBitConvertUInt64ToDouble(OFByteSwap64(
+	    OFBitConvertDoubleToUInt64(d)));
 }
 
-#ifdef OF_BIG_ENDIAN
+#if defined(OF_BIG_ENDIAN) || defined(DOXYGEN)
+/**
+ * @brief Converts the specified 16 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to native endian
+ */
 # define OFFromBigEndian16(i) (i)
+
+/**
+ * @brief Converts the specified 32 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to native endian
+ */
 # define OFFromBigEndian32(i) (i)
+
+/**
+ * @brief Converts the specified 64 bit integer from big endian to native
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to native endian
+ */
 # define OFFromBigEndian64(i) (i)
+
+/**
+ * @brief Converts the specified 16 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to native endian
+ */
 # define OFFromLittleEndian16(i) OFByteSwap16(i)
+
+/**
+ * @brief Converts the specified 32 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to native endian
+ */
 # define OFFromLittleEndian32(i) OFByteSwap32(i)
+
+/**
+ * @brief Converts the specified 64 bit integer from little endian to native
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to native endian
+ */
 # define OFFromLittleEndian64(i) OFByteSwap64(i)
+
+/**
+ * @brief Converts the specified 16 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to big endian
+ */
 # define OFToBigEndian16(i) (i)
+
+/**
+ * @brief Converts the specified 32 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to big endian
+ */
 # define OFToBigEndian32(i) (i)
+
+/**
+ * @brief Converts the specified 64 bit integer from native endian to big
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to big endian
+ */
 # define OFToBigEndian64(i) (i)
+
+/**
+ * @brief Converts the specified 16 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 16 bit integer to convert
+ * @return The 16 bit integer converted to little endian
+ */
 # define OFToLittleEndian16(i) OFByteSwap16(i)
+
+/**
+ * @brief Converts the specified 32 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 32 bit integer to convert
+ * @return The 32 bit integer converted to little endian
+ */
 # define OFToLittleEndian32(i) OFByteSwap32(i)
+
+/**
+ * @brief Converts the specified 64 bit integer from native endian to little
+ *	  endian.
+ *
+ * @param i The 64 bit integer to convert
+ * @return The 64 bit integer converted to little endian
+ */
 # define OFToLittleEndian64(i) OFByteSwap64(i)
 #else
 # define OFFromBigEndian16(i) OFByteSwap16(i)
@@ -649,14 +856,69 @@ OFByteSwapDouble(double d)
 # define OFToLittleEndian64(i) (i)
 #endif
 
-#ifdef OF_FLOAT_BIG_ENDIAN
+#if defined(OF_FLOAT_BIG_ENDIAN) || defined(DOXYGEN)
+/**
+ * @brief Converts the specified float from big endian to native endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to native endian
+ */
 # define OFFromBigEndianFloat(f) (f)
+
+/**
+ * @brief Converts the specified double from big endian to native endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to native endian
+ */
 # define OFFromBigEndianDouble(d) (d)
+
+/**
+ * @brief Converts the specified float from little endian to native endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to native endian
+ */
 # define OFFromLittleEndianFloat(f) OFByteSwapFloat(f)
+
+/**
+ * @brief Converts the specified double from little endian to native endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to native endian
+ */
 # define OFFromLittleEndianDouble(d) OFByteSwapDouble(d)
+
+/**
+ * @brief Converts the specified float from native endian to big endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to big endian
+ */
 # define OFToBigEndianFloat(f) (f)
+
+/**
+ * @brief Converts the specified double from native endian to big endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to big endian
+ */
 # define OFToBigEndianDouble(d) (d)
+
+/**
+ * @brief Converts the specified float from native endian to little endian.
+ *
+ * @param f The float to convert
+ * @return The float converted to little endian
+ */
 # define OFToLittleEndianFloat(f) OFByteSwapFloat(f)
+
+/**
+ * @brief Converts the specified double from native endian to little endian.
+ *
+ * @param d The double to convert
+ * @return The double converted to little endian
+ */
 # define OFToLittleEndianDouble(d) OFByteSwapDouble(d)
 #else
 # define OFFromBigEndianFloat(f) OFByteSwapFloat(f)
@@ -669,36 +931,60 @@ OFByteSwapDouble(double d)
 # define OFToLittleEndianDouble(d) (d)
 #endif
 
+/**
+ * @brief Rotates the specified value left by the specified amount of bits.
+ *
+ * @param value The value to rotate
+ * @param bits The number of bits to rotate left the value by
+ * @return The value rotated left by the specified amount of bits
+ */
 #define OFRotateLeft(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) << ((bits) % (sizeof(value) * 8))) |			\
     ((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
+
+/**
+ * @brief Rotates the specified value right by the specified amount of bits.
+ *
+ * @param value The value to rotate
+ * @param bits The number of bits to rotate right the value by
+ * @return The value rotated right by the specified amount of bits
+ */
 #define OFRotateRight(value, bits)					\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) >> ((bits) % (sizeof(value) * 8))) |			\
     ((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
     : (value))
 
+/**
+ * @brief Rounds up the specified value to the specified power of two.
+ *
+ * @param pow2 The power of 2 to round up to
+ * @param value The value to round up to the specified power of two
+ * @return The specified value rounded up to the specified power of two
+ */
 #define OFRoundUpToPowerOf2(pow2, value)	\
     (((value) + (pow2) - 1) & ~((pow2) - 1))
 
+#define OF_ULONG_BIT (sizeof(unsigned long) * CHAR_BIT)
+
 static OF_INLINE bool
-OFBitsetIsSet(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetIsSet(unsigned long *_Nonnull storage, size_t idx)
 {
-	return storage[idx / CHAR_BIT] & (1u << (idx % CHAR_BIT));
+	return storage[idx / OF_ULONG_BIT] & (1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void
-OFBitsetSet(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetSet(unsigned long *_Nonnull storage, size_t idx)
 {
-	storage[idx / CHAR_BIT] |= (1u << (idx % CHAR_BIT));
+	storage[idx / OF_ULONG_BIT] |= (1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void
-OFBitsetClear(unsigned char *_Nonnull storage, size_t idx)
+OFBitSetClear(unsigned long *_Nonnull storage, size_t idx)
 {
-	storage[idx / CHAR_BIT] &= ~(1u << (idx % CHAR_BIT));
+	storage[idx / OF_ULONG_BIT] &= ~(1ul << (idx % OF_ULONG_BIT));
 }
 
 static OF_INLINE void

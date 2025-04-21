@@ -75,10 +75,10 @@
     <argument name='size' type='size_t' m68k-reg='d0'/>
   </function>
   <include>OFHTTPRequest.h</include>
-  <function name='OFHTTPRequestMethodName' return-type='const char *_Nullable'>
+  <function name='OFHTTPRequestMethodString' return-type='OFString *_Nullable'>
     <argument name='method' type='OFHTTPRequestMethod' m68k-reg='d0'/>
   </function>
-  <function name='OFHTTPRequestMethodParseName'
+  <function name='OFHTTPRequestMethodParseString'
             return-type='OFHTTPRequestMethod'>
     <argument name='string' type='OFString *' m68k-reg='a0'/>
   </function>
@@ -119,15 +119,15 @@
               m68k-reg='a0'/>
   </function>
   <!-- The following scrypt functions are only for tests. -->
-  <function name='OFSalsa20_8Core'>
+  <function name='_OFSalsa20_8Core'>
     <argument name='buffer' type='uint32_t *_Nonnull' m68k-reg='a0'/>
   </function>
-  <function name='OFScryptBlockMix'>
+  <function name='_OFScryptBlockMix'>
     <argument name='output' type='uint32_t *_Nonnull' m68k-reg='a0'/>
     <argument name='input' type='const uint32_t *_Nonnull' m68k-reg='a1'/>
     <argument name='blockSize' type='size_t' m68k-reg='d0'/>
   </function>
-  <function name='OFScryptROMix'>
+  <function name='_OFScryptROMix'>
     <argument name='buffer' type='uint32_t *' m68k-reg='a0'/>
     <argument name='blockSize' type='size_t' m68k-reg='d0'/>
     <argument name='costFactor' type='size_t' m68k-reg='d1'/>
@@ -230,7 +230,7 @@
             return-type='Class _Nonnull *_Nullable'/>
   <!-- Only for tests. -->
   <include>OFStrPTime.h</include>
-  <function name='OFStrPTime' return-type='const char *_Nullable'>
+  <function name='_OFStrPTime' return-type='const char *_Nullable'>
     <argument name='buffer' type='const char *' m68k-reg='a0'/>
     <argument name='format' type='const char *' m68k-reg='a1'/>
     <argument name='tm' type='struct tm *' m68k-reg='a2'/>

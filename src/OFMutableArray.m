@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -154,7 +158,8 @@ OF_SINGLETON_METHODS
 
 + (instancetype)arrayWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 - (instancetype)init
@@ -243,13 +248,9 @@ OF_SINGLETON_METHODS
 
 	count = self.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if ([self objectAtIndex: i] == oldObject) {
+	for (size_t i = 0; i < count; i++)
+		if ([self objectAtIndex: i] == oldObject)
 			[self replaceObjectAtIndex: i withObject: newObject];
-
-			return;
-		}
-	}
 }
 
 - (void)removeObjectAtIndex: (size_t)idx
@@ -336,12 +337,12 @@ OF_SINGLETON_METHODS
 	id object1 = [self objectAtIndex: idx1];
 	id object2 = [self objectAtIndex: idx2];
 
-	[object1 retain];
+	objc_retain(object1);
 	@try {
 		[self replaceObjectAtIndex: idx1 withObject: object2];
 		[self replaceObjectAtIndex: idx2 withObject: object1];
 	} @finally {
-		[object1 release];
+		objc_release(object1);
 	}
 }
 

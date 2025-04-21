@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -21,6 +25,8 @@
 #import "OFDate.h"
 #import "OFStream.h"
 #import "OFString.h"
+#import "OFZIPArchive.h"
+#import "OFZIPArchive+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -227,8 +233,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
 		if (extraFieldLength > 0)
-			extraField = [[[stream readDataWithCount:
-			    extraFieldLength] mutableCopy] autorelease];
+			extraField = objc_autorelease([[stream
+			    readDataWithCount: extraFieldLength] mutableCopy]);
 		if (fileCommentLength > 0)
 			_fileComment = [[stream
 			    readStringWithLength: fileCommentLength
@@ -244,16 +250,17 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = OFZIPArchiveReadField64(
+				_uncompressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = OFZIPArchiveReadField64(
+				_compressedSize = _OFZIPArchiveReadField64(
 				    &ZIP64, &ZIP64Size);
 			if (_localFileHeaderOffset == 0xFFFFFFFF)
 				_localFileHeaderOffset =
-				    OFZIPArchiveReadField64(&ZIP64, &ZIP64Size);
+				    _OFZIPArchiveReadField64(&ZIP64,
+				    &ZIP64Size);
 			if (_startDiskNumber == 0xFFFF)
-				_startDiskNumber = OFZIPArchiveReadField32(
+				_startDiskNumber = _OFZIPArchiveReadField32(
 				    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0 || _localFileHeaderOffset < 0)
@@ -269,7 +276,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -278,16 +285,16 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 - (void)dealloc
 {
-	[_fileName release];
-	[_extraField release];
-	[_fileComment release];
+	objc_release(_fileName);
+	objc_release(_extraField);
+	objc_release(_fileComment);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -312,7 +319,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		copy->_versionSpecificAttributes = _versionSpecificAttributes;
 		copy->_localFileHeaderOffset = _localFileHeaderOffset;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -365,7 +372,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [date autorelease];
+	return objc_autoreleaseReturnValue(date);
 }
 
 - (OFZIPArchiveEntryCompressionMethod)compressionMethod
@@ -413,9 +420,22 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _startDiskNumber;
 }
 
+- (void)of_setStartDiskNumber: (uint32_t)startDiskNumber
+{
+	_startDiskNumber = startDiskNumber;
+}
+
 - (int64_t)of_localFileHeaderOffset
 {
 	return _localFileHeaderOffset;
+}
+
+- (void)of_setLocalFileHeaderOffset: (int64_t)localFileHeaderOffset
+{
+	if (localFileHeaderOffset < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	_localFileHeaderOffset = localFileHeaderOffset;
 }
 
 - (OFString *)description
@@ -428,8 +448,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
 	    @"\tGeneral purpose bit flag = %u\n"
-	    @"\tCompressed size = %" @PRIu64 "\n"
-	    @"\tUncompressed size = %" @PRIu64 "\n"
+	    @"\tCompressed size = %llu\n"
+	    @"\tUncompressed size = %llu\n"
 	    @"\tCompression method = %@\n"
 	    @"\tModification date = %@\n"
 	    @"\tCRC32 = %08" @PRIX32 @"\n"
@@ -439,11 +459,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	    _compressedSize, _uncompressedSize, compressionMethod,
 	    self.modificationDate, _CRC32, _extraField];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (uint64_t)of_writeToStream: (OFStream *)stream

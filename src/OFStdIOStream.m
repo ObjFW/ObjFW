@@ -1,21 +1,26 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <errno.h>
+#include <math.h>
 
 #include "unistd_wrapper.h"
 
@@ -28,11 +33,12 @@
 
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
+#import "OFApplication.h"
 #import "OFColor.h"
 #import "OFDate.h"
-#import "OFApplication.h"
+#import "OFDictionary.h"
 #ifdef OF_WINDOWS
-# import "OFWin32ConsoleStdIOStream.h"
+# import "platform/Windows/OFWin32ConsoleStdIOStream.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -54,10 +60,33 @@
 # undef HAVE_ISATTY
 #endif
 
+#ifdef OF_MSDOS
+# include <conio.h>
+#endif
+
+#ifdef OF_WII
+# define asm __asm__
+# include <gccore.h>
+# undef asm
+#endif
+
 #ifdef OF_WII_U
 # define BOOL WUT_BOOL
 # include <coreinit/debug.h>
 # undef BOOL
+#endif
+
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
+#ifdef OF_NINTENDO_3DS
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
 #endif
 
 /* References for static linking */
@@ -136,8 +165,8 @@ OFLogV(OFConstantString *format, va_list arguments)
 	if (me == nil)
 		me = @"?";
 
-	msg = [[[OFString alloc] initWithFormat: format
-				      arguments: arguments] autorelease];
+	msg = objc_autorelease([[OFString alloc] initWithFormat: format
+						      arguments: arguments]);
 
 	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
 			       date.microsecond / 1000, me, getpid(), msg];
@@ -145,44 +174,169 @@ OFLogV(OFConstantString *format, va_list arguments)
 	objc_autoreleasePoolPop(pool);
 }
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
+#ifdef OF_MSDOS
+int
+colorToMSDOS(OFColor *color)
+{
+	if (color == [OFColor black])
+		return BLACK;
+	if (color == [OFColor navy])
+		return BLUE;
+	if (color == [OFColor green])
+		return GREEN;
+	if (color == [OFColor teal])
+		return CYAN;
+	if (color == [OFColor maroon])
+		return RED;
+	if (color == [OFColor purple])
+		return MAGENTA;
+	if (color == [OFColor olive])
+		return BROWN;
+	if (color == [OFColor silver])
+		return LIGHTGRAY;
+	if (color == [OFColor gray])
+		return DARKGRAY;
+	if (color == [OFColor blue])
+		return LIGHTBLUE;
+	if (color == [OFColor lime])
+		return LIGHTGREEN;
+	if (color == [OFColor aqua])
+		return LIGHTCYAN;
+	if (color == [OFColor red])
+		return LIGHTRED;
+	if (color == [OFColor fuchsia])
+		return LIGHTMAGENTA;
+	if (color == [OFColor yellow])
+		return YELLOW;
+	if (color == [OFColor white])
+		return WHITE;
+
+	return -1;
+}
+#else
 static int
 colorToANSI(OFColor *color)
 {
-	if ([color isEqual: [OFColor black]])
+	if (color == nil)
+		return 39;
+	if (color == [OFColor black])
 		return 30;
-	if ([color isEqual: [OFColor maroon]])
+	if (color == [OFColor maroon])
 		return 31;
-	if ([color isEqual: [OFColor green]])
+	if (color == [OFColor green])
 		return 32;
-	if ([color isEqual: [OFColor olive]])
+	if (color == [OFColor olive])
 		return 33;
-	if ([color isEqual: [OFColor navy]])
+	if (color == [OFColor navy])
 		return 34;
-	if ([color isEqual: [OFColor purple]])
+	if (color == [OFColor purple])
 		return 35;
-	if ([color isEqual: [OFColor teal]])
+	if (color == [OFColor teal])
 		return 36;
-	if ([color isEqual: [OFColor silver]])
+	if (color == [OFColor silver])
 		return 37;
-	if ([color isEqual: [OFColor grey]])
+	if (color == [OFColor gray])
 		return 90;
-	if ([color isEqual: [OFColor red]])
+	if (color == [OFColor red])
 		return 91;
-	if ([color isEqual: [OFColor lime]])
+	if (color == [OFColor lime])
 		return 92;
-	if ([color isEqual: [OFColor yellow]])
+	if (color == [OFColor yellow])
 		return 93;
-	if ([color isEqual: [OFColor blue]])
+	if (color == [OFColor blue])
 		return 94;
-	if ([color isEqual: [OFColor fuchsia]])
+	if (color == [OFColor fuchsia])
 		return 95;
-	if ([color isEqual: [OFColor aqua]])
+	if (color == [OFColor aqua])
 		return 96;
-	if ([color isEqual: [OFColor white]])
+	if (color == [OFColor white])
 		return 97;
 
 	return -1;
+}
+
+static unsigned int
+channelTo6Values(uint8_t channel)
+{
+	if (channel >= 235)
+		return 5;
+	if (channel >= 195)
+		return 4;
+	if (channel >= 155)
+		return 3;
+	if (channel >= 115)
+		return 2;
+	if (channel >= 75)
+		return 1;
+
+	return 0;
+}
+
+static unsigned int
+colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
+{
+	int redIndex, greenIndex, blueIndex;
+
+	if (red == green && green == blue) {
+		if (red >= 244)
+			return 231;
+		if (red >= 234)
+			return 255;
+		if (red >= 224)
+			return 254;
+		if (red >= 214)
+			return 253;
+		if (red >= 204)
+			return 252;
+		if (red >= 194)
+			return 251;
+		if (red >= 184)
+			return 250;
+		if (red >= 174)
+			return 249;
+		if (red >= 164)
+			return 248;
+		if (red >= 154)
+			return 247;
+		if (red >= 144)
+			return 246;
+		if (red >= 134)
+			return 245;
+		if (red >= 124)
+			return 244;
+		if (red >= 114)
+			return 243;
+		if (red >= 104)
+			return 242;
+		if (red >= 94)
+			return 241;
+		if (red >= 84)
+			return 240;
+		if (red >= 74)
+			return 239;
+		if (red >= 64)
+			return 238;
+		if (red >= 54)
+			return 237;
+		if (red >= 44)
+			return 236;
+		if (red >= 34)
+			return 235;
+		if (red >= 24)
+			return 234;
+		if (red >= 14)
+			return 233;
+		if (red >= 4)
+			return 232;
+
+		return 16;
+	}
+
+	redIndex = channelTo6Values(red);
+	greenIndex = channelTo6Values(green);
+	blueIndex = channelTo6Values(blue);
+
+	return 16 + 36 * redIndex + 6 * greenIndex + blueIndex;
 }
 #endif
 
@@ -241,6 +395,43 @@ colorToANSI(OFColor *color)
 }
 #endif
 
+#if defined(OF_WII)
++ (void)setUpConsole
+{
+	GXRModeObj *mode;
+	void *nextFB;
+
+	VIDEO_Init();
+
+	mode = VIDEO_GetPreferredMode(NULL);
+	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
+	VIDEO_Configure(mode);
+	VIDEO_SetNextFramebuffer(nextFB);
+	VIDEO_SetBlack(FALSE);
+	VIDEO_Flush();
+
+	VIDEO_WaitVSync();
+	if (mode->viTVMode & VI_NON_INTERLACE)
+		VIDEO_WaitVSync();
+
+	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
+	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
+}
+#elif defined(OF_NINTENDO_DS)
++ (void)setUpConsole
+{
+	consoleDemoInit();
+}
+#elif defined(OF_NINTENDO_3DS)
++ (void)setUpConsole
+{
+	gfxInitDefault();
+	atexit(gfxExit);
+
+	consoleInit(GFX_BOTTOM, NULL);
+}
+#endif
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
@@ -253,13 +444,19 @@ colorToANSI(OFColor *color)
 
 	_handle = handle;
 	_closable = closable;
+	_colors = 16;
+	_cursorVisible = true;
 
 	return self;
 }
 #elif defined(OF_WII_U)
 - (instancetype)of_init
 {
-	return [super init];
+	self = [super init];
+
+	_colors = -1;
+
+	return self;
 }
 #else
 - (instancetype)of_initWithFileDescriptor: (int)fd
@@ -267,6 +464,12 @@ colorToANSI(OFColor *color)
 	self = [super init];
 
 	_fd = fd;
+# ifdef OF_MSDOS
+	_colors = 16;
+# else
+	_colors = -1;
+# endif
+	_cursorVisible = self.hasTerminal;
 
 	return self;
 }
@@ -368,6 +571,32 @@ colorToANSI(OFColor *color)
 							     errNo: EIO];
 
 	return (size_t)bytesWritten;
+#elif defined(OF_MSDOS)
+	ssize_t bytesWritten;
+
+	if (self.hasTerminal) {
+		const char *buffer_ = buffer;
+
+		for (size_t i = 0; i < length; i++) {
+			if (buffer_[i] == '\n')
+				putch('\r');
+
+			putch(buffer_[i]);
+		}
+
+		return length;
+	}
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((bytesWritten = write(_fd, buffer, length)) < 0)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: 0
+							     errNo: errno];
+
+	return (size_t)bytesWritten;
 #elif defined(OF_WII_U)
 	OSConsoleWrite(buffer, length);
 
@@ -458,7 +687,10 @@ colorToANSI(OFColor *color)
 
 - (bool)hasTerminal
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
+	return true;
+#elif defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);
 #else
 	return false;
@@ -467,7 +699,13 @@ colorToANSI(OFColor *color)
 
 - (int)columns
 {
-#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -482,7 +720,13 @@ colorToANSI(OFColor *color)
 
 - (int)rows
 {
-#if defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
+#if defined(OF_MSDOS)
+	struct text_info ti;
+
+	gettextinfo(&ti);
+
+	return ti.screenwidth;
+#elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
 
@@ -495,73 +739,301 @@ colorToANSI(OFColor *color)
 #endif
 }
 
+- (int)colors
+{
+	void *pool;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
+	OFString *var;
+
+	if (_colors != -1)
+		return _colors;
+
+	if (!self.hasTerminal)
+		return -1;
+
+	pool = objc_autoreleasePoolPush();
+	environment = [OFApplication environment];
+
+	var = [environment objectForKey: @"COLORTERM"];
+	if ([var isEqual: @"24bit"] || [var isEqual: @"truecolor"] ||
+	    [var isEqual: @"16777216"]) {
+		_colors = 16777216;
+		objc_autoreleasePoolPop(pool);
+		return _colors;
+	}
+
+	var = [environment objectForKey: @"TERM"];
+	if ([var hasSuffix: @"-256color"]) {
+		_colors = 256;
+		objc_autoreleasePoolPop(pool);
+		return _colors;
+	}
+
+	_colors = 16;
+	objc_autoreleasePoolPop(pool);
+	return _colors;
+}
+
+- (OFColor *)foregroundColor
+{
+	return _foregroundColor;
+}
+
 - (void)setForegroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (color == _foregroundColor)
 		return;
 
-	if ((code = colorToANSI(color)) == -1)
+	if (!self.hasTerminal)
 		return;
 
-	[self writeFormat: @"\033[%um", code];
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textcolor(code);
+#else
+	if ((code = colorToANSI(color)) != -1)
+		[self writeFormat: @"\033[%um", code];
+	else if (self.colors >= 256) {
+		float red, green, blue, alpha;
+		uint8_t redInt, greenInt, blueInt;
+
+		[color getRed: &red green: &green blue: &blue alpha: &alpha];
+		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
+		    green > 1 || blue < 0 || blue > 1)
+			return;
+
+		redInt = roundf(red * 255);
+		greenInt = roundf(green * 255);
+		blueInt = roundf(blue * 255);
+
+		if (self.colors == 16777216)
+			[self writeFormat: @"\033[38;2;%u;%u;%um",
+					   redInt, greenInt, blueInt];
+		else
+			[self writeFormat: @"\033[38;5;%um",
+					   colorTo256Color(redInt, greenInt,
+					       blueInt)];
+	}
 #endif
+
+	objc_release(_foregroundColor);
+	_foregroundColor = objc_retain(color);
+}
+
+- (OFColor *)backgroundColor
+{
+	return _backgroundColor;
 }
 
 - (void)setBackgroundColor: (OFColor *)color
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	int code;
 
-	if (!isatty(_fd))
+	if (color == _backgroundColor)
 		return;
 
-	if ((code = colorToANSI(color)) == -1)
+	if (!self.hasTerminal)
 		return;
 
-	[self writeFormat: @"\033[%um", code + 10];
+#ifdef OF_MSDOS
+	if ((code = colorToMSDOS(color)) == -1)
+		return;
+
+	textbackground(code);
+#else
+	if ((code = colorToANSI(color)) != -1)
+		[self writeFormat: @"\033[%um", code + 10];
+	else {
+		float red, green, blue, alpha;
+		uint8_t redInt, greenInt, blueInt;
+
+		[color getRed: &red green: &green blue: &blue alpha: &alpha];
+		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
+		    green > 1 || blue < 0 || blue > 1)
+			return;
+
+		redInt = roundf(red * 255);
+		greenInt = roundf(green * 255);
+		blueInt = roundf(blue * 255);
+
+		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
+			[self writeFormat: @"\033[48;5;%um", code];
+		else
+			[self writeFormat: @"\033[48;2;%u;%u;%um",
+					   redInt, greenInt, blueInt];
+	}
 #endif
+
+	objc_release(_backgroundColor);
+	_backgroundColor = objc_retain(color);
+}
+
+- (bool)isBold
+{
+	return _bold;
+}
+
+- (void)setBold: (bool)bold
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (bold == _bold)
+		return;
+
+	[self writeString: (bold ? @"\033[1m" : @"\033[22m")];
+
+	_bold = bold;
+#endif
+}
+
+- (bool)isItalic
+{
+	return _italic;
+}
+
+- (void)setItalic: (bool)italic
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (italic == _italic)
+		return;
+
+	[self writeString: (italic ? @"\033[3m" : @"\033[23m")];
+
+	_italic = italic;
+#endif
+}
+
+- (bool)isUnderlined
+{
+	return _underlined;
+}
+
+- (void)setUnderlined: (bool)underlined
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (underlined == _underlined)
+		return;
+
+	[self writeString: (underlined ? @"\033[4m" : @"\033[24m")];
+
+	_underlined = underlined;
+#endif
+}
+
+- (bool)isBlinking
+{
+	return _blinking;
+}
+
+- (void)setBlinking: (bool)blinking
+{
+#ifndef OF_MSDOS
+	if (!self.hasTerminal)
+		return;
+
+	if (blinking == _blinking)
+		return;
+
+	[self writeString: (blinking ? @"\033[5m" : @"\033[25m")];
+
+	_blinking = blinking;
+#endif
+}
+
+- (bool)isCursorVisible
+{
+	return _cursorVisible;
+}
+
+- (void)setCursorVisible: (bool)visible
+{
+	if (!self.hasTerminal)
+		return;
+
+	if (visible == _cursorVisible)
+		return;
+
+#ifdef OF_MSDOS
+	_setcursortype(visible ? _NORMALCURSOR : _NOCURSOR);
+#else
+	[self writeString: (visible ? @"\033[?25h" : @"\033[?25l")];
+#endif
+
+	_cursorVisible = visible;
 }
 
 - (void)reset
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	normvideo();
+#else
 	[self writeString: @"\033[0m"];
 #endif
+
+	objc_release(_foregroundColor);
+	objc_release(_backgroundColor);
+	_foregroundColor = _backgroundColor = nil;
+	_bold = false;
+	_italic = false;
+	_underlined = false;
+	_blinking = false;
 }
 
 - (void)clear
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	clrscr();
+#else
 	[self writeString: @"\033[2J"];
 #endif
 }
 
 - (void)eraseLine
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	int column = wherex();
+
+	gotoxy(1, wherey());
+	clreol();
+	gotoxy(column, wherey());
+#else
 	[self writeString: @"\033[2K"];
 #endif
 }
 
 - (void)setCursorColumn: (unsigned int)column
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
-	[self writeFormat: @"\033[%uG", column + 1];
+#ifdef OF_MSDOS
+	gotoxy(column + 1, wherey());
+#else
+	if (column == 0)
+		[self writeString: @"\r"];
+	else
+		[self writeFormat: @"\033[%uG", column + 1];
 #endif
 }
 
@@ -570,10 +1042,12 @@ colorToANSI(OFColor *color)
 	if (position.x < 0 || position.y < 0)
 		@throw [OFInvalidArgumentException exception];
 
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(position.x + 1, position.y + 1);
+#else
 	[self writeFormat: @"\033[%u;%uH",
 			   (unsigned)position.y + 1, (unsigned)position.x + 1];
 #endif
@@ -581,10 +1055,12 @@ colorToANSI(OFColor *color)
 
 - (void)setRelativeCursorPosition: (OFPoint)position
 {
-#if defined(HAVE_ISATTY) && !defined(OF_WII_U)
-	if (!isatty(_fd))
+	if (!self.hasTerminal)
 		return;
 
+#ifdef OF_MSDOS
+	gotoxy(wherex() + position.x, wherey() + position.y);
+#else
 	if (position.x > 0)
 		[self writeFormat: @"\033[%uC", (unsigned)position.x];
 	else if (position.x < 0)

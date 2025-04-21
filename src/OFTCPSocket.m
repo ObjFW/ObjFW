@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,7 +22,6 @@
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED
 #endif
-#define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
 #include <errno.h>
@@ -50,11 +53,43 @@
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
 
+#if defined(OF_MACOS) || defined(OF_IOS)
+# ifndef AF_MULTIPATH
+#  define AF_MULTIPATH 39
+# endif
+#endif
+
+enum {
+	flagAllowsMPTCP = 1,
+	flagMapIPv4 = 2,
+	flagUseConnectX = 4
+};
+
 static const OFRunLoopMode connectRunLoopMode =
     @"OFTCPSocketConnectRunLoopMode";
 
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
+
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+static OFSocketAddress
+mapIPv4(const OFSocketAddress *IPv4Address)
+{
+	OFSocketAddress IPv6Address = {
+		.family = OFSocketAddressFamilyIPv6,
+		.length = sizeof(struct sockaddr_in6)
+	};
+
+	IPv6Address.sockaddr.in6.sin6_family = AF_INET6;
+	IPv6Address.sockaddr.in6.sin6_port = IPv4Address->sockaddr.in.sin_port;
+	memcpy(&IPv6Address.sockaddr.in6.sin6_addr.s6_addr[12],
+	    &IPv4Address->sockaddr.in.sin_addr.s_addr, 4);
+	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[10] = 0xFF;
+	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[11] = 0xFF;
+
+	return IPv6Address;
+}
+#endif
 
 @interface OFTCPSocket () <OFAsyncIPSocketConnecting>
 @end
@@ -70,7 +105,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 @implementation OFTCPSocketConnectDelegate
 - (void)dealloc
 {
-	[_exception release];
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -81,7 +116,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	 exception: (id)exception
 {
 	_done = true;
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 }
 @end
 
@@ -93,7 +128,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	id old = defaultSOCKS5Host;
 	defaultSOCKS5Host = [host copy];
-	[old release];
+	objc_release(old);
 }
 
 + (OFString *)SOCKS5Host
@@ -119,7 +154,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_SOCKS5Host = [defaultSOCKS5Host copy];
 		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -128,7 +163,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)dealloc
 {
-	[_SOCKS5Host release];
+	objc_release(_SOCKS5Host);
 
 	[super dealloc];
 }
@@ -143,11 +178,40 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if ((_socket = socket(
-	    ((struct sockaddr *)&address->sockaddr)->sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
-		*errNo = OFSocketErrNo();
-		return false;
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	if (_flags & flagAllowsMPTCP) {
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		_socket = socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
+
+		if (_socket != OFInvalidSocketHandle &&
+		    address->family == OFSocketAddressFamilyIPv4)
+			_flags |= flagMapIPv4;
+		else
+			_flags &= ~flagMapIPv4;
+	}
+#elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
+	if (_flags & flagAllowsMPTCP) {
+		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_TCP);
+
+		if (_socket != OFInvalidSocketHandle)
+			_flags |= flagUseConnectX;
+		else
+			_flags &= ~flagUseConnectX;
+	}
+#endif
+
+	if (_socket == OFInvalidSocketHandle) {
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address->sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
 	}
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
@@ -161,15 +225,48 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (bool)of_connectSocketToAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
-	if (_socket == OFInvalidSocketHandle)
-		@throw [OFNotOpenException exceptionWithObject: self];
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	OFSocketAddress mappedIPv4;
+#endif
 
-	/* Cast needed for AmigaOS, where the argument is declared non-const */
-	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
-	    address->length) != 0) {
-		*errNo = OFSocketErrNo();
-		return false;
+	if (_socket == OFInvalidSocketHandle) {
+		@throw [OFNotOpenException exceptionWithObject: self];
 	}
+
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	if (_flags & flagMapIPv4) {
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		mappedIPv4 = mapIPv4(address);
+		address = &mappedIPv4;
+	}
+#endif
+
+#if (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
+	if (_flags & flagUseConnectX) {
+		sa_endpoints_t endpoints = {
+			.sae_dstaddr = (struct sockaddr *)&address->sockaddr,
+			.sae_dstaddrlen = address->length
+		};
+
+		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
+		    NULL, NULL) != 0) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
+	} else
+#endif
+		/*
+		 * Cast needed for AmigaOS, where the argument is declared
+		 * non-const.
+		 */
+		if (connect(_socket, (struct sockaddr *)&address->sockaddr,
+		    address->length) != 0) {
+			*errNo = _OFSocketErrNo();
+			return false;
+		}
 
 	return true;
 }
@@ -185,7 +282,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = _delegate;
 	OFTCPSocketConnectDelegate *connectDelegate =
-	    [[[OFTCPSocketConnectDelegate alloc] init] autorelease];
+	    objc_autorelease([[OFTCPSocketConnectDelegate alloc] init]);
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
@@ -222,27 +319,27 @@ static uint16_t defaultSOCKS5Port = 1080;
 	id <OFTCPSocketDelegate> delegate;
 
 	if (_SOCKS5Host != nil) {
-		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
+		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
 			      host: host
 			      port: port
 			  delegate: _delegate
 #ifdef OF_HAVE_BLOCKS
-			     block: NULL
+			   handler: NULL
 #endif
-		    ] autorelease];
+		    ]);
 		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	} else
 		delegate = _delegate;
 
-	[[[[OFAsyncIPSocketConnector alloc]
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
 			delegate: delegate
-			   block: NULL
-	    ] autorelease] startWithRunLoopMode: runLoopMode];
+			 handler: NULL
+	    ]) startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -252,10 +349,25 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      port: (uint16_t)port
 		     block: (OFTCPSocketAsyncConnectBlock)block
 {
+	OFTCPSocketConnectedHandler handler = ^ (OFTCPSocket *socket,
+	    OFString *host_, uint16_t port_, id exception) {
+		block(exception);
+	};
+
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: OFDefaultRunLoopMode
-			   block: block];
+			 handler: handler];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+		   handler: (OFTCPSocketConnectedHandler)handler
+{
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: OFDefaultRunLoopMode
+			 handler: handler];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
@@ -263,26 +375,42 @@ static uint16_t defaultSOCKS5Port = 1080;
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFTCPSocketAsyncConnectBlock)block
 {
+	OFTCPSocketConnectedHandler handler = ^ (OFTCPSocket *socket,
+	    OFString *host_, uint16_t port_, id exception) {
+		block(exception);
+	};
+
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: runLoopMode
+			 handler: handler];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		   handler: (OFTCPSocketConnectedHandler)handler
+{
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
 	if (_SOCKS5Host != nil) {
-		delegate = [[[OFTCPSocketSOCKS5Connector alloc]
+		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
 			      host: host
 			      port: port
 			  delegate: nil
-			     block: block] autorelease];
+			   handler: handler]);
 		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	}
 
-	[[[[OFAsyncIPSocketConnector alloc]
+	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
 			delegate: delegate
-			   block: (delegate == nil ? block : NULL)] autorelease]
+			 handler: (delegate == nil ? handler : NULL)])
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -313,14 +441,30 @@ static uint16_t defaultSOCKS5Port = 1080;
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
 
-	if ((_socket = socket(
-	    ((struct sockaddr *)&address.sockaddr)->sa_family,
-	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
-		@throw [OFBindIPSocketFailedException
-		    exceptionWithHost: host
-				 port: port
-			       socket: self
-				errNo: OFSocketErrNo()];
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	if (_flags & flagAllowsMPTCP) {
+		/*
+		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
+		 * IPv6 can both be used for a single connection.
+		 */
+		_socket = socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
+
+		if (_socket != OFInvalidSocketHandle &&
+		    address.family == OFSocketAddressFamilyIPv4)
+			address = mapIPv4(&address);
+	}
+#endif
+
+	if (_socket == OFInvalidSocketHandle)
+		if ((_socket = socket(
+		    ((struct sockaddr *)&address.sockaddr)->sa_family,
+		    SOCK_STREAM | SOCK_CLOEXEC, 0)) == OFInvalidSocketHandle)
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -337,7 +481,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 		if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 		    address.length) != 0) {
-			int errNo = OFSocketErrNo();
+			int errNo = _OFSocketErrNo();
 
 			closesocket(_socket);
 			_socket = OFInvalidSocketHandle;
@@ -364,8 +508,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    address.length)) == 0)
 				break;
 
-			if (OFSocketErrNo() != EADDRINUSE) {
-				int errNo = OFSocketErrNo();
+			if (_OFSocketErrNo() != EADDRINUSE) {
+				int errNo = _OFSocketErrNo();
 
 				closesocket(_socket);
 				_socket = OFInvalidSocketHandle;
@@ -384,9 +528,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	memset(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -423,6 +567,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return address;
 }
 
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+- (instancetype)accept
+{
+	OFTCPSocket *sock = [super accept];
+	sock.allowsMPTCP = self.allowsMPTCP;
+	return sock;
+}
+#endif
+
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 - (void)setSendsKeepAlives: (bool)sendsKeepAlives
 {
@@ -432,19 +585,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 }
 
 - (bool)sendsKeepAlives
 {
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return v;
 }
@@ -459,23 +612,36 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 }
 
 - (bool)canDelaySendingSegments
 {
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return !v;
 }
 #endif
+
+- (void)setAllowsMPTCP: (bool)allowsMPTCP
+{
+	if (allowsMPTCP)
+		_flags |= flagAllowsMPTCP;
+	else
+		_flags &= ~flagAllowsMPTCP;
+}
+
+- (bool)allowsMPTCP
+{
+	return (_flags & flagAllowsMPTCP);
+}
 
 - (void)close
 {

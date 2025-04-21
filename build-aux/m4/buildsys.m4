@@ -1,25 +1,21 @@
 dnl
 dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
-dnl               2018, 2020, 2021, 2022, 2023
+dnl               2018, 2020, 2021, 2022, 2023, 2024, 2025
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
-dnl https://fossil.nil.im/buildsys
+dnl https://fl.nil.im/buildsys
 dnl
 dnl Permission to use, copy, modify, and/or distribute this software for any
 dnl purpose with or without fee is hereby granted, provided that the above
-dnl copyright notice and this permission notice is present in all copies.
+dnl copyright notice and this permission notice appear in all copies.
 dnl
-dnl THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-dnl AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-dnl IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-dnl ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-dnl LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-dnl CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-dnl SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-dnl INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-dnl CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-dnl ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-dnl POSSIBILITY OF SUCH DAMAGE.
+dnl THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+dnl REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+dnl AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+dnl INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+dnl LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+dnl OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+dnl PERFORMANCE OF THIS SOFTWARE.
 dnl
 
 AC_DEFUN([BUILDSYS_INIT], [
@@ -28,6 +24,10 @@ AC_DEFUN([BUILDSYS_INIT], [
 
 	AC_ARG_ENABLE(rpath,
 		AS_HELP_STRING([--disable-rpath], [do not use rpath]))
+
+	AC_ARG_ENABLE(silent-rules,
+		AS_HELP_STRING([--disable-silent-rules],
+			[print executed commands during build]))
 
 	case "$build_os" in
 	darwin*)
@@ -100,6 +100,16 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT setaf 4 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT setaf 6 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT setaf 9 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT setaf 10 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT setaf 11 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT setaf 12 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT setaf 14 2>/dev/null)")
 			dnl OpenBSD seems to want 3 parameters for terminals
 			dnl ending in -256color, but the additional two
 			dnl parameters don't seem to do anything, so we set
@@ -114,6 +124,16 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT setaf 4 0 0 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT setaf 6 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT setaf 9 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT setaf 10 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT setaf 11 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT setaf 12 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT setaf 14 0 0 2>/dev/null)")
 			else
 				AC_SUBST(TERM_SETAF1,
 					"$($TPUT AF 1 2>/dev/null)")
@@ -125,7 +145,22 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT AF 4 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT AF 6 2>/dev/null)")
+				AC_SUBST(TERM_SETAF9,
+					"$($TPUT AF 9 2>/dev/null)")
+				AC_SUBST(TERM_SETAF10,
+					"$($TPUT AF 10 2>/dev/null)")
+				AC_SUBST(TERM_SETAF11,
+					"$($TPUT AF 11 2>/dev/null)")
+				AC_SUBST(TERM_SETAF12,
+					"$($TPUT AF 12 2>/dev/null)")
+				AC_SUBST(TERM_SETAF14,
+					"$($TPUT AF 14 2>/dev/null)")
 			fi
+		])
+
+		AS_IF([test x"$enable_silent_rules" != x"no"], [
+			AC_SUBST(SILENT, '.SILENT:')
+			AC_SUBST(MAKEFLAGS_SILENT, '-s')
 		])
 	])
 ])
@@ -144,6 +179,7 @@ AC_DEFUN([BUILDSYS_CHECK_IOS], [
 			#endif
 		], [
 			host_is_ios="yes"
+			AC_SUBST(HOST_IS_IOS, yes)
 		], [
 			host_is_ios="no"
 		])
@@ -171,6 +207,145 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 
 	AC_SUBST(PROG_IMPLIB_NEEDED)
 	AC_SUBST(PROG_IMPLIB_LDFLAGS)
+])
+
+AC_DEFUN([BUILDSYS_STACK_PROTECTOR], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+
+	case "$host" in
+	m68k-*-amigaos*)
+		dnl Stack Protector test compiles and links, but linking the
+		dnl actual code fails.
+		;;
+	*)
+		_BUILDSYS_STACK_PROTECTOR_REAL
+		;;
+	esac
+])
+
+AC_DEFUN([_BUILDSYS_STACK_PROTECTOR_REAL], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_MSG_CHECKING(for Stack Protector)
+
+	old_CFLAGS="$CFLAGS"
+	old_CXXFLAGS="$CXXFLAGS"
+	old_OBJCFLAGS="$OBJCFLAGS"
+	old_OBJCXXFLAGS="$OBJCXXFLAGS"
+	old_LDFLAGS="$LDFLAGS"
+
+	CFLAGS="$CFLAGS -fstack-protector-strong"
+	CXXFLAGS="$CXXFLAGS -fstack-protector-strong"
+	OBJCFLAGS="$OBJCFLAGS -fstack-protector-strong"
+	OBJCXXFLAGS="$OBJCXXFLAGS -fstack-protector-strong"
+	LDFLAGS="$LDFLAGS -fstack-protector-strong"
+
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+		], [
+			char buf[16];
+
+			puts("Stack Protector test");
+		])
+	], [
+		AC_MSG_RESULT(strong)
+		AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector-strong)
+		AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector-strong)
+	], [
+		CFLAGS="$old_CFLAGS -fstack-protector"
+		CXXFLAGS="$old_CXXFLAGS -fstack-protector"
+		OBJCFLAGS="$old_OBJCFLAGS -fstack-protector"
+		OBJCXXFLAGS="$old_OBJCXXFLAGS -fstack-protector"
+		LDFLAGS="$old_LDFLAGS -fstack-protector"
+		
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <stdio.h>
+			], [
+				char buf[16];
+
+				puts("Stack Protector test");
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector)
+			AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector)
+		], [	
+			AC_MSG_RESULT(no)
+		])
+	])
+
+	CFLAGS="$old_CFLAGS"
+	CXXFLAGS="$old_CXXFLAGS"
+	OBJCFLAGS="$old_OBJCFLAGS"
+	OBJCXXFLAGS="$old_OBJCXXFLAGS"
+	LDFLAGS="$old_LDFLAGS"
+])
+
+AC_DEFUN([BUILDSYS_PIE], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_MSG_CHECKING(for Position Independent Executable support)
+
+	old_CFLAGS="$CFLAGS"
+	old_CXXFLAGS="$CXXFLAGS"
+	old_OBJCFLAGS="$OBJCFLAGS"
+	old_OBJCXXFLAGS="$OBJCXXFLAGS"
+	old_LDFLAGS="$LDFLAGS"
+
+	CFLAGS="$CFLAGS -fPIE"
+	CXXFLAGS="$CXXFLAGS -fPIE"
+	OBJCFLAGS="$OBJCFLAGS -fPIE"
+	OBJCXXFLAGS="$OBJCXXFLAGS -fPIE"
+	LDFLAGS="$LDFLAGS -Wl,-pie"
+
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			#include <stdio.h>
+		], [
+			puts("PIE test");
+		])
+	], [
+		AC_MSG_RESULT(yes)
+		AC_SUBST(PIE_CFLAGS, -fPIE)
+		AC_SUBST(PIE_LDFLAGS, [-Wl,-pie])
+	], [
+		AC_MSG_RESULT(no)
+	])
+
+	CFLAGS="$old_CFLAGS"
+	CXXFLAGS="$old_CXXFLAGS"
+	OBJCFLAGS="$old_OBJCFLAGS"
+	OBJCXXFLAGS="$old_OBJCXXFLAGS"
+	LDFLAGS="$old_LDFLAGS"
+])
+
+AC_DEFUN([BUILDSYS_RELRO], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_MSG_CHECKING(for RELRO support)
+
+	case "$host_os" in
+	morphos*)
+		AC_MSG_RESULT(no)
+		;;
+	*)
+		old_LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <stdio.h>
+			], [
+				puts("RELRO test");
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			AC_SUBST(RELRO_LDFLAGS, [-Wl,-z,relro,-z,now])
+		], [
+			AC_MSG_RESULT(no)
+		])
+
+		LDFLAGS="$old_LDFLAGS"
+		;;
+	esac
 ])
 
 AC_DEFUN([BUILDSYS_SHARED_LIB], [
@@ -240,8 +415,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		LIB_LDFLAGS_INSTALL_NAME=''
 		LIB_PREFIX='lib'
 		LIB_SUFFIX='.so'
-		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
-		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH}'
 		CLEAN_LIB=''
 		;;
 	hppa*-*-hpux*)
@@ -284,8 +459,8 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		AS_IF([test x"$enable_rpath" != x"no"], [
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
 		])
-		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
-		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
+		INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH} ${DESTDIR}${libdir}/$$i'
+		UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.${LIB_PATCH}'
 		CLEAN_LIB=''
 		;;
 	esac
@@ -309,11 +484,10 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 
 	case "$host_os" in
 	darwin*)
+		FRAMEWORK_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
 		AS_IF([test x"$host_is_ios" = x"yes"], [
-			FRAMEWORK_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
 			FRAMEWORK_LDFLAGS_INSTALL_NAME='-Wl,-install_name,@executable_path/Frameworks/$$out/$${out%.framework}'
 		], [
-			FRAMEWORK_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
 			FRAMEWORK_LDFLAGS_INSTALL_NAME='-Wl,-install_name,@executable_path/../Frameworks/$$out/$${out%.framework}'
 		])
 
@@ -322,6 +496,9 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 		AC_SUBST(FRAMEWORK_LIBS)
 
 		$1
+		;;
+	*)
+		$2
 		;;
 	esac
 ])
@@ -335,49 +512,53 @@ AC_DEFUN([BUILDSYS_PLUGIN], [
 	*-*-darwin*)
 		AC_MSG_RESULT(Darwin)
 		PLUGIN_CFLAGS='-fPIC -DPIC'
-		PLUGIN_LDFLAGS='-bundle ${PLUGIN_LDFLAGS_BUNDLE_LOADER}'
-		PLUGIN_SUFFIX='.bundle'
-		AS_IF([test x"$host_is_ios" = x"yes"], [
-			LINK_PLUGIN='rm -fr $$out && ${MKDIR_P} $$out && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && ${LD} -o $$out/$${out%${PLUGIN_SUFFIX}} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out'
-		], [
-			LINK_PLUGIN='rm -fr $$out && ${MKDIR_P} $$out/Contents/MacOS && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Contents/Info.plist; fi && ${LD} -o $$out/Contents/MacOS/$${out%${PLUGIN_SUFFIX}} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out'
-		])
-		INSTALL_PLUGIN='&& rm -fr ${DESTDIR}${plugindir}/$$i && cp -R $$i ${DESTDIR}${plugindir}/'
-		UNINSTALL_PLUGIN='&& rm -fr ${DESTDIR}${plugindir}/$$i'
+		PLUGIN_LDFLAGS='-bundle'
+		PLUGIN_SUFFIX='.dylib'
 		;;
 	*-*-mingw* | *-*-cygwin*)
 		AC_MSG_RESULT(MinGW / Cygwin)
 		PLUGIN_CFLAGS=''
 		PLUGIN_LDFLAGS='-shared -Wl,--export-all-symbols'
 		PLUGIN_SUFFIX='.dll'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	hppa*-*-hpux*)
 		AC_MSG_RESULT([HP-UX (PA-RISC)])
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.sl'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	*)
 		AC_MSG_RESULT(ELF)
 		PLUGIN_CFLAGS='-fPIC -DPIC'
 		PLUGIN_LDFLAGS='-shared'
 		PLUGIN_SUFFIX='.so'
-		LINK_PLUGIN='${LD} -o $$out ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
-		INSTALL_PLUGIN='&& ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i'
-		UNINSTALL_PLUGIN='&& rm -f ${DESTDIR}${plugindir}/$$i'
 		;;
 	esac
 
 	AC_SUBST(PLUGIN_CFLAGS)
 	AC_SUBST(PLUGIN_LDFLAGS)
 	AC_SUBST(PLUGIN_SUFFIX)
-	AC_SUBST(LINK_PLUGIN)
-	AC_SUBST(INSTALL_PLUGIN)
-	AC_SUBST(UNINSTALL_PLUGIN)
+])
+
+AC_DEFUN([BUILDSYS_BUNDLE], [
+	AC_REQUIRE([AC_CANONICAL_HOST])
+	AC_REQUIRE([BUILDSYS_CHECK_IOS])
+	AC_REQUIRE([BUILDSYS_PLUGIN])
+
+	case "$host_os" in
+	darwin*)
+		AS_IF([test x"$host_is_ios" = x"yes"], [
+			LINK_BUNDLE='${MKDIR_P} $$out && ${INSTALL} -m 644 Info.plist $$out/Info.plist && ${LD} -o $$out/$${out%.bundle} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		], [
+			LINK_BUNDLE='${MKDIR_P} $$out/Contents/MacOS && ${INSTALL} -m 644 Info.plist $$out/Contents/Info.plist && ${LD} -o $$out/Contents/MacOS/$${out%.bundle} ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}'
+		])
+
+		AC_SUBST(LINK_BUNDLE)
+
+		$1
+		;;
+	*)
+		$2
+		;;
+	esac
 ])

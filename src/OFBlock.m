@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -43,8 +47,8 @@ struct Block {
 	struct {
 		unsigned long reserved;
 		unsigned long size;
-		void (*_Nullable copyHelper)(void *dest, void *src);
-		void (*_Nullable disposeHelper)(void *src);
+		void (*copyHelper)(void *dest, void *src);
+		void (*disposeHelper)(void *src);
 		const char *signature;
 	} *descriptor;
 };
@@ -128,7 +132,7 @@ static struct {
 	}
 };
 
-static struct objc_module module = {
+static struct _objc_module module = {
 	8, sizeof(module), NULL, (struct objc_symtab *)&symtab
 };
 
@@ -260,7 +264,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 		break;
 	case OFBlockFieldIsObject:
 		if (!(flags_ & OFBlockByrefCaller))
-			*(id *)dst_ = [(id)src_ retain];
+			*(id *)dst_ = objc_retain((id)src_);
 		break;
 	case OFBlockFieldIsByref:;
 		struct Byref *src = (struct Byref *)src_;
@@ -337,7 +341,7 @@ _Block_object_dispose(const void *object_, const int flags_)
 		break;
 	case OFBlockFieldIsObject:
 		if (!(flags_ & OFBlockByrefCaller))
-			[(id)object_ release];
+			objc_release((id)object_);
 		break;
 	case OFBlockFieldIsByref:;
 		struct Byref *object = (struct Byref *)object_;

@@ -48,13 +48,14 @@ SRCS = OFAllocFailedException.m				\
        OFUnsupportedVersionException.m			\
        OFWriteFailedException.m				\
        ${USE_SRCS_FILES}				\
-       ${USE_SRCS_PLUGINS}				\
+       ${USE_SRCS_MODULES}				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
 	     OFGetCurrentDirectoryFailedException.m
-SRCS_PLUGINS = OFLoadPluginFailedException.m
+SRCS_MODULES = OFLoadPluginFailedException.m	\
+	       OFLoadModuleFailedException.m
 SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFBindIPSocketFailedException.m		\
 	       OFBindSocketFailedException.m		\

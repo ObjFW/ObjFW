@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,7 +30,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	cmpwi	%r3, 0
-	beq-	returnNilMethod
+	beq-	.LreturnNilMethod
 
 	andi.	%r0, %r3, 1
 	bne-	.LtaggedPointer_\name
@@ -57,7 +61,7 @@
 0:
 #ifdef OF_PIC
 	stwu	%r1, -16(%r1)
-	mflr	%r0	
+	mflr	%r0
 	stw	%r0, 20(%r1)
 	stw	%r30, 8(%r1)
 
@@ -124,7 +128,7 @@
 	mr	%r5, %r3
 	lwz	%r3, 0(%r3)
 	cmpwi	%r3, 0
-	beq-	returnNilMethod
+	beq-	.LreturnNilMethod
 
 	lwz	%r5, 4(%r5)
 	lwz	%r5, 32(%r5)
@@ -139,19 +143,19 @@ GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
+.LreturnNilMethod:
 	mflr	%r0
-	bl	getPC
+	bl	.LgetPC
 	mtlr	%r0
 0:
-	addi	%r3, %r3, nilMethod-0b
+	addi	%r3, %r3, .LnilMethod-0b
 	blr
 
-nilMethod:
+.LnilMethod:
 	li	%r3, 0
 	blr
 
-getPC:
+.LgetPC:
 	mflr	%r3
 	blr
 

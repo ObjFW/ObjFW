@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFMacRomanTable[] = {
+const OFChar16 _OFMacRomanTable[] OF_VISIBILITY_INTERNAL = {
 	0x00C4, 0x00C5, 0x00C7, 0x00C9, 0x00D1, 0x00D6, 0x00DC, 0x00E1,
 	0x00E0, 0x00E2, 0x00E4, 0x00E3, 0x00E5, 0x00E7, 0x00E9, 0x00E8,
 	0x00EA, 0x00EB, 0x00ED, 0x00EC, 0x00EE, 0x00EF, 0x00F1, 0x00F3,
@@ -37,8 +41,8 @@ const OFChar16 OFMacRomanTable[] = {
 	0xF8FF, 0x00D2, 0x00DA, 0x00DB, 0x00D9, 0x0131, 0x02C6, 0x02DC,
 	0x00AF, 0x02D8, 0x02D9, 0x02DA, 0x00B8, 0x02DD, 0x02DB, 0x02C7
 };
-const size_t OFMacRomanTableOffset =
-    256 - (sizeof(OFMacRomanTable) / sizeof(*OFMacRomanTable));
+const size_t _OFMacRomanTableOffset OF_VISIBILITY_INTERNAL =
+    256 - (sizeof(_OFMacRomanTable) / sizeof(*_OFMacRomanTable));
 
 static const unsigned char page0[] = {
 	0xCA, 0xC1, 0xA2, 0xA3, 0x00, 0xB4, 0x00, 0xA4,
@@ -148,12 +152,17 @@ static const unsigned char pageFB[] = {
 };
 static const uint8_t pageFBStart = 0x01;
 
-bool
-OFUnicodeToMacRoman(const OFUnichar *input, unsigned char *output,
-    size_t length, bool lossy)
+bool OF_VISIBILITY_INTERNAL
+_OFUnicodeToMacRoman(const OFUnichar *input, unsigned char *output,
+    size_t length, bool lossy, bool insecure)
 {
 	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = input[i];
+		OFUnichar c;
+
+		if OF_UNLIKELY (!insecure && input[i] == 0)
+			return false;
+
+		c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

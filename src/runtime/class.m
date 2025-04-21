@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -182,7 +186,25 @@ callLoad(Class class)
 void
 objc_updateDTable(Class class)
 {
+	bool usesRuntimeRR = false, hasCustomRR = false;
+	static SEL retainSel = NULL, retainCountSel = NULL, releaseSel = NULL;
+	static SEL autoreleaseSel = NULL, usesRuntimeRRSel = NULL;
+	unsigned long superclassInfo = 0;
 	struct objc_category **categories;
+
+	if (retainSel == NULL || retainCountSel == NULL || releaseSel == NULL ||
+	    autoreleaseSel == NULL || usesRuntimeRRSel == NULL) {
+		retainSel = sel_registerName("retain");
+		retainCountSel = sel_registerName("retainCount");
+		releaseSel = sel_registerName("release");
+		autoreleaseSel = sel_registerName("autorelease");
+		usesRuntimeRRSel = sel_registerName("_usesRuntimeRR");
+
+		if (retainSel == NULL || retainCountSel == NULL ||
+		    releaseSel == NULL || autoreleaseSel == NULL ||
+		    usesRuntimeRRSel == NULL)
+			OBJC_ERROR("Failed to register internal selectors");
+	}
 
 	if (!(class->info & OBJC_CLASS_INFO_DTABLE))
 		return;
@@ -190,15 +212,29 @@ objc_updateDTable(Class class)
 	if (class->dTable == emptyDTable)
 		class->dTable = objc_dtable_new();
 
-	if (class->superclass != Nil)
+	if (class->superclass != Nil) {
+		superclassInfo = class->superclass->info;
 		objc_dtable_copy(class->dTable, class->superclass->dTable);
+	}
 
 	for (struct objc_method_list *methodList = class->methodList;
-	    methodList != NULL; methodList = methodList->next)
-		for (unsigned int i = 0; i < methodList->count; i++)
-			objc_dtable_set(class->dTable,
-			    (uint32_t)methodList->methods[i].selector.UID,
+	    methodList != NULL; methodList = methodList->next) {
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			SEL selector = (SEL)&methodList->methods[i].selector;
+
+			objc_dtable_set(class->dTable, (uint32_t)selector->UID,
 			    methodList->methods[i].implementation);
+
+			if (sel_isEqual(selector, retainSel) ||
+			    sel_isEqual(selector, retainCountSel) ||
+			    sel_isEqual(selector, releaseSel) ||
+			    sel_isEqual(selector, autoreleaseSel))
+				hasCustomRR = true;
+
+			if (sel_isEqual(selector, usesRuntimeRRSel))
+				usesRuntimeRR = true;
+		}
+	}
 
 	if ((categories = objc_categoriesForClass(class)) != NULL) {
 		for (unsigned int i = 0; categories[i] != NULL; i++) {
@@ -208,16 +244,38 @@ objc_updateDTable(Class class)
 			    : categories[i]->classMethods);
 
 			for (; methodList != NULL;
-			    methodList = methodList->next)
+			    methodList = methodList->next) {
 				for (unsigned int j = 0;
-				    j < methodList->count; j++)
+				    j < methodList->count; j++) {
+					SEL selector = (SEL)
+					    &methodList->methods[j].selector;
+
 					objc_dtable_set(class->dTable,
-					    (uint32_t)methodList->methods[j]
-					    .selector.UID,
+					    (uint32_t)selector->UID,
 					    methodList->methods[j]
 					    .implementation);
+
+					if (sel_isEqual(selector, retainSel) ||
+					    sel_isEqual(selector,
+					    retainCountSel) ||
+					    sel_isEqual(selector, releaseSel) ||
+					    sel_isEqual(selector,
+					    autoreleaseSel))
+						hasCustomRR = true;
+
+					if (sel_isEqual(selector,
+					    usesRuntimeRRSel))
+						usesRuntimeRR = true;
+				}
+			}
 		}
 	}
+
+	if (usesRuntimeRR ||
+	    (!hasCustomRR && (superclassInfo & OBJC_CLASS_INFO_RUNTIME_RR)))
+		class->info |= OBJC_CLASS_INFO_RUNTIME_RR;
+	else
+		class->info &= ~OBJC_CLASS_INFO_RUNTIME_RR;
 
 	if (class->subclassList != NULL)
 		for (Class *iter = class->subclassList; *iter != NULL; iter++)
@@ -413,12 +471,11 @@ processLoadQueue(void)
 		if (loadQueue[i]->info & OBJC_CLASS_INFO_SETUP) {
 			callLoad(loadQueue[i]);
 
-			loadQueueCount--;
-
-			if (loadQueueCount == 0) {
+			if (--loadQueueCount == 0) {
 				free(loadQueue);
 				loadQueue = NULL;
-				continue;
+				loadQueueCount = 0;
+				break;
 			}
 
 			loadQueue[i] = loadQueue[loadQueueCount];
@@ -466,6 +523,7 @@ objc_registerAllClasses(struct objc_symtab *symtab)
 	}
 
 	processLoadQueue();
+	objc_processCategoriesLoadQueue();
 }
 
 Class
@@ -526,6 +584,7 @@ objc_registerClassPair(Class class)
 		class->info |= OBJC_CLASS_INFO_LOADED;
 
 	processLoadQueue();
+	objc_processCategoriesLoadQueue();
 
 	objc_globalMutex_unlock();
 }
@@ -588,8 +647,13 @@ objc_getClassList(Class *buffer, unsigned int count)
 	unsigned int j;
 	objc_globalMutex_lock();
 
-	if (buffer == NULL)
-		return classesCount;
+	if (buffer == NULL) {
+		count = classesCount;
+
+		objc_globalMutex_unlock();
+
+		return count;
+	}
 
 	if (classesCount < count)
 		count = classesCount;
@@ -603,7 +667,8 @@ objc_getClassList(Class *buffer, unsigned int count)
 			return j;
 		}
 
-		if (classes->data[i] == NULL)
+		if (classes->data[i] == NULL ||
+		    classes->data[i] == &objc_deletedBucket)
 			continue;
 
 		if (strcmp(classes->data[i]->key, "Protocol") == 0)

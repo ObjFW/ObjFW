@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -38,18 +42,18 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							   repeats: repeats]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -60,19 +64,19 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object
+							   repeats: repeats]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -84,20 +88,20 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							   repeats: repeats]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -110,21 +114,21 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					    object: object3
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							    object: object3
+							   repeats: repeats]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)scheduledTimerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -138,22 +142,22 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					    object: object3
-					    object: object4
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							    object: object3
+							    object: object4
+							   repeats: repeats]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -163,17 +167,17 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					   repeats: repeats
-					     block: block] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							   repeats: repeats
+							     block: block]);
 
 	[[OFRunLoop currentRunLoop] addTimer: timer];
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 #endif
 
@@ -184,16 +188,16 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							   repeats: repeats]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -204,17 +208,17 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object
+							   repeats: repeats]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -226,18 +230,18 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							   repeats: repeats]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -250,19 +254,19 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					    object: object3
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							    object: object3
+							   repeats: repeats]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 + (instancetype)timerWithTimeInterval: (OFTimeInterval)timeInterval
@@ -276,20 +280,20 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					    target: target
-					  selector: selector
-					    object: object1
-					    object: object2
-					    object: object3
-					    object: object4
-					   repeats: repeats] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							    target: target
+							  selector: selector
+							    object: object1
+							    object: object2
+							    object: object3
+							    object: object4
+							   repeats: repeats]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -299,15 +303,15 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
-	id timer = [[[self alloc] initWithFireDate: fireDate
-					  interval: timeInterval
-					   repeats: repeats
-					     block: block] autorelease];
+	id timer = objc_autorelease([[self alloc] initWithFireDate: fireDate
+							  interval: timeInterval
+							   repeats: repeats
+							     block: block]);
 
-	[timer retain];
+	objc_retain(timer);
 	objc_autoreleasePoolPop(pool);
 
-	return [timer autorelease];
+	return objc_autoreleaseReturnValue(timer);
 }
 #endif
 
@@ -331,14 +335,14 @@
 	self = [super init];
 
 	@try {
-		_fireDate = [fireDate retain];
+		_fireDate = objc_retain(fireDate);
 		_interval = interval;
-		_target = [target retain];
+		_target = objc_retain(target);
 		_selector = selector;
-		_object1 = [object1 retain];
-		_object2 = [object2 retain];
-		_object3 = [object3 retain];
-		_object4 = [object4 retain];
+		_object1 = objc_retain(object1);
+		_object2 = objc_retain(object2);
+		_object3 = objc_retain(object3);
+		_object4 = objc_retain(object4);
 		_arguments = arguments;
 		_repeats = repeats;
 		_valid = true;
@@ -346,7 +350,7 @@
 		_condition = [[OFCondition alloc] init];
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -462,7 +466,7 @@
 	self = [super init];
 
 	@try {
-		_fireDate = [fireDate retain];
+		_fireDate = objc_retain(fireDate);
 		_interval = interval;
 		_repeats = repeats;
 		_block = [block copy];
@@ -471,7 +475,7 @@
 		_condition = [[OFCondition alloc] init];
 # endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -488,17 +492,17 @@
 	OFAssert(_inRunLoop == nil);
 	OFAssert(_inRunLoopMode == nil);
 
-	[_fireDate release];
-	[_target release];
-	[_object1 release];
-	[_object2 release];
-	[_object3 release];
-	[_object4 release];
+	objc_release(_fireDate);
+	objc_release(_target);
+	objc_release(_object1);
+	objc_release(_object2);
+	objc_release(_object3);
+	objc_release(_object4);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_block);
 #endif
 #ifdef OF_HAVE_THREADS
-	[_condition release];
+	objc_release(_condition);
 #endif
 
 	[super dealloc];
@@ -517,11 +521,11 @@
 	OFRunLoop *oldInRunLoop = _inRunLoop;
 	OFRunLoopMode oldInRunLoopMode = _inRunLoopMode;
 
-	_inRunLoop = [runLoop retain];
-	[oldInRunLoop release];
+	_inRunLoop = objc_retain(runLoop);
+	objc_release(oldInRunLoop);
 
 	_inRunLoopMode = [mode copy];
-	[oldInRunLoopMode release];
+	objc_release(oldInRunLoopMode);
 }
 
 - (void)of_reschedule
@@ -542,7 +546,7 @@
 	newFireDate = _fireDate.timeIntervalSince1970 +
 	    (missedIntervals + 1) * _interval;
 
-	[_fireDate release];
+	objc_release(_fireDate);
 	_fireDate = nil;
 	_fireDate = [[OFDate alloc]
 	    initWithTimeIntervalSince1970: newFireDate];
@@ -615,7 +619,7 @@
 
 - (void)setFireDate: (OFDate *)fireDate
 {
-	[self retain];
+	objc_retain(self);
 	@try {
 		@synchronized (self) {
 			OFDate *old;
@@ -625,12 +629,12 @@
 
 			old = _fireDate;
 			_fireDate = [fireDate copy];
-			[old release];
+			objc_release(old);
 
 			[_inRunLoop addTimer: self forMode: _inRunLoopMode];
 		}
 	} @finally {
-		[self release];
+		objc_release(self);
 	}
 }
 
@@ -639,13 +643,13 @@
 	_valid = false;
 
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_block);
 #endif
-	[_target release];
-	[_object1 release];
-	[_object2 release];
-	[_object3 release];
-	[_object4 release];
+	objc_release(_target);
+	objc_release(_object1);
+	objc_release(_object2);
+	objc_release(_object3);
+	objc_release(_object4);
 
 	_target = nil;
 	_object1 = nil;
@@ -719,7 +723,7 @@
 
 		objc_autoreleasePoolPop(pool);
 
-		return [ret autorelease];
+		return objc_autoreleaseReturnValue(ret);
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif

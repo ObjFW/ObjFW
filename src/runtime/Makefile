@@ -10,8 +10,10 @@ FRAMEWORK = ${OBJFWRT_FRAMEWORK}
 AMIGA_LIB = ${OBJFWRT_AMIGA_LIB}
 LIB_MAJOR = ${OBJFWRT_LIB_MAJOR}
 LIB_MINOR = ${OBJFWRT_LIB_MINOR}
+LIB_PATCH = ${OBJFWRT_LIB_PATCH}
 
 SRCS = arc.m			\
+       association.m		\
        autorelease.m		\
        category.m		\
        class.m			\

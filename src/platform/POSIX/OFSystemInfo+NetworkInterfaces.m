@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -53,6 +57,7 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFSystemInfo (NetworkInterfaces)
 static bool
@@ -189,7 +194,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
-		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
 		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
 			return false;
 
@@ -227,9 +232,12 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			    address.sockaddr.in6.sin6_addr.s6_addr[0] == 0xFE &&
 			    (address.sockaddr.in6.sin6_addr.s6_addr[1] & 0xC0)
 			    == 0x80) {
-#   if defined(HAVE_INET6_GETSCOPEID)
-				inet6_getscopeid(&address.sockaddr.in6,
-				    INET6_IS_ADDR_LINKLOCAL);
+#   if defined(__KAME__)
+#    define addr6 address.sockaddr.in6.sin6_addr.s6_addr
+				address.sockaddr.in6.sin6_scope_id =
+				    (addr6[2] << 8) | addr6[3];
+				addr6[2] = addr6[3] = 0;
+#    undef addr6
 #   elif defined(HAVE_IF_NAMETOINDEX)
 				address.sockaddr.in6.sin6_scope_id =
 				    if_nametoindex(
@@ -241,11 +249,14 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 			[addresses addItem: &address];
 
 next:
-# ifdef _SIZEOF_ADDR_IFREQ
-			buffer += _SIZEOF_ADDR_IFREQ(*current);
-# else
-			buffer += sizeof(struct ifreq);
-# endif
+#  if defined(HAVE_STRUCT_SOCKADDR_SA_LEN) && !defined(OF_NETBSD)
+			if (current->ifr_addr.sa_len > sizeof(struct sockaddr))
+				buffer += sizeof(struct ifreq) -
+				    sizeof(struct sockaddr) +
+				    current->ifr_addr.sa_len;
+			else
+#  endif
+				buffer += sizeof(struct ifreq);
 		}
 	} @finally {
 		free(ifrs);
@@ -319,18 +330,17 @@ queryNetworkInterfaceIPv6Addresses(OFMutableDictionary *ret)
 		address.sockaddr.in6.sin6_family = AF_INET6;
 
 		for (size_t i = 0; i < 32; i += 2) {
-			unsigned long long byte;
+			unsigned char byte;
 
 			@try {
 				byte = [[addressString
 				    substringWithRange: OFMakeRange(i, 2)]
-				    unsignedLongLongValueWithBase: 16];
+				    unsignedCharValueWithBase: 16];
 			} @catch (OFInvalidFormatException *e) {
 				goto next_line;
-			}
-
-			if (byte > 0xFF)
+			} @catch (OFOutOfRangeException *e) {
 				goto next_line;
+			}
 
 			address.sockaddr.in6.sin6_addr.s6_addr[i / 2] =
 			    (unsigned char)byte;
@@ -399,7 +409,8 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 		    componentsSeparatedByString: @" "
 					options: OFStringSkipEmptyComponents];
 		OFString *name;
-		unsigned long long network, nodeLong;
+		unsigned long network;
+		unsigned long long nodeLong;
 		unsigned char node[IPX_NODE_LEN];
 		OFSocketAddress address;
 		OFMutableData *addresses;
@@ -416,7 +427,7 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 
 		@try {
 			network = [[components objectAtIndex: 0]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedLongValueWithBase: 16];
 			nodeLong = [[components objectAtIndex: 1]
 			    unsignedLongLongValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
@@ -488,7 +499,8 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		    componentsSeparatedByString: @" "
 					options: OFStringSkipEmptyComponents];
 		OFString *addressString, *name;
-		unsigned long long network, node;
+		unsigned short network;
+		unsigned char node;
 		OFSocketAddress address;
 		OFMutableData *addresses;
 
@@ -510,10 +522,10 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		@try {
 			network = [[addressString
 			    substringWithRange: OFMakeRange(0, 4)]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedShortValueWithBase: 16];
 			node = [[addressString
 			    substringWithRange: OFMakeRange(5, 2)]
-			    unsignedLongLongValueWithBase: 16];
+			    unsignedCharValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
 			continue;
 		}
@@ -626,7 +638,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 
 	return true;
 #elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
-    defined(HAVE_STRUCT_SOCKADDR_DL)
+    defined(HAVE_STRUCT_SOCKADDR_DL) && defined(IFT_ETHER)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct ifconf ifc;
@@ -646,7 +658,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
-		ifc.ifc_len = 128 * sizeof(struct ifreq);
+		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
 		if (ioctl(sock, SIOCGIFCONF, &ifc) < 0)
 			return false;
 
@@ -727,10 +739,10 @@ next:
 		[interface makeImmutable];
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

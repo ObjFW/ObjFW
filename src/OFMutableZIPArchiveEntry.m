@@ -1,25 +1,29 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFMutableZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
-#import "OFString.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -28,7 +32,6 @@
 @dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
 @dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
-@dynamic of_localFileHeaderOffset;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -38,12 +41,13 @@
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
-	return [[[self alloc] initWithFileName: fileName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
 }
 
 - (instancetype)initWithFileName: (OFString *)fileName
 {
-	self = [super of_init];
+	self = [self of_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -55,7 +59,7 @@
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -79,7 +83,7 @@
 
 	old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -94,7 +98,7 @@
 
 	old = _fileComment;
 	_fileComment = [fileComment copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -112,7 +116,7 @@
 
 	old = _extraField;
 	_extraField = [extraField copy];
-	[old release];
+	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -171,14 +175,6 @@
 - (void)setGeneralPurposeBitFlag: (uint16_t)generalPurposeBitFlag
 {
 	_generalPurposeBitFlag = generalPurposeBitFlag;
-}
-
-- (void)of_setLocalFileHeaderOffset: (int64_t)localFileHeaderOffset
-{
-	if (localFileHeaderOffset < 0)
-		@throw [OFInvalidArgumentException exception];
-
-	_localFileHeaderOffset = localFileHeaderOffset;
 }
 
 - (void)makeImmutable

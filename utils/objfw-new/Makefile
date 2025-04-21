@@ -3,8 +3,10 @@ include ../../extra.mk
 PROG = objfw-new${PROG_SUFFIX}
 SRCS = NewApp.m		\
        NewClass.m	\
+       NewTest.m	\
        ObjFWNew.m	\
        Property.m
+MAN = objfw-new.1
 
 include ../../buildsys.mk
 
@@ -14,8 +16,7 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
 	    -I../..
-LIBS := -L../../src  -L../../src/linklib ${OBJFW_LIBS}			\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
-	${LIBS}
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src ${OBJFW_LIB} -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

@@ -66,7 +66,7 @@ run:
 	exit $$EXIT
 
 CPPFLAGS += -I../../src -I../../src/runtime -I../..
-LIBS := -L../../src -L../../src/linklib ${OBJFW_LIBS}			\
+LIBS := -L../../src -L../../src/linklib ${OBJFW_LIB}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS} \
 	${LIBS}
 LD = ${OBJC}

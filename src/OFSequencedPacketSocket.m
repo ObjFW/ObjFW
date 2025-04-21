@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -47,19 +51,9 @@
 @implementation OFSequencedPacketSocket
 @synthesize listening = _listening, delegate = _delegate;
 
-+ (void)initialize
-{
-	if (self != [OFSequencedPacketSocket class])
-		return;
-
-	if (!OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)socket
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -72,10 +66,14 @@
 			abort();
 		}
 
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		_socket = OFInvalidSocketHandle;
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -94,11 +92,11 @@
 - (int)of_socketError
 {
 	int errNo;
-	socklen_t len = sizeof(errNo);
+	socklen_t len = (socklen_t)sizeof(errNo);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
 	    &len) != 0)
-		return OFSocketErrNo();
+		return _OFSocketErrNo();
 
 	return errNo;
 }
@@ -106,7 +104,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)canBlock
@@ -139,7 +137,7 @@
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	_canBlock = canBlock;
 #else
@@ -155,11 +153,15 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
-	if ((ret = recv(_socket, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException
-		    exceptionWithObject: self
-			requestedLength: length
-				  errNo: OFSocketErrNo()];
+	while ((ret = recv(_socket, buffer, length, 0)) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+					  errNo: errNo];
+	}
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -168,7 +170,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	return ret;
@@ -190,7 +192,7 @@
 						       length: length
 							 mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-							block: NULL
+						      handler: NULL
 # endif
 						     delegate: _delegate];
 }
@@ -200,10 +202,27 @@
 			length: (size_t)length
 			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
+	OFSequencedPacketSocketPacketReceivedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, void *buffer_, size_t length_,
+	    id exception) {
+		return block(length_, exception);
+	};
+
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
 			 runLoopMode: OFDefaultRunLoopMode
-			       block: block];
+			     handler: handler];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler
+{
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: OFDefaultRunLoopMode
+			     handler: handler];
 }
 
 - (void)
@@ -212,11 +231,32 @@
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 		     block: (OFSequencedPacketSocketAsyncReceiveBlock)block
 {
+	OFSequencedPacketSocketPacketReceivedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, void *buffer_, size_t length_,
+	    id exception) {
+		return block(length_, exception);
+	};
+
 	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
 						       buffer: buffer
 						       length: length
 							 mode: runLoopMode
-							block: block
+						      handler: handler
+						     delegate: nil];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler
+
+{
+	[OFRunLoop of_addAsyncReceiveForSequencedPacketSocket: self
+						       buffer: buffer
+						       length: length
+							 mode: runLoopMode
+						      handler: handler
 						     delegate: nil];
 }
 #endif
@@ -232,12 +272,16 @@
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = send(_socket, (void *)buffer, length, 0)) < 0)
-		@throw [OFWriteFailedException
-		    exceptionWithObject: self
-			requestedLength: length
-			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+	while ((bytesWritten = send(_socket, (void *)buffer, length, 0)) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: 0
+					  errNo: errNo];
+	}
 #else
 	int bytesWritten;
 
@@ -249,7 +293,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	if ((size_t)bytesWritten != length)
@@ -270,7 +314,7 @@
 						      data: data
 						      mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-						     block: NULL
+						   handler: NULL
 # endif
 						  delegate: _delegate];
 }
@@ -279,19 +323,46 @@
 - (void)asyncSendData: (OFData *)data
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
+	OFSequencedPacketSocketDataSentHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, OFData *data_, id exception) {
+		return block(exception);
+	};
+
 	[self asyncSendData: data
 		runLoopMode: OFDefaultRunLoopMode
-		      block: block];
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+		handler: (OFSequencedPacketSocketDataSentHandler)handler
+{
+	[self asyncSendData: data
+		runLoopMode: OFDefaultRunLoopMode
+		    handler: handler];
 }
 
 - (void)asyncSendData: (OFData *)data
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
 {
+	OFSequencedPacketSocketDataSentHandler handler = ^ (
+	    OFSequencedPacketSocket *socket, OFData *data_, id exception) {
+		return block(exception);
+	};
+
+	[self asyncSendData: data
+		runLoopMode: runLoopMode
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFSequencedPacketSocketDataSentHandler)handler
+{
 	[OFRunLoop of_addAsyncSendForSequencedPacketSocket: self
 						      data: data
 						      mode: runLoopMode
-						     block: block
+						   handler: handler
 						  delegate: nil];
 }
 #endif
@@ -310,7 +381,7 @@
 		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	_listening = true;
 }
@@ -327,7 +398,7 @@
 	if (_socket == OFInvalidSocketHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	client = [[[[self class] alloc] init] autorelease];
+	client = objc_autorelease([[self.class alloc] init]);
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
@@ -338,7 +409,7 @@
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
@@ -346,14 +417,14 @@
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
@@ -372,6 +443,11 @@
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
 		client->_remoteAddress.family = OFSocketAddressFamilyIPv6;
+		break;
+#endif
+#ifdef OF_HAVE_UNIX_SOCKETS
+	case AF_UNIX:
+		client->_remoteAddress.family = OFSocketAddressFamilyUNIX;
 		break;
 #endif
 #ifdef OF_HAVE_IPX
@@ -396,23 +472,50 @@
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: NULL
+				      handler: NULL
 				     delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
+	OFSequencedPacketSocketAcceptedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket,
+	    OFSequencedPacketSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithHandler: (OFSequencedPacketSocketAcceptedHandler)handler
+{
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
 }
 
 - (void)
     asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block
 {
+	OFSequencedPacketSocketAcceptedHandler handler = ^ (
+	    OFSequencedPacketSocket *socket,
+	    OFSequencedPacketSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: runLoopMode
+				 handler: handler];
+}
+
+- (void)
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketAcceptedHandler)handler
+{
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: block
+				      handler: handler
 				     delegate: nil];
 }
 #endif

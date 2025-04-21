@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -26,6 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <math.h>
 
 #include "macros.h"
 
@@ -83,7 +88,7 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**
- * @brief An enum for representing endianess.
+ * @brief An enum for representing endianness.
  */
 typedef enum {
 	/** Most significant byte first (big endian) */
@@ -99,7 +104,7 @@ typedef enum {
 } OFByteOrder;
 
 /**
- * @struct OFRange OFObject.h ObjFW/OFObject.h
+ * @struct OFRange OFObject.h ObjFW/ObjFW.h
  *
  * @brief A range.
  */
@@ -115,7 +120,7 @@ typedef struct OF_BOXABLE OFRange {
  *
  * @param start The starting index of the range
  * @param length The length of the range
- * @return An OFRangeith the specified start and length
+ * @return An OFRange with the specified start and length
  */
 static OF_INLINE OFRange OF_CONST_FUNC
 OFMakeRange(size_t start, size_t length)
@@ -150,7 +155,7 @@ OFEqualRanges(OFRange range1, OFRange range2)
 typedef double OFTimeInterval;
 
 /**
- * @struct OFPoint OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint OFObject.h ObjFW/ObjFW.h
  *
  * @brief A point in 2D space.
  */
@@ -196,7 +201,7 @@ OFEqualPoints(OFPoint point1, OFPoint point2)
 }
 
 /**
- * @struct OFSize OFObject.h ObjFW/OFObject.h
+ * @struct OFSize OFObject.h ObjFW/ObjFW.h
  *
  * @brief A size.
  */
@@ -242,7 +247,7 @@ OFEqualSizes(OFSize size1, OFSize size2)
 }
 
 /**
- * @struct OFRect OFObject.h ObjFW/OFObject.h
+ * @struct OFRect OFObject.h ObjFW/ObjFW.h
  *
  * @brief A rectangle.
  */
@@ -293,7 +298,7 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 }
 
 /**
- * @struct OFVector3D OFObject.h ObjFW/OFObject.h
+ * @struct OFVector3D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 3D space.
  */
@@ -345,7 +350,78 @@ OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
 }
 
 /**
- * @struct OFVector4D OFObject.h ObjFW/OFObject.h
+ * @brief Adds the two specified vectors.
+ *
+ * @param vector1 The vector to add to
+ * @param vector2 The vector to add
+ * @return The sum of the two vectors
+ */
+static OF_INLINE OFVector3D
+OFAddVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return OFMakeVector3D(vector1.x + vector2.x, vector1.y + vector2.y,
+	    vector1.z + vector2.z);
+}
+
+/**
+ * @brief Subtracts the second vector from the first vector.
+ *
+ * @param vector1 The vector to subtract from
+ * @param vector2 The vector to subtract
+ * @return The second vector subtracted from the first vector
+ */
+static OF_INLINE OFVector3D
+OFSubtractVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return OFMakeVector3D(vector1.x - vector2.x, vector1.y - vector2.y,
+	    vector1.z - vector2.z);
+}
+
+/**
+ * @brief Multiplies the specified vector with a scalar.
+ *
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
+ */
+static OF_INLINE OFVector3D
+OFMultiplyVector3D(OFVector3D vector, float scalar)
+{
+	return OFMakeVector3D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar);
+}
+
+/**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z;
+}
+
+/**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	OFVector3D difference = OFSubtractVectors3D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors3D(difference, difference));
+}
+
+/**
+ * @struct OFVector4D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 4D space.
  */
@@ -400,6 +476,77 @@ OFEqualVectors4D(OFVector4D vector1, OFVector4D vector2)
 		return false;
 
 	return true;
+}
+
+/**
+ * @brief Adds the two specified vectors.
+ *
+ * @param vector1 The vector to add to
+ * @param vector2 The vector to add
+ * @return The sum of the two vectors
+ */
+static OF_INLINE OFVector4D
+OFAddVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return OFMakeVector4D(vector1.x + vector2.x, vector1.y + vector2.y,
+	    vector1.z + vector2.z, vector1.w + vector2.w);
+}
+
+/**
+ * @brief Subtracts the second vector from the first vector.
+ *
+ * @param vector1 The vector to subtract from
+ * @param vector2 The vector to subtract
+ * @return The second vector subtracted from the first vector
+ */
+static OF_INLINE OFVector4D
+OFSubtractVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return OFMakeVector4D(vector1.x - vector2.x, vector1.y - vector2.y,
+	    vector1.z - vector2.z, vector1.w - vector2.w);
+}
+
+/**
+ * @brief Multiplies the specified vector with a scalar.
+ *
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
+ */
+static OF_INLINE OFVector4D
+OFMultiplyVector4D(OFVector4D vector, float scalar)
+{
+	return OFMakeVector4D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar, vector.w * scalar);
+}
+
+/**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z + vector1.w * vector2.w;
+}
+
+/**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	OFVector4D difference = OFSubtractVectors4D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors4D(difference, difference));
 }
 
 /**
@@ -459,7 +606,7 @@ static const size_t OFNotFound = SIZE_MAX;
 @class OFThread;
 
 /**
- * @protocol OFObject OFObject.h ObjFW/OFObject.h
+ * @protocol OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The protocol which all root classes implement.
  */
@@ -678,7 +825,7 @@ static const size_t OFNotFound = SIZE_MAX;
 @end
 
 /**
- * @class OFObject OFObject.h ObjFW/OFObject.h
+ * @class OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
@@ -734,6 +881,10 @@ OF_ROOT_CLASS
  *
  * Derived classes can override this to execute their own code when the class
  * is loaded.
+ *
+ * @warning You cannot make use of other classes from inside this method! Only
+ *	    the class itself, its superclasses and instances of the class or
+ *	    its superclassses can be messaged!
  */
 + (void)load;
 
@@ -933,7 +1084,7 @@ OF_ROOT_CLASS
  * @try {
  *         // Custom initialization code goes here.
  * } @catch (id e) {
- *         [self release];
+ *         objc_release(self);
  *         @throw e;
  * }
  *
@@ -1332,13 +1483,13 @@ OF_ROOT_CLASS
  *	    returns!
  *
  * @param selector The selector not understood by the receiver
- * @throw OFNotImplementedException
+ * @throw OFNotImplementedException The method is not implemented
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
 
 /**
- * @protocol OFCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of copies.
  */
@@ -1356,7 +1507,7 @@ OF_ROOT_CLASS
 @end
 
 /**
- * @protocol OFMutableCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFMutableCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of mutable copies.
  *
@@ -1373,11 +1524,12 @@ OF_ROOT_CLASS
 @end
 
 /**
- * @protocol OFComparing OFObject.h ObjFW/OFObject.h
+ * @protocol OFComparing OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for comparing objects.
  *
- * This protocol is implemented by objects that can be compared. Its only method, @ref compare:, should be overridden with a stronger type.
+ * This protocol is implemented by objects that can be compared. Its only
+ * method, @ref compare:, should be overridden with a stronger type.
  */
 @protocol OFComparing
 /**
@@ -1407,7 +1559,7 @@ extern "C" {
  *				address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Allocates memory for the specified number of items of the specified
@@ -1424,7 +1576,7 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  *				address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Resizes memory to the specified number of items of the specified size.
@@ -1450,7 +1602,7 @@ extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
  * @brief Frees memory allocated by @ref OFAllocMemory, @ref OFAllocZeroedMemory
  *	  or @ref OFResizeMemory.
  *
- * @param pointer A pointer to the memory to free or nil (passing nil ooes
+ * @param pointer A pointer to the memory to free or nil (passing nil does
  *		  nothing)
  */
 extern void OFFreeMemory(void *_Nullable pointer);
@@ -1458,14 +1610,86 @@ extern void OFFreeMemory(void *_Nullable pointer);
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
-# ifndef __OBJC2__
+extern id _Nullable objc_retain(id _Nullable object);
+extern id _Nullable objc_retainBlock(id _Nullable block);
+extern id _Nullable objc_retainAutorelease(id _Nullable object);
+extern void objc_release(id _Nullable object);
+extern id _Nullable objc_autorelease(id _Nullable object);
+extern id _Nullable objc_autoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleasedReturnValue(id _Nullable object);
+extern id _Nullable objc_storeStrong(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_storeWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_loadWeakRetained(id _Nullable *_Nonnull object);
+extern _Nullable id objc_initWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern void objc_destroyWeak(id _Nullable *_Nonnull object);
+extern id _Nullable objc_loadWeak(id _Nullable *_Nonnull object);
+extern void objc_copyWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
+extern void objc_moveWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
+# ifdef OF_DECLARE_CONSTRUCT_INSTANCE
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 extern void *_Nullable objc_destructInstance(id _Nullable object);
 # endif
+# ifdef OF_DECLARE_SET_ASSOCIATED_OBJECT
+typedef enum objc_associationPolicy {
+	OBJC_ASSOCIATION_ASSIGN	= 0,
+	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+	OBJC_ASSOCIATION_RETAIN = OBJC_ASSOCIATION_RETAIN_NONATOMIC | 0x300,
+	OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+	OBJC_ASSOCIATION_COPY = OBJC_ASSOCIATION_COPY_NONATOMIC | 0x300
+} objc_associationPolicy;
+extern void objc_setAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key, id _Nullable value,
+    objc_associationPolicy policy);
+extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key);
+extern void objc_removeAssociatedObjects(id _Nonnull object);
+# endif
 #endif
+
+/**
+ * @brief Allocates a new object.
+ *
+ * This is useful to override @ref OFObject#alloc in a subclass that can then
+ * allocate extra memory in the same memory allocation.
+ *
+ * @param class_ The class of which to allocate an object
+ * @param extraSize Extra space after the ivars to allocate
+ * @param extraAlignment Alignment of the extra space after the ivars
+ * @param extra A pointer to set to a pointer to the extra space
+ * @return The allocated object
+ */
 extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
     void *_Nullable *_Nullable extra);
+
+/**
+ * @brief This function is called when a method is not found.
+ *
+ * It can also be called intentionally to indicate that a method is not
+ * implemetned, for example in an abstract method. However, instead of calling
+ * OFMethodNotFound directly, it is preferred to do the following:
+ *
+ *     - (void)abstractMethod
+ *     {
+ *     	OF_UNRECOGNIZED_SELECTOR
+ *     }
+ *
+ * However, do not use this for init methods. Instead, use the following:
+ *
+ *     - (instancetype)init
+ *     {
+ *     	OF_INVALID_INIT_METHOD
+ *     }
+ *
+ * @param self The object which does not have the method
+ * @param _cmd The selector of the method that does not exist
+ */
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
 
 /**

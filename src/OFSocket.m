@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,6 +30,8 @@
 
 #include <errno.h>
 
+#import "OFSocket.h"
+#import "OFSocket+Private.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFLocale.h"
@@ -33,8 +39,6 @@
 # import "OFMutex.h"
 #endif
 #import "OFOnce.h"
-#import "OFSocket.h"
-#import "OFSocket+Private.h"
 #import "OFString.h"
 #ifdef OF_HAVE_THREADS
 # import "OFTLSKey.h"
@@ -75,7 +79,7 @@ static OFMutex *mutex;
 static void
 releaseMutex(void)
 {
-	[mutex release];
+	objc_release(mutex);
 }
 #endif
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
@@ -84,9 +88,9 @@ static bool initSuccessful = false;
 
 #ifdef OF_AMIGAOS
 # if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
-OFTLSKey OFSocketBaseKey;
+OFTLSKey _OFSocketBaseKey;
 #  ifdef OF_AMIGAOS4
-OFTLSKey OFSocketInterfaceKey;
+OFTLSKey _OFSocketInterfaceKey;
 #  endif
 # else
 struct Library *SocketBase;
@@ -99,11 +103,11 @@ struct SocketIFace *ISocket = NULL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 OF_CONSTRUCTOR()
 {
-	if (OFTLSKeyNew(&OFSocketBaseKey) != 0)
+	if (OFTLSKeyNew(&_OFSocketBaseKey) != 0)
 		@throw [OFInitializationFailedException exception];
 
 # ifdef OF_AMIGAOS4
-	if (OFTLSKeyNew(&OFSocketInterfaceKey) != 0)
+	if (OFTLSKeyNew(&_OFSocketInterfaceKey) != 0)
 		@throw [OFInitializationFailedException exception];
 # endif
 }
@@ -172,7 +176,7 @@ OF_DESTRUCTOR()
 #endif
 
 bool
-OFSocketInit(void)
+_OFSocketInit(void)
 {
 #if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
@@ -186,9 +190,9 @@ OFSocketInit(void)
 # endif
 
 # ifdef OF_AMIGAOS4
-	if ((socketInterface = OFTLSKeyGet(OFSocketInterfaceKey)) != NULL)
+	if ((socketInterface = OFTLSKeyGet(_OFSocketInterfaceKey)) != NULL)
 # else
-	if ((socketBase = OFTLSKeyGet(OFSocketBaseKey)) != NULL)
+	if ((socketBase = OFTLSKeyGet(_OFSocketBaseKey)) != NULL)
 # endif
 		return true;
 
@@ -203,7 +207,7 @@ OFSocketInit(void)
 	}
 # endif
 
-	if (OFTLSKeySet(OFSocketBaseKey, socketBase) != 0) {
+	if (OFTLSKeySet(_OFSocketBaseKey, socketBase) != 0) {
 		CloseLibrary(socketBase);
 # ifdef OF_AMIGAOS4
 		DropInterface((struct Interface *)socketInterface);
@@ -212,7 +216,7 @@ OFSocketInit(void)
 	}
 
 # ifdef OF_AMIGAOS4
-	if (OFTLSKeySet(OFSocketInterfaceKey, socketInterface) != 0) {
+	if (OFTLSKeySet(_OFSocketInterfaceKey, socketInterface) != 0) {
 		CloseLibrary(socketBase);
 		DropInterface((struct Interface *)socketInterface);
 		return false;
@@ -225,11 +229,12 @@ OFSocketInit(void)
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
 void
-OFSocketDeinit(void)
+_OFSocketDeinit(void)
 {
-	struct Library *socketBase = OFTLSKeyGet(OFSocketBaseKey);
+	struct Library *socketBase = OFTLSKeyGet(_OFSocketBaseKey);
 # ifdef OF_AMIGAOS4
-	struct SocketIFace *socketInterface = OFTLSKeyGet(OFSocketInterfaceKey);
+	struct SocketIFace *socketInterface =
+	    OFTLSKeyGet(_OFSocketInterfaceKey);
 
 	if (socketInterface != NULL)
 		DropInterface((struct Interface *)socketInterface);
@@ -240,7 +245,7 @@ OFSocketDeinit(void)
 #endif
 
 int
-OFSocketErrNo(void)
+_OFSocketErrNo(void)
 {
 #if defined(OF_WINDOWS)
 	switch (WSAGetLastError()) {
@@ -342,7 +347,7 @@ OFSocketErrNo(void)
 
 #ifndef OF_WII
 int
-OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
+_OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen)
 {
 	int ret;
@@ -375,7 +380,7 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	ret.length = 8;
 #else
-	ret.length = sizeof(ret.sockaddr.in);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.in);
 #endif
 
 	addrIn->sin_family = AF_INET;
@@ -392,19 +397,20 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 	addr = 0;
 
 	for (OFString *component in components) {
-		unsigned long long number;
+		unsigned char number;
 
 		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
 
-		if ([component indexOfCharacterFromSet:
-		    whitespaceCharacterSet] != OFNotFound)
+		if ([component rangeOfCharacterFromSet:
+		    whitespaceCharacterSet].location != OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
-		number = component.unsignedLongLongValue;
-
-		if (number > UINT8_MAX)
+		@try {
+			number = component.unsignedCharValue;
+		} @catch (OFOutOfRangeException *e) {
 			@throw [OFInvalidFormatException exception];
+		}
 
 		addr = (addr << 8) | ((uint32_t)number & 0xFF);
 	}
@@ -419,18 +425,24 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 static uint16_t
 parseIPv6Component(OFString *component)
 {
-	unsigned long long number;
+	unsigned short number;
 
-	if ([component indexOfCharacterFromSet:
-	    [OFCharacterSet whitespaceCharacterSet]] != OFNotFound)
+	if ([component rangeOfCharacterFromSet:
+	    [OFCharacterSet whitespaceCharacterSet]].location != OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
-	number = [component unsignedLongLongValueWithBase: 16];
-
-	if (number > UINT16_MAX)
+	@try {
+		number = [component unsignedShortValueWithBase: 16];
+	} @catch (OFOutOfRangeException *e) {
 		@throw [OFInvalidFormatException exception];
+	}
 
-	return (uint16_t)number;
+#if USHRT_MAX != 65535
+	if (number > 65535)
+		@throw [OFInvalidFormatException exception];
+#endif
+
+	return number;
 }
 
 static OFString *
@@ -447,9 +459,8 @@ transformEmbeddedIPv4(OFString *IPv6)
 	if (lastColon == OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
-	IPv4 = [IPv6 substringWithRange:
-	    OFMakeRange(lastColon + 1, IPv6.length - lastColon - 1)];
-	IPv6 = [IPv6 substringWithRange: OFMakeRange(0, lastColon + 1)];
+	IPv4 = [IPv6 substringFromIndex: lastColon + 1];
+	IPv6 = [IPv6 substringToIndex: lastColon + 1];
 
 	address = OFSocketAddressParseIPv4(IPv4, 0);
 	addrIn = &address.sockaddr.in;
@@ -471,7 +482,7 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPv6;
-	ret.length = sizeof(ret.sockaddr.in6);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.in6);
 
 #ifdef AF_INET6
 	addrIn6->sin6_family = AF_INET6;
@@ -485,8 +496,8 @@ OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 		IPv6 = [IPv6 substringToIndex: percent];
 
 		@try {
-			addrIn6->sin6_scope_id = (uint32_t)[interface
-			    unsignedLongLongValueWithBase: 10];
+			addrIn6->sin6_scope_id = [interface
+			    unsignedIntValueWithBase: 10];
 		} @catch (OFInvalidFormatException *e) {
 #if defined(HAVE_IF_NAMETOINDEX) && !defined(OF_WINDOWS)
 			addrIn6->sin6_scope_id = if_nametoindex([interface
@@ -601,6 +612,11 @@ OFSocketAddressMakeUNIX(OFString *path)
 	memcpy(ret.sockaddr.un.sun_path,
 	    [path cStringWithEncoding: encoding], length);
 
+#ifdef OF_LINUX
+	if (ret.sockaddr.un.sun_path[0] == '@')
+		ret.sockaddr.un.sun_path[0] = '\0';
+#endif
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -614,7 +630,7 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyIPX;
-	ret.length = sizeof(ret.sockaddr.ipx);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.ipx);
 
 #ifdef AF_IPX
 	ret.sockaddr.ipx.sipx_family = AF_IPX;
@@ -637,7 +653,7 @@ OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OFSocketAddressFamilyAppleTalk;
-	ret.length = sizeof(ret.sockaddr.at);
+	ret.length = (socklen_t)sizeof(ret.sockaddr.at);
 
 #ifdef AF_APPLETALK
 	ret.sockaddr.at.sat_family = AF_APPLETALK;
@@ -967,7 +983,7 @@ appleTalkString(const OFSocketAddress *address)
 {
 	const struct sockaddr_at *addrAT = &address->sockaddr.at;
 
-	return [OFString stringWithFormat: @"%d.%d",
+	return [OFString stringWithFormat: @"%" PRIu8 ".%" PRIu8,
 	    OFFromBigEndian16(addrAT->sat_net), addrAT->sat_node];
 }
 
@@ -987,6 +1003,35 @@ OFSocketAddressString(const OFSocketAddress *address)
 		return appleTalkString(address);
 	default:
 		@throw [OFInvalidArgumentException exception];
+	}
+}
+
+OFString *
+OFSocketAddressDescription(const OFSocketAddress *address)
+{
+	switch (address->family) {
+	case OFSocketAddressFamilyIPv4:
+		return [OFString
+		    stringWithFormat: @"%@:%" PRIu16,
+				      IPv4String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPv6:
+		return [OFString
+		    stringWithFormat: @"[%@]:%" PRIu16,
+				      IPv6String(address),
+				      OFSocketAddressIPPort(address)];
+	case OFSocketAddressFamilyIPX:
+		return [OFString
+		    stringWithFormat: @"%@.%" PRIX16,
+				      IPXString(address),
+				      OFSocketAddressIPXPort(address)];
+	case OFSocketAddressFamilyAppleTalk:
+		return [OFString
+		    stringWithFormat: @"%@." PRIu8,
+				      appleTalkString(address),
+				      OFSocketAddressAppleTalkPort(address)];
+	default:
+		return OFSocketAddressString(address);
 	}
 }
 
@@ -1019,14 +1064,15 @@ OFSocketAddressIPPort(const OFSocketAddress *address)
 }
 
 OFString *
-OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
+OFSocketAddressUNIXPath(const OFSocketAddress *address)
 {
 	socklen_t length;
 
 	if (address->family != OFSocketAddressFamilyUNIX)
 		@throw [OFInvalidArgumentException exception];
 
-	length = address->length - offsetof(struct sockaddr_un, sun_path);
+	length =
+	    address->length - (socklen_t)offsetof(struct sockaddr_un, sun_path);
 
 	for (socklen_t i = 0; i < length; i++)
 		if (address->sockaddr.un.sun_path[i] == 0)

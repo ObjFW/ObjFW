@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -37,6 +41,10 @@
 #import "OFRunLoop+Private.h"
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFSocket.h"
+# import "OFSocket+Private.h"
+#endif
 #import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
@@ -52,8 +60,6 @@
 # include <crt_externs.h>
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-extern int _CRT_glob;
-extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
 # define Class IntuitionClass
 # include <proto/exec.h>
@@ -104,25 +110,28 @@ atexitHandler(void)
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate:)])
 		[delegate applicationWillTerminate: notification];
 
-	[delegate release];
+	objc_release(delegate);
 
 	[[OFNotificationCenter defaultCenter] postNotification: notification];
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && \
     defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-	OFSocketDeinit();
+	_OFSocketDeinit();
 #endif
 }
 
 int
 OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 {
-	[[OFLocale alloc] init];
+	[OFLocale currentLocale];
 
 	app = [[OFApplication alloc] of_init];
 
 #ifdef OF_WINDOWS
 	if ([OFSystemInfo isWindowsNT]) {
+		extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int,
+		    int *);
+		extern int _CRT_glob;
 		wchar_t **wargv, **wenvp;
 		int wargc, si = 0;
 
@@ -140,7 +149,7 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 	[app of_run];
 
-	[delegate release];
+	objc_release(delegate);
 
 	return 0;
 }
@@ -428,33 +437,33 @@ SIGNAL_HANDLER(SIGUSR2)
 		char *env;
 
 		if ((env = getenv("HOME")) != NULL) {
-			OFString *home = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *home =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: home forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
-			OFString *path = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *path =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: path forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
-			OFString *shell = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *shell =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: shell forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
-			OFString *tmpdir = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *tmpdir =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: tmpdir forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
-			OFString *user = [[[OFString alloc]
-			    initWithUTF8StringNoCopy: env
-					freeWhenDone: false] autorelease];
+			OFString *user =
+			    [OFString stringWithUTF8StringNoCopy: env
+						    freeWhenDone: false];
 			[_environment setObject: user forKey: @"USER"];
 		}
 
@@ -463,7 +472,7 @@ SIGNAL_HANDLER(SIGUSR2)
 
 		[_environment makeImmutable];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -472,8 +481,8 @@ SIGNAL_HANDLER(SIGUSR2)
 
 - (void)dealloc
 {
-	[_arguments release];
-	[_environment release];
+	objc_release(_arguments);
+	objc_release(_environment);
 
 	[super dealloc];
 }
@@ -492,7 +501,8 @@ SIGNAL_HANDLER(SIGUSR2)
 #ifndef OF_NINTENDO_DS
 	if (*argc > 0) {
 #else
-	if (__system_argv->argvMagic == ARGV_MAGIC && __system_argv->argc > 0) {
+	if (g_envNdsArgvHeader->magic == ENV_NDS_ARGV_MAGIC &&
+	    g_envNdsArgvHeader->argc > 0) {
 #endif
 		_programName = [[OFString alloc] initWithCString: (*argv)[0]
 							encoding: encoding];
@@ -589,7 +599,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	[OFThread of_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
 #else
-	runLoop = [[[OFRunLoop alloc] init] autorelease];
+	runLoop = objc_autorelease([[OFRunLoop alloc] init]);
 #endif
 
 	[OFRunLoop of_setMainRunLoop: runLoop];
@@ -673,7 +683,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	objc_autoreleasePoolPop(pool);
 
 	if (_activeSandbox == nil)
-		_activeSandbox = [sandbox retain];
+		_activeSandbox = objc_retain(sandbox);
 # endif
 }
 
@@ -701,7 +711,7 @@ SIGNAL_HANDLER(SIGUSR2)
 	objc_autoreleasePoolPop(pool);
 
 	if (_activeSandboxForChildProcesses == nil)
-		_activeSandboxForChildProcesses = [sandbox retain];
+		_activeSandboxForChildProcesses = objc_retain(sandbox);
 # endif
 }
 #endif

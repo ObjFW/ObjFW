@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -64,7 +68,7 @@ OFForward:
 	sw	$a2, 36($sp)
 	sw	$a3, 40($sp)
 #ifdef OF_MIPS_EABI
-	/* For some reason, $a4-$a8 are not always defined */
+	/* For some reason, $a4-$a7 are not always defined */
 	sw	$8, 44($sp)
 	sw	$9, 48($sp)
 	sw	$10, 52($sp)
@@ -82,11 +86,11 @@ OFForward:
 
 	move	$s0, $gp
 #ifdef OF_PIC
-	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
+	lw	$s1, %got(.Lsel_forwardingTargetForSelector_)($gp)
 #else
-	lui	$s1, %hi(sel_forwardingTargetForSelector_)
+	lui	$s1, %hi(.Lsel_forwardingTargetForSelector_)
 #endif
-	addiu	$s1, $s1, %lo(sel_forwardingTargetForSelector_)
+	addiu	$s1, $s1, %lo(.Lsel_forwardingTargetForSelector_)
 
 	jal_pic	object_getClass
 
@@ -159,7 +163,7 @@ OFForward:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found
+	j_pic	OFMethodNotFound
 .type OFForward, %function
 .size OFForward, .-OFForward
 
@@ -206,11 +210,11 @@ OFForward_stret:
 
 	move	$s0, $gp
 #ifdef OF_PIC
-	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
+	lw	$s1, %got(.Lsel_forwardingTargetForSelector_)($gp)
 #else
-	lui	$s1, %hi(sel_forwardingTargetForSelector_)
+	lui	$s1, %hi(.Lsel_forwardingTargetForSelector_)
 #endif
-	addiu	$s1, $s1, %lo(sel_forwardingTargetForSelector_)
+	addiu	$s1, $s1, %lo(.Lsel_forwardingTargetForSelector_)
 
 	move	$a0, $a1
 	jal_pic	object_getClass
@@ -285,44 +289,44 @@ OFForward_stret:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found_stret
+	j_pic	OFMethodNotFound_stret
 .type OFForward_stret, %function
 .size OFForward_stret, .-OFForward_stret
 
-init:
+.Linit:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
 
-	lw	$a0, %got(module)($gp)
-	addiu	$a0, $a0, %lo(module)
+	lw	$a0, %got(.Lmodule)($gp)
+	addiu	$a0, $a0, %lo(.Lmodule)
 	lw	$t9, %call16(__objc_exec_class)($gp)
 	jr	$t9
 #else
-	lui	$a0, %hi(module)
-	addiu	$a0, $a0, %lo(module)
+	lui	$a0, %hi(.Lmodule)
+	addiu	$a0, $a0, %lo(.Lmodule)
 	j	__objc_exec_class
 #endif
 
 .section .ctors, "aw", %progbits
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,18 +30,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFEnumerationMutationException.h"
 
-static void *
-retain(void *object)
-{
-	return [(id)object retain];
-}
-
-static void
-release(void *object)
-{
-	[(id)object release];
-}
-
 static unsigned long
 hash(void *object)
 {
@@ -51,8 +43,8 @@ equal(void *object1, void *object2)
 }
 
 static const OFMapTableFunctions keyFunctions = {
-	.retain = retain,
-	.release = release,
+	.retain = (void *(*)(void *))objc_retain,
+	.release = (void (*)(void *))objc_release,
 	.hash = hash,
 	.equal = equal
 };
@@ -74,7 +66,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 			 objectFunctions: objectFunctions
 				capacity: capacity];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -91,7 +83,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 	@try {
 		count = set.count;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -101,7 +93,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (id object in set)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -118,7 +110,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 	@try {
 		count = array.count;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -128,7 +120,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (id object in array)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -143,7 +135,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		for (size_t i = 0; i < count; i++)
 			[_mapTable setObject: (void *)1 forKey: objects[i]];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -173,7 +165,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		while ((object = va_arg(arguments, id)) != nil)
 			[_mapTable setObject: (void *)1 forKey: object];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -182,7 +174,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 
 - (void)dealloc
 {
-	[_mapTable release];
+	objc_release(_mapTable);
 
 	[super dealloc];
 }
@@ -230,18 +222,18 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		return nil;
 	}
 
-	object = [(id)*objectPtr retain];
+	object = objc_retain((id)*objectPtr);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFMapTableEnumeratorWrapper alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableEnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
-			object: self] autorelease];
+			object: self]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state

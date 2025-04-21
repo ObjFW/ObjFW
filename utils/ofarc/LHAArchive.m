@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,14 @@
 #include <errno.h>
 
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -43,21 +51,23 @@ indent(OFString *string)
 static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
-	if (POSIXPermissions == nil)
-		return;
+	if (POSIXPermissions != nil) {
+		OFFileAttributes attributes;
 
-	POSIXPermissions = [OFNumber numberWithUnsignedShort:
-	    POSIXPermissions.unsignedShortValue & 0777];
+		POSIXPermissions = [OFNumber numberWithUnsignedShort:
+		    POSIXPermissions.unsignedShortValue & 0777];
+		attributes = [OFDictionary
+		    dictionaryWithObject: POSIXPermissions
+				  forKey: OFFilePOSIXPermissions];
 
-	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: POSIXPermissions
-			  forKey: OFFilePOSIXPermissions];
-
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	}
 #endif
 }
 
@@ -83,21 +93,22 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithPath: (OFString *)path
-			 stream: (OF_KINDOF(OFStream *))stream
-			   mode: (OFString *)mode
-		       encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
+		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				    stream: stream
-				      mode: mode
-				  encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      stream: (OF_KINDOF(OFStream *))stream
-			mode: (OFString *)mode
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -108,7 +119,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -117,7 +128,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -238,7 +249,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 					[OFStdOut writeLine: OF_LOCALIZED(
 					    @"list_osid",
 					    @"Operating system identifier: "
-					    "%[osid]",
+					    @"%[osid]",
 					    @"osid", OSID)];
 				}
 			}
@@ -263,6 +274,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
+	OFMutableArray *delayedModificationDates = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFLHAArchiveEntry *entry;
@@ -293,7 +305,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -301,11 +313,18 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
-			setModificationDate(outFileName, entry);
+			/*
+			 * As creating a new file in a directory changes its
+			 * modification date, we can only set it once all files
+			 * have been created.
+			 */
+			[delayedModificationDates addObject:
+			    [OFPair pairWithFirstObject: outFileName
+					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -347,8 +366,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeString: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -360,8 +379,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -370,6 +389,9 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
+
+	for (OFPair *pair in delayedModificationDates)
+		setModificationDate(pair.firstObject, pair.secondObject);
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -432,15 +454,9 @@ outer_loop_end:
 }
 
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (OFString *)archiveComment
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-
-	if (files.count < 1) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
-		    @"Need one or more files to add!")];
-		app->_exitStatus = 1;
-		return;
-	}
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
@@ -450,7 +466,7 @@ outer_loop_end:
 		OFStream *output;
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -516,8 +532,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[OFStdOut writeString: @"\r"];
-					[OFStdOut writeString: OF_LOCALIZED(
+					[OFStdErr writeString: @"\r"];
+					[OFStdErr writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -527,8 +543,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

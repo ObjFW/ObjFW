@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -40,7 +44,7 @@ static const size_t chunkSize = 16;
 
 struct Page {
 	struct Page *next, *previous;
-	void *map;
+	unsigned long *map;
 	unsigned char *page;
 };
 
@@ -98,8 +102,8 @@ static struct Page *
 addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
-	    CHAR_BIT;
+	size_t mapSize = OFRoundUpToPowerOf2(OF_ULONG_BIT,
+	    pageSize / chunkSize) / OF_ULONG_BIT;
 	struct Page *page;
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct Page *lastPage;
@@ -140,7 +144,7 @@ addPage(bool allowPreallocated)
 
 	page = OFAllocMemory(1, sizeof(*page));
 	@try {
-		page->map = OFAllocZeroedMemory(1, mapSize);
+		page->map = OFAllocZeroedMemory(mapSize, sizeof(unsigned long));
 	} @catch (id e) {
 		OFFreeMemory(page);
 		@throw e;
@@ -182,10 +186,10 @@ addPage(bool allowPreallocated)
 static void
 removePageIfEmpty(struct Page *page)
 {
-	unsigned char *map = page->map;
+	unsigned long *map = page->map;
 	size_t pageSize = [OFSystemInfo pageSize];
-	size_t mapSize = OFRoundUpToPowerOf2(CHAR_BIT, pageSize / chunkSize) /
-	    CHAR_BIT;
+	size_t mapSize = OFRoundUpToPowerOf2(OF_ULONG_BIT,
+	    pageSize / chunkSize) / OF_ULONG_BIT;
 
 	for (size_t i = 0; i < mapSize; i++)
 		if (map[i] != 0)
@@ -225,7 +229,7 @@ allocateMemory(struct Page *page, size_t bytes)
 	pageSize = [OFSystemInfo pageSize];
 
 	for (i = 0; i < pageSize / chunkSize; i++) {
-		if (OFBitsetIsSet(page->map, i)) {
+		if (OFBitSetIsSet(page->map, i)) {
 			chunksLeft = chunks;
 			firstChunk = i + 1;
 			continue;
@@ -237,7 +241,7 @@ allocateMemory(struct Page *page, size_t bytes)
 
 	if (chunksLeft == 0) {
 		for (size_t j = firstChunk; j < firstChunk + chunks; j++)
-			OFBitsetSet(page->map, j);
+			OFBitSetSet(page->map, j);
 
 		return page->page + (chunkSize * firstChunk);
 	}
@@ -257,7 +261,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 	OFZeroMemory(pointer, bytes);
 
 	for (size_t i = 0; i < chunks; i++)
-		OFBitsetClear(page->map, chunkIndex + i);
+		OFBitSetClear(page->map, chunkIndex + i);
 }
 #endif
 
@@ -325,19 +329,19 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 + (instancetype)dataWithCount: (size_t)count
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithCount: count
-		      allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCount: count
+		  allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 + (instancetype)dataWithCount: (size_t)count
 		     itemSize: (size_t)itemSize
 	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithCount: count
-				   itemSize: itemSize
-		      allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCount: count
+			       itemSize: itemSize
+		  allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 + (instancetype)dataWithItems: (const void *)items count: (size_t)count
@@ -456,7 +460,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		_itemSize = itemSize;
 		_allowsSwappableMemory = allowsSwappableMemory;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

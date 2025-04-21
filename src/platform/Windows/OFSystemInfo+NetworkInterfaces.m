@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -38,18 +42,16 @@ init(void)
 {
 	HMODULE module;
 
-	if ((module = LoadLibrary("iphlpapi.dll")) != NULL)
+	if ((module = GetModuleHandle("iphlpapi.dll")) != NULL)
 		GetAdaptersAddressesFuncPtr = (WINAPI ULONG (*)(ULONG, ULONG,
 		    PVOID, PIP_ADAPTER_ADDRESSES, PULONG))
 		    GetProcAddress(module, "GetAdaptersAddresses");
-
 }
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFNetworkInterface) *
 networkInterfacesFromGetAdaptersAddresses(void)
 {
 	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
-	OFStringEncoding encoding = [OFLocale encoding];
 	ULONG adapterAddressesSize = sizeof(IP_ADAPTER_ADDRESSES);
 	PIP_ADAPTER_ADDRESSES adapterAddresses;
 
@@ -57,6 +59,7 @@ networkInterfacesFromGetAdaptersAddresses(void)
 		return nil;
 
 	@try {
+		OFStringEncoding encoding = [OFLocale encoding];
 		ULONG error = GetAdaptersAddressesFuncPtr(AF_UNSPEC, 0, NULL,
 		    adapterAddresses, &adapterAddressesSize);
 
@@ -102,7 +105,7 @@ networkInterfacesFromGetAdaptersAddresses(void)
 				[interface setObject: address forKey: key];
 			}
 
-			for (PIP_ADAPTER_UNICAST_ADDRESS_LH addrIter =
+			for (__typeof__(iter->FirstUnicastAddress) addrIter =
 			    iter->FirstUnicastAddress; addrIter != NULL;
 			    addrIter = addrIter->Next) {
 				OFSocketAddress address;
@@ -195,8 +198,7 @@ networkInterfacesFromGetAdaptersInfo(void)
 			OFSocketAddress IPv4Address;
 			OFData *addresses;
 
-			name = [OFString stringWithCString: iter->AdapterName
-						  encoding: encoding];
+			name = [OFString stringWithFormat: @"%u", iter->Index];
 
 			if ((interface = [ret objectForKey: name]) == nil) {
 				interface = [OFMutableDictionary dictionary];
@@ -259,10 +261,10 @@ networkInterfacesFromGetAdaptersInfo(void)
 		[interface makeImmutable];
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

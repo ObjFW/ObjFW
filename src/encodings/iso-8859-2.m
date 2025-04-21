@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFISO8859_2Table[] = {
+const OFChar16 _OFISO8859_2Table[] OF_VISIBILITY_INTERNAL = {
 	0x00A0, 0x0104, 0x02D8, 0x0141, 0x00A4, 0x013D, 0x015A, 0x00A7,
 	0x00A8, 0x0160, 0x015E, 0x0164, 0x0179, 0x00AD, 0x017D, 0x017B,
 	0x00B0, 0x0105, 0x02DB, 0x0142, 0x00B4, 0x013E, 0x015B, 0x02C7,
@@ -33,8 +37,8 @@ const OFChar16 OFISO8859_2Table[] = {
 	0x0111, 0x0144, 0x0148, 0x00F3, 0x00F4, 0x0151, 0x00F6, 0x00F7,
 	0x0159, 0x016F, 0x00FA, 0x0171, 0x00FC, 0x00FD, 0x0163, 0x02D9
 };
-const size_t OFISO8859_2TableOffset =
-    256 - (sizeof(OFISO8859_2Table) / sizeof(*OFISO8859_2Table));
+const size_t _OFISO8859_2TableOffset OF_VISIBILITY_INTERNAL =
+    256 - (sizeof(_OFISO8859_2Table) / sizeof(*_OFISO8859_2Table));
 
 static const unsigned char page0[] = {
 	0xA0, 0x00, 0x00, 0x00, 0xA4, 0x00, 0x00, 0xA7,
@@ -79,12 +83,17 @@ static const unsigned char page2[] = {
 };
 static const uint8_t page2Start = 0xC7;
 
-bool
-OFUnicodeToISO8859_2(const OFUnichar *input, unsigned char *output,
-    size_t length, bool lossy)
+bool OF_VISIBILITY_INTERNAL
+_OFUnicodeToISO8859_2(const OFUnichar *input, unsigned char *output,
+    size_t length, bool lossy, bool insecure)
 {
 	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = input[i];
+		OFUnichar c;
+
+		if OF_UNLIKELY (!insecure && input[i] == 0)
+			return false;
+
+		c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

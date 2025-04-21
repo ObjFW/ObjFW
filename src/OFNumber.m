@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,6 +24,7 @@
 #import "OFNumber.h"
 #import "OFConcreteNumber.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFString.h"
 #import "OFTaggedPointerNumber.h"
 
@@ -27,10 +32,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFNumber ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFNumber () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderNumber: OFNumber
@@ -393,67 +395,74 @@ OF_SINGLETON_METHODS
 
 + (instancetype)numberWithBool: (bool)value
 {
-	return [[[self alloc] initWithBool: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBool: value]);
 }
 
 + (instancetype)numberWithChar: (signed char)value
 {
-	return [[[self alloc] initWithChar: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithChar: value]);
 }
 
 + (instancetype)numberWithShort: (short)value
 {
-	return [[[self alloc] initWithShort: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithShort: value]);
 }
 
 + (instancetype)numberWithInt: (int)value
 {
-	return [[[self alloc] initWithInt: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithInt: value]);
 }
 
 + (instancetype)numberWithLong: (long)value
 {
-	return [[[self alloc] initWithLong: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithLong: value]);
 }
 
 + (instancetype)numberWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLongLong: value]);
 }
 
 + (instancetype)numberWithUnsignedChar: (unsigned char)value
 {
-	return [[[self alloc] initWithUnsignedChar: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedChar: value]);
 }
 
 + (instancetype)numberWithUnsignedShort: (unsigned short)value
 {
-	return [[[self alloc] initWithUnsignedShort: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedShort: value]);
 }
 
 + (instancetype)numberWithUnsignedInt: (unsigned int)value
 {
-	return [[[self alloc] initWithUnsignedInt: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedInt: value]);
 }
 
 + (instancetype)numberWithUnsignedLong: (unsigned long)value
 {
-	return [[[self alloc] initWithUnsignedLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLong: value]);
 }
 
 + (instancetype)numberWithUnsignedLongLong: (unsigned long long)value
 {
-	return [[[self alloc] initWithUnsignedLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLongLong: value]);
 }
 
 + (instancetype)numberWithFloat: (float)value
 {
-	return [[[self alloc] initWithFloat: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithFloat: value]);
 }
 
 + (instancetype)numberWithDouble: (double)value
 {
-	return [[[self alloc] initWithDouble: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDouble: value]);
 }
 
 - (instancetype)initWithBool: (bool)value
@@ -544,42 +553,82 @@ OF_SINGLETON_METHODS
 
 - (signed char)charValue
 {
-	return (signed char)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SCHAR_MIN || value > SCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (signed char)value;
 }
 
 - (short)shortValue
 {
-	return (short)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SHRT_MIN || value > SHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (short)value;
 }
 
 - (int)intValue
 {
-	return (int)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < INT_MIN || value > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)value;
 }
 
 - (long)longValue
 {
-	return (long)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < LONG_MIN || value > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (long)value;
 }
 
 - (unsigned char)unsignedCharValue
 {
-	return (unsigned char)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned char)value;
 }
 
 - (unsigned short)unsignedShortValue
 {
-	return (unsigned short)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > USHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned short)value;
 }
 
 - (unsigned int)unsignedIntValue
 {
-	return (unsigned int)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned int)value;
 }
 
 - (unsigned long)unsignedLongValue
 {
-	return (unsigned long)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > ULONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned long)value;
 }
 
 - (float)floatValue
@@ -688,7 +737,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description

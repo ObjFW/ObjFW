@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,6 +23,7 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFMD5Hash.h"
 #import "OFOptionsParser.h"
@@ -32,11 +37,23 @@
 #import "OFSecureData.h"
 #import "OFStdIOStream.h"
 
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
+
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 
 @interface OFHash: OFObject <OFApplicationDelegate>
 @end
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFHash)
 
@@ -45,7 +62,7 @@ help(void)
 {
 	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] "
-	    @"[--sha256] [--sha384] [--sha512] file1 [file2 ...]",
+	    @"[--sha256] [--sha384] [--sha512] [--iri] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
@@ -73,15 +90,17 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
-	bool calculateSHA256, calculateSHA384, calculateSHA512;
+	bool calculateSHA256, calculateSHA384, calculateSHA512, isIRI;
 	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
+		{ '\0', @"rmd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
 		{ '\0', @"sha224", 0, &calculateSHA224, NULL },
 		{ '\0', @"sha256", 0, &calculateSHA256, NULL },
 		{ '\0', @"sha384", 0, &calculateSHA384, NULL },
 		{ '\0', @"sha512", 0, &calculateSHA512, NULL },
+		{ '\0', @"iri", 0, &isIRI, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser =
@@ -107,16 +126,16 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		switch (option) {
 		case '?':
 			if (optionsParser.lastLongOption != nil)
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_long_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString stringWithFormat:
 				    @"%C", optionsParser.lastOption];
-				[OFStdErr writeLine:
-				    OF_LOCALIZED(@"unknown_option",
+				[OFStdErr writeLine: OF_LOCALIZED(
+				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optStr)];
@@ -134,14 +153,15 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		sandbox.allowsReadingFiles = true;
 		sandbox.allowsUserDatabaseReading = true;
 
-		for (OFString *path in optionsParser.remainingArguments)
-			[sandbox unveilPath: path permissions: @"r"];
+		if (!isIRI)
+			for (OFString *path in optionsParser.remainingArguments)
+				[sandbox unveilPath: path permissions: @"r"];
 
 		[sandbox unveilPath: @LOCALIZATION_DIR permissions: @"r"];
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 
@@ -173,20 +193,31 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *file;
 
-		if ([path isEqual: @"-"])
+		if (!isIRI && [path isEqual: @"-"])
 			file = OFStdIn;
 		else {
 			@try {
-				file = [OFFile fileWithPath: path mode: @"r"];
+				if (isIRI) {
+					OFIRI *IRI =
+					    [OFIRI IRIWithString: path];
+
+					file = [OFIRIHandler
+					    openItemAtIRI: IRI
+						     mode: @"r"];
+				} else
+					file = [OFFile fileWithPath: path
+							       mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
+				OFString *filePath =
+				    (e.IRI != nil ? e.IRI.string : e.path);
 
 				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
 				    @"Failed to open file %[file]: %[error]",
-				    @"file", e.path,
+				    @"file", filePath,
 				    @"error", error)];
 
 				exitStatus = 1;

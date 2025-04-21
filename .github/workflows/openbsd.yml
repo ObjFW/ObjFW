@@ -2,7 +2,7 @@ name: openbsd
 on: [push, pull_request]
 jobs:
   tests:
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         configure_flags:
@@ -10,13 +10,13 @@ jobs:
           - --disable-shared
           - --with-tls=gnutls
     steps:
-    - uses: actions/checkout@v3
-    - uses: vmactions/openbsd-vm@v0
+    - uses: actions/checkout@v4
+    - uses: vmactions/openbsd-vm@v1
       with:
         usesh: true
         copyback: false
         prepare: |
-          pkg_add autoconf-2.71 automake-1.16.5 gnutls pkgconf
+          pkg_add autoconf-2.72p0 automake-1.16.5 gnutls pkgconf
         run: |
           ./autogen.sh
           ./configure OBJC=clang ${{ matrix.configure_flags }}

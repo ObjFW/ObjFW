@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -36,8 +40,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine:
-	    OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -45,16 +48,16 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n    "
-		    @"-c  --class "
+		    @"-c  --class= "
 		    @"  The DNS class to query (defaults to IN)\n    "
-		    @"-h  --help  "
+		    @"-h  --help   "
 		    @"  Show this help\n    "
-		    @"-s  --server"
+		    @"-s  --server="
 		    @"  The server to query\n    "
-		    @"-t  --type  "
-		    @"  The record type to query (defaults to ALL, can be "
-		    @"repeated)\n    "
-		    @"    --tcp   "
+		    @"-t  --type=  "
+		    @"  The record type to query (defaults to AAAA and A,\n"
+		    @"                   can be repeated)\n    "
+		    @"    --tcp    "
 		    @"  Force using TCP for the query")];
 	}
 
@@ -72,8 +75,7 @@ help(OFStream *stream, bool full, int status)
 	if (exception == nil)
 		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[OFStdErr writeLine: OF_LOCALIZED(
-		    @"failed_to_resolve",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
 		_errors++;
@@ -120,7 +122,7 @@ help(OFStream *stream, bool full, int status)
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 
@@ -192,8 +194,10 @@ help(OFStream *stream, bool full, int status)
 	DNSClass = (DNSClassString != nil
 	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
-	if (recordTypes.count == 0)
-		[recordTypes addObject: @"ALL"];
+	if (recordTypes.count == 0) {
+		[recordTypes addObject: @"AAAA"];
+		[recordTypes addObject: @"A"];
+	}
 
 	if (server != nil)
 		resolver.nameServers = [OFArray arrayWithObject: server];
