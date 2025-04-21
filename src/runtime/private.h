@@ -245,34 +245,14 @@ struct objc_libC {
 # else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
-# ifdef OF_AMIGAOS_M68K
-	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
-	    void *_Nonnull);
-	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
-# endif
-# ifdef OF_MORPHOS
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
-# endif
-# ifdef OF_AMIGAOS_M68K
-	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
-	    const char *_Nonnull restrict fmt, va_list args);
-# endif
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	void (*_Nonnull exit)(int);
 };
 #endif
 
 #ifdef OBJC_COMPILING_AMIGA_LIBRARY
-# if defined(__MORPHOS__)
-#  include <ppcinline/macros.h>
-#  define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
-# else
-#  define OBJC_M68K_ARG(type, name, reg)	\
-	register type reg_##name __asm__(#reg);	\
-	type name = reg_##name;
-# endif
-
 extern bool objc_init(unsigned int, struct objc_libC *);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 #  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\

@@ -54,21 +54,6 @@ m68k-*-amigaos*)
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
 	with_tls="no"
-	supports_amiga_lib="yes"
-
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB, 'objfw${OBJFW_LIB_MAJOR}.library')
-		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
-		dnl For 68000, GCC emits calls to helper functions that
-		dnl do not work properly in a library.
-		t="-mcpu=68020 -fbaserel32 -noixemul -ffreestanding"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-		t="$t -resident32 -nostartfiles -nodefaultlibs -ldebug -lc"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-	])
-
-	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
@@ -93,10 +78,8 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB,
-			['objfw${OBJFW_LIB_MAJOR}ppc.library'])
 		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFWRT_LIB_MAJOR}ppc.library'])
+			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
@@ -535,22 +518,10 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	], [
 		AC_SUBST(TESTPLUGIN_PLUGIN, 'TestPlugin${PLUGIN_SUFFIX}')
 	])
-
-	AC_SUBST(OBJFW_LIB, "-lobjfw")
 ], [
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
-		tmp="../src/linklib/libobjfw.library.a"
-		AC_SUBST(LIBOBJFW_DEP, "$tmp")
-		AC_SUBST(LIBOBJFW_DEP_LVL2, "../$tmp")
-	], [
-		AC_SUBST(OBJFW_LIB, "-lobjfw")
-		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
-		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
-
-		AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library is built])
-	])
-
+	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
+	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
+	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
 	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
 	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 ])
@@ -568,7 +539,7 @@ AS_IF([test x"$build_framework" = x"yes"], [
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+AS_IF([test x"$enable_shared" = x"no"], [
 	enable_static="yes"
 ])
 AS_IF([test x"$enable_static" = x"yes"], [
@@ -581,9 +552,7 @@ AS_IF([test x"$enable_static" = x"yes"], [
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
-	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
-	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
+       AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -1107,10 +1076,7 @@ AC_SUBST(ENCODINGS_SRCS)
 AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
 ])
-AS_IF([test x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(ENCODINGS_AMIGALIB_A, "encodings.amigalib.a")
-])
-AS_IF([test x"$enable_static" = x"yes"], [
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
 ])
 

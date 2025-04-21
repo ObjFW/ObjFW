@@ -85,14 +85,6 @@ static struct {
 
 unsigned long OFHashSeed;
 
-#ifdef OF_AMIGAOS
-unsigned long *
-OFHashSeedRef(void)
-{
-	return &OFHashSeed;
-}
-#endif
-
 void *
 OFAllocMemory(size_t count, size_t size)
 {

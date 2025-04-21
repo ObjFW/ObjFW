@@ -21,7 +21,6 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-#import "amiga-library.h"
 
 #define USE_INLINE_STDARG
 #define Class IntuitionClass
@@ -32,11 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(OF_AMIGAOS_M68K)
-# include <stabs.h>
-#elif defined(OF_MORPHOS)
-# include <constructor.h>
-#endif
+#include <constructor.h>
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 extern int _Unwind_SjLj_RaiseException(void *);
@@ -57,14 +52,8 @@ extern void _Unwind_SjLj_Resume(void *);
 #else
 extern void _Unwind_Resume(void *);
 #endif
-#ifdef OF_AMIGAOS_M68K
-extern void __register_frame_info(const void *, void *);
-extern void *__deregister_frame_info(const void *);
-#endif
-#ifdef OF_MORPHOS
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
-#endif
 
 void *__objc_class_name_Protocol;
 
@@ -124,17 +113,8 @@ ctor(void)
 #else
 		._Unwind_Resume = _Unwind_Resume,
 #endif
-#ifdef OF_AMIGAOS_M68K
-		.__register_frame_info = __register_frame_info,
-		.__deregister_frame_info = __deregister_frame_info,
-#endif
-#ifdef OF_MORPHOS
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
-#endif
-#ifdef OF_AMIGAOS_M68K
-		.vsnprintf = vsnprintf,
-#endif
 		.atexit = atexit,
 		.exit = exit,
 	};
@@ -159,10 +139,6 @@ dtor(void)
 	CloseLibrary(ObjFWRTBase);
 }
 
-# if defined(OF_AMIGAOS_M68K)
-ADD2INIT(ctor, -5)
-ADD2EXIT(dtor, -5)
-# elif defined(OF_MORPHOS)
 CONSTRUCTOR_P(ObjFWRT, 4000)
 {
 	ctor();
@@ -174,7 +150,6 @@ DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
 }
-# endif
 #endif
 
 extern int __gnu_objc_personality(int version, int actions, uint64_t *exClass,
@@ -188,9 +163,5 @@ __gnu_objc_personality_v0(
 #endif
     int version, int actions, uint64_t exClass, void *ex, void *ctx)
 {
-#ifdef OF_AMIGAOS_M68K
 	return __gnu_objc_personality(version, actions, &exClass, ex, ctx);
-#else
-	return __gnu_objc_personality(version, actions, &exClass, ex, ctx);
-#endif
 }

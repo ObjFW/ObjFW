@@ -26,7 +26,7 @@ LIBS := -L../../src		\
 	-L../../src/tls		\
 	-L../../src/bridge	\
 	${OFHTTP_LIBS}		\
-	${OBJFW_LIB}		\
+	-lobjfw			\
 	${RUNTIME_LIBS}		\
 	${LIBS}
 LD = ${OBJC}

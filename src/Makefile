@@ -1,20 +1,12 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE} ${TLS} hid test
-CLEAN = amiga-end.amigalib.dep		\
-	amiga-end.amigalib.o		\
-	amiga-glue.amigalib.dep		\
-	amiga-glue.amigalib.o		\
-	amiga-library-functable.inc	\
-	amiga-library.amigalib.dep	\
-	amiga-library.amigalib.o
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
 FRAMEWORK = ${OBJFW_FRAMEWORK}
-AMIGA_LIB = ${OBJFW_AMIGA_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 LIB_PATCH = ${OBJFW_LIB_PATCH}
@@ -270,28 +262,18 @@ OBJS_EXTRA = exceptions/exceptions.a	\
 LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 		 encodings/encodings.lib.a	\
 		 forwarding/forwarding.lib.a
-AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
-		       exceptions/exceptions.amigalib.a	\
-		       encodings/encodings.amigalib.a	\
-		       forwarding/forwarding.amigalib.a	\
-		       amiga-end.amigalib.o
 
 include ../buildsys.mk
 
 ${TLS} hid: ${BRIDGE}
 
-CPPFLAGS += -I. -I.. -Iexceptions -Iruntime		\
-	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
-	    -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}	\
-	    -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}
+CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
-AMIGA_LIB_LIBS := -Lruntime -Lruntime/linklib -lobjfwrt.library.amigalib ${LIBS}
 LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\

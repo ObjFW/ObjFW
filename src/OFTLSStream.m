@@ -34,20 +34,7 @@
 }
 @end
 
-#ifdef OF_AMIGAOS
-# undef OFTLSStreamImplementation
-#endif
-
 Class OFTLSStreamImplementation = Nil;
-
-#ifdef OF_AMIGAOS
-Class *
-OFTLSStreamImplementationRef(void)
-{
-	return &OFTLSStreamImplementation;
-}
-#endif
-
 static const OFRunLoopMode handshakeRunLoopMode =
     @"OFTLSStreamHandshakeRunLoopMode";
 

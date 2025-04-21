@@ -35,17 +35,7 @@
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
 #define VERSION_STRING CONCAT_VERSION(OBJFWRT_LIB_MAJOR, OBJFWRT_LIB_MINOR)
 
-#if defined(OF_AMIGAOS_M68K)
-# define DATA_OFFSET 0x7FFE
-#elif defined(OF_MORPHOS)
-# define DATA_OFFSET 0x8000
-#endif
-
-#ifdef OF_AMIGAOS_M68K
-# define OBJC_M68K_REG(reg) __asm__(#reg)
-#else
-# define OBJC_M68K_REG(reg)
-#endif
+#define DATA_OFFSET 0x8000
 
 /* This always needs to be the first thing in the file. */
 int
@@ -53,14 +43,6 @@ _start(void)
 {
 	return -1;
 }
-
-#ifdef OF_AMIGAOS_M68K
-void
-__init_eh(void)
-{
-	/* Taken care of by objc_init() */
-}
-#endif
 
 struct ObjFWRTBase {
 	struct Library library;
@@ -70,28 +52,10 @@ struct ObjFWRTBase {
 	bool initialized;
 };
 
-#ifdef OF_AMIGAOS_M68K
-extern uintptr_t __CTOR_LIST__[];
-extern const void *_EH_FRAME_BEGINS__;
-extern void *_EH_FRAME_OBJECTS__;
-#endif
-
-#ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
-#endif
 struct ExecBase *SysBase;
 struct objc_libC libC;
 
-#if defined(OF_AMIGAOS_M68K)
-__asm__ (
-    ".text\n"
-    ".globl ___restore_a4\n"
-    ".align 1\n"
-    "___restore_a4:\n"
-    "	movea.l	42(a6), a4\n"
-    "	rts"
-);
-#elif defined(OF_MORPHOS)
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
     ".section .text\n"
@@ -101,25 +65,17 @@ __asm__ (
     "	lwz	%r13, 44(%r13)\n"
     "	blr\n"
 );
-#endif
 
 static OF_INLINE char *
 getDataSeg(void)
 {
 	char *dataSeg;
 
-#if defined(OF_AMIGAOS_M68K)
-	__asm__ (
-	    "move.l	#___a4_init, %0"
-	    : "=r"(dataSeg)
-	);
-#elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __r13_init@ha\n\t"
 	    "la		%0, __r13_init@l(%0)"
 	    : "=r"(dataSeg)
 	);
-#endif
 
 	return dataSeg;
 }
@@ -129,13 +85,6 @@ getDataSize(void)
 {
 	size_t dataSize;
 
-#if defined(OF_AMIGAOS_M68K)
-	__asm__ (
-	    "move.l	#___data_size, %0\n\t"
-	    "add.l	#___bss_size, %0"
-	    : "=r"(dataSize)
-	);
-#elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __sdata_size@ha\n\t"
 	    "la		%0, __sdata_size@l(%0)\n\t"
@@ -145,7 +94,6 @@ getDataSize(void)
 	    : "=r"(dataSize)
 	    :: "r9"
 	);
-#endif
 
 	return dataSize;
 }
@@ -155,38 +103,23 @@ getDataDataRelocs(void)
 {
 	size_t *dataDataRelocs;
 
-#if defined(OF_AMIGAOS_M68K)
-	__asm__ (
-	    "move.l	#___datadata_relocs, %0"
-	    : "=r"(dataDataRelocs)
-	);
-#elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __datadata_relocs@ha\n\t"
 	    "la		%0, __datadata_relocs@l(%0)\n\t"
 	    : "=r"(dataDataRelocs)
 	);
-#endif
 
 	return dataDataRelocs;
 }
 
 static struct Library *
-libInit(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
-    void *segList OBJC_M68K_REG(a0), struct ExecBase *sysBase OBJC_M68K_REG(a6))
+libInit(struct ObjFWRTBase *base, void *segList, struct ExecBase *sysBase)
 {
-#if defined(OF_AMIGAOS_M68K)
-	__asm__ __volatile__ (
-	    "move.l	a6, _SysBase"
-	    :: "a"(sysBase)
-	);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "lis	%%r9, SysBase@ha\n\t"
 	    "stw	%0, SysBase@l(%%r9)"
 	    :: "r"(sysBase) : "r9"
 	);
-#endif
 
 	base->segList = segList;
 	base->parent = NULL;
@@ -198,8 +131,7 @@ libInit(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
 struct Library *__saveds
 libOpen(void)
 {
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
-
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
 	struct ObjFWRTBase *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
@@ -279,7 +211,7 @@ expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 static void *__saveds
 libExpunge(void)
 {
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
 
 	return expunge(base, SysBase);
 }
@@ -293,18 +225,10 @@ libClose(void)
 	 */
 	struct ExecBase *sysBase = SysBase;
 #define SysBase sysBase
-
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
 
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent;
-
-#ifdef OF_AMIGAOS_M68K
-		if (base->initialized)
-			for (void *const *frame = _EH_FRAME_BEGINS__;
-			    *frame != NULL;)
-				libC.__deregister_frame_info(*frame++);
-#endif
 
 		parent = base->parent;
 
@@ -332,15 +256,9 @@ libNull(void)
 bool
 objc_init(unsigned int version, struct objc_libC *libC_)
 {
-#ifdef OF_AMIGAOS_M68K
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
-#else
 	register struct ObjFWRTBase *r12 __asm__("r12");
 	struct ObjFWRTBase *base = r12;
-#endif
-#ifdef OF_MORPHOS
 	void *frame;
-#endif
 	uintptr_t *iter, *iter0;
 
 	if (version > 1)
@@ -351,13 +269,6 @@ objc_init(unsigned int version, struct objc_libC *libC_)
 
 	memcpy(&libC, libC_, sizeof(libC));
 
-#ifdef OF_AMIGAOS_M68K
-	for (void *const *frame = _EH_FRAME_BEGINS__,
-	    **object = _EH_FRAME_OBJECTS__; *frame != NULL;)
-		libC.__register_frame_info(*frame++, *object++);
-
-	iter0 = &__CTOR_LIST__[1];
-#elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
 	    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
@@ -367,7 +278,6 @@ objc_init(unsigned int version, struct objc_libC *libC_)
 	);
 
 	libC.__register_frame(frame);
-#endif
 
 	for (iter = iter0; *iter != 0; iter++);
 
@@ -487,21 +397,6 @@ _Unwind_Resume(void *ex)
 }
 #endif
 
-#ifdef OF_AMIGAOS_M68K
-void
-__register_frame_info(const void *begin, void *object)
-{
-	libC.__register_frame_info(begin, object);
-}
-
-void
-*__deregister_frame_info(const void *begin)
-{
-	return libC.__deregister_frame_info(begin);
-}
-#endif
-
-#ifdef OF_MORPHOS
 void __register_frame(void *frame)
 {
 	libC.__register_frame(frame);
@@ -511,29 +406,6 @@ void __deregister_frame(void *frame)
 {
 	libC.__deregister_frame(frame);
 }
-#endif
-
-#ifdef OF_AMIGAOS_M68K
-int
-snprintf(char *restrict str, size_t size, const char *restrict fmt, ...)
-{
-	va_list args;
-	int ret;
-
-	va_start(args, fmt);
-	ret = vsnprintf(str, size, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-vsnprintf(char *restrict str, size_t size, const char *restrict fmt,
-    va_list args)
-{
-	return libC.vsnprintf(str, size, fmt, args);
-}
-#endif
 
 int
 atexit(void (*function)(void))
@@ -552,23 +424,17 @@ exit(int status)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
-#ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
-#endif
 	(CONST_APTR)libOpen,
 	(CONST_APTR)libClose,
 	(CONST_APTR)libExpunge,
 	(CONST_APTR)libNull,
-#ifdef OF_MORPHOS
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
-#endif
 #include "amiga-funcarray.inc"
 	(CONST_APTR)-1,
-#ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END
-#endif
 };
 #pragma GCC diagnostic pop
 
@@ -576,10 +442,8 @@ static struct {
 	ULONG dataSize;
 	CONST_APTR *functionTable;
 	ULONG *dataTable;
-	struct Library *(*initFunc)(
-	    struct ObjFWRTBase *base OBJC_M68K_REG(d0),
-	    void *segList OBJC_M68K_REG(a0),
-	    struct ExecBase *execBase OBJC_M68K_REG(a6));
+	struct Library *(*initFunc)(struct ObjFWRTBase *base, void *segList,
+	    struct ExecBase *execBase);
 } init_table = {
 	sizeof(struct ObjFWRTBase),
 	functionTable,
@@ -591,25 +455,18 @@ struct Resident resident = {
 	.rt_MatchWord = RTC_MATCHWORD,
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
-	.rt_Flags = RTF_AUTOINIT
-#ifdef OF_MORPHOS
-	    | RTF_PPC | RTF_EXTENDED
-#endif
-	    ,
+	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
 	.rt_Version = OBJFWRT_LIB_MAJOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
 	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
 	.rt_IdString = (char *)"ObjFWRT " VERSION_STRING
-	    " \xA9 2008-2023 Jonathan Schleifer",
+	    " \xA9 2008-2025 Jonathan Schleifer",
 	.rt_Init = &init_table,
-#ifdef OF_MORPHOS
 	.rt_Revision = OBJFWRT_LIB_MINOR,
 	.rt_Tags = NULL,
-#endif
 };
 
-#if defined(OF_MORPHOS)
 __asm__ (
     ".section .eh_frame, \"aw\"\n"
     ".globl __EH_FRAME_BEGIN__\n"
@@ -621,20 +478,3 @@ __asm__ (
     "__CTOR_LIST__:\n"
     ".section .text"
 );
-#elif defined(OF_AMIGAOS_M68K)
-__asm__ (
-    ".section .list___EH_FRAME_BEGINS__, \"aw\"\n"
-    ".globl __EH_FRAME_BEGIN__\n"
-    ".type __EH_FRAME_BEGIN__, @object\n"
-    "__EH_FRAME_BEGINS__:\n"
-    ".section .dlist___EH_FRAME_OBJECTS__, \"aw\"\n"
-    ".globl __EH_FRAME_OBJECTS__\n"
-    ".type __EH_FRAME_OBJECTS__, @object\n"
-    "__EH_FRAME_OBJECTS__:\n"
-    ".section .list___CTOR_LIST__, \"aw\"\n"
-    ".globl ___CTOR_LIST__\n"
-    ".type ___CTOR_LIST__, @object\n"
-    "___CTOR_LIST__:\n"
-    ".section .text"
-);
-#endif

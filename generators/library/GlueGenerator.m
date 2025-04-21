@@ -72,6 +72,8 @@
 
 - (void)generate
 {
+	size_t includes = 0;
+
 	[_header writeString: COPYRIGHT];
 	[_impl writeString: COPYRIGHT];
 
@@ -87,23 +89,16 @@
 	    @"#import \"amiga-glue.h\"\n"
 	    @"\n"];
 
-	for (OFXMLElement *include in [_library elementsForName: @"include"])
-		[_header writeFormat: @"#import \"%@\"\n", include.stringValue];
+	for (OFXMLElement *include in [_library elementsForName: @"include"]) {
+		[_header writeFormat: @"#import \"%@\"\n",
+				      include.stringValue];
+		includes++;
+	}
 
-	[_header writeString:
-	    @"\n"
-	    @"#ifdef OF_AMIGAOS_M68K\n"
-	    @"# define PPC_PARAMS(...) (void)\n"
-	    @"# define M68K_ARG(type, name, reg)\t\t\\\n"
-	    @"\tregister type reg##name __asm__(#reg);\t\\\n"
-	    @"\ttype name = reg##name;\n"
-	    @"#else\n"
-	    @"# define PPC_PARAMS(...) (__VA_ARGS__)\n"
-	    @"# define M68K_ARG(...)\n"
-	    @"#endif\n"
-	    @"\n"];
+	if (includes > 0)
+		[_impl writeString: @"\n"];
+
 	[_impl writeString:
-	    @"#ifdef OF_MORPHOS\n"
 	    @"/* All __saveds functions in this file need to use the SysV "
 	    @"ABI */\n"
 	    @"__asm__ (\n"
@@ -112,8 +107,7 @@
 	    @"    \"__restore_r13:\\n\"\n"
 	    @"    \"\tlwz\t%r13, 44(%r12)\\n\"\n"
 	    @"    \"\tblr\\n\"\n"
-	    @");\n"
-	    @"#endif\n"];
+	    @");\n"];
 
 	for (OFXMLElement *function in
 	    [_library elementsForName: @"function"]) {
@@ -140,8 +134,8 @@
 				    returnType, name];
 
 		if (arguments.count > 0) {
-			[_header writeString: @" PPC_PARAMS("];
-			[_impl writeString: @" PPC_PARAMS("];
+			[_header writeString: @"("];
+			[_impl writeString: @"("];
 		} else {
 			[_header writeString: @"(void"];
 			[_impl writeString: @"(void"];
@@ -172,20 +166,6 @@
 		[_header writeString: @");\n"];
 
 		[_impl writeString: @")\n{\n"];
-		for (OFXMLElement *argument in arguments) {
-			OFString *argName =
-			    [argument attributeForName: @"name"].stringValue;
-			OFString *argType =
-			    [argument attributeForName: @"type"].stringValue;
-			OFString *m68kReg = [argument
-			    attributeForName: @"m68k-reg"].stringValue;
-
-			[_impl writeFormat: @"\tM68K_ARG(%@, %@, %@)\n",
-					    argType, argName, m68kReg];
-		}
-
-		if (arguments.count > 0)
-			[_impl writeString: @"\n"];
 
 		if (![returnType isEqual: @"void"])
 			[_impl writeString: @"\treturn "];

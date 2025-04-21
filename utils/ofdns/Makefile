@@ -18,6 +18,6 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"
 OBJCFLAGS += ${PIE_CFLAGS}
-LIBS := -L../../src ${OBJFW_LIB} -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

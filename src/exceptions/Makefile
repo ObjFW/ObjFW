@@ -2,7 +2,6 @@ include ../../extra.mk
 
 STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
-STATIC_AMIGA_LIB_NOINST = ${EXCEPTIONS_AMIGALIB_A}
 
 SRCS = OFAllocFailedException.m				\
        OFAlreadyOpenException.m				\

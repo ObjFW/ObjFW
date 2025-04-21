@@ -25,7 +25,7 @@ LIBS := -L../../src		\
 	-L../../src/tls		\
 	-L../../src/bridge	\
 	${OFHASH_LIBS}		\
-	${OBJFW_LIB}		\
+	-lobjfw			\
 	${RUNTIME_LIBS}		\
 	${LIBS}
 LD = ${OBJC}
