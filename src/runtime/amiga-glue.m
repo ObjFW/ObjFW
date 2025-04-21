@@ -39,6 +39,36 @@ glue_objc_init(unsigned int version, struct objc_libC *libC)
 	return objc_init(version, libC);
 }
 
+struct objc_hashtable *_Nonnull __saveds
+glue_objc_hashtable_new(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size)
+{
+	return objc_hashtable_new(hash, equal, size);
+}
+
+void __saveds
+glue_objc_hashtable_set(struct objc_hashtable *_Nonnull table, const void *_Nonnull key, const void *_Nonnull object)
+{
+	objc_hashtable_set(table, key, object);
+}
+
+void *_Nullable __saveds
+glue_objc_hashtable_get(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
+{
+	return objc_hashtable_get(table, key);
+}
+
+void __saveds
+glue_objc_hashtable_delete(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
+{
+	objc_hashtable_delete(table, key);
+}
+
+void __saveds
+glue_objc_hashtable_free(struct objc_hashtable *_Nonnull table)
+{
+	objc_hashtable_free(table);
+}
+
 void __saveds
 glue___objc_exec_class(struct _objc_module *_Nonnull module)
 {
@@ -274,9 +304,9 @@ glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull nam
 }
 
 void __saveds
-glue_objc_registerClassPair(Class _Nonnull class)
+glue_objc_registerClassPair(Class _Nonnull class_)
 {
-	objc_registerClassPair(class);
+	objc_registerClassPair(class_);
 }
 
 unsigned int __saveds
@@ -292,69 +322,69 @@ glue_objc_copyClassList(unsigned int *_Nullable length)
 }
 
 bool __saveds
-glue_class_isMetaClass(Class _Nullable class)
+glue_class_isMetaClass(Class _Nullable class_)
 {
-	return class_isMetaClass(class);
+	return class_isMetaClass(class_);
 }
 
 const char *_Nullable __saveds
-glue_class_getName(Class _Nullable class)
+glue_class_getName(Class _Nullable class_)
 {
-	return class_getName(class);
+	return class_getName(class_);
 }
 
 Class _Nullable __saveds
-glue_class_getSuperclass(Class _Nullable class)
+glue_class_getSuperclass(Class _Nullable class_)
 {
-	return class_getSuperclass(class);
+	return class_getSuperclass(class_);
 }
 
 unsigned long __saveds
-glue_class_getInstanceSize(Class _Nullable class)
+glue_class_getInstanceSize(Class _Nullable class_)
 {
-	return class_getInstanceSize(class);
+	return class_getInstanceSize(class_);
 }
 
 bool __saveds
-glue_class_respondsToSelector(Class _Nullable class, SEL _Nonnull selector)
+glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 {
-	return class_respondsToSelector(class, selector);
+	return class_respondsToSelector(class_, selector);
 }
 
 bool __saveds
-glue_class_conformsToProtocol(Class _Nullable class, Protocol *_Nonnull p)
+glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 {
-	return class_conformsToProtocol(class, p);
+	return class_conformsToProtocol(class_, p);
 }
 
 IMP _Nullable __saveds
-glue_class_getMethodImplementation(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 {
-	return class_getMethodImplementation(class, selector);
+	return class_getMethodImplementation(class_, selector);
 }
 
 IMP _Nullable __saveds
-glue_class_getMethodImplementation_stret(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)
 {
-	return class_getMethodImplementation_stret(class, selector);
+	return class_getMethodImplementation_stret(class_, selector);
 }
 
 Method _Nullable __saveds
-glue_class_getInstanceMethod(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 {
-	return class_getInstanceMethod(class, selector);
+	return class_getInstanceMethod(class_, selector);
 }
 
 bool __saveds
-glue_class_addMethod(Class _Nonnull class, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
-	return class_addMethod(class, selector, implementation, typeEncoding);
+	return class_addMethod(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable __saveds
-glue_class_replaceMethod(Class _Nonnull class, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
-	return class_replaceMethod(class, selector, implementation, typeEncoding);
+	return class_replaceMethod(class_, selector, implementation, typeEncoding);
 }
 
 Class _Nullable __saveds
@@ -364,9 +394,9 @@ glue_object_getClass(id _Nullable object)
 }
 
 Class _Nullable __saveds
-glue_object_setClass(id _Nullable object, Class _Nonnull class)
+glue_object_setClass(id _Nullable object, Class _Nonnull class_)
 {
-	return object_setClass(object, class);
+	return object_setClass(object, class_);
 }
 
 const char *_Nullable __saveds
@@ -393,40 +423,28 @@ glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnul
 	return protocol_conformsToProtocol(protocol1, protocol2);
 }
 
-_Nullable objc_uncaught_exception_handler __saveds
-glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
+Method _Nullable *_Nullable __saveds
+glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-	return objc_setUncaughtExceptionHandler(handler);
+	return class_copyMethodList(class_, outCount);
 }
 
-void __saveds
-glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
+SEL _Nonnull __saveds
+glue_method_getName(Method _Nonnull method)
 {
-	objc_setForwardHandler(forward, stretForward);
+	return method_getName(method);
 }
 
-void __saveds
-glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
+const char *_Nullable __saveds
+glue_method_getTypeEncoding(Method _Nonnull method)
 {
-	objc_setEnumerationMutationHandler(hadler);
-}
-
-id _Nullable __saveds
-glue_objc_constructInstance(Class _Nullable class, void *_Nullable bytes)
-{
-	return objc_constructInstance(class, bytes);
-}
-
-void __saveds
-glue_objc_deinit(void)
-{
-	objc_deinit();
+	return method_getTypeEncoding(method);
 }
 
 Ivar _Nullable *_Nullable __saveds
-glue_class_copyIvarList(Class _Nullable class, unsigned int *_Nullable outCount)
+glue_class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-	return class_copyIvarList(class, outCount);
+	return class_copyIvarList(class_, outCount);
 }
 
 const char *_Nonnull __saveds
@@ -447,28 +465,10 @@ glue_ivar_getOffset(Ivar _Nonnull ivar)
 	return ivar_getOffset(ivar);
 }
 
-Method _Nullable *_Nullable __saveds
-glue_class_copyMethodList(Class _Nullable class, unsigned int *_Nullable outCount)
-{
-	return class_copyMethodList(class, outCount);
-}
-
-SEL _Nonnull __saveds
-glue_method_getName(Method _Nonnull method)
-{
-	return method_getName(method);
-}
-
-const char *_Nullable __saveds
-glue_method_getTypeEncoding(Method _Nonnull method)
-{
-	return method_getTypeEncoding(method);
-}
-
 objc_property_t _Nullable *_Nullable __saveds
-glue_class_copyPropertyList(Class _Nullable class, unsigned int *_Nullable outCount)
+glue_class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-	return class_copyPropertyList(class, outCount);
+	return class_copyPropertyList(class_, outCount);
 }
 
 const char *_Nonnull __saveds
@@ -483,10 +483,70 @@ glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *
 	return property_copyAttributeValue(property, name);
 }
 
+void __saveds
+glue_objc_deinit(void)
+{
+	objc_deinit();
+}
+
+_Nullable objc_uncaught_exception_handler __saveds
+glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
+{
+	return objc_setUncaughtExceptionHandler(handler);
+}
+
+void __saveds
+glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
+{
+	objc_setForwardHandler(forward, stretForward);
+}
+
+void __saveds
+glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
+{
+	objc_setEnumerationMutationHandler(hadler);
+}
+
+id _Nullable __saveds
+glue_objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
+{
+	return objc_constructInstance(class_, bytes);
+}
+
 void *_Nullable __saveds
 glue_objc_destructInstance(id _Nullable object)
 {
 	return objc_destructInstance(object);
+}
+
+id _Nullable __saveds
+glue_class_createInstance(Class _Nullable class_, size_t extraBytes)
+{
+	return class_createInstance(class_, extraBytes);
+}
+
+id _Nullable __saveds
+glue_object_dispose(id _Nullable object)
+{
+	return object_dispose(object);
+}
+
+id _Nonnull __saveds
+glue__objc_rootRetain(id _Nonnull object)
+{
+	return _objc_rootRetain(object);
+}
+
+unsigned int __saveds
+glue__objc_rootRetainCount(id _Nonnull object)
+{
+	return _objc_rootRetainCount(object);
+}
+
+void __saveds
+glue__objc_rootRelease(id _Nonnull object)
+{
+	_objc_rootRelease(object);
 }
 
 void *_Null_unspecified __saveds
@@ -507,36 +567,6 @@ glue__objc_rootAutorelease(id _Nullable object)
 	return _objc_rootAutorelease(object);
 }
 
-struct objc_hashtable *_Nonnull __saveds
-glue_objc_hashtable_new(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size)
-{
-	return objc_hashtable_new(hash, equal, size);
-}
-
-void __saveds
-glue_objc_hashtable_set(struct objc_hashtable *_Nonnull table, const void *_Nonnull key, const void *_Nonnull object)
-{
-	objc_hashtable_set(table, key, object);
-}
-
-void *_Nullable __saveds
-glue_objc_hashtable_get(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
-{
-	return objc_hashtable_get(table, key);
-}
-
-void __saveds
-glue_objc_hashtable_delete(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
-{
-	objc_hashtable_delete(table, key);
-}
-
-void __saveds
-glue_objc_hashtable_free(struct objc_hashtable *_Nonnull table)
-{
-	objc_hashtable_free(table);
-}
-
 void __saveds
 glue_objc_setTaggedPointerSecret(uintptr_t secret)
 {
@@ -544,9 +574,9 @@ glue_objc_setTaggedPointerSecret(uintptr_t secret)
 }
 
 int __saveds
-glue_objc_registerTaggedPointerClass(Class _Nonnull class)
+glue_objc_registerTaggedPointerClass(Class _Nonnull class_)
 {
-	return objc_registerTaggedPointerClass(class);
+	return objc_registerTaggedPointerClass(class_);
 }
 
 bool __saveds
@@ -562,7 +592,25 @@ glue_object_getTaggedPointerValue(id _Nonnull object)
 }
 
 id _Nullable __saveds
-glue_objc_createTaggedPointer(int class, uintptr_t value)
+glue_objc_createTaggedPointer(int class_, uintptr_t value)
 {
-	return objc_createTaggedPointer(class, value);
+	return objc_createTaggedPointer(class_, value);
+}
+
+void __saveds
+glue_objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nullable value, objc_associationPolicy policy)
+{
+	objc_setAssociatedObject(object, key, value, policy);
+}
+
+id _Nullable __saveds
+glue_objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
+{
+	return objc_getAssociatedObject(object, key);
+}
+
+void __saveds
+glue_objc_removeAssociatedObjects(id _Nonnull object)
+{
+	objc_removeAssociatedObjects(object);
 }
