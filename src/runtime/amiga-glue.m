@@ -23,7 +23,6 @@
 
 #import "amiga-glue.h"
 
-
 /* All __saveds functions in this file need to use the SysV ABI */
 __asm__ (
     ".section .text\n"

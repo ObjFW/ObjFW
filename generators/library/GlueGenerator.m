@@ -96,7 +96,7 @@
 	}
 
 	if (includes > 0)
-		[_impl writeString: @"\n"];
+		[_header writeString: @"\n"];
 
 	[_impl writeString:
 	    @"/* All __saveds functions in this file need to use the SysV "

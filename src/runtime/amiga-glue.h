@@ -21,6 +21,7 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
+
 extern bool glue_objc_init(unsigned int version, struct objc_libC *libC);
 extern struct objc_hashtable *_Nonnull glue_objc_hashtable_new(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size);
 extern void glue_objc_hashtable_set(struct objc_hashtable *_Nonnull table, const void *_Nonnull key, const void *_Nonnull object);
