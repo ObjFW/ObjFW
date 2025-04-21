@@ -131,13 +131,21 @@ libInit(struct ObjFWRTBase *base, void *segList, struct ExecBase *sysBase)
 struct Library *__saveds
 libOpen(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
+	struct ExecBase *sysBase;
 	struct ObjFWRTBase *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
 	if (base->parent != NULL)
 		return NULL;
+
+	__asm__ __volatile__ (
+	    "lis	%0, SysBase@ha\n\t"
+	    "lwz	%0, SysBase@l(%0)"
+	    : "=r"(sysBase)
+	);
+#define SysBase sysBase
 
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
@@ -180,6 +188,7 @@ libOpen(void)
 	child->dataSeg += DATA_OFFSET;
 
 	return &child->library;
+#undef SysBase
 }
 
 static void *
@@ -211,7 +220,7 @@ expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 static void *__saveds
 libExpunge(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
 
 	return expunge(base, SysBase);
 }
@@ -225,7 +234,7 @@ libClose(void)
 	 */
 	struct ExecBase *sysBase = SysBase;
 #define SysBase sysBase
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_a6;
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
 
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent;
