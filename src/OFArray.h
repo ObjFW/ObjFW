@@ -387,20 +387,26 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 /**
  * @brief Performs the specified selector on all objects in the array.
  *
+ * @deprecated Use fast enumeration instead
+ *
  * @param selector The selector to perform on all objects in the array
  */
-- (void)makeObjectsPerformSelector: (SEL)selector;
+- (void)makeObjectsPerformSelector: (SEL)selector
+    OF_DEPRECATED(ObjFW, 1, 4, "Use fast enumeration instead");
 
 /**
  * @brief Performs the specified selector on all objects in the array with the
  *	  specified object.
+ *
+ * @deprecated Use fast enumeration instead
  *
  * @param selector The selector to perform on all objects in the array
  * @param object The object to perform the selector with on all objects in the
  *	      array
  */
 - (void)makeObjectsPerformSelector: (SEL)selector
-			withObject: (nullable id)object;
+			withObject: (nullable id)object
+    OF_DEPRECATED(ObjFW, 1, 4, "Use fast enumeration instead");
 
 /**
  * @brief Returns a copy of the array sorted using the specified selector and
