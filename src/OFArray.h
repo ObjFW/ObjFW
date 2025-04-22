@@ -387,7 +387,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
 /**
  * @brief Performs the specified selector on all objects in the array.
  *
- * @deprecated Use fast enumeration instead
+ * @deprecated Use fast enumeration instead.
  *
  * @param selector The selector to perform on all objects in the array
  */
@@ -398,7 +398,7 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @brief Performs the specified selector on all objects in the array with the
  *	  specified object.
  *
- * @deprecated Use fast enumeration instead
+ * @deprecated Use fast enumeration instead.
  *
  * @param selector The selector to perform on all objects in the array
  * @param object The object to perform the selector with on all objects in the
