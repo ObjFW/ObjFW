@@ -217,6 +217,10 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return data;
 }
 
+#if defined(__clang__) || OF_GCC_VERSION >= 406
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (void)getExtendedAttributeData: (OFData **)data
 			 andType: (id *)type
 			 forName: (OFString *)name
@@ -224,7 +228,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 {
 	/*
 	 * Only call into -[extendedAttributeDataForName:ofItemAtIRI:] if it
-	 * has been overridden. This is to be backwards-compatible to
+	 * has been overridden. This is to be backwards-compatible with
 	 * subclasses that predate the introduction of
 	 * -[getExtendedAttributeData:andType:forName:ofItemAtIRI:].
 	 * Without this check, this would result in an infinite loop.
@@ -233,14 +237,8 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 	if (class_getMethodImplementation(object_getClass(self), selector) !=
 	    class_getMethodImplementation([OFIRIHandler class], selector)) {
-		/*
-		 * Use -[performSelector:withObject:withObject:] to avoid
-		 * deprecation warning. This entire thing is purely for
-		 * backwards compatibility.
-		 */
-		*data = [self performSelector: selector
-				   withObject: name
-				   withObject: IRI];
+		*data = [self extendedAttributeDataForName: name
+					       ofItemAtIRI: IRI];
 
 		if (type != NULL)
 			*type = nil;
@@ -250,6 +248,9 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 	OF_UNRECOGNIZED_SELECTOR
 }
+#if defined(__clang__) || OF_GCC_VERSION >= 406
+# pragma GCC diagnostic pop
+#endif
 
 - (void)setExtendedAttributeData: (OFData *)data
 			 forName: (OFString *)name
@@ -261,17 +262,20 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 			   ofItemAtIRI: IRI];
 }
 
+#if defined(__clang__) || OF_GCC_VERSION >= 406
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (void)setExtendedAttributeData: (OFData *)data
 			 andType: (id)type
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
 {
-
 	if (type == nil) {
 		/*
 		 * Only call into
 		 * -[setExtendedAttributeData:forName:ofItemAtIRI:] if it has
-		 * been overridden. This is to be backwards-compatible to
+		 * been overridden. This is to be backwards-compatible with
 		 * subclasses that predate the introduction of
 		 * -[setExtendedAttributeData:andType:forName:ofItemAtIRI:].
 		 * Without this check, this would result in an infinite loop.
@@ -283,22 +287,18 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 		    selector) !=
 		    class_getMethodImplementation([OFIRIHandler class],
 		    selector)) {
-			/*
-			 * Use
-			 * -[performSelector:withObject:withObject:withObject:]
-			 * to avoid deprecation warning. This entire thing is
-			 * purely for backwards compatibility.
-			 */
-			[self performSelector: selector
-				   withObject: data
-				   withObject: name
-				   withObject: IRI];
+			[self setExtendedAttributeData: data
+					       forName: name
+					   ofItemAtIRI: IRI];
 			return;
 		}
 	}
 
 	OF_UNRECOGNIZED_SELECTOR
 }
+#if defined(__clang__) || OF_GCC_VERSION >= 406
+# pragma GCC diagnostic pop
+#endif
 
 - (void)removeExtendedAttributeForName: (OFString *)name
 			   ofItemAtIRI: (OFIRI *)IRI

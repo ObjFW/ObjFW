@@ -425,8 +425,14 @@ isSubclassOfClass(Class class, Class superclass)
 			instance = objc_autorelease([[class alloc] init]);
 
 			@try {
+				SEL selector;
+				IMP method;
+
 				[instance setUp];
-				[instance performSelector: test.pointerValue];
+
+				selector = test.pointerValue;
+				method = [instance methodForSelector: selector];
+				((void (*)(id, SEL))method)(instance, selector);
 			} @catch (OTAssertionFailedException *e) {
 				/*
 				 * If an assertion fails during -[setUp], don't

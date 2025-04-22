@@ -972,9 +972,6 @@ normalizedKey(OFString *key)
   didAcceptSocket: (OFStreamSocket *)acceptedSocket
 	exception: (id)exception
 {
-	SEL selector = (_usesTLS
-	    ? @selector(of_startTLSWithSocket:) : @selector(of_handleStream:));
-
 	if (exception != nil) {
 		if ([_delegate respondsToSelector: @selector(
 		    server:didEncounterException:request:response:)]) {
@@ -1002,6 +999,8 @@ normalizedKey(OFString *key)
 
 #ifdef OF_HAVE_THREADS
 	if (_numberOfThreads > 1) {
+		SEL selector = (_usesTLS ? @selector(of_startTLSWithSocket:) :
+		    @selector(of_handleStream:));
 		OFHTTPServerThread *thread =
 		    [_threadPool objectAtIndex: _nextThreadIndex];
 
@@ -1012,9 +1011,15 @@ normalizedKey(OFString *key)
 			     onThread: thread
 			   withObject: acceptedSocket
 			waitUntilDone: false];
-	} else
+	} else {
 #endif
-		[self performSelector: selector withObject: acceptedSocket];
+		if (_usesTLS)
+			[self of_startTLSWithSocket: acceptedSocket];
+		else
+			[self of_handleStream: acceptedSocket];
+#ifdef OF_HAVE_THREADS
+	}
+#endif
 
 	return true;
 }
