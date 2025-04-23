@@ -131,9 +131,7 @@ libInit(struct ObjFWRTBase *base, void *segList, struct ExecBase *sysBase)
 struct Library *__saveds
 libOpen(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
-	struct ExecBase *sysBase;
-	struct ObjFWRTBase *child;
+	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6, *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
@@ -143,9 +141,8 @@ libOpen(void)
 	__asm__ __volatile__ (
 	    "lis	%0, SysBase@ha\n\t"
 	    "lwz	%0, SysBase@l(%0)"
-	    : "=r"(sysBase)
+	    : "=r"(SysBase)
 	);
-#define SysBase sysBase
 
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
@@ -160,7 +157,7 @@ libOpen(void)
 		return NULL;
 	}
 
-	memcpy(child, (char *)base - base->library.lib_NegSize,
+	CopyMem((char *)base - base->library.lib_NegSize, child,
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
 	child = (struct ObjFWRTBase *)
@@ -177,7 +174,7 @@ libOpen(void)
 		return NULL;
 	}
 
-	memcpy(child->dataSeg, base->dataSeg - DATA_OFFSET, dataSize);
+	CopyMem(base->dataSeg - DATA_OFFSET, child->dataSeg, dataSize);
 
 	dataDataRelocs = getDataDataRelocs();
 	displacement = child->dataSeg - (base->dataSeg - DATA_OFFSET);
@@ -188,7 +185,6 @@ libOpen(void)
 	child->dataSeg += DATA_OFFSET;
 
 	return &child->library;
-#undef SysBase
 }
 
 static void *
