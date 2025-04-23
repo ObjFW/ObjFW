@@ -539,7 +539,6 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
@@ -682,6 +681,7 @@ case "$objc_runtime" in
 
 	AS_IF([test x"$enable_static" = x"yes"], [
 		AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
+		AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 	])
 
 	AS_IF([test x"$build_framework" = x"yes"], [
