@@ -254,13 +254,6 @@ struct objc_libC {
 
 #ifdef OBJC_COMPILING_AMIGA_LIBRARY
 extern bool objc_init(unsigned int, struct objc_libC *);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
-	__gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx)
-# else
-#  define __gnu_objc_personality(version, actions, exClass, ex, ctx)	\
-	__gnu_objc_personality_v0(version, actions, *exClass, ex, ctx)
-# endif
 #endif
 
 extern void objc_registerAllCategories(struct objc_symtab *_Nonnull)

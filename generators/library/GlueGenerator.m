@@ -86,8 +86,7 @@
 	    @"\n\n"
 	    @"#include \"config.h\"\n"
 	    @"\n"
-	    @"#import \"amiga-glue.h\"\n"
-	    @"\n"];
+	    @".section .text\n"];
 
 	for (OFXMLElement *include in [_library elementsForName: @"include"]) {
 		[_header writeFormat: @"#import \"%@\"\n",
@@ -97,17 +96,6 @@
 
 	if (includes > 0)
 		[_header writeString: @"\n"];
-
-	[_impl writeString:
-	    @"/* All __saveds functions in this file need to use the SysV "
-	    @"ABI */\n"
-	    @"__asm__ (\n"
-	    @"    \".section .text\\n\"\n"
-	    @"    \".align 2\\n\"\n"
-	    @"    \"__restore_r13:\\n\"\n"
-	    @"    \"\tlwz\t%r13, 44(%r12)\\n\"\n"
-	    @"    \"\tblr\\n\"\n"
-	    @");\n"];
 
 	for (OFXMLElement *function in
 	    [_library elementsForName: @"function"]) {
@@ -128,18 +116,10 @@
 		    (![returnType hasSuffix: @"*"] ? @" " : @""),
 		    name];
 
-		[_impl writeFormat: @"\n"
-				    @"%@ __saveds\n"
-				    @"glue_%@",
-				    returnType, name];
-
-		if (arguments.count > 0) {
+		if (arguments.count > 0)
 			[_header writeString: @"("];
-			[_impl writeString: @"("];
-		} else {
+		else
 			[_header writeString: @"(void"];
-			[_impl writeString: @"(void"];
-		}
 
 		argumentIndex = 0;
 		for (OFXMLElement *argument in arguments) {
@@ -148,44 +128,24 @@
 			OFString *argType =
 			    [argument attributeForName: @"type"].stringValue;
 
-			if (argumentIndex++ > 0) {
+			if (argumentIndex++ > 0)
 				[_header writeString: @", "];
-				[_impl writeString: @", "];
-			}
 
 			[_header writeString: argType];
-			[_impl writeString: argType];
-			if (![argType hasSuffix: @"*"]) {
+			if (![argType hasSuffix: @"*"])
 				[_header writeString: @" "];
-				[_impl writeString: @" "];
-			}
 			[_header writeString: argName];
-			[_impl writeString: argName];
 		}
 
 		[_header writeString: @");\n"];
 
-		[_impl writeString: @")\n{\n"];
-
-		if (![returnType isEqual: @"void"])
-			[_impl writeString: @"\treturn "];
-		else
-			[_impl writeString: @"\t"];
-
-		[_impl writeFormat: @"%@(", name];
-
-		argumentIndex = 0;
-		for (OFXMLElement *argument in arguments) {
-			OFString *argName =
-			    [argument attributeForName: @"name"].stringValue;
-
-			if (argumentIndex++ > 0)
-				[_impl writeString: @", "];
-
-			[_impl writeString: argName];
-		}
-
-		[_impl writeString: @");\n}\n"];
+		[_impl writeFormat:
+		    @"\n"
+		    @".globl glue_%@\n"
+		    @"glue_%@:\n"
+		    @"	lwz	%%r13, 44(%%r12)\n"
+		    @"	b	%@\n",
+		    name, name, name];
 	}
 }
 @end

@@ -19,11 +19,7 @@
 
 #include "config.h"
 
-#include "platform.h"
-
-__asm__ (
-    ".section .eh_frame, \"aw\"\n"
-    "	.long 0\n"
-    ".section .ctors, \"aw\"\n"
-    "	.long 0"
-);
+.section .eh_frame, "aw"
+	.long 0
+.section .ctors, "aw"
+	.long 0

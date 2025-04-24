@@ -46,7 +46,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFIRI *glueHeaderIRI = [sourcesIRI
 	    IRIByAppendingPathComponent: @"amiga-glue.h"];
 	OFIRI *glueIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-glue.m"];
+	    IRIByAppendingPathComponent: @"amiga-glue.S"];
 	OFIRI *funcArrayIRI = [sourcesIRI
 	    IRIByAppendingPathComponent: @"amiga-funcarray.inc"];
 	OFXMLElement *library = [OFXMLElement elementWithStream:
