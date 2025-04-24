@@ -104,10 +104,10 @@
   <function name='objc_enumerationMutation'>
     <argument name='object' type='id _Nonnull'/>
   </function>
-  <function name='__gnu_objc_personality' return-type='int'>
+  <function name='__gnu_objc_personality_v0' return-type='int'>
     <argument name='version' type='int'/>
     <argument name='actions' type='int'/>
-    <argument name='exClass' type='uint64_t *_Nonnull'/>
+    <argument name='exClass' type='uint64_t _Nonnull'/>
     <argument name='ex' type='void *_Nonnull'/>
     <argument name='ctx' type='void *_Nonnull'/>
   </function>

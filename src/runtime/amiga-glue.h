@@ -46,7 +46,7 @@ extern void glue_objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t
 extern void glue_objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_enumerationMutation(id _Nonnull object);
-extern int glue___gnu_objc_personality(int version, int actions, uint64_t *_Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
+extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern id _Nullable glue_objc_retain(id _Nullable object);
 extern id _Nullable glue_objc_retainBlock(id _Nullable block);
 extern id _Nullable glue_objc_retainAutorelease(id _Nullable object);

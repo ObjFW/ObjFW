@@ -143,10 +143,10 @@ glue_objc_enumerationMutation:
 	lwz	%r13, 44(%r12)
 	b	objc_enumerationMutation
 
-.globl glue___gnu_objc_personality
-glue___gnu_objc_personality:
+.globl glue___gnu_objc_personality_v0
+glue___gnu_objc_personality_v0:
 	lwz	%r13, 44(%r12)
-	b	__gnu_objc_personality
+	b	__gnu_objc_personality_v0
 
 .globl glue_objc_retain
 glue_objc_retain:

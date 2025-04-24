@@ -151,17 +151,3 @@ DESTRUCTOR_P(ObjFWRT, 0)
 	dtor();
 }
 #endif
-
-extern int __gnu_objc_personality(int version, int actions, uint64_t *exClass,
-    void *ex, void *ctx);
-
-int
-#ifdef HAVE_SJLJ_EXCEPTIONS
-__gnu_objc_personality_sj0(
-#else
-__gnu_objc_personality_v0(
-#endif
-    int version, int actions, uint64_t exClass, void *ex, void *ctx)
-{
-	return __gnu_objc_personality(version, actions, &exClass, ex, ctx);
-}

@@ -426,17 +426,6 @@ exit(int status)
 	OF_UNREACHABLE
 }
 
-int
-__gnu_objc_personality(int version, int actions, uint64_t *exClass, void *ex,
-    void *ctx)
-{
-#ifdef HAVE_SJLJ_EXCEPTIONS
-	return __gnu_objc_personality_sj0(version, actions, *exClass, ex, ctx);
-#else
-	return __gnu_objc_personality_v0(version, actions, *exClass, ex, ctx);
-#endif
-}
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {

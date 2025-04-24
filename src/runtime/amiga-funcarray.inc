@@ -43,7 +43,7 @@
 (CONST_APTR)glue_objc_getPropertyStruct,
 (CONST_APTR)glue_objc_setPropertyStruct,
 (CONST_APTR)glue_objc_enumerationMutation,
-(CONST_APTR)glue___gnu_objc_personality,
+(CONST_APTR)glue___gnu_objc_personality_v0,
 (CONST_APTR)glue_objc_retain,
 (CONST_APTR)glue_objc_retainBlock,
 (CONST_APTR)glue_objc_retainAutorelease,
