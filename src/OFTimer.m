@@ -567,31 +567,26 @@
 		_block(self);
 	else {
 #endif
+		IMP method = [_target methodForSelector: _selector];
+
 		switch (_arguments) {
 		case 0:
-			[_target performSelector: _selector];
+			((void (*)(id, SEL))method)(_target, _selector);
 			break;
 		case 1:
-			[_target performSelector: _selector
-				      withObject: _object1];
+			((void (*)(id, SEL, id))method)(_target, _selector,
+			    _object1);
 			break;
 		case 2:
-			[_target performSelector: _selector
-				      withObject: _object1
-				      withObject: _object2];
+			((void (*)(id, SEL, id, id))method)(_target, _selector,
+			    _object1, _object2);
 			break;
 		case 3:
-			[_target performSelector: _selector
-				      withObject: _object1
-				      withObject: _object2
-				      withObject: _object3];
-			break;
+			((void (*)(id, SEL, id, id, id))method)(_target,
+			    _selector, _object1, _object2, _object3);
 		case 4:
-			[_target performSelector: _selector
-				      withObject: _object1
-				      withObject: _object2
-				      withObject: _object3
-				      withObject: _object4];
+			((void (*)(id, SEL, id, id, id, id))method)(_target,
+			    _selector, _object1, _object2, _object3, _object4);
 			break;
 		}
 #ifdef OF_HAVE_BLOCKS
