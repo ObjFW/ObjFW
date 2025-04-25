@@ -118,13 +118,7 @@ _objc_registerAllSelectors(struct objc_symtab *symtab)
 const char *
 sel_getName(SEL selector)
 {
-	const char *ret;
-
-	_objc_globalMutex_lock();
-	ret = _objc_sparsearray_get(selectorNames, (uint32_t)selector->UID);
-	_objc_globalMutex_unlock();
-
-	return ret;
+	return _objc_sparsearray_get(selectorNames, (uint32_t)selector->UID);
 }
 
 bool
