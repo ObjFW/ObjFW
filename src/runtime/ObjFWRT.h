@@ -86,12 +86,12 @@
 /**
  * @brief A pointer to a class.
  */
-typedef struct objc_class *Class;
+typedef struct _objc_class *Class;
 
 /**
  * @brief A pointer to any object.
  */
-typedef struct objc_object *id;
+typedef struct _objc_object *id;
 
 /**
  * @brief A selector.
@@ -99,14 +99,14 @@ typedef struct objc_object *id;
  * A selector is the name of a method including the colons and an optional type
  * encoding.
  */
-typedef const struct objc_selector *SEL;
+typedef const struct _objc_selector *SEL;
 
 /**
  * @brief A method.
  *
  * A method consists of a selector with a type encoding and an implementation.
  */
-typedef const struct objc_method *Method;
+typedef const struct _objc_method *Method;
 
 /**
  * @brief A protocol.
@@ -114,18 +114,18 @@ typedef const struct objc_method *Method;
 #if defined(__OBJC__) && !defined(DOXYGEN)
 @class Protocol;
 #else
-typedef const struct objc_protocol *Protocol;
+typedef const struct _objc_protocol *Protocol;
 #endif
 
 /**
  * @brief An instance variable.
  */
-typedef const struct objc_ivar *Ivar;
+typedef const struct _objc_ivar *Ivar;
 
 /**
  * @brief A property.
  */
-typedef const struct objc_property *objc_property_t;
+typedef const struct _objc_property *objc_property_t;
 
 #if !defined(__wii__) && !defined(__amigaos__)
 /**

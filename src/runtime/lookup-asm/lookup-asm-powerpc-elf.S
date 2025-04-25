@@ -94,26 +94,26 @@
 	addis	%r6, %r6, .Lbiased_got2-0b@ha
 	addi	%r6, %r6, .Lbiased_got2-0b@l
 
-	lwz	%r5, .Lgot_objc_taggedPointerSecret-.Lbiased_got2(%r6)
+	lwz	%r5, .Lgot__objc_taggedPointerSecret-.Lbiased_got2(%r6)
 	lwz	%r5, 0(%r5)
 #elif defined(OF_BASEREL)
-	addis	%r5, %r13, objc_taggedPointerSecret@drel@ha
-	lwz	%r5, objc_taggedPointerSecret@drel@l(%r5)
+	addis	%r5, %r13, _objc_taggedPointerSecret@drel@ha
+	lwz	%r5, _objc_taggedPointerSecret@drel@l(%r5)
 #else
-	lis	%r5, objc_taggedPointerSecret@ha
-	lwz	%r5, objc_taggedPointerSecret@l(%r5)
+	lis	%r5, _objc_taggedPointerSecret@ha
+	lwz	%r5, _objc_taggedPointerSecret@l(%r5)
 #endif
 	xor	%r5, %r3, %r5
 	rlwinm	%r5, %r5, 1, 0x1C
 
 #if defined(OF_PIC)
-	lwz	%r6, .Lgot_objc_taggedPointerClasses-.Lbiased_got2(%r6)
+	lwz	%r6, .Lgot__objc_taggedPointerClasses-.Lbiased_got2(%r6)
 #elif defined(OF_BASEREL)
-	addis	%r6, %r13, objc_taggedPointerClasses@drel@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@drel@l
+	addis	%r6, %r13, _objc_taggedPointerClasses@drel@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@drel@l
 #else
-	lis	%r6, objc_taggedPointerClasses@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@l
+	lis	%r6, _objc_taggedPointerClasses@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@l
 #endif
 	lwzx	%r5, %r6, %r5
 	lwz	%r5, 32(%r5)
@@ -138,8 +138,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
@@ -162,14 +162,14 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 #ifdef OF_PIC
 .section .got2, "aw"
 .Lbiased_got2 = .+0x8000
-.Lgot_objc_methodNotFound:
-	.long objc_methodNotFound
-.Lgot_objc_methodNotFound_stret:
-	.long objc_methodNotFound_stret
-.Lgot_objc_taggedPointerSecret:
-	.long objc_taggedPointerSecret
-.Lgot_objc_taggedPointerClasses:
-	.long objc_taggedPointerClasses
+.Lgot__objc_methodNotFound:
+	.long _objc_methodNotFound
+.Lgot__objc_methodNotFound_stret:
+	.long _objc_methodNotFound_stret
+.Lgot__objc_taggedPointerSecret:
+	.long _objc_taggedPointerSecret
+.Lgot__objc_taggedPointerClasses:
+	.long _objc_taggedPointerClasses
 #endif
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)

@@ -24,14 +24,14 @@
 #define numTaggedPointerBits 4
 #define maxNumTaggedPointerClasses (1 << (numTaggedPointerBits - 1))
 
-Class objc_taggedPointerClasses[maxNumTaggedPointerClasses];
+Class _objc_taggedPointerClasses[maxNumTaggedPointerClasses];
 static int taggedPointerClassesCount;
-uintptr_t objc_taggedPointerSecret;
+uintptr_t _objc_taggedPointerSecret;
 
 void
 objc_setTaggedPointerSecret(uintptr_t secret)
 {
-	objc_taggedPointerSecret = secret & ~(uintptr_t)1;
+	_objc_taggedPointerSecret = secret & ~(uintptr_t)1;
 }
 
 int
@@ -39,17 +39,17 @@ objc_registerTaggedPointerClass(Class class)
 {
 	int i;
 
-	objc_globalMutex_lock();
+	_objc_globalMutex_lock();
 
 	if (taggedPointerClassesCount == maxNumTaggedPointerClasses) {
-		objc_globalMutex_unlock();
+		_objc_globalMutex_unlock();
 		return -1;
 	}
 
 	i = taggedPointerClassesCount++;
-	objc_taggedPointerClasses[i] = class;
+	_objc_taggedPointerClasses[i] = class;
 
-	objc_globalMutex_unlock();
+	_objc_globalMutex_unlock();
 
 	return i;
 }
@@ -63,9 +63,9 @@ object_isTaggedPointer(id object)
 }
 
 Class
-object_getTaggedPointerClass(id object)
+_object_getTaggedPointerClass(id object)
 {
-	uintptr_t pointer = (uintptr_t)object ^ objc_taggedPointerSecret;
+	uintptr_t pointer = (uintptr_t)object ^ _objc_taggedPointerSecret;
 
 	pointer &= (1 << numTaggedPointerBits) - 1;
 	pointer >>= 1;
@@ -73,13 +73,13 @@ object_getTaggedPointerClass(id object)
 	if (pointer >= maxNumTaggedPointerClasses)
 		return Nil;
 
-	return objc_taggedPointerClasses[pointer];
+	return _objc_taggedPointerClasses[pointer];
 }
 
 uintptr_t
 object_getTaggedPointerValue(id object)
 {
-	uintptr_t pointer = (uintptr_t)object ^ objc_taggedPointerSecret;
+	uintptr_t pointer = (uintptr_t)object ^ _objc_taggedPointerSecret;
 
 	pointer >>= numTaggedPointerBits;
 
@@ -100,5 +100,5 @@ objc_createTaggedPointer(int class, uintptr_t value)
 	pointer = (class << 1) | 1;
 	pointer |= (value << numTaggedPointerBits);
 
-	return (id)(pointer ^ objc_taggedPointerSecret);
+	return (id)(pointer ^ _objc_taggedPointerSecret);
 }

@@ -70,11 +70,11 @@
 	jmp	\notFound
 
 .LtaggedPointer_\name:
-	xorq	objc_taggedPointerSecret(%rip), %rcx
+	xorq	_objc_taggedPointerSecret(%rip), %rcx
 	andb	$0xE, %cl
 	movzbl	%cl, %r8d
 
-	leaq	objc_taggedPointerClasses(%rip), %rax
+	leaq	_objc_taggedPointerClasses(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	56(%r8), %r8
 
@@ -103,8 +103,8 @@
 .endef
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

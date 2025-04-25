@@ -43,7 +43,7 @@ typedef DWORD OFTLSKey;
 typedef ULONG OFTLSKey;
 #elif defined(OF_AMIGAOS)
 typedef struct _OFTLSKey {
-	struct objc_hashtable *table;
+	struct _objc_hashtable *table;
 	struct _OFTLSKey *next, *previous;
 } *OFTLSKey;
 #endif

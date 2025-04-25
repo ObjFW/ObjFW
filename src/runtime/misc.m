@@ -49,7 +49,7 @@ objc_enumerationMutation(id object)
 	if (enumerationMutationHandler != NULL)
 		enumerationMutationHandler(object);
 	else
-		OBJC_ERROR("Object was mutated during enumeration!");
+		_OBJC_ERROR("Object was mutated during enumeration!");
 }
 
 void
@@ -59,7 +59,7 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
 }
 
 void
-objc_error(const char *title, const char *format, ...)
+_objc_error(const char *title, const char *format, ...)
 {
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 # define messageLen 512
@@ -137,7 +137,7 @@ objc_error(const char *title, const char *format, ...)
 }
 
 char *
-objc_strdup(const char *string)
+_objc_strdup(const char *string)
 {
 	char *copy;
 	size_t length = strlen(string);

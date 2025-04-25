@@ -17,12 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-enum objc_object_info {
-	OBJC_OBJECT_INFO_WEAK_REFERENCES = 0x1,
-	OBJC_OBJECT_INFO_ASSOCIATIONS = 0x02
+enum _objc_object_info {
+	_OBJC_OBJECT_INFO_WEAK_REFERENCES = 0x1,
+	_OBJC_OBJECT_INFO_ASSOCIATIONS = 0x02
 };
 
-struct objc_pre_ivars {
+struct _objc_pre_ivars {
 #ifdef OF_MSDOS
 	ptrdiff_t offset;
 #endif
@@ -33,8 +33,9 @@ struct objc_pre_ivars {
 #endif
 };
 
-#define OBJC_PRE_IVARS_ALIGNED \
-	OFRoundUpToPowerOf2(sizeof(struct objc_pre_ivars), OF_BIGGEST_ALIGNMENT)
-#define OBJC_PRE_IVARS(obj)					\
-	((struct objc_pre_ivars *)(void *)((char *)obj -	\
-	    OBJC_PRE_IVARS_ALIGNED))
+#define _OBJC_PRE_IVARS_ALIGNED \
+	OFRoundUpToPowerOf2(sizeof(struct _objc_pre_ivars),	\
+	    OF_BIGGEST_ALIGNMENT)
+#define _OBJC_PRE_IVARS(obj)					\
+	((struct _objc_pre_ivars *)(void *)((char *)obj -	\
+	    _OBJC_PRE_IVARS_ALIGNED))

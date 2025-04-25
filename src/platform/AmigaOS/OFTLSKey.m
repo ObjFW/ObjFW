@@ -109,7 +109,7 @@ OFTLSKeyFree(OFTLSKey key)
 		if (lastKey == key)
 			lastKey = key->previous;
 
-		objc_hashtable_free(key->table);
+		_objc_hashtable_free(key->table);
 		free(key);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
@@ -128,7 +128,7 @@ OFTLSKeyGet(OFTLSKey key)
 		if (key->table == NULL)
 			return NULL;
 
-		ret = objc_hashtable_get(key->table, FindTask(NULL));
+		ret = _objc_hashtable_get(key->table, FindTask(NULL));
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}
@@ -144,12 +144,13 @@ OFTLSKeySet(OFTLSKey key, void *ptr)
 		struct Task *task = FindTask(NULL);
 
 		if (key->table == NULL)
-			key->table = objc_hashtable_new(hashFunc, equalFunc, 2);
+			key->table = _objc_hashtable_new(hashFunc, equalFunc,
+			    2);
 
 		if (ptr == NULL)
-			objc_hashtable_delete(key->table, task);
+			_objc_hashtable_delete(key->table, task);
 		else
-			objc_hashtable_set(key->table, task, ptr);
+			_objc_hashtable_set(key->table, task, ptr);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}
@@ -166,7 +167,7 @@ OFTLSKeyThreadExited(void)
 
 		for (OFTLSKey iter = firstKey; iter != NULL; iter = iter->next)
 			if (iter->table != NULL)
-				objc_hashtable_delete(iter->table, task);
+				_objc_hashtable_delete(iter->table, task);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}

@@ -91,13 +91,13 @@
 	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
 	daddu	$t0, $t0, $t9
 
-	ld	$t1, %got_disp(objc_taggedPointerSecret)($t0)
+	ld	$t1, %got_disp(_objc_taggedPointerSecret)($t0)
 	ld	$t1, 0($t1)
 	xor	$t1, $a0, $t1
 	and	$t1, $t1, 0xE
 	dsll	$t1, $t1, 2
 
-	ld	$t0, %got_disp(objc_taggedPointerClasses)($t0)
+	ld	$t0, %got_disp(_objc_taggedPointerClasses)($t0)
 	daddu	$t0, $t0, $t1
 	ld	$t0, ($t0)
 	ld	$t0, 64($t0)
@@ -129,8 +129,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

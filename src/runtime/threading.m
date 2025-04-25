@@ -34,22 +34,22 @@ static void
 init(void)
 {
 	if (OFPlainRecursiveMutexNew(&globalMutex) != 0)
-		OBJC_ERROR("Failed to create global mutex!");
+		_OBJC_ERROR("Failed to create global mutex!");
 }
 
 void
-objc_globalMutex_lock(void)
+_objc_globalMutex_lock(void)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, init);
 
 	if (OFPlainRecursiveMutexLock(&globalMutex) != 0)
-		OBJC_ERROR("Failed to lock global mutex!");
+		_OBJC_ERROR("Failed to lock global mutex!");
 }
 
 void
-objc_globalMutex_unlock(void)
+_objc_globalMutex_unlock(void)
 {
 	if (OFPlainRecursiveMutexUnlock(&globalMutex) != 0)
-		OBJC_ERROR("Failed to unlock global mutex!");
+		_OBJC_ERROR("Failed to unlock global mutex!");
 }

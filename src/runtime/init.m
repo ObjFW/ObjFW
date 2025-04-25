@@ -25,26 +25,26 @@
 void
 __objc_exec_class(struct _objc_module *module)
 {
-	objc_globalMutex_lock();
+	_objc_globalMutex_lock();
 
-	objc_registerAllSelectors(module->symtab);
-	objc_registerAllClasses(module->symtab);
-	objc_registerAllCategories(module->symtab);
-	objc_initStaticInstances(module->symtab);
+	_objc_registerAllSelectors(module->symtab);
+	_objc_registerAllClasses(module->symtab);
+	_objc_registerAllCategories(module->symtab);
+	_objc_initStaticInstances(module->symtab);
 
-	objc_globalMutex_unlock();
+	_objc_globalMutex_unlock();
 }
 
 void
 objc_deinit(void)
 {
-	objc_globalMutex_lock();
+	_objc_globalMutex_lock();
 
-	objc_unregisterAllCategories();
-	objc_unregisterAllClasses();
-	objc_unregisterAllSelectors();
-	objc_forgetPendingStaticInstances();
-	objc_dtable_cleanup();
+	_objc_unregisterAllCategories();
+	_objc_unregisterAllClasses();
+	_objc_unregisterAllSelectors();
+	_objc_forgetPendingStaticInstances();
+	_objc_dtable_cleanup();
 
-	objc_globalMutex_unlock();
+	_objc_globalMutex_unlock();
 }

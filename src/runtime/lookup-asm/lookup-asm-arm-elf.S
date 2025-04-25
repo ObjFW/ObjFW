@@ -87,8 +87,8 @@
 
 .Lgot$indirect_.LtaggedPointer_\name:
 	.long	_GLOBAL_OFFSET_TABLE_-(.LtaggedPointer_\name+12)
-	.long	objc_taggedPointerSecret(GOT)
-	.long	objc_taggedPointerClasses(GOT)
+	.long	_objc_taggedPointerSecret(GOT)
+	.long	_objc_taggedPointerClasses(GOT)
 .endm
 
 .macro GENERATE_LOOKUP_SUPER name lookup
@@ -106,8 +106,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

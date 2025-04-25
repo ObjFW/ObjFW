@@ -25,14 +25,14 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-struct objc_sparsearray *
-objc_sparsearray_new(uint8_t levels)
+struct _objc_sparsearray *
+_objc_sparsearray_new(uint8_t levels)
 {
-	struct objc_sparsearray *sparsearray;
+	struct _objc_sparsearray *sparsearray;
 
 	if ((sparsearray = calloc(1, sizeof(*sparsearray))) == NULL ||
 	    (sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
-		OBJC_ERROR("Failed to allocate memory for sparse array!");
+		_OBJC_ERROR("Failed to allocate memory for sparse array!");
 
 	sparsearray->levels = levels;
 
@@ -40,9 +40,9 @@ objc_sparsearray_new(uint8_t levels)
 }
 
 void *
-objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
+_objc_sparsearray_get(struct _objc_sparsearray *sparsearray, uintptr_t idx)
 {
-	struct objc_sparsearray_data *iter = sparsearray->data;
+	struct _objc_sparsearray_data *iter = sparsearray->data;
 
 	for (uint8_t i = 0; i < sparsearray->levels - 1; i++) {
 		uintptr_t j =
@@ -56,10 +56,10 @@ objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 }
 
 void
-objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
+_objc_sparsearray_set(struct _objc_sparsearray *sparsearray, uintptr_t idx,
     void *value)
 {
-	struct objc_sparsearray_data *iter = sparsearray->data;
+	struct _objc_sparsearray_data *iter = sparsearray->data;
 
 	for (uint8_t i = 0; i < sparsearray->levels - 1; i++) {
 		uintptr_t j =
@@ -67,8 +67,8 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 
 		if (iter->next[j] == NULL)
 			if ((iter->next[j] = calloc(1,
-			    sizeof(struct objc_sparsearray_data))) == NULL)
-				OBJC_ERROR("Failed to allocate memory for "
+			    sizeof(struct _objc_sparsearray_data))) == NULL)
+				_OBJC_ERROR("Failed to allocate memory for "
 				    "sparse array!");
 
 		iter = iter->next[j];
@@ -78,7 +78,7 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 }
 
 static void
-freeSparsearrayData(struct objc_sparsearray_data *data, uint8_t depth)
+freeSparsearrayData(struct _objc_sparsearray_data *data, uint8_t depth)
 {
 	if (data == NULL || depth == 0)
 		return;
@@ -90,7 +90,7 @@ freeSparsearrayData(struct objc_sparsearray_data *data, uint8_t depth)
 }
 
 void
-objc_sparsearray_free(struct objc_sparsearray *sparsearray)
+_objc_sparsearray_free(struct _objc_sparsearray *sparsearray)
 {
 	freeSparsearrayData(sparsearray->data, sparsearray->levels);
 	free(sparsearray);

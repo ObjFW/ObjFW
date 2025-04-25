@@ -62,12 +62,12 @@ Lmain_$0:
 	ret
 
 LtaggedPointer_$0:
-	movq	_objc_taggedPointerSecret@GOTPCREL(%rip), %rax
+	movq	__objc_taggedPointerSecret@GOTPCREL(%rip), %rax
 	xorq	(%rax), %rdi
 	andb	$$0xE, %dil
 	movzbl	%dil, %r8d
 
-	movq	_objc_taggedPointerClasses@GOTPCREL(%rip), %rax
+	movq	__objc_taggedPointerClasses@GOTPCREL(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	64(%r8), %r8
 
@@ -88,8 +88,8 @@ $0:
 	jmp	Lmain_$1
 .endmacro
 
-GENERATE_LOOKUP _objc_msg_lookup, _objc_methodNotFound
-GENERATE_LOOKUP _objc_msg_lookup_stret, _objc_methodNotFound_stret
+GENERATE_LOOKUP _objc_msg_lookup, __objc_methodNotFound
+GENERATE_LOOKUP _objc_msg_lookup_stret, __objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super, _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 

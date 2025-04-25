@@ -39,13 +39,13 @@ struct Association {
 };
 
 #ifdef OF_OBJFW_RUNTIME
-typedef struct objc_hashtable objc_hashtable;
+typedef struct _objc_hashtable _objc_hashtable;
 #else
-typedef OFMapTable objc_hashtable;
+typedef OFMapTable _objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };
 
-static OF_INLINE objc_hashtable *
-objc_hashtable_new(uint32_t (*hash)(const void *key),
+static OF_INLINE _objc_hashtable *
+_objc_hashtable_new(uint32_t (*hash)(const void *key),
     bool (*equal)(const void *key1, const void *key2), uint32_t size)
 {
 	return [[OFMapTable alloc] initWithKeyFunctions: defaultFunctions
@@ -53,31 +53,31 @@ objc_hashtable_new(uint32_t (*hash)(const void *key),
 }
 
 static OF_INLINE void
-objc_hashtable_set(objc_hashtable *hashtable, const void *key,
+_objc_hashtable_set(_objc_hashtable *hashtable, const void *key,
     const void *object)
 {
 	return [hashtable setObject: (void *)object forKey: (void *)key];
 }
 
 static OF_INLINE void *
-objc_hashtable_get(objc_hashtable *hashtable, const void *key)
+_objc_hashtable_get(_objc_hashtable *hashtable, const void *key)
 {
 	return [hashtable objectForKey: (void *)key];
 }
 
 static OF_INLINE void
-objc_hashtable_delete(objc_hashtable *hashtable, const void *key)
+_objc_hashtable_delete(_objc_hashtable *hashtable, const void *key)
 {
 	[hashtable removeObjectForKey: (void *)key];
 }
 
 static OF_INLINE void
-objc_hashtable_free(objc_hashtable *hashtable)
+_objc_hashtable_free(_objc_hashtable *hashtable)
 {
 	objc_release(hashtable);
 }
 
-# define OBJC_ERROR(...) abort()
+# define _OBJC_ERROR(...) abort()
 #endif
 
 #ifdef OF_HAVE_THREADS
@@ -87,7 +87,7 @@ static OFSpinlock spinlocks[numSlots];
 #else
 # define numSlots 1
 #endif
-static objc_hashtable *hashtables[numSlots];
+static _objc_hashtable *hashtables[numSlots];
 
 static OF_INLINE size_t
 slotForObject(id object)
@@ -110,10 +110,10 @@ equal(const void *object1, const void *object2)
 OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < numSlots; i++) {
-		hashtables[i] = objc_hashtable_new(hash, equal, 2);
+		hashtables[i] = _objc_hashtable_new(hash, equal, 2);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockNew(&spinlocks[i]) != 0)
-			OBJC_ERROR("Failed to create spinlocks!");
+			_OBJC_ERROR("Failed to create spinlocks!");
 #endif
 	}
 }
@@ -142,29 +142,29 @@ objc_setAssociatedObject(id object, const void *key, id value,
 
 #if defined(OF_HAVE_ATOMIC_OPS) && \
     (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
-	OFAtomicIntOr(&OBJC_PRE_IVARS(object)->info,
-	    OBJC_OBJECT_INFO_ASSOCIATIONS);
+	OFAtomicIntOr(&_OBJC_PRE_IVARS(object)->info,
+	    _OBJC_OBJECT_INFO_ASSOCIATIONS);
 #endif
 
 	slot = slotForObject(object);
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 
 	@try {
 #endif
-		objc_hashtable *objectHashtable;
+		_objc_hashtable *objectHashtable;
 		struct Association *association;
 
-		objectHashtable = objc_hashtable_get(hashtables[slot], object);
+		objectHashtable = _objc_hashtable_get(hashtables[slot], object);
 		if (objectHashtable == NULL) {
-			objectHashtable = objc_hashtable_new(hash, equal, 2);
-			objc_hashtable_set(hashtables[slot], object,
+			objectHashtable = _objc_hashtable_new(hash, equal, 2);
+			_objc_hashtable_set(hashtables[slot], object,
 			    objectHashtable);
 		}
 
-		association = objc_hashtable_get(objectHashtable, key);
+		association = _objc_hashtable_get(objectHashtable, key);
 		if (association != NULL) {
 			switch (association->policy) {
 			case OBJC_ASSOCIATION_RETAIN:
@@ -179,9 +179,9 @@ objc_setAssociatedObject(id object, const void *key, id value,
 		} else {
 			association = malloc(sizeof(*association));
 			if (association == NULL)
-				OBJC_ERROR("Failed to allocate association!");
+				_OBJC_ERROR("Failed to allocate association!");
 
-			objc_hashtable_set(objectHashtable, key, association);
+			_objc_hashtable_set(objectHashtable, key, association);
 		}
 
 		association->policy = policy;
@@ -189,7 +189,7 @@ objc_setAssociatedObject(id object, const void *key, id value,
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to unlock spinlock!");
+			_OBJC_ERROR("Failed to unlock spinlock!");
 	}
 #endif
 }
@@ -202,18 +202,18 @@ objc_getAssociatedObject(id object, const void *key)
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 
 	@try {
 #endif
-		objc_hashtable *objectHashtable;
+		_objc_hashtable *objectHashtable;
 		struct Association *association;
 
-		objectHashtable = objc_hashtable_get(hashtables[slot], object);
+		objectHashtable = _objc_hashtable_get(hashtables[slot], object);
 		if (objectHashtable == NULL)
 			return nil;
 
-		association = objc_hashtable_get(objectHashtable, key);
+		association = _objc_hashtable_get(objectHashtable, key);
 		if (association == NULL)
 			return nil;
 
@@ -230,7 +230,7 @@ objc_getAssociatedObject(id object, const void *key)
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to unlock spinlock!");
+			_OBJC_ERROR("Failed to unlock spinlock!");
 	}
 #endif
 
@@ -246,7 +246,7 @@ objc_removeAssociatedObjects(id object)
     (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
 	OFReleaseMemoryBarrier();
 
-	if (!(OBJC_PRE_IVARS(object)->info & OBJC_OBJECT_INFO_ASSOCIATIONS))
+	if (!(_OBJC_PRE_IVARS(object)->info & _OBJC_OBJECT_INFO_ASSOCIATIONS))
 		return;
 #endif
 
@@ -254,13 +254,13 @@ objc_removeAssociatedObjects(id object)
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlocks[slot]) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 
 	@try {
 #endif
-		objc_hashtable *objectHashtable;
+		_objc_hashtable *objectHashtable;
 
-		objectHashtable = objc_hashtable_get(hashtables[slot], object);
+		objectHashtable = _objc_hashtable_get(hashtables[slot], object);
 		if (objectHashtable == NULL)
 			return;
 
@@ -269,7 +269,7 @@ objc_removeAssociatedObjects(id object)
 			struct Association *association;
 
 			if (objectHashtable->data[i] == NULL ||
-			    objectHashtable->data[i] == &objc_deletedBucket)
+			    objectHashtable->data[i] == &_objc_deletedBucket)
 				continue;
 
 			association = (struct Association *)
@@ -296,12 +296,12 @@ objc_removeAssociatedObjects(id object)
 			free(association);
 		}
 
-		objc_hashtable_delete(hashtables[slot], object);
-		objc_hashtable_free(objectHashtable);
+		_objc_hashtable_delete(hashtables[slot], object);
+		_objc_hashtable_free(objectHashtable);
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to unlock spinlock!");
+			_OBJC_ERROR("Failed to unlock spinlock!");
 	}
 #endif
 }

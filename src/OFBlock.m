@@ -86,42 +86,42 @@ enum {
 
 #ifdef OF_OBJFW_RUNTIME
 /* Begin of ObjC module */
-static struct objc_class _NSConcreteStackBlock_metaclass = {
-	Nil, Nil, "OFStackBlock", 8, OBJC_CLASS_INFO_METACLASS,
+static struct _objc_class _NSConcreteStackBlock_metaclass = {
+	Nil, Nil, "OFStackBlock", 8, _OBJC_CLASS_INFO_METACLASS,
 	sizeof(_NSConcreteStackBlock_metaclass), NULL, NULL
 };
 
-struct objc_class _NSConcreteStackBlock = {
+struct _objc_class _NSConcreteStackBlock = {
 	&_NSConcreteStackBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFStackBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
+	"OFStackBlock", 8, _OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
-static struct objc_class _NSConcreteGlobalBlock_metaclass = {
-	Nil, Nil, "OFGlobalBlock", 8, OBJC_CLASS_INFO_METACLASS,
+static struct _objc_class _NSConcreteGlobalBlock_metaclass = {
+	Nil, Nil, "OFGlobalBlock", 8, _OBJC_CLASS_INFO_METACLASS,
 	sizeof(_NSConcreteGlobalBlock_metaclass), NULL, NULL
 };
 
-struct objc_class _NSConcreteGlobalBlock = {
+struct _objc_class _NSConcreteGlobalBlock = {
 	&_NSConcreteGlobalBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFGlobalBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
+	"OFGlobalBlock", 8, _OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
-static struct objc_class _NSConcreteMallocBlock_metaclass = {
-	Nil, Nil, "OFMallocBlock", 8, OBJC_CLASS_INFO_METACLASS,
+static struct _objc_class _NSConcreteMallocBlock_metaclass = {
+	Nil, Nil, "OFMallocBlock", 8, _OBJC_CLASS_INFO_METACLASS,
 	sizeof(_NSConcreteMallocBlock_metaclass), NULL, NULL
 };
 
-struct objc_class _NSConcreteMallocBlock = {
+struct _objc_class _NSConcreteMallocBlock = {
 	&_NSConcreteMallocBlock_metaclass, (Class)(void *)"OFBlock",
-	"OFMallocBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
+	"OFMallocBlock", 8, _OBJC_CLASS_INFO_CLASS, sizeof(struct Block),
 	NULL, NULL
 };
 
 static struct {
 	unsigned long unknown;
-	struct objc_selector *selectorRefs;
+	struct _objc_selector *selectorRefs;
 	uint16_t classDefsCount, categoryDefsCount;
 	void *defs[4];
 } symtab = {
@@ -133,7 +133,7 @@ static struct {
 };
 
 static struct _objc_module module = {
-	8, sizeof(module), NULL, (struct objc_symtab *)&symtab
+	8, sizeof(module), NULL, (struct _objc_symtab *)&symtab
 };
 
 OF_CONSTRUCTOR()

@@ -137,7 +137,7 @@ objc_destructInstance(id object)
 		return NULL;
 
 #ifdef OF_OBJFW_RUNTIME
-	objc_zeroWeakReferences(object);
+	_objc_zeroWeakReferences(object);
 #endif
 
 	if (destructSelector == NULL)
@@ -178,31 +178,31 @@ class_createInstance(Class class, size_t extraBytes)
 	instanceSize = class_getInstanceSize(class);
 
 #if defined(OF_WINDOWS)
-	instance = __mingw_aligned_malloc(OBJC_PRE_IVARS_ALIGNED +
+	instance = __mingw_aligned_malloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT);
 #elif defined(OF_DJGPP)
-	instance = alignedAlloc(OBJC_PRE_IVARS_ALIGNED +
+	instance = alignedAlloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT, &offset);
 #elif defined(OF_SOLARIS)
 	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
-	    OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes) != 0)
+	    _OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes) != 0)
 		instance = NULL;
 #else
-	instance = malloc(OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes);
+	instance = malloc(_OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes);
 #endif
 
 	if OF_UNLIKELY (instance == nil)
 		return nil;
 
 #ifdef OF_DJGPP
-	((struct objc_pre_ivars *)instance)->offset = offset;
+	((struct _objc_pre_ivars *)instance)->offset = offset;
 #endif
-	((struct objc_pre_ivars *)instance)->retainCount = 1;
-	((struct objc_pre_ivars *)instance)->info = 0;
+	((struct _objc_pre_ivars *)instance)->retainCount = 1;
+	((struct _objc_pre_ivars *)instance)->info = 0;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
-	    &((struct objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
+	    &((struct _objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
 # if defined(OF_WINDOWS)
 		__mingw_alaigned_free(instance);
 # elif defined(OF_DJGPP)
@@ -214,19 +214,20 @@ class_createInstance(Class class, size_t extraBytes)
 	}
 #endif
 
-	instance = (id)(void *)((char *)instance + OBJC_PRE_IVARS_ALIGNED);
+	instance = (id)(void *)((char *)instance + _OBJC_PRE_IVARS_ALIGNED);
 	memset(instance, 0, instanceSize + extraBytes);
 
 	if (!objc_constructInstance(class, instance)) {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-		OFSpinlockFree(&OBJC_PRE_IVARS(instance)->retainCountSpinlock);
+		OFSpinlockFree(&_OBJC_PRE_IVARS(instance)->retainCountSpinlock);
 #endif
 #if defined(OF_WINDOWS)
-		__mingw_aligned_free((char *)instance - OBJC_PRE_IVARS_ALIGNED);
+		__mingw_aligned_free(
+		    (char *)instance - _OBJC_PRE_IVARS_ALIGNED);
 #elif defined(OF_DJGPP)
-		alignedFree((char *)instance - OBJC_PRE_IVARS_ALIGNED, offset);
+		alignedFree((char *)instance - _OBJC_PRE_IVARS_ALIGNED, offset);
 #else
-		free((char *)instance - OBJC_PRE_IVARS_ALIGNED);
+		free((char *)instance - _OBJC_PRE_IVARS_ALIGNED);
 #endif
 		return nil;
 	}
@@ -240,16 +241,16 @@ object_dispose(id object)
 	objc_destructInstance(object);
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	OFSpinlockFree(&OBJC_PRE_IVARS(object)->retainCountSpinlock);
+	OFSpinlockFree(&_OBJC_PRE_IVARS(object)->retainCountSpinlock);
 #endif
 
 #if defined(OF_WINDOWS)
-	__mingw_aligned_free((char *)object - OBJC_PRE_IVARS_ALIGNED);
+	__mingw_aligned_free((char *)object - _OBJC_PRE_IVARS_ALIGNED);
 #elif defined(OF_DJGPP)
-	alignedFree((char *)object - OBJC_PRE_IVARS_ALIGNED,
-	    OBJC_PRE_IVARS(object)->offset);
+	alignedFree((char *)object - _OBJC_PRE_IVARS_ALIGNED,
+	    _OBJC_PRE_IVARS(object)->offset);
 #else
-	free((char *)object - OBJC_PRE_IVARS_ALIGNED);
+	free((char *)object - _OBJC_PRE_IVARS_ALIGNED);
 #endif
 
 	return nil;
@@ -259,7 +260,7 @@ id
 _objc_rootRetain(id object)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	OFAtomicIntIncrease(&OBJC_PRE_IVARS(object)->retainCount);
+	OFAtomicIntIncrease(&_OBJC_PRE_IVARS(object)->retainCount);
 #elif defined(OF_AMIGAOS)
 	/*
 	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
@@ -269,18 +270,19 @@ _objc_rootRetain(id object)
 # ifndef OF_AMIGAOS_M68K
 	Forbid();
 # endif
-	OBJC_PRE_IVARS(object)->retainCount++;
+	_OBJC_PRE_IVARS(object)->retainCount++;
 # ifndef OF_AMIGAOS_M68K
 	Permit();
 # endif
 #else
-	if (OFSpinlockLock(&OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to lock spinlock!");
 
-	OBJC_PRE_IVARS->retainCount++;
+	_OBJC_PRE_IVARS->retainCount++;
 
-	if (OFSpinlockUnlock(&OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+	if (OFSpinlockUnlock(
+	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	return object;
@@ -289,7 +291,7 @@ _objc_rootRetain(id object)
 unsigned int
 _objc_rootRetainCount(id object)
 {
-	return OBJC_PRE_IVARS(object)->retainCount;
+	return _OBJC_PRE_IVARS(object)->retainCount;
 }
 
 void
@@ -298,7 +300,7 @@ _objc_rootRelease(id object)
 #if defined(OF_HAVE_ATOMIC_OPS)
 	OFReleaseMemoryBarrier();
 
-	if (OFAtomicIntDecrease(&OBJC_PRE_IVARS(object)->retainCount) <= 0) {
+	if (OFAtomicIntDecrease(&_OBJC_PRE_IVARS(object)->retainCount) <= 0) {
 		OFAcquireMemoryBarrier();
 
 		[object dealloc];
@@ -307,7 +309,7 @@ _objc_rootRelease(id object)
 	int retainCount;
 
 	Forbid();
-	retainCount = --OBJC_PRE_IVARS(object)->retainCount;
+	retainCount = --_OBJC_PRE_IVARS(object)->retainCount;
 	Permit();
 
 	if (retainCount == 0)
@@ -315,13 +317,14 @@ _objc_rootRelease(id object)
 #else
 	int retainCount;
 
-	if (OFSpinlockLock(&OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to lock spinlock!");
 
-	retainCount = --OBJC_PRE_IVARS(object)->retainCount;
+	retainCount = --_OBJC_PRE_IVARS(object)->retainCount;
 
-	if (OFSpinlockUnlock(&OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+	if (OFSpinlockUnlock(
+	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to unlock spinlock!");
 
 	if (retainCount == 0)
 		[object dealloc];
