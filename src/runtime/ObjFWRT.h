@@ -86,12 +86,12 @@
 /**
  * @brief A pointer to a class.
  */
-typedef struct _objc_class *Class;
+typedef struct objc_class *Class;
 
 /**
  * @brief A pointer to any object.
  */
-typedef struct _objc_object *id;
+typedef struct objc_object *id;
 
 /**
  * @brief A selector.
@@ -99,14 +99,14 @@ typedef struct _objc_object *id;
  * A selector is the name of a method including the colons and an optional type
  * encoding.
  */
-typedef const struct _objc_selector *SEL;
+typedef const struct objc_selector *SEL;
 
 /**
  * @brief A method.
  *
  * A method consists of a selector with a type encoding and an implementation.
  */
-typedef const struct _objc_method *Method;
+typedef const struct objc_method *Method;
 
 /**
  * @brief A protocol.
@@ -114,18 +114,18 @@ typedef const struct _objc_method *Method;
 #if defined(__OBJC__) && !defined(DOXYGEN)
 @class Protocol;
 #else
-typedef const struct _objc_protocol *Protocol;
+typedef const struct objc_protocol *Protocol;
 #endif
 
 /**
  * @brief An instance variable.
  */
-typedef const struct _objc_ivar *Ivar;
+typedef const struct objc_ivar *Ivar;
 
 /**
  * @brief A property.
  */
-typedef const struct _objc_property *objc_property_t;
+typedef const struct objc_property *objc_property_t;
 
 #if !defined(__wii__) && !defined(__amigaos__)
 /**
@@ -757,8 +757,10 @@ extern void objc_removeAssociatedObjects(id _Nonnull object);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
-struct _objc_module;
-extern void __objc_exec_class(struct _objc_module *_Nonnull module);
+#ifdef __clang__
+struct objc_module;
+extern void __objc_exec_class(struct objc_module *_Nonnull module);
+#endif
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

@@ -172,7 +172,7 @@ objc_property_t *
 class_copyPropertyList(Class class, unsigned int *outCount)
 {
 	unsigned int i, count;
-	struct _objc_property_list *iter;
+	struct objc_property_list *iter;
 	objc_property_t *properties;
 
 	if (class == Nil) {

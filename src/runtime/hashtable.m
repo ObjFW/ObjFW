@@ -28,7 +28,7 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-struct _objc_hashtable_bucket _objc_deletedBucket;
+struct objc_hashtable_bucket _objc_deletedBucket;
 
 uint32_t
 _objc_string_hash(const void *str_)
@@ -56,11 +56,11 @@ _objc_string_equal(const void *ptr1, const void *ptr2)
 	return (strcmp(ptr1, ptr2) == 0);
 }
 
-struct _objc_hashtable *
+struct objc_hashtable *
 _objc_hashtable_new(uint32_t (*hash)(const void *),
     bool (*equal)(const void *, const void *), uint32_t size)
 {
-	struct _objc_hashtable *table;
+	struct objc_hashtable *table;
 
 	if ((table = malloc(sizeof(*table))) == NULL)
 		_OBJC_ERROR("Not enough memory to allocate hash table!");
@@ -70,7 +70,7 @@ _objc_hashtable_new(uint32_t (*hash)(const void *),
 
 	table->count = 0;
 	table->size = size;
-	table->data = calloc(size, sizeof(struct _objc_hashtable_bucket *));
+	table->data = calloc(size, sizeof(struct objc_hashtable_bucket *));
 
 	if (table->data == NULL)
 		_OBJC_ERROR("Not enough memory to allocate hash table!");
@@ -79,10 +79,10 @@ _objc_hashtable_new(uint32_t (*hash)(const void *),
 }
 
 static void
-resize(struct _objc_hashtable *table, uint32_t count)
+resize(struct objc_hashtable *table, uint32_t count)
 {
 	uint32_t fullness, newSize;
-	struct _objc_hashtable_bucket **newData;
+	struct objc_hashtable_bucket **newData;
 
 	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
 		_OBJC_ERROR("Integer overflow!");
@@ -135,7 +135,7 @@ resize(struct _objc_hashtable *table, uint32_t count)
 }
 
 static inline bool
-indexForKey(struct _objc_hashtable *table, const void *key, uint32_t *idx)
+indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 {
 	uint32_t i, hash;
 
@@ -168,11 +168,11 @@ indexForKey(struct _objc_hashtable *table, const void *key, uint32_t *idx)
 }
 
 void
-_objc_hashtable_set(struct _objc_hashtable *table, const void *key,
+_objc_hashtable_set(struct objc_hashtable *table, const void *key,
     const void *object)
 {
 	uint32_t i, hash, last;
-	struct _objc_hashtable_bucket *bucket;
+	struct objc_hashtable_bucket *bucket;
 
 	if (indexForKey(table, key, &i)) {
 		table->data[i]->object = object;
@@ -209,7 +209,7 @@ _objc_hashtable_set(struct _objc_hashtable *table, const void *key,
 }
 
 void *
-_objc_hashtable_get(struct _objc_hashtable *table, const void *key)
+_objc_hashtable_get(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
@@ -220,7 +220,7 @@ _objc_hashtable_get(struct _objc_hashtable *table, const void *key)
 }
 
 void
-_objc_hashtable_delete(struct _objc_hashtable *table, const void *key)
+_objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
@@ -235,7 +235,7 @@ _objc_hashtable_delete(struct _objc_hashtable *table, const void *key)
 }
 
 void
-_objc_hashtable_free(struct _objc_hashtable *table)
+_objc_hashtable_free(struct objc_hashtable *table)
 {
 	for (uint32_t i = 0; i < table->size; i++)
 		if (table->data[i] != NULL &&

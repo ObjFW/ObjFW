@@ -36,14 +36,14 @@ static const uint32_t maxSel = 0xFFFF;
 static const uint8_t selLevels = 2;
 #endif
 
-static struct _objc_hashtable *selectors = NULL;
+static struct objc_hashtable *selectors = NULL;
 static uint32_t selectorsCount = 0;
-static struct _objc_sparsearray *selectorNames = NULL;
+static struct objc_sparsearray *selectorNames = NULL;
 static void **freeList = NULL;
 static size_t freeListCount = 0;
 
 void
-_objc_registerSelector(struct _objc_selector *selector)
+_objc_registerSelector(struct objc_selector *selector)
 {
 	SEL existingSelector;
 	const char *name;
@@ -74,7 +74,7 @@ _objc_registerSelector(struct _objc_selector *selector)
 SEL
 sel_registerName(const char *name)
 {
-	struct _objc_selector *selector;
+	struct objc_selector *selector;
 
 	_objc_globalMutex_lock();
 
@@ -104,9 +104,9 @@ sel_registerName(const char *name)
 }
 
 void
-_objc_registerAllSelectors(struct _objc_symtab *symtab)
+_objc_registerAllSelectors(struct objc_symtab *symtab)
 {
-	struct _objc_selector *selector;
+	struct objc_selector *selector;
 
 	if (symtab->selectorRefs == NULL)
 		return;

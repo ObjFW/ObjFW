@@ -39,7 +39,7 @@ struct WeakRef {
 };
 
 #ifdef OF_OBJFW_RUNTIME
-typedef struct _objc_hashtable _objc_hashtable;
+typedef struct objc_hashtable _objc_hashtable;
 
 /* Inlined for performance. */
 static OF_INLINE bool
@@ -54,7 +54,7 @@ _object_isTaggedPointer_fast(id object)
 static OF_INLINE Class
 _object_getClass_fast(id object_)
 {
-	struct _objc_object *object = (struct _objc_object *)object_;
+	struct objc_object *object = (struct objc_object *)object_;
 
 	return object->isa;
 }

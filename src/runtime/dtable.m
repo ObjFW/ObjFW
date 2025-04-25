@@ -25,9 +25,9 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-static struct _objc_dtable_level2 *emptyLevel2 = NULL;
+static struct objc_dtable_level2 *emptyLevel2 = NULL;
 #ifdef OF_SELUID24
-static struct _objc_dtable_level3 *emptyLevel3 = NULL;
+static struct objc_dtable_level3 *emptyLevel3 = NULL;
 #endif
 
 static void
@@ -52,10 +52,10 @@ init(void)
 #endif
 }
 
-struct _objc_dtable *
+struct objc_dtable *
 _objc_dtable_new(void)
 {
-	struct _objc_dtable *dTable;
+	struct objc_dtable *dTable;
 
 #ifdef OF_SELUID24
 	if (emptyLevel2 == NULL || emptyLevel3 == NULL)
@@ -75,7 +75,7 @@ _objc_dtable_new(void)
 }
 
 void
-_objc_dtable_copy(struct _objc_dtable *dest, struct _objc_dtable *src)
+_objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
 		if (src->buckets[i] == emptyLevel2)
@@ -117,7 +117,7 @@ _objc_dtable_copy(struct _objc_dtable *dest, struct _objc_dtable *src)
 }
 
 void
-_objc_dtable_set(struct _objc_dtable *dTable, uint32_t idx, IMP implementation)
+_objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
@@ -129,7 +129,7 @@ _objc_dtable_set(struct _objc_dtable *dTable, uint32_t idx, IMP implementation)
 #endif
 
 	if (dTable->buckets[i] == emptyLevel2) {
-		struct _objc_dtable_level2 *level2 = malloc(sizeof(*level2));
+		struct objc_dtable_level2 *level2 = malloc(sizeof(*level2));
 
 		if (level2 == NULL)
 			_OBJC_ERROR("Not enough memory to insert into "
@@ -147,7 +147,7 @@ _objc_dtable_set(struct _objc_dtable *dTable, uint32_t idx, IMP implementation)
 
 #ifdef OF_SELUID24
 	if (dTable->buckets[i]->buckets[j] == emptyLevel3) {
-		struct _objc_dtable_level3 *level3 = malloc(sizeof(*level3));
+		struct objc_dtable_level3 *level3 = malloc(sizeof(*level3));
 
 		if (level3 == NULL)
 			_OBJC_ERROR("Not enough memory to insert into "
@@ -166,7 +166,7 @@ _objc_dtable_set(struct _objc_dtable *dTable, uint32_t idx, IMP implementation)
 }
 
 void
-_objc_dtable_free(struct _objc_dtable *dTable)
+_objc_dtable_free(struct objc_dtable *dTable)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
 		if (dTable->buckets[i] == emptyLevel2)

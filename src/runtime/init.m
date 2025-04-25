@@ -23,7 +23,7 @@
 #import "private.h"
 
 void
-__objc_exec_class(struct _objc_module *module)
+__objc_exec_class(struct objc_module *module)
 {
 	_objc_globalMutex_lock();
 

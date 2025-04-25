@@ -33,23 +33,23 @@ typedef uint32_t (*_Nonnull _objc_hashtable_hash_func)(
 typedef bool (*_Nonnull _objc_hashtable_equal_func)(const void *_Nonnull key1,
     const void *_Nonnull key2);
 
-struct _objc_class {
+struct objc_class {
 	Class _Nonnull isa;
 	Class _Nullable superclass;
 	const char *_Nonnull name;
 	unsigned long version;
 	unsigned long info;
 	long instanceSize;
-	struct _objc_ivar_list *_Nullable ivars;
-	struct _objc_method_list *_Nullable methodList;
-	struct _objc_dtable *_Nullable dTable;
+	struct objc_ivar_list *_Nullable ivars;
+	struct objc_method_list *_Nullable methodList;
+	struct objc_dtable *_Nullable dTable;
 	Class _Nullable *_Nullable subclassList;
 	void *_Nullable siblingClass;
-	struct _objc_protocol_list *_Nullable protocols;
+	struct objc_protocol_list *_Nullable protocols;
 	void *_Nullable GCObjectType;
 	unsigned long ABIVersion;
 	int32_t *_Nonnull *_Nullable ivarOffsets;
-	struct _objc_property_list *_Nullable propertyList;
+	struct objc_property_list *_Nullable propertyList;
 };
 
 enum _objc_class_info {
@@ -63,57 +63,57 @@ enum _objc_class_info {
 	_OBJC_CLASS_INFO_RUNTIME_RR  = 0x1000
 };
 
-struct _objc_object {
+struct objc_object {
 	Class _Nonnull isa;
 };
 
-struct _objc_selector {
+struct objc_selector {
 	uintptr_t UID;
 	const char *_Nullable typeEncoding;
 };
 
-struct _objc_method {
-	struct _objc_selector selector;
+struct objc_method {
+	struct objc_selector selector;
 	IMP _Nonnull implementation;
 };
 
-struct _objc_method_list {
-	struct _objc_method_list *_Nullable next;
+struct objc_method_list {
+	struct objc_method_list *_Nullable next;
 	unsigned int count;
-	struct _objc_method methods[1];
+	struct objc_method methods[1];
 };
 
-struct _objc_category {
+struct objc_category {
 	const char *_Nonnull categoryName;
 	const char *_Nonnull className;
-	struct _objc_method_list *_Nullable instanceMethods;
-	struct _objc_method_list *_Nullable classMethods;
-	struct _objc_protocol_list *_Nullable protocols;
+	struct objc_method_list *_Nullable instanceMethods;
+	struct objc_method_list *_Nullable classMethods;
+	struct objc_protocol_list *_Nullable protocols;
 };
 
-struct _objc_ivar {
+struct objc_ivar {
 	const char *_Nonnull name;
 	const char *_Nonnull typeEncoding;
 	unsigned int offset;
 };
 
-struct _objc_ivar_list {
+struct objc_ivar_list {
 	unsigned int count;
-	struct _objc_ivar ivars[1];
+	struct objc_ivar ivars[1];
 };
 
-struct _objc_method_description {
+struct objc_method_description {
 	const char *_Nonnull name;
 	const char *_Nonnull typeEncoding;
 };
 
-struct _objc_method_description_list {
+struct objc_method_description_list {
 	int count;
-	struct _objc_method_description list[1];
+	struct objc_method_description list[1];
 };
 
-struct _objc_protocol_list {
-	struct _objc_protocol_list *_Nullable next;
+struct objc_protocol_list {
+	struct objc_protocol_list *_Nullable next;
 	long count;
 	Protocol *__unsafe_unretained _Nonnull list[1];
 };
@@ -126,9 +126,9 @@ __attribute__((__objc_root_class__))
 @public
 	Class _Nonnull isa;
 	const char *_Nonnull name;
-	struct _objc_protocol_list *_Nullable protocolList;
-	struct _objc_method_description_list *_Nullable instanceMethods;
-	struct _objc_method_description_list *_Nullable classMethods;
+	struct objc_protocol_list *_Nullable protocolList;
+	struct objc_method_description_list *_Nullable instanceMethods;
+	struct objc_method_description_list *_Nullable classMethods;
 }
 @end
 
@@ -153,7 +153,7 @@ enum _objc_property_extended_attributes {
 	_OBJC_PROPERTY_UNSAFE_UNRETAINED = 0x20
 };
 
-struct _objc_property {
+struct objc_property {
 	const char *_Nonnull name;
 	unsigned char attributes, extendedAttributes;
 	struct {
@@ -162,55 +162,55 @@ struct _objc_property {
 	} getter, setter;
 };
 
-struct _objc_property_list {
+struct objc_property_list {
 	unsigned int count;
-	struct _objc_property_list *_Nullable next;
-	struct _objc_property properties[1];
+	struct objc_property_list *_Nullable next;
+	struct objc_property properties[1];
 };
 
-struct _objc_static_instances {
+struct objc_static_instances {
 	const char *_Nonnull className;
 	id _Nullable instances[1];
 };
 
-struct _objc_symtab {
+struct objc_symtab {
 	unsigned long unknown;
-	struct _objc_selector *_Nullable selectorRefs;
+	struct objc_selector *_Nullable selectorRefs;
 	uint16_t classDefsCount;
 	uint16_t categoryDefsCount;
 	void *_Nonnull defs[1];
 };
 
-struct _objc_module {
+struct objc_module {
 	unsigned long version;	/* 9 = non-fragile */
 	unsigned long size;
 	const char *_Nullable name;
-	struct _objc_symtab *_Nonnull symtab;
+	struct objc_symtab *_Nonnull symtab;
 };
 
-struct _objc_hashtable_bucket {
+struct objc_hashtable_bucket {
 	const void *_Nonnull key, *_Nonnull object;
 	uint32_t hash;
 };
 
-struct _objc_hashtable {
+struct objc_hashtable {
 	_objc_hashtable_hash_func hash;
 	_objc_hashtable_equal_func equal;
 	uint32_t count, size;
-	struct _objc_hashtable_bucket *_Nonnull *_Nullable data;
+	struct objc_hashtable_bucket *_Nonnull *_Nullable data;
 };
 
-struct _objc_sparsearray {
-	struct _objc_sparsearray_data {
+struct objc_sparsearray {
+	struct objc_sparsearray_data {
 		void *_Nullable next[256];
 	} *_Nonnull data;
 	uint8_t levels;
 };
 
-struct _objc_dtable {
-	struct _objc_dtable_level2 {
+struct objc_dtable {
+	struct objc_dtable_level2 {
 #ifdef OF_SELUID24
-		struct _objc_dtable_level3 {
+		struct objc_dtable_level3 {
 			IMP _Nullable buckets[256];
 		} *_Nonnull buckets[256];
 #else
@@ -219,15 +219,15 @@ struct _objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
-extern void _objc_registerAllCategories(struct _objc_symtab *_Nonnull)
+extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_INTERNAL;
-extern struct _objc_category *_Nullable *_Nullable
+extern struct objc_category *_Nullable *_Nullable
     _objc_categoriesForClass(Class _Nonnull) OF_VISIBILITY_INTERNAL;
 extern void _objc_processCategoriesLoadQueue(void) OF_VISIBILITY_INTERNAL;
 extern void _objc_unregisterAllCategories(void) OF_VISIBILITY_INTERNAL;
 extern void _objc_initializeClass(Class _Nonnull) OF_VISIBILITY_INTERNAL;
 extern void _objc_updateDTable(Class _Nonnull) OF_VISIBILITY_INTERNAL;
-extern void _objc_registerAllClasses(struct _objc_symtab *_Nonnull)
+extern void _objc_registerAllClasses(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern Class _Nullable _objc_classnameToClass(const char *_Nonnull, bool)
     OF_VISIBILITY_INTERNAL;
@@ -236,41 +236,41 @@ extern void _objc_unregisterAllClasses(void) OF_VISIBILITY_INTERNAL;
 extern uint32_t _objc_string_hash(const void *_Nonnull) OF_VISIBILITY_INTERNAL;
 extern bool _objc_string_equal(const void *_Nonnull, const void *_Nonnull)
     OF_VISIBILITY_INTERNAL;
-extern struct _objc_hashtable *_Nonnull _objc_hashtable_new(
+extern struct objc_hashtable *_Nonnull _objc_hashtable_new(
     _objc_hashtable_hash_func, _objc_hashtable_equal_func, uint32_t)
     OF_VISIBILITY_INTERNAL;
-extern struct _objc_hashtable_bucket _objc_deletedBucket OF_VISIBILITY_INTERNAL;
-extern void _objc_hashtable_set(struct _objc_hashtable *_Nonnull,
+extern struct objc_hashtable_bucket _objc_deletedBucket OF_VISIBILITY_INTERNAL;
+extern void _objc_hashtable_set(struct objc_hashtable *_Nonnull,
     const void *_Nonnull, const void *_Nonnull) OF_VISIBILITY_INTERNAL;
-extern void *_Nullable _objc_hashtable_get(struct _objc_hashtable *_Nonnull,
+extern void *_Nullable _objc_hashtable_get(struct objc_hashtable *_Nonnull,
     const void *_Nonnull) OF_VISIBILITY_INTERNAL;
-extern void _objc_hashtable_delete(struct _objc_hashtable *_Nonnull,
+extern void _objc_hashtable_delete(struct objc_hashtable *_Nonnull,
     const void *_Nonnull) OF_VISIBILITY_INTERNAL;
-extern void _objc_hashtable_free(struct _objc_hashtable *_Nonnull)
+extern void _objc_hashtable_free(struct objc_hashtable *_Nonnull)
     OF_VISIBILITY_INTERNAL;
-extern void _objc_registerSelector(struct _objc_selector *_Nonnull)
+extern void _objc_registerSelector(struct objc_selector *_Nonnull)
     OF_VISIBILITY_INTERNAL;
-extern void _objc_registerAllSelectors(struct _objc_symtab *_Nonnull)
+extern void _objc_registerAllSelectors(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern void _objc_unregisterAllSelectors(void) OF_VISIBILITY_INTERNAL;
-extern struct _objc_sparsearray *_Nonnull _objc_sparsearray_new(uint8_t)
+extern struct objc_sparsearray *_Nonnull _objc_sparsearray_new(uint8_t)
     OF_VISIBILITY_INTERNAL;
-extern void *_Nullable _objc_sparsearray_get(struct _objc_sparsearray *_Nonnull,
+extern void *_Nullable _objc_sparsearray_get(struct objc_sparsearray *_Nonnull,
     uintptr_t) OF_VISIBILITY_INTERNAL;
-extern void _objc_sparsearray_set(struct _objc_sparsearray *_Nonnull, uintptr_t,
+extern void _objc_sparsearray_set(struct objc_sparsearray *_Nonnull, uintptr_t,
     void *_Nullable) OF_VISIBILITY_INTERNAL;
-extern void _objc_sparsearray_free(struct _objc_sparsearray *_Nonnull)
+extern void _objc_sparsearray_free(struct objc_sparsearray *_Nonnull)
     OF_VISIBILITY_INTERNAL;
-extern struct _objc_dtable *_Nonnull _objc_dtable_new(void)
+extern struct objc_dtable *_Nonnull _objc_dtable_new(void)
     OF_VISIBILITY_INTERNAL;
-extern void _objc_dtable_copy(struct _objc_dtable *_Nonnull,
-    struct _objc_dtable *_Nonnull) OF_VISIBILITY_INTERNAL;
-extern void _objc_dtable_set(struct _objc_dtable *_Nonnull, uint32_t,
+extern void _objc_dtable_copy(struct objc_dtable *_Nonnull,
+    struct objc_dtable *_Nonnull) OF_VISIBILITY_INTERNAL;
+extern void _objc_dtable_set(struct objc_dtable *_Nonnull, uint32_t,
     IMP _Nullable) OF_VISIBILITY_INTERNAL;
-extern void _objc_dtable_free(struct _objc_dtable *_Nonnull)
+extern void _objc_dtable_free(struct objc_dtable *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern void _objc_dtable_cleanup(void) OF_VISIBILITY_INTERNAL;
-extern void _objc_initStaticInstances(struct _objc_symtab *_Nonnull)
+extern void _objc_initStaticInstances(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern void _objc_forgetPendingStaticInstances(void) OF_VISIBILITY_INTERNAL;
 extern void _objc_zeroWeakReferences(id _Nonnull) OF_VISIBILITY_INTERNAL;
@@ -289,7 +289,7 @@ extern char *_Nullable _objc_strdup(const char *_Nonnull string)
     OF_VISIBILITY_INTERNAL;
 
 static OF_INLINE IMP _Nullable
-_objc_dtable_get(const struct _objc_dtable *_Nonnull dtable, uint32_t idx)
+_objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;

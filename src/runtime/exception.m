@@ -123,7 +123,7 @@ typedef enum {
 	_URC_FAILURE		= 9
 } _Unwind_Reason_Code;
 
-struct _objc_exception {
+struct objc_exception {
 	struct _Unwind_Exception {
 		uint64_t class;
 		void (*cleanup)(
@@ -276,7 +276,7 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
 #endif
 
 static objc_uncaught_exception_handler uncaughtExceptionHandler;
-static struct _objc_exception emergencyExceptions[numEmergencyExceptions];
+static struct objc_exception emergencyExceptions[numEmergencyExceptions];
 #ifdef OF_HAVE_THREADS
 static OFSpinlock emergencyExceptionsSpinlock;
 
@@ -541,7 +541,7 @@ classMatches(Class class, id object)
 
 static uint8_t
 findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
-    bool foreign, struct _objc_exception *e, intptr_t *filterPtr)
+    bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
@@ -633,7 +633,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #endif
-	struct _objc_exception *e = (struct _objc_exception *)ex;
+	struct objc_exception *e = (struct objc_exception *)ex;
 	bool foreign = (exClass != GNUCOBJC_EXCEPTION_CLASS);
 	const uint8_t *LSDAAddr, *actionRecords;
 	struct LSDA LSDA;
@@ -762,7 +762,7 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
 void
 objc_exception_throw(id object)
 {
-	struct _objc_exception *e = calloc(1, sizeof(*e));
+	struct objc_exception *e = calloc(1, sizeof(*e));
 	bool emergency = false;
 
 	if (e == NULL) {

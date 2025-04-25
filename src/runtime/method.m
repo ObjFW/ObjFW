@@ -26,7 +26,7 @@ Method *
 class_copyMethodList(Class class, unsigned int *outCount)
 {
 	unsigned int i, count;
-	struct _objc_method_list *iter;
+	struct objc_method_list *iter;
 	Method *methods;
 
 	if (class == Nil) {

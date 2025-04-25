@@ -39,7 +39,7 @@ struct Association {
 };
 
 #ifdef OF_OBJFW_RUNTIME
-typedef struct _objc_hashtable _objc_hashtable;
+typedef struct objc_hashtable _objc_hashtable;
 #else
 typedef OFMapTable _objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };

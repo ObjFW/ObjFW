@@ -195,14 +195,14 @@ class_createInstance(Class class, size_t extraBytes)
 		return nil;
 
 #ifdef OF_DJGPP
-	((struct _objc_pre_ivars *)instance)->offset = offset;
+	((struct objc_pre_ivars *)instance)->offset = offset;
 #endif
-	((struct _objc_pre_ivars *)instance)->retainCount = 1;
-	((struct _objc_pre_ivars *)instance)->info = 0;
+	((struct objc_pre_ivars *)instance)->retainCount = 1;
+	((struct objc_pre_ivars *)instance)->info = 0;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (OFSpinlockNew(
-	    &((struct _objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
+	    &((struct objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
 # if defined(OF_WINDOWS)
 		__mingw_alaigned_free(instance);
 # elif defined(OF_DJGPP)

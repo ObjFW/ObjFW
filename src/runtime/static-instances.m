@@ -25,13 +25,13 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-static struct _objc_static_instances **staticInstancesList = NULL;
+static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-_objc_initStaticInstances(struct _objc_symtab *symtab)
+_objc_initStaticInstances(struct objc_symtab *symtab)
 {
-	struct _objc_static_instances **staticInstances;
+	struct objc_static_instances **staticInstances;
 
 	/* Check if the class for a static instance became available */
 	for (size_t i = 0; i < staticInstancesCount; i++) {
@@ -70,7 +70,7 @@ _objc_initStaticInstances(struct _objc_symtab *symtab)
 		}
 	}
 
-	staticInstances = (struct _objc_static_instances **)
+	staticInstances = (struct objc_static_instances **)
 	    symtab->defs[symtab->classDefsCount + symtab->categoryDefsCount];
 
 	if (staticInstances == NULL)

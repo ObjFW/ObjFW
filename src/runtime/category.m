@@ -26,14 +26,14 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-static struct _objc_hashtable *categoriesMap = NULL;
-static struct _objc_category **loadQueue = NULL;
+static struct objc_hashtable *categoriesMap = NULL;
+static struct objc_category **loadQueue = NULL;
 static size_t loadQueueCount = 0;
 
 static void
-registerSelectors(struct _objc_category *category)
+registerSelectors(struct objc_category *category)
 {
-	struct _objc_method_list *iter;
+	struct objc_method_list *iter;
 	unsigned int i;
 
 	for (iter = category->instanceMethods; iter != NULL; iter = iter->next)
@@ -46,14 +46,14 @@ registerSelectors(struct _objc_category *category)
 }
 
 static bool
-hasLoad(struct _objc_category *category)
+hasLoad(struct objc_category *category)
 {
 	static SEL loadSel = NULL;
 
 	if (loadSel == NULL)
 		loadSel = sel_registerName("load");
 
-	for (struct _objc_method_list *methodList = category->classMethods;
+	for (struct objc_method_list *methodList = category->classMethods;
 	    methodList != NULL; methodList = methodList->next)
 		for (unsigned int i = 0; i < methodList->count; i++)
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
@@ -64,14 +64,14 @@ hasLoad(struct _objc_category *category)
 }
 
 static void
-callLoad(Class class, struct _objc_category *category)
+callLoad(Class class, struct objc_category *category)
 {
 	static SEL loadSel = NULL;
 
 	if (loadSel == NULL)
 		loadSel = sel_registerName("load");
 
-	for (struct _objc_method_list *methodList = category->classMethods;
+	for (struct objc_method_list *methodList = category->classMethods;
 	    methodList != NULL; methodList = methodList->next) {
 		for (unsigned int i = 0; i < methodList->count; i++) {
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
@@ -104,7 +104,7 @@ _objc_processCategoriesLoadQueue(void)
 			loadQueue[i] = loadQueue[loadQueueCount];
 
 			loadQueue = realloc(loadQueue,
-			    sizeof(struct _objc_category *) * loadQueueCount);
+			    sizeof(struct objc_category *) * loadQueueCount);
 
 			if (loadQueue == NULL)
 				_OBJC_ERROR("Not enough memory for load "
@@ -114,17 +114,17 @@ _objc_processCategoriesLoadQueue(void)
 }
 
 static void
-registerCategory(struct _objc_category *category)
+registerCategory(struct objc_category *category)
 {
 	size_t numCategories = 0;
-	struct _objc_category **categories;
+	struct objc_category **categories;
 	Class class = _objc_classnameToClass(category->className, false);
 
 	if (categoriesMap == NULL)
 		categoriesMap = _objc_hashtable_new(
 		    _objc_string_hash, _objc_string_equal, 2);
 
-	categories = (struct _objc_category **)_objc_hashtable_get(
+	categories = (struct objc_category **)_objc_hashtable_get(
 	    categoriesMap, category->className);
 
 	if (categories != NULL)
@@ -164,7 +164,7 @@ registerCategory(struct _objc_category *category)
 			callLoad(class, category);
 		else {
 			loadQueue = realloc(loadQueue,
-			    sizeof(struct _objc_category *) *
+			    sizeof(struct objc_category *) *
 			    (loadQueueCount + 1));
 
 			if (loadQueue == NULL)
@@ -177,10 +177,10 @@ registerCategory(struct _objc_category *category)
 }
 
 void
-_objc_registerAllCategories(struct _objc_symtab *symtab)
+_objc_registerAllCategories(struct objc_symtab *symtab)
 {
-	struct _objc_category **categories =
-	    (struct _objc_category **)symtab->defs + symtab->classDefsCount;
+	struct objc_category **categories =
+	    (struct objc_category **)symtab->defs + symtab->classDefsCount;
 
 	for (size_t i = 0; i < symtab->categoryDefsCount; i++) {
 		registerSelectors(categories[i]);
@@ -188,13 +188,13 @@ _objc_registerAllCategories(struct _objc_symtab *symtab)
 	}
 }
 
-struct _objc_category **
+struct objc_category **
 _objc_categoriesForClass(Class class)
 {
 	if (categoriesMap == NULL)
 		return NULL;
 
-	return (struct _objc_category **)_objc_hashtable_get(categoriesMap,
+	return (struct objc_category **)_objc_hashtable_get(categoriesMap,
 	    class->name);
 }
 

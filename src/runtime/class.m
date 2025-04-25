@@ -27,13 +27,13 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-static struct _objc_hashtable *classes = NULL;
+static struct objc_hashtable *classes = NULL;
 static unsigned classesCount = 0;
 static Class *loadQueue = NULL;
 static size_t loadQueueCount = 0;
-static struct _objc_dtable *emptyDTable = NULL;
+static struct objc_dtable *emptyDTable = NULL;
 static unsigned lookupsUntilFastPath = 128;
-static struct _objc_sparsearray *fastPath = NULL;
+static struct objc_sparsearray *fastPath = NULL;
 
 static void
 registerClass(Class class)
@@ -69,7 +69,7 @@ class_registerAlias_np(Class class, const char *name)
 static void
 registerSelectors(Class class)
 {
-	struct _objc_method_list *iter;
+	struct objc_method_list *iter;
 	unsigned int i;
 
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
@@ -131,7 +131,7 @@ _objc_classnameToClass(const char *name, bool cache)
 static void
 callSelector(Class class, SEL selector)
 {
-	for (struct _objc_method_list *methodList = class->isa->methodList;
+	for (struct objc_method_list *methodList = class->isa->methodList;
 	    methodList != NULL; methodList = methodList->next)
 		for (unsigned int i = 0; i < methodList->count; i++)
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
@@ -148,7 +148,7 @@ hasLoad(Class class)
 	if (loadSel == NULL)
 		loadSel = sel_registerName("load");
 
-	for (struct _objc_method_list *methodList = class->isa->methodList;
+	for (struct objc_method_list *methodList = class->isa->methodList;
 	    methodList != NULL; methodList = methodList->next)
 		for (size_t i = 0; i < methodList->count; i++)
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
@@ -184,7 +184,7 @@ _objc_updateDTable(Class class)
 	static SEL retainSel = NULL, retainCountSel = NULL, releaseSel = NULL;
 	static SEL autoreleaseSel = NULL, usesRuntimeRRSel = NULL;
 	unsigned long superclassInfo = 0;
-	struct _objc_category **categories;
+	struct objc_category **categories;
 
 	if (retainSel == NULL || retainCountSel == NULL || releaseSel == NULL ||
 	    autoreleaseSel == NULL || usesRuntimeRRSel == NULL) {
@@ -211,7 +211,7 @@ _objc_updateDTable(Class class)
 		_objc_dtable_copy(class->dTable, class->superclass->dTable);
 	}
 
-	for (struct _objc_method_list *methodList = class->methodList;
+	for (struct objc_method_list *methodList = class->methodList;
 	    methodList != NULL; methodList = methodList->next) {
 		for (unsigned int i = 0; i < methodList->count; i++) {
 			SEL selector = (SEL)&methodList->methods[i].selector;
@@ -232,7 +232,7 @@ _objc_updateDTable(Class class)
 
 	if ((categories = _objc_categoriesForClass(class)) != NULL) {
 		for (unsigned int i = 0; categories[i] != NULL; i++) {
-			struct _objc_method_list *methodList =
+			struct objc_method_list *methodList =
 			    (class->info & _OBJC_CLASS_INFO_CLASS
 			    ? categories[i]->instanceMethods
 			    : categories[i]->classMethods);
@@ -485,7 +485,7 @@ processLoadQueue(void)
 }
 
 void
-_objc_registerAllClasses(struct _objc_symtab *symtab)
+_objc_registerAllClasses(struct objc_symtab *symtab)
 {
 	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
 		Class class = (Class)symtab->defs[i];
@@ -524,7 +524,7 @@ _objc_registerAllClasses(struct _objc_symtab *symtab)
 Class
 objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 {
-	struct _objc_class *class, *metaclass;
+	struct objc_class *class, *metaclass;
 	Class iter, rootclass = Nil;
 
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
@@ -785,14 +785,14 @@ class_getMethodImplementation_stret(Class class, SEL selector)
 	return objc_msg_lookup_stret((id)&dummy, selector);
 }
 
-static struct _objc_method *
+static struct objc_method *
 getMethod(Class class, SEL selector)
 {
-	struct _objc_category **categories;
+	struct objc_category **categories;
 
 	if ((categories = _objc_categoriesForClass(class)) != NULL) {
 		for (; *categories != NULL; categories++) {
-			struct _objc_method_list *methodList =
+			struct objc_method_list *methodList =
 			    (class->info & _OBJC_CLASS_INFO_METACLASS
 			    ? (*categories)->classMethods
 			    : (*categories)->instanceMethods);
@@ -808,7 +808,7 @@ getMethod(Class class, SEL selector)
 		}
 	}
 
-	for (struct _objc_method_list *methodList = class->methodList;
+	for (struct objc_method_list *methodList = class->methodList;
 	    methodList != NULL; methodList = methodList->next)
 		for (unsigned int i = 0; i < methodList->count; i++)
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
@@ -822,7 +822,7 @@ static void
 addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	struct _objc_method_list *methodList;
+	struct objc_method_list *methodList;
 
 	/* FIXME: We need a way to free this at objc_deinit() */
 	if ((methodList = malloc(sizeof(*methodList))) == NULL)
@@ -893,7 +893,7 @@ IMP
 class_replaceMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	struct _objc_method *method;
+	struct objc_method *method;
 	IMP oldImplementation;
 
 	_objc_globalMutex_lock();
@@ -915,7 +915,7 @@ class_replaceMethod(Class class, SEL selector, IMP implementation,
 Class
 object_getClass(id object_)
 {
-	struct _objc_object *object;
+	struct objc_object *object;
 
 	if (object_ == nil)
 		return Nil;
@@ -923,7 +923,7 @@ object_getClass(id object_)
 	if (object_isTaggedPointer(object_))
 		return _object_getTaggedPointerClass(object_);
 
-	object = (struct _objc_object *)object_;
+	object = (struct objc_object *)object_;
 
 	return object->isa;
 }
@@ -931,13 +931,13 @@ object_getClass(id object_)
 Class
 object_setClass(id object_, Class class)
 {
-	struct _objc_object *object;
+	struct objc_object *object;
 	Class old;
 
 	if (object_ == nil)
 		return Nil;
 
-	object = (struct _objc_object *)object_;
+	object = (struct objc_object *)object_;
 
 	old = object->isa;
 	object->isa = class;
