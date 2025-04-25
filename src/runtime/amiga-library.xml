@@ -6,29 +6,6 @@
     <argument name='version' type='unsigned int'/>
     <argument name='libC' type='struct objc_libC *'/>
   </function>
-  <!-- The following functions are private! Don't use! -->
-  <function name='objc_hashtable_new'
-            return-type='struct objc_hashtable *_Nonnull'>
-    <argument name='hash' type='objc_hashtable_hash_func'/>
-    <argument name='equal' type='objc_hashtable_equal_func'/>
-    <argument name='size' type='uint32_t'/>
-  </function>
-  <function name='objc_hashtable_set'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'/>
-    <argument name='key' type='const void *_Nonnull'/>
-    <argument name='object' type='const void *_Nonnull'/>
-  </function>
-  <function name='objc_hashtable_get' return-type='void *_Nullable'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'/>
-    <argument name='key' type='const void *_Nonnull'/>
-  </function>
-  <function name='objc_hashtable_delete'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'/>
-    <argument name='key' type='const void *_Nonnull'/>
-  </function>
-  <function name='objc_hashtable_free'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'/>
-  </function>
   <!-- Used by the compiler, but can be called manually. -->
   <function name='__objc_exec_class'>
     <argument name='module' type='struct _objc_module *_Nonnull'/>

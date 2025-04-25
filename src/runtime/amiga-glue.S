@@ -28,31 +28,6 @@ glue_objc_init:
 	lwz	%r13, 44(%r12)
 	b	objc_init
 
-.globl glue_objc_hashtable_new
-glue_objc_hashtable_new:
-	lwz	%r13, 44(%r12)
-	b	objc_hashtable_new
-
-.globl glue_objc_hashtable_set
-glue_objc_hashtable_set:
-	lwz	%r13, 44(%r12)
-	b	objc_hashtable_set
-
-.globl glue_objc_hashtable_get
-glue_objc_hashtable_get:
-	lwz	%r13, 44(%r12)
-	b	objc_hashtable_get
-
-.globl glue_objc_hashtable_delete
-glue_objc_hashtable_delete:
-	lwz	%r13, 44(%r12)
-	b	objc_hashtable_delete
-
-.globl glue_objc_hashtable_free
-glue_objc_hashtable_free:
-	lwz	%r13, 44(%r12)
-	b	objc_hashtable_free
-
 .globl glue___objc_exec_class
 glue___objc_exec_class:
 	lwz	%r13, 44(%r12)

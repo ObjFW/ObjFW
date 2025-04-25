@@ -23,11 +23,6 @@
 #import "private.h"
 
 extern bool glue_objc_init(unsigned int version, struct objc_libC *libC);
-extern struct objc_hashtable *_Nonnull glue_objc_hashtable_new(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size);
-extern void glue_objc_hashtable_set(struct objc_hashtable *_Nonnull table, const void *_Nonnull key, const void *_Nonnull object);
-extern void *_Nullable glue_objc_hashtable_get(struct objc_hashtable *_Nonnull table, const void *_Nonnull key);
-extern void glue_objc_hashtable_delete(struct objc_hashtable *_Nonnull table, const void *_Nonnull key);
-extern void glue_objc_hashtable_free(struct objc_hashtable *_Nonnull table);
 extern void glue___objc_exec_class(struct _objc_module *_Nonnull module);
 extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern void glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name);
