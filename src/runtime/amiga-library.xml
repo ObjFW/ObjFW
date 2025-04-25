@@ -8,7 +8,7 @@
   </function>
   <!-- Used by the compiler, but can be called manually. -->
   <function name='__objc_exec_class'>
-    <argument name='module' type='struct _objc_module *_Nonnull'/>
+    <argument name='module' type='struct objc_module *_Nonnull'/>
   </function>
   <function name='__gnu_objc_personality_v0' return-type='int'>
     <argument name='version' type='int'/>

@@ -65,13 +65,13 @@
 	tail	\notFound@plt
 
 .LtaggedPointer_\name:
-	la	t1, objc_taggedPointerSecret
+	la	t1, _objc_taggedPointerSecret
 	ld	t1, (t1)
 	xor	t1, a0, t1
 	andi	t1, t1, 0xE
 	slli	t1, t1, 2
 
-	la	t0, objc_taggedPointerClasses
+	la	t0, _objc_taggedPointerClasses
 	add	t0, t0, t1
 	ld	t0, (t0)
 	ld	t0, 64(t0)
@@ -95,8 +95,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

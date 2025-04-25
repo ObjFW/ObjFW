@@ -62,13 +62,13 @@
 	b	%plt(\notFound)
 
 .LtaggedPointer_\name:
-	la.global $t1, objc_taggedPointerSecret
+	la.global $t1, _objc_taggedPointerSecret
 	ldptr.d	$t1, $t1, 0
 	xor	$t1, $a0, $t1
 	andi	$t1, $t1, 0xE
 	slli.d	$t1, $t1, 2
 
-	la.global $t0, objc_taggedPointerClasses
+	la.global $t0, _objc_taggedPointerClasses
 	ldx.d	$t0, $t0, $t1
 	ldptr.d	$t0, $t0, 64
 
@@ -91,8 +91,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

@@ -283,7 +283,7 @@ static OFSpinlock emergencyExceptionsSpinlock;
 OF_CONSTRUCTOR()
 {
 	if (OFSpinlockNew(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Failed to create spinlock!");
+		_OBJC_ERROR("Failed to create spinlock!");
 }
 #endif
 
@@ -344,7 +344,7 @@ getBase(struct _Unwind_Context *ctx, uint8_t enc)
 #endif
 	}
 
-	OBJC_ERROR("Unknown encoding!");
+	_OBJC_ERROR("Unknown encoding!");
 }
 
 static size_t
@@ -364,7 +364,7 @@ sizeForEncoding(uint8_t enc)
 		return 8;
 	}
 
-	OBJC_ERROR("Unknown encoding!");
+	_OBJC_ERROR("Unknown encoding!");
 }
 
 static uint64_t
@@ -411,7 +411,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 	case DW_EH_PE_sdata8:
 		READ(int64_t)
 	default:
-		OBJC_ERROR("Unknown encoding!");
+		_OBJC_ERROR("Unknown encoding!");
 	}
 #undef READ
 
@@ -600,7 +600,7 @@ findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
 		} else if (filter == 0)
 			return CLEANUP_FOUND;
 		else if (filter < 0)
-			OBJC_ERROR("Invalid filter!");
+			_OBJC_ERROR("Invalid filter!");
 	} while (displacement != 0);
 
 	return 0;
@@ -732,7 +732,7 @@ PERSONALITY_FUNC(PERSONALITY)
 		return _URC_INSTALL_CONTEXT;
 	}
 
-	OBJC_ERROR(
+	_OBJC_ERROR(
 	    "Neither _UA_SEARCH_PHASE nor _UA_CLEANUP_PHASE in actions!");
 }
 
@@ -748,14 +748,14 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
 {
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
@@ -768,7 +768,7 @@ objc_exception_throw(id object)
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 		for (uint_fast8_t i = 0; i < numEmergencyExceptions; i++) {
@@ -783,12 +783,12 @@ objc_exception_throw(id object)
 
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 	}
 
 	if (e == NULL)
-		OBJC_ERROR("Not enough memory to allocate exception!");
+		_OBJC_ERROR("Not enough memory to allocate exception!");
 
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 	e->exception.cleanup = (emergency
@@ -800,7 +800,7 @@ objc_exception_throw(id object)
 	if (uncaughtExceptionHandler != NULL)
 		uncaughtExceptionHandler(object);
 
-	OBJC_ERROR("_Unwind_RaiseException() returned!");
+	_OBJC_ERROR("_Unwind_RaiseException() returned!");
 }
 
 objc_uncaught_exception_handler

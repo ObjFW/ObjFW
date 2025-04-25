@@ -23,7 +23,7 @@
 #import "private.h"
 
 extern bool glue_objc_init(unsigned int version, struct objc_libC *libC);
-extern void glue___objc_exec_class(struct _objc_module *_Nonnull module);
+extern void glue___objc_exec_class(struct objc_module *_Nonnull module);
 extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern void glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name);
 extern IMP _Nonnull glue_objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);

@@ -42,14 +42,14 @@ objc_init(unsigned int version, struct objc_libC *libC)
 }
 
 void
-__objc_exec_class(struct _objc_module *_Nonnull module)
+__objc_exec_class(struct objc_module *_Nonnull module)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(struct _objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 34))(module);
+	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
 int

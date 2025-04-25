@@ -78,8 +78,8 @@
 	mov	%g1, %o7
 #endif
 
-	sethi	%hi(objc_taggedPointerSecret), %o2
-	or	%o2, %lo(objc_taggedPointerSecret), %o2
+	sethi	%hi(_objc_taggedPointerSecret), %o2
+	or	%o2, %lo(_objc_taggedPointerSecret), %o2
 #ifdef OF_PIC
 	ldx	[%o3 + %o2], %o2
 #endif
@@ -88,8 +88,8 @@
 	and	%o0, 0xE, %o0
 	sll	%o0, 2, %o0
 
-	sethi	%hi(objc_taggedPointerClasses), %o2
-	or	%o2, %lo(objc_taggedPointerClasses), %o2
+	sethi	%hi(_objc_taggedPointerClasses), %o2
+	or	%o2, %lo(_objc_taggedPointerClasses), %o2
 #ifdef OF_PIC
 	ldx	[%o3 + %o2], %o2
 #endif
@@ -115,8 +115,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

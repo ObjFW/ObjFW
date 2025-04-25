@@ -38,11 +38,11 @@ registerSelectors(struct objc_category *category)
 
 	for (iter = category->instanceMethods; iter != NULL; iter = iter->next)
 		for (i = 0; i < iter->count; i++)
-			objc_registerSelector(&iter->methods[i].selector);
+			_objc_registerSelector(&iter->methods[i].selector);
 
 	for (iter = category->classMethods; iter != NULL; iter = iter->next)
 		for (i = 0; i < iter->count; i++)
-			objc_registerSelector(&iter->methods[i].selector);
+			_objc_registerSelector(&iter->methods[i].selector);
 }
 
 static bool
@@ -86,12 +86,12 @@ callLoad(Class class, struct objc_category *category)
 }
 
 void
-objc_processCategoriesLoadQueue(void)
+_objc_processCategoriesLoadQueue(void)
 {
 	for (size_t i = 0; i < loadQueueCount; i++) {
 		Class class = objc_lookUpClass(loadQueue[i]->className);
 
-		if (class != Nil && class->info & OBJC_CLASS_INFO_LOADED) {
+		if (class != Nil && class->info & _OBJC_CLASS_INFO_LOADED) {
 			callLoad(class, loadQueue[i]);
 
 			if (--loadQueueCount == 0) {
@@ -107,7 +107,8 @@ objc_processCategoriesLoadQueue(void)
 			    sizeof(struct objc_category *) * loadQueueCount);
 
 			if (loadQueue == NULL)
-				OBJC_ERROR("Not enough memory for load queue!");
+				_OBJC_ERROR("Not enough memory for load "
+				    "queue!");
 		}
 	}
 }
@@ -117,20 +118,20 @@ registerCategory(struct objc_category *category)
 {
 	size_t numCategories = 0;
 	struct objc_category **categories;
-	Class class = objc_classnameToClass(category->className, false);
+	Class class = _objc_classnameToClass(category->className, false);
 
 	if (categoriesMap == NULL)
-		categoriesMap = objc_hashtable_new(
-		    objc_string_hash, objc_string_equal, 2);
+		categoriesMap = _objc_hashtable_new(
+		    _objc_string_hash, _objc_string_equal, 2);
 
-	categories = (struct objc_category **)objc_hashtable_get(
+	categories = (struct objc_category **)_objc_hashtable_get(
 	    categoriesMap, category->className);
 
 	if (categories != NULL)
 		for (; categories[numCategories] != NULL; numCategories++);
 	else {
 		if ((categories = malloc(sizeof(*categories))) == NULL)
-			OBJC_ERROR("Not enough memory for category %s of "
+			_OBJC_ERROR("Not enough memory for category %s of "
 			    "class %s!\n",
 			    category->categoryName, category->className);
 
@@ -139,16 +140,16 @@ registerCategory(struct objc_category *category)
 
 	if ((categories = realloc(categories,
 	    (numCategories + 2) * sizeof(*categories))) == NULL)
-		OBJC_ERROR("Not enough memory for category %s of class %s!",
+		_OBJC_ERROR("Not enough memory for category %s of class %s!",
 		    category->categoryName, category->className);
 
 	categories[numCategories] = category;
 	categories[numCategories + 1] = NULL;
-	objc_hashtable_set(categoriesMap, category->className, categories);
+	_objc_hashtable_set(categoriesMap, category->className, categories);
 
-	if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
-		objc_updateDTable(class);
-		objc_updateDTable(class->isa);
+	if (class != Nil && class->info & _OBJC_CLASS_INFO_SETUP) {
+		_objc_updateDTable(class);
+		_objc_updateDTable(class->isa);
 	}
 
 	if (hasLoad(category)) {
@@ -159,7 +160,7 @@ registerCategory(struct objc_category *category)
 		 */
 		class = objc_lookUpClass(category->className);
 
-		if (class != Nil && class->info & OBJC_CLASS_INFO_LOADED)
+		if (class != Nil && class->info & _OBJC_CLASS_INFO_LOADED)
 			callLoad(class, category);
 		else {
 			loadQueue = realloc(loadQueue,
@@ -167,7 +168,8 @@ registerCategory(struct objc_category *category)
 			    (loadQueueCount + 1));
 
 			if (loadQueue == NULL)
-				OBJC_ERROR("Not enough memory for load queue!");
+				_OBJC_ERROR("Not enough memory for load "
+				    "queue!");
 
 			loadQueue[loadQueueCount++] = category;
 		}
@@ -175,7 +177,7 @@ registerCategory(struct objc_category *category)
 }
 
 void
-objc_registerAllCategories(struct objc_symtab *symtab)
+_objc_registerAllCategories(struct objc_symtab *symtab)
 {
 	struct objc_category **categories =
 	    (struct objc_category **)symtab->defs + symtab->classDefsCount;
@@ -187,17 +189,17 @@ objc_registerAllCategories(struct objc_symtab *symtab)
 }
 
 struct objc_category **
-objc_categoriesForClass(Class class)
+_objc_categoriesForClass(Class class)
 {
 	if (categoriesMap == NULL)
 		return NULL;
 
-	return (struct objc_category **)objc_hashtable_get(categoriesMap,
+	return (struct objc_category **)_objc_hashtable_get(categoriesMap,
 	    class->name);
 }
 
 void
-objc_unregisterAllCategories(void)
+_objc_unregisterAllCategories(void)
 {
 	if (categoriesMap == NULL)
 		return;
@@ -206,6 +208,6 @@ objc_unregisterAllCategories(void)
 		if (categoriesMap->data[i] != NULL)
 			free((void *)categoriesMap->data[i]->object);
 
-	objc_hashtable_free(categoriesMap);
+	_objc_hashtable_free(categoriesMap);
 	categoriesMap = NULL;
 }

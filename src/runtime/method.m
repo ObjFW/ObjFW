@@ -36,7 +36,7 @@ class_copyMethodList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_globalMutex_lock();
+	_objc_globalMutex_lock();
 
 	count = 0;
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
@@ -46,12 +46,12 @@ class_copyMethodList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_globalMutex_unlock();
+		_objc_globalMutex_unlock();
 		return NULL;
 	}
 
 	if ((methods = malloc((count + 1) * sizeof(Method))) == NULL)
-		OBJC_ERROR("Not enough memory to copy methods");
+		_OBJC_ERROR("Not enough memory to copy methods");
 
 	i = 0;
 	for (iter = class->methodList; iter != NULL; iter = iter->next)
@@ -59,14 +59,14 @@ class_copyMethodList(Class class, unsigned int *outCount)
 			methods[i++] = &iter->methods[j];
 
 	if (i != count)
-		OBJC_ERROR("Fatal internal inconsistency!");
+		_OBJC_ERROR("Fatal internal inconsistency!");
 
 	methods[count] = NULL;
 
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_globalMutex_unlock();
+	_objc_globalMutex_unlock();
 
 	return methods;
 }

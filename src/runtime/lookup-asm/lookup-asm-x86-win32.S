@@ -63,11 +63,11 @@
 	ret
 
 .LtaggedPointer_\name:
-	xorl	_objc_taggedPointerSecret, %edx
+	xorl	__objc_taggedPointerSecret, %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	movl	_objc_taggedPointerClasses(,%edx,2), %edx
+	movl	__objc_taggedPointerClasses(,%edx,2), %edx
 	movl	32(%edx), %edx
 
 	jmp	.Lmain_\name
@@ -103,8 +103,8 @@
 .endef
 .endm
 
-GENERATE_LOOKUP _objc_msg_lookup _objc_methodNotFound
-GENERATE_LOOKUP _objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP _objc_msg_lookup __objc_methodNotFound
+GENERATE_LOOKUP _objc_msg_lookup_stret __objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super _objc_msg_lookup
 GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 

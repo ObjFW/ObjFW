@@ -64,12 +64,12 @@
 	ret
 
 .LtaggedPointer_\name:
-	movq	objc_taggedPointerSecret@GOTPCREL(%rip), %rax
+	movq	_objc_taggedPointerSecret@GOTPCREL(%rip), %rax
 	xorq	(%rax), %rdi
 	andb	$0xE, %dil
 	movzbl	%dil, %r8d
 
-	movq	objc_taggedPointerClasses@GOTPCREL(%rip), %rax
+	movq	_objc_taggedPointerClasses@GOTPCREL(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	64(%r8), %r8
 
@@ -94,8 +94,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

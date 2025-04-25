@@ -34,11 +34,11 @@ static void
 init(void)
 {
 	if ((emptyLevel2 = malloc(sizeof(*emptyLevel2))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate dispatch table!");
+		_OBJC_ERROR("Not enough memory to allocate dispatch table!");
 
 #ifdef OF_SELUID24
 	if ((emptyLevel3 = malloc(sizeof(*emptyLevel3))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate dispatch table!");
+		_OBJC_ERROR("Not enough memory to allocate dispatch table!");
 #endif
 
 #ifdef OF_SELUID24
@@ -53,7 +53,7 @@ init(void)
 }
 
 struct objc_dtable *
-objc_dtable_new(void)
+_objc_dtable_new(void)
 {
 	struct objc_dtable *dTable;
 
@@ -66,7 +66,7 @@ objc_dtable_new(void)
 #endif
 
 	if ((dTable = malloc(sizeof(*dTable))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate dispatch table!");
+		_OBJC_ERROR("Not enough memory to allocate dispatch table!");
 
 	for (uint_fast16_t i = 0; i < 256; i++)
 		dTable->buckets[i] = emptyLevel2;
@@ -75,7 +75,7 @@ objc_dtable_new(void)
 }
 
 void
-objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
+_objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
 		if (src->buckets[i] == emptyLevel2)
@@ -98,7 +98,7 @@ objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
 
 				idx = (uint32_t)
 				    (((uint32_t)i << 16) | (j << 8) | k);
-				objc_dtable_set(dest, idx, implementation);
+				_objc_dtable_set(dest, idx, implementation);
 			}
 		}
 #else
@@ -110,14 +110,14 @@ objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
 				continue;
 
 			idx = (uint32_t)((i << 8) | j);
-			objc_dtable_set(dest, idx, implementation);
+			_objc_dtable_set(dest, idx, implementation);
 		}
 #endif
 	}
 }
 
 void
-objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
+_objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
@@ -132,7 +132,7 @@ objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 		struct objc_dtable_level2 *level2 = malloc(sizeof(*level2));
 
 		if (level2 == NULL)
-			OBJC_ERROR("Not enough memory to insert into "
+			_OBJC_ERROR("Not enough memory to insert into "
 			    "dispatch table!");
 
 		for (uint_fast16_t l = 0; l < 256; l++)
@@ -150,7 +150,7 @@ objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 		struct objc_dtable_level3 *level3 = malloc(sizeof(*level3));
 
 		if (level3 == NULL)
-			OBJC_ERROR("Not enough memory to insert into "
+			_OBJC_ERROR("Not enough memory to insert into "
 			    "dispatch table!");
 
 		for (uint_fast16_t l = 0; l < 256; l++)
@@ -166,7 +166,7 @@ objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 }
 
 void
-objc_dtable_free(struct objc_dtable *dTable)
+_objc_dtable_free(struct objc_dtable *dTable)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
 		if (dTable->buckets[i] == emptyLevel2)
@@ -185,7 +185,7 @@ objc_dtable_free(struct objc_dtable *dTable)
 }
 
 void
-objc_dtable_cleanup(void)
+_objc_dtable_cleanup(void)
 {
 	if (emptyLevel2 != NULL)
 		free(emptyLevel2);
