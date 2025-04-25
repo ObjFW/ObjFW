@@ -33,6 +33,17 @@
   <function name='__objc_exec_class'>
     <argument name='module' type='struct _objc_module *_Nonnull'/>
   </function>
+  <function name='__gnu_objc_personality_v0' return-type='int'>
+    <argument name='version' type='int'/>
+    <argument name='actions' type='int'/>
+    <argument name='exClass' type='uint64_t _Nonnull'/>
+    <argument name='ex' type='void *_Nonnull'/>
+    <argument name='ctx' type='void *_Nonnull'/>
+  </function>
+  <function name='class_registerAlias_np'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
   <function name='objc_msg_lookup' return-type='IMP _Nonnull'>
     <argument name='object' type='id _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
@@ -103,13 +114,6 @@
   </function>
   <function name='objc_enumerationMutation'>
     <argument name='object' type='id _Nonnull'/>
-  </function>
-  <function name='__gnu_objc_personality_v0' return-type='int'>
-    <argument name='version' type='int'/>
-    <argument name='actions' type='int'/>
-    <argument name='exClass' type='uint64_t _Nonnull'/>
-    <argument name='ex' type='void *_Nonnull'/>
-    <argument name='ctx' type='void *_Nonnull'/>
   </function>
   <function name='objc_retain' return-type='id _Nullable'>
     <argument name='object' type='id _Nullable'/>

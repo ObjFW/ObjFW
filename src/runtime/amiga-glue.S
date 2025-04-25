@@ -58,6 +58,16 @@ glue___objc_exec_class:
 	lwz	%r13, 44(%r12)
 	b	__objc_exec_class
 
+.globl glue___gnu_objc_personality_v0
+glue___gnu_objc_personality_v0:
+	lwz	%r13, 44(%r12)
+	b	__gnu_objc_personality_v0
+
+.globl glue_class_registerAlias_np
+glue_class_registerAlias_np:
+	lwz	%r13, 44(%r12)
+	b	class_registerAlias_np
+
 .globl glue_objc_msg_lookup
 glue_objc_msg_lookup:
 	lwz	%r13, 44(%r12)
@@ -142,11 +152,6 @@ glue_objc_setPropertyStruct:
 glue_objc_enumerationMutation:
 	lwz	%r13, 44(%r12)
 	b	objc_enumerationMutation
-
-.globl glue___gnu_objc_personality_v0
-glue___gnu_objc_personality_v0:
-	lwz	%r13, 44(%r12)
-	b	__gnu_objc_personality_v0
 
 .globl glue_objc_retain
 glue_objc_retain:

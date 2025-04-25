@@ -107,6 +107,28 @@ __objc_exec_class(struct _objc_module *_Nonnull module)
 	__extension__ ((void (*)(struct _objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 64))(module);
 }
 
+int
+__gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 70))(version, actions, exClass, ex, ctx);
+}
+
+void
+class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(Class _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(class_, name);
+}
+
 IMP _Nonnull
 objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 {
@@ -115,7 +137,7 @@ objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 70))(object, selector);
+	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 82))(object, selector);
 }
 
 IMP _Nonnull
@@ -126,7 +148,7 @@ objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(object, selector);
+	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(object, selector);
 }
 
 IMP _Nonnull
@@ -137,7 +159,7 @@ objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 82))(super, selector);
+	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(super, selector);
 }
 
 IMP _Nonnull
@@ -148,7 +170,7 @@ objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull sele
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(super, selector);
+	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(super, selector);
 }
 
 Class _Nullable
@@ -159,7 +181,7 @@ objc_lookUpClass(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(name);
+	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(name);
 }
 
 Class _Nullable
@@ -170,7 +192,7 @@ objc_getClass(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(name);
+	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(name);
 }
 
 Class _Nonnull
@@ -181,7 +203,7 @@ objc_getRequiredClass(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(name);
+	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 118))(name);
 }
 
 Class _Nullable
@@ -192,7 +214,7 @@ objc_lookup_class(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(name);
+	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(name);
 }
 
 Class _Nonnull
@@ -203,7 +225,7 @@ objc_get_class(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 118))(name);
+	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(name);
 }
 
 void
@@ -214,7 +236,7 @@ objc_exception_throw(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(object);
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(object);
 
 	OF_UNREACHABLE
 }
@@ -227,7 +249,7 @@ objc_sync_enter(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(object);
+	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(object);
 }
 
 int
@@ -238,7 +260,7 @@ objc_sync_exit(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(object);
+	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(object);
 }
 
 id _Nullable
@@ -249,7 +271,7 @@ objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool ato
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(self, _cmd, offset, atomic);
+	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(self, _cmd, offset, atomic);
 }
 
 void
@@ -260,7 +282,7 @@ objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Null
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(self, _cmd, offset, value, atomic, copy);
+	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(self, _cmd, offset, value, atomic, copy);
 }
 
 void
@@ -271,7 +293,7 @@ objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(dest, src, size, atomic, strong);
+	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(dest, src, size, atomic, strong);
 }
 
 void
@@ -282,7 +304,7 @@ objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(dest, src, size, atomic, strong);
+	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(dest, src, size, atomic, strong);
 }
 
 void
@@ -293,18 +315,7 @@ objc_enumerationMutation(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(object);
-}
-
-int
-__gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
-{
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(version, actions, exClass, ex, ctx);
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
 }
 
 id _Nullable
@@ -315,7 +326,7 @@ objc_retain(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 184))(object);
 }
 
 id _Nullable
@@ -326,7 +337,7 @@ objc_retainBlock(id _Nullable block)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 184))(block);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 190))(block);
 }
 
 id _Nullable
@@ -337,7 +348,7 @@ objc_retainAutorelease(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 190))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 196))(object);
 }
 
 void
@@ -348,7 +359,7 @@ objc_release(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 196))(object);
+	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object);
 }
 
 id _Nullable
@@ -359,7 +370,7 @@ objc_autorelease(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 208))(object);
 }
 
 id _Nullable
@@ -370,7 +381,7 @@ objc_autoreleaseReturnValue(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 208))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object);
 }
 
 id _Nullable
@@ -381,7 +392,7 @@ objc_retainAutoreleaseReturnValue(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object);
 }
 
 id _Nullable
@@ -392,7 +403,7 @@ objc_retainAutoreleasedReturnValue(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object);
 }
 
 id _Nullable
@@ -403,7 +414,7 @@ objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object, value);
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(object, value);
 }
 
 id _Nullable
@@ -414,7 +425,7 @@ objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(object, value);
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(object, value);
 }
 
 id _Nullable
@@ -425,7 +436,7 @@ objc_loadWeakRetained(id _Nullable *_Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 244))(object);
 }
 
 id _Nullable
@@ -436,7 +447,7 @@ objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 244))(object, value);
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(object, value);
 }
 
 void
@@ -447,7 +458,7 @@ objc_destroyWeak(id _Nullable *_Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(object);
+	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(object);
 }
 
 id _Nullable
@@ -458,7 +469,7 @@ objc_loadWeak(id _Nullable *_Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(object);
 }
 
 void
@@ -469,7 +480,7 @@ objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(dest, src);
+	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(dest, src);
 }
 
 void
@@ -480,7 +491,7 @@ objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(dest, src);
+	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(dest, src);
 }
 
 SEL _Nonnull
@@ -491,7 +502,7 @@ sel_registerName(const char *_Nonnull name)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(name);
+	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(name);
 }
 
 const char *_Nonnull
@@ -502,7 +513,7 @@ sel_getName(SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(selector);
+	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(selector);
 }
 
 bool
@@ -513,7 +524,7 @@ sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(selector1, selector2);
+	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(selector1, selector2);
 }
 
 Class _Nonnull
@@ -524,7 +535,7 @@ objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, si
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(superclass, name, extraBytes);
+	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(superclass, name, extraBytes);
 }
 
 void
@@ -535,7 +546,7 @@ objc_registerClassPair(Class _Nonnull class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(class_);
+	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(class_);
 }
 
 unsigned int
@@ -546,7 +557,7 @@ objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(buffer, count);
+	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(buffer, count);
 }
 
 Class _Nonnull *_Nonnull
@@ -557,7 +568,7 @@ objc_copyClassList(unsigned int *_Nullable length)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(length);
+	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(length);
 }
 
 bool
@@ -568,7 +579,7 @@ class_isMetaClass(Class _Nullable class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_);
+	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_);
 }
 
 const char *_Nullable
@@ -579,7 +590,7 @@ class_getName(Class _Nullable class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_);
+	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_);
 }
 
 Class _Nullable
@@ -590,7 +601,7 @@ class_getSuperclass(Class _Nullable class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_);
+	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 334))(class_);
 }
 
 unsigned long
@@ -601,7 +612,7 @@ class_getInstanceSize(Class _Nullable class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 334))(class_);
+	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_);
 }
 
 bool
@@ -612,7 +623,7 @@ class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector);
+	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector);
 }
 
 bool
@@ -623,7 +634,7 @@ class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, p);
+	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(class_, p);
 }
 
 IMP _Nullable
@@ -634,7 +645,7 @@ class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(class_, selector);
+	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(class_, selector);
 }
 
 IMP _Nullable
@@ -645,7 +656,7 @@ class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selecto
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(class_, selector);
+	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(class_, selector);
 }
 
 Method _Nullable
@@ -656,7 +667,7 @@ class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(class_, selector);
+	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(class_, selector);
 }
 
 bool
@@ -667,7 +678,7 @@ class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull imple
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(class_, selector, implementation, typeEncoding);
+	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable
@@ -678,7 +689,7 @@ class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull i
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(class_, selector, implementation, typeEncoding);
+	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(class_, selector, implementation, typeEncoding);
 }
 
 Class _Nullable
@@ -689,7 +700,7 @@ object_getClass(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(object);
+	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 388))(object);
 }
 
 Class _Nullable
@@ -700,7 +711,7 @@ object_setClass(id _Nullable object, Class _Nonnull class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 388))(object, class_);
+	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(object, class_);
 }
 
 const char *_Nullable
@@ -711,7 +722,7 @@ object_getClassName(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(object);
+	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(object);
 }
 
 const char *_Nonnull
@@ -722,7 +733,7 @@ protocol_getName(Protocol *_Nonnull protocol)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(protocol);
+	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(protocol);
 }
 
 bool
@@ -733,7 +744,7 @@ protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(protocol1, protocol2);
+	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 412))(protocol1, protocol2);
 }
 
 bool
@@ -744,7 +755,7 @@ protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull pro
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 412))(protocol1, protocol2);
+	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(protocol1, protocol2);
 }
 
 Method _Nullable *_Nullable
@@ -755,7 +766,7 @@ class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(class_, outCount);
+	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 424))(class_, outCount);
 }
 
 SEL _Nonnull
@@ -766,7 +777,7 @@ method_getName(Method _Nonnull method)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 424))(method);
+	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(method);
 }
 
 const char *_Nullable
@@ -777,7 +788,7 @@ method_getTypeEncoding(Method _Nonnull method)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(method);
+	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(method);
 }
 
 Ivar _Nullable *_Nullable
@@ -788,7 +799,7 @@ class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(class_, outCount);
+	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(class_, outCount);
 }
 
 const char *_Nonnull
@@ -799,7 +810,7 @@ ivar_getName(Ivar _Nonnull ivar)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(ivar);
+	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(ivar);
 }
 
 const char *_Nonnull
@@ -810,7 +821,7 @@ ivar_getTypeEncoding(Ivar _Nonnull ivar)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(ivar);
+	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 454))(ivar);
 }
 
 ptrdiff_t
@@ -821,7 +832,7 @@ ivar_getOffset(Ivar _Nonnull ivar)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 454))(ivar);
+	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 460))(ivar);
 }
 
 objc_property_t _Nullable *_Nullable
@@ -832,7 +843,7 @@ class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 460))(class_, outCount);
+	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(class_, outCount);
 }
 
 const char *_Nonnull
@@ -843,7 +854,7 @@ property_getName(objc_property_t _Nonnull property)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(property);
+	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(property);
 }
 
 char *_Nullable
@@ -854,7 +865,7 @@ property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonn
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(property, name);
+	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 478))(property, name);
 }
 
 void
@@ -865,7 +876,7 @@ objc_deinit()
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 478))();
+	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 484))();
 }
 
 _Nullable objc_uncaught_exception_handler
@@ -876,7 +887,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handl
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 484))(handler);
+	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(handler);
 }
 
 void
@@ -887,7 +898,7 @@ objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(forward, stretForward);
+	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(forward, stretForward);
 }
 
 void
@@ -898,7 +909,7 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable h
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(hadler);
+	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(hadler);
 }
 
 id _Nullable
@@ -909,7 +920,7 @@ objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(class_, bytes);
+	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(class_, bytes);
 }
 
 void *_Nullable
@@ -920,7 +931,7 @@ objc_destructInstance(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(object);
+	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(object);
 }
 
 id _Nullable
@@ -931,7 +942,7 @@ class_createInstance(Class _Nullable class_, size_t extraBytes)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(class_, extraBytes);
+	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 520))(class_, extraBytes);
 }
 
 id _Nullable
@@ -942,7 +953,7 @@ object_dispose(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 520))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 526))(object);
 }
 
 id _Nonnull
@@ -953,7 +964,7 @@ _objc_rootRetain(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 526))(object);
+	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 532))(object);
 }
 
 unsigned int
@@ -964,7 +975,7 @@ _objc_rootRetainCount(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 532))(object);
+	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(object);
 }
 
 void
@@ -975,7 +986,7 @@ _objc_rootRelease(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(object);
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 544))(object);
 }
 
 void *_Null_unspecified
@@ -986,7 +997,7 @@ objc_autoreleasePoolPush()
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 544))();
+	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 550))();
 }
 
 void
@@ -997,7 +1008,7 @@ objc_autoreleasePoolPop(void *_Null_unspecified pool)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 550))(pool);
+	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(pool);
 }
 
 id _Nullable
@@ -1008,7 +1019,7 @@ _objc_rootAutorelease(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(object);
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(object);
 }
 
 void
@@ -1019,7 +1030,7 @@ objc_setTaggedPointerSecret(uintptr_t secret)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(secret);
+	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(secret);
 }
 
 int
@@ -1030,7 +1041,7 @@ objc_registerTaggedPointerClass(Class _Nonnull class_)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(class_);
+	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(class_);
 }
 
 bool
@@ -1041,7 +1052,7 @@ object_isTaggedPointer(id _Nullable object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(object);
+	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object);
 }
 
 uintptr_t
@@ -1052,7 +1063,7 @@ object_getTaggedPointerValue(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object);
+	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 586))(object);
 }
 
 id _Nullable
@@ -1063,7 +1074,7 @@ objc_createTaggedPointer(int class_, uintptr_t value)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 586))(class_, value);
+	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 592))(class_, value);
 }
 
 void
@@ -1074,7 +1085,7 @@ objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nulla
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 592))(object, key, value, policy);
+	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 598))(object, key, value, policy);
 }
 
 id _Nullable
@@ -1085,7 +1096,7 @@ objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 598))(object, key);
+	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 604))(object, key);
 }
 
 void
@@ -1096,5 +1107,5 @@ objc_removeAssociatedObjects(id _Nonnull object)
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 604))(object);
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 610))(object);
 }

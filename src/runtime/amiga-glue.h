@@ -29,6 +29,8 @@ extern void *_Nullable glue_objc_hashtable_get(struct objc_hashtable *_Nonnull t
 extern void glue_objc_hashtable_delete(struct objc_hashtable *_Nonnull table, const void *_Nonnull key);
 extern void glue_objc_hashtable_free(struct objc_hashtable *_Nonnull table);
 extern void glue___objc_exec_class(struct _objc_module *_Nonnull module);
+extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
+extern void glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name);
 extern IMP _Nonnull glue_objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull glue_objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull glue_objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector);
@@ -46,7 +48,6 @@ extern void glue_objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t
 extern void glue_objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_enumerationMutation(id _Nonnull object);
-extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern id _Nullable glue_objc_retain(id _Nullable object);
 extern id _Nullable glue_objc_retainBlock(id _Nullable block);
 extern id _Nullable glue_objc_retainAutorelease(id _Nullable object);
