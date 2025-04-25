@@ -28,9 +28,9 @@
 # endif
 #endif
 
-typedef uint32_t (*_Nonnull _objc_hashtable_hash_func)(
+typedef uint32_t (*_Nonnull objc_hashtable_hash_func)(
     const void *_Nonnull key);
-typedef bool (*_Nonnull _objc_hashtable_equal_func)(const void *_Nonnull key1,
+typedef bool (*_Nonnull objc_hashtable_equal_func)(const void *_Nonnull key1,
     const void *_Nonnull key2);
 
 struct objc_class {
@@ -194,8 +194,8 @@ struct objc_hashtable_bucket {
 };
 
 struct objc_hashtable {
-	_objc_hashtable_hash_func hash;
-	_objc_hashtable_equal_func equal;
+	objc_hashtable_hash_func hash;
+	objc_hashtable_equal_func equal;
 	uint32_t count, size;
 	struct objc_hashtable_bucket *_Nonnull *_Nullable data;
 };
@@ -237,7 +237,7 @@ extern uint32_t _objc_string_hash(const void *_Nonnull) OF_VISIBILITY_INTERNAL;
 extern bool _objc_string_equal(const void *_Nonnull, const void *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern struct objc_hashtable *_Nonnull _objc_hashtable_new(
-    _objc_hashtable_hash_func, _objc_hashtable_equal_func, uint32_t)
+    objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t)
     OF_VISIBILITY_INTERNAL;
 extern struct objc_hashtable_bucket _objc_deletedBucket OF_VISIBILITY_INTERNAL;
 extern void _objc_hashtable_set(struct objc_hashtable *_Nonnull,
