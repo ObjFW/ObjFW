@@ -23,8 +23,8 @@
 
 .globl _OFForward
 .globl _OFForward_stret
-.hidden _OFForward
-.hidden _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 #ifdef OF_PIC
 .macro j_pic symbol

@@ -29,8 +29,8 @@
 
 .globl __OFForward
 .globl __OFForward_stret
-.hidden _OFForward
-.hidden _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section __TEXT, __text, regular, pure_instructions
 __OFForward:

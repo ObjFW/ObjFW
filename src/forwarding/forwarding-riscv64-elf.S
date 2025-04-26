@@ -23,8 +23,8 @@
 
 .globl _OFForward
 .globl _OFForward_stret
-.hidden _OFForward
-.hidden _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 _OFForward:
 	addi	sp, sp, -144
