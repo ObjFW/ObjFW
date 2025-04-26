@@ -21,11 +21,13 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -83,10 +85,10 @@ OFForward:
 0:
 	call	OFMethodNotFound
 	 restore
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -144,8 +146,8 @@ OFForward_stret:
 0:
 	call	OFMethodNotFound_stret
 	 restore
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	save	%sp, -96, %sp

@@ -27,11 +27,13 @@
 # define _CET_ENDBR
 #endif
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	_CET_ENDBR
 
 	pushq	%rbp
@@ -115,10 +117,10 @@ OFForward:
 	popq	%rbp
 
 	jmp	OFMethodNotFound@PLT
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	_CET_ENDBR
 
 	pushq	%rbp
@@ -204,8 +206,8 @@ OFForward_stret:
 	popq	%rbp
 
 	jmp	OFMethodNotFound_stret@PLT
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	_CET_ENDBR

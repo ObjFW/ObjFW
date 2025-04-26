@@ -27,11 +27,13 @@
 # define _CET_ENDBR
 #endif
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section __TEXT, __text, regular, pure_instructions
-_OFForward:
+__OFForward:
 	_CET_ENDBR
 
 	pushq	%rbp
@@ -116,7 +118,7 @@ _OFForward:
 
 	jmp	_OFMethodNotFound
 
-_OFForward_stret:
+__OFForward_stret:
 	_CET_ENDBR
 
 	pushq	%rbp

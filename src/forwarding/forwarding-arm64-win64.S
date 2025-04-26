@@ -21,12 +21,14 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section .text
-OFForward:
-OFForward_stret:
+_OFForward:
+_OFForward_stret:
 #ifdef HAVE_BTI
 	bti	c
 #endif
@@ -100,11 +102,11 @@ OFForward_stret:
 
 	ldp	fp, lr, [sp], #224
 	b	OFMethodNotFound
-.def OFForward
+.def _OFForward
 .scl 2
 .type 32
 .endef
-.def OFForward_stret
+.def _OFForward_stret
 .scl 2
 .type 32
 .endef

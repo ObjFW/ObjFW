@@ -21,17 +21,19 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	daddiu	$sp, $sp, -128
 	sd	$ra, 0($sp)
 	sd	$gp, 8($sp)
 
-	lui	$gp, %hi(%neg(%gp_rel(OFForward)))
-	daddiu	$gp, $gp, %lo(%neg(%gp_rel(OFForward)))
+	lui	$gp, %hi(%neg(%gp_rel(_OFForward)))
+	daddiu	$gp, $gp, %lo(%neg(%gp_rel(_OFForward)))
 	daddu	$gp, $gp, $t9
 
 	sd	$a0, 16($sp)
@@ -119,16 +121,16 @@ OFForward:
 	daddiu	$sp, $sp, 128
 
 	jr	$t9
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	daddiu	$sp, $sp, -128
 	sd	$ra, 0($sp)
 	sd	$gp, 8($sp)
 
-	lui	$gp, %hi(%neg(%gp_rel(OFForward_stret)))
-	daddiu	$gp, $gp, %lo(%neg(%gp_rel(OFForward_stret)))
+	lui	$gp, %hi(%neg(%gp_rel(_OFForward_stret)))
+	daddiu	$gp, $gp, %lo(%neg(%gp_rel(_OFForward_stret)))
 	daddu	$gp, $gp, $t9
 
 	sd	$a0, 16($sp)
@@ -218,8 +220,8 @@ OFForward_stret:
 	daddiu	$sp, $sp, 128
 
 	jr	$t9
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	daddiu	$sp, $sp, -16

@@ -21,18 +21,20 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.hidden _OFForward
+.hidden _OFForward_stret
 
 .section .text
 .section .opd, "aw", @progbits
-OFForward:
+_OFForward:
 	.p2align 3
-	.quad .Lbegin_OFForward
+	.quad .Lbegin__OFForward
 	.quad .TOC.@tocbase
 	.quad 0
 .previous
-.Lbegin_OFForward:
+.Lbegin__OFForward:
 	.cfi_startproc
 	mflr	%r0
 	std	%r0, 16(%r1)
@@ -145,17 +147,17 @@ OFForward:
 
 	blr
 	.cfi_endproc
-.type OFForward, @function
-.size OFForward, .-.Lbegin_OFForward
+.type _OFForward, @function
+.size _OFForward, .-.Lbegin__OFForward
 
 .section .opd, "aw", @progbits
-OFForward_stret:
+_OFForward_stret:
 	.p2align 3
-	.quad .Lbegin_OFForward_stret
+	.quad .Lbegin__OFForward_stret
 	.quad .TOC.@tocbase
 	.quad 0
 .previous
-.Lbegin_OFForward_stret:
+.Lbegin__OFForward_stret:
 	.cfi_startproc
 	mflr	%r0
 	std	%r0, 16(%r1)
@@ -270,8 +272,8 @@ OFForward_stret:
 
 	blr
 	.cfi_endproc
-.type OFForward_stret, @function
-.size OFForward_stret, .-.Lbegin_OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-.Lbegin__OFForward_stret
 
 .section .opd, "aw", @progbits
 .Linit:

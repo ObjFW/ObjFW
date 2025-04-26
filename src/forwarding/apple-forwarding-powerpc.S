@@ -19,8 +19,10 @@
 
 #include "config.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.hidden __OFForward
+.hidden __OFForward_stret
 
 .section __TEXT, __cstring, cstring_literals
 Lstr_forwardingTargetForSelector_:
@@ -34,7 +36,7 @@ Lsel_forwardingTargetForSelector_:
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
-_OFForward:
+__OFForward:
 	mflr	r0
 	stw	r0, 8(r1)
 	stwu	r1, -192(r1)
@@ -136,7 +138,7 @@ _OFForward:
 
 	b	_OFMethodNotFound
 
-_OFForward_stret:
+__OFForward_stret:
 	mflr	r0
 	stw	r0, 8(r1)
 	stwu	r1, -184(r1)

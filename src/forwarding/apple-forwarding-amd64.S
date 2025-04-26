@@ -25,8 +25,10 @@
 # define _CET_ENDBR
 #endif
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.hidden __OFForward
+.hidden __OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 Lstr_forwardingTargetForSelector_:
@@ -41,7 +43,7 @@ Lsel_forwardingTargetForSelector_:
 	.long 0, 0x40
 
 .section __TEXT, __text, regular, pure_instructions
-_OFForward:
+__OFForward:
 	_CET_ENDBR
 
 	pushq	%rbp
@@ -116,7 +118,7 @@ _OFForward:
 
 	jmp	_OFMethodNotFound
 
-_OFForward_stret:
+__OFForward_stret:
 	_CET_ENDBR
 
 	pushq	%rbp
