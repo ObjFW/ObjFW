@@ -21,8 +21,8 @@
 
 .globl __OFForward
 .globl __OFForward_stret
-.hidden __OFForward
-.hidden __OFForward_stret
+.private_extern __OFForward
+.private_extern __OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 Lstr_forwardingTargetForSelector_:
