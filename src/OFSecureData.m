@@ -533,14 +533,16 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 	if (!_allowsSwappableMemory) {
 		size_t pageSize = [OFSystemInfo pageSize];
+		/* Extra variable needed to work around a bug in GCC 15. */
+		size_t count = _count;
 
-		if (_count * _itemSize > pageSize)
+		if (count * _itemSize > pageSize)
 			unmapPages(_items,
-			    OFRoundUpToPowerOf2(pageSize, _count * _itemSize) /
+			    OFRoundUpToPowerOf2(pageSize, count * _itemSize) /
 			    pageSize);
 		else if (_page != NULL) {
 			if (_items != NULL)
-				freeMemory(_page, _items, _count * _itemSize);
+				freeMemory(_page, _items, count * _itemSize);
 
 			removePageIfEmpty(_page);
 		}
