@@ -55,6 +55,13 @@
 
 #define bufferSize 4096
 
+#ifdef OF_AMIGAOS
+const char *version =
+    "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR)
+    " \xA9 2008-2025 Jonathan Schleifer";
+#endif
+
 #ifdef HAVE_TLS_SUPPORT
 void
 _reference_to_ObjFWTLS(void)
