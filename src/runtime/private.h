@@ -221,16 +221,13 @@ struct objc_dtable {
 
 #if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
     defined(OBJC_COMPILING_AMIGA_LINKLIB)
-struct objc_libC {
+struct objc_linklib_context {
+	unsigned int version;
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
-# else
 	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
-# endif
 	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
 	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
 	    void *_Nonnull);
@@ -241,20 +238,12 @@ struct objc_libC {
 	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
 	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
 	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
-# ifdef HAVE_SJLJ_EXCEPTIONS
-	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
-# else
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
-# endif
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	void (*_Nonnull exit)(int);
 };
-#endif
-
-#ifdef OBJC_COMPILING_AMIGA_LIBRARY
-extern bool objc_init(unsigned int, struct objc_libC *);
 #endif
 
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)

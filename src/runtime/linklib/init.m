@@ -33,11 +33,7 @@
 
 #include <constructor.h>
 
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern int _Unwind_SjLj_RaiseException(void *);
-#else
 extern int _Unwind_RaiseException(void *);
-#endif
 extern void _Unwind_DeleteException(void *);
 extern void *_Unwind_GetLanguageSpecificData(void *);
 extern uintptr_t _Unwind_GetRegionStart(void *);
@@ -47,18 +43,14 @@ extern uintptr_t _Unwind_GetIP(void *);
 extern uintptr_t _Unwind_GetGR(void *, int);
 extern void _Unwind_SetIP(void *, uintptr_t);
 extern void _Unwind_SetGR(void *, int, uintptr_t);
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern void _Unwind_SjLj_Resume(void *);
-#else
 extern void _Unwind_Resume(void *);
-#endif
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
 
 void *__objc_class_name_Protocol;
 
 #ifndef OBJC_AMIGA_LIB
-extern bool objc_init(unsigned int version, struct objc_libC *libC);
+extern bool objc_init(struct objc_linklib_context *ctx);
 
 struct Library *ObjFWRTBase;
 
@@ -88,16 +80,13 @@ static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
-	struct objc_libC libC = {
+	struct objc_linklib_context ctx = {
+		.version = 1,
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-#ifdef HAVE_SJLJ_EXCEPTIONS
-		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
-#else
 		._Unwind_RaiseException = _Unwind_RaiseException,
-#endif
 		._Unwind_DeleteException = _Unwind_DeleteException,
 		._Unwind_GetLanguageSpecificData =
 		    _Unwind_GetLanguageSpecificData,
@@ -108,11 +97,7 @@ ctor(void)
 		._Unwind_GetGR = _Unwind_GetGR,
 		._Unwind_SetIP = _Unwind_SetIP,
 		._Unwind_SetGR = _Unwind_SetGR,
-#ifdef HAVE_SJLJ_EXCEPTIONS
-		._Unwind_SjLj_Resume = _Unwind_SjLj_Resume,
-#else
 		._Unwind_Resume = _Unwind_Resume,
-#endif
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
 		.atexit = atexit,
@@ -127,7 +112,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!objc_init(1, &libC))
+	if (!objc_init(&ctx))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;

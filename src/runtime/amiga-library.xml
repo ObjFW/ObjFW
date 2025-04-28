@@ -3,8 +3,7 @@
   <include>private.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='objc_init' return-type='bool'>
-    <argument name='version' type='unsigned int'/>
-    <argument name='libC' type='struct objc_libC *'/>
+    <argument name='ctx' type='struct objc_linklib_context *'/>
   </function>
   <!-- Used by the compiler, but can be called manually. -->
   <function name='__objc_exec_class'>

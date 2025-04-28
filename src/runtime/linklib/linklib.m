@@ -31,14 +31,14 @@ extern struct Library *ObjFWRTBase;
 #endif
 
 bool
-objc_init(unsigned int version, struct objc_libC *libC)
+objc_init(struct objc_linklib_context *ctx)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(unsigned int, struct objc_libC *))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(version, libC);
+	return __extension__ ((bool (*)(struct objc_linklib_context *))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(ctx);
 }
 
 void

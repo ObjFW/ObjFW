@@ -54,7 +54,7 @@ struct ObjFWRTBase {
 
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
-struct objc_libC libC;
+static struct objc_linklib_context linklibCtx;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
@@ -148,8 +148,8 @@ libOpen(void)
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
 	/*
-	 * We cannot use malloc here, as that depends on the libC passed from
-	 * the application.
+	 * We cannot use malloc here, as that depends on the linklib context
+	 * passed from the application.
 	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
 	    base->library.lib_PosSize, MEMF_ANY)) == NULL) {
@@ -259,20 +259,20 @@ libNull(void)
 }
 
 bool
-objc_init(unsigned int version, struct objc_libC *libC_)
+objc_init(struct objc_linklib_context *ctx)
 {
 	register struct ObjFWRTBase *r12 __asm__("r12");
 	struct ObjFWRTBase *base = r12;
 	void *frame;
 	uintptr_t *iter, *iter0;
 
-	if (version > 1)
+	if (ctx->version > 1)
 		return false;
 
 	if (base->initialized)
 		return true;
 
-	memcpy(&libC, libC_, sizeof(libC));
+	memcpy(&linklibCtx, ctx, sizeof(linklibCtx));
 
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
@@ -282,7 +282,7 @@ objc_init(unsigned int version, struct objc_libC *libC_)
 	    : "=r"(frame), "=r"(iter0)
 	);
 
-	libC.__register_frame(frame);
+	linklibCtx.__register_frame(frame);
 
 	for (iter = iter0; *iter != 0; iter++);
 
@@ -299,129 +299,113 @@ objc_init(unsigned int version, struct objc_libC *libC_)
 void *
 malloc(size_t size)
 {
-	return libC.malloc(size);
+	return linklibCtx.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	return libC.calloc(count, size);
+	return linklibCtx.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	return libC.realloc(ptr, size);
+	return linklibCtx.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	libC.free(ptr);
+	linklibCtx.free(ptr);
 }
 
-#ifdef HAVE_SJLJ_EXCEPTIONS
-int
-_Unwind_SjLj_RaiseException(void *ex)
-{
-	return libC._Unwind_SjLj_RaiseException(ex);
-}
-#else
 int
 _Unwind_RaiseException(void *ex)
 {
-	return libC._Unwind_RaiseException(ex);
+	return linklibCtx._Unwind_RaiseException(ex);
 }
-#endif
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	libC._Unwind_DeleteException(ex);
+	linklibCtx._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	return libC._Unwind_GetLanguageSpecificData(ctx);
+	return linklibCtx._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	return libC._Unwind_GetRegionStart(ctx);
+	return linklibCtx._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	return libC._Unwind_GetDataRelBase(ctx);
+	return linklibCtx._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	return libC._Unwind_GetTextRelBase(ctx);
+	return linklibCtx._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	return libC._Unwind_GetIP(ctx);
+	return linklibCtx._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	return libC._Unwind_GetGR(ctx, gr);
+	return linklibCtx._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	libC._Unwind_SetIP(ctx, ip);
+	linklibCtx._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	libC._Unwind_SetGR(ctx, gr, value);
+	linklibCtx._Unwind_SetGR(ctx, gr, value);
 }
 
-#ifdef HAVE_SJLJ_EXCEPTIONS
-void
-_Unwind_SjLj_Resume(void *ex)
-{
-	libC._Unwind_SjLj_Resume(ex);
-}
-#else
 void
 _Unwind_Resume(void *ex)
 {
-	libC._Unwind_Resume(ex);
+	linklibCtx._Unwind_Resume(ex);
 }
-#endif
 
 void __register_frame(void *frame)
 {
-	libC.__register_frame(frame);
+	linklibCtx.__register_frame(frame);
 }
 
 void __deregister_frame(void *frame)
 {
-	libC.__deregister_frame(frame);
+	linklibCtx.__deregister_frame(frame);
 }
 
 int
 atexit(void (*function)(void))
 {
-	return libC.atexit(function);
+	return linklibCtx.atexit(function);
 }
 
 void
 exit(int status)
 {
-	libC.exit(status);
+	linklibCtx.exit(status);
 
 	OF_UNREACHABLE
 }
