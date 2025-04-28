@@ -1,12 +1,15 @@
 include ../../extra.mk
 
-PROG_NOINST = objc_sync${PROG_SUFFIX}
-SRCS = test.m
+PROG_NOINST = gen_libraries${PROG_SUFFIX}
+SRCS = FuncArrayGenerator.m	\
+       GlueGenerator.m		\
+       LibraryGenerator.m	\
+       LinkLibGenerator.m
 
 include ../../buildsys.mk
 
 .PHONY: run
-run:
+run: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f objfw${OBJFW_LIB_MAJOR}.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
@@ -52,8 +55,10 @@ run:
 		    ${OBJFWRT_AMIGA_LIB}; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
+	DYLD_FRAMEWORK_PATH=../../src:../../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
+	ASAN_OPTIONS=allocator_may_return_null=1 \
 	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
@@ -65,8 +70,6 @@ run:
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
-CPPFLAGS += -I../../src -I../../src/runtime -I../..
-LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS} \
-	${LIBS}
+CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
+LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}

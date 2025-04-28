@@ -54,8 +54,6 @@ m68k-*-amigaos*)
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
 	with_tls="no"
-
-	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
@@ -77,6 +75,17 @@ powerpc-*-amigaos*)
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	supports_amiga_lib="yes"
+
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFWRT_AMIGA_LIB,
+			['objfwrt${OBJFWRT_LIB_MAJOR}ppc.library'])
+		t="-mresident32 -ffreestanding -noixemul"
+		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
+		t="$t -laboxstubs -labox -lmath -ldebug -lc"
+		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -472,6 +481,10 @@ BUILDSYS_RELRO
 OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
 LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
 
+AC_ARG_ENABLE(amiga-lib,
+	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
+AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
@@ -514,20 +527,24 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
-	TESTS_LIBS="-L../src -L../src/runtime $TESTS_LIBS"
+	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
 ])
-AS_IF([test x"$enable_static" = x"yes"], [
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
+])
+
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+       AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -548,6 +565,10 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS -lobjfw \${RUNTIME_LIBS}"
 	])
 	AC_SUBST(TESTPLUGIN_LIBS)
+])
+
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(LINKLIB, linklib)
 ])
 
 AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
@@ -660,6 +681,7 @@ case "$objc_runtime" in
 
 	AS_IF([test x"$enable_static" = x"yes"], [
 		AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
+		AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 	])
 
 	AS_IF([test x"$build_framework" = x"yes"], [
@@ -667,10 +689,18 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
 	])
 
-	AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
+		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
+		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
+	], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	])
 	AC_SUBST(RUNTIME_STATIC_LIBS, '${libdir}/libobjfwrt.a')
 
-	AS_IF([test x"$enable_shared" = x"no"], [
+	AS_IF([test x"$enable_shared" = x"no" \
+	    -a x"$enable_amiga_lib" = x"no"], [
 		AC_SUBST(LIBOBJFWRT_DEP, "../src/runtime/libobjfwrt.a")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../../src/runtime/libobjfwrt.a")
 	])
@@ -1059,6 +1089,9 @@ netbsd*)
 	dnl so that it has to be killed using SIGKILL.
 	dnl When disabling __thread, it doesn't freeze, but all symbols are
 	dnl wrong.
+	;;
+morphos*)
+	dnl MorphOS has a dladdr symbol, but it doesn't work.
 	;;
 *)
 	AC_CHECK_FUNCS(dladdr)

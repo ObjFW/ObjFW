@@ -219,6 +219,33 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
+#if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
+    defined(OBJC_COMPILING_AMIGA_LINKLIB)
+struct objc_linklib_context {
+	unsigned int version;
+	void *_Nullable (*_Nonnull malloc)(size_t);
+	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
+	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
+	void (*_Nonnull free)(void *_Nullable);
+	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
+	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
+	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
+	    void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetRegionStart)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetDataRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetTextRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetIP)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
+	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
+	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
+	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
+	void (*_Nonnull __register_frame)(void *_Nonnull);
+	void (*_Nonnull __deregister_frame)(void *_Nonnull);
+	int (*_Nonnull atexit)(void (*_Nonnull)(void));
+	void (*_Nonnull exit)(int);
+};
+#endif
+
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_INTERNAL;
 extern struct objc_category *_Nullable *_Nullable

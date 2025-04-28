@@ -273,7 +273,7 @@ FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
-LIBS := -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
+LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\

@@ -131,6 +131,7 @@ run:
 	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll
 	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib
 	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib
+	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -165,6 +166,9 @@ run:
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
 		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
+	fi
+	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
+		cp ../src/runtime/${OBJFWRT_AMIGA_LIB} ${OBJFWRT_AMIGA_LIB}; \
 	fi
 	if test -f ../src/hid/libobjfwhid.so; then \
 		${LN_S} ../src/hid/libobjfwhid.so \
