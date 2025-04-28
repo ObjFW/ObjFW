@@ -138,12 +138,6 @@ libOpen(void)
 	if (base->parent != NULL)
 		return NULL;
 
-	__asm__ __volatile__ (
-	    "lis	%0, SysBase@ha\n\t"
-	    "lwz	%0, SysBase@l(%0)"
-	    : "=r"(SysBase)
-	);
-
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
