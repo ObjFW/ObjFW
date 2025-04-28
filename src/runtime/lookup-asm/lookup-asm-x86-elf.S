@@ -74,12 +74,12 @@
 	call	.LgetEIP
 	addl	$_GLOBAL_OFFSET_TABLE_, %eax
 
-	movl	objc_taggedPointerSecret@GOT(%eax), %ecx
+	movl	_objc_taggedPointerSecret@GOT(%eax), %ecx
 	xorl	(%ecx), %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	movl	objc_taggedPointerClasses@GOT(%eax), %eax
+	movl	_objc_taggedPointerClasses@GOT(%eax), %eax
 	movl	(%eax,%edx,2), %edx
 	movl	32(%edx), %edx
 
@@ -112,8 +112,8 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

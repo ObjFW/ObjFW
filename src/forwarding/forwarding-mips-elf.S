@@ -21,8 +21,10 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 #ifdef OF_PIC
 .macro j_pic symbol
@@ -43,7 +45,7 @@
 #endif
 
 .section .text
-OFForward:
+_OFForward:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -164,10 +166,10 @@ OFForward:
 	addiu	$sp, $sp, 96
 
 	j_pic	OFMethodNotFound
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -290,8 +292,8 @@ OFForward_stret:
 	addiu	$sp, $sp, 96
 
 	j_pic	OFMethodNotFound_stret
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 #ifdef OF_PIC

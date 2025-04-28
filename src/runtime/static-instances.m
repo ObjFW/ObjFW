@@ -29,7 +29,7 @@ static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-objc_initStaticInstances(struct objc_symtab *symtab)
+_objc_initStaticInstances(struct objc_symtab *symtab)
 {
 	struct objc_static_instances **staticInstances;
 
@@ -59,7 +59,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 			    staticInstancesCount);
 
 			if (staticInstancesList == NULL)
-				OBJC_ERROR("Not enough memory for list of "
+				_OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
 			/*
@@ -89,7 +89,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 			    (staticInstancesCount + 1));
 
 			if (staticInstancesList == NULL)
-				OBJC_ERROR("Not enough memory for list of "
+				_OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
 			staticInstancesList[staticInstancesCount++] =
@@ -99,7 +99,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 }
 
 void
-objc_forgetPendingStaticInstances(void)
+_objc_forgetPendingStaticInstances(void)
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;

@@ -39,7 +39,7 @@ OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < numSpinlocks; i++)
 		if (OFSpinlockNew(&spinlocks[i]) != 0)
-			OBJC_ERROR("Failed to create spinlocks!");
+			_OBJC_ERROR("Failed to create spinlocks!");
 }
 #endif
 
@@ -52,12 +52,12 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 		size_t slot = spinlockSlot(ptr);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 			return objc_autoreleaseReturnValue(objc_retain(*ptr));
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-				OBJC_ERROR("Failed to unlock spinlock!");
+				_OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #else
 		return objc_autoreleaseReturnValue(objc_retain(*ptr));
@@ -77,7 +77,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 		size_t slot = spinlockSlot(ptr);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 #endif
 			id old = *ptr;
@@ -97,7 +97,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 #ifdef OF_HAVE_THREADS
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-				OBJC_ERROR("Failed to unlock spinlock!");
+				_OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #endif
 
@@ -131,12 +131,12 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		size_t slot = spinlockSlot(src);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to unlock spinlock!");
+			_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -154,12 +154,12 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		size_t slot = spinlockSlot(src);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
-			OBJC_ERROR("Failed to unlock spinlock!");
+			_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 		return;
@@ -182,10 +182,10 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	objc_globalMutex_lock();
+	_objc_globalMutex_lock();
 
 	count = 0;
-	if (class->info & OBJC_CLASS_INFO_NEW_ABI)
+	if (class->info & _OBJC_CLASS_INFO_NEW_ABI)
 		for (iter = class->propertyList; iter != NULL;
 		    iter = iter->next)
 			count += iter->count;
@@ -194,13 +194,13 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 		if (outCount != NULL)
 			*outCount = 0;
 
-		objc_globalMutex_unlock();
+		_objc_globalMutex_unlock();
 		return NULL;
 	}
 
 	properties = malloc((count + 1) * sizeof(objc_property_t));
 	if (properties == NULL)
-		OBJC_ERROR("Not enough memory to copy properties");
+		_OBJC_ERROR("Not enough memory to copy properties");
 
 	i = 0;
 	for (iter = class->propertyList; iter != NULL; iter = iter->next)
@@ -208,14 +208,14 @@ class_copyPropertyList(Class class, unsigned int *outCount)
 			properties[i++] = &iter->properties[j];
 
 	if (i != count)
-		OBJC_ERROR("Fatal internal inconsistency!");
+		_OBJC_ERROR("Fatal internal inconsistency!");
 
 	properties[count] = NULL;
 
 	if (outCount != NULL)
 		*outCount = count;
 
-	objc_globalMutex_unlock();
+	_objc_globalMutex_unlock();
 
 	return properties;
 }
@@ -237,18 +237,18 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 
 	switch (*name) {
 	case 'T':
-		ret = objc_strdup(property->getter.typeEncoding);
+		ret = _objc_strdup(property->getter.typeEncoding);
 		nullIsError = true;
 		break;
 	case 'G':
-		if (property->attributes & OBJC_PROPERTY_GETTER) {
-			ret = objc_strdup(property->getter.name);
+		if (property->attributes & _OBJC_PROPERTY_GETTER) {
+			ret = _objc_strdup(property->getter.name);
 			nullIsError = true;
 		}
 		break;
 	case 'S':
-		if (property->attributes & OBJC_PROPERTY_SETTER) {
-			ret = objc_strdup(property->setter.name);
+		if (property->attributes & _OBJC_PROPERTY_SETTER) {
+			ret = _objc_strdup(property->setter.name);
 			nullIsError = true;
 		}
 		break;
@@ -260,17 +260,17 @@ property_copyAttributeValue(objc_property_t property, const char *name)
 		}				\
 		break;
 
-	BOOL_CASE('R', attributes, OBJC_PROPERTY_READONLY)
-	BOOL_CASE('C', attributes, OBJC_PROPERTY_COPY)
-	BOOL_CASE('&', attributes, OBJC_PROPERTY_RETAIN)
-	BOOL_CASE('N', attributes, OBJC_PROPERTY_NONATOMIC)
-	BOOL_CASE('D', extendedAttributes, OBJC_PROPERTY_DYNAMIC)
-	BOOL_CASE('W', extendedAttributes, OBJC_PROPERTY_WEAK)
+	BOOL_CASE('R', attributes, _OBJC_PROPERTY_READONLY)
+	BOOL_CASE('C', attributes, _OBJC_PROPERTY_COPY)
+	BOOL_CASE('&', attributes, _OBJC_PROPERTY_RETAIN)
+	BOOL_CASE('N', attributes, _OBJC_PROPERTY_NONATOMIC)
+	BOOL_CASE('D', extendedAttributes, _OBJC_PROPERTY_DYNAMIC)
+	BOOL_CASE('W', extendedAttributes, _OBJC_PROPERTY_WEAK)
 #undef BOOL_CASE
 	}
 
 	if (nullIsError && ret == NULL)
-		OBJC_ERROR("Not enough memory to copy property attribute "
+		_OBJC_ERROR("Not enough memory to copy property attribute "
 		    "value!");
 
 	return ret;

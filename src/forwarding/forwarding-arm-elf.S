@@ -25,11 +25,13 @@
 .fpu vfp
 #endif
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 #ifdef HAVE_VFP2
 	vstmdb	sp!, {d0-d7}
 #endif
@@ -86,10 +88,10 @@ OFForward:
 	vldmia	sp!, {d0-d7}
 #endif
 	b	OFMethodNotFound(PLT)
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 #ifdef HAVE_VFP2
 	vstmdb	sp!, {d0-d7}
 #endif
@@ -147,8 +149,8 @@ OFForward_stret:
 	vldmia	sp!, {d0-d7}
 #endif
 	b	OFMethodNotFound_stret(PLT)
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	ldr	r0, .Lmodule$indirect_.L2

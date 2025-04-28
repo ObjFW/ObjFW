@@ -88,13 +88,13 @@
 	blr
 
 .LtaggedPointer_\name:
-	addis	%r5, %r2, objc_taggedPointerSecret@toc@ha
-	ld	%r5, objc_taggedPointerSecret@toc@l(%r5)
+	addis	%r5, %r2, _objc_taggedPointerSecret@toc@ha
+	ld	%r5, _objc_taggedPointerSecret@toc@l(%r5)
 	xor	%r5, %r3, %r5
 	rlwinm	%r5, %r5, 2, 0x38
 
-	addis	%r6, %r2, objc_taggedPointerClasses@toc@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@toc@l
+	addis	%r6, %r2, _objc_taggedPointerClasses@toc@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@toc@l
 	ldx	%r5, %r6, %r5
 	ld	%r5, 64(%r5)
 
@@ -132,8 +132,8 @@
 .size \name, .-.Lbegin_\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

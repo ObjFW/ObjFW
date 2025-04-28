@@ -21,10 +21,12 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
-OFForward:
+_OFForward:
 	addi	sp, sp, -144
 	sd	ra, 8(sp)
 
@@ -105,10 +107,10 @@ OFForward:
 	add	sp, sp, 144
 
 	tail	OFMethodNotFound@plt
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	addi	sp, sp, -144
 	sd	ra, 8(sp)
 
@@ -191,8 +193,8 @@ OFForward_stret:
 	add	sp, sp, 144
 
 	tail	OFMethodNotFound_stret@plt
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	lla	a0, .Lmodule

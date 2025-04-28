@@ -27,11 +27,13 @@
 # define _CET_ENDBR
 #endif
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	_CET_ENDBR
 
 	pushl	%ebp
@@ -94,10 +96,10 @@ OFForward:
 	popl	%ebp
 
 	jmp	*%eax
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	_CET_ENDBR
 
 	pushl	%ebp
@@ -160,8 +162,8 @@ OFForward_stret:
 	popl	%ebp
 
 	jmp	*%eax
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	_CET_ENDBR

@@ -56,14 +56,14 @@
 	ret
 
 .LtaggedPointer_\name:
-	adrp	x2, objc_taggedPointerSecret
-	ldr	x2, [x2, :lo12:objc_taggedPointerSecret]
+	adrp	x2, _objc_taggedPointerSecret
+	ldr	x2, [x2, :lo12:_objc_taggedPointerSecret]
 	eor	x0, x0, x2
 	and	x0, x0, #0xE
 	lsl	x0, x0, #2
 
-	adrp	x2, objc_taggedPointerClasses
-	add	x2, x2, :lo12:objc_taggedPointerClasses
+	adrp	x2, _objc_taggedPointerClasses
+	add	x2, x2, :lo12:_objc_taggedPointerClasses
 	ldr	x2, [x2, x0]
 	ldr	x2, [x2, #56]
 
@@ -94,8 +94,8 @@
 .endef
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 

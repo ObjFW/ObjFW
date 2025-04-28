@@ -21,11 +21,13 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	addi.d	$sp, $sp, -144
 	st.d	$ra, $sp, 0
 
@@ -104,10 +106,10 @@ OFForward:
 	addi.d	$sp, $sp, 144
 
 	b	%plt(OFMethodNotFound)
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	addi.d	$sp, $sp, -144
 	st.d	$ra, $sp, 0
 
@@ -188,8 +190,8 @@ OFForward_stret:
 	addi.d	$sp, $sp, 144
 
 	b	%plt(OFMethodNotFound_stret)
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	la.local $a0, .Lmodule
