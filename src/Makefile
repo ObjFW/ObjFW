@@ -268,7 +268,6 @@ include ../buildsys.mk
 ${TLS} hid: ${BRIDGE}
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
-AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\

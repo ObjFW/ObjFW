@@ -360,12 +360,6 @@
 # define OF_DIRECT_MEMBERS
 #endif
 
-#ifdef OF_COMPILING_AMIGA_LIBRARY
-# undef errno
-extern int *_Nonnull OFErrNo(void);
-# define errno (*OFErrNo())
-#endif
-
 #ifdef OF_APPLE_RUNTIME
 # if defined(OF_AMD64) || defined(OF_X86) || defined(OF_ARM64) || \
     defined(OF_ARM) || defined(OF_POWERPC)
