@@ -24,7 +24,8 @@ CPPFLAGS += -I../../src							\
 	    -I../..							\
 	    -DOBJFWTLS_LOCAL_INCLUDES					\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"
-OBJCFLAGS += ${PIE_CFLAGS}
+OBJCFLAGS += ${PIE_CFLAGS}				\
+	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 LIBS := -L../../src		\
 	-L../../src/runtime	\
 	-L../../src/tls		\

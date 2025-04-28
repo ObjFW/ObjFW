@@ -58,8 +58,8 @@
 #ifdef OF_AMIGAOS
 const char *version =
     "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR)
-    " \xA9 2008-2025 Jonathan Schleifer";
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
 #ifdef HAVE_TLS_SUPPORT
