@@ -28,6 +28,13 @@
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 
+#ifdef OF_AMIGAOS
+const char *version =
+    "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR)
+    " \xA9 2008-2025 Jonathan Schleifer";
+#endif
+
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
 {
 	size_t _inFlight;

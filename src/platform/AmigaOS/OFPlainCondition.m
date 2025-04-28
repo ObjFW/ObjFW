@@ -177,8 +177,9 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 			    (timeout - request.Time.Seconds) * 1000000
 #else
 		.tr_time = {
-			.tv_sec = (ULONG)timeout,
-			.tv_micro = (timeout - request.tr_time.tv_sec) * 1000000
+			.tv_secs = (ULONG)timeout,
+			.tv_micro =
+			    (timeout - request.tr_time.tv_secs) * 1000000
 #endif
 		}
 	};

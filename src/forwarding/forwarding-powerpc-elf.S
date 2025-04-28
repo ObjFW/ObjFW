@@ -21,11 +21,13 @@
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -159,10 +161,10 @@ OFForward:
 #else
 	b	OFMethodNotFound
 #endif
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -298,8 +300,8 @@ OFForward_stret:
 #else
 	b	OFMethodNotFound_stret
 #endif
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	stwu	%r1, -16(%r1)

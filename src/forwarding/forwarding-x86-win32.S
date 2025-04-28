@@ -19,8 +19,8 @@
 
 #include "config.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
 
 #ifdef HAVE_CET_H
 # include <cet.h>
@@ -29,7 +29,7 @@
 #endif
 
 .section .text
-_OFForward:
+__OFForward:
 	_CET_ENDBR
 
 	pushl	%ebp
@@ -87,12 +87,12 @@ _OFForward:
 	popl	%ebp
 
 	jmp	_OFMethodNotFound
-.def _OFForward
+.def __OFForward
 .scl 2
 .type 32
 .endef
 
-_OFForward_stret:
+__OFForward_stret:
 	_CET_ENDBR
 
 	pushl	%ebp
@@ -150,7 +150,7 @@ _OFForward_stret:
 	popl	%ebp
 
 	jmp	_OFMethodNotFound_stret
-.def _OFForward_stret
+.def __OFForward_stret
 .scl 2
 .type 32
 .endef

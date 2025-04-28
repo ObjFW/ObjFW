@@ -23,15 +23,17 @@
 
 .abiversion 2
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	.cfi_startproc
-	addis	%r2, %r12, .TOC.-OFForward@ha
-	addi	%r2, %r2, .TOC.-OFForward@l
-.localentry OFForward, .-OFForward
+	addis	%r2, %r12, .TOC.-_OFForward@ha
+	addi	%r2, %r2, .TOC.-_OFForward@l
+.localentry _OFForward, .-_OFForward
 	mflr	%r0
 	std	%r0, 16(%r1)
 	stdu	%r1, -160(%r1)
@@ -138,14 +140,14 @@ OFForward:
 
 	blr
 	.cfi_endproc
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	.cfi_startproc
-	addis	%r2, %r12, .TOC.-OFForward_stret@ha
-	addi	%r2, %r2, .TOC.-OFForward_stret@l
-.localentry OFForward_stret, .-OFForward_stret
+	addis	%r2, %r12, .TOC.-_OFForward_stret@ha
+	addi	%r2, %r2, .TOC.-_OFForward_stret@l
+.localentry _OFForward_stret, .-_OFForward_stret
 	mflr	%r0
 	std	%r0, 16(%r1)
 	stdu	%r1, -160(%r1)
@@ -254,8 +256,8 @@ OFForward_stret:
 
 	blr
 	.cfi_endproc
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 	addis	%r2, %r12, .TOC.-.Linit@ha

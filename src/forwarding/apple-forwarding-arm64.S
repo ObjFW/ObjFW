@@ -19,8 +19,10 @@
 
 #include "config.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.private_extern __OFForward
+.private_extern __OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 Lstr_forwardingTargetForSelector_:
@@ -36,8 +38,8 @@ Lsel_forwardingTargetForSelector_:
 
 .section __TEXT, __text, regular, pure_instructions
 .align 2
-_OFForward:
-_OFForward_stret:
+__OFForward:
+__OFForward_stret:
 #ifdef HAVE_BTI
 	bti	c
 #endif

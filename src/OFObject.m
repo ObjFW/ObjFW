@@ -68,11 +68,11 @@ extern void _objc_rootRelease(id object);
 extern id _objc_rootAutorelease(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
-extern id OFForward(id, SEL, ...);
-extern struct Stret OFForward_stret(id, SEL, ...);
+extern id _OFForward(id, SEL, ...);
+extern struct Stret _OFForward_stret(id, SEL, ...);
 #else
-# define OFForward OFMethodNotFound
-# define OFForward_stret OFMethodNotFound_stret
+# define _OFForward OFMethodNotFound
+# define _OFForward_stret OFMethodNotFound_stret
 #endif
 
 #ifdef OF_WINDOWS
@@ -412,10 +412,10 @@ _references_to_categories_of_OFObject(void)
 	 * already been set, so this is the best we can do.
 	 */
 	if (dlsym(RTLD_DEFAULT, "NSFoundationVersionNumber") == NULL)
-		objc_setForwardHandler((void *)&OFForward,
-		    (void *)&OFForward_stret);
+		objc_setForwardHandler((void *)&_OFForward,
+		    (void *)&_OFForward_stret);
 #else
-	objc_setForwardHandler((IMP)&OFForward, (IMP)&OFForward_stret);
+	objc_setForwardHandler((IMP)&_OFForward, (IMP)&_OFForward_stret);
 #endif
 
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);

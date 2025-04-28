@@ -19,8 +19,10 @@
 
 #include "config.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.private_extern __OFForward
+.private_extern __OFForward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
 Lstr_forwardingTargetForSelector_:
@@ -36,7 +38,7 @@ Lsel_forwardingTargetForSelector_:
 .section __TEXT, __text, regular, pure_instructions
 .arm
 .align 2
-_OFForward:
+__OFForward:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
@@ -80,7 +82,7 @@ Lsel_forwardingTargetForSelector_$indirect_L0:
 .end_data_region
 
 .align 2
-_OFForward_stret:
+__OFForward_stret:
 	stmfd	sp!, {r0-r4, lr}
 	vstmdb	sp!, {d0-d7}
 
