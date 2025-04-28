@@ -31,10 +31,6 @@
 #include <proto/exec.h>
 #undef Class
 
-#define CONCAT_VERSION2(major, minor) #major "." #minor
-#define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
-#define VERSION_STRING CONCAT_VERSION(OBJFWRT_LIB_MAJOR, OBJFWRT_LIB_MINOR)
-
 #define DATA_OFFSET 0x8000
 
 /* This always needs to be the first thing in the file. */
@@ -427,7 +423,7 @@ static struct {
 	ULONG *dataTable;
 	struct Library *(*initFunc)(struct ObjFWRTBase *base, void *segList,
 	    struct ExecBase *execBase);
-} init_table = {
+} initTable = {
 	sizeof(struct ObjFWRTBase),
 	functionTable,
 	NULL,
@@ -443,10 +439,12 @@ struct Resident resident = {
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
 	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
-	.rt_IdString = (char *)"ObjFWRT " VERSION_STRING
+	.rt_IdString = (char *)OBJFWRT_AMIGA_LIB " "
+	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
+	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
 	    " \xA9 2008-2025 Jonathan Schleifer",
-	.rt_Init = &init_table,
-	.rt_Revision = OBJFWRT_LIB_MINOR,
+	.rt_Init = &initTable,
+	.rt_Revision = OBJFWRT_LIB_PATCH,
 	.rt_Tags = NULL,
 };
 
