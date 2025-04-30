@@ -497,15 +497,7 @@ mingw*)
 	;;
 esac
 
-case "$host_os" in
-morphos*)
-	dnl Stack protector is incompatible with libraries.
-	;;
-*)
-	BUILDSYS_STACK_PROTECTOR
-	;;
-esac
-
+BUILDSYS_STACK_PROTECTOR
 BUILDSYS_RELRO
 OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
 LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
