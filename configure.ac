@@ -80,10 +80,9 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB,
-			['objfw${OBJFW_LIB_MAJOR}ppc.library'])
+		AC_SUBST(OBJFW_AMIGA_LIB, ['objfw${OBJFW_LIB_MAJOR}m.library'])
 		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFWRT_LIB_MAJOR}ppc.library'])
+			['objfwrt${OBJFWRT_LIB_MAJOR}m.library'])
 		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"

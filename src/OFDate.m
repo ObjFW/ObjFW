@@ -53,6 +53,13 @@
 # define trunc(x) ((int64_t)(x))
 #endif
 
+#ifdef OF_MORPHOS
+# include <devices/timer.h>
+# include <ppcinline/timer.h>
+
+extern struct Device *TimerBase;
+#endif
+
 @interface OFPlaceholderDate: OFDate
 @end
 
@@ -89,7 +96,13 @@ initDistantPast(void)
 static OFTimeInterval
 now(void)
 {
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(OF_MORPHOS)
+	struct timeval tv;
+
+	GetUTCSysTime(&tv);
+
+	return 252460800.0 + tv.tv_secs + (OFTimeInterval)tv.tv_usec / 1000000;
+#elif defined(HAVE_CLOCK_GETTIME)
 	struct timespec ts;
 
 	OFEnsure(clock_gettime(CLOCK_REALTIME, &ts) == 0);
