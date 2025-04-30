@@ -66,7 +66,8 @@ m68k-*-amigaos*)
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="$t -resident32 -nostartfiles -nodefaultlibs -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-		AC_SUBST(AMIGA_GLUE_AMIGALIB_O, "amiga-glue.amigalib.o")
+		AC_SUBST(AMIGA_LIBRARY_GLUE_AMIGALIB_O,
+			["amiga-library-glue.amigalib.o"])
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
@@ -103,7 +104,8 @@ powerpc-*-amigaos*)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		t="$t -laboxstubs -labox -lmath -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-		AC_SUBST(AMIGA_GLUE_AMIGALIB_O, "amiga-glue-morphos.amigalib.o")
+		AC_SUBST(AMIGA_LIBRARY_GLUE_AMIGALIB_O,
+			["amiga-library-glue-morphos.amigalib.o"])
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)

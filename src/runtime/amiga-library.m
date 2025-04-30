@@ -22,7 +22,7 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-#import "amiga-glue.h"
+#import "amiga-library-glue.h"
 
 #define Class IntuitionClass
 #include <exec/libraries.h>
@@ -204,10 +204,6 @@ libOpen(void)
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
-	/*
-	 * We cannot use malloc here, as that depends on the linklib context
-	 * passed from the application.
-	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
 	    base->library.lib_PosSize, MEMF_ANY)) == NULL) {
 		base->library.lib_OpenCnt--;
@@ -334,7 +330,7 @@ objc_init(struct objc_linklib_context *ctx)
 	if (base->initialized)
 		return true;
 
-	memcpy(&linklibCtx, ctx, sizeof(linklibCtx));
+	CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
 
 #if defined(OF_MORPHOS)
 	__asm__ (
@@ -552,7 +548,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
 #endif
-#include "amiga-funcarray.inc"
+#include "amiga-library-funcarray.inc"
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

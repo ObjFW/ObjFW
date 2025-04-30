@@ -44,13 +44,13 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFIRI *linkLibIRI = [sourcesIRI
 	    IRIByAppendingPathComponent: @"linklib/linklib.m"];
 	OFIRI *glueHeaderIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-glue.h"];
+	    IRIByAppendingPathComponent: @"amiga-library-glue.h"];
 	OFIRI *glueIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-glue.m"];
+	    IRIByAppendingPathComponent: @"amiga-library-glue.m"];
 	OFIRI *morphOSGlueIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-glue-morphos.S"];
+	    IRIByAppendingPathComponent: @"amiga-library-glue-morphos.S"];
 	OFIRI *funcArrayIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-funcarray.inc"];
+	    IRIByAppendingPathComponent: @"amiga-library-funcarray.inc"];
 	OFXMLElement *library = [OFXMLElement elementWithStream:
 	    [OFFile fileWithPath: libraryIRI.fileSystemRepresentation
 			    mode: @"r"]];
@@ -61,7 +61,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	    [OFFile fileWithPath: glueHeaderIRI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *glue =
-	    [OFFile fileWithPath: glueIRI.fileSystemRepresentation mode: @"w"];
+	    [OFFile fileWithPath: glueIRI.fileSystemRepresentation
+			    mode: @"w"];
 	OFFile *morphOSGlue =
 	    [OFFile fileWithPath: morphOSGlueIRI.fileSystemRepresentation
 			    mode: @"w"];
