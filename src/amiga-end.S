@@ -19,17 +19,16 @@
 
 #include "config.h"
 
-#include "platform.h"
-
-#ifdef OF_MORPHOS
-__asm__ (
-    ".section .eh_frame, \"aw\"\n"
-    "	.long 0\n"
-    ".section .ctors, \"aw\"\n"
-    "	.long 0"
-);
+#if defined(OF_MORPHOS)
+.section .eh_frame, "aw"
+	.long 0
+.section .ctors, "aw"
+	.long 0
 #else
-__asm__ (
-    ""
-);
+.section .list___EH_FRAME_BEGINS__, "aw"
+	.long 0
+.section .dlist___EH_FRAME_OBJECTS__, "aw"
+	.long 0
+.section .list___CTOR_LIST__, "aw"
+	.long 0
 #endif
