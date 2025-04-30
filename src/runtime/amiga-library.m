@@ -137,10 +137,6 @@ libOpen(void)
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
-	/*
-	 * We cannot use malloc here, as that depends on the linklib context
-	 * passed from the application.
-	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
 	    base->library.lib_PosSize, MEMF_ANY)) == NULL) {
 		base->library.lib_OpenCnt--;
@@ -262,7 +258,7 @@ objc_init(struct objc_linklib_context *ctx)
 	if (base->initialized)
 		return true;
 
-	memcpy(&linklibCtx, ctx, sizeof(linklibCtx));
+	CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
 
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
