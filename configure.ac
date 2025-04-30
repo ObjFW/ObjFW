@@ -85,6 +85,8 @@ powerpc-*-amigaos*)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		t="$t -laboxstubs -labox -lmath -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+		AC_SUBST(AMIGA_LIBRARY_GLUE_AMIGALIB_O,
+			["amiga-library-glue-morphos.amigalib.o"])
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)

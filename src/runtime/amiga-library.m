@@ -22,7 +22,7 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-#import "amiga-glue.h"
+#import "amiga-library-glue.h"
 
 #define Class IntuitionClass
 #include <exec/libraries.h>
@@ -407,7 +407,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)libNull,
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_32BIT_SYSTEMV,
-#include "amiga-funcarray.inc"
+#include "amiga-library-funcarray.inc"
 	(CONST_APTR)-1,
 	(CONST_APTR)FUNCARRAY_END
 };
