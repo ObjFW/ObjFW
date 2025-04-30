@@ -33,256 +33,155 @@ extern struct Library *ObjFWRTBase;
 bool
 objc_init(struct objc_linklib_context *ctx)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(struct objc_linklib_context *__asm__("a0")))(((uintptr_t)ObjFWRTBase) - 30))(ctx);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(struct objc_linklib_context *))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(ctx);
-#endif
 }
 
 void
 __objc_exec_class(struct objc_module *_Nonnull module)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(struct objc_module *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 36))(module);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 34))(module);
-#endif
 }
 
 int
-__gnu_objc_personality_v0(int version, int actions, uint64_t exClass, void *_Nonnull ex, void *_Nonnull ctx)
+__gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((int (*)(int __asm__("(nil)"), int __asm__("(nil)"), uint64_t __asm__("(nil)"), void *_Nonnull __asm__("(nil)"), void *_Nonnull __asm__("(nil)")))(((uintptr_t)ObjFWRTBase) - 42))(version, actions, exClass, ex, ctx);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(int, int, uint64_t, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 40))(version, actions, exClass, ex, ctx);
-#endif
-}
-
-int
-__gnu_objc_personality_sj0_wrapper(int version, int actions, uint64_t *_Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((int (*)(int __asm__("d0"), int __asm__("d1"), uint64_t *_Nonnull __asm__("a0"), void *_Nonnull __asm__("a1"), void *_Nonnull __asm__("a2")))(((uintptr_t)ObjFWRTBase) - 48))(version, actions, exClass, ex, ctx);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((int (*)(int, int, uint64_t *_Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 46))(version, actions, exClass, ex, ctx);
-#endif
+	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 40))(version, actions, exClass, ex, ctx);
 }
 
 void
 class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(Class _Nonnull __asm__("a0"), const char *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 54))(class_, name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(Class _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 52))(class_, name);
-#endif
+	__extension__ ((void (*)(Class _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 46))(class_, name);
 }
 
 IMP _Nonnull
 objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nonnull (*)(id _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 60))(object, selector);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 52))(object, selector);
+}
+
+IMP _Nonnull
+objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 58))(object, selector);
-#endif
-}
-
-IMP _Nonnull
-objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nonnull (*)(id _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 66))(object, selector);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 64))(object, selector);
-#endif
 }
 
 IMP _Nonnull
 objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nonnull (*)(struct objc_super *_Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 72))(super, selector);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 64))(super, selector);
+}
+
+IMP _Nonnull
+objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull selector)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 70))(super, selector);
-#endif
-}
-
-IMP _Nonnull
-objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull selector)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nonnull (*)(struct objc_super *_Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 78))(super, selector);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(super, selector);
-#endif
 }
 
 Class _Nullable
 objc_lookUpClass(const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 84))(name);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(name);
+}
+
+Class _Nullable
+objc_getClass(const char *_Nonnull name)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 82))(name);
-#endif
-}
-
-Class _Nullable
-objc_getClass(const char *_Nonnull name)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 90))(name);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(name);
-#endif
 }
 
 Class _Nonnull
 objc_getRequiredClass(const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nonnull (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 96))(name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(name);
-#endif
+	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(name);
 }
 
 Class _Nullable
 objc_lookup_class(const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 102))(name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(name);
-#endif
+	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(name);
 }
 
 Class _Nonnull
 objc_get_class(const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nonnull (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 108))(name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(name);
-#endif
+	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(name);
 }
 
 void
 objc_exception_throw(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 114))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(object);
-#endif
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(object);
 
 	OF_UNREACHABLE
 }
@@ -290,1342 +189,868 @@ objc_exception_throw(id _Nonnull object)
 int
 objc_sync_enter(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((int (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 120))(object);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(object);
+}
+
+int
+objc_sync_exit(id _Nullable object)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 118))(object);
-#endif
-}
-
-int
-objc_sync_exit(id _Nullable object)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((int (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 126))(object);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(object);
-#endif
 }
 
 id _Nullable
 objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool atomic)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1"), ptrdiff_t __asm__("d0"), bool __asm__("d1")))(((uintptr_t)ObjFWRTBase) - 132))(self, _cmd, offset, atomic);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(self, _cmd, offset, atomic);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(self, _cmd, offset, atomic);
 }
 
 void
 objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Nullable value, bool atomic, signed char copy)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1"), ptrdiff_t __asm__("d0"), id _Nullable __asm__("a2"), bool __asm__("d1"), signed char __asm__("d2")))(((uintptr_t)ObjFWRTBase) - 138))(self, _cmd, offset, value, atomic, copy);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(self, _cmd, offset, value, atomic, copy);
-#endif
+	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(self, _cmd, offset, value, atomic, copy);
 }
 
 void
 objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(void *_Nonnull __asm__("a0"), const void *_Nonnull __asm__("a1"), ptrdiff_t __asm__("d0"), bool __asm__("d1"), bool __asm__("d2")))(((uintptr_t)ObjFWRTBase) - 144))(dest, src, size, atomic, strong);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(dest, src, size, atomic, strong);
+}
+
+void
+objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(dest, src, size, atomic, strong);
-#endif
-}
-
-void
-objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(void *_Nonnull __asm__("a0"), const void *_Nonnull __asm__("a1"), ptrdiff_t __asm__("d0"), bool __asm__("d1"), bool __asm__("d2")))(((uintptr_t)ObjFWRTBase) - 150))(dest, src, size, atomic, strong);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(dest, src, size, atomic, strong);
-#endif
 }
 
 void
 objc_enumerationMutation(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 156))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(object);
-#endif
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(object);
 }
 
 id _Nullable
 objc_retain(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 162))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(object);
 }
 
 id _Nullable
 objc_retainBlock(id _Nullable block)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 168))(block);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(block);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(block);
 }
 
 id _Nullable
 objc_retainAutorelease(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 174))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(object);
 }
 
 void
 objc_release(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 180))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
-#endif
+	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(object);
 }
 
 id _Nullable
 objc_autorelease(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 186))(object);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
+}
+
+id _Nullable
+objc_autoreleaseReturnValue(id _Nullable object)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 184))(object);
-#endif
 }
 
 id _Nullable
-objc_autoreleaseReturnValue(id _Nullable object)
+objc_retainAutoreleaseReturnValue(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 192))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 190))(object);
-#endif
 }
 
 id _Nullable
-objc_retainAutoreleaseReturnValue(id _Nullable object)
+objc_retainAutoreleasedReturnValue(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 198))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 196))(object);
-#endif
-}
-
-id _Nullable
-objc_retainAutoreleasedReturnValue(id _Nullable object)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 204))(object);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object);
-#endif
 }
 
 id _Nullable
 objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable *_Nonnull __asm__("a0"), id _Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 210))(object, value);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object, value);
+}
+
+id _Nullable
+objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 208))(object, value);
-#endif
-}
-
-id _Nullable
-objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable *_Nonnull __asm__("a0"), id _Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 216))(object, value);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object, value);
-#endif
 }
 
 id _Nullable
 objc_loadWeakRetained(id _Nullable *_Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 222))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object);
 }
 
 id _Nullable
 objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable *_Nonnull __asm__("a0"), id _Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 228))(object, value);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object, value);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object, value);
 }
 
 void
 objc_destroyWeak(id _Nullable *_Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nullable *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 234))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(object);
-#endif
+	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object);
 }
 
 id _Nullable
 objc_loadWeak(id _Nullable *_Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 240))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(object);
 }
 
 void
 objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nullable *_Nonnull __asm__("a0"), id _Nullable *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 246))(dest, src);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(dest, src);
+}
+
+void
+objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 244))(dest, src);
-#endif
-}
-
-void
-objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nullable *_Nonnull __asm__("a0"), id _Nullable *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 252))(dest, src);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(dest, src);
-#endif
 }
 
 SEL _Nonnull
 sel_registerName(const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((SEL _Nonnull (*)(const char *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 258))(name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(name);
-#endif
+	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(name);
 }
 
 const char *_Nonnull
 sel_getName(SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nonnull (*)(SEL _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 264))(selector);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(selector);
-#endif
+	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(selector);
 }
 
 bool
 sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(SEL _Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 270))(selector1, selector2);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(selector1, selector2);
-#endif
+	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(selector1, selector2);
 }
 
 Class _Nonnull
 objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nonnull (*)(Class _Nullable __asm__("a0"), const char *_Nonnull __asm__("a1"), size_t __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 276))(superclass, name, extraBytes);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(superclass, name, extraBytes);
-#endif
+	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(superclass, name, extraBytes);
 }
 
 void
 objc_registerClassPair(Class _Nonnull class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(Class _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 282))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(class_);
-#endif
+	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(class_);
 }
 
 unsigned int
 objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((unsigned int (*)(Class _Nonnull *_Nullable __asm__("a0"), unsigned int __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 288))(buffer, count);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(buffer, count);
-#endif
+	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(buffer, count);
 }
 
 Class _Nonnull *_Nonnull
 objc_copyClassList(unsigned int *_Nullable length)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 294))(length);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(length);
-#endif
+	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(length);
 }
 
 bool
 class_isMetaClass(Class _Nullable class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Class _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 300))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(class_);
-#endif
+	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(class_);
 }
 
 const char *_Nullable
 class_getName(Class _Nullable class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nullable (*)(Class _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 306))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(class_);
-#endif
+	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(class_);
 }
 
 Class _Nullable
 class_getSuperclass(Class _Nullable class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(Class _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 312))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(class_);
-#endif
+	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(class_);
 }
 
 unsigned long
 class_getInstanceSize(Class _Nullable class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((unsigned long (*)(Class _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 318))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_);
-#endif
+	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(class_);
 }
 
 bool
 class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Class _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 324))(class_, selector);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_, selector);
-#endif
+	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_, selector);
 }
 
 bool
 class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Class _Nullable __asm__("a0"), Protocol *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 330))(class_, p);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_, p);
-#endif
+	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_, p);
 }
 
 IMP _Nullable
 class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nullable (*)(Class _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 336))(class_, selector);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_, selector);
+}
+
+IMP _Nullable
+class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 334))(class_, selector);
-#endif
-}
-
-IMP _Nullable
-class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nullable (*)(Class _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 342))(class_, selector);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector);
-#endif
 }
 
 Method _Nullable
 class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Method _Nullable (*)(Class _Nullable __asm__("a0"), SEL _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 348))(class_, selector);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector);
-#endif
+	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector);
 }
 
 bool
 class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Class _Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1"), IMP _Nonnull __asm__("a2"), const char *_Nullable __asm__("a3")))(((uintptr_t)ObjFWRTBase) - 354))(class_, selector, implementation, typeEncoding);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(class_, selector, implementation, typeEncoding);
-#endif
+	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable
 class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((IMP _Nullable (*)(Class _Nonnull __asm__("a0"), SEL _Nonnull __asm__("a1"), IMP _Nonnull __asm__("a2"), const char *_Nullable __asm__("a3")))(((uintptr_t)ObjFWRTBase) - 360))(class_, selector, implementation, typeEncoding);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(class_, selector, implementation, typeEncoding);
-#endif
+	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(class_, selector, implementation, typeEncoding);
 }
 
 Class _Nullable
 object_getClass(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 366))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object);
-#endif
+	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(object);
 }
 
 Class _Nullable
 object_setClass(id _Nullable object, Class _Nonnull class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Class _Nullable (*)(id _Nullable __asm__("a0"), Class _Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 372))(object, class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(object, class_);
-#endif
+	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object, class_);
 }
 
 const char *_Nullable
 object_getClassName(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 378))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(object);
-#endif
+	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(object);
 }
 
 const char *_Nonnull
 protocol_getName(Protocol *_Nonnull protocol)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nonnull (*)(Protocol *_Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 384))(protocol);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol);
-#endif
+	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(protocol);
 }
 
 bool
 protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Protocol *_Nonnull __asm__("a0"), Protocol *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 390))(protocol1, protocol2);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol1, protocol2);
+}
+
+bool
+protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 388))(protocol1, protocol2);
-#endif
-}
-
-bool
-protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(Protocol *_Nonnull __asm__("a0"), Protocol *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 396))(protocol1, protocol2);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(protocol1, protocol2);
-#endif
 }
 
 Method _Nullable *_Nullable
 class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Method _Nullable *_Nullable (*)(Class _Nullable __asm__("a0"), unsigned int *_Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 402))(class_, outCount);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(class_, outCount);
-#endif
+	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(class_, outCount);
 }
 
 SEL _Nonnull
 method_getName(Method _Nonnull method)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((SEL _Nonnull (*)(Method _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 408))(method);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(method);
-#endif
+	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(method);
 }
 
 const char *_Nullable
 method_getTypeEncoding(Method _Nonnull method)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nullable (*)(Method _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 414))(method);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 412))(method);
-#endif
+	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(method);
 }
 
 Ivar _Nullable *_Nullable
 class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((Ivar _Nullable *_Nullable (*)(Class _Nullable __asm__("a0"), unsigned int *_Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 420))(class_, outCount);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(class_, outCount);
-#endif
+	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 412))(class_, outCount);
 }
 
 const char *_Nonnull
 ivar_getName(Ivar _Nonnull ivar)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nonnull (*)(Ivar _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 426))(ivar);
-#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(ivar);
+}
+
+const char *_Nonnull
+ivar_getTypeEncoding(Ivar _Nonnull ivar)
+{
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 424))(ivar);
-#endif
-}
-
-const char *_Nonnull
-ivar_getTypeEncoding(Ivar _Nonnull ivar)
-{
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nonnull (*)(Ivar _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 432))(ivar);
-#elif defined(OF_MORPHOS)
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(ivar);
-#endif
 }
 
 ptrdiff_t
 ivar_getOffset(Ivar _Nonnull ivar)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((ptrdiff_t (*)(Ivar _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 438))(ivar);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(ivar);
-#endif
+	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(ivar);
 }
 
 objc_property_t _Nullable *_Nullable
 class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable __asm__("a0"), unsigned int *_Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 444))(class_, outCount);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(class_, outCount);
-#endif
+	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(class_, outCount);
 }
 
 const char *_Nonnull
 property_getName(objc_property_t _Nonnull property)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((const char *_Nonnull (*)(objc_property_t _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 450))(property);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(property);
-#endif
+	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(property);
 }
 
 char *_Nullable
 property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((char *_Nullable (*)(objc_property_t _Nonnull __asm__("a0"), const char *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 456))(property, name);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 454))(property, name);
-#endif
+	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(property, name);
 }
 
 void
 objc_deinit()
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)())(((uintptr_t)ObjFWRTBase) - 462))();
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 460))();
-#endif
+	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 454))();
 }
 
 _Nullable objc_uncaught_exception_handler
 objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 468))(handler);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(handler);
-#endif
+	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 460))(handler);
 }
 
 void
 objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(IMP _Nullable __asm__("a0"), IMP _Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 474))(forward, stretForward);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(forward, stretForward);
-#endif
+	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(forward, stretForward);
 }
 
 void
 objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(objc_enumeration_mutation_handler _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 480))(hadler);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 478))(hadler);
-#endif
+	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(hadler);
 }
 
 id _Nullable
 objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(Class _Nullable __asm__("a0"), void *_Nullable __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 486))(class_, bytes);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 484))(class_, bytes);
-#endif
+	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 478))(class_, bytes);
 }
 
 void *_Nullable
 objc_destructInstance(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((void *_Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 492))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(object);
-#endif
+	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 484))(object);
 }
 
 id _Nullable
 class_createInstance(Class _Nullable class_, size_t extraBytes)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(Class _Nullable __asm__("a0"), size_t __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 498))(class_, extraBytes);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(class_, extraBytes);
-#endif
+	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(class_, extraBytes);
 }
 
 id _Nullable
 object_dispose(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 504))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(object);
 }
 
 id _Nonnull
 _objc_rootRetain(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nonnull (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 510))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(object);
-#endif
+	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(object);
 }
 
 unsigned int
 _objc_rootRetainCount(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((unsigned int (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 516))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(object);
-#endif
+	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(object);
 }
 
 void
 _objc_rootRelease(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 522))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 520))(object);
-#endif
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(object);
 }
 
 void *_Null_unspecified
 objc_autoreleasePoolPush()
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((void *_Null_unspecified (*)())(((uintptr_t)ObjFWRTBase) - 528))();
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 526))();
-#endif
+	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 520))();
 }
 
 void
 objc_autoreleasePoolPop(void *_Null_unspecified pool)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(void *_Null_unspecified __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 534))(pool);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 532))(pool);
-#endif
+	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 526))(pool);
 }
 
 id _Nullable
 _objc_rootAutorelease(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 540))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(object);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 532))(object);
 }
 
 void
 objc_setTaggedPointerSecret(uintptr_t secret)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(uintptr_t __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 546))(secret);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 544))(secret);
-#endif
+	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(secret);
 }
 
 int
 objc_registerTaggedPointerClass(Class _Nonnull class_)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((int (*)(Class _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 552))(class_);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 550))(class_);
-#endif
+	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 544))(class_);
 }
 
 bool
 object_isTaggedPointer(id _Nullable object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((bool (*)(id _Nullable __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 558))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(object);
-#endif
+	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 550))(object);
 }
 
 uintptr_t
 object_getTaggedPointerValue(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((uintptr_t (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 564))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(object);
-#endif
+	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(object);
 }
 
 id _Nullable
 objc_createTaggedPointer(int class_, uintptr_t value)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(int __asm__("a0"), uintptr_t __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 570))(class_, value);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(class_, value);
-#endif
+	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(class_, value);
 }
 
 void
 objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nullable value, objc_associationPolicy policy)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0"), const void *_Nonnull __asm__("a1"), id _Nullable __asm__("a2"), objc_associationPolicy __asm__("d0")))(((uintptr_t)ObjFWRTBase) - 576))(object, key, value, policy);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(object, key, value, policy);
-#endif
+	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(object, key, value, policy);
 }
 
 id _Nullable
 objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	return ((id _Nullable (*)(id _Nonnull __asm__("a0"), const void *_Nonnull __asm__("a1")))(((uintptr_t)ObjFWRTBase) - 582))(object, key);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object, key);
-#endif
+	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(object, key);
 }
 
 void
 objc_removeAssociatedObjects(id _Nonnull object)
 {
-#if defined(OF_AMIGAOS_M68K)
-	register struct Library *a6 __asm__("a6") = ObjFWRTBase;
-	(void)a6;
-	((void (*)(id _Nonnull __asm__("a0")))(((uintptr_t)ObjFWRTBase) - 588))(object);
-#elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 586))(object);
-#endif
+	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object);
 }

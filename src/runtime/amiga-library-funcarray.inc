@@ -21,12 +21,7 @@
 
 (CONST_APTR)glue_objc_init,
 (CONST_APTR)glue___objc_exec_class,
-#if !defined(OF_AMIGAOS_M68K)
 (CONST_APTR)glue___gnu_objc_personality_v0,
-#endif
-#if defined(OF_AMIGAOS_M68K)
-(CONST_APTR)glue___gnu_objc_personality_sj0_wrapper,
-#endif
 (CONST_APTR)glue_class_registerAlias_np,
 (CONST_APTR)glue_objc_msg_lookup,
 (CONST_APTR)glue_objc_msg_lookup_stret,

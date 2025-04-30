@@ -54,21 +54,6 @@ m68k-*-amigaos*)
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
 	with_tls="no"
-	supports_amiga_lib="yes"
-
-	AS_IF([test x"$enable_amiga_lib" != x"no"], [
-		AC_SUBST(OBJFW_AMIGA_LIB, 'objfw${OBJFW_LIB_MAJOR}.library')
-		AC_SUBST(OBJFWRT_AMIGA_LIB,
-			['objfwrt${OBJFWRT_LIB_MAJOR}.library'])
-		dnl For 68000, GCC emits calls to helper functions that
-		dnl do not work properly in a library.
-		t="-mcpu=68020 -fbaserel32 -noixemul -ffreestanding"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
-		t="$t -resident32 -nostartfiles -nodefaultlibs -ldebug -lc"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
-		AC_SUBST(AMIGA_LIBRARY_GLUE_AMIGALIB_O,
-			["amiga-library-glue.amigalib.o"])
-	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;

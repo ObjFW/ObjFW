@@ -31,17 +31,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(OF_MORPHOS)
-# include <constructor.h>
-#elif defined(OF_AMIGAOS_M68K)
-# include <stabs.h>
-#endif
+#include <constructor.h>
 
-#ifdef OF_MORPHOS
 extern int _Unwind_RaiseException(void *);
-#else
-extern int _Unwind_SjLj_RaiseException(void *);
-#endif
 extern void _Unwind_DeleteException(void *);
 extern void *_Unwind_GetLanguageSpecificData(void *);
 extern uintptr_t _Unwind_GetRegionStart(void *);
@@ -51,15 +43,9 @@ extern uintptr_t _Unwind_GetIP(void *);
 extern uintptr_t _Unwind_GetGR(void *, int);
 extern void _Unwind_SetIP(void *, uintptr_t);
 extern void _Unwind_SetGR(void *, int, uintptr_t);
-#ifdef OF_MORPHOS
 extern void _Unwind_Resume(void *);
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
-#else
-extern void _Unwind_SjLj_Resume(void *);
-extern void __register_frame_info(const void *, void *);
-extern void *__deregister_frame_info(const void *);
-#endif
 
 void *__objc_class_name_Protocol;
 
@@ -100,11 +86,7 @@ ctor(void)
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-# ifdef OF_MORPHOS
 		._Unwind_RaiseException = _Unwind_RaiseException,
-# else
-		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
-# endif
 		._Unwind_DeleteException = _Unwind_DeleteException,
 		._Unwind_GetLanguageSpecificData =
 		    _Unwind_GetLanguageSpecificData,
@@ -115,20 +97,11 @@ ctor(void)
 		._Unwind_GetGR = _Unwind_GetGR,
 		._Unwind_SetIP = _Unwind_SetIP,
 		._Unwind_SetGR = _Unwind_SetGR,
-# ifdef OF_MORPHOS
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
-# else
-		._Unwind_SjLj_Resume = _Unwind_SjLj_Resume,
-		.__register_frame_info = __register_frame_info,
-		.__deregister_frame_info = __deregister_frame_info,
-# endif
 		.atexit = atexit,
 		.exit = exit,
-# ifdef OF_AMIGAOS_M68K
-		.vsnprintf = vsnprintf,
-# endif
 	};
 
 	if (initialized)
@@ -151,7 +124,6 @@ dtor(void)
 	CloseLibrary(ObjFWRTBase);
 }
 
-# ifdef OF_MORPHOS
 CONSTRUCTOR_P(ObjFWRT, 4000)
 {
 	ctor();
@@ -162,18 +134,5 @@ CONSTRUCTOR_P(ObjFWRT, 4000)
 DESTRUCTOR_P(ObjFWRT, 0)
 {
 	dtor();
-}
-# elif defined(OF_AMIGAOS_M68K)
-ADD2INIT(ctor, -5)
-ADD2EXIT(dtor, -5)
-# endif
-#endif
-
-#ifdef OF_AMIGAOS_M68K
-int
-__gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
-    void *ex, void *ctx)
-{
-	return __gnu_objc_personality_sj0(version, action, &exClass, ex, ctx);
 }
 #endif

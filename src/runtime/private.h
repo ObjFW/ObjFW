@@ -227,11 +227,7 @@ struct objc_linklib_context {
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
-# ifdef OF_MORPHOS
 	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
-# else
-	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
-# endif
 	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
 	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
 	    void *_Nonnull);
@@ -242,34 +238,12 @@ struct objc_linklib_context {
 	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
 	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
 	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
-# ifdef OF_MORPHOS
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
-# else
-	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
-	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
-	    void *_Nonnull);
-	void *(*_Nonnull __deregister_frame_info)(const void *_Nonnull);
-# endif
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	void (*_Nonnull exit)(int);
-# ifdef OF_AMIGAOS_M68K
-	int (*_Nonnull vsnprintf)(char *restrict _Nonnull str, size_t size,
-	    const char *_Nonnull restrict fmt, va_list args);
-# endif
 };
-#endif
-
-#ifdef OBJC_COMPILING_AMIGA_LIBRARY
-# if defined(__MORPHOS__)
-#  include <ppcinline/macros.h>
-#  define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
-# else
-#  define OBJC_M68K_ARG(type, name, reg)	\
-	register type reg_##name __asm__(#reg);	\
-	type name = reg_##name;
-# endif
 #endif
 
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)

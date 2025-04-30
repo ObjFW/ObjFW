@@ -2,29 +2,29 @@
   <include>amiga-library.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='OFInit' return-type='bool'>
-    <argument name='version' type='unsigned int' m68k-reg='d0'/>
-    <argument name='libc' type='struct OFLibC *_Nonnull' m68k-reg='a0'/>
-    <argument name='RTBase' type='struct Library *_Nonnull' m68k-reg='a1'/>
+    <argument name='version' type='unsigned int'/>
+    <argument name='libc' type='struct OFLibC *_Nonnull'/>
+    <argument name='RTBase' type='struct Library *_Nonnull'/>
   </function>
   <include>OFObject.h</include>
   <function name='OFAllocMemory' return-type='void *_Nullable'>
-    <argument name='count' type='size_t' m68k-reg='d0'/>
-    <argument name='size' type='size_t' m68k-reg='d1'/>
+    <argument name='count' type='size_t'/>
+    <argument name='size' type='size_t'/>
   </function>
   <function name='OFAllocZeroedMemory' return-type='void *_Nullable'>
-    <argument name='count' type='size_t' m68k-reg='d0'/>
-    <argument name='size' type='size_t' m68k-reg='d1'/>
+    <argument name='count' type='size_t'/>
+    <argument name='size' type='size_t'/>
   </function>
   <function name='OFResizeMemory' return-type='void *_Nullable'>
-    <argument name='pointer' type='void *_Nullable' m68k-reg='a0'/>
-    <argument name='count' type='size_t' m68k-reg='d0'/>
-    <argument name='size' type='size_t' m68k-reg='d1'/>
+    <argument name='pointer' type='void *_Nullable'/>
+    <argument name='count' type='size_t'/>
+    <argument name='size' type='size_t'/>
   </function>
   <function name='OFFreeMemory'>
-    <argument name='pointer' type='void *_Nullable' m68k-reg='a0'/>
+    <argument name='pointer' type='void *_Nullable'/>
   </function>
   <function name='OFHashInit'>
-    <argument name='hash' type='unsigned long *_Nonnull' m68k-reg='a0'/>
+    <argument name='hash' type='unsigned long *_Nonnull'/>
   </function>
   <function name='OFRandom16' return-type='uint16_t'/>
   <function name='OFRandom32' return-type='uint32_t'/>
@@ -38,230 +38,227 @@
   <function name='OFStdErrRef'
             return-type='OFStdIOStream *_Nonnull *_Nullable'/>
   <function name='OFLogV'>
-    <argument name='format' type='OFConstantString *' m68k-reg='a0'/>
-    <argument name='arguments' type='va_list' m68k-reg='a1'/>
+    <argument name='format' type='OFConstantString *'/>
+    <argument name='arguments' type='va_list'/>
   </function>
   <include>OFApplication.h</include>
   <function name='OFApplicationMain' return-type='int'>
-    <argument name='argc' type='int *_Nonnull' m68k-reg='a0'/>
-    <argument name='argv' type='char *_Nullable *_Nonnull *_Nonnull'
-              m68k-reg='a1'/>
-    <argument name='delegate' type='id <OFApplicationDelegate>' m68k-reg='a2'/>
+    <argument name='argc' type='int *_Nonnull'/>
+    <argument name='argv' type='char *_Nullable *_Nonnull *_Nonnull'/>
+    <argument name='delegate' type='id <OFApplicationDelegate>'/>
   </function>
   <include>OFBlock.h</include>
   <function name='_Block_copy' return-type='void *_Nullable'>
-    <argument name='block' type='const void *_Nullable' m68k-reg='a0'/>
+    <argument name='block' type='const void *_Nullable'/>
   </function>
   <function name='_Block_release'>
-    <argument name='block' type='const void *_Nullable' m68k-reg='a0'/>
+    <argument name='block' type='const void *_Nullable'/>
   </function>
   <include>OFDNSResourceRecord.h</include>
   <function name='OFDNSClassName' return-type='OFString *_Nonnull'>
-    <argument name='DNSClass' type='OFDNSClass' m68k-reg='d0'/>
+    <argument name='DNSClass' type='OFDNSClass'/>
   </function>
   <function name='OFDNSRecordTypeName' return-type='OFString *_Nonnull'>
-    <argument name='recordType' type='OFDNSRecordType' m68k-reg='d0'/>
+    <argument name='recordType' type='OFDNSRecordType'/>
   </function>
   <function name='OFDNSClassParseName' return-type='OFDNSClass'>
-    <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
+    <argument name='string' type='OFString *_Nonnull'/>
   </function>
   <function name='OFDNSRecordTypeParseName' return-type='OFDNSRecordType'>
-    <argument name='string' type='OFString *_Nonnull' m68k-reg='a0'/>
+    <argument name='string' type='OFString *_Nonnull'/>
   </function>
   <include>OFEmbeddedIRIHandler.h</include>
   <function name='OFRegisterEmbeddedFile'>
-    <argument name='name' type='OFString *_Nonnull' m68k-reg='a0'/>
-    <argument name='bytes' type='const uint8_t *_Nonnull' m68k-reg='a1'/>
-    <argument name='size' type='size_t' m68k-reg='d0'/>
+    <argument name='name' type='OFString *_Nonnull'/>
+    <argument name='bytes' type='const uint8_t *_Nonnull'/>
+    <argument name='size' type='size_t'/>
   </function>
   <include>OFHTTPRequest.h</include>
   <function name='OFHTTPRequestMethodString' return-type='OFString *_Nullable'>
-    <argument name='method' type='OFHTTPRequestMethod' m68k-reg='d0'/>
+    <argument name='method' type='OFHTTPRequestMethod'/>
   </function>
   <function name='OFHTTPRequestMethodParseString'
             return-type='OFHTTPRequestMethod'>
-    <argument name='string' type='OFString *' m68k-reg='a0'/>
+    <argument name='string' type='OFString *'/>
   </function>
   <include>OFHTTPResponse.h</include>
   <function name='OFHTTPStatusCodeString' return-type='OFString *_Nonnull'>
-    <argument name='code' type='short' m68k-reg='d0'/>
+    <argument name='code' type='short'/>
   </function>
   <include>OFList.h</include>
   <function name='OFListItemNext' return-type='OFListItem _Nullable'>
-    <argument name='listItem' type='OFListItem _Nonnull' m68k-reg='a0'/>
+    <argument name='listItem' type='OFListItem _Nonnull'/>
   </function>
   <function name='OFListItemPrevious' return-type='OFListItem _Nullable'>
-    <argument name='listItem' type='OFListItem _Nonnull' m68k-reg='a0'/>
+    <argument name='listItem' type='OFListItem _Nonnull'/>
   </function>
   <function name='OFListItemObject' return-type='id _Nonnull'>
-    <argument name='listItem' type='OFListItem _Nonnull' m68k-reg='a0'/>
+    <argument name='listItem' type='OFListItem _Nonnull'/>
   </function>
   <include>OFMethodSignature.h</include>
   <function name='OFSizeOfTypeEncoding' return-type='size_t'>
-    <argument name='type' type='const char *' m68k-reg='a0'/>
+    <argument name='type' type='const char *'/>
   </function>
   <function name='OFAlignmentOfTypeEncoding' return-type='size_t'>
-    <argument name='type' type='const char *' m68k-reg='a0'/>
+    <argument name='type' type='const char *'/>
   </function>
   <include>OFOnce.h</include>
   <function name='OFOnce'>
-    <argument name='control' type='OFOnceControl *_Nonnull' m68k-reg='a0'/>
-    <argument name='func' type='OFOnceFunction _Nonnull' m68k-reg='a1'/>
+    <argument name='control' type='OFOnceControl *_Nonnull'/>
+    <argument name='func' type='OFOnceFunction _Nonnull'/>
   </function>
   <include>OFPBKDF2.h</include>
   <function name='OFPBKDF2Wrapper'>
-    <argument name='parameters' type='const OFPBKDF2Parameters *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='parameters' type='const OFPBKDF2Parameters *_Nonnull'/>
   </function>
   <include>OFScrypt.h</include>
   <function name='OFScryptWrapper'>
-    <argument name='parameters' type='const OFScryptParameters *_Nonnull'
-              m68k-reg='a0'/>
+    <argument name='parameters' type='const OFScryptParameters *_Nonnull'/>
   </function>
   <!-- The following scrypt functions are only for tests. -->
   <function name='_OFSalsa20_8Core'>
-    <argument name='buffer' type='uint32_t *_Nonnull' m68k-reg='a0'/>
+    <argument name='buffer' type='uint32_t *_Nonnull'/>
   </function>
   <function name='_OFScryptBlockMix'>
-    <argument name='output' type='uint32_t *_Nonnull' m68k-reg='a0'/>
-    <argument name='input' type='const uint32_t *_Nonnull' m68k-reg='a1'/>
-    <argument name='blockSize' type='size_t' m68k-reg='d0'/>
+    <argument name='output' type='uint32_t *_Nonnull'/>
+    <argument name='input' type='const uint32_t *_Nonnull'/>
+    <argument name='blockSize' type='size_t'/>
   </function>
   <function name='_OFScryptROMix'>
-    <argument name='buffer' type='uint32_t *' m68k-reg='a0'/>
-    <argument name='blockSize' type='size_t' m68k-reg='d0'/>
-    <argument name='costFactor' type='size_t' m68k-reg='d1'/>
-    <argument name='tmp' type='uint32_t *' m68k-reg='a1'/>
+    <argument name='buffer' type='uint32_t *'/>
+    <argument name='blockSize' type='size_t'/>
+    <argument name='costFactor' type='size_t'/>
+    <argument name='tmp' type='uint32_t *'/>
   </function>
   <include>OFSocket.h</include>
   <function name='OFSocketAddressParseIP' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+    <argument name='IP' type='OFString *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressParseIPv4' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+    <argument name='IP' type='OFString *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressParseIPv6' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+    <argument name='IP' type='OFString *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressMakeUNIX' return-type='OFSocketAddress'>
-    <argument name='path' type='OFString *' m68k-reg='a0'/>
+    <argument name='path' type='OFString *'/>
   </function>
   <function name='OFSocketAddressMakeIPX' return-type='OFSocketAddress'>
-    <argument name='network' type='uint32_t' m68k-reg='d0'/>
-    <argument name='node' type='const unsigned char *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d1'/>
+    <argument name='network' type='uint32_t'/>
+    <argument name='node' type='const unsigned char *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressMakeAppleTalk' return-type='OFSocketAddress'>
-    <argument name='network' type='uint16_t' m68k-reg='d0'/>
-    <argument name='node' type='uint8_t' m68k-reg='d1'/>
-    <argument name='port' type='uint8_t' m68k-reg='d2'/>
+    <argument name='network' type='uint16_t'/>
+    <argument name='node' type='uint8_t'/>
+    <argument name='port' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressEqual' return-type='bool'>
-    <argument name='address1' type='const OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='address2' type='const OFSocketAddress *' m68k-reg='a1'/>
+    <argument name='address1' type='const OFSocketAddress *'/>
+    <argument name='address2' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressHash' return-type='unsigned long'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressString' return-type='OFString *_Nonnull'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetIPPort'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressIPPort' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressUNIXPath' return-type='OFString *'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetIPXNetwork'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='network' type='uint32_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='network' type='uint32_t'/>
   </function>
   <function name='OFSocketAddressIPXNetwork' return-type='uint32_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetIPXNode'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='node' type='const unsigned char *' m68k-reg='a1'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='node' type='const unsigned char *'/>
   </function>
   <function name='OFSocketAddressGetIPXNode'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='node' type='unsigned char *_Nonnull' m68k-reg='a1'/>
+    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='node' type='unsigned char *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetIPXPort'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='port' type='uint16_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressIPXPort' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkNetwork'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='network' type='uint16_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='network' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkNetwork' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkNode'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='node' type='uint8_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='node' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkNode' return-type='uint8_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkPort'>
-    <argument name='address' type='OFSocketAddress *' m68k-reg='a0'/>
-    <argument name='port' type='uint8_t' m68k-reg='d0'/>
+    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='port' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkPort' return-type='uint8_t'>
-    <argument name='address' type='const OFSocketAddress *' m68k-reg='a0'/>
+    <argument name='address' type='const OFSocketAddress *'/>
   </function>
   <include>OFTLSStream.h</include>
   <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
-    <argument name='errorCode' type='OFTLSStreamErrorCode' m68k-reg='d0'/>
+    <argument name='errorCode' type='OFTLSStreamErrorCode'/>
   </function>
   <function name='OFTLSStreamImplementationRef'
             return-type='Class _Nonnull *_Nullable'/>
   <!-- Only for tests. -->
   <include>OFStrPTime.h</include>
   <function name='_OFStrPTime' return-type='const char *_Nullable'>
-    <argument name='buffer' type='const char *' m68k-reg='a0'/>
-    <argument name='format' type='const char *' m68k-reg='a1'/>
-    <argument name='tm' type='struct tm *' m68k-reg='a2'/>
-    <argument name='tz' type='int16_t *_Nullable' m68k-reg='a3'/>
+    <argument name='buffer' type='const char *'/>
+    <argument name='format' type='const char *'/>
+    <argument name='tm' type='struct tm *'/>
+    <argument name='tz' type='int16_t *_Nullable'/>
   </function>
   <include>OFString.h</include>
   <function name='OFStringEncodingParseName' return-type='OFStringEncoding'>
-    <argument name='string' type='OFString *' m68k-reg='a0'/>
+    <argument name='string' type='OFString *'/>
   </function>
   <function name='OFStringEncodingName' return-type='OFString *_Nullable'>
-    <argument name='encoding' type='OFStringEncoding' m68k-reg='d0'/>
+    <argument name='encoding' type='OFStringEncoding'/>
   </function>
   <function name='OFUTF16StringLength' return-type='size_t'>
-    <argument name='string' type='const OFChar16 *' m68k-reg='a0'/>
+    <argument name='string' type='const OFChar16 *'/>
   </function>
   <function name='OFUTF32StringLength' return-type='size_t'>
-    <argument name='string' type='const OFChar32 *' m68k-reg='a0'/>
+    <argument name='string' type='const OFChar32 *'/>
   </function>
   <include>OFZIPArchiveEntry.h</include>
   <function name='OFZIPArchiveEntryVersionToString'
             return-type='OFString *_Nonnull'>
-    <argument name='version' type='uint16_t' m68k-reg='d0'/>
+    <argument name='version' type='uint16_t'/>
   </function>
   <function name='OFZIPArchiveEntryCompressionMethodName'
             return-type='OFString *_Nonnull'>
-    <argument name='compressionMethod' type='OFZIPArchiveEntryCompressionMethod'
-              m68k-reg='d0'/>
+    <argument name='compressionMethod'
+              type='OFZIPArchiveEntryCompressionMethod'/>
   </function>
   <function name='OFZIPArchiveEntryExtraFieldFind' return-type='size_t'>
-    <argument name='extraField' type='OFData *' m68k-reg='a0'/>
-    <argument name='tag' type='OFZIPArchiveEntryExtraFieldTag' m68k-reg='d0'/>
-    <argument name='size' type='uint16_t *' m68k-reg='a1'/>
+    <argument name='extraField' type='OFData *'/>
+    <argument name='tag' type='OFZIPArchiveEntryExtraFieldTag'/>
+    <argument name='size' type='uint16_t *'/>
   </function>
 </amiga-library>

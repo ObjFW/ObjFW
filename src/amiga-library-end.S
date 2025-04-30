@@ -19,16 +19,7 @@
 
 #include "config.h"
 
-#if defined(OF_MORPHOS)
 .section .eh_frame, "aw"
 	.long 0
 .section .ctors, "aw"
 	.long 0
-#else
-.section .list___EH_FRAME_BEGINS__, "aw"
-	.long 0
-.section .dlist___EH_FRAME_OBJECTS__, "aw"
-	.long 0
-.section .list___CTOR_LIST__, "aw"
-	.long 0
-#endif

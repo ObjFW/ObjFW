@@ -127,56 +127,8 @@
 			[_impl writeString: argName];
 		}
 
-		[_impl writeFormat:
-		    @")\n"
-		    @"{\n"
-		    @"#if defined(OF_AMIGAOS_M68K)\n"
-		    @"\tregister struct Library *a6 __asm__(\"a6\") = %@;\n"
-		    @"\t(void)a6;\n"
-		    @"\t", libBase];
-
-		if (![returnType isEqual: @"void"])
-			[_impl writeString: @"return "];
-
-		[_impl writeString: @"(("];
-		[_impl writeString: returnType];
-		if (![returnType hasSuffix: @"*"])
-			[_impl writeString: @" "];
-		[_impl writeString: @"(*)("];
-
-		argumentIndex = 0;
-		for (OFXMLElement *argument in arguments) {
-			OFString *argType =
-			    [argument attributeForName: @"type"].stringValue;
-			OFString *m68kReg = [argument
-			    attributeForName: @"m68k-reg"].stringValue;
-
-			if (argumentIndex++ > 0)
-				[_impl writeString: @", "];
-
-			[_impl writeString: argType];
-			if (![argType hasSuffix: @"*"])
-				[_impl writeString: @" "];
-			[_impl writeFormat: @"__asm__(\"%@\")", m68kReg];
-		}
-
-		[_impl writeFormat: @"))(((uintptr_t)%@) - %zu))(",
-				    libBase, 30 + funcIndex * 6];
-
-		argumentIndex = 0;
-		for (OFXMLElement *argument in
-		    [function elementsForName: @"argument"]) {
-			OFString *argName =
-			    [argument attributeForName: @"name"].stringValue;
-
-			if (argumentIndex++ > 0)
-				[_impl writeString: @", "];
-
-			[_impl writeString: argName];
-		}
-
-		[_impl writeFormat: @");\n"
-				    @"#elif defined(OF_MORPHOS)\n"
+		[_impl writeFormat: @")\n"
+				    @"{\n"
 				    @"\t__asm__ __volatile__ (\n"
 				    @"\t    \"mr\t\t%%%%r12, %%0\"\n"
 				    @"\t    :: \"r\"(%@) : \"r12\"\n"
@@ -220,8 +172,7 @@
 			[_impl writeString: argName];
 		}
 
-		[_impl writeString: @");\n"
-				    @"#endif\n"];
+		[_impl writeString: @");\n"];
 
 		if ([function attributeForName: @"noreturn"] != nil)
 			[_impl writeString: @"\n\tOF_UNREACHABLE\n"];

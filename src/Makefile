@@ -1,7 +1,7 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${LINKLIB} ${BRIDGE} ${TLS} hid test
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding ${LINKLIB}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
 CLEAN = amiga-end.amigalib.dep		\
 	amiga-end.amigalib.o		\
 	amiga-glue.amigalib.dep		\

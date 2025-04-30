@@ -33,19 +33,10 @@ glue___objc_exec_class:
 	lwz	%r13, 44(%r12)
 	b	__objc_exec_class
 
-#if !defined(OF_AMIGAOS_M68K)
 .globl glue___gnu_objc_personality_v0
 glue___gnu_objc_personality_v0:
 	lwz	%r13, 44(%r12)
 	b	__gnu_objc_personality_v0
-#endif
-
-#if defined(OF_AMIGAOS_M68K)
-.globl glue___gnu_objc_personality_sj0_wrapper
-glue___gnu_objc_personality_sj0_wrapper:
-	lwz	%r13, 44(%r12)
-	b	__gnu_objc_personality_sj0_wrapper
-#endif
 
 .globl glue_class_registerAlias_np
 glue_class_registerAlias_np:
