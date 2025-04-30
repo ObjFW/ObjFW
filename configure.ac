@@ -540,7 +540,7 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="\${OBJFW_LIB} \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"

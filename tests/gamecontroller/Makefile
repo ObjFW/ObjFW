@@ -126,7 +126,7 @@ CPPFLAGS += -I../../src			\
 	    -I../..			\
 	    -DOBJFWHID_LOCAL_INCLUDES
 LIBS := -L../../src/hid -L../../src/bridge -lobjfwhid ${HID_LIBS}	\
-	-L../../src -lobjfw						\
+	-L../../src -L../../src/linklib ${OBJFW_LIB}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}
 LD = ${OBJC}

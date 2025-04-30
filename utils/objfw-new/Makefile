@@ -18,7 +18,7 @@ CPPFLAGS += -I../../src					\
 	    -I../..
 OBJCFLAGS += ${PIE_CFLAGS}				\
 	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
-LIBS := -L../../src ${OBJFW_LIB}					\
+LIBS := -L../../src -L../../src/linklib ${OBJFW_LIB}			\
 	-L../../src/runtime -L../../src/runtime/linklib	${RUNTIME_LIBS}	\
 	${LIBS}
 LD = ${OBJC}

@@ -23,6 +23,7 @@ CPPFLAGS += -I../../src							\
 OBJCFLAGS += ${PIE_CFLAGS}				\
 	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 LIBS := -L../../src			\
+	-L../../src/linklib		\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\

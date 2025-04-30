@@ -292,7 +292,8 @@ OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 # cannot find ObjFW symbols. So the only solution is to list everything twice,
 # but hide it behind a variable because listing it twice causes a warning on
 # macOS.
-LIBS := -L../src/test		\
+LIBS := -L../src/linklib	\
+	-L../src/test		\
 	-lobjfwtest		\
 	${TESTS_LIBS}		\
 	${LIBS}			\
