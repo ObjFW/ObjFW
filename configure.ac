@@ -66,6 +66,7 @@ m68k-*-amigaos*)
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="$t -resident32 -nostartfiles -nodefaultlibs -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+		AC_SUBST(AMIGA_GLUE_AMIGALIB_O, "amiga-glue.amigalib.o")
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
@@ -102,6 +103,7 @@ powerpc-*-amigaos*)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		t="$t -laboxstubs -labox -lmath -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+		AC_SUBST(AMIGA_GLUE_AMIGALIB_O, "amiga-glue-morphos.amigalib.o")
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
@@ -520,7 +522,6 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
 	AC_SUBST(OBJFWHID_SHARED_LIB, '${LIB_PREFIX}objfwhid${LIB_SUFFIX}')
 
@@ -564,26 +565,25 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
-	TESTS_LIBS="-L../src -L../src/runtime $TESTS_LIBS"
+	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
-])
-AS_IF([test x"$enable_static" = x"yes"], [
+
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
-
+])
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
 	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
-	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -714,12 +714,17 @@ case "$objc_runtime" in
 	AC_CONFIG_FILES(src/runtime/Info.plist)
 
 	AS_IF([test x"$enable_shared" != x"no"], [
+		AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
+	])
+
+	AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFWRT_SHARED_LIB,
 			'${LIB_PREFIX}objfwrt${LIB_SUFFIX}')
 	])
 
 	AS_IF([test x"$enable_static" = x"yes"], [
 		AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
+		AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 	])
 
 	AS_IF([test x"$build_framework" = x"yes"], [
@@ -730,6 +735,7 @@ case "$objc_runtime" in
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
 		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
 	], [

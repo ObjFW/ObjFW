@@ -26,13 +26,14 @@ CPPFLAGS += -I../../src							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"
 OBJCFLAGS += ${PIE_CFLAGS}				\
 	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
-LIBS := -L../../src		\
-	-L../../src/runtime	\
-	-L../../src/tls		\
-	-L../../src/bridge	\
-	${OFHTTP_LIBS}		\
-	${OBJFW_LIB}		\
-	${RUNTIME_LIBS}		\
+LIBS := -L../../src			\
+	-L../../src/runtime		\
+	-L../../src/runtime/linklib	\
+	-L../../src/tls			\
+	-L../../src/bridge		\
+	${OFHTTP_LIBS}			\
+	${OBJFW_LIB}			\
+	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

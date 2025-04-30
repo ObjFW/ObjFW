@@ -23,19 +23,9 @@
 
 #import "amiga-glue.h"
 
-#ifdef OF_MORPHOS
-/* All __saveds functions in this file need to use the SysV ABI */
-__asm__ (
-    ".section .text\n"
-    ".align 2\n"
-    "__restore_r13:\n"
-    "	lwz	%r13, 44(%r12)\n"
-    "	blr\n"
-);
-#endif
 
 bool __saveds
-glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase)
+glue_OFInit(void)
 {
 	M68K_ARG(unsigned int, version, d0)
 	M68K_ARG(struct OFLibC *_Nonnull, libc, a0)
@@ -45,7 +35,7 @@ glue_OFInit PPC_PARAMS(unsigned int version, struct OFLibC *_Nonnull libc, struc
 }
 
 void *_Nullable __saveds
-glue_OFAllocMemory PPC_PARAMS(size_t count, size_t size)
+glue_OFAllocMemory(void)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
@@ -54,7 +44,7 @@ glue_OFAllocMemory PPC_PARAMS(size_t count, size_t size)
 }
 
 void *_Nullable __saveds
-glue_OFAllocZeroedMemory PPC_PARAMS(size_t count, size_t size)
+glue_OFAllocZeroedMemory(void)
 {
 	M68K_ARG(size_t, count, d0)
 	M68K_ARG(size_t, size, d1)
@@ -63,7 +53,7 @@ glue_OFAllocZeroedMemory PPC_PARAMS(size_t count, size_t size)
 }
 
 void *_Nullable __saveds
-glue_OFResizeMemory PPC_PARAMS(void *_Nullable pointer, size_t count, size_t size)
+glue_OFResizeMemory(void)
 {
 	M68K_ARG(void *_Nullable, pointer, a0)
 	M68K_ARG(size_t, count, d0)
@@ -73,7 +63,7 @@ glue_OFResizeMemory PPC_PARAMS(void *_Nullable pointer, size_t count, size_t siz
 }
 
 void __saveds
-glue_OFFreeMemory PPC_PARAMS(void *_Nullable pointer)
+glue_OFFreeMemory(void)
 {
 	M68K_ARG(void *_Nullable, pointer, a0)
 
@@ -81,7 +71,7 @@ glue_OFFreeMemory PPC_PARAMS(void *_Nullable pointer)
 }
 
 void __saveds
-glue_OFHashInit PPC_PARAMS(unsigned long *_Nonnull hash)
+glue_OFHashInit(void)
 {
 	M68K_ARG(unsigned long *_Nonnull, hash, a0)
 
@@ -131,7 +121,7 @@ glue_OFStdErrRef(void)
 }
 
 void __saveds
-glue_OFLogV PPC_PARAMS(OFConstantString *format, va_list arguments)
+glue_OFLogV(void)
 {
 	M68K_ARG(OFConstantString *, format, a0)
 	M68K_ARG(va_list, arguments, a1)
@@ -140,7 +130,7 @@ glue_OFLogV PPC_PARAMS(OFConstantString *format, va_list arguments)
 }
 
 int __saveds
-glue_OFApplicationMain PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
+glue_OFApplicationMain(void)
 {
 	M68K_ARG(int *_Nonnull, argc, a0)
 	M68K_ARG(char *_Nullable *_Nonnull *_Nonnull, argv, a1)
@@ -150,7 +140,7 @@ glue_OFApplicationMain PPC_PARAMS(int *_Nonnull argc, char *_Nullable *_Nonnull 
 }
 
 void *_Nullable __saveds
-glue__Block_copy PPC_PARAMS(const void *_Nullable block)
+glue__Block_copy(void)
 {
 	M68K_ARG(const void *_Nullable, block, a0)
 
@@ -158,7 +148,7 @@ glue__Block_copy PPC_PARAMS(const void *_Nullable block)
 }
 
 void __saveds
-glue__Block_release PPC_PARAMS(const void *_Nullable block)
+glue__Block_release(void)
 {
 	M68K_ARG(const void *_Nullable, block, a0)
 
@@ -166,7 +156,7 @@ glue__Block_release PPC_PARAMS(const void *_Nullable block)
 }
 
 OFString *_Nonnull __saveds
-glue_OFDNSClassName PPC_PARAMS(OFDNSClass DNSClass)
+glue_OFDNSClassName(void)
 {
 	M68K_ARG(OFDNSClass, DNSClass, d0)
 
@@ -174,7 +164,7 @@ glue_OFDNSClassName PPC_PARAMS(OFDNSClass DNSClass)
 }
 
 OFString *_Nonnull __saveds
-glue_OFDNSRecordTypeName PPC_PARAMS(OFDNSRecordType recordType)
+glue_OFDNSRecordTypeName(void)
 {
 	M68K_ARG(OFDNSRecordType, recordType, d0)
 
@@ -182,7 +172,7 @@ glue_OFDNSRecordTypeName PPC_PARAMS(OFDNSRecordType recordType)
 }
 
 OFDNSClass __saveds
-glue_OFDNSClassParseName PPC_PARAMS(OFString *_Nonnull string)
+glue_OFDNSClassParseName(void)
 {
 	M68K_ARG(OFString *_Nonnull, string, a0)
 
@@ -190,7 +180,7 @@ glue_OFDNSClassParseName PPC_PARAMS(OFString *_Nonnull string)
 }
 
 OFDNSRecordType __saveds
-glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string)
+glue_OFDNSRecordTypeParseName(void)
 {
 	M68K_ARG(OFString *_Nonnull, string, a0)
 
@@ -198,7 +188,7 @@ glue_OFDNSRecordTypeParseName PPC_PARAMS(OFString *_Nonnull string)
 }
 
 void __saveds
-glue_OFRegisterEmbeddedFile PPC_PARAMS(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, size_t size)
+glue_OFRegisterEmbeddedFile(void)
 {
 	M68K_ARG(OFString *_Nonnull, name, a0)
 	M68K_ARG(const uint8_t *_Nonnull, bytes, a1)
@@ -208,7 +198,7 @@ glue_OFRegisterEmbeddedFile PPC_PARAMS(OFString *_Nonnull name, const uint8_t *_
 }
 
 OFString *_Nullable __saveds
-glue_OFHTTPRequestMethodString PPC_PARAMS(OFHTTPRequestMethod method)
+glue_OFHTTPRequestMethodString(void)
 {
 	M68K_ARG(OFHTTPRequestMethod, method, d0)
 
@@ -216,7 +206,7 @@ glue_OFHTTPRequestMethodString PPC_PARAMS(OFHTTPRequestMethod method)
 }
 
 OFHTTPRequestMethod __saveds
-glue_OFHTTPRequestMethodParseString PPC_PARAMS(OFString *string)
+glue_OFHTTPRequestMethodParseString(void)
 {
 	M68K_ARG(OFString *, string, a0)
 
@@ -224,7 +214,7 @@ glue_OFHTTPRequestMethodParseString PPC_PARAMS(OFString *string)
 }
 
 OFString *_Nonnull __saveds
-glue_OFHTTPStatusCodeString PPC_PARAMS(short code)
+glue_OFHTTPStatusCodeString(void)
 {
 	M68K_ARG(short, code, d0)
 
@@ -232,7 +222,7 @@ glue_OFHTTPStatusCodeString PPC_PARAMS(short code)
 }
 
 OFListItem _Nullable __saveds
-glue_OFListItemNext PPC_PARAMS(OFListItem _Nonnull listItem)
+glue_OFListItemNext(void)
 {
 	M68K_ARG(OFListItem _Nonnull, listItem, a0)
 
@@ -240,7 +230,7 @@ glue_OFListItemNext PPC_PARAMS(OFListItem _Nonnull listItem)
 }
 
 OFListItem _Nullable __saveds
-glue_OFListItemPrevious PPC_PARAMS(OFListItem _Nonnull listItem)
+glue_OFListItemPrevious(void)
 {
 	M68K_ARG(OFListItem _Nonnull, listItem, a0)
 
@@ -248,7 +238,7 @@ glue_OFListItemPrevious PPC_PARAMS(OFListItem _Nonnull listItem)
 }
 
 id _Nonnull __saveds
-glue_OFListItemObject PPC_PARAMS(OFListItem _Nonnull listItem)
+glue_OFListItemObject(void)
 {
 	M68K_ARG(OFListItem _Nonnull, listItem, a0)
 
@@ -256,7 +246,7 @@ glue_OFListItemObject PPC_PARAMS(OFListItem _Nonnull listItem)
 }
 
 size_t __saveds
-glue_OFSizeOfTypeEncoding PPC_PARAMS(const char *type)
+glue_OFSizeOfTypeEncoding(void)
 {
 	M68K_ARG(const char *, type, a0)
 
@@ -264,7 +254,7 @@ glue_OFSizeOfTypeEncoding PPC_PARAMS(const char *type)
 }
 
 size_t __saveds
-glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type)
+glue_OFAlignmentOfTypeEncoding(void)
 {
 	M68K_ARG(const char *, type, a0)
 
@@ -272,7 +262,7 @@ glue_OFAlignmentOfTypeEncoding PPC_PARAMS(const char *type)
 }
 
 void __saveds
-glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
+glue_OFOnce(void)
 {
 	M68K_ARG(OFOnceControl *_Nonnull, control, a0)
 	M68K_ARG(OFOnceFunction _Nonnull, func, a1)
@@ -281,7 +271,7 @@ glue_OFOnce PPC_PARAMS(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull 
 }
 
 void __saveds
-glue_OFPBKDF2Wrapper PPC_PARAMS(const OFPBKDF2Parameters *_Nonnull parameters)
+glue_OFPBKDF2Wrapper(void)
 {
 	M68K_ARG(const OFPBKDF2Parameters *_Nonnull, parameters, a0)
 
@@ -289,7 +279,7 @@ glue_OFPBKDF2Wrapper PPC_PARAMS(const OFPBKDF2Parameters *_Nonnull parameters)
 }
 
 void __saveds
-glue_OFScryptWrapper PPC_PARAMS(const OFScryptParameters *_Nonnull parameters)
+glue_OFScryptWrapper(void)
 {
 	M68K_ARG(const OFScryptParameters *_Nonnull, parameters, a0)
 
@@ -297,7 +287,7 @@ glue_OFScryptWrapper PPC_PARAMS(const OFScryptParameters *_Nonnull parameters)
 }
 
 void __saveds
-glue__OFSalsa20_8Core PPC_PARAMS(uint32_t *_Nonnull buffer)
+glue__OFSalsa20_8Core(void)
 {
 	M68K_ARG(uint32_t *_Nonnull, buffer, a0)
 
@@ -305,7 +295,7 @@ glue__OFSalsa20_8Core PPC_PARAMS(uint32_t *_Nonnull buffer)
 }
 
 void __saveds
-glue__OFScryptBlockMix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize)
+glue__OFScryptBlockMix(void)
 {
 	M68K_ARG(uint32_t *_Nonnull, output, a0)
 	M68K_ARG(const uint32_t *_Nonnull, input, a1)
@@ -315,7 +305,7 @@ glue__OFScryptBlockMix PPC_PARAMS(uint32_t *_Nonnull output, const uint32_t *_No
 }
 
 void __saveds
-glue__OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp)
+glue__OFScryptROMix(void)
 {
 	M68K_ARG(uint32_t *, buffer, a0)
 	M68K_ARG(size_t, blockSize, d0)
@@ -326,7 +316,7 @@ glue__OFScryptROMix PPC_PARAMS(uint32_t *buffer, size_t blockSize, size_t costFa
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressParseIP PPC_PARAMS(OFString *IP, uint16_t port)
+glue_OFSocketAddressParseIP(void)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
@@ -335,7 +325,7 @@ glue_OFSocketAddressParseIP PPC_PARAMS(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressParseIPv4 PPC_PARAMS(OFString *IP, uint16_t port)
+glue_OFSocketAddressParseIPv4(void)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
@@ -344,7 +334,7 @@ glue_OFSocketAddressParseIPv4 PPC_PARAMS(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port)
+glue_OFSocketAddressParseIPv6(void)
 {
 	M68K_ARG(OFString *, IP, a0)
 	M68K_ARG(uint16_t, port, d0)
@@ -353,7 +343,7 @@ glue_OFSocketAddressParseIPv6 PPC_PARAMS(OFString *IP, uint16_t port)
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressMakeUNIX PPC_PARAMS(OFString *path)
+glue_OFSocketAddressMakeUNIX(void)
 {
 	M68K_ARG(OFString *, path, a0)
 
@@ -361,7 +351,7 @@ glue_OFSocketAddressMakeUNIX PPC_PARAMS(OFString *path)
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressMakeIPX PPC_PARAMS(uint32_t network, const unsigned char *node, uint16_t port)
+glue_OFSocketAddressMakeIPX(void)
 {
 	M68K_ARG(uint32_t, network, d0)
 	M68K_ARG(const unsigned char *, node, a0)
@@ -371,7 +361,7 @@ glue_OFSocketAddressMakeIPX PPC_PARAMS(uint32_t network, const unsigned char *no
 }
 
 OFSocketAddress __saveds
-glue_OFSocketAddressMakeAppleTalk PPC_PARAMS(uint16_t network, uint8_t node, uint8_t port)
+glue_OFSocketAddressMakeAppleTalk(void)
 {
 	M68K_ARG(uint16_t, network, d0)
 	M68K_ARG(uint8_t, node, d1)
@@ -381,7 +371,7 @@ glue_OFSocketAddressMakeAppleTalk PPC_PARAMS(uint16_t network, uint8_t node, uin
 }
 
 bool __saveds
-glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *address1, const OFSocketAddress *address2)
+glue_OFSocketAddressEqual(void)
 {
 	M68K_ARG(const OFSocketAddress *, address1, a0)
 	M68K_ARG(const OFSocketAddress *, address2, a1)
@@ -390,7 +380,7 @@ glue_OFSocketAddressEqual PPC_PARAMS(const OFSocketAddress *address1, const OFSo
 }
 
 unsigned long __saveds
-glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressHash(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -398,7 +388,7 @@ glue_OFSocketAddressHash PPC_PARAMS(const OFSocketAddress *address)
 }
 
 OFString *_Nonnull __saveds
-glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressString(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -406,7 +396,7 @@ glue_OFSocketAddressString PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetIPPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
+glue_OFSocketAddressSetIPPort(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint16_t, port, d0)
@@ -415,7 +405,7 @@ glue_OFSocketAddressSetIPPort PPC_PARAMS(OFSocketAddress *address, uint16_t port
 }
 
 uint16_t __saveds
-glue_OFSocketAddressIPPort PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressIPPort(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -423,7 +413,7 @@ glue_OFSocketAddressIPPort PPC_PARAMS(const OFSocketAddress *address)
 }
 
 OFString * __saveds
-glue_OFSocketAddressUNIXPath PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressUNIXPath(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -431,7 +421,7 @@ glue_OFSocketAddressUNIXPath PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *address, uint32_t network)
+glue_OFSocketAddressSetIPXNetwork(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint32_t, network, d0)
@@ -440,7 +430,7 @@ glue_OFSocketAddressSetIPXNetwork PPC_PARAMS(OFSocketAddress *address, uint32_t 
 }
 
 uint32_t __saveds
-glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressIPXNetwork(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -448,7 +438,7 @@ glue_OFSocketAddressIPXNetwork PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *address, const unsigned char *node)
+glue_OFSocketAddressSetIPXNode(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(const unsigned char *, node, a1)
@@ -457,7 +447,7 @@ glue_OFSocketAddressSetIPXNode PPC_PARAMS(OFSocketAddress *address, const unsign
 }
 
 void __saveds
-glue_OFSocketAddressGetIPXNode PPC_PARAMS(const OFSocketAddress *address, unsigned char *_Nonnull node)
+glue_OFSocketAddressGetIPXNode(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 	M68K_ARG(unsigned char *_Nonnull, node, a1)
@@ -466,7 +456,7 @@ glue_OFSocketAddressGetIPXNode PPC_PARAMS(const OFSocketAddress *address, unsign
 }
 
 void __saveds
-glue_OFSocketAddressSetIPXPort PPC_PARAMS(OFSocketAddress *address, uint16_t port)
+glue_OFSocketAddressSetIPXPort(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint16_t, port, d0)
@@ -475,7 +465,7 @@ glue_OFSocketAddressSetIPXPort PPC_PARAMS(OFSocketAddress *address, uint16_t por
 }
 
 uint16_t __saveds
-glue_OFSocketAddressIPXPort PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressIPXPort(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -483,7 +473,7 @@ glue_OFSocketAddressIPXPort PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetAppleTalkNetwork PPC_PARAMS(OFSocketAddress *address, uint16_t network)
+glue_OFSocketAddressSetAppleTalkNetwork(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint16_t, network, d0)
@@ -492,7 +482,7 @@ glue_OFSocketAddressSetAppleTalkNetwork PPC_PARAMS(OFSocketAddress *address, uin
 }
 
 uint16_t __saveds
-glue_OFSocketAddressAppleTalkNetwork PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressAppleTalkNetwork(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -500,7 +490,7 @@ glue_OFSocketAddressAppleTalkNetwork PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetAppleTalkNode PPC_PARAMS(OFSocketAddress *address, uint8_t node)
+glue_OFSocketAddressSetAppleTalkNode(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint8_t, node, d0)
@@ -509,7 +499,7 @@ glue_OFSocketAddressSetAppleTalkNode PPC_PARAMS(OFSocketAddress *address, uint8_
 }
 
 uint8_t __saveds
-glue_OFSocketAddressAppleTalkNode PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressAppleTalkNode(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -517,7 +507,7 @@ glue_OFSocketAddressAppleTalkNode PPC_PARAMS(const OFSocketAddress *address)
 }
 
 void __saveds
-glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_t port)
+glue_OFSocketAddressSetAppleTalkPort(void)
 {
 	M68K_ARG(OFSocketAddress *, address, a0)
 	M68K_ARG(uint8_t, port, d0)
@@ -526,7 +516,7 @@ glue_OFSocketAddressSetAppleTalkPort PPC_PARAMS(OFSocketAddress *address, uint8_
 }
 
 uint8_t __saveds
-glue_OFSocketAddressAppleTalkPort PPC_PARAMS(const OFSocketAddress *address)
+glue_OFSocketAddressAppleTalkPort(void)
 {
 	M68K_ARG(const OFSocketAddress *, address, a0)
 
@@ -534,7 +524,7 @@ glue_OFSocketAddressAppleTalkPort PPC_PARAMS(const OFSocketAddress *address)
 }
 
 OFString * __saveds
-glue_OFTLSStreamErrorCodeDescription PPC_PARAMS(OFTLSStreamErrorCode errorCode)
+glue_OFTLSStreamErrorCodeDescription(void)
 {
 	M68K_ARG(OFTLSStreamErrorCode, errorCode, d0)
 
@@ -548,7 +538,7 @@ glue_OFTLSStreamImplementationRef(void)
 }
 
 const char *_Nullable __saveds
-glue__OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz)
+glue__OFStrPTime(void)
 {
 	M68K_ARG(const char *, buffer, a0)
 	M68K_ARG(const char *, format, a1)
@@ -559,7 +549,7 @@ glue__OFStrPTime PPC_PARAMS(const char *buffer, const char *format, struct tm *t
 }
 
 OFStringEncoding __saveds
-glue_OFStringEncodingParseName PPC_PARAMS(OFString *string)
+glue_OFStringEncodingParseName(void)
 {
 	M68K_ARG(OFString *, string, a0)
 
@@ -567,7 +557,7 @@ glue_OFStringEncodingParseName PPC_PARAMS(OFString *string)
 }
 
 OFString *_Nullable __saveds
-glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding)
+glue_OFStringEncodingName(void)
 {
 	M68K_ARG(OFStringEncoding, encoding, d0)
 
@@ -575,7 +565,7 @@ glue_OFStringEncodingName PPC_PARAMS(OFStringEncoding encoding)
 }
 
 size_t __saveds
-glue_OFUTF16StringLength PPC_PARAMS(const OFChar16 *string)
+glue_OFUTF16StringLength(void)
 {
 	M68K_ARG(const OFChar16 *, string, a0)
 
@@ -583,7 +573,7 @@ glue_OFUTF16StringLength PPC_PARAMS(const OFChar16 *string)
 }
 
 size_t __saveds
-glue_OFUTF32StringLength PPC_PARAMS(const OFChar32 *string)
+glue_OFUTF32StringLength(void)
 {
 	M68K_ARG(const OFChar32 *, string, a0)
 
@@ -591,7 +581,7 @@ glue_OFUTF32StringLength PPC_PARAMS(const OFChar32 *string)
 }
 
 OFString *_Nonnull __saveds
-glue_OFZIPArchiveEntryVersionToString PPC_PARAMS(uint16_t version)
+glue_OFZIPArchiveEntryVersionToString(void)
 {
 	M68K_ARG(uint16_t, version, d0)
 
@@ -599,7 +589,7 @@ glue_OFZIPArchiveEntryVersionToString PPC_PARAMS(uint16_t version)
 }
 
 OFString *_Nonnull __saveds
-glue_OFZIPArchiveEntryCompressionMethodName PPC_PARAMS(OFZIPArchiveEntryCompressionMethod compressionMethod)
+glue_OFZIPArchiveEntryCompressionMethodName(void)
 {
 	M68K_ARG(OFZIPArchiveEntryCompressionMethod, compressionMethod, d0)
 
@@ -607,7 +597,7 @@ glue_OFZIPArchiveEntryCompressionMethodName PPC_PARAMS(OFZIPArchiveEntryCompress
 }
 
 size_t __saveds
-glue_OFZIPArchiveEntryExtraFieldFind PPC_PARAMS(OFData *extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size)
+glue_OFZIPArchiveEntryExtraFieldFind(void)
 {
 	M68K_ARG(OFData *, extraField, a0)
 	M68K_ARG(OFZIPArchiveEntryExtraFieldTag, tag, d0)

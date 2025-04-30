@@ -3,11 +3,31 @@
   <include>private.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='objc_init' return-type='bool'>
-    <argument name='version' type='unsigned int' m68k-reg='d0'/>
-    <argument name='libC' type='struct objc_libC *' m68k-reg='a0'/>
+    <argument name='ctx' type='struct objc_linklib_context *' m68k-reg='a0'/>
   </function>
+  <!-- Used by the compiler, but can be called manually. -->
   <function name='__objc_exec_class'>
-    <argument name='module' type='struct _objc_module *_Nonnull' m68k-reg='a0'/>
+    <argument name='module' type='struct objc_module *_Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='__gnu_objc_personality_v0' return-type='int'
+            condition='!defined(OF_AMIGAOS_M68K)'>
+    <argument name='version' type='int'/>
+    <argument name='actions' type='int'/>
+    <argument name='exClass' type='uint64_t'/>
+    <argument name='ex' type='void *_Nonnull'/>
+    <argument name='ctx' type='void *_Nonnull'/>
+  </function>
+  <function name='__gnu_objc_personality_sj0_wrapper' return-type='int'
+            condition='defined(OF_AMIGAOS_M68K)'>
+    <argument name='version' type='int' m68k-reg='d0'/>
+    <argument name='actions' type='int' m68k-reg='d1'/>
+    <argument name='exClass' type='uint64_t *_Nonnull' m68k-reg='a0'/>
+    <argument name='ex' type='void *_Nonnull' m68k-reg='a1'/>
+    <argument name='ctx' type='void *_Nonnull' m68k-reg='a2'/>
+  </function>
+  <function name='class_registerAlias_np'>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a0'/>
+    <argument name='name' type='const char *_Nonnull' m68k-reg='a1'/>
   </function>
   <function name='objc_msg_lookup' return-type='IMP _Nonnull'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
@@ -80,13 +100,6 @@
   <function name='objc_enumerationMutation'>
     <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
   </function>
-  <function name='__gnu_objc_personality' return-type='int'>
-    <argument name='version' type='int' m68k-reg='d0'/>
-    <argument name='actions' type='int' m68k-reg='d1'/>
-    <argument name='exClass' type='uint64_t *_Nonnull' m68k-reg='d2'/>
-    <argument name='ex' type='void *_Nonnull' m68k-reg='a0'/>
-    <argument name='ctx' type='void *_Nonnull' m68k-reg='a1'/>
-  </function>
   <function name='objc_retain' return-type='id _Nullable'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
   </function>
@@ -141,6 +154,7 @@
     <argument name='dest' type='id _Nullable *_Nonnull' m68k-reg='a0'/>
     <argument name='src' type='id _Nullable *_Nonnull' m68k-reg='a1'/>
   </function>
+  <!-- Public API -->
   <function name='sel_registerName' return-type='SEL _Nonnull'>
     <argument name='name' type='const char *_Nonnull' m68k-reg='a0'/>
   </function>
@@ -157,7 +171,7 @@
     <argument name='extraBytes' type='size_t' m68k-reg='d0'/>
   </function>
   <function name='objc_registerClassPair'>
-    <argument name='class' type='Class _Nonnull' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a0'/>
   </function>
   <function name='objc_getClassList' return-type='unsigned int'>
     <argument name='buffer' type='Class _Nonnull *_Nullable' m68k-reg='a0'/>
@@ -167,46 +181,46 @@
     <argument name='length' type='unsigned int *_Nullable' m68k-reg='a0'/>
   </function>
   <function name='class_isMetaClass' return-type='bool'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
   </function>
   <function name='class_getName' return-type='const char *_Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
   </function>
   <function name='class_getSuperclass' return-type='Class _Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
   </function>
   <function name='class_getInstanceSize' return-type='unsigned long'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
   </function>
   <function name='class_respondsToSelector' return-type='bool'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
   </function>
   <function name='class_conformsToProtocol' return-type='bool'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='p' type='Protocol *_Nonnull' m68k-reg='a1'/>
   </function>
   <function name='class_getMethodImplementation' return-type='IMP _Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
   </function>
   <function name='class_getMethodImplementation_stret'
             return-type='IMP _Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
   </function>
   <function name='class_getInstanceMethod' return-type='Method _Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
   </function>
   <function name='class_addMethod' return-type='bool'>
-    <argument name='class' type='Class _Nonnull' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
     <argument name='implementation' type='IMP _Nonnull' m68k-reg='a2'/>
     <argument name='typeEncoding' type='const char *_Nullable' m68k-reg='a3'/>
   </function>
   <function name='class_replaceMethod' return-type='IMP _Nullable'>
-    <argument name='class' type='Class _Nonnull' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a0'/>
     <argument name='selector' type='SEL _Nonnull' m68k-reg='a1'/>
     <argument name='implementation' type='IMP _Nonnull' m68k-reg='a2'/>
     <argument name='typeEncoding' type='const char *_Nullable' m68k-reg='a3'/>
@@ -216,7 +230,7 @@
   </function>
   <function name='object_setClass' return-type='Class _Nullable'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
-    <argument name='class' type='Class _Nonnull' m68k-reg='a1'/>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a1'/>
   </function>
   <function name='object_getClassName' return-type='const char *_Nullable'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
@@ -232,6 +246,43 @@
     <argument name='protocol1' type='Protocol *_Nonnull' m68k-reg='a0'/>
     <argument name='protocol2' type='Protocol *_Nonnull' m68k-reg='a1'/>
   </function>
+  <function name='class_copyMethodList'
+            return-type='Method _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
+  </function>
+  <function name='method_getName' return-type='SEL _Nonnull'>
+    <argument name='method' type='Method _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='method_getTypeEncoding' return-type='const char *_Nullable'>
+    <argument name='method' type='Method _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='class_copyIvarList' return-type='Ivar _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
+  </function>
+  <function name='ivar_getName' return-type='const char *_Nonnull'>
+    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='ivar_getTypeEncoding' return-type='const char *_Nonnull'>
+    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='ivar_getOffset' return-type='ptrdiff_t'>
+    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='class_copyPropertyList'
+            return-type='objc_property_t _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
+  </function>
+  <function name='property_getName' return-type='const char *_Nonnull'>
+    <argument name='property' type='objc_property_t _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='property_copyAttributeValue' return-type='char *_Nullable'>
+    <argument name='property' type='objc_property_t _Nonnull' m68k-reg='a0'/>
+    <argument name='name' type='const char *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <function name='objc_deinit'/>
   <function name='objc_setUncaughtExceptionHandler'
             return-type='_Nullable objc_uncaught_exception_handler'>
     <argument name='handler' type='objc_uncaught_exception_handler _Nullable'
@@ -246,91 +297,41 @@
               m68k-reg='a0'/>
   </function>
   <function name='objc_constructInstance' return-type='id _Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
     <argument name='bytes' type='void *_Nullable' m68k-reg='a1'/>
-  </function>
-  <function name='objc_deinit'/>
-  <function name='class_copyIvarList' return-type='Ivar _Nullable *_Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
-    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
-  </function>
-  <function name='ivar_getName' return-type='const char *_Nonnull'>
-    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='ivar_getTypeEncoding' return-type='const char *_Nonnull'>
-    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='ivar_getOffset' return-type='ptrdiff_t'>
-    <argument name='ivar' type='Ivar _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='class_copyMethodList'
-            return-type='Method _Nullable *_Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
-    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
-  </function>
-  <function name='method_getName' return-type='SEL _Nonnull'>
-    <argument name='method' type='Method _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='method_getTypeEncoding' return-type='const char *_Nullable'>
-    <argument name='method' type='Method _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='class_copyPropertyList'
-            return-type='objc_property_t _Nullable *_Nullable'>
-    <argument name='class' type='Class _Nullable' m68k-reg='a0'/>
-    <argument name='outCount' type='unsigned int *_Nullable' m68k-reg='a1'/>
-  </function>
-  <function name='property_getName' return-type='const char *_Nonnull'>
-    <argument name='property' type='objc_property_t _Nonnull' m68k-reg='a0'/>
-  </function>
-  <function name='property_copyAttributeValue' return-type='char *_Nullable'>
-    <argument name='property' type='objc_property_t _Nonnull' m68k-reg='a0'/>
-    <argument name='name' type='const char *_Nonnull' m68k-reg='a1'/>
   </function>
   <function name='objc_destructInstance' return-type='void *_Nullable'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
   </function>
-  <function name='objc_autoreleasePoolPush'
-            return-type='void *_Null_unspecified'>
+  <function name='class_createInstance' return-type='id _Nullable'>
+    <argument name='class_' type='Class _Nullable' m68k-reg='a0'/>
+    <argument name='extraBytes' type='size_t' m68k-reg='d0'/>
   </function>
+  <function name='object_dispose' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable' m68k-reg='a0'/>
+  </function>
+  <function name='_objc_rootRetain' return-type='id _Nonnull'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>>
+  </function>
+  <function name='_objc_rootRetainCount' return-type='unsigned int'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='_objc_rootRelease'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
+  </function>
+  <function name='objc_autoreleasePoolPush'
+            return-type='void *_Null_unspecified'/>
   <function name='objc_autoreleasePoolPop'>
     <argument name='pool' type='void *_Null_unspecified' m68k-reg='a0'/>
   </function>
   <function name='_objc_rootAutorelease' return-type='id _Nullable'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
   </function>
-  <!-- The following functions are private! Don't use! -->
-  <function name='objc_hashtable_new'
-            return-type='struct objc_hashtable *_Nonnull'>
-    <argument name='hash' type='objc_hashtable_hash_func' m68k-reg='a0'/>
-    <argument name='equal' type='objc_hashtable_equal_func' m68k-reg='a1'/>
-    <argument name='size' type='uint32_t' m68k-reg='d0'/>
-  </function>
-  <function name='objc_hashtable_set'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'
-              m68k-reg='a0'/>
-    <argument name='key' type='const void *_Nonnull' m68k-reg='a1'/>
-    <argument name='object' type='const void *_Nonnull' m68k-reg='a2'/>
-  </function>
-  <function name='objc_hashtable_get' return-type='void *_Nullable'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'
-              m68k-reg='a0'/>
-    <argument name='key' type='const void *_Nonnull' m68k-reg='a1'/>
-  </function>
-  <function name='objc_hashtable_delete'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'
-              m68k-reg='a0'/>
-    <argument name='key' type='const void *_Nonnull' m68k-reg='a1'/>
-  </function>
-  <function name='objc_hashtable_free'>
-    <argument name='table' type='struct objc_hashtable *_Nonnull'
-              m68k-reg='a0'/>
-  </function>
-  <!-- Public functions again -->
   <function name='objc_setTaggedPointerSecret'>
     <argument name='secret' type='uintptr_t' m68k-reg='d0'/>
   </function>
   <function name='objc_registerTaggedPointerClass' return-type='int'>
-    <argument name='class' type='Class _Nonnull' m68k-reg='a0'/>
+    <argument name='class_' type='Class _Nonnull' m68k-reg='a0'/>
   </function>
   <function name='object_isTaggedPointer' return-type='bool'>
     <argument name='object' type='id _Nullable' m68k-reg='a0'/>
@@ -339,7 +340,20 @@
     <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
   </function>
   <function name='objc_createTaggedPointer' return-type='id _Nullable'>
-    <argument name='class' type='int' m68k-reg='d0'/>
-    <argument name='value' type='uintptr_t' m68k-reg='d1'/>
+    <argument name='class_' type='int' m68k-reg='a0'/>
+    <argument name='value' type='uintptr_t' m68k-reg='d0'/>
+  </function>
+  <function name='objc_setAssociatedObject'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
+    <argument name='key' type='const void *_Nonnull' m68k-reg='a1'/>
+    <argument name='value' type='id _Nullable' m68k-reg='a2'/>
+    <argument name='policy' type='objc_associationPolicy' m68k-reg='d0'/>
+  </function>
+  <function name='objc_getAssociatedObject' return-type='id _Nullable'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
+    <argument name='key' type='const void *_Nonnull' m68k-reg='a1'/>
+  </function>
+  <function name='objc_removeAssociatedObjects'>
+    <argument name='object' type='id _Nonnull' m68k-reg='a0'/>
   </function>
 </amiga-library>

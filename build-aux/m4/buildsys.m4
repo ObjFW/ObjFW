@@ -213,9 +213,11 @@ AC_DEFUN([BUILDSYS_STACK_PROTECTOR], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 
 	case "$host" in
-	m68k-*-amigaos*)
-		dnl Stack Protector test compiles and links, but linking the
-		dnl actual code fails.
+	m68k-*-amigaos* | *-*-morphos*)
+		dnl Stack Protector test compiles and links, but is not
+		dnl actually supported.
+		AC_MSG_CHECKING(for Stack Protector)
+		AC_MSG_RESULT(no)
 		;;
 	*)
 		_BUILDSYS_STACK_PROTECTOR_REAL

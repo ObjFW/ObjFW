@@ -271,7 +271,7 @@ LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 		 encodings/encodings.lib.a	\
 		 forwarding/forwarding.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+AMIGA_LIB_OBJS_EXTRA = ${AMIGA_GLUE_AMIGALIB_O}		\
 		       exceptions/exceptions.amigalib.a	\
 		       encodings/encodings.amigalib.a	\
 		       forwarding/forwarding.amigalib.a	\

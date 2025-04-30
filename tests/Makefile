@@ -173,6 +173,9 @@ run:
 	if test -f ../src/${OBJFW_AMIGA_LIB}; then \
 		cp ../src/${OBJFW_AMIGA_LIB} ${OBJFW_AMIGA_LIB}; \
 	fi
+	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
+		cp ../src/runtime/${OBJFWRT_AMIGA_LIB} ${OBJFWRT_AMIGA_LIB}; \
+	fi
 	if test -f ../src/hid/libobjfwhid.so; then \
 		${LN_S} ../src/hid/libobjfwhid.so \
 		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \

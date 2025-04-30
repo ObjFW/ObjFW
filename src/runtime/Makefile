@@ -46,7 +46,7 @@ includesubdir = ObjFWRT
 OBJS_EXTRA = lookup-asm/lookup-asm.a
 LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
-AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+AMIGA_LIB_OBJS_EXTRA = ${AMIGA_GLUE_AMIGALIB_O}		\
 		       lookup-asm/lookup-asm.amigalib.a	\
 		       amiga-end.amigalib.o
 
@@ -56,7 +56,9 @@ CPPFLAGS += -I. -I.. -I../..					\
 	    -DOBJC_COMPILING_RUNTIME				\
 	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
 	    -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}		\
-	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}
+	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}		\
+	    -DOBJFWRT_LIB_PATCH=${OBJFWRT_LIB_PATCH}
+AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}

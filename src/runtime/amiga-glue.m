@@ -23,36 +23,62 @@
 
 #import "amiga-glue.h"
 
-#ifdef OF_MORPHOS
-/* All __saveds functions in this file need to use the SysV ABI */
-__asm__ (
-    ".section .text\n"
-    ".align 2\n"
-    "__restore_r13:\n"
-    "	lwz	%r13, 44(%r12)\n"
-    "	blr\n"
-);
-#endif
 
 bool __saveds
-glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libC *libC)
+glue_objc_init(void)
 {
-	M68K_ARG(unsigned int, version, d0)
-	M68K_ARG(struct objc_libC *, libC, a0)
+	M68K_ARG(struct objc_linklib_context *, ctx, a0)
 
-	return objc_init(version, libC);
+	return objc_init(ctx);
 }
 
 void __saveds
-glue___objc_exec_class PPC_PARAMS(struct _objc_module *_Nonnull module)
+glue___objc_exec_class(void)
 {
-	M68K_ARG(struct _objc_module *_Nonnull, module, a0)
+	M68K_ARG(struct objc_module *_Nonnull, module, a0)
 
 	__objc_exec_class(module);
 }
 
+#if !defined(OF_AMIGAOS_M68K)
+int __saveds
+glue___gnu_objc_personality_v0(void)
+{
+	M68K_ARG(int, version, (nil))
+	M68K_ARG(int, actions, (nil))
+	M68K_ARG(uint64_t, exClass, (nil))
+	M68K_ARG(void *_Nonnull, ex, (nil))
+	M68K_ARG(void *_Nonnull, ctx, (nil))
+
+	return __gnu_objc_personality_v0(version, actions, exClass, ex, ctx);
+}
+#endif
+
+#if defined(OF_AMIGAOS_M68K)
+int __saveds
+glue___gnu_objc_personality_sj0_wrapper(void)
+{
+	M68K_ARG(int, version, d0)
+	M68K_ARG(int, actions, d1)
+	M68K_ARG(uint64_t *_Nonnull, exClass, a0)
+	M68K_ARG(void *_Nonnull, ex, a1)
+	M68K_ARG(void *_Nonnull, ctx, a2)
+
+	return __gnu_objc_personality_sj0_wrapper(version, actions, exClass, ex, ctx);
+}
+#endif
+
+void __saveds
+glue_class_registerAlias_np(void)
+{
+	M68K_ARG(Class _Nonnull, class_, a0)
+	M68K_ARG(const char *_Nonnull, name, a1)
+
+	class_registerAlias_np(class_, name);
+}
+
 IMP _Nonnull __saveds
-glue_objc_msg_lookup PPC_PARAMS(id _Nullable object, SEL _Nonnull selector)
+glue_objc_msg_lookup(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
@@ -61,7 +87,7 @@ glue_objc_msg_lookup PPC_PARAMS(id _Nullable object, SEL _Nonnull selector)
 }
 
 IMP _Nonnull __saveds
-glue_objc_msg_lookup_stret PPC_PARAMS(id _Nullable object, SEL _Nonnull selector)
+glue_objc_msg_lookup_stret(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
@@ -70,7 +96,7 @@ glue_objc_msg_lookup_stret PPC_PARAMS(id _Nullable object, SEL _Nonnull selector
 }
 
 IMP _Nonnull __saveds
-glue_objc_msg_lookup_super PPC_PARAMS(struct objc_super *_Nonnull super, SEL _Nonnull selector)
+glue_objc_msg_lookup_super(void)
 {
 	M68K_ARG(struct objc_super *_Nonnull, super, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
@@ -79,7 +105,7 @@ glue_objc_msg_lookup_super PPC_PARAMS(struct objc_super *_Nonnull super, SEL _No
 }
 
 IMP _Nonnull __saveds
-glue_objc_msg_lookup_super_stret PPC_PARAMS(struct objc_super *_Nonnull super, SEL _Nonnull selector)
+glue_objc_msg_lookup_super_stret(void)
 {
 	M68K_ARG(struct objc_super *_Nonnull, super, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
@@ -88,7 +114,7 @@ glue_objc_msg_lookup_super_stret PPC_PARAMS(struct objc_super *_Nonnull super, S
 }
 
 Class _Nullable __saveds
-glue_objc_lookUpClass PPC_PARAMS(const char *_Nonnull name)
+glue_objc_lookUpClass(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -96,7 +122,7 @@ glue_objc_lookUpClass PPC_PARAMS(const char *_Nonnull name)
 }
 
 Class _Nullable __saveds
-glue_objc_getClass PPC_PARAMS(const char *_Nonnull name)
+glue_objc_getClass(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -104,7 +130,7 @@ glue_objc_getClass PPC_PARAMS(const char *_Nonnull name)
 }
 
 Class _Nonnull __saveds
-glue_objc_getRequiredClass PPC_PARAMS(const char *_Nonnull name)
+glue_objc_getRequiredClass(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -112,7 +138,7 @@ glue_objc_getRequiredClass PPC_PARAMS(const char *_Nonnull name)
 }
 
 Class _Nullable __saveds
-glue_objc_lookup_class PPC_PARAMS(const char *_Nonnull name)
+glue_objc_lookup_class(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -120,7 +146,7 @@ glue_objc_lookup_class PPC_PARAMS(const char *_Nonnull name)
 }
 
 Class _Nonnull __saveds
-glue_objc_get_class PPC_PARAMS(const char *_Nonnull name)
+glue_objc_get_class(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -128,7 +154,7 @@ glue_objc_get_class PPC_PARAMS(const char *_Nonnull name)
 }
 
 void __saveds
-glue_objc_exception_throw PPC_PARAMS(id _Nonnull object)
+glue_objc_exception_throw(void)
 {
 	M68K_ARG(id _Nonnull, object, a0)
 
@@ -136,7 +162,7 @@ glue_objc_exception_throw PPC_PARAMS(id _Nonnull object)
 }
 
 int __saveds
-glue_objc_sync_enter PPC_PARAMS(id _Nullable object)
+glue_objc_sync_enter(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -144,7 +170,7 @@ glue_objc_sync_enter PPC_PARAMS(id _Nullable object)
 }
 
 int __saveds
-glue_objc_sync_exit PPC_PARAMS(id _Nullable object)
+glue_objc_sync_exit(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -152,7 +178,7 @@ glue_objc_sync_exit PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_getProperty PPC_PARAMS(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool atomic)
+glue_objc_getProperty(void)
 {
 	M68K_ARG(id _Nonnull, self, a0)
 	M68K_ARG(SEL _Nonnull, _cmd, a1)
@@ -163,7 +189,7 @@ glue_objc_getProperty PPC_PARAMS(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t 
 }
 
 void __saveds
-glue_objc_setProperty PPC_PARAMS(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Nullable value, bool atomic, signed char copy)
+glue_objc_setProperty(void)
 {
 	M68K_ARG(id _Nonnull, self, a0)
 	M68K_ARG(SEL _Nonnull, _cmd, a1)
@@ -176,7 +202,7 @@ glue_objc_setProperty PPC_PARAMS(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t 
 }
 
 void __saveds
-glue_objc_getPropertyStruct PPC_PARAMS(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
+glue_objc_getPropertyStruct(void)
 {
 	M68K_ARG(void *_Nonnull, dest, a0)
 	M68K_ARG(const void *_Nonnull, src, a1)
@@ -188,7 +214,7 @@ glue_objc_getPropertyStruct PPC_PARAMS(void *_Nonnull dest, const void *_Nonnull
 }
 
 void __saveds
-glue_objc_setPropertyStruct PPC_PARAMS(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
+glue_objc_setPropertyStruct(void)
 {
 	M68K_ARG(void *_Nonnull, dest, a0)
 	M68K_ARG(const void *_Nonnull, src, a1)
@@ -200,27 +226,15 @@ glue_objc_setPropertyStruct PPC_PARAMS(void *_Nonnull dest, const void *_Nonnull
 }
 
 void __saveds
-glue_objc_enumerationMutation PPC_PARAMS(id _Nonnull object)
+glue_objc_enumerationMutation(void)
 {
 	M68K_ARG(id _Nonnull, object, a0)
 
 	objc_enumerationMutation(object);
 }
 
-int __saveds
-glue___gnu_objc_personality PPC_PARAMS(int version, int actions, uint64_t *_Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
-{
-	M68K_ARG(int, version, d0)
-	M68K_ARG(int, actions, d1)
-	M68K_ARG(uint64_t *_Nonnull, exClass, d2)
-	M68K_ARG(void *_Nonnull, ex, a0)
-	M68K_ARG(void *_Nonnull, ctx, a1)
-
-	return __gnu_objc_personality(version, actions, exClass, ex, ctx);
-}
-
 id _Nullable __saveds
-glue_objc_retain PPC_PARAMS(id _Nullable object)
+glue_objc_retain(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -228,7 +242,7 @@ glue_objc_retain PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_retainBlock PPC_PARAMS(id _Nullable block)
+glue_objc_retainBlock(void)
 {
 	M68K_ARG(id _Nullable, block, a0)
 
@@ -236,7 +250,7 @@ glue_objc_retainBlock PPC_PARAMS(id _Nullable block)
 }
 
 id _Nullable __saveds
-glue_objc_retainAutorelease PPC_PARAMS(id _Nullable object)
+glue_objc_retainAutorelease(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -244,7 +258,7 @@ glue_objc_retainAutorelease PPC_PARAMS(id _Nullable object)
 }
 
 void __saveds
-glue_objc_release PPC_PARAMS(id _Nullable object)
+glue_objc_release(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -252,7 +266,7 @@ glue_objc_release PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_autorelease PPC_PARAMS(id _Nullable object)
+glue_objc_autorelease(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -260,7 +274,7 @@ glue_objc_autorelease PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_autoreleaseReturnValue PPC_PARAMS(id _Nullable object)
+glue_objc_autoreleaseReturnValue(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -268,7 +282,7 @@ glue_objc_autoreleaseReturnValue PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_retainAutoreleaseReturnValue PPC_PARAMS(id _Nullable object)
+glue_objc_retainAutoreleaseReturnValue(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -276,7 +290,7 @@ glue_objc_retainAutoreleaseReturnValue PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_retainAutoreleasedReturnValue PPC_PARAMS(id _Nullable object)
+glue_objc_retainAutoreleasedReturnValue(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -284,7 +298,7 @@ glue_objc_retainAutoreleasedReturnValue PPC_PARAMS(id _Nullable object)
 }
 
 id _Nullable __saveds
-glue_objc_storeStrong PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable value)
+glue_objc_storeStrong(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 	M68K_ARG(id _Nullable, value, a1)
@@ -293,7 +307,7 @@ glue_objc_storeStrong PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable val
 }
 
 id _Nullable __saveds
-glue_objc_storeWeak PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable value)
+glue_objc_storeWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 	M68K_ARG(id _Nullable, value, a1)
@@ -302,7 +316,7 @@ glue_objc_storeWeak PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable value
 }
 
 id _Nullable __saveds
-glue_objc_loadWeakRetained PPC_PARAMS(id _Nullable *_Nonnull object)
+glue_objc_loadWeakRetained(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 
@@ -310,7 +324,7 @@ glue_objc_loadWeakRetained PPC_PARAMS(id _Nullable *_Nonnull object)
 }
 
 id _Nullable __saveds
-glue_objc_initWeak PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable value)
+glue_objc_initWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 	M68K_ARG(id _Nullable, value, a1)
@@ -319,7 +333,7 @@ glue_objc_initWeak PPC_PARAMS(id _Nullable *_Nonnull object, id _Nullable value)
 }
 
 void __saveds
-glue_objc_destroyWeak PPC_PARAMS(id _Nullable *_Nonnull object)
+glue_objc_destroyWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 
@@ -327,7 +341,7 @@ glue_objc_destroyWeak PPC_PARAMS(id _Nullable *_Nonnull object)
 }
 
 id _Nullable __saveds
-glue_objc_loadWeak PPC_PARAMS(id _Nullable *_Nonnull object)
+glue_objc_loadWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, object, a0)
 
@@ -335,7 +349,7 @@ glue_objc_loadWeak PPC_PARAMS(id _Nullable *_Nonnull object)
 }
 
 void __saveds
-glue_objc_copyWeak PPC_PARAMS(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
+glue_objc_copyWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, dest, a0)
 	M68K_ARG(id _Nullable *_Nonnull, src, a1)
@@ -344,7 +358,7 @@ glue_objc_copyWeak PPC_PARAMS(id _Nullable *_Nonnull dest, id _Nullable *_Nonnul
 }
 
 void __saveds
-glue_objc_moveWeak PPC_PARAMS(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
+glue_objc_moveWeak(void)
 {
 	M68K_ARG(id _Nullable *_Nonnull, dest, a0)
 	M68K_ARG(id _Nullable *_Nonnull, src, a1)
@@ -353,7 +367,7 @@ glue_objc_moveWeak PPC_PARAMS(id _Nullable *_Nonnull dest, id _Nullable *_Nonnul
 }
 
 SEL _Nonnull __saveds
-glue_sel_registerName PPC_PARAMS(const char *_Nonnull name)
+glue_sel_registerName(void)
 {
 	M68K_ARG(const char *_Nonnull, name, a0)
 
@@ -361,7 +375,7 @@ glue_sel_registerName PPC_PARAMS(const char *_Nonnull name)
 }
 
 const char *_Nonnull __saveds
-glue_sel_getName PPC_PARAMS(SEL _Nonnull selector)
+glue_sel_getName(void)
 {
 	M68K_ARG(SEL _Nonnull, selector, a0)
 
@@ -369,7 +383,7 @@ glue_sel_getName PPC_PARAMS(SEL _Nonnull selector)
 }
 
 bool __saveds
-glue_sel_isEqual PPC_PARAMS(SEL _Nonnull selector1, SEL _Nonnull selector2)
+glue_sel_isEqual(void)
 {
 	M68K_ARG(SEL _Nonnull, selector1, a0)
 	M68K_ARG(SEL _Nonnull, selector2, a1)
@@ -378,7 +392,7 @@ glue_sel_isEqual PPC_PARAMS(SEL _Nonnull selector1, SEL _Nonnull selector2)
 }
 
 Class _Nonnull __saveds
-glue_objc_allocateClassPair PPC_PARAMS(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
+glue_objc_allocateClassPair(void)
 {
 	M68K_ARG(Class _Nullable, superclass, a0)
 	M68K_ARG(const char *_Nonnull, name, a1)
@@ -388,15 +402,15 @@ glue_objc_allocateClassPair PPC_PARAMS(Class _Nullable superclass, const char *_
 }
 
 void __saveds
-glue_objc_registerClassPair PPC_PARAMS(Class _Nonnull class)
+glue_objc_registerClassPair(void)
 {
-	M68K_ARG(Class _Nonnull, class, a0)
+	M68K_ARG(Class _Nonnull, class_, a0)
 
-	objc_registerClassPair(class);
+	objc_registerClassPair(class_);
 }
 
 unsigned int __saveds
-glue_objc_getClassList PPC_PARAMS(Class _Nonnull *_Nullable buffer, unsigned int count)
+glue_objc_getClassList(void)
 {
 	M68K_ARG(Class _Nonnull *_Nullable, buffer, a0)
 	M68K_ARG(unsigned int, count, d0)
@@ -405,7 +419,7 @@ glue_objc_getClassList PPC_PARAMS(Class _Nonnull *_Nullable buffer, unsigned int
 }
 
 Class _Nonnull *_Nonnull __saveds
-glue_objc_copyClassList PPC_PARAMS(unsigned int *_Nullable length)
+glue_objc_copyClassList(void)
 {
 	M68K_ARG(unsigned int *_Nullable, length, a0)
 
@@ -413,106 +427,106 @@ glue_objc_copyClassList PPC_PARAMS(unsigned int *_Nullable length)
 }
 
 bool __saveds
-glue_class_isMetaClass PPC_PARAMS(Class _Nullable class)
+glue_class_isMetaClass(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 
-	return class_isMetaClass(class);
+	return class_isMetaClass(class_);
 }
 
 const char *_Nullable __saveds
-glue_class_getName PPC_PARAMS(Class _Nullable class)
+glue_class_getName(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 
-	return class_getName(class);
+	return class_getName(class_);
 }
 
 Class _Nullable __saveds
-glue_class_getSuperclass PPC_PARAMS(Class _Nullable class)
+glue_class_getSuperclass(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 
-	return class_getSuperclass(class);
+	return class_getSuperclass(class_);
 }
 
 unsigned long __saveds
-glue_class_getInstanceSize PPC_PARAMS(Class _Nullable class)
+glue_class_getInstanceSize(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 
-	return class_getInstanceSize(class);
+	return class_getInstanceSize(class_);
 }
 
 bool __saveds
-glue_class_respondsToSelector PPC_PARAMS(Class _Nullable class, SEL _Nonnull selector)
+glue_class_respondsToSelector(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 
-	return class_respondsToSelector(class, selector);
+	return class_respondsToSelector(class_, selector);
 }
 
 bool __saveds
-glue_class_conformsToProtocol PPC_PARAMS(Class _Nullable class, Protocol *_Nonnull p)
+glue_class_conformsToProtocol(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 	M68K_ARG(Protocol *_Nonnull, p, a1)
 
-	return class_conformsToProtocol(class, p);
+	return class_conformsToProtocol(class_, p);
 }
 
 IMP _Nullable __saveds
-glue_class_getMethodImplementation PPC_PARAMS(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getMethodImplementation(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 
-	return class_getMethodImplementation(class, selector);
+	return class_getMethodImplementation(class_, selector);
 }
 
 IMP _Nullable __saveds
-glue_class_getMethodImplementation_stret PPC_PARAMS(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getMethodImplementation_stret(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 
-	return class_getMethodImplementation_stret(class, selector);
+	return class_getMethodImplementation_stret(class_, selector);
 }
 
 Method _Nullable __saveds
-glue_class_getInstanceMethod PPC_PARAMS(Class _Nullable class, SEL _Nonnull selector)
+glue_class_getInstanceMethod(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 
-	return class_getInstanceMethod(class, selector);
+	return class_getInstanceMethod(class_, selector);
 }
 
 bool __saveds
-glue_class_addMethod PPC_PARAMS(Class _Nonnull class, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_addMethod(void)
 {
-	M68K_ARG(Class _Nonnull, class, a0)
+	M68K_ARG(Class _Nonnull, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 	M68K_ARG(IMP _Nonnull, implementation, a2)
 	M68K_ARG(const char *_Nullable, typeEncoding, a3)
 
-	return class_addMethod(class, selector, implementation, typeEncoding);
+	return class_addMethod(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable __saveds
-glue_class_replaceMethod PPC_PARAMS(Class _Nonnull class, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_replaceMethod(void)
 {
-	M68K_ARG(Class _Nonnull, class, a0)
+	M68K_ARG(Class _Nonnull, class_, a0)
 	M68K_ARG(SEL _Nonnull, selector, a1)
 	M68K_ARG(IMP _Nonnull, implementation, a2)
 	M68K_ARG(const char *_Nullable, typeEncoding, a3)
 
-	return class_replaceMethod(class, selector, implementation, typeEncoding);
+	return class_replaceMethod(class_, selector, implementation, typeEncoding);
 }
 
 Class _Nullable __saveds
-glue_object_getClass PPC_PARAMS(id _Nullable object)
+glue_object_getClass(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -520,16 +534,16 @@ glue_object_getClass PPC_PARAMS(id _Nullable object)
 }
 
 Class _Nullable __saveds
-glue_object_setClass PPC_PARAMS(id _Nullable object, Class _Nonnull class)
+glue_object_setClass(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
-	M68K_ARG(Class _Nonnull, class, a1)
+	M68K_ARG(Class _Nonnull, class_, a1)
 
-	return object_setClass(object, class);
+	return object_setClass(object, class_);
 }
 
 const char *_Nullable __saveds
-glue_object_getClassName PPC_PARAMS(id _Nullable object)
+glue_object_getClassName(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -537,7 +551,7 @@ glue_object_getClassName PPC_PARAMS(id _Nullable object)
 }
 
 const char *_Nonnull __saveds
-glue_protocol_getName PPC_PARAMS(Protocol *_Nonnull protocol)
+glue_protocol_getName(void)
 {
 	M68K_ARG(Protocol *_Nonnull, protocol, a0)
 
@@ -545,7 +559,7 @@ glue_protocol_getName PPC_PARAMS(Protocol *_Nonnull protocol)
 }
 
 bool __saveds
-glue_protocol_isEqual PPC_PARAMS(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_isEqual(void)
 {
 	M68K_ARG(Protocol *_Nonnull, protocol1, a0)
 	M68K_ARG(Protocol *_Nonnull, protocol2, a1)
@@ -554,7 +568,7 @@ glue_protocol_isEqual PPC_PARAMS(Protocol *_Nonnull protocol1, Protocol *_Nonnul
 }
 
 bool __saveds
-glue_protocol_conformsToProtocol PPC_PARAMS(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_conformsToProtocol(void)
 {
 	M68K_ARG(Protocol *_Nonnull, protocol1, a0)
 	M68K_ARG(Protocol *_Nonnull, protocol2, a1)
@@ -562,38 +576,88 @@ glue_protocol_conformsToProtocol PPC_PARAMS(Protocol *_Nonnull protocol1, Protoc
 	return protocol_conformsToProtocol(protocol1, protocol2);
 }
 
-_Nullable objc_uncaught_exception_handler __saveds
-glue_objc_setUncaughtExceptionHandler PPC_PARAMS(objc_uncaught_exception_handler _Nullable handler)
+Method _Nullable *_Nullable __saveds
+glue_class_copyMethodList(void)
 {
-	M68K_ARG(objc_uncaught_exception_handler _Nullable, handler, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
+	M68K_ARG(unsigned int *_Nullable, outCount, a1)
 
-	return objc_setUncaughtExceptionHandler(handler);
+	return class_copyMethodList(class_, outCount);
 }
 
-void __saveds
-glue_objc_setForwardHandler PPC_PARAMS(IMP _Nullable forward, IMP _Nullable stretForward)
+SEL _Nonnull __saveds
+glue_method_getName(void)
 {
-	M68K_ARG(IMP _Nullable, forward, a0)
-	M68K_ARG(IMP _Nullable, stretForward, a1)
+	M68K_ARG(Method _Nonnull, method, a0)
 
-	objc_setForwardHandler(forward, stretForward);
+	return method_getName(method);
 }
 
-void __saveds
-glue_objc_setEnumerationMutationHandler PPC_PARAMS(objc_enumeration_mutation_handler _Nullable hadler)
+const char *_Nullable __saveds
+glue_method_getTypeEncoding(void)
 {
-	M68K_ARG(objc_enumeration_mutation_handler _Nullable, hadler, a0)
+	M68K_ARG(Method _Nonnull, method, a0)
 
-	objc_setEnumerationMutationHandler(hadler);
+	return method_getTypeEncoding(method);
 }
 
-id _Nullable __saveds
-glue_objc_constructInstance PPC_PARAMS(Class _Nullable class, void *_Nullable bytes)
+Ivar _Nullable *_Nullable __saveds
+glue_class_copyIvarList(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
-	M68K_ARG(void *_Nullable, bytes, a1)
+	M68K_ARG(Class _Nullable, class_, a0)
+	M68K_ARG(unsigned int *_Nullable, outCount, a1)
 
-	return objc_constructInstance(class, bytes);
+	return class_copyIvarList(class_, outCount);
+}
+
+const char *_Nonnull __saveds
+glue_ivar_getName(void)
+{
+	M68K_ARG(Ivar _Nonnull, ivar, a0)
+
+	return ivar_getName(ivar);
+}
+
+const char *_Nonnull __saveds
+glue_ivar_getTypeEncoding(void)
+{
+	M68K_ARG(Ivar _Nonnull, ivar, a0)
+
+	return ivar_getTypeEncoding(ivar);
+}
+
+ptrdiff_t __saveds
+glue_ivar_getOffset(void)
+{
+	M68K_ARG(Ivar _Nonnull, ivar, a0)
+
+	return ivar_getOffset(ivar);
+}
+
+objc_property_t _Nullable *_Nullable __saveds
+glue_class_copyPropertyList(void)
+{
+	M68K_ARG(Class _Nullable, class_, a0)
+	M68K_ARG(unsigned int *_Nullable, outCount, a1)
+
+	return class_copyPropertyList(class_, outCount);
+}
+
+const char *_Nonnull __saveds
+glue_property_getName(void)
+{
+	M68K_ARG(objc_property_t _Nonnull, property, a0)
+
+	return property_getName(property);
+}
+
+char *_Nullable __saveds
+glue_property_copyAttributeValue(void)
+{
+	M68K_ARG(objc_property_t _Nonnull, property, a0)
+	M68K_ARG(const char *_Nonnull, name, a1)
+
+	return property_copyAttributeValue(property, name);
 }
 
 void __saveds
@@ -602,96 +666,87 @@ glue_objc_deinit(void)
 	objc_deinit();
 }
 
-Ivar _Nullable *_Nullable __saveds
-glue_class_copyIvarList PPC_PARAMS(Class _Nullable class, unsigned int *_Nullable outCount)
+_Nullable objc_uncaught_exception_handler __saveds
+glue_objc_setUncaughtExceptionHandler(void)
 {
-	M68K_ARG(Class _Nullable, class, a0)
-	M68K_ARG(unsigned int *_Nullable, outCount, a1)
+	M68K_ARG(objc_uncaught_exception_handler _Nullable, handler, a0)
 
-	return class_copyIvarList(class, outCount);
+	return objc_setUncaughtExceptionHandler(handler);
 }
 
-const char *_Nonnull __saveds
-glue_ivar_getName PPC_PARAMS(Ivar _Nonnull ivar)
+void __saveds
+glue_objc_setForwardHandler(void)
 {
-	M68K_ARG(Ivar _Nonnull, ivar, a0)
+	M68K_ARG(IMP _Nullable, forward, a0)
+	M68K_ARG(IMP _Nullable, stretForward, a1)
 
-	return ivar_getName(ivar);
+	objc_setForwardHandler(forward, stretForward);
 }
 
-const char *_Nonnull __saveds
-glue_ivar_getTypeEncoding PPC_PARAMS(Ivar _Nonnull ivar)
+void __saveds
+glue_objc_setEnumerationMutationHandler(void)
 {
-	M68K_ARG(Ivar _Nonnull, ivar, a0)
+	M68K_ARG(objc_enumeration_mutation_handler _Nullable, hadler, a0)
 
-	return ivar_getTypeEncoding(ivar);
+	objc_setEnumerationMutationHandler(hadler);
 }
 
-ptrdiff_t __saveds
-glue_ivar_getOffset PPC_PARAMS(Ivar _Nonnull ivar)
+id _Nullable __saveds
+glue_objc_constructInstance(void)
 {
-	M68K_ARG(Ivar _Nonnull, ivar, a0)
+	M68K_ARG(Class _Nullable, class_, a0)
+	M68K_ARG(void *_Nullable, bytes, a1)
 
-	return ivar_getOffset(ivar);
-}
-
-Method _Nullable *_Nullable __saveds
-glue_class_copyMethodList PPC_PARAMS(Class _Nullable class, unsigned int *_Nullable outCount)
-{
-	M68K_ARG(Class _Nullable, class, a0)
-	M68K_ARG(unsigned int *_Nullable, outCount, a1)
-
-	return class_copyMethodList(class, outCount);
-}
-
-SEL _Nonnull __saveds
-glue_method_getName PPC_PARAMS(Method _Nonnull method)
-{
-	M68K_ARG(Method _Nonnull, method, a0)
-
-	return method_getName(method);
-}
-
-const char *_Nullable __saveds
-glue_method_getTypeEncoding PPC_PARAMS(Method _Nonnull method)
-{
-	M68K_ARG(Method _Nonnull, method, a0)
-
-	return method_getTypeEncoding(method);
-}
-
-objc_property_t _Nullable *_Nullable __saveds
-glue_class_copyPropertyList PPC_PARAMS(Class _Nullable class, unsigned int *_Nullable outCount)
-{
-	M68K_ARG(Class _Nullable, class, a0)
-	M68K_ARG(unsigned int *_Nullable, outCount, a1)
-
-	return class_copyPropertyList(class, outCount);
-}
-
-const char *_Nonnull __saveds
-glue_property_getName PPC_PARAMS(objc_property_t _Nonnull property)
-{
-	M68K_ARG(objc_property_t _Nonnull, property, a0)
-
-	return property_getName(property);
-}
-
-char *_Nullable __saveds
-glue_property_copyAttributeValue PPC_PARAMS(objc_property_t _Nonnull property, const char *_Nonnull name)
-{
-	M68K_ARG(objc_property_t _Nonnull, property, a0)
-	M68K_ARG(const char *_Nonnull, name, a1)
-
-	return property_copyAttributeValue(property, name);
+	return objc_constructInstance(class_, bytes);
 }
 
 void *_Nullable __saveds
-glue_objc_destructInstance PPC_PARAMS(id _Nullable object)
+glue_objc_destructInstance(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
 	return objc_destructInstance(object);
+}
+
+id _Nullable __saveds
+glue_class_createInstance(void)
+{
+	M68K_ARG(Class _Nullable, class_, a0)
+	M68K_ARG(size_t, extraBytes, d0)
+
+	return class_createInstance(class_, extraBytes);
+}
+
+id _Nullable __saveds
+glue_object_dispose(void)
+{
+	M68K_ARG(id _Nullable, object, a0)
+
+	return object_dispose(object);
+}
+
+id _Nonnull __saveds
+glue__objc_rootRetain(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+
+	return _objc_rootRetain(object);
+}
+
+unsigned int __saveds
+glue__objc_rootRetainCount(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+
+	return _objc_rootRetainCount(object);
+}
+
+void __saveds
+glue__objc_rootRelease(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+
+	_objc_rootRelease(object);
 }
 
 void *_Null_unspecified __saveds
@@ -701,7 +756,7 @@ glue_objc_autoreleasePoolPush(void)
 }
 
 void __saveds
-glue_objc_autoreleasePoolPop PPC_PARAMS(void *_Null_unspecified pool)
+glue_objc_autoreleasePoolPop(void)
 {
 	M68K_ARG(void *_Null_unspecified, pool, a0)
 
@@ -709,61 +764,15 @@ glue_objc_autoreleasePoolPop PPC_PARAMS(void *_Null_unspecified pool)
 }
 
 id _Nullable __saveds
-glue__objc_rootAutorelease PPC_PARAMS(id _Nullable object)
+glue__objc_rootAutorelease(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
 	return _objc_rootAutorelease(object);
 }
 
-struct objc_hashtable *_Nonnull __saveds
-glue_objc_hashtable_new PPC_PARAMS(objc_hashtable_hash_func hash, objc_hashtable_equal_func equal, uint32_t size)
-{
-	M68K_ARG(objc_hashtable_hash_func, hash, a0)
-	M68K_ARG(objc_hashtable_equal_func, equal, a1)
-	M68K_ARG(uint32_t, size, d0)
-
-	return objc_hashtable_new(hash, equal, size);
-}
-
 void __saveds
-glue_objc_hashtable_set PPC_PARAMS(struct objc_hashtable *_Nonnull table, const void *_Nonnull key, const void *_Nonnull object)
-{
-	M68K_ARG(struct objc_hashtable *_Nonnull, table, a0)
-	M68K_ARG(const void *_Nonnull, key, a1)
-	M68K_ARG(const void *_Nonnull, object, a2)
-
-	objc_hashtable_set(table, key, object);
-}
-
-void *_Nullable __saveds
-glue_objc_hashtable_get PPC_PARAMS(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
-{
-	M68K_ARG(struct objc_hashtable *_Nonnull, table, a0)
-	M68K_ARG(const void *_Nonnull, key, a1)
-
-	return objc_hashtable_get(table, key);
-}
-
-void __saveds
-glue_objc_hashtable_delete PPC_PARAMS(struct objc_hashtable *_Nonnull table, const void *_Nonnull key)
-{
-	M68K_ARG(struct objc_hashtable *_Nonnull, table, a0)
-	M68K_ARG(const void *_Nonnull, key, a1)
-
-	objc_hashtable_delete(table, key);
-}
-
-void __saveds
-glue_objc_hashtable_free PPC_PARAMS(struct objc_hashtable *_Nonnull table)
-{
-	M68K_ARG(struct objc_hashtable *_Nonnull, table, a0)
-
-	objc_hashtable_free(table);
-}
-
-void __saveds
-glue_objc_setTaggedPointerSecret PPC_PARAMS(uintptr_t secret)
+glue_objc_setTaggedPointerSecret(void)
 {
 	M68K_ARG(uintptr_t, secret, d0)
 
@@ -771,15 +780,15 @@ glue_objc_setTaggedPointerSecret PPC_PARAMS(uintptr_t secret)
 }
 
 int __saveds
-glue_objc_registerTaggedPointerClass PPC_PARAMS(Class _Nonnull class)
+glue_objc_registerTaggedPointerClass(void)
 {
-	M68K_ARG(Class _Nonnull, class, a0)
+	M68K_ARG(Class _Nonnull, class_, a0)
 
-	return objc_registerTaggedPointerClass(class);
+	return objc_registerTaggedPointerClass(class_);
 }
 
 bool __saveds
-glue_object_isTaggedPointer PPC_PARAMS(id _Nullable object)
+glue_object_isTaggedPointer(void)
 {
 	M68K_ARG(id _Nullable, object, a0)
 
@@ -787,7 +796,7 @@ glue_object_isTaggedPointer PPC_PARAMS(id _Nullable object)
 }
 
 uintptr_t __saveds
-glue_object_getTaggedPointerValue PPC_PARAMS(id _Nonnull object)
+glue_object_getTaggedPointerValue(void)
 {
 	M68K_ARG(id _Nonnull, object, a0)
 
@@ -795,10 +804,38 @@ glue_object_getTaggedPointerValue PPC_PARAMS(id _Nonnull object)
 }
 
 id _Nullable __saveds
-glue_objc_createTaggedPointer PPC_PARAMS(int class, uintptr_t value)
+glue_objc_createTaggedPointer(void)
 {
-	M68K_ARG(int, class, d0)
-	M68K_ARG(uintptr_t, value, d1)
+	M68K_ARG(int, class_, a0)
+	M68K_ARG(uintptr_t, value, d0)
 
-	return objc_createTaggedPointer(class, value);
+	return objc_createTaggedPointer(class_, value);
+}
+
+void __saveds
+glue_objc_setAssociatedObject(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+	M68K_ARG(const void *_Nonnull, key, a1)
+	M68K_ARG(id _Nullable, value, a2)
+	M68K_ARG(objc_associationPolicy, policy, d0)
+
+	objc_setAssociatedObject(object, key, value, policy);
+}
+
+id _Nullable __saveds
+glue_objc_getAssociatedObject(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+	M68K_ARG(const void *_Nonnull, key, a1)
+
+	return objc_getAssociatedObject(object, key);
+}
+
+void __saveds
+glue_objc_removeAssociatedObjects(void)
+{
+	M68K_ARG(id _Nonnull, object, a0)
+
+	objc_removeAssociatedObjects(object);
 }
