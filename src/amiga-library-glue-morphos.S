@@ -527,3 +527,8 @@ glue_OFZIPArchiveEntryCompressionMethodName:
 glue_OFZIPArchiveEntryExtraFieldFind:
 	lwz	%r13, 44(%r12)
 	b	OFZIPArchiveEntryExtraFieldFind
+
+.globl glue_OFStrError
+glue_OFStrError:
+	lwz	%r13, 44(%r12)
+	b	OFStrError

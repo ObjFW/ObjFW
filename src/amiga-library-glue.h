@@ -43,6 +43,7 @@
 #import "OFTLSStream.h"
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFException.h"
 
 extern bool glue_OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase);
 extern void *_Nullable glue_OFAllocMemory(size_t count, size_t size);
@@ -145,3 +146,4 @@ extern Class _Nonnull *_Nullable glue_OFX509CertificateImplementationRef(void);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryVersionToString(uint16_t version);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compressionMethod);
 extern size_t glue_OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *_Nonnull size);
+extern OFString *_Nonnull glue_OFStrError(int errNo);

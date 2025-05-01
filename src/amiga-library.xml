@@ -370,4 +370,8 @@
     <argument name='tag' type='OFZIPArchiveEntryExtraFieldTag'/>
     <argument name='size' type='uint16_t *_Nonnull'/>
   </function>
+  <include>OFException.h</include>
+  <function name='OFStrError' return-type='OFString *_Nonnull'>
+    <argument name='errNo' type='int'/>
+  </function>
 </amiga-library>

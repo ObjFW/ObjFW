@@ -45,6 +45,7 @@
 #import "OFTLSStream.h"
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFException.h"
 
 extern struct Library *ObjFWBase;
 
@@ -1161,4 +1162,15 @@ OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryEx
 	);
 
 	return __extension__ ((size_t (*)(OFData *_Nonnull, OFZIPArchiveEntryExtraFieldTag, uint16_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 628))(extraField, tag, size);
+}
+
+OFString *_Nonnull
+OFStrError(int errNo)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r"(ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 634))(errNo);
 }
