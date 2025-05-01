@@ -26,10 +26,6 @@
 @interface OFConcreteMutableArrayTests: OFMutableArrayTests
 @end
 
-#ifdef OF_MORPHOS
-void *__objc_class_name_OFConcreteMutableArray;
-#endif
-
 static OFString *const cArray[] = {
 	@"Foo",
 	@"Bar",

@@ -26,10 +26,6 @@
 @interface OFUTF8StringTests: OFStringTests
 @end
 
-#ifdef OF_MORPHOS
-void *__objc_class_name_OFUTF8String;
-#endif
-
 @implementation OFUTF8StringTests
 - (Class)arrayClass
 {

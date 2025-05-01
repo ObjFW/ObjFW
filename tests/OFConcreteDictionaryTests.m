@@ -26,10 +26,6 @@
 @interface OFConcreteDictionaryTests: OFDictionaryTests
 @end
 
-#ifdef OF_MORPHOS
-void *__objc_class_name_OFConcreteDictionary;
-#endif
-
 @implementation OFConcreteDictionaryTests
 - (Class)dictionaryClass
 {

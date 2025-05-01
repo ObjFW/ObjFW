@@ -26,10 +26,6 @@
 @interface OFConcreteSetTests: OFSetTests
 @end
 
-#ifdef OF_MORPHOS
-void *__objc_class_name_OFConcreteSet;
-#endif
-
 @implementation OFConcreteSetTests
 - (Class)setClass
 {

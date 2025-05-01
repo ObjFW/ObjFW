@@ -269,6 +269,18 @@ void *__objc_class_name_OFStillLockedException;
 void *__objc_class_name_OFThreadStillRunningException;
 void *__objc_class_name_OFWaitForConditionFailedException;
 #endif
+/* Only used by tests. */
+void *__objc_class_name_OFBitSetCharacterSet;
+void *__objc_class_name_OFConcreteArray;
+void *__objc_class_name_OFConcreteDictionary;
+void *__objc_class_name_OFConcreteMutableArray;
+void *__objc_class_name_OFConcreteMutableDictionary;
+void *__objc_class_name_OFConcreteMutableSet;
+void *__objc_class_name_OFConcreteSet;
+void *__objc_class_name_OFMutableUTF8String;
+void *__objc_class_name_OFRangeCharacterSet;
+void *__objc_class_name_OFSelectKernelEventObserver;
+void *__objc_class_name_OFUTF8String;
 
 #include "OFFileManagerConstants.inc"
 #include "OFRunLoopConstants.inc"
