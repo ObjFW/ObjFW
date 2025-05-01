@@ -26,6 +26,10 @@
 @interface OFMutableUTF8StringTests: OFMutableStringTests
 @end
 
+#ifdef OF_MORPHOS
+void *__objc_class_name_OFMutableUTF8String;
+#endif
+
 @implementation OFMutableUTF8StringTests
 - (Class)arrayClass
 {

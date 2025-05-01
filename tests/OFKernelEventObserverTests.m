@@ -44,6 +44,10 @@
 }
 @end
 
+#ifdef OF_MORPHOS
+void *__objc_class_name_OFSelectKernelEventObserver;
+#endif
+
 static const size_t numExpectedEvents = 3;
 
 @implementation OFKernelEventObserverTests

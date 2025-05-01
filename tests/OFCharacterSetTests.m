@@ -32,6 +32,11 @@
 @interface CustomCharacterSet: OFCharacterSet
 @end
 
+#ifdef OF_MORPHOS
+void *__objc_class_name_OFBitSetCharacterSet;
+void *__objc_class_name_OFRangeCharacterSet;
+#endif
+
 @implementation CustomCharacterSet
 - (bool)characterIsMember: (OFUnichar)character
 {
