@@ -38,40 +38,11 @@
 #include <proto/exec.h>
 #include <proto/intuition.h>
 
-#if defined(OF_AMIGAOS_M68K)
-# include <stabs.h>
-#elif defined(OF_MORPHOS)
-# include <constructor.h>
-#endif
+#include <constructor.h>
 
 extern struct Library *ObjFWRTBase;
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern int _Unwind_SjLj_RaiseException(void *);
-#else
-extern int _Unwind_RaiseException(void *);
-#endif
-extern void _Unwind_DeleteException(void *);
-extern void *_Unwind_GetLanguageSpecificData(void *);
-extern uintptr_t _Unwind_GetRegionStart(void *);
-extern uintptr_t _Unwind_GetDataRelBase(void *);
-extern uintptr_t _Unwind_GetTextRelBase(void *);
-extern uintptr_t _Unwind_GetIP(void *);
-extern uintptr_t _Unwind_GetGR(void *, int);
-extern void _Unwind_SetIP(void *, uintptr_t);
-extern void _Unwind_SetGR(void *, int, uintptr_t);
-#ifdef HAVE_SJLJ_EXCEPTIONS
-extern void _Unwind_SjLj_Resume(void *);
-#else
-extern void _Unwind_Resume(void *);
-#endif
-#ifdef OF_AMIGAOS_M68K
-extern void __register_frame_info(const void *, void *);
-extern void *__deregister_frame_info(const void *);
-#endif
-#ifdef OF_MORPHOS
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
-#endif
 extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
 
 struct Library *ObjFWBase;
@@ -329,46 +300,14 @@ ctor(void)
 		.realloc = realloc,
 		.free = free,
 		.abort = abort,
-#ifdef HAVE_SJLJ_EXCEPTIONS
-		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
-#else
-		._Unwind_RaiseException = _Unwind_RaiseException,
-#endif
-		._Unwind_DeleteException = _Unwind_DeleteException,
-		._Unwind_GetLanguageSpecificData =
-		    _Unwind_GetLanguageSpecificData,
-		._Unwind_GetRegionStart = _Unwind_GetRegionStart,
-		._Unwind_GetDataRelBase = _Unwind_GetDataRelBase,
-		._Unwind_GetTextRelBase = _Unwind_GetTextRelBase,
-		._Unwind_GetIP = _Unwind_GetIP,
-		._Unwind_GetGR = _Unwind_GetGR,
-		._Unwind_SetIP = _Unwind_SetIP,
-		._Unwind_SetGR = _Unwind_SetGR,
-#ifdef HAVE_SJLJ_EXCEPTIONS
-		._Unwind_SjLj_Resume = _Unwind_SjLj_Resume,
-#else
-		._Unwind_Resume = _Unwind_Resume,
-#endif
-#ifdef OF_AMIGAOS_M68K
-		.__register_frame_info = __register_frame_info,
-		.__deregister_frame_info = __deregister_frame_info,
-#endif
-#ifdef OF_MORPHOS
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
-#endif
 		.errNo = errNo,
-#ifdef OF_MORPHOS
 		.vasprintf = vasprintf,
-#else
-		.vsnprintf = vsnprintf,
-#endif
 		.strtof = strtof,
 		.strtod = strtod,
-#ifdef OF_MORPHOS
 		.gmtime_r = gmtime_r,
 		.localtime_r = localtime_r,
-#endif
 		.mktime = mktime,
 		.gettimeofday = gettimeofday,
 		.strftime = strftime,
@@ -395,7 +334,8 @@ ctor(void)
 static void __attribute__((__used__))
 dtor(void)
 {
-	CloseLibrary(ObjFWBase);
+	if (ObjFWBase != NULL)
+		CloseLibrary(ObjFWBase);
 }
 
 # if defined(OF_AMIGAOS_M68K)
