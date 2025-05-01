@@ -50,6 +50,13 @@ typedef struct {
 } *OFPlainThread;
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wnullability-completeness"
+#endif
+
 typedef struct {
 	float priority;
 	size_t stackSize;
@@ -68,7 +75,7 @@ typedef void (*OFPlainThreadFunction)(id _Nullable object);
  *
  * @return The current plain thread
  */
-static OF_INLINE OFPlainThread _Null_unspecified
+static OF_INLINE OFPlainThread
 OFCurrentPlainThread(void)
 {
 	return pthread_self();
@@ -81,25 +88,25 @@ OFCurrentPlainThread(void)
  * @return Whether the specified plain thread is the current thread
  */
 static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread)
+OFPlainThreadIsCurrent(OFPlainThread thread)
 {
 	return pthread_equal(thread, pthread_self());
 }
 #elif defined(OF_WINDOWS)
-static OF_INLINE OFPlainThread _Null_unspecified
+static OF_INLINE OFPlainThread
 OFCurrentPlainThread(void)
 {
 	return GetCurrentThread();
 }
 
 static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread)
+OFPlainThreadIsCurrent(OFPlainThread thread)
 {
 	return (thread == GetCurrentThread());
 }
 #elif defined(OF_AMIGAOS)
-extern OFPlainThread _Null_unspecified OFCurrentPlainThread(void);
-extern bool OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified);
+extern OFPlainThread OFCurrentPlainThread(void);
+extern bool OFPlainThreadIsCurrent(OFPlainThread);
 #endif
 
 #ifdef __cplusplus
@@ -111,7 +118,7 @@ extern "C" {
  * @param attr A pointer to the thread attributes to initialize
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr);
+extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
 
 /**
  * @brief Creates a new plain thread.
@@ -126,8 +133,8 @@ extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr);
  * @param attr Thread attributes
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadNew(OFPlainThread _Null_unspecified *_Nonnull thread,
-    const char *_Nullable name, OFPlainThreadFunction _Nonnull function,
+extern int OFPlainThreadNew(OFPlainThread *_Nonnull thread,
+    const char *_Nullable name, OFPlainThreadFunction function,
     id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
 
 /**
@@ -143,7 +150,7 @@ extern void OFSetThreadName(const char *_Nullable name);
  * @param thread The thread to join
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadJoin(OFPlainThread _Null_unspecified thread);
+extern int OFPlainThreadJoin(OFPlainThread thread);
 
 /**
  * @brief Detaches the specified thread.
@@ -151,7 +158,13 @@ extern int OFPlainThreadJoin(OFPlainThread _Null_unspecified thread);
  * @param thread The thread to detach
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadDetach(OFPlainThread _Null_unspecified thread);
+extern int OFPlainThreadDetach(OFPlainThread thread);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+
+OF_ASSUME_NONNULL_END

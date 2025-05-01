@@ -93,12 +93,12 @@ extern int glue_OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *_Nonnull mut
 extern int glue_OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *_Nonnull mutex);
 extern int glue_OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *_Nonnull mutex);
 extern int glue_OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr);
-extern int glue_OFPlainThreadNew(OFPlainThread _Null_unspecified *_Nonnull thread, const char *_Nullable name, OFPlainThreadFunction _Nonnull function, id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
+extern int glue_OFPlainThreadNew(OFPlainThread _Nonnull *_Nonnull thread, const char *_Nullable name, OFPlainThreadFunction _Nonnull function, id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
 extern void glue_OFSetThreadName(const char *_Nullable name);
-extern int glue_OFPlainThreadJoin(OFPlainThread _Null_unspecified thread);
-extern int glue_OFPlainThreadDetach(OFPlainThread _Null_unspecified thread);
-extern OFPlainThread _Null_unspecified glue_OFCurrentPlainThread(void);
-extern bool glue_OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread);
+extern int glue_OFPlainThreadJoin(OFPlainThread _Nonnull thread);
+extern int glue_OFPlainThreadDetach(OFPlainThread _Nonnull thread);
+extern OFPlainThread _Nonnull glue_OFCurrentPlainThread(void);
+extern bool glue_OFPlainThreadIsCurrent(OFPlainThread _Nonnull thread);
 extern void glue_OFScrypt(OFScryptParameters parameters);
 extern void glue__OFSalsa20_8Core(uint32_t *_Nonnull buffer);
 extern void glue__OFScryptBlockMix(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);

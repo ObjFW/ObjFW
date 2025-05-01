@@ -177,7 +177,7 @@
     <argument name='attr' type='OFPlainThreadAttributes *_Nonnull'/>
   </function>
   <function name='OFPlainThreadNew' return-type='int'>
-    <argument name='thread' type='OFPlainThread _Null_unspecified *_Nonnull'/>
+    <argument name='thread' type='OFPlainThread _Nonnull *_Nonnull'/>
     <argument name='name' type='const char *_Nullable'/>
     <argument name='function' type='OFPlainThreadFunction _Nonnull'/>
     <argument name='object' type='id _Nullable'/>
@@ -187,15 +187,14 @@
     <argument name='name' type='const char *_Nullable'/>
   </function>
   <function name='OFPlainThreadJoin' return-type='int'>
-    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
+    <argument name='thread' type='OFPlainThread _Nonnull'/>
   </function>
   <function name='OFPlainThreadDetach' return-type='int'>
-    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
+    <argument name='thread' type='OFPlainThread _Nonnull'/>
   </function>
-  <function name='OFCurrentPlainThread'
-            return-type='OFPlainThread _Null_unspecified'/>
+  <function name='OFCurrentPlainThread' return-type='OFPlainThread _Nonnull'/>
   <function name='OFPlainThreadIsCurrent' return-type='bool'>
-    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
+    <argument name='thread' type='OFPlainThread _Nonnull'/>
   </function>
   <include>OFScrypt.h</include>
   <function name='OFScrypt'>

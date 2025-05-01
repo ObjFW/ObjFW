@@ -592,14 +592,14 @@ OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr)
 }
 
 int
-OFPlainThreadNew(OFPlainThread _Null_unspecified *_Nonnull thread, const char *_Nullable name, OFPlainThreadFunction _Nonnull function, id _Nullable object, const OFPlainThreadAttributes *_Nullable attr)
+OFPlainThreadNew(OFPlainThread _Nonnull *_Nonnull thread, const char *_Nullable name, OFPlainThreadFunction _Nonnull function, id _Nullable object, const OFPlainThreadAttributes *_Nullable attr)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Null_unspecified *_Nonnull, const char *_Nullable, OFPlainThreadFunction _Nonnull, id _Nullable, const OFPlainThreadAttributes *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 322))(thread, name, function, object, attr);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull *_Nonnull, const char *_Nullable, OFPlainThreadFunction _Nonnull, id _Nullable, const OFPlainThreadAttributes *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 322))(thread, name, function, object, attr);
 }
 
 void
@@ -614,28 +614,28 @@ OFSetThreadName(const char *_Nullable name)
 }
 
 int
-OFPlainThreadJoin(OFPlainThread _Null_unspecified thread)
+OFPlainThreadJoin(OFPlainThread _Nonnull thread)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Null_unspecified))*(void **)(((uintptr_t)ObjFWBase) - 334))(thread);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 334))(thread);
 }
 
 int
-OFPlainThreadDetach(OFPlainThread _Null_unspecified thread)
+OFPlainThreadDetach(OFPlainThread _Nonnull thread)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Null_unspecified))*(void **)(((uintptr_t)ObjFWBase) - 340))(thread);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 340))(thread);
 }
 
-OFPlainThread _Null_unspecified
+OFPlainThread _Nonnull
 OFCurrentPlainThread()
 {
 	__asm__ __volatile__ (
@@ -643,18 +643,18 @@ OFCurrentPlainThread()
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFPlainThread _Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWBase) - 346))();
+	return __extension__ ((OFPlainThread _Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 346))();
 }
 
 bool
-OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread)
+OFPlainThreadIsCurrent(OFPlainThread _Nonnull thread)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(OFPlainThread _Null_unspecified))*(void **)(((uintptr_t)ObjFWBase) - 352))(thread);
+	return __extension__ ((bool (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 352))(thread);
 }
 
 void
