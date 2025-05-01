@@ -48,6 +48,16 @@ glue_OFFreeMemory:
 	lwz	%r13, 44(%r12)
 	b	OFFreeMemory
 
+.globl glue_OFAllocObject
+glue_OFAllocObject:
+	lwz	%r13, 44(%r12)
+	b	OFAllocObject
+
+.globl glue_OFMethodNotFound
+glue_OFMethodNotFound:
+	lwz	%r13, 44(%r12)
+	b	OFMethodNotFound
+
 .globl glue_OFHashInit
 glue_OFHashInit:
 	lwz	%r13, 44(%r12)

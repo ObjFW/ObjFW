@@ -23,12 +23,23 @@
   <function name='OFFreeMemory'>
     <argument name='pointer' type='void *_Nullable'/>
   </function>
+  <function name='OFAllocObject' return-type='id _Nonnull'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='extraSize' type='size_t'/>
+    <argument name='extraAlignment' type='size_t'/>
+    <argument name='extra' type='void *_Nullable *_Nullable'/>
+  </function>
+  <function name='OFMethodNotFound' noreturn='1'>
+    <argument name='self' type='id _Nonnull'/>
+    <argument name='_cmd' type='SEL _Nonnull'/>
+  </function>
   <function name='OFHashInit'>
     <argument name='hash' type='unsigned long *_Nonnull'/>
   </function>
   <function name='OFRandom16' return-type='uint16_t'/>
   <function name='OFRandom32' return-type='uint32_t'/>
   <function name='OFRandom64' return-type='uint64_t'/>
+  <!-- Only for tests. -->
   <function name='OFHashSeedRef' return-type='unsigned long *_Nonnull'/>
   <include>OFApplication.h</include>
   <function name='OFApplicationMain' return-type='int'>

@@ -24,6 +24,8 @@
 (CONST_APTR)glue_OFAllocZeroedMemory,
 (CONST_APTR)glue_OFResizeMemory,
 (CONST_APTR)glue_OFFreeMemory,
+(CONST_APTR)glue_OFAllocObject,
+(CONST_APTR)glue_OFMethodNotFound,
 (CONST_APTR)glue_OFHashInit,
 (CONST_APTR)glue_OFRandom16,
 (CONST_APTR)glue_OFRandom32,

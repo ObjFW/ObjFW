@@ -50,6 +50,8 @@ extern void *_Nullable glue_OFAllocMemory(size_t count, size_t size);
 extern void *_Nullable glue_OFAllocZeroedMemory(size_t count, size_t size);
 extern void *_Nullable glue_OFResizeMemory(void *_Nullable pointer, size_t count, size_t size);
 extern void glue_OFFreeMemory(void *_Nullable pointer);
+extern id _Nonnull glue_OFAllocObject(Class _Nonnull class_, size_t extraSize, size_t extraAlignment, void *_Nullable *_Nullable extra);
+extern void glue_OFMethodNotFound(id _Nonnull self, SEL _Nonnull _cmd);
 extern void glue_OFHashInit(unsigned long *_Nonnull hash);
 extern uint16_t glue_OFRandom16(void);
 extern uint32_t glue_OFRandom32(void);
