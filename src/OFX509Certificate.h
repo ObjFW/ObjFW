@@ -105,7 +105,12 @@ extern "C" {
  * is useful to either force a specific implementation or to use one that ObjFW
  * does not know about.
  */
+#ifndef OF_AMIGAOS
 extern Class OFX509CertificateImplementation;
+#else
+extern Class _Nonnull *_Nullable OFX509CertificateImplementationRef(void);
+# define OFX509CertificateImplementation (*OFX509CertificateImplementationRef())
+#endif
 #ifdef __cplusplus
 }
 #endif

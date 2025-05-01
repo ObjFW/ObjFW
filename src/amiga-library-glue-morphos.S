@@ -73,26 +73,6 @@ glue_OFHashSeedRef:
 	lwz	%r13, 44(%r12)
 	b	OFHashSeedRef
 
-.globl glue_OFStdInRef
-glue_OFStdInRef:
-	lwz	%r13, 44(%r12)
-	b	OFStdInRef
-
-.globl glue_OFStdOutRef
-glue_OFStdOutRef:
-	lwz	%r13, 44(%r12)
-	b	OFStdOutRef
-
-.globl glue_OFStdErrRef
-glue_OFStdErrRef:
-	lwz	%r13, 44(%r12)
-	b	OFStdErrRef
-
-.globl glue_OFLogV
-glue_OFLogV:
-	lwz	%r13, 44(%r12)
-	b	OFLogV
-
 .globl glue_OFApplicationMain
 glue_OFApplicationMain:
 	lwz	%r13, 44(%r12)
@@ -107,6 +87,16 @@ glue__Block_copy:
 glue__Block_release:
 	lwz	%r13, 44(%r12)
 	b	_Block_release
+
+.globl glue__Block_object_assign
+glue__Block_object_assign:
+	lwz	%r13, 44(%r12)
+	b	_Block_object_assign
+
+.globl glue__Block_object_dispose
+glue__Block_object_dispose:
+	lwz	%r13, 44(%r12)
+	b	_Block_object_dispose
 
 .globl glue_OFDNSClassName
 glue_OFDNSClassName:
@@ -178,15 +168,140 @@ glue_OFOnce:
 	lwz	%r13, 44(%r12)
 	b	OFOnce
 
-.globl glue_OFPBKDF2Wrapper
-glue_OFPBKDF2Wrapper:
+.globl glue_OFPBKDF2
+glue_OFPBKDF2:
 	lwz	%r13, 44(%r12)
-	b	OFPBKDF2Wrapper
+	b	OFPBKDF2
 
-.globl glue_OFScryptWrapper
-glue_OFScryptWrapper:
+.globl glue_OFPlainConditionNew
+glue_OFPlainConditionNew:
 	lwz	%r13, 44(%r12)
-	b	OFScryptWrapper
+	b	OFPlainConditionNew
+
+.globl glue_OFPlainConditionSignal
+glue_OFPlainConditionSignal:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionSignal
+
+.globl glue_OFPlainConditionBroadcast
+glue_OFPlainConditionBroadcast:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionBroadcast
+
+.globl glue_OFPlainConditionWait
+glue_OFPlainConditionWait:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionWait
+
+.globl glue_OFPlainConditionTimedWait
+glue_OFPlainConditionTimedWait:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionTimedWait
+
+.globl glue_OFPlainConditionWaitOrExecSignal
+glue_OFPlainConditionWaitOrExecSignal:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionWaitOrExecSignal
+
+.globl glue_OFPlainConditionTimedWaitOrExecSignal
+glue_OFPlainConditionTimedWaitOrExecSignal:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionTimedWaitOrExecSignal
+
+.globl glue_OFPlainConditionFree
+glue_OFPlainConditionFree:
+	lwz	%r13, 44(%r12)
+	b	OFPlainConditionFree
+
+.globl glue_OFPlainMutexNew
+glue_OFPlainMutexNew:
+	lwz	%r13, 44(%r12)
+	b	OFPlainMutexNew
+
+.globl glue_OFPlainMutexLock
+glue_OFPlainMutexLock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainMutexLock
+
+.globl glue_OFPlainMutexTryLock
+glue_OFPlainMutexTryLock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainMutexTryLock
+
+.globl glue_OFPlainMutexUnlock
+glue_OFPlainMutexUnlock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainMutexUnlock
+
+.globl glue_OFPlainMutexFree
+glue_OFPlainMutexFree:
+	lwz	%r13, 44(%r12)
+	b	OFPlainMutexFree
+
+.globl glue_OFPlainRecursiveMutexNew
+glue_OFPlainRecursiveMutexNew:
+	lwz	%r13, 44(%r12)
+	b	OFPlainRecursiveMutexNew
+
+.globl glue_OFPlainRecursiveMutexLock
+glue_OFPlainRecursiveMutexLock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainRecursiveMutexLock
+
+.globl glue_OFPlainRecursiveMutexTryLock
+glue_OFPlainRecursiveMutexTryLock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainRecursiveMutexTryLock
+
+.globl glue_OFPlainRecursiveMutexUnlock
+glue_OFPlainRecursiveMutexUnlock:
+	lwz	%r13, 44(%r12)
+	b	OFPlainRecursiveMutexUnlock
+
+.globl glue_OFPlainRecursiveMutexFree
+glue_OFPlainRecursiveMutexFree:
+	lwz	%r13, 44(%r12)
+	b	OFPlainRecursiveMutexFree
+
+.globl glue_OFPlainThreadAttributesInit
+glue_OFPlainThreadAttributesInit:
+	lwz	%r13, 44(%r12)
+	b	OFPlainThreadAttributesInit
+
+.globl glue_OFPlainThreadNew
+glue_OFPlainThreadNew:
+	lwz	%r13, 44(%r12)
+	b	OFPlainThreadNew
+
+.globl glue_OFSetThreadName
+glue_OFSetThreadName:
+	lwz	%r13, 44(%r12)
+	b	OFSetThreadName
+
+.globl glue_OFPlainThreadJoin
+glue_OFPlainThreadJoin:
+	lwz	%r13, 44(%r12)
+	b	OFPlainThreadJoin
+
+.globl glue_OFPlainThreadDetach
+glue_OFPlainThreadDetach:
+	lwz	%r13, 44(%r12)
+	b	OFPlainThreadDetach
+
+.globl glue_OFCurrentPlainThread
+glue_OFCurrentPlainThread:
+	lwz	%r13, 44(%r12)
+	b	OFCurrentPlainThread
+
+.globl glue_OFPlainThreadIsCurrent
+glue_OFPlainThreadIsCurrent:
+	lwz	%r13, 44(%r12)
+	b	OFPlainThreadIsCurrent
+
+.globl glue_OFScrypt
+glue_OFScrypt:
+	lwz	%r13, 44(%r12)
+	b	OFScrypt
 
 .globl glue__OFSalsa20_8Core
 glue__OFSalsa20_8Core:
@@ -247,6 +362,11 @@ glue_OFSocketAddressHash:
 glue_OFSocketAddressString:
 	lwz	%r13, 44(%r12)
 	b	OFSocketAddressString
+
+.globl glue_OFSocketAddressDescription
+glue_OFSocketAddressDescription:
+	lwz	%r13, 44(%r12)
+	b	OFSocketAddressDescription
 
 .globl glue_OFSocketAddressSetIPPort
 glue_OFSocketAddressSetIPPort:
@@ -323,15 +443,25 @@ glue_OFSocketAddressAppleTalkPort:
 	lwz	%r13, 44(%r12)
 	b	OFSocketAddressAppleTalkPort
 
-.globl glue_OFTLSStreamErrorCodeDescription
-glue_OFTLSStreamErrorCodeDescription:
+.globl glue_OFStdInRef
+glue_OFStdInRef:
 	lwz	%r13, 44(%r12)
-	b	OFTLSStreamErrorCodeDescription
+	b	OFStdInRef
 
-.globl glue_OFTLSStreamImplementationRef
-glue_OFTLSStreamImplementationRef:
+.globl glue_OFStdOutRef
+glue_OFStdOutRef:
 	lwz	%r13, 44(%r12)
-	b	OFTLSStreamImplementationRef
+	b	OFStdOutRef
+
+.globl glue_OFStdErrRef
+glue_OFStdErrRef:
+	lwz	%r13, 44(%r12)
+	b	OFStdErrRef
+
+.globl glue_OFLogV
+glue_OFLogV:
+	lwz	%r13, 44(%r12)
+	b	OFLogV
 
 .globl glue__OFStrPTime
 glue__OFStrPTime:
@@ -357,6 +487,31 @@ glue_OFUTF16StringLength:
 glue_OFUTF32StringLength:
 	lwz	%r13, 44(%r12)
 	b	OFUTF32StringLength
+
+.globl glue_OFTLSKeyNew
+glue_OFTLSKeyNew:
+	lwz	%r13, 44(%r12)
+	b	OFTLSKeyNew
+
+.globl glue_OFTLSKeyFree
+glue_OFTLSKeyFree:
+	lwz	%r13, 44(%r12)
+	b	OFTLSKeyFree
+
+.globl glue_OFTLSStreamImplementationRef
+glue_OFTLSStreamImplementationRef:
+	lwz	%r13, 44(%r12)
+	b	OFTLSStreamImplementationRef
+
+.globl glue_OFTLSStreamErrorCodeDescription
+glue_OFTLSStreamErrorCodeDescription:
+	lwz	%r13, 44(%r12)
+	b	OFTLSStreamErrorCodeDescription
+
+.globl glue_OFX509CertificateImplementationRef
+glue_OFX509CertificateImplementationRef:
+	lwz	%r13, 44(%r12)
+	b	OFX509CertificateImplementationRef
 
 .globl glue_OFZIPArchiveEntryVersionToString
 glue_OFZIPArchiveEntryVersionToString:

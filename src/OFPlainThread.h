@@ -55,13 +55,20 @@ typedef struct {
 	size_t stackSize;
 } OFPlainThreadAttributes;
 
+/**
+ * @brief A function for an OFPlainThread.
+ *
+ * @param object An optional object that is passed to the thread.
+ */
+typedef void (*OFPlainThreadFunction)(id _Nullable object);
+
 #if defined(OF_HAVE_PTHREADS) || defined(DOXYGEN)
 /**
  * @brief Returns the current plain thread.
  *
  * @return The current plain thread
  */
-static OF_INLINE OFPlainThread
+static OF_INLINE OFPlainThread _Null_unspecified
 OFCurrentPlainThread(void)
 {
 	return pthread_self();
@@ -74,25 +81,25 @@ OFCurrentPlainThread(void)
  * @return Whether the specified plain thread is the current thread
  */
 static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread thread)
+OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread)
 {
 	return pthread_equal(thread, pthread_self());
 }
 #elif defined(OF_WINDOWS)
-static OF_INLINE OFPlainThread
+static OF_INLINE OFPlainThread _Null_unspecified
 OFCurrentPlainThread(void)
 {
 	return GetCurrentThread();
 }
 
 static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread thread)
+OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread)
 {
 	return (thread == GetCurrentThread());
 }
 #elif defined(OF_AMIGAOS)
-extern OFPlainThread OFCurrentPlainThread(void);
-extern bool OFPlainThreadIsCurrent(OFPlainThread);
+extern OFPlainThread _Null_unspecified OFCurrentPlainThread(void);
+extern bool OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified);
 #endif
 
 #ifdef __cplusplus
@@ -104,7 +111,7 @@ extern "C" {
  * @param attr A pointer to the thread attributes to initialize
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
+extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr);
 
 /**
  * @brief Creates a new plain thread.
@@ -119,15 +126,16 @@ extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
  * @param attr Thread attributes
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadNew(OFPlainThread *thread, const char *name,
-    void (*function)(id), id object, const OFPlainThreadAttributes *attr);
+extern int OFPlainThreadNew(OFPlainThread _Null_unspecified *_Nonnull thread,
+    const char *_Nullable name, OFPlainThreadFunction _Nonnull function,
+    id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
 
 /**
  * @brief Sets the name of the current thread.
  *
  * @param name The name for the current thread
  */
-extern void OFSetThreadName(const char *name);
+extern void OFSetThreadName(const char *_Nullable name);
 
 /**
  * @brief Joins the specified thread.
@@ -135,7 +143,7 @@ extern void OFSetThreadName(const char *name);
  * @param thread The thread to join
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadJoin(OFPlainThread thread);
+extern int OFPlainThreadJoin(OFPlainThread _Null_unspecified thread);
 
 /**
  * @brief Detaches the specified thread.
@@ -143,7 +151,7 @@ extern int OFPlainThreadJoin(OFPlainThread thread);
  * @param thread The thread to detach
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadDetach(OFPlainThread thread);
+extern int OFPlainThreadDetach(OFPlainThread _Null_unspecified thread);
 #ifdef __cplusplus
 }
 #endif

@@ -21,7 +21,6 @@
 
 #import "amiga-library.h"
 #import "OFObject.h"
-#import "OFStdIOStream.h"
 #import "OFApplication.h"
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
@@ -32,11 +31,17 @@
 #import "OFMethodSignature.h"
 #import "OFOnce.h"
 #import "OFPBKDF2.h"
+#import "OFPlainCondition.h"
+#import "OFPlainMutex.h"
+#import "OFPlainThread.h"
 #import "OFScrypt.h"
 #import "OFSocket.h"
-#import "OFTLSStream.h"
+#import "OFStdIOStream.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
+#import "OFTLSKey.h"
+#import "OFTLSStream.h"
+#import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 
 extern bool glue_OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase);
@@ -49,13 +54,11 @@ extern uint16_t glue_OFRandom16(void);
 extern uint32_t glue_OFRandom32(void);
 extern uint64_t glue_OFRandom64(void);
 extern unsigned long *_Nonnull glue_OFHashSeedRef(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdInRef(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdOutRef(void);
-extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdErrRef(void);
-extern void glue_OFLogV(OFConstantString *format, va_list arguments);
 extern int glue_OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate);
 extern void *_Nullable glue__Block_copy(const void *_Nullable block);
 extern void glue__Block_release(const void *_Nullable block);
+extern void glue__Block_object_assign(void *_Nonnull dst_, const void *_Nullable src_);
+extern void glue__Block_object_dispose(const void *object_, int flags);
 extern OFString *_Nonnull glue_OFDNSClassName(OFDNSClass DNSClass);
 extern OFString *_Nonnull glue_OFDNSRecordTypeName(OFDNSRecordType recordType);
 extern OFDNSClass glue_OFDNSClassParseName(OFString *_Nonnull string);
@@ -70,42 +73,75 @@ extern id _Nonnull glue_OFListItemObject(OFListItem _Nonnull listItem);
 extern size_t glue_OFSizeOfTypeEncoding(const char *type);
 extern size_t glue_OFAlignmentOfTypeEncoding(const char *type);
 extern void glue_OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func);
-extern void glue_OFPBKDF2Wrapper(const OFPBKDF2Parameters *_Nonnull parameters);
-extern void glue_OFScryptWrapper(const OFScryptParameters *_Nonnull parameters);
+extern void glue_OFPBKDF2(OFPBKDF2Parameters parameters);
+extern int glue_OFPlainConditionNew(OFPlainCondition *_Nonnull condition);
+extern int glue_OFPlainConditionSignal(OFPlainCondition *_Nonnull condition);
+extern int glue_OFPlainConditionBroadcast(OFPlainCondition *_Nonnull condition);
+extern int glue_OFPlainConditionWait(OFPlainCondition *_Nonnull condition, OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainConditionTimedWait(OFPlainCondition *_Nonnull condition, OFPlainMutex *_Nonnull mutex, OFTimeInterval timeout);
+extern int glue_OFPlainConditionWaitOrExecSignal(OFPlainCondition *_Nonnull condition, OFPlainMutex *_Nonnull mutex, ULONG *_Nonnull signalMask);
+extern int glue_OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *_Nonnull condition, OFPlainMutex *_Nonnull mutex, OFTimeInterval timeout, ULONG *_Nonnull signalMask);
+extern int glue_OFPlainConditionFree(OFPlainCondition *_Nonnull condition);
+extern int glue_OFPlainMutexNew(OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainMutexLock(OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainMutexTryLock(OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainMutexUnlock(OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainMutexFree(OFPlainMutex *_Nonnull mutex);
+extern int glue_OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *_Nonnull mutex);
+extern int glue_OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *_Nonnull mutex);
+extern int glue_OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *_Nonnull mutex);
+extern int glue_OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *_Nonnull mutex);
+extern int glue_OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *_Nonnull mutex);
+extern int glue_OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr);
+extern int glue_OFPlainThreadNew(OFPlainThread _Null_unspecified *_Nonnull thread, const char *_Nullable name, OFPlainThreadFunction _Nonnull function, id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
+extern void glue_OFSetThreadName(const char *_Nullable name);
+extern int glue_OFPlainThreadJoin(OFPlainThread _Null_unspecified thread);
+extern int glue_OFPlainThreadDetach(OFPlainThread _Null_unspecified thread);
+extern OFPlainThread _Null_unspecified glue_OFCurrentPlainThread(void);
+extern bool glue_OFPlainThreadIsCurrent(OFPlainThread _Null_unspecified thread);
+extern void glue_OFScrypt(OFScryptParameters parameters);
 extern void glue__OFSalsa20_8Core(uint32_t *_Nonnull buffer);
 extern void glue__OFScryptBlockMix(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);
 extern void glue__OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *tmp);
-extern OFSocketAddress glue_OFSocketAddressParseIP(OFString *IP, uint16_t port);
-extern OFSocketAddress glue_OFSocketAddressParseIPv4(OFString *IP, uint16_t port);
-extern OFSocketAddress glue_OFSocketAddressParseIPv6(OFString *IP, uint16_t port);
-extern OFSocketAddress glue_OFSocketAddressMakeUNIX(OFString *path);
-extern OFSocketAddress glue_OFSocketAddressMakeIPX(uint32_t network, const unsigned char *node, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressParseIP(OFString *_Nonnull IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressParseIPv4(OFString *_Nonnull IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressParseIPv6(OFString *_Nonnull IP, uint16_t port);
+extern OFSocketAddress glue_OFSocketAddressMakeUNIX(OFString *_Nonnull path);
+extern OFSocketAddress glue_OFSocketAddressMakeIPX(uint32_t network, const unsigned char *_Nonnull node, uint16_t port);
 extern OFSocketAddress glue_OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port);
-extern bool glue_OFSocketAddressEqual(const OFSocketAddress *address1, const OFSocketAddress *address2);
-extern unsigned long glue_OFSocketAddressHash(const OFSocketAddress *address);
-extern OFString *_Nonnull glue_OFSocketAddressString(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetIPPort(OFSocketAddress *address, uint16_t port);
-extern uint16_t glue_OFSocketAddressIPPort(const OFSocketAddress *address);
-extern OFString *glue_OFSocketAddressUNIXPath(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetIPXNetwork(OFSocketAddress *address, uint32_t network);
-extern uint32_t glue_OFSocketAddressIPXNetwork(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetIPXNode(OFSocketAddress *address, const unsigned char *node);
-extern void glue_OFSocketAddressGetIPXNode(const OFSocketAddress *address, unsigned char *_Nonnull node);
-extern void glue_OFSocketAddressSetIPXPort(OFSocketAddress *address, uint16_t port);
-extern uint16_t glue_OFSocketAddressIPXPort(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *address, uint16_t network);
-extern uint16_t glue_OFSocketAddressAppleTalkNetwork(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetAppleTalkNode(OFSocketAddress *address, uint8_t node);
-extern uint8_t glue_OFSocketAddressAppleTalkNode(const OFSocketAddress *address);
-extern void glue_OFSocketAddressSetAppleTalkPort(OFSocketAddress *address, uint8_t port);
-extern uint8_t glue_OFSocketAddressAppleTalkPort(const OFSocketAddress *address);
-extern OFString *glue_OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode);
-extern Class _Nonnull *_Nullable glue_OFTLSStreamImplementationRef(void);
+extern bool glue_OFSocketAddressEqual(const OFSocketAddress *_Nonnull address1, const OFSocketAddress *_Nonnull address2);
+extern unsigned long glue_OFSocketAddressHash(const OFSocketAddress *_Nonnull address);
+extern OFString *_Nonnull glue_OFSocketAddressString(const OFSocketAddress *_Nonnull address);
+extern OFString *_Nonnull glue_OFSocketAddressDescription(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetIPPort(OFSocketAddress *_Nonnull address, uint16_t port);
+extern uint16_t glue_OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
+extern OFString *glue_OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetIPXNetwork(OFSocketAddress *_Nonnull address, uint32_t network);
+extern uint32_t glue_OFSocketAddressIPXNetwork(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address, const unsigned char *_Nonnull node);
+extern void glue_OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address, unsigned char *_Nonnull node);
+extern void glue_OFSocketAddressSetIPXPort(OFSocketAddress *_Nonnull address, uint16_t port);
+extern uint16_t glue_OFSocketAddressIPXPort(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *_Nonnull address, uint16_t network);
+extern uint16_t glue_OFSocketAddressAppleTalkNetwork(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address, uint8_t node);
+extern uint8_t glue_OFSocketAddressAppleTalkNode(const OFSocketAddress *_Nonnull address);
+extern void glue_OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address, uint8_t port);
+extern uint8_t glue_OFSocketAddressAppleTalkPort(const OFSocketAddress *_Nonnull address);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdInRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdOutRef(void);
+extern OFStdIOStream *_Nonnull *_Nullable glue_OFStdErrRef(void);
+extern void glue_OFLogV(OFConstantString *_Nonnull format, va_list arguments);
 extern const char *_Nullable glue__OFStrPTime(const char *buffer, const char *format, struct tm *tm, int16_t *_Nullable tz);
-extern OFStringEncoding glue_OFStringEncodingParseName(OFString *string);
+extern OFStringEncoding glue_OFStringEncodingParseName(OFString *_Nonnull string);
 extern OFString *_Nullable glue_OFStringEncodingName(OFStringEncoding encoding);
-extern size_t glue_OFUTF16StringLength(const OFChar16 *string);
-extern size_t glue_OFUTF32StringLength(const OFChar32 *string);
+extern size_t glue_OFUTF16StringLength(const OFChar16 *_Nonnull string);
+extern size_t glue_OFUTF32StringLength(const OFChar32 *_Nonnull string);
+extern int glue_OFTLSKeyNew(OFTLSKey _Nonnull *_Nonnull key);
+extern int glue_OFTLSKeyFree(OFTLSKey _Nonnull key);
+extern Class _Nonnull *_Nullable glue_OFTLSStreamImplementationRef(void);
+extern OFString *glue_OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode);
+extern Class _Nonnull *_Nullable glue_OFX509CertificateImplementationRef(void);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryVersionToString(uint16_t version);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compressionMethod);
-extern size_t glue_OFZIPArchiveEntryExtraFieldFind(OFData *extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *size);
+extern size_t glue_OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *_Nonnull size);

@@ -30,17 +30,6 @@
   <function name='OFRandom32' return-type='uint32_t'/>
   <function name='OFRandom64' return-type='uint64_t'/>
   <function name='OFHashSeedRef' return-type='unsigned long *_Nonnull'/>
-  <include>OFStdIOStream.h</include>
-  <function name='OFStdInRef'
-            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
-  <function name='OFStdOutRef'
-            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
-  <function name='OFStdErrRef'
-            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
-  <function name='OFLogV'>
-    <argument name='format' type='OFConstantString *'/>
-    <argument name='arguments' type='va_list'/>
-  </function>
   <include>OFApplication.h</include>
   <function name='OFApplicationMain' return-type='int'>
     <argument name='argc' type='int *_Nonnull'/>
@@ -53,6 +42,14 @@
   </function>
   <function name='_Block_release'>
     <argument name='block' type='const void *_Nullable'/>
+  </function>
+  <function name='_Block_object_assign'>
+    <argument name='dst_' type='void *_Nonnull'/>
+    <argument name='src_' type='const void *_Nullable'/>
+  </function>
+  <function name='_Block_object_dispose'>
+    <argument name='object_' type='const void *'/>
+    <argument name='flags' type='int'/>
   </function>
   <include>OFDNSResourceRecord.h</include>
   <function name='OFDNSClassName' return-type='OFString *_Nonnull'>
@@ -108,12 +105,101 @@
     <argument name='func' type='OFOnceFunction _Nonnull'/>
   </function>
   <include>OFPBKDF2.h</include>
-  <function name='OFPBKDF2Wrapper'>
-    <argument name='parameters' type='const OFPBKDF2Parameters *_Nonnull'/>
+  <function name='OFPBKDF2'>
+    <argument name='parameters' type='OFPBKDF2Parameters'/>
+  </function>
+  <include>OFPlainCondition.h</include>
+  <function name='OFPlainConditionNew' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionSignal' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionBroadcast' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionWait' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionTimedWait' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+    <argument name='timeout' type='OFTimeInterval'/>
+  </function>
+  <function name='OFPlainConditionWaitOrExecSignal' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+    <argument name='signalMask' type='ULONG *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionTimedWaitOrExecSignal' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+    <argument name='timeout' type='OFTimeInterval'/>
+    <argument name='signalMask' type='ULONG *_Nonnull'/>
+  </function>
+  <function name='OFPlainConditionFree' return-type='int'>
+    <argument name='condition' type='OFPlainCondition *_Nonnull'/>
+  </function>
+  <include>OFPlainMutex.h</include>
+  <function name='OFPlainMutexNew' return-type='int'>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainMutexLock' return-type='int'>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainMutexTryLock' return-type='int'>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainMutexUnlock' return-type='int'>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainMutexFree' return-type='int'>
+    <argument name='mutex' type='OFPlainMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainRecursiveMutexNew' return-type='int'>
+    <argument name='mutex' type='OFPlainRecursiveMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainRecursiveMutexLock' return-type='int'>
+    <argument name='mutex' type='OFPlainRecursiveMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainRecursiveMutexTryLock' return-type='int'>
+    <argument name='mutex' type='OFPlainRecursiveMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainRecursiveMutexUnlock' return-type='int'>
+    <argument name='mutex' type='OFPlainRecursiveMutex *_Nonnull'/>
+  </function>
+  <function name='OFPlainRecursiveMutexFree' return-type='int'>
+    <argument name='mutex' type='OFPlainRecursiveMutex *_Nonnull'/>
+  </function>
+  <include>OFPlainThread.h</include>
+  <function name='OFPlainThreadAttributesInit' return-type='int'>
+    <argument name='attr' type='OFPlainThreadAttributes *_Nonnull'/>
+  </function>
+  <function name='OFPlainThreadNew' return-type='int'>
+    <argument name='thread' type='OFPlainThread _Null_unspecified *_Nonnull'/>
+    <argument name='name' type='const char *_Nullable'/>
+    <argument name='function' type='OFPlainThreadFunction _Nonnull'/>
+    <argument name='object' type='id _Nullable'/>
+    <argument name='attr' type='const OFPlainThreadAttributes *_Nullable'/>
+  </function>
+  <function name='OFSetThreadName'>
+    <argument name='name' type='const char *_Nullable'/>
+  </function>
+  <function name='OFPlainThreadJoin' return-type='int'>
+    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
+  </function>
+  <function name='OFPlainThreadDetach' return-type='int'>
+    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
+  </function>
+  <function name='OFCurrentPlainThread'
+            return-type='OFPlainThread _Null_unspecified'/>
+  <function name='OFPlainThreadIsCurrent' return-type='bool'>
+    <argument name='thread' type='OFPlainThread _Null_unspecified'/>
   </function>
   <include>OFScrypt.h</include>
-  <function name='OFScryptWrapper'>
-    <argument name='parameters' type='const OFScryptParameters *_Nonnull'/>
+  <function name='OFScrypt'>
+    <argument name='parameters' type='OFScryptParameters'/>
   </function>
   <!-- The following scrypt functions are only for tests. -->
   <function name='_OFSalsa20_8Core'>
@@ -132,23 +218,23 @@
   </function>
   <include>OFSocket.h</include>
   <function name='OFSocketAddressParseIP' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *'/>
+    <argument name='IP' type='OFString *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressParseIPv4' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *'/>
+    <argument name='IP' type='OFString *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressParseIPv6' return-type='OFSocketAddress'>
-    <argument name='IP' type='OFString *'/>
+    <argument name='IP' type='OFString *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressMakeUNIX' return-type='OFSocketAddress'>
-    <argument name='path' type='OFString *'/>
+    <argument name='path' type='OFString *_Nonnull'/>
   </function>
   <function name='OFSocketAddressMakeIPX' return-type='OFSocketAddress'>
     <argument name='network' type='uint32_t'/>
-    <argument name='node' type='const unsigned char *'/>
+    <argument name='node' type='const unsigned char *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressMakeAppleTalk' return-type='OFSocketAddress'>
@@ -157,74 +243,82 @@
     <argument name='port' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressEqual' return-type='bool'>
-    <argument name='address1' type='const OFSocketAddress *'/>
-    <argument name='address2' type='const OFSocketAddress *'/>
+    <argument name='address1' type='const OFSocketAddress *_Nonnull'/>
+    <argument name='address2' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressHash' return-type='unsigned long'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressString' return-type='OFString *_Nonnull'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
+  </function>
+  <function name='OFSocketAddressDescription' return-type='OFString *_Nonnull'>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetIPPort'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressIPPort' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressUNIXPath' return-type='OFString *'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetIPXNetwork'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='network' type='uint32_t'/>
   </function>
   <function name='OFSocketAddressIPXNetwork' return-type='uint32_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetIPXNode'>
-    <argument name='address' type='OFSocketAddress *'/>
-    <argument name='node' type='const unsigned char *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
+    <argument name='node' type='const unsigned char *_Nonnull'/>
   </function>
   <function name='OFSocketAddressGetIPXNode'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
     <argument name='node' type='unsigned char *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetIPXPort'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='port' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressIPXPort' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkNetwork'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='network' type='uint16_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkNetwork' return-type='uint16_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkNode'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='node' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkNode' return-type='uint8_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
   <function name='OFSocketAddressSetAppleTalkPort'>
-    <argument name='address' type='OFSocketAddress *'/>
+    <argument name='address' type='OFSocketAddress *_Nonnull'/>
     <argument name='port' type='uint8_t'/>
   </function>
   <function name='OFSocketAddressAppleTalkPort' return-type='uint8_t'>
-    <argument name='address' type='const OFSocketAddress *'/>
+    <argument name='address' type='const OFSocketAddress *_Nonnull'/>
   </function>
-  <include>OFTLSStream.h</include>
-  <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
-    <argument name='errorCode' type='OFTLSStreamErrorCode'/>
+  <include>OFStdIOStream.h</include>
+  <function name='OFStdInRef'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='OFStdOutRef'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='OFStdErrRef'
+            return-type='OFStdIOStream *_Nonnull *_Nullable'/>
+  <function name='OFLogV'>
+    <argument name='format' type='OFConstantString *_Nonnull'/>
+    <argument name='arguments' type='va_list'/>
   </function>
-  <function name='OFTLSStreamImplementationRef'
-            return-type='Class _Nonnull *_Nullable'/>
   <!-- Only for tests. -->
   <include>OFStrPTime.h</include>
   <function name='_OFStrPTime' return-type='const char *_Nullable'>
@@ -235,17 +329,33 @@
   </function>
   <include>OFString.h</include>
   <function name='OFStringEncodingParseName' return-type='OFStringEncoding'>
-    <argument name='string' type='OFString *'/>
+    <argument name='string' type='OFString *_Nonnull'/>
   </function>
   <function name='OFStringEncodingName' return-type='OFString *_Nullable'>
     <argument name='encoding' type='OFStringEncoding'/>
   </function>
   <function name='OFUTF16StringLength' return-type='size_t'>
-    <argument name='string' type='const OFChar16 *'/>
+    <argument name='string' type='const OFChar16 *_Nonnull'/>
   </function>
   <function name='OFUTF32StringLength' return-type='size_t'>
-    <argument name='string' type='const OFChar32 *'/>
+    <argument name='string' type='const OFChar32 *_Nonnull'/>
   </function>
+  <include>OFTLSKey.h</include>
+  <function name='OFTLSKeyNew' return-type='int'>
+    <argument name='key' type='OFTLSKey _Nonnull *_Nonnull'/>
+  </function>
+  <function name='OFTLSKeyFree' return-type='int'>
+    <argument name='key' type='OFTLSKey _Nonnull'/>
+  </function>
+  <include>OFTLSStream.h</include>
+  <function name='OFTLSStreamImplementationRef'
+            return-type='Class _Nonnull *_Nullable'/>
+  <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
+    <argument name='errorCode' type='OFTLSStreamErrorCode'/>
+  </function>
+  <include>OFX509Certificate.h</include>
+  <function name='OFX509CertificateImplementationRef'
+            return-type='Class _Nonnull *_Nullable'/>
   <include>OFZIPArchiveEntry.h</include>
   <function name='OFZIPArchiveEntryVersionToString'
             return-type='OFString *_Nonnull'>
@@ -257,8 +367,8 @@
               type='OFZIPArchiveEntryCompressionMethod'/>
   </function>
   <function name='OFZIPArchiveEntryExtraFieldFind' return-type='size_t'>
-    <argument name='extraField' type='OFData *'/>
+    <argument name='extraField' type='OFData *_Nonnull'/>
     <argument name='tag' type='OFZIPArchiveEntryExtraFieldTag'/>
-    <argument name='size' type='uint16_t *'/>
+    <argument name='size' type='uint16_t *_Nonnull'/>
   </function>
 </amiga-library>

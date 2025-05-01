@@ -410,9 +410,6 @@ DESTRUCTOR_P(ObjFW, 5000)
 # endif
 #endif
 
-extern void OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters);
-extern void OFScryptWrapper(const OFScryptParameters *parameters);
-
 void
 OFLog(OFConstantString *format, ...)
 {
@@ -421,16 +418,4 @@ OFLog(OFConstantString *format, ...)
 	va_start(arguments, format);
 	OFLogV(format, arguments);
 	va_end(arguments);
-}
-
-void
-OFPBKDF2(OFPBKDF2Parameters parameters)
-{
-	OFPBKDF2Wrapper(&parameters);
-}
-
-void
-OFScrypt(OFScryptParameters parameters)
-{
-	OFScryptWrapper(&parameters);
 }
