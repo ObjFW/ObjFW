@@ -41,9 +41,20 @@
 #include <constructor.h>
 
 extern struct Library *ObjFWRTBase;
+extern int _Unwind_RaiseException(void *);
+extern void _Unwind_DeleteException(void *);
+extern void *_Unwind_GetLanguageSpecificData(void *);
+extern uintptr_t _Unwind_GetRegionStart(void *);
+extern uintptr_t _Unwind_GetDataRelBase(void *);
+extern uintptr_t _Unwind_GetTextRelBase(void *);
+extern uintptr_t _Unwind_GetIP(void *);
+extern uintptr_t _Unwind_GetGR(void *, int);
+extern void _Unwind_SetIP(void *, uintptr_t);
+extern void _Unwind_SetGR(void *, int, uintptr_t);
+extern void _Unwind_Resume(void *);
+extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
-extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
 
 struct Library *ObjFWBase;
 void *__objc_class_name_OFActivateSandboxFailedException;
@@ -285,7 +296,7 @@ error(const char *string, ULONG arg)
 }
 
 static int *
-errNo(void)
+errNoRef(void)
 {
 	return &errno;
 }
@@ -294,28 +305,43 @@ static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
-	struct OFLibC libC = {
+	struct OFLinklibContext ctx = {
+		.version = 1,
+		.ObjFWRTBase = ObjFWRTBase,
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
-		.abort = abort,
+		._Unwind_RaiseException = _Unwind_RaiseException,
+		._Unwind_DeleteException = _Unwind_DeleteException,
+		._Unwind_GetLanguageSpecificData =
+		    _Unwind_GetLanguageSpecificData,
+		._Unwind_GetRegionStart = _Unwind_GetRegionStart,
+		._Unwind_GetDataRelBase = _Unwind_GetDataRelBase,
+		._Unwind_GetTextRelBase = _Unwind_GetTextRelBase,
+		._Unwind_GetIP = _Unwind_GetIP,
+		._Unwind_GetGR = _Unwind_GetGR,
+		._Unwind_SetIP = _Unwind_SetIP,
+		._Unwind_SetGR = _Unwind_SetGR,
+		._Unwind_Resume = _Unwind_Resume,
+		._Unwind_Backtrace = _Unwind_Backtrace,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
-		.errNo = errNo,
+		.atexit = atexit,
+		.exit = exit,
+		.abort = abort,
+		.errNoRef = errNoRef,
 		.vasprintf = vasprintf,
 		.strtof = strtof,
 		.strtod = strtod,
 		.gmtime_r = gmtime_r,
 		.localtime_r = localtime_r,
 		.mktime = mktime,
-		.gettimeofday = gettimeofday,
 		.strftime = strftime,
-		.exit = exit,
-		.atexit = atexit,
 		.signal = signal,
 		.setlocale = setlocale,
-		._Unwind_Backtrace = _Unwind_Backtrace
+		.setjmp = setjmp,
+		.longjmp = longjmp,
 	};
 
 	if (initialized)
@@ -325,7 +351,7 @@ ctor(void)
 		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
 		    OBJFW_LIB_MINOR);
 
-	if (!OFInit(1, &libC, ObjFWRTBase))
+	if (!OFInit(&ctx))
 		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;

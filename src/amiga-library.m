@@ -37,10 +37,6 @@
 #include <proto/exec.h>
 #undef Class
 
-#define CONCAT_VERSION2(major, minor) #major "." #minor
-#define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
-#define VERSION_STRING CONCAT_VERSION(OBJFW_LIB_MAJOR, OBJFW_LIB_MINOR)
-
 #define DATA_OFFSET 0x8000
 
 /* This always needs to be the first thing in the file. */
@@ -60,7 +56,7 @@ struct ObjFWBase {
 
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
-struct OFLibC libC;
+struct OFLinklibContext linklibCtx;
 struct Library *ObjFWRTBase;
 
 /* All __saveds functions in this file need to use the M68K ABI */
@@ -138,9 +134,7 @@ libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
 struct Library *__saveds
 libOpen(void)
 {
-	OF_M68K_ARG(struct ObjFWBase *, base, a6)
-
-	struct ObjFWBase *child;
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6, *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
@@ -150,17 +144,13 @@ libOpen(void)
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
-	/*
-	 * We cannot use malloc here, as that depends on the libC passed from
-	 * the application.
-	 */
 	if ((child = AllocMem(base->library.lib_NegSize +
 	    base->library.lib_PosSize, MEMF_ANY)) == NULL) {
 		base->library.lib_OpenCnt--;
 		return NULL;
 	}
 
-	memcpy(child, (char *)base - base->library.lib_NegSize,
+	CopyMem((char *)base - base->library.lib_NegSize, child,
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
 	child = (struct ObjFWBase *)((char *)child + base->library.lib_NegSize);
@@ -176,7 +166,7 @@ libOpen(void)
 		return NULL;
 	}
 
-	memcpy(child->dataSeg, base->dataSeg - DATA_OFFSET, dataSize);
+	CopyMem(base->dataSeg - DATA_OFFSET, child->dataSeg, dataSize);
 
 	dataDataRelocs = getDataDataRelocs();
 	displacement = child->dataSeg - (base->dataSeg - DATA_OFFSET);
@@ -218,7 +208,7 @@ expunge(struct ObjFWBase *base, struct ExecBase *sysBase)
 static void *__saveds
 libExpunge(void)
 {
-	OF_M68K_ARG(struct ObjFWBase *, base, a6)
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
 
 	return expunge(base, SysBase);
 }
@@ -232,8 +222,7 @@ libClose(void)
 	 */
 	struct ExecBase *sysBase = SysBase;
 #define SysBase sysBase
-
-	OF_M68K_ARG(struct ObjFWBase *, base, a6)
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
 
 	if (base->parent != NULL) {
 		struct ObjFWBase *parent;
@@ -277,20 +266,20 @@ OFInitPart2(uintptr_t *iter0, struct Library *RTBase)
 }
 
 bool
-OFInit(unsigned int version, struct OFLibC *libC_, struct Library *RTBase)
+OFInit(struct OFLinklibContext *ctx)
 {
 	register struct ObjFWBase *r12 __asm__("r12");
 	struct ObjFWBase *base = r12;
 	void *frame;
 	uintptr_t *iter0;
 
-	if (version > 1)
+	if (ctx->version > 1)
 		return false;
 
 	if (base->initialized)
 		return true;
 
-	memcpy(&libC, libC_, sizeof(libC));
+	CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
 
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
@@ -300,9 +289,9 @@ OFInit(unsigned int version, struct OFLibC *libC_, struct Library *RTBase)
 	    : "=r"(frame), "=r"(iter0)
 	);
 
-	libC.__register_frame(frame);
+	linklibCtx.__register_frame(frame);
 
-	OFInitPart2(iter0, RTBase);
+	OFInitPart2(iter0, ctx->ObjFWRTBase);
 
 	base->initialized = true;
 
@@ -312,121 +301,131 @@ OFInit(unsigned int version, struct OFLibC *libC_, struct Library *RTBase)
 void *
 malloc(size_t size)
 {
-	return libC.malloc(size);
+	return linklibCtx.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	return libC.calloc(count, size);
+	return linklibCtx.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	return libC.realloc(ptr, size);
+	return linklibCtx.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	libC.free(ptr);
-}
-
-void
-abort(void)
-{
-	libC.abort();
-
-	OF_UNREACHABLE
+	linklibCtx.free(ptr);
 }
 
 int
 _Unwind_RaiseException(void *ex)
 {
-	return libC._Unwind_RaiseException(ex);
+	return linklibCtx._Unwind_RaiseException(ex);
 }
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	libC._Unwind_DeleteException(ex);
+	linklibCtx._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	return libC._Unwind_GetLanguageSpecificData(ctx);
+	return linklibCtx._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	return libC._Unwind_GetRegionStart(ctx);
+	return linklibCtx._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	return libC._Unwind_GetDataRelBase(ctx);
+	return linklibCtx._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	return libC._Unwind_GetTextRelBase(ctx);
+	return linklibCtx._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	return libC._Unwind_GetIP(ctx);
+	return linklibCtx._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	return libC._Unwind_GetGR(ctx, gr);
+	return linklibCtx._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	libC._Unwind_SetIP(ctx, ip);
+	linklibCtx._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	libC._Unwind_SetGR(ctx, gr, value);
+	linklibCtx._Unwind_SetGR(ctx, gr, value);
 }
 
 void
 _Unwind_Resume(void *ex)
 {
-	libC._Unwind_Resume(ex);
+	linklibCtx._Unwind_Resume(ex);
 }
 
-void __register_frame(void *frame)
+int
+_Unwind_Backtrace(int (*callback)(void *, void *), void *data)
 {
-	libC.__register_frame(frame);
+	return linklibCtx._Unwind_Backtrace(callback, data);
 }
 
-void __deregister_frame(void *frame)
+int
+atexit(void (*function)(void))
 {
-	libC.__deregister_frame(frame);
+	return linklibCtx.atexit(function);
+}
+
+void
+exit(int status)
+{
+	linklibCtx.exit(status);
+
+	OF_UNREACHABLE
+}
+
+void
+abort(void)
+{
+	linklibCtx.abort();
+
+	OF_UNREACHABLE
 }
 
 int *
-OFErrNo(void)
+OFErrNoRef(void)
 {
-	return libC.errNo();
+	return linklibCtx.errNoRef();
 }
 
 int
 vasprintf(char **restrict strp, const char *restrict fmt, va_list args)
 {
-	return libC.vasprintf(strp, fmt, args);
+	return linklibCtx.vasprintf(strp, fmt, args);
 }
 
 int
@@ -445,99 +444,61 @@ asprintf(char **restrict strp, const char *restrict fmt, ...)
 float
 strtof(const char *str, char **endptr)
 {
-	return libC.strtof(str, endptr);
+	return linklibCtx.strtof(str, endptr);
 }
 
 double
 strtod(const char *str, char **endptr)
 {
-	return libC.strtod(str, endptr);
+	return linklibCtx.strtod(str, endptr);
 }
 
 struct tm *
 gmtime_r(const time_t *time, struct tm *tm)
 {
-	return libC.gmtime_r(time, tm);
+	return linklibCtx.gmtime_r(time, tm);
 }
 
 struct tm *
 localtime_r(const time_t *time, struct tm *tm)
 {
-	return libC.localtime_r(time, tm);
-}
-
-int
-gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-	return libC.gettimeofday(tv, tz);
+	return linklibCtx.localtime_r(time, tm);
 }
 
 time_t
 mktime(struct tm *tm)
 {
-	return libC.mktime(tm);
+	return linklibCtx.mktime(tm);
 }
 
 size_t
 strftime(char *str, size_t len, const char *fmt, const struct tm *tm)
 {
-	return libC.strftime(str, len, fmt, tm);
+	return linklibCtx.strftime(str, len, fmt, tm);
 }
 
-void
-exit(int status)
+sighandler_t
+signal(int sig, sighandler_t func)
 {
-	libC.exit(status);
-
-	OF_UNREACHABLE
-}
-
-int
-atexit(void (*function)(void))
-{
-	return libC.atexit(function);
-}
-
-OFSignalHandler
-signal(int sig, OFSignalHandler func)
-{
-	return libC.signal(sig, func);
+	return linklibCtx.signal(sig, func);
 }
 
 char *
 setlocale(int category, const char *locale)
 {
-	return libC.setlocale(category, locale);
-}
-
-int
-_Unwind_Backtrace(int (*callback)(void *, void *), void *data)
-{
-	return libC._Unwind_Backtrace(callback, data);
+	return linklibCtx.setlocale(category, locale);
 }
 
 int
 setjmp(jmp_buf env)
 {
-	return libC.setjmp(env);
+	return linklibCtx.setjmp(env);
 }
 
 void
 longjmp(jmp_buf env, int val)
 {
-	libC.longjmp(env, val);
-}
-
-void
-OFPBKDF2Wrapper(const OFPBKDF2Parameters *parameters)
-{
-	OFPBKDF2(*parameters);
-}
-
-void
-OFScryptWrapper(const OFScryptParameters *parameters)
-{
-	OFScrypt(*parameters);
+	linklibCtx.longjmp(env, val);
 }
 
 #pragma GCC diagnostic push
@@ -563,7 +524,7 @@ static struct {
 	ULONG *dataTable;
 	struct Library *(*initFunc)(struct ObjFWBase *base, void *segList,
 	    struct ExecBase *execBase);
-} init_table = {
+} initTable = {
 	sizeof(struct ObjFWBase),
 	functionTable,
 	NULL,
@@ -575,14 +536,16 @@ struct Resident resident = {
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
 	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
-	.rt_Version = OBJFW_LIB_MAJOR,
+	.rt_Version = OBJFW_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
 	.rt_Name = (char *)OBJFW_AMIGA_LIB,
-	.rt_IdString = (char *)"ObjFW " VERSION_STRING
-	    " \xA9 2008-2023 Jonathan Schleifer",
-	.rt_Init = &init_table,
-	.rt_Revision = OBJFW_LIB_MINOR,
+	.rt_IdString = (char *)OBJFW_AMIGA_LIB " "
+	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
+	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
+	    " \xA9 2008-2025 Jonathan Schleifer",
+	.rt_Init = &initTable,
+	.rt_Revision = OBJFW_LIB_PATCH,
 	.rt_Tags = NULL,
 };
 

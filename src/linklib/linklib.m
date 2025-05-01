@@ -54,14 +54,14 @@ extern struct Library *ObjFWBase;
 #endif
 
 bool
-OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase)
+OFInit(struct OFLinklibContext *_Nonnull libc)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(unsigned int, struct OFLibC *_Nonnull, struct Library *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 28))(version, libc, RTBase);
+	return __extension__ ((bool (*)(struct OFLinklibContext *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 28))(libc);
 }
 
 void *_Nullable

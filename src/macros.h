@@ -362,8 +362,8 @@
 
 #ifdef OF_COMPILING_AMIGA_LIBRARY
 # undef errno
-extern int *_Nonnull OFErrNo(void);
-# define errno (*OFErrNo())
+extern int *_Nonnull OFErrNoRef(void);
+# define errno (*OFErrNoRef())
 #endif
 
 #ifdef OF_APPLE_RUNTIME

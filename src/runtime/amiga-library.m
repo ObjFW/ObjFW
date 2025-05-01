@@ -372,16 +372,6 @@ _Unwind_Resume(void *ex)
 	linklibCtx._Unwind_Resume(ex);
 }
 
-void __register_frame(void *frame)
-{
-	linklibCtx.__register_frame(frame);
-}
-
-void __deregister_frame(void *frame)
-{
-	linklibCtx.__deregister_frame(frame);
-}
-
 int
 atexit(void (*function)(void))
 {

@@ -806,15 +806,7 @@ OF_SINGLETON_METHODS
 
 - (OFTimeInterval)timeIntervalSinceNow
 {
-	struct timeval t;
-	OFTimeInterval seconds;
-
-	OFEnsure(gettimeofday(&t, NULL) == 0);
-
-	seconds = t.tv_sec;
-	seconds += (OFTimeInterval)t.tv_usec / 1000000;
-
-	return self.timeIntervalSince1970 - seconds;
+	return self.timeIntervalSince1970 - now();
 }
 
 - (OFDate *)dateByAddingTimeInterval: (OFTimeInterval)seconds

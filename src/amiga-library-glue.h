@@ -45,7 +45,7 @@
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
 
-extern bool glue_OFInit(unsigned int version, struct OFLibC *_Nonnull libc, struct Library *_Nonnull RTBase);
+extern bool glue_OFInit(struct OFLinklibContext *_Nonnull libc);
 extern void *_Nullable glue_OFAllocMemory(size_t count, size_t size);
 extern void *_Nullable glue_OFAllocZeroedMemory(size_t count, size_t size);
 extern void *_Nullable glue_OFResizeMemory(void *_Nullable pointer, size_t count, size_t size);

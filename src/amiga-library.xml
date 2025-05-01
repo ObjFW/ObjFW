@@ -2,9 +2,7 @@
   <include>amiga-library.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='OFInit' return-type='bool'>
-    <argument name='version' type='unsigned int'/>
-    <argument name='libc' type='struct OFLibC *_Nonnull'/>
-    <argument name='RTBase' type='struct Library *_Nonnull'/>
+    <argument name='libc' type='struct OFLinklibContext *_Nonnull'/>
   </function>
   <include>OFObject.h</include>
   <function name='OFAllocMemory' return-type='void *_Nullable'>
