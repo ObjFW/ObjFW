@@ -65,7 +65,7 @@ typedef struct {
 /**
  * @brief A function for an OFPlainThread.
  *
- * @param object An optional object that is passed to the thread.
+ * @param object An optional object that is passed to the thread
  */
 typedef void (*OFPlainThreadFunction)(id _Nullable object);
 
