@@ -12,7 +12,8 @@
 {
     usage: [
         "Benutzung: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] ",
-        "[--sha256] [--sha384] [--sha512] [--iri] datei1 [datei2 ...]"
+        "[--sha256] [--sha384] [--sha512] [--iri] [--version] datei1 ",
+        "[datei2 ...]"
     ],
     unknown_long_option: "%[prog]: Unbekannte Option: --%[opt]",
     unknown_option: "%[prog]: Unbekannte Option: -%[opt]",

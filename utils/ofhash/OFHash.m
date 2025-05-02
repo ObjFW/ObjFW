@@ -36,6 +36,7 @@
 #import "OFSandbox.h"
 #import "OFSecureData.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
 
 #ifdef HAVE_TLS_SUPPORT
 # import "ObjFWTLS.h"
@@ -69,10 +70,25 @@ help(void)
 {
 	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] "
-	    @"[--sha256] [--sha384] [--sha512] [--iri] file1 [file2 ...]",
+	    @"[--sha256] [--sha384] [--sha512] [--iri] [--version] "
+	    @"file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofhash %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+	    		       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static void
@@ -108,6 +124,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		{ '\0', @"sha384", 0, &calculateSHA384, NULL },
 		{ '\0', @"sha512", 0, &calculateSHA512, NULL },
 		{ '\0', @"iri", 0, &isIRI, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser =
@@ -131,6 +148,9 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 		case '?':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(

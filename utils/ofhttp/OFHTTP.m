@@ -145,10 +145,26 @@ help(OFStream *stream, bool full, int status)
 		    @"    --insecure       "
 		    @"  Ignore TLS errors and allow insecure redirects\n    "
 		    @"    --ignore-status  "
-		    @"  Ignore HTTP status code")];
+		    @"  Ignore HTTP status code\n    "
+		    @"    --version        "
+		    @"  Show version information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofhttp %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+	    		       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static OFString *
@@ -444,6 +460,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		{ 'v', @"verbose", 0, &_verbose, NULL },
 		{ '\0', @"insecure", 0, &_insecure, NULL },
 		{ '\0', @"ignore-status", 0, &_ignoreStatus, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -491,6 +508,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		case 'P':
 			[self setProxy: optionsParser.argument];
 			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(
