@@ -30,9 +30,8 @@
 #import "OFSystemInfo.h"
 
 #ifdef OF_AMIGAOS
-const char *version =
-    "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 

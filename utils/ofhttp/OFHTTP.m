@@ -61,9 +61,8 @@
 #import "ProgressBar.h"
 
 #ifdef OF_AMIGAOS
-const char *version =
-    "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
