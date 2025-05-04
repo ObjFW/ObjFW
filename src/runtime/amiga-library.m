@@ -35,7 +35,7 @@
 
 /* This always needs to be the first thing in the file. */
 int
-_start(void)
+__start(void)
 {
 	return -1;
 }
