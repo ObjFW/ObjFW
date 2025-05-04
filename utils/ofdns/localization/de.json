@@ -20,7 +20,7 @@
         "und A,\n",
         "                   kann wiederholt werden)\n",
         "        --tcp      Benutzung von TCP erzwingen\n",
-        "        --version  Versionsinformation anzeigen"
+        "        --version  Versionsinformationen anzeigen"
     ],
     long_option_requires_argument: [
         "%[prog]: Option --%[opt] benötigt ein Argument"

@@ -30,7 +30,7 @@
         "        --insecure         TLS-Fehler ignorieren und unsichere\n",
         "                           Weiterleitungen erlauben\n",
         "        --ignore-status    HTTP Status-Code ignorieren\n",
-        "        --version          Versionsinformation anzeigen"
+        "        --version          Versionsinformationen anzeigen"
     ],
     invalid_input_header: "%[prog]: Header müssen im Format Name:Wert sein!",
     invalid_input_method: "%[prog]: Ungültige Request-Methode %[method]!",
