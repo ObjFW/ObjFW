@@ -41,7 +41,7 @@
 
 /* This always needs to be the first thing in the file. */
 int
-_start(void)
+__start(void)
 {
 	return -1;
 }
@@ -543,7 +543,7 @@ struct Resident resident = {
 	.rt_IdString = (char *)OBJFW_AMIGA_LIB " "
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
-	    " \xA9 2008-2025 Jonathan Schleifer",
+	    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer",
 	.rt_Init = &initTable,
 	.rt_Revision = OBJFW_LIB_PATCH,
 	.rt_Tags = NULL,

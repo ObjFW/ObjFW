@@ -36,7 +36,8 @@
         "    -t  --type=             Archiv-Typ (gz, lha, tar, tgz, zip, ",
         "zoo)\n",
         "    -v  --verbose           Ausführlicher Modus für Datei-Liste\n",
-        "    -x  --extract           Dateien entpacken"
+        "    -x  --extract           Dateien entpacken\n",
+        "        --version           Versionsinformation anzeigen"
     ],
     "2_options_mutually_exclusive": [
         "Fehler: -%[shortopt1] / --%[longopt1] und ",

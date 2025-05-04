@@ -18,9 +18,9 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/tls						\
 	    -I../..							\
 	    -DOBJFWTLS_LOCAL_INCLUDES					\
-	    -DLOCALIZATION_DIR=\"${datadir}/ofhash/localization\"
-OBJCFLAGS += ${PIE_CFLAGS}				\
-	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+	    -DLOCALIZATION_DIR=\"${datadir}/ofhash/localization\"	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src			\
 	-L../../src/linklib		\
 	-L../../src/runtime		\

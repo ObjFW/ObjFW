@@ -27,11 +27,11 @@
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
 
 #ifdef OF_AMIGAOS
-const char *version =
-    "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
@@ -65,10 +65,26 @@ help(OFStream *stream, bool full, int status)
 		    @"  The record type to query (defaults to AAAA and A,\n"
 		    @"                   can be repeated)\n    "
 		    @"    --tcp    "
-		    @"  Force using TCP for the query")];
+		    @"  Force using TCP for the query\n    "
+		    @"    --version"
+		    @"  Print the version information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofdns %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 @implementation OFDNS
@@ -97,11 +113,12 @@ help(OFStream *stream, bool full, int status)
 	OFString *DNSClassString, *server;
 	bool forceTCP;
 	const OFOptionsParserOption options[] = {
-		{ 'c', @"class", 1, NULL, &DNSClassString },
-		{ 'h', @"help", 0, NULL, NULL },
-		{ 's', @"server", 1, NULL, &server },
-		{ 't', @"type", 1, NULL, NULL },
+		{ 'c',  @"class", 1, NULL, &DNSClassString },
+		{ 'h',  @"help", 0, NULL, NULL },
+		{ 's',  @"server", 1, NULL, &server },
+		{ 't',  @"type", 1, NULL, NULL },
 		{ '\0', @"tcp", 0, &forceTCP, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
@@ -144,6 +161,9 @@ help(OFStream *stream, bool full, int status)
 		case 'h':
 			help(OFStdOut, true, 0);
 			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(

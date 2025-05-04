@@ -97,11 +97,15 @@ static OFTimeInterval
 now(void)
 {
 #if defined(OF_MORPHOS)
+# ifdef DEVICES_TIMER_H_TIMEVAL_CAMELCASE
+	struct TimeVal tv;
+# else
 	struct timeval tv;
+# endif
 
 	GetUTCSysTime(&tv);
 
-	return 252460800.0 + tv.tv_secs + (OFTimeInterval)tv.tv_usec / 1000000;
+	return 252460800.0 + tv.tv_secs + (OFTimeInterval)tv.tv_micro / 1000000;
 #elif defined(HAVE_CLOCK_GETTIME)
 	struct timespec ts;
 

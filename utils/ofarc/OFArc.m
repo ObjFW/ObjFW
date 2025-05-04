@@ -31,6 +31,7 @@
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
@@ -56,9 +57,8 @@
 #define bufferSize 4096
 
 #ifdef OF_AMIGAOS
-const char *version =
-    "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+const char *VER = "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
@@ -108,10 +108,26 @@ help(OFStream *stream, bool full, int status)
 		    @"tgz, zip, zoo)\n"
 		    @"    -v  --verbose           Verbose output for file list"
 		    @"\n"
-		    @"    -x  --extract           Extract files")];
+		    @"    -x  --extract           Extract files\n"
+		    @"        --version           Print the version "
+		    @"information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofarc %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static void
@@ -225,21 +241,22 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 	OFString *archiveComment, *outputDir, *encodingString, *type;
 	bool isIRI;
 	const OFOptionsParserOption options[] = {
-		{ 'a', @"append", 0, NULL, NULL },
-		{ 0,   @"archive-comment", 1, NULL, &archiveComment },
-		{ 'c', @"create", 0, NULL, NULL },
-		{ 'C', @"directory", 1, NULL, &outputDir },
-		{ 'E', @"encoding", 1, NULL, &encodingString },
-		{ 'f', @"force", 0, NULL, NULL },
-		{ 'h', @"help", 0, NULL, NULL },
-		{ 0,   @"iri", 0, &isIRI, NULL },
-		{ 'l', @"list", 0, NULL, NULL },
-		{ 'n', @"no-clobber", 0, NULL, NULL },
-		{ 'p', @"print", 0, NULL, NULL },
-		{ 'q', @"quiet", 0, NULL, NULL },
-		{ 't', @"type", 1, NULL, &type },
-		{ 'v', @"verbose", 0, NULL, NULL },
-		{ 'x', @"extract", 0, NULL, NULL },
+		{ 'a',  @"append", 0, NULL, NULL },
+		{ '\0', @"archive-comment", 1, NULL, &archiveComment },
+		{ 'c',  @"create", 0, NULL, NULL },
+		{ 'C',  @"directory", 1, NULL, &outputDir },
+		{ 'E',  @"encoding", 1, NULL, &encodingString },
+		{ 'f',  @"force", 0, NULL, NULL },
+		{ 'h',  @"help", 0, NULL, NULL },
+		{ '\0', @"iri", 0, &isIRI, NULL },
+		{ 'l',  @"list", 0, NULL, NULL },
+		{ 'n',  @"no-clobber", 0, NULL, NULL },
+		{ 'p',  @"print", 0, NULL, NULL },
+		{ 'q',  @"quiet", 0, NULL, NULL },
+		{ 't',  @"type", 1, NULL, &type },
+		{ 'v',  @"verbose", 0, NULL, NULL },
+		{ 'x',  @"extract", 0, NULL, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFUnichar option, mode = '\0';
@@ -320,6 +337,9 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		case 'h':
 			help(OFStdOut, true, 0);
 			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 		case '=':
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"option_takes_no_argument",

@@ -88,7 +88,7 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 libdir = @libdir@
-amigalibdir ?= ${prefix}/libs
+amigalibdir ?= ${prefix}/Libs
 plugindir ?= ${libdir}/${PACKAGE_NAME}
 bundledir ?= ${prefix}/Library/PlugIns/${PACKAGE_NAME}
 datarootdir = @datarootdir@
@@ -694,14 +694,14 @@ locales: ${MO_FILES}
 	fi
 
 .S.o .S.amigalib.o:
-	${COMPILE_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
 	if ${AS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} \
 	    ${DEP_ASFLAGS} -c -o $@ $<; then \
-		${COMPILE_OK}; \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .S.lib.o:
 	${COMPILE_LIB_STATUS}
