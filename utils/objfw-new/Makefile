@@ -15,9 +15,9 @@ ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
-	    -I../..
-OBJCFLAGS += ${PIE_CFLAGS}				\
-	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+	    -I../..					\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src -lobjfw						\
 	-L../../src/runtime -L../../src/runtime/linklib	${RUNTIME_LIBS}	\
 	${LIBS}

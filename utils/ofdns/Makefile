@@ -16,9 +16,9 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/runtime						\
 	    -I../../src/exceptions					\
 	    -I../..							\
-	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"
-OBJCFLAGS += ${PIE_CFLAGS}				\
-	     -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src -lobjfw						\
 	-L../../src/runtime -L../../src/runtime/linklib	${RUNTIME_LIBS}	\
 	${LIBS}

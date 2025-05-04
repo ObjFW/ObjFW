@@ -121,7 +121,7 @@ version(void)
 {
 	[OFStdOut writeFormat: @"ofarc %@ (ObjFW %@) "
 			       @"<https://objfw.nil.im/>\n"
-	    		       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
 			       @"<js@nil.im>\n"
 			       @"Licensed under the LGPL 3.0 "
 			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
