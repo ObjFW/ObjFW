@@ -285,7 +285,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofarc/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofarc/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

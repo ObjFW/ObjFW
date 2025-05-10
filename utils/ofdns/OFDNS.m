@@ -134,7 +134,7 @@ version(void)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 # else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofdns/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofdns/localization"]];
 # endif
 #endif
 
