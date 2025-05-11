@@ -112,9 +112,9 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	condition->waitingTasks = &waitingTask;
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask))
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.
@@ -213,16 +213,19 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else if (mask & (1ul << port.mp_SigBit))
-		error = ETIMEDOUT;
-	else
-		/*
-		 * This should not happen - it means something interrupted the
-		 * Wait(), so the best we can do is return EINTR.
-		 */
-		error = EINTR;
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask)) {
+		if (mask & (1ul << port.mp_SigBit))
+			error = ETIMEDOUT;
+		else
+			/*
+			 * This should not happen - it means something
+			 * interrupted the Wait(), so the best we can do is
+			 * return EINTR.
+			 */
+			error = EINTR;
+	}
 
 	condition->waitingTasks = waitingTask.next;
 
