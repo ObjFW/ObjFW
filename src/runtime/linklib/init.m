@@ -121,7 +121,8 @@ ctor(void)
 static void __attribute__((__used__))
 dtor(void)
 {
-	CloseLibrary(ObjFWRTBase);
+	if (ObjFWRTBase != NULL)
+		CloseLibrary(ObjFWRTBase);
 }
 
 CONSTRUCTOR_P(ObjFWRT, 4000)
