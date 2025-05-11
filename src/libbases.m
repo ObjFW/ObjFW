@@ -25,8 +25,8 @@
 #include <proto/exec.h>
 #undef Class
 
+#include <devices/timer.h>
 #ifdef OF_MORPHOS
-# include <devices/timer.h>
 # include <ppcinline/timer.h>
 #endif
 
