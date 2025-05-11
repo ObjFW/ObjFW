@@ -31,6 +31,9 @@
 #endif
 #undef Class
 
+extern struct Device *TimerBase;
+extern struct Unit *MicroHZUnit;
+
 int
 OFPlainConditionNew(OFPlainCondition *condition)
 {
@@ -168,6 +171,8 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 				.mn_ReplyPort = &port,
 				.mn_Length = sizeof(request)
 			},
+			.io_Device = TimerBase,
+			.io_Unit = MicroHZUnit,
 			.io_Command = TR_ADDREQUEST
 		},
 #ifdef OF_AMIGAOS4
@@ -189,12 +194,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 	NewList(&port.mp_MsgList);
 
 	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
-		error = EAGAIN;
-		goto fail;
-	}
-
-	if (OpenDevice("timer.device", UNIT_MICROHZ,
-	    (struct IORequest *)&request, 0) != 0) {
 		error = EAGAIN;
 		goto fail;
 	}
@@ -233,7 +232,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 		AbortIO((struct IORequest *)&request);
 		WaitIO((struct IORequest *)&request);
 	}
-	CloseDevice((struct IORequest *)&request);
 
 	Permit();
 
