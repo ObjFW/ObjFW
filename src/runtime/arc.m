@@ -382,7 +382,9 @@ _objc_zeroWeakReferences(id value)
 	OFReleaseMemoryBarrier();
 
 	if (value != nil && !object_isTaggedPointer(value) &&
-	    !(_OBJC_PRE_IVARS(value)->info & _OBJC_OBJECT_INFO_WEAK_REFERENCES))
+	    (_object_getClass_fast(value)->info &
+	    _OBJC_CLASS_INFO_RUNTIME_RR) && !(_OBJC_PRE_IVARS(value)->info &
+	    _OBJC_OBJECT_INFO_WEAK_REFERENCES))
 		return;
 #endif
 
