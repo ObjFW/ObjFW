@@ -340,6 +340,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		case '-':
 			if ([optionsParser.lastLongOption isEqual: @"version"])
 				version();
+			break;
 		case '=':
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"option_takes_no_argument",

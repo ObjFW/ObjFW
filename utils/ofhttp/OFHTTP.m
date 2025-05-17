@@ -510,6 +510,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		case '-':
 			if ([optionsParser.lastLongOption isEqual: @"version"])
 				version();
+			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(
