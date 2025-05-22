@@ -57,7 +57,7 @@
 # define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)
 # define hstrerror(err) "unknown (no hstrerror)"
 # define SOCKET_ERROR -1
-# if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
+# ifdef OF_HAVE_THREADS
 #  define SocketBase ((struct Library *)OFTLSKeyGet(_OFSocketBaseKey))
 #  ifdef OF_AMIGAOS4
 #   define ISocket ((struct SocketIFace *)OFTLSKeyGet(_OFSocketInterfaceKey))
@@ -102,7 +102,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern bool _OFSocketInit(void) OF_VISIBILITY_INTERNAL;
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
 extern void _OFSocketDeinit(void) OF_VISIBILITY_INTERNAL;
 #endif
 extern int _OFSocketErrNo(void) OF_VISIBILITY_INTERNAL;
@@ -111,7 +111,7 @@ extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen) OF_VISIBILITY_INTERNAL;
 #endif
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
 extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_INTERNAL;
 # ifdef OF_AMIGAOS4
 extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_INTERNAL;
