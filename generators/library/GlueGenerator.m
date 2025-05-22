@@ -143,9 +143,27 @@
 		    @"\n"
 		    @".globl glue_%@\n"
 		    @"glue_%@:\n"
+		    @".cfi_startproc\n"
+		    @"	stwu	%%r1, -16(%%r1)\n"
+		    @".cfi_def_cfa_offset 16\n"
+		    @"	mflr	%%r0\n"
+		    @"	stw	%%r0, 20(%%r1)\n"
+		    @".cfi_offset 65, 4\n"
+		    @"	stw	%%r13, 12(%%r1)\n"
+		    @".cfi_offset 13, -4\n"
 		    @"	lwz	%%r13, 44(%%r12)\n"
-		    @"	b	%@\n",
-		    name, name, name];
+		    @"	bl	%@\n"
+		    @"	lwz	%%r13, 12(%%r1)\n"
+		    @"	lwz	%%r0, 20(%%r1)\n"
+		    @"	addi	%%r1, %%r1, 16\n"
+		    @".cfi_def_cfa_offset 0\n"
+		    @"	mtlr	%%r0\n"
+		    @".cfi_restore 65\n"
+		    @"	blr\n"
+		    @".cfi_endproc\n"
+		    @".type glue_%@, @function\n"
+		    @".size glue_%@, .-glue_%@\n",
+		    name, name, name, name, name, name];
 	}
 }
 @end
