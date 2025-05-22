@@ -45,8 +45,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	    IRIByAppendingPathComponent: @"linklib/linklib.m"];
 	OFIRI *glueHeaderIRI = [sourcesIRI
 	    IRIByAppendingPathComponent: @"amiga-library-glue.h"];
-	OFIRI *morphOSGlueIRI = [sourcesIRI
-	    IRIByAppendingPathComponent: @"amiga-library-glue-morphos.S"];
+	OFIRI *glueIRI = [sourcesIRI
+	    IRIByAppendingPathComponent: @"amiga-library-glue.m"];
 	OFIRI *funcArrayIRI = [sourcesIRI
 	    IRIByAppendingPathComponent: @"amiga-library-funcarray.inc"];
 	OFXMLElement *library = [OFXMLElement elementWithStream:
@@ -58,8 +58,8 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFFile *glueHeader =
 	    [OFFile fileWithPath: glueHeaderIRI.fileSystemRepresentation
 			    mode: @"w"];
-	OFFile *morphOSGlue =
-	    [OFFile fileWithPath: morphOSGlueIRI.fileSystemRepresentation
+	OFFile *glue =
+	    [OFFile fileWithPath: glueIRI.fileSystemRepresentation
 			    mode: @"w"];
 	OFFile *funcArray =
 	    [OFFile fileWithPath: funcArrayIRI.fileSystemRepresentation
@@ -70,7 +70,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	GlueGenerator *glueGenerator = [[[GlueGenerator alloc]
 		  initWithLibrary: library
 			   header: glueHeader
-	    morphOSImplementation: morphOSGlue] autorelease];
+		   implementation: glue] autorelease];
 	FuncArrayGenerator *funcArrayGenerator = [[[FuncArrayGenerator alloc]
 	    initWithLibrary: library
 		    include: funcArray] autorelease];

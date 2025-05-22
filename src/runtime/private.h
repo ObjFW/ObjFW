@@ -244,6 +244,10 @@ struct objc_linklib_context {
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	void (*_Nonnull exit)(int);
 };
+
+extern bool objc_init(struct objc_linklib_context *ctx);
+extern void class_registerAlias_np(Class _Nonnull class_,
+    const char *_Nonnull name);
 #endif
 
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)
