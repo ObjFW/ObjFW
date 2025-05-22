@@ -53,11 +53,12 @@
     <argument name='block' type='const void *_Nullable'/>
   </function>
   <function name='_Block_object_assign'>
-    <argument name='dst_' type='void *_Nonnull'/>
-    <argument name='src_' type='const void *_Nullable'/>
+    <argument name='dst' type='void *_Nonnull'/>
+    <argument name='src' type='const void *_Nullable'/>
+    <argument name='flags' type='int'/>
   </function>
   <function name='_Block_object_dispose'>
-    <argument name='object_' type='const void *'/>
+    <argument name='object' type='const void *'/>
     <argument name='flags' type='int'/>
   </function>
   <include>OFDNSResourceRecord.h</include>

@@ -221,25 +221,25 @@ _Block_release(const void *_Nullable block)
 }
 
 void
-_Block_object_assign(void *_Nonnull dst_, const void *_Nullable src_)
+_Block_object_assign(void *_Nonnull dst, const void *_Nullable src, int flags)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Nonnull, const void *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 118))(dst_, src_);
+	__extension__ ((void (*)(void *_Nonnull, const void *_Nullable, int))*(void **)(((uintptr_t)ObjFWBase) - 118))(dst, src, flags);
 }
 
 void
-_Block_object_dispose(const void *object_, int flags)
+_Block_object_dispose(const void *object, int flags)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r"(ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const void *, int))*(void **)(((uintptr_t)ObjFWBase) - 124))(object_, flags);
+	__extension__ ((void (*)(const void *, int))*(void **)(((uintptr_t)ObjFWBase) - 124))(object, flags);
 }
 
 OFString *_Nonnull

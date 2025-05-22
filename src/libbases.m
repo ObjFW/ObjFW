@@ -25,8 +25,8 @@
 #include <proto/exec.h>
 #undef Class
 
+#include <devices/timer.h>
 #ifdef OF_MORPHOS
-# include <devices/timer.h>
 # include <ppcinline/timer.h>
 #endif
 
@@ -43,10 +43,9 @@ struct Library *LocaleBase;
 #ifdef OF_AMIGAOS4
 struct LocaleIFace *ILocale;
 #endif
-#ifdef OF_MORPHOS
 struct Device *TimerBase;
+struct Unit *MicroHZUnit;
 static struct timerequest timeRequest;
-#endif
 
 OF_CONSTRUCTOR()
 {
@@ -70,21 +69,18 @@ OF_CONSTRUCTOR()
 		@throw [OFInitializationFailedException exception];
 #endif
 
-#ifdef OF_MORPHOS
 	if (OpenDevice("timer.device", UNIT_MICROHZ,
 	    &timeRequest.tr_node, 0) != 0)
 		@throw [OFInitializationFailedException exception];
 
 	TimerBase = timeRequest.tr_node.io_Device;
-#endif
+	MicroHZUnit = timeRequest.tr_node.io_Unit;
 }
 
 OF_DESTRUCTOR()
 {
-#ifdef OF_MORPHOS
 	if (TimerBase != NULL)
 		CloseDevice(&timeRequest.tr_node);
-#endif
 
 #ifdef OF_AMIGAOS4
 	if (ILocale != NULL)

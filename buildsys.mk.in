@@ -693,15 +693,15 @@ locales: ${MO_FILES}
 		${COMPILE_FAILED}; \
 	fi
 
-.S.o .S.amigalib.o:
-	${COMPILE_AMIGA_LIB_STATUS}
+.S.o:
+	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
 	if ${AS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} \
 	    ${DEP_ASFLAGS} -c -o $@ $<; then \
-		${COMPILE_AMIGA_LIB_OK}; \
+		${COMPILE_OK}; \
 	else \
-		${COMPILE_AMIGA_LIB_FAILED}; \
+		${COMPILE_FAILED}; \
 	fi
 .S.lib.o:
 	${COMPILE_LIB_STATUS}
@@ -712,6 +712,16 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
+	fi
+.S.amigalib.o:
+	${COMPILE_AMIGA_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
+	if ${AS} ${AMIGA_LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} \
+	    ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
+	else \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .S.plugin.o:
 	${COMPILE_PLUGIN_STATUS}

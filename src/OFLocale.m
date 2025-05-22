@@ -24,6 +24,7 @@
 #import "OFLocale.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFFileManager.h"
 #import "OFIRI.h"
 #import "OFNumber.h"
 #import "OFString.h"
@@ -536,7 +537,8 @@ OF_SINGLETON_METHODS
 - (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
 	void *pool;
-	OFIRI *mapIRI, *localizationIRI;
+	OFFileManager *fileManager;
+	OFIRI *mapIRI, *localizationIRI, *compressedLocalizationIRI;
 	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
@@ -571,8 +573,19 @@ OF_SINGLETON_METHODS
 		return;
 	}
 
+	fileManager = [OFFileManager defaultManager];
+
 	localizationIRI = [IRI IRIByAppendingPathComponent:
 	    [localizationFile stringByAppendingString: @".json"]];
+	compressedLocalizationIRI = [IRI IRIByAppendingPathComponent:
+	    [localizationFile stringByAppendingString: @".json.gz"]];
+
+	if (![fileManager fileExistsAtIRI: localizationIRI] &&
+	    [fileManager fileExistsAtIRI: compressedLocalizationIRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = compressedLocalizationIRI.string;
+		localizationIRI = tmp;
+	}
 
 	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:
 	    localizationIRI] objectByParsingJSON]];

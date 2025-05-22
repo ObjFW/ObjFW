@@ -687,8 +687,10 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 
 - (bool)hasTerminal
 {
-#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
-    defined(OF_NINTENDO_SWITCH)
+#if defined(OF_AMIGAOS)
+	return IsInteractive(_handle);
+#elif defined(OF_WII) || defined(OF_NINTENDO_DS) || \
+    defined(OF_NINTENDO_3DS) || defined(OF_NINTENDO_SWITCH)
 	return true;
 #elif defined(HAVE_ISATTY) && !defined(OF_WII_U)
 	return isatty(_fd);

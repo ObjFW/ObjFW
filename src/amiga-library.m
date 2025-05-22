@@ -61,6 +61,7 @@ struct Library *ObjFWRTBase;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
+    ".globl __restore_r13\n"
     ".section .text\n"
     ".align 2\n"
     "__restore_r13:\n"

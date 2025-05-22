@@ -37,7 +37,7 @@
         "zoo)\n",
         "    -v  --verbose           Ausführlicher Modus für Datei-Liste\n",
         "    -x  --extract           Dateien entpacken\n",
-        "        --version           Versionsinformation anzeigen"
+        "        --version           Versionsinformationen anzeigen"
     ],
     "2_options_mutually_exclusive": [
         "Fehler: -%[shortopt1] / --%[longopt1] und ",

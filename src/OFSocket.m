@@ -73,7 +73,7 @@
 # undef id
 #endif
 
-#if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
+#if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 static OFMutex *mutex;
 
 static void
@@ -82,12 +82,12 @@ releaseMutex(void)
 	objc_release(mutex);
 }
 #endif
-#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
 #endif
 
 #ifdef OF_AMIGAOS
-# if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
+# ifdef OF_HAVE_THREADS
 OFTLSKey _OFSocketBaseKey;
 #  ifdef OF_AMIGAOS4
 OFTLSKey _OFSocketInterfaceKey;
@@ -100,7 +100,7 @@ struct SocketIFace *ISocket = NULL;
 # endif
 #endif
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
 OF_CONSTRUCTOR()
 {
 	if (OFTLSKeyNew(&_OFSocketBaseKey) != 0)
@@ -113,7 +113,7 @@ OF_CONSTRUCTOR()
 }
 #endif
 
-#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 static void
 init(void)
 {
@@ -122,17 +122,6 @@ init(void)
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		return;
-# elif defined(OF_AMIGAOS)
-	if ((SocketBase = OpenLibrary("bsdsocket.library", 4)) == NULL)
-		return;
-
-#  ifdef OF_AMIGAOS4
-	if ((ISocket = (struct SocketIFace *)
-	    GetInterface(SocketBase, "main", 1, NULL)) == NULL) {
-		CloseLibrary(SocketBase);
-		return;
-	}
-#  endif
 # elif defined(OF_WII)
 	if (net_init() < 0)
 		return;
@@ -153,7 +142,7 @@ init(void)
 	atexit(socketExit);
 # endif
 
-# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
+# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 	mutex = [[OFMutex alloc] init];
 	atexit(releaseMutex);
 # endif
@@ -178,7 +167,7 @@ OF_DESTRUCTOR()
 bool
 _OFSocketInit(void)
 {
-#if !defined(OF_AMIGAOS) || defined(OF_MORPHOS) || !defined(OF_HAVE_THREADS)
+#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, init);
 
@@ -227,7 +216,7 @@ _OFSocketInit(void)
 #endif
 }
 
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
 void
 _OFSocketDeinit(void)
 {
@@ -352,11 +341,11 @@ _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
 {
 	int ret;
 
-# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
+# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 	[mutex lock];
 # endif
 	ret = getsockname(sock, addr, addrLen);
-# if defined(OF_HAVE_THREADS) && (!defined(OF_AMIGAOS) || defined(OF_MORPHOS))
+# if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 	[mutex unlock];
 # endif
 

@@ -63,6 +63,10 @@ extern __declspec(dllexport) void _Block_object_assign(void *, const void *,
 extern __declspec(dllexport) void _Block_object_dispose(const void *,
     const int);
 # endif
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+extern void _Block_object_assign(void *, const void *, const int);
+extern void _Block_object_dispose(const void *, const int);
+# endif
 #ifdef __cplusplus
 }
 #endif

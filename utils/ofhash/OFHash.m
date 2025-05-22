@@ -142,7 +142,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhash/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhash/localization"]];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -150,6 +150,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		case '-':
 			if ([optionsParser.lastLongOption isEqual: @"version"])
 				version();
+			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(

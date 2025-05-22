@@ -486,7 +486,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhttp/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhttp/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -510,6 +510,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		case '-':
 			if ([optionsParser.lastLongOption isEqual: @"version"])
 				version();
+			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(

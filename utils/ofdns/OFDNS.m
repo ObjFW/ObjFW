@@ -134,7 +134,7 @@ version(void)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 # else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofdns/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofdns/localization"]];
 # endif
 #endif
 
@@ -164,6 +164,7 @@ version(void)
 		case '-':
 			if ([optionsParser.lastLongOption isEqual: @"version"])
 				version();
+			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(

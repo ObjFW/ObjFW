@@ -31,6 +31,9 @@
 #endif
 #undef Class
 
+extern struct Device *TimerBase;
+extern struct Unit *MicroHZUnit;
+
 int
 OFPlainConditionNew(OFPlainCondition *condition)
 {
@@ -112,9 +115,9 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	condition->waitingTasks = &waitingTask;
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask))
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.
@@ -168,6 +171,8 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 				.mn_ReplyPort = &port,
 				.mn_Length = sizeof(request)
 			},
+			.io_Device = TimerBase,
+			.io_Unit = MicroHZUnit,
 			.io_Command = TR_ADDREQUEST
 		},
 #ifdef OF_AMIGAOS4
@@ -193,12 +198,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 		goto fail;
 	}
 
-	if (OpenDevice("timer.device", UNIT_MICROHZ,
-	    (struct IORequest *)&request, 0) != 0) {
-		error = EAGAIN;
-		goto fail;
-	}
-
 	Forbid();
 
 	if ((error = OFPlainMutexUnlock(mutex)) != 0) {
@@ -213,16 +212,19 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else if (mask & (1ul << port.mp_SigBit))
-		error = ETIMEDOUT;
-	else
-		/*
-		 * This should not happen - it means something interrupted the
-		 * Wait(), so the best we can do is return EINTR.
-		 */
-		error = EINTR;
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask)) {
+		if (mask & (1ul << port.mp_SigBit))
+			error = ETIMEDOUT;
+		else
+			/*
+			 * This should not happen - it means something
+			 * interrupted the Wait(), so the best we can do is
+			 * return EINTR.
+			 */
+			error = EINTR;
+	}
 
 	condition->waitingTasks = waitingTask.next;
 
@@ -230,7 +232,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 		AbortIO((struct IORequest *)&request);
 		WaitIO((struct IORequest *)&request);
 	}
-	CloseDevice((struct IORequest *)&request);
 
 	Permit();
 
