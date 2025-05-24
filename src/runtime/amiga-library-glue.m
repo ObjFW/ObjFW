@@ -23,6 +23,14 @@
 
 #import "amiga-library-glue.h"
 
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+
 bool __saveds
 glue_objc_init(struct objc_linklib_context *ctx)
 {
