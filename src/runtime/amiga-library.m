@@ -245,14 +245,14 @@ libNull(void)
 }
 
 bool
-objc_init(struct objc_linklib_context *ctx)
+objc_init(unsigned int version, struct objc_linklib_context *ctx)
 {
 	register struct ObjFWRTBase *r12 __asm__("r12");
 	struct ObjFWRTBase *base = r12;
 	void *frame;
 	uintptr_t *iter, *iter0;
 
-	if (ctx->version > 1)
+	if (version > 1)
 		return false;
 
 	if (base->initialized)
@@ -304,6 +304,26 @@ void
 free(void *ptr)
 {
 	linklibCtx.free(ptr);
+}
+
+int
+vfprintf(FILE *fp, const char *fmt, va_list args)
+{
+	return linklibCtx.vfprintf(fp, fmt, args);
+}
+
+int
+fflush(FILE *fp)
+{
+	return linklibCtx.fflush(fp);
+}
+
+void
+abort(void)
+{
+	linklibCtx.abort();
+
+	OF_UNREACHABLE
 }
 
 int
@@ -380,20 +400,6 @@ void __register_frame(void *frame)
 void __deregister_frame(void *frame)
 {
 	linklibCtx.__deregister_frame(frame);
-}
-
-int
-atexit(void (*function)(void))
-{
-	return linklibCtx.atexit(function);
-}
-
-void
-exit(int status)
-{
-	linklibCtx.exit(status);
-
-	OF_UNREACHABLE
 }
 
 #pragma GCC diagnostic push
