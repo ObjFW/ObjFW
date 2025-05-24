@@ -82,7 +82,7 @@ _objc_error(const char *title, const char *format, ...)
 	MessageBoxA(NULL, message, title,
 	    MB_OK | MB_SYSTEMMODAL | MB_ICONERROR);
 
-	exit(EXIT_FAILURE);
+	abort();
 #elif defined(OF_AMIGAOS)
 	struct Library *IntuitionBase;
 # ifdef OF_AMIGAOS4
@@ -95,12 +95,12 @@ _objc_error(const char *title, const char *format, ...)
 # endif
 
 	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
-		exit(EXIT_FAILURE);
+		abort();
 
 # ifdef OF_AMIGAOS4
 	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
 	    "main", 1, NULL)) == NULL)
-		exit(EXIT_FAILURE);
+		abort();
 # endif
 
 	easy.es_StructSize = sizeof(easy);
@@ -117,7 +117,7 @@ _objc_error(const char *title, const char *format, ...)
 
 	CloseLibrary(IntuitionBase);
 
-	exit(EXIT_FAILURE);
+	abort();
 #else
 	va_list args;
 

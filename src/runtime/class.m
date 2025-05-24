@@ -870,6 +870,14 @@ class_getInstanceMethod(Class class, SEL selector)
 	return NULL;
 }
 
+#if defined(OBJC_COMPILING_AMIGA_LIBRARY) && defined(OF_MORPHOS)
+const char *
+_class_getMethodTypeEncoding(Class class, SEL selector)
+{
+	return method_getTypeEncoding(class_getInstanceMethod(class, selector));
+}
+#endif
+
 bool
 class_addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)

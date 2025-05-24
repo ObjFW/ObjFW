@@ -306,7 +306,6 @@ ctor(void)
 {
 	static bool initialized = false;
 	struct OFLinklibContext ctx = {
-		.version = 1,
 		.ObjFWRTBase = ObjFWRTBase,
 		.malloc = malloc,
 		.calloc = calloc,
@@ -351,7 +350,7 @@ ctor(void)
 		error("Failed to open " OBJFW_AMIGA_LIB " version %lu!",
 		    OBJFW_LIB_MINOR);
 
-	if (!OFInit(&ctx))
+	if (!OFInit(1, &ctx))
 		error("Failed to initialize " OBJFW_AMIGA_LIB "!", 0);
 
 	initialized = true;
@@ -364,10 +363,6 @@ dtor(void)
 		CloseLibrary(ObjFWBase);
 }
 
-# if defined(OF_AMIGAOS_M68K)
-ADD2INIT(ctor, -2);
-ADD2EXIT(dtor, -2);
-# elif defined(OF_MORPHOS)
 CONSTRUCTOR_P(ObjFW, 5000)
 {
 	ctor();
@@ -379,7 +374,6 @@ DESTRUCTOR_P(ObjFW, 5000)
 {
 	dtor();
 }
-# endif
 #endif
 
 void

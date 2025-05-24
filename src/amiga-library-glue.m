@@ -23,10 +23,18 @@
 
 #import "amiga-library-glue.h"
 
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+
 bool __saveds
-glue_OFInit(struct OFLinklibContext *_Nonnull libc)
+glue_OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx)
 {
-	return OFInit(libc);
+	return OFInit(version, ctx);
 }
 
 void *_Nullable __saveds

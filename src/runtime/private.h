@@ -222,11 +222,13 @@ struct objc_dtable {
 #if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
     defined(OBJC_COMPILING_AMIGA_LINKLIB)
 struct objc_linklib_context {
-	unsigned int version;
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
 	void (*_Nonnull free)(void *_Nullable);
+	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
+	int (*_Nonnull fflush)(FILE *_Nonnull);
+	void (*_Nonnull abort)(void);
 	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
 	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
 	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
@@ -241,13 +243,16 @@ struct objc_linklib_context {
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
-	int (*_Nonnull atexit)(void (*_Nonnull)(void));
-	void (*_Nonnull exit)(int);
 };
 
-extern bool objc_init(struct objc_linklib_context *ctx);
+extern bool objc_init(unsigned int version,
+    struct objc_linklib_context *_Nonnull ctx);
 extern void class_registerAlias_np(Class _Nonnull class_,
     const char *_Nonnull name);
+# ifdef OF_MORPHOS
+extern const char *_Nullable _class_getMethodTypeEncoding(Class _Nullable class,
+    SEL _Nonnull selector);
+# endif
 #endif
 
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)

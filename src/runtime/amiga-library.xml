@@ -3,22 +3,12 @@
   <include>private.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='objc_init' return-type='bool'>
-    <argument name='ctx' type='struct objc_linklib_context *'/>
+    <argument name='version' type='unsigned int'/>
+    <argument name='ctx' type='struct objc_linklib_context *_Nonnull'/>
   </function>
   <!-- Used by the compiler, but can be called manually. -->
   <function name='__objc_exec_class'>
     <argument name='module' type='struct objc_module *_Nonnull'/>
-  </function>
-  <function name='__gnu_objc_personality_v0' return-type='int'>
-    <argument name='version' type='int'/>
-    <argument name='actions' type='int'/>
-    <argument name='exClass' type='uint64_t _Nonnull'/>
-    <argument name='ex' type='void *_Nonnull'/>
-    <argument name='ctx' type='void *_Nonnull'/>
-  </function>
-  <function name='class_registerAlias_np'>
-    <argument name='class_' type='Class _Nonnull'/>
-    <argument name='name' type='const char *_Nonnull'/>
   </function>
   <function name='objc_msg_lookup' return-type='IMP _Nonnull'>
     <argument name='object' type='id _Nullable'/>
@@ -90,6 +80,13 @@
   </function>
   <function name='objc_enumerationMutation'>
     <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='__gnu_objc_personality_v0' return-type='int'>
+    <argument name='version' type='int'/>
+    <argument name='actions' type='int'/>
+    <argument name='exClass' type='uint64_t _Nonnull'/>
+    <argument name='ex' type='void *_Nonnull'/>
+    <argument name='ctx' type='void *_Nonnull'/>
   </function>
   <function name='objc_retain' return-type='id _Nullable'>
     <argument name='object' type='id _Nullable'/>
@@ -200,7 +197,9 @@
     <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
   </function>
-  <function name='class_getInstanceMethod' return-type='Method _Nullable'>
+  <!-- MorphOS started using it before the API was stable. -->
+  <function name='_class_getMethodTypeEncoding'
+            return-type='const char *_Nullable' condition='defined(OF_MORPHOS)'>
     <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
   </function>
@@ -237,17 +236,22 @@
     <argument name='protocol1' type='Protocol *_Nonnull'/>
     <argument name='protocol2' type='Protocol *_Nonnull'/>
   </function>
-  <function name='class_copyMethodList'
-            return-type='Method _Nullable *_Nullable'>
-    <argument name='class_' type='Class _Nullable'/>
-    <argument name='outCount' type='unsigned int *_Nullable'/>
+  <function name='objc_setUncaughtExceptionHandler'
+            return-type='_Nullable objc_uncaught_exception_handler'>
+    <argument name='handler' type='objc_uncaught_exception_handler _Nullable'/>
   </function>
-  <function name='method_getName' return-type='SEL _Nonnull'>
-    <argument name='method' type='Method _Nonnull'/>
+  <function name='objc_setForwardHandler'>
+    <argument name='forward' type='IMP _Nullable'/>
+    <argument name='stretForward' type='IMP _Nullable'/>
   </function>
-  <function name='method_getTypeEncoding' return-type='const char *_Nullable'>
-    <argument name='method' type='Method _Nonnull'/>
+  <function name='objc_setEnumerationMutationHandler'>
+    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'/>
   </function>
+  <!-- MorphOS started using it before the API was stable. -->
+  <function name='_objc_zeroWeakReferences' condition='defined(OF_MORPHOS)'>
+    <argument name='value' type='id _Nullable'/>
+  </function>
+  <function name='objc_deinit'/>
   <function name='class_copyIvarList' return-type='Ivar _Nullable *_Nullable'>
     <argument name='class_' type='Class _Nullable'/>
     <argument name='outCount' type='unsigned int *_Nullable'/>
@@ -261,6 +265,25 @@
   <function name='ivar_getOffset' return-type='ptrdiff_t'>
     <argument name='ivar' type='Ivar _Nonnull'/>
   </function>
+  <function name='class_registerAlias_np'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='class_getInstanceMethod' return-type='Method _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='class_copyMethodList'
+            return-type='Method _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='outCount' type='unsigned int *_Nullable'/>
+  </function>
+  <function name='method_getName' return-type='SEL _Nonnull'>
+    <argument name='method' type='Method _Nonnull'/>
+  </function>
+  <function name='method_getTypeEncoding' return-type='const char *_Nullable'>
+    <argument name='method' type='Method _Nonnull'/>
+  </function>
   <function name='class_copyPropertyList'
             return-type='objc_property_t _Nullable *_Nullable'>
     <argument name='class_' type='Class _Nullable'/>
@@ -272,18 +295,6 @@
   <function name='property_copyAttributeValue' return-type='char *_Nullable'>
     <argument name='property' type='objc_property_t _Nonnull'/>
     <argument name='name' type='const char *_Nonnull'/>
-  </function>
-  <function name='objc_deinit'/>
-  <function name='objc_setUncaughtExceptionHandler'
-            return-type='_Nullable objc_uncaught_exception_handler'>
-    <argument name='handler' type='objc_uncaught_exception_handler _Nullable'/>
-  </function>
-  <function name='objc_setForwardHandler'>
-    <argument name='forward' type='IMP _Nullable'/>
-    <argument name='stretForward' type='IMP _Nullable'/>
-  </function>
-  <function name='objc_setEnumerationMutationHandler'>
-    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'/>
   </function>
   <function name='objc_constructInstance' return-type='id _Nullable'>
     <argument name='class_' type='Class _Nullable'/>

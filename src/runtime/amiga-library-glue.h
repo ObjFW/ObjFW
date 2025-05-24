@@ -22,10 +22,8 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-extern bool glue_objc_init(struct objc_linklib_context *ctx);
+extern bool glue_objc_init(unsigned int version, struct objc_linklib_context *_Nonnull ctx);
 extern void glue___objc_exec_class(struct objc_module *_Nonnull module);
-extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
-extern void glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name);
 extern IMP _Nonnull glue_objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull glue_objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull glue_objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector);
@@ -43,6 +41,7 @@ extern void glue_objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t
 extern void glue_objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_enumerationMutation(id _Nonnull object);
+extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern id _Nullable glue_objc_retain(id _Nullable object);
 extern id _Nullable glue_objc_retainBlock(id _Nullable block);
 extern id _Nullable glue_objc_retainAutorelease(id _Nullable object);
@@ -74,7 +73,9 @@ extern bool glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull s
 extern bool glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p);
 extern IMP _Nullable glue_class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector);
 extern IMP _Nullable glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector);
-extern Method _Nullable glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector);
+#if defined(OF_MORPHOS)
+extern const char *_Nullable glue__class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector);
+#endif
 extern bool glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 extern IMP _Nullable glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 extern Class _Nullable glue_object_getClass(id _Nullable object);
@@ -83,20 +84,25 @@ extern const char *_Nullable glue_object_getClassName(id _Nullable object);
 extern const char *_Nonnull glue_protocol_getName(Protocol *_Nonnull protocol);
 extern bool glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
 extern bool glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
-extern Method _Nullable *_Nullable glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount);
-extern SEL _Nonnull glue_method_getName(Method _Nonnull method);
-extern const char *_Nullable glue_method_getTypeEncoding(Method _Nonnull method);
+extern _Nullable objc_uncaught_exception_handler glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler);
+extern void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward);
+extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler);
+#if defined(OF_MORPHOS)
+extern void glue__objc_zeroWeakReferences(id _Nullable value);
+#endif
+extern void glue_objc_deinit(void);
 extern Ivar _Nullable *_Nullable glue_class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount);
 extern const char *_Nonnull glue_ivar_getName(Ivar _Nonnull ivar);
 extern const char *_Nonnull glue_ivar_getTypeEncoding(Ivar _Nonnull ivar);
 extern ptrdiff_t glue_ivar_getOffset(Ivar _Nonnull ivar);
+extern void glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name);
+extern Method _Nullable glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector);
+extern Method _Nullable *_Nullable glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount);
+extern SEL _Nonnull glue_method_getName(Method _Nonnull method);
+extern const char *_Nullable glue_method_getTypeEncoding(Method _Nonnull method);
 extern objc_property_t _Nullable *_Nullable glue_class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount);
 extern const char *_Nonnull glue_property_getName(objc_property_t _Nonnull property);
 extern char *_Nullable glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name);
-extern void glue_objc_deinit(void);
-extern _Nullable objc_uncaught_exception_handler glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler);
-extern void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward);
-extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler);
 extern id _Nullable glue_objc_constructInstance(Class _Nullable class_, void *_Nullable bytes);
 extern void *_Nullable glue_objc_destructInstance(id _Nullable object);
 extern id _Nullable glue_class_createInstance(Class _Nullable class_, size_t extraBytes);

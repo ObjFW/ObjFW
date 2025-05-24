@@ -26,7 +26,6 @@
 typedef void (*sighandler_t)(int);
 
 struct OFLinklibContext {
-	unsigned int version;
 	struct Library *ObjFWRTBase;
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
@@ -71,5 +70,5 @@ struct OFLinklibContext {
 	void __dead2 (*_Nonnull longjmp)(jmp_buf, int);
 };
 
-extern bool OFInit(struct OFLinklibContext *_Nonnull ctx);
+extern bool OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx);
 extern unsigned long *OFHashSeedRef(void);

@@ -61,7 +61,6 @@ struct Library *ObjFWRTBase;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
-    ".globl __restore_r13\n"
     ".section .text\n"
     ".align 2\n"
     "__restore_r13:\n"
@@ -267,14 +266,14 @@ OFInitPart2(uintptr_t *iter0, struct Library *RTBase)
 }
 
 bool
-OFInit(struct OFLinklibContext *ctx)
+OFInit(unsigned int version, struct OFLinklibContext *ctx)
 {
 	register struct ObjFWBase *r12 __asm__("r12");
 	struct ObjFWBase *base = r12;
 	void *frame;
 	uintptr_t *iter0;
 
-	if (ctx->version > 1)
+	if (version > 1)
 		return false;
 
 	if (base->initialized)

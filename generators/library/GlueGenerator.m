@@ -100,6 +100,16 @@
 	if (includes > 0)
 		[_header writeString: @"\n"];
 
+	[_impl writeString: 
+	    @"\n"
+	    @"__asm__ (\n"
+	    @"    \".section .text\\n\"\n"
+	    @"    \".align 2\\n\"\n"
+	    @"    \"__restore_r13:\\n\"\n"
+	    @"    \"	lwz	%r13, 44(%r12)\\n\"\n"
+	    @"    \"	blr\\n\"\n"
+	    @");\n"];
+
 	for (OFXMLElement *function in
 	    [_library elementsForName: @"function"]) {
 		OFString *name =

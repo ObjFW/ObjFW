@@ -50,8 +50,6 @@ extern void __deregister_frame(void *);
 void *__objc_class_name_Protocol;
 
 #ifndef OBJC_AMIGA_LIB
-extern bool objc_init(struct objc_linklib_context *ctx);
-
 struct Library *ObjFWRTBase;
 
 static void
@@ -73,7 +71,7 @@ error(const char *string, ULONG arg)
 		CloseLibrary(IntuitionBase);
 	}
 
-	exit(EXIT_FAILURE);
+	abort();
 }
 
 static void __attribute__((__used__))
@@ -81,11 +79,13 @@ ctor(void)
 {
 	static bool initialized = false;
 	struct objc_linklib_context ctx = {
-		.version = 1,
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
 		.free = free,
+		.vfprintf = vfprintf,
+		.fflush = fflush,
+		.abort = abort,
 		._Unwind_RaiseException = _Unwind_RaiseException,
 		._Unwind_DeleteException = _Unwind_DeleteException,
 		._Unwind_GetLanguageSpecificData =
@@ -100,8 +100,6 @@ ctor(void)
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
-		.atexit = atexit,
-		.exit = exit,
 	};
 
 	if (initialized)
@@ -112,7 +110,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!objc_init(&ctx))
+	if (!objc_init(1, &ctx))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
@@ -132,7 +130,7 @@ CONSTRUCTOR_P(ObjFWRT, 4000)
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFWRT, 0)
+DESTRUCTOR_P(ObjFWRT, 4000)
 {
 	dtor();
 }

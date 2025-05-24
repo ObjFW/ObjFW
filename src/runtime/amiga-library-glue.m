@@ -23,28 +23,24 @@
 
 #import "amiga-library-glue.h"
 
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+
 bool __saveds
-glue_objc_init(struct objc_linklib_context *ctx)
+glue_objc_init(unsigned int version, struct objc_linklib_context *_Nonnull ctx)
 {
-	return objc_init(ctx);
+	return objc_init(version, ctx);
 }
 
 void __saveds
 glue___objc_exec_class(struct objc_module *_Nonnull module)
 {
 	__objc_exec_class(module);
-}
-
-int __saveds
-glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
-{
-	return __gnu_objc_personality_v0(version, actions, exClass, ex, ctx);
-}
-
-void __saveds
-glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
-{
-	class_registerAlias_np(class_, name);
 }
 
 IMP _Nonnull __saveds
@@ -147,6 +143,12 @@ void __saveds
 glue_objc_enumerationMutation(id _Nonnull object)
 {
 	objc_enumerationMutation(object);
+}
+
+int __saveds
+glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
+{
+	return __gnu_objc_personality_v0(version, actions, exClass, ex, ctx);
 }
 
 id _Nullable __saveds
@@ -335,11 +337,13 @@ glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull se
 	return class_getMethodImplementation_stret(class_, selector);
 }
 
-Method _Nullable __saveds
-glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
+#if defined(OF_MORPHOS)
+const char *_Nullable __saveds
+glue__class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 {
-	return class_getInstanceMethod(class_, selector);
+	return _class_getMethodTypeEncoding(class_, selector);
 }
+#endif
 
 bool __saveds
 glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
@@ -389,22 +393,36 @@ glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnul
 	return protocol_conformsToProtocol(protocol1, protocol2);
 }
 
-Method _Nullable *_Nullable __saveds
-glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
+_Nullable objc_uncaught_exception_handler __saveds
+glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
 {
-	return class_copyMethodList(class_, outCount);
+	return objc_setUncaughtExceptionHandler(handler);
 }
 
-SEL _Nonnull __saveds
-glue_method_getName(Method _Nonnull method)
+void __saveds
+glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 {
-	return method_getName(method);
+	objc_setForwardHandler(forward, stretForward);
 }
 
-const char *_Nullable __saveds
-glue_method_getTypeEncoding(Method _Nonnull method)
+void __saveds
+glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
 {
-	return method_getTypeEncoding(method);
+	objc_setEnumerationMutationHandler(hadler);
+}
+
+#if defined(OF_MORPHOS)
+void __saveds
+glue__objc_zeroWeakReferences(id _Nullable value)
+{
+	_objc_zeroWeakReferences(value);
+}
+#endif
+
+void __saveds
+glue_objc_deinit(void)
+{
+	objc_deinit();
 }
 
 Ivar _Nullable *_Nullable __saveds
@@ -431,6 +449,36 @@ glue_ivar_getOffset(Ivar _Nonnull ivar)
 	return ivar_getOffset(ivar);
 }
 
+void __saveds
+glue_class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
+{
+	class_registerAlias_np(class_, name);
+}
+
+Method _Nullable __saveds
+glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
+{
+	return class_getInstanceMethod(class_, selector);
+}
+
+Method _Nullable *_Nullable __saveds
+glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
+{
+	return class_copyMethodList(class_, outCount);
+}
+
+SEL _Nonnull __saveds
+glue_method_getName(Method _Nonnull method)
+{
+	return method_getName(method);
+}
+
+const char *_Nullable __saveds
+glue_method_getTypeEncoding(Method _Nonnull method)
+{
+	return method_getTypeEncoding(method);
+}
+
 objc_property_t _Nullable *_Nullable __saveds
 glue_class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
@@ -447,30 +495,6 @@ char *_Nullable __saveds
 glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)
 {
 	return property_copyAttributeValue(property, name);
-}
-
-void __saveds
-glue_objc_deinit(void)
-{
-	objc_deinit();
-}
-
-_Nullable objc_uncaught_exception_handler __saveds
-glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
-{
-	return objc_setUncaughtExceptionHandler(handler);
-}
-
-void __saveds
-glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
-{
-	objc_setForwardHandler(forward, stretForward);
-}
-
-void __saveds
-glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
-{
-	objc_setEnumerationMutationHandler(hadler);
 }
 
 id _Nullable __saveds
