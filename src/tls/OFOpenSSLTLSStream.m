@@ -264,13 +264,8 @@ errToErrorCode(const SSL *SSL_)
 
 - (bool)lowlevelHasDataInReadBuffer
 {
-#ifdef HAVE_SSL_HAS_PENDING
-	return (_underlyingStream.hasDataInReadBuffer ||
-	    SSL_has_pending(_SSL) || BIO_ctrl_pending(_readBIO) > 0);
-#else
 	return (_underlyingStream.hasDataInReadBuffer ||
 	    SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0);
-#endif
 }
 
 - (void)of_asyncPerformHandshakeWithHost: (OFString *)host
