@@ -141,7 +141,7 @@ static const OFTimeInterval updateInterval = 0.1;
 			else if (rem >= 0.125)
 				[OFStdErr writeString: @"▏"];
 			else
-				[OFStdErr writeString: @" "];
+				[OFStdErr writeString: @" "];
 
 			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
 				[OFStdErr writeString: @" "];
@@ -166,7 +166,7 @@ static const OFTimeInterval updateInterval = 0.1;
 				[OFStdErr writeString: @" "];
 
 			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
-				[OFStdErr writeString: @" "];
+				[OFStdErr writeString: @" "];
 		}
 
 		[OFStdErr writeFormat: @"] %,6.2f%% ", percent];
