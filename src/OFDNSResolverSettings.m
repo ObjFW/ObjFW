@@ -206,6 +206,9 @@ parseNetStackArray(OFString *string)
 
 	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
+	if (string.length == 0)
+		return [OFArray array];
+
 	return [string componentsSeparatedByString: @"|"];
 }
 #endif
