@@ -1966,11 +1966,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
 				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
-
-				old_LIBS="$LIBS"
-				LIBS="$TLS_LIBS $LIBS"
-				AC_CHECK_FUNCS(SSL_has_pending)
-				LIBS="$old_LIBS"
 			])
 		], [], [-l$crypto -l$z $TLS_LIBS])
 	])
