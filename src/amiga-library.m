@@ -77,7 +77,7 @@ getDataSeg(void)
 	__asm__ (
 	    "lis	%0, __r13_init@ha\n\t"
 	    "la		%0, __r13_init@l(%0)"
-	    : "=r"(dataSeg)
+	    : "=r" (dataSeg)
 	);
 
 	return dataSeg;
@@ -94,7 +94,7 @@ getDataSize(void)
 	    "lis	%%r9, __sbss_size@ha\n\t"
 	    "la		%%r9, __sbss_size@l(%%r9)\n\t"
 	    "add	%0, %0, %%r9"
-	    : "=r"(dataSize)
+	    : "=r" (dataSize)
 	    :: "r9"
 	);
 
@@ -109,7 +109,7 @@ getDataDataRelocs(void)
 	__asm__ (
 	    "lis	%0, __datadata_relocs@ha\n\t"
 	    "la		%0, __datadata_relocs@l(%0)\n\t"
-	    : "=r"(dataDataRelocs)
+	    : "=r" (dataDataRelocs)
 	);
 
 	return dataDataRelocs;
@@ -121,7 +121,7 @@ libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
 	__asm__ __volatile__ (
 	    "lis	%%r9, SysBase@ha\n\t"
 	    "stw	%0, SysBase@l(%%r9)"
-	    :: "r"(sysBase) : "r9"
+	    :: "r" (sysBase) : "r9"
 	);
 
 	base->segList = segList;
@@ -286,7 +286,7 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 	    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
 	    "lis	%1, __CTOR_LIST__@ha\n\t"
 	    "la		%1, __CTOR_LIST__@l(%1)\n\t"
-	    : "=r"(frame), "=r"(iter0)
+	    : "=r" (frame), "=r" (iter0)
 	);
 
 	linklibCtx.__register_frame(frame);

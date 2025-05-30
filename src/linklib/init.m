@@ -363,14 +363,14 @@ dtor(void)
 		CloseLibrary(ObjFWBase);
 }
 
-CONSTRUCTOR_P(ObjFW, 5000)
+CONSTRUCTOR_P(ObjFW, 126)
 {
 	ctor();
 
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFW, 5000)
+DESTRUCTOR_P(ObjFW, 126)
 {
 	dtor();
 }

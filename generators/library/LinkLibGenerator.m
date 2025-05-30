@@ -108,7 +108,8 @@
 		if (returnType == nil)
 			returnType = @"void";
 
-		[_impl writeFormat: @"%@\n%@(", returnType, name];
+		[_impl writeFormat: @"%@ __attribute__((__weak__))\n"
+				    @"%@(", returnType, name];
 
 		argumentIndex = 0;
 		for (OFXMLElement *argument in
@@ -131,7 +132,7 @@
 				    @"{\n"
 				    @"\t__asm__ __volatile__ (\n"
 				    @"\t    \"mr\t\t%%%%r12, %%0\"\n"
-				    @"\t    :: \"r\"(%@) : \"r12\"\n"
+				    @"\t    :: \"r\" (%@) : \"r12\"\n"
 				    @"\t);\n"
 				    @"\n"
 				    @"\t",

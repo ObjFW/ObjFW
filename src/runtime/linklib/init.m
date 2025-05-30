@@ -123,14 +123,14 @@ dtor(void)
 		CloseLibrary(ObjFWRTBase);
 }
 
-CONSTRUCTOR_P(ObjFWRT, 4000)
+CONSTRUCTOR_P(ObjFWRT, 125)
 {
 	ctor();
 
 	return 0;
 }
 
-DESTRUCTOR_P(ObjFWRT, 4000)
+DESTRUCTOR_P(ObjFWRT, 125)
 {
 	dtor();
 }

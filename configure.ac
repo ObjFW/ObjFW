@@ -2059,11 +2059,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			AS_IF([test x"$tls_support" = x"OpenSSL"], [
 				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
-
-				old_LIBS="$LIBS"
-				LIBS="$TLS_LIBS $LIBS"
-				AC_CHECK_FUNCS(SSL_has_pending)
-				LIBS="$old_LIBS"
 			])
 		])
 	])

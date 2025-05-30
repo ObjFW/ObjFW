@@ -1114,28 +1114,28 @@ print-hierarchy:
 print-var:
 	printf '%s\n' '${${VAR}}'
 
-DIR_ENTER = printf "@TERM_EL@@TERM_SETAF6@Entering directory @TERM_SETAF14@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd $$i || exit $$?
-DIR_LEAVE = printf "@TERM_EL@@TERM_SETAF6@Leaving directory @TERM_SETAF14@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd .. || exit $$?
-COMPILE_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_SETAF11@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$<"
-COMPILE_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_SETAF10@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$<"
-COMPILE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$<"; exit $$err
-COMPILE_LIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_SETAF11@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (lib)...@TERM_SGR0@\r" "$<"
-COMPILE_LIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_SETAF10@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (lib).@TERM_SGR0@\n" "$<"
-COMPILE_LIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (lib)!@TERM_SGR0@\n" "$<"; exit $$err
-COMPILE_AMIGA_LIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_SETAF11@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (Amiga lib)...@TERM_SGR0@\r" "$<"
-COMPILE_AMIGA_LIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_SETAF10@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (Amiga lib).@TERM_SGR0@\n" "$<"
-COMPILE_AMIGA_LIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (Amiga lib)!@TERM_SGR0@\n" "$<"; exit $$err
-COMPILE_PLUGIN_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_SETAF11@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (plugin)...@TERM_SGR0@\r" "$<"
-COMPILE_PLUGIN_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_SETAF10@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (plugin).@TERM_SGR0@\n" "$<"
-COMPILE_PLUGIN_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (plugin)!@TERM_SGR0@\n" "$<"; exit $$err
-LINK_STATUS = printf "@TERM_EL@@TERM_SETAF3@Linking @TERM_SETAF11@@TERM_BOLD@$@@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r"
-LINK_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully linked @TERM_SETAF10@@TERM_BOLD@$@@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n"
-LINK_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to link @TERM_SETAF9@@TERM_BOLD@$@@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n"; exit $$err
-INSTALL_STATUS = printf "@TERM_EL@@TERM_SETAF3@Installing @TERM_SETAF11@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$$i"
-INSTALL_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully installed @TERM_SETAF10@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$$i"
-INSTALL_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to install @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$$i"; exit $$err
-DELETE_OK = printf "@TERM_EL@@TERM_SETAF4@Deleted @TERM_SETAF12@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF4@.@TERM_SGR0@\n" "$$i"
-DELETE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to delete @TERM_SETAF9@@TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$$i"; exit $$err
+DIR_ENTER = printf "\033[2K\033[36mEntering directory \033[96m\033[1m%s\033[0m\033[36m.\033[0m\n" "$$i"; cd $$i || exit $$?
+DIR_LEAVE = printf "\033[2K\033[36mLeaving directory \033[96m\033[1m%s\033[0m\033[36m.\033[0m\n" "$$i"; cd .. || exit $$?
+COMPILE_STATUS = printf "\033[2K\033[33mCompiling \033[93m\033[1m%s\033[0m\033[33m...\033[0m\r" "$<"
+COMPILE_OK = printf "\033[2K\033[32mSuccessfully compiled \033[92m\033[1m%s\033[0m\033[32m.\033[0m\n" "$<"
+COMPILE_FAILED = err=$$?; printf "\033[2K\033[31mFailed to compile \033[91m\033[1m%s\033[0m\033[31m!\033[0m\n" "$<"; exit $$err
+COMPILE_LIB_STATUS = printf "\033[2K\033[33mCompiling \033[93m\033[1m%s\033[0m\033[33m (lib)...\033[0m\r" "$<"
+COMPILE_LIB_OK = printf "\033[2K\033[32mSuccessfully compiled \033[92m\033[1m%s\033[0m\033[32m (lib).\033[0m\n" "$<"
+COMPILE_LIB_FAILED = err=$$?; printf "\033[2K\033[31mFailed to compile \033[91m\033[1m%s\033[0m\033[31m (lib)!\033[0m\n" "$<"; exit $$err
+COMPILE_AMIGA_LIB_STATUS = printf "\033[2K\033[33mCompiling \033[93m\033[1m%s\033[0m\033[33m (Amiga lib)...\033[0m\r" "$<"
+COMPILE_AMIGA_LIB_OK = printf "\033[2K\033[32mSuccessfully compiled \033[92m\033[1m%s\033[0m\033[32m (Amiga lib).\033[0m\n" "$<"
+COMPILE_AMIGA_LIB_FAILED = err=$$?; printf "\033[2K\033[31mFailed to compile \033[91m\033[1m%s\033[0m\033[31m (Amiga lib)!\033[0m\n" "$<"; exit $$err
+COMPILE_PLUGIN_STATUS = printf "\033[2K\033[33mCompiling \033[93m\033[1m%s\033[0m\033[33m (plugin)...\033[0m\r" "$<"
+COMPILE_PLUGIN_OK = printf "\033[2K\033[32mSuccessfully compiled \033[92m\033[1m%s\033[0m\033[32m (plugin).\033[0m\n" "$<"
+COMPILE_PLUGIN_FAILED = err=$$?; printf "\033[2K\033[31mFailed to compile \033[91m\033[1m%s\033[0m\033[31m (plugin)!\033[0m\n" "$<"; exit $$err
+LINK_STATUS = printf "\033[2K\033[33mLinking \033[93m\033[1m$@\033[0m\033[33m...\033[0m\r"
+LINK_OK = printf "\033[2K\033[32mSuccessfully linked \033[92m\033[1m$@\033[0m\033[32m.\033[0m\n"
+LINK_FAILED = err=$$?; printf "\033[2K\033[31mFailed to link \033[91m\033[1m$@\033[0m\033[31m!\033[0m\n"; exit $$err
+INSTALL_STATUS = printf "\033[2K\033[33mInstalling \033[93m\033[1m%s\033[0m\033[33m...\033[0m\r" "$$i"
+INSTALL_OK = printf "\033[2K\033[32mSuccessfully installed \033[92m\033[1m%s\033[0m\033[32m.\033[0m\n" "$$i"
+INSTALL_FAILED = err=$$?; printf "\033[2K\033[31mFailed to install \033[91m\033[1m%s\033[0m\033[31m!\033[0m\n" "$$i"; exit $$err
+DELETE_OK = printf "\033[2K\033[34mDeleted \033[94m\033[1m%s\033[0m\033[34m.\033[0m\n" "$$i"
+DELETE_FAILED = err=$$?; printf "\033[2K\033[31mFailed to delete \033[91m\033[1m%s\033[0m\033[31m!\033[0m\n" "$$i"; exit $$err
 
 .CURDIR ?= .
 -include ${.CURDIR}/.deps

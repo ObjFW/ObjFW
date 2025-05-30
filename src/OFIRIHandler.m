@@ -217,10 +217,6 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return data;
 }
 
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 - (void)getExtendedAttributeData: (OFData **)data
 			 andType: (id *)type
 			 forName: (OFString *)name
@@ -237,8 +233,12 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 	if (class_getMethodImplementation(object_getClass(self), selector) !=
 	    class_getMethodImplementation([OFIRIHandler class], selector)) {
-		*data = [self extendedAttributeDataForName: name
-					       ofItemAtIRI: IRI];
+		/* Use -[methodForSelector:] to avoid deprecation warning. */
+		OFData *(*imp)(id, SEL, OFString *, OFIRI *) =
+		    (OFData *(*)(id, SEL, OFString *, OFIRI *))
+		    [self methodForSelector: selector];
+
+		*data = imp(self, selector, name, IRI);
 
 		if (type != NULL)
 			*type = nil;
@@ -248,9 +248,6 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 	OF_UNRECOGNIZED_SELECTOR
 }
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic pop
-#endif
 
 - (void)setExtendedAttributeData: (OFData *)data
 			 forName: (OFString *)name
@@ -262,10 +259,6 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 			   ofItemAtIRI: IRI];
 }
 
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 - (void)setExtendedAttributeData: (OFData *)data
 			 andType: (id)type
 			 forName: (OFString *)name
@@ -287,18 +280,21 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 		    selector) !=
 		    class_getMethodImplementation([OFIRIHandler class],
 		    selector)) {
-			[self setExtendedAttributeData: data
-					       forName: name
-					   ofItemAtIRI: IRI];
+			/*
+			 * Use -[methodForSelector:] to avoid deprecation
+			 * warning.
+			 */
+			void (*imp)(id, SEL, OFData *, OFString *, OFIRI *) =
+			    (void (*)(id, SEL, OFData *, OFString *, OFIRI *))
+			    [self methodForSelector: selector];
+
+			imp(self, selector, data, name, IRI);
 			return;
 		}
 	}
 
 	OF_UNRECOGNIZED_SELECTOR
 }
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic pop
-#endif
 
 - (void)removeExtendedAttributeForName: (OFString *)name
 			   ofItemAtIRI: (OFIRI *)IRI
