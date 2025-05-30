@@ -118,20 +118,6 @@ getDataDataRelocs(void)
 	return dataDataRelocs;
 }
 
-static void
-createTrampoline(uint32_t buffer[TRAMPLINE_SIZE], IMP function)
-{
-	uintptr_t base = (uintptr_t)ObjFWBase;
-	ptrdiff_t offset = (ptrdiff_t)function - (ptrdiff_t)&buffer[2];
-
-	/* lis r12, r12, hi(base) */
-	buffer[0] = 0x3D800000 | ((base >> 16) & 0xFFFF);
-	/* ori r12, r12, lo(base) */
-	buffer[1] = 0x618C0000 | (base & 0xFFFF);
-	/* b function */
-	buffer[2] = 0x48000000 | (((offset >> 2) & 0xFFFFFF) << 2);
-}
-
 static struct Library *
 libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
 {
@@ -307,6 +293,20 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 }
 
 static void
+createTrampoline(uint32_t buffer[TRAMPLINE_SIZE], IMP function)
+{
+	ptrdiff_t offset;
+
+	/* lis r12, r12, hi(ObjFWBase) */
+	buffer[0] = 0x3D800000 | (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
+	/* ori r12, r12, lo(ObjFWBase) */
+	buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+	/* b function */
+	offset = (ptrdiff_t)function - (ptrdiff_t)&buffer[2];
+	buffer[2] = 0x48000000 | (((offset >> 2) & 0xFFFFFF) << 2);
+}
+
+static void
 createTrampolinesForMethodList(struct objc_method_list *methodList)
 {
 	for (; methodList != NULL; methodList = methodList->next) {
@@ -354,7 +354,7 @@ __objc_exec_class(struct objc_module *module)
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(
+	__extension__ ((void (*)(struct objc_module *))*(void **)(
 	    ((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
