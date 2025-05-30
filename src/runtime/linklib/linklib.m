@@ -35,7 +35,7 @@ objc_init(unsigned int version, struct objc_linklib_context *_Nonnull ctx)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(unsigned int, struct objc_linklib_context *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(version, ctx);
@@ -46,7 +46,7 @@ __objc_exec_class(struct objc_module *_Nonnull module)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 34))(module);
@@ -57,7 +57,7 @@ objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 40))(object, selector);
@@ -68,7 +68,7 @@ objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 46))(object, selector);
@@ -79,7 +79,7 @@ objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 52))(super, selector);
@@ -90,7 +90,7 @@ objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull sele
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 58))(super, selector);
@@ -101,7 +101,7 @@ objc_lookUpClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 64))(name);
@@ -112,7 +112,7 @@ objc_getClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 70))(name);
@@ -123,7 +123,7 @@ objc_getRequiredClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(name);
@@ -134,7 +134,7 @@ objc_lookup_class(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 82))(name);
@@ -145,7 +145,7 @@ objc_get_class(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(name);
@@ -156,7 +156,7 @@ objc_exception_throw(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(object);
@@ -169,7 +169,7 @@ objc_sync_enter(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(object);
@@ -180,7 +180,7 @@ objc_sync_exit(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(object);
@@ -191,7 +191,7 @@ objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool ato
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(self, _cmd, offset, atomic);
@@ -202,7 +202,7 @@ objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Null
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 118))(self, _cmd, offset, value, atomic, copy);
@@ -213,7 +213,7 @@ objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(dest, src, size, atomic, strong);
@@ -224,7 +224,7 @@ objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(dest, src, size, atomic, strong);
@@ -235,7 +235,7 @@ objc_enumerationMutation(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(object);
@@ -246,7 +246,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, v
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(version, actions, exClass, ex, ctx);
@@ -257,7 +257,7 @@ objc_retain(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(object);
@@ -268,7 +268,7 @@ objc_retainBlock(id _Nullable block)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(block);
@@ -279,7 +279,7 @@ objc_retainAutorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(object);
@@ -290,7 +290,7 @@ objc_release(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(object);
@@ -301,7 +301,7 @@ objc_autorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(object);
@@ -312,7 +312,7 @@ objc_autoreleaseReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
@@ -323,7 +323,7 @@ objc_retainAutoreleaseReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 184))(object);
@@ -334,7 +334,7 @@ objc_retainAutoreleasedReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 190))(object);
@@ -345,7 +345,7 @@ objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 196))(object, value);
@@ -356,7 +356,7 @@ objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object, value);
@@ -367,7 +367,7 @@ objc_loadWeakRetained(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 208))(object);
@@ -378,7 +378,7 @@ objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object, value);
@@ -389,7 +389,7 @@ objc_destroyWeak(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object);
@@ -400,7 +400,7 @@ objc_loadWeak(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object);
@@ -411,7 +411,7 @@ objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(dest, src);
@@ -422,7 +422,7 @@ objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(dest, src);
@@ -433,7 +433,7 @@ sel_registerName(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 244))(name);
@@ -444,7 +444,7 @@ sel_getName(SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(selector);
@@ -455,7 +455,7 @@ sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(selector1, selector2);
@@ -466,7 +466,7 @@ objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, si
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(superclass, name, extraBytes);
@@ -477,7 +477,7 @@ objc_registerClassPair(Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(class_);
@@ -488,7 +488,7 @@ objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(buffer, count);
@@ -499,7 +499,7 @@ objc_copyClassList(unsigned int *_Nullable length)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(length);
@@ -510,7 +510,7 @@ class_isMetaClass(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(class_);
@@ -521,7 +521,7 @@ class_getName(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(class_);
@@ -532,7 +532,7 @@ class_getSuperclass(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(class_);
@@ -543,7 +543,7 @@ class_getInstanceSize(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(class_);
@@ -554,7 +554,7 @@ class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(class_, selector);
@@ -565,7 +565,7 @@ class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_, p);
@@ -576,7 +576,7 @@ class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_, selector);
@@ -587,7 +587,7 @@ class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selecto
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_, selector);
@@ -598,7 +598,7 @@ _class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 334))(class_, selector);
@@ -609,7 +609,7 @@ class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull imple
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector, implementation, typeEncoding);
@@ -620,7 +620,7 @@ class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull i
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector, implementation, typeEncoding);
@@ -631,7 +631,7 @@ object_getClass(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(object);
@@ -642,7 +642,7 @@ object_setClass(id _Nullable object, Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(object, class_);
@@ -653,7 +653,7 @@ object_getClassName(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object);
@@ -664,7 +664,7 @@ protocol_getName(Protocol *_Nonnull protocol)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(protocol);
@@ -675,7 +675,7 @@ protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(protocol1, protocol2);
@@ -686,7 +686,7 @@ protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull pro
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol1, protocol2);
@@ -697,7 +697,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handl
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 388))(handler);
@@ -708,7 +708,7 @@ objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(forward, stretForward);
@@ -719,7 +719,7 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable h
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(hadler);
@@ -730,7 +730,7 @@ _objc_zeroWeakReferences(id _Nullable value)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(value);
@@ -741,7 +741,7 @@ objc_deinit()
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 412))();
@@ -752,7 +752,7 @@ class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(class_, outCount);
@@ -763,7 +763,7 @@ ivar_getName(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 424))(ivar);
@@ -774,7 +774,7 @@ ivar_getTypeEncoding(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(ivar);
@@ -785,7 +785,7 @@ ivar_getOffset(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(ivar);
@@ -796,7 +796,7 @@ class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(Class _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(class_, name);
@@ -807,7 +807,7 @@ class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(class_, selector);
@@ -818,7 +818,7 @@ class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 454))(class_, outCount);
@@ -829,7 +829,7 @@ method_getName(Method _Nonnull method)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 460))(method);
@@ -840,7 +840,7 @@ method_getTypeEncoding(Method _Nonnull method)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(method);
@@ -851,7 +851,7 @@ class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(class_, outCount);
@@ -862,7 +862,7 @@ property_getName(objc_property_t _Nonnull property)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 478))(property);
@@ -873,7 +873,7 @@ property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonn
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 484))(property, name);
@@ -884,7 +884,7 @@ objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(class_, bytes);
@@ -895,7 +895,7 @@ objc_destructInstance(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(object);
@@ -906,7 +906,7 @@ class_createInstance(Class _Nullable class_, size_t extraBytes)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(class_, extraBytes);
@@ -917,7 +917,7 @@ object_dispose(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(object);
@@ -928,7 +928,7 @@ _objc_rootRetain(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(object);
@@ -939,7 +939,7 @@ _objc_rootRetainCount(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 520))(object);
@@ -950,7 +950,7 @@ _objc_rootRelease(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 526))(object);
@@ -961,7 +961,7 @@ objc_autoreleasePoolPush()
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 532))();
@@ -972,7 +972,7 @@ objc_autoreleasePoolPop(void *_Null_unspecified pool)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(pool);
@@ -983,7 +983,7 @@ _objc_rootAutorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 544))(object);
@@ -994,7 +994,7 @@ objc_setTaggedPointerSecret(uintptr_t secret)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 550))(secret);
@@ -1005,7 +1005,7 @@ objc_registerTaggedPointerClass(Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(class_);
@@ -1016,7 +1016,7 @@ object_isTaggedPointer(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(object);
@@ -1027,7 +1027,7 @@ object_getTaggedPointerValue(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(object);
@@ -1038,7 +1038,7 @@ objc_createTaggedPointer(int class_, uintptr_t value)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(class_, value);
@@ -1049,7 +1049,7 @@ objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nulla
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object, key, value, policy);
@@ -1060,7 +1060,7 @@ objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 586))(object, key);
@@ -1071,7 +1071,7 @@ objc_removeAssociatedObjects(id _Nonnull object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
-	    :: "r"(ObjFWRTBase) : "r12"
+	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 592))(object);
