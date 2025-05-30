@@ -30,6 +30,8 @@
 #import "amiga-library.h"
 #import "amiga-library-glue.h"
 
+#import "runtime/private.h"
+
 #define Class IntuitionClass
 #include <exec/libraries.h>
 #include <exec/nodes.h>
@@ -38,6 +40,7 @@
 #undef Class
 
 #define DATA_OFFSET 0x8000
+#define TRAMPLINE_SIZE 3
 
 /* This always needs to be the first thing in the file. */
 int
@@ -46,13 +49,13 @@ __start(void)
 	return -1;
 }
 
-struct ObjFWBase {
+static struct ObjFWBase {
 	struct Library library;
 	void *segList;
 	struct ObjFWBase *parent;
 	char *dataSeg;
 	bool initialized;
-};
+} *ObjFWBase;
 
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
@@ -113,6 +116,20 @@ getDataDataRelocs(void)
 	);
 
 	return dataDataRelocs;
+}
+
+static void
+createTrampoline(uint32_t buffer[TRAMPLINE_SIZE], IMP function)
+{
+	uintptr_t base = (uintptr_t)ObjFWBase;
+	ptrdiff_t offset = (ptrdiff_t)function - (ptrdiff_t)&buffer[2];
+
+	/* lis r12, r12, hi(base) */
+	buffer[0] = 0x3D800000 | ((base >> 16) & 0xFFFF);
+	/* ori r12, r12, lo(base) */
+	buffer[1] = 0x618C0000 | (base & 0xFFFF);
+	/* b function */
+	buffer[2] = 0x48000000 | (((offset >> 2) & 0xFFFFFF) << 2);
 }
 
 static struct Library *
@@ -225,9 +242,7 @@ libClose(void)
 	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
 
 	if (base->parent != NULL) {
-		struct ObjFWBase *parent;
-
-		parent = base->parent;
+		struct ObjFWBase *parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
@@ -250,28 +265,13 @@ libNull(void)
 	return NULL;
 }
 
-static void __saveds
-OFInitPart2(uintptr_t *iter0, struct Library *RTBase)
-{
-	uintptr_t *iter;
-
-	ObjFWRTBase = RTBase;
-
-	for (iter = iter0; *iter != 0; iter++);
-
-	while (iter > iter0) {
-		void (*ctor)(void) = (void (*)(void))*--iter;
-		ctor();
-	}
-}
-
 bool
 OFInit(unsigned int version, struct OFLinklibContext *ctx)
 {
 	register struct ObjFWBase *r12 __asm__("r12");
 	struct ObjFWBase *base = r12;
 	void *frame;
-	uintptr_t *iter0;
+	uintptr_t *iter, *iter0;
 
 	if (version > 1)
 		return false;
@@ -291,11 +291,71 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 
 	linklibCtx.__register_frame(frame);
 
-	OFInitPart2(iter0, ctx->ObjFWRTBase);
+	ObjFWBase = base;
+	ObjFWRTBase = ctx->ObjFWRTBase;
+
+	for (iter = iter0; *iter != 0; iter++);
+
+	while (iter > iter0) {
+		void (*ctor)(void) = (void (*)(void))*--iter;
+		ctor();
+	}
 
 	base->initialized = true;
 
 	return true;
+}
+
+static void
+createTrampolinesForMethodList(struct objc_method_list *methodList)
+{
+	for (; methodList != NULL; methodList = methodList->next) {
+		uint32_t *trampolines = malloc(
+		    methodList->count * TRAMPLINE_SIZE * sizeof(uint32_t));
+
+		if (trampolines == NULL)
+			abort();
+
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			createTrampoline(&trampolines[i * 3],
+			    methodList->methods[i].implementation);
+
+			methodList->methods[i].implementation =
+			    (IMP)(uintptr_t)&trampolines[i * 3];
+		}
+
+		CacheFlushDataInstArea(trampolines,
+		    methodList->count * TRAMPLINE_SIZE * sizeof(uint32_t));
+	}
+}
+
+void
+__objc_exec_class(struct objc_module *module)
+{
+	struct objc_symtab *symtab = module->symtab;
+
+	for (size_t i = 0; i < symtab->classDefsCount; i++) {
+		struct objc_class *class = symtab->defs[i];
+
+		createTrampolinesForMethodList(class->methodList);
+		createTrampolinesForMethodList(class->isa->methodList);
+	}
+
+	for (size_t i = symtab->classDefsCount;
+	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
+		struct objc_category *category = symtab->defs[i];
+
+		createTrampolinesForMethodList(category->instanceMethods);
+		createTrampolinesForMethodList(category->classMethods);
+	}
+
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(
+	    ((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
 void *

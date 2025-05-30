@@ -219,9 +219,7 @@ libClose(void)
 	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
 
 	if (base->parent != NULL) {
-		struct ObjFWRTBase *parent;
-
-		parent = base->parent;
+		struct ObjFWRTBase *parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
