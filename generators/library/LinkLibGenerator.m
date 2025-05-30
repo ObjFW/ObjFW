@@ -108,7 +108,8 @@
 		if (returnType == nil)
 			returnType = @"void";
 
-		[_impl writeFormat: @"%@\n%@(", returnType, name];
+		[_impl writeFormat: @"%@ __attribute__((__weak__))\n"
+				    @"%@(", returnType, name];
 
 		argumentIndex = 0;
 		for (OFXMLElement *argument in

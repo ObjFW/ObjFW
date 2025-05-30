@@ -30,7 +30,7 @@ extern struct Library *ObjFWRTBase;
 # pragma GCC diagnostic ignored "-Warray-parameter"
 #endif
 
-bool
+bool __attribute__((__weak__))
 objc_init(unsigned int version, struct objc_linklib_context *_Nonnull ctx)
 {
 	__asm__ __volatile__ (
@@ -41,7 +41,7 @@ objc_init(unsigned int version, struct objc_linklib_context *_Nonnull ctx)
 	return __extension__ ((bool (*)(unsigned int, struct objc_linklib_context *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 28))(version, ctx);
 }
 
-void
+void __attribute__((__weak__))
 __objc_exec_class(struct objc_module *_Nonnull module)
 {
 	__asm__ __volatile__ (
@@ -52,7 +52,7 @@ __objc_exec_class(struct objc_module *_Nonnull module)
 	__extension__ ((void (*)(struct objc_module *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
-IMP _Nonnull
+IMP _Nonnull __attribute__((__weak__))
 objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -63,7 +63,7 @@ objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)
 	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 40))(object, selector);
 }
 
-IMP _Nonnull
+IMP _Nonnull __attribute__((__weak__))
 objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -74,7 +74,7 @@ objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)
 	return __extension__ ((IMP _Nonnull (*)(id _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 46))(object, selector);
 }
 
-IMP _Nonnull
+IMP _Nonnull __attribute__((__weak__))
 objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -85,7 +85,7 @@ objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 52))(super, selector);
 }
 
-IMP _Nonnull
+IMP _Nonnull __attribute__((__weak__))
 objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -96,7 +96,7 @@ objc_msg_lookup_super_stret(struct objc_super *_Nonnull super, SEL _Nonnull sele
 	return __extension__ ((IMP _Nonnull (*)(struct objc_super *_Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 58))(super, selector);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 objc_lookUpClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -107,7 +107,7 @@ objc_lookUpClass(const char *_Nonnull name)
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 64))(name);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 objc_getClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -118,7 +118,7 @@ objc_getClass(const char *_Nonnull name)
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 70))(name);
 }
 
-Class _Nonnull
+Class _Nonnull __attribute__((__weak__))
 objc_getRequiredClass(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -129,7 +129,7 @@ objc_getRequiredClass(const char *_Nonnull name)
 	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 76))(name);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 objc_lookup_class(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -140,7 +140,7 @@ objc_lookup_class(const char *_Nonnull name)
 	return __extension__ ((Class _Nullable (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 82))(name);
 }
 
-Class _Nonnull
+Class _Nonnull __attribute__((__weak__))
 objc_get_class(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -151,7 +151,7 @@ objc_get_class(const char *_Nonnull name)
 	return __extension__ ((Class _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 88))(name);
 }
 
-void
+void __attribute__((__weak__))
 objc_exception_throw(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -164,7 +164,7 @@ objc_exception_throw(id _Nonnull object)
 	OF_UNREACHABLE
 }
 
-int
+int __attribute__((__weak__))
 objc_sync_enter(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -175,7 +175,7 @@ objc_sync_enter(id _Nullable object)
 	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 100))(object);
 }
 
-int
+int __attribute__((__weak__))
 objc_sync_exit(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -186,7 +186,7 @@ objc_sync_exit(id _Nullable object)
 	return __extension__ ((int (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 106))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool atomic)
 {
 	__asm__ __volatile__ (
@@ -197,7 +197,7 @@ objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool ato
 	return __extension__ ((id _Nullable (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 112))(self, _cmd, offset, atomic);
 }
 
-void
+void __attribute__((__weak__))
 objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Nullable value, bool atomic, signed char copy)
 {
 	__asm__ __volatile__ (
@@ -208,7 +208,7 @@ objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, id _Null
 	__extension__ ((void (*)(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable, bool, signed char))*(void **)(((uintptr_t)ObjFWRTBase) - 118))(self, _cmd, offset, value, atomic, copy);
 }
 
-void
+void __attribute__((__weak__))
 objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
 {
 	__asm__ __volatile__ (
@@ -219,7 +219,7 @@ objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 124))(dest, src, size, atomic, strong);
 }
 
-void
+void __attribute__((__weak__))
 objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong)
 {
 	__asm__ __volatile__ (
@@ -230,7 +230,7 @@ objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t 
 	__extension__ ((void (*)(void *_Nonnull, const void *_Nonnull, ptrdiff_t, bool, bool))*(void **)(((uintptr_t)ObjFWRTBase) - 130))(dest, src, size, atomic, strong);
 }
 
-void
+void __attribute__((__weak__))
 objc_enumerationMutation(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -241,7 +241,7 @@ objc_enumerationMutation(id _Nonnull object)
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(object);
 }
 
-int
+int __attribute__((__weak__))
 __gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
 {
 	__asm__ __volatile__ (
@@ -252,7 +252,7 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, v
 	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(version, actions, exClass, ex, ctx);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_retain(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -263,7 +263,7 @@ objc_retain(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 148))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_retainBlock(id _Nullable block)
 {
 	__asm__ __volatile__ (
@@ -274,7 +274,7 @@ objc_retainBlock(id _Nullable block)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 154))(block);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_retainAutorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -285,7 +285,7 @@ objc_retainAutorelease(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 160))(object);
 }
 
-void
+void __attribute__((__weak__))
 objc_release(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -296,7 +296,7 @@ objc_release(id _Nullable object)
 	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 166))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_autorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -307,7 +307,7 @@ objc_autorelease(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 172))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_autoreleaseReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -318,7 +318,7 @@ objc_autoreleaseReturnValue(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 178))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_retainAutoreleaseReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -329,7 +329,7 @@ objc_retainAutoreleaseReturnValue(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 184))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_retainAutoreleasedReturnValue(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -340,7 +340,7 @@ objc_retainAutoreleasedReturnValue(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 190))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
@@ -351,7 +351,7 @@ objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 196))(object, value);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
@@ -362,7 +362,7 @@ objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 202))(object, value);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_loadWeakRetained(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -373,7 +373,7 @@ objc_loadWeakRetained(id _Nullable *_Nonnull object)
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 208))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)
 {
 	__asm__ __volatile__ (
@@ -384,7 +384,7 @@ objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull, id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 214))(object, value);
 }
 
-void
+void __attribute__((__weak__))
 objc_destroyWeak(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -395,7 +395,7 @@ objc_destroyWeak(id _Nullable *_Nonnull object)
 	__extension__ ((void (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 220))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_loadWeak(id _Nullable *_Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -406,7 +406,7 @@ objc_loadWeak(id _Nullable *_Nonnull object)
 	return __extension__ ((id _Nullable (*)(id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 226))(object);
 }
 
-void
+void __attribute__((__weak__))
 objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 {
 	__asm__ __volatile__ (
@@ -417,7 +417,7 @@ objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 232))(dest, src);
 }
 
-void
+void __attribute__((__weak__))
 objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 {
 	__asm__ __volatile__ (
@@ -428,7 +428,7 @@ objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)
 	__extension__ ((void (*)(id _Nullable *_Nonnull, id _Nullable *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 238))(dest, src);
 }
 
-SEL _Nonnull
+SEL _Nonnull __attribute__((__weak__))
 sel_registerName(const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -439,7 +439,7 @@ sel_registerName(const char *_Nonnull name)
 	return __extension__ ((SEL _Nonnull (*)(const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 244))(name);
 }
 
-const char *_Nonnull
+const char *_Nonnull __attribute__((__weak__))
 sel_getName(SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -450,7 +450,7 @@ sel_getName(SEL _Nonnull selector)
 	return __extension__ ((const char *_Nonnull (*)(SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 250))(selector);
 }
 
-bool
+bool __attribute__((__weak__))
 sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 {
 	__asm__ __volatile__ (
@@ -461,7 +461,7 @@ sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(selector1, selector2);
 }
 
-Class _Nonnull
+Class _Nonnull __attribute__((__weak__))
 objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
 {
 	__asm__ __volatile__ (
@@ -472,7 +472,7 @@ objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, si
 	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(superclass, name, extraBytes);
 }
 
-void
+void __attribute__((__weak__))
 objc_registerClassPair(Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
@@ -483,7 +483,7 @@ objc_registerClassPair(Class _Nonnull class_)
 	__extension__ ((void (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 268))(class_);
 }
 
-unsigned int
+unsigned int __attribute__((__weak__))
 objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count)
 {
 	__asm__ __volatile__ (
@@ -494,7 +494,7 @@ objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count)
 	return __extension__ ((unsigned int (*)(Class _Nonnull *_Nullable, unsigned int))*(void **)(((uintptr_t)ObjFWRTBase) - 274))(buffer, count);
 }
 
-Class _Nonnull *_Nonnull
+Class _Nonnull *_Nonnull __attribute__((__weak__))
 objc_copyClassList(unsigned int *_Nullable length)
 {
 	__asm__ __volatile__ (
@@ -505,7 +505,7 @@ objc_copyClassList(unsigned int *_Nullable length)
 	return __extension__ ((Class _Nonnull *_Nonnull (*)(unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 280))(length);
 }
 
-bool
+bool __attribute__((__weak__))
 class_isMetaClass(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
@@ -516,7 +516,7 @@ class_isMetaClass(Class _Nullable class_)
 	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(class_);
 }
 
-const char *_Nullable
+const char *_Nullable __attribute__((__weak__))
 class_getName(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
@@ -527,7 +527,7 @@ class_getName(Class _Nullable class_)
 	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(class_);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 class_getSuperclass(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
@@ -538,7 +538,7 @@ class_getSuperclass(Class _Nullable class_)
 	return __extension__ ((Class _Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 298))(class_);
 }
 
-unsigned long
+unsigned long __attribute__((__weak__))
 class_getInstanceSize(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
@@ -549,7 +549,7 @@ class_getInstanceSize(Class _Nullable class_)
 	return __extension__ ((unsigned long (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 304))(class_);
 }
 
-bool
+bool __attribute__((__weak__))
 class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -560,7 +560,7 @@ class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 310))(class_, selector);
 }
 
-bool
+bool __attribute__((__weak__))
 class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 {
 	__asm__ __volatile__ (
@@ -571,7 +571,7 @@ class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
 	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_, p);
 }
 
-IMP _Nullable
+IMP _Nullable __attribute__((__weak__))
 class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -582,7 +582,7 @@ class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)
 	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 322))(class_, selector);
 }
 
-IMP _Nullable
+IMP _Nullable __attribute__((__weak__))
 class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -593,7 +593,7 @@ class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selecto
 	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 328))(class_, selector);
 }
 
-const char *_Nullable
+const char *_Nullable __attribute__((__weak__))
 _class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -604,7 +604,7 @@ _class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 	return __extension__ ((const char *_Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 334))(class_, selector);
 }
 
-bool
+bool __attribute__((__weak__))
 class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	__asm__ __volatile__ (
@@ -615,7 +615,7 @@ class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull imple
 	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector, implementation, typeEncoding);
 }
 
-IMP _Nullable
+IMP _Nullable __attribute__((__weak__))
 class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	__asm__ __volatile__ (
@@ -626,7 +626,7 @@ class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull i
 	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector, implementation, typeEncoding);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 object_getClass(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -637,7 +637,7 @@ object_getClass(id _Nullable object)
 	return __extension__ ((Class _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 352))(object);
 }
 
-Class _Nullable
+Class _Nullable __attribute__((__weak__))
 object_setClass(id _Nullable object, Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
@@ -648,7 +648,7 @@ object_setClass(id _Nullable object, Class _Nonnull class_)
 	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(object, class_);
 }
 
-const char *_Nullable
+const char *_Nullable __attribute__((__weak__))
 object_getClassName(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -659,7 +659,7 @@ object_getClassName(id _Nullable object)
 	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object);
 }
 
-const char *_Nonnull
+const char *_Nonnull __attribute__((__weak__))
 protocol_getName(Protocol *_Nonnull protocol)
 {
 	__asm__ __volatile__ (
@@ -670,7 +670,7 @@ protocol_getName(Protocol *_Nonnull protocol)
 	return __extension__ ((const char *_Nonnull (*)(Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 370))(protocol);
 }
 
-bool
+bool __attribute__((__weak__))
 protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 {
 	__asm__ __volatile__ (
@@ -681,7 +681,7 @@ protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(protocol1, protocol2);
 }
 
-bool
+bool __attribute__((__weak__))
 protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
 {
 	__asm__ __volatile__ (
@@ -692,7 +692,7 @@ protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull pro
 	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol1, protocol2);
 }
 
-_Nullable objc_uncaught_exception_handler
+_Nullable objc_uncaught_exception_handler __attribute__((__weak__))
 objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler)
 {
 	__asm__ __volatile__ (
@@ -703,7 +703,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handl
 	return __extension__ ((_Nullable objc_uncaught_exception_handler (*)(objc_uncaught_exception_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 388))(handler);
 }
 
-void
+void __attribute__((__weak__))
 objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 {
 	__asm__ __volatile__ (
@@ -714,7 +714,7 @@ objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 	__extension__ ((void (*)(IMP _Nullable, IMP _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 394))(forward, stretForward);
 }
 
-void
+void __attribute__((__weak__))
 objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
 {
 	__asm__ __volatile__ (
@@ -725,7 +725,7 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable h
 	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(hadler);
 }
 
-void
+void __attribute__((__weak__))
 _objc_zeroWeakReferences(id _Nullable value)
 {
 	__asm__ __volatile__ (
@@ -736,7 +736,7 @@ _objc_zeroWeakReferences(id _Nullable value)
 	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 406))(value);
 }
 
-void
+void __attribute__((__weak__))
 objc_deinit()
 {
 	__asm__ __volatile__ (
@@ -747,7 +747,7 @@ objc_deinit()
 	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 412))();
 }
 
-Ivar _Nullable *_Nullable
+Ivar _Nullable *_Nullable __attribute__((__weak__))
 class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
@@ -758,7 +758,7 @@ class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	return __extension__ ((Ivar _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 418))(class_, outCount);
 }
 
-const char *_Nonnull
+const char *_Nonnull __attribute__((__weak__))
 ivar_getName(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
@@ -769,7 +769,7 @@ ivar_getName(Ivar _Nonnull ivar)
 	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 424))(ivar);
 }
 
-const char *_Nonnull
+const char *_Nonnull __attribute__((__weak__))
 ivar_getTypeEncoding(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
@@ -780,7 +780,7 @@ ivar_getTypeEncoding(Ivar _Nonnull ivar)
 	return __extension__ ((const char *_Nonnull (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 430))(ivar);
 }
 
-ptrdiff_t
+ptrdiff_t __attribute__((__weak__))
 ivar_getOffset(Ivar _Nonnull ivar)
 {
 	__asm__ __volatile__ (
@@ -791,7 +791,7 @@ ivar_getOffset(Ivar _Nonnull ivar)
 	return __extension__ ((ptrdiff_t (*)(Ivar _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 436))(ivar);
 }
 
-void
+void __attribute__((__weak__))
 class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -802,7 +802,7 @@ class_registerAlias_np(Class _Nonnull class_, const char *_Nonnull name)
 	__extension__ ((void (*)(Class _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 442))(class_, name);
 }
 
-Method _Nullable
+Method _Nullable __attribute__((__weak__))
 class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 {
 	__asm__ __volatile__ (
@@ -813,7 +813,7 @@ class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)
 	return __extension__ ((Method _Nullable (*)(Class _Nullable, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 448))(class_, selector);
 }
 
-Method _Nullable *_Nullable
+Method _Nullable *_Nullable __attribute__((__weak__))
 class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
@@ -824,7 +824,7 @@ class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	return __extension__ ((Method _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 454))(class_, outCount);
 }
 
-SEL _Nonnull
+SEL _Nonnull __attribute__((__weak__))
 method_getName(Method _Nonnull method)
 {
 	__asm__ __volatile__ (
@@ -835,7 +835,7 @@ method_getName(Method _Nonnull method)
 	return __extension__ ((SEL _Nonnull (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 460))(method);
 }
 
-const char *_Nullable
+const char *_Nullable __attribute__((__weak__))
 method_getTypeEncoding(Method _Nonnull method)
 {
 	__asm__ __volatile__ (
@@ -846,7 +846,7 @@ method_getTypeEncoding(Method _Nonnull method)
 	return __extension__ ((const char *_Nullable (*)(Method _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 466))(method);
 }
 
-objc_property_t _Nullable *_Nullable
+objc_property_t _Nullable *_Nullable __attribute__((__weak__))
 class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 {
 	__asm__ __volatile__ (
@@ -857,7 +857,7 @@ class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)
 	return __extension__ ((objc_property_t _Nullable *_Nullable (*)(Class _Nullable, unsigned int *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 472))(class_, outCount);
 }
 
-const char *_Nonnull
+const char *_Nonnull __attribute__((__weak__))
 property_getName(objc_property_t _Nonnull property)
 {
 	__asm__ __volatile__ (
@@ -868,7 +868,7 @@ property_getName(objc_property_t _Nonnull property)
 	return __extension__ ((const char *_Nonnull (*)(objc_property_t _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 478))(property);
 }
 
-char *_Nullable
+char *_Nullable __attribute__((__weak__))
 property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)
 {
 	__asm__ __volatile__ (
@@ -879,7 +879,7 @@ property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonn
 	return __extension__ ((char *_Nullable (*)(objc_property_t _Nonnull, const char *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 484))(property, name);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
 {
 	__asm__ __volatile__ (
@@ -890,7 +890,7 @@ objc_constructInstance(Class _Nullable class_, void *_Nullable bytes)
 	return __extension__ ((id _Nullable (*)(Class _Nullable, void *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 490))(class_, bytes);
 }
 
-void *_Nullable
+void *_Nullable __attribute__((__weak__))
 objc_destructInstance(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -901,7 +901,7 @@ objc_destructInstance(id _Nullable object)
 	return __extension__ ((void *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 496))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 class_createInstance(Class _Nullable class_, size_t extraBytes)
 {
 	__asm__ __volatile__ (
@@ -912,7 +912,7 @@ class_createInstance(Class _Nullable class_, size_t extraBytes)
 	return __extension__ ((id _Nullable (*)(Class _Nullable, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 502))(class_, extraBytes);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 object_dispose(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -923,7 +923,7 @@ object_dispose(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 508))(object);
 }
 
-id _Nonnull
+id _Nonnull __attribute__((__weak__))
 _objc_rootRetain(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -934,7 +934,7 @@ _objc_rootRetain(id _Nonnull object)
 	return __extension__ ((id _Nonnull (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 514))(object);
 }
 
-unsigned int
+unsigned int __attribute__((__weak__))
 _objc_rootRetainCount(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -945,7 +945,7 @@ _objc_rootRetainCount(id _Nonnull object)
 	return __extension__ ((unsigned int (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 520))(object);
 }
 
-void
+void __attribute__((__weak__))
 _objc_rootRelease(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -956,7 +956,7 @@ _objc_rootRelease(id _Nonnull object)
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 526))(object);
 }
 
-void *_Null_unspecified
+void *_Null_unspecified __attribute__((__weak__))
 objc_autoreleasePoolPush()
 {
 	__asm__ __volatile__ (
@@ -967,7 +967,7 @@ objc_autoreleasePoolPush()
 	return __extension__ ((void *_Null_unspecified (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 532))();
 }
 
-void
+void __attribute__((__weak__))
 objc_autoreleasePoolPop(void *_Null_unspecified pool)
 {
 	__asm__ __volatile__ (
@@ -978,7 +978,7 @@ objc_autoreleasePoolPop(void *_Null_unspecified pool)
 	__extension__ ((void (*)(void *_Null_unspecified))*(void **)(((uintptr_t)ObjFWRTBase) - 538))(pool);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 _objc_rootAutorelease(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -989,7 +989,7 @@ _objc_rootAutorelease(id _Nullable object)
 	return __extension__ ((id _Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 544))(object);
 }
 
-void
+void __attribute__((__weak__))
 objc_setTaggedPointerSecret(uintptr_t secret)
 {
 	__asm__ __volatile__ (
@@ -1000,7 +1000,7 @@ objc_setTaggedPointerSecret(uintptr_t secret)
 	__extension__ ((void (*)(uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 550))(secret);
 }
 
-int
+int __attribute__((__weak__))
 objc_registerTaggedPointerClass(Class _Nonnull class_)
 {
 	__asm__ __volatile__ (
@@ -1011,7 +1011,7 @@ objc_registerTaggedPointerClass(Class _Nonnull class_)
 	return __extension__ ((int (*)(Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 556))(class_);
 }
 
-bool
+bool __attribute__((__weak__))
 object_isTaggedPointer(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -1022,7 +1022,7 @@ object_isTaggedPointer(id _Nullable object)
 	return __extension__ ((bool (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 562))(object);
 }
 
-uintptr_t
+uintptr_t __attribute__((__weak__))
 object_getTaggedPointerValue(id _Nonnull object)
 {
 	__asm__ __volatile__ (
@@ -1033,7 +1033,7 @@ object_getTaggedPointerValue(id _Nonnull object)
 	return __extension__ ((uintptr_t (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 568))(object);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_createTaggedPointer(int class_, uintptr_t value)
 {
 	__asm__ __volatile__ (
@@ -1044,7 +1044,7 @@ objc_createTaggedPointer(int class_, uintptr_t value)
 	return __extension__ ((id _Nullable (*)(int, uintptr_t))*(void **)(((uintptr_t)ObjFWRTBase) - 574))(class_, value);
 }
 
-void
+void __attribute__((__weak__))
 objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nullable value, objc_associationPolicy policy)
 {
 	__asm__ __volatile__ (
@@ -1055,7 +1055,7 @@ objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nulla
 	__extension__ ((void (*)(id _Nonnull, const void *_Nonnull, id _Nullable, objc_associationPolicy))*(void **)(((uintptr_t)ObjFWRTBase) - 580))(object, key, value, policy);
 }
 
-id _Nullable
+id _Nullable __attribute__((__weak__))
 objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
 {
 	__asm__ __volatile__ (
@@ -1066,7 +1066,7 @@ objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key)
 	return __extension__ ((id _Nullable (*)(id _Nonnull, const void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 586))(object, key);
 }
 
-void
+void __attribute__((__weak__))
 objc_removeAssociatedObjects(id _Nonnull object)
 {
 	__asm__ __volatile__ (
