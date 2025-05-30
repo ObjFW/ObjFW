@@ -373,15 +373,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	self = [super init];
 
 	@try {
-		uint32_t date;
+		uint32_t tmp, date;
 
-		memcpy(&_compressedSize, header + 7, 4);
-		_compressedSize =
-		    OFFromLittleEndian32((uint32_t)_compressedSize);
+		memcpy(&tmp, header + 7, 4);
+		_compressedSize = OFFromLittleEndian32(tmp);
 
-		memcpy(&_uncompressedSize, header + 11, 4);
-		_uncompressedSize =
-		    OFFromLittleEndian32((uint32_t)_uncompressedSize);
+		memcpy(&tmp, header + 11, 4);
+		_uncompressedSize = OFFromLittleEndian32(tmp);
 
 		memcpy(&date, header + 15, 4);
 		date = OFFromLittleEndian32(date);
@@ -395,7 +393,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			void *pool = objc_autoreleasePoolPush();
 			uint8_t extendedAreaSize;
 			uint8_t fileNameLength;
-			OFString *tmp;
+			OFString *fileName;
 
 			if (header[0] < (21 - 2) + 1 + 2)
 				@throw [OFInvalidFormatException exception];
@@ -403,11 +401,12 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_modificationDate = [parseMSDOSDate(date) retain];
 
 			fileNameLength = [stream readInt8];
-			tmp = [stream readStringWithLength: fileNameLength
-						  encoding: encoding];
-			tmp = [tmp stringByReplacingOccurrencesOfString: @"\\"
-							     withString: @"/"];
-			_fileName = [tmp copy];
+			fileName = [stream readStringWithLength: fileNameLength
+						       encoding: encoding];
+			fileName = [fileName
+			    stringByReplacingOccurrencesOfString: @"\\"
+						      withString: @"/"];
+			_fileName = [fileName copy];
 
 			_CRC16 = [stream readLittleEndianInt16];
 
