@@ -258,8 +258,7 @@ objc_storeWeak(id *object, id value)
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
 		struct WeakRef *ref;
 
-#if defined(OF_HAVE_ATOMIC_OPS) && \
-    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 		if (!object_isTaggedPointer(value) &&
 		    (_object_getClass_fast(value)->info &
 		     _OBJC_CLASS_INFO_RUNTIME_RR))
@@ -380,8 +379,7 @@ _objc_zeroWeakReferences(id value)
 {
 	struct WeakRef *ref;
 
-#if defined(OF_HAVE_ATOMIC_OPS) && \
-    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 	OFReleaseMemoryBarrier();
 
 	if (value != nil && !object_isTaggedPointer(value) &&

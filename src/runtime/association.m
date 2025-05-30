@@ -149,8 +149,7 @@ objc_setAssociatedObject(id object, const void *key, id value,
 		return;
 	}
 
-#if defined(OF_HAVE_ATOMIC_OPS) && \
-    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 	if (!object_isTaggedPointer(object) &&
 	    (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR))
 		OFAtomicIntOr(&_OBJC_PRE_IVARS(object)->info,
@@ -253,8 +252,7 @@ objc_removeAssociatedObjects(id object)
 {
 	size_t slot;
 
-#if defined(OF_HAVE_ATOMIC_OPS) && \
-    (defined(OF_OBJFW_RUNTIME) || defined(OF_DECLARE_CONSTRUCT_INSTANCE))
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 	OFReleaseMemoryBarrier();
 
 	if (object != nil && !object_isTaggedPointer(object) &&
