@@ -214,6 +214,7 @@
 	timeout.tv_usec = (int)((timeInterval - timeout.tv_sec) * 1000000);
 
 #ifdef OF_AMIGAOS
+retry:
 	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
@@ -236,10 +237,16 @@
 
 	Permit();
 
-	if (events < 0)
+	if (events < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo == EINTR)
+			goto retry;
+
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
-				    errNo: _OFSocketErrNo()];
+				    errNo: errNo];
+	}
 
 	if (execSignalMask != 0 &&
 	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
