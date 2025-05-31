@@ -40,7 +40,7 @@
 #undef Class
 
 #define DATA_OFFSET 0x8000
-#define TRAMPLINE_SIZE 3
+#define TRAMPOLINE_SIZE 3
 
 /* This always needs to be the first thing in the file. */
 int
@@ -293,7 +293,7 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 }
 
 static void
-createTrampoline(uint32_t buffer[TRAMPLINE_SIZE], IMP function)
+createTrampoline(uint32_t buffer[TRAMPOLINE_SIZE], IMP function)
 {
 	ptrdiff_t offset;
 
@@ -311,7 +311,7 @@ createTrampolinesForMethodList(struct objc_method_list *methodList)
 {
 	for (; methodList != NULL; methodList = methodList->next) {
 		uint32_t *trampolines = malloc(
-		    methodList->count * TRAMPLINE_SIZE * sizeof(uint32_t));
+		    methodList->count * TRAMPOLINE_SIZE * sizeof(uint32_t));
 
 		if (trampolines == NULL)
 			abort();
@@ -325,7 +325,7 @@ createTrampolinesForMethodList(struct objc_method_list *methodList)
 		}
 
 		CacheFlushDataInstArea(trampolines,
-		    methodList->count * TRAMPLINE_SIZE * sizeof(uint32_t));
+		    methodList->count * TRAMPOLINE_SIZE * sizeof(uint32_t));
 	}
 }
 
