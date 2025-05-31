@@ -79,6 +79,17 @@ extern struct Stret _OFForward_stret(id, SEL, ...);
 static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+__asm__ (
+    ".globl __restore_r13\n"
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+#endif
+
 static struct {
 	Class isa;
 } allocFailedException;
