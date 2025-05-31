@@ -56,7 +56,6 @@ extern int _Unwind_Backtrace(int (*)(void *, void *), void *);
 extern void __register_frame(void *);
 extern void __deregister_frame(void *);
 
-struct Library *ObjFWBase;
 void *__objc_class_name_OFActivateSandboxFailedException;
 void *__objc_class_name_OFAllocFailedException;
 void *__objc_class_name_OFAlreadyOpenException;
