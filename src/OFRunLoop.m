@@ -1260,6 +1260,19 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			    [[OFKernelEventObserver alloc]
 			    initWithRunLoopMode: mode];
 			state->_kernelEventObserver.delegate = state;
+# ifdef OF_AMIGAOS
+#  ifdef OF_HAVE_THREADS
+			[state->_execSignalsMutex lock];
+			@try {
+#  endif
+				state->_kernelEventObserver.execSignalMask =
+				    state->_execSignalMask;
+#  ifdef OF_HAVE_THREADS
+			} @finally {
+				[state->_execSignalsMutex unlock];
+			}
+#  endif
+# endif
 		}
 #endif
 #ifdef OF_HAVE_THREADS
@@ -1946,7 +1959,16 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 #ifdef OF_HAVE_THREADS
 				[state->_condition lock];
 # ifdef OF_AMIGAOS
-				signalMask = state->_execSignalMask;
+#  ifdef OF_HAVE_THREADS
+				[state->_execSignalsMutex lock];
+				@try {
+#  endif
+					signalMask = state->_execSignalMask;
+#  ifdef OF_HAVE_THREADS
+				} @finally {
+					[state->_execSignalsMutex unlock];
+				}
+#  endif
 				[state->_condition
 				    waitForTimeInterval: timeout
 					   orExecSignal: &signalMask];
@@ -1978,7 +2000,16 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 #ifdef OF_HAVE_THREADS
 				[state->_condition lock];
 # ifdef OF_AMIGAOS
-				signalMask = state->_execSignalMask;
+#  ifdef OF_HAVE_THREADS
+				[state->_execSignalsMutex lock];
+				@try {
+#  endif
+					signalMask = state->_execSignalMask;
+#  ifdef OF_HAVE_THREADS
+				} @finally {
+					[state->_execSignalsMutex unlock];
+				}
+#  endif
 				[state->_condition
 				    waitForConditionOrExecSignal: &signalMask];
 				if (signalMask != 0)
