@@ -254,7 +254,7 @@
 		if (errNo != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
-					    errNo: errNo)];
+					    errNo: errNo];
 	}
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
