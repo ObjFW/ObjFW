@@ -90,7 +90,10 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	ProgressBar *_progressBar;
 }
 
+#ifndef OF_AMIGAOS
 - (void)SIGINTCheck;
+#endif
+- (void)handleSIGINT;
 - (void)downloadNextIRI;
 @end
 
@@ -622,10 +625,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 #endif
 
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleSIGINT)];
+#else
 	[OFTimer scheduledTimerWithTimeInterval: 0.1
 					 target: self
 				       selector: @selector(SIGINTCheck)
 					repeats: true];
+#endif
 
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
@@ -637,16 +646,20 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 - (void)SIGINTCheck
 {
-	if (SIGINTReceived) {
-		if (!_quiet) {
-			OFStdErr.cursorVisible = true;
-			[OFStdErr writeString: @"\n  "];
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
-		}
+	if (SIGINTReceived)
+		[self handleSIGINT];
+}
 
-		[OFApplication terminateWithStatus: 1];
+- (void)handleSIGINT
+{
+	if (!_quiet) {
+		OFStdErr.cursorVisible = true;
+		[OFStdErr writeString: @"\n  "];
+		[OFStdErr writeLine:
+		    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
 	}
+
+	[OFApplication terminateWithStatus: 1];
 }
 
 -	(void)client: (OFHTTPClient *)client
