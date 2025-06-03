@@ -32,19 +32,19 @@ int _OFString_PathAdditions_reference;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	bool firstAfterDevice = true;
+	OFString *lastComponent = nil;
 
 	for (OFString *component in components) {
 		if (component.length == 0)
 			continue;
 
-		if (!firstAfterDevice)
+		if (lastComponent != nil && ![lastComponent hasSuffix: @"/"] &&
+		    ![lastComponent hasSuffix: @":"])
 			[ret appendString: @"/"];
 
 		[ret appendString: component];
 
-		if (![component hasSuffix: @":"])
-			firstAfterDevice = false;
+		lastComponent = component;
 	}
 
 	[ret makeImmutable];
