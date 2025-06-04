@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFEpollKernelEventObserver: OFKernelEventObserver
 {
 	int _epfd;
-	OFMapTable *_FDToEvents;
+	OFMapTable *_FDToEvent;
 }
 @end
 

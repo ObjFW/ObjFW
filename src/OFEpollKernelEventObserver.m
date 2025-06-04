@@ -32,13 +32,26 @@
 #import "OFArray.h"
 #import "OFMapTable.h"
 #import "OFNull.h"
+#import "OFPair.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveKernelEventsFailedException.h"
 
 #define eventListSize 64
 
-static const OFMapTableFunctions mapFunctions = { NULL };
+static void
+releaseEvent(void *object)
+{
+	struct epoll_event *event = object;
+
+	objc_release(event->data.ptr);
+	OFFreeMemory(event);
+}
+
+static const OFMapTableFunctions keyFunctions = { NULL };
+static const OFMapTableFunctions objectFunctions = {
+	.release = releaseEvent
+};
 
 @implementation OFEpollKernelEventObserver
 - (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
@@ -63,9 +76,9 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			fcntl(_epfd, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-		_FDToEvents = [[OFMapTable alloc]
-		    initWithKeyFunctions: mapFunctions
-			 objectFunctions: mapFunctions];
+		_FDToEvent = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			 objectFunctions: objectFunctions];
 
 		memset(&event, 0, sizeof(event));
 		event.events = EPOLLIN;
@@ -86,46 +99,63 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 {
 	close(_epfd);
 
-	objc_release(_FDToEvents);
+	objc_release(_FDToEvent);
 
 	[super dealloc];
 }
 
 - (void)of_addObject: (id)object
       fileDescriptor: (int)fd
-	      events: (int)addEvents OF_DIRECT
+	      events: (uint32_t)addEvents OF_DIRECT
 {
-	struct epoll_event event;
-	intptr_t events;
+	struct epoll_event *event =
+	    [_FDToEvent objectForKey: (void *)((intptr_t)fd + 1)];
+	uint32_t oldEvents;
 
-	events = (intptr_t)[_FDToEvents
-	    objectForKey: (void *)((intptr_t)fd + 1)];
+	if (event == NULL) {
+		event = OFAllocZeroedMemory(1, sizeof(*event));
+		@try {
+			event->data.ptr = [[OFMutablePair alloc] init];
 
-	memset(&event, 0, sizeof(event));
-	event.events = (int)events | addEvents;
-	event.data.ptr = object;
+			[_FDToEvent setObject: event 
+				       forKey: (void *)((intptr_t)fd + 1)];
+		} @catch (id e) {
+			OFFreeMemory(event);
+			@throw e;
+		}
+	}
 
-	if (epoll_ctl(_epfd, (events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
-	    fd, &event) == -1)
+	oldEvents = event->events;
+	event->events |= addEvents;
+
+	if (epoll_ctl(_epfd, (oldEvents == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
+	    fd, event) == -1) {
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
 				    errNo: errno];
+	}
 
-	[_FDToEvents setObject: (void *)(events | addEvents)
-			forKey: (void *)((intptr_t)fd + 1)];
+	if (addEvents == EPOLLIN)
+		((OFMutablePair *)event->data.ptr).firstObject = object;
+	else if (addEvents == EPOLLOUT)
+		((OFMutablePair *)event->data.ptr).secondObject = object;
+	else
+		OFEnsure(0);
 }
 
 - (void)of_removeObject: (id)object
 	 fileDescriptor: (int)fd
-		 events: (int)removeEvents OF_DIRECT
+		 events: (uint32_t)removeEvents OF_DIRECT
 {
-	intptr_t events;
+	struct epoll_event *event =
+	    [_FDToEvent objectForKey: (void *)((intptr_t)fd + 1)];
 
-	events = (intptr_t)[_FDToEvents
-	    objectForKey: (void *)((intptr_t)fd + 1)];
-	events &= ~removeEvents;
+	if (event == NULL)
+		return;
 
-	if (events == 0) {
+	event->events &= ~removeEvents;
+
+	if (event->events == 0) {
 		if (epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
 			/*
 			 * When an async connect fails, it seems the socket is
@@ -137,21 +167,17 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 				    exceptionWithObserver: self
 						    errNo: errno];
 
-		[_FDToEvents removeObjectForKey: (void *)((intptr_t)fd + 1)];
+		[_FDToEvent removeObjectForKey: (void *)((intptr_t)fd + 1)];
 	} else {
-		struct epoll_event event;
-
-		memset(&event, 0, sizeof(event));
-		event.events = (int)events;
-		event.data.ptr = object;
-
-		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
+		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, event) == -1)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
-		[_FDToEvents setObject: (void *)events
-				forKey: (void *)((intptr_t)fd + 1)];
+		if (removeEvents == EPOLLIN)
+			((OFMutablePair *)event->data.ptr).firstObject = nil;
+		else if (removeEvents == EPOLLOUT)
+			((OFMutablePair *)event->data.ptr).secondObject = nil;
 	}
 }
 
@@ -220,7 +246,8 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    eventList[i].data.ptr];
+				    ((OFPair *)eventList[i].data.ptr)
+				    .firstObject];
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -231,7 +258,8 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    eventList[i].data.ptr];
+				    ((OFPair *)eventList[i].data.ptr)
+				    .secondObject];
 
 			objc_autoreleasePoolPop(pool);
 		}
