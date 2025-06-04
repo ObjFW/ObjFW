@@ -26,7 +26,9 @@
 #endif
 
 #import "OFPollKernelEventObserver.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFPair.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
@@ -44,14 +46,18 @@
 	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
 
 		_FDs = [[OFMutableData alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
 		[_FDs addItem: &p];
 
-		_maxFD = _cancelFD[0];
-		_FDToObject = OFAllocMemory((size_t)_maxFD + 1, sizeof(id));
+		_objects = [[OFMutableArray alloc] init];
+		[_objects addObject:
+		    [[[OFMutablePair alloc] init] autorelease]];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -63,7 +69,7 @@
 - (void)dealloc
 {
 	objc_release(_FDs);
-	OFFreeMemory(_FDToObject);
+	objc_release(_objects);
 
 	[super dealloc];
 }
@@ -71,9 +77,9 @@
 static void
 addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
+	struct pollfd p = { fd, events, 0 };
 	struct pollfd *FDs;
 	size_t count;
-	bool found;
 
 	if (fd < 0)
 		@throw [OFObserveKernelEventsFailedException
@@ -82,28 +88,36 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 	FDs = self->_FDs.mutableItems;
 	count = self->_FDs.count;
-	found = false;
 
 	for (size_t i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events |= events;
-			found = true;
-			break;
+
+			if (events == POLLIN)
+				[[self->_objects objectAtIndex: i]
+				    setFirstObject: object];
+			else if (events == POLLOUT)
+				[[self->_objects objectAtIndex: i]
+				    setSecondObject: object];
+			else
+				OFEnsure(0);
+
+			return;
 		}
 	}
 
-	if (!found) {
-		struct pollfd p = { fd, events, 0 };
+	[self->_FDs addItem: &p];
 
-		if (fd > self->_maxFD) {
-			self->_maxFD = fd;
-			self->_FDToObject = OFResizeMemory(self->_FDToObject,
-			    (size_t)self->_maxFD + 1, sizeof(id));
-		}
-
-		self->_FDToObject[fd] = object;
-		[self->_FDs addItem: &p];
-	}
+	if (events == POLLIN)
+		[self->_objects addObject:
+		    [OFMutablePair pairWithFirstObject: object
+					  secondObject: nil]];
+	else if (events == POLLOUT)
+		[self->_objects addObject:
+		    [OFMutablePair pairWithFirstObject: nil
+					  secondObject: object]];
+	else
+		OFEnsure(0);
 }
 
 static void
@@ -125,11 +139,8 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			FDs[i].events &= ~events;
 
 			if (FDs[i].events == 0) {
-				/*
-				 * TODO: Remove from and resize _FDToObject,
-				 *	 adjust _maxFD.
-				 */
 				[self->_FDs removeItemAtIndex: i];
+				[self->_objects removeObjectAtIndex: i];
 			}
 
 			break;
@@ -169,6 +180,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
 	void *pool;
 	struct pollfd *FDs;
+	OFArray *objects;
 	size_t nFDs;
 
 	if ([self processReadBuffers])
@@ -177,7 +189,10 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	pool = objc_autoreleasePoolPush();
 
 	FDs = [objc_autorelease([_FDs mutableCopy]) mutableItems];
+	objects = objc_autorelease([_objects copy]);
 	nFDs = _FDs.count;
+
+	OFAssert(objects.count == nFDs);
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)
@@ -195,8 +210,6 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	}
 
 	for (size_t i = 0; i < nFDs; i++) {
-		OFAssert(FDs[i].fd <= _maxFD);
-
 		if (FDs[i].revents & POLLIN) {
 			void *pool2;
 
@@ -219,7 +232,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    _FDToObject[FDs[i].fd]];
+				    [[objects objectAtIndex: i] firstObject]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -230,12 +243,10 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    _FDToObject[FDs[i].fd]];
+				    [[objects objectAtIndex: i] secondObject]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
-
-		FDs[i].revents = 0;
 	}
 
 	objc_autoreleasePoolPop(pool);

@@ -22,12 +22,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableData;
+@class OFMutablePair OF_GENERIC(FirstType, SecondType);
 
 @interface OFPollKernelEventObserver: OFKernelEventObserver
 {
 	OFMutableData *_FDs;
-	int _maxFD;
-	id __unsafe_unretained *_FDToObject;
+	OFMutableArray OF_GENERIC(OFMutablePair *) *_objects;
 }
 @end
 
