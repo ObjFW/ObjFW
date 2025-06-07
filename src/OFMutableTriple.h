@@ -40,17 +40,20 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The first object of the triple.
  */
-@property (readwrite, nonatomic, retain) FirstType firstObject;
+@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, retain)
+    FirstType firstObject;
 
 /**
  * @brief The second object of the triple.
  */
-@property (readwrite, nonatomic, retain) SecondType secondObject;
+@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, retain)
+    SecondType secondObject;
 
 /**
  * @brief The third object of the triple.
  */
-@property (readwrite, nonatomic, retain) ThirdType thirdObject;
+@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, retain)
+    ThirdType thirdObject;
 
 /**
  * @brief Converts the mutable triple to an immutable triple.
