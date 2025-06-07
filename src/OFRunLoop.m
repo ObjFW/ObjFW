@@ -669,7 +669,8 @@ static OFRunLoop *mainRunLoop = nil;
 	} @catch (OFWriteFailedException *e) {
 		length = e.bytesWritten;
 
-		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
+		if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN &&
+		    (e.errNo != 0 || length <= 0))
 			exception = e;
 	} @catch (id e) {
 		length = 0;
