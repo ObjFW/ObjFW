@@ -192,7 +192,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		/* FIXME: Translate error to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: ret
+						      bytesWritten: 0
 							     errNo: 0];
 	}
 
