@@ -125,7 +125,7 @@ id
 objc_retain(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (_object_isTaggedPointer_fast(object) || object == nil)
+	if (object == nil || _object_isTaggedPointer_fast(object))
 		return object;
 
 	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
@@ -145,7 +145,7 @@ id
 objc_retainAutorelease(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (_object_isTaggedPointer_fast(object) || object == nil)
+	if (object == nil || _object_isTaggedPointer_fast(object))
 		return object;
 
 	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
@@ -159,7 +159,7 @@ void
 objc_release(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (_object_isTaggedPointer_fast(object) || object == nil)
+	if (object == nil || _object_isTaggedPointer_fast(object))
 		return;
 
 	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR) {
@@ -175,7 +175,7 @@ id
 objc_autorelease(id object)
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (_object_isTaggedPointer_fast(object) || object == nil)
+	if (object == nil || _object_isTaggedPointer_fast(object))
 		return object;
 
 	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
