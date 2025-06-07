@@ -12,7 +12,7 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-.PHONY: check docs release
+.PHONY: check docs release upload
 
 utils tests: src
 
@@ -45,3 +45,11 @@ release: docs
 	gzip -9 objfw-docs-${PACKAGE_VERSION}.tar
 	rm -f objfw-docs-${PACKAGE_VERSION}.tar
 	gpg -b objfw-docs-${PACKAGE_VERSION}.tar.gz || true
+
+upload:
+	fossil uv revert
+	fossil uv add objfw-${PACKAGE_VERSION}.tar.gz
+	fossil uv add objfw-${PACKAGE_VERSION}.tar.gz.sig
+	fossil uv add objfw-docs-${PACKAGE_VERSION}.tar.gz
+	fossil uv add objfw-docs-${PACKAGE_VERSION}.tar.gz.sig
+	fossil uv sync
