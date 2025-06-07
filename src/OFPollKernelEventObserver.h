@@ -21,13 +21,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableData;
-@class OFMutablePair OF_GENERIC(FirstType, SecondType);
 
 @interface OFPollKernelEventObserver: OFKernelEventObserver
 {
 	OFMutableData *_FDs;
-	OFMutableArray OF_GENERIC(OFMutablePair *) *_objects;
+	OFMutableArray *_objects;
 }
 @end
 

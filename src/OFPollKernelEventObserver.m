@@ -28,7 +28,7 @@
 #import "OFPollKernelEventObserver.h"
 #import "OFArray.h"
 #import "OFData.h"
-#import "OFPair.h"
+#import "OFNull.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
@@ -53,9 +53,8 @@
 		    sizeof(struct pollfd)];
 		[_FDs addItem: &p];
 
-		_objects = [[OFMutableArray alloc] init];
-		[_objects addObject:
-		    [[[OFMutablePair alloc] init] autorelease]];
+		_objects = [[OFMutableArray alloc]
+		    initWithObject: [OFNull null]];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -92,32 +91,12 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	for (size_t i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events |= events;
-
-			if (events == POLLIN)
-				[[self->_objects objectAtIndex: i]
-				    setFirstObject: object];
-			else if (events == POLLOUT)
-				[[self->_objects objectAtIndex: i]
-				    setSecondObject: object];
-			else
-				OFEnsure(0);
-
 			return;
 		}
 	}
 
 	[self->_FDs addItem: &p];
-
-	if (events == POLLIN)
-		[self->_objects addObject:
-		    [OFMutablePair pairWithFirstObject: object
-					  secondObject: nil]];
-	else if (events == POLLOUT)
-		[self->_objects addObject:
-		    [OFMutablePair pairWithFirstObject: nil
-					  secondObject: object]];
-	else
-		OFEnsure(0);
+	[self->_objects addObject: object];
 }
 
 static void
@@ -232,7 +211,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    [[objects objectAtIndex: i] firstObject]];
+				    [objects objectAtIndex: i]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -243,7 +222,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    [[objects objectAtIndex: i] secondObject]];
+				    [objects objectAtIndex: i]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
