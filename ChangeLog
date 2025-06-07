@@ -4,6 +4,17 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
+ * Fixes OpenSSL TLS streams being reported as ready for reading when they are
+   not.
+ * Fixes using async I/O on OFHTTPServer's request body or response.
+ * Fixes configure on Solaris / Illumos.
+ * Improves configure check for GameController.framework.
+ * Removes unncessary promotion to double in OFColor.
+ * Fixes handling the last disk number on ZIP64 archives.
+ * Fixes OFLHAArchiveEntry on big endian systems.
+ * Fixes inconsistent nullability in OFMutablePair and OFMutableTriple.
+
 ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
  + OFStdIOStream adds support truecolor, 256 colors, bold, italic, underlined
    and italic.
