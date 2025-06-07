@@ -617,6 +617,16 @@ normalizedKey(OFString *key)
 		    server: _server
 		   request: request] autorelease];
 
+	/*
+	 * A user might want to perform async I/O on the request body or the
+	 * response, however, we are currently handling an async read on the
+	 * underlying stream. This request would only be removed once we return
+	 * here, at which point there would be two async I/Os on the same FD
+	 * with different objects, which is not supported. So cancel all async
+	 * requests now.
+	 */
+	[_stream cancelAsyncRequests];
+
 	[_server.delegate server: _server
 	       didReceiveRequest: request
 		     requestBody: _requestBody
