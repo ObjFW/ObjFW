@@ -101,6 +101,8 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
+		if (e.errNo == EPIPE || e.errNo == ECONNRESET)
+			return errSSLClosedAbort;
 
 		@throw e;
 	}
