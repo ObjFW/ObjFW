@@ -233,7 +233,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		/* FIXME: Translate error to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: ret
+						      bytesWritten: 0
 							     errNo: 0];
 	}
 
