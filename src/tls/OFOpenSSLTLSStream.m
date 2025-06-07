@@ -507,6 +507,9 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -586,6 +589,9 @@ errToErrorCode(const SSL *SSL_)
 			}
 		}
 	}
+
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
 
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(

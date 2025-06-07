@@ -416,6 +416,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -462,6 +465,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				      errorCode: statusToErrorCode(
 						     &_SSL, status)];
 	}
+
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
 
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(

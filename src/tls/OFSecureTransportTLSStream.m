@@ -381,6 +381,9 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 				      errorCode: statusToErrorCode(status)];
 	}
 
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
+
 	if (_server) {
 		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])

@@ -386,6 +386,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		}
 	}
 
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -445,6 +448,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 				      errorCode: errorCode];
 		}
 	}
+
+	/* Cancel async requests so delegate can perform async I/O */
+	[stream cancelAsyncRequests];
 
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
