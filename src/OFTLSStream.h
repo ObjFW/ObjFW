@@ -188,6 +188,8 @@ typedef enum {
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
  * @throw OFAlreadyOpenException The handshake was already performed
+ * @throw OFReadFailedException The underlying stream had a read error
+ * @throw OFWriteFailedException The underlying stream had a write error
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
 
@@ -216,6 +218,8 @@ typedef enum {
  *
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
  * @throw OFAlreadyOpenException The handshake was already performed
+ * @throw OFReadFailedException The underlying stream had a read error
+ * @throw OFWriteFailedException The underlying stream had a write error
  */
 - (void)performServerHandshake;
 @end

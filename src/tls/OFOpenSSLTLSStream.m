@@ -146,8 +146,14 @@ errToErrorCode(const SSL *SSL_)
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				if (e.errNo != EPIPE && e.errNo != ECONNRESET)
+					@throw e;
+			}
 		}
 	}
 
@@ -370,8 +376,14 @@ errToErrorCode(const SSL *SSL_)
 
 		OFEnsure(tmp >= 0);
 
-		[_underlyingStream writeBuffer: _buffer length: tmp];
-		[_underlyingStream flushWriteBuffer];
+		@try {
+			[_underlyingStream writeBuffer: _buffer
+						length: tmp];
+			[_underlyingStream flushWriteBuffer];
+		} @catch (OFWriteFailedException *e) {
+			exception = e;
+			goto inform_delegate;
+		}
 	}
 
 	if (status == 1)
@@ -415,6 +427,7 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
+inform_delegate:
 	if (server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -468,8 +481,14 @@ errToErrorCode(const SSL *SSL_)
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
 		if (status == 1)
@@ -507,6 +526,7 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
+inform_delegate:
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -541,8 +561,14 @@ errToErrorCode(const SSL *SSL_)
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
 		ERR_clear_error();
@@ -553,8 +579,14 @@ errToErrorCode(const SSL *SSL_)
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
 		if (status == 1)
@@ -587,6 +619,7 @@ errToErrorCode(const SSL *SSL_)
 		}
 	}
 
+inform_delegate:
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
