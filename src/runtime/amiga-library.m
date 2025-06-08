@@ -40,6 +40,13 @@ __start(void)
 	return -1;
 }
 
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: " OBJFWRT_AMIGA_LIB " "
+    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
+    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
+    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer";
+#endif
+
 struct ObjFWRTBase {
 	struct Library library;
 	void *segList;
