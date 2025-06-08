@@ -278,26 +278,29 @@ normalizedKey(OFString *key)
 			[_stream writeString: @"0\r\n\r\n"];
 	} @catch (OFWriteFailedException *e) {
 		id <OFHTTPServerDelegate> delegate = _server.delegate;
+		SEL deprecatedSelector = @selector(server:
+		    didReceiveExceptionForResponse:request:exception:);
 
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
 		if ([delegate respondsToSelector:
 		    @selector(server:didEncounterException:request:response:)])
 			[delegate	   server: _server
 			    didEncounterException: e
 					  request: _request
 					 response: self];
-		else if ([delegate respondsToSelector: @selector(server:
-		  didReceiveExceptionForResponse:request:exception:)])
-			[delegate		    server: _server
-			    didReceiveExceptionForResponse: self
-						   request: _request
-						 exception: e];
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic pop
-#endif
+		else if ([delegate respondsToSelector: deprecatedSelector]) {
+			/*
+			 * Use -[methodForSelector:] to avoid deprecation
+			 * warning.
+			 */
+			void (*imp)(id, SEL, OFHTTPServer *, OFHTTPResponse *,
+			    OFHTTPRequest *, id) = (void (*)(id, SEL,
+			    OFHTTPServer *, OFHTTPResponse *, OFHTTPRequest *,
+			    id))
+			    [delegate methodForSelector: deprecatedSelector];
+
+			imp(delegate, deprecatedSelector, _server, self,
+			    _request, e);
+		}
 	}
 
 	objc_release(_stream);
@@ -976,6 +979,9 @@ normalizedKey(OFString *key)
 	exception: (id)exception
 {
 	if (exception != nil) {
+		SEL deprecatedSelector =
+		    @selector(server:didReceiveExceptionOnListeningSocket:);
+
 		if ([_delegate respondsToSelector: @selector(
 		    server:didEncounterException:request:response:)]) {
 			[_delegate	   server: self
@@ -985,17 +991,18 @@ normalizedKey(OFString *key)
 			return false;
 		}
 
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
-		if ([_delegate respondsToSelector:
-		    @selector(server:didReceiveExceptionOnListeningSocket:)])
-			return [_delegate		  server: self
-			    didReceiveExceptionOnListeningSocket: exception];
-#if defined(__clang__) || OF_GCC_VERSION >= 406
-# pragma GCC diagnostic pop
-#endif
+		if ([_delegate respondsToSelector: deprecatedSelector]) {
+			/*
+			 * Use -[methodForSelector:] to avoid deprecation
+			 * warning.
+			 */
+			bool (*imp)(id, SEL, OFHTTPServer *, id) =
+			    (bool (*)(id, SEL, OFHTTPServer *, id))
+			    [_delegate methodForSelector: deprecatedSelector];
+
+			return imp(_delegate, deprecatedSelector, self,
+			    exception);
+		}
 
 		return false;
 	}
