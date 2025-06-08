@@ -4,6 +4,15 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.3.1 -> ObjFW 1.3.2, 2025-06-08
+ * Fixes handling of truncated writes in OFRunLoop.
+ * Makes OFHTTPServer more reliable.
+ * Fixes handling of write errors when using OpenSSL.
+ * Fixes reporting of written bytes in OFWriteFailedException when using GnuTLS.
+ * Fixes reporting of written bytes in OFWriteFailedException when using
+   MbedTLS.
+ * Fixes handling of EPIPE and ECONNRESET when using Secure Transport.
+
 ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
  * Fixes OpenSSL TLS streams being reported as ready for reading when they are
    not.
