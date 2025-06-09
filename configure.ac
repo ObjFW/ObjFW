@@ -2006,8 +2006,14 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
 		morphos*)
-			ssl="ssl_shared"
-			crypto="crypto_shared"
+			AC_CHECK_LIB(ssl_shared, openssl3_r13_saved, [
+				ssl="ssl_shared"
+				crypto="crypto_shared"
+			], [
+				ssl="ssl"
+				crypto="crypto"
+			])
+			TLS_LIBS="-pthread -latomic $TLS_LIBS"
 			;;
 		mingw*)
 			ssl="ssl"
