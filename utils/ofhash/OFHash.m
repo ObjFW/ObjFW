@@ -21,6 +21,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFDate.h"
 #import "OFFile.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
@@ -52,6 +53,9 @@ const char *VER = "$VER: ofhash " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 #endif
 
 @interface OFHash: OFObject <OFApplicationDelegate>
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#endif
 @end
 
 #ifdef HAVE_TLS_SUPPORT
@@ -136,6 +140,9 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	OFSHA256Hash *SHA256Hash = nil;
 	OFSHA384Hash *SHA384Hash = nil;
 	OFSHA512Hash *SHA512Hash = nil;
+#ifdef OF_AMIGAOS
+	OFDate *distantPast = [OFDate distantPast];
+#endif
 
 #ifndef OF_AMIGAOS
 	[OFLocale addLocalizationDirectoryIRI:
@@ -143,6 +150,12 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 #else
 	[OFLocale addLocalizationDirectoryIRI:
 	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhash/localization"]];
+#endif
+
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -220,6 +233,12 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *file;
 
+#ifdef OF_AMIGAOS
+		/* Spin run loop once to see if we got Ctrl-C. */
+		[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+				      beforeDate: distantPast];
+#endif
+
 		if (!isIRI && [path isEqual: @"-"])
 			file = OFStdIn;
 		else {
@@ -263,6 +282,12 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		while (!file.atEndOfStream) {
 			uint8_t buffer[1024];
 			size_t length;
+
+#ifdef OF_AMIGAOS
+			/* Spin run loop once to see if we got Ctrl-C. */
+			[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+					      beforeDate: distantPast];
+#endif
 
 			@try {
 				length = [file readIntoBuffer: buffer
@@ -328,4 +353,11 @@ outer_loop_end:
 
 	[OFApplication terminateWithStatus: exitStatus];
 }
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	raise(SIGINT);
+}
+#endif
 @end

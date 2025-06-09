@@ -90,10 +90,12 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	ProgressBar *_progressBar;
 }
 
-#ifndef OF_AMIGAOS
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#else
 - (void)SIGINTCheck;
 #endif
-- (void)handleSIGINT;
+- (void)abort;
 - (void)downloadNextIRI;
 @end
 
@@ -628,7 +630,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #ifdef OF_AMIGAOS
 	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
 					target: self
-				      selector: @selector(handleSIGINT)];
+				      selector: @selector(handleBreakCtrlC:)];
 #else
 	[OFTimer scheduledTimerWithTimeInterval: 0.1
 					 target: self
@@ -639,6 +641,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
 
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	[self abort];
+}
+#else
 - (void)applicationDidReceiveSIGINT
 {
 	SIGINTReceived = true;
@@ -647,10 +655,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 - (void)SIGINTCheck
 {
 	if (SIGINTReceived)
-		[self handleSIGINT];
+		[self abort];
 }
+#endif
 
-- (void)handleSIGINT
+- (void)abort
 {
 	if (!_quiet) {
 		OFStdErr.cursorVisible = true;
