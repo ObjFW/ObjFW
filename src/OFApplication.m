@@ -162,7 +162,8 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 @synthesize activeSandboxForChildProcesses = _activeSandboxForChildProcesses;
 #endif
 
-#define SIGNAL_HANDLER(signal)					\
+#ifndef OF_AMIGAOS
+# define SIGNAL_HANDLER(signal)					\
 	static void						\
 	handle##signal(int sig)					\
 	{							\
@@ -170,16 +171,17 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 		    @selector(applicationDidReceive##signal));	\
 	}
 SIGNAL_HANDLER(SIGINT)
-#ifdef SIGHUP
+# ifdef SIGHUP
 SIGNAL_HANDLER(SIGHUP)
-#endif
-#ifdef SIGUSR1
+# endif
+# ifdef SIGUSR1
 SIGNAL_HANDLER(SIGUSR1)
-#endif
-#ifdef SIGUSR2
+# endif
+# ifdef SIGUSR2
 SIGNAL_HANDLER(SIGUSR2)
+# endif
+# undef SIGNAL_HANDLER
 #endif
-#undef SIGNAL_HANDLER
 
 + (OFApplication *)sharedApplication
 {
@@ -561,7 +563,10 @@ SIGNAL_HANDLER(SIGUSR2)
 
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate
 {
-#define REGISTER_SIGNAL(sig)						\
+	_delegate = delegate;
+
+#ifndef OF_AMIGAOS
+# define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
 		_##sig##Handler = (void (*)(id, SEL))[(id)delegate	\
@@ -573,20 +578,19 @@ SIGNAL_HANDLER(SIGUSR2)
 		signal(sig, (void (*)(int))SIG_DFL);			\
 	}
 
-	_delegate = delegate;
-
 	REGISTER_SIGNAL(SIGINT)
-#ifdef SIGHUP
+# ifdef SIGHUP
 	REGISTER_SIGNAL(SIGHUP)
-#endif
-#ifdef SIGUSR1
+# endif
+# ifdef SIGUSR1
 	REGISTER_SIGNAL(SIGUSR1)
-#endif
-#ifdef SIGUSR2
+# endif
+# ifdef SIGUSR2
 	REGISTER_SIGNAL(SIGUSR2)
-#endif
+# endif
 
-#undef REGISTER_SIGNAL
+# undef REGISTER_SIGNAL
+#endif
 }
 
 - (void)of_run

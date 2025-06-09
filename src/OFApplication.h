@@ -148,6 +148,7 @@ extern int _CRT_glob;
  */
 - (void)applicationWillTerminate: (OFNotification *)notification;
 
+#ifndef OF_AMIGAOS
 /**
  * @brief A method which is called when the application received a SIGINT.
  *
@@ -155,10 +156,12 @@ extern int _CRT_glob;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGINT;
 
-#ifdef SIGHUP
+# ifdef SIGHUP
 /**
  * @brief A method which is called when the application received a SIGHUP.
  *
@@ -168,11 +171,13 @@ extern int _CRT_glob;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGHUP;
-#endif
+# endif
 
-#ifdef SIGUSR1
+# ifdef SIGUSR1
 /**
  * @brief A method which is called when the application received a SIGUSR1.
  *
@@ -182,11 +187,13 @@ extern int _CRT_glob;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGUSR1;
-#endif
+# endif
 
-#ifdef SIGUSR2
+# ifdef SIGUSR2
 /**
  * @brief A method which is called when the application received a SIGUSR2.
  *
@@ -196,8 +203,11 @@ extern int _CRT_glob;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGUSR2;
+# endif
 #endif
 @end
 
