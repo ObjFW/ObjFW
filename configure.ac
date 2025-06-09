@@ -2034,7 +2034,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					tmp="$tmp $TLS_FRAMEWORK_LIBS"
 					TLS_FRAMEWORK_LIBS="$tmp"
 				], [], [-l$crypto -lz $TLS_LIBS])
-			], [], [-l$crypto $TLS_LIBS])
+			], [-l$crypto $TLS_LIBS])
 
 			AS_IF([test x"$tls_support" = x"OpenSSL"], [
 				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
