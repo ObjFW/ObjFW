@@ -90,9 +90,7 @@ _objc_error(const char *title, const char *format, ...)
 # endif
 	struct EasyStruct easy;
 
-# ifndef OF_AMIGAOS4
 	kprintf("[%s] %s\n", title, message);
-# endif
 
 	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
 		abort();

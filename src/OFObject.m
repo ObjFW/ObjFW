@@ -33,6 +33,7 @@
 #endif
 
 #import "OFObject.h"
+#import "OFApplication.h"
 #import "OFArray.h"
 #import "OFLocale.h"
 #import "OFMethodSignature.h"
@@ -59,6 +60,17 @@
 
 #ifdef OF_WINDOWS
 # include <windows.h>
+#endif
+
+#ifdef OF_AMIGAOS
+# define Class IntuitionClass
+# define USE_INLINE_STDARG
+# include <proto/exec.h>
+# include <clib/debug_protos.h>
+# define __NOLIBBASE_
+# include <proto/intuition.h>
+# undef __NOLIBBASE_
+# undef Class
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -281,12 +293,26 @@ typeEncodingForSelector(Class class, SEL selector)
 static void
 uncaughtExceptionHandler(id exception)
 {
+# ifdef OF_AMIGAOS
+#  ifdef OF_HAVE_FILES
+	const char *programName = [OFApplication sharedApplication].programName
+	    .lastPathComponent.UTF8String;
+#  else
+	const char *programName = [OFApplication sharedApplication].programName
+	    .UTF8String;
+#  endif
+# endif
 	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
 	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
+# ifdef OF_AMIGAOS
+	kprintf("%s: Runtime error: Unhandled exception:\n", programName);
+	kprintf("%s: %s\n", programName, [[exception description] UTF8String]);
+# else
 	OFLog(@"Runtime error: Unhandled exception:");
 	OFLog(@"%@", exception);
+# endif
 
 	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
 		stackTraceAddresses = [exception stackTraceAddresses];
@@ -301,8 +327,13 @@ uncaughtExceptionHandler(id exception)
 		if (stackTraceSymbols.count != count)
 			stackTraceSymbols = nil;
 
+# ifdef OF_AMIGAOS
+		kprintf("%s:\n", programName);
+		kprintf("%s: Stack trace:\n", programName);
+# else
 		OFLog(@"");
 		OFLog(@"Stack trace:");
+# endif
 
 		if (stackTraceSymbols != nil) {
 			for (size_t i = 0; i < count; i++) {
@@ -312,19 +343,62 @@ uncaughtExceptionHandler(id exception)
 				    objectAtIndex: i]
 				    cStringWithEncoding: encoding];
 
+# ifdef OF_AMIGAOS
+				kprintf("%s:   %p  %s\n", programName,
+				    address, symbol);
+# else
 				OFLog(@"  %p  %s", address, symbol);
+# endif
 			}
 		} else {
 			for (size_t i = 0; i < count; i++) {
 				void *address = [[stackTraceAddresses
 				    objectAtIndex: i] pointerValue];
 
+# ifdef OF_AMIGAOS
+				kprintf("%s:   %p\n", programName, address);
+# else
 				OFLog(@"  %p", address);
+# endif
 			}
 		}
 	}
 
+# ifdef OF_AMIGAOS
+	struct Library *IntuitionBase;
+#  ifdef OF_AMIGAOS4
+	struct IntuitionIFace *IIntuition;
+#  endif
+	struct EasyStruct easy;
+
+	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
+		abort();
+
+#  ifdef OF_AMIGAOS4
+	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
+	    "main", 1, NULL)) == NULL)
+		abort();
+#  endif
+
+	easy.es_StructSize = sizeof(easy);
+	easy.es_Flags = 0;
+	easy.es_Title = (void *)programName;
+	easy.es_TextFormat = (void *)"%s";
+	easy.es_GadgetFormat = (void *)"OK";
+
+	EasyRequest(NULL, &easy, NULL, (ULONG)[[OFString stringWithFormat:
+	    @"Runtime error: Unhandled exception:\n%@", exception] UTF8String]);
+
+#  ifdef OF_AMIGAOS4
+	DropInterface((struct Interface *)IIntuition);
+#  endif
+
+	CloseLibrary(IntuitionBase);
+
+	exit(1);
+# else
 	abort();
+# endif
 }
 #endif
 
