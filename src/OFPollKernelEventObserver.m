@@ -46,7 +46,6 @@
 	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
 		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
 
 		_FDs = [[OFMutableData alloc] initWithItemSize:
@@ -55,8 +54,6 @@
 
 		_objects = [[OFMutableArray alloc]
 		    initWithObject: [OFNull null]];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
