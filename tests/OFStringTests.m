@@ -1294,8 +1294,24 @@ static const char *range80ToFF =
 	    @"foo/bar/baz");
 
 	OTAssertEqualObjects([self.stringClass pathWithComponents:
-	    ([OFArray arrayWithObjects: @"foo/", @"bar", @"", @"baz", @"/",
+	    ([OFArray arrayWithObjects: @"foo", @"/", @"bar", @"", @"baz", @"/",
 	    nil])], @"foo//bar/baz//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"foo//", @"bar", @"", @"baz", @"/",
+	    nil])], @"foo//bar/baz//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"", @"bar",
+	    @"/", nil])], @"dev:/foo/bar//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:/", @"foo", @"", @"bar", @"/",
+	    nil])], @"dev:/foo/bar//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"//", @"bar//",
+	    nil])], @"dev:/foo///bar//");
 
 	OTAssertEqualObjects([self.stringClass pathWithComponents:
 	    [OFArray arrayWithObject: @"foo"]], @"foo");

@@ -135,7 +135,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFString *_Nullable _host;
 	uint16_t _port;
-	id <OFHTTPServerDelegate> _Nullable _delegate;
+	OFObject <OFHTTPServerDelegate> *_Nullable _delegate;
 	OFString *_Nullable _name;
 	OFTCPSocket *_Nullable _listeningSocket;
 	bool _usesTLS;
@@ -180,7 +180,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The delegate for the HTTP server.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    id <OFHTTPServerDelegate> delegate;
+    OFObject <OFHTTPServerDelegate> *delegate;
 
 #ifdef OF_HAVE_THREADS
 /**

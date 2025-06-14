@@ -39,12 +39,14 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The first object of the pair.
  */
-@property (readwrite, nonatomic, retain) FirstType firstObject;
+@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, retain)
+    FirstType firstObject;
 
 /**
  * @brief The second object of the pair.
  */
-@property (readwrite, nonatomic, retain) SecondType secondObject;
+@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, retain)
+    SecondType secondObject;
 
 /**
  * @brief Converts the mutable pair to an immutable pair.
