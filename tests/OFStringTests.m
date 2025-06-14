@@ -1314,6 +1314,10 @@ static const char *range80ToFF =
 	    nil])], @"dev:/foo///bar//");
 
 	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"/", @"foo", @"/", @"/",
+	    @"bar", nil])], @"dev://foo///bar");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
 	    [OFArray arrayWithObject: @"foo"]], @"foo");
 # elif defined(OF_WII) || defined(OF_NINTENDO_DS) || \
     defined(OF_NINTENDO_3DS) || defined(OF_NINTENDO_SWITCH)
@@ -1393,28 +1397,35 @@ static const char *range80ToFF =
 	    pathComponents], [OFArray array]);
 # elif defined(OF_AMIGAOS)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:tmp"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"tmp", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:tmp/"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"tmp", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:/"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"/", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"foo/bar"] pathComponents],
-	    ([OFArray arrayWithObjects: @"foo", @"bar", nil]));
+	    @"dh0:foo/bar/baz"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dh0:", @"foo", @"bar", @"baz", nil]));
 
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"foo/bar/baz/"] pathComponents],
 	    ([OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil]));
 
 	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"foo//"] pathComponents],
-	    ([OFArray arrayWithObjects: @"foo", @"/", nil]));
+	    @"foo//bar/baz//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"foo", @"/", @"bar", @"baz", @"/",
+	    nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev:/foo/bar//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"bar", @"/",
+	    nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev:/foo///bar//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"/", @"/",
+	    @"bar", @"/", nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev://foo///bar"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"/", @"foo", @"/", @"/",
+	    @"bar", nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString: @"foo/"]
+	    pathComponents], [OFArray arrayWithObject: @"foo"]);
 
 	OTAssertEqualObjects([[self.stringClass stringWithString: @""]
 	    pathComponents], [OFArray array]);
