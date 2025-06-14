@@ -53,6 +53,10 @@ OF_ASSUME_NONNULL_BEGIN
 		      fileName: (OFString *)fileName;
 - (nullable OFString *)safeLocalPathForPath: (OFString *)path;
 - (void)quarantineFile: (OFString *)path;
+- (void)checkForCancellation;
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

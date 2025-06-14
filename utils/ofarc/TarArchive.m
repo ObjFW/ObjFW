@@ -132,6 +132,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
+		[app checkForCancellation];
+
 		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
@@ -309,6 +311,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
 
+		[app checkForCancellation];
+
 		if (!all && ![files containsObject: fileName])
 			continue;
 
@@ -379,9 +383,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -455,15 +463,21 @@ outer_loop_end:
 		OFString *fileName = entry.fileName;
 		OFStream *stream;
 
+		[app checkForCancellation];
+
 		if (![files containsObject: fileName])
 			continue;
 
 		stream = [_archive streamForReadingCurrentEntry];
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: OFStdOut
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: OFStdOut
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -497,6 +511,8 @@ outer_loop_end:
 		OFFileAttributeType type;
 		OFMutableTarArchiveEntry *entry;
 		OFStream *output;
+
+		[app checkForCancellation];
 
 		if (app->_outputLevel >= 0)
 			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
@@ -549,10 +565,13 @@ outer_loop_end:
 							mode: @"r"];
 
 			while (!input.atEndOfStream) {
-				ssize_t length = [app
-				    copyBlockFromStream: input
-					       toStream: output
-					       fileName: fileName];
+				ssize_t length;
+
+				[app checkForCancellation];
+
+				length = [app copyBlockFromStream: input
+							 toStream: output
+							 fileName: fileName];
 
 				if (length < 0) {
 					app->_exitStatus = 1;

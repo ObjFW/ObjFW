@@ -178,6 +178,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	for (OFZIPArchiveEntry *entry in _archive.entries) {
 		void *pool = objc_autoreleasePoolPush();
 
+		[app checkForCancellation];
+
 		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
@@ -315,6 +317,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
 
+		[app checkForCancellation];
+
 		if (!all && ![files containsObject: fileName])
 			continue;
 
@@ -373,9 +377,13 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -459,9 +467,13 @@ outer_loop_end:
 		}
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: OFStdOut
-							 fileName: path];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: OFStdOut
+						 fileName: path];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -489,6 +501,8 @@ outer_loop_end:
 		OFMutableZIPArchiveEntry *entry;
 		unsigned long long size;
 		OFStream *output;
+
+		[app checkForCancellation];
 
 		components = localFileName.pathComponents;
 		fileName = [components componentsJoinedByString: @"/"];
@@ -528,10 +542,13 @@ outer_loop_end:
 							mode: @"r"];
 
 			while (!input.atEndOfStream) {
-				ssize_t length = [app
-				    copyBlockFromStream: input
-					       toStream: output
-					       fileName: fileName];
+				ssize_t length;
+
+				[app checkForCancellation];
+
+				length = [app copyBlockFromStream: input
+							 toStream: output
+							 fileName: fileName];
 
 				if (length < 0) {
 					app->_exitStatus = 1;

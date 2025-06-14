@@ -288,6 +288,12 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofarc/localization"]];
 #endif
 
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
+#endif
+
 	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
@@ -889,4 +895,23 @@ error:
 				ofItemAtPath: path];
 #endif
 }
+
+- (void)checkForCancellation
+{
+#ifdef OF_AMIGAOS
+	/*
+	 * Perform a single iteration of the run loop to see if we received
+	 * Ctrl-C.
+	 */
+	[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+			      beforeDate: [OFDate distantPast]];
+#endif
+}
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	raise(SIGINT);
+}
+#endif
 @end
