@@ -54,7 +54,7 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#define bufferSize 4096
+#define bufferSize 16384
 
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
