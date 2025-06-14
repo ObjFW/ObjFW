@@ -295,13 +295,13 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)parseStream: (OFStream *)stream
 {
-	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = OFAllocMemory(1, pageSize);
+	const size_t bufferSize = 16384;
+	char *buffer = OFAllocMemory(1, bufferSize);
 
 	@try {
 		while (!stream.atEndOfStream) {
 			size_t length = [stream readIntoBuffer: buffer
-							length: pageSize];
+							length: bufferSize];
 			[self parseBuffer: buffer length: length];
 		}
 	} @finally {

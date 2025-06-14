@@ -492,13 +492,13 @@ retry_2:
 - (OFData *)readDataUntilEndOfStream
 {
 	OFMutableData *data = [OFMutableData data];
-	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = OFAllocMemory(1, pageSize);
+	const size_t bufferSize = 16384;
+	char *buffer = OFAllocMemory(1, bufferSize);
 
 	@try {
 		while (!self.atEndOfStream) {
 			size_t length =
-			    [self readIntoBuffer: buffer length: pageSize];
+			    [self readIntoBuffer: buffer length: bufferSize];
 			[data addItems: buffer count: length];
 		}
 	} @finally {

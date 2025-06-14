@@ -696,12 +696,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			objc_autoreleasePoolPop(pool2);
 		}
 	} else if ([type isEqual: OFFileTypeRegular]) {
-		size_t pageSize = [OFSystemInfo pageSize];
+		const size_t bufferSize = 16384;
 		OFStream *sourceStream = nil;
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		buffer = OFAllocMemory(1, pageSize);
+		buffer = OFAllocMemory(1, bufferSize);
 		@try {
 			sourceStream = [OFIRIHandler openItemAtIRI: source
 							      mode: @"r"];
@@ -714,7 +714,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 				length = [sourceStream
 				    readIntoBuffer: buffer
-					    length: pageSize];
+					    length: bufferSize];
 				[destinationStream writeBuffer: buffer
 							length: length];
 			}
