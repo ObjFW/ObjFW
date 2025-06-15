@@ -27,6 +27,7 @@
 #import "OFFileManager.h"
 #import "OFIRI.h"
 #import "OFNumber.h"
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFString+Private.h"
 
@@ -524,6 +525,13 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		objc_autoreleasePoolPop(pool);
 #endif
+
+		if (OFStdIn.hasTerminal)
+			OFStdIn.encoding = _encoding;
+		if (OFStdOut.hasTerminal)
+			OFStdOut.encoding = _encoding;
+		if (OFStdErr.hasTerminal)
+			OFStdErr.encoding = _encoding;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
