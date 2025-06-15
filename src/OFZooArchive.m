@@ -78,7 +78,6 @@ OF_DIRECT_MEMBERS
 {
 	OFZooArchive *_archive;
 	OFMutableZooArchiveEntry *_entry;
-	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
 	OFStreamOffset *_lastHeaderOffset;
 	size_t *_lastHeaderLength;
@@ -89,7 +88,6 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_initWithArchive: (OFZooArchive *)archive
 			    stream: (OFSeekableStream *)stream
 			     entry: (OFZooArchiveEntry *)entry
-			  encoding: (OFStringEncoding)encoding
 		  lastHeaderOffset: (OFStreamOffset *)lastHeaderOffset
 		  lastHeaderLength: (size_t *)lastHeaderLength;
 @end
@@ -374,7 +372,6 @@ OF_DIRECT_MEMBERS
 	    of_initWithArchive: self
 			stream: _stream
 			 entry: entry
-		      encoding: _encoding
 	      lastHeaderOffset: &_lastHeaderOffset
 	      lastHeaderLength: &_lastHeaderLength];
 
@@ -548,7 +545,6 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_initWithArchive: (OFZooArchive *)archive
 			    stream: (OFSeekableStream *)stream
 			     entry: (OFZooArchiveEntry *)entry
-			  encoding: (OFStringEncoding)encoding
 		  lastHeaderOffset: (OFStreamOffset *)lastHeaderOffset
 		  lastHeaderLength: (size_t *)lastHeaderLength
 {
@@ -557,14 +553,14 @@ OF_DIRECT_MEMBERS
 	@try {
 		_archive = objc_retain(archive);
 		_entry = [entry mutableCopy];
-		_encoding = encoding;
 		_lastHeaderOffset = lastHeaderOffset;
 		_lastHeaderLength = lastHeaderLength;
 
 		*_lastHeaderOffset = [stream seekToOffset: 0
 						   whence: OFSeekCurrent];
-		*_lastHeaderLength = [_entry of_writeToStream: stream
-						     encoding: _encoding];
+		*_lastHeaderLength = [_entry
+		    of_writeToStream: stream
+			    encoding: _archive.encoding];
 
 		/*
 		 * Retain stream last, so that -[close] called by -[dealloc]
@@ -656,7 +652,8 @@ OF_DIRECT_MEMBERS
 	_entry->_dataOffset = (uint32_t)offset;
 
 	OFEnsure([_entry of_writeToStream: _stream
-				 encoding: _encoding] == *_lastHeaderLength);
+				 encoding: _archive.encoding] ==
+	    *_lastHeaderLength);
 	[_stream seekToOffset: offset whence: OFSeekSet];
 
 	objc_release(_stream);

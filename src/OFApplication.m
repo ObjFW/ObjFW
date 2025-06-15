@@ -354,9 +354,9 @@ SIGNAL_HANDLER(SIGUSR2)
 				continue;
 
 			file = [OFFile fileWithPath: path mode: @"r"];
+			file.encoding = encoding;
 
-			value = [file readLineWithEncoding: encoding];
-			if (value != nil)
+			if ((value = [file readLine]) != nil)
 				[_environment setObject: value forKey: name];
 
 			objc_autoreleasePoolPop(pool2);

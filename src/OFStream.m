@@ -511,7 +511,7 @@ retry_2:
 
 - (OFString *)readString
 {
-	return [self readStringWithEncoding: OFStringEncodingUTF8];
+	return [self readStringWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readStringWithEncoding: (OFStringEncoding)encoding
@@ -528,7 +528,7 @@ retry_2:
 - (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
-				 encoding: OFStringEncodingUTF8];
+				 encoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readStringWithLength: (size_t)length
@@ -706,7 +706,7 @@ retry:
 
 - (OFString *)readLine
 {
-	return [self readLineWithEncoding: OFStringEncodingUTF8];
+	return [self readLineWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readLineWithEncoding: (OFStringEncoding)encoding
@@ -723,7 +723,7 @@ retry:
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncReadString
 {
-	[self asyncReadStringWithEncoding: OFStringEncodingUTF8
+	[self asyncReadStringWithEncoding: (OFStringEncoding)_encoding
 			      runLoopMode: OFDefaultRunLoopMode];
 }
 
@@ -750,7 +750,7 @@ retry:
 
 - (void)asyncReadLine
 {
-	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
 			    runLoopMode: OFDefaultRunLoopMode];
 }
 
@@ -778,7 +778,7 @@ retry:
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncReadStringWithHandler: (OFStreamStringReadHandler)handler
 {
-	[self asyncReadStringWithEncoding: OFStringEncodingUTF8
+	[self asyncReadStringWithEncoding: (OFStringEncoding)_encoding
 			      runLoopMode: OFDefaultRunLoopMode
 				  handler: handler];
 }
@@ -812,14 +812,14 @@ retry:
 		return block(string, exception);
 	};
 
-	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
 			    runLoopMode: OFDefaultRunLoopMode
 				handler: handler];
 }
 
 - (void)asyncReadLineWithHandler: (OFStreamStringReadHandler)handler
 {
-	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
 			    runLoopMode: OFDefaultRunLoopMode
 				handler: handler];
 }
@@ -877,7 +877,7 @@ retry:
 
 - (OFString *)tryReadString
 {
-	return [self tryReadStringWithEncoding: OFStringEncodingUTF8];
+	return [self tryReadStringWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding
@@ -1023,7 +1023,7 @@ retry:
 
 - (OFString *)tryReadLine
 {
-	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
+	return [self tryReadLineWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
@@ -1198,7 +1198,7 @@ retry:
 - (OFString *)readUntilDelimiter: (OFString *)delimiter
 {
 	return [self readUntilDelimiter: delimiter
-			       encoding: OFStringEncodingUTF8];
+			       encoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readUntilDelimiter: (OFString *)delimiter
@@ -1217,7 +1217,7 @@ retry:
 - (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
 {
 	return [self tryReadUntilDelimiter: delimiter
-				  encoding: OFStringEncodingUTF8];
+				  encoding: (OFStringEncoding)_encoding];
 }
 
 - (bool)flushWriteBuffer
@@ -1320,7 +1320,7 @@ retry:
 - (void)asyncWriteString: (OFString *)string
 {
 	[self asyncWriteString: string
-		      encoding: OFStringEncodingUTF8
+		      encoding: (OFStringEncoding)_encoding
 		   runLoopMode: OFDefaultRunLoopMode];
 }
 
@@ -1408,7 +1408,7 @@ retry:
 	};
 
 	[self asyncWriteString: string
-		      encoding: OFStringEncodingUTF8
+		      encoding: (OFStringEncoding)_encoding
 		   runLoopMode: OFDefaultRunLoopMode
 		       handler: handler];
 }
@@ -1417,7 +1417,7 @@ retry:
 		 handler: (OFStreamStringWrittenHandler)handler
 {
 	[self asyncWriteString: string
-		      encoding: OFStringEncodingUTF8
+		      encoding: (OFStringEncoding)_encoding
 		   runLoopMode: OFDefaultRunLoopMode
 		       handler: handler];
 }
@@ -1566,7 +1566,7 @@ retry:
 
 - (void)writeString: (OFString *)string
 {
-	[self writeString: string encoding: OFStringEncodingUTF8];
+	[self writeString: string encoding: (OFStringEncoding)_encoding];
 }
 
 - (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
@@ -1588,7 +1588,7 @@ retry:
 
 - (void)writeLine: (OFString *)string
 {
-	[self writeLine: string encoding: OFStringEncodingUTF8];
+	[self writeLine: string encoding: (OFStringEncoding)_encoding];
 }
 
 - (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
@@ -1620,26 +1620,47 @@ retry:
 
 - (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
-	char *UTF8String;
-	int length;
-
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = _OFVASPrintF(&UTF8String, format.UTF8String,
-	    arguments)) == -1)
-		@throw [OFInvalidFormatException exception];
+	if (_encoding == OFStringEncodingUTF8) {
+		char *UTF8String;
+		int length;
 
-	@try {
-		[self writeBuffer: UTF8String length: length];
-	} @finally {
-		free(UTF8String);
+		if ((length = _OFVASPrintF(&UTF8String, format.UTF8String,
+		    arguments)) == -1)
+			@throw [OFInvalidFormatException exception];
+
+		@try {
+			[self writeBuffer: UTF8String length: length];
+		} @finally {
+			free(UTF8String);
+		}
+	} else {
+		OFString *string = [[OFString alloc] initWithFormat: format
+							  arguments: arguments];
+
+		@try {
+			[self writeString: string];
+		} @finally {
+			objc_release(string);
+		}
 	}
 }
 
 - (bool)hasDataInReadBuffer
 {
 	return (_readBufferLength > 0 || [self lowlevelHasDataInReadBuffer]);
+}
+
+- (OFStringEncoding)encoding
+{
+	return (OFStringEncoding)_encoding;
+}
+
+- (void)setEncoding: (OFStringEncoding)encoding
+{
+	_encoding = encoding;
 }
 
 - (bool)canBlock

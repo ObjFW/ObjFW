@@ -494,7 +494,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	[stream writeLittleEndianInt32: 0xFFFFFFFF];
 	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
 
-	[stream writeString: _fileName];
+	[stream writeString: _fileName encoding: OFStringEncodingUTF8];
 	size += (uint64_t)_fileName.UTF8StringLength;
 
 	[stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
@@ -510,7 +510,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	size += (uint64_t)_extraField.count;
 
 	if (_fileComment != nil)
-		[stream writeString: _fileComment];
+		[stream writeString: _fileComment
+			   encoding: OFStringEncodingUTF8];
 	size += (uint64_t)_fileComment.UTF8StringLength;
 
 	objc_autoreleasePoolPop(pool);

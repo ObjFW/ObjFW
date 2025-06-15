@@ -609,7 +609,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_stream writeLittleEndianInt16: extraFieldLength + 20];
 	offsetAdd += 4 + (5 * 2) + (3 * 4) + (2 * 2);
 
-	[_stream writeString: fileName];
+	[_stream writeString: fileName encoding: OFStringEncodingUTF8];
 	offsetAdd += fileNameLength;
 
 	[_stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
@@ -684,9 +684,11 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_stream writeLittleEndianInt16: 0xFFFF];	/* CD entries */
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];	/* CD size */
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];	/* CD offset */
-	[_stream writeLittleEndianInt16: _archiveComment.UTF8StringLength];
+	[_stream writeLittleEndianInt16: [_archiveComment
+	     cStringLengthWithEncoding: OFStringEncodingCodepage437]];
 	if (_archiveComment != nil)
-		[_stream writeString: _archiveComment];
+		[_stream writeString: _archiveComment
+			    encoding: OFStringEncodingCodepage437];
 
 	objc_autoreleasePoolPop(pool);
 }
