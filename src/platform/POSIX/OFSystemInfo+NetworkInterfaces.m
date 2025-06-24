@@ -432,6 +432,8 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 			    unsignedLongLongValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
 			continue;
+		} @catch (OFOutOfRangeException *e) {
+			continue;
 		}
 
 		if (network > 0xFFFFFFFF || nodeLong > 0xFFFFFFFFFFFF)
@@ -527,6 +529,8 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 			    substringWithRange: OFMakeRange(5, 2)]
 			    unsignedCharValueWithBase: 16];
 		} @catch (OFInvalidFormatException *e) {
+			continue;
+		} @catch (OFOutOfRangeException *e) {
 			continue;
 		}
 
