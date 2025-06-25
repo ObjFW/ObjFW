@@ -293,10 +293,11 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	staticHosts = [OFMutableDictionary dictionary];
 
-	while ((line =
-	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
+	while ((line = [file readLine]) != nil) {
 		OFArray *components, *hosts;
 		OFRange range;
 		OFString *address;
@@ -381,11 +382,12 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	if (nameServers == nil)
 		nameServers = [OFMutableArray array];
 
-	while ((line =
-	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
+	while ((line = [file readLine]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
 		OFRange range;
 		OFArray *components, *arguments;

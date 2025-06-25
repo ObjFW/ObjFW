@@ -66,9 +66,10 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
-#define GIBIBYTE (1024 * 1024 * 1024)
-#define MEBIBYTE (1024 * 1024)
-#define KIBIBYTE (1024)
+#define KIBIBYTE 1024
+#define MEBIBYTE (1024 * KIBIBYTE)
+#define GIBIBYTE (1024 * MEBIBYTE)
+#define BUFFER_SIZE (16 * KIBIBYTE)
 
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
     OFStreamDelegate>
@@ -84,7 +85,7 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
-	char *_buffer;
+	char _buffer[BUFFER_SIZE];
 	OFStream *_output;
 	unsigned long long _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
@@ -337,8 +338,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
-
-		_buffer = OFAllocMemory(1, [OFSystemInfo pageSize]);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -1118,7 +1117,7 @@ after_exception_handling:
 	_currentFileName = nil;
 
 	response.delegate = self;
-	[response asyncReadIntoBuffer: _buffer length: [OFSystemInfo pageSize]];
+	[response asyncReadIntoBuffer: _buffer length: BUFFER_SIZE];
 	return;
 
 next:

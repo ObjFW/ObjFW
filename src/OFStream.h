@@ -286,7 +286,9 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-	OF_RESERVE_IVARS(OFStream, 4)
+@protected
+	uintptr_t _encoding;
+	OF_RESERVE_IVARS(OFStream, 3)
 }
 
 /**
@@ -303,6 +305,14 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * @brief Whether data is present in the internal read buffer.
  */
 @property (readonly, nonatomic) bool hasDataInReadBuffer;
+
+/**
+ * @brief The encoding to use for reading / writing strings to / from the
+ *	  stream if none has been specified.
+ *
+ * Defaults to UTF-8.
+ */
+@property (nonatomic) OFStringEncoding encoding;
 
 /**
  * @brief Whether the stream can block.
@@ -1389,7 +1399,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
- * @brief Asynchronously writes a string in UTF-8 encoding into the stream.
+ * @brief Asynchronously writes a string into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!

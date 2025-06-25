@@ -147,9 +147,13 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	setPermissions(fileName, _archiveIRI);
 
 	while (!_stream.atEndOfStream) {
-		ssize_t length = [app copyBlockFromStream: _stream
-						 toStream: output
-						 fileName: fileName];
+		ssize_t length;
+
+		[app checkForCancellation];
+
+		length = [app copyBlockFromStream: _stream
+					 toStream: output
+					 fileName: fileName];
 
 		if (length < 0) {
 			app->_exitStatus = 1;
@@ -182,9 +186,13 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	}
 
 	while (!_stream.atEndOfStream) {
-		ssize_t length = [app copyBlockFromStream: _stream
-						 toStream: OFStdOut
-						 fileName: fileName];
+		ssize_t length;
+
+		[app checkForCancellation];
+
+		length = [app copyBlockFromStream: _stream
+					 toStream: OFStdOut
+					 fileName: fileName];
 
 		if (length < 0) {
 			app->_exitStatus = 1;

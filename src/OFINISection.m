@@ -586,7 +586,6 @@ unescapeMutableString(OFMutableString *string)
 }
 
 - (bool)of_writeToStream: (OFStream *)stream
-		encoding: (OFStringEncoding)encoding
 		   first: (bool)first
 {
 	if (_lines.count == 0)
@@ -605,11 +604,9 @@ unescapeMutableString(OFMutableString *string)
 			[stream writeFormat: @"%@\r\n", comment->_comment];
 		} else if ([line isKindOfClass: [OFINISectionPair class]]) {
 			OFINISectionPair *pair = line;
-			OFString *key = escapeString(pair->_key);
-			OFString *value = escapeString(pair->_value);
-			OFString *tmp = [OFString
-			    stringWithFormat: @"%@=%@\r\n", key, value];
-			[stream writeString: tmp encoding: encoding];
+			[stream writeFormat: @"%@=%@\r\n",
+					     escapeString(pair->_key),
+					     escapeString(pair->_value)];
 		} else
 			@throw [OFInvalidArgumentException exception];
 	}

@@ -149,7 +149,9 @@ isWhitespaceLine(OFString *line)
 		@throw e;
 	}
 
-	while ((line = [file readLineWithEncoding: encoding]) != nil) {
+	file.encoding = encoding;
+
+	while ((line = [file readLine]) != nil) {
 		if (isWhitespaceLine(line))
 			continue;
 
@@ -189,10 +191,10 @@ isWhitespaceLine(OFString *line)
 	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	bool first = true;
 
+	file.encoding = encoding;
+
 	for (OFINISection *section in _sections)
-		if ([section of_writeToStream: file
-				     encoding: encoding
-					first: first])
+		if ([section of_writeToStream: file first: first])
 			first = false;
 
 	objc_autoreleasePoolPop(pool);

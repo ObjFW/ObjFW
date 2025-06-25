@@ -303,14 +303,13 @@ OF_SINGLETON_METHODS
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
-		size_t pageSize;
+		const size_t bufferSize = 16384;
 
-		pageSize = [OFSystemInfo pageSize];
-		buffer = OFAllocMemory(1, pageSize);
+		buffer = OFAllocMemory(1, bufferSize);
 
 		while (!stream.atEndOfStream) {
 			size_t length = [stream readIntoBuffer: buffer
-							length: pageSize];
+							length: bufferSize];
 
 			if (SIZE_MAX - count < length)
 				@throw [OFOutOfRangeException exception];

@@ -27,8 +27,8 @@ release: docs
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
-	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil-settings*,.github*' | ofarc -ttgz -xq -
+	git archive --prefix objfw-${PACKAGE_VERSION}/ HEAD | ofarc -ttar -xq -
+	rm -fr objfw-${PACKAGE_VERSION}/.forgejo objfw-${PACKAGE_VERSION}/.git*
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
@@ -45,11 +45,3 @@ release: docs
 	gzip -9 objfw-docs-${PACKAGE_VERSION}.tar
 	rm -f objfw-docs-${PACKAGE_VERSION}.tar
 	gpg -b objfw-docs-${PACKAGE_VERSION}.tar.gz || true
-
-upload:
-	fossil uv revert
-	fossil uv add objfw-${PACKAGE_VERSION}.tar.gz
-	fossil uv add objfw-${PACKAGE_VERSION}.tar.gz.sig
-	fossil uv add objfw-docs-${PACKAGE_VERSION}.tar.gz
-	fossil uv add objfw-docs-${PACKAGE_VERSION}.tar.gz.sig
-	fossil uv sync

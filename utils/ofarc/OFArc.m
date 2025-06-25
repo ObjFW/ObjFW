@@ -54,7 +54,7 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#define bufferSize 4096
+#define bufferSize 16384
 
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
@@ -286,6 +286,12 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 #else
 	[OFLocale addLocalizationDirectoryIRI:
 	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofarc/localization"]];
+#endif
+
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -889,4 +895,23 @@ error:
 				ofItemAtPath: path];
 #endif
 }
+
+- (void)checkForCancellation
+{
+#ifdef OF_AMIGAOS
+	/*
+	 * Perform a single iteration of the run loop to see if we received
+	 * Ctrl-C.
+	 */
+	[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+			      beforeDate: [OFDate distantPast]];
+#endif
+}
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	raise(SIGINT);
+}
+#endif
 @end

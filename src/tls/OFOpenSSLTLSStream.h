@@ -24,7 +24,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OFOpenSSLTLSStreamBufferSize 512
+/*
+ * According to RFC 8449, the maximum record size for TLS 1.2 is 16384 +
+ * expansion up to 2048, while TLS 1.3 reduces this to 16384 + 256.
+ */
+#define OFOpenSSLTLSStreamBufferSize (16384 + 2048)
 
 OF_SUBCLASSING_RESTRICTED
 @interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>

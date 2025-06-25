@@ -28,9 +28,7 @@ OF_DIRECT_MEMBERS
 @interface OFINISection ()
 - (instancetype)of_initWithName: (OFString *)name OF_METHOD_FAMILY(init);
 - (void)of_parseLine: (OFString *)line;
-- (bool)of_writeToStream: (OFStream *)stream
-		encoding: (OFStringEncoding)encoding
-		   first: (bool)first;
+- (bool)of_writeToStream: (OFStream *)stream first: (bool)first;
 @end
 
 OF_ASSUME_NONNULL_END

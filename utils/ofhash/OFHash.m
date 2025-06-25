@@ -46,6 +46,8 @@
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 
+#define BUFFER_SIZE 16384
+
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofhash " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
@@ -53,6 +55,10 @@ const char *VER = "$VER: ofhash " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 #endif
 
 @interface OFHash: OFObject <OFApplicationDelegate>
+{
+	uint8_t _buffer[BUFFER_SIZE];
+}
+
 #ifdef OF_AMIGAOS
 - (void)handleBreakCtrlC: (ULONG)signal;
 #endif
@@ -280,7 +286,6 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		[SHA512Hash reset];
 
 		while (!file.atEndOfStream) {
-			uint8_t buffer[1024];
 			size_t length;
 
 #ifdef OF_AMIGAOS
@@ -290,8 +295,8 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 #endif
 
 			@try {
-				length = [file readIntoBuffer: buffer
-						       length: 1024];
+				length = [file readIntoBuffer: _buffer
+						       length: BUFFER_SIZE];
 			} @catch (OFReadFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)
@@ -308,25 +313,25 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 			}
 
 			if (calculateMD5)
-				[MD5Hash updateWithBuffer: buffer
+				[MD5Hash updateWithBuffer: _buffer
 						   length: length];
 			if (calculateRIPEMD160)
-				[RIPEMD160Hash updateWithBuffer: buffer
+				[RIPEMD160Hash updateWithBuffer: _buffer
 							 length: length];
 			if (calculateSHA1)
-				[SHA1Hash updateWithBuffer: buffer
+				[SHA1Hash updateWithBuffer: _buffer
 						    length: length];
 			if (calculateSHA224)
-				[SHA224Hash updateWithBuffer: buffer
+				[SHA224Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA256)
-				[SHA256Hash updateWithBuffer: buffer
+				[SHA256Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA384)
-				[SHA384Hash updateWithBuffer: buffer
+				[SHA384Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA512)
-				[SHA512Hash updateWithBuffer: buffer
+				[SHA512Hash updateWithBuffer: _buffer
 						      length: length];
 		}
 

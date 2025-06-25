@@ -1,16 +1,13 @@
 blank_issues_enabled: true
 contact_links:
   - name: New ObjFW ticket
-    url: https://objfw.nil.im/tktnew
+    url: https://git.nil.im/ObjFW/ObjFW/issues/new
     about:
       Please use this to create a new ticket. You can also report issues on
       GitHub, but this is preferred.
   - name: Existing ObjFW tickets
-    url: https://objfw.nil.im/reportlist
+    url: https://git.nil.im/ObjFW/ObjFW/issues
     about: Please use this to look for existing tickets.
-  - name: ObjFW Forum
-    url: https://objfw.nil.im/forum
-    about: Please use this if you have questions or want support.
   - name: ObjFW Matrix Room
     url: https://matrix.to/#/%23objfw:nil.im
     about: Please use this for interactive questions and support.

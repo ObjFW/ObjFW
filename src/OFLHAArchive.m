@@ -73,7 +73,6 @@ OF_DIRECT_MEMBERS
 {
 	OFLHAArchive *_archive;
 	OFMutableLHAArchiveEntry *_entry;
-	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
 	OFStreamOffset _headerOffset;
 	uint64_t _bytesWritten;
@@ -82,8 +81,7 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)of_initWithArchive: (OFLHAArchive *)archive
 			    stream: (OFSeekableStream *)stream
-			     entry: (OFLHAArchiveEntry *)entry
-			  encoding: (OFStringEncoding)encoding;
+			     entry: (OFLHAArchiveEntry *)entry;
 @end
 
 @implementation OFLHAArchive
@@ -289,8 +287,7 @@ OF_DIRECT_MEMBERS
 	    [[OFLHAArchiveFileWriteStream alloc]
 	    of_initWithArchive: self
 			stream: (OFSeekableStream *)_stream
-			 entry: entry
-		      encoding: _encoding]);
+			 entry: entry]);
 	_hasWritten = true;
 
 	return _lastReturnedStream;
@@ -516,17 +513,15 @@ OF_DIRECT_MEMBERS
 - (instancetype)of_initWithArchive: (OFLHAArchive *)archive
 			    stream: (OFSeekableStream *)stream
 			     entry: (OFLHAArchiveEntry *)entry
-			  encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_archive = objc_retain(archive);
 		_entry = [entry mutableCopy];
-		_encoding = encoding;
 
 		_headerOffset = [stream seekToOffset: 0 whence: OFSeekCurrent];
-		[_entry of_writeToStream: stream encoding: _encoding];
+		[_entry of_writeToStream: stream encoding: _archive.encoding];
 
 		/*
 		 * Retain stream last, so that -[close] called by -[dealloc]
@@ -611,7 +606,7 @@ OF_DIRECT_MEMBERS
 
 	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 	[_stream seekToOffset: _headerOffset whence: OFSeekSet];
-	[_entry of_writeToStream: _stream encoding: _encoding];
+	[_entry of_writeToStream: _stream encoding: _archive.encoding];
 	[_stream seekToOffset: offset whence: OFSeekSet];
 
 	objc_release(_stream);
