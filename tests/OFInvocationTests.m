@@ -525,8 +525,7 @@ __extension__
 }
 # endif
 
-/* Currently broken. */
-# if 0 && defined(__SIZEOF_INT128__)
+# ifdef __SIZEOF_INT128__
 - (void)testInvoke8
 {
 	SEL selector = @selector(invocationTestMethod9::::::::::::::::);

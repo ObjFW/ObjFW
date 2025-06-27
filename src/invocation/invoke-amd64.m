@@ -161,7 +161,7 @@ pushLongDoublePair(struct CallContext **context, long double value[2])
 	*context = newContext;
 }
 
-#if defined(__SIZEOF_INT128__) && !defined(__clang__)
+#ifdef __SIZEOF_INT128__
 static void
 pushInt128(struct CallContext **context, uint_fast8_t *currentGPR,
     uint64_t value[2])
@@ -175,7 +175,7 @@ pushInt128(struct CallContext **context, uint_fast8_t *currentGPR,
 		return;
 	}
 
-	stackSize = OF_ROUND_UP_POW2(2, (*context)->stackSize) + 2;
+	stackSize = OFRoundUpToPowerOf2(2, (*context)->stackSize) + 2;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -247,13 +247,7 @@ OFInvocationInvoke(OFInvocation *invocation)
 			uint64_t int128Tmp[2];
 			[invocation getArgument: &int128Tmp
 					atIndex: i];
-# ifndef __clang__
 			pushInt128(&context, &currentGPR, int128Tmp);
-# else
-			/* See https://bugs.llvm.org/show_bug.cgi?id=34646 */
-			pushGPR(&context, &currentGPR, int128Tmp[0]);
-			pushGPR(&context, &currentGPR, int128Tmp[1]);
-# endif
 			break;
 #endif
 		case 'f':;
