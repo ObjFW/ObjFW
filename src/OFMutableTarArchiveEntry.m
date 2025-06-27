@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -34,17 +38,18 @@
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
-	return [[[self alloc] initWithFileName: fileName] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
 }
 
 - (instancetype)initWithFileName: (OFString *)fileName
 {
-	self = [super of_init];
+	self = [self of_init];
 
 	@try {
 		_fileName = [fileName copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -64,28 +69,28 @@
 {
 	OFString *old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
 	OFNumber *old = _POSIXPermissions;
-	_POSIXPermissions = [POSIXPermissions retain];
-	[old release];
+	_POSIXPermissions = objc_retain(POSIXPermissions);
+	objc_release(old);
 }
 
 - (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
 	OFNumber *old = _ownerAccountID;
-	_ownerAccountID = [ownerAccountID retain];
-	[old release];
+	_ownerAccountID = objc_retain(ownerAccountID);
+	objc_release(old);
 }
 
 - (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
 	OFNumber *old = _groupOwnerAccountID;
-	_groupOwnerAccountID = [groupOwnerAccountID retain];
-	[old release];
+	_groupOwnerAccountID = objc_retain(groupOwnerAccountID);
+	objc_release(old);
 }
 
 - (void)setCompressedSize: (unsigned long long)compressedSize
@@ -101,8 +106,8 @@
 - (void)setModificationDate: (OFDate *)modificationDate
 {
 	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
-	[old release];
+	_modificationDate = objc_retain(modificationDate);
+	objc_release(old);
 }
 
 - (void)setType: (OFTarArchiveEntryType)type
@@ -114,21 +119,21 @@
 {
 	OFString *old = _targetFileName;
 	_targetFileName = [targetFileName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
 	OFString *old = _ownerAccountName;
 	_ownerAccountName = [ownerAccountName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
 	OFString *old = _groupOwnerAccountName;
 	_groupOwnerAccountName = [groupOwnerAccountName copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)setDeviceMajor: (unsigned long)deviceMajor

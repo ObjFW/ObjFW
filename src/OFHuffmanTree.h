@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <stdbool.h>
@@ -29,7 +33,7 @@ typedef struct _OFHuffmanTree {
 
 /* Inlined for performance. */
 static OF_INLINE bool
-OFHuffmanTreeWalk(id _Nullable stream,
+_OFHuffmanTreeWalk(id _Nullable stream,
     bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
     OFHuffmanTree _Nonnull *_Nonnull tree, uint16_t *_Nonnull value)
 {
@@ -55,10 +59,12 @@ OFHuffmanTreeWalk(id _Nullable stream,
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFHuffmanTree _Nonnull OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
-    uint16_t count);
-extern OFHuffmanTree _Nonnull OFHuffmanTreeNewSingle(uint16_t value);
-extern void OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree);
+extern OFHuffmanTree _Nonnull _OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
+    uint16_t count) OF_VISIBILITY_INTERNAL;
+extern OFHuffmanTree _Nonnull _OFHuffmanTreeNewSingle(uint16_t value)
+    OF_VISIBILITY_INTERNAL;
+extern void _OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree)
+    OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

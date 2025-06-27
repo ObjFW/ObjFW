@@ -1,30 +1,37 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 #define FORMAT @"%@ %@ %@ %@ %@ %@ %@ %@ %@ %g %g %g %g %g %g %g %g %g"
 #define ARGS @"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", \
 	    1.5, 2.25, 3.125, 4.0625, 5.03125, 6.5, 7.25, 8.0, 9.0
 #define RESULT @"a b c d e f g h i 1.5 2.25 3.125 4.0625 5.03125 6.5 7.25 8 9"
 
-static OFString *const module = @"Forwarding";
+@interface ForwardingTests: OTTestCase
+@end
+
 static size_t forwardingsCount = 0;
 static bool success = false;
 static id target = nil;
@@ -33,10 +40,10 @@ struct StretTest {
 	char buffer[1024];
 };
 
-@interface ForwardingTest: OFObject
+@interface ForwardingTestObject: OFObject
 @end
 
-@interface ForwardingTest (Test)
+@interface ForwardingTestObject (NonExistentMethods)
 + (void)test;
 - (void)test;
 - (uint32_t)forwardingTargetTest: (intptr_t)a0
@@ -61,7 +68,150 @@ test(id self, SEL _cmd)
 	success = true;
 }
 
-@implementation ForwardingTest
+@implementation ForwardingTests
+- (void)setUp
+{
+	[super setUp];
+
+	forwardingsCount = 0;
+	success = false;
+	target = nil;
+}
+
+- (void)testForwardingMessageAndAddingClassMethod
+{
+	[ForwardingTestObject test];
+	OTAssertTrue(success);
+	OTAssertEqual(forwardingsCount, 1);
+
+	[ForwardingTestObject test];
+	OTAssertEqual(forwardingsCount, 1);
+}
+
+- (void)forwardingMessageAndAddingInstanceMethod
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	[testObject test];
+	OTAssertTrue(success);
+	OTAssertEqual(forwardingsCount, 1);
+
+	[testObject test];
+	OTAssertEqual(forwardingsCount, 1);
+}
+
+#ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+- (void)testForwardingTargetForSelector
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertEqual(
+	    [testObject forwardingTargetTest: 0xDEADBEEF
+					    : -1
+					    : 1.25
+					    : 2.75], 0x12345678);
+}
+
+- (void)testForwardingTargetForSelectorWithVariableArguments
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertEqualObjects(
+	    ([testObject forwardingTargetVarArgTest: FORMAT, ARGS]), RESULT);
+}
+
+/*
+ * Don't try fpret on Win64 if we don't have stret forwarding, as long double
+ * is handled as a struct there.
+ *
+ * Don't try fpret on macOS on x86_64 with the Apple runtime as a regression
+ * was introduced in either macOS 14 or 15 where objc_msgSend_fpret calls the
+ * stret forwarding handler instead of the regular one.
+ */
+# if !(defined(OF_WINDOWS) && defined(OF_AMD64) && \
+    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
+    !(defined(OF_APPLE_RUNTIME) && defined(OF_AMD64))
+- (void)testForwardingTargetForSelectorFPRet
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertEqual([testObject forwardingTargetFPRetTest],
+	    12345678.00006103515625);
+}
+# endif
+
+# ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+- (void)testForwardingTargetForSelectorStRet
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertEqual(memcmp([testObject forwardingTargetStRetTest].buffer,
+	    "abcdefghijklmnopqrstuvwxyz", 27), 0);
+}
+# endif
+
+- (void)testForwardingTargetForSelectorReturningNilThrows
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertThrowsSpecific([testObject forwardingTargetNilTest],
+	    OFNotImplementedException);
+}
+
+- (void)testForwardingTargetForSelectorReturningSelfThrows
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertThrowsSpecific([testObject forwardingTargetSelfTest],
+	    OFNotImplementedException);
+}
+
+# ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+- (void)testForwardingTargetForSelectorStRetReturningNilThrows
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertThrowsSpecific([testObject forwardingTargetNilStRetTest],
+	    OFNotImplementedException);
+}
+
+- (void)testForwardingTargetForSelectorStRetReturningSelfThrows
+{
+	ForwardingTestObject *testObject =
+	    objc_autorelease([[ForwardingTestObject alloc] init]);
+
+	target = objc_autorelease([[ForwardingTarget alloc] init]);
+
+	OTAssertThrowsSpecific([testObject forwardingTargetSelfStRetTest],
+	    OFNotImplementedException);
+}
+# endif
+#endif
+@end
+
+@implementation ForwardingTestObject
 + (bool)resolveClassMethod: (SEL)selector
 {
 	forwardingsCount++;
@@ -149,11 +299,10 @@ test(id self, SEL _cmd)
 	OFEnsure(self == target);
 
 	va_start(args, format);
-	ret = [[[OFString alloc] initWithFormat: format
-				      arguments: args] autorelease];
+	ret = [[OFString alloc] initWithFormat: format arguments: args];
 	va_end(args);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (long double)forwardingTargetFPRetTest
@@ -172,66 +321,5 @@ test(id self, SEL _cmd)
 	memcpy(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
 
 	return ret;
-}
-@end
-
-@implementation TestsAppDelegate (ForwardingTests)
-- (void)forwardingTests
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	TEST(@"Forwarding a message and adding a class method",
-	    R([ForwardingTest test]) && success &&
-	    R([ForwardingTest test]) && forwardingsCount == 1);
-
-	ForwardingTest *testObject =
-	    [[[ForwardingTest alloc] init] autorelease];
-
-	success = false;
-	forwardingsCount = 0;
-
-	TEST(@"Forwarding a message and adding an instance method",
-	    R([testObject test]) && success && R([testObject test]) &&
-	    forwardingsCount == 1);
-
-#ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
-	target = [[[ForwardingTarget alloc] init] autorelease];
-	TEST(@"-[forwardingTargetForSelector:]",
-	    [testObject forwardingTargetTest: 0xDEADBEEF
-					    : -1
-					    : 1.25
-					    : 2.75] == 0x12345678)
-	TEST(@"-[forwardingTargetForSelector:] variable arguments",
-	    [[testObject forwardingTargetVarArgTest: FORMAT, ARGS]
-	    isEqual: RESULT])
-	/*
-	 * Don't try fpret on Win64 if we don't have stret forwarding, as
-	 * long double is handled as a struct there.
-	 */
-# if !defined(OF_WINDOWS) || !defined(OF_X86_64) || \
-	defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
-	TEST(@"-[forwardingTargetForSelector:] fp return",
-	    [testObject forwardingTargetFPRetTest] == 12345678.00006103515625)
-# endif
-# ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
-	TEST(@"-[forwardingTargetForSelector:] struct return",
-	    !memcmp([testObject forwardingTargetStRetTest].buffer,
-	    "abcdefghijklmnopqrstuvwxyz", 27))
-# endif
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target",
-	    OFNotImplementedException, [testObject forwardingTargetNilTest])
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target",
-	    OFNotImplementedException, [testObject forwardingTargetSelfTest])
-# ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target + "
-	    @"stret", OFNotImplementedException,
-	    [testObject forwardingTargetNilStRetTest])
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target + "
-	    @"stret", OFNotImplementedException,
-	    [testObject forwardingTargetSelfStRetTest])
-# endif
-#endif
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

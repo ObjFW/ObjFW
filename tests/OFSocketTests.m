@@ -1,21 +1,29 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
+
+@interface OFSocketTests: OTTestCase
+@end
 
 #define COMPARE_V6(a, a0, a1, a2, a3, a4, a5, a6, a7)		\
 	(a.sockaddr.in6.sin6_addr.s6_addr[0] == (a0 >> 8) &&	\
@@ -52,148 +60,197 @@
 	a.sockaddr.in6.sin6_addr.s6_addr[14] = a7 >> 8;		\
 	a.sockaddr.in6.sin6_addr.s6_addr[15] = a7 & 0xFF;
 
-static OFString *const module = @"OFSocket";
-
-@implementation TestsAppDelegate (OFSocketTests)
-- (void)socketTests
+@implementation OFSocketTests
+- (void)testParseIPv4
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFSocketAddress addr;
+	OFSocketAddress address = OFSocketAddressParseIP(@"127.0.0.1", 1234);
 
-	TEST(@"Parsing an IPv4",
-	    R(addr = OFSocketAddressParseIP(@"127.0.0.1", 1234)) &&
-	    OFFromBigEndian32(addr.sockaddr.in.sin_addr.s_addr) == 0x7F000001 &&
-	    OFFromBigEndian16(addr.sockaddr.in.sin_port) == 1234)
+	OTAssertEqual(OFFromBigEndian32(address.sockaddr.in.sin_addr.s_addr),
+	    0x7F000001);
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in.sin_port), 1234);
+}
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #1", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"127.0.0.0.1", 1234))
+- (void)testParseRejectsInvalidIPv4
+{
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"127.0.0.0.1", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #2", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"127.0.0.256", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"127.0.0.256", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #3", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"127.0.0. 1", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"127.0.0. 1", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #4", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@" 127.0.0.1", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@" 127.0.0.1", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #5", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"127.0.a.1", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"127.0.a.1", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #6", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"127.0..1", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"127.0..1", 1234),
+	    OFInvalidFormatException);
+}
 
-	TEST(@"Port of an IPv4 address", OFSocketAddressIPPort(&addr) == 1234)
+- (void)testPortForIPv4
+{
+	OFSocketAddress address = OFSocketAddressParseIP(@"127.0.0.1", 1234);
 
-	TEST(@"Converting an IPv4 to a string",
-	    [OFSocketAddressString(&addr) isEqual: @"127.0.0.1"])
+	OTAssertEqual(OFSocketAddressIPPort(&address), 1234);
+}
 
-	TEST(@"Parsing an IPv6 #1",
-	    R(addr = OFSocketAddressParseIP(
-	    @"1122:3344:5566:7788:99aa:bbCc:ddee:ff00", 1234)) &&
-	    COMPARE_V6(addr,
-	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00) &&
-	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+- (void)testStringForIPv4
+{
+	OFSocketAddress address = OFSocketAddressParseIP(@"127.0.0.1", 1234);
 
-	TEST(@"Parsing an IPv6 #2",
-	    R(addr = OFSocketAddressParseIP(@"::", 1234)) &&
-	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0) &&
-	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+	OTAssertEqualObjects(OFSocketAddressString(&address), @"127.0.0.1");
+}
 
-	TEST(@"Parsing an IPv6 #3",
-	    R(addr = OFSocketAddressParseIP(@"aaAa::bBbb", 1234)) &&
-	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0xBBBB) &&
-	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+- (void)testParseIPv6
+{
+	OFSocketAddress address;
 
-	TEST(@"Parsing an IPv6 #4",
-	    R(addr = OFSocketAddressParseIP(@"aaAa::", 1234)) &&
-	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0) &&
-	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+	address = OFSocketAddressParseIP(
+	    @"1122:3344:5566:7788:99aa:bbCc:ddee:ff00", 1234);
+	OTAssert(COMPARE_V6(address,
+	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	TEST(@"Parsing an IPv6 #5",
-	    R(addr = OFSocketAddressParseIP(@"::aaAa", 1234)) &&
-	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0xAAAA) &&
-	    OFFromBigEndian16(addr.sockaddr.in6.sin6_port) == 1234)
+	address = OFSocketAddressParseIP(@"::", 1234);
+	OTAssert(COMPARE_V6(address, 0, 0, 0, 0, 0, 0, 0, 0));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1:::2", 1234))
+	address = OFSocketAddressParseIP(@"aaAa::bBbb", 1234);
+	OTAssert(COMPARE_V6(address, 0xAAAA, 0, 0, 0, 0, 0, 0, 0xBBBB));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #2", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1: ::2", 1234))
+	address = OFSocketAddressParseIP(@"aaAa::", 1234);
+	OTAssert(COMPARE_V6(address, 0xAAAA, 0, 0, 0, 0, 0, 0, 0));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #3", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1:: :2", 1234))
+	address = OFSocketAddressParseIP(@"::aaAa", 1234);
+	OTAssert(COMPARE_V6(address, 0, 0, 0, 0, 0, 0, 0, 0xAAAA));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #4", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1::2::3", 1234))
+	address = OFSocketAddressParseIP(@"fd00::1%123", 1234);
+	OTAssert(COMPARE_V6(address, 0xFD00, 0, 0, 0, 0, 0, 0, 1));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
+	OTAssertEqual(address.sockaddr.in6.sin6_scope_id, 123);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #5", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"10000::1", 1234))
+	address = OFSocketAddressParseIP(@"::ffff:127.0.0.1", 1234);
+	OTAssert(COMPARE_V6(address, 0, 0, 0, 0, 0, 0xFFFF, 0x7F00, 1));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #6", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"::10000", 1234))
+	address = OFSocketAddressParseIP(@"64:ff9b::127.0.0.1", 1234);
+	OTAssert(COMPARE_V6(address, 0x64, 0xFF9B, 0, 0, 0, 0, 0x7F00, 1));
+	OTAssertEqual(OFFromBigEndian16(address.sockaddr.in6.sin6_port), 1234);
+}
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #7", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"::1::", 1234))
+- (void)testParseRejectsInvalidIPv6
+{
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1:::2", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #8", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1:2:3:4:5:6:7:", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1: ::2", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #9", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1:2:3:4:5:6:7::", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1:: :2", 1234),
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #10", OFInvalidFormatException,
-	    OFSocketAddressParseIP(@"1:2", 1234))
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1::2::3", 1234),
+	    OFInvalidFormatException);
 
-	TEST(@"Port of an IPv6 address", OFSocketAddressIPPort(&addr) == 1234)
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"10000::1", 1234),
+	    OFInvalidFormatException);
 
-	SET_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0)
-	TEST(@"Converting an IPv6 to a string #1",
-	    [OFSocketAddressString(&addr) isEqual: @"::"])
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"::10000", 1234),
+	    OFInvalidFormatException);
 
-	SET_V6(addr, 0, 0, 0, 0, 0, 0, 0, 1)
-	TEST(@"Converting an IPv6 to a string #2",
-	    [OFSocketAddressString(&addr) isEqual: @"::1"])
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"::1::", 1234),
+	    OFInvalidFormatException);
 
-	SET_V6(addr, 1, 0, 0, 0, 0, 0, 0, 0)
-	TEST(@"Converting an IPv6 to a string #3",
-	    [OFSocketAddressString(&addr) isEqual: @"1::"])
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1:2:3:4:5:6:7:", 1234),
+	    OFInvalidFormatException);
 
-	SET_V6(addr,
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1:2:3:4:5:6:7::", 1234),
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(OFSocketAddressParseIP(@"1:2", 1234),
+	    OFInvalidFormatException);
+}
+
+- (void)testPortForIPv6
+{
+	OFSocketAddress address = OFSocketAddressParseIP(@"::", 1234);
+
+	OTAssertEqual(OFSocketAddressIPPort(&address), 1234);
+}
+
+- (void)testStringForIPv6
+{
+	OFSocketAddress address = OFSocketAddressParseIP(@"::", 1234);
+
+	OTAssertEqualObjects(OFSocketAddressString(&address), @"::");
+
+	SET_V6(address, 0, 0, 0, 0, 0, 0, 0, 1)
+	OTAssertEqualObjects(OFSocketAddressString(&address), @"::1");
+
+	SET_V6(address, 1, 0, 0, 0, 0, 0, 0, 0)
+	OTAssertEqualObjects(OFSocketAddressString(&address), @"1::");
+
+	SET_V6(address,
 	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00)
-	TEST(@"Converting an IPv6 to a string #4",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"1122:3344:5566:7788:99aa:bbcc:ddee:ff00"])
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"1122:3344:5566:7788:99aa:bbcc:ddee:ff00");
 
-	SET_V6(addr, 0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0)
-	TEST(@"Converting an IPv6 to a string #5",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"1122:3344:5566:7788:99aa:bbcc:ddee:0"])
+	SET_V6(address,
+	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"1122:3344:5566:7788:99aa:bbcc:ddee:0");
 
-	SET_V6(addr, 0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0, 0)
-	TEST(@"Converting an IPv6 to a string #6",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"1122:3344:5566:7788:99aa:bbcc::"])
+	SET_V6(address, 0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0, 0)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"1122:3344:5566:7788:99aa:bbcc::");
 
-	SET_V6(addr, 0, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00)
-	TEST(@"Converting an IPv6 to a string #7",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"0:3344:5566:7788:99aa:bbcc:ddee:ff00"])
+	SET_V6(address,
+	    0, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"0:3344:5566:7788:99aa:bbcc:ddee:ff00");
 
-	SET_V6(addr, 0, 0, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00)
-	TEST(@"Converting an IPv6 to a string #8",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"::5566:7788:99aa:bbcc:ddee:ff00"])
+	SET_V6(address, 0, 0, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"::5566:7788:99aa:bbcc:ddee:ff00");
 
-	SET_V6(addr, 0, 0, 0x5566, 0, 0, 0, 0xDDEE, 0xFF00)
-	TEST(@"Converting an IPv6 to a string #9",
-	    [OFSocketAddressString(&addr) isEqual: @"0:0:5566::ddee:ff00"])
+	SET_V6(address, 0, 0, 0x5566, 0, 0, 0, 0xDDEE, 0xFF00)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"0:0:5566::ddee:ff00");
 
-	SET_V6(addr, 0, 0, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0, 0)
-	TEST(@"Converting an IPv6 to a string #10",
-	    [OFSocketAddressString(&addr)
-	    isEqual: @"::5566:7788:99aa:bbcc:0:0"])
+	SET_V6(address, 0, 0, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0, 0)
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"::5566:7788:99aa:bbcc:0:0");
 
-	objc_autoreleasePoolPop(pool);
+	address.sockaddr.in6.sin6_scope_id = 123;
+	OTAssertEqualObjects(OFSocketAddressString(&address),
+	    @"::5566:7788:99aa:bbcc:0:0%123");
+}
+
+- (void)testAddressEqual
+{
+	OFSocketAddress addr1 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr2 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr3 = OFSocketAddressParseIP(@"127.0.0.1", 1235);
+
+	OTAssertTrue(OFSocketAddressEqual(&addr1, &addr2));
+	OTAssertFalse(OFSocketAddressEqual(&addr1, &addr3));
+}
+
+- (void)testAddressHash
+{
+	OFSocketAddress addr1 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr2 = OFSocketAddressParseIP(@"127.0.0.1", 1234);
+	OFSocketAddress addr3 = OFSocketAddressParseIP(@"127.0.0.1", 1235);
+
+	OTAssertEqual(OFSocketAddressHash(&addr1), OFSocketAddressHash(&addr2));
+	OTAssertNotEqual(OFSocketAddressHash(&addr1),
+	    OFSocketAddressHash(&addr3));
 }
 @end

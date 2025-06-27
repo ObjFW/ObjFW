@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -34,6 +38,7 @@
 
 #include <windows.h>
 
+OF_DIRECT_MEMBERS
 @interface OFSubprocess ()
 - (OFChar16 *)of_wideEnvironmentForDictionary: (OFDictionary *)dictionary;
 - (char *)of_environmentForDictionary: (OFDictionary *)environment;
@@ -42,23 +47,26 @@
 @implementation OFSubprocess
 + (instancetype)subprocessWithProgram: (OFString *)program
 {
-	return [[[self alloc] initWithProgram: program] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			  programName: (OFString *)programName
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
@@ -66,10 +74,11 @@
 			    arguments: (OFArray *)arguments
 			  environment: (OFDictionary *)environment
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments
-				  environment: environment] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments
+			      environment: environment]);
 }
 
 - (instancetype)init
@@ -161,7 +170,7 @@
 
 		for (OFString *argument in arguments) {
 			OFMutableString *tmp =
-			    [[argument mutableCopy] autorelease];
+			    objc_autorelease([argument mutableCopy]);
 			bool containsSpaces = [tmp containsString: @" "];
 
 			[argumentsString appendString: @" "];
@@ -236,7 +245,7 @@
 		CloseHandle(_readPipe[1]);
 		CloseHandle(_writePipe[0]);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -383,7 +392,9 @@
 	if (_readPipe[0] == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self closeForWriting];
+	if (_writePipe[1] != NULL)
+		[self closeForWriting];
+
 	CloseHandle(_readPipe[0]);
 
 	if (_handle != INVALID_HANDLE_VALUE) {

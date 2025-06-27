@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -25,6 +29,8 @@
 #endif
 
 #import "macros.h"
+
+/** @file */
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
@@ -45,7 +51,20 @@ typedef struct _OFTLSKey {
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Creates a new Thread Local Storage key.
+ *
+ * @param key A pointer to the key to create
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFTLSKeyNew(OFTLSKey *key);
+
+/**
+ * @brief Destroys the specified Thread Local Storage key.
+ *
+ * @param key A pointer to the key to destroy
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFTLSKeyFree(OFTLSKey key);
 #ifdef __cplusplus
 }
@@ -53,17 +72,29 @@ extern int OFTLSKeyFree(OFTLSKey key);
 
 /* TLS keys are inlined for performance. */
 
-#if defined(OF_HAVE_PTHREADS)
+#if defined(OF_HAVE_PTHREADS) || defined(DOXYGEN)
+/**
+ * @brief Returns the current value for the specified Thread Local Storage key.
+ *
+ * @param key A pointer to the key whose value to return
+ * @return The current value for the specified Thread Local Storage key
+ */
 static OF_INLINE void *
 OFTLSKeyGet(OFTLSKey key)
 {
 	return pthread_getspecific(key);
 }
 
+/**
+ * @brief Sets the current value for the specified Thread Local Storage key.
+ *
+ * @param key A pointer to the key whose value to set
+ * @param value The new value for the key
+ */
 static OF_INLINE int
-OFTLSKeySet(OFTLSKey key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *value)
 {
-	return pthread_setspecific(key, ptr);
+	return pthread_setspecific(key, value);
 }
 #elif defined(OF_WINDOWS)
 static OF_INLINE void *
@@ -73,9 +104,9 @@ OFTLSKeyGet(OFTLSKey key)
 }
 
 static OF_INLINE int
-OFTLSKeySet(OFTLSKey key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *value)
 {
-	return (TlsSetValue(key, ptr) ? 0 : EINVAL);
+	return (TlsSetValue(key, value) ? 0 : EINVAL);
 }
 #elif defined(OF_MORPHOS)
 static OF_INLINE void *
@@ -85,9 +116,9 @@ OFTLSKeyGet(OFTLSKey key)
 }
 
 static OF_INLINE int
-OFTLSKeySet(OFTLSKey key, void *ptr)
+OFTLSKeySet(OFTLSKey key, void *value)
 {
-	return (TLSSetValue(key, (APTR)ptr) ? 0 : EINVAL);
+	return (TLSSetValue(key, (APTR)value) ? 0 : EINVAL);
 }
 #elif defined(OF_AMIGAOS)
 /* Those are too big too inline. */
@@ -95,7 +126,7 @@ OFTLSKeySet(OFTLSKey key, void *ptr)
 extern "C" {
 # endif
 extern void *OFTLSKeyGet(OFTLSKey key);
-extern int OFTLSKeySet(OFTLSKey key, void *ptr);
+extern int OFTLSKeySet(OFTLSKey key, void *value);
 # ifdef __cplusplus
 }
 # endif

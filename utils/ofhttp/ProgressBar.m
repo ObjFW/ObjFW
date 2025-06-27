@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -39,6 +43,10 @@ static const OFTimeInterval updateInterval = 0.1;
 # define truncf(x) trunc(x)
 #endif
 
+@interface ProgressBar ()
+- (void)_calculateBPSAndETA;
+@end
+
 @implementation ProgressBar
 - (instancetype)initWithLength: (unsigned long long)length
 		   resumedFrom: (unsigned long long)resumedFrom
@@ -54,21 +62,21 @@ static const OFTimeInterval updateInterval = 0.1;
 		_resumedFrom = resumedFrom;
 		_startDate = [[OFDate alloc] init];
 		_lastReceivedDate = [[OFDate alloc] init];
-		_drawTimer = [[OFTimer
+		_drawTimer = objc_retain([OFTimer
 		    scheduledTimerWithTimeInterval: updateInterval
 					    target: self
 					  selector: @selector(draw)
-					   repeats: true] retain];
-		_BPSTimer = [[OFTimer
+					   repeats: true]);
+		_BPSTimer = objc_retain([OFTimer
 		    scheduledTimerWithTimeInterval: 1.0
 					    target: self
 					  selector: @selector(
-							calculateBPSAndETA)
-					   repeats: true] retain];
+							_calculateBPSAndETA)
+					   repeats: true]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -79,10 +87,10 @@ static const OFTimeInterval updateInterval = 0.1;
 {
 	[self stop];
 
-	[_startDate release];
-	[_lastReceivedDate release];
-	[_drawTimer release];
-	[_BPSTimer release];
+	objc_release(_startDate);
+	objc_release(_lastReceivedDate);
+	objc_release(_drawTimer);
+	objc_release(_BPSTimer);
 
 	[super dealloc];
 }
@@ -97,7 +105,7 @@ static const OFTimeInterval updateInterval = 0.1;
 	float bars, percent;
 	int columns, barWidth;
 
-	if ((columns = OFStdOut.columns) >= 0) {
+	if ((columns = OFStdErr.columns) >= 0) {
 		if (columns > 37)
 			barWidth = columns - 37;
 		else
@@ -111,57 +119,57 @@ static const OFTimeInterval updateInterval = 0.1;
 	    (float)(_resumedFrom + _length) * 100;
 
 	if (_useUnicode) {
-		[OFStdOut writeString: @"\r  ▕"];
+		[OFStdErr writeString: @"\r  ▕"];
 
 		for (size_t i = 0; i < (size_t)bars; i++)
-			[OFStdOut writeString: @"█"];
+			[OFStdErr writeString: @"█"];
 		if (bars < barWidth) {
 			float rem = bars - truncf(bars);
 
 			if (rem >= 0.875)
-				[OFStdOut writeString: @"▉"];
+				[OFStdErr writeString: @"▉"];
 			else if (rem >= 0.75)
-				[OFStdOut writeString: @"▊"];
+				[OFStdErr writeString: @"▊"];
 			else if (rem >= 0.625)
-				[OFStdOut writeString: @"▋"];
+				[OFStdErr writeString: @"▋"];
 			else if (rem >= 0.5)
-				[OFStdOut writeString: @"▌"];
+				[OFStdErr writeString: @"▌"];
 			else if (rem >= 0.375)
-				[OFStdOut writeString: @"▍"];
+				[OFStdErr writeString: @"▍"];
 			else if (rem >= 0.25)
-				[OFStdOut writeString: @"▎"];
+				[OFStdErr writeString: @"▎"];
 			else if (rem >= 0.125)
-				[OFStdOut writeString: @"▏"];
+				[OFStdErr writeString: @"▏"];
 			else
-				[OFStdOut writeString: @" "];
+				[OFStdErr writeString: @" "];
 
 			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
-				[OFStdOut writeString: @" "];
+				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdOut writeFormat: @"▏ %,6.2f%% ", percent];
+		[OFStdErr writeFormat: @"▏ %,6.2f%% ", percent];
 	} else {
-		[OFStdOut writeString: @"\r  ["];
+		[OFStdErr writeString: @"\r  ["];
 
 		for (size_t i = 0; i < (size_t)bars; i++)
-			[OFStdOut writeString: @"#"];
+			[OFStdErr writeString: @"#"];
 		if (bars < barWidth) {
 			float rem = bars - truncf(bars);
 
 			if (rem >= 0.75)
-				[OFStdOut writeString: @"O"];
+				[OFStdErr writeString: @"O"];
 			else if (rem >= 0.5)
-				[OFStdOut writeString: @"o"];
+				[OFStdErr writeString: @"o"];
 			else if (rem >= 0.25)
-				[OFStdOut writeString: @"."];
+				[OFStdErr writeString: @"."];
 			else
-				[OFStdOut writeString: @" "];
+				[OFStdErr writeString: @" "];
 
 			for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
-				[OFStdOut writeString: @" "];
+				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdOut writeFormat: @"] %,6.2f%% ", percent];
+		[OFStdErr writeFormat: @"] %,6.2f%% ", percent];
 	}
 
 	if (percent == 100) {
@@ -172,40 +180,40 @@ static const OFTimeInterval updateInterval = 0.1;
 	}
 
 	if (isinf(_ETA))
-		[OFStdOut writeString: @"--:--:-- "];
+		[OFStdErr writeString: @"--:--:-- "];
 	else if (_ETA >= 99 * 3600) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,4.2f", _ETA / (24 * 3600)];
-		[OFStdOut writeString: OF_LOCALIZED(@"eta_days",
+		[OFStdErr writeString: OF_LOCALIZED(@"eta_days",
 		    @"%[num] d ",
 		    @"num", num)];
 	} else
-		[OFStdOut writeFormat: @"%2u:%02u:%02u ",
+		[OFStdErr writeFormat: @"%2u:%02u:%02u ",
 		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
 		    (uint8_t)_ETA % 60];
 
 	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneGibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_gibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_gibs",
 		    @"%[num] GiB/s",
 		    @"num", num)];
 	} else if (_BPS >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneMebibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_mibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_mibs",
 		    @"%[num] MiB/s",
 		    @"num", num)];
 	} else if (_BPS >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneKibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_kibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_kibs",
 		    @"%[num] KiB/s",
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_bps",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_bps",
 		    @"%[num] B/s  ",
 		    @"num", num)];
 	}
@@ -213,30 +221,30 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)_drawReceived
 {
-	[OFStdOut writeString: @"\r  "];
+	[OFStdErr writeString: @"\r  "];
 
 	if (_resumedFrom + _received >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / oneGibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_gib",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_gib",
 		    @"%[num] GiB",
 		    @"num", num)];
 	} else if (_resumedFrom + _received >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / oneMebibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_mib",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_mib",
 		    @"%[num] MiB",
 		    @"num", num)];
 	} else if (_resumedFrom + _received >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / oneKibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_kib",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_kib",
 		    @"%[num] KiB",
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
 		    @"%jd", _resumedFrom + _received];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_bytes",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_bytes",
 		    @"["
 		    @"    ["
 		    @"        {'num == 1': '1 byte '},"
@@ -246,7 +254,7 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"num", num)];
 	}
 
-	[OFStdOut writeString: @" "];
+	[OFStdErr writeString: @" "];
 
 	if (_stopped)
 		_BPS = (float)_received /
@@ -255,25 +263,25 @@ static const OFTimeInterval updateInterval = 0.1;
 	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneGibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_gibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_gibs",
 		    @"%[num] GiB/s",
 		    @"num", num)];
 	} else if (_BPS >= oneMebibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneMebibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_mibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_mibs",
 		    @"%[num] MiB/s",
 		    @"num", num)];
 	} else if (_BPS >= oneKibibyte) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS / oneKibibyte];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_kibs",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_kibs",
 		    @"%[num] KiB/s",
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", _BPS];
-		[OFStdOut writeString: OF_LOCALIZED(@"progress_bps",
+		[OFStdErr writeString: OF_LOCALIZED(@"progress_bps",
 		    @"%[num] B/s  ",
 		    @"num", num)];
 	}
@@ -281,13 +289,15 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)draw
 {
+	OFStdErr.cursorVisible = false;
+
 	if (_length > 0)
 		[self _drawProgress];
 	else
 		[self _drawReceived];
 }
 
-- (void)calculateBPSAndETA
+- (void)_calculateBPSAndETA
 {
 	_BPSWindow[_BPSWindowIndex++ % BPS_WINDOW_SIZE] =
 	    (float)(_received - _lastReceived) /
@@ -304,7 +314,8 @@ static const OFTimeInterval updateInterval = 0.1;
 	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;
-	[_lastReceivedDate release];
+	objc_release(_lastReceivedDate);
+	_lastReceivedDate = nil;
 	_lastReceivedDate = [[OFDate alloc] init];
 }
 
@@ -314,5 +325,7 @@ static const OFTimeInterval updateInterval = 0.1;
 	[_BPSTimer invalidate];
 
 	_stopped = true;
+
+	OFStdErr.cursorVisible = true;
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,7 +23,7 @@
 
 #import "common.h"
 
-const OFChar16 OFCodepage437Table[] = {
+const OFChar16 _OFCodepage437Table[] OF_VISIBILITY_INTERNAL = {
 	0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
 	0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
 	0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
@@ -37,8 +41,8 @@ const OFChar16 OFCodepage437Table[] = {
 	0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
 	0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0
 };
-const size_t OFCodepage437TableOffset =
-    256 - (sizeof(OFCodepage437Table) / sizeof(*OFCodepage437Table));
+const size_t _OFCodepage437TableOffset OF_VISIBILITY_INTERNAL =
+    256 - (sizeof(_OFCodepage437Table) / sizeof(*_OFCodepage437Table));
 
 static const unsigned char page0[] = {
 	0xFF, 0xAD, 0x9B, 0x9C, 0x00, 0x9D, 0x00, 0x00,
@@ -128,12 +132,17 @@ static const unsigned char page25[] = {
 };
 static const uint8_t page25Start = 0x00;
 
-bool
-OFUnicodeToCodepage437(const OFUnichar *input, unsigned char *output,
-    size_t length, bool lossy)
+bool OF_VISIBILITY_INTERNAL
+_OFUnicodeToCodepage437(const OFUnichar *input, unsigned char *output,
+    size_t length, bool lossy, bool insecure)
 {
 	for (size_t i = 0; i < length; i++) {
-		OFUnichar c = input[i];
+		OFUnichar c;
+
+		if OF_UNLIKELY (!insecure && input[i] == 0)
+			return 0;
+
+		c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
 			uint8_t idx;

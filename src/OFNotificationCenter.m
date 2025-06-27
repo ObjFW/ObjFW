@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_NOTIFICATION_CENTER_M
@@ -20,9 +24,6 @@
 #import "OFNotificationCenter.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 #import "OFSet.h"
 #import "OFString.h"
 
@@ -69,16 +70,16 @@ static OFNotificationCenter *defaultCenter;
 		void *pool = objc_autoreleasePoolPush();
 
 		_name = [name copy];
-		_observer = [observer retain];
+		_observer = observer;
 		_selector = selector;
-		_object = [object retain];
+		_object = objc_retain(object);
 
 		_selectorHash = [[OFString stringWithUTF8String:
 		    sel_getName(_selector)] hash];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -94,10 +95,10 @@ static OFNotificationCenter *defaultCenter;
 
 	@try {
 		_name = [name copy];
-		_object = [object retain];
+		_object = objc_retain(object);
 		_block = [block copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -107,11 +108,10 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)dealloc
 {
-	[_name release];
-	[_observer release];
-	[_object release];
+	objc_release(_name);
+	objc_release(_object);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_block);
 #endif
 
 	[super dealloc];
@@ -184,12 +184,9 @@ static OFNotificationCenter *defaultCenter;
 	self = [super init];
 
 	@try {
-#ifdef OF_HAVE_THREADS
-		_mutex = [[OFMutex alloc] init];
-#endif
 		_handles = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -198,20 +195,14 @@ static OFNotificationCenter *defaultCenter;
 
 - (void)dealloc
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex release];
-#endif
-	[_handles release];
+	objc_release(_handles);
 
 	[super dealloc];
 }
 
 - (void)of_addObserver: (OFNotificationCenterHandle *)handle
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
+	@synchronized (_handles) {
 		OFMutableSet *handlesForName =
 		    [_handles objectForKey: handle->_name];
 
@@ -222,11 +213,7 @@ static OFNotificationCenter *defaultCenter;
 		}
 
 		[handlesForName addObject: handle];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 }
 
 - (void)addObserver: (id)observer
@@ -236,64 +223,60 @@ static OFNotificationCenter *defaultCenter;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self of_addObserver:
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
-						     observer: observer
-						     selector: selector
-						       object: object]
-	    autorelease]];
+	[self of_addObserver: objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
+						    observer: observer
+						    selector: selector
+						      object: object])];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFNotificationCenterHandle *)
-    addObserverForName: (OFNotificationName)name
-		object: (id)object
-	    usingBlock: (OFNotificationCenterBlock)block
+- (id)addObserverForName: (OFNotificationName)name
+		  object: (id)object
+	      usingBlock: (OFNotificationCenterBlock)block
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFNotificationCenterHandle *handle =
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
-						       object: object
-							block: block]
-	    autorelease];
+	OFNotificationCenterHandle *handle = objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
+						      object: object
+						       block: block]);
 
 	[self of_addObserver: handle];
 
-	[handle retain];
+	objc_retain(handle);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [handle autorelease];
+	return objc_autoreleaseReturnValue(handle);
 }
 #endif
 
-- (void)removeObserver: (OFNotificationCenterHandle *)handle
+- (void)removeObserver: (id)handle_
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFNotificationCenterHandle *handle;
+	void *pool;
 
-	/* {} required to avoid -Wmisleading-indentation false positive. */
-	if (![handle isKindOfClass: [OFNotificationCenterHandle class]]) {
+	if (![handle_ isKindOfClass: [OFNotificationCenterHandle class]])
 		@throw [OFInvalidArgumentException exception];
-	}
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		OFNotificationName name = [[handle->_name copy] autorelease];
+	handle = handle_;
+	pool = objc_autoreleasePoolPush();
+
+	if (![handle isKindOfClass: [OFNotificationCenterHandle class]])
+		@throw [OFInvalidArgumentException exception];
+
+	@synchronized (_handles) {
+		OFNotificationName name =
+		    objc_autorelease([handle->_name copy]);
 		OFMutableSet *handlesForName = [_handles objectForKey: name];
 
 		[handlesForName removeObject: handle];
 
 		if (handlesForName.count == 0)
 			[_handles removeObjectForKey: name];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -305,12 +288,11 @@ static OFNotificationCenter *defaultCenter;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self removeObserver:
-	    [[[OFNotificationCenterHandle alloc] initWithName: name
+	[self removeObserver: objc_autorelease(
+	    [[OFNotificationCenterHandle alloc] initWithName: name
 						     observer: observer
 						     selector: selector
-						       object: object]
-	    autorelease]];
+						       object: object])];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -320,20 +302,13 @@ static OFNotificationCenter *defaultCenter;
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *matchedHandles = [OFMutableArray array];
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
+	@synchronized (_handles) {
 		for (OFNotificationCenterHandle *handle in
 		    [_handles objectForKey: notification.name])
 			if (handle->_object == nil ||
 			    handle->_object == notification.object)
 				[matchedHandles addObject: handle];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
 	}
-#endif
 
 	for (OFNotificationCenterHandle *handle in matchedHandles) {
 #ifdef OF_HAVE_BLOCKS
@@ -357,14 +332,14 @@ static OFNotificationCenter *defaultCenter;
 }
 
 - (void)postNotificationName: (OFNotificationName)name
-		      object: (nullable id)object
+		      object: (id)object
 {
 	[self postNotificationName: name object: object userInfo: nil];
 }
 
 - (void)postNotificationName: (OFNotificationName)name
-		      object: (nullable id)object
-		    userInfo: (nullable OFDictionary *)userInfo
+		      object: (id)object
+		    userInfo: (OFDictionary *)userInfo
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -378,22 +353,5 @@ static OFNotificationCenter *defaultCenter;
 @end
 
 @implementation OFDefaultNotificationCenter
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+OF_SINGLETON_METHODS
 @end

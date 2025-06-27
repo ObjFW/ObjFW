@@ -1,21 +1,24 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
 #import "OFMessagePackRepresentation.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,19 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFConstantString;
 
 /**
- * @class OFDate OFDate.h ObjFW/OFDate.h
+ * @class OFDate OFDate.h ObjFW/ObjFW.h
  *
  * @brief A class for storing, accessing and comparing dates.
  */
-#ifndef OF_DATE_M
-OF_SUBCLASSING_RESTRICTED
-#endif
-@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
+@interface OFDate: OFObject <OFCopying, OFComparing,
     OFMessagePackRepresentation>
-{
-	OFTimeInterval _seconds;
-}
-
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFDate *distantFuture;
 @property (class, readonly, nonatomic) OFDate *distantPast;
@@ -197,7 +193,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns a date in the distant future.
  *
- * The date is system-dependant.
+ * The date is system-dependent.
  *
  * @return A date in the distant future
  */
@@ -206,7 +202,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns a date in the distant past.
  *
- * The date is system-dependant.
+ * The date is system-dependent.
  *
  * @return A date in the distant past
  */
@@ -284,6 +280,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * See the man page for `strftime` for information on the format.
  *
+ * @warning The format is currently limited to the following format specifiers:
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
+ *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
  * @throw OFInvalidFormatException The specified format is invalid
@@ -294,6 +294,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a string of the local date with the specified format.
  *
  * See the man page for `strftime` for information on the format.
+ *
+ * @warning The format is currently limited to the following format specifiers:
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString

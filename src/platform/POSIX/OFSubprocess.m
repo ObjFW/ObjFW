@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -41,10 +45,14 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifndef HAVE_POSIX_SPAWNP
+#ifndef OF_MACOS
 extern char **environ;
+#else
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 #endif
 
+OF_DIRECT_MEMBERS
 @interface OFSubprocess ()
 - (void)of_getArgv: (char ***)argv
     forProgramName: (OFString *)programName
@@ -55,23 +63,26 @@ extern char **environ;
 @implementation OFSubprocess
 + (instancetype)subprocessWithProgram: (OFString *)program
 {
-	return [[[self alloc] initWithProgram: program] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
 			  programName: (OFString *)programName
 			    arguments: (OFArray *)arguments
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments]);
 }
 
 + (instancetype)subprocessWithProgram: (OFString *)program
@@ -79,10 +90,11 @@ extern char **environ;
 			    arguments: (OFArray *)arguments
 			  environment: (OFDictionary *)environment
 {
-	return [[[self alloc] initWithProgram: program
-				  programName: programName
-				    arguments: arguments
-				  environment: environment] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithProgram: program
+			      programName: programName
+				arguments: arguments
+			      environment: environment]);
 }
 
 - (instancetype)init
@@ -143,7 +155,7 @@ extern char **environ;
 
 		@try {
 			env = [self of_environmentForDictionary: environment];
-#ifdef HAVE_POSIX_SPAWNP
+#if defined(HAVE_POSIX_SPAWNP) && defined(HAVE_SPAWN_H)
 			posix_spawn_file_actions_t actions;
 			posix_spawnattr_t attr;
 
@@ -178,7 +190,7 @@ extern char **environ;
 # endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
-				    argv, env) != 0)
+				    argv, (env != NULL ? env : environ)) != 0)
 					@throw [OFInitializationFailedException
 					    exceptionWithClass: self.class];
 			} @finally {
@@ -187,7 +199,8 @@ extern char **environ;
 			}
 #else
 			if ((_pid = vfork()) == 0) {
-				environ = env;
+				if (env != NULL)
+					environ = env;
 
 				close(_readPipe[0]);
 				close(_writePipe[1]);
@@ -218,7 +231,7 @@ extern char **environ;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -376,7 +389,9 @@ extern char **environ;
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self closeForWriting];
+	if (_writePipe[1] != -1)
+		[self closeForWriting];
+
 	close(_readPipe[0]);
 
 	if (_pid != -1) {

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -40,7 +44,7 @@
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_\name:
 	cmpdi	%r3, 0
@@ -84,13 +88,13 @@
 	blr
 
 .LtaggedPointer_\name:
-	addis	%r5, %r2, objc_taggedPointerSecret@toc@ha
-	ld	%r5, objc_taggedPointerSecret@toc@l(%r5)
+	addis	%r5, %r2, _objc_taggedPointerSecret@toc@ha
+	ld	%r5, _objc_taggedPointerSecret@toc@l(%r5)
 	xor	%r5, %r3, %r5
 	rlwinm	%r5, %r5, 2, 0x38
 
-	addis	%r6, %r2, objc_taggedPointerClasses@toc@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@toc@l
+	addis	%r6, %r2, _objc_taggedPointerClasses@toc@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@toc@l
 	ldx	%r5, %r6, %r5
 	ld	%r5, 64(%r5)
 
@@ -112,7 +116,7 @@
 	.quad .Lbegin_\name
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_\name:
 	mr	%r5, %r3
@@ -128,36 +132,36 @@
 .size \name, .-.Lbegin_\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 .LreturnNilMethod:
-	addis	%r3, %r2, nilMethod@toc@ha
-	addi	%r3, %r3, nilMethod@toc@l
+	addis	%r3, %r2, .LnilMethod@toc@ha
+	addi	%r3, %r3, .LnilMethod@toc@l
 	blr
 
 #if defined(_CALL_ELF) && _CALL_ELF == 2
-nilMethod:
-	addis	%r2, %r12, .TOC.-nilMethod@ha
-	addi	%r2, %r2, .TOC.-nilMethod@l
-.localentry nilMethod, .-nilMethod
+.LnilMethod:
+	addis	%r2, %r12, .TOC.-.LnilMethod@ha
+	addi	%r2, %r2, .TOC.-.LnilMethod@l
+.localentry .LnilMethod, .-.LnilMethod
 #else
 .section .opd, "aw", @progbits
-nilMethod:
+.LnilMethod:
 	.p2align 3
 	.quad .Lbegin_nilMethod
 	.quad .TOC.@tocbase
 	.quad 0
-.section .text
+.previous
 #endif
 .Lbegin_nilMethod:
 	li	%r3, 0
 	blr
-.type nilMethod, @function
-.size nilMethod, .-.Lbegin_nilMethod
+.type .LnilMethod, @function
+.size .LnilMethod, .-.Lbegin_nilMethod
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif

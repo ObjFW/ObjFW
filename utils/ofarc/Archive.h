@@ -1,32 +1,46 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
-#import "OFFile.h"
-#import "OFArray.h"
+#import "OFString.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFArray OF_GENERIC(ObjectType);
+@class OFIRI;
+@class OFStream;
 
 @protocol Archive <OFObject>
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding;
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithIRI: (nullable OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding;
+- (instancetype)initWithIRI: (nullable OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;
 @optional
-- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files;
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (nullable OFString *)archiveComment;
 @end
+
+OF_ASSUME_NONNULL_END

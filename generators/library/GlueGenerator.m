@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -68,6 +72,8 @@
 
 - (void)generate
 {
+	size_t includes = 0;
+
 	[_header writeString: COPYRIGHT];
 	[_impl writeString: COPYRIGHT];
 
@@ -80,36 +86,29 @@
 	    @"\n\n"
 	    @"#include \"config.h\"\n"
 	    @"\n"
-	    @"#import \"amiga-glue.h\"\n"
-	    @"\n"];
+	    @"#import \"amiga-library-glue.h\"\n"];
 
-	for (OFXMLElement *include in [_library elementsForName: @"include"])
-		[_header writeFormat: @"#import \"%@\"\n", include.stringValue];
+	if (includes > 0)
+		[_header writeString: @"\n"];
 
-	[_header writeString:
+	for (OFXMLElement *include in [_library elementsForName: @"include"]) {
+		[_header writeFormat: @"#import \"%@\"\n",
+				      include.stringValue];
+		includes++;
+	}
+
+	if (includes > 0)
+		[_header writeString: @"\n"];
+
+	[_impl writeString: 
 	    @"\n"
-	    @"#ifdef OF_AMIGAOS_M68K\n"
-	    @"# define PPC_PARAMS(...) (void)\n"
-	    @"# define M68K_ARG(type, name, reg)\t\t\\\n"
-	    @"\tregister type reg##name __asm__(#reg);\t\\\n"
-	    @"\ttype name = reg##name;\n"
-	    @"#else\n"
-	    @"# define PPC_PARAMS(...) (__VA_ARGS__)\n"
-	    @"# define M68K_ARG(...)\n"
-	    @"#endif\n"
-	    @"\n"];
-	[_impl writeString:
-	    @"#ifdef OF_MORPHOS\n"
-	    @"/* All __saveds functions in this file need to use the SysV "
-	    @"ABI */\n"
 	    @"__asm__ (\n"
 	    @"    \".section .text\\n\"\n"
 	    @"    \".align 2\\n\"\n"
 	    @"    \"__restore_r13:\\n\"\n"
-	    @"    \"\tlwz\t%r13, 44(%r12)\\n\"\n"
-	    @"    \"\tblr\\n\"\n"
-	    @");\n"
-	    @"#endif\n"];
+	    @"    \"	lwz	%r13, 44(%r12)\\n\"\n"
+	    @"    \"	blr\\n\"\n"
+	    @");\n"];
 
 	for (OFXMLElement *function in
 	    [_library elementsForName: @"function"]) {
@@ -117,9 +116,18 @@
 		    [function attributeForName: @"name"].stringValue;
 		OFString *returnType =
 		    [function attributeForName: @"return-type"].stringValue;
+		OFString *condition =
+		    [function attributeForName: @"condition"].stringValue;
 		OFArray OF_GENERIC(OFXMLElement *) *arguments =
 		    [function elementsForName: @"argument"];
 		size_t argumentIndex;
+
+		[_impl writeString: @"\n"];
+
+		if (condition != nil) {
+			[_header writeFormat: @"#if %@\n", condition];
+			[_impl writeFormat: @"#if %@\n", condition];
+		}
 
 		if (returnType == nil)
 			returnType = @"void";
@@ -130,14 +138,13 @@
 		    (![returnType hasSuffix: @"*"] ? @" " : @""),
 		    name];
 
-		[_impl writeFormat: @"\n"
-				    @"%@ __saveds\n"
+		[_impl writeFormat: @"%@ __saveds\n"
 				    @"glue_%@",
 				    returnType, name];
 
 		if (arguments.count > 0) {
-			[_header writeString: @" PPC_PARAMS("];
-			[_impl writeString: @" PPC_PARAMS("];
+			[_header writeString: @"("];
+			[_impl writeString: @"("];
 		} else {
 			[_header writeString: @"(void"];
 			[_impl writeString: @"(void"];
@@ -157,31 +164,18 @@
 
 			[_header writeString: argType];
 			[_impl writeString: argType];
+
 			if (![argType hasSuffix: @"*"]) {
 				[_header writeString: @" "];
 				[_impl writeString: @" "];
 			}
+
 			[_header writeString: argName];
 			[_impl writeString: argName];
 		}
 
 		[_header writeString: @");\n"];
-
 		[_impl writeString: @")\n{\n"];
-		for (OFXMLElement *argument in arguments) {
-			OFString *argName =
-			    [argument attributeForName: @"name"].stringValue;
-			OFString *argType =
-			    [argument attributeForName: @"type"].stringValue;
-			OFString *m68kReg = [argument
-			    attributeForName: @"m68k-reg"].stringValue;
-
-			[_impl writeFormat: @"\tM68K_ARG(%@, %@, %@)\n",
-					    argType, argName, m68kReg];
-		}
-
-		if (arguments.count > 0)
-			[_impl writeString: @"\n"];
 
 		if (![returnType isEqual: @"void"])
 			[_impl writeString: @"\treturn "];
@@ -201,7 +195,13 @@
 			[_impl writeString: argName];
 		}
 
-		[_impl writeString: @");\n}\n"];
+		[_impl writeString: @");\n"
+				    @"}\n"];
+
+		if (condition != nil) {
+			[_header writeString: @"#endif\n"];
+			[_impl writeString: @"#endif\n"];
+		}
 	}
 }
 @end

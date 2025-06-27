@@ -1,22 +1,30 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <signal.h>
 
 #import "OFObject.h"
 #import "OFNotification.h"
+
+#ifdef OF_WINDOWS
+# include <windows.h>
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,10 +37,22 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSandbox;
 @class OFString;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief A notification that will be sent when the application did finish
+ *	  launching.
+ */
+extern const OFNotificationName OFApplicationDidFinishLaunchingNotification;
+
 /**
  * @brief A notification that will be sent when the application will terminate.
  */
 extern const OFNotificationName OFApplicationWillTerminateNotification;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @brief Specify the class to be used as the application delegate.
@@ -51,27 +71,59 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * OF_APPLICATION_DELEGATE(MyAppDelegate)
  *
  * @implementation MyAppDelegate
- * - (void)applicationDidFinishLaunching
+ * - (void)applicationDidFinishLaunching: (OFNotification *)notification
  * {
  *         [OFApplication terminate];
  * }
  * @end
  * @endcode
  */
-#define OF_APPLICATION_DELEGATE(class_)			\
+#ifndef OF_WINDOWS
+# define OF_APPLICATION_DELEGATE(class_)		\
 	int						\
 	main(int argc, char *argv[])			\
 	{						\
 		return OFApplicationMain(&argc, &argv,	\
 		    (class_ *)[[class_ alloc] init]);	\
 	}
+#else
+# define OF_APPLICATION_DELEGATE(class_)				\
+	int								\
+	main(int argc, char *argv[])					\
+	{								\
+		return OFApplicationMain(&argc, &argv,			\
+		    (class_ *)[[class_ alloc] init]);			\
+	}								\
+									\
+	WINAPI int							\
+	WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,		\
+	    LPSTR lpCmdLine, int nShowCmd)				\
+	{								\
+		int argc = 0, si = 0;					\
+		char **argv = NULL, **envp = NULL;			\
+									\
+		__getmainargs(&argc, &argv, &envp, _CRT_glob, &si);	\
+									\
+		return OFApplicationMain(&argc, &argv,			\
+		    (class_ *)[[class_ alloc] init]);			\
+	}
+# ifdef __cplusplus
+extern "C" {
+# endif
+extern void __getmainargs(int *_Nonnull, char *_Nonnull *_Nullable *_Nullable,
+    char *_Nonnull *_Nullable *_Nullable, int, int *_Nonnull);
+extern int _CRT_glob;
+# ifdef __cplusplus
+}
+# endif
+#endif
 
 #ifdef OF_HAVE_PLEDGE
 # define OF_HAVE_SANDBOX
 #endif
 
 /**
- * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
+ * @protocol OFApplicationDelegate OFApplication.h ObjFW/ObjFW.h
  *
  * @brief A protocol for delegates of OFApplication.
  *
@@ -81,15 +133,22 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
 /**
  * @brief A method which is called when the application was initialized and is
  *	  running now.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationDidFinishLaunchingNotification
  */
-- (void)applicationDidFinishLaunching;
+- (void)applicationDidFinishLaunching: (OFNotification *)notification;
 
 @optional
 /**
  * @brief A method which is called when the application will terminate.
+ *
+ * @param notification A notification with name
+ *		       OFApplicationWillTerminateNotification
  */
-- (void)applicationWillTerminate;
+- (void)applicationWillTerminate: (OFNotification *)notification;
 
+#ifndef OF_AMIGAOS
 /**
  * @brief A method which is called when the application received a SIGINT.
  *
@@ -97,10 +156,12 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGINT;
 
-#ifdef SIGHUP
+# ifdef SIGHUP
 /**
  * @brief A method which is called when the application received a SIGHUP.
  *
@@ -110,11 +171,13 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGHUP;
-#endif
+# endif
 
-#ifdef SIGUSR1
+# ifdef SIGUSR1
 /**
  * @brief A method which is called when the application received a SIGUSR1.
  *
@@ -124,11 +187,13 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGUSR1;
-#endif
+# endif
 
-#ifdef SIGUSR2
+# ifdef SIGUSR2
 /**
  * @brief A method which is called when the application received a SIGUSR2.
  *
@@ -138,13 +203,16 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  *	    message dispatching is not signal-safe! You are only allowed to do
  *	    signal-safe operations like setting a variable or calling a
  *	    signal-safe function!
+ *
+ * @note This method is not available on AmigaOS.
  */
 - (void)applicationDidReceiveSIGUSR2;
+# endif
 #endif
 @end
 
 /**
- * @class OFApplication OFApplication.h ObjFW/OFApplication.h
+ * @class OFApplication OFApplication.h ObjFW/ObjFW.h
  *
  * @brief A class which represents the application as an object.
  *
@@ -153,7 +221,7 @@ extern const OFNotificationName OFApplicationWillTerminateNotification;
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  *
  * When the application is about to be terminated,
- * @ref OFApplicationDelegate#applicationWillTerminate will be called on the
+ * @ref OFApplicationDelegate#applicationWillTerminate: will be called on the
  * delegate and an @ref OFApplicationWillTerminateNotification will be sent.
  */
 OF_SUBCLASSING_RESTRICTED

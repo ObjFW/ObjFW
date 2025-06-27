@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -41,16 +45,49 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A block which is called when data was read asynchronously from a
  *	  stream.
  *
+ * @deprecated Use @ref OFStreamReadHandler instead.
+ *
  * @param length The length of the data that has been read
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception);
+typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFStreamReadHandler instead");
+
+/**
+ * @brief A handler which is called when data was read asynchronously from a
+ *	  stream.
+ *
+ * @param stream The stream on which data was read
+ * @param buffer A buffer with the data that has been read
+ * @param length The length of the data that has been read
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return A bool whether the same handler should be used for the next read
+ */
+typedef bool (^OFStreamReadHandler)(OFStream *stream, void *buffer,
+    size_t length, id _Nullable exception);
+
+/**
+ * @brief A block which is called when a string was read asynchronously from a
+ *	  stream.
+ *
+ * @param stream The stream on which a string was read
+ * @param string The string which has been read or `nil` when the end of stream
+ *		 occurred
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return A bool whether the same block should be used for the next read
+ */
+typedef bool (^OFStreamStringReadHandler)(OFStream *stream,
+    OFString *_Nullable string, id _Nullable exception);
 
 /**
  * @brief A block which is called when a line was read asynchronously from a
  *	  stream.
+ *
+ * @deprecated Use @ref OFStreamStringReadHandler instead.
  *
  * @param line The line which has been read or `nil` when the end of stream
  *	       occurred
@@ -59,11 +96,14 @@ typedef bool (^OFStreamAsyncReadBlock)(size_t length, id _Nullable exception);
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
-    id _Nullable exception);
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFStreamStringReadHandler instead");
 
 /**
  * @brief A block which is called when data was written asynchronously to a
  *	  stream.
+ *
+ * @deprecated Use @ref OFStreamDataWrittenHandler instead.
  *
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
@@ -73,11 +113,30 @@ typedef bool (^OFStreamAsyncReadLineBlock)(OFString *_Nullable line,
  * @return The data to repeat the write with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(size_t bytesWritten,
-    id _Nullable exception);
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFStreamDataWrittenHandler instead");
+
+/**
+ * @brief A handler which is called when data was written asynchronously to a
+ *	  stream.
+ *
+ * @param stream The stream to which data was written
+ * @param data The data which was written to the stream
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
+ * @param exception An exception which occurred while writing or `nil` on
+ *		    success
+ * @return The data to repeat the write with or nil if it should not repeat
+ */
+typedef OFData *_Nullable (^OFStreamDataWrittenHandler)(OFStream *stream,
+    OFData *data, size_t bytesWritten, id _Nullable exception);
 
 /**
  * @brief A block which is called when a string was written asynchronously to a
  *	  stream.
+ *
+ * @deprecated Use @ref OFStreamStringWrittenHandler instead.
  *
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length of the specified data on the
@@ -87,11 +146,30 @@ typedef OFData *_Nullable (^OFStreamAsyncWriteDataBlock)(size_t bytesWritten,
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
-    size_t bytesWritten, id _Nullable exception);
+    size_t bytesWritten, id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFStreamStringWrittenHandler instead");
+
+/**
+ * @brief A handler which is called when a string was written asynchronously to
+ *	  a stream.
+ *
+ * @param stream The stream to which a string was written
+ * @param string The string which was written to the stream
+ * @param encoding The encoding in which the string was written
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
+ * @param exception An exception which occurred while writing or `nil` on
+ *		    success
+ * @return The string to repeat the write with or nil if it should not repeat
+ */
+typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
+    OFString *string, OFStringEncoding encoding, size_t bytesWritten,
+    id _Nullable exception);
 #endif
 
 /**
- * @protocol OFStreamDelegate OFStream.h ObjFW/OFStream.h
+ * @protocol OFStreamDelegate OFStream.h ObjFW/ObjFW.h
  *
  * A delegate for OFStream.
  */
@@ -111,6 +189,20 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
 	  exception: (nullable id)exception;
+
+/**
+ * @brief This method is called when a string was read asynchronously from a
+ *	  stream.
+ *
+ * @param stream The stream on which a string was read
+ * @param string The string which has been read or `nil` when the end of stream
+ *	       occurred
+ * @param exception An exception that occurred while reading, or nil on success
+ * @return A bool whether the read should be repeated
+ */
+-  (bool)stream: (OFStream *)stream
+  didReadString: (nullable OFString *)string
+      exception: (nullable id)exception;
 
 /**
  * @brief This method is called when a line was read asynchronously from a
@@ -164,7 +256,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 @end
 
 /**
- * @class OFStream OFStream.h ObjFW/OFStream.h
+ * @class OFStream OFStream.h ObjFW/ObjFW.h
  *
  * @brief A base class for different types of streams.
  *
@@ -194,7 +286,9 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-	OF_RESERVE_IVARS(OFStream, 4)
+@protected
+	uintptr_t _encoding;
+	OF_RESERVE_IVARS(OFStream, 3)
 }
 
 /**
@@ -213,11 +307,20 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 @property (readonly, nonatomic) bool hasDataInReadBuffer;
 
 /**
+ * @brief The encoding to use for reading / writing strings to / from the
+ *	  stream if none has been specified.
+ *
+ * Defaults to UTF-8.
+ */
+@property (nonatomic) OFStringEncoding encoding;
+
+/**
  * @brief Whether the stream can block.
  *
  * By default, a stream can block.
  * On Win32, setting this currently only works for sockets!
  *
+ * @throw OFGetOptionFailedException The option could not be retrieved
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canBlock;
@@ -364,6 +467,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @brief Asynchronously reads *at most* ref `length` bytes from the stream
  *	  into a buffer.
  *
+ * @deprecated Use @ref asyncReadIntoBuffer:length:handler: instead.
+ *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
@@ -387,7 +492,74 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		      block: (OFStreamAsyncReadBlock)block;
+		      block: (OFStreamAsyncReadBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadIntoBuffer:length:handler:] instead");
+
+/**
+ * @brief Asynchronously reads *at most* ref `length` bytes from the stream
+ *	  into a buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * @ref asyncReadIntoBuffer:exactLength:handler:. Note that a read can even
+ * return 0 bytes - this does not necessarily mean that the stream ended, so
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read.
+ *		 The buffer must not be freed before the async read completed!
+ * @param length The length of the data that should be read at most.
+ *		 The buffer *must* be *at least* this big!
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again with the
+ *		  same buffer and maximum length when more data has been
+ *		  received. If you want the next handler in the queue to handle
+ *		  the data received next, you need to return false from the
+ *		  handler.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		    handler: (OFStreamReadHandler)handler;
+
+/**
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
+ *	  buffer.
+ *
+ * @deprecated Use @ref asyncReadIntoBuffer:length:runLoopMode:handler: instead.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
+ * return 0 bytes - this does not necessarily mean that the stream ended, so
+ * you still need to check @ref atEndOfStream. Do not assume that the stream
+ * ended just because a read returned 0 bytes - some streams do internal
+ * processing that has a result of 0 bytes.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read.
+ *		 The buffer must not be freed before the async read completed!
+ * @param length The length of the data that should be read at most.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again with the same
+ *		buffer and maximum length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return false from the block.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		      block: (OFStreamAsyncReadBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadIntoBuffer:length:runLoopMode:handler:] instead");
 
 /**
  * @brief Asynchronously reads *at most* `length` bytes from the stream into a
@@ -395,7 +567,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
+ * @ref asyncReadIntoBuffer:exactLength:handler:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
  * you still need to check @ref atEndOfStream. Do not assume that the stream
  * ended just because a read returned 0 bytes - some streams do internal
@@ -409,20 +581,23 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param runLoopMode The run loop mode in which to perform the async read
- * @param block The block to call when the data has been received.
- *		If the block returns true, it will be called again with the same
- *		buffer and maximum length when more data has been received. If
- *		you want the next block in the queue to handle the data
- *		received next, you need to return false from the block.
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again with the
+ *		  same buffer and maximum length when more data has been
+ *		  received. If you want the next handler in the queue to handle
+ *		  the data received next, you need to return false from the
+ *		  handler.
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
-		      block: (OFStreamAsyncReadBlock)block;
+		    handler: (OFStreamReadHandler)handler;
 
 /**
  * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
+ *
+ * @deprecated Use @ref asyncReadIntoBuffer:exactLength:handler: instead.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
  * the block when less than the specified length has been read - instead, it
@@ -443,11 +618,42 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		      block: (OFStreamAsyncReadBlock)block;
+		      block: (OFStreamAsyncReadBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadIntoBuffer:exactLength:handler:] instead");
 
 /**
  * @brief Asynchronously reads exactly the specified `length` bytes from the
  *	  stream into a buffer.
+ *
+ * Unlike @ref asyncReadIntoBuffer:length:handler:, this method does not invoke
+ * the handler when less than the specified length has been read - instead, it
+ * waits until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read
+ * @param length The length of the data that should be read.
+ *		 The buffer *must* be *at least* this big!
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again with the
+ *		  same buffer and exact length when more data has been
+ *		  received. If you want the next handler in the queue to handle
+ *		  the data received next, you need to return false from the
+ *		  handler.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		    handler: (OFStreamReadHandler)handler;
+
+/**
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
+ *	  stream into a buffer.
+ *
+ * @deprecated Use @ref asyncReadIntoBuffer:exactLength:runLoopMode:handler:
+ *	       instead.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
  * the block when less than the specified length has been read - instead, it
@@ -470,7 +676,37 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
-		      block: (OFStreamAsyncReadBlock)block;
+		      block: (OFStreamAsyncReadBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadIntoBuffer:exactLength:runLoopMode:handler: instead]");
+
+/**
+ * @brief Asynchronously reads exactly the specified `length` bytes from the
+ *	  stream into a buffer.
+ *
+ * Unlike @ref asyncReadIntoBuffer:length:handler:, this method does not invoke
+ * the handler when less than the specified length has been read - instead, it
+ * waits until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read
+ * @param length The length of the data that should be read.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again with the
+ *		  same buffer and exact length when more data has been
+ *		  received. If you want the next handler in the queue to handle
+ *		  the data received next, you need to return false from the
+ *		  handler.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		    handler: (OFStreamReadHandler)handler;
 # endif
 #endif
 
@@ -494,7 +730,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint16_t from the stream in native endianess
+ * @return A uint16_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -508,7 +744,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint32_t from the stream in the native endianess
+ * @return A uint32_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -522,7 +758,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint64_t from the stream in the native endianess
+ * @return A uint64_t from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -536,7 +772,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A float from the stream in the native endianess
+ * @return A float from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -550,7 +786,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A double from the stream in the native endianess
+ * @return A double from the stream in big endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -564,7 +800,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint16_t from the stream in native endianess
+ * @return A uint16_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -578,7 +814,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint32_t from the stream in the native endianess
+ * @return A uint32_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -592,7 +828,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A uint64_t from the stream in the native endianess
+ * @return A uint64_t from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -606,7 +842,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A float from the stream in the native endianess
+ * @return A float from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -620,7 +856,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
- * @return A double from the stream in the native endianess
+ * @return A double from the stream in little endian
  * @throw OFReadFailedException Reading failed
  * @throw OFTruncatedDataException The end of the stream was reached before
  *				   reading enough bytes
@@ -670,6 +906,29 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @throw OFNotOpenException The stream is not open
  */
 - (OFData *)readDataUntilEndOfStream;
+
+/**
+ * @brief Reads a string until a `\0` appears in the stream or the end of the
+ *	  stream is reached.
+ *
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)readString;
+
+/**
+ * @brief Reads a string with the specified encoding until a `\0` appears in
+ *	  the stream or the end of the stream is reached.
+ *
+ * @param encoding The encoding of the string to read from the stream
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads a string with the specified length from the stream.
@@ -745,6 +1004,39 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 #ifdef OF_HAVE_SOCKETS
 /**
+ * @brief Asynchronously reads until a `\0`, end of stream or an exception
+ *	  occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ */
+- (void)asyncReadString;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode;
+
+/**
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
@@ -779,8 +1071,61 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 
 # ifdef OF_HAVE_BLOCKS
 /**
+ * @brief Asynchronously reads until a `\0`, end of stream or an exception
+ *	  occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next string has been received. If you want the next handler
+ *		  in the queue to handle the next string, you need to return
+ *		  false from the handler.
+ */
+- (void)asyncReadStringWithHandler: (OFStreamStringReadHandler)handler;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next string has been received. If you want the next handler
+ *		  in the queue to handle the next string, you need to return
+ *		  false from the handler.
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			    handler: (OFStreamStringReadHandler)handler;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a `\0`, end of
+ *	  stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next string has been received. If you want the next handler
+ *		  in the queue to handle the next string, you need to return
+ *		  false from the handler.
+ */
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+			    handler: (OFStreamStringReadHandler)handler;
+
+/**
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
+ *
+ * @deprecated Use @ref asyncReadLineWithHandler: instead.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -791,11 +1136,29 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		to handle the next line, you need to return false from the
  *		block.
  */
-- (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block;
+- (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncReadLineWithHandler:] instead");
+
+/**
+ * @brief Asynchronously reads until a newline, `\0`, end of stream or an
+ *	  exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next line has been received. If you want the next handler in
+ *		  the queue to handle the next line, you need to return false
+ *		  from the handler.
+ */
+- (void)asyncReadLineWithHandler: (OFStreamStringReadHandler)handler;
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
+ *
+ * @deprecated Use @ref asyncReadLineWithEncoding:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -808,11 +1171,32 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		block.
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
-			    block: (OFStreamAsyncReadLineBlock)block;
+			    block: (OFStreamAsyncReadLineBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadLineWithEncoding:handler:] instead");
 
 /**
  * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next line has been received. If you want the next handler in
+ *		  the queue to handle the next line, you need to return false
+ *		  from the handler.
+ */
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+			  handler: (OFStreamStringReadHandler)handler;
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
+ *
+ * @deprecated Use @ref asyncReadLineWithEncoding:runLoopMode:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -827,9 +1211,53 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (OFRunLoopMode)runLoopMode
-			    block: (OFStreamAsyncReadLineBlock)block;
+			    block: (OFStreamAsyncReadLineBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReadLineWithEncoding:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param handler The handler to call when the data has been received.
+ *		  If the handler returns true, it will be called again when the
+ *		  next line has been received. If you want the next handler in
+ *		  the queue to handle the next line, you need to return false
+ *		  from the handler.
+ */
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
+			  handler: (OFStreamStringReadHandler)handler;
 # endif
 #endif
+
+/**
+ * @brief Tries to read a string until a `\0` appears in the stream or the end
+ *	  of the stream is reached.
+ *
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)tryReadString;
+
+/**
+ * @brief Tries to read a string with the specified encoding until a `\0`
+ *	  appears in the stream or the end of the stream is reached.
+ *
+ * @param encoding The encoding of the string to read from the stream
+ * @throw OFReadFailedException Reading failed
+ * @throw OFInvalidEncodingException The string read from the stream has
+ *				     invalid encoding
+ * @throw OFNotOpenException The stream is not open
+ */
+- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to read a line from the stream (see @ref readLine) and returns
@@ -864,7 +1292,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  stream occurs.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -879,7 +1307,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -895,7 +1323,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -911,7 +1339,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or `nil` if the end of the
+ * @return The string that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
@@ -971,7 +1399,7 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 	   runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
- * @brief Asynchronously writes a string in UTF-8 encoding into the stream.
+ * @brief Asynchronously writes a string into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
@@ -1014,6 +1442,8 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 /**
  * @brief Asynchronously writes data into the stream.
  *
+ * @deprecated Use @ref asyncWriteData:handler: instead.
+ *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
  *
@@ -1023,10 +1453,27 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-		 block: (OFStreamAsyncWriteDataBlock)block;
+		 block: (OFStreamAsyncWriteDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncWriteData:handler:] instead");
 
 /**
  * @brief Asynchronously writes data into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param data The data which is written into the stream
+ * @param handler The handler to call when the data has been written. It should
+ *		  return the data for the next write with the same callback or
+ *		  nil if it should not repeat.
+ */
+- (void)asyncWriteData: (OFData *)data
+	       handler: (OFStreamDataWrittenHandler)handler;
+
+/**
+ * @brief Asynchronously writes data into the stream.
+ *
+ * @deprecated Use @ref asyncWriteData:runLoopMode:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
@@ -1039,10 +1486,30 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (OFRunLoopMode)runLoopMode
-		 block: (OFStreamAsyncWriteDataBlock)block;
+		 block: (OFStreamAsyncWriteDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncWriteData:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously writes data into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param data The data which is written into the stream
+ * @param runLoopMode The run loop mode in which to perform the async write
+ * @param handler The handler to call when the data has been written. It should
+ *		  return the data for the next write with the same callback or
+ *		  nil if it should not repeat.
+ */
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (OFRunLoopMode)runLoopMode
+	       handler: (OFStreamDataWrittenHandler)handler;
 
 /**
  * @brief Asynchronously writes a string into the stream.
+ *
+ * @deprecated Use @ref asyncWriteString:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
@@ -1053,11 +1520,28 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteString: (OFString *)string
-		   block: (OFStreamAsyncWriteStringBlock)block;
+		   block: (OFStreamAsyncWriteStringBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncWriteString:handler:] instead");
+
+/**
+ * @brief Asynchronously writes a string into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param handler The handler to call when the string has been written. It
+ *		  should return the string for the next write with the same
+ *		  callback or nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		 handler: (OFStreamStringWrittenHandler)handler;
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
  *	  stream.
+ *
+ * @deprecated Use @ref asyncWriteString:encoding:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
@@ -1071,11 +1555,33 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  */
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
-		   block: (OFStreamAsyncWriteStringBlock)block;
+		   block: (OFStreamAsyncWriteStringBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncWriteString:encoding:handler:] instead");
 
 /**
  * @brief Asynchronously writes a string in the specified encoding into the
  *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ * @param handler The handler to call when the string has been written. It
+ *		  should return the string for the next write with the same
+ *		  callback or nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+		 handler: (OFStreamStringWrittenHandler)handler;
+
+/**
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @deprecated Use @ref asyncWriteString:encoding:runLoopMode:handler: instead.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
@@ -1091,7 +1597,29 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (OFRunLoopMode)runLoopMode
-		   block: (OFStreamAsyncWriteStringBlock)block;
+		   block: (OFStreamAsyncWriteStringBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncWriteString:encoding:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ * @param runLoopMode The run loop mode in which to perform the async write
+ * @param handler The handler to call when the string has been written. It
+ *		  should return the string for the next write with the same
+ *		  callback or nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
+		 handler: (OFStreamStringWrittenHandler)handler;
 # endif
 #endif
 
@@ -1390,6 +1918,19 @@ typedef OFString *_Nullable (^OFStreamAsyncWriteStringBlock)(
  * @return Whether the lowlevel is at the end of the stream
  */
 - (bool)lowlevelIsAtEndOfStream;
+
+/**
+ * @brief Returns whether the lowlevel has data in the read buffer.
+ *
+ * @warning Do not call this directly!
+ *
+ * @note Override this method in case your stream can buffer data itself, such
+ *	 as when implementing @ref OFTLSStream. If not overridden, it always
+ *	 returns false.
+ *
+ * @return Whether the lowlevel has data in the read buffer
+ */
+- (bool)lowlevelHasDataInReadBuffer;
 @end
 
 OF_ASSUME_NONNULL_END

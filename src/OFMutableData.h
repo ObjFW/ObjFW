@@ -1,36 +1,32 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-@class OFURI;
-
 /**
- * @class OFMutableData OFMutableData.h ObjFW/OFMutableData.h
+ * @class OFMutableData OFMutableData.h ObjFW/ObjFW.h
  *
  * @brief A class for storing and manipulating arbitrary data in an array.
  */
 @interface OFMutableData: OFData
-{
-	size_t _capacity;
-	OF_RESERVE_IVARS(OFMutableData, 4)
-}
-
 /**
  * @brief All items of the OFMutableData as a C array.
  *
@@ -55,22 +51,6 @@ OF_ASSUME_NONNULL_BEGIN
     OF_RETURNS_INNER_POINTER;
 
 /**
- * @brief Creates a new OFMutableData with an item size of 1.
- *
- * @return A new autoreleased OFMutableData
- */
-+ (instancetype)data;
-
-/**
- * @brief Creates a new OFMutableData whose items all have the same specified
- *	  size.
- *
- * @param itemSize The size of a single element in the OFMutableData
- * @return A new autoreleased OFMutableData
- */
-+ (instancetype)dataWithItemSize: (size_t)itemSize;
-
-/**
  * @brief Creates a new OFMutableData with enough memory to hold the specified
  *	  number of items which all have an item size of 1.
  *
@@ -88,22 +68,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFMutableData
  */
 + (instancetype)dataWithItemSize: (size_t)itemSize capacity: (size_t)capacity;
-
-/**
- * @brief Initializes an already allocated OFMutableData with an item size of 1.
- *
- * @return An initialized OFMutableData
- */
-- (instancetype)init;
-
-/**
- * @brief Initializes an already allocated OFMutableData whose items all have
- *	  the same size.
- *
- * @param itemSize The size of a single element in the OFMutableData
- * @return An initialized OFMutableData
- */
-- (instancetype)initWithItemSize: (size_t)itemSize;
 
 /**
  * @brief Initializes an already allocated OFMutableData with enough memory to

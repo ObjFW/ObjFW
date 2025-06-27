@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,9 +22,13 @@
 #include <errno.h>
 
 #import "OFOpenSSLTLSStream.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFOpenSSLX509Certificate.h"
 
-#import "OFAlreadyConnectedException.h"
+#include <openssl/err.h>
+
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
@@ -30,7 +38,45 @@
 #define bufferSize OFOpenSSLTLSStreamBufferSize
 
 int _ObjFWTLS_reference;
-static SSL_CTX *clientContext;
+static SSL_CTX *clientContext, *serverContext;
+
+static OFTLSStreamErrorCode
+verifyResultToErrorCode(const SSL *SSL_)
+{
+	switch (SSL_get_verify_result(SSL_)) {
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+	case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+	case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+	case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+	case X509_V_ERR_CERT_UNTRUSTED:
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+	case X509_V_ERR_HOSTNAME_MISMATCH:
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	case X509_V_ERR_CERT_NOT_YET_VALID:
+	case X509_V_ERR_CERT_HAS_EXPIRED:
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	case X509_V_ERR_CERT_REVOKED:
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	}
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
+static OFTLSStreamErrorCode
+errToErrorCode(const SSL *SSL_)
+{
+	unsigned long err = ERR_get_error();
+
+	switch (ERR_GET_LIB(err)) {
+	case ERR_LIB_SSL:
+		switch (ERR_GET_REASON(err)) {
+		case SSL_R_CERTIFICATE_VERIFY_FAILED:
+			return verifyResultToErrorCode(SSL_);
+		}
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
 
 @implementation OFOpenSSLTLSStream
 + (void)load
@@ -51,6 +97,10 @@ static SSL_CTX *clientContext;
 	    SSL_CTX_set_default_verify_paths(clientContext) != 1)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
+
+	if ((serverContext = SSL_CTX_new(TLS_server_method())) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 }
 
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
@@ -66,7 +116,7 @@ static SSL_CTX *clientContext;
 		 */
 		_underlyingStream.buffersWrites = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -78,7 +128,7 @@ static SSL_CTX *clientContext;
 	if (_SSL != NULL)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
@@ -88,13 +138,31 @@ static SSL_CTX *clientContext;
 	if (_SSL == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_handshakeDone)
+	if (_handshakeDone) {
 		SSL_shutdown(_SSL);
+
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
+			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
+
+			OFEnsure(tmp >= 0);
+
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				if (e.errNo != EPIPE && e.errNo != ECONNRESET)
+					@throw e;
+			}
+		}
+	}
 
 	SSL_free(_SSL);
 	_SSL = NULL;
 
-	[_host release];
+	_handshakeDone = false;
+
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -108,22 +176,7 @@ static SSL_CTX *clientContext;
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (BIO_ctrl_pending(_readBIO) < 1) {
-		@try {
-			size_t tmp = [_underlyingStream
-			    readIntoBuffer: _buffer
-				    length: bufferSize];
-
-			OFEnsure(tmp <= INT_MAX);
-			/* Writing to a memory BIO must never fail. */
-			OFEnsure(BIO_write(_readBIO, _buffer, (int)tmp) ==
-			    (int)tmp);
-		} @catch (OFReadFailedException *e) {
-			if (e.errNo != EWOULDBLOCK && e.errNo != EAGAIN)
-				@throw e;
-		}
-	}
-
+	ERR_clear_error();
 	ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
 
 	while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -135,26 +188,49 @@ static SSL_CTX *clientContext;
 		[_underlyingStream flushWriteBuffer];
 	}
 
-	if (ret != 1) {
-		/*
-		 * The underlying stream might have had data ready, but not
-		 * enough for OpenSSL to return decrypted data. This means the
-		 * caller might have observed the TLS stream for reading, got a
-		 * ready signal and read - and expects the read to succeed, not
-		 * to fail with EWOULDBLOCK, as it was signaled ready.
-		 * Therefore, return 0, as we could read 0 decrypted bytes, but
-		 * cleared the ready signal of the underlying stream.
-		 */
+	if (ret == 1)
+		return bytesRead;
+
+	if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ) {
+		if (BIO_ctrl_pending(_readBIO) < 1) {
+			@try {
+				size_t tmp = [_underlyingStream
+				    readIntoBuffer: _buffer
+					    length: bufferSize];
+
+				OFEnsure(tmp <= INT_MAX);
+				/* Writing to a memory BIO must never fail. */
+				OFEnsure(BIO_write(_readBIO, _buffer,
+				    (int)tmp) == (int)tmp);
+			} @catch (OFReadFailedException *e) {
+				if (e.errNo == EWOULDBLOCK || e.errNo != EAGAIN)
+					return 0;
+			}
+		}
+
+		ERR_clear_error();
+		ret = SSL_read_ex(_SSL, buffer, length, &bytesRead);
+
+		while (BIO_ctrl_pending(_writeBIO) > 0) {
+			int tmp = BIO_read(_writeBIO, _buffer, bufferSize);
+
+			OFEnsure(tmp >= 0);
+
+			[_underlyingStream writeBuffer: _buffer length: tmp];
+			[_underlyingStream flushWriteBuffer];
+		}
+
+		if (ret == 1)
+			return bytesRead;
+
 		if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ)
 			return 0;
-
-		/* FIXME: Translate error to errNo */
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: 0];
 	}
 
-	return bytesRead;
+	/* FIXME: Translate error to errNo */
+	@throw [OFReadFailedException exceptionWithObject: self
+					  requestedLength: length
+						    errNo: 0];
 }
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
@@ -164,6 +240,8 @@ static SSL_CTX *clientContext;
 
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
+
+	ERR_clear_error();
 
 	if ((ret = SSL_write_ex(_SSL, buffer, length, &bytesWritten)) != 1) {
 		/* FIXME: Translate error to errNo */
@@ -190,24 +268,24 @@ static SSL_CTX *clientContext;
 	return bytesWritten;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	if (SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    SSL_pending(_SSL) > 0 || BIO_ctrl_pending(_readBIO) > 0);
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	int status;
 
 	if (_SSL != NULL)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	if ((_readBIO = BIO_new(BIO_s_mem())) == NULL)
 		@throw [OFTLSHandshakeFailedException
@@ -226,7 +304,7 @@ static SSL_CTX *clientContext;
 	BIO_set_mem_eof_return(_readBIO, -1);
 	BIO_set_mem_eof_return(_writeBIO, -1);
 
-	if ((_SSL = SSL_new(clientContext)) == NULL) {
+	if ((_SSL = SSL_new(server ? serverContext : clientContext)) == NULL) {
 		BIO_free(_readBIO);
 		BIO_free(_writeBIO);
 		@throw [OFTLSHandshakeFailedException
@@ -236,26 +314,61 @@ static SSL_CTX *clientContext;
 	}
 
 	SSL_set_bio(_SSL, _readBIO, _writeBIO);
-	SSL_set_connect_state(_SSL);
+
+	if (server)
+		SSL_set_accept_state(_SSL);
+	else
+		SSL_set_connect_state(_SSL);
 
 	_host = [host copy];
+	_server = server;
 
-	if (SSL_set_tlsext_host_name(_SSL, _host.UTF8String) != 1)
-		@throw [OFTLSHandshakeFailedException
-		    exceptionWithStream: self
-				   host: host
-			      errorCode: initFailedErrorCode];
-
-	if (_verifiesCertificates) {
-		SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
-
-		if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+	if (!server) {
+		if (SSL_set_tlsext_host_name(_SSL, _host.UTF8String) != 1)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
+
+		if (_verifiesCertificates) {
+			SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
+
+			if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+		}
 	}
 
+	if (_certificateChain.count > 0) {
+		OFOpenSSLX509Certificate *certificate =
+		    (OFOpenSSLX509Certificate *)_certificateChain.firstObject;
+		bool first = true;
+
+		if (SSL_use_certificate(_SSL,
+		    certificate.of_certificate) != 1 ||
+		    SSL_use_PrivateKey(_SSL, certificate.of_privateKey) != 1)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+
+		for (OFOpenSSLX509Certificate *iter in _certificateChain) {
+			if (first) {
+				first = false;
+				continue;
+			}
+
+			if (SSL_add1_chain_cert(_SSL, iter.of_certificate) != 1)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+		}
+	}
+
+	ERR_clear_error();
 	status = SSL_do_handshake(_SSL);
 
 	while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -263,8 +376,14 @@ static SSL_CTX *clientContext;
 
 		OFEnsure(tmp >= 0);
 
-		[_underlyingStream writeBuffer: _buffer length: tmp];
-		[_underlyingStream flushWriteBuffer];
+		@try {
+			[_underlyingStream writeBuffer: _buffer
+						length: tmp];
+			[_underlyingStream flushWriteBuffer];
+		} @catch (OFWriteFailedException *e) {
+			exception = e;
+			goto inform_delegate;
+		}
 	}
 
 	if (status == 1)
@@ -272,19 +391,34 @@ static SSL_CTX *clientContext;
 	else {
 		switch (SSL_get_error(_SSL, status)) {
 		case SSL_ERROR_WANT_READ:
-			[_underlyingStream asyncReadIntoBuffer: _buffer
-							length: bufferSize
-						   runLoopMode: runLoopMode];
-			[_delegate retain];
-			return;
+			if (!_underlyingStream.atEndOfStream) {
+				[_underlyingStream
+				    asyncReadIntoBuffer: _buffer
+						 length: bufferSize
+					    runLoopMode: runLoopMode];
+				objc_retain(_delegate);
+				objc_autoreleasePoolPop(pool);
+				return;
+			}
+
+			exception = [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: OFTLSStreamErrorCodeUnknown];
+			break;
 		case SSL_ERROR_WANT_WRITE:
-			[_underlyingStream
-			    asyncWriteData: [OFData dataWithItems: "" count: 0]
-			       runLoopMode: runLoopMode];
-			[_delegate retain];
+			[_underlyingStream asyncWriteData: [OFData data]
+					      runLoopMode: runLoopMode];
+			objc_retain(_delegate);
+			objc_autoreleasePoolPop(pool);
 			return;
+		case SSL_ERROR_SSL:
+			exception = [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: errToErrorCode(_SSL)];
+			break;
 		default:
-			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
@@ -293,28 +427,53 @@ static SSL_CTX *clientContext;
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+inform_delegate:
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		static const OFTLSStreamErrorCode unknownErrorCode =
 		    OFTLSStreamErrorCodeUnknown;
 		int status;
-		OFData *data;
 
 		OFEnsure(length <= INT_MAX);
 		OFEnsure(BIO_write(_readBIO, buffer, (int)length) ==
 		    (int)length);
 
+		ERR_clear_error();
 		status = SSL_do_handshake(_SSL);
 
 		while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -322,8 +481,14 @@ static SSL_CTX *clientContext;
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
 		if (status == 1)
@@ -331,14 +496,26 @@ static SSL_CTX *clientContext;
 		else {
 			switch (SSL_get_error(_SSL, status)) {
 			case SSL_ERROR_WANT_READ:
-				return true;
-			case SSL_ERROR_WANT_WRITE:
-				data = [OFData dataWithItems: "" count: 0];
+				if (!_underlyingStream.atEndOfStream)
+					return true;
+
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: unknownErrorCode];
+				break;
+			case SSL_ERROR_WANT_WRITE:;
 				OFRunLoopMode runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
-				[_underlyingStream asyncWriteData: data
+				[_underlyingStream asyncWriteData: [OFData data]
 						      runLoopMode: runLoopMode];
 				return false;
+			case SSL_ERROR_SSL:
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: errToErrorCode(_SSL)];
+				break;
 			default:
 				exception = [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
@@ -349,13 +526,21 @@ static SSL_CTX *clientContext;
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+inform_delegate:
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -376,10 +561,17 @@ static SSL_CTX *clientContext;
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
+		ERR_clear_error();
 		status = SSL_do_handshake(_SSL);
 
 		while (BIO_ctrl_pending(_writeBIO) > 0) {
@@ -387,8 +579,14 @@ static SSL_CTX *clientContext;
 
 			OFEnsure(tmp >= 0);
 
-			[_underlyingStream writeBuffer: _buffer length: tmp];
-			[_underlyingStream flushWriteBuffer];
+			@try {
+				[_underlyingStream writeBuffer: _buffer
+							length: tmp];
+				[_underlyingStream flushWriteBuffer];
+			} @catch (OFWriteFailedException *e) {
+				exception = e;
+				goto inform_delegate;
+			}
 		}
 
 		if (status == 1)
@@ -405,6 +603,12 @@ static SSL_CTX *clientContext;
 				return nil;
 			case SSL_ERROR_WANT_WRITE:
 				return data;
+			case SSL_ERROR_SSL:
+				exception = [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: errToErrorCode(_SSL)];
+				break;
 			default:
 				exception = [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
@@ -415,13 +619,21 @@ static SSL_CTX *clientContext;
 		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+inform_delegate:
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

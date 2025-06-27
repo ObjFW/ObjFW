@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -85,6 +89,12 @@
 			    @"\n",
 			    libBase];
 
+	[_impl writeString:
+	    @"#if OF_GCC_VERSION >= 1100\n"
+	    @"# pragma GCC diagnostic ignored \"-Warray-parameter\"\n"
+	    @"#endif\n"
+	    @"\n"];
+
 	functions = [_library elementsForName: @"function"];
 	for (OFXMLElement *function in functions) {
 		OFString *name =
@@ -98,7 +108,8 @@
 		if (returnType == nil)
 			returnType = @"void";
 
-		[_impl writeFormat: @"%@\n%@(", returnType, name];
+		[_impl writeFormat: @"%@ __attribute__((__weak__))\n"
+				    @"%@(", returnType, name];
 
 		argumentIndex = 0;
 		for (OFXMLElement *argument in
@@ -117,60 +128,11 @@
 			[_impl writeString: argName];
 		}
 
-		[_impl writeFormat:
-		    @")\n"
-		    @"{\n"
-		    @"#if defined(OF_AMIGAOS_M68K)\n"
-		    @"\tregister struct Library *a6 __asm__(\"a6\") = %@;\n"
-		    @"\t(void)a6;\n"
-		    @"\t", libBase];
-
-		if (![returnType isEqual: @"void"])
-			[_impl writeString: @"return "];
-
-		[_impl writeString: @"(("];
-		[_impl writeString: returnType];
-		if (![returnType hasSuffix: @"*"])
-			[_impl writeString: @" "];
-		[_impl writeString: @"(*)("];
-
-		argumentIndex = 0;
-		for (OFXMLElement *argument in arguments) {
-			OFString *argType =
-			    [argument attributeForName: @"type"].stringValue;
-			OFString *m68kReg = [argument
-			    attributeForName: @"m68k-reg"].stringValue;
-
-			if (argumentIndex++ > 0)
-				[_impl writeString: @", "];
-
-			[_impl writeString: argType];
-			if (![argType hasSuffix: @"*"])
-				[_impl writeString: @" "];
-			[_impl writeFormat: @"__asm__(\"%@\")",
-						    m68kReg];
-		}
-
-		[_impl writeFormat: @"))(((uintptr_t)%@) - %zu))(",
-				    libBase, 30 + funcIndex * 6];
-
-		argumentIndex = 0;
-		for (OFXMLElement *argument in
-		    [function elementsForName: @"argument"]) {
-			OFString *argName =
-			    [argument attributeForName: @"name"].stringValue;
-
-			if (argumentIndex++ > 0)
-				[_impl writeString: @", "];
-
-			[_impl writeString: argName];
-		}
-
-		[_impl writeFormat: @");\n"
-				    @"#elif defined(OF_MORPHOS)\n"
+		[_impl writeFormat: @")\n"
+				    @"{\n"
 				    @"\t__asm__ __volatile__ (\n"
 				    @"\t    \"mr\t\t%%%%r12, %%0\"\n"
-				    @"\t    :: \"r\"(%@) : \"r12\"\n"
+				    @"\t    :: \"r\" (%@) : \"r12\"\n"
 				    @"\t);\n"
 				    @"\n"
 				    @"\t",
@@ -211,8 +173,7 @@
 			[_impl writeString: argName];
 		}
 
-		[_impl writeString: @");\n"
-				    @"#endif\n"];
+		[_impl writeString: @");\n"];
 
 		if ([function attributeForName: @"noreturn"] != nil)
 			[_impl writeString: @"\n\tOF_UNREACHABLE\n"];

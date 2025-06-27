@@ -1,27 +1,33 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -34,8 +40,8 @@ OFForward:
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -46,8 +52,8 @@ OFForward:
 	be	0f
 
 	 mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -56,8 +62,8 @@ OFForward:
 	mov	%o0, %l0
 
 	mov	%i0, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -79,10 +85,10 @@ OFForward:
 0:
 	call	OFMethodNotFound
 	 restore
-.type OFForward, %function
-.size OFForward, .-OFForward
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -95,8 +101,8 @@ OFForward_stret:
 	call	object_getClass
 	 nop
 
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -107,8 +113,8 @@ OFForward_stret:
 	be	0f
 
 	 mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -117,8 +123,8 @@ OFForward_stret:
 	mov	%o0, %l0
 
 	mov	%i1, %o0
-	sethi	%hi(sel_forwardingTargetForSelector_), %o1
-	or	%o1, %lo(sel_forwardingTargetForSelector_), %o1
+	sethi	%hi(.Lsel_forwardingTargetForSelector_), %o1
+	or	%o1, %lo(.Lsel_forwardingTargetForSelector_), %o1
 #ifdef OF_PIC
 	ld	[%l7 + %o1], %o1
 #endif
@@ -140,10 +146,10 @@ OFForward_stret:
 0:
 	call	OFMethodNotFound_stret
 	 restore
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
-init:
+.Linit:
 	save	%sp, -96, %sp
 
 #ifdef OF_PIC
@@ -152,8 +158,8 @@ init:
 	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
 #endif
 
-	sethi	%hi(module), %i0
-	or	%i0, %lo(module), %i0
+	sethi	%hi(.Lmodule), %i0
+	or	%i0, %lo(.Lmodule), %i0
 #ifdef OF_PIC
 	ld	[%l7 + %i0], %i0
 #endif
@@ -172,24 +178,24 @@ add_pc:
 #else
 .section .ctors, "aw", %progbits
 #endif
-	.word init
+	.word .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.word str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.word .Lstr_forwardingTargetForSelector_, 0
 	.word 0, 0
-symtab:
-	.word 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.word 0, .Lsel_forwardingTargetForSelector_
 	.half 0, 0
 	.word 0
 	.word 0
-module:
-	.word 8, 16, 0, symtab
+.Lmodule:
+	.word 8, 16, 0, .Lsymtab
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

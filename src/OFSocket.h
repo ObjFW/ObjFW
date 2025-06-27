@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -34,6 +38,9 @@
 #endif
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
+#endif
+#ifdef OF_HAVE_NETINET_SCTP_H
+# include <netinet/sctp.h>
 #endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
@@ -61,8 +68,6 @@
 # endif
 #endif
 
-/** @file */
-
 #ifdef OF_WII
 # include <network.h>
 #endif
@@ -74,6 +79,8 @@
 #import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+/** @file */
 
 #ifndef OF_WINDOWS
 typedef int OFSocketHandle;
@@ -136,8 +143,10 @@ struct sockaddr_un {
 };
 #endif
 
-#ifndef OF_HAVE_IPX
+#ifndef IPX_NODE_LEN
 # define IPX_NODE_LEN 6
+#endif
+#if !defined(OF_HAVE_IPX)
 struct sockaddr_ipx {
 	sa_family_t sipx_family;
 	uint32_t sipx_network;
@@ -145,38 +154,39 @@ struct sockaddr_ipx {
 	uint16_t sipx_port;
 	uint8_t sipx_type;
 };
-#endif
-#ifdef OF_WINDOWS
+#elif defined(OF_WINDOWS)
 # define IPX_NODE_LEN 6
 # define sipx_family sa_family
 # define sipx_network sa_netnum
 # define sipx_node sa_nodenum
 # define sipx_port sa_socket
+#elif defined(OF_FREEBSD)
+# define sipx_network sipx_addr.x_net.c_net
+# define sipx_node sipx_addr.x_host.c_host
 #endif
 
 #ifndef OF_HAVE_APPLETALK
 struct sockaddr_at {
 	sa_family_t sat_family;
 	uint8_t sat_port;
-	struct at_addr {
-		uint16_t s_net;
-		uint8_t s_node;
-	} sat_addr;
+	uint16_t sat_net;
+	uint8_t sat_node;
 };
-#endif
-#ifdef OF_WINDOWS
-# define sat_port sat_socket
 #else
-# define sat_net sat_addr.s_net
-# define sat_node sat_addr.s_node
+# ifdef OF_WINDOWS
+#  define sat_port sat_socket
+# else
+#  define sat_net sat_addr.s_net
+#  define sat_node sat_addr.s_node
+# endif
 #endif
 
 /**
- * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
+ * @struct OFSocketAddress OFSocket.h ObjFW/ObjFW.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
-typedef struct OF_BOXABLE {
+typedef struct OF_BOXABLE OFSocketAddress {
 	OFSocketAddressFamily family;
 	/*
 	 * We can't use struct sockaddr as it can contain variable length
@@ -188,6 +198,13 @@ typedef struct OF_BOXABLE {
 		struct sockaddr_un un;
 		struct sockaddr_ipx ipx;
 		struct sockaddr_at at;
+#ifdef OF_HAVE_SOCKADDR_STORAGE
+		/*
+		 * Required to make the ABI stable in case we want to add more
+		 * address types later.
+		 */
+		struct sockaddr_storage storage;
+#endif
 	} sockaddr;
 	socklen_t length;
 } OFSocketAddress;
@@ -280,9 +297,20 @@ extern unsigned long OFSocketAddressHash(
  * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @return The address as an IP string
+ * @return The address as a string, without the port
  */
 extern OFString *_Nonnull OFSocketAddressString(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Returns a description for the specified @ref OFSocketAddress.
+ *
+ * This is similar to @ref OFSocketAddressString, but it also contains the port.
+ *
+ * @param address The address to return a description for
+ * @return The address as an string, with the port
+ */
+extern OFString *_Nonnull OFSocketAddressDescription(
     const OFSocketAddress *_Nonnull address);
 
 /**
@@ -308,7 +336,7 @@ extern uint16_t OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address);
  * @param address The address on which to get the UNIX socket path
  * @return The UNIX socket path
  */
-extern OFString *_Nullable OFSocketAddressUNIXPath(
+extern OFString *OFSocketAddressUNIXPath(
     const OFSocketAddress *_Nonnull address);
 
 /**
@@ -417,23 +445,6 @@ extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
  */
 extern uint8_t OFSocketAddressAppleTalkPort(
     const OFSocketAddress *_Nonnull address);
-
-extern bool OFSocketInit(void);
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern void OFSocketDeinit(void);
-#endif
-extern int OFSocketErrNo(void);
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen);
-#endif
-
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern OFTLSKey OFSocketBaseKey;
-# ifdef OF_AMIGAOS4
-extern OFTLSKey OFSocketInterfaceKey;
-# endif
-#endif
 #ifdef __cplusplus
 }
 #endif

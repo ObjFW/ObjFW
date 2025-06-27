@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,7 +22,6 @@
 #import "OFUUID.h"
 #import "OFArray.h"
 #import "OFString.h"
-#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -29,17 +32,19 @@
 @implementation OFUUID
 + (instancetype)UUID
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)UUIDWithUUIDBytes: (const unsigned char [16])bytes
 {
-	return [[[self alloc] initWithUUIDBytes: bytes] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUUIDBytes: bytes]);
 }
 
 + (instancetype)UUIDWithUUIDString: (OFString *)string
 {
-	return [[[self alloc] initWithUUIDString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUUIDString: string]);
 }
 
 - (instancetype)init
@@ -138,32 +143,9 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *UUIDString;
-
-	@try {
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		UUIDString = element.stringValue;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithUUIDString: UUIDString];
-
-	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -196,7 +178,7 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFComparisonResult)compare: (OFUUID *)UUID
@@ -234,19 +216,5 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 - (OFString *)description
 {
 	return self.UUIDString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element = [OFXMLElement elementWithName: self.className
-						    namespace: OFSerializationNS
-						  stringValue: self.UUIDString];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 @end

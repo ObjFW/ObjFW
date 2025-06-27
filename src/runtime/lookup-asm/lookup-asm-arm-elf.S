@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,7 +30,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	cmp	r0, #0
-	beq	returnNilMethod
+	beq	.LreturnNilMethod
 
 	tst	r0, #1
 	bne	.LtaggedPointer_\name
@@ -83,8 +87,8 @@
 
 .Lgot$indirect_.LtaggedPointer_\name:
 	.long	_GLOBAL_OFFSET_TABLE_-(.LtaggedPointer_\name+12)
-	.long	objc_taggedPointerSecret(GOT)
-	.long	objc_taggedPointerClasses(GOT)
+	.long	_objc_taggedPointerSecret(GOT)
+	.long	_objc_taggedPointerClasses(GOT)
 .endm
 
 .macro GENERATE_LOOKUP_SUPER name lookup
@@ -92,7 +96,7 @@
 	mov	r2, r0
 	ldr	r0, [r0, #0]
 	cmp	r0, #0
-	beq	returnNilMethod
+	beq	.LreturnNilMethod
 
 	ldr	r2, [r2, #4]
 	ldr	r2, [r2, #32]
@@ -102,19 +106,19 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
-	adr	r0, nilMethod
+.LreturnNilMethod:
+	adr	r0, .LnilMethod
 	bx	lr
 
-nilMethod:
+.LnilMethod:
 	mov	r0, #0
 	bx	lr
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

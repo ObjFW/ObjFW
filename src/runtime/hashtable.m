@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -24,10 +28,10 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-struct objc_hashtable_bucket objc_deletedBucket;
+struct objc_hashtable_bucket _objc_deletedBucket;
 
 uint32_t
-objc_string_hash(const void *str_)
+_objc_string_hash(const void *str_)
 {
 	const char *str = str_;
 	uint32_t hash = 0;
@@ -47,19 +51,19 @@ objc_string_hash(const void *str_)
 }
 
 bool
-objc_string_equal(const void *ptr1, const void *ptr2)
+_objc_string_equal(const void *ptr1, const void *ptr2)
 {
 	return (strcmp(ptr1, ptr2) == 0);
 }
 
 struct objc_hashtable *
-objc_hashtable_new(uint32_t (*hash)(const void *),
+_objc_hashtable_new(uint32_t (*hash)(const void *),
     bool (*equal)(const void *, const void *), uint32_t size)
 {
 	struct objc_hashtable *table;
 
 	if ((table = malloc(sizeof(*table))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate hash table!");
+		_OBJC_ERROR("Not enough memory to allocate hash table!");
 
 	table->hash = hash;
 	table->equal = equal;
@@ -69,7 +73,7 @@ objc_hashtable_new(uint32_t (*hash)(const void *),
 	table->data = calloc(size, sizeof(struct objc_hashtable_bucket *));
 
 	if (table->data == NULL)
-		OBJC_ERROR("Not enough memory to allocate hash table!");
+		_OBJC_ERROR("Not enough memory to allocate hash table!");
 
 	return table;
 }
@@ -81,7 +85,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 	struct objc_hashtable_bucket **newData;
 
 	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
-		OBJC_ERROR("Integer overflow!");
+		_OBJC_ERROR("Integer overflow!");
 
 	fullness = count * 8 / table->size;
 
@@ -99,11 +103,11 @@ resize(struct objc_hashtable *table, uint32_t count)
 		return;
 
 	if ((newData = calloc(newSize, sizeof(*newData))) == NULL)
-		OBJC_ERROR("Not enough memory to resize hash table!");
+		_OBJC_ERROR("Not enough memory to resize hash table!");
 
 	for (uint32_t i = 0; i < table->size; i++) {
 		if (table->data[i] != NULL &&
-		    table->data[i] != &objc_deletedBucket) {
+		    table->data[i] != &_objc_deletedBucket) {
 			uint32_t j, last;
 
 			last = newSize;
@@ -119,7 +123,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 			}
 
 			if (j >= last)
-				OBJC_ERROR("No free bucket in hash table!");
+				_OBJC_ERROR("No free bucket in hash table!");
 
 			newData[j] = table->data[i];
 		}
@@ -138,7 +142,7 @@ indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 	hash = table->hash(key) & (table->size - 1);
 
 	for (i = hash; i < table->size && table->data[i] != NULL; i++) {
-		if (table->data[i] == &objc_deletedBucket)
+		if (table->data[i] == &_objc_deletedBucket)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
@@ -151,7 +155,7 @@ indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 		return false;
 
 	for (i = 0; i < hash && table->data[i] != NULL; i++) {
-		if (table->data[i] == &objc_deletedBucket)
+		if (table->data[i] == &_objc_deletedBucket)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
@@ -164,7 +168,7 @@ indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 }
 
 void
-objc_hashtable_set(struct objc_hashtable *table, const void *key,
+_objc_hashtable_set(struct objc_hashtable *table, const void *key,
     const void *object)
 {
 	uint32_t i, hash, last;
@@ -181,20 +185,20 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	last = table->size;
 
 	for (i = hash & (table->size - 1); i < last && table->data[i] != NULL &&
-	    table->data[i] != &objc_deletedBucket; i++);
+	    table->data[i] != &_objc_deletedBucket; i++);
 
 	if (i >= last) {
 		last = hash & (table->size - 1);
 
 		for (i = 0; i < last && table->data[i] != NULL &&
-		    table->data[i] != &objc_deletedBucket; i++);
+		    table->data[i] != &_objc_deletedBucket; i++);
 	}
 
 	if (i >= last)
-		OBJC_ERROR("No free bucket in hash table!");
+		_OBJC_ERROR("No free bucket in hash table!");
 
 	if ((bucket = malloc(sizeof(*bucket))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate hash table bucket!");
+		_OBJC_ERROR("Not enough memory to allocate hash table bucket!");
 
 	bucket->key = key;
 	bucket->hash = hash;
@@ -205,7 +209,7 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 }
 
 void *
-objc_hashtable_get(struct objc_hashtable *table, const void *key)
+_objc_hashtable_get(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
@@ -216,7 +220,7 @@ objc_hashtable_get(struct objc_hashtable *table, const void *key)
 }
 
 void
-objc_hashtable_delete(struct objc_hashtable *table, const void *key)
+_objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
@@ -224,18 +228,18 @@ objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 		return;
 
 	free(table->data[idx]);
-	table->data[idx] = &objc_deletedBucket;
+	table->data[idx] = &_objc_deletedBucket;
 
 	table->count--;
 	resize(table, table->count);
 }
 
 void
-objc_hashtable_free(struct objc_hashtable *table)
+_objc_hashtable_free(struct objc_hashtable *table)
 {
 	for (uint32_t i = 0; i < table->size; i++)
 		if (table->data[i] != NULL &&
-		    table->data[i] != &objc_deletedBucket)
+		    table->data[i] != &_objc_deletedBucket)
 			free(table->data[i]);
 
 	free(table->data);

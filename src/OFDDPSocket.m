@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -22,15 +26,28 @@
 #endif
 
 #import "OFDDPSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
-#import "OFAlreadyConnectedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFBindDDPSocketFailedException.h"
+#import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
+
+#ifdef HAVE_NET_IF_H
+# include <net/if.h>
+#endif
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #ifdef OF_HAVE_NETAT_APPLETALK_H
 # include <netat/ddp.h>
@@ -67,7 +84,7 @@ struct ATInterfaceConfig {
 		@throw [OFInvalidArgumentException exception];
 
 	if (_socket != OFInvalidSocketHandle)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 	address = OFSocketAddressMakeAppleTalk(network, node, port);
 
@@ -88,7 +105,7 @@ struct ATInterfaceConfig {
 				    port: port
 			    protocolType: protocolType
 				  socket: self
-				   errNo: OFSocketErrNo()];
+				   errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -99,7 +116,7 @@ struct ATInterfaceConfig {
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -117,9 +134,9 @@ struct ATInterfaceConfig {
 	address.family = OFSocketAddressFamilyAppleTalk;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -148,7 +165,7 @@ struct ATInterfaceConfig {
 
 #ifdef OF_MACOS
 	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
-	    sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
+	    (socklen_t)sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
 	    struct ATInterfaceConfig), &config) != 0)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
@@ -156,7 +173,7 @@ struct ATInterfaceConfig {
 				    port: port
 			    protocolType: protocolType
 				  socket: self
-				   errNo: OFSocketErrNo()];
+				   errNo: _OFSocketErrNo()];
 
 	OFSocketAddressSetAppleTalkNetwork(&address, config.address.s_net);
 	OFSocketAddressSetAppleTalkNode(&address, config.address.s_node);
@@ -210,7 +227,7 @@ struct ATInterfaceConfig {
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	if (ret < 1 || protocolType != _protocolType)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -249,7 +266,7 @@ struct ATInterfaceConfig {
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	if ((size_t)bytesWritten != length + 1) {
 		bytesWritten--;

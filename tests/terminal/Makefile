@@ -67,6 +67,6 @@ run:
 
 CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
 LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS} \
 	${LIBS}
 LD = ${OBJC}

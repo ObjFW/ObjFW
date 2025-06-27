@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -40,7 +44,8 @@ stringEqual(void *object1, void *object2)
 
 + (instancetype)parserWithOptions: (const OFOptionsParserOption *)options
 {
-	return [[[self alloc] initWithOptions: options] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithOptions: options]);
 }
 
 - (instancetype)init
@@ -117,7 +122,7 @@ stringEqual(void *object1, void *object2)
 					 * Make sure we are in a consistent
 					 * state where dealloc works.
 					 */
-					[iter2->longOption release];
+					objc_release(iter2->longOption);
 
 					iter2->shortOption = '\0';
 					iter2->longOption = nil;
@@ -129,9 +134,9 @@ stringEqual(void *object1, void *object2)
 		iter2->shortOption = '\0';
 		iter2->longOption = nil;
 
-		_arguments = [[OFApplication arguments] retain];
+		_arguments = objc_retain([OFApplication arguments]);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -144,13 +149,13 @@ stringEqual(void *object1, void *object2)
 		for (OFOptionsParserOption *iter = _options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++)
-			[iter->longOption release];
+			objc_release(iter->longOption);
 
 	OFFreeMemory(_options);
-	[_longOptions release];
+	objc_release(_longOptions);
 
-	[_arguments release];
-	[_argument release];
+	objc_release(_arguments);
+	objc_release(_argument);
 
 	[super dealloc];
 }
@@ -163,8 +168,8 @@ stringEqual(void *object1, void *object2)
 	if (_done || _index >= _arguments.count)
 		return '\0';
 
-	[_lastLongOption release];
-	[_argument release];
+	objc_release(_lastLongOption);
+	objc_release(_argument);
 	_lastLongOption = nil;
 	_argument = nil;
 
@@ -216,7 +221,7 @@ stringEqual(void *object1, void *object2)
 				*option->isSpecifiedPtr = true;
 			if (option->argumentPtr != NULL)
 				*option->argumentPtr =
-				    [[_argument copy] autorelease];
+				    objc_autorelease([_argument copy]);
 
 			if (option->shortOption != '\0')
 				_lastOption = option->shortOption;
@@ -256,7 +261,7 @@ stringEqual(void *object1, void *object2)
 				*iter->isSpecifiedPtr = true;
 			if (iter->argumentPtr != NULL)
 				*iter->argumentPtr =
-				    [[_argument copy] autorelease];
+				    objc_autorelease([_argument copy]);
 
 			_index++;
 			_subIndex = 0;

@@ -6,14 +6,14 @@ jobs:
     steps:
     - name: Install dependencies
       run: docker pull devkitpro/devkitppc
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitppc \
           sh -c 'cd /objfw && ./configure --host=powerpc-eabi --with-wii'
@@ -21,15 +21,32 @@ jobs:
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitppc \
           sh -c "cd /objfw && make -j$(nproc)"
+    - name: make boot.dol
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw/tests && make boot.dol"
     - name: make install
       run: |
         docker run \
           -e DEVKITPRO=/opt/devkitpro \
-          -e PATH="/opt/devkitpro/devkitPPC/bin:$PATH" \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
           -v "$PWD:/objfw" \
           devkitpro/devkitppc \
           sh -c "cd /objfw && make install"
+    - name: Create objfw-tests
+      run: |
+        mkdir -p objfw-tests/objfw-tests
+        cp tests/boot.dol tests/testfile.txt objfw-tests/objfw-tests
+    - name: Upload objfw-tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: Wii Tests
+        path: objfw-tests

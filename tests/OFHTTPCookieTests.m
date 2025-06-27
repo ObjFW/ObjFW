@@ -1,49 +1,53 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFHTTPCookie";
+@interface OFHTTPCookieTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFHTTPCookieTests)
-- (void)HTTPCookieTests
+@implementation OFHTTPCookieTests
+- (void)testCookiesWithResponseHeaderFieldsForIRI
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFURI *URI = [OFURI URIWithString: @"http://nil.im"];
-	OFHTTPCookie *cookie1, *cookie2;
-	OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
+	OFIRI *IRI = [OFIRI IRIWithString: @"http://nil.im"];
+	OFHTTPCookie *cookie1 = [OFHTTPCookie cookieWithName: @"foo"
+						       value: @"bar"
+						      domain: @"nil.im"];
+	OFHTTPCookie *cookie2 = [OFHTTPCookie cookieWithName: @"qux"
+						       value: @"cookie"
+						      domain: @"nil.im"];
+	OFDictionary *headers;
 
-	cookie1 = [OFHTTPCookie cookieWithName: @"foo"
-					 value: @"bar"
-					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #1",
-	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
-	    dictionaryWithObject: @"foo=bar"
-	    forKey: @"Set-Cookie"] forURI: URI]
-	    isEqual: [OFArray arrayWithObject: cookie1]])
+	headers = [OFDictionary dictionaryWithObject: @"foo=bar"
+					      forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    [OFArray arrayWithObject: cookie1]);
 
-	cookie2 = [OFHTTPCookie cookieWithName: @"qux"
-					 value: @"cookie"
-					domain: @"nil.im"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #2",
-	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
-	    dictionaryWithObject: @"foo=bar,qux=cookie"
-	    forKey: @"Set-Cookie"] forURI: URI]
-	    isEqual: [OFArray arrayWithObjects: cookie1, cookie2, nil]])
+	headers = [OFDictionary dictionaryWithObject: @"foo=bar,qux=cookie"
+					      forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));
 
 	cookie1.expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
 	cookie2.expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
@@ -54,20 +58,37 @@ static OFString *const module = @"OFHTTPCookie";
 	cookie2.HTTPOnly = true;
 	[cookie2.extensions addObject: @"foo"];
 	[cookie2.extensions addObject: @"bar"];
-	TEST(@"+[cookiesWithResponseHeaderFields:forURI:] #3",
-	    [(cookies = [OFHTTPCookie cookiesWithResponseHeaderFields:
-	    [OFDictionary dictionaryWithObject:
-	    @"foo=bar; Expires=Fri, 13 Feb 2009 23:31:30 GMT; Path=/x,"
-	    @"qux=cookie; Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
-	    @"Domain=webkeks.org; Path=/objfw; Secure; HTTPOnly; foo; bar"
-	    forKey: @"Set-Cookie"] forURI: URI]) isEqual:
-	    [OFArray arrayWithObjects: cookie1, cookie2, nil]])
 
-	TEST(@"+[requestHeaderFieldsWithCookies:]",
-	    [[OFHTTPCookie requestHeaderFieldsWithCookies: cookies] isEqual:
+	headers = [OFDictionary
+	    dictionaryWithObject: @"foo=bar; "
+				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
+				  @"Path=/x,"
+				  @"qux=cookie; "
+				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
+				  @"Domain=webkeks.org; "
+				  @"Path=/objfw; "
+				  @"Secure; "
+				  @"HTTPOnly; "
+				  @"foo; "
+				  @"bar"
+			  forKey: @"Set-Cookie"];
+	OTAssertEqualObjects(
+	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));
+}
+
+- (void)testRequestHeaderFieldsWithCookies
+{
+	OFHTTPCookie *cookie1 = [OFHTTPCookie cookieWithName: @"foo"
+						       value: @"bar"
+						      domain: @"nil.im"];
+	OFHTTPCookie *cookie2 = [OFHTTPCookie cookieWithName: @"qux"
+						       value: @"cookie"
+						      domain: @"nil.im"];
+
+	OTAssertEqualObjects([OFHTTPCookie requestHeaderFieldsWithCookies:
+	    ([OFArray arrayWithObjects: cookie1, cookie2, nil])],
 	    [OFDictionary dictionaryWithObject: @"foo=bar; qux=cookie"
-					forKey: @"Cookie"]])
-
-	objc_autoreleasePoolPop(pool);
+					forKey: @"Cookie"]);
 }
 @end

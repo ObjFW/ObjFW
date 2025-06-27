@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-
 #import "OFMutableArray.h"
-#import "OFMutableAdjacentArray.h"
+#import "OFConcreteMutableArray.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -31,22 +33,12 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableArrayPlaceholder: OFMutableArray
+@interface OFPlaceholderMutableArray: OFMutableArray
 @end
 
-static OFComparisonResult
-compare(id left, id right, SEL selector)
-{
-	OFComparisonResult (*comparator)(id, SEL, id) =
-	    (OFComparisonResult (*)(id, SEL, id))
-	    [left methodForSelector: selector];
-
-	return comparator(left, selector, right);
-}
-
 static void
-quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
-    OFArraySortOptions options)
+quicksort(OFMutableArray *array, size_t left, size_t right,
+    OFCompareFunction compare, void *context, OFArraySortOptions options)
 {
 	OFComparisonResult ascending, descending;
 
@@ -65,11 +57,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 
 		do {
 			while (compare([array objectAtIndex: i], pivot,
-			    selector) != descending && i < right)
+			    context) != descending && i < right)
 				i++;
 
 			while (compare([array objectAtIndex: j], pivot,
-			    selector) != ascending && j > left)
+			    context) != ascending && j > left)
 				j--;
 
 			if (i < j)
@@ -77,79 +69,39 @@ quicksort(OFMutableArray *array, size_t left, size_t right, SEL selector,
 					   withObjectAtIndex: j];
 		} while (i < j);
 
-		if (compare([array objectAtIndex: i], pivot, selector) ==
+		if (compare([array objectAtIndex: i], pivot, context) ==
 		    descending)
 			[array exchangeObjectAtIndex: i
 				   withObjectAtIndex: right];
 
 		if (i > 0)
-			quicksort(array, left, i - 1, selector, options);
-
-		left = i + 1;
-	}
-}
-
-#ifdef OF_HAVE_BLOCKS
-static void
-quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
-    OFComparator comparator, OFArraySortOptions options)
-{
-	OFComparisonResult ascending, descending;
-
-	if (options & OFArraySortDescending) {
-		ascending = OFOrderedDescending;
-		descending = OFOrderedAscending;
-	} else {
-		ascending = OFOrderedAscending;
-		descending = OFOrderedDescending;
-	}
-
-	while (left < right) {
-		size_t i = left;
-		size_t j = right - 1;
-		id pivot = [array objectAtIndex: right];
-
-		do {
-			while (comparator([array objectAtIndex: i], pivot) !=
-			    descending && i < right)
-				i++;
-
-			while (comparator([array objectAtIndex: j], pivot) !=
-			    ascending && j > left)
-				j--;
-
-			if (i < j)
-				[array exchangeObjectAtIndex: i
-					   withObjectAtIndex: j];
-		} while (i < j);
-
-		if (comparator([array objectAtIndex: i], pivot) == descending)
-			[array exchangeObjectAtIndex: i
-				   withObjectAtIndex: right];
-
-		if (i > 0)
-			quicksortWithBlock(array, left, i - 1, comparator,
+			quicksort(array, left, i - 1, compare, context,
 			    options);
 
 		left = i + 1;
 	}
 }
-#endif
 
-@implementation OFMutableArrayPlaceholder
+@implementation OFPlaceholderMutableArray
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
-	return (id)[[OFMutableAdjacentArray alloc] init];
+	return (id)[[OFConcreteMutableArray alloc] init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithCapacity: capacity];
+	return (id)[[OFConcreteMutableArray alloc] initWithCapacity: capacity];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObject: object];
+	return (id)[[OFConcreteMutableArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -158,7 +110,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableAdjacentArray alloc] initWithObject: firstObject
+	ret = [[OFConcreteMutableArray alloc] initWithObject: firstObject
 						   arguments: arguments];
 	va_end(arguments);
 
@@ -167,52 +119,33 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (instancetype)initWithObject: (id)firstObject arguments: (va_list)arguments
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObject: firstObject
+	return (id)[[OFConcreteMutableArray alloc] initWithObject: firstObject
 							arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithArray: array];
+	return (id)[[OFConcreteMutableArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
-	return (id)[[OFMutableAdjacentArray alloc] initWithObjects: objects
+	return (id)[[OFConcreteMutableArray alloc] initWithObjects: objects
 							     count: count];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableAdjacentArray alloc]
-	    initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableArray
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		placeholder.isa = [OFMutableArrayPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableArray class]);
 }
 
 + (instancetype)alloc
@@ -225,28 +158,34 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 + (instancetype)arrayWithCapacity: (size_t)capacity
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCapacity: capacity]);
 }
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFMutableArray class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-	}
-
 	return [super init];
+}
+
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 - (id)copy
 {
@@ -309,13 +248,9 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 	count = self.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if ([self objectAtIndex: i] == oldObject) {
+	for (size_t i = 0; i < count; i++)
+		if ([self objectAtIndex: i] == oldObject)
 			[self replaceObjectAtIndex: i withObject: newObject];
-
-			return;
-		}
-	}
 }
 
 - (void)removeObjectAtIndex: (size_t)idx
@@ -402,18 +337,29 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	id object1 = [self objectAtIndex: idx1];
 	id object2 = [self objectAtIndex: idx2];
 
-	[object1 retain];
+	objc_retain(object1);
 	@try {
 		[self replaceObjectAtIndex: idx1 withObject: object2];
 		[self replaceObjectAtIndex: idx2 withObject: object1];
 	} @finally {
-		[object1 release];
+		objc_release(object1);
 	}
 }
 
 - (void)sort
 {
 	[self sortUsingSelector: @selector(compare:) options: 0];
+}
+
+static OFComparisonResult
+selectorCompare(id left, id right, void *context)
+{
+	SEL selector = context;
+	OFComparisonResult (*comparator)(id, SEL, id) =
+	    (OFComparisonResult (*)(id, SEL, id))
+	    [left methodForSelector: selector];
+
+	return comparator(left, selector, right);
 }
 
 - (void)sortUsingSelector: (SEL)selector
@@ -424,10 +370,31 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (count == 0 || count == 1)
 		return;
 
-	quicksort(self, 0, count - 1, selector, options);
+	quicksort(self, 0, count - 1, selectorCompare, (void *)selector,
+	    options);
+}
+
+- (void)sortUsingFunction: (OFCompareFunction)compare
+		  context: (void *)context
+		  options: (OFArraySortOptions)options
+{
+	size_t count = self.count;
+
+	if (count == 0 || count == 1)
+		return;
+
+	quicksort(self, 0, count - 1, compare, context, options);
 }
 
 #ifdef OF_HAVE_BLOCKS
+static OFComparisonResult
+blockCompare(id left, id right, void *context)
+{
+	OFComparator block = (OFComparator)context;
+
+	return block(left, right);
+}
+
 - (void)sortUsingComparator: (OFComparator)comparator
 		    options: (OFArraySortOptions)options
 {
@@ -436,7 +403,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (count == 0 || count == 1)
 		return;
 
-	quicksortWithBlock(self, 0, count - 1, comparator, options);
+	quicksort(self, 0, count - 1, blockCompare, comparator, options);
 }
 #endif
 

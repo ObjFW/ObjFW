@@ -1,75 +1,67 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <errno.h>
+#include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFDDPSocket";
+@interface OFDDPSocketTests: OTTestCase
+@end
 
-@implementation TestsAppDelegate (OFDDPSocketTests)
-- (void)DDPSocketTests
+@implementation OFDDPSocketTests
+- (void)testDDPSocket
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFDDPSocket *sock;
 	OFSocketAddress address1, address2;
 	char buffer[5];
 
-	TEST(@"+[socket]", (sock = [OFDDPSocket socket]))
+	sock = [OFDDPSocket socket];
 
 	@try {
-		TEST(@"-[bindToNetwork:node:port:]",
-		    R(address1 = [sock bindToNetwork: 0
-						node: 0
-						port: 0
-					protocolType: 11]))
+		address1 = [sock bindToNetwork: 0
+					  node: 0
+					  port: 0
+				  protocolType: 11];
 	} @catch (OFBindSocketFailedException *e) {
 		switch (e.errNo) {
 		case EAFNOSUPPORT:
-			[OFStdOut setForegroundColor: [OFColor lime]];
-			[OFStdOut writeLine:
-			    @"\r[OFDDPSocket] -[bindToNetwork:node:port:"
-			    @"protocolType:] AppleTalk unsupported, skipping "
-			    @"tests"];
-			break;
+		case EPROTONOSUPPORT:
+			OTSkip(@"AppleTalk unsupported");
 		case EADDRNOTAVAIL:
-			[OFStdOut setForegroundColor: [OFColor lime]];
-			[OFStdOut writeLine:
-			    @"\r[OFDDPSocket] -[bindToNetwork:node:port:"
-			    @"protocolType:] AppleTalk not configured, "
-			    @"skipping tests"];
-			break;
+			OTSkip(@"AppleTalk not configured");
 		default:
 			@throw e;
 		}
-
-		objc_autoreleasePoolPop(pool);
-		return;
 	}
 
-	TEST(@"-[sendBuffer:length:receiver:]",
-	    R([sock sendBuffer: "Hello" length: 5 receiver: &address1]))
+	[sock sendBuffer: "Hello" length: 5 receiver: &address1];
 
-	TEST(@"-[receiveIntoBuffer:length:sender:]",
-	    [sock receiveIntoBuffer: buffer length: 5 sender: &address2] == 5 &&
-	    memcmp(buffer, "Hello", 5) == 0 &&
-	    OFSocketAddressEqual(&address1, &address2) &&
-	    OFSocketAddressHash(&address1) == OFSocketAddressHash(&address2))
-
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqual([sock receiveIntoBuffer: buffer
+				       length: 5
+				       sender: &address2], 5);
+	OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+	OTAssertTrue(OFSocketAddressEqual(&address1, &address2));
+	OTAssertEqual(OFSocketAddressHash(&address1),
+	    OFSocketAddressHash(&address2));
 }
 @end

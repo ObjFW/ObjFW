@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -27,10 +31,10 @@
 OF_APPLICATION_DELEGATE(TerminalTests)
 
 @implementation TerminalTests
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFArray *colors = [OFArray arrayWithObjects:
-	    [OFColor black], [OFColor silver], [OFColor grey], [OFColor white],
+	    [OFColor black], [OFColor silver], [OFColor gray], [OFColor white],
 	    [OFColor maroon], [OFColor red], [OFColor purple],
 	    [OFColor fuchsia], [OFColor green], [OFColor lime], [OFColor olive],
 	    [OFColor yellow], [OFColor navy], [OFColor blue], [OFColor teal],
@@ -42,7 +46,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[OFStdOut setForegroundColor: color];
+		OFStdOut.foregroundColor = color;
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -50,7 +54,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	i = 0;
 	for (OFColor *color in colors) {
-		[OFStdOut setBackgroundColor: color];
+		OFStdOut.backgroundColor = color;
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -59,8 +63,8 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	i = 0;
 	reverseEnumerator = [colors.reversedArray objectEnumerator];
 	for (OFColor *color in colors) {
-		[OFStdOut setForegroundColor: color];
-		[OFStdOut setBackgroundColor: [reverseEnumerator nextObject]];
+		OFStdOut.foregroundColor = color;
+		OFStdOut.backgroundColor = [reverseEnumerator nextObject];
 		[OFStdOut writeFormat: @"%zx", i++];
 	}
 	[OFStdOut reset];
@@ -68,11 +72,11 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 
 	for (i = 0; i < colors.count * 2; i++) {
 		if (i % 2)
-			[OFStdOut setBackgroundColor: [colors objectAtIndex:
-			    ((i / 2) + 2) % colors.count]];
+			OFStdOut.backgroundColor = [colors objectAtIndex:
+			    ((i / 2) + 2) % colors.count];
 		else
-			[OFStdOut setForegroundColor:
-			    [colors objectAtIndex: i / 2]];
+			OFStdOut.foregroundColor =
+			    [colors objectAtIndex: i / 2];
 
 		[OFStdOut writeFormat: @"%zx", i / 2];
 	}
@@ -82,7 +86,7 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[OFStdOut writeLine: @"Press return"];
 	[OFStdIn readLine];
 
-	[OFStdOut setBackgroundColor: [OFColor green]];
+	OFStdOut.backgroundColor = [OFColor green];
 	[OFStdOut writeString: @"Hello!"];
 	[OFThread sleepForTimeInterval: 2];
 	[OFStdOut eraseLine];

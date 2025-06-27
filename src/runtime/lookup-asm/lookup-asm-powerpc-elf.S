@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,7 +30,7 @@
 .macro GENERATE_LOOKUP name notFound
 \name:
 	cmpwi	%r3, 0
-	beq-	returnNilMethod
+	beq-	.LreturnNilMethod
 
 	andi.	%r0, %r3, 1
 	bne-	.LtaggedPointer_\name
@@ -57,7 +61,7 @@
 0:
 #ifdef OF_PIC
 	stwu	%r1, -16(%r1)
-	mflr	%r0	
+	mflr	%r0
 	stw	%r0, 20(%r1)
 	stw	%r30, 8(%r1)
 
@@ -90,26 +94,26 @@
 	addis	%r6, %r6, .Lbiased_got2-0b@ha
 	addi	%r6, %r6, .Lbiased_got2-0b@l
 
-	lwz	%r5, .Lgot_objc_taggedPointerSecret-.Lbiased_got2(%r6)
+	lwz	%r5, .Lgot__objc_taggedPointerSecret-.Lbiased_got2(%r6)
 	lwz	%r5, 0(%r5)
 #elif defined(OF_BASEREL)
-	addis	%r5, %r13, objc_taggedPointerSecret@drel@ha
-	lwz	%r5, objc_taggedPointerSecret@drel@l(%r5)
+	addis	%r5, %r13, _objc_taggedPointerSecret@drel@ha
+	lwz	%r5, _objc_taggedPointerSecret@drel@l(%r5)
 #else
-	lis	%r5, objc_taggedPointerSecret@ha
-	lwz	%r5, objc_taggedPointerSecret@l(%r5)
+	lis	%r5, _objc_taggedPointerSecret@ha
+	lwz	%r5, _objc_taggedPointerSecret@l(%r5)
 #endif
 	xor	%r5, %r3, %r5
 	rlwinm	%r5, %r5, 1, 0x1C
 
 #if defined(OF_PIC)
-	lwz	%r6, .Lgot_objc_taggedPointerClasses-.Lbiased_got2(%r6)
+	lwz	%r6, .Lgot__objc_taggedPointerClasses-.Lbiased_got2(%r6)
 #elif defined(OF_BASEREL)
-	addis	%r6, %r13, objc_taggedPointerClasses@drel@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@drel@l
+	addis	%r6, %r13, _objc_taggedPointerClasses@drel@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@drel@l
 #else
-	lis	%r6, objc_taggedPointerClasses@ha
-	addi	%r6, %r6, objc_taggedPointerClasses@l
+	lis	%r6, _objc_taggedPointerClasses@ha
+	addi	%r6, %r6, _objc_taggedPointerClasses@l
 #endif
 	lwzx	%r5, %r6, %r5
 	lwz	%r5, 32(%r5)
@@ -124,7 +128,7 @@
 	mr	%r5, %r3
 	lwz	%r3, 0(%r3)
 	cmpwi	%r3, 0
-	beq-	returnNilMethod
+	beq-	.LreturnNilMethod
 
 	lwz	%r5, 4(%r5)
 	lwz	%r5, 32(%r5)
@@ -134,40 +138,40 @@
 .size \name, .-\name
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-returnNilMethod:
+.LreturnNilMethod:
 	mflr	%r0
-	bl	getPC
+	bl	.LgetPC
 	mtlr	%r0
 0:
-	addi	%r3, %r3, nilMethod-0b
+	addi	%r3, %r3, .LnilMethod-0b
 	blr
 
-nilMethod:
+.LnilMethod:
 	li	%r3, 0
 	blr
 
-getPC:
+.LgetPC:
 	mflr	%r3
 	blr
 
 #ifdef OF_PIC
 .section .got2, "aw"
 .Lbiased_got2 = .+0x8000
-.Lgot_objc_methodNotFound:
-	.long objc_methodNotFound
-.Lgot_objc_methodNotFound_stret:
-	.long objc_methodNotFound_stret
-.Lgot_objc_taggedPointerSecret:
-	.long objc_taggedPointerSecret
-.Lgot_objc_taggedPointerClasses:
-	.long objc_taggedPointerClasses
+.Lgot__objc_methodNotFound:
+	.long _objc_methodNotFound
+.Lgot__objc_methodNotFound_stret:
+	.long _objc_methodNotFound_stret
+.Lgot__objc_taggedPointerSecret:
+	.long _objc_taggedPointerSecret
+.Lgot__objc_taggedPointerClasses:
+	.long _objc_taggedPointerClasses
 #endif
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif

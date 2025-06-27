@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFTLSStream.h"
@@ -20,13 +24,18 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OFOpenSSLTLSStreamBufferSize 512
+/*
+ * According to RFC 8449, the maximum record size for TLS 1.2 is 16384 +
+ * expansion up to 2048, while TLS 1.3 reduces this to 16384 + 256.
+ */
+#define OFOpenSSLTLSStreamBufferSize (16384 + 2048)
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFOpenSSLTLSStream: OFTLSStream <OFStreamDelegate>
 {
-	bool _handshakeDone;
-	SSL *_SSL;
 	BIO *_readBIO, *_writeBIO;
+	SSL *_SSL;
+	bool _server, _handshakeDone;
 	OFString *_host;
 	char _buffer[OFOpenSSLTLSStreamBufferSize];
 }

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -27,7 +31,7 @@
 #import "OFPBKDF2.h"
 
 void
-OFSalsa20_8Core(uint32_t buffer[16])
+_OFSalsa20_8Core(uint32_t buffer[16])
 {
 	uint32_t tmp[16];
 
@@ -77,7 +81,7 @@ OFSalsa20_8Core(uint32_t buffer[16])
 }
 
 void
-OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
+_OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 {
 	uint32_t tmp[16];
 
@@ -93,7 +97,7 @@ OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 		for (size_t j = 0; j < 16; j++)
 			tmp[j] ^= input[i * 16 + j];
 
-		OFSalsa20_8Core(tmp);
+		_OFSalsa20_8Core(tmp);
 
 		/*
 		 * Even indices are stored in the first half and odd ones in
@@ -106,7 +110,7 @@ OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 }
 
 void
-OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
+_OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
     uint32_t *tmp)
 {
 	/* Check defined here and executed in OFScrypt() */
@@ -120,17 +124,17 @@ OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 
 	for (size_t i = 0; i < costFactor; i++) {
 		memcpy(tmp2 + i * 32 * blockSize, tmp, 128 * blockSize);
-		OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
+		_OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
-		uint32_t j = OFFromLittleEndian32(
-		    tmp[(2 * blockSize - 1) * 16]) & (costFactor - 1);
+		uint32_t j = (uint32_t)(OFFromLittleEndian32(
+		    tmp[(2 * blockSize - 1) * 16]) & (costFactor - 1));
 
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];
 
-		OFScryptBlockMix(buffer, tmp, blockSize);
+		_OFScryptBlockMix(buffer, tmp, blockSize);
 
 		if (i < costFactor - 1)
 			memcpy(tmp, buffer, 128 * blockSize);
@@ -196,7 +200,7 @@ OFScrypt(OFScryptParameters param)
 		});
 
 		for (size_t i = 0; i < param.parallelization; i++)
-			OFScryptROMix(bufferItems + i * 32 * param.blockSize,
+			_OFScryptROMix(bufferItems + i * 32 * param.blockSize,
 			    param.blockSize, param.costFactor, tmpItems);
 
 		OFPBKDF2((OFPBKDF2Parameters){
@@ -212,8 +216,8 @@ OFScrypt(OFScryptParameters param)
 			.allowsSwappableMemory = param.allowsSwappableMemory
 		});
 	} @finally {
-		[tmp release];
-		[buffer release];
-		[HMAC release];
+		objc_release(tmp);
+		objc_release(buffer);
+		objc_release(HMAC);
 	}
 }

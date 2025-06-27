@@ -1,41 +1,46 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-@implementation TestsAppDelegate (OFLocaleTests)
-- (void)localeTests
+@interface OFLocaleTests: OTTestCase
+@end
+
+@implementation OFLocaleTests
++ (OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, id) *) *)summary
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray *summary = [OFMutableArray array];
 
-	[OFStdOut setForegroundColor: [OFColor lime]];
+#define ADD(name, value)						\
+	[summary addObject: [OFPair pairWithFirstObject: name		\
+					   secondObject: value]];
 
-	[OFStdOut writeFormat: @"[OFLocale] Language code: %@\n",
-	    [OFLocale languageCode]];
+	ADD(@"Language code", [OFLocale languageCode])
+	ADD(@"Country code", [OFLocale countryCode])
+	ADD(@"Encoding", OFStringEncodingName([OFLocale encoding]))
+	ADD(@"Decimal separator", [OFLocale decimalSeparator])
 
-	[OFStdOut writeFormat: @"[OFLocale] Country code: %@\n",
-	    [OFLocale countryCode]];
+#undef ADD
 
-	[OFStdOut writeFormat: @"[OFLocale] Encoding: %@\n",
-	    OFStringEncodingName([OFLocale encoding])];
-
-	[OFStdOut writeFormat: @"[OFLocale] Decimal separator: %@\n",
-	    [OFLocale decimalSeparator]];
-
-	objc_autoreleasePoolPop(pool);
+	return summary;
 }
 @end

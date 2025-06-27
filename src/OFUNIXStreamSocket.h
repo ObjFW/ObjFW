@@ -1,27 +1,75 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStreamSocket.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFString;
 
 /**
- * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h \
- *	     ObjFW/OFUNIXStreamSocket.h
+ * @brief A key for UNIX socket credentials.
+ *
+ * Possible keys are:
+ *
+ *  * OFUNIXSocketCredentialsUserID
+ *  * OFUNIXSocketCredentialsGroupID
+ *  * OFUNIXSocketCredentialsProcessID
+ */
+typedef OFConstantString *OFUNIXSocketCredentialsKey;
+
+/**
+ * @brief Credentials for a UNIX socket.
+ */
+typedef OFDictionary OF_GENERIC(OFUNIXSocketCredentialsKey, id)
+    *OFUNIXSocketCredentials;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief The user ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsUserID;
+
+/**
+ * @brief The group ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsGroupID;
+
+/**
+ * @brief The process ID of the credentials.
+ *
+ * This maps to an @ref OFNumber.
+ */
+extern OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID;
+#ifdef __cplusplus
+}
+#endif
+
+/**
+ * @protocol OFUNIXStreamSocketDelegate OFUNIXStreamSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFUNIXStreamSocket.
  */
@@ -29,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFUNIXStreamSocket OFUNIXStreamSocket.h ObjFW/OFUNIXStreamSocket.h
+ * @class OFUNIXStreamSocket OFUNIXStreamSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use UNIX stream sockets.
  *
@@ -51,20 +99,27 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFUNIXStreamSocketDelegate> delegate;
 
 /**
- * @brief Connects the OFUNIXStreamSocket to the specified destination.
+ * @brief The credentials of the peer the socket is connected to.
+ */
+@property (readonly, nonatomic) OFUNIXSocketCredentials peerCredentials;
+
+/**
+ * @brief Connects the OFUNIXStreamSocket to the specified path.
  *
- * @param path The path to connect to
+ * @param path The path to connect to. If the path starts with an `@`, an
+ *	       abstract UNIX socket is used on Linux.
  * @throw OFConnectUNIXSocketFailedException Connecting failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToPath: (OFString *)path;
 
 /**
- * @brief Binds the socket to the specified host and port.
+ * @brief Binds the socket to the specified path.
  *
- * @param path The path to bind to
+ * @param path The path to bind to. If the path starts with an `@`, an abstract
+ *	       UNIX socket is used on Linux.
  * @throw OFBindUNIXSocketFailedException Binding failed
- * @throw OFAlreadyConnectedException The socket is already connected or bound
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)bindToPath: (OFString *)path;
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,7 +29,7 @@ static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-objc_initStaticInstances(struct objc_symtab *symtab)
+_objc_initStaticInstances(struct objc_symtab *symtab)
 {
 	struct objc_static_instances **staticInstances;
 
@@ -55,7 +59,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 			    staticInstancesCount);
 
 			if (staticInstancesList == NULL)
-				OBJC_ERROR("Not enough memory for list of "
+				_OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
 			/*
@@ -85,7 +89,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 			    (staticInstancesCount + 1));
 
 			if (staticInstancesList == NULL)
-				OBJC_ERROR("Not enough memory for list of "
+				_OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
 			staticInstancesList[staticInstancesCount++] =
@@ -95,7 +99,7 @@ objc_initStaticInstances(struct objc_symtab *symtab)
 }
 
 void
-objc_forgetPendingStaticInstances(void)
+_objc_forgetPendingStaticInstances(void)
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;

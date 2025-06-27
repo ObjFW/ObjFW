@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -27,14 +31,14 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # define USE_INLINE_STDARG
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
 # define __NOLIBBASE__
-# define Class IntuitionClass
 # include <proto/intuition.h>
-# undef Class
 # undef __NOLIBBASE__
+# undef Class
 #endif
 
 static objc_enumeration_mutation_handler enumerationMutationHandler = NULL;
@@ -45,7 +49,7 @@ objc_enumerationMutation(id object)
 	if (enumerationMutationHandler != NULL)
 		enumerationMutationHandler(object);
 	else
-		OBJC_ERROR("Object was mutated during enumeration!");
+		_OBJC_ERROR("Object was mutated during enumeration!");
 }
 
 void
@@ -55,7 +59,7 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
 }
 
 void
-objc_error(const char *title, const char *format, ...)
+_objc_error(const char *title, const char *format, ...)
 {
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 # define messageLen 512
@@ -78,7 +82,7 @@ objc_error(const char *title, const char *format, ...)
 	MessageBoxA(NULL, message, title,
 	    MB_OK | MB_SYSTEMMODAL | MB_ICONERROR);
 
-	exit(EXIT_FAILURE);
+	abort();
 #elif defined(OF_AMIGAOS)
 	struct Library *IntuitionBase;
 # ifdef OF_AMIGAOS4
@@ -86,17 +90,15 @@ objc_error(const char *title, const char *format, ...)
 # endif
 	struct EasyStruct easy;
 
-# ifndef OF_AMIGAOS4
 	kprintf("[%s] %s\n", title, message);
-# endif
 
 	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
-		exit(EXIT_FAILURE);
+		abort();
 
 # ifdef OF_AMIGAOS4
 	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
 	    "main", 1, NULL)) == NULL)
-		exit(EXIT_FAILURE);
+		abort();
 # endif
 
 	easy.es_StructSize = sizeof(easy);
@@ -113,7 +115,7 @@ objc_error(const char *title, const char *format, ...)
 
 	CloseLibrary(IntuitionBase);
 
-	exit(EXIT_FAILURE);
+	abort();
 #else
 	va_list args;
 
@@ -133,7 +135,7 @@ objc_error(const char *title, const char *format, ...)
 }
 
 char *
-objc_strdup(const char *string)
+_objc_strdup(const char *string)
 {
 	char *copy;
 	size_t length = strlen(string);

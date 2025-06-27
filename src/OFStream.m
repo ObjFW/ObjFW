@@ -1,23 +1,24 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define __NO_EXT_QNX
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -52,6 +53,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
@@ -82,7 +84,7 @@
 
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -97,11 +99,6 @@
 	[super dealloc];
 }
 
-- (bool)lowlevelIsAtEndOfStream
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -112,9 +109,19 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (bool)lowlevelIsAtEndOfStream
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (bool)lowlevelHasDataInReadBuffer
+{
+	return false;
+}
+
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)isAtEndOfStream
@@ -137,8 +144,17 @@
 			char tmp[minReadSize], *readBuffer;
 			size_t bytesRead;
 
-			bytesRead = [self lowlevelReadIntoBuffer: tmp
-							  length: minReadSize];
+retry_1:
+			@try {
+				bytesRead = [self
+				    lowlevelReadIntoBuffer: tmp
+						    length: minReadSize];
+			} @catch (OFReadFailedException *e) {
+				if (e.errNo == EINTR)
+					goto retry_1;
+
+				@throw e;
+			}
 
 			if (bytesRead > length) {
 				memcpy(buffer, tmp, length);
@@ -158,7 +174,16 @@
 			}
 		}
 
-		return [self lowlevelReadIntoBuffer: buffer length: length];
+retry_2:
+		@try {
+			return [self lowlevelReadIntoBuffer: buffer
+						     length: length];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry_2;
+
+			@throw e;
+		}
 	}
 
 	if (length >= _readBufferLength) {
@@ -213,7 +238,7 @@
 				     length: length
 				       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				      block: NULL
+				    handler: NULL
 # endif
 				   delegate: _delegate];
 }
@@ -237,7 +262,7 @@
 				exactLength: length
 				       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				      block: NULL
+				    handler: NULL
 # endif
 				   delegate: _delegate];
 }
@@ -247,16 +272,47 @@
 		     length: (size_t)length
 		      block: (OFStreamAsyncReadBlock)block
 {
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
 	[self asyncReadIntoBuffer: buffer
 			   length: length
 		      runLoopMode: OFDefaultRunLoopMode
-			    block: block];
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		    handler: (OFStreamReadHandler)handler
+{
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: OFDefaultRunLoopMode
+			  handler: handler];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
+{
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: runLoopMode
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		    handler: (OFStreamReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -265,7 +321,7 @@
 				     buffer: buffer
 				     length: length
 				       mode: runLoopMode
-				      block: block
+				    handler: handler
 				   delegate: nil];
 }
 
@@ -273,16 +329,47 @@
 		exactLength: (size_t)length
 		      block: (OFStreamAsyncReadBlock)block
 {
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
 		      runLoopMode: OFDefaultRunLoopMode
-			    block: block];
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		    handler: (OFStreamReadHandler)handler
+{
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: OFDefaultRunLoopMode
+			  handler: handler];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
+{
+	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
+	    size_t length_, id exception) {
+		return block(length, exception);
+	};
+
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: runLoopMode
+			  handler: handler];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (OFRunLoopMode)runLoopMode
+		    handler: (OFStreamReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -291,7 +378,7 @@
 				     buffer: buffer
 				exactLength: length
 				       mode: runLoopMode
-				      block: block
+				    handler: handler
 				   delegate: nil];
 }
 # endif
@@ -405,13 +492,13 @@
 - (OFData *)readDataUntilEndOfStream
 {
 	OFMutableData *data = [OFMutableData data];
-	size_t pageSize = [OFSystemInfo pageSize];
-	char *buffer = OFAllocMemory(1, pageSize);
+	const size_t bufferSize = 16384;
+	char *buffer = OFAllocMemory(1, bufferSize);
 
 	@try {
 		while (!self.atEndOfStream) {
 			size_t length =
-			    [self readIntoBuffer: buffer length: pageSize];
+			    [self readIntoBuffer: buffer length: bufferSize];
 			[data addItems: buffer count: length];
 		}
 	} @finally {
@@ -422,10 +509,26 @@
 	return data;
 }
 
+- (OFString *)readString
+{
+	return [self readStringWithEncoding: (OFStringEncoding)_encoding];
+}
+
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding
+{
+	OFString *string = nil;
+
+	while ((string = [self tryReadStringWithEncoding: encoding]) == nil)
+		if (self.atEndOfStream)
+			return nil;
+
+	return string;
+}
+
 - (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
-				 encoding: OFStringEncodingUTF8];
+				 encoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readStringWithLength: (size_t)length
@@ -504,8 +607,16 @@
 			return ret;
 		}
 
-		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: pageSize];
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		/* Look if there's a newline or \0 */
 		for (size_t i = 0; i < bufferLength; i++) {
@@ -595,7 +706,7 @@
 
 - (OFString *)readLine
 {
-	return [self readLineWithEncoding: OFStringEncodingUTF8];
+	return [self readLineWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readLineWithEncoding: (OFStringEncoding)encoding
@@ -610,9 +721,36 @@
 }
 
 #ifdef OF_HAVE_SOCKETS
+- (void)asyncReadString
+{
+	[self asyncReadStringWithEncoding: (OFStringEncoding)_encoding
+			      runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+{
+	[self asyncReadStringWithEncoding: encoding
+			      runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	OFStream <OFReadyForReadingObserving> *stream =
+	    (OFStream <OFReadyForReadingObserving> *)self;
+
+	[OFRunLoop of_addAsyncReadStringForStream: stream
+					 encoding: encoding
+					     mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					  handler: NULL
+# endif
+					 delegate: _delegate];
+}
+
 - (void)asyncReadLine
 {
-	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
 			    runLoopMode: OFDefaultRunLoopMode];
 }
 
@@ -632,30 +770,98 @@
 				       encoding: encoding
 					   mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					  block: NULL
+					handler: NULL
 # endif
 				       delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS
+- (void)asyncReadStringWithHandler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadStringWithEncoding: (OFStringEncoding)_encoding
+			      runLoopMode: OFDefaultRunLoopMode
+				  handler: handler];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			    handler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadStringWithEncoding: encoding
+			      runLoopMode: OFDefaultRunLoopMode
+				  handler: handler];
+}
+
+- (void)asyncReadStringWithEncoding: (OFStringEncoding)encoding
+			runLoopMode: (OFRunLoopMode)runLoopMode
+			    handler: (OFStreamStringReadHandler)handler
+{
+	OFStream <OFReadyForReadingObserving> *stream =
+	    (OFStream <OFReadyForReadingObserving> *)self;
+
+	[OFRunLoop of_addAsyncReadStringForStream: stream
+					 encoding: encoding
+					     mode: runLoopMode
+					  handler: handler
+					 delegate: nil];
+}
+
 - (void)asyncReadLineWithBlock: (OFStreamAsyncReadLineBlock)block
 {
-	[self asyncReadLineWithEncoding: OFStringEncodingUTF8
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
 			    runLoopMode: OFDefaultRunLoopMode
-				  block: block];
+				handler: handler];
+}
+
+- (void)asyncReadLineWithHandler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadLineWithEncoding: (OFStringEncoding)_encoding
+			    runLoopMode: OFDefaultRunLoopMode
+				handler: handler];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 			    block: (OFStreamAsyncReadLineBlock)block
 {
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
 	[self asyncReadLineWithEncoding: encoding
 			    runLoopMode: OFDefaultRunLoopMode
-				  block: block];
+				handler: handler];
+}
+
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+			  handler: (OFStreamStringReadHandler)handler
+{
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: OFDefaultRunLoopMode
+				handler: handler];
 }
 
 - (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
 		      runLoopMode: (OFRunLoopMode)runLoopMode
 			    block: (OFStreamAsyncReadLineBlock)block
+{
+	OFStreamStringReadHandler handler = ^ (OFStream *stream,
+	    OFString *string, id exception) {
+		return block(string, exception);
+	};
+
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: runLoopMode
+				handler: handler];
+}
+
+- (void)asyncReadLineWithEncoding: (OFStringEncoding)encoding
+		      runLoopMode: (OFRunLoopMode)runLoopMode
+			  handler: (OFStreamStringReadHandler)handler
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -663,15 +869,161 @@
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
 					   mode: runLoopMode
-					  block: block
+					handler: handler
 				       delegate: nil];
 }
 # endif
 #endif
 
+- (OFString *)tryReadString
+{
+	return [self tryReadStringWithEncoding: (OFStringEncoding)_encoding];
+}
+
+- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding
+{
+	size_t pageSize, bufferLength;
+	char *buffer, *readBuffer;
+	OFString *ret;
+
+	/* Look if there's something in our buffer */
+	if (!_waitingForDelimiter && _readBuffer != NULL) {
+		for (size_t i = 0; i < _readBufferLength; i++) {
+			if (_readBuffer[i] == '\0') {
+				ret = [OFString
+				    stringWithCString: _readBuffer
+					     encoding: encoding
+					       length: i];
+
+				_readBuffer += i + 1;
+				_readBufferLength -= i + 1;
+
+				_waitingForDelimiter = false;
+				return ret;
+			}
+		}
+	}
+
+	/* Read and see if we got a \0 */
+	pageSize = [OFSystemInfo pageSize];
+	buffer = OFAllocMemory(1, pageSize);
+
+	@try {
+		if ([self lowlevelIsAtEndOfStream]) {
+			if (_readBuffer == NULL) {
+				_waitingForDelimiter = false;
+				return nil;
+			}
+
+			ret = [OFString stringWithCString: _readBuffer
+						 encoding: encoding
+						   length: _readBufferLength];
+
+			OFFreeMemory(_readBufferMemory);
+			_readBuffer = _readBufferMemory = NULL;
+			_readBufferLength = 0;
+
+			_waitingForDelimiter = false;
+			return ret;
+		}
+
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
+
+		/* Look if there's a \0 */
+		for (size_t i = 0; i < bufferLength; i++) {
+			if (buffer[i] == '\0') {
+				size_t retLength;
+				char *retCString;
+
+				retLength = _readBufferLength + i;
+				retCString = OFAllocMemory(retLength, 1);
+
+				memcpy(retCString, _readBuffer,
+				    _readBufferLength);
+				memcpy(retCString + _readBufferLength,
+				    buffer, i);
+
+				@try {
+					ret = [OFString
+					    stringWithCString: retCString
+						     encoding: encoding
+						       length: retLength];
+				} @catch (id e) {
+					if (bufferLength > 0) {
+						/*
+						 * Append data to _readBuffer
+						 * to prevent loss of data.
+						 */
+						readBuffer = OFAllocMemory(
+						    _readBufferLength +
+						    bufferLength, 1);
+
+						memcpy(readBuffer, _readBuffer,
+						    _readBufferLength);
+						memcpy(readBuffer +
+						    _readBufferLength,
+						    buffer, bufferLength);
+
+						OFFreeMemory(_readBufferMemory);
+						_readBuffer = readBuffer;
+						_readBufferMemory = readBuffer;
+						_readBufferLength +=
+						    bufferLength;
+					}
+
+					@throw e;
+				} @finally {
+					OFFreeMemory(retCString);
+				}
+
+				readBuffer = OFAllocMemory(bufferLength - i - 1,
+				    1);
+				if (readBuffer != NULL)
+					memcpy(readBuffer, buffer + i + 1,
+					    bufferLength - i - 1);
+
+				OFFreeMemory(_readBufferMemory);
+				_readBuffer = _readBufferMemory = readBuffer;
+				_readBufferLength = bufferLength - i - 1;
+
+				_waitingForDelimiter = false;
+				return ret;
+			}
+		}
+
+		/* No \0 was found */
+		if (bufferLength > 0) {
+			readBuffer = OFAllocMemory(
+			    _readBufferLength + bufferLength, 1);
+
+			memcpy(readBuffer, _readBuffer, _readBufferLength);
+			memcpy(readBuffer + _readBufferLength,
+			    buffer, bufferLength);
+
+			OFFreeMemory(_readBufferMemory);
+			_readBuffer = _readBufferMemory = readBuffer;
+			_readBufferLength += bufferLength;
+		}
+	} @finally {
+		OFFreeMemory(buffer);
+	}
+
+	_waitingForDelimiter = true;
+	return nil;
+}
+
 - (OFString *)tryReadLine
 {
-	return [self tryReadLineWithEncoding: OFStringEncodingUTF8];
+	return [self tryReadLineWithEncoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
@@ -702,7 +1054,7 @@
 				ret = [OFString
 				    stringWithCString: _readBuffer
 					     encoding: encoding
-					      length: i + 1 - delimiterLength];
+					       length: i + 1 - delimiterLength];
 
 				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
@@ -736,8 +1088,16 @@
 			return ret;
 		}
 
-		bufferLength = [self lowlevelReadIntoBuffer: buffer
-						     length: pageSize];
+retry:
+		@try {
+			bufferLength = [self lowlevelReadIntoBuffer: buffer
+							     length: pageSize];
+		} @catch (OFReadFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		/* Look if there's a delimiter or \0 */
 		for (size_t i = 0; i < bufferLength; i++) {
@@ -835,11 +1195,10 @@
 	return nil;
 }
 
-
 - (OFString *)readUntilDelimiter: (OFString *)delimiter
 {
 	return [self readUntilDelimiter: delimiter
-			       encoding: OFStringEncodingUTF8];
+			       encoding: (OFStringEncoding)_encoding];
 }
 
 - (OFString *)readUntilDelimiter: (OFString *)delimiter
@@ -858,7 +1217,7 @@
 - (OFString *)tryReadUntilDelimiter: (OFString *)delimiter
 {
 	return [self tryReadUntilDelimiter: delimiter
-				  encoding: OFStringEncodingUTF8];
+				  encoding: (OFStringEncoding)_encoding];
 }
 
 - (bool)flushWriteBuffer
@@ -868,8 +1227,16 @@
 	if (_writeBuffer == NULL)
 		return true;
 
-	bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
-					  length: _writeBufferLength];
+retry:
+	@try {
+		bytesWritten = [self lowlevelWriteBuffer: _writeBuffer
+						  length: _writeBufferLength];
+	} @catch (OFWriteFailedException *e) {
+		if (e.errNo == EINTR)
+			goto retry;
+
+		@throw e;
+	}
 
 	if (bytesWritten == 0)
 		return false;
@@ -900,8 +1267,18 @@
 - (void)writeBuffer: (const void *)buffer length: (size_t)length
 {
 	if (!_buffersWrites) {
-		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
-							 length: length];
+		size_t bytesWritten;
+
+retry:
+		@try {
+			bytesWritten = [self lowlevelWriteBuffer: buffer
+							  length: length];
+		} @catch (OFWriteFailedException *e) {
+			if (e.errNo == EINTR)
+				goto retry;
+
+			@throw e;
+		}
 
 		if (bytesWritten < length)
 			@throw [OFWriteFailedException
@@ -935,7 +1312,7 @@
 					data: data
 					mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				       block: NULL
+				     handler: NULL
 # endif
 				    delegate: _delegate];
 }
@@ -943,7 +1320,7 @@
 - (void)asyncWriteString: (OFString *)string
 {
 	[self asyncWriteString: string
-		      encoding: OFStringEncodingUTF8
+		      encoding: (OFStringEncoding)_encoding
 		   runLoopMode: OFDefaultRunLoopMode];
 }
 
@@ -967,7 +1344,7 @@
 				    encoding: encoding
 					mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-				       block: NULL
+				     handler: NULL
 # endif
 				    delegate: _delegate];
 }
@@ -975,14 +1352,41 @@
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncWriteData: (OFData *)data block: (OFStreamAsyncWriteDataBlock)block
 {
+	OFStreamDataWrittenHandler handler = ^ (OFStream *stream, OFData *data_,
+	    size_t bytesWritten, id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteData: data
 		 runLoopMode: OFDefaultRunLoopMode
-		       block: block];
+		     handler: handler];
+}
+
+- (void)asyncWriteData: (OFData *)data
+	       handler: (OFStreamDataWrittenHandler)handler
+{
+	[self asyncWriteData: data
+		 runLoopMode: OFDefaultRunLoopMode
+		     handler: handler];
 }
 
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (OFRunLoopMode)runLoopMode
 		 block: (OFStreamAsyncWriteDataBlock)block
+{
+	OFStreamDataWrittenHandler handler = ^ (OFStream *stream, OFData *data_,
+	    size_t bytesWritten, id exception) {
+		return block(bytesWritten, exception);
+	};
+
+	[self asyncWriteData: data
+		 runLoopMode: runLoopMode
+		     handler: handler];
+}
+
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (OFRunLoopMode)runLoopMode
+	       handler: (OFStreamDataWrittenHandler)handler
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -990,33 +1394,81 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 					data: data
 					mode: runLoopMode
-				       block: block
+				     handler: handler
 				    delegate: nil];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		   block: (OFStreamAsyncWriteStringBlock)block
 {
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteString: string
-		      encoding: OFStringEncodingUTF8
+		      encoding: (OFStringEncoding)_encoding
 		   runLoopMode: OFDefaultRunLoopMode
-			 block: block];
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		 handler: (OFStreamStringWrittenHandler)handler
+{
+	[self asyncWriteString: string
+		      encoding: (OFStringEncoding)_encoding
+		   runLoopMode: OFDefaultRunLoopMode
+		       handler: handler];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 		   block: (OFStreamAsyncWriteStringBlock)block
 {
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
 	[self asyncWriteString: string
 		      encoding: encoding
 		   runLoopMode: OFDefaultRunLoopMode
-			 block: block];
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+		 handler: (OFStreamStringWrittenHandler)handler
+{
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: OFDefaultRunLoopMode
+		       handler: handler];
 }
 
 - (void)asyncWriteString: (OFString *)string
 		encoding: (OFStringEncoding)encoding
 	     runLoopMode: (OFRunLoopMode)runLoopMode
 		   block: (OFStreamAsyncWriteStringBlock)block
+{
+	OFStreamStringWrittenHandler handler = ^ (OFStream *stream,
+	    OFString *string_, OFStringEncoding encoding_, size_t bytesWritten,
+	    id exception) {
+		return block(bytesWritten, exception);
+	};
+
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: runLoopMode
+		       handler: handler];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (OFStringEncoding)encoding
+	     runLoopMode: (OFRunLoopMode)runLoopMode
+		 handler: (OFStreamStringWrittenHandler)handler
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1025,7 +1477,7 @@
 				      string: string
 				    encoding: encoding
 					mode: runLoopMode
-				       block: block
+				     handler: handler
 				    delegate: nil];
 }
 # endif
@@ -1114,7 +1566,7 @@
 
 - (void)writeString: (OFString *)string
 {
-	[self writeString: string encoding: OFStringEncodingUTF8];
+	[self writeString: string encoding: (OFStringEncoding)_encoding];
 }
 
 - (void)writeString: (OFString *)string encoding: (OFStringEncoding)encoding
@@ -1136,7 +1588,7 @@
 
 - (void)writeLine: (OFString *)string
 {
-	[self writeLine: string encoding: OFStringEncodingUTF8];
+	[self writeLine: string encoding: (OFStringEncoding)_encoding];
 }
 
 - (void)writeLine: (OFString *)string encoding: (OFStringEncoding)encoding
@@ -1168,26 +1620,47 @@
 
 - (void)writeFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
-	char *UTF8String;
-	int length;
-
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = OFVASPrintF(&UTF8String, format.UTF8String,
-	    arguments)) == -1)
-		@throw [OFInvalidFormatException exception];
+	if (_encoding == OFStringEncodingUTF8) {
+		char *UTF8String;
+		int length;
 
-	@try {
-		[self writeBuffer: UTF8String length: length];
-	} @finally {
-		free(UTF8String);
+		if ((length = _OFVASPrintF(&UTF8String, format.UTF8String,
+		    arguments)) == -1)
+			@throw [OFInvalidFormatException exception];
+
+		@try {
+			[self writeBuffer: UTF8String length: length];
+		} @finally {
+			free(UTF8String);
+		}
+	} else {
+		OFString *string = [[OFString alloc] initWithFormat: format
+							  arguments: arguments];
+
+		@try {
+			[self writeString: string];
+		} @finally {
+			objc_release(string);
+		}
 	}
 }
 
 - (bool)hasDataInReadBuffer
 {
-	return (_readBufferLength > 0);
+	return (_readBufferLength > 0 || [self lowlevelHasDataInReadBuffer]);
+}
+
+- (OFStringEncoding)encoding
+{
+	return (OFStringEncoding)_encoding;
+}
+
+- (void)setEncoding: (OFStringEncoding)encoding
+{
+	_encoding = encoding;
 }
 
 - (bool)canBlock

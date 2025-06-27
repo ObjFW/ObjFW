@@ -12,12 +12,12 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-.PHONY: docs release
+.PHONY: check docs release upload
 
 utils tests: src
 
 check: tests
-	cd tests && ${MAKE} -s run
+	${MAKE} -C tests -s run
 
 docs:
 	rm -fr docs
@@ -27,17 +27,14 @@ release: docs
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \
 		objfw-${PACKAGE_VERSION}.tar.gz
-	fossil tarball --name objfw-${PACKAGE_VERSION} current - \
-		--exclude '.fossil*,.git*' | ofarc -ttgz -xq -
+	git archive --prefix objfw-${PACKAGE_VERSION}/ HEAD | ofarc -ttar -xq -
+	rm -fr objfw-${PACKAGE_VERSION}/.forgejo objfw-${PACKAGE_VERSION}/.git*
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofarc -cq objfw-${PACKAGE_VERSION}.tar objfw-${PACKAGE_VERSION}
 	rm -fr objfw-${PACKAGE_VERSION}
 	gzip -9 objfw-${PACKAGE_VERSION}.tar
 	rm -f objfw-${PACKAGE_VERSION}.tar
 	gpg -b objfw-${PACKAGE_VERSION}.tar.gz || true
-	echo "Generating documentation..."
-	rm -fr docs
-	doxygen >/dev/null
 	rm -fr objfw-docs-${PACKAGE_VERSION} objfw-docs-${PACKAGE_VERSION}.tar \
 		objfw-docs-${PACKAGE_VERSION}.tar.gz
 	mv docs objfw-docs-${PACKAGE_VERSION}

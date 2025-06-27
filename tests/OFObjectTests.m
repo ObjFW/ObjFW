@@ -1,29 +1,26 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
-
-#if (defined(OF_DRAGONFLYBSD) && defined(__LP64__)) || defined(OF_NINTENDO_3DS)
-# define TOO_BIG (SIZE_MAX / 3)
-#else
-# define TOO_BIG (SIZE_MAX - 128)
-#endif
-
-static OFString *const module = @"OFObject";
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
 @interface MyObject: OFObject
 {
@@ -61,6 +58,192 @@ static OFString *const module = @"OFObject";
 @property (nonatomic) double doubleValue;
 @end
 
+@interface OFObjectTests: OTTestCase
+{
+	MyObject *_myObject;
+}
+@end
+
+@implementation OFObjectTests
+- (void)setUp
+{
+	[super setUp];
+
+	_myObject = [[MyObject alloc] init];
+}
+
+- (void)dealloc
+{
+	objc_release(_myObject);
+
+	[super dealloc];
+}
+
+- (void)testClassDescription
+{
+	OTAssertEqualObjects([OFObject description], @"OFObject");
+	OTAssertEqualObjects([MyObject description], @"MyObject");
+}
+
+- (void)testInstanceDescription
+{
+	OFObject *object = objc_autorelease([[OFObject alloc] init]);
+
+	OTAssertEqualObjects(object.description, @"<OFObject>");
+	OTAssertEqualObjects(_myObject.description, @"<MyObject>");
+}
+
+- (void)testValueForKey
+{
+	_myObject.objectValue = @"Hello";
+	_myObject.classValue = _myObject.class;
+
+	OTAssertEqualObjects([_myObject valueForKey: @"objectValue"], @"Hello");
+	OTAssertEqualObjects([_myObject valueForKey: @"classValue"],
+	    _myObject.class);
+	OTAssertEqualObjects([_myObject valueForKey: @"class"],
+	    _myObject.class);
+}
+
+- (void)testValueForKeyWithUndefinedKeyThrows
+{
+	OTAssertThrowsSpecific([_myObject valueForKey: @"undefined"],
+	   OFUndefinedKeyException);
+}
+
+- (void)testSetValueForKey
+{
+	[_myObject setValue: @"World" forKey: @"objectValue"];
+	[_myObject setValue: [OFObject class] forKey: @"classValue"];
+
+	OTAssertEqualObjects(_myObject.objectValue, @"World");
+	OTAssertEqualObjects(_myObject.classValue, [OFObject class]);
+}
+
+- (void)testSetValueWithUndefinedKeyThrows
+{
+	OTAssertThrowsSpecific([_myObject setValue: @"x" forKey: @"undefined"],
+	    OFUndefinedKeyException);
+}
+
+- (void)testAutoWrappingOfValueForKey
+{
+	_myObject.boolValue = 1;
+	_myObject.charValue = 2;
+	_myObject.shortValue = 3;
+	_myObject.intValue = 4;
+	_myObject.longValue = 5;
+	_myObject.longLongValue = 6;
+	_myObject.unsignedCharValue = 7;
+	_myObject.unsignedShortValue = 8;
+	_myObject.unsignedIntValue = 9;
+	_myObject.unsignedLongValue = 10;
+	_myObject.unsignedLongLongValue = 11;
+	_myObject.floatValue = 12;
+	_myObject.doubleValue = 13;
+
+	OTAssertEqualObjects([_myObject valueForKey: @"boolValue"],
+	    [OFNumber numberWithBool: 1]);
+	OTAssertEqualObjects([_myObject valueForKey: @"charValue"],
+	    [OFNumber numberWithChar: 2]);
+	OTAssertEqualObjects([_myObject valueForKey: @"shortValue"],
+	    [OFNumber numberWithShort: 3]);
+	OTAssertEqualObjects([_myObject valueForKey: @"intValue"],
+	    [OFNumber numberWithInt: 4]);
+	OTAssertEqualObjects([_myObject valueForKey: @"longValue"],
+	    [OFNumber numberWithLong: 5]);
+	OTAssertEqualObjects([_myObject valueForKey: @"longLongValue"],
+	    [OFNumber numberWithLongLong: 6]);
+	OTAssertEqualObjects([_myObject valueForKey: @"unsignedCharValue"],
+	    [OFNumber numberWithUnsignedChar: 7]);
+	OTAssertEqualObjects([_myObject valueForKey: @"unsignedShortValue"],
+	    [OFNumber numberWithUnsignedShort: 8]);
+	OTAssertEqualObjects([_myObject valueForKey: @"unsignedIntValue"],
+	    [OFNumber numberWithUnsignedInt: 9]);
+	OTAssertEqualObjects([_myObject valueForKey: @"unsignedLongValue"],
+	    [OFNumber numberWithUnsignedLong: 10]);
+	OTAssertEqualObjects([_myObject valueForKey: @"unsignedLongLongValue"],
+	    [OFNumber numberWithUnsignedLongLong: 11]);
+	OTAssertEqualObjects([_myObject valueForKey: @"floatValue"],
+	    [OFNumber numberWithFloat: 12]);
+	OTAssertEqualObjects([_myObject valueForKey: @"doubleValue"],
+	    [OFNumber numberWithDouble: 13]);
+}
+
+- (void)testAutoWrappingOfSetValueForKey
+{
+	[_myObject setValue: [OFNumber numberWithBool: 0]
+		     forKey: @"boolValue"];
+	[_myObject setValue: [OFNumber numberWithChar: 10]
+		     forKey: @"charValue"];
+	[_myObject setValue: [OFNumber numberWithShort: 20]
+		     forKey: @"shortValue"];
+	[_myObject setValue: [OFNumber numberWithInt: 30]
+		     forKey: @"intValue"];
+	[_myObject setValue: [OFNumber numberWithLong: 40]
+		     forKey: @"longValue"];
+	[_myObject setValue: [OFNumber numberWithLongLong: 50]
+		     forKey: @"longLongValue"];
+	[_myObject setValue: [OFNumber numberWithUnsignedChar: 60]
+		     forKey: @"unsignedCharValue"];
+	[_myObject setValue: [OFNumber numberWithUnsignedShort: 70]
+		     forKey: @"unsignedShortValue"];
+	[_myObject setValue: [OFNumber numberWithUnsignedInt: 80]
+		     forKey: @"unsignedIntValue"];
+	[_myObject setValue: [OFNumber numberWithUnsignedLong: 90]
+		     forKey: @"unsignedLongValue"];
+	[_myObject setValue: [OFNumber numberWithUnsignedLongLong: 100]
+		     forKey: @"unsignedLongLongValue"];
+	[_myObject setValue: [OFNumber numberWithFloat: 110]
+		     forKey: @"floatValue"];
+	[_myObject setValue: [OFNumber numberWithDouble: 120]
+		     forKey: @"doubleValue"];
+
+	OTAssertEqual(_myObject.isBoolValue, 0);
+	OTAssertEqual(_myObject.charValue, 10);
+	OTAssertEqual(_myObject.shortValue, 20);
+	OTAssertEqual(_myObject.intValue, 30);
+	OTAssertEqual(_myObject.longValue, 40);
+	OTAssertEqual(_myObject.longLongValue, 50);
+	OTAssertEqual(_myObject.unsignedCharValue, 60);
+	OTAssertEqual(_myObject.unsignedShortValue, 70);
+	OTAssertEqual(_myObject.unsignedIntValue, 80);
+	OTAssertEqual(_myObject.unsignedLongValue, 90);
+	OTAssertEqual(_myObject.unsignedLongLongValue, 100);
+	OTAssertEqual(_myObject.floatValue, 110);
+	OTAssertEqual(_myObject.doubleValue, 120);
+}
+
+- (void)testSetValueForKeyWithNilThrows
+{
+	OTAssertThrowsSpecific(
+	    [_myObject setValue: (id _Nonnull)nil forKey: @"intValue"],
+	    OFInvalidArgumentException);
+}
+
+- (void)testValueForKeyPath
+{
+	_myObject.objectValue = objc_autorelease([[MyObject alloc] init]);
+	[_myObject.objectValue setObjectValue:
+	    objc_autorelease([[MyObject alloc] init])];
+	[[_myObject.objectValue objectValue] setDoubleValue: 0.5];
+
+	OTAssertEqual([[_myObject valueForKeyPath:
+	    @"objectValue.objectValue.doubleValue"] doubleValue], 0.5);
+}
+
+- (void)testSetValueForKeyPath
+{
+	_myObject.objectValue = objc_autorelease([[MyObject alloc] init]);
+	[_myObject.objectValue setObjectValue:
+	    objc_autorelease([[MyObject alloc] init])];
+	[_myObject setValue: [OFNumber numberWithDouble: 0.75]
+		 forKeyPath: @"objectValue.objectValue.doubleValue"];
+
+	OTAssertEqual([[_myObject.objectValue objectValue] doubleValue], 0.75);
+}
+@end
+
 @implementation MyObject
 @synthesize objectValue = _objectValue, classValue = _classValue;
 @synthesize boolValue = _boolValue, charValue = _charValue;
@@ -75,147 +258,8 @@ static OFString *const module = @"OFObject";
 
 - (void)dealloc
 {
-	[_objectValue release];
+	objc_release(_objectValue);
 
 	[super dealloc];
-}
-@end
-
-@implementation TestsAppDelegate (OFObjectTests)
-- (void)objectTests
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFObject *object;
-	MyObject *myObject;
-
-	TEST(@"+[description]",
-	    [[OFObject description] isEqual: @"OFObject"] &&
-	    [[MyObject description] isEqual: @"MyObject"])
-
-	object = [[[OFObject alloc] init] autorelease];
-	myObject = [[[MyObject alloc] init] autorelease];
-
-	TEST(@"-[description]",
-	    [object.description isEqual: @"<OFObject>"] &&
-	    [myObject.description isEqual: @"<MyObject>"])
-
-	myObject.objectValue = @"Hello";
-	myObject.classValue = myObject.class;
-	TEST(@"-[valueForKey:]",
-	    [[myObject valueForKey: @"objectValue"] isEqual: @"Hello"] &&
-	    [[myObject valueForKey: @"classValue"] isEqual: myObject.class] &&
-	    [[myObject valueForKey: @"class"] isEqual: myObject.class])
-
-	EXPECT_EXCEPTION(@"-[valueForKey:] with undefined key",
-	    OFUndefinedKeyException, [myObject valueForKey: @"undefined"])
-
-	TEST(@"-[setValue:forKey:]",
-	    R([myObject setValue: @"World" forKey: @"objectValue"]) &&
-	    R([myObject setValue: [OFObject class] forKey: @"classValue"]) &&
-	    [myObject.objectValue isEqual: @"World"] &&
-	    [myObject.classValue isEqual: [OFObject class]])
-
-	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
-	    OFUndefinedKeyException,
-	    [myObject setValue: @"x" forKey: @"undefined"])
-
-	myObject.boolValue = 1;
-	myObject.charValue = 2;
-	myObject.shortValue = 3;
-	myObject.intValue = 4;
-	myObject.longValue = 5;
-	myObject.longLongValue = 6;
-	myObject.unsignedCharValue = 7;
-	myObject.unsignedShortValue = 8;
-	myObject.unsignedIntValue = 9;
-	myObject.unsignedLongValue = 10;
-	myObject.unsignedLongLongValue = 11;
-	myObject.floatValue = 12;
-	myObject.doubleValue = 13;
-	TEST(@"Auto-wrapping of -[valueForKey:]",
-	    [[myObject valueForKey: @"boolValue"] isEqual:
-	    [OFNumber numberWithBool: 1]] &&
-	    [[myObject valueForKey: @"charValue"] isEqual:
-	    [OFNumber numberWithChar: 2]] &&
-	    [[myObject valueForKey: @"shortValue"] isEqual:
-	    [OFNumber numberWithShort: 3]] &&
-	    [[myObject valueForKey: @"intValue"] isEqual:
-	    [OFNumber numberWithInt: 4]] &&
-	    [[myObject valueForKey: @"longValue"] isEqual:
-	    [OFNumber numberWithLong: 5]] &&
-	    [[myObject valueForKey: @"longLongValue"] isEqual:
-	    [OFNumber numberWithLongLong: 6]] &&
-	    [[myObject valueForKey: @"unsignedCharValue"] isEqual:
-	    [OFNumber numberWithUnsignedChar: 7]] &&
-	    [[myObject valueForKey: @"unsignedShortValue"] isEqual:
-	    [OFNumber numberWithUnsignedShort: 8]] &&
-	    [[myObject valueForKey: @"unsignedIntValue"] isEqual:
-	    [OFNumber numberWithUnsignedInt: 9]] &&
-	    [[myObject valueForKey: @"unsignedLongValue"] isEqual:
-	    [OFNumber numberWithUnsignedLong: 10]] &&
-	    [[myObject valueForKey: @"unsignedLongLongValue"] isEqual:
-	    [OFNumber numberWithUnsignedLongLong: 11]] &&
-	    [[myObject valueForKey: @"floatValue"] isEqual:
-	    [OFNumber numberWithFloat: 12]] &&
-	    [[myObject valueForKey: @"doubleValue"] isEqual:
-	    [OFNumber numberWithDouble: 13]])
-
-	TEST(@"Auto-wrapping of -[setValue:forKey:]",
-	    R([myObject setValue: [OFNumber numberWithBool: 0]
-			  forKey: @"boolValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithChar: 10]
-			  forKey: @"charValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithShort: 20]
-			  forKey: @"shortValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithInt: 30]
-			  forKey: @"intValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithLong: 40]
-			  forKey: @"longValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithLongLong: 50]
-			  forKey: @"longLongValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithUnsignedChar: 60]
-			  forKey: @"unsignedCharValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithUnsignedShort: 70]
-			  forKey: @"unsignedShortValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithUnsignedInt: 80]
-			  forKey: @"unsignedIntValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithUnsignedLong: 90]
-			  forKey: @"unsignedLongValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithUnsignedLongLong: 100]
-			  forKey: @"unsignedLongLongValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithFloat: 110]
-			  forKey: @"floatValue"]) &&
-	    R([myObject setValue: [OFNumber numberWithDouble: 120]
-			  forKey: @"doubleValue"]) &&
-	    myObject.isBoolValue == 0 && myObject.charValue == 10 &&
-	    myObject.shortValue == 20 && myObject.intValue == 30 &&
-	    myObject.longValue == 40 && myObject.longLongValue == 50 &&
-	    myObject.unsignedCharValue == 60 &&
-	    myObject.unsignedShortValue == 70 &&
-	    myObject.unsignedIntValue == 80 &&
-	    myObject.unsignedLongValue == 90 &&
-	    myObject.unsignedLongLongValue == 100 &&
-	    myObject.floatValue == 110 &&
-	    myObject.doubleValue == 120)
-
-	EXPECT_EXCEPTION(@"Catch -[setValue:forKey:] with nil key for scalar",
-	    OFInvalidArgumentException,
-	    [myObject setValue: (id _Nonnull)nil forKey: @"intValue"])
-
-	TEST(@"-[valueForKeyPath:]",
-	    (myObject = [[[MyObject alloc] init] autorelease]) &&
-	    (myObject.objectValue = [[[MyObject alloc] init] autorelease]) &&
-	    R([myObject.objectValue
-	    setObjectValue: [[[MyObject alloc] init] autorelease]]) &&
-	    R([[myObject.objectValue objectValue] setDoubleValue: 0.5]) &&
-	    [[myObject valueForKeyPath: @"objectValue.objectValue.doubleValue"]
-	    doubleValue] == 0.5)
-
-	TEST(@"[-setValue:forKeyPath:]",
-	    R([myObject setValue: [OFNumber numberWithDouble: 0.75]
-		      forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
-	    [[myObject.objectValue objectValue] doubleValue] == 0.75)
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

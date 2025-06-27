@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2022 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,8 @@
 #ifndef _XOPEN_SOURCE_EXTENDED
 # define _XOPEN_SOURCE_EXTENDED
 #endif
-#define __NO_EXT_QNX
 #define _HPUX_ALT_XOPEN_SOCKET_API
 
-#include <assert.h>
 #include <errno.h>
 #include <string.h>
 
@@ -29,36 +31,33 @@
 #import "OFStreamSocket+Private.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFAcceptSocketFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenOnSocketFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
+#if defined(OF_AMIGAOS) && !defined(UNIQUE_ID)
+# define UNIQUE_ID -1
+#endif
+
 @implementation OFStreamSocket
 @dynamic delegate;
 @synthesize listening = _listening;
 
-+ (void)initialize
-{
-	if (self != [OFStreamSocket class])
-		return;
-
-	if (!OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)socket
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -71,9 +70,16 @@
 			abort();
 		}
 
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		_socket = OFInvalidSocketHandle;
+#ifdef OF_AMIGAOS
+		_socketID = -1;
+#endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -108,7 +114,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -117,7 +123,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	if (ret == 0)
@@ -142,7 +148,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #else
 	int bytesWritten;
 
@@ -154,7 +160,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	return (size_t)bytesWritten;
@@ -172,7 +178,7 @@
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	_canBlock = canBlock;
 }
@@ -212,11 +218,11 @@
 - (int)of_socketError
 {
 	int errNo;
-	socklen_t len = sizeof(errNo);
+	socklen_t len = (socklen_t)sizeof(errNo);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
 	    &len) != 0)
-		return OFSocketErrNo();
+		return _OFSocketErrNo();
 
 	return errNo;
 }
@@ -236,20 +242,24 @@
 		@throw [OFListenOnSocketFailedException
 		    exceptionWithSocket: self
 				backlog: backlog
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	_listening = true;
 }
 
 - (instancetype)accept
 {
-	OFStreamSocket *client = [[[[self class] alloc] init] autorelease];
+	OFStreamSocket *client;
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 # endif
 #endif
 
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	client = objc_autorelease([[self.class alloc] init]);
 	client->_remoteAddress.length =
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
@@ -260,7 +270,7 @@
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket,
 	    (struct sockaddr * )&client->_remoteAddress.sockaddr,
@@ -268,14 +278,14 @@
 	    OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #else
 	if ((client->_socket = accept(_socket,
 	    (struct sockaddr *)&client->_remoteAddress.sockaddr,
 	    &client->_remoteAddress.length)) == OFInvalidSocketHandle)
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
@@ -283,7 +293,7 @@
 # endif
 #endif
 
-	assert(client->_remoteAddress.length <=
+	OFAssert(client->_remoteAddress.length <=
 	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
 	switch (((struct sockaddr *)&client->_remoteAddress.sockaddr)
@@ -323,22 +333,46 @@
 {
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: NULL
+				      handler: NULL
 				     delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (OFStreamSocketAsyncAcceptBlock)block
 {
-	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode block: block];
+	OFStreamSocketAcceptedHandler handler = ^ (OFStreamSocket *socket,
+	    OFStreamSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithHandler: (OFStreamSocketAcceptedHandler)handler
+{
+	[self asyncAcceptWithRunLoopMode: OFDefaultRunLoopMode
+				 handler: handler];
 }
 
 - (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
 			     block: (OFStreamSocketAsyncAcceptBlock)block
 {
+	OFStreamSocketAcceptedHandler handler = ^ (OFStreamSocket *socket,
+	    OFStreamSocket *acceptedSocket, id exception) {
+		return block(acceptedSocket, exception);
+	};
+
+	[self asyncAcceptWithRunLoopMode: runLoopMode
+				 handler: handler];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+			   handler: (OFStreamSocketAcceptedHandler)handler
+{
 	[OFRunLoop of_addAsyncAcceptForSocket: self
 					 mode: runLoopMode
-					block: block
+				      handler: handler
 				     delegate: nil];
 }
 #endif
@@ -355,6 +389,51 @@
 		@throw [OFOutOfRangeException exception];
 
 	return &_remoteAddress;
+}
+
+- (void)releaseSocketFromCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if ((_socketID = ReleaseSocket(_socket, UNIQUE_ID)) == -1) {
+		switch (Errno()) {
+		case ENOMEM:
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: 0];
+		case EBADF:
+			@throw [OFNotOpenException exceptionWithObject: self];
+		default:
+			OFEnsure(0);
+		}
+	}
+
+	_socket = OFInvalidSocketHandle;
+#endif
+}
+
+- (void)obtainSocketForCurrentThread
+{
+#ifdef OF_AMIGAOS
+	if (_socket != OFInvalidSocketHandle)
+		@throw [OFAlreadyOpenException exceptionWithObject: self];
+
+	if (_socketID == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	/*
+	 * FIXME: We should store these, but that requires changing all
+	 *	  subclasses. This only becomes a problem if IPv6 support ever
+	 *	  gets added.
+	 */
+	_socket = ObtainSocket(_socketID, AF_INET, SOCK_STREAM, 0);
+	if (_socket == OFInvalidSocketHandle)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self.class];
+
+	_socketID = -1;
+#endif
 }
 
 - (void)close
