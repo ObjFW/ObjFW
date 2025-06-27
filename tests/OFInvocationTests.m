@@ -156,22 +156,53 @@ struct TestStruct {
 				       : (complex float)c15
 				       : (complex double)c16
 {
-	OFEnsure(creal(c1) == 1.0 && cimag(c1) == 0.5);
-	OFEnsure(creal(c2) == 2.0 && cimag(c2) == 1.0);
-	OFEnsure(creal(c3) == 3.0 && cimag(c3) == 1.5);
-	OFEnsure(creal(c4) == 4.0 && cimag(c4) == 2.0);
-	OFEnsure(creal(c5) == 5.0 && cimag(c5) == 2.5);
-	OFEnsure(creal(c6) == 6.0 && cimag(c6) == 3.0);
-	OFEnsure(creal(c7) == 7.0 && cimag(c7) == 3.5);
-	OFEnsure(creal(c8) == 8.0 && cimag(c8) == 4.0);
-	OFEnsure(creal(c9) == 9.0 && cimag(c9) == 4.5);
-	OFEnsure(creal(c10) == 10.0 && cimag(c10) == 5.0);
-	OFEnsure(creal(c11) == 11.0 && cimag(c11) == 5.5);
-	OFEnsure(creal(c12) == 12.0 && cimag(c12) == 6.0);
-	OFEnsure(creal(c13) == 13.0 && cimag(c13) == 6.5);
-	OFEnsure(creal(c14) == 14.0 && cimag(c14) == 7.0);
-	OFEnsure(creal(c15) == 15.0 && cimag(c15) == 7.5);
-	OFEnsure(creal(c16) == 16.0 && cimag(c16) == 8.0);
+	OTAssertEqual(creal(c1), 1.0);
+	OTAssertEqual(cimag(c1), 0.5);
+
+	OTAssertEqual(creal(c2), 2.0);
+	OTAssertEqual(cimag(c2), 1.0);
+
+	OTAssertEqual(creal(c3), 3.0);
+	OTAssertEqual(cimag(c3), 1.5);
+
+	OTAssertEqual(creal(c4), 4.0);
+	OTAssertEqual(cimag(c4), 2.0);
+
+	OTAssertEqual(creal(c5), 5.0);
+	OTAssertEqual(cimag(c5), 2.5);
+
+	OTAssertEqual(creal(c6), 6.0);
+	OTAssertEqual(cimag(c6), 3.0);
+
+	OTAssertEqual(creal(c7), 7.0);
+	OTAssertEqual(cimag(c7), 3.5);
+
+	OTAssertEqual(creal(c8), 8.0);
+	OTAssertEqual(cimag(c8), 4.0);
+
+	OTAssertEqual(creal(c9), 9.0);
+	OTAssertEqual(cimag(c9), 4.5);
+
+	OTAssertEqual(creal(c10), 10.0);
+	OTAssertEqual(cimag(c10), 5.0);
+
+	OTAssertEqual(creal(c11), 11.0);
+	OTAssertEqual(cimag(c11), 5.5);
+
+	OTAssertEqual(creal(c12), 12.0);
+	OTAssertEqual(cimag(c12), 6.0);
+
+	OTAssertEqual(creal(c13), 13.0);
+	OTAssertEqual(cimag(c13), 6.5);
+
+	OTAssertEqual(creal(c14), 14.0);
+	OTAssertEqual(cimag(c14), 7.0);
+
+	OTAssertEqual(creal(c15), 15.0);
+	OTAssertEqual(cimag(c15), 7.5);
+
+	OTAssertEqual(creal(c16), 16.0);
+	OTAssertEqual(cimag(c16), 8.0);
 
 	return (c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 +
 	    c12 + c13 + c14 + c15 + c16) / 16;
