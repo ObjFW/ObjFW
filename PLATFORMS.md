@@ -4,7 +4,6 @@ Platforms
 ObjFW is known to work on the following platforms, but should run on many
 others as well.
 
-
 AmigaOS
 -------
 
@@ -12,7 +11,6 @@ AmigaOS
   * Architectures: m68k, PowerPC
   * Compilers: GCC 6.4.1b (amiga-gcc), GCC 8.3.0 (adtools)
   * Runtimes: ObjFW
-
 
 Android
 -------
@@ -22,7 +20,6 @@ Android
   * Compilers: Clang 3.3, Clang 3.8.0
   * Runtimes: ObjFW
 
-
 Bare metal ARM Cortex-M4
 ------------------------
 
@@ -30,7 +27,6 @@ Bare metal ARM Cortex-M4
   * Compilers: Clang 3.5
   * Runtimes: ObjFW
   * Notes: Bootloader, libc (newlib) and possibly external RAM required
-
 
 DOS
 ---
@@ -40,7 +36,6 @@ DOS
   * Compilers: DJGPP GCC 4.7.3 (djdev204)
   * Runtimes: ObjFW
 
-
 DragonFlyBSD
 ------------
 
@@ -48,7 +43,6 @@ DragonFlyBSD
   * Architectures: AMD64, x86
   * Compilers: GCC 4.4.7
   * Runtimes: ObjFW
-
 
 FreeBSD
 -------
@@ -58,7 +52,6 @@ FreeBSD
   * Compilers: Clang 3.1, Clang 3.3
   * Runtimes: ObjFW
 
-
 GNU/Hurd
 --------
 
@@ -66,7 +59,6 @@ GNU/Hurd
   * Architectures: i686
   * Compilers: Clang 14.0.6
   * Runtimes: ObjFW
-
 
 Haiku
 -----
@@ -76,17 +68,15 @@ Haiku
   * Compilers: Clang 3.2, GCC 4.6.3
   * Runtimes: ObjFW
 
-
 HP-UX
 -----
 
-  * OS versions: 11i v1 (PA-RISC 2.0), 11i v3 (Itanium)
+  * OS versions: 11i v1, 11i v3
   * Architectures: Itanium, PA-RISC 2.0
   * Compilers: GCC 4.7.2, GCC 7.5.0
   * Runtimes: ObjFW
   * Notes: Exception handling on Itanium in 32 bit mode is broken, you need to
            use 64 bit mode by passing `OBJC="gcc -mlp64"` to `configure`.
-
 
 iOS
 ---
@@ -95,16 +85,15 @@ iOS
   * Compilers: Clang
   * Runtimes: Apple
 
-
 Linux
 -----
 
-  * Architectures: Alpha, AMD64, ARMv6, ARMv7, ARM64, Itanium, m68k, MIPS (O32),
-                   MIPS64 (N64), RISC-V 64, PowerPC, S390x, SuperH-4, x86
-  * Compilers: Clang 3.0-10.0, GCC 4.6-10.0
+  * Architectures: Alpha, AMD64, ARMv5, ARMv6, ARMv7, ARM64, Itanium,
+                   LoongArch 64, m68k, MIPS (O32), MIPS64 (N64), RISC-V 64,
+                   PA-RISC, PowerPC, PowerPC 64, S390x, SuperH-4, x86
+  * Compilers: Clang 3.0-18.1.1, GCC 4.6-14.1.1
   * C libraries: glibc, musl
   * Runtimes: ObjFW
-
 
 macOS
 -----
@@ -113,7 +102,6 @@ macOS
   * Architectures: AMD64, PowerPC, PowerPC64, x86
   * Compilers: Clang 3.1-10.0, Apple GCC 4.0.1 & 4.2.1
   * Runtimes: Apple, ObjFW
-
 
 MiNT
 ----
@@ -124,7 +112,6 @@ MiNT
   * Compilers: GCC 4.6.4 (MiNT 20130415)
   * Limitations: No shared libraries, no threads
 
-
 MorphOS
 -------
 
@@ -132,7 +119,6 @@ MorphOS
   * Architectures: PowerPC
   * Compilers: GCC 9.3.0
   * Runtimes: ObjFW
-
 
 NetBSD
 ------
@@ -143,7 +129,6 @@ NetBSD
   * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3 & 7.4.0
   * Runtimes: ObjFW
 
-
 Nintendo 3DS
 ------------
 
@@ -152,7 +137,6 @@ Nintendo 3DS
   * Compilers: GCC 5.3.0 (devkitARM release 45)
   * Runtimes: ObjFW
   * Limitations: No threads
-
 
 Nintendo DS
 -----------
@@ -163,16 +147,14 @@ Nintendo DS
   * Limitations: No threads, no sockets
   * Notes: File support requires an argv-compatible launcher (such as HBMenu)
 
-
 Nintendo Switch
 ---------------
 
   * OS Versions: yuzu 1093
   * Architectures: AArch64
-  * Compilers: GCC 12.1.0 (devkitA64 release 19) 
+  * Compilers: GCC 12.1.0 (devkitA64 release 19)
   * Runtimes: ObjFW
   * Limitations: No sockets, no shared libraries, not tested on real hardware
-
 
 OpenBSD
 -------
@@ -181,7 +163,6 @@ OpenBSD
   * Architectures: AMD64, MIPS64, PA-RISC, PowerPC, SPARC64
   * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
-
 
 PlayStation Portable
 --------------------
@@ -192,7 +173,6 @@ PlayStation Portable
   * Runtimes: ObjFW
   * Limitations: No threads, no sockets
 
-
 QNX
 ---
 
@@ -201,15 +181,13 @@ QNX
   * Compilers: GCC 4.6.1
   * Runtimes: ObjFW
 
-
 Solaris
 -------
 
   * OS Versions: OpenIndiana 2015.03, OpenIndiana 2023.04, Oracle Solaris 11.4
-  * Architectures: AMD64, x86
+  * Architectures: AMD64, SPARC64, x86
   * Compilers: Clang 3.4.2, Clang 11.0.0, Clang 13.0.1, GCC 4.8.3, GCC 10.4.0
   * Runtimes: ObjFW
-
 
 Wii
 ---
@@ -219,7 +197,6 @@ Wii
   * Compilers: GCC 4.6.3 (devkitPPC release 26)
   * Runtimes: ObjFW
   * Limitations: No threads
-
 
 Wii U
 -----
@@ -231,19 +208,16 @@ Wii U
   * Limitations: No files, no threads, no sockets, no shared libraries, not
                  tested on real hardware
 
-
 Windows
 -------
 
-  * OS Versions: 98 SE, NT 4.0, XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, 11,
-                 Wine (x86 & x64)
+  * OS Versions: 98 SE, NT 4.0, XP, 7, 8, 8.1, 10, 11, Wine
   * Architectures: AArch64, AMD64, x86
   * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (AMD64 & x86),
                Clang 3.9.0 from msys2 (x86),
                Clang 10.0 from msys2 (AMD64 & x86),
                Clang 14.0.4 from msys2 (AArch64)
   * Runtimes: ObjFW
-
 
 Others
 ------
@@ -256,7 +230,6 @@ e-mail to js@nil.im so it can be added here!
 
 If you have a platform on which ObjFW does not work, please contact me as well!
 
-
 Forwarding
 ==========
 
@@ -267,9 +240,13 @@ resolveInstanceMethod:, which are always available):
 
   * AMD64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)
   * ARM (EABI/ELF, Apple/Mach-O)
-  * ARM64 (ARM64/ELF, Apple/Mach-O)
+  * ARM64 (ARM64/ELF, Apple/Mach-O, Win64/PE)
+  * LoongArch 64 (ELF)
   * MIPS (O32/ELF, EABI/ELF)
+  * MIPS64 (N64/ELF)
   * PowerPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
+  * PowerPC 64 (SysV/ELF, SysV/ELF v2)
+  * RISC-V 64 (ELF)
   * SPARC (SysV/ELF)
   * SPARC64 (SysV/ELF)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)

@@ -1,0 +1,114 @@
+.\"
+.\" Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+.\"
+.\" All rights reserved.
+.\"
+.\" This program is free software: you can redistribute it and/or modify it
+.\" under the terms of the GNU Lesser General Public License version 3.0 only,
+.\" as published by the Free Software Foundation.
+.\"
+.\" This program is distributed in the hope that it will be useful, but WITHOUT
+.\" ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\" FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+.\" version 3.0 for more details.
+.\"
+.\" You should have received a copy of the GNU Lesser General Public License
+.\" version 3.0 along with this program. If not, see
+.\" <https://www.gnu.org/licenses/>.
+.\"
+.TH objfw-config 1
+.SH NAME
+objfw-config - print flags required for compiling with ObjFW
+.SH SYNOPSIS
+.B objfw-config
+[\fBoptions\fR]
+.SH DESCRIPTION
+.B objfw-config
+is a program which outputs various flags needed to compile software using ObjFW.
+.SH OPTIONS
+.TP
+.BR \fB\-\-all\fR
+Outputs all flags + libs.
+.TP
+.BR \fB\-\-arc\fR
+Outputs the required \fBOBJCFLAGS\fR to use ARC.
+.TP
+.BR \fB\-\-cflags\fR
+Outputs the required \fBCFLAGS\fR.
+.TP
+.BR \fB\-\-cppflags\fR
+Outputs the required \fBCPPFLAGS\fR.
+.TP
+.BR \fB\-\-cxxflags\fR
+Outputs the required \fBCXXFLAGS\fR.
+.TP
+.BR \fB\-\-framework-libs\fR
+Outputs the required \fBLIBS\fR, preferring frameworks.
+.TP
+.BR \fB\-\-help\fR
+Prints the help.
+.TP
+.BR \fB\-\-ldflags\fR
+Outputs the required \fBLDFLAGS\fR.
+.TP
+.BR \fB\-\-libs\fR
+Outputs the required \fBLIBS\fR.
+.TP
+.BR \fB\-\-lib-cflags\fR
+Outputs \fBCFLAGS\fR for building a library.
+.TP
+.BR \fB\-\-lib-ldflags\fR
+Outputs \fBLDFLAGS\fR for building a library.
+.TP
+.BR \fB\-\-lib-prefix\fR
+Outputs the prefix for libraries.
+.TP
+.BR \fB\-\-lib-suffix\fR
+Outputs the suffix for libraries.
+.TP
+.BR \fB\-\-objc\fR
+Outputs the \fBOBJC\fR used to compile ObjFW. It is required to use the same
+\fBOBJC\fR that was used to compile ObjFW.
+.TP
+.BR \fB\-\-objcflags\fR
+Outputs the required \fBOBJCFLAGS\fR.
+.TP
+.BR \fB\-\-package\fR " " \fIname\fR
+Additionally outputs the flags for the specified package.
+.TP
+.BR \fB\-\-packages-dir\fR
+Outputs the directory where flags for packages are stored.
+.TP
+.BR \fB\-\-plugin-cflags\fR
+Outputs \fBCFLAGS\fR for building a plugin.
+.TP
+.BR \fB\-\-plugin-ldflags\fR
+Outputs \fBLDFLAGS\fR for building a plugin.
+.TP
+.BR \fB\-\-plugin-suffix\fR
+Outputs the suffix for plugins.
+.TP
+.BR \fB\-\-prog-suffix\fR
+Outputs the suffix for binaries.
+.TP
+.BR \fB\-\-reexport\fR
+Outputs \fBLDFLAGS\fR to reexport ObjFW.
+.TP
+.BR \fB\-\-rpath\fR
+Outputs \fBLDFLAGS\fR for using rpath.
+.TP
+.BR \fB\-\-static-libs\fR
+Outputs the required \fBLIBS\fR to link ObjFW statically.
+.TP
+.BR \fB\-\-version\fR
+Outputs the installed ObjFW version.
+.SH EXAMPLES
+Print \fBOBJCFLAGS\fR and \fBCPPFLAGS\fR:
+.PP
+	objfw-config \-\-objcflags \-\-cppflags
+.PP
+Print \fBLIBS\fR and \fBLDFLAGS\fR for ObjFW and ObjFWTLS:
+.PP
+	objfw-config \-\-libs \-\-ldflags --package ObjFWTLS
+.SH SEE ALSO
+\fIobjfw-compile\fR(1)

@@ -5,6 +5,7 @@ SRCS = OFHTTP.m		\
        ProgressBar.m
 DATA = localization/de.json		\
        localization/localizations.json
+MAN = ofhttp.1
 
 include ../../buildsys.mk
 
@@ -17,9 +18,18 @@ CPPFLAGS += -I../../src							\
 	    -I../../src/exceptions					\
 	    -I../../src/tls						\
 	    -I../..							\
-	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'
-LIBS := -L../../src -L../../src/tls ${OFHTTP_LIBS} -lobjfw		\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+	    -DOBJFWTLS_LOCAL_INCLUDES					\
+	    -DLOCALIZATION_DIR='"${datadir}/ofhttp/localization"'	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src			\
+	-L../../src/runtime		\
+	-L../../src/runtime/linklib	\
+	-L../../src/tls			\
+	-L../../src/bridge		\
+	${OFHTTP_LIBS}			\
+	-lobjfw				\
+	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

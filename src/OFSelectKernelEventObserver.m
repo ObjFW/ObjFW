@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
-
-#define __NO_EXT_QNX
 
 #include "platform.h"
 
@@ -31,6 +33,7 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFInitializationFailedException.h"
@@ -49,9 +52,9 @@
 #endif
 
 @implementation OFSelectKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		FD_ZERO(&_readFDs);
@@ -74,7 +77,7 @@
 		_maxFD = (int)_cancelFD[0];
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -186,7 +189,7 @@
 #endif
 	void *pool;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 #ifdef FD_COPY
@@ -232,21 +235,28 @@
 	FreeSignal(_cancelSignal);
 
 	Permit();
-#else
-	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (timeInterval != -1 ? &timeout : NULL));
-#endif
 
-	if (events < 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: OFSocketErrNo()];
+	if (events < 0) {
+		int errNo = _OFSocketErrNo();
 
-#ifdef OF_AMIGAOS
-	if (execSignalMask != 0 &&
+		if (errNo != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errNo];
+	} else if (execSignalMask != 0 &&
 	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
 		[_delegate execSignalWasReceived: execSignalMask];
 #else
+	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (timeInterval != -1 ? &timeout : NULL))) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errNo];
+	}
+
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 
@@ -262,7 +272,7 @@
 	pool = objc_autoreleasePoolPush();
 
 	for (id <OFReadyForReadingObserving> object in
-	    [[_readObjects copy] autorelease]) {
+	    objc_autorelease([_readObjects copy])) {
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForReading;
 
@@ -275,7 +285,7 @@
 	}
 
 	for (id <OFReadyForWritingObserving> object in
-	    [[_writeObjects copy] autorelease]) {
+	    objc_autorelease([_writeObjects copy])) {
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 

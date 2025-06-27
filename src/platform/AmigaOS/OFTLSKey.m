@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -105,7 +109,7 @@ OFTLSKeyFree(OFTLSKey key)
 		if (lastKey == key)
 			lastKey = key->previous;
 
-		objc_hashtable_free(key->table);
+		_objc_hashtable_free(key->table);
 		free(key);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
@@ -124,7 +128,7 @@ OFTLSKeyGet(OFTLSKey key)
 		if (key->table == NULL)
 			return NULL;
 
-		ret = objc_hashtable_get(key->table, FindTask(NULL));
+		ret = _objc_hashtable_get(key->table, FindTask(NULL));
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}
@@ -140,12 +144,13 @@ OFTLSKeySet(OFTLSKey key, void *ptr)
 		struct Task *task = FindTask(NULL);
 
 		if (key->table == NULL)
-			key->table = objc_hashtable_new(hashFunc, equalFunc, 2);
+			key->table = _objc_hashtable_new(hashFunc, equalFunc,
+			    2);
 
 		if (ptr == NULL)
-			objc_hashtable_delete(key->table, task);
+			_objc_hashtable_delete(key->table, task);
 		else
-			objc_hashtable_set(key->table, task, ptr);
+			_objc_hashtable_set(key->table, task, ptr);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}
@@ -162,7 +167,7 @@ OFTLSKeyThreadExited(void)
 
 		for (OFTLSKey iter = firstKey; iter != NULL; iter = iter->next)
 			if (iter->table != NULL)
-				objc_hashtable_delete(iter->table, task);
+				_objc_hashtable_delete(iter->table, task);
 	} @finally {
 		ReleaseSemaphore(&semaphore);
 	}

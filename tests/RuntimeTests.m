@@ -1,29 +1,30 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"Runtime";
+static void *testKey = &testKey;
 
-@interface OFObject (SuperTest)
-- (id)superTest;
-@end
-
-@interface RuntimeTest: OFObject
+@interface RuntimeTestClass: OFObject
 {
 	OFString *_foo, *_bar;
 }
@@ -34,14 +35,124 @@ static OFString *const module = @"Runtime";
 - (id)nilSuperTest;
 @end
 
-@implementation RuntimeTest
+@interface RuntimeTests: OTTestCase
+{
+	RuntimeTestClass *_test;
+}
+@end
+
+@interface OFObject (SuperTest)
+- (id)superTest;
+@end
+
+@implementation RuntimeTests
+- (void)setUp
+{
+	[super setUp];
+
+	_test = [[RuntimeTestClass alloc] init];
+}
+
+- (void)dealloc
+{
+	objc_release(_test);
+
+	[super dealloc];
+}
+
+- (void)testCallNonExistentMethodViaSuper
+{
+	OTAssertThrowsSpecific([_test superTest], OFNotImplementedException);
+}
+
+- (void)testCallMethodViaSuperWithNilSelf
+{
+	OTAssertNil([_test nilSuperTest]);
+}
+
+- (void)testPropertyCopyNonatomic
+{
+	OFMutableString *string = [OFMutableString stringWithString: @"foo"];
+	OFString *foo = @"foo";
+
+	_test.foo = string;
+	OTAssertEqualObjects(_test.foo, foo);
+	OTAssertNotEqual(_test.foo, foo);
+	OTAssertEqual(_test.foo.retainCount, 1);
+}
+
+- (void)testPropertyRetainAtomic
+{
+	OFMutableString *string = [OFMutableString stringWithString: @"foo"];
+
+	_test.bar = string;
+	OTAssertEqual(_test.bar, string);
+	OTAssertEqual(string.retainCount, 3);
+}
+
+- (void)testAssociatedObjects
+{
+	objc_setAssociatedObject(self, testKey, _test, OBJC_ASSOCIATION_ASSIGN);
+	OTAssertEqual(_test.retainCount, 1);
+
+	objc_setAssociatedObject(self, testKey, _test, OBJC_ASSOCIATION_RETAIN);
+	OTAssertEqual(_test.retainCount, 2);
+
+	OTAssertEqual(objc_getAssociatedObject(self, testKey), _test);
+	OTAssertEqual(_test.retainCount, 3);
+
+	objc_setAssociatedObject(self, testKey, _test, OBJC_ASSOCIATION_ASSIGN);
+	OTAssertEqual(_test.retainCount, 2);
+
+	objc_setAssociatedObject(self, testKey, _test,
+	    OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	OTAssertEqual(_test.retainCount, 3);
+
+	OTAssertEqual(objc_getAssociatedObject(self, testKey), _test);
+	OTAssertEqual(_test.retainCount, 3);
+
+	objc_removeAssociatedObjects(self);
+	OTAssertEqual(_test.retainCount, 2);
+}
+
+#ifdef OF_OBJFW_RUNTIME
+- (void)testTaggedPointers
+{
+	int classID;
+	uintmax_t value;
+	id object;
+
+	if (sizeof(uintptr_t) == 8)
+		value = 0xDEADBEEFDEADBEF;
+	else if (sizeof(uintptr_t) == 4)
+		value = 0xDEADBEF;
+	else
+		OTAssert(sizeof(uintptr_t) == 8 || sizeof(uintptr_t) == 4);
+
+	OTAssertNotEqual(objc_registerTaggedPointerClass([OFString class]), -1);
+
+	classID = objc_registerTaggedPointerClass([OFNumber class]);
+	OTAssertNotEqual(classID, -1);
+
+	object = objc_createTaggedPointer(classID, (uintptr_t)value);
+	OTAssertNotNil(object);
+	OTAssertEqual(object_getClass(object), [OFNumber class]);
+	OTAssertEqual([object class], [OFNumber class]);
+	OTAssertEqual(object_getTaggedPointerValue(object), value);
+	OTAssertNotNil(objc_createTaggedPointer(classID, UINTPTR_MAX >> 4));
+	OTAssertNil(objc_createTaggedPointer(classID, (UINTPTR_MAX >> 4) + 1));
+}
+#endif
+@end
+
+@implementation RuntimeTestClass
 @synthesize foo = _foo;
 @synthesize bar = _bar;
 
 - (void)dealloc
 {
-	[_foo release];
-	[_bar release];
+	objc_release(_foo);
+	objc_release(_bar);
 
 	[super dealloc];
 }
@@ -56,58 +167,5 @@ static OFString *const module = @"Runtime";
 	self = nil;
 
 	return [self superTest];
-}
-@end
-
-@implementation TestsAppDelegate (RuntimeTests)
-- (void)runtimeTests
-{
-	void *pool = objc_autoreleasePoolPush();
-	RuntimeTest *test = [[[RuntimeTest alloc] init] autorelease];
-	OFString *string, *foo;
-#ifdef OF_OBJFW_RUNTIME
-	int classID;
-	uintmax_t value;
-	id object;
-#endif
-
-	EXPECT_EXCEPTION(@"Calling a non-existent method via super",
-	    OFNotImplementedException, [test superTest])
-
-	TEST(@"Calling a method via a super with self == nil",
-	    [test nilSuperTest] == nil)
-
-	string = [OFMutableString stringWithString: @"foo"];
-	foo = @"foo";
-
-	test.foo = string;
-	TEST(@"copy, nonatomic properties", [test.foo isEqual: foo] &&
-	    test.foo != foo && test.foo.retainCount == 1)
-
-	test.bar = string;
-	TEST(@"retain, atomic properties",
-	    test.bar == string && string.retainCount == 3)
-
-#ifdef OF_OBJFW_RUNTIME
-	if (sizeof(uintptr_t) == 8)
-		value = 0xDEADBEEFDEADBEF;
-	else if (sizeof(uintptr_t) == 4)
-		value = 0xDEADBEF;
-	else
-		abort();
-
-	TEST(@"Tagged pointers",
-	    objc_registerTaggedPointerClass([OFString class]) != -1 &&
-	    (classID = objc_registerTaggedPointerClass([OFNumber class])) !=
-	    -1 &&
-	    (object = objc_createTaggedPointer(classID, (uintptr_t)value)) &&
-	    object_getClass(object) == [OFNumber class] &&
-	    [object class] == [OFNumber class] &&
-	    object_getTaggedPointerValue(object) == value &&
-	    objc_createTaggedPointer(classID, UINTPTR_MAX >> 4) != nil &&
-	    objc_createTaggedPointer(classID, (UINTPTR_MAX >> 4) + 1) == nil)
-#endif
-
-	objc_autoreleasePoolPop(pool);
 }
 @end

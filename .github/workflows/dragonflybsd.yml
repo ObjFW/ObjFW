@@ -2,7 +2,7 @@ name: dragonflybsd
 on: [push, pull_request]
 jobs:
   tests:
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         configure_flags:
@@ -10,8 +10,8 @@ jobs:
           - --disable-shared
           - --with-tls=gnutls
     steps:
-    - uses: actions/checkout@v3
-    - uses: vmactions/dragonflybsd-vm@v0
+    - uses: actions/checkout@v4
+    - uses: vmactions/dragonflybsd-vm@v1
       with:
         usesh: true
         copyback: false

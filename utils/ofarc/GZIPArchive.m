@@ -1,24 +1,31 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFApplication.h"
+#import "OFArray.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFStdIOStream.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFStdIOStream.h"
 
 #import "GZIPArchive.h"
 #import "OFArc.h"
@@ -26,12 +33,14 @@
 static OFArc *app;
 
 static void
-setPermissions(OFString *destination, OFString *source)
+setPermissions(OFString *destination, OFIRI *source)
 {
+	[app quarantineFile: destination];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFFileAttributes attributes = [fileManager
-	    attributesOfItemAtPath: source];
+	    attributesOfItemAtIRI: source];
 	OFFileAttributeKey key = OFFilePOSIXPermissions;
 	OFFileAttributes destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
@@ -65,29 +74,31 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithPath: (OFString *)path
-			 stream: (OF_KINDOF(OFStream *))stream
-			   mode: (OFString *)mode
-		       encoding: (OFStringEncoding)encoding
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
+		      encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				    stream: stream
-				      mode: mode
-				  encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		      stream: (OF_KINDOF(OFStream *))stream
-			mode: (OFString *)mode
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
 		_stream = [[OFGZIPStream alloc] initWithStream: stream
 							  mode: mode];
+		_archiveIRI = [IRI copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -96,7 +107,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)dealloc
 {
-	[_stream release];
+	objc_release(_stream);
+	objc_release(_archiveIRI);
 
 	[super dealloc];
 }
@@ -114,18 +126,17 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	OFFile *output;
 
 	if (files.count != 0) {
-		[OFStdErr writeLine:
-		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"cannot_extract_specific_file_from_gz",
 		    @"Cannot extract a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
 		return;
 	}
 
-	fileName = app->_archivePath.lastPathComponent
-	    .stringByDeletingPathExtension;
+	fileName = _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (app->_outputLevel >= 0)
-		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
@@ -133,12 +144,16 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 		return;
 
 	output = [OFFile fileWithPath: fileName mode: @"w"];
-	setPermissions(fileName, app->_archivePath);
+	setPermissions(fileName, _archiveIRI);
 
 	while (!_stream.atEndOfStream) {
-		ssize_t length = [app copyBlockFromStream: _stream
-						 toStream: output
-						 fileName: fileName];
+		ssize_t length;
+
+		[app checkForCancellation];
+
+		length = [app copyBlockFromStream: _stream
+					 toStream: output
+					 fileName: fileName];
 
 		if (length < 0) {
 			app->_exitStatus = 1;
@@ -150,8 +165,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	setModificationDate(fileName, _stream);
 
 	if (app->_outputLevel >= 0) {
-		[OFStdOut writeString: @"\r"];
-		[OFStdOut writeLine: OF_LOCALIZED(@"extracting_file_done",
+		[OFStdErr writeString: @"\r"];
+		[OFStdErr writeLine: OF_LOCALIZED(@"extracting_file_done",
 		    @"Extracting %[file]... done",
 		    @"file", fileName)];
 	}
@@ -159,8 +174,8 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
-	OFString *fileName = app->_archivePath.lastPathComponent
-	    .stringByDeletingPathExtension;
+	OFString *fileName =
+	    _archiveIRI.IRIByDeletingPathExtension.lastPathComponent;
 
 	if (files.count > 0) {
 		[OFStdErr writeLine: OF_LOCALIZED(
@@ -171,9 +186,13 @@ setModificationDate(OFString *path, OFGZIPStream *stream)
 	}
 
 	while (!_stream.atEndOfStream) {
-		ssize_t length = [app copyBlockFromStream: _stream
-						 toStream: OFStdOut
-						 fileName: fileName];
+		ssize_t length;
+
+		[app checkForCancellation];
+
+		length = [app copyBlockFromStream: _stream
+					 toStream: OFStdOut
+					 fileName: fileName];
 
 		if (length < 0) {
 			app->_exitStatus = 1;

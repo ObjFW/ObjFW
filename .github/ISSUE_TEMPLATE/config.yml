@@ -1,41 +1,33 @@
 blank_issues_enabled: true
 contact_links:
   - name: New ObjFW ticket
-    url: https://objfw.nil.im/tktnew
+    url: https://git.nil.im/ObjFW/ObjFW/issues/new
     about:
       Please use this to create a new ticket. You can also report issues on
       GitHub, but this is preferred.
   - name: Existing ObjFW tickets
-    url: https://objfw.nil.im/reportlist
+    url: https://git.nil.im/ObjFW/ObjFW/issues
     about: Please use this to look for existing tickets.
-  - name: ObjFW Forum
-    url: https://objfw.nil.im/forum
-    about: Please use this if you have questions or want support.
   - name: ObjFW Matrix Room
     url: https://matrix.to/#/%23objfw:nil.im
     about: Please use this for interactive questions and support.
-  - name: ObjFW IRC Channel
-    url: https://webchat.oftc.net/?channels=%23objfw
-    about:
-      Please use this for interactive questions and support - it is bridged to 
-      the Matrix room above.
-  - name: ObjFW Slack Channel
-    url: https://objfw.nil.im/slack
-    about:
-      Please use this for interactive questions and support - it is bridged to 
-      the Matrix room above.
   - name: ObjFW Discord Channel
     url: https://objfw.nil.im/discord
     about:
-      Please use this for interactive questions and support - it is bridged to 
+      Please use this for interactive questions and support - it is bridged to
       the Matrix room above.
   - name: ObjFW Telegram Room
     url: https://t.me/objfw
     about:
-      Please use this for interactive questions and support - it is bridged to 
+      Please use this for interactive questions and support - it is bridged to
       the Matrix room above.
-  - name: ObjFW Gitter Room
-    url: https://gitter.im/ObjFW/ObjFW
+  - name: ObjFW Slack Channel
+    url: https://objfw.nil.im/slack
     about:
-      Please use this for interactive questions and support - it is bridged to 
+      Please use this for interactive questions and support - it is bridged to
+      the Matrix room above.
+  - name: ObjFW IRC Channel
+    url: https://webchat.oftc.net/?channels=%23objfw
+    about:
+      Please use this for interactive questions and support - it is bridged to
       the Matrix room above.

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFFileManager.h"
@@ -23,10 +27,31 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 @class OFDate;
 @class OFIRI;
+@class OFIRIHandler;
 @class OFStream;
 
 /**
- * @class OFIRIHandler OFIRIHandler.h ObjFW/OFIRIHandler.h
+ * @protocol OFIRIHandlerDelegate OFIRIHandlerDelegate.h ObjFW/ObjFW.h
+ *
+ * @brief A delegate for OFIRIHandler operations.
+ */
+@protocol OFIRIHandlerDelegate <OFObject>
+/**
+ * @brief This method is called when an IRI handler opened an item.
+ *
+ * @param IRIHandler The IRI handler which opened an item
+ * @param IRI The IRI of the item the IRI handler opened
+ * @param stream The stream opened for the item, or `nil` on error
+ * @param exception An exception that occurred when opening the item, or `nil`
+ */
+- (void)IRIHandler: (OFIRIHandler *)IRIHandler
+  didOpenItemAtIRI: (OFIRI *)IRI
+	    stream: (nullable OFStream *)stream
+	 exception: (nullable id)exception;
+@end
+
+/**
+ * @class OFIRIHandler OFIRIHandler.h ObjFW/ObjFW.h
  *
  * @brief A handler for an IRI scheme.
  */
@@ -88,6 +113,34 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -124,6 +177,34 @@ OF_ASSUME_NONNULL_BEGIN
  *					 the handler
  */
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
+
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate;
 
 /**
  * @brief Returns the attributes for the item at the specified IRI.
@@ -297,8 +378,39 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the extended attribute data for the specified name of the
  *	  item at the specified IRI.
  *
+ * @deprecated Use @ref getExtendedAttributeData:andType:forName:ofItemAtIRI:
+ *	       instead.
+ *
  * This method is not available for all IRIs.
  *
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to return the extended attribute from
+ * @return The extended attribute data for the specified name of the item at
+ *	   the specified IRI
+ * @throw OFGetItemAttributesFailedException Getting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Getting extended attributes is not
+ *				    implemented for the specified item
+ */
+- (OFData *)extendedAttributeDataForName: (OFString *)name
+			     ofItemAtIRI: (OFIRI *)IRI
+    OF_DEPRECATED(ObjFW, 1, 1,
+	"Use -[getExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
+
+/**
+ * @brief Gets the extended attribute data and type for the specified name
+ *	  of the item at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ *
+ * @param data A pointer to `OFData *` that gets set to the data of the
+ *	       extended attribute
+ * @param type A pointer to `id` that gets set to the type of the extended
+ *	       attribute, if not `NULL`. Gets set to `nil` if the extended
+ *	       attribute has no type. The type of the type depends on the IRI
+ *	       handler.
  * @param name The name of the extended attribute
  * @param IRI The IRI of the item to return the extended attribute from
  * @throw OFGetItemAttributesFailedException Getting the extended attribute
@@ -308,12 +420,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFNotImplementedException Getting extended attributes is not
  *				    implemented for the specified item
  */
-- (OFData *)extendedAttributeDataForName: (OFString *)name
-			     ofItemAtIRI: (OFIRI *)IRI;
+- (void)getExtendedAttributeData: (OFData *_Nonnull *_Nonnull)data
+			 andType: (id _Nullable *_Nullable)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI;
 
 /**
  * @brief Sets the extended attribute data for the specified name of the item
  *	  at the specified IRI.
+ *
+ * @deprecated Use @ref setExtendedAttributeData:andType:forName:ofItemAtIRI:
+ *	       instead.
  *
  * This method is not available for all IRIs.
  *
@@ -329,10 +446,39 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)setExtendedAttributeData: (OFData *)data
 			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+    OF_DEPRECATED(ObjFW, 1, 1,
+	"Use -[setExtendedAttributeData:andType:forName:ofItemAtIRI:] instead");
+
+/**
+ * @brief Sets the extended attribute data and type for the specified name of
+ *	  the item at the specified IRI.
+ *
+ * This method is not available for all IRIs.
+ * Not all IRIs support a non-nil type.
+ *
+ * @param data The data for the extended attribute
+ * @param type The type for the extended attribute. `nil` does not mean to keep
+ *	       the existing type, but to set it to no type. The type of the
+ *	       type depends on the IRI handler.
+ * @param name The name of the extended attribute
+ * @param IRI The IRI of the item to set the extended attribute on
+ * @throw OFSetItemAttributesFailedException Setting the extended attribute
+ *					     failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ * @throw OFNotImplementedException Setting extended attributes is not
+ *				    implemented for the specified item or a
+ *				    type was specified and typed extended
+ *				    attributes are not supported
+ */
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (nullable id)type
+			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI;
 
 /**
- * @brief Removes the extended attribute for the specified name wof the item at
+ * @brief Removes the extended attribute for the specified name of the item at
  *	  the specified IRI.
  *
  * This method is not available for all IRIs.

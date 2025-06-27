@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,6 +24,8 @@
 #endif
 
 #import "OFUNIXStreamSocket.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
@@ -27,6 +33,14 @@
 #import "OFAlreadyOpenException.h"
 #import "OFBindUNIXSocketFailedException.h"
 #import "OFConnectUNIXSocketFailedException.h"
+#import "OFGetOptionFailedException.h"
+
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsUserID =
+    @"OFUNIXSocketCredentialsUserID";
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsGroupID =
+    @"OFUNIXSocketCredentialsGroupID";
+OFUNIXSocketCredentialsKey OFUNIXSocketCredentialsProcessID =
+    @"OFUNIXSocketCredentialsProcessID";
 
 @implementation OFUNIXStreamSocket
 @dynamic delegate;
@@ -48,7 +62,7 @@
 		@throw [OFConnectUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -59,7 +73,7 @@
 
 	if (connect(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -88,7 +102,7 @@
 		@throw [OFBindUNIXSocketFailedException
 		    exceptionWithPath: path
 			       socket: self
-				errNo: OFSocketErrNo()];
+				errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -99,7 +113,7 @@
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -109,5 +123,45 @@
 			       socket: self
 				errNo: errNo];
 	}
+}
+
+- (OFUNIXSocketCredentials)peerCredentials
+{
+#if defined(OF_LINUX)
+	struct ucred ucred;
+	socklen_t len = (socklen_t)sizeof(ucred);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_PEERCRED, &ucred, &len) != 0 ||
+	    len != sizeof(ucred))
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: _OFSocketErrNo()];
+
+	return [OFDictionary dictionaryWithKeysAndObjects:
+	    OFUNIXSocketCredentialsProcessID,
+	    [OFNumber numberWithUnsignedLong: ucred.pid],
+	    OFUNIXSocketCredentialsUserID,
+	    [OFNumber numberWithUnsignedLong: ucred.uid],
+	    OFUNIXSocketCredentialsGroupID,
+	    [OFNumber numberWithUnsignedLong: ucred.gid],
+	    nil];
+#elif defined(HAVE_GETPEEREID)
+	uid_t UID;
+	gid_t GID;
+
+	if (getpeereid(_socket, &UID, &GID) != 0)
+		@throw [OFGetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: _OFSocketErrNo()];
+
+	return [OFDictionary dictionaryWithKeysAndObjects:
+	    OFUNIXSocketCredentialsUserID,
+	    [OFNumber numberWithUnsignedLong: UID],
+	    OFUNIXSocketCredentialsGroupID,
+	    [OFNumber numberWithUnsignedLong: GID],
+	    nil];
+#else
+	return [OFDictionary dictionary];
+#endif
 }
 @end

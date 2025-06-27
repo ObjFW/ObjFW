@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -34,6 +38,7 @@
 
 static const uint8_t SPXPacketType = 5;
 
+OF_DIRECT_MEMBERS
 @interface OFSPXSocket ()
 - (int)of_createSocketForAddress: (const OFSocketAddress *)address
 			   errNo: (int *)errNo;
@@ -50,7 +55,7 @@ OF_DIRECT_MEMBERS
 	unsigned char _node[IPX_NODE_LEN];
 	uint16_t _port;
 #ifdef OF_HAVE_BLOCKS
-	OFSPXSocketAsyncConnectBlock _block;
+	OFSPXSocketConnectedHandler _handler;
 #endif
 }
 
@@ -59,7 +64,7 @@ OF_DIRECT_MEMBERS
 			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFSPXSocketAsyncConnectBlock)block
+		       handler: (OFSPXSocketConnectedHandler)handler
 #endif
 ;
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
@@ -71,21 +76,21 @@ OF_DIRECT_MEMBERS
 			  node: (const unsigned char [IPX_NODE_LEN])node
 			  port: (uint16_t)port
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFSPXSocketAsyncConnectBlock)block
+		       handler: (OFSPXSocketConnectedHandler)handler
 #endif
 {
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_network = network;
 		memcpy(_node, node, IPX_NODE_LEN);
 		_port = port;
 #ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
+		_handler = [handler copy];
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -94,9 +99,9 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	[_socket release];
+	objc_release(_socket);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_handler);
 #endif
 
 	[super dealloc];
@@ -148,8 +153,8 @@ inform_delegate:
 		((OFSPXSocket *)sock).canBlock = true;
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(exception);
+	if (_handler != NULL)
+		_handler(_socket, _network, _node, _port, exception);
 	else {
 #endif
 		if ([delegate respondsToSelector:
@@ -190,7 +195,7 @@ inform_delegate:
 	if ((_socket = socket(address->sockaddr.ipx.sipx_family,
 	    SOCK_SEQPACKET | SOCK_CLOEXEC, NSPROTO_SPX)) ==
 	    OFInvalidSocketHandle) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -210,7 +215,7 @@ inform_delegate:
 
 	if (connect(_socket, (struct sockaddr *)&address->sockaddr,
 	    address->length) != 0) {
-		*errNo = OFSocketErrNo();
+		*errNo = _OFSocketErrNo();
 		return false;
 	}
 
@@ -273,7 +278,7 @@ inform_delegate:
 		      node: node
 		      port: port
 #ifdef OF_HAVE_BLOCKS
-		     block: NULL
+		   handler: NULL
 #endif
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
@@ -286,11 +291,29 @@ inform_delegate:
 			 port: (uint16_t)port
 			block: (OFSPXSocketAsyncConnectBlock)block
 {
+	OFSPXSocketConnectedHandler handler = ^ (OFSPXSocket *socket,
+	    uint32_t network_, const unsigned char node_[IPX_NODE_LEN],
+	    uint16_t port_, id exception) {
+		block(exception);
+	};
+
 	[self asyncConnectToNetwork: network
 			       node: node
 			       port: port
 			runLoopMode: OFDefaultRunLoopMode
-			      block: block];
+			    handler: handler];
+}
+
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		      handler: (OFSPXSocketConnectedHandler)handler
+{
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: OFDefaultRunLoopMode
+			    handler: handler];
 }
 
 - (void)asyncConnectToNetwork: (uint32_t)network
@@ -299,6 +322,25 @@ inform_delegate:
 		  runLoopMode: (OFRunLoopMode)runLoopMode
 			block: (OFSPXSocketAsyncConnectBlock)block
 {
+	OFSPXSocketConnectedHandler handler = ^ (OFSPXSocket *socket,
+	    uint32_t network_, const unsigned char node_[IPX_NODE_LEN],
+	    uint16_t port_, id exception) {
+		block(exception);
+	};
+
+	[self asyncConnectToNetwork: network
+			       node: node
+			       port: port
+			runLoopMode: runLoopMode
+			    handler: handler];
+}
+
+- (void)asyncConnectToNetwork: (uint32_t)network
+			 node: (const unsigned char [IPX_NODE_LEN])node
+			 port: (uint16_t)port
+		  runLoopMode: (OFRunLoopMode)runLoopMode
+		      handler: (OFSPXSocketConnectedHandler)handler
+{
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFSPXSocketAsyncConnectDelegate alloc]
@@ -306,7 +348,7 @@ inform_delegate:
 		   network: network
 		      node: node
 		      port: port
-		     block: block
+		   handler: handler
 	    ] autorelease] startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -336,7 +378,7 @@ inform_delegate:
 				    port: port
 			      packetType: SPXPacketType
 				  socket: self
-				   errNo: OFSocketErrNo()];
+				   errNo: _OFSocketErrNo()];
 
 	_canBlock = true;
 
@@ -347,7 +389,7 @@ inform_delegate:
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
@@ -365,9 +407,9 @@ inform_delegate:
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
-	if (OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
+	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
 	    &address.length) != 0) {
-		int errNo = OFSocketErrNo();
+		int errNo = _OFSocketErrNo();
 
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;

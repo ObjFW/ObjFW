@@ -1,27 +1,41 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include "platform.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
+
+.globl __OFForward
+.globl __OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section __TEXT, __text, regular, pure_instructions
-_OFForward:
+__OFForward:
+	_CET_ENDBR
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -46,18 +60,18 @@ _OFForward:
 	call	_object_getClass
 
 	movq	%rax, %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	call	_class_respondsToSelector
 
 	testq	%rax, %rax
 	jz	0f
 
 	movq	-0x10(%rbp), %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	call	_objc_msg_lookup
 
 	movq	-0x10(%rbp), %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x18(%rbp), %rdx
 	call	*%rax
 
@@ -104,7 +118,9 @@ _OFForward:
 
 	jmp	_OFMethodNotFound
 
-_OFForward_stret:
+__OFForward_stret:
+	_CET_ENDBR
+
 	pushq	%rbp
 	movq	%rsp, %rbp
 
@@ -130,18 +146,18 @@ _OFForward_stret:
 	call	_object_getClass
 
 	movq	%rax, %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	call	_class_respondsToSelector
 
 	testq	%rax, %rax
 	jz	0f
 
 	movq	-0x18(%rbp), %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	call	_objc_msg_lookup
 
 	movq	-0x18(%rbp), %rdi
-	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	leaq	Lsel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x20(%rbp), %rdx
 	call	*%rax
 
@@ -189,25 +205,27 @@ _OFForward_stret:
 
 	jmp	_OFMethodNotFound_stret
 
-init:
-	leaq	module(%rip), %rdi
+Linit:
+	_CET_ENDBR
+
+	leaq	Lmodule(%rip), %rdi
 	jmp	___objc_exec_class
 
 .section __DATA, __mod_init_func, mod_init_funcs
-	.quad init
+	.quad Linit
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __data
-sel_forwardingTargetForSelector_:
-	.quad str_forwardingTargetForSelector_, 0
+Lsel_forwardingTargetForSelector_:
+	.quad Lstr_forwardingTargetForSelector_, 0
 	.quad 0, 0
-symtab:
-	.quad 0, sel_forwardingTargetForSelector_
+Lsymtab:
+	.quad 0, Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.quad 0
-module:
-	.quad 8, 32, 0, symtab
+Lmodule:
+	.quad 8, 32, 0, Lsymtab

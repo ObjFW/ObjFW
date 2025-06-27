@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -97,10 +101,10 @@ domainFromHostname(OFString *hostname)
 		ret = nil;
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
-		size_t pos = [hostname rangeOfString: @"."].location;
+		OFRange range = [hostname rangeOfString: @"."];
 
-		if (pos != OFNotFound)
-			ret = [hostname substringFromIndex: pos + 1];
+		if (range.location != OFNotFound)
+			ret = [hostname substringFromIndex: range.location + 1];
 		else
 			ret = nil;
 	}
@@ -202,6 +206,9 @@ parseNetStackArray(OFString *string)
 
 	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
+	if (string.length == 0)
+		return [OFArray array];
+
 	return [string componentsSeparatedByString: @"|"];
 }
 #endif
@@ -209,11 +216,11 @@ parseNetStackArray(OFString *string)
 @implementation OFDNSResolverSettings
 - (void)dealloc
 {
-	[_staticHosts release];
-	[_nameServers release];
-	[_localDomain release];
-	[_searchDomains release];
-	[_lastConfigReload release];
+	objc_release(_staticHosts);
+	objc_release(_nameServers);
+	objc_release(_localDomain);
+	objc_release(_searchDomains);
+	objc_release(_lastConfigReload);
 
 	[super dealloc];
 }
@@ -235,7 +242,7 @@ parseNetStackArray(OFString *string)
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -244,16 +251,16 @@ parseNetStackArray(OFString *string)
 
 - (void)setDefaults
 {
-	[_staticHosts release];
+	objc_release(_staticHosts);
 	_staticHosts = nil;
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = nil;
 
-	[_localDomain release];
+	objc_release(_localDomain);
 	_localDomain = nil;
 
-	[_searchDomains release];
+	objc_release(_searchDomains);
 	_searchDomains = nil;
 
 	_timeout = 2;
@@ -286,17 +293,18 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	staticHosts = [OFMutableDictionary dictionary];
 
-	while ((line =
-	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
+	while ((line = [file readLine]) != nil) {
 		OFArray *components, *hosts;
-		size_t pos;
+		OFRange range;
 		OFString *address;
 
-		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -337,32 +345,17 @@ parseNetStackArray(OFString *string)
 {
 	@try {
 		if ([option hasPrefix: @"ndots:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 6];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_minNumberOfDotsInAbsoluteName = (unsigned int)number;
+			_minNumberOfDotsInAbsoluteName =
+			    option.unsignedIntValue;
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringFromIndex: 8];
-
 			_timeout = option.unsignedLongLongValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 9];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_maxAttempts = (unsigned int)number;
+			_maxAttempts = option.unsignedIntValue;
 		} else if ([option hasPrefix: @"reload-period:"]) {
 			option = [option substringFromIndex: 14];
-
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
 			_forcesTCP = true;
@@ -377,7 +370,8 @@ parseNetStackArray(OFString *string)
 	    [OFCharacterSet whitespaceCharacterSet];
 	OFCharacterSet *commentCharacters = [OFCharacterSet
 	    characterSetWithCharactersInString: @"#;"];
-	OFMutableArray *nameServers = [[_nameServers mutableCopy] autorelease];
+	OFMutableArray *nameServers =
+	    objc_autorelease([_nameServers mutableCopy]);
 	OFFile *file;
 	OFString *line;
 
@@ -388,19 +382,20 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	if (nameServers == nil)
 		nameServers = [OFMutableArray array];
 
-	while ((line =
-	    [file readLineWithEncoding: [OFLocale encoding]]) != nil) {
+	while ((line = [file readLine]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
-		size_t pos;
+		OFRange range;
 		OFArray *components, *arguments;
 		OFString *option;
 
-		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -428,10 +423,10 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[_localDomain release];
+			objc_release(_localDomain);
 			_localDomain = [arguments.firstObject copy];
 		} else if ([option isEqual: @"search"]) {
-			[_searchDomains release];
+			objc_release(_searchDomains);
 			_searchDomains = [arguments copy];
 		} else if ([option isEqual: @"options"])
 			for (OFString *argument in arguments)
@@ -442,7 +437,7 @@ parseNetStackArray(OFString *string)
 
 	[nameServers makeImmutable];
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = [nameServers copy];
 
 	objc_autoreleasePoolPop(pool);

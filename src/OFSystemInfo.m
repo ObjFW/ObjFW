@@ -1,23 +1,27 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define __NO_EXT_QNX
 
 #include "config.h"
 
 #include <limits.h>	/* include any libc header to get the libc defines */
+#include <setjmp.h>
+#include <signal.h>
 
 #include "unistd_wrapper.h"
 
@@ -59,7 +63,8 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
- #import "OFFile.h"
+# import "OFFile.h"
+# import "OFFileManager.h"
 #endif
 #import "OFIRI.h"
 #import "OFLocale.h"
@@ -116,12 +121,49 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct X86Regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+
+static bool SSESupport;
+static jmp_buf SSETestEnv;
+
+static void
+SSETestSIGILLHandler(int signum)
+{
+	longjmp(SSETestEnv, 1);
+}
+
+# ifndef __clang__
+#  pragma GCC push_options
+#  pragma GCC target("sse")
+# endif
+static void
+SSETest(void)
+{
+	void (*oldHandler)(int) = signal(SIGILL, SSETestSIGILLHandler);
+
+	if (setjmp(SSETestEnv) == 0) {
+		__asm__ __volatile__ (
+		    "movaps	%%xmm0, %%xmm0"
+		    ::: "xmm0"	/* clang is unhappy if we don't clobber it */
+		);
+		SSESupport = true;
+	} else
+		SSESupport = false;
+
+	signal(SIGILL, oldHandler);
+}
+# ifndef __clang__
+#  pragma GCC pop_options
+# endif
 #endif
 
 static size_t pageSize = 4096;
 static size_t numberOfCPUs = 1;
 static OFString *operatingSystemName = nil;
 static OFString *operatingSystemVersion = nil;
+
+#ifdef OF_WINDOWS
+static const char *(*wine_get_version)(void);
+#endif
 
 static void
 initOperatingSystemName(void)
@@ -159,7 +201,7 @@ initOperatingSystemName(void)
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname name;
 
-	if (uname(&name) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemName = [[OFString alloc]
@@ -256,7 +298,7 @@ initOperatingSystemVersion(void)
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname name;
 
-	if (uname(&name) != 0)
+	if (uname(&name) == -1)
 		return;
 
 	operatingSystemVersion = [[OFString alloc]
@@ -286,8 +328,12 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 # if defined(OF_AMD64) && defined(__GNUC__)
 	__asm__ (
 	    "cpuid"
-	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=b" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # elif defined(OF_X86) && defined(__GNUC__)
 	/*
@@ -300,14 +346,52 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    "xchgl	%%ebx, %%edi\n\t"
 	    "cpuid\n\t"
 	    "xchgl	%%edi, %%ebx"
-	    : "=a"(regs.eax), "=D"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-	    : "a"(eax), "c"(ecx)
+	    : "=a" (regs.eax),
+	      "=D" (regs.ebx),
+	      "=c" (regs.ecx),
+	      "=d" (regs.edx)
+	    : "a" (eax),
+	      "c" (ecx)
 	);
 # else
 	memset(&regs, 0, sizeof(regs));
 # endif
 
 	return regs;
+}
+
+static OF_INLINE struct X86Regs
+x86XCR(uint32_t ecx)
+{
+	struct X86Regs regs = { 0 };
+
+	if (!(x86CPUID(1, 0).ecx & (1u << 27)))
+		return regs;
+
+	__asm__ (
+	    "xgetbv"
+	    : "=a" (regs.eax),
+	      "=d" (regs.edx)
+	    : "c" (ecx)
+	);
+
+	return regs;
+}
+#endif
+
+#ifdef OF_LOONGARCH64
+static uint32_t
+cpucfg(uint32_t word)
+{
+	uint32_t ret;
+
+	__asm__ (
+	    "cpucfg	%0, %1"
+	    : "=r" (ret)
+	    : "r" (word)
+	);
+
+	return ret;
 }
 #endif
 
@@ -319,11 +403,26 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	if (self != [OFSystemInfo class])
 		return;
 
+#if defined(OF_AMD64) || defined(OF_X86)
+	/*
+	 * Do this as early as possible, as it involves signals.
+	 * Required as cpuid can return SSE support while the OS has not
+	 * enabled it.
+	 */
+	SSETest();
+#endif
+
 #if defined(OF_WINDOWS)
+	HANDLE module;
+
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	pageSize = si.dwPageSize;
 	numberOfCPUs = si.dwNumberOfProcessors;
+
+	if ((module = GetModuleHandle("ntdll.dll")) != NULL)
+		wine_get_version = (const char *(*)(void))
+		    GetProcAddress(module, "wine_get_version");
 #elif defined(OF_QNX)
 	if ((tmp = sysconf(_SC_PAGESIZE)) > 0)
 		pageSize = tmp;
@@ -388,6 +487,17 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return operatingSystemVersion;
 }
 
+#ifdef OF_WINDOWS
++ (OFString *)wineVersion
+{
+	if (wine_get_version != NULL)
+		return [OFString stringWithCString: wine_get_version()
+					  encoding: [OFLocale encoding]];
+
+	return nil;
+}
+#endif
+
 + (OFIRI *)userDataIRI
 {
 #ifdef OF_HAVE_FILES
@@ -450,6 +560,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
 	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -471,7 +583,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [IRI autorelease];
+	return objc_autoreleaseReturnValue(IRI);
 # endif
 #else
 	return nil;
@@ -540,6 +652,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 			  isDirectory: true];
 # elif defined(OF_AMIGAOS)
 	return [OFIRI fileIRIWithPath: @"PROGDIR:" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -617,6 +731,8 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	return [OFIRI fileIRIWithPath: path isDirectory: true];
 # elif defined(OF_MINT)
 	return [OFIRI fileIRIWithPath: @"u:\\tmp" isDirectory: true];
+# elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	return [[OFFileManager defaultManager] currentDirectoryIRI];
 # elif defined(OF_NINTENDO_SWITCH)
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFOnce(&onceControl, mountTmpFS);
@@ -692,6 +808,9 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	    NULL, 0) != 0)
 		return nil;
 
+	if (length > 0 && buffer[length - 1] == '\0')
+		length--;
+
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]
 				    length: length];
@@ -727,67 +846,177 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 #if defined(OF_AMD64) || defined(OF_X86)
 + (bool)supportsMMX
 {
-	return (x86CPUID(1, 0).edx & (1u << 23));
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 23));
 }
 
 + (bool)supports3DNow
 {
-	return (x86CPUID(0x80000001, 0).edx & (1u << 31));
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 31));
 }
 
 + (bool)supportsEnhanced3DNow
 {
-	return (x86CPUID(0x80000001, 0).edx & (1u << 30));
+	return (x86CPUID(0x80000000, 0).eax >= 0x80000001 &&
+	    x86CPUID(0x80000001, 0).edx & (1u << 30));
 }
 
 + (bool)supportsSSE
 {
-	return (x86CPUID(1, 0).edx & (1u << 25));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86CPUID(1, 0).edx & (1u << 26));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).edx & (1u << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86CPUID(1, 0).ecx & (1u << 0));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86CPUID(1, 0).ecx & (1u << 9));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86CPUID(1, 0).ecx & (1u << 19));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86CPUID(1, 0).ecx & (1u << 20));
+	return SSESupport &&
+	    (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 20));
 }
 
 + (bool)supportsAVX
 {
-	return (x86CPUID(1, 0).ecx & (1u << 28));
+	return ((x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 28)) &&
+	    (x86XCR(0).eax & 0x6) == 0x6);
 }
 
 + (bool)supportsAVX2
 {
-	return x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5));
+	return ((x86CPUID(0, 0).eax >= 7 && (x86CPUID(7, 0).ebx & (1u << 5))) &&
+	    (x86XCR(0).eax & 0x6) == 0x6);
 }
 
 + (bool)supportsAESNI
 {
-	return (x86CPUID(1, 0).ecx & (1u << 25));
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 25));
 }
 
 + (bool)supportsSHAExtensions
 {
-	return (x86CPUID(7, 0).ebx & (1u << 29));
+	return (x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 29));
+}
+
++ (bool)supportsFusedMultiplyAdd
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 12));
+}
+
++ (bool)supportsF16C
+{
+	return (x86CPUID(0, 0).eax >= 1 && x86CPUID(1, 0).ecx & (1u << 29));
+}
+
++ (bool)supportsAVX512Foundation
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 16)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ConflictDetectionInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 28)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ExponentialAndReciprocalInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 27)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512PrefetchInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 26)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorLengthExtensions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 31)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512DoublewordAndQuadwordInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 17)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512ByteAndWordInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 30)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512IntegerFusedMultiplyAdd
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ebx & (1u << 21)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorByteManipulationInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 1)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorPopulationCountInstruction
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 14)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorNeuralNetworkInstructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 11)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512VectorByteManipulationInstructions2
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 6)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512BitAlgorithms
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).ecx & (1u << 12)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512Float16Instructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 0).edx & (1u << 23)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
+}
+
++ (bool)supportsAVX512BFloat16Instructions
+{
+	return ((x86CPUID(0, 0).eax >= 7 && x86CPUID(7, 1).eax & (1u << 5)) &&
+	    (x86XCR(0).eax & 0xE6) == 0xE6);
 }
 #endif
 
@@ -815,6 +1044,18 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 # endif
 
 	return false;
+}
+#endif
+
+#ifdef OF_LOONGARCH64
++ (bool)supportsLSX
+{
+	return cpucfg(2) & (1 << 6);
+}
+
++ (bool)supportsLASX
+{
+	return cpucfg(2) & (1 << 7);
 }
 #endif
 

@@ -1,42 +1,76 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <errno.h>
 
+#import <Foundation/Foundation.h>
+
 #import "OFSecureTransportTLSStream.h"
+#import "OFArray.h"
+#import "OFSecureTransportKeychain.h"
+#import "OFSecureTransportX509Certificate.h"
+
+#include <Security/SecCertificate.h>
+#include <Security/SecIdentity.h>
 
 #import "OFAlreadyOpenException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
 
+/*
+ * Apple deprecated Secure Transport without providing a replacement that can
+ * work with any socket. On top of that, their replacement, Network.framework,
+ * doesn't support STARTTLS at all.
+ */
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
+
 int _ObjFWTLS_reference;
+
+static OFTLSStreamErrorCode
+statusToErrorCode(OSStatus status)
+{
+	switch (status) {
+	case errSSLXCertChainInvalid:
+		return OFTLSStreamErrorCodeCertificateVerificationFailed;
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
 
 static OSStatus
 readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 {
+	OFStream *underlyingStream =
+	    ((OFTLSStream *)connection).underlyingStream;
 	bool incomplete;
 	size_t length;
 
 	@try {
-		length = [((OFTLSStream *)connection).underlyingStream
-		    readIntoBuffer: data
-			    length: *dataLength];
+		length = [underlyingStream readIntoBuffer: data
+						   length: *dataLength];
 	} @catch (OFReadFailedException *e) {
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN) {
 			*dataLength = 0;
@@ -45,6 +79,9 @@ readFunc(SSLConnectionRef connection, void *data, size_t *dataLength)
 
 		@throw e;
 	}
+
+	if (length == 0 && underlyingStream.atEndOfStream)
+		return errSSLClosedAbort;
 
 	incomplete = (length < *dataLength);
 	*dataLength = length;
@@ -64,21 +101,14 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 
 		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 			return errSSLWouldBlock;
+		if (e.errNo == EPIPE || e.errNo == ECONNRESET)
+			return errSSLClosedAbort;
 
 		@throw e;
 	}
 
 	return noErr;
 }
-
-/*
- * Apple deprecated Secure Transport without providing a replacement that can
- * work with any socket. On top of that, their replacement, Network.framework,
- * doesn't support STARTTLS at all.
- */
-#if OF_GCC_VERSION >= 402
-# pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
 
 @implementation OFSecureTransportTLSStream
 + (void)load
@@ -95,7 +125,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	@try {
 		_underlyingStream.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -107,7 +137,7 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context != NULL)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
@@ -117,12 +147,18 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	if (_context == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
-	SSLClose(_context);
+	@try {
+		SSLClose(_context);
+	} @catch (OFWriteFailedException *e) {
+		if (e.errNo != EPIPE)
+			@throw e;
+	}
+
 #ifdef HAVE_SSLCREATECONTEXT
-	CFRelease(_context);
+	objc_release((id)_context);
 #else
 	SSLDisposeContext(_context);
 #endif
@@ -168,22 +204,22 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 	return bytesWritten;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
 	size_t bufferSize;
 
-	if (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
-	    bufferSize > 0)
-		return true;
-
-	return super.hasDataInReadBuffer;
+	return (_underlyingStream.hasDataInReadBuffer ||
+	    (SSLGetBufferedReadSize(_context, &bufferSize) == noErr &&
+	    bufferSize > 0));
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
+	void *pool = objc_autoreleasePoolPush();
 	id exception = nil;
 	OSStatus status;
 
@@ -191,10 +227,11 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
 #ifdef HAVE_SSLCREATECONTEXT
-	if ((_context = SSLCreateContext(kCFAllocatorDefault, kSSLClientSide,
+	if ((_context = SSLCreateContext(kCFAllocatorDefault,
+	    (server ? kSSLServerSide : kSSLClientSide),
 	    kSSLStreamType)) == NULL)
 #else
-	if (SSLNewContext(false, &_context) != noErr)
+	if (SSLNewContext(server, &_context) != noErr)
 #endif
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
@@ -209,14 +246,67 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			      errorCode: initFailedErrorCode];
 
 	_host = [host copy];
+	_server = server;
 
-	if (_verifiesCertificates)
+	if (!server && _verifiesCertificates)
 		if (SSLSetPeerDomainName(_context,
 		    _host.UTF8String, _host.UTF8StringLength) != noErr)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
 				      errorCode: initFailedErrorCode];
+
+	if (_certificateChain.count > 0) {
+		bool first = true;
+		NSMutableArray *array;
+		SecCertificateRef firstCertificate;
+
+		array = [NSMutableArray
+		    arrayWithCapacity: _certificateChain.count];
+		if (array == nil)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: _host
+				      errorCode: initFailedErrorCode];
+
+		firstCertificate = ((OFSecureTransportX509Certificate *)
+		    _certificateChain.firstObject).of_certificate;
+
+		if (CFGetTypeID(firstCertificate) == SecIdentityGetTypeID())
+			[array addObject: (id)firstCertificate];
+#ifndef OF_IOS
+		else {
+			SecKeychainRef keychain = [[OFSecureTransportKeychain
+			    temporaryKeychain] keychain];
+			SecIdentityRef identity;
+
+			if (SecIdentityCreateWithCertificate(keychain,
+			    firstCertificate, &identity) != noErr)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: _host
+					      errorCode: initFailedErrorCode];
+
+			[array addObject: (id)identity];
+			objc_release((id)identity);
+		}
+#else
+		else
+			@throw [OFInvalidArgumentException exception];
+#endif
+
+		for (OFSecureTransportX509Certificate *certificate in
+		    _certificateChain) {
+			if (first) {
+				first = false;
+				continue;
+			}
+
+			[array addObject: (id)certificate.of_certificate];
+		}
+
+		SSLSetCertificate(_context, (CFArrayRef)array);
+	}
 
 	status = SSLHandshake(_context);
 
@@ -229,10 +319,11 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		 * readable or writable doesn't work either, as the stream is
 		 * almost always at least ready for one of the two.
 		 */
-		[_underlyingStream asyncReadIntoBuffer: (void *)"" 
+		[_underlyingStream asyncReadIntoBuffer: (void *)""
 						length: 0
 					   runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
+		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
@@ -241,19 +332,43 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: _host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: statusToErrorCode(status)];
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (server) {
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (nullable id)exception
+	  exception: (id)exception
 {
 	if (exception == nil) {
 		OSStatus status = SSLHandshake(_context);
@@ -265,16 +380,23 @@ writeFunc(SSLConnectionRef connection, const void *data, size_t *dataLength)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([(id <OFObject>)_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }

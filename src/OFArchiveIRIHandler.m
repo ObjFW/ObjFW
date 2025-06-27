@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,6 +29,7 @@
 #import "OFStream.h"
 #import "OFTarArchive.h"
 #import "OFZIPArchive.h"
+#import "OFZooArchive.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOpenItemFailedException.h"
@@ -74,27 +79,28 @@ initPathAllowedCharacters(void)
 	if ([scheme isEqual: @"gzip"]) {
 		stream = [OFIRIHandler openItemAtIRI: [OFIRI IRIWithString:
 							  IRI.path]
-						mode: @"r"];
-		stream = [OFGZIPStream streamWithStream: stream mode: @"r"];
+						mode: mode];
+		stream = [OFGZIPStream streamWithStream: stream mode: mode];
 		goto end;
 	}
 
 	percentEncodedPath = IRI.percentEncodedPath;
-	pos = [percentEncodedPath rangeOfString: @"!"].location;
+	pos = [percentEncodedPath
+	    rangeOfString: @"!"
+		  options: OFStringSearchBackwards].location;
 
 	if (pos == OFNotFound)
 		@throw [OFInvalidArgumentException exception];
 
 	archiveIRI = [OFIRI IRIWithString:
-	    [percentEncodedPath substringWithRange: OFMakeRange(0, pos)]
+	    [percentEncodedPath substringToIndex: pos]
 	    .stringByRemovingPercentEncoding];
-	path = [percentEncodedPath substringWithRange:
-	    OFMakeRange(pos + 1, percentEncodedPath.length - pos - 1)]
+	path = [percentEncodedPath substringFromIndex: pos + 1]
 	    .stringByRemovingPercentEncoding;
 
 	if ([scheme isEqual: @"lha"]) {
 		OFLHAArchive *archive = [OFLHAArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 		OFLHAArchiveEntry *entry;
 
 		while ((entry = [archive nextEntry]) != nil) {
@@ -109,7 +115,7 @@ initPathAllowedCharacters(void)
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"tar"]) {
 		OFTarArchive *archive = [OFTarArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 		OFTarArchiveEntry *entry;
 
 		while ((entry = [archive nextEntry]) != nil) {
@@ -124,18 +130,33 @@ initPathAllowedCharacters(void)
 							     errNo: ENOENT];
 	} else if ([scheme isEqual: @"zip"]) {
 		OFZIPArchive *archive = [OFZIPArchive archiveWithIRI: archiveIRI
-								mode: @"r"];
+								mode: mode];
 
 		stream = [archive streamForReadingFile: path];
+	} else if ([scheme isEqual: @"zoo"]) {
+		OFZooArchive *archive = [OFZooArchive archiveWithIRI: archiveIRI
+								mode: mode];
+		OFZooArchiveEntry *entry;
+
+		while ((entry = [archive nextEntry]) != nil) {
+			if ([entry.fileName isEqual: path]) {
+				stream = [archive streamForReadingCurrentEntry];
+				goto end;
+			}
+		}
+
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: ENOENT];
 	} else
 		@throw [OFInvalidArgumentException exception];
 
 end:
-	stream = [stream retain];
+	stream = objc_retain(stream);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [stream autorelease];
+	return objc_autoreleaseReturnValue(stream);
 }
 @end
 
@@ -145,13 +166,13 @@ end:
 	self = [super init];
 
 	@try {
-		_characterSet =
-		    [[OFCharacterSet IRIPathAllowedCharacterSet] retain];
+		_characterSet = objc_retain(
+		    [OFCharacterSet IRIPathAllowedCharacterSet]);
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -160,7 +181,7 @@ end:
 
 - (void)dealloc
 {
-	[_characterSet release];
+	objc_release(_characterSet);
 
 	[super dealloc];
 }
@@ -173,25 +194,21 @@ end:
 @end
 
 OFIRI *
-OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
+_OFArchiveIRIHandlerIRIForFileInArchive(OFString *scheme,
     OFString *pathInArchive, OFIRI *archiveIRI)
 {
 	static OFOnceControl onceControl = OFOnceControlInitValue;
 	OFMutableIRI *ret = [OFMutableIRI IRIWithScheme: scheme];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *archiveIRIString;
 
 	OFOnce(&onceControl, initPathAllowedCharacters);
 
 	pathInArchive = [pathInArchive
 	    stringByAddingPercentEncodingWithAllowedCharacters:
 	    pathAllowedCharacters];
-	archiveIRIString = [archiveIRI.string
-	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    pathAllowedCharacters];
 
 	ret.percentEncodedPath = [OFString
-	    stringWithFormat: @"%@!%@", archiveIRIString, pathInArchive];
+	    stringWithFormat: @"%@!%@", archiveIRI.string, pathInArchive];
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);

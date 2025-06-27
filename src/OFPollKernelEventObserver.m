@@ -1,19 +1,21 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define __NO_EXT_QNX
 
 #include "config.h"
 
@@ -24,7 +26,10 @@
 #endif
 
 #import "OFPollKernelEventObserver.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFNull.h"
+#import "OFSocket.h"
 #import "OFSocket+Private.h"
 
 #import "OFObserveKernelEventsFailedException.h"
@@ -36,9 +41,9 @@
 #endif
 
 @implementation OFPollKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
@@ -47,10 +52,10 @@
 		    sizeof(struct pollfd)];
 		[_FDs addItem: &p];
 
-		_maxFD = _cancelFD[0];
-		_FDToObject = OFAllocMemory((size_t)_maxFD + 1, sizeof(id));
+		_objects = [[OFMutableArray alloc]
+		    initWithObject: [OFNull null]];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -59,8 +64,8 @@
 
 - (void)dealloc
 {
-	[_FDs release];
-	OFFreeMemory(_FDToObject);
+	objc_release(_FDs);
+	objc_release(_objects);
 
 	[super dealloc];
 }
@@ -68,9 +73,9 @@
 static void
 addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
+	struct pollfd p = { fd, events, 0 };
 	struct pollfd *FDs;
 	size_t count;
-	bool found;
 
 	if (fd < 0)
 		@throw [OFObserveKernelEventsFailedException
@@ -79,28 +84,16 @@ addObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 	FDs = self->_FDs.mutableItems;
 	count = self->_FDs.count;
-	found = false;
 
 	for (size_t i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events |= events;
-			found = true;
-			break;
+			return;
 		}
 	}
 
-	if (!found) {
-		struct pollfd p = { fd, events, 0 };
-
-		if (fd > self->_maxFD) {
-			self->_maxFD = fd;
-			self->_FDToObject = OFResizeMemory(self->_FDToObject,
-			    (size_t)self->_maxFD + 1, sizeof(id));
-		}
-
-		self->_FDToObject[fd] = object;
-		[self->_FDs addItem: &p];
-	}
+	[self->_FDs addItem: &p];
+	[self->_objects addObject: object];
 }
 
 static void
@@ -122,11 +115,8 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			FDs[i].events &= ~events;
 
 			if (FDs[i].events == 0) {
-				/*
-				 * TODO: Remove from and resize _FDToObject,
-				 *	 adjust _maxFD.
-				 */
 				[self->_FDs removeItemAtIndex: i];
+				[self->_objects removeObjectAtIndex: i];
 			}
 
 			break;
@@ -166,33 +156,36 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 {
 	void *pool;
 	struct pollfd *FDs;
-	int events;
+	OFArray *objects;
 	size_t nFDs;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 	pool = objc_autoreleasePoolPush();
 
-	FDs = [[[_FDs mutableCopy] autorelease] mutableItems];
+	FDs = [objc_autorelease([_FDs mutableCopy]) mutableItems];
+	objects = objc_autorelease([_objects copy]);
 	nFDs = _FDs.count;
+
+	OFAssert(objects.count == nFDs);
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	events = poll(FDs, (nfds_t)nFDs,
-	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1));
+	while (poll(FDs, (nfds_t)nFDs,
+	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 0) {
+		int errNo = _OFSocketErrNo();
 
-	if (events < 0)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: errno];
+		if (errNo != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errNo];
+	}
 
 	for (size_t i = 0; i < nFDs; i++) {
-		OFAssert(FDs[i].fd <= _maxFD);
-
 		if (FDs[i].revents & POLLIN) {
 			void *pool2;
 
@@ -215,7 +208,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    _FDToObject[FDs[i].fd]];
+				    [objects objectAtIndex: i]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -226,12 +219,10 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    _FDToObject[FDs[i].fd]];
+				    [objects objectAtIndex: i]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
-
-		FDs[i].revents = 0;
 	}
 
 	objc_autoreleasePoolPop(pool);

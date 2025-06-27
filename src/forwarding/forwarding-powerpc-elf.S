@@ -1,27 +1,33 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 .section .text
-OFForward:
+_OFForward:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -63,8 +69,8 @@ OFForward:
 #else
 	bl	object_getClass
 
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 	bl	class_respondsToSelector
 #endif
 
@@ -76,8 +82,8 @@ OFForward:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
 #else
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -86,8 +92,8 @@ OFForward:
 #ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 #endif
 	lwz	%r5, 12(%r1)
 	bctrl
@@ -155,10 +161,10 @@ OFForward:
 #else
 	b	OFMethodNotFound
 #endif
-.type OFForward, @function
-.size OFForward, .-OFForward
+.type _OFForward, @function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 	stwu	%r1, -112(%r1)
 	mflr	%r0
 	stw	%r0, 116(%r1)
@@ -201,8 +207,8 @@ OFForward_stret:
 #else
 	bl	object_getClass
 
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 	bl	class_respondsToSelector
 #endif
 
@@ -214,8 +220,8 @@ OFForward_stret:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
 #else
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
@@ -224,8 +230,8 @@ OFForward_stret:
 #ifdef OF_PIC
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 #else
-	lis	%r4, sel_forwardingTargetForSelector_@ha
-	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
 #endif
 	lwz	%r5, 16(%r1)
 	bctrl
@@ -294,10 +300,10 @@ OFForward_stret:
 #else
 	b	OFMethodNotFound_stret
 #endif
-.type OFForward_stret, @function
-.size OFForward_stret, .-OFForward_stret
+.type _OFForward_stret, @function
+.size _OFForward_stret, .-_OFForward_stret
 
-init:
+.Linit:
 	stwu	%r1, -16(%r1)
 	mflr	%r0
 	stw	%r0, 20(%r1)
@@ -315,8 +321,8 @@ init:
 
 	lwz	%r30, 8(%r1)
 #else
-	lis	%r3, module@ha
-	la	%r3, module@l(%r3)
+	lis	%r3, .Lmodule@ha
+	la	%r3, .Lmodule@l(%r3)
 	bl	__objc_exec_class
 #endif
 
@@ -326,37 +332,37 @@ init:
 	blr
 
 .section .ctors, "aw", @progbits
-	.long init
+	.long .Linit
 
 .section .rodata
-str_forwardingTargetForSelector_:
+.Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section .data
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_, 0
+.Lsel_forwardingTargetForSelector_:
+	.long .Lstr_forwardingTargetForSelector_, 0
 	.long 0, 0
-symtab:
-	.long 0, sel_forwardingTargetForSelector_
+.Lsymtab:
+	.long 0, .Lsel_forwardingTargetForSelector_
 	.short 0, 0
 	.long 0
 	.long 0
-module:
-	.long 8, 16, 0, symtab
+.Lmodule:
+	.long 8, 16, 0, .Lsymtab
 
 #ifdef OF_PIC
 .section .got2, "aw"
 .Lbiased_got2 = .+0x8000
 .Lgot_module:
-	.long module
+	.long .Lmodule
 .Lgot_sel_forwardingTargetForSelector_:
-	.long sel_forwardingTargetForSelector_
+	.long .Lsel_forwardingTargetForSelector_
 .Lgot_OFMethodNotFound:
 	.long OFMethodNotFound
 .Lgot_OFMethodNotFound_stret:
 	.long OFMethodNotFound_stret
 #endif
 
-#if defined(OF_LINUX) || defined(OF_HURD)
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", @progbits
 #endif

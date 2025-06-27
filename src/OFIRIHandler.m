@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,10 +23,6 @@
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFNumber.h"
-
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 
 #import "OFArchiveIRIHandler.h"
 #import "OFEmbeddedIRIHandler.h"
@@ -36,15 +36,6 @@
 #import "OFUnsupportedProtocolException.h"
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
-#ifdef OF_HAVE_THREADS
-static OFMutex *mutex;
-
-static void
-releaseMutex(void)
-{
-	[mutex release];
-}
-#endif
 
 @implementation OFIRIHandler
 @synthesize scheme = _scheme;
@@ -55,10 +46,6 @@ releaseMutex(void)
 		return;
 
 	handlers = [[OFMutableDictionary alloc] init];
-#ifdef OF_HAVE_THREADS
-	mutex = [[OFMutex alloc] init];
-	atexit(releaseMutex);
-#endif
 
 	[self registerClass: [OFEmbeddedIRIHandler class]
 		  forScheme: @"embedded"];
@@ -73,14 +60,12 @@ releaseMutex(void)
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"lha"];
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"tar"];
 	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zip"];
+	[self registerClass: [OFArchiveIRIHandler class] forScheme: @"zoo"];
 }
 
 + (bool)registerClass: (Class)class forScheme: (OFString *)scheme
 {
-#ifdef OF_HAVE_THREADS
-	[mutex lock];
-	@try {
-#endif
+	@synchronized (handlers) {
 		OFIRIHandler *handler;
 
 		if ([handlers objectForKey: scheme] != nil)
@@ -90,13 +75,9 @@ releaseMutex(void)
 		@try {
 			[handlers setObject: handler forKey: scheme];
 		} @finally {
-			[handler release];
+			objc_release(handler);
 		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[mutex unlock];
 	}
-#endif
 
 	return true;
 }
@@ -105,16 +86,9 @@ releaseMutex(void)
 {
 	OF_KINDOF(OFIRIHandler *) handler;
 
-#ifdef OF_HAVE_THREADS
-	[mutex lock];
-	@try {
-#endif
+	@synchronized (handlers) {
 		handler = [handlers objectForKey: IRI.scheme];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[mutex unlock];
 	}
-#endif
 
 	if (handler == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
@@ -125,6 +99,15 @@ releaseMutex(void)
 + (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	return [[self handlerForIRI: IRI] openItemAtIRI: IRI mode: mode];
+}
+
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+{
+	[[self handlerForIRI: IRI] asyncOpenItemAtIRI: IRI
+						 mode: mode
+					     delegate: delegate];
 }
 
 - (instancetype)init
@@ -139,7 +122,7 @@ releaseMutex(void)
 	@try {
 		_scheme = [scheme copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -148,12 +131,19 @@ releaseMutex(void)
 
 - (void)dealloc
 {
-	[_scheme release];
+	objc_release(_scheme);
 
 	[super dealloc];
 }
 
 - (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -217,6 +207,45 @@ releaseMutex(void)
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
 {
+	OFData *data;
+
+	[self getExtendedAttributeData: &data
+			       andType: NULL
+			       forName: name
+			   ofItemAtIRI: IRI];
+
+	return data;
+}
+
+- (void)getExtendedAttributeData: (OFData **)data
+			 andType: (id *)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	/*
+	 * Only call into -[extendedAttributeDataForName:ofItemAtIRI:] if it
+	 * has been overridden. This is to be backwards-compatible with
+	 * subclasses that predate the introduction of
+	 * -[getExtendedAttributeData:andType:forName:ofItemAtIRI:].
+	 * Without this check, this would result in an infinite loop.
+	 */
+	SEL selector = @selector(extendedAttributeDataForName:ofItemAtIRI:);
+
+	if (class_getMethodImplementation(object_getClass(self), selector) !=
+	    class_getMethodImplementation([OFIRIHandler class], selector)) {
+		/* Use -[methodForSelector:] to avoid deprecation warning. */
+		OFData *(*imp)(id, SEL, OFString *, OFIRI *) =
+		    (OFData *(*)(id, SEL, OFString *, OFIRI *))
+		    [self methodForSelector: selector];
+
+		*data = imp(self, selector, name, IRI);
+
+		if (type != NULL)
+			*type = nil;
+
+		return;
+	}
+
 	OF_UNRECOGNIZED_SELECTOR
 }
 
@@ -224,6 +253,46 @@ releaseMutex(void)
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
 {
+	[self setExtendedAttributeData: data
+			       andType: nil
+			       forName: name
+			   ofItemAtIRI: IRI];
+}
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (id)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	if (type == nil) {
+		/*
+		 * Only call into
+		 * -[setExtendedAttributeData:forName:ofItemAtIRI:] if it has
+		 * been overridden. This is to be backwards-compatible with
+		 * subclasses that predate the introduction of
+		 * -[setExtendedAttributeData:andType:forName:ofItemAtIRI:].
+		 * Without this check, this would result in an infinite loop.
+		 */
+		SEL selector =
+		    @selector(setExtendedAttributeData:forName:ofItemAtIRI:);
+
+		if (class_getMethodImplementation(object_getClass(self),
+		    selector) !=
+		    class_getMethodImplementation([OFIRIHandler class],
+		    selector)) {
+			/*
+			 * Use -[methodForSelector:] to avoid deprecation
+			 * warning.
+			 */
+			void (*imp)(id, SEL, OFData *, OFString *, OFIRI *) =
+			    (void (*)(id, SEL, OFData *, OFString *, OFIRI *))
+			    [self methodForSelector: selector];
+
+			imp(self, selector, data, name, IRI);
+			return;
+		}
+	}
+
 	OF_UNRECOGNIZED_SELECTOR
 }
 

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -21,11 +25,11 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFSettings OFSettings.h ObjFW/OFSettings.h
+ * @class OFSettings OFSettings.h ObjFW/ObjFW.h
  *
  * Paths are delimited by dots, for example `category.subcategory.key`.
  *
- * @note The behaviour when accessing a path with a different type than it has
+ * @note The behavior when accessing a path with a different type than it has
  *	 been accessed with before is undefined! If you want to change the type
  *	 for a path, remove it and then set it with the new type.
  *
@@ -75,12 +79,21 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setString: (OFString *)string forPath: (OFString *)path;
 
 /**
- * @brief Sets the specified path to the specified long long.
+ * @brief Sets the specified path to the specified `long long`.
  *
- * @param longLong The long long to set
- * @param path The path to store the long long at
+ * @param longLong The `long long` to set
+ * @param path The path to store the `long long` at
  */
 - (void)setLongLong: (long long)longLong forPath: (OFString *)path;
+
+/**
+ * @brief Sets the specified path to the specified `unsigned long long`.
+ *
+ * @param unsignedLongLong The `unsigned long long` to set
+ * @param path The path to store the `unsigned long long` at
+ */
+- (void)setUnsignedLongLong: (unsigned long long)unsignedLongLong
+		    forPath: (OFString *)path;
 
 /**
  * @brief Sets the specified path to the specified bool.
@@ -136,15 +149,26 @@ OF_ASSUME_NONNULL_BEGIN
 			defaultValue: (nullable OFString *)defaultValue;
 
 /**
- * @brief Returns the long long for the specified path, or the default value if
- *	  the path does not exist.
+ * @brief Returns the `long long` for the specified path, or the default value
+ *	  if the path does not exist.
  *
- * @param path The path for which the long long should be returned
+ * @param path The path for which the `long long` should be returned
  * @param defaultValue The default value to return if the path does not exist
- * @return The long long of the specified path
+ * @return The `long long` of the specified path
  */
 - (long long)longLongForPath: (OFString *)path
 		defaultValue: (long long)defaultValue;
+
+/**
+ * @brief Returns the `unsigned long long` for the specified path, or the
+ *	  default value if the path does not exist.
+ *
+ * @param path The path for which the `unsigned long long` should be returned
+ * @param defaultValue The default value to return if the path does not exist
+ * @return The `unsigned long long` of the specified path
+ */
+- (unsigned long long)unsignedLongLongForPath: (OFString *)path
+				 defaultValue: (unsigned long long)defaultValue;
 
 /**
  * @brief Returns the bool for the specified path, or the default value if the

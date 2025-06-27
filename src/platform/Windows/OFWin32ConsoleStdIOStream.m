@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -47,6 +51,7 @@
 #import "OFData.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
+#import "OFString+Private.h"
 #import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
@@ -67,6 +72,8 @@ codepageToEncoding(UINT codepage)
 		return OFStringEncodingCodepage850;
 	case 858:
 		return OFStringEncodingCodepage858;
+	case 1250:
+		return OFStringEncodingWindows1250;
 	case 1251:
 		return OFStringEncodingWindows1251;
 	case 1252:
@@ -114,7 +121,7 @@ codepageToEncoding(UINT codepage)
 		if (GetConsoleScreenBufferInfo(_handle, &csbi))
 			_attributes = csbi.wAttributes;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -176,7 +183,7 @@ codepageToEncoding(UINT codepage)
 			char UTF8[4];
 			size_t UTF8Len;
 
-			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
+			if ((UTF8Len = _OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
@@ -233,7 +240,7 @@ codepageToEncoding(UINT codepage)
 				i++;
 			}
 
-			if ((UTF8Len = OFUTF8StringEncode(c, UTF8)) == 0)
+			if ((UTF8Len = _OFUTF8StringEncode(c, UTF8)) == 0)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
@@ -274,7 +281,7 @@ codepageToEncoding(UINT codepage)
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
 
-		UTF8Len = -OFUTF8StringDecode(
+		UTF8Len = -_OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		OFEnsure(UTF8Len > 0);
@@ -290,7 +297,7 @@ codepageToEncoding(UINT codepage)
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
 			return 0;
 
-		UTF8Len = OFUTF8StringDecode(
+		UTF8Len = _OFUTF8StringDecode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
 
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
@@ -362,7 +369,7 @@ codepageToEncoding(UINT codepage)
 			OFUnichar c;
 			ssize_t UTF8Len;
 
-			UTF8Len = OFUTF8StringDecode(buffer + i, length - i,
+			UTF8Len = _OFUTF8StringDecode(buffer + i, length - i,
 			    &c);
 
 			if (UTF8Len < 0 && UTF8Len >= -4) {
@@ -472,10 +479,18 @@ codepageToEncoding(UINT codepage)
 	return -1;
 }
 
+- (int)colors
+{
+	return 16;
+}
+
 - (void)setForegroundColor: (OFColor *)color
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
+
+	if (color == _foregroundColor)
+		return;
 
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
 		return;
@@ -483,19 +498,26 @@ codepageToEncoding(UINT codepage)
 	csbi.wAttributes &= ~(FOREGROUND_RED | FOREGROUND_GREEN |
 	    FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
-	[color getRed: &red green: &green blue: &blue alpha: NULL];
+	if (color != nil) {
+		[color getRed: &red green: &green blue: &blue alpha: NULL];
 
-	if (red >= 0.25)
-		csbi.wAttributes |= FOREGROUND_RED;
-	if (green >= 0.25)
-		csbi.wAttributes |= FOREGROUND_GREEN;
-	if (blue >= 0.25)
-		csbi.wAttributes |= FOREGROUND_BLUE;
+		if (red >= 0.25)
+			csbi.wAttributes |= FOREGROUND_RED;
+		if (green >= 0.25)
+			csbi.wAttributes |= FOREGROUND_GREEN;
+		if (blue >= 0.25)
+			csbi.wAttributes |= FOREGROUND_BLUE;
 
-	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
-		csbi.wAttributes |= FOREGROUND_INTENSITY;
+		if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+			csbi.wAttributes |= FOREGROUND_INTENSITY;
+	} else
+		csbi.wAttributes |= _attributes & (FOREGROUND_RED |
+		    FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
-	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
+		objc_release(_foregroundColor);
+		_foregroundColor = objc_retain(color);
+	}
 }
 
 - (void)setBackgroundColor: (OFColor *)color
@@ -503,30 +525,79 @@ codepageToEncoding(UINT codepage)
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	float red, green, blue;
 
+	if (color == _backgroundColor)
+		return;
+
 	if (!GetConsoleScreenBufferInfo(_handle, &csbi))
 		return;
 
 	csbi.wAttributes &= ~(BACKGROUND_RED | BACKGROUND_GREEN |
 	    BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-	[color getRed: &red green: &green blue: &blue alpha: NULL];
+	if (color != nil) {
+		[color getRed: &red green: &green blue: &blue alpha: NULL];
 
-	if (red >= 0.25)
-		csbi.wAttributes |= BACKGROUND_RED;
-	if (green >= 0.25)
-		csbi.wAttributes |= BACKGROUND_GREEN;
-	if (blue >= 0.25)
-		csbi.wAttributes |= BACKGROUND_BLUE;
+		if (red >= 0.25)
+			csbi.wAttributes |= BACKGROUND_RED;
+		if (green >= 0.25)
+			csbi.wAttributes |= BACKGROUND_GREEN;
+		if (blue >= 0.25)
+			csbi.wAttributes |= BACKGROUND_BLUE;
 
-	if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
-		csbi.wAttributes |= BACKGROUND_INTENSITY;
+		if (red >= 0.75 || green >= 0.75 || blue >= 0.75)
+			csbi.wAttributes |= BACKGROUND_INTENSITY;
+	} else
+		csbi.wAttributes |= _attributes & (BACKGROUND_RED |
+		    BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-	SetConsoleTextAttribute(_handle, csbi.wAttributes);
+	if (SetConsoleTextAttribute(_handle, csbi.wAttributes)) {
+		objc_release(_backgroundColor);
+		_backgroundColor = objc_retain(color);
+	}
+}
+
+- (void)setBold: (bool)bold
+{
+	/* No support for bold. */
+}
+
+- (void)setItalic: (bool)italic
+{
+	/* No support for italic. */
+}
+
+- (void)setUnderlined: (bool)underlined
+{
+	/* No support for underlined. */
+}
+
+- (void)setBlinking: (bool)blinking
+{
+	/* No support for blinking. */
+}
+
+- (void)setCursorVisible: (bool)visible
+{
+	CONSOLE_CURSOR_INFO cci;
+
+	if (!GetConsoleCursorInfo(_handle, &cci))
+		return;
+
+	cci.bVisible = visible;
+
+	if (!SetConsoleCursorInfo(_handle, &cci))
+		return;
+
+	_cursorVisible = visible;
 }
 
 - (void)reset
 {
-	SetConsoleTextAttribute(_handle, _attributes);
+	if (SetConsoleTextAttribute(_handle, _attributes)) {
+		objc_release(_foregroundColor);
+		objc_release(_backgroundColor);
+		_foregroundColor = _backgroundColor = nil;
+	}
 }
 
 - (void)clear

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -21,6 +25,7 @@
 #include <math.h>
 
 #import "OFString+JSONParsing.h"
+#import "OFString+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
@@ -132,8 +137,33 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 			return 0xFFFF;
 	}
 
-	if (ret == 0)
+	return ret;
+}
+
+static inline OFChar16
+parseHexEscape(const char *pointer, const char *stop)
+{
+	OFChar16 ret = 0;
+
+	if (pointer + 3 >= stop)
 		return 0xFFFF;
+
+	if (pointer[0] != '\\' || pointer[1] != 'x')
+		return 0xFFFF;
+
+	for (uint8_t i = 0; i < 2; i++) {
+		char c = pointer[i + 2];
+		ret <<= 4;
+
+		if (c >= '0' && c <= '9')
+			ret |= c - '0';
+		else if (c >= 'a' && c <= 'f')
+			ret |= c + 10 - 'a';
+		else if (c >= 'A' && c <= 'F')
+			ret |= c + 10 - 'A';
+		else
+			return 0xFFFF;
+	}
 
 	return ret;
 }
@@ -185,6 +215,10 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				buffer[i++] = '\t';
 				(*pointer)++;
 				break;
+			case '0':
+				buffer[i++] = '\0';
+				(*pointer)++;
+				break;
 			/* Parse Unicode escape sequence */
 			case 'u':;
 				OFChar16 c1, c2;
@@ -205,7 +239,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				/* Normal character */
 				if ((c1 & 0xFC00) != 0xD800) {
-					l = OFUTF8StringEncode(c1, buffer + i);
+					l = _OFUTF8StringEncode(c1, buffer + i);
 					if (l == 0) {
 						OFFreeMemory(buffer);
 						return nil;
@@ -231,7 +265,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				c = (((c1 & 0x3FF) << 10) |
 				    (c2 & 0x3FF)) + 0x10000;
 
-				l = OFUTF8StringEncode(c, buffer + i);
+				l = _OFUTF8StringEncode(c, buffer + i);
 				if (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
@@ -239,6 +273,23 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				i += l;
 				*pointer += 11;
+
+				break;
+			case 'x':
+				c1 = parseHexEscape(*pointer - 1, stop);
+				if (c1 == 0xFFFF) {
+					OFFreeMemory(buffer);
+					return nil;
+				}
+
+				l = _OFUTF8StringEncode(c1, buffer + i);
+				if (l == 0) {
+					OFFreeMemory(buffer);
+					return nil;
+				}
+
+				i += l;
+				*pointer += 3;
 
 				break;
 			case '\r':
@@ -327,7 +378,7 @@ parseIdentifier(const char **pointer, const char *stop)
 
 			/* Normal character */
 			if ((c1 & 0xFC00) != 0xD800) {
-				l = OFUTF8StringEncode(c1, buffer + i);
+				l = _OFUTF8StringEncode(c1, buffer + i);
 				if (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
@@ -352,7 +403,7 @@ parseIdentifier(const char **pointer, const char *stop)
 
 			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
 
-			l = OFUTF8StringEncode(c, buffer + i);
+			l = _OFUTF8StringEncode(c, buffer + i);
 			if (l == 0) {
 				OFFreeMemory(buffer);
 				return nil;
@@ -564,7 +615,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 			number = [OFNumber numberWithUnsignedLongLong:
 			    [string unsignedLongLongValueWithBase: 0]];
 	} @finally {
-		[string release];
+		objc_release(string);
 	}
 
 	return number;
@@ -658,10 +709,10 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
 
-	[object retain];
+	objc_retain(object);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,6 +23,9 @@
 
 #import "OFAsyncIPSocketConnector.h"
 #import "OFData.h"
+#ifdef OF_HAVE_SCTP
+# import "OFSCTPSocket.h"
+#endif
 #import "OFTCPSocket.h"
 #import "OFThread.h"
 #import "OFTimer.h"
@@ -31,18 +38,18 @@
 			  host: (OFString *)host
 			  port: (uint16_t)port
 		      delegate: (id)delegate
-			 block: (id)block
+		       handler: (id)handler
 {
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
-		_delegate = [delegate retain];
-		_block = [block copy];
+		_delegate = objc_retain(delegate);
+		_handler = [handler copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -51,12 +58,12 @@
 
 - (void)dealloc
 {
-	[_socket release];
-	[_host release];
-	[_delegate release];
-	[_block release];
-	[_exception release];
-	[_socketAddresses release];
+	objc_release(_socket);
+	objc_release(_host);
+	objc_release(_delegate);
+	objc_release(_handler);
+	objc_release(_exception);
+	objc_release(_socketAddresses);
 
 	[super dealloc];
 }
@@ -67,9 +74,15 @@
 		[_socket setCanBlock: true];
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL) {
+	if (_handler != NULL) {
 		if ([_socket isKindOfClass: [OFTCPSocket class]])
-			((OFTCPSocketAsyncConnectBlock)_block)(_exception);
+			((OFTCPSocketConnectedHandler)_handler)(_socket, _host,
+			    _port, _exception);
+# ifdef OF_HAVE_SCTP
+		else if ([_socket isKindOfClass: [OFSCTPSocket class]])
+			((OFSCTPSocketConnectedHandler)_handler)(_socket, _host,
+			    _port, _exception);
+# endif
 		else
 			OFEnsure(0);
 	} else {
@@ -92,13 +105,13 @@
 		 * self might be retained only by the pending async requests,
 		 * which we're about to cancel.
 		 */
-		[[self retain] autorelease];
+		objc_retainAutorelease(self);
 
 		[sock cancelAsyncRequests];
 		[sock of_closeSocket];
 
 		if (_socketAddressesIndex >= _socketAddresses.count) {
-			_exception = [exception retain];
+			_exception = objc_retain(exception);
 			[self didConnect];
 		} else {
 			/*
@@ -216,7 +229,7 @@
        exception: (id)exception
 {
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return;
 	}

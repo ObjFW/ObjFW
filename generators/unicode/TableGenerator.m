@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -55,7 +59,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		_decompositionTableSize       = SIZE_MAX;
 		_decompositionCompatTableSize = SIZE_MAX;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -117,17 +121,17 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
-		    unsignedLongLongValueWithBase: 16];
+		    unsignedLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
 		_uppercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 12] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 12] unsignedLongValueWithBase: 16];
 		_lowercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 13] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 13] unsignedLongValueWithBase: 16];
 		_titlecaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 14] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 14] unsignedLongValueWithBase: 16];
 
 		if ([[components objectAtIndex: 5] length] > 0) {
 			OFArray *decomposed = [[components objectAtIndex: 5]
@@ -147,8 +151,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 				OFUnichar unichar = (OFUnichar)[character
 				    unsignedLongLongValueWithBase: 16];
 
-				[string appendCharacters: &unichar
-						  length: 1];
+				[string appendCharacters: &unichar length: 1];
 			}
 
 			[string makeImmutable];
@@ -200,13 +203,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			continue;
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
-		    unsignedLongLongValueWithBase: 16];
+		    unsignedLongValueWithBase: 16];
 
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
 		_caseFoldingTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 2] unsignedLongLongValueWithBase: 16];
+		    objectAtIndex: 2] unsignedLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -257,7 +260,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			[replacement makeImmutable];
 
 			if (changed) {
-				[table[i] release];
+				objc_release(table[i]);
 				table[i] = [replacement copy];
 
 				done = false;
@@ -294,7 +297,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
 	    @"\n"
-	    @"#import \"OFString.h\"\n\n"
+	    @"#import \"unicode.h\"\n"
+	    @"\n"
 	    @"static const OFUnichar emptyPage[0x100] = { 0 };\n"
 	    @"static const char *emptyDecompositionPage[0x100] = { NULL };\n"
 	    @"\n"];
@@ -587,9 +591,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	_decompositionTableSize++;
 	_decompositionCompatTableSize++;
 
-	/* Write OFUnicodeUppercaseTable */
+	/* Write _OFUnicodeUppercaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeUppercaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeUppercaseTable[0x%X] = {\n\t",
 			   _uppercaseTableSize];
 
 	for (OFUnichar i = 0; i < _uppercaseTableSize; i++) {
@@ -608,9 +612,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeLowercaseTable */
+	/* Write _OFUnicodeLowercaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeLowercaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeLowercaseTable[0x%X] = {\n\t",
 			   _lowercaseTableSize];
 
 	for (OFUnichar i = 0; i < _lowercaseTableSize; i++) {
@@ -629,9 +633,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeTitlecaseTable */
+	/* Write _OFUnicodeTitlecaseTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeTitlecaseTable[0x%X] = {\n\t",
+			   @"_OFUnicodeTitlecaseTable[0x%X] = {\n\t",
 			   _titlecaseTableSize];
 
 	for (OFUnichar i = 0; i < _titlecaseTableSize; i++) {
@@ -652,9 +656,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[file writeString: @"\n};\n\n"];
 
-	/* Write OFUnicodeCaseFoldingTable */
+	/* Write _OFUnicodeCaseFoldingTable */
 	[file writeFormat: @"const OFUnichar *const "
-			   @"OFUnicodeCaseFoldingTable[0x%X] = {\n\t",
+			   @"_OFUnicodeCaseFoldingTable[0x%X] = {\n\t",
 			   _caseFoldingTableSize];
 
 	for (OFUnichar i = 0; i < _caseFoldingTableSize; i++) {
@@ -676,8 +680,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: @"\n};\n\n"];
 
 	/* Write OFUnicodeDecompositionTable */
-	[file writeFormat: @"const char *const "
-			   @"*OFUnicodeDecompositionTable[0x%X] = {\n\t",
+	[file writeFormat: @"const char *const *const "
+			   @"_OFUnicodeDecompositionTable[0x%X] = {\n\t",
 			   _decompositionTableSize];
 
 	for (OFUnichar i = 0; i < _decompositionTableSize; i++) {
@@ -697,8 +701,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[file writeString: @"\n};\n\n"];
 
 	/* Write OFUnicodeDecompositionCompatTable */
-	[file writeFormat: @"const char *const "
-			   @"*OFUnicodeDecompositionCompatTable[0x%X] = {"
+	[file writeFormat: @"const char *const *const "
+			   @"_OFUnicodeDecompositionCompatTable[0x%X] = {"
 			   @"\n\t",
 			   _decompositionCompatTableSize];
 
@@ -733,12 +737,12 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#import \"OFString.h\"\n\n"];
 
 	[file writeFormat:
-	    @"#define OFUnicodeUppercaseTableSize 0x%X\n"
-	    @"#define OFUnicodeLowercaseTableSize 0x%X\n"
-	    @"#define OFUnicodeTitlecaseTableSize 0x%X\n"
-	    @"#define OFUnicodeCaseFoldingTableSize 0x%X\n"
-	    @"#define OFUnicodeDecompositionTableSize 0x%X\n"
-	    @"#define OFUnicodeDecompositionCompatTableSize 0x%X\n\n",
+	    @"#define _OFUnicodeUppercaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeLowercaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeTitlecaseTableSize 0x%X\n"
+	    @"#define _OFUnicodeCaseFoldingTableSize 0x%X\n"
+	    @"#define _OFUnicodeDecompositionTableSize 0x%X\n"
+	    @"#define _OFUnicodeDecompositionCompatTableSize 0x%X\n\n",
 	    _uppercaseTableSize, _lowercaseTableSize, _titlecaseTableSize,
 	    _caseFoldingTableSize, _decompositionTableSize,
 	    _decompositionCompatTableSize];
@@ -748,19 +752,22 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"extern \"C\" {\n"
 	    @"#endif\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeUppercaseTable[OFUnicodeUppercaseTableSize];\n"
+	    @"    _OFUnicodeUppercaseTable[_OFUnicodeUppercaseTableSize]\n"
+	    @"    OF_VISIBILITY_INTERNAL;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeLowercaseTable[OFUnicodeLowercaseTableSize];\n"
+	    @"    _OFUnicodeLowercaseTable[_OFUnicodeLowercaseTableSize]\n"
+	    @"    OF_VISIBILITY_INTERNAL;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeTitlecaseTable[OFUnicodeTitlecaseTableSize];\n"
+	    @"    _OFUnicodeTitlecaseTable[_OFUnicodeTitlecaseTableSize]\n"
+	    @"    OF_VISIBILITY_INTERNAL;\n"
 	    @"extern const OFUnichar *const _Nonnull\n"
-	    @"    OFUnicodeCaseFoldingTable[OFUnicodeCaseFoldingTableSize];\n"
+	    @"    _OFUnicodeCaseFoldingTable[_OFUnicodeCaseFoldingTableSize];\n"
 	    @"extern const char *const _Nullable *const _Nonnull\n"
-	    @"    OFUnicodeDecompositionTable["
-	    @"OFUnicodeDecompositionTableSize];\n"
+	    @"    _OFUnicodeDecompositionTable["
+	    @"_OFUnicodeDecompositionTableSize];\n"
 	    @"extern const char *const _Nullable *const _Nonnull\n"
-	    @"    OFUnicodeDecompositionCompatTable["
-	    @"OFUnicodeDecompositionCompatTableSize];\n"
+	    @"    _OFUnicodeDecompositionCompatTable["
+	    @"_OFUnicodeDecompositionCompatTableSize];\n"
 	    @"#ifdef __cplusplus\n"
 	    @"}\n"
 	    @"#endif\n"];

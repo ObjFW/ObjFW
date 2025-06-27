@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -34,6 +38,9 @@
 #endif
 #ifdef OF_HAVE_NETINET_TCP_H
 # include <netinet/tcp.h>
+#endif
+#ifdef OF_HAVE_NETINET_SCTP_H
+# include <netinet/sctp.h>
 #endif
 #ifdef OF_HAVE_SYS_UN_H
 # include <sys/un.h>
@@ -175,7 +182,7 @@ struct sockaddr_at {
 #endif
 
 /**
- * @struct OFSocketAddress OFSocket.h ObjFW/OFSocket.h
+ * @struct OFSocketAddress OFSocket.h ObjFW/ObjFW.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
@@ -290,9 +297,20 @@ extern unsigned long OFSocketAddressHash(
  * @brief Converts the specified @ref OFSocketAddress to a string.
  *
  * @param address The address to convert to a string
- * @return The address as an IP string, without the port
+ * @return The address as a string, without the port
  */
 extern OFString *_Nonnull OFSocketAddressString(
+    const OFSocketAddress *_Nonnull address);
+
+/**
+ * @brief Returns a description for the specified @ref OFSocketAddress.
+ *
+ * This is similar to @ref OFSocketAddressString, but it also contains the port.
+ *
+ * @param address The address to return a description for
+ * @return The address as an string, with the port
+ */
+extern OFString *_Nonnull OFSocketAddressDescription(
     const OFSocketAddress *_Nonnull address);
 
 /**
@@ -427,23 +445,6 @@ extern void OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address,
  */
 extern uint8_t OFSocketAddressAppleTalkPort(
     const OFSocketAddress *_Nonnull address);
-
-extern bool OFSocketInit(void);
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern void OFSocketDeinit(void);
-#endif
-extern int OFSocketErrNo(void);
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen);
-#endif
-
-#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
-extern OFTLSKey OFSocketBaseKey;
-# ifdef OF_AMIGAOS4
-extern OFTLSKey OFSocketInterfaceKey;
-# endif
-#endif
 #ifdef __cplusplus
 }
 #endif

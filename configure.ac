@@ -1,13 +1,17 @@
-AC_INIT(ObjFW, 1.1dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.4-dev, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
-AC_DEFINE(OBJFW_VERSION_MAJOR, 1, [The major version of ObjFW])
-AC_DEFINE(OBJFW_VERSION_MINOR, 1, [The minor version of ObjFW])
-dnl This may only be set to 1.1 once 1.1 is released
-AC_SUBST(BUNDLE_VERSION, 1.0.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.0)
+objfw_version_major=1
+objfw_version_minor=4
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
+	[The major version of ObjFW])
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
+	[The minor version of ObjFW])
+dnl This may only be set to 1.4 once 1.4 is released
+AC_SUBST(BUNDLE_VERSION, 1.3.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.3)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
@@ -30,6 +34,7 @@ arm-*-riscos*)
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	LDFLAGS="$LDFLAGS $flags"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $flags"
 
 	enable_shared="no"
 	enable_threads="no"
@@ -42,7 +47,9 @@ m68k-*-amigaos*)
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 	LDFLAGS="$LDFLAGS -noixemul"
-	LIBS="$LIBS -ldebug"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -64,10 +71,22 @@ powerpc-*-amigaos*)
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
-	LIBS="$LIBS -ldebug"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -noixemul"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
+	supports_amiga_lib="yes"
+
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		t="-mresident32 -ffreestanding -noixemul"
+		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
+		t="$t -laboxstubs -labox -lmath -ldebug -lc"
+		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
@@ -78,7 +97,9 @@ powerpc-*-amigaos*)
 	;;
 *-*-mingw*)
 	LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
-	LIBS="$LIBS -lversion"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -Wl,--allow-multiple-definition"
+	LIBS="-lversion $LIBS"
+	OBJFW_LIBS="-lversion $OBJFW_LIBS"
 
 	AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
 	;;
@@ -92,10 +113,13 @@ powerpc-*-amigaos*)
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
 	CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
 	LDFLAGS="$LDFLAGS -G0"
-	LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
-	LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
-	LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
-	LIBS="$LIBS -lpsputility -lpspuser -lpspkernel -lgcc -lpsplibc"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -G0"
+	tmp="-L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay -lpspge -lpspctrl"
+	tmp="$tmp -lpspsdk -lc -lpspnet -lpspnet_inet -lpspnet_apctl"
+	tmp="$tmp -lpspnet_resolver -lpsputility -lpspuser -lpspkernel -lgcc"
+	tmp="$tmp -lpsplibc"
+	LIBS="$tmp $LIBS"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
@@ -115,7 +139,8 @@ hppa*-*-hpux*)
 	dnl also used for .S files.
 	OBJCFLAGS="$OBJCFLAGS -include inttypes.h"
 	dnl We need -latomic for GCC's atomics to work.
-	LIBS="$LIBS -latomic"
+	LIBS="-latomic $LIBS"
+	OBJFW_LIBS="-latomic $OBJFW_LIBS"
 	;;
 *-*-mint*)
 	enable_shared="no"
@@ -152,6 +177,8 @@ morphos*)
 esac
 AC_PROG_OBJC($potential_compilers)
 AC_PROG_OBJCPP
+AC_PROG_EGREP
+AC_PROG_SED
 AC_PROG_LN_S
 
 BUILDSYS_CHECK_IOS
@@ -169,13 +196,17 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
-	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
-	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
+	LIBS="-L$DEVKITPRO/libogc/lib/wii -lfat -logc $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libogc/lib/wii -lfat -logc $OBJFW_LIBS"
+	HID_STATIC_LIBS="-lwiiuse -lbte $HID_LIBS"
+	HID_LIBS="-lwiiuse -lbte $HID_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
+	AC_SUBST(USE_SRCS_WII, '${SRCS_WII}')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -192,8 +223,11 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 	CPPFLAGS="-isystem $DEVKITPRO/wut/include -D__WIIU__ -D__WUT__"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -isystem \$DEVKITPRO/wut/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__WIIU__ -D__WUT__"
-	LDFLAGS="-specs=$DEVKITPRO/wut/share/wut.specs"
-	LIBS="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/wut/share/wut.specs"
+	tmp="-L$DEVKITPRO/wut/lib -L$DEVKITPRO/wut/lib/stubs -lwut"
+	LIBS="$tmp $LIBS"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_files="no"	# TODO
 	enable_shared="no"	# TODO
 	enable_threads="no"	# TODO
@@ -201,6 +235,12 @@ AS_IF([test x"$with_wii_u" = x"yes"], [
 
 	AC_DEFINE(OF_WII_U, 1, [Whether we are compiling for Wii U])
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+	# Repetition of libraries is required for Wii U, as otherwise it cannot
+	# find main. Just moving -lobjfwtest later doesn't work either, as then
+	# the linker cannot find ObjFW symbols. So the only solution is to list
+	# everything twice, but hide it behind a variable because listing it
+	# twice causes a warning on macOS.
+	AC_SUBST(WII_U_TESTS_LIBS, '-lobjfwtest ${TESTS_LIBS} ${LIBS}')
 ])
 
 AC_ARG_WITH(nds,
@@ -213,17 +253,27 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	flags="-march=armv5te -mtune=arm946e-s -mthumb -mthumb-interwork"
 	OBJCFLAGS="$OBJCFLAGS $flags"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
-	CPPFLAGS="$CPPFLAGS -DARM9 -I$DEVKITPRO/libnds/include"
-	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
+	CPPFLAGS="$CPPFLAGS -DARM9 -D__NDS__ -I$DEVKITPRO/libnds/include"
+	CPPFLAGS="$CPPFLAGS -I$DEVKITPRO/calico/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -D__NDS__"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -I\$DEVKITPRO/libnds/include"
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -I\$DEVKITPRO/calico/include"
 	ASFLAGS="$ASFLAGS -march=armv5te"
-	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
-	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
+	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/calico/share/ds9.specs"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=\$DEVKITPRO/calico/share/ds9.specs"
+	tmp="-L$DEVKITPRO/libnds/lib -L$DEVKITPRO/calico/lib"
+	tmp="$tmp -lfilesystem -lfat -lnds9 -lcalico_ds9"
+	LIBS="$tmp $LIBS"
+	tmp="-L\$DEVKITPRO/libnds/lib -L\$DEVKITPRO/calico/lib"
+	tmp="$tmp -lfilesystem -lfat -lnds9 -lcalico_ds9"
+	OBJFW_LIBS="$tmp $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_DS, 1, [Whether we are compiling for Nintendo DS])
+	AC_SUBST(USE_SRCS_NINTENDO_DS, '${SRCS_NINTENDO_DS}')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -241,9 +291,12 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	ASFLAGS="$ASFLAGS -march=armv6k"
-	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
-	LDFLAGS="$LDFLAGS -mfloat-abi=hard -mtp=soft -mword-relocations"
-	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
+	tmp="-specs=3dsx.specs -march=armv6k -mtune=mpcore -mfloat-abi=hard"
+	tmp="$tmp -mtp=soft -mword-relocations"
+	LDFLAGS="$LDFLAGS $tmp"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $tmp"
+	LIBS="-L$DEVKITPRO/libctru/lib -lctru $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libctru/lib -lctru $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	with_tls="no"
@@ -251,6 +304,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
 		[Whether we are compiling for Nintendo 3DS])
+	AC_SUBST(USE_SRCS_NINTENDO_3DS, '${SRCS_NINTENDO_3DS}')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -268,7 +322,10 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -D__SWITCH__ -I$DEVKITPRO/libnx/include"
 	ASFLAGS="$ASFLAGS $flags"
 	LDFLAGS="$LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs $flags"
-	LIBS="$LIBS -L$DEVKITPRO/libnx/lib -lnx"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -specs=$DEVKITPRO/libnx/switch.specs"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS $flags"
+	LIBS="-L$DEVKITPRO/libnx/lib -lnx $LIBS"
+	OBJFW_LIBS="-L$DEVKITPRO/libnx/lib -lnx $OBJFW_LIBS"
 	enable_shared="no"
 	enable_threads="yes"
 	enable_sockets="no"	# TODO
@@ -276,10 +333,12 @@ AS_IF([test x"$with_nintendo_switch" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_SWITCH, 1,
 		[Whether we are compiling for Nintendo Switch])
+	AC_SUBST(USE_SRCS_NINTENDO_SWITCH, '${SRCS_NINTENDO_SWITCH}')
 ])
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
+CPPFLAGS="$CPPFLAGS -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3"
 flags="-fexceptions -fobjc-exceptions -funwind-tables"
 flags="$flags -fconstant-string-class=OFConstantString"
 OBJCFLAGS="$OBJCFLAGS -Wall $flags"
@@ -287,6 +346,7 @@ OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 dnl amiga-gcc requires -fexceptions in LDFLAGS in order to link in the glue code
 dnl for registering the frames.
 LDFLAGS="$LDFLAGS -fexceptions"
+OBJFW_LDFLAGS="$OBJFW_LDFLAGS -fexceptions"
 
 case "$OBJC" in
 *clang*)
@@ -297,6 +357,7 @@ case "$OBJC" in
 		dnl everything used in ObjFW's assembly files. Therefore, use
 		dnl the integrated assembler for ObjC files, but not for
 		dnl assembly files.
+		ASFLAGS="$ASFLAGS -no-integrated-as"
 		OBJCFLAGS="$OBJCFLAGS -integrated-as"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -integrated-as"
 		;;
@@ -333,6 +394,22 @@ AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
 	OBJCFLAGS="$OBJCFLAGS $flag"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsnumber-literals, [
+	flag="-Xclang -fno-constant-nsnumber-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsarray-literals, [
+	flag="-Xclang -fno-constant-nsarray-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
+AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-nsdictionary-literals, [
+	flag="-Xclang -fno-constant-nsdictionary-literals"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
+])
+
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
 AS_IF([test x"$with_nds" != x"yes"], [
@@ -349,6 +426,13 @@ AX_CHECK_COMPILER_FLAGS([-Wobjc-missing-property-synthesis -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-missing-property-synthesis"])
 AX_CHECK_COMPILER_FLAGS([-Wmissing-method-return-type -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wmissing-method-return-type"])
+
+AS_IF([test x"$host_cpu" = x"powerpc64"], [
+	dnl Buggy warning in both GCC and Clang on PowerPC 64!
+	dnl But only in big endian mode.
+	AX_CHECK_COMPILER_FLAGS([-Wno-overlength-strings -Werror],
+		[OBJCFLAGS="$OBJCFLAGS -Wno-overlength-strings"])
+])
 
 case "$host" in
 m68k-*-amigaos*)
@@ -393,51 +477,83 @@ mingw*)
 	;;
 esac
 
+BUILDSYS_STACK_PROTECTOR
+BUILDSYS_RELRO
+OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
+LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
+
+AC_ARG_ENABLE(amiga-lib,
+	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
+AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
 	BUILDSYS_PLUGIN
+	BUILDSYS_PIE
 
 	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
+	AC_SUBST(OBJFWHID_SHARED_LIB, '${LIB_PREFIX}objfwhid${LIB_SUFFIX}')
+
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
+		AC_SUBST(OBJFWHID_FRAMEWORK, "ObjFWHID.framework")
 		build_framework="yes"
+	])
+
+	BUILDSYS_BUNDLE([
+		AC_SUBST(TESTPLUGIN_BUNDLE, "TestPlugin.bundle")
+	], [
+		AC_SUBST(TESTPLUGIN_PLUGIN, 'TestPlugin${PLUGIN_SUFFIX}')
 	])
 ], [
 	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
+	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 ])
 
 AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-framework ObjFWHID \${HID_FRAMEWORK_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="\${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
-	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
+	TESTS_LIBS="-L../src $TESTS_LIBS"
 ])
 
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
 ])
-AS_IF([test x"$enable_static" = x"yes"], [
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
+
+	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
+])
+
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+       AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
-	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
+	AC_SUBST(USE_SRCS_MODULES, '${SRCS_MODULES}')
 	AC_SUBST(TESTPLUGIN, "plugin")
+	AC_DEFINE(OF_HAVE_MODULES, 1, [Whether we have support for modules])
+	dnl Deprecated
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
 	AC_CONFIG_FILES(tests/plugin/Info.plist)
 
@@ -450,6 +566,10 @@ AS_IF([test x"$enable_files" != x"no" -a x"$PLUGIN_SUFFIX" != x""], [
 		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS -lobjfw \${RUNTIME_LIBS}"
 	])
 	AC_SUBST(TESTPLUGIN_LIBS)
+])
+
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(LINKLIB, linklib)
 ])
 
 AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
@@ -488,7 +608,7 @@ AS_IF([test x"$enable_runtime" != x"yes"], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
 			#import <objc/objc.h>
 
-			#ifdef OBJC_BOOL_DEFINED
+			#ifdef OBJC_EXPORT
 			egrep_cpp_yes
 			#endif
 		], [
@@ -504,11 +624,14 @@ AC_MSG_RESULT($objc_runtime)
 case "$objc_runtime" in
 "ObjFW runtime")
 	AC_DEFINE(OF_OBJFW_RUNTIME, 1, [Whether we use the ObjFW runtime])
+	AC_SUBST(USE_SRCS_TAGGED_POINTERS, '${SRCS_TAGGED_POINTERS}')
 
-	AC_MSG_CHECKING([whether -fobjc-runtime=objfw is supported])
+	runtime_name="objfw-${objfw_version_major}.${objfw_version_minor}"
+	runtime_flag="-fobjc-runtime=$runtime_name"
+	AC_MSG_CHECKING([whether $runtime_flag is supported])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+	OBJCFLAGS="$OBJCFLAGS -Xclang $runtime_flag"
 	AC_LINK_IFELSE([
 		AC_LANG_PROGRAM([
 			#ifdef __has_attribute
@@ -540,7 +663,7 @@ case "$objc_runtime" in
 			[Test test];
 		]])
 	], [
-		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fobjc-runtime=objfw"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang $runtime_flag"
 		AC_MSG_RESULT(yes)
 	], [
 		OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
@@ -559,6 +682,7 @@ case "$objc_runtime" in
 
 	AS_IF([test x"$enable_static" = x"yes"], [
 		AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
+		AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 	])
 
 	AS_IF([test x"$build_framework" = x"yes"], [
@@ -566,9 +690,18 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
 	])
 
-	AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
+		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
+		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
+	], [
+		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
+	])
+	AC_SUBST(RUNTIME_STATIC_LIBS, '${libdir}/libobjfwrt.a')
 
-	AS_IF([test x"$enable_shared" = x"no"], [
+	AS_IF([test x"$enable_shared" = x"no" \
+	    -a x"$enable_amiga_lib" = x"no"], [
 		AC_SUBST(LIBOBJFWRT_DEP, "../src/runtime/libobjfwrt.a")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../../src/runtime/libobjfwrt.a")
 	])
@@ -578,61 +711,36 @@ case "$objc_runtime" in
 	])
 
 	AC_MSG_CHECKING(for exception type)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			extern void foo();
+	AC_EGREP_CPP(egrep_cpp_yes, [
+		#ifdef __SEH__
+		egrep_cpp_yes
+		#endif
+	], [
+		AC_MSG_RESULT(SEH)
+		exception_type="SEH"
+		raise_exception="_Unwind_RaiseException"
+	], [
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef __USING_SJLJ_EXCEPTIONS__
+			egrep_cpp_yes
+			#endif
 		], [
-			@try {
-				foo();
-			} @finally {
-				foo();
-			}
-		])
-	], [
-		AS_IF([$EGREP __gnu_objc_personality_v0 conftest.$ac_objext \
-		    >/dev/null], [
-			exception_type="DWARF"
-		])
-		AS_IF([$EGREP __gnu_objc_personality_sj0 conftest.$ac_objext \
-		    >/dev/null], [
+			AC_MSG_RESULT(SjLj)
 			exception_type="SjLj"
-		])
-		AS_IF([$EGREP __gnu_objc_personality_seh0 conftest.$ac_objext \
-		    >/dev/null], [
-			exception_type="SEH"
-		])
-
-		case "$exception_type" in
-		DWARF)
-			AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
-				[Whether DWARF exceptions are used])
-			raise_exception="_Unwind_RaiseException"
-			;;
-		SjLj)
-			AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
-				[Whether SjLj exceptions are used])
 			raise_exception="_Unwind_SjLj_RaiseException"
-			;;
-		SEH)
-			AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
-				[Whether SEH exceptions are used])
+		], [
+			AC_MSG_RESULT(DWARF)
+			exception_type="DWARF"
 			raise_exception="_Unwind_RaiseException"
-			;;
-		*)
-			AC_MSG_RESULT(unknown)
-			AC_MSG_ERROR([Exception type not detected!])
-			;;
-		esac
-
-		AC_MSG_RESULT($exception_type)
-	], [
-		AC_MSG_RESULT(exceptions unavailable!)
-		AC_MSG_ERROR([Exceptions not accepted by compiler!])
+		])
 	])
 
 	AC_SEARCH_LIBS($raise_exception, [c++abi gcc_s gcc unwind], [
 		dnl c++abi requires pthread on OpenBSD
-		AS_IF([test x"$ac_lib" = x"c++abi"], [LIBS="$LIBS -lpthread"])
+		AS_IF([test x"$ac_lib" = x"c++abi"], [
+			LIBS="-lpthread $LIBS"
+			OBJFW_LIBS="-lpthread $OBJFW_LIBS"
+		])
 	], [
 		AC_MSG_ERROR([$raise_exception missing!])
 	], [-lpthread])
@@ -645,6 +753,7 @@ case "$objc_runtime" in
 	AC_CHECK_LIB(objc, objc_msgSend, [
 		AC_SUBST(RUNTIME_LIBS, "-lobjc")
 		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-lobjc")
+		AC_SUBST(RUNTIME_STATIC_LIBS, "-lobjc")
 	], [
 		AC_MSG_ERROR([libobjc not found!])
 	])
@@ -653,10 +762,27 @@ case "$objc_runtime" in
 	OBJCFLAGS="$OBJCFLAGS -lobjc"
 
 	AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
-		AC_SUBST(RUNTIME_AUTORELEASE_M, "runtime/autorelease.m")
+		dnl If we're using the Apple runtime and it doesn't have
+		dnl autorelease pools, we need to use the implementation from
+		dnl Foundation to make ObjFWBridge work. We can't use the
+		dnl ObjFWRT implementation as that would result in two parallel
+		dnl autorelease pool chains.
+		AC_SUBST(AUTORELEASE_FOUNDATION_M, "autorelease-foundation.m")
+		LIBS="-framework Foundation"
+		FRAMEWORK_LIBS="-framework Foundation"
 	])
 	AC_CHECK_FUNC(objc_constructInstance, [], [
 		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
+		AC_DEFINE(OF_DECLARE_CONSTRUCT_INSTANCE, 1,
+			[Whether to declare objc_constructInstance etc.])
+	])
+	AC_CHECK_FUNCS(objc_setAssociatedObject, [], [
+		AC_SUBST(RUNTIME_ASSOCIATION_M, "runtime/association.m")
+		AC_DEFINE(OF_DECLARE_SET_ASSOCIATED_OBJECT, 1,
+			[Whether to declare objc_setAssociatedObject etc.])
+	])
+	AC_CHECK_FUNCS(objc_retain, [], [
+		AC_SUBST(RUNTIME_ARC_M, "runtime/arc.m")
 	])
 
 	OBJCFLAGS="$old_OBJCFLAGS"
@@ -678,19 +804,13 @@ esac
 case "$host_os" in
 darwin*)
 	AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
+
 	AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK, ["-Wl,-reexport-lobjc"])
-		LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
 	])
 
 	AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
-		AS_IF([test x"$exception_type" = x"DWARF"], [
-			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
-		])
-		AS_IF([test x"$exception_type" = x"SjLj"], [
-			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
-		])
 		AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
 		AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
 			["-Wl,-reexport_framework,ObjFWRT"])
@@ -736,7 +856,6 @@ AC_COMPILE_IFELSE([
 	]])
 ], [
 	AC_MSG_RESULT(yes)
-	AC_DEFINE(COMPILER_SUPPORTS_ARC, 1, [Whether the compiler supports ARC])
 	AC_SUBST(RUNTIME_ARC_TESTS_M, RuntimeARCTests.m)
 ], [
 	AC_MSG_RESULT(no)
@@ -787,9 +906,6 @@ AC_CHECK_HEADER(inttypes.h,
 AC_CHECK_HEADER(sys/types.h,
 	[AC_DEFINE(OF_HAVE_SYS_TYPES_H, 1, [Whether we have sys/types.h])])
 
-AC_CHECK_TYPE(max_align_t,
-	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
-
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
@@ -810,12 +926,14 @@ AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
 			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
 		])
 	], [
-		AS_IF([$EGREP BigEnd conftest.$ac_objext >/dev/null], [
+		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
+		    $EGREP BigEnd >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
 				[Whether floats are big endian])
 			fp_endianess="big endian"
 		], [
-			AS_IF([$EGREP dnEgiB conftest.$ac_objext >/dev/null], [
+			AS_IF([$SED 's/[[^[:print:]]]//g' \
+			    <conftest.$ac_objext | $EGREP dnEgiB >/dev/null], [
 				fp_endianess="little endian"
 			])
 		])
@@ -830,6 +948,23 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 
 case "$host_cpu" in
 arm* | earm*)
+	AC_MSG_CHECKING(for blx)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			#if !defined(__arm64__) && !defined(__arch64__) && \
+			    !defined(__ARM64_ARCH_8__)
+			__asm__ __volatile__ (
+				"blx	r12"
+			);
+			#endif
+		])
+	], [
+		AC_DEFINE(HAVE_BLX, 1, [Whether we have blx])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+
 	AC_MSG_CHECKING(for VFP2 or above)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([], [
@@ -847,10 +982,29 @@ arm* | earm*)
 		AC_MSG_RESULT(no)
 	])
 	;;
+aarch64* | arm64*)
+	AC_MSG_CHECKING(for bti)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([], [
+			__asm__ __volatile__ ("bti c");
+		])
+	], [
+		AC_DEFINE(HAVE_BTI, 1, [Whether we have bti])
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
+i?86 | x86_64)
+	AC_CHECK_HEADERS(cet.h)
+	;;
 esac
 
-AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
-AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
+AC_CHECK_LIB(m, fmod, [
+	LIBS="-lm $LIBS"
+	OBJFW_LIBS="-lm $OBJFW_LIBS"
+])
+AC_CHECK_LIB(complex, creal, TESTS_LIBS="-lcomplex $TESTS_LIBS")
 
 AC_CHECK_FUNCS(strtof truncf)
 
@@ -897,6 +1051,7 @@ AC_DEFUN([ENCODING_FLAG], [
 ])
 ENCODING_FLAG(codepage-437, codepage_437, [Codepage 437], HAVE_CODEPAGE_437)
 ENCODING_FLAG(codepage-850, codepage_850, [Codepage 850], HAVE_CODEPAGE_850)
+ENCODING_FLAG(codepage-852, codepage_852, [Codepage 852], HAVE_CODEPAGE_852)
 ENCODING_FLAG(codepage-858, codepage_858, [Codepage 858], HAVE_CODEPAGE_858)
 ENCODING_FLAG(iso-8859-2, iso_8859_2, [ISO 8859-2], HAVE_ISO_8859_2)
 ENCODING_FLAG(iso-8859-3, iso_8859_3, [ISO 8859-3], HAVE_ISO_8859_3)
@@ -904,6 +1059,7 @@ ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
 ENCODING_FLAG(koi8-r, koi8_r, [KOI8-R], HAVE_KOI8_R)
 ENCODING_FLAG(koi8-u, koi8_u, [KOI8-U], HAVE_KOI8_U)
 ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
+ENCODING_FLAG(windows-1250, windows_1250, [Windows-1250], HAVE_WINDOWS_1250)
 ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
 ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
 
@@ -921,7 +1077,10 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 AC_CHECK_FUNCS(arc4random arc4random_buf getrandom random, break)
 
 AS_IF([test x"$host_os" != x"morphos"], [
-	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+	AC_CHECK_LIB(dl, dlopen, [
+		LIBS="-ldl $LIBS"
+		OBJFW_LIBS="-ldl $OBJFW_LIBS"
+	])
 ])
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
 case "$host_os" in
@@ -931,6 +1090,9 @@ netbsd*)
 	dnl so that it has to be killed using SIGKILL.
 	dnl When disabling __thread, it doesn't freeze, but all symbols are
 	dnl wrong.
+	;;
+morphos*)
+	dnl MorphOS has a dladdr symbol, but it doesn't work.
 	;;
 *)
 	AC_CHECK_FUNCS(dladdr)
@@ -963,7 +1125,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		AC_CHECK_LIB(pthread, main, LIBS="$LIBS -lpthread")
+		AC_CHECK_LIB(pthread, main, [
+			LIBS="-lpthread $LIBS"
+			OBJFW_LIBS="-lpthread $OBJFW_LIBS"
+		])
 
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
@@ -1253,34 +1418,14 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_FUNC(symlink, [
 		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 	])
-	AC_CHECK_FUNCS([lstat])
+	AC_CHECK_FUNCS([lstat lutimes utimensat])
 	AC_CHECK_MEMBERS([struct stat.st_birthtime], [], [], [
 		#include <sys/stat.h>
 	])
-
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Werror"
-	AC_MSG_CHECKING(for readdir_r)
-	AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <dirent.h>
-		], [
-			DIR *dir = 0;
-			struct dirent entry, *result;
-
-			readdir_r(dir, &entry, &result);
-		])
-	], [
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(HAVE_READDIR_R, 1, [Whether we have readdir_r()])
-	], [
-		AC_MSG_RESULT(no)
-	])
-	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
 AC_CHECK_HEADERS(dirent.h)
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r])
+AC_CHECK_FUNCS([sysconf clock_gettime gmtime_r localtime_r])
 
 case "$host_os" in
 amigaos* | morphos*)
@@ -1368,19 +1513,35 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	amigaos* | morphos*)
 		;;
 	haiku*)
-		LIBS="$LIBS -lnetwork"
+		LIBS="-lnetwork $LIBS"
+		OBJFW_LIBS="-lnetwork $OBJFW_LIBS"
 		;;
 	mingw*)
-		LIBS="$LIBS -lws2_32 -liphlpapi"
+		LIBS="-lws2_32 -liphlpapi $LIBS"
+		OBJFW_LIBS="-lws2_32 -liphlpapi $OBJFW_LIBS"
 		;;
 	*)
-		AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
+		AC_CHECK_LIB(socket, socket, [
+			LIBS="-lsocket $LIBS"
+			OBJFW_LIBS="-lsocket $OBJFW_LIBS"
+		])
 		;;
 	esac
 
 	AC_CHECK_HEADER(sys/socket.h, [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
+	])
+	AC_CHECK_MEMBERS([struct sockaddr.sa_len], [], [], [
+		#ifdef OF_HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+		#ifdef _WIN32
+		# include <winsock2.h>
+		#endif
 	])
 	AC_CHECK_TYPE([struct sockaddr_storage], [
 		AC_DEFINE(OF_HAVE_SOCKADDR_STORAGE, 1,
@@ -1405,23 +1566,69 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
+	AC_CHECK_HEADER(netinet/sctp.h, [
+		AC_DEFINE(OF_HAVE_SCTP, 1, [Whether we have SCTP])
+		AC_DEFINE(OF_HAVE_NETINET_SCTP_H, 1,
+			[Whether we have netinet/sctp.h])
+		AC_SUBST(USE_SRCS_SCTP, '${SRCS_SCTP}')
+	], [], [
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h sys/sockio.h])
-	AC_CHECK_HEADERS([net/if.h net/if_arp.h net/if_dl.h net/if_types.h])
+	AC_CHECK_HEADERS([net/if.h], [], [], [
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+	])
+	AC_CHECK_HEADERS([net/if_arp.h net/if_dl.h net/if_types.h], [], [], [
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
+		#endif
+	])
 	AC_CHECK_FUNCS([if_indextoname if_nametoindex if_nameindex])
 	AC_CHECK_TYPES([struct sockaddr_dl], [], [], [
 		#ifdef HAVE_SYS_TYPES_H
 		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
+		#ifdef HAVE_NET_IF_H
+		# include <net/if.h>
 		#endif
 		#ifdef HAVE_NET_IF_DL_H
 		# include <net/if_dl.h>
 		#endif
 	])
 	AC_CHECK_TYPES([struct lifconf], [], [], [
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
 		#ifdef HAVE_NET_IF_H
 		# include <net/if.h>
 		#endif
 	])
 	AC_CHECK_MEMBERS([struct ifreq.ifr_hwaddr], [], [], [
+		#ifdef HAVE_SYS_TYPES_H
+		# include <sys/types.h>
+		#endif
+		#ifdef OF_HAVE_SYS_SOCKET_H
+		# include <sys/socket.h>
+		#endif
 		#ifdef HAVE_NET_IF_H
 		# include <net/if.h>
 		#endif
@@ -1507,6 +1714,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			# include <afunix.h>
 			#endif
 		])
+
+		AC_CHECK_FUNCS(getpeereid)
 	], [], [
 		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>
@@ -1536,8 +1745,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_network, [], [
 		AC_CHECK_MEMBER(struct sockaddr_ipx.sa_netnum, [], [
-			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port, [
-			], [], [
+			AC_CHECK_MEMBER(struct sockaddr_ipx.sipx_addr.x_port,
+			[], [], [
 				#ifdef HAVE_SYS_TYPES_H
 				# include <sys/types.h>
 				#endif
@@ -1765,7 +1974,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, openssl, gnutls, securetransport or no)]))
+			(yes, openssl, gnutls, securetransport, mbedtls or
+			no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
 
@@ -1777,16 +1987,64 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			AC_CHECK_FUNC(SSLHandshake, [
 				tls_support="Secure Transport"
-				TLS_LIBS="-framework Foundation $TLS_LIBS"
-				TLS_LIBS="-framework Security $TLS_LIBS"
+				tmp="-framework Security -framework Foundation"
+				TLS_LIBS="-lobjfwbridge $tmp $TLS_LIBS"
+				tmp="-framework ObjFWBridge $tmp"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
-				AC_SUBST(OF_SECURE_TRANSPORT_TLS_STREAM_M,
-					"OFSecureTransportTLSStream.m")
+				AC_SUBST(USE_SRCS_SECURETRANSPORT,
+					'${SRCS_SECURETRANSPORT}')
 
 				AC_CHECK_FUNCS(SSLCreateContext)
 			], [])
 
 			LIBS="$old_LIBS"
+		])
+	])
+
+	AS_IF([test x"$with_tls" = x"openssl" \
+	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
+		case "$host_os" in
+		morphos*)
+			AC_CHECK_LIB(ssl_shared, openssl3_r13_saved, [
+				ssl="ssl_shared"
+				crypto="crypto_shared"
+			], [
+				ssl="ssl"
+				crypto="crypto"
+			])
+			TLS_LIBS="-pthread -latomic $TLS_LIBS"
+			;;
+		mingw*)
+			ssl="ssl"
+			crypto="crypto"
+			TLS_LIBS="-lcrypt32 -lpathcch $TLS_LIBS"
+			;;
+		*)
+			ssl="ssl"
+			crypto="crypto"
+			;;
+		esac
+
+		AC_CHECK_HEADER(openssl/ssl.h, [
+			AC_CHECK_LIB($ssl, SSL_set1_host, [
+				tls_support="OpenSSL"
+				tmp="-l$ssl -l$crypto"
+				TLS_LIBS="$tmp $TLS_LIBS"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
+			], [
+				AC_CHECK_LIB($ssl, SSL_set1_host, [
+					tls_support="OpenSSL"
+					tmp="-l$ssl -l$crypto -lz"
+					TLS_LIBS="$tmp $TLS_LIBS"
+					tmp="$tmp $TLS_FRAMEWORK_LIBS"
+					TLS_FRAMEWORK_LIBS="$tmp"
+				], [], [-l$crypto -lz $TLS_LIBS])
+			], [-l$crypto $TLS_LIBS])
+
+			AS_IF([test x"$tls_support" = x"OpenSSL"], [
+				AC_SUBST(USE_SRCS_OPENSSL, '${SRCS_OPENSSL}')
+			])
 		])
 	])
 
@@ -1796,8 +2054,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			tls_support="GnuTLS"
 			TLS_CPPFLAGS="$gnutls_CFLAGS $TLS_CPPFLAGS"
 			TLS_LIBS="$gnutls_LIBS $TLS_LIBS"
+			TLS_FRAMEWORK_LIBS="$gnutls_LIBS $TLS_FRAMEWORK_LIBS"
 
-			AC_SUBST(OF_GNUTLS_TLS_STREAM_M, "OFGnuTLSTLSStream.m")
+			AC_SUBST(USE_SRCS_GNUTLS, '${SRCS_GNUTLS}')
 		], [
 			dnl Disable default action-if-not-found, which exits
 			dnl configure with an error.
@@ -1805,38 +2064,31 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	])
 
-	AS_IF([test x"$with_tls" = x"openssl" \
-	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
-		case "$host_os" in
-		morphos*)
-			ssl="ssl_shared"
-			crypto="crypto_shared"
-			;;
-		*)
-			ssl="ssl"
-			crypto="crypto"
-			;;
-		esac
+	AS_IF([test x"$with_tls" = x"mbedtls"], [
+		AC_CHECK_LIB(mbedtls, mbedtls_net_init, [
+			AC_CHECK_HEADER(mbedtls/ssl.h, [
+				tls_support="Mbed TLS"
+				tmp="-lmbedtls -lmbedx509 -lmbedcrypto"
+				TLS_LIBS="$tmp $TLS_LIBS"
+				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
 
-		AC_CHECK_LIB($ssl, SSL_set1_host, [
-			AC_CHECK_HEADER(openssl/ssl.h, [
-				tls_support="OpenSSL"
-				TLS_LIBS="-l$ssl -l$crypto $TLS_LIBS"
-
-				AC_SUBST(OF_OPENSSL_TLS_STREAM_M,
-					"OFOpenSSLTLSStream.m")
+				AC_SUBST(USE_SRCS_MBEDTLS, '${SRCS_MBEDTLS}')
 			])
-		], [], [-l$crypto])
+		], [], [-lmbedx509 -lmbedcrypto])
 	])
 
 	AS_IF([test x"$tls_support" != x"no"], [
 		AC_SUBST(TLS, "tls")
 		AC_SUBST(TLS_CPPFLAGS)
 		AC_SUBST(TLS_LIBS)
+		AC_SUBST(TLS_FRAMEWORK_LIBS)
+		AC_SUBST(TLS_STATIC_LIBS)
 		AC_DEFINE(HAVE_TLS_SUPPORT, 1,
 			[Whether we have an implementation for TLS])
-		AC_CONFIG_FILES(src/tls/Info.plist)
+		AC_CONFIG_FILES([src/tls/ObjFWTLS.oc src/tls/Info.plist])
 
+		OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
+		OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
 		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
 
 		AS_IF([test x"$enable_shared" != x"no"], [
@@ -1855,7 +2107,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AS_IF([test x"$with_tls" != x"no" -a x"$tls_support" = x"no"], [
 		AC_MSG_ERROR(m4_normalize([
 			No TLS implementation was found. Please install OpenSSL,
-			GnuTLS or use --without-tls.
+			GnuTLS, Mbed TLS or use --without-tls.
 		]))
 	])
 
@@ -1943,7 +2195,8 @@ AS_IF([test x"$have_subprocesses" = x""], [
 	])
 ])
 AS_IF([test x"$have_subprocesses" = x"yes"], [
-	AC_SUBST(OF_SUBPROCESS_M, "OFSubprocess.m")
+	AC_SUBST(USE_SRCS_SUBPROCESSES, '${SRCS_SUBPROCESSES}')
+	AC_SUBST(SUBPROCESS, "subprocess")
 	AC_DEFINE(OF_HAVE_SUBPROCESSES, 1, [Whether we have subprocesses])
 ])
 
@@ -2003,6 +2256,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -Werror"
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2026,11 +2281,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-aliasing"
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(
 	    whether we need -Wno-unused-property-ivar due to Clang bugs)
 	AC_COMPILE_IFELSE([
@@ -2062,13 +2320,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-unused-property-ivar"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-unused-property-ivar"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wcast-align"
+	OBJCFLAGS="$OBJCFLAGS -Wcast-align -Werror"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2093,13 +2352,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS -Wcast-align"
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
+	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code -Werror"
 	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([[
@@ -2169,13 +2429,14 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		]])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wunreachable-code"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
+	OBJCFLAGS="$OBJCFLAGS -Wdocumentation -Werror"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
@@ -2197,6 +2458,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wdocumentation"
 	], [
 		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
@@ -2204,7 +2466,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AS_IF([test x"$check_pedantic" = x"yes"], [
 		old_OBJCFLAGS="$OBJCFLAGS"
-		OBJCFLAGS="$OBJCFLAGS -pedantic"
+		OBJCFLAGS="$OBJCFLAGS -pedantic -Werror"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
 		AC_COMPILE_IFELSE([
 			AC_LANG_SOURCE([
@@ -2240,12 +2502,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS -pedantic"
 		], [
 			AC_MSG_RESULT(yes)
 			OBJCFLAGS="$old_OBJCFLAGS"
 		])
 	])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(whether we need -Wno-strict-prototypes)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
@@ -2255,12 +2520,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
 	], [
 		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-strict-prototypes"
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-strict-prototypes"
 	])
 
 	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -Werror"
 		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
 		AC_COMPILE_IFELSE([
 			AC_LANG_PROGRAM([
@@ -2271,12 +2539,50 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			])
 		], [
 			AC_MSG_RESULT(no)
+			OBJCFLAGS="$old_OBJCFLAGS"
 		], [
 			AC_MSG_RESULT(yes)
-			OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+			OBJCFLAGS="$old_OBJCFLAGS -Wno-gnu-imaginary-constant"
 		])
 	])
 ])
+
+case "$host_os" in
+linux*)
+	AS_IF([test x"$enable_files" != x"no"], [
+		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
+	])
+	;;
+mingw*)
+	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
+	;;
+darwin*)
+	AC_MSG_CHECKING(new enough GameController.framework)
+	AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([
+			#import <GameController/GameController.h>
+		], [
+			if (@available(macOS 14.0, iOS 17.0, *)) {
+				GCController *controller =
+				    GCController.controllers[[0]];
+				(void)controller.input;
+			}
+		])
+	], [
+		AC_MSG_RESULT(yes)
+		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
+		AC_DEFINE(OF_HAVE_GCF, 1,
+			[Whether we have GameController.framework])
+		tmp="-framework GameController"
+		HID_STATIC_LIBS="$tmp \${libdir}/libobjfwbridge.a $HID_LIBS"
+		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
+		tmp="$tmp -framework ObjFWBridge"
+		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
+	], [
+		AC_MSG_RESULT(no)
+	])
+	;;
+esac
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "${host_alias}-")
@@ -2314,13 +2620,20 @@ AC_SUBST(DEP_ASFLAGS, '${DEP_OBJCFLAGS}')
 
 AC_SUBST(OBJFW_CPPFLAGS)
 AC_SUBST(OBJFW_OBJCFLAGS)
+AC_SUBST(OBJFW_LDFLAGS)
+AC_SUBST(OBJFW_LIBS)
 
+AC_SUBST(HID_LIBS)
+AC_SUBST(HID_FRAMEWORK_LIBS)
+AC_SUBST(HID_STATIC_LIBS)
 AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
 	src/Info.plist
+	src/hid/Info.plist
+	src/hid/ObjFWHID.oc
 	tests/Info.plist
 	utils/objfw-config
 ])

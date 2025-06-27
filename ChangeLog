@@ -4,7 +4,325 @@ Legend:
 
 This file only contains the most significant changes.
 
-ObjFW 0.90.1 -> ObjFW 0.90.2, 23.10.2017
+ObjFW 1.3.1 -> ObjFW 1.3.2, 2025-06-08
+ * Fixes handling of truncated writes in OFRunLoop.
+ * Makes OFHTTPServer more reliable.
+ * Fixes handling of write errors when using OpenSSL.
+ * Fixes reporting of written bytes in OFWriteFailedException when using GnuTLS.
+ * Fixes reporting of written bytes in OFWriteFailedException when using
+   MbedTLS.
+ * Fixes handling of EPIPE and ECONNRESET when using Secure Transport.
+
+ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
+ * Fixes OpenSSL TLS streams being reported as ready for reading when they are
+   not.
+ * Fixes using async I/O on OFHTTPServer's request body or response.
+ * Fixes configure on Solaris / Illumos.
+ * Improves configure check for GameController.framework.
+ * Removes unncessary promotion to double in OFColor.
+ * Fixes handling the last disk number on ZIP64 archives.
+ * Fixes OFLHAArchiveEntry on big endian systems.
+ * Fixes inconsistent nullability in OFMutablePair and OFMutableTriple.
+
+ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
+ + OFStdIOStream adds support truecolor, 256 colors, bold, italic, underlined
+   and italic.
+ * OFStdIOStream now keeps track of state to reduce the amount of escape codes
+   used.
+ + Adds support for getting peer credentials to UNIX sockets.
+ + Adds support for MPTCP.
+ + Adds more functions to parse integers to OFString.
+ + Adds range checks to OFNumber instead of truncating values.
+ * Deprecates OFPlugin in favor of OFModule.
+ * Deprecates a few methods in various classes, their replacements are
+   specified in the deprecation message.
+ * Optimizes lookup for embedded files.
+ * Improves EINTR handling throughout the entire code base.
+ + ObjFWRT calls +[load] on categories now.
+ * Adds and uses more error codes for OFTLSStream.
+ + Adds OFX509Certificate with support for PKCS #12 and PEM files.
+ + Adds server mode for OFTLSStream.
+ + Adds support for TLS to OFHTTPServer.
+ + Adds support for mbedTLS 3 to ObjFWTLS.
+ * Fixes handling of unexpected stream end in OFOpenSSLTLSStream.
+ + OFRunLoop now supports interacting with foreign run loops.
+ + ObjFWBridge now provides an OFKernelEventObserver implementation that uses
+   CFRunLoop to allow running code that needs a CFRunLoop inside an OFRunLoop.
+ + ObjFWBridge now bridges OFDate/NSDate and OFData/NSData.
+ * Fixes ObjFWBridge on macOS 10.5 (Leopard).
+ + Adds documentation for ObjFWBridge.
+ + Adds support for game controllers on macOS & iOS to ObjFWHID.
+ + Adds OFNotifications for changes values to ObjFWHID.
+ * ObjFWHID now uses more consistent names for game controller elements.
+ + Adds game controller-specific profiles on Linux to ObjFWHID for the following
+   controllers: Switch Pro Controller, Nintendo Switch Online SNES gamepad,
+   8BitDo Ultimate 2C Wireless, 8BitDo NES30.
+ + Adds game controller-specific profiles on macOS & iOS to ObjFWHID for the
+   following controllers: DualSense, DualShock 4, pair of Joy-Cons, Switch Pro
+   Controller, Nintendo Switch Online N64 controller, Nintendo Switch Online
+   SNES gamepad, Stadia gamepad, 8BitDo NES30.
+ * ObjFWHID now filters spurious extra buttons with the Xbox 360 Wireless
+   Receiver on Linux.
+ * ObjFWHID now assumes a single Joy-Con to be rotated and handles it
+   accordingly.
+ * ofarc now quarantines files before setting permissions, preventing an issue
+   where the permissions would no longer allow quarantining files.
+
+ObjFW 1.2.3 -> ObjFW 1.2.4, 2025-02-20
+ * Fixes OFPlainConditionTimedWait(), which as a result fixes OFRunLoop
+   spinning in some situations.
+ * Fixes OFMutableUTF8Strings containing `\0`.
+ * Fixes OFHTTPServer using an IPv6 address as host.
+
+ObjFW 1.2.2 -> ObjFW 1.2.3, 2024-12-15
+ * Fixes OFRunLoop not draining the autorelease pool after firing a timer.
+ * Adds -fno-constant-ns{number,array,dictionary}-literals to OBJCFLAGS, which
+   is required to have literals work with ObjFW with recent Xcode versions.
+
+ObjFW 1.2.1 -> ObjFW 1.2.2, 2024-12-07
+ * Fixes OFTLSSocket not sending shutdown when using OpenSSL.
+ * Fixes OFTLSSocket initialization when using MbedTLS.
+ * Fixes imports in ObjFWTLS.h.
+ * OFINIFile now properly quotes ; and #.
+ * Ensures ofarc and ofhash link ObjFWTLS.
+ * Makes OFEmbeddedIRIHandler public, as it's required for objfw-embed.
+ * Fixes compiling on Haiku r1beta5.
+ * Adds compatibility with latest devkitARM.
+
+ObjFW 1.2 -> ObjFW 1.2.1, 2024-11-09
+ * Fixes exceptions in ObjC++.
+ * Fixes compiling ObjC++ on Windows.
+ * Fixes compiling tests on Haiku.
+ * Properly hides private methods in ObjFWHID.
+
+ObjFW 1.1.7 -> ObjFW 1.2, 2024-11-02
+ + Adds a new framework for game controllers called ObjFWHID.
+ + Adds support for tagged pointer strings.
+ + Strings are now allowed to contain `\0`, while preventing such strings from
+   being passed to anything that expects a C string.
+ * `\u0000` and `\x??` are now allowed in JSON.
+ + Adds a new option `OFJSONRepresentationOptionSorted` to create sorted,
+   reproducible JSON representations.
+ * Socket initialization is now delayed until sockets are used for the first
+   time to significantly speed up startup on some systems, in particular game
+   consoles.
+ + Adds -[readString], -[tryReadString] and -[asyncReadString] to OFStream to
+   read until a `\0` is found.
+ + Adds support for SCTP sockets.
+ + Adds support for UNIX sequenced packet sockets.
+ + Adds assembly lookup for the following platforms: ARM64/Win64, RISC-V 64/ELF,
+   LoongArch 64/ELF.
+ + Adds -[forwardingTargetForSelector:] for the following platforms:
+   MIPS64-N64/ELF, RISC-V 64/ELF, LoongArch 64/ELF, PowerPC 64/ELF v1,
+   PowerPC 64/ELF v2, ARM64/Win64
+ + Adds support for the following encodings: Windows-1250, Codepage 852.
+ + Adds support for extended attributes on Solaris.
+ * OFPlugin now falls back to loading .dylibs on macOS/iOS when no .bundle was
+   found.
+ * OFINICategory was renamed to OFINISection.
+ * The API for async I/O handlers was changed to contain more arguments, which
+   results in new methods that take a handler instead of a block and deprecating
+   the old ones.
+ * -[attributesOfItemAtIRI:] now works for embedded files.
+ * `OF_APPLICATION_DELEGATE()` now works with `-mwindows`.
+ + Adds man pages for all utilities.
+ * ofdns now defaults to query AAAA and A, not ALL.
+ * ofhash now accepts --rmd160 as an alias for --ripemd160.
+
+ObjFW 1.1.6 -> ObjFW 1.1.7, 2024-08-25
+ * Fixes creating OFStrings from C strings with some encodings.
+ * Fixes creating an ASCII C string from an OFString that has been initialized
+   by passing an instance of a custom string class.
+ * Fixes OFINIFile not parsing `=` within `"` correctly.
+ * OFINIFile now allows comments and pairs before the first category.
+ * OFINIFile now allows # for comments.
+ * Hides some private symbols in the runtime library.
+ * Disables UNIX datagram sockets on Hurd as Hurd has incomplete support for
+   UNIX datagram sockets.
+
+ObjFW 1.1.5 -> ObjFW 1.1.6, 2024-08-11
+ * Fixes ObjC++ with GCC.
+ * Adds handling of EINTR in OFKernelEventObserver.
+ * Fixes overriding / reusing stack arguments in super calls on x86.
+ * Makes headers compatible with -Wunused-parameter.
+
+ObjFW 1.1.4 -> ObjFW 1.1.5, 2024-07-06
+ * Fixes MIPS32.
+ * Properly hides private symbols in the runtime so they can't be used
+   accidentally anymore.
+
+ObjFW 1.1.3 -> ObjFW 1.1.4, 2024-05-22
+ * Fixes ofarc failing to extract from stdin on macOS.
+ * Fixes the workaround for missing blx on ARM.
+ * Avoids Clang's integrated assembler on MIPS64 for .S files (as it cannot
+   calcualte the offset between two labels).
+ * Fixes X32 being mistaken for AMD64.
+
+ObjFW 1.1.2 -> ObjFW 1.1.3, 2024-05-12
+ * Fixes +[OFSystemInfo networkInterfaces] on NetBSD.
+ * Properly hides private symbols so they can't be used accidentally anymore.
+ * Adds missing documentation for various functions and macros.
+ * Uses RtlGenRandom to get proper randomness on Windows now.
+ * No longer uses _wutime64, which is buggy in some MinGW distributions.
+ * Only uses blx on ARM if it is available now.
+ * Adds a workaround for OFSubprocess tests on Windows 9x.
+ * Skips symlink tests if symlinks are unavailable.
+
+ObjFW 1.1.1 -> ObjFW 1.1.2, 2024-04-20
+ * Fixes configure script on systems using BusyBox for tr.
+ * Fixes compiling for Haiku.
+ * Fixes -[contentsOfDirectoryAtIRI:] corrupting the stack on Solaris.
+ * Fixes compiling for Wii with newer SDK.
+ * Fixes missing endbr / bti.
+ * Minor optimizations to ARM64 assembly.
+
+ObjFW 1.1 -> ObjFW 1.1.1, 2024-04-14
+ * Fixes missing ${DESTDIR} in some Makefiles.
+
+ObjFW 1.0.12 -> ObjFW 1.1, 2024-04-14
+ * ObjFW is now licensed under LGPLv3.0-only.
+ + Adds a new framework for writing tests called ObjFWTest.
+ * All tests were migrated to ObjFWTest.
+ + The runtime now supports associated objects.
+ + OFDNSResolver now caches responses.
+ + OFDNSResolver now supports URI and LOC DNS resource records.
+ + Adds methods to handle path extension to OFIRI.
+ + Adds support for Mbed TLS.
+ + Adds more methods to OFSystemInfo to check for CPU features.
+ * OFSystemInfo now only indicates CPU features as supported if the OS also
+   supports them.
+ + OFLHAArchive now supports extracting and creating files > 4 GB.
+ + OFLHAArchive now supports header level 3.
+ + OFLHAArchive now supports extracting -lhx-, -lz4- and -pm0- files.
+ * OFLHAArchive no longer defaults to ISO 8859-1.
+ + New class OFZooArchive for extracting and creating Zoo files.
+ * The schemes for archive IRI handlers have been renamed.
+ * The schemes for archive IRI handlers now look for the rightmost `!`,
+   which allows for chaining with less quoting.
+ * Fixes -[OFMutableArray replaceObjectIdenticalTo:withObject:] being
+   inconsistent with -[OFMutableArray replaceObject:withObject:].
+ * Fixes getting non-existent xattrs in OFFileManager.
+ * Objects on Windows, MS-DOS and 32 bit Solaris now get properly aligned so
+   that SIMD can be used on ivars.
+ * Fixes parsing of signed numbers in MessagePack.
+ * Fixes a memory leak in OFTarArchive.
+ + Adds support for typed extended file attributes (only on Haiku).
+ + Adds support for extended file attributes on Haiku, NetBSD and FreeBSD.
+ + OFStdIOStream now supports cursor movement and colors on MS-DOS.
+ * All headers are now compatible with -masm=intel.
+ + OFMatrix4x4 can now transform multiple vectors at once.
+ + OFMatrix4x4 has a 3DNow! implementation for multiplication and vector
+   transformations now.
+ + OFMatrix4x4 has an SSE implementation for vector transformations now.
+ * Updates Unicode support to 15.1.
+ * Fixes compatibility with LibreSSL.
+ * Fixes two linker warnings on macOS.
+ * Fixes compiling on QNX.
+ * OFLocale now supports automatic initialization.
+ + ofarc now supports extracting and creating Zoo archives.
+ + ofarc now has an --iri option to directly work on local and remote IRIs.
+ + ofarc now prints the archive comment with -lv.
+ + ofarc can now add an archive comment with --archive-comment=.
+ + ofarc now propagates the quarantine xattr on macOS when extracting an
+   archive.
+
+ObjFW 1.0.11 -> ObjFW 1.0.12, 2024-03-11
+ * Fixes a regression in OFZIPArchive that was introduced in 1.0.11 that
+   resulted in failing to extract archives and creating broken archives.
+ * Fixes a rare condition where OFInflateStream could end up in an endless
+   loop.
+ * Fixes OFTarArchiveEntry not having a default date, which could result in
+   messaging nil on a FP return, which yielded invalid results on 32-bit x86
+   with GCC.
+
+ObjFW 1.0.10 -> ObjFW 1.0.11, 2024-03-09
+ * Fixes -[OFHTTPClientResponse isAtEndOfStream] and
+   -[OFGZIPStream isAtEndOfStream].
+ * Fixes how OFZIPArchive handles disk 0 vs. disk 1.
+ * OFLHAArchive and OFZIPArchive create more compatible archives now.
+ * OFLHAArchive ignores padding in level 2 headers now.
+ * ofarc correctly sets modification dates of directories now by delaying
+   setting those until after all files have been extracted.
+ * Fixes a linker warning on macOS/iOS.
+ * Several minor documentation fixes.
+ * OFFileIRIHandler correctly transforms exceptions now so that they use an IRI
+   and not a path.
+
+ObjFW 1.0.9 -> ObjFW 1.0.10, 2024-02-24
+ * Fixes objc_getClassList() not releasing the global runtime mutex.
+ * Improves OFLHAArchive's compatibility with non-standard archives.
+ + Adds endbr32 / endbr64 / bti instructions for compatibility with Control
+   Flow Integrity.
+
+ObjFW 1.0.8 -> ObjFW 1.0.9, 2024-02-18
+ * Fixes OFGZIPStream reading the size and CRC32 incorrectly when either spans
+   multiple reads.
+ * Fixes a type mismatch in OFMapTable that could cause problems on big endian
+   systems when uint32_t and unsigned long have a different size.
+ * Fixes the default implementation of -[initWithKeys:arguments:] for custom
+   dictionaries.
+ * Improves detection of mutation during enumeration in
+   -[enumerateKeysAndObjectsUsingBlock:].
+ * Minor documentation fixes.
+
+ObjFW 1.0.7 -> ObjFW 1.0.8, 2024-01-21
+ * Fixes compilation on NetBSD, OpenBSD, OpenIndiana etc. which was broken by
+   1.0.7.
+
+ObjFW 1.0.6 -> ObjFW 1.0.7, 2024-01-21
+ * Fixes inheriting the environment in OFSubprocess.
+ * Fixes dealloc in OFSubprocess when -[closeForWriting] was called.
+ + Adds tests for OFSubprocess.
+ * Changes the key for +[OFSystemInfo networkInterfaces] to the adapter name
+   on Windows XP and newer to avoid a possible collission on the adapter index.
+ * Fixes compilation with old MinGW versions.
+ * Fixes the documentation for OFSRVDNSResourceRecord.
+
+ObjFW 1.0.5 -> ObjFW 1.0.6, 2024-01-15
+ * Fixes compatibility with autoconf 2.72.
+ * Fixes OFDNSResolver's handling of types, classes and lengths > 255.
+
+ObjFW 1.0.4 -> ObjFW 1.0.5, 2023-11-05
+ * Fixes the calculation of the extra alignment in OFAllocObject()
+ * Fixes +[OFSystemInfo networkInterfaces] on OpenBSD and Windows 98
+ * Fixes OFSocketAddressString() for AppleTalk addresses
+ * Uses GetModuleHandle() instead of LoadLibrary() where possible on Windows
+ * Disables tests for global blocks on Win64 due to broken compilers
+ * Adds PGP keys to verify tarballs and commits in the code repository
+
+ObjFW 1.0.3 -> ObjFW 1.0.4, 2023-10-08
+ * Fixes OFFile closing fd 0 when initialization fails
+ * Fixes -[stringByAppendingPathComponent:] on empty strings
+ * Fixes +[OFSystemInfo operatingSystemName] and
+   +[OFSystemInfo operatingSystemVersion] returning nil on some systems
+ * Adds a license for localizations
+
+ObjFW 1.0.2 -> ObjFW 1.0.3, 2023-09-14
+ * Fixes -[OFConcreteData initWithItemSize:] not setting freeWhenDone to true,
+   which resulted in a memory leak
+ * Fixes -[OFData initWithContentsOfIRI:] freeing the buffer in @catch instead
+   of @finally, which resulted in a memory leak
+
+ObjFW 1.0.1 -> ObjFW 1.0.2, 2023-09-11
+ * The build system has been updated to fix building .frameworks and to build
+   them differently for macOS and iOS
+
+ObjFW 1.0 -> ObjFW 1.0.1, 2023-09-10
+ * Hanging connections with OFTLSStream have been fixed when using OpenSSL
+ * The same fix as for OpenSSL has been applied to GnuTLS and SecureTransport
+   out of caution, even though there have been no hangs in practice
+ * The build system has been updated to fix building .frameworks among other
+   minor changes
+ * Some headers have been changed to fix compatibility with ObjC++
+ * Warnings about empty .o files on x86_64 Darwin have been fixed
+ * The OFDate documentation has been improved to list supported formats
+
+ObjFW 0.90.2 -> ObjFW 1.0, 2023-08-29
+ + First stable release with stable API and ABI
+ * Too many changes to list, as it has been almost 6 years since the last
+   release. See commits in the repository for details.
+
+ObjFW 0.90.1 -> ObjFW 0.90.2, 2017-10-23
  * Fix shadowed variables which caused many bugs (e.g. using the wrong object)
  * Many, many nullability fixes
  * OFTCPSocket: Fix exception not being retained for async connect
@@ -15,7 +333,7 @@ ObjFW 0.90.1 -> ObjFW 0.90.2, 23.10.2017
  * Better check for iOS
  * tests: Fix testing the wrong OFKernelEventObserver
 
-ObjFW 0.90 -> ObjFW 0.90.1, 20.08.2017
+ObjFW 0.90 -> ObjFW 0.90.1, 2017-08-20
  * OFData: Fix -[description]
  * OFFileManager: Set errno to 0 before readdir()
  * OFDate: Add -[localMinute]
@@ -28,7 +346,7 @@ ObjFW 0.90 -> ObjFW 0.90.1, 20.08.2017
  * Remove the OFFile b modes from MorphOS
    (they were already removed for all other OSes)
 
-ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
+ObjFW 0.8.1 -> ObjFW 0.90, 2017-08-01
  + New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry
 		OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager,
 		OFLocalization
@@ -60,7 +378,7 @@ ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
  + String decomposition to NFD
  * OFFile modes simplified ('b' removed)
 
-ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
+ObjFW 0.8 -> ObjFW 0.8.1, 2015-10-04
  * Adjust to __nullable / __nonnull being changed to _Nullable / _Nonnull in
    Clang 3.7 (this fixes compilation with Clang 3.7)
  * Blocks: Proper handling when called from a byref handler
@@ -74,7 +392,7 @@ ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
  * Don't use -pedantic on platforms where it's broken by the system headers
  * Documentation fixes
 
-ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
+ObjFW 0.7.1 -> ObjFW 0.8, 2015-08-14
 
  + An insanely huge amount of new APIs
  + New classes: OFHTTPServer, OFINICategory, OFINIFile, OFInflate64Stream,
@@ -123,7 +441,7 @@ ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
  * Unicode support updated to Unicode 8.0
  * OFURL: Proper escaping and unescaping
 
-ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
+ObjFW 0.7 -> ObjFW 0.7.1, 2012-11-12
  + Support for Haiku
  * Autorelease pools now work properly without __thread
  * Incorrect framework version in Xcode project fixed
@@ -132,7 +450,7 @@ ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
    problems with newer Clang versions
  * More use of OF_SENTINEL
 
-ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
+ObjFW 0.6 -> ObjFW 0.7, 2012-10-27
  Again, the differences are more than in any release before, thus listing them
  all would be too much. The major differences are:
  + ObjFW now comes with its own runtime, which greatly increases performance
@@ -156,7 +474,7 @@ ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
  * Most ObjC compiler feature checks are not part of configure anymore, making
    it possible to use the same installation with different compilers
 
-ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
+ObjFW 0.5.4 -> ObjFW 0.6, 2012-02-27
  The differences between 0.5.4 and 0.6 are too big to list them all. However,
  the major new features are:
  * OFString, OFArray, OFDictionary, OFSet and OFCountedSet are now class
@@ -172,17 +490,17 @@ ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
  + SOCKS5 support for OFTCPSockets (client only)
  * Several API changes
 
-ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
+ObjFW 0.5.3 -> ObjFW 0.5.4, 2011-08-30
  * The blocks runtime is now working correctly
  * Documentation fixes
  * -framework works with objfw-compile now
  + Support for QNX
  * Various small fixes
 
-ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
+ObjFW 0.5.2 -> ObjFW 0.5.3, 2011-07-01
  * Lots of bugfixes, see Git log for details
 
-ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
+ObjFW 0.5.1 -> ObjFW 0.5.2, 2011-04-25
  * Fix double-retain in OFList
  * Don't ignore the timeout in OFStreamObserver when using select()
  * Do -[OFURL copy] in a try block to prevent a leak when an exception occurs
@@ -191,7 +509,7 @@ ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
  * Fix a warning when sizeof(size_t) < sizeof(long long)
  * Skip possible BOMs when appending strings
 
-ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
+ObjFW 0.5 -> ObjFW 0.5.1, 2011-04-21
  * Work around a wrong warning produced by Apple GCC 4.0.1 which would cause
    the build to fail due to -Werror
  * Call objc_thread_{add,remove} when using the GNU runtime to make sure the
@@ -199,7 +517,7 @@ ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
  * Detach a thread before restarting if it was never joined
  * Release the old return value when restarting a thread
 
-ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
+ObjFW 0.4-alpha1 -> 0.5, 2011-04-09
  + %@ is now allowed in format strings
  + Added of_log for easy logging
  * Exceptions have one header per exception now
@@ -219,7 +537,7 @@ ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
  + Add Haiku to the list of supported platforms
  * Lots of small bugfixes and countless small changes. Read the commits!
 
-ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
+ObjFW 0.3.1 -> 0.4-alpha1, 2011-01-03
  * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3
  + Support for blocks was added, including a blocks runtime
  + Added support for the new GNU runtime, introduced in GCC 4.6
@@ -238,7 +556,7 @@ ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
  * Many small changes and new features that would be too much to list here
    The diff between 0.3.1 and 0.4-alpha1 has almost 24000 lines!
 
-ObjFW 0.3 -> 0.3.1, 19.06.2010
+ObjFW 0.3 -> 0.3.1, 2010-06-19
  * Fix a typo in OFMutableDictionary that prevented termination in case
    the last bucket is already used when the dictionary is resized
  * The mutations pointer is now correctly initialized in enumerators for
@@ -247,7 +565,7 @@ ObjFW 0.3 -> 0.3.1, 19.06.2010
    updated to use the new one now
  * PLATFORMS has been updated to be more specific
 
-ObjFW 0.2.1 -> 0.3, 09.05.2010
+ObjFW 0.2.1 -> 0.3, 2010-05-09
  + Many new methods were added to different classes
  + A huge amount of methods was added to OFStream, allowing easy binary
    stream handling and even mixing string-based and binary operations
@@ -288,7 +606,7 @@ ObjFW 0.2.1 -> 0.3, 09.05.2010
    reexported now. Additionally, objfw-config offers --reexport now to produce
    libraries that link against ObjFW and reexport it
 
-ObjFW 0.2 -> 0.2.1, 14.03.2010
+ObjFW 0.2 -> 0.2.1, 2010-03-14
  * Fix for OFNumbers not doing calculations
  * Improved -[hash] for OFNumbers with floats and doubles
  + Tests for OFNumber
@@ -296,7 +614,7 @@ ObjFW 0.2 -> 0.2.1, 14.03.2010
  * Documentation improvements
  * Updated copyright
 
-ObjFW 0.1.2 -> 0.2, 01.02.2010
+ObjFW 0.1.2 -> 0.2, 2010-02-01
  + Support for ObjC 2 Fast Enumerations on every platform which has
    compiler support for fast enumerations
  + Support for ObjC 2 properties on every platform with compiler support
@@ -325,13 +643,13 @@ ObjFW 0.1.2 -> 0.2, 01.02.2010
    Windows. This way, it is a compile time error instead of a runtime
    error
 
-ObjFW 0.1.1 -> 0.1.2, 15.01.2010
+ObjFW 0.1.1 -> 0.1.2, 2010-01-15
  * Fix a bug in OFMutableArray's -[removeObject:] and
    -[removeObjectIdenticalTo:] that could lead to not removing all
    occurrences of the object from the array and to out of bounds reads
  * Change the URL in the framework plist to the homepage
 
-ObjFW 0.1 -> 0.1.1, 04.01.2010
+ObjFW 0.1 -> 0.1.1, 2010-01-04
  * Fix a missing out of range check for -[removeNItems:atIndex:] that
    allowed the programmer to specify too big ranges so it would crash
    instead of throwing an exception
@@ -346,5 +664,5 @@ ObjFW 0.1 -> 0.1.1, 04.01.2010
    lose data when it stumbles upon invalid encoding. Instead, it allows
    recalling with the correct encoding now
 
-ObjFW 0.1, 24.12.2009
+ObjFW 0.1, 2009-12-24
  + Initial release

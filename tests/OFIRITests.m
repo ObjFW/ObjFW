@@ -1,371 +1,622 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *const module = @"OFIRI";
-static OFString *IRIString = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
+@interface OFIRITests: OTTestCase
+{
+	OFIRI *_IRI[11];
+	OFMutableIRI *_mutableIRI;
+}
+@end
+
+static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
     @"pa%3Fth?que%23ry=1&f%26oo=b%3dar#frag%23ment";
 
-@implementation TestsAppDelegate (OFIRITests)
-- (void)IRITests
+@implementation OFIRITests
+- (void)setUp
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFIRI *IRI1, *IRI2, *IRI3, *IRI4, *IRI5, *IRI6, *IRI7, *IRI8, *IRI9;
-	OFIRI *IRI10, *IRI11;
-	OFMutableIRI *mutableIRI;
+	[super setUp];
 
-	TEST(@"+[IRIWithString:]",
-	    R(IRI1 = [OFIRI IRIWithString: IRIString]) &&
-	    R(IRI2 = [OFIRI IRIWithString: @"http://foo:80"]) &&
-	    R(IRI3 = [OFIRI IRIWithString: @"http://bar/"]) &&
-	    R(IRI4 = [OFIRI IRIWithString: @"file:///etc/passwd"]) &&
-	    R(IRI5 = [OFIRI IRIWithString: @"http://foo/bar/qux/foo%2fbar"]) &&
-	    R(IRI6 = [OFIRI IRIWithString: @"https://[12:34::56:abcd]/"]) &&
-	    R(IRI7 = [OFIRI IRIWithString: @"https://[12:34::56:abcd]:234/"]) &&
-	    R(IRI8 = [OFIRI IRIWithString: @"urn:qux:foo"]) &&
-	    R(IRI9 = [OFIRI IRIWithString: @"file:/foo?query#frag"]) &&
-	    R(IRI10 = [OFIRI IRIWithString: @"file:foo@bar/qux?query#frag"]) &&
-	    R(IRI11 = [OFIRI IRIWithString: @"http://ä/ö?ü"]))
+	_IRI[0] = [[OFIRI alloc] initWithString: IRI0String];
+	_IRI[1] = [[OFIRI alloc] initWithString: @"http://foo:80"];
+	_IRI[2] = [[OFIRI alloc] initWithString: @"http://bar/"];
+	_IRI[3] = [[OFIRI alloc] initWithString: @"file:///etc/passwd"];
+	_IRI[4] = [[OFIRI alloc]
+	    initWithString: @"http://foo/bar/qux/foo%2fbar"];
+	_IRI[5] = [[OFIRI alloc] initWithString: @"https://[12:34::56:abcd]/"];
+	_IRI[6] = [[OFIRI alloc]
+	    initWithString: @"https://[12:34::56:abcd]:234/"];
+	_IRI[7] = [[OFIRI alloc] initWithString: @"urn:qux:foo"];
+	_IRI[8] = [[OFIRI alloc] initWithString: @"file:/foo?query#frag"];
+	_IRI[9] = [[OFIRI alloc]
+	    initWithString: @"file:foo@bar/qux?query#frag"];
+	_IRI[10] = [[OFIRI alloc] initWithString: @"http://ä/ö?ü"];
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #1",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"ht,tp://foo"])
+	_mutableIRI = [[OFMutableIRI alloc] initWithScheme: @"dummy"];
+}
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #2",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"http://f`oo"])
+- (void)dealloc
+{
+	for (uint_fast8_t i = 0; i < 11; i++)
+		objc_release(_IRI[i]);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #3",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"http://foo/`"])
+	objc_release(_mutableIRI);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #4",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"http://foo/foo?`"])
+	[super dealloc];
+}
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #5",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"http://foo/foo?foo#`"])
+- (void)testIRIWithStringFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"ht,tp://foo"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #6",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"https://[g]/"])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"http://f`oo"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #7",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"https://[f]:/"])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"http://foo/`"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #8",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"https://[f]:f/"])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"http://foo/foo?`"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"+[IRIWithString:] fails with invalid characters #9",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"foo:"])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"http://foo/foo?foo#`"],
+	    OFInvalidFormatException);
 
-	TEST(@"+[IRIWithString:relativeToIRI:]",
-	    [[[OFIRI IRIWithString: @"/foo" relativeToIRI: IRI1] string]
-	    isEqual: @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
-	    [[[OFIRI IRIWithString: @"foo/bar?q"
-		     relativeToIRI: [OFIRI IRIWithString: @"http://h/qux/quux"]]
-	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
-	    [[[OFIRI IRIWithString: @"foo/bar"
-		     relativeToIRI: [OFIRI IRIWithString: @"http://h/qux/?x"]]
-	    string] isEqual: @"http://h/qux/foo/bar"] &&
-	    [[[OFIRI IRIWithString: @"http://foo/?q"
-		     relativeToIRI: IRI1] string] isEqual: @"http://foo/?q"] &&
-	    [[[OFIRI IRIWithString: @"foo"
-		     relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar"]]
-	    string] isEqual: @"http://foo/foo"] &&
-	    [[[OFIRI IRIWithString: @"foo"
-		     relativeToIRI: [OFIRI IRIWithString: @"http://foo"]]
-	    string] isEqual: @"http://foo/foo"])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"https://[g]/"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"+[IRIWithString:relativeToIRI:] fails with invalid characters #1",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"`" relativeToIRI: IRI1])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"https://[f]:/"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"+[IRIWithString:relativeToIRI:] fails with invalid characters #2",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"/`" relativeToIRI: IRI1])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"https://[f]:f/"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(
-	    @"+[IRIWithString:relativeToIRI:] fails with invalid characters #3",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"?`" relativeToIRI: IRI1])
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"foo:"],
+	    OFInvalidFormatException);
+}
 
-	EXPECT_EXCEPTION(
-	    @"+[IRIWithString:relativeToIRI:] fails with invalid characters #4",
-	    OFInvalidFormatException,
-	    [OFIRI IRIWithString: @"#`" relativeToIRI: IRI1])
+- (void)testIRIWithStringRelativeToIRI
+{
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"/foo"
+				     relativeToIRI: _IRI[0]] string],
+	    @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/foo");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"foo/bar?q"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://h/qux/quux"]]
+	    string],
+	    @"http://h/qux/foo/bar?q");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"foo/bar"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://h/qux/?x"]]
+	    string],
+	    @"http://h/qux/foo/bar");
+
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://foo/?q"
+				     relativeToIRI: _IRI[0]] string],
+	    @"http://foo/?q");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"foo"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar"]]
+	    string],
+	    @"http://foo/foo");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"foo"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://foo"]]
+	    string],
+	    @"http://foo/foo");
+}
+
+- (void)testIRIWithStringRelativeToIRIFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(
+	    [OFIRI IRIWithString: @"`" relativeToIRI: _IRI[0]],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [OFIRI IRIWithString: @"/`" relativeToIRI: _IRI[0]],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [OFIRI IRIWithString: @"?`" relativeToIRI: _IRI[0]],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [OFIRI IRIWithString: @"#`" relativeToIRI: _IRI[0]],
+	    OFInvalidFormatException);
+}
 
 #ifdef OF_HAVE_FILES
-	TEST(@"+[fileIRIWithPath:]",
-	    [[[OFIRI fileIRIWithPath: @"testfile.txt"] fileSystemRepresentation]
-	    isEqual: [[OFFileManager defaultManager].currentDirectoryPath
-	    stringByAppendingPathComponent: @"testfile.txt"]])
+- (void)testFileIRIWithPath
+{
+	OTAssertEqualObjects(
+	    [[OFIRI fileIRIWithPath: @"testfile.txt"] fileSystemRepresentation],
+	    [[OFFileManager defaultManager].currentDirectoryPath
+	    stringByAppendingPathComponent: @"testfile.txt"]);
+}
 
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	OFIRI *tmp;
-	TEST(@"+[fileIRIWithPath:] for c:\\",
-	    (tmp = [OFIRI fileIRIWithPath: @"c:\\"]) &&
-	    [tmp.string isEqual: @"file:/c:/"] &&
-	    [tmp.fileSystemRepresentation isEqual: @"c:\\"])
+- (void)testFileIRWithPathC
+{
+	OFIRI *IRI = [OFIRI fileIRIWithPath: @"c:\\"];
+	OTAssertEqualObjects(IRI.string, @"file:/c:/");
+	OTAssertEqualObjects(IRI.fileSystemRepresentation, @"c:\\");
+}
 # endif
 
 # ifdef OF_WINDOWS
-	TEST(@"+[fileIRIWithPath:] with UNC",
-	    (tmp = [OFIRI fileIRIWithPath: @"\\\\foo\\bar"
-			      isDirectory: false]) &&
-	    [tmp.host isEqual: @"foo"] && [tmp.path isEqual: @"/bar"] &&
-	    [tmp.string isEqual: @"file://foo/bar"] &&
-	    [tmp.fileSystemRepresentation isEqual: @"\\\\foo\\bar"] &&
-	    (tmp = [OFIRI fileIRIWithPath: @"\\\\test" isDirectory: true]) &&
-	    [tmp.host isEqual: @"test"] && [tmp.path isEqual: @"/"] &&
-	    [tmp.string isEqual: @"file://test/"] &&
-	    [tmp.fileSystemRepresentation isEqual: @"\\\\test"])
+- (void)testFileIRIWithPathUNC
+{
+	OFIRI *IRI;
+
+	IRI = [OFIRI fileIRIWithPath: @"\\\\foo\\bar" isDirectory: false];
+	OTAssertEqualObjects(IRI.host, @"foo");
+	OTAssertEqualObjects(IRI.path, @"/bar");
+	OTAssertEqualObjects(IRI.string, @"file://foo/bar");
+	OTAssertEqualObjects(IRI.fileSystemRepresentation, @"\\\\foo\\bar");
+
+	IRI = [OFIRI fileIRIWithPath: @"\\\\test" isDirectory: true];
+	OTAssertEqualObjects(IRI.host, @"test");
+	OTAssertEqualObjects(IRI.path, @"/");
+	OTAssertEqualObjects(IRI.string, @"file://test/");
+	OTAssertEqualObjects(IRI.fileSystemRepresentation, @"\\\\test");
+}
 # endif
 #endif
 
-	TEST(@"-[string]",
-	    [IRI1.string isEqual: IRIString] &&
-	    [IRI2.string isEqual: @"http://foo:80"] &&
-	    [IRI3.string isEqual: @"http://bar/"] &&
-	    [IRI4.string isEqual: @"file:///etc/passwd"] &&
-	    [IRI5.string isEqual: @"http://foo/bar/qux/foo%2fbar"] &&
-	    [IRI6.string isEqual: @"https://[12:34::56:abcd]/"] &&
-	    [IRI7.string isEqual: @"https://[12:34::56:abcd]:234/"] &&
-	    [IRI8.string isEqual: @"urn:qux:foo"] &&
-	    [IRI9.string isEqual: @"file:/foo?query#frag"] &&
-	    [IRI10.string isEqual: @"file:foo@bar/qux?query#frag"] &&
-	    [IRI11.string isEqual: @"http://ä/ö?ü"])
+- (void)testString
+{
+	OTAssertEqualObjects(_IRI[0].string, IRI0String);
+	OTAssertEqualObjects(_IRI[1].string, @"http://foo:80");
+	OTAssertEqualObjects(_IRI[2].string, @"http://bar/");
+	OTAssertEqualObjects(_IRI[3].string, @"file:///etc/passwd");
+	OTAssertEqualObjects(_IRI[4].string, @"http://foo/bar/qux/foo%2fbar");
+	OTAssertEqualObjects(_IRI[5].string, @"https://[12:34::56:abcd]/");
+	OTAssertEqualObjects(_IRI[6].string, @"https://[12:34::56:abcd]:234/");
+	OTAssertEqualObjects(_IRI[7].string, @"urn:qux:foo");
+	OTAssertEqualObjects(_IRI[8].string, @"file:/foo?query#frag");
+	OTAssertEqualObjects(_IRI[9].string, @"file:foo@bar/qux?query#frag");
+	OTAssertEqualObjects(_IRI[10].string, @"http://ä/ö?ü");
+}
 
-	TEST(@"-[scheme]",
-	    [IRI1.scheme isEqual: @"ht+tp"] && [IRI4.scheme isEqual: @"file"] &&
-	    [IRI9.scheme isEqual: @"file"] && [IRI10.scheme isEqual: @"file"] &&
-	    [IRI11.scheme isEqual: @"http"])
+- (void)testScheme
+{
+	OTAssertEqualObjects(_IRI[0].scheme, @"ht+tp");
+	OTAssertEqualObjects(_IRI[3].scheme, @"file");
+	OTAssertEqualObjects(_IRI[8].scheme, @"file");
+	OTAssertEqualObjects(_IRI[9].scheme, @"file");
+	OTAssertEqualObjects(_IRI[10].scheme, @"http");
+}
 
-	TEST(@"-[user]", [IRI1.user isEqual: @"us:er"] && IRI4.user == nil &&
-	    IRI10.user == nil && IRI11.user == nil)
-	TEST(@"-[password]",
-	    [IRI1.password isEqual: @"p@w"] && IRI4.password == nil &&
-	    IRI10.password == nil && IRI11.password == nil)
-	TEST(@"-[host]", [IRI1.host isEqual: @"ho:st"] &&
-	    [IRI6.host isEqual: @"12:34::56:abcd"] &&
-	    [IRI7.host isEqual: @"12:34::56:abcd"] &&
-	    IRI8.host == nil && IRI9.host == nil && IRI10.host == nil &&
-	    [IRI11.host isEqual: @"ä"])
-	TEST(@"-[port]", IRI1.port.unsignedShortValue == 1234 &&
-	    [IRI4 port] == nil && IRI7.port.unsignedShortValue == 234 &&
-	    IRI8.port == nil && IRI9.port == nil && IRI10.port == nil &&
-	    IRI11.port == nil)
-	TEST(@"-[path]",
-	    [IRI1.path isEqual: @"/pa?th"] &&
-	    [IRI4.path isEqual: @"/etc/passwd"] &&
-	    [IRI8.path isEqual: @"qux:foo"] &&
-	    [IRI9.path isEqual: @"/foo"] &&
-	    [IRI10.path isEqual: @"foo@bar/qux"] &&
-	    [IRI11.path isEqual: @"/ö"])
-	TEST(@"-[pathComponents]",
-	    [IRI1.pathComponents isEqual:
-	    [OFArray arrayWithObjects: @"/", @"pa?th", nil]] &&
-	    [IRI4.pathComponents isEqual:
-	    [OFArray arrayWithObjects: @"/", @"etc", @"passwd", nil]] &&
-	    [IRI5.pathComponents isEqual:
-	    [OFArray arrayWithObjects: @"/", @"bar", @"qux", @"foo/bar", nil]])
-	TEST(@"-[lastPathComponent]",
-	    [[[OFIRI IRIWithString: @"http://host/foo//bar/baz"]
-	    lastPathComponent] isEqual: @"baz"] &&
-	    [[[OFIRI IRIWithString: @"http://host/foo//bar/baz/"]
-	    lastPathComponent] isEqual: @"baz"] &&
-	    [[[OFIRI IRIWithString: @"http://host/foo/"]
-	    lastPathComponent] isEqual: @"foo"] &&
-	    [[[OFIRI IRIWithString: @"http://host/"]
-	    lastPathComponent] isEqual: @"/"] &&
-	    [IRI5.lastPathComponent isEqual: @"foo/bar"])
-	TEST(@"-[query]",
-	    [IRI1.query isEqual: @"que#ry=1&f&oo=b=ar"] && IRI4.query == nil &&
-	    [IRI9.query isEqual: @"query"] && [IRI10.query isEqual: @"query"] &&
-	    [IRI11.query isEqual: @"ü"])
-	TEST(@"-[queryItems]",
-	    [IRI1.queryItems isEqual: [OFArray arrayWithObjects:
+- (void)testUser
+{
+	OTAssertEqualObjects(_IRI[0].user, @"us:er");
+	OTAssertNil(_IRI[3].user);
+	OTAssertNil(_IRI[9].user);
+	OTAssertNil(_IRI[10].user);
+}
+
+- (void)testPassword
+{
+	OTAssertEqualObjects(_IRI[0].password, @"p@w");
+	OTAssertNil(_IRI[3].password);
+	OTAssertNil(_IRI[9].password);
+	OTAssertNil(_IRI[10].password);
+}
+
+- (void)testHost
+{
+	OTAssertEqualObjects(_IRI[0].host, @"ho:st");
+	OTAssertEqualObjects(_IRI[5].host, @"12:34::56:abcd");
+	OTAssertEqualObjects(_IRI[6].host, @"12:34::56:abcd");
+	OTAssertNil(_IRI[7].host);
+	OTAssertNil(_IRI[8].host);
+	OTAssertNil(_IRI[9].host);
+	OTAssertEqualObjects(_IRI[10].host, @"ä");
+}
+
+- (void)testPort
+{
+	OTAssertEqual(_IRI[0].port.unsignedShortValue, 1234);
+	OTAssertNil(_IRI[3].port);
+	OTAssertEqual(_IRI[6].port.unsignedShortValue, 234);
+	OTAssertNil(_IRI[7].port);
+	OTAssertNil(_IRI[8].port);
+	OTAssertNil(_IRI[9].port);
+	OTAssertNil(_IRI[10].port);
+}
+
+- (void)testPath
+{
+	OTAssertEqualObjects(_IRI[0].path, @"/pa?th");
+	OTAssertEqualObjects(_IRI[3].path, @"/etc/passwd");
+	OTAssertEqualObjects(_IRI[7].path, @"qux:foo");
+	OTAssertEqualObjects(_IRI[8].path, @"/foo");
+	OTAssertEqualObjects(_IRI[9].path, @"foo@bar/qux");
+	OTAssertEqualObjects(_IRI[10].path, @"/ö");
+}
+
+- (void)testPathComponents
+{
+	OTAssertEqualObjects(_IRI[0].pathComponents,
+	    ([OFArray arrayWithObjects: @"/", @"pa?th", nil]));
+
+	OTAssertEqualObjects(_IRI[3].pathComponents,
+	    ([OFArray arrayWithObjects: @"/", @"etc", @"passwd", nil]));
+
+	OTAssertEqualObjects(_IRI[4].pathComponents,
+	    ([OFArray arrayWithObjects: @"/", @"bar", @"qux", @"foo/bar",
+	    nil]));
+}
+
+- (void)testLastPathComponent
+{
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://host/foo//bar/baz"]
+	    lastPathComponent],
+	    @"baz");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://host/foo//bar/baz/"]
+	    lastPathComponent],
+	    @"baz");
+
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://host/foo/"]
+	    lastPathComponent],
+	    @"foo");
+
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://host/"]
+	    lastPathComponent],
+	    @"/");
+
+	OTAssertEqualObjects(_IRI[4].lastPathComponent, @"foo/bar");
+}
+
+- (void)testPathExtension
+{
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://host/path.dir/path.file"]
+	    pathExtension], @"file");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://host/path/path.dir/"]
+	    pathExtension], @"dir");
+}
+
+- (void)testQuery
+{
+	OTAssertEqualObjects(_IRI[0].query, @"que#ry=1&f&oo=b=ar");
+	OTAssertNil(_IRI[3].query);
+	OTAssertEqualObjects(_IRI[8].query, @"query");
+	OTAssertEqualObjects(_IRI[9].query, @"query");
+	OTAssertEqualObjects(_IRI[10].query, @"ü");
+}
+
+- (void)testQueryItems
+{
+	OTAssertEqualObjects(_IRI[0].queryItems,
+	    ([OFArray arrayWithObjects:
 	    [OFPair pairWithFirstObject: @"que#ry" secondObject: @"1"],
-	    [OFPair pairWithFirstObject: @"f&oo" secondObject: @"b=ar"], nil]]);
-	TEST(@"-[fragment]",
-	    [IRI1.fragment isEqual: @"frag#ment"] && IRI4.fragment == nil &&
-	    [IRI9.fragment isEqual: @"frag"] &&
-	    [IRI10.fragment isEqual: @"frag"])
+	    [OFPair pairWithFirstObject: @"f&oo" secondObject: @"b=ar"], nil]));
+}
 
-	TEST(@"-[copy]", R(IRI4 = [[IRI1 copy] autorelease]))
+- (void)testFragment
+{
+	OTAssertEqualObjects(_IRI[0].fragment, @"frag#ment");
+	OTAssertNil(_IRI[3].fragment);
+	OTAssertEqualObjects(_IRI[8].fragment, @"frag");
+	OTAssertEqualObjects(_IRI[9].fragment, @"frag");
+}
 
-	TEST(@"-[isEqual:]", [IRI1 isEqual: IRI4] && ![IRI2 isEqual: IRI3] &&
-	    [[OFIRI IRIWithString: @"HTTP://bar/"] isEqual: IRI3])
+- (void)testCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_IRI[0] copy]), _IRI[0]);
+}
 
-	TEST(@"-[hash:]", IRI1.hash == IRI4.hash && IRI2.hash != IRI3.hash)
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(_IRI[0], [OFIRI IRIWithString: IRI0String]);
+	OTAssertNotEqualObjects(_IRI[1], _IRI[2]);
+	OTAssertEqualObjects([OFIRI IRIWithString: @"HTTP://bar/"], _IRI[2]);
+}
 
-	EXPECT_EXCEPTION(@"Detection of invalid format",
-	    OFInvalidFormatException, [OFIRI IRIWithString: @"http"])
+- (void)testHash
+{
+	OTAssertEqual(_IRI[0].hash, [[OFIRI IRIWithString: IRI0String] hash]);
+	OTAssertNotEqual(_IRI[1].hash, _IRI[2].hash);
+}
 
-	TEST(@"-[IRIByAddingPercentEncodingForUnicodeCharacters]",
-	    [IRI11.IRIByAddingPercentEncodingForUnicodeCharacters
-	    isEqual: [OFIRI IRIWithString: @"http://%C3%A4/%C3%B6?%C3%BC"]])
+- (void)testIRIWithStringFailsWithInvalidFormat
+{
+	OTAssertThrowsSpecific([OFIRI IRIWithString: @"http"],
+	    OFInvalidFormatException);
+}
 
-	mutableIRI = [OFMutableIRI IRIWithScheme: @"dummy"];
+- (void)testIRIByAppendingPathComponent
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component"]
+	    IRIByAppendingPathComponent: @"foo/bar"] path],
+	    @"/path/component/foo/bar");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedScheme:] with invalid characters fails",
-	    OFInvalidFormatException, mutableIRI.scheme = @"%20")
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component/"]
+	    IRIByAppendingPathComponent: @"foo/bar"] path],
+	    @"/path/component/foo/bar");
 
-	TEST(@"-[setHost:]",
-	    (mutableIRI.host = @"ho:st") &&
-	    [mutableIRI.percentEncodedHost isEqual: @"ho%3Ast"] &&
-	    (mutableIRI.host = @"12:34:ab") &&
-	    [mutableIRI.percentEncodedHost isEqual: @"[12:34:ab]"] &&
-	    (mutableIRI.host = @"12:34:aB") &&
-	    [mutableIRI.percentEncodedHost isEqual: @"[12:34:aB]"] &&
-	    (mutableIRI.host = @"12:34:g") &&
-	    [mutableIRI.percentEncodedHost isEqual: @"12%3A34%3Ag"])
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component/"]
+	    IRIByAppendingPathComponent: @"foo/bar"
+			    isDirectory: true] path],
+	    @"/path/component/foo/bar/");
+}
 
-	TEST(@"-[setPercentEncodedHost:]",
-	    (mutableIRI.percentEncodedHost = @"ho%3Ast") &&
-	    [mutableIRI.host isEqual: @"ho:st"] &&
-	    (mutableIRI.percentEncodedHost = @"[12:34]") &&
-	    [mutableIRI.host isEqual: @"12:34"] &&
-	    (mutableIRI.percentEncodedHost = @"[12::ab]") &&
-	    [mutableIRI.host isEqual: @"12::ab"])
+- (void)testIRIByDeletingLastPathComponent
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/component"]
+	    IRIByDeletingLastPathComponent] path], @"/path/");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedHost:] with invalid characters fails #1",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedHost = @"/")
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/directory/"]
+	    IRIByDeletingLastPathComponent] path], @"/path/");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedHost:] with invalid characters fails #2",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedHost = @"[12:34")
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path"]
+	    IRIByDeletingLastPathComponent] path], @"/");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedHost:] with invalid characters fails #3",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedHost = @"[a::g]")
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/"]
+	    IRIByDeletingLastPathComponent] path], @"/");
 
-	TEST(@"-[setUser:]",
-	    (mutableIRI.user = @"us:er") &&
-	    [mutableIRI.percentEncodedUser isEqual: @"us%3Aer"])
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host"]
+	    IRIByDeletingLastPathComponent] path], @"");
+}
 
-	TEST(@"-[setPercentEncodedUser:]",
-	    (mutableIRI.percentEncodedUser = @"us%3Aer") &&
-	    [mutableIRI.user isEqual: @"us:er"])
+- (void)testIRIByAppendingPathExtension
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path.dir/path"]
+	    IRIByAppendingPathExtension: @"file"] path],
+	    @"/path.dir/path.file");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedUser:] with invalid characters fails",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedHost = @"/")
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/path/"]
+	    IRIByAppendingPathExtension: @"dir"] path],
+	    @"/path/path.dir/");
+}
 
-	TEST(@"-[setPassword:]",
-	    (mutableIRI.password = @"pass:word") &&
-	    [mutableIRI.percentEncodedPassword isEqual: @"pass%3Aword"])
+- (void)testIRIByDeletingPathExtension
+{
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path.dir/path.file"]
+	    IRIByDeletingPathExtension] path],
+	    @"/path.dir/path");
 
-	TEST(@"-[setPercentEncodedPassword:]",
-	    (mutableIRI.percentEncodedPassword = @"pass%3Aword") &&
-	    [mutableIRI.password isEqual: @"pass:word"])
+	OTAssertEqualObjects(
+	    [[[OFIRI IRIWithString: @"http://host/path/path.dir/"]
+	    IRIByDeletingPathExtension] path],
+	    @"/path/path/");
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedPassword:] with invalid characters fails",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedPassword = @"/")
+- (void)testIRIByAddingPercentEncodingForUnicodeCharacters
+{
+	OTAssertEqualObjects(
+	    _IRI[10].IRIByAddingPercentEncodingForUnicodeCharacters,
+	    [OFIRI IRIWithString: @"http://%C3%A4/%C3%B6?%C3%BC"]);
+}
 
-	TEST(@"-[setPath:]",
-	    (mutableIRI.path = @"pa/th@?") &&
-	    [mutableIRI.percentEncodedPath isEqual: @"pa/th@%3F"])
+- (void)testSetPercentEncodedSchemeFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.scheme = @"%20",
+	    OFInvalidFormatException);
+}
 
-	TEST(@"-[setPercentEncodedPath:]",
-	    (mutableIRI.percentEncodedPath = @"pa/th@%3F") &&
-	    [mutableIRI.path isEqual: @"pa/th@?"])
+- (void)testSetHost
+{
+	_mutableIRI.host = @"ho:st";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedHost, @"ho%3Ast");
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedPath:] with invalid characters fails",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedPath = @"?")
+	_mutableIRI.host = @"12:34:ab";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedHost, @"[12:34:ab]");
 
-	TEST(@"-[setQuery:]",
-	    (mutableIRI.query = @"que/ry?#") &&
-	    [mutableIRI.percentEncodedQuery isEqual: @"que/ry?%23"])
+	_mutableIRI.host = @"12:34:aB";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedHost, @"[12:34:aB]");
 
-	TEST(@"-[setPercentEncodedQuery:]",
-	    (mutableIRI.percentEncodedQuery = @"que/ry?%23") &&
-	    [mutableIRI.query isEqual: @"que/ry?#"])
+	_mutableIRI.host = @"12:34:g";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedHost, @"12%3A34%3Ag");
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedQuery:] with invalid characters fails",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedQuery = @"`")
+- (void)testSetPercentEncodedHost
+{
+	_mutableIRI.percentEncodedHost = @"ho%3Ast";
+	OTAssertEqualObjects(_mutableIRI.host, @"ho:st");
 
-	TEST(@"-[setQueryItems:]",
-	    (mutableIRI.queryItems = [OFArray arrayWithObjects:
+	_mutableIRI.percentEncodedHost = @"[12:34]";
+	OTAssertEqualObjects(_mutableIRI.host, @"12:34");
+
+	_mutableIRI.percentEncodedHost = @"[12::ab]";
+	OTAssertEqualObjects(_mutableIRI.host, @"12::ab");
+}
+
+- (void)testSetPercentEncodedHostFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"/",
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"[12:34",
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"[a::g]",
+	    OFInvalidFormatException);
+}
+
+- (void)testSetUser
+{
+	_mutableIRI.user = @"us:er";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedUser, @"us%3Aer");
+}
+
+- (void)testSetPercentEncodedUser
+{
+	_mutableIRI.percentEncodedUser = @"us%3Aer";
+	OTAssertEqualObjects(_mutableIRI.user, @"us:er");
+}
+
+- (void)testSetPercentEncodedUserFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"/",
+	    OFInvalidFormatException);
+}
+
+- (void)testSetPassword
+{
+	_mutableIRI.password = @"pass:word";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedPassword,
+	    @"pass%3Aword");
+}
+
+- (void)testSetPercentEncodedPassword
+{
+	_mutableIRI.percentEncodedPassword = @"pass%3Aword";
+	OTAssertEqualObjects(_mutableIRI.password, @"pass:word");
+}
+
+- (void)testSetPercentEncodedPasswordFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedPassword = @"/",
+	    OFInvalidFormatException);
+}
+
+- (void)testSetPath
+{
+	_mutableIRI.path = @"pa/th@?";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedPath, @"pa/th@%3F");
+}
+
+- (void)testSetPercentEncodedPath
+{
+	_mutableIRI.percentEncodedPath = @"pa/th@%3F";
+	OTAssertEqualObjects(_mutableIRI.path, @"pa/th@?");
+}
+
+- (void)testSetPercentEncodedPathFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedPath = @"?",
+	    OFInvalidFormatException);
+}
+
+- (void)testSetQuery
+{
+	_mutableIRI.query = @"que/ry?#";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedQuery, @"que/ry?%23");
+}
+
+- (void)testSetPercentEncodedQuery
+{
+	_mutableIRI.percentEncodedQuery = @"que/ry?%23";
+	OTAssertEqualObjects(_mutableIRI.query, @"que/ry?#");
+}
+
+- (void)testSetPercentEncodedQueryFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedQuery = @"`",
+	    OFInvalidFormatException);
+}
+
+- (void)testSetQueryItems
+{
+	_mutableIRI.queryItems = [OFArray arrayWithObjects:
 	    [OFPair pairWithFirstObject: @"foo&bar" secondObject: @"baz=qux"],
 	    [OFPair pairWithFirstObject: @"f=oobar" secondObject: @"b&azqux"],
-	    nil]) && [mutableIRI.percentEncodedQuery isEqual:
-	    @"foo%26bar=baz%3Dqux&f%3Doobar=b%26azqux"])
+	    nil];
+	OTAssertEqualObjects(_mutableIRI.percentEncodedQuery,
+	    @"foo%26bar=baz%3Dqux&f%3Doobar=b%26azqux");
+}
 
-	TEST(@"-[setFragment:]",
-	    (mutableIRI.fragment = @"frag/ment?#") &&
-	    [mutableIRI.percentEncodedFragment isEqual: @"frag/ment?%23"])
+- (void)testSetFragment
+{
+	_mutableIRI.fragment = @"frag/ment?#";
+	OTAssertEqualObjects(_mutableIRI.percentEncodedFragment,
+	    @"frag/ment?%23");
+}
 
-	TEST(@"-[setPercentEncodedFragment:]",
-	    (mutableIRI.percentEncodedFragment = @"frag/ment?%23") &&
-	    [mutableIRI.fragment isEqual: @"frag/ment?#"])
+- (void)testSetPercentEncodedFragment
+{
+	_mutableIRI.percentEncodedFragment = @"frag/ment?%23";
+	OTAssertEqualObjects(_mutableIRI.fragment, @"frag/ment?#");
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[setPercentEncodedFragment:] with invalid characters fails",
-	    OFInvalidFormatException,
-	    mutableIRI.percentEncodedFragment = @"`")
+- (void)testSetPercentEncodedFragmentFailsWithInvalidCharacters
+{
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedFragment = @"`",
+	    OFInvalidFormatException);
+}
 
-	TEST(@"-[IRIByAppendingPathComponent:isDirectory:]",
-	    [[[OFIRI IRIWithString: @"file:///foo/bar"]
-	    IRIByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
-	    [OFIRI IRIWithString: @"file:///foo/bar/qux"]] &&
-	    [[[OFIRI IRIWithString: @"file:///foo/bar/"]
-	    IRIByAppendingPathComponent: @"qux" isDirectory: false] isEqual:
-	    [OFIRI IRIWithString: @"file:///foo/bar/qux"]] &&
-	    [[[OFIRI IRIWithString: @"file:///foo/bar/"]
-	    IRIByAppendingPathComponent: @"qu?x" isDirectory: false] isEqual:
-	    [OFIRI IRIWithString: @"file:///foo/bar/qu%3Fx"]] &&
-	    [[[OFIRI IRIWithString: @"file:///foo/bar/"]
-	    IRIByAppendingPathComponent: @"qu?x" isDirectory: true] isEqual:
-	    [OFIRI IRIWithString: @"file:///foo/bar/qu%3Fx/"]])
+-(void)testIRIByAppendingPathComponentIsDirectory
+{
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"file:///foo/bar"]
+	    IRIByAppendingPathComponent: @"qux"
+			    isDirectory: false],
+	    [OFIRI IRIWithString: @"file:///foo/bar/qux"]);
 
-	TEST(@"-[IRIByStandardizingPath]",
-	    [[[OFIRI IRIWithString: @"http://foo/bar/.."]
-	    IRIByStandardizingPath] isEqual:
-	    [OFIRI IRIWithString: @"http://foo/"]] &&
-	    [[[OFIRI IRIWithString: @"http://foo/bar/%2E%2E/../qux/"]
-	    IRIByStandardizingPath] isEqual:
-	    [OFIRI IRIWithString: @"http://foo/bar/qux/"]] &&
-	    [[[OFIRI IRIWithString: @"http://foo/bar/./././qux/./"]
-	    IRIByStandardizingPath] isEqual:
-	    [OFIRI IRIWithString: @"http://foo/bar/qux/"]] &&
-	    [[[OFIRI IRIWithString: @"http://foo/bar/../../qux"]
-	    IRIByStandardizingPath] isEqual:
-	    [OFIRI IRIWithString: @"http://foo/../qux"]])
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"file:///foo/bar/"]
+	    IRIByAppendingPathComponent: @"qux"
+			    isDirectory: false],
+	    [OFIRI IRIWithString: @"file:///foo/bar/qux"]);
 
-	objc_autoreleasePoolPop(pool);
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"file:///foo/bar/"]
+	    IRIByAppendingPathComponent: @"qu?x"
+			    isDirectory: false],
+	    [OFIRI IRIWithString: @"file:///foo/bar/qu%3Fx"]);
+
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"file:///foo/bar/"]
+	    IRIByAppendingPathComponent: @"qu?x"
+			    isDirectory: true],
+	    [OFIRI IRIWithString: @"file:///foo/bar/qu%3Fx/"]);
+}
+
+- (void)testIRIByStandardizingPath
+{
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://foo/bar/.."]
+	    IRIByStandardizingPath],
+	    [OFIRI IRIWithString: @"http://foo/"]);
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://foo/bar/%2E%2E/../qux/"]
+	    IRIByStandardizingPath],
+	    [OFIRI IRIWithString: @"http://foo/bar/qux/"]);
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"http://foo/bar/./././qux/./"]
+	    IRIByStandardizingPath],
+	    [OFIRI IRIWithString: @"http://foo/bar/qux/"]);
+
+	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://foo/bar/../../qux"]
+	    IRIByStandardizingPath],
+	    [OFIRI IRIWithString: @"http://foo/../qux"]);
 }
 @end

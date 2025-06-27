@@ -1,7 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding
-SUBDIRS_AFTER = ${BRIDGE} ${TLS}
+SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -9,6 +9,7 @@ STATIC_LIB = ${OBJFW_STATIC_LIB}
 FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
+LIB_PATCH = ${OBJFW_LIB_PATCH}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
@@ -22,12 +23,14 @@ SRCS = OFApplication.m			\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDictionary.m			\
+       OFEmbeddedIRIHandler.m		\
        OFEnumerator.m			\
        OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFINICategory.m			\
        OFINIFile.m			\
+       OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
        OFInflate64Stream.m		\
@@ -54,6 +57,7 @@ SRCS = OFApplication.m			\
        OFMutableTarArchiveEntry.m	\
        OFMutableTriple.m		\
        OFMutableZIPArchiveEntry.m	\
+       OFMutableZooArchiveEntry.m	\
        OFNotification.m			\
        OFNotificationCenter.m		\
        OFNull.m				\
@@ -88,7 +92,6 @@ SRCS = OFApplication.m			\
        OFString+PropertyListParsing.m	\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
-       ${OF_SUBPROCESS_M}		\
        OFSystemInfo.m			\
        OFTarArchive.m			\
        OFTarArchiveEntry.m		\
@@ -108,41 +111,63 @@ SRCS = OFApplication.m			\
        OFXMLProcessingInstruction.m	\
        OFZIPArchive.m			\
        OFZIPArchiveEntry.m		\
+       OFZooArchive.m			\
+       OFZooArchiveEntry.m		\
        ${USE_SRCS_FILES}		\
-       ${USE_SRCS_PLUGINS}		\
+       ${USE_SRCS_MODULES}		\
        ${USE_SRCS_SOCKETS}		\
+       ${USE_SRCS_SUBPROCESSES}		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
 	     OFString+PathAdditions.m
-SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFDNSQuery.m			\
+SRCS_MODULES = OFPlugin.m	\
+	       OFModule.m
+SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
+	       OFADNSResourceRecord.m		\
+	       OFCNAMEDNSResourceRecord.m	\
+	       OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
+	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
+	       OFLOCDNSResourceRecord.m		\
+	       OFMXDNSResourceRecord.m		\
+	       OFNSDNSResourceRecord.m		\
+	       OFPTRDNSResourceRecord.m		\
+	       OFRPDNSResourceRecord.m		\
+	       OFSOADNSResourceRecord.m		\
+	       OFSRVDNSResourceRecord.m		\
 	       OFSequencedPacketSocket.m	\
 	       OFSocket.m			\
 	       OFStreamSocket.m			\
 	       OFSystemInfo+NetworkInterfaces.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
+	       OFTXTDNSResourceRecord.m		\
 	       OFUDPSocket.m			\
+	       OFURIDNSResourceRecord.m		\
+	       OFX509Certificate.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
 SRCS_APPLETALK = OFDDPSocket.m
 SRCS_IPX = OFIPXSocket.m	\
 	   OFSPXSocket.m	\
 	   OFSPXStreamSocket.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m	\
+SRCS_SCTP = OFSCTPSocket.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocket.m		\
+		    OFUNIXSequencedPacketSocket.m	\
 		    OFUNIXStreamSocket.m
+SRCS_SUBPROCESSES = OFSubprocess.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFPlainCondition.m	\
@@ -194,7 +219,6 @@ SRCS += OFASPrintF.m			\
 	OFConcreteSet.m			\
 	OFConcreteSubarray.m		\
 	OFConcreteValue.m		\
-	OFEmbeddedIRIHandler.m		\
 	OFHuffmanTree.m			\
 	OFINIFileSettings.m		\
 	OFInvertedCharacterSet.m	\
@@ -206,14 +230,14 @@ SRCS += OFASPrintF.m			\
 	OFStrPTime.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\
-	OFTaggedPointerColor.m		\
-	OFTaggedPointerDate.m		\
-	OFTaggedPointerNumber.m		\
 	OFUTF8String.m			\
+	${AUTORELEASE_FOUNDATION_M}	\
 	${LIBBASES_M}			\
-	${RUNTIME_AUTORELEASE_M}	\
+	${RUNTIME_ARC_M}		\
+	${RUNTIME_ASSOCIATION_M}	\
 	${RUNTIME_INSTANCE_M}		\
-	${UNICODE_M}
+	${UNICODE_M}			\
+	${USE_SRCS_TAGGED_POINTERS}
 SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
@@ -225,6 +249,10 @@ SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		${OF_POLL_KERNEL_EVENT_OBSERVER_M}	\
 		${OF_SELECT_KERNEL_EVENT_OBSERVER_M}	\
 		OFTCPSocketSOCKS5Connector.m
+SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
+		       OFTaggedPointerDate.m		\
+		       OFTaggedPointerNumber.m		\
+		       OFTaggedPointerString.m
 SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 
@@ -237,13 +265,15 @@ LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 
 include ../buildsys.mk
 
+${TLS} hid: ${BRIDGE}
+
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
-LIBS := -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
+LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\

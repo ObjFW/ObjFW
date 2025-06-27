@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -101,17 +105,17 @@ OF_SINGLETON_METHODS
 
 + (instancetype)set
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)setWithSet: (OFSet *)set
 {
-	return [[[self alloc] initWithSet: set] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithSet: set]);
 }
 
 + (instancetype)setWithArray: (OFArray *)array
 {
-	return [[[self alloc] initWithArray: array] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithArray: array]);
 }
 
 + (instancetype)setWithObjects: (id)firstObject, ...
@@ -120,17 +124,17 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[[self alloc] initWithObject: firstObject
-				  arguments: arguments] autorelease];
+	ret = [[self alloc] initWithObject: firstObject arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 + (instancetype)setWithObjects: (id const *)objects count: (size_t)count
 {
-	return [[[self alloc] initWithObjects: objects
-					count: count] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				    count: count]);
 }
 
 - (instancetype)init
@@ -141,7 +145,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -172,15 +176,17 @@ OF_SINGLETON_METHODS
 	} @catch (id e) {
 		OFFreeMemory(objects);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	@try {
-		return [self initWithObjects: objects count: count];
+		self = [self initWithObjects: objects count: count];
 	} @finally {
 		OFFreeMemory(objects);
 	}
+
+	return self;
 }
 
 - (instancetype)initWithArray: (OFArray *)array
@@ -193,7 +199,7 @@ OF_SINGLETON_METHODS
 		count = array.count;
 		objects = array.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -246,7 +252,7 @@ OF_SINGLETON_METHODS
 	@try {
 		objects = OFAllocMemory(count, sizeof(id));
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -258,10 +264,12 @@ OF_SINGLETON_METHODS
 			OFEnsure(objects[i] != nil);
 		}
 
-		return [self initWithObjects: objects count: count];
+		self = [self initWithObjects: objects count: count];
 	} @finally {
 		OFFreeMemory(objects);
 	}
+
+	return self;
 }
 
 - (size_t)count
@@ -402,7 +410,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -430,7 +438,7 @@ OF_SINGLETON_METHODS
 
 - (OFSet *)setByAddingObjectsFromSet: (OFSet *)set
 {
-	OFMutableSet *new = [[self mutableCopy] autorelease];
+	OFMutableSet *new = objc_autorelease([self mutableCopy]);
 	[new unionSet: set];
 	[new makeImmutable];
 	return new;
@@ -439,17 +447,17 @@ OF_SINGLETON_METHODS
 - (OFArray *)allObjects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *ret = [[[self objectEnumerator] allObjects] retain];
+	OFArray *ret = objc_retain([[self objectEnumerator] allObjects]);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (id)anyObject
 {
 	void *pool = objc_autoreleasePoolPush();
-	id ret = [[[self objectEnumerator] nextObject] retain];
+	id ret = objc_retain([[self objectEnumerator] nextObject]);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 #ifdef OF_HAVE_BLOCKS

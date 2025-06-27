@@ -1,36 +1,42 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-.globl _OFForward
-.globl _OFForward_stret
+.globl __OFForward
+.globl __OFForward_stret
+.private_extern __OFForward
+.private_extern __OFForward_stret
 
 .section __TEXT, __cstring, cstring_literals
-str_forwardingTargetForSelector_:
+Lstr_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs
-sel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+Lsel_forwardingTargetForSelector_:
+	.long Lstr_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
-_OFForward:
+__OFForward:
 	mflr	r0
 	stw	r0, 8(r1)
 	stwu	r1, -192(r1)
@@ -71,8 +77,8 @@ _OFForward:
 	bl	0f
 0:
 	mflr	r13
-	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
-	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
+	addis	r13, r13, ha16(Lsel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(Lsel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector
@@ -132,7 +138,7 @@ _OFForward:
 
 	b	_OFMethodNotFound
 
-_OFForward_stret:
+__OFForward_stret:
 	mflr	r0
 	stw	r0, 8(r1)
 	stwu	r1, -184(r1)
@@ -174,8 +180,8 @@ _OFForward_stret:
 	bl	0f
 0:
 	mflr	r13
-	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
-	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
+	addis	r13, r13, ha16(Lsel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(Lsel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector

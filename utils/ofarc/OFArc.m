@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -22,18 +26,26 @@
 #import "OFFile.h"
 #import "OFFileManager.h"
 #import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
 
 #import "OFArc.h"
 #import "GZIPArchive.h"
 #import "LHAArchive.h"
 #import "TarArchive.h"
 #import "ZIPArchive.h"
+#import "ZooArchive.h"
+
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
 
 #import "OFCreateDirectoryFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -42,7 +54,21 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#define bufferSize 4096
+#define bufferSize 16384
+
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2025 Jonathan Schleifer";
+#endif
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFArc)
 
@@ -57,27 +83,51 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n"
-		    @"    -a  --append      Append to archive\n"
-		    @"    -c  --create      Create archive\n"
-		    @"    -C  --directory   Extract into the specified "
+		    @"    -a  --append            Append to archive\n"
+		    @"        --archive-comment=  Archive comment to use when "
+		    @"creating or appending\n"
+		    @"    -c  --create            Create archive\n"
+		    @"    -C  --directory=        Extract into the specified "
 		    @"directory\n"
-		    @"    -E  --encoding    The encoding used by the archive "
-		    "(only tar files)\n"
-		    @"    -f  --force       Force / overwrite files\n"
-		    @"    -h  --help        Show this help\n"
-		    @"    -l  --list        List all files in the archive\n"
-		    @"    -n  --no-clobber  Never overwrite files\n"
-		    @"    -p  --print       Print one or more files from the "
+		    @"    -E  --encoding=         The encoding used by the "
 		    @"archive\n"
-		    @"    -q  --quiet       Quiet mode (no output, except "
-		    @"errors)\n"
-		    @"    -t  --type        Archive type (gz, lha, tar, tgz, "
-		    @"zip)\n"
-		    @"    -v  --verbose     Verbose output for file list\n"
-		    @"    -x  --extract     Extract files")];
+		    @"                            (only tar, lha and zoo files)"
+		    @"\n"
+		    @"    -f  --force             Force / overwrite files\n"
+		    @"    -h  --help              Show this help\n"
+		    @"        --iri               Use an IRI to access the "
+		    @"archive\n"
+		    @"    -l  --list              List all files in the archive"
+		    @"\n"
+		    @"    -n  --no-clobber        Never overwrite files\n"
+		    @"    -p  --print             Print one or more files from "
+		    @"the archive\n"
+		    @"    -q  --quiet             Quiet mode (no output, "
+		    @"except errors)\n"
+		    @"    -t  --type=             Archive type (gz, lha, tar, "
+		    @"tgz, zip, zoo)\n"
+		    @"    -v  --verbose           Verbose output for file list"
+		    @"\n"
+		    @"    -x  --extract           Extract files\n"
+		    @"        --version           Print the version "
+		    @"information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofarc %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static void
@@ -98,6 +148,18 @@ mutuallyExclusiveError(OFUnichar shortOption1, OFString *longOption1,
 	    @"shortopt2", shortOption2Str,
 	    @"longopt2", longOption2)];
 	[OFApplication terminateWithStatus: 1];
+}
+
+static OFIRI *
+argumentToIRI(OFString *argument, bool isIRI)
+{
+	if (isIRI)
+		return [OFIRI IRIWithString: argument];
+
+	if ([argument isEqual: @"-"])
+		return nil;
+
+	return [OFIRI fileIRIWithPath: argument];
 }
 
 static void
@@ -146,7 +208,8 @@ writingNotSupported(OFString *type)
 }
 
 static void
-addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
+addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
+    OFString *archiveComment)
 {
 	OFMutableArray *expandedFiles =
 	    [OFMutableArray arrayWithCapacity: files.count];
@@ -157,39 +220,50 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		    [fileManager attributesOfItemAtPath: file];
 
 		if ([attributes.fileType isEqual: OFFileTypeDirectory])
-			[expandedFiles addObjectsFromArray: 
+			[expandedFiles addObjectsFromArray:
 			    [fileManager subpathsOfDirectoryAtPath: file]];
 		else
 			[expandedFiles addObject: file];
 	}
 
-	[archive addFiles: expandedFiles];
+	if (expandedFiles.count < 1) {
+		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		    @"Need one or more files to add!")];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	[archive addFiles: expandedFiles archiveComment: archiveComment];
 }
 
 @implementation OFArc
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFString *outputDir, *encodingString, *type;
+	OFString *archiveComment, *outputDir, *encodingString, *type;
+	bool isIRI;
 	const OFOptionsParserOption options[] = {
-		{ 'a', @"append", 0, NULL, NULL },
-		{ 'c', @"create", 0, NULL, NULL },
-		{ 'C', @"directory", 1, NULL, &outputDir },
-		{ 'E', @"encoding", 1, NULL, &encodingString },
-		{ 'f', @"force", 0, NULL, NULL },
-		{ 'h', @"help", 0, NULL, NULL },
-		{ 'l', @"list", 0, NULL, NULL },
-		{ 'n', @"no-clobber", 0, NULL, NULL },
-		{ 'p', @"print", 0, NULL, NULL },
-		{ 'q', @"quiet", 0, NULL, NULL },
-		{ 't', @"type", 1, NULL, &type },
-		{ 'v', @"verbose", 0, NULL, NULL },
-		{ 'x', @"extract", 0, NULL, NULL },
+		{ 'a',  @"append", 0, NULL, NULL },
+		{ '\0', @"archive-comment", 1, NULL, &archiveComment },
+		{ 'c',  @"create", 0, NULL, NULL },
+		{ 'C',  @"directory", 1, NULL, &outputDir },
+		{ 'E',  @"encoding", 1, NULL, &encodingString },
+		{ 'f',  @"force", 0, NULL, NULL },
+		{ 'h',  @"help", 0, NULL, NULL },
+		{ '\0', @"iri", 0, &isIRI, NULL },
+		{ 'l',  @"list", 0, NULL, NULL },
+		{ 'n',  @"no-clobber", 0, NULL, NULL },
+		{ 'p',  @"print", 0, NULL, NULL },
+		{ 'q',  @"quiet", 0, NULL, NULL },
+		{ 't',  @"type", 1, NULL, &type },
+		{ 'v',  @"verbose", 0, NULL, NULL },
+		{ 'x',  @"extract", 0, NULL, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFUnichar option, mode = '\0';
 	OFStringEncoding encoding = OFStringEncodingAutodetect;
 	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
+	OFIRI *IRI;
 	id <Archive> archive;
 
 #ifdef OF_HAVE_SANDBOX
@@ -211,7 +285,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofarc/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofarc/localization"]];
+#endif
+
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -262,6 +342,10 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 			break;
 		case 'h':
 			help(OFStdOut, true, 0);
+			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 			break;
 		case '=':
 			[OFStdErr writeLine: OF_LOCALIZED(
@@ -338,12 +422,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		if (remainingArguments.count < 1)
 			help(OFStdErr, false, 1);
 
+		IRI = argumentToIRI(remainingArguments.firstObject, isIRI);
 		files = [remainingArguments objectsInRange:
 		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		if (![remainingArguments.firstObject isEqual: @"-"])
-			[sandbox unveilPath: remainingArguments.firstObject
+		if ([IRI.scheme isEqual: @"file"])
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
@@ -353,32 +438,32 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		[OFApplication of_activateSandbox: sandbox];
 #endif
 
-		archive = [self
-		    openArchiveWithPath: remainingArguments.firstObject
-				   type: type
-				   mode: mode
-			       encoding: encoding];
+		archive = [self openArchiveWithIRI: IRI
+					      type: type
+					      mode: mode
+					  encoding: encoding];
 
-		addFiles(archive, files);
+		addFiles(archive, files, archiveComment);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
 			help(OFStdErr, false, 1);
 
+		IRI = argumentToIRI(remainingArguments.firstObject, isIRI);
+
 #ifdef OF_HAVE_SANDBOX
-		if (![remainingArguments.firstObject isEqual: @"-"])
-			[sandbox unveilPath: remainingArguments.firstObject
+		if ([IRI.scheme isEqual: @"file"])
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
 		[OFApplication of_activateSandbox: sandbox];
 #endif
 
-		archive = [self
-		    openArchiveWithPath: remainingArguments.firstObject
-				   type: type
-				   mode: mode
-			       encoding: encoding];
+		archive = [self openArchiveWithIRI: IRI
+					      type: type
+					      mode: mode
+					  encoding: encoding];
 
 		[archive listFiles];
 		break;
@@ -386,23 +471,23 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		if (remainingArguments.count < 1)
 			help(OFStdErr, false, 1);
 
+		IRI = argumentToIRI(remainingArguments.firstObject, isIRI);
+		files = [remainingArguments objectsInRange:
+		    OFMakeRange(1, remainingArguments.count - 1)];
+
 #ifdef OF_HAVE_SANDBOX
-		if (![remainingArguments.firstObject isEqual: @"-"])
-			[sandbox unveilPath: remainingArguments.firstObject
+		if ([IRI.scheme isEqual: @"file"])
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		sandbox.allowsUnveil = false;
 		[OFApplication of_activateSandbox: sandbox];
 #endif
 
-		files = [remainingArguments objectsInRange:
-		    OFMakeRange(1, remainingArguments.count - 1)];
-
-		archive = [self
-		    openArchiveWithPath: remainingArguments.firstObject
-				   type: type
-				   mode: mode
-			       encoding: encoding];
+		archive = [self openArchiveWithIRI: IRI
+					      type: type
+					      mode: mode
+					  encoding: encoding];
 
 		[archive printFiles: files];
 		break;
@@ -410,12 +495,13 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		if (remainingArguments.count < 1)
 			help(OFStdErr, false, 1);
 
+		IRI = argumentToIRI(remainingArguments.firstObject, isIRI);
 		files = [remainingArguments objectsInRange:
 		    OFMakeRange(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		if (![remainingArguments.firstObject isEqual: @"-"])
-			[sandbox unveilPath: remainingArguments.firstObject
+		if ([IRI.scheme isEqual: @"file"])
+			[sandbox unveilPath: IRI.fileSystemRepresentation
 				permissions: @"r"];
 
 		if (files.count > 0)
@@ -436,11 +522,27 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		[OFApplication of_activateSandbox: sandbox];
 #endif
 
-		archive = [self
-		    openArchiveWithPath: remainingArguments.firstObject
-				   type: type
-				   mode: mode
-			       encoding: encoding];
+		archive = [self openArchiveWithIRI: IRI
+					      type: type
+					      mode: mode
+					  encoding: encoding];
+
+#ifdef OF_MACOS
+		if ([IRI.scheme isEqual: @"file"]) {
+			@try {
+				OFString *attributeName =
+				    @"com.apple.quarantine";
+
+				_quarantine = objc_retain(
+				    [[OFFileManager defaultManager]
+				    extendedAttributeDataForName: attributeName
+						     ofItemAtIRI: IRI]);
+			} @catch (OFGetItemAttributesFailedException *e) {
+				if (e.errNo != /*ENOATTR*/ 93)
+					@throw e;
+			}
+		}
+#endif
 
 		if (outputDir != nil) {
 			OFFileManager *fileManager =
@@ -456,26 +558,20 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		@try {
 			[archive extractFiles: files];
 		} @catch (OFCreateDirectoryFailedException *e) {
-			OFString *error = [OFString
-			    stringWithCString: strerror(e.errNo)
-				     encoding: [OFLocale encoding]];
 			[OFStdErr writeString: @"\r"];
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
 			    @"dir", e.IRI.fileSystemRepresentation,
-			    @"error", error)];
+			    @"error", OFStrError(e.errNo))];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {
-			OFString *error = [OFString
-			    stringWithCString: strerror(e.errNo)
-				     encoding: [OFLocale encoding]];
 			[OFStdErr writeString: @"\r"];
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
 			    @"Failed to open file %[file]: %[error]",
 			    @"file", e.path,
-			    @"error", error)];
+			    @"error", OFStrError(e.errNo))];
 			_exitStatus = 1;
 		}
 
@@ -488,20 +584,15 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	[OFApplication terminateWithStatus: _exitStatus];
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString *)path
-			       type: (OFString *)type
-			       mode: (char)mode
-			   encoding: (OFStringEncoding)encoding
+- (id <Archive>)openArchiveWithIRI: (OFIRI *)IRI
+			      type: (OFString *)type
+			      mode: (char)mode
+			  encoding: (OFStringEncoding)encoding
 {
+	/* To make clang-analyzer happy about assigning nil to path later. */
 	OFString *modeString, *fileModeString;
 	OFStream *file = nil;
 	id <Archive> archive = nil;
-
-	[_archivePath release];
-	_archivePath = [path copy];
-
-	if (path == nil)
-		return nil;
 
 	switch (mode) {
 	case 'a':
@@ -509,7 +600,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		fileModeString = @"r+";
 		break;
 	case 'c':
-		modeString = fileModeString = @"w";
+		modeString = @"w";
+		fileModeString = @"w+";
 		break;
 	case 'l':
 	case 'p':
@@ -520,7 +612,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	if ([path isEqual: @"-"]) {
+	if (IRI == nil) {
 		switch (mode) {
 		case 'a':
 		case 'c':
@@ -534,69 +626,77 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 		default:
 			@throw [OFInvalidArgumentException exception];
 		}
-
-		path = nil;
 	} else {
 		@try {
-			file = [OFFile fileWithPath: path mode: fileModeString];
+			file = [OFIRIHandler openItemAtIRI: IRI
+						      mode: fileModeString];
 		} @catch (OFOpenItemFailedException *e) {
-			OFString *error = [OFString
-			    stringWithCString: strerror(e.errNo)
-				     encoding: [OFLocale encoding]];
 			[OFStdErr writeString: @"\r"];
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
 			    @"Failed to open file %[file]: %[error]",
-			    @"file", e.path,
-			    @"error", error)];
+			    @"file", e.IRI.string,
+			    @"error", OFStrError(e.errNo))];
 			[OFApplication terminateWithStatus: 1];
 		}
 	}
 
 	if (type == nil || [type isEqual: @"auto"]) {
+		OFString *lowercasePath = IRI.path.lowercaseString;
+
 		/* This one has to be first for obvious reasons */
-		if ([path hasSuffix: @".tar.gz"] || [path hasSuffix: @".tgz"] ||
-		    [path hasSuffix: @".TAR.GZ"] || [path hasSuffix: @".TGZ"])
+		if ([lowercasePath hasSuffix: @".tar.gz"] ||
+		    [lowercasePath hasSuffix: @".tgz"])
 			type = @"tgz";
-		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
+		else if ([lowercasePath hasSuffix: @".gz"])
 			type = @"gz";
-		else if ([path hasSuffix: @".lha"] || [path hasSuffix: @".lzh"])
+		else if ([lowercasePath hasSuffix: @".lha"] ||
+		    [lowercasePath hasSuffix: @".lzh"] ||
+		    [lowercasePath hasSuffix: @".lzs"] ||
+		    [lowercasePath hasSuffix: @".pma"])
 			type = @"lha";
-		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
+		else if ([lowercasePath hasSuffix: @".tar"])
 			type = @"tar";
+		else if ([lowercasePath hasSuffix: @".zoo"])
+			type = @"zoo";
 		else
 			type = @"zip";
 	}
 
 	@try {
 		if ([type isEqual: @"gz"])
-			archive = [GZIPArchive archiveWithPath: path
-							stream: file
-							  mode: modeString
-						      encoding: encoding];
-		else if ([type isEqual: @"lha"])
-			 archive = [LHAArchive archiveWithPath: path
-							stream: file
-							  mode: modeString
-						      encoding: encoding];
-		else if ([type isEqual: @"tar"])
-			archive = [TarArchive archiveWithPath: path
+			archive = [GZIPArchive archiveWithIRI: IRI
 						       stream: file
 							 mode: modeString
 						     encoding: encoding];
+		else if ([type isEqual: @"lha"])
+			 archive = [LHAArchive archiveWithIRI: IRI
+						       stream: file
+							 mode: modeString
+						      encoding: encoding];
+		else if ([type isEqual: @"tar"])
+			archive = [TarArchive archiveWithIRI: IRI
+						      stream: file
+							mode: modeString
+						    encoding: encoding];
 		else if ([type isEqual: @"tgz"]) {
 			OFStream *GZIPStream = [OFGZIPStream
 			    streamWithStream: file
 					mode: modeString];
-			archive = [TarArchive archiveWithPath: path
-						       stream: GZIPStream
-							 mode: modeString
-						     encoding: encoding];
+			archive = [TarArchive archiveWithIRI: IRI
+						      stream: GZIPStream
+							mode: modeString
+						    encoding: encoding];
 		} else if ([type isEqual: @"zip"])
-			archive = [ZIPArchive archiveWithPath: path
-						       stream: file
-							 mode: modeString
-						     encoding: encoding];
+			archive = [ZIPArchive archiveWithIRI: IRI
+						      stream: file
+							mode: modeString
+						    encoding: encoding];
+		else if ([type isEqual: @"zoo"])
+			archive = [ZooArchive archiveWithIRI: IRI
+						      stream: file
+							mode: modeString
+						    encoding: encoding];
 		else {
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",
@@ -613,33 +713,27 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 
 		@throw e;
 	} @catch (OFReadFailedException *e) {
-		OFString *error = [OFString
-		    stringWithCString: strerror(e.errNo)
-			     encoding: [OFLocale encoding]];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
-		    @"file", path,
-		    @"error", error)];
+		    @"file", IRI.string,
+		    @"error", OFStrError(e.errNo))];
 		goto error;
 	} @catch (OFSeekFailedException *e) {
-		OFString *error = [OFString
-		    stringWithCString: strerror(e.errNo)
-			     encoding: [OFLocale encoding]];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
 		    @"Failed to seek in file %[file]: %[error]",
-		    @"file", path,
-		    @"error", error)];
+		    @"file", IRI.string,
+		    @"error", OFStrError(e.errNo))];
 		goto error;
 	} @catch (OFInvalidFormatException *e) {
 		[OFStdErr writeLine: OF_LOCALIZED(
 		    @"file_is_not_a_valid_archive",
 		    @"File %[file] is not a valid archive!",
-		    @"file", path)];
+		    @"file", IRI.string)];
 		goto error;
 	}
 
-	if ((mode == 'a' || mode == 'c') &&
-	    ![archive respondsToSelector: @selector(addFiles:)]) {
+	if ((mode == 'a' || mode == 'c') && ![archive respondsToSelector:
+	    @selector(addFiles:archiveComment:)]) {
 		writingNotSupported(type);
 		goto error;
 	}
@@ -647,11 +741,11 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files)
 	return archive;
 
 error:
-	if (mode == 'c')
-		[[OFFileManager defaultManager] removeItemAtPath: path];
+	if (mode == 'c' && IRI != nil)
+		[[OFFileManager defaultManager] removeItemAtIRI: IRI];
 
 	[OFApplication terminateWithStatus: 1];
-	return nil;
+	abort();
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName
@@ -665,8 +759,8 @@ error:
 
 	if (_overwrite == -1) {
 		if (_outputLevel >= 0) {
-			[OFStdOut writeString: @" "];
-			[OFStdOut writeLine:
+			[OFStdErr writeString: @" "];
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"file_skipped", @"skipped")];
 		}
 		return false;
@@ -698,7 +792,7 @@ error:
 
 	if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 		if (_outputLevel >= 0)
-			[OFStdOut writeLine: OF_LOCALIZED(@"skipping_file",
+			[OFStdErr writeLine: OF_LOCALIZED(@"skipping_file",
 			    @"Skipping %[file]...",
 			    @"file", fileName)];
 
@@ -706,7 +800,7 @@ error:
 	}
 
 	if (_outputLevel >= 0)
-		[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+		[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 		    @"Extracting %[file]...",
 		    @"file", fileName)];
 
@@ -723,28 +817,22 @@ error:
 	@try {
 		length = [input readIntoBuffer: buffer length: bufferSize];
 	} @catch (OFReadFailedException *e) {
-		OFString *error = [OFString
-		    stringWithCString: strerror(e.errNo)
-			     encoding: [OFLocale encoding]];
-		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeString: @"\r"];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", fileName,
-		    @"error", error)];
+		    @"error", OFStrError(e.errNo))];
 		return -1;
 	}
 
 	@try {
 		[output writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		OFString *error = [OFString
-		    stringWithCString: strerror(e.errNo)
-			     encoding: [OFLocale encoding]];
-		[OFStdOut writeString: @"\r"];
+		[OFStdErr writeString: @"\r"];
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_write_file",
 		    @"Failed to write file %[file]: %[error]",
 		    @"file", fileName,
-		    @"error", error)];
+		    @"error", OFStrError(e.errNo))];
 		return -1;
 	}
 
@@ -790,10 +878,40 @@ error:
 		}
 	}
 
-	[path retain];
+	objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [path autorelease];
+	return objc_autoreleaseReturnValue(path);
 }
+
+- (void)quarantineFile: (OFString *)path
+{
+#ifdef OF_MACOS
+	if (_quarantine != nil)
+		[[OFFileManager defaultManager]
+		    setExtendedAttributeData: _quarantine
+				     forName: @"com.apple.quarantine"
+				ofItemAtPath: path];
+#endif
+}
+
+- (void)checkForCancellation
+{
+#ifdef OF_AMIGAOS
+	/*
+	 * Perform a single iteration of the run loop to see if we received
+	 * Ctrl-C.
+	 */
+	[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+			      beforeDate: [OFDate distantPast]];
+#endif
+}
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	raise(SIGINT);
+}
+#endif
 @end
