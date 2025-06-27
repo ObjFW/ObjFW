@@ -52,7 +52,7 @@
 		_library = objc_retain(library);
 		_impl = objc_retain(impl);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
