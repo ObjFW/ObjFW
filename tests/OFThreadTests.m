@@ -32,8 +32,8 @@
 - (id)main
 {
 	[[OFThread threadDictionary] setObject: @"bar" forKey: @"foo"];
-	OFEnsure([[[OFThread threadDictionary]
-	    objectForKey: @"foo"] isEqual: @"bar"]);
+	OTAssertEqualObjects([[OFThread threadDictionary] objectForKey: @"foo"],
+	    @"bar");
 
 	return @"success";
 }
