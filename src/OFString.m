@@ -499,12 +499,14 @@ isASCIIWithoutNull(const char *string, size_t length)
 		}
 #endif
 
-		string = OFAllocObject([OFUTF8String class], length + 1, 1,
-		    &storage);
+		if (encoding == OFStringEncodingUTF8) {
+			string = OFAllocObject([OFUTF8String class],
+			    length + 1, 1, &storage);
 
-		return (id)[string of_initWithUTF8String: cString
-						  length: length
-						 storage: storage];
+			return (id)[string of_initWithUTF8String: cString
+							  length: length
+							 storage: storage];
+		}
 	}
 
 	return (id)[[OFUTF8String alloc] initWithCString: cString
@@ -535,12 +537,14 @@ isASCIIWithoutNull(const char *string, size_t length)
 		}
 #endif
 
-		string = OFAllocObject([OFUTF8String class], cStringLength + 1,
-		    1, &storage);
+		if (encoding == OFStringEncodingUTF8) {
+			string = OFAllocObject([OFUTF8String class],
+			    cStringLength + 1, 1, &storage);
 
-		return (id)[string of_initWithUTF8String: cString
-						  length: cStringLength
-						 storage: storage];
+			return (id)[string of_initWithUTF8String: cString
+							  length: cStringLength
+							 storage: storage];
+		}
 	}
 
 	return (id)[[OFUTF8String alloc] initWithCString: cString
