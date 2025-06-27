@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,9 +24,14 @@
 #import "OFLocale.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFFileManager.h"
 #import "OFIRI.h"
 #import "OFNumber.h"
+#import "OFStdIOStream.h"
 #import "OFString.h"
+#import "OFString+Private.h"
+
+#import "OFOnce.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -37,15 +46,27 @@
 # undef Class
 #endif
 
+OF_DIRECT_MEMBERS
+@interface OFLocale ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+@end
+
+static OFOnceControl initLocaleControl = OFOnceControlInitValue;
 static OFLocale *currentLocale = nil;
 static OFDictionary *operatorPrecedences = nil;
+
+static void
+initLocale(void)
+{
+	currentLocale = [[OFLocale alloc] of_init];
+}
 
 #ifndef OF_AMIGAOS
 static void
 parseLocale(char *locale, OFStringEncoding *encoding,
     OFString **languageCode, OFString **countryCode)
 {
-	locale = OFStrDup(locale);
+	locale = _OFStrDup(locale);
 
 	@try {
 		OFStringEncoding enc = OFStringEncodingASCII;
@@ -90,7 +111,7 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 static bool
 evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
-	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
+	OFMutableString *condition = objc_autorelease([condition_ mutableCopy]);
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -312,10 +333,13 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 + (void)initialize
 {
+	void *pool;
 	OFNumber *one, *two, *three, *four;
 
 	if (self != [OFLocale class])
 		return;
+
+	pool = objc_autoreleasePoolPush();
 
 	/* 1 is also used to denote a unary operator. */
 	one = [OFNumber numberWithUnsignedInt: 1];
@@ -337,30 +361,42 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	    @"!", one,
 	    @"is_real", one,
 	    nil];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 + (OFLocale *)currentLocale
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale;
 }
 
 + (OFString *)languageCode
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.languageCode;
 }
 
 + (OFString *)countryCode
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.countryCode;
 }
 
 + (OFStringEncoding)encoding
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.encoding;
 }
 
 + (OFString *)decimalSeparator
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.decimalSeparator;
 }
 
@@ -371,15 +407,25 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 - (instancetype)init
 {
+	/*
+	 * In the past, applications not using OFApplication were required to
+	 * create an instance of OFLocale manually. This is no longer needed
+	 * and +[currentLocale] creates the singleton. However, in order to not
+	 * break old applications, this method needs to just return the
+	 * singleton now.
+	 */
+	objc_release(self);
+
+	return [OFLocale currentLocale];
+}
+
+- (instancetype)of_init
+{
 	self = [super init];
 
 	@try {
 #ifndef OF_AMIGAOS
 		char *locale, *messagesLocale = NULL;
-
-		if (currentLocale != nil)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
 
 # ifdef OF_MSDOS
 		_encoding = OFStringEncodingCodepage437;
@@ -406,8 +452,8 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			parseLocale(messagesLocale, &_encoding,
 			    &_languageCode, &_countryCode);
 
-			[_languageCode retain];
-			[_countryCode retain];
+			objc_retain(_languageCode);
+			objc_retain(_countryCode);
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -479,30 +525,28 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		objc_autoreleasePoolPop(pool);
 #endif
+
+		if (OFStdIn.hasTerminal)
+			OFStdIn.encoding = _encoding;
+		if (OFStdOut.hasTerminal)
+			OFStdOut.encoding = _encoding;
+		if (OFStdErr.hasTerminal)
+			OFStdErr.encoding = _encoding;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
-
-	currentLocale = self;
 
 	return self;
 }
 
-- (void)dealloc
-{
-	[_languageCode release];
-	[_countryCode release];
-	[_decimalSeparator release];
-	[_localizedStrings release];
-
-	[super dealloc];
-}
+OF_SINGLETON_METHODS
 
 - (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
 	void *pool;
-	OFIRI *mapIRI, *localizationIRI;
+	OFFileManager *fileManager;
+	OFIRI *mapIRI, *localizationIRI, *compressedLocalizationIRI;
 	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
@@ -537,8 +581,19 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		return;
 	}
 
+	fileManager = [OFFileManager defaultManager];
+
 	localizationIRI = [IRI IRIByAppendingPathComponent:
 	    [localizationFile stringByAppendingString: @".json"]];
+	compressedLocalizationIRI = [IRI IRIByAppendingPathComponent:
+	    [localizationFile stringByAppendingString: @".json.gz"]];
+
+	if (![fileManager fileExistsAtIRI: localizationIRI] &&
+	    [fileManager fileExistsAtIRI: compressedLocalizationIRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = compressedLocalizationIRI.string;
+		localizationIRI = tmp;
+	}
 
 	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:
 	    localizationIRI] objectByParsingJSON]];

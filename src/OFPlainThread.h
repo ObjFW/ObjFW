@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "objfw-defs.h"
@@ -23,6 +27,8 @@
 #endif
 
 #import "OFObject.h"
+
+/** @file */
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
@@ -49,13 +55,24 @@ typedef struct {
 	size_t stackSize;
 } OFPlainThreadAttributes;
 
-#if defined(OF_HAVE_PTHREADS)
+#if defined(OF_HAVE_PTHREADS) || defined(DOXYGEN)
+/**
+ * @brief Returns the current plain thread.
+ *
+ * @return The current plain thread
+ */
 static OF_INLINE OFPlainThread
 OFCurrentPlainThread(void)
 {
 	return pthread_self();
 }
 
+/**
+ * @brief Returns whether the specified plain thread is the current thread.
+ *
+ * @param thread The thread to check
+ * @return Whether the specified plain thread is the current thread
+ */
 static OF_INLINE bool
 OFPlainThreadIsCurrent(OFPlainThread thread)
 {
@@ -81,11 +98,51 @@ extern bool OFPlainThreadIsCurrent(OFPlainThread);
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Initializes the specified thread attributes.
+ *
+ * @param attr A pointer to the thread attributes to initialize
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
+
+/**
+ * @brief Creates a new plain thread.
+ *
+ * A plain thread is similar to @ref OFThread, but does not use exceptions and
+ * is just a lightweight wrapper around the system's thread implementation.
+ *
+ * @param thread A pointer to the thread to create
+ * @param name A name for the thread
+ * @param function The function the thread should execute
+ * @param object The object to pass to the thread as an argument
+ * @param attr Thread attributes
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFPlainThreadNew(OFPlainThread *thread, const char *name,
     void (*function)(id), id object, const OFPlainThreadAttributes *attr);
+
+/**
+ * @brief Sets the name of the current thread.
+ *
+ * @param name The name for the current thread
+ */
 extern void OFSetThreadName(const char *name);
+
+/**
+ * @brief Joins the specified thread.
+ *
+ * @param thread The thread to join
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFPlainThreadJoin(OFPlainThread thread);
+
+/**
+ * @brief Detaches the specified thread.
+ *
+ * @param thread The thread to detach
+ * @return 0 on success, or an error number from `<errno.h>` on error
+ */
 extern int OFPlainThreadDetach(OFPlainThread thread);
 #ifdef __cplusplus
 }

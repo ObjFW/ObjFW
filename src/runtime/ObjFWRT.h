@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef OBJFWRT_OBJFWRT_H
@@ -192,7 +196,6 @@ typedef enum objc_associationPolicy {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /**
  * @brief Registers a selector with the specified name with the runtime.
  *
@@ -576,6 +579,10 @@ extern void objc_setEnumerationMutationHandler(
  * @brief Constructs an instance of the specified class in the specified array
  *	  of bytes.
  *
+ * @warning Instances created using this *cannot* use the runtime's reference
+ *	    counting and will result in a crash. Use @ref class_createInstance
+ *	    instead!
+ *
  * @param class_ The class of which to construct an instance
  * @param bytes An array of bytes of at least the length of the instance size.
  *		Must be properly aligned for the class.
@@ -591,6 +598,57 @@ extern id _Nullable objc_constructInstance(Class _Nullable class_,
  * @return The array of bytes that was used to back the instance
  */
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+
+/**
+ * @brief Creates a new instance of the specified class with the specified
+ *	  amount of extra space after the instance variables.
+ *
+ * @param class_ The class of which to create an instance
+ * @param extraBytes The amount of extra space after the instance variables
+ * @return The created instance
+ */
+extern id _Nullable class_createInstance(Class _Nullable class_,
+    size_t extraBytes);
+
+/**
+ * @brief Disposes of the specified object.
+ *
+ * This destructs the object and frees the memory.
+ *
+ * @param object The object to dispose of
+ * @return `nil`
+ */
+extern id _Nullable object_dispose(id _Nullable object);
+
+/**
+ * @brief Retains the specified object.
+ *
+ * This is only to be used to implement the `retain` method in a root class.
+ *
+ * @param object The object to retain
+ * @return The retained object
+ */
+extern id _Nonnull _objc_rootRetain(id _Nonnull object);
+
+/**
+ * @brief Returns the retain count for the specified object.
+ *
+ * This is only to be used to implement the `retainCount` method in a root
+ * class.
+ *
+ * @param object The object whose retain count to return
+ * @return The retain count of the specified object
+ */
+extern unsigned int _objc_rootRetainCount(id _Nonnull object);
+
+/**
+ * @brief Releases the specified object.
+ *
+ * This is only to be used to implement the `release` method in a root class.
+ *
+ * @param object The object to release
+ */
+extern void _objc_rootRelease(id _Nonnull object);
 
 /**
  * @brief Creates a new autorelease pool and puts it on top of the stack of
@@ -699,8 +757,10 @@ extern void objc_removeAssociatedObjects(id _Nonnull object);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
+#ifdef __clang__
 struct objc_module;
 extern void __objc_exec_class(struct objc_module *_Nonnull module);
+#endif
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

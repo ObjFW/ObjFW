@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -28,14 +32,12 @@
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
-#ifdef OF_HAVE_PLUGINS
-# import "OFPlugin.h"
-#endif
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
+#import "OFTimer.h"
 
 #ifdef HAVE_TLS_SUPPORT
 # import "ObjFWTLS.h"
@@ -58,9 +60,16 @@
 
 #import "ProgressBar.h"
 
-#define GIBIBYTE (1024 * 1024 * 1024)
-#define MEBIBYTE (1024 * 1024)
-#define KIBIBYTE (1024)
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2025 Jonathan Schleifer";
+#endif
+
+#define KIBIBYTE 1024
+#define MEBIBYTE (1024 * KIBIBYTE)
+#define GIBIBYTE (1024 * MEBIBYTE)
+#define BUFFER_SIZE (16 * KIBIBYTE)
 
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
     OFStreamDelegate>
@@ -76,12 +85,18 @@
 	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
-	char *_buffer;
+	char _buffer[BUFFER_SIZE];
 	OFStream *_output;
 	unsigned long long _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
 
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#else
+- (void)SIGINTCheck;
+#endif
+- (void)abort;
 - (void)downloadNextIRI;
 @end
 
@@ -92,6 +107,8 @@ _reference_to_ObjFWTLS(void)
 	_ObjFWTLS_reference = 1;
 }
 #endif
+
+static volatile sig_atomic_t SIGINTReceived = false;
 
 OF_APPLICATION_DELEGATE(OFHTTP)
 
@@ -133,10 +150,26 @@ help(OFStream *stream, bool full, int status)
 		    @"    --insecure       "
 		    @"  Ignore TLS errors and allow insecure redirects\n    "
 		    @"    --ignore-status  "
-		    @"  Ignore HTTP status code")];
+		    @"  Ignore HTTP status code\n    "
+		    @"    --version        "
+		    @"  Show version information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofhttp %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static OFString *
@@ -286,9 +319,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	fileName = fileName.lastPathComponent;
 
-	[fileName retain];
+	objc_retain(fileName);
 	objc_autoreleasePoolPop(pool);
-	return [fileName autorelease];
+	return objc_autoreleaseReturnValue(fileName);
 }
 
 @implementation OFHTTP
@@ -305,10 +338,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
-
-		_buffer = OFAllocMemory(1, [OFSystemInfo pageSize]);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -340,7 +371,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 {
 	OFString *contentLength = nil;
 
-	[_body release];
+	objc_release(_body);
 	_body = nil;
 
 	if ([path isEqual: @"-"])
@@ -392,17 +423,18 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    rangeOfString: @":"
 			  options: OFStringSearchBackwards].location;
 		OFString *host;
-		unsigned long long port;
+		unsigned short port;
 
 		if (pos == OFNotFound)
 			@throw [OFInvalidFormatException exception];
 
 		host = [proxy substringToIndex: pos];
-		port = [proxy substringFromIndex: pos + 1]
-		    .unsignedLongLongValue;
+		port = [proxy substringFromIndex: pos + 1].unsignedShortValue;
 
-		if (port > UINT16_MAX)
+#if USHRT_MAX != 65535
+		if (port > 65535)
 			@throw [OFOutOfRangeException exception];
+#endif
 
 		[OFTCPSocket setSOCKS5Host: host];
 		[OFTCPSocket setSOCKS5Port: (uint16_t)port];
@@ -431,6 +463,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		{ 'v', @"verbose", 0, &_verbose, NULL },
 		{ '\0', @"insecure", 0, &_insecure, NULL },
 		{ '\0', @"ignore-status", 0, &_ignoreStatus, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser;
@@ -457,7 +490,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhttp/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhttp/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -477,6 +510,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		case 'P':
 			[self setProxy: optionsParser.argument];
+			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
@@ -589,7 +626,55 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	_useUnicode = ([OFLocale encoding] == OFStringEncodingUTF8);
 #endif
 
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
+#else
+	[OFTimer scheduledTimerWithTimeInterval: 0.1
+					 target: self
+				       selector: @selector(SIGINTCheck)
+					repeats: true];
+#endif
+
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
+}
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	[self abort];
+}
+#else
+- (void)applicationDidReceiveSIGINT
+{
+	SIGINTReceived = true;
+}
+
+- (void)SIGINTCheck
+{
+	if (SIGINTReceived)
+		[self abort];
+}
+#endif
+
+- (void)abort
+{
+	if (!_quiet) {
+		OFStdErr.cursorVisible = true;
+		[OFStdErr writeString: @"\n  "];
+		[OFStdErr writeLine:
+		    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
+	}
+
+	[OFApplication terminateWithStatus: 1];
+}
+
+-	(void)client: (OFHTTPClient *)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+	     request: (OFHTTPRequest *)request
+{
+	TCPSocket.canBlock = false;
 }
 
 -	(void)client: (OFHTTPClient *)client
@@ -628,16 +713,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[OFStdOut writeFormat: @"  %@: %@\n", key, object];
+			[OFStdErr writeFormat: @"  %@: %@\n", key, object];
 
 		objc_autoreleasePoolPop(pool);
 	}
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"☇ %@", IRI.string];
+			[OFStdErr writeFormat: @"☇ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"< %@", IRI.string];
 	}
 
 	_length = 0;
@@ -655,12 +740,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		[_progressBar stop];
 		[_progressBar draw];
-		[_progressBar release];
+		objc_release(_progressBar);
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[OFStdOut writeString: @"\n  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"download_error",
+			[OFStdErr writeString: @"\n  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"download_error",
 			    @"Error!")];
 		}
 
@@ -687,12 +772,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (response.atEndOfStream) {
 		[_progressBar stop];
 		[_progressBar draw];
-		[_progressBar release];
+		objc_release(_progressBar);
 		_progressBar = nil;
 
 		if (!_quiet) {
-			[OFStdOut writeString: @"\n  "];
-			[OFStdOut writeLine:
+			[OFStdErr writeString: @"\n  "];
+			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
@@ -718,9 +803,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
 		if (_useUnicode)
-			[OFStdOut writeFormat: @" ➜ %hd\n", statusCode];
+			[OFStdErr writeFormat: @" ➜ %hd\n", statusCode];
 		else
-			[OFStdOut writeFormat: @" -> %hd\n", statusCode];
+			[OFStdErr writeFormat: @" -> %hd\n", statusCode];
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -774,8 +859,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			OFString *key, *object;
 
 			if (statusCode / 100 == 2 && _currentFileName != nil) {
-				[OFStdOut writeString: @"  "];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"  "];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"info_name_unaligned",
 				    @"Name: %[name]",
 				    @"name", _currentFileName)];
@@ -783,24 +868,24 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil)
-				[OFStdOut writeFormat: @"  %@: %@\n",
+				[OFStdErr writeFormat: @"  %@: %@\n",
 						       key, object];
 
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
-			[OFStdOut writeString: @"  "];
+			[OFStdErr writeString: @"  "];
 
 			if (_currentFileName != nil)
-				[OFStdOut writeLine: OF_LOCALIZED(@"info_name",
+				[OFStdErr writeLine: OF_LOCALIZED(@"info_name",
 				    @"Name: %[name]",
 				    @"name", _currentFileName)];
 
-			[OFStdOut writeString: @"  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"info_type",
+			[OFStdErr writeString: @"  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"info_type",
 			    @"Type: %[type]",
 			    @"type", type)];
-			[OFStdOut writeString: @"  "];
-			[OFStdOut writeLine: OF_LOCALIZED(@"info_size",
+			[OFStdErr writeString: @"  "];
+			[OFStdErr writeLine: OF_LOCALIZED(@"info_size",
 			    @"Size: %[size]",
 			    @"size", lengthString)];
 		}
@@ -816,7 +901,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		if ([exception isKindOfClass:
 		    [OFResolveHostFailedException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_resolve_host_failed",
@@ -828,7 +913,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFConnectSocketFailedException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_connection_failed",
@@ -840,7 +925,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFInvalidServerResponseException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_invalid_server_response",
@@ -851,7 +936,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		} else if ([exception isKindOfClass:
 		    [OFUnsupportedProtocolException class]]) {
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
 			    @"%[prog]: No TLS support in ObjFW!\n"
@@ -867,7 +952,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    .errorCode);
 
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"download_failed_tls_handshake_failed",
@@ -883,7 +968,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    @"Read or write failed");
 
 			if (!_quiet)
-				[OFStdOut writeString: @"\n"];
+				[OFStdErr writeString: @"\n"];
 
 			if ([exception isKindOfClass:
 			    [OFReadFailedException class]])
@@ -953,7 +1038,7 @@ after_exception_handling:
 	}
 
 	if ([_outputPath isEqual: @"-"])
-		_output = [OFStdOut copy];
+		_output = OFStdOut;
 	else {
 		if (!_continue && !_force && [[OFFileManager defaultManager]
 		    fileExistsAtPath: _currentFileName]) {
@@ -985,7 +1070,7 @@ after_exception_handling:
 			goto next;
 		}
 
-#ifdef OF_LINUX
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 		@try {
 			OFString *IRIString = request.IRI.string;
 			OFData *downloadedFromData = [OFData
@@ -1028,15 +1113,15 @@ after_exception_handling:
 		[_progressBar draw];
 	}
 
-	[_currentFileName release];
+	objc_release(_currentFileName);
 	_currentFileName = nil;
 
 	response.delegate = self;
-	[response asyncReadIntoBuffer: _buffer length: [OFSystemInfo pageSize]];
+	[response asyncReadIntoBuffer: _buffer length: BUFFER_SIZE];
 	return;
 
 next:
-	[_currentFileName release];
+	objc_release(_currentFileName);
 	_currentFileName = nil;
 
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
@@ -1052,7 +1137,7 @@ next:
 	_received = _length = _resumedFrom = 0;
 
 	if (_output != OFStdOut)
-		[_output release];
+		objc_release(_output);
 	_output = nil;
 
 	if (_IRIIndex >= _IRIs.count)
@@ -1081,14 +1166,14 @@ next:
 		goto next;
 	}
 
-	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
+	clientHeaders = objc_autorelease([_clientHeaders mutableCopy]);
 
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdOut writeFormat: @"⠒ %@", IRI.string];
+				[OFStdErr writeFormat: @"⠒ %@", IRI.string];
 			else
-				[OFStdOut writeFormat: @"? %@", IRI.string];
+				[OFStdErr writeFormat: @"? %@", IRI.string];
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];
@@ -1101,7 +1186,7 @@ next:
 	}
 
 	if (!_detectedFileName) {
-		[_currentFileName release];
+		objc_release(_currentFileName);
 		_currentFileName = nil;
 	} else
 		_detectedFileName = false;
@@ -1113,7 +1198,7 @@ next:
 		_currentFileName = [IRI.path.lastPathComponent copy];
 
 	if ([_currentFileName isEqual: @"/"] || _currentFileName.length == 0) {
-		[_currentFileName release];
+		objc_release(_currentFileName);
 		_currentFileName = nil;
 	}
 
@@ -1141,9 +1226,9 @@ next:
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdOut writeFormat: @"⇣ %@", IRI.string];
+			[OFStdErr writeFormat: @"⇣ %@", IRI.string];
 		else
-			[OFStdOut writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"v %@", IRI.string];
 	}
 
 	request = [OFHTTPRequest requestWithIRI: IRI];

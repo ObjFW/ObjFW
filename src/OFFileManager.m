@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -214,13 +218,14 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (OFIRI *)currentDirectoryIRI
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFIRI *ret;
+	OFIRI *ret = [OFIRI fileIRIWithPath: self.currentDirectoryPath
+				isDirectory: true];
 
-	ret = [OFIRI fileIRIWithPath: self.currentDirectoryPath];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -243,12 +248,13 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	OFFileAttributes ret;
 
-	ret = [self attributesOfItemAtIRI: [OFIRI fileIRIWithPath: path]];
-	ret = [ret retain];
+	ret = [self attributesOfItemAtIRI: [OFIRI fileIRIWithPath: path
+						      isDirectory: false]];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -271,7 +277,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self setAttributes: attributes
-		ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+		ofItemAtIRI: [OFIRI fileIRIWithPath: path isDirectory: false]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -295,7 +301,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	bool ret;
 
-	ret = [self fileExistsAtIRI: [OFIRI fileIRIWithPath: path]];
+	ret = [self fileExistsAtIRI: [OFIRI fileIRIWithPath: path
+						isDirectory: false]];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -322,7 +329,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	void *pool = objc_autoreleasePoolPush();
 	bool ret;
 
-	ret = [self directoryExistsAtIRI: [OFIRI fileIRIWithPath: path]];
+	ret = [self directoryExistsAtIRI: [OFIRI fileIRIWithPath: path
+						     isDirectory: true]];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -398,7 +406,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	 * iterate them in reverse order until we find the first existing
 	 * directory, and then create subdirectories from there.
 	 */
-	mutableIRI = [[IRI mutableCopy] autorelease];
+	mutableIRI = objc_autorelease([IRI mutableCopy]);
 	mutableIRI.percentEncodedPath = @"/";
 	components = IRI.pathComponents;
 	componentIRIs = [OFMutableArray arrayWithCapacity: components.count];
@@ -408,7 +416,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 		if (![mutableIRI.percentEncodedPath isEqual: @"/"])
 			[componentIRIs addObject:
-			    [[mutableIRI copy] autorelease]];
+			    objc_autorelease([mutableIRI copy])];
 	}
 
 	componentIRIsCount = componentIRIs.count;
@@ -439,7 +447,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self createDirectoryAtIRI: [OFIRI fileIRIWithPath: path]];
+	[self createDirectoryAtIRI: [OFIRI fileIRIWithPath: path
+					       isDirectory: true]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -449,7 +458,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self createDirectoryAtIRI: [OFIRI fileIRIWithPath: path]
+	[self createDirectoryAtIRI: [OFIRI fileIRIWithPath: path
+					       isDirectory: true]
 		     createParents: createParents];
 
 	objc_autoreleasePoolPop(pool);
@@ -476,18 +486,19 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	OFArray OF_GENERIC(OFIRI *) *IRIs;
 	OFMutableArray OF_GENERIC(OFString *) *ret;
 
-	IRIs = [self contentsOfDirectoryAtIRI: [OFIRI fileIRIWithPath: path]];
+	IRIs = [self contentsOfDirectoryAtIRI: [OFIRI fileIRIWithPath: path
+							  isDirectory: true]];
 	ret = [OFMutableArray arrayWithCapacity: IRIs.count];
 
 	for (OFIRI *IRI in IRIs)
 		[ret addObject: IRI.lastPathComponent];
 
 	[ret makeImmutable];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFArray OF_GENERIC(OFString *) *)subpathsOfDirectoryAtPath: (OFString *)path
@@ -513,11 +524,11 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	}
 
 	[ret makeImmutable];
-	ret = [ret retain];
+	ret = objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)changeCurrentDirectoryPath: (OFString *)path
@@ -589,8 +600,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self copyItemAtIRI: [OFIRI fileIRIWithPath: source]
-		      toIRI: [OFIRI fileIRIWithPath: destination]];
+	[self copyItemAtIRI: [OFIRI fileIRIWithPath: source
+					isDirectory: false]
+		      toIRI: [OFIRI fileIRIWithPath: destination
+					isDirectory: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -683,12 +696,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			objc_autoreleasePoolPop(pool2);
 		}
 	} else if ([type isEqual: OFFileTypeRegular]) {
-		size_t pageSize = [OFSystemInfo pageSize];
+		const size_t bufferSize = 16384;
 		OFStream *sourceStream = nil;
 		OFStream *destinationStream = nil;
 		char *buffer;
 
-		buffer = OFAllocMemory(1, pageSize);
+		buffer = OFAllocMemory(1, bufferSize);
 		@try {
 			sourceStream = [OFIRIHandler openItemAtIRI: source
 							      mode: @"r"];
@@ -701,7 +714,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 				length = [sourceStream
 				    readIntoBuffer: buffer
-					    length: pageSize];
+					    length: bufferSize];
 				[destinationStream writeBuffer: buffer
 							length: length];
 			}
@@ -776,8 +789,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self moveItemAtIRI: [OFIRI fileIRIWithPath: source]
-		      toIRI: [OFIRI fileIRIWithPath: destination]];
+	[self moveItemAtIRI: [OFIRI fileIRIWithPath: source
+					isDirectory: false]
+		      toIRI: [OFIRI fileIRIWithPath: destination
+					isDirectory: false]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -850,7 +865,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (void)removeItemAtPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self removeItemAtIRI: [OFIRI fileIRIWithPath: path]];
+	[self removeItemAtIRI: [OFIRI fileIRIWithPath: path
+					  isDirectory: false]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -881,8 +897,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (void)linkItemAtPath: (OFString *)source toPath: (OFString *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self linkItemAtIRI: [OFIRI fileIRIWithPath: source]
-		      toIRI: [OFIRI fileIRIWithPath: destination]];
+	[self linkItemAtIRI: [OFIRI fileIRIWithPath: source
+					isDirectory: false]
+		      toIRI: [OFIRI fileIRIWithPath: destination
+					isDirectory: false]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -911,7 +929,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	     withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-	[self createSymbolicLinkAtIRI: [OFIRI fileIRIWithPath: path]
+	[self createSymbolicLinkAtIRI: [OFIRI fileIRIWithPath: path
+						  isDirectory: false]
 		  withDestinationPath: target];
 	objc_autoreleasePoolPop(pool);
 }
@@ -920,6 +939,22 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
 {
+	OFData *data;
+
+	[self getExtendedAttributeData: &data
+			       andType: NULL
+			       forName: name
+			   ofItemAtIRI: IRI];
+
+	return data;
+}
+
+- (void)getExtendedAttributeData: (OFData **)data
+			 andType: (id *)type
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	void *pool = objc_autoreleasePoolPush();
 	OFIRIHandler *IRIHandler;
 
 	if (IRI == nil)
@@ -928,28 +963,73 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if ((IRIHandler = [OFIRIHandler handlerForIRI: IRI]) == nil)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
-	return [IRIHandler extendedAttributeDataForName: name ofItemAtIRI: IRI];
+	[IRIHandler getExtendedAttributeData: data
+				     andType: type
+				     forName: name
+				 ofItemAtIRI: IRI];
+
+	objc_retain(*data);
+	if (type != NULL)
+		objc_retain(*type);
+
+	objc_autoreleasePoolPop(pool);
+
+	objc_autorelease(*data);
+	if (type != NULL)
+		objc_autorelease(*type);
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			    ofItemAtPath: (OFString *)path
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFData *ret;
+	OFData *data;
 
-	ret = [self
-	    extendedAttributeDataForName: name
-			     ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
-	ret = [ret retain];
+	[self getExtendedAttributeData: &data
+			       andType: NULL
+			       forName: name
+			  ofItemAtPath: path];
+
+	return data;
+}
+
+- (void)getExtendedAttributeData: (OFData **)data
+			 andType: (id *)type
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self getExtendedAttributeData: data
+			       andType: type
+			       forName: name
+			   ofItemAtIRI: [OFIRI fileIRIWithPath: path
+						   isDirectory: false]];
+
+	objc_retain(*data);
+	if (type != NULL)
+		objc_retain(*type);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	objc_autorelease(*data);
+	if (type != NULL)
+		objc_autorelease(*type);
 }
 #endif
 
 - (void)setExtendedAttributeData: (OFData *)data
+			 forName: (OFString *)name
+		     ofItemAtIRI: (OFIRI *)IRI
+{
+	[self setExtendedAttributeData: data
+			       andType: nil
+			       forName: name
+			   ofItemAtIRI: IRI];
+}
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (id)type
 			 forName: (OFString *)name
 		     ofItemAtIRI: (OFIRI *)IRI
 {
@@ -962,6 +1042,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	[IRIHandler setExtendedAttributeData: data
+				     andType: type
 				     forName: name
 				 ofItemAtIRI: IRI];
 }
@@ -971,10 +1052,25 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			 forName: (OFString *)name
 		    ofItemAtPath: (OFString *)path
 {
-	void *pool = objc_autoreleasePoolPush();
 	[self setExtendedAttributeData: data
+			       andType: nil
 			       forName: name
-			   ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+			  ofItemAtPath: path];
+}
+
+- (void)setExtendedAttributeData: (OFData *)data
+			 andType: (id)type
+			 forName: (OFString *)name
+		    ofItemAtPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setExtendedAttributeData: data
+			       andType: type
+			       forName: name
+			   ofItemAtIRI: [OFIRI fileIRIWithPath: path
+						   isDirectory: false]];
+
 	objc_autoreleasePoolPop(pool);
 }
 #endif
@@ -999,7 +1095,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self removeExtendedAttributeForName: name
-				 ofItemAtIRI: [OFIRI fileIRIWithPath: path]];
+				 ofItemAtIRI: [OFIRI fileIRIWithPath: path
+							 isDirectory: false]];
 	objc_autoreleasePoolPop(pool);
 }
 #endif

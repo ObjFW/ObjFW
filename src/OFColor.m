@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -44,13 +48,13 @@ static const float allowedImprecision = 0.0000001;
 		      alpha: (float)alpha
 {
 #ifdef OF_OBJFW_RUNTIME
-	uint8_t redInt = nearbyintf(red * 255);
-	uint8_t greenInt = nearbyintf(green * 255);
-	uint8_t blueInt = nearbyintf(blue * 255);
+	uint8_t redInt = roundf(red * 255);
+	uint8_t greenInt = roundf(green * 255);
+	uint8_t blueInt = roundf(blue * 255);
 
 	if (fabsf(red * 255 - redInt) < allowedImprecision &&
 	    fabsf(green * 255 - greenInt) < allowedImprecision &&
-	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1) {
+	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1.0f) {
 		id ret = [OFTaggedPointerColor colorWithRed: redInt
 						      green: greenInt
 						       blue: blueInt];
@@ -98,7 +102,7 @@ OF_SINGLETON_METHODS
 		    initWithRed: redValue				   \
 			  green: greenValue				   \
 			   blue: blueValue				   \
-			  alpha: 1];					   \
+			  alpha: 1.0f];					   \
 	}								   \
 									   \
 	+ (OFColor *)name						   \
@@ -136,10 +140,10 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 			blue: (float)blue
 		       alpha: (float)alpha
 {
-	return [[[self alloc] initWithRed: red
-				    green: green
-				     blue: blue
-				    alpha: alpha] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithRed: red
+							       green: green
+								blue: blue
+							       alpha: alpha]);
 }
 
 - (instancetype)initWithRed: (float)red
@@ -151,7 +155,7 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 

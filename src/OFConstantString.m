@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_CONSTANT_STRING_M
@@ -22,6 +26,7 @@
 
 #import "OFConstantString.h"
 #import "OFUTF8String.h"
+#import "OFUTF8String+Private.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -84,7 +89,8 @@ OF_SINGLETON_METHODS
 - (void)finishInitialization
 {
 	@synchronized (self) {
-		struct OFUTF8StringIvars *ivars;
+		struct _OFUTF8StringIvars *ivars;
+		bool containsNull;
 
 		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
@@ -93,8 +99,8 @@ OF_SINGLETON_METHODS
 		ivars->cString = _cString;
 		ivars->cStringLength = _cStringLength;
 
-		switch (OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
-		    &ivars->length)) {
+		switch (_OFUTF8StringCheck(ivars->cString, ivars->cStringLength,
+		    &ivars->length, &containsNull)) {
 		case 1:
 			ivars->isUTF8 = true;
 			break;
@@ -102,6 +108,8 @@ OF_SINGLETON_METHODS
 			OFFreeMemory(ivars);
 			@throw [OFInvalidEncodingException exception];
 		}
+
+		ivars->containsNull = containsNull;
 
 		_cString = (char *)ivars;
 		object_setClass(self, [OFConstantUTF8String class]);
@@ -240,25 +248,25 @@ OF_SINGLETON_METHODS
 	return [self rangeOfString: string options: options range: range];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet];
+	return [self rangeOfCharacterFromSet: characterSet];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet options: options];
+	return [self rangeOfCharacterFromSet: characterSet options: options];
 }
 
-- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
-			  options: (OFStringSearchOptions)options
-			    range: (OFRange)range
+- (OFRange)rangeOfCharacterFromSet: (OFCharacterSet *)characterSet
+			   options: (OFStringSearchOptions)options
+			     range: (OFRange)range
 {
 	[self finishInitialization];
-	return [self indexOfCharacterFromSet: characterSet
+	return [self rangeOfCharacterFromSet: characterSet
 				     options: options
 				       range: range];
 }
@@ -427,6 +435,54 @@ OF_SINGLETON_METHODS
 	return self.stringByDeletingLastPathComponent;
 }
 
+- (signed char)charValue
+{
+	[self finishInitialization];
+	return self.charValue;
+}
+
+- (signed char)charValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self charValueWithBase: base];
+}
+
+- (short)shortValue
+{
+	[self finishInitialization];
+	return self.shortValue;
+}
+
+- (short)shortValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self shortValueWithBase: base];
+}
+
+- (int)intValue
+{
+	[self finishInitialization];
+	return self.intValue;
+}
+
+- (int)intValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self intValueWithBase: base];
+}
+
+- (long)longValue
+{
+	[self finishInitialization];
+	return self.longValue;
+}
+
+- (long)longValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self longValueWithBase: base];
+}
+
 - (long long)longLongValue
 {
 	[self finishInitialization];
@@ -437,6 +493,54 @@ OF_SINGLETON_METHODS
 {
 	[self finishInitialization];
 	return [self longLongValueWithBase: base];
+}
+
+- (unsigned char)unsignedCharValue
+{
+	[self finishInitialization];
+	return self.unsignedCharValue;
+}
+
+- (unsigned char)unsignedCharValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedCharValueWithBase: base];
+}
+
+- (unsigned short)unsignedShortValue
+{
+	[self finishInitialization];
+	return self.unsignedShortValue;
+}
+
+- (unsigned short)unsignedShortValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedShortValueWithBase: base];
+}
+
+- (unsigned int)unsignedIntValue
+{
+	[self finishInitialization];
+	return self.unsignedIntValue;
+}
+
+- (unsigned int)unsignedIntValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedIntValueWithBase: base];
+}
+
+- (unsigned long)unsignedLongValue
+{
+	[self finishInitialization];
+	return self.unsignedLongValue;
+}
+
+- (unsigned long)unsignedLongValueWithBase: (unsigned char)base
+{
+	[self finishInitialization];
+	return [self unsignedLongValueWithBase: base];
 }
 
 - (unsigned long long)unsignedLongLongValue

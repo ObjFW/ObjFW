@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -35,7 +39,7 @@
 	@try {
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -51,9 +55,9 @@
 			@throw [OFInvalidArgumentException exception];
 
 		[_array addItem: &object];
-		[object retain];
+		objc_retain(object);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -68,14 +72,14 @@
 		id object;
 
 		[_array addItem: &firstObject];
-		[firstObject retain];
+		objc_retain(firstObject);
 
 		while ((object = va_arg(arguments, id)) != nil) {
 			[_array addItem: &object];
-			[object retain];
+			objc_retain(object);
 		}
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -99,24 +103,24 @@
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
 							capacity: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] retain];
+			objc_retain(objects[i]);
 
 		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] release];
+			objc_release(objects[i]);
 
 		/* Prevent double-release of objects */
-		[_array release];
+		objc_release(_array);
 		_array = nil;
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -134,7 +138,7 @@
 			if (objects[i] == nil)
 				ok = false;
 
-			[objects[i] retain];
+			objc_retain(objects[i]);
 		}
 
 		if (!ok)
@@ -145,9 +149,9 @@
 		[_array addItems: objects count: count];
 	} @catch (id e) {
 		for (size_t i = 0; i < count; i++)
-			[objects[i] release];
+			objc_release(objects[i]);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -223,7 +227,6 @@
 	return OFNotFound;
 }
 
-
 - (OFArray *)objectsInRange: (OFRange)range
 {
 	if (range.length > SIZE_MAX - range.location ||
@@ -235,8 +238,9 @@
 		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
-	return [[[OFConcreteSubarray alloc] initWithArray: self
-						    range: range] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFConcreteSubarray alloc] initWithArray: self
+						range: range]);
 }
 
 - (bool)isEqual: (id)object
@@ -329,9 +333,9 @@
 	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] release];
+		objc_release(objects[i]);
 
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

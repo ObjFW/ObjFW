@@ -1,20 +1,23 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
-#import "OFKernelEventObserver.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFString.h"
 
@@ -24,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
+ * @class OFLHAArchive OFLHAArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating LHA files.
  */
@@ -39,10 +42,12 @@ OF_SUBCLASSING_RESTRICTED
 @public
 #endif
 	OFStream *_Nullable _lastReturnedStream;
+@protected
+	bool _hasWritten;
 }
 
 /**
- * @brief The encoding to use for the archive. Defaults to ISO 8859-1.
+ * @brief The encoding to use for the archive. Defaults to UTF-8.
  */
 @property (nonatomic) OFStringEncoding encoding;
 
@@ -70,8 +75,8 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
- * @brief Creates an IRI for accessing a the specified file within the
- *	  specified LHA archive.
+ * @brief Creates an IRI for accessing the specified file within the specified
+ *	  LHA archive.
  *
  * @param path The path of the file within the archive
  * @param IRI The IRI of the archive
@@ -152,8 +157,8 @@ OF_SUBCLASSING_RESTRICTED
  * @note The returned stream conforms to @ref OFReadyForWritingObserving if the
  *	 underlying stream does so, too.
  *
- * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry or
+ * @warning Calling @ref streamForWritingEntry: will invalidate all streams
+ *	    returned by @ref streamForReadingCurrentEntry or
  *	    @ref streamForWritingEntry:! Reading from or writing to an
  *	    invalidated stream will throw an @ref OFReadFailedException or
  *	    @ref OFWriteFailedException!

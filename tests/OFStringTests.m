@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -39,6 +43,15 @@ static const OFChar16 swappedChar16String[] = {
 	0xFFFE, 0x6600, 0xF600, 0xF600, 0x6200, 0xE400, 0x7200, 0x3CD8, 0x3ADC,
 	0
 };
+static const char *range80ToFF =
+    "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91"
+    "\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3"
+    "\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5"
+    "\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7"
+    "\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9"
+    "\xDA\xDB\xDC\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB"
+    "\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD"
+    "\xFE\xFF";
 
 @interface CustomString: OFString
 {
@@ -70,7 +83,7 @@ static const OFChar16 swappedChar16String[] = {
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }
@@ -90,6 +103,16 @@ static const OFChar16 swappedChar16String[] = {
 	OTAssertEqual(_string.hash, @"täṠ€🤔".hash);
 	OTAssertNotEqual([[self.stringClass stringWithString: @"test"] hash],
 	    @"täṠ€".hash);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_string copy]), _string);
+}
+
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_string mutableCopy]), _string);
 }
 
 - (void)testCompare
@@ -242,8 +265,35 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testStringWithCStringEncodingISO8859_15
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
-		     encoding: OFStringEncodingISO8859_15], @"€ŠšŽžŒœŸ");
+	    stringWithCString: "a\x80\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
+		     encoding: OFStringEncodingISO8859_15],
+	    @"a\xC2\x80€ŠšŽžŒœŸ");
+}
+#endif
+
+#ifdef HAVE_WINDOWS_1250
+- (void)testStringWithCStringEncodingWindows1250
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: "\x80\x82\x84\x85\x86\x87\x89\x8A"
+			       "\x8B\x8C\x8D\x8E\x8F\x91\x92\x93"
+			       "\x94\x95\x96\x97\x99\x9A\x9B\x9C"
+			       "\x9D\x9E\x9F\xA0\xA1\xA2\xA3\xA4"
+			       "\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC"
+			       "\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4"
+			       "\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC"
+			       "\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4"
+			       "\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC"
+			       "\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4"
+			       "\xD5\xD6\xD7\xD8\xD9\xDA\xDB\xDC"
+			       "\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4"
+			       "\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC"
+			       "\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4"
+			       "\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC"
+			       "\xFD\xFE\xFF"
+		     encoding: OFStringEncodingWindows1250],
+	    @"€‚„…†‡‰Š‹ŚŤŽŹ‘’“”•–—™š›śťžź ˇ˘Ł¤Ą¦§¨©Ş«¬­®Ż°±˛ł´µ¶·¸ąş»Ľ˝ľżŔÁÂĂÄ"
+	    @"ĹĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺćçčéęëěíîďđńňóôőö÷řůúűüýţ˙");
 }
 #endif
 
@@ -263,8 +313,47 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testStringWithCStringEncodingCodepage437
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithCString: "\xB0\xB1\xB2\xDB"
-		     encoding: OFStringEncodingCodepage437], @"░▒▓█");
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage437],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛"
+	    @"┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_850
+- (void)testStringWithCStringEncodingCodepage850
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage850],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_852
+- (void)testStringWithCStringEncodingCodepage852
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage852],
+	    @"ÇüéâäůćçłëŐőîŹÄĆÉĹĺôöĽľŚśÖÜŤťŁ×čáíóúĄąŽžĘę¬źČş«»░▒▓│┤ÁÂĚŞ╣║╗╝Żż"
+	    @"┐└┴┬├─┼Ăă╚╔╩╦╠═╬¤đĐĎËďŇÍÎě┘┌█▄ŢŮ▀ÓßÔŃńňŠšŔÚŕŰýÝţ´­˝˛ˇ˘§÷¸°¨˙űŘř"
+	    @"■ ");
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_858
+- (void)testStringWithCStringEncodingCodepage858
+{
+	OTAssertEqualObjects([self.stringClass
+	    stringWithCString: range80ToFF
+		     encoding: OFStringEncodingCodepage858],
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ ");
 }
 #endif
 
@@ -320,6 +409,30 @@ static const OFChar16 swappedChar16String[] = {
 }
 #endif
 
+#ifdef HAVE_WINDOWS_1250
+- (void)testCStringWithEncodingWindows1250
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"€‚„…†‡‰Š‹ŚŤŽŹ‘’“”•–—™š›śťžź ˇ˘Ł¤Ą¦§¨©Ş«¬­®Ż°±˛ł´µ¶·¸ąş»Ľ˝ľżŔÁÂĂÄ"
+	    @"ĹĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺćçčéęëěíîďđńňóôőö÷řůúűüýţ˙"]
+	    cStringWithEncoding: OFStringEncodingWindows1250],
+	    "\x80\x82\x84\x85\x86\x87\x89\x8A\x8B\x8C\x8D\x8E\x8F\x91\x92\x93"
+	    "\x94\x95\x96\x97\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3\xA4"
+	    "\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4"
+	    "\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xC1\xC2\xC3\xC4"
+	    "\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4"
+	    "\xD5\xD6\xD7\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE0\xE1\xE2\xE3\xE4"
+	    "\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF\xF0\xF1\xF2\xF3\xF4"
+	    "\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF"), 0);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"This is ä t€st…‼"]
+	    cStringWithEncoding: OFStringEncodingWindows1250],
+	    OFInvalidEncodingException);
+}
+#endif
+
 #ifdef HAVE_WINDOWS_1252
 - (void)testCStringWithEncodingWindows1252
 {
@@ -339,14 +452,52 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testCStringWithEncodingCodepage437
 {
 	OTAssertEqual(
-	    strcmp([[self.stringClass stringWithString: @"Tést strîng ░▒▓"]
-	    cStringWithEncoding: OFStringEncodingCodepage437],
-	    "T\x82st str\x8Cng \xB0\xB1\xB2"), 0);
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛"
+	    @"┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage437],
+	    range80ToFF), 0);
 
 	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"T€st strîng ░▒▓"]
 	    cStringWithEncoding: OFStringEncodingCodepage437],
 	    OFInvalidEncodingException);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_850
+- (void)testCStringWithEncodingCodepage850
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈıÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage850],
+	    range80ToFF), 0);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_852
+- (void)testCStringWithEncodingCodepage852
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäůćçłëŐőîŹÄĆÉĹĺôöĽľŚśÖÜŤťŁ×čáíóúĄąŽžĘę¬źČş«»░▒▓│┤ÁÂĚŞ╣║╗╝Żż"
+	    @"┐└┴┬├─┼Ăă╚╔╩╦╠═╬¤đĐĎËďŇÍÎě┘┌█▄ŢŮ▀ÓßÔŃńňŠšŔÚŕŰýÝţ´­˝˛ˇ˘§÷¸°¨˙űŘř"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage852],
+	    range80ToFF), 0);
+}
+#endif
+
+#ifdef HAVE_CODEPAGE_858
+- (void)testCStringWithEncodingCodepage858
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString:
+	    @"ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤ÁÂÀ©╣║╗╝¢¥"
+	    @"┐└┴┬├─┼ãÃ╚╔╩╦╠═╬¤ðÐÊËÈ€ÍÎÏ┘┌█▄¦Ì▀ÓßÔÒõÕµþÞÚÛÙýÝ¯´­±‗¾¶§÷¸°¨·¹³²"
+	    @"■ "] cStringWithEncoding: OFStringEncodingCodepage858],
+	    range80ToFF), 0);
 }
 #endif
 
@@ -372,6 +523,16 @@ static const OFChar16 swappedChar16String[] = {
 	    strcmp([[self.stringClass stringWithString: @"This is ä t€st…"]
 	    lossyCStringWithEncoding: OFStringEncodingISO8859_15],
 	    "This is \xE4 t\xA4st?"), 0);
+}
+#endif
+
+#ifdef HAVE_WINDOWS_1250
+- (void)testLossyCStringWithEncodingWindows1250
+{
+	OTAssertEqual(
+	    strcmp([[self.stringClass stringWithString: @"This is ä t€st…‼"]
+	    lossyCStringWithEncoding: OFStringEncodingWindows1250],
+	    "This is \xE4 t\x80st\x85?"), 0);
 }
 #endif
 
@@ -435,36 +596,45 @@ static const OFChar16 swappedChar16String[] = {
 	    OFOutOfRangeException);
 }
 
-- (void)testIndexOfCharacterFromSet
+- (void)testRangeOfCharacterFromSet
 {
 	OFCharacterSet *characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
+	OFRange range;
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđe"]
-	    indexOfCharacterFromSet: characterSet], 2);
+	range = [[self.stringClass stringWithString: @"abcđabcđe"]
+	    rangeOfCharacterFromSet: characterSet];
+	OTAssertEqual(range.location, 2);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđë"]
-	    indexOfCharacterFromSet: characterSet
-			    options: OFStringSearchBackwards], 7);
+	range = [[self.stringClass stringWithString: @"abcđabcđë"]
+	    rangeOfCharacterFromSet: characterSet
+			    options: OFStringSearchBackwards];
+	OTAssertEqual(range.location, 7);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđë"]
-	    indexOfCharacterFromSet: characterSet
+	range = [[self.stringClass stringWithString: @"abcđabcđë"]
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFMakeRange(4, 4)], 6);
+			      range: OFMakeRange(4, 4)];
+	OTAssertEqual(range.location, 6);
+	OTAssertEqual(range.length, 1);
 
-	OTAssertEqual([[self.stringClass stringWithString: @"abcđabcđëf"]
-	    indexOfCharacterFromSet: characterSet
+	range = [[self.stringClass stringWithString: @"abcđabcđëf"]
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
-			      range: OFMakeRange(8, 2)], OFNotFound);
+			      range: OFMakeRange(8, 2)];
+	OTAssertEqual(range.location, OFNotFound);
+	OTAssertEqual(range.length, 0);
 }
 
-- (void)testIndexOfCharacterFromSetFailsWithOutOfRangeRange
+- (void)testRangeOfCharacterFromSetFailsWithOutOfRangeRange
 {
 	OFCharacterSet *characterSet =
 	    [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
 
 	OTAssertThrowsSpecific([[self.stringClass stringWithString: @"𝄞öö"]
-	    indexOfCharacterFromSet: characterSet
+	    rangeOfCharacterFromSet: characterSet
 			    options: 0
 			      range: OFMakeRange(3, 1)],
 	    OFOutOfRangeException);
@@ -588,6 +758,10 @@ static const OFChar16 swappedChar16String[] = {
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"\t\t\r\n"] longLongValueWithBase: 8], 0);
+
+	OTAssertEqual([[self.stringClass stringWithString:
+	    ([OFString stringWithFormat: @"%lld", LLONG_MIN])] longLongValue],
+	    LLONG_MIN);
 }
 
 - (void)testLongLongValueThrowsOnInvalidFormat
@@ -913,7 +1087,7 @@ static const OFChar16 swappedChar16String[] = {
 - (void)testStringByXMLUnescapingWithDelegate
 {
 	EntityHandler *entityHandler =
-	    [[[EntityHandler alloc] init] autorelease];
+	    objc_autorelease([[EntityHandler alloc] init]);
 
 	OTAssertEqualObjects([[self.stringClass stringWithString: @"x&foo;y"]
 	    stringByXMLUnescapingWithDelegate: entityHandler],
@@ -1120,8 +1294,28 @@ static const OFChar16 swappedChar16String[] = {
 	    @"foo/bar/baz");
 
 	OTAssertEqualObjects([self.stringClass pathWithComponents:
-	    ([OFArray arrayWithObjects: @"foo/", @"bar", @"", @"baz", @"/",
+	    ([OFArray arrayWithObjects: @"foo", @"/", @"bar", @"", @"baz", @"/",
 	    nil])], @"foo//bar/baz//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"foo//", @"bar", @"", @"baz", @"/",
+	    nil])], @"foo//bar/baz//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"", @"bar",
+	    @"/", nil])], @"dev:/foo/bar//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:/", @"foo", @"", @"bar", @"/",
+	    nil])], @"dev:/foo/bar//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"//", @"bar//",
+	    nil])], @"dev:/foo///bar//");
+
+	OTAssertEqualObjects([self.stringClass pathWithComponents:
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"/", @"foo", @"/", @"/",
+	    @"bar", nil])], @"dev://foo///bar");
 
 	OTAssertEqualObjects([self.stringClass pathWithComponents:
 	    [OFArray arrayWithObject: @"foo"]], @"foo");
@@ -1203,33 +1397,40 @@ static const OFChar16 swappedChar16String[] = {
 	    pathComponents], [OFArray array]);
 # elif defined(OF_AMIGAOS)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:tmp"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"tmp", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:tmp/"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"tmp", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"dh0:/"] pathComponents],
-	    ([OFArray arrayWithObjects: @"dh0:", @"/", nil]));
-
-	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"foo/bar"] pathComponents],
-	    ([OFArray arrayWithObjects: @"foo", @"bar", nil]));
+	    @"dh0:foo/bar/baz"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dh0:", @"foo", @"bar", @"baz", nil]));
 
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"foo/bar/baz/"] pathComponents],
 	    ([OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil]));
 
 	OTAssertEqualObjects([[self.stringClass stringWithString:
-	    @"foo//"] pathComponents],
-	    ([OFArray arrayWithObjects: @"foo", @"/", nil]));
+	    @"foo//bar/baz//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"foo", @"/", @"bar", @"baz", @"/",
+	    nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev:/foo/bar//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"bar", @"/",
+	    nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev:/foo///bar//"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"foo", @"/", @"/",
+	    @"bar", @"/", nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString:
+	    @"dev://foo///bar"] pathComponents],
+	    ([OFArray arrayWithObjects: @"dev:", @"/", @"/", @"foo", @"/", @"/",
+	    @"bar", nil]));
+
+	OTAssertEqualObjects([[self.stringClass stringWithString: @"foo/"]
+	    pathComponents], [OFArray arrayWithObject: @"foo"]);
 
 	OTAssertEqualObjects([[self.stringClass stringWithString: @""]
 	    pathComponents], [OFArray array]);
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
-    defined(OF_NINTENDO_SWITCH)
+# elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_WII) || defined(OF_NINTENDO_SWITCH)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"sdmc:/tmp"] pathComponents],
 	    ([OFArray arrayWithObjects: @"sdmc:", @"tmp", nil]));
@@ -1404,8 +1605,8 @@ static const OFChar16 swappedChar16String[] = {
 	    @"foo/bar"] stringByDeletingLastPathComponent], @"foo");
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"foo"] stringByDeletingLastPathComponent], @"");
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII) || \
-    defined(OF_NINTENDO_SWITCH)
+# elif defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_WII) || defined(OF_NINTENDO_SWITCH)
 	OTAssertEqualObjects([[self.stringClass stringWithString:
 	    @"/tmp/"] stringByDeletingLastPathComponent], @"");
 	OTAssertEqualObjects([[self.stringClass stringWithString:
@@ -1538,7 +1739,7 @@ static const OFChar16 swappedChar16String[] = {
 	@try {
 		_string = [[OFMutableString alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1552,7 +1753,7 @@ static const OFChar16 swappedChar16String[] = {
 	@try {
 		_string = [string mutableCopy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1570,7 +1771,7 @@ static const OFChar16 swappedChar16String[] = {
 							  encoding: encoding
 							    length: length];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1589,7 +1790,7 @@ static const OFChar16 swappedChar16String[] = {
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1608,7 +1809,7 @@ static const OFChar16 swappedChar16String[] = {
 				 length: length
 			      byteOrder: byteOrder];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1624,7 +1825,7 @@ static const OFChar16 swappedChar16String[] = {
 		_string = [[OFMutableString alloc] initWithFormat: format
 							arguments: arguments];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1633,7 +1834,7 @@ static const OFChar16 swappedChar16String[] = {
 
 - (void)dealloc
 {
-	[_string release];
+	objc_release(_string);
 
 	[super dealloc];
 }

@@ -1,24 +1,30 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFDate.h"
 #import "OFFile.h"
 #import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFMD5Hash.h"
 #import "OFOptionsParser.h"
@@ -31,12 +37,40 @@
 #import "OFSandbox.h"
 #import "OFSecureData.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
+
+#ifdef HAVE_TLS_SUPPORT
+# import "ObjFWTLS.h"
+#endif
 
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 
+#define BUFFER_SIZE 16384
+
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: ofhash " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2025 Jonathan Schleifer";
+#endif
+
 @interface OFHash: OFObject <OFApplicationDelegate>
+{
+	uint8_t _buffer[BUFFER_SIZE];
+}
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#endif
 @end
+
+#ifdef HAVE_TLS_SUPPORT
+void
+_reference_to_ObjFWTLS(void)
+{
+	_ObjFWTLS_reference = 1;
+}
+#endif
 
 OF_APPLICATION_DELEGATE(OFHash)
 
@@ -45,10 +79,25 @@ help(void)
 {
 	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] "
-	    @"[--sha256] [--sha384] [--sha512] file1 [file2 ...]",
+	    @"[--sha256] [--sha384] [--sha512] [--iri] [--version] "
+	    @"file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofhash %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 static void
@@ -73,15 +122,18 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 {
 	int exitStatus = 0;
 	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
-	bool calculateSHA256, calculateSHA384, calculateSHA512;
+	bool calculateSHA256, calculateSHA384, calculateSHA512, isIRI;
 	const OFOptionsParserOption options[] = {
 		{ '\0', @"md5", 0, &calculateMD5, NULL },
 		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
+		{ '\0', @"rmd160", 0, &calculateRIPEMD160, NULL },
 		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
 		{ '\0', @"sha224", 0, &calculateSHA224, NULL },
 		{ '\0', @"sha256", 0, &calculateSHA256, NULL },
 		{ '\0', @"sha384", 0, &calculateSHA384, NULL },
 		{ '\0', @"sha512", 0, &calculateSHA512, NULL },
+		{ '\0', @"iri", 0, &isIRI, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser =
@@ -94,17 +146,30 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	OFSHA256Hash *SHA256Hash = nil;
 	OFSHA384Hash *SHA384Hash = nil;
 	OFSHA512Hash *SHA512Hash = nil;
+#ifdef OF_AMIGAOS
+	OFDate *distantPast = [OFDate distantPast];
+#endif
 
 #ifndef OF_AMIGAOS
 	[OFLocale addLocalizationDirectoryIRI:
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/share/ofhash/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhash/localization"]];
+#endif
+
+#ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
 #endif
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
+			break;
 		case '?':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(
@@ -134,14 +199,15 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		sandbox.allowsReadingFiles = true;
 		sandbox.allowsUserDatabaseReading = true;
 
-		for (OFString *path in optionsParser.remainingArguments)
-			[sandbox unveilPath: path permissions: @"r"];
+		if (!isIRI)
+			for (OFString *path in optionsParser.remainingArguments)
+				[sandbox unveilPath: path permissions: @"r"];
 
 		[sandbox unveilPath: @LOCALIZATION_DIR permissions: @"r"];
 
 		[OFApplication of_activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 
@@ -173,20 +239,37 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *file;
 
-		if ([path isEqual: @"-"])
+#ifdef OF_AMIGAOS
+		/* Spin run loop once to see if we got Ctrl-C. */
+		[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+				      beforeDate: distantPast];
+#endif
+
+		if (!isIRI && [path isEqual: @"-"])
 			file = OFStdIn;
 		else {
 			@try {
-				file = [OFFile fileWithPath: path mode: @"r"];
+				if (isIRI) {
+					OFIRI *IRI =
+					    [OFIRI IRIWithString: path];
+
+					file = [OFIRIHandler
+					    openItemAtIRI: IRI
+						     mode: @"r"];
+				} else
+					file = [OFFile fileWithPath: path
+							       mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
+				OFString *filePath =
+				    (e.IRI != nil ? e.IRI.string : e.path);
 
 				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
 				    @"Failed to open file %[file]: %[error]",
-				    @"file", e.path,
+				    @"file", filePath,
 				    @"error", error)];
 
 				exitStatus = 1;
@@ -203,12 +286,17 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 		[SHA512Hash reset];
 
 		while (!file.atEndOfStream) {
-			uint8_t buffer[1024];
 			size_t length;
 
+#ifdef OF_AMIGAOS
+			/* Spin run loop once to see if we got Ctrl-C. */
+			[[OFRunLoop mainRunLoop] runMode: OFDefaultRunLoopMode
+					      beforeDate: distantPast];
+#endif
+
 			@try {
-				length = [file readIntoBuffer: buffer
-						       length: 1024];
+				length = [file readIntoBuffer: _buffer
+						       length: BUFFER_SIZE];
 			} @catch (OFReadFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror(e.errNo)
@@ -225,25 +313,25 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 			}
 
 			if (calculateMD5)
-				[MD5Hash updateWithBuffer: buffer
+				[MD5Hash updateWithBuffer: _buffer
 						   length: length];
 			if (calculateRIPEMD160)
-				[RIPEMD160Hash updateWithBuffer: buffer
+				[RIPEMD160Hash updateWithBuffer: _buffer
 							 length: length];
 			if (calculateSHA1)
-				[SHA1Hash updateWithBuffer: buffer
+				[SHA1Hash updateWithBuffer: _buffer
 						    length: length];
 			if (calculateSHA224)
-				[SHA224Hash updateWithBuffer: buffer
+				[SHA224Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA256)
-				[SHA256Hash updateWithBuffer: buffer
+				[SHA256Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA384)
-				[SHA384Hash updateWithBuffer: buffer
+				[SHA384Hash updateWithBuffer: _buffer
 						      length: length];
 			if (calculateSHA512)
-				[SHA512Hash updateWithBuffer: buffer
+				[SHA512Hash updateWithBuffer: _buffer
 						      length: length];
 		}
 
@@ -270,4 +358,11 @@ outer_loop_end:
 
 	[OFApplication terminateWithStatus: exitStatus];
 }
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	raise(SIGINT);
+}
+#endif
 @end

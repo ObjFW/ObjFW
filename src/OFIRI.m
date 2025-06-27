@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,6 +23,7 @@
 #include <string.h>
 
 #import "OFIRI.h"
+#import "OFIRI+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
@@ -33,6 +38,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 @interface OFIRIAllowedCharacterSetBase: OFCharacterSet
 @end
@@ -116,7 +122,7 @@ initIRIFragmentAllowedCharacterSet(void)
 }
 
 bool
-OFIRIIsIPv6Host(OFString *host)
+_OFIRIIsIPv6Host(OFString *host)
 {
 	const char *UTF8String = host.UTF8String;
 	bool hasColon = false;
@@ -390,12 +396,12 @@ OF_SINGLETON_METHODS
 	self = [super init];
 
 	@try {
-		_characterSet = [characterSet retain];
+		_characterSet = objc_retain(characterSet);
 		_characterIsMember = (bool (*)(id, SEL, OFUnichar))
 		    [_characterSet methodForSelector:
 		    @selector(characterIsMember:)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -404,7 +410,7 @@ OF_SINGLETON_METHODS
 
 - (void)dealloc
 {
-	[_characterSet release];
+	objc_release(_characterSet);
 
 	[super dealloc];
 }
@@ -417,18 +423,20 @@ OF_SINGLETON_METHODS
 @end
 
 void
-OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
+_OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
     bool allowPercent)
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	if (allowPercent)
-		characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
-		    initWithCharacterSet: characterSet] autorelease];
+		characterSet = objc_autorelease(
+		    [[OFInvertedCharacterSetWithoutPercent alloc]
+		    initWithCharacterSet: characterSet]);
 	else
 		characterSet = characterSet.invertedSet;
 
-	if ([string indexOfCharacterFromSet: characterSet] != OFNotFound)
+	if ([string rangeOfCharacterFromSet: characterSet].location !=
+	    OFNotFound)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -500,30 +508,33 @@ OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 @implementation OFIRI
 + (instancetype)IRI
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)IRIWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 + (instancetype)IRIWithString: (OFString *)string relativeToIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithString: string
-			       relativeToIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithString: string
+							  relativeToIRI: IRI]);
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)fileIRIWithPath: (OFString *)path
 {
-	return [[[self alloc] initFileIRIWithPath: path] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initFileIRIWithPath: path]);
 }
 
 + (instancetype)fileIRIWithPath: (OFString *)path isDirectory: (bool)isDirectory
 {
-	return [[[self alloc] initFileIRIWithPath: path
-				      isDirectory: isDirectory] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initFileIRIWithPath: path
+				  isDirectory: isDirectory]);
 }
 #endif
 
@@ -540,14 +551,14 @@ parseUserInfo(OFIRI *self, const char *UTF8String, size_t length)
 		    initWithUTF8String: colon + 1
 				length: length - (colon - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(self->_percentEncodedPassword,
+		_OFIRIVerifyIsEscaped(self->_percentEncodedPassword,
 		    [OFCharacterSet IRIPasswordAllowedCharacterSet], true);
 	} else
 		self->_percentEncodedUser = [[OFString alloc]
 		    initWithUTF8String: UTF8String
 				length: length];
 
-	OFIRIVerifyIsEscaped(self->_percentEncodedUser,
+	_OFIRIVerifyIsEscaped(self->_percentEncodedUser,
 	    [OFCharacterSet IRIUserAllowedCharacterSet], true);
 }
 
@@ -555,6 +566,7 @@ static void
 parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 {
 	OFString *portString;
+	unsigned short port;
 
 	if (*UTF8String == '[') {
 		const char *end = memchr(UTF8String, ']', length);
@@ -593,7 +605,7 @@ parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 			length = 0;
 		}
 
-		OFIRIVerifyIsEscaped(self->_percentEncodedHost,
+		_OFIRIVerifyIsEscaped(self->_percentEncodedHost,
 		    [OFCharacterSet IRIHostAllowedCharacterSet], true);
 	}
 
@@ -611,12 +623,18 @@ parseHostPort(OFIRI *self, const char *UTF8String, size_t length)
 			@throw [OFInvalidFormatException exception];
 
 	portString = [OFString stringWithUTF8String: UTF8String length: length];
-
-	if (portString.unsignedLongLongValue > 65535)
+	@try {
+		port = portString.unsignedShortValue;
+	} @catch (OFOutOfRangeException *e) {
 		@throw [OFInvalidFormatException exception];
+	}
 
-	self->_port = [[OFNumber alloc] initWithUnsignedShort:
-	    (unsigned short)portString.unsignedLongLongValue];
+#if USHRT_MAX != 65535
+	if (port > 65535)
+		@throw [OFInvalidFormatException exception];
+#endif
+
+	self->_port = [[OFNumber alloc] initWithUnsignedShort: port];
 }
 
 static size_t
@@ -653,7 +671,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: fragment + 1
 				  length: length - (fragment - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(*fragmentString,
+		_OFIRIVerifyIsEscaped(*fragmentString,
 		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
@@ -664,7 +682,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 		    stringWithUTF8String: query + 1
 				  length: length - (query - UTF8String) - 1];
 
-		OFIRIVerifyIsEscaped(*queryString,
+		_OFIRIVerifyIsEscaped(*queryString,
 		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = query - UTF8String;
@@ -673,7 +691,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 	*pathString = [OFString stringWithUTF8String: UTF8String
 					      length: length];
 
-	OFIRIVerifyIsEscaped(*pathString,
+	_OFIRIVerifyIsEscaped(*pathString,
 	    [OFCharacterSet IRIPathAllowedCharacterSet], true);
 }
 
@@ -696,7 +714,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 						    length: colon - UTF8String]
 		    lowercaseString] copy];
 
-		OFIRIVerifyIsEscaped(_scheme,
+		_OFIRIVerifyIsEscaped(_scheme,
 		    [OFCharacterSet IRISchemeAllowedCharacterSet], false);
 
 		length -= colon - UTF8String + 1;
@@ -727,7 +745,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -773,8 +791,8 @@ merge(OFString *base, OFString *path)
 	if (base.length == 0)
 		base = @"/";
 
-	components = [[[base componentsSeparatedByString: @"/"]
-	    mutableCopy] autorelease];
+	components = objc_autorelease(
+	    [[base componentsSeparatedByString: @"/"] mutableCopy]);
 
 	if (components.count == 1)
 		[components addObject: path];
@@ -792,7 +810,7 @@ merge(OFString *base, OFString *path)
 	@try {
 		absolute = isAbsolute(string);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -863,7 +881,7 @@ merge(OFString *base, OFString *path)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -880,7 +898,7 @@ merge(OFString *base, OFString *path)
 		isDirectory = [path of_isDirectoryPath];
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -921,7 +939,7 @@ merge(OFString *base, OFString *path)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -941,14 +959,14 @@ merge(OFString *base, OFString *path)
 
 - (void)dealloc
 {
-	[_scheme release];
-	[_percentEncodedHost release];
-	[_port release];
-	[_percentEncodedUser release];
-	[_percentEncodedPassword release];
-	[_percentEncodedPath release];
-	[_percentEncodedQuery release];
-	[_percentEncodedFragment release];
+	objc_release(_scheme);
+	objc_release(_percentEncodedHost);
+	objc_release(_port);
+	objc_release(_percentEncodedUser);
+	objc_release(_percentEncodedPassword);
+	objc_release(_percentEncodedPath);
+	objc_release(_percentEncodedQuery);
+	objc_release(_percentEncodedFragment);
 
 	[super dealloc];
 }
@@ -1022,7 +1040,7 @@ merge(OFString *base, OFString *path)
 		OFString *host = [_percentEncodedHost substringWithRange:
 		    OFMakeRange(1, _percentEncodedHost.length - 2)];
 
-		if (!OFIRIIsIPv6Host(host))
+		if (!_OFIRIIsIPv6Host(host))
 			@throw [OFInvalidArgumentException exception];
 
 		return host;
@@ -1084,14 +1102,14 @@ merge(OFString *base, OFString *path)
 	if (isFile) {
 		OFString *path = [_percentEncodedPath
 		    of_IRIPathToPathWithPercentEncodedHost: nil];
-		ret = [[path.pathComponents mutableCopy] autorelease];
+		ret = objc_autorelease([path.pathComponents mutableCopy]);
 
 		if (![ret.firstObject isEqual: @"/"])
 			[ret insertObject: @"/" atIndex: 0];
 	} else
 #endif
-		ret = [[[_percentEncodedPath componentsSeparatedByString: @"/"]
-		    mutableCopy] autorelease];
+		ret = objc_autorelease([[_percentEncodedPath
+		    componentsSeparatedByString: @"/"] mutableCopy]);
 
 	count = ret.count;
 
@@ -1112,11 +1130,11 @@ merge(OFString *base, OFString *path)
 	}
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)lastPathComponent
@@ -1148,11 +1166,32 @@ merge(OFString *base, OFString *path)
 	ret = [OFString
 	    stringWithUTF8String: lastComponent
 			  length: length - (lastComponent - UTF8String)];
-	ret = [ret.stringByRemovingPercentEncoding retain];
+	ret = objc_retain(ret.stringByRemovingPercentEncoding);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
+}
+
+- (OFString *)pathExtension
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret, *fileName;
+	size_t pos;
+
+	fileName = self.lastPathComponent;
+	pos = [fileName rangeOfString: @"."
+			      options: OFStringSearchBackwards].location;
+	if (pos == OFNotFound || pos == 0) {
+		objc_autoreleasePoolPop(pool);
+		return @"";
+	}
+
+	ret = [fileName substringFromIndex: pos + 1];
+
+	objc_retain(ret);
+	objc_autoreleasePoolPop(pool);
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)query
@@ -1196,11 +1235,11 @@ merge(OFString *base, OFString *path)
 	}
 
 	[ret makeImmutable];
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)fragment
@@ -1215,7 +1254,7 @@ merge(OFString *base, OFString *path)
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -1231,7 +1270,7 @@ merge(OFString *base, OFString *path)
 		copy->_percentEncodedQuery = [_percentEncodedQuery copy];
 		copy->_percentEncodedFragment = [_percentEncodedFragment copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -1288,17 +1327,17 @@ merge(OFString *base, OFString *path)
 	path = [self.path
 	    of_IRIPathToPathWithPercentEncodedHost: _percentEncodedHost];
 
-	[path retain];
+	objc_retain(path);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [path autorelease];
+	return objc_autoreleaseReturnValue(path);
 }
 #endif
 
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI appendPathComponent: component];
 	[IRI makeImmutable];
 	return IRI;
@@ -1307,15 +1346,39 @@ merge(OFString *base, OFString *path)
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI appendPathComponent: component isDirectory: isDirectory];
+	[IRI makeImmutable];
+	return IRI;
+}
+
+- (OFIRI *)IRIByDeletingLastPathComponent
+{
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
+	[IRI deleteLastPathComponent];
+	[IRI makeImmutable];
+	return IRI;
+}
+
+- (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension
+{
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
+	[IRI appendPathExtension: extension];
+	[IRI makeImmutable];
+	return IRI;
+}
+
+- (OFIRI *)IRIByDeletingPathExtension
+{
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
+	[IRI deletePathExtension];
 	[IRI makeImmutable];
 	return IRI;
 }
 
 - (OFIRI *)IRIByStandardizingPath
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	[IRI standardizePath];
 	[IRI makeImmutable];
 	return IRI;
@@ -1323,7 +1386,7 @@ merge(OFString *base, OFString *path)
 
 - (OFIRI *)IRIByAddingPercentEncodingForUnicodeCharacters
 {
-	OFMutableIRI *IRI = [[self mutableCopy] autorelease];
+	OFMutableIRI *IRI = objc_autorelease([self mutableCopy]);
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *ASCII =
 	    [OFCharacterSet characterSetWithRange: OFMakeRange(0, 0x80)];

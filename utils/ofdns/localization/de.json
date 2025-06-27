@@ -16,9 +16,11 @@
         "    -c  --class=   Die anzufragende DNS-Klasse (standardmäßig IN)\n",
         "    -h  --help     Diese Hilfe anzeigen\n",
         "    -s  --server=  Der abzufragende Server\n",
-        "    -t  --type=    Der anzufragende Record-Typ (standardmäßig ALL,\n",
+        "    -t  --type=    Der anzufragende Record-Typ (standardmäßig AAAA ",
+        "und A,\n",
         "                   kann wiederholt werden)\n",
-        "        --tcp      Benutzung von TCP erzwingen"
+        "        --tcp      Benutzung von TCP erzwingen\n",
+        "        --version  Versionsinformationen anzeigen"
     ],
     long_option_requires_argument: [
         "%[prog]: Option --%[opt] benötigt ein Argument"

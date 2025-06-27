@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -51,19 +55,9 @@
 @implementation OFDatagramSocket
 @synthesize delegate = _delegate;
 
-+ (void)initialize
-{
-	if (self != [OFDatagramSocket class])
-		return;
-
-	if (!OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)socket
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -76,13 +70,17 @@
 			abort();
 		}
 
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		_socket = OFInvalidSocketHandle;
 #ifdef OF_HAVE_AMIGAOS
 		_socketID = -1;
 #endif
 		_canBlock = true;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -99,7 +97,7 @@
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (bool)canBlock
@@ -132,7 +130,7 @@
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	_canBlock = canBlock;
 #else
@@ -148,7 +146,7 @@
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 #ifdef OF_WII
 	_canSendToBroadcastAddresses = canSendToBroadcastAddresses;
@@ -159,13 +157,13 @@
 {
 #ifndef OF_WII
 	int v;
-	socklen_t len = sizeof(v);
+	socklen_t len = (socklen_t)sizeof(v);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_BROADCAST,
 	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithObject: self
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 
 	return v;
 #else
@@ -186,13 +184,17 @@
 		sender->length = (socklen_t)sizeof(sender->sockaddr);
 
 #ifndef OF_WINDOWS
-	if ((ret = recvfrom(_socket, buffer, length, 0,
+	while ((ret = recvfrom(_socket, buffer, length, 0,
 	    (sender != NULL ? (struct sockaddr *)&sender->sockaddr : NULL),
-	    (sender != NULL ? &sender->length : NULL))) < 0)
-		@throw [OFReadFailedException
-		    exceptionWithObject: self
-			requestedLength: length
-				  errNo: OFSocketErrNo()];
+	    (sender != NULL ? &sender->length : NULL))) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+					  errNo: errNo];
+	}
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -203,7 +205,7 @@
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	if (sender != NULL) {
@@ -261,7 +263,7 @@
 						length: length
 						  mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-						 block: NULL
+					       handler: NULL
 # endif
 					      delegate: _delegate];
 }
@@ -271,10 +273,26 @@
 			length: (size_t)length
 			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
+	OFDatagramSocketPacketReceivedHandler handler = ^ bool (
+	    OFDatagramSocket *socket, void *buffer_, size_t length_,
+	    const OFSocketAddress *sender, id exception) {
+		return block(length_, sender, exception);
+	};
+
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
 			 runLoopMode: OFDefaultRunLoopMode
-			       block: block];
+			     handler: handler];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler
+{
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: OFDefaultRunLoopMode
+			     handler: handler];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
@@ -282,11 +300,28 @@
 		   runLoopMode: (OFRunLoopMode)runLoopMode
 			 block: (OFDatagramSocketAsyncReceiveBlock)block
 {
+	OFDatagramSocketPacketReceivedHandler handler = ^ bool (
+	    OFDatagramSocket *socket, void *buffer_, size_t length_,
+	    const OFSocketAddress *sender, id exception) {
+		return block(length_, sender, exception);
+	};
+
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: runLoopMode
+			     handler: handler];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFDatagramSocketPacketReceivedHandler)handler
+{
 	[OFRunLoop of_addAsyncReceiveForDatagramSocket: self
 						buffer: buffer
 						length: length
 						  mode: runLoopMode
-						 block: block
+					       handler: handler
 					      delegate: nil];
 }
 #endif
@@ -304,13 +339,17 @@
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
-	    (struct sockaddr *)&receiver->sockaddr, receiver->length)) < 0)
-		@throw [OFWriteFailedException
-		    exceptionWithObject: self
-			requestedLength: length
-			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+	while ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
+	    (struct sockaddr *)&receiver->sockaddr, receiver->length)) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo != EINTR)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: 0
+					  errNo: errNo];
+	}
 #else
 	int bytesWritten;
 
@@ -323,7 +362,7 @@
 		    exceptionWithObject: self
 			requestedLength: length
 			   bytesWritten: 0
-				  errNo: OFSocketErrNo()];
+				  errNo: _OFSocketErrNo()];
 #endif
 
 	if ((size_t)bytesWritten != length)
@@ -350,7 +389,7 @@
 					   receiver: receiver
 					       mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
-					      block: NULL
+					    handler: NULL
 # endif
 					   delegate: _delegate];
 }
@@ -360,10 +399,26 @@
 	     receiver: (const OFSocketAddress *)receiver
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
+	OFDatagramSocketDataSentHandler handler = ^ OFData *(
+	    OFDatagramSocket *socket, OFData *data_,
+	    const OFSocketAddress *receiver_, id exception) {
+		return block(exception);
+	};
+
 	[self asyncSendData: data
 		   receiver: receiver
 		runLoopMode: OFDefaultRunLoopMode
-		      block: block];
+		    handler: handler];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	      handler: (OFDatagramSocketDataSentHandler)handler
+{
+	[self asyncSendData: data
+		   receiver: receiver
+		runLoopMode: OFDefaultRunLoopMode
+		    handler: handler];
 }
 
 - (void)asyncSendData: (OFData *)data
@@ -371,11 +426,30 @@
 	  runLoopMode: (OFRunLoopMode)runLoopMode
 		block: (OFDatagramSocketAsyncSendDataBlock)block
 {
+	OFDatagramSocketDataSentHandler handler = ^ OFData *(
+	    OFDatagramSocket *socket, OFData *data_,
+	    const OFSocketAddress *receiver_, id exception) {
+		return block(exception);
+	};
+
 	[OFRunLoop of_addAsyncSendForDatagramSocket: self
 					       data: data
 					   receiver: receiver
 					       mode: runLoopMode
-					      block: block
+					    handler: handler
+					   delegate: nil];
+}
+
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const OFSocketAddress *)receiver
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFDatagramSocketDataSentHandler)handler
+{
+	[OFRunLoop of_addAsyncSendForDatagramSocket: self
+					       data: data
+					   receiver: receiver
+					       mode: runLoopMode
+					    handler: handler
 					   delegate: nil];
 }
 #endif

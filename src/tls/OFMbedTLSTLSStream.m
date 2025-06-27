@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,9 +23,11 @@
 
 #import "OFMbedTLSTLSStream.h"
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFMbedTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -37,6 +43,35 @@
 int _ObjFWTLS_reference;
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
+
+static OFTLSStreamErrorCode
+verifyResultToErrorCode(const mbedtls_ssl_context *SSL)
+{
+	switch (mbedtls_ssl_get_verify_result(SSL)) {
+	case MBEDTLS_X509_BADCERT_NOT_TRUSTED:
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+	case MBEDTLS_X509_BADCERT_CN_MISMATCH:
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	case MBEDTLS_X509_BADCERT_EXPIRED:
+	case MBEDTLS_X509_BADCERT_FUTURE:
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	case MBEDTLS_X509_BADCERT_REVOKED:
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	}
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
+
+static OFTLSStreamErrorCode
+statusToErrorCode(const mbedtls_ssl_context *SSL, int status)
+{
+	switch (status) {
+	case MBEDTLS_ERR_X509_CERT_VERIFY_FAILED:
+		return verifyResultToErrorCode(SSL);
+	}
+
+	return OFTLSStreamErrorCodeUnknown;
+}
 
 @implementation OFMbedTLSTLSStream
 static int
@@ -113,9 +148,10 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	@try {
 		_underlyingStream.delegate = self;
 
+		mbedtls_ssl_config_init(&_config);
 		mbedtls_x509_crt_init(&_CAChain);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -127,8 +163,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_initialized)
 		[self close];
 
-	[_host release];
+	objc_release(_host);
 
+	mbedtls_ssl_config_free(&_config);
 	mbedtls_x509_crt_free(&_CAChain);
 
 	[super dealloc];
@@ -143,10 +180,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		mbedtls_ssl_close_notify(&_SSL);
 
 	mbedtls_ssl_free(&_SSL);
-	mbedtls_ssl_config_free(&_config);
 	_initialized = _handshakeDone = false;
 
-	[_host release];
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -197,7 +233,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		/* FIXME: Translate error to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: ret
+						      bytesWritten: 0
 							     errNo: 0];
 	}
 
@@ -210,8 +246,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	    mbedtls_ssl_get_bytes_avail(&_SSL));
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -223,7 +260,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_initialized)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if (mbedtls_ssl_config_defaults(&_config, MBEDTLS_SSL_IS_CLIENT,
+	if (mbedtls_ssl_config_defaults(&_config,
+	    (server ? MBEDTLS_SSL_IS_SERVER : MBEDTLS_SSL_IS_CLIENT),
 	    MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
@@ -231,8 +269,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			      errorCode: initFailedErrorCode];
 
 	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
-	mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
-	    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
 
 	/* TODO: Add other ways to add a CA chain */
 	CAFilePath = [[OFApplication environment]
@@ -246,9 +282,37 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				      errorCode: initFailedErrorCode];
 	}
 
-	mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
+	if (!server) {
+		mbedtls_ssl_conf_ca_chain(&_config, &_CAChain, NULL);
+		mbedtls_ssl_conf_authmode(&_config, (_verifiesCertificates
+		    ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE));
+	}
+
+	if (_certificateChain.count > 0) {
+		/*
+		 * MbedTLS does not allow storing the certificates
+		 * independently, so the chain has to be kept. This means we
+		 * can just get the first certificate and get the entire chain
+		 * from it.
+		 */
+		OFMbedTLSX509CertificateChain *chain =
+		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
+		    .of_chain;
+
+		mbedtls_ssl_conf_ca_chain(&_config,
+		    chain.certificate->next, NULL);
+
+		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
+		    chain.privateKey) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
 
 	mbedtls_ssl_init(&_SSL);
+	_initialized = true;
+
 	if (mbedtls_ssl_setup(&_SSL, &_config) != 0)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
@@ -258,12 +322,15 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	mbedtls_ssl_set_bio(&_SSL, self, writeFunc, readFunc, NULL);
 
 	_host = [host copy];
+	_server = server;
 
-	if (mbedtls_ssl_set_hostname(&_SSL, _host.UTF8String) != 0)
-		@throw [OFTLSHandshakeFailedException
-		    exceptionWithStream: self
-				   host: host
-			      errorCode: initFailedErrorCode];
+	if (!server) {
+		if (mbedtls_ssl_set_hostname(&_SSL, _host.UTF8String) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
 
 	status = mbedtls_ssl_handshake(&_SSL);
 
@@ -271,13 +338,13 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		[_underlyingStream asyncReadIntoBuffer: (void *)""
 						length: 0
 					   runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	} else if (status == MBEDTLS_ERR_SSL_WANT_WRITE) {
 		[_underlyingStream asyncWriteData: [OFData data]
 				      runLoopMode: runLoopMode];
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -285,19 +352,40 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (status == 0)
 		_handshakeDone = true;
 	else
-		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: statusToErrorCode(&_SSL, status)];
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -324,16 +412,24 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(
+						     &_SSL, status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(
+		    stream:didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -363,16 +459,24 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: statusToErrorCode(
+						     &_SSL, status)];
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

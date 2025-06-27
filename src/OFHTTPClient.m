@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_HTTP_CLIENT_M
@@ -117,46 +121,46 @@ constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequestMethod method = request.method;
-	OFIRI *IRI = request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
+	OFIRI *URI = request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 	OFString *path;
-	OFString *user = IRI.user, *password = IRI.password;
+	OFString *user = URI.user, *password = URI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	bool hasContentLength, chunked;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if (IRI.path.length > 0)
-		path = IRI.percentEncodedPath;
+	if (URI.path.length > 0)
+		path = URI.percentEncodedPath;
 	else
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
 	    @"%@ %@", OFHTTPRequestMethodString(method), path];
 
-	if (IRI.query != nil) {
+	if (URI.query != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: IRI.percentEncodedQuery];
+		[requestString appendString: URI.percentEncodedQuery];
 	}
 
 	[requestString appendString: @" HTTP/"];
 	[requestString appendString: request.protocolVersionString];
 	[requestString appendString: @"\r\n"];
 
-	headers = [[request.headers mutableCopy] autorelease];
+	headers = objc_autorelease([request.headers mutableCopy]);
 	if (headers == nil)
 		headers = [OFMutableDictionary dictionary];
 
 	if ([headers objectForKey: @"Host"] == nil) {
-		OFNumber *port = IRI.port;
+		OFNumber *port = URI.port;
 
 		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%@", IRI.percentEncodedHost, port];
+			    @"%@:%@", URI.percentEncodedHost, port];
 
 			[headers setObject: host forKey: @"Host"];
 		} else
-			[headers setObject: IRI.percentEncodedHost
+			[headers setObject: URI.percentEncodedHost
 				    forKey: @"Host"];
 	}
 
@@ -206,11 +210,11 @@ constructRequestString(OFHTTPRequest *request)
 
 	[requestString appendString: @"\r\n"];
 
-	[requestString retain];
+	objc_retain(requestString);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [requestString autorelease];
+	return objc_autoreleaseReturnValue(requestString);
 }
 
 static OF_INLINE void
@@ -264,12 +268,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	self = [super init];
 
 	@try {
-		_client = [client retain];
-		_request = [request retain];
+		_client = objc_retain(client);
+		_request = objc_retain(request);
 		_redirects = redirects;
 		_serverHeaders = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -278,10 +282,10 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)dealloc
 {
-	[_client release];
-	[_request release];
-	[_version release];
-	[_serverHeaders release];
+	objc_release(_client);
+	objc_release(_request);
+	objc_release(_version);
+	objc_release(_serverHeaders);
 
 	[super dealloc];
 }
@@ -306,8 +310,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	OFString *location;
 	id exception;
 
-	response = [[[OFHTTPClientResponse alloc] initWithStream: stream]
-	    autorelease];
+	response = objc_autorelease(
+	    [[OFHTTPClientResponse alloc] initWithStream: stream]);
 	response.protocolVersionString = _version;
 	response.statusCode = _status;
 	response.headers = _serverHeaders;
@@ -329,11 +333,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (keepAlive) {
 		response.of_keepAlive = true;
 
-		_client->_stream = [stream retain];
+		_client->_stream = objc_retain(stream);
 		_client->_lastIRI = [IRI copy];
 		_client->_lastWasHEAD =
 		    (_request.method == OFHTTPRequestMethodHead);
-		_client->_lastResponse = [response retain];
+		_client->_lastResponse = objc_retain(response);
 	}
 
 	if (_redirects > 0 && (_status == 301 || _status == 302 ||
@@ -374,9 +378,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFDictionary OF_GENERIC(OFString *, OFString *)
 			    *headers = _request.headers;
 			OFHTTPRequest *newRequest =
-			    [[_request copy] autorelease];
+			    objc_autorelease([_request copy]);
 			OFMutableDictionary *newHeaders =
-			    [[headers mutableCopy] autorelease];
+			    objc_autorelease([headers mutableCopy]);
 
 			if (![newIRI.host isEqual: IRI.host])
 				[newHeaders removeObjectForKey: @"Host"];
@@ -436,7 +440,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)handleFirstLine: (OFString *)line
 {
-	long long status;
+	int status;
 
 	/*
 	 * It's possible that the write succeeds on a connection that is
@@ -457,7 +461,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	status = [line substringWithRange: OFMakeRange(9, 3)].longLongValue;
+	status = [line substringWithRange: OFMakeRange(9, 3)].intValue;
 
 	if (status < 0 || status > 599)
 		@throw [OFInvalidServerResponseException exception];
@@ -587,10 +591,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	    isEqual: @"chunked"];
 
 	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
-		stream.delegate = nil;
+		OFStream *requestBody;
 
-		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
-		    initWithHandler: self stream: stream] autorelease];
+		stream.delegate = nil;
+		requestBody = objc_autorelease([[OFHTTPClientRequestBodyStream
+		    alloc] initWithHandler: self
+				    stream: stream]);
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:)])
@@ -698,13 +704,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		 * reused. If everything is successful, we set _stream again
 		 * at the end.
 		 */
-		stream = [_client->_stream autorelease];
+		stream = objc_autorelease(_client->_stream);
 		_client->_stream = nil;
 
-		[_client->_lastIRI release];
+		objc_release(_client->_lastIRI);
 		_client->_lastIRI = nil;
 
-		[_client->_lastResponse release];
+		objc_release(_client->_lastResponse);
 		_client->_lastResponse = nil;
 
 		stream.delegate = self;
@@ -719,28 +725,29 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)closeAndReconnect
 {
 	@try {
-		OFIRI *IRI =
+		OFIRI *URI =
 		    _request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 		OFTCPSocket *sock;
 		uint16_t port;
-		OFNumber *IRIPort;
+		OFNumber *URIPort;
 
 		[_client close];
 
 		sock = [OFTCPSocket socket];
+		sock.allowsMPTCP = true;
 
-		if ([IRI.scheme caseInsensitiveCompare: @"https"] ==
+		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
 		    OFOrderedSame)
 			port = 443;
 		else
 			port = 80;
 
-		IRIPort = IRI.port;
-		if (IRIPort != nil)
-			port = IRIPort.unsignedShortValue;
+		URIPort = URI.port;
+		if (URIPort != nil)
+			port = URIPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: IRI.host port: port];
+		[sock asyncConnectToHost: URI.host port: port];
 	} @catch (id e) {
 		[self raiseException: e];
 	}
@@ -757,8 +764,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 		OFString *transferEncoding, *contentLengthString;
 
-		_handler = [handler retain];
-		_stream = [stream retain];
+		_handler = objc_retain(handler);
+		_stream = objc_retain(stream);
 
 		headers = _handler->_request.headers;
 
@@ -775,7 +782,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		} else if (!_chunked)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -787,7 +794,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (_stream != nil)
 		[self close];
 
-	[_handler release];
+	objc_release(_handler);
 
 	[super dealloc];
 }
@@ -850,7 +857,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	_stream.delegate = _handler;
 	[_stream asyncReadLine];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -870,7 +877,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	_stream = objc_retain(stream);
 
 	return self;
 }
@@ -918,11 +925,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_atEndOfStream)
-		return 0;
-
 	if (!_hasContentLength && !_chunked)
 		return [_stream readIntoBuffer: buffer length: length];
+
+	if (_atEndOfStream)
+		return 0;
 
 	if (_stream.atEndOfStream)
 		@throw [OFTruncatedDataException exception];
@@ -1047,9 +1054,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_atEndOfStream)
-		return true;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -1080,7 +1084,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	_atEndOfStream = false;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
@@ -1093,12 +1097,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	self = [super init];
 
 	@try {
-		_client = [client retain];
+		_client = objc_retain(client);
 		_delegate = client.delegate;
 
 		_client.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -1108,7 +1112,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)dealloc
 {
 	_client.delegate = _delegate;
-	[_client release];
+	objc_release(_client);
 
 	[super dealloc];
 }
@@ -1139,8 +1143,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	[[OFRunLoop currentRunLoop] stop];
 
-	[_response release];
-	_response = [response retain];
+	objc_release(_response);
+	_response = objc_retain(response);
 
 	[_delegate     client: client
 	    didPerformRequest: request
@@ -1218,7 +1222,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 + (instancetype)client
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (void)dealloc
@@ -1237,17 +1241,16 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			 redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClientSyncPerformer *syncPerformer =
-	    [[[OFHTTPClientSyncPerformer alloc] initWithClient: self]
-	    autorelease];
+	OFHTTPClientSyncPerformer *syncPerformer = objc_autorelease(
+	    [[OFHTTPClientSyncPerformer alloc] initWithClient: self]);
 	OFHTTPResponse *response = [syncPerformer performRequest: request
 						       redirects: redirects];
 
-	[response retain];
+	objc_retain(response);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [response autorelease];
+	return objc_autoreleaseReturnValue(response);
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
@@ -1281,13 +1284,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)close
 {
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
-	[_lastIRI release];
+	objc_release(_lastIRI);
 	_lastIRI = nil;
 
-	[_lastResponse release];
+	objc_release(_lastResponse);
 	_lastResponse = nil;
 }
 @end

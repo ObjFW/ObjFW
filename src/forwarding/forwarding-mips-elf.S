@@ -1,24 +1,30 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include "platform.h"
 
-.globl OFForward
-.globl OFForward_stret
+.globl _OFForward
+.globl _OFForward_stret
+.internal _OFForward
+.internal _OFForward_stret
 
 #ifdef OF_PIC
 .macro j_pic symbol
@@ -39,7 +45,7 @@
 #endif
 
 .section .text
-OFForward:
+_OFForward:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -64,7 +70,7 @@ OFForward:
 	sw	$a2, 36($sp)
 	sw	$a3, 40($sp)
 #ifdef OF_MIPS_EABI
-	/* For some reason, $a4-$a8 are not always defined */
+	/* For some reason, $a4-$a7 are not always defined */
 	sw	$8, 44($sp)
 	sw	$9, 48($sp)
 	sw	$10, 52($sp)
@@ -159,11 +165,11 @@ OFForward:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found
-.type OFForward, %function
-.size OFForward, .-OFForward
+	j_pic	OFMethodNotFound
+.type _OFForward, %function
+.size _OFForward, .-_OFForward
 
-OFForward_stret:
+_OFForward_stret:
 #ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -285,9 +291,9 @@ OFForward_stret:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	of_method_not_found_stret
-.type OFForward_stret, %function
-.size OFForward_stret, .-OFForward_stret
+	j_pic	OFMethodNotFound_stret
+.type _OFForward_stret, %function
+.size _OFForward_stret, .-_OFForward_stret
 
 .Linit:
 #ifdef OF_PIC

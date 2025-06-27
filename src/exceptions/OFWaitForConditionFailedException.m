@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -27,8 +31,9 @@
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
 				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithCondition: condition
-					  errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithCondition: condition
+				      errNo: errNo]);
 }
 
 + (instancetype)exception
@@ -40,7 +45,7 @@
 {
 	self = [super init];
 
-	_condition = [condition retain];
+	_condition = objc_retain(condition);
 	_errNo = errNo;
 
 	return self;
@@ -53,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_condition release];
+	objc_release(_condition);
 
 	[super dealloc];
 }

@@ -1,22 +1,27 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFSocket.h"
 #endif
+#import "OFRunLoop.h"
 
 #ifdef OF_AMIGAOS
 # include <exec/types.h>
@@ -27,14 +32,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDate;
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 @class OFMutableData;
 
 /**
- * @protocol OFKernelEventObserverDelegate
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFKernelEventObserverDelegate OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  *	  OFKernelEventObserver.
@@ -75,8 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @protocol OFReadyForReadingObserving
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFReadyForReadingObserving OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for reading by OFKernelEventObserver.
@@ -90,8 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @protocol OFReadyForWritingObserving
- *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @protocol OFReadyForWritingObserving OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for writing by OFKernelEventObserver.
@@ -106,8 +105,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @class OFKernelEventObserver
- *	  OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ * @class OFKernelEventObserver OFKernelEventObserver.h ObjFW/ObjFW.h
  *
  * @brief A class that can observe multiple kernel events (e.g. streams being
  *	  ready to read) at once.
@@ -151,12 +149,49 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic) ULONG execSignalMask;
 # endif
 
+# ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) bool handlesForeignEvents;
+# endif
+
 /**
  * @brief Creates a new OFKernelEventObserver.
  *
  * @return A new, autoreleased OFKernelEventObserver
  */
 + (instancetype)observer;
+
+/**
+ * @brief Whether the kernel event observer handles foreign events.
+ *
+ * This is the case if the kernel event observer also handles events from a
+ * foreign run loop and used by @ref OFRunLoop to determine whether the kernel
+ * event observer should also be called even when there are currently no
+ * sockets being observed.
+ */
++ (bool)handlesForeignEvents;
+
+/**
+ * @brief Initializes the @ref OFKernelEventObserver.
+ *
+ * @return An initialized @ref OFKernelEventObserver
+ */
+- (instancetype)init;
+
+/**
+ * @brief Initializes the @ref OFKernelEventObserver.
+ *
+ * @note Subclasses must override this method, but it must not be called!
+ *	 Instead, @ref init should be called.
+ *
+ * @param runLoopMode This is used by @ref OFRunLoop if the kernel event
+ *		      observer being created is for a run loop mode. This can
+ *		      be used by subclasses of @ref OFKernelEventObserver to
+ *		      integrate @ref OFRunLoop with a foreign run loop. If the
+ *		      @ref OFKernelEventObserver is not being created by
+ *		      @ref OFRunLoop, it is `nil`.
+ * @return An initialized @ref OFKernelEventObserver
+ */
+- (instancetype)initWithRunLoopMode: (nullable OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Adds an object to observe for reading.
@@ -248,9 +283,14 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief This method should be called by subclasses in @ref observeUntilDate:
  *	  as the first thing to handle all sockets that currently have data in
- *	  the read buffer.
+ *	  the read buffer and should return early if @ref processReadBuffers
+ *	  returned true.
+ *
+ * @note You should not call this manually!
+ *
+ * @return Whether at least one read buffer was handled
  */
-- (bool)of_processReadBuffers;
+- (bool)processReadBuffers;
 @end
 #endif
 

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -96,7 +100,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithIRI: IRI] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
 }
 
 - (instancetype)initWithIRI: (OFIRI *)IRI
@@ -109,7 +113,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		_protocolVersion.major = 1;
 		_protocolVersion.minor = 1;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -123,8 +127,8 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 - (void)dealloc
 {
-	[_IRI release];
-	[_headers release];
+	objc_release(_IRI);
+	objc_release(_headers);
 
 	[super dealloc];
 }
@@ -155,7 +159,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		copy.headers = _headers;
 		copy.remoteAddress = self.remoteAddress;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -227,20 +231,13 @@ OFHTTPRequestMethodParseName(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
-	unsigned long long major, minor;
 	OFHTTPRequestProtocolVersion protocolVersion;
 
 	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [components.firstObject unsignedLongLongValue];
-	minor = [components.lastObject unsignedLongLongValue];
-
-	if (major > UCHAR_MAX || minor > UCHAR_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	protocolVersion.major = (unsigned char)major;
-	protocolVersion.minor = (unsigned char)minor;
+	protocolVersion.major = [components.firstObject unsignedCharValue];
+	protocolVersion.minor = [components.lastObject unsignedCharValue];
 
 	self.protocolVersion = protocolVersion;
 
@@ -279,6 +276,6 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -41,7 +45,7 @@ static int
 {
 	__block int i = 42;
 
-	return [Block_copy(^ int { return ++i; }) autorelease];
+	return objc_autorelease(Block_copy(^ int { return ++i; }));
 }
 
 static double
@@ -96,7 +100,7 @@ forwardTest(void)
 	};
 	void (^mallocBlock)(void);
 
-	mallocBlock = [[stackBlock copy] autorelease];
+	mallocBlock = objc_autorelease([stackBlock copy]);
 	OTAssertEqual([mallocBlock class], objc_getClass("OFMallocBlock"));
 	OTAssertTrue([mallocBlock isKindOfClass: [OFBlock class]]);
 }
@@ -118,7 +122,7 @@ forwardTest(void)
 #if !defined(OF_WINDOWS) || !defined(__clang__)
 - (void)testCopyGlobalBlock
 {
-	OTAssertEqual([[globalBlock copy] autorelease], (id)globalBlock);
+	OTAssertEqual(objc_autorelease([globalBlock copy]), (id)globalBlock);
 }
 #endif
 
@@ -131,8 +135,8 @@ forwardTest(void)
 	};
 	void (^mallocBlock)(void);
 
-	mallocBlock = [[stackBlock copy] autorelease];
-	OTAssertEqual([[mallocBlock copy] autorelease], (id)mallocBlock);
+	mallocBlock = objc_autorelease([stackBlock copy]);
+	OTAssertEqual(objc_autorelease([mallocBlock copy]), (id)mallocBlock);
 	OTAssertEqual([mallocBlock retainCount], 2);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -37,8 +41,9 @@
 #endif
 
 #import "OFASPrintF.h"
-#import "OFString.h"
 #import "OFLocale.h"
+#import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -419,7 +424,7 @@ formatConversionSpecifierState(struct Context *ctx)
 
 		{
 			char buffer[5];
-			size_t len = OFUTF8StringEncode(
+			size_t len = _OFUTF8StringEncode(
 			    va_arg(ctx->arguments, OFUnichar), buffer);
 
 			if (len == 0)
@@ -450,7 +455,7 @@ formatConversionSpecifierState(struct Context *ctx)
 
 			j = 0;
 			for (size_t i = 0; i < len; i++) {
-				size_t clen = OFUTF8StringEncode(arg[i],
+				size_t clen = _OFUTF8StringEncode(arg[i],
 				    buffer + j);
 
 				if (clen == 0) {
@@ -755,7 +760,7 @@ static bool (*states[])(struct Context *) = {
 };
 
 int
-OFVASPrintF(char **string, const char *format, va_list arguments)
+_OFVASPrintF(char **string, const char *format, va_list arguments)
 {
 	struct Context ctx;
 

@@ -1,22 +1,28 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <errno.h>
 #include <string.h>
+
+#include "unistd_wrapper.h"
 
 #import "ObjFW.h"
 #import "ObjFWTest.h"
@@ -25,26 +31,14 @@
 @end
 
 @implementation OFUNIXStreamSocketTests
-- (void)testUNIXStreamSocket
+- (void)testUNIXStreamSocketWithPath: (OFString *)path
 {
-	OFString *path;
 	OFUNIXStreamSocket *sockClient, *sockServer, *sockAccepted;
 	char buffer[5];
 
-#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
-	path = [[OFSystemInfo temporaryDirectoryIRI]
-	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
-	    .fileSystemRepresentation;
-#else
-	/*
-	 * We can have sockets, including UNIX sockets, while file support is
-	 * disabled.
-	 *
-	 * We also use this code path for iOS, as the temporaryDirectory:RI is
-	 * too long on the iOS simulator.
-	 */
-	path = [OFString stringWithFormat: @"/tmp/%@",
-					   [[OFUUID UUID] UUIDString]];
+#ifdef OF_WINDOWS
+	if ([OFSystemInfo wineVersion] != nil)
+		OTSkip(@"UNIX stream sockets are broken on Wine");
 #endif
 
 	sockClient = [OFUNIXStreamSocket socket];
@@ -63,6 +57,11 @@
 	}
 
 	@try {
+#ifndef OF_WINDOWS
+		OFUNIXSocketCredentials peerCredentials;
+		OFNumber *number;
+#endif
+
 		[sockServer listen];
 
 		[sockClient connectToPath: path];
@@ -75,10 +74,62 @@
 
 		OTAssertEqual(OFSocketAddressUNIXPath(
 		    sockAccepted.remoteAddress).length, 0);
+
+#ifndef OF_WINDOWS
+		peerCredentials = sockAccepted.peerCredentials;
+
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsUserID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getuid()]);
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsGroupID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getgid()]);
+		number = [peerCredentials objectForKey:
+		    OFUNIXSocketCredentialsProcessID];
+		if (number != nil)
+			OTAssertEqualObjects(number,
+			    [OFNumber numberWithUnsignedLong: getpid()]);
+#endif
 	} @finally {
 #ifdef OF_HAVE_FILES
-		[[OFFileManager defaultManager] removeItemAtPath: path];
+		if (![path hasPrefix: @"@"])
+			[[OFFileManager defaultManager] removeItemAtPath: path];
 #endif
 	}
 }
+
+- (void)testUNIXStreamSocket
+{
+#if defined(OF_HAVE_FILES) && !defined(OF_IOS)
+	OFString *path = [[OFSystemInfo temporaryDirectoryIRI]
+	    IRIByAppendingPathComponent: [[OFUUID UUID] UUIDString]]
+	    .fileSystemRepresentation;
+#else
+	/*
+	 * We can have sockets, including UNIX sockets, while file support is
+	 * disabled.
+	 *
+	 * We also use this code path for iOS, as the temporaryDirectory:RI is
+	 * too long on the iOS simulator.
+	 */
+	OFString *path = [OFString
+	    stringWithFormat: @"/tmp/%@", [[OFUUID UUID] UUIDString]];
+#endif
+
+	OTAssertNotNil(path);
+
+	[self testUNIXStreamSocketWithPath: path];
+}
+
+#ifdef OF_LINUX
+- (void)testAbstractUNIXStreamSocket
+{
+	[self testUNIXStreamSocketWithPath: [OFString stringWithFormat:
+	    @"@/tmp/%@", [[OFUUID UUID] UUIDString]]];
+}
+#endif
 @end

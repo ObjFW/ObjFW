@@ -29,7 +29,8 @@
         "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",
         "        --insecure         TLS-Fehler ignorieren und unsichere\n",
         "                           Weiterleitungen erlauben\n",
-        "        --ignore-status    HTTP Status-Code ignorieren"
+        "        --ignore-status    HTTP Status-Code ignorieren\n",
+        "        --version          Versionsinformationen anzeigen"
     ],
     invalid_input_header: "%[prog]: Header müssen im Format Name:Wert sein!",
     invalid_input_method: "%[prog]: Ungültige Request-Methode %[method]!",
@@ -92,6 +93,7 @@
         "  %[exception]"
     ],
     download_done: "Fertig!",
+    download_aborted: "Abgebrochen!",
     invalid_iri: "%[prog]: Ungültige IRI: <%[iri]>!",
     invalid_scheme: "%[prog]: Ungültiges Schema: <%[iri]>!",
     type_unknown: "unbekannt",

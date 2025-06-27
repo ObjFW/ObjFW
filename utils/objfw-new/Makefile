@@ -6,6 +6,7 @@ SRCS = NewApp.m		\
        NewTest.m	\
        ObjFWNew.m	\
        Property.m
+MAN = objfw-new.1
 
 include ../../buildsys.mk
 
@@ -14,7 +15,11 @@ ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
-	    -I../..
-LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
+	    -I../..					\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src -lobjfw						\
+	-L../../src/runtime -L../../src/runtime/linklib	${RUNTIME_LIBS}	\
+	${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

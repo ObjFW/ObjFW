@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFRunLoop.h"
@@ -19,6 +23,9 @@
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFStreamSocket.h"
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -41,7 +48,7 @@ OF_DIRECT_MEMBERS
 			  length: (size_t)length
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable OFStreamAsyncReadBlock)block
+			 handler: (nullable OFStreamReadHandler)handler
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -50,15 +57,26 @@ OF_DIRECT_MEMBERS
 		     exactLength: (size_t)length
 			    mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			   block: (nullable OFStreamAsyncReadBlock)block
+			 handler: (nullable OFStreamReadHandler)handler
 # endif
 			delegate: (nullable id <OFStreamDelegate>)delegate;
++ (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
+					    > *)stream
+			      encoding: (OFStringEncoding)encoding
+				  mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+			       handler: (nullable OFStreamStringReadHandler)
+					    handler
+# endif
+			      delegate: (nullable id <OFStreamDelegate>)
+					    delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (OFStringEncoding)encoding
 				mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			       block: (nullable OFStreamAsyncReadLineBlock)block
+			     handler: (nullable OFStreamStringReadHandler)
+					  handler
 # endif
 			    delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -66,7 +84,7 @@ OF_DIRECT_MEMBERS
 			     data: (OFData *)data
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable OFStreamAsyncWriteDataBlock)block
+			  handler: (nullable OFStreamDataWrittenHandler)handler
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -75,7 +93,8 @@ OF_DIRECT_MEMBERS
 			 encoding: (OFStringEncoding)encoding
 			     mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-			    block: (nullable OFStreamAsyncWriteStringBlock)block
+			  handler: (nullable OFStreamStringWrittenHandler)
+				       handler
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -85,22 +104,22 @@ OF_DIRECT_MEMBERS
 # endif
 + (void)of_addAsyncAcceptForSocket: (id)socket
 			      mode: (OFRunLoopMode)mode
-			     block: (nullable id)block
+			   handler: (nullable id)handler
 			  delegate: (nullable id)delegate;
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)socket
     buffer: (void *)buffer
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFDatagramSocketAsyncReceiveBlock)block
+   handler: (nullable OFDatagramSocketPacketReceivedHandler)handler
 # endif
-  delegate: (nullable id <OFDatagramSocketDelegate>) delegate;
+  delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)socket
       data: (OFData *)data
   receiver: (const OFSocketAddress *)receiver
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFDatagramSocketAsyncSendDataBlock)block
+   handler: (nullable OFDatagramSocketDataSentHandler)handler
 # endif
   delegate: (nullable id <OFDatagramSocketDelegate>)delegate;
 + (void)of_addAsyncReceiveForSequencedPacketSocket:
@@ -109,17 +128,35 @@ OF_DIRECT_MEMBERS
     length: (size_t)length
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSequencedPacketSocketAsyncReceiveBlock)block
+   handler: (nullable OFSequencedPacketSocketPacketReceivedHandler)handler
 # endif
-  delegate: (nullable id <OFSequencedPacketSocketDelegate>) delegate;
+  delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
 + (void)of_addAsyncSendForSequencedPacketSocket:
 					       (OFSequencedPacketSocket *)socket
       data: (OFData *)data
       mode: (OFRunLoopMode)mode
 # ifdef OF_HAVE_BLOCKS
-     block: (nullable OFSequencedPacketSocketAsyncSendDataBlock)block
+   handler: (nullable OFSequencedPacketSocketDataSentHandler)handler
 # endif
   delegate: (nullable id <OFSequencedPacketSocketDelegate>)delegate;
+# ifdef OF_HAVE_SCTP
++ (void)of_addAsyncReceiveForSCTPSocket: (OFSCTPSocket *)socket
+    buffer: (void *)buffer
+    length: (size_t)length
+      mode: (OFRunLoopMode)mode
+#  ifdef OF_HAVE_BLOCKS
+   handler: (nullable OFSCTPSocketMessageReceivedHandler)handler
+#  endif
+  delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
++ (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)socket
+      data: (OFData *)data
+      info: (OFSCTPMessageInfo)info
+      mode: (OFRunLoopMode)mode
+# ifdef OF_HAVE_BLOCKS
+   handler: (nullable OFSCTPSocketDataSentHandler)handler
+# endif
+  delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
+# endif
 + (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode;
 #endif
 - (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode;

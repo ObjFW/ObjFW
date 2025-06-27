@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #define OF_MAP_TABLE_M
@@ -82,19 +86,19 @@ OF_DIRECT_MEMBERS
 + (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
 			 objectFunctions: (OFMapTableFunctions)objectFunctions
 {
-	return [[[self alloc]
-	    initWithKeyFunctions: keyFunctions
-		  objectFunctions: objectFunctions] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithKeyFunctions: keyFunctions
+			       objectFunctions: objectFunctions]);
 }
 
 + (instancetype)mapTableWithKeyFunctions: (OFMapTableFunctions)keyFunctions
 			 objectFunctions: (OFMapTableFunctions)objectFunctions
 				capacity: (size_t)capacity
 {
-	return [[[self alloc]
-	    initWithKeyFunctions: keyFunctions
-		 objectFunctions: objectFunctions
-			capacity: capacity] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithKeyFunctions: keyFunctions
+			       objectFunctions: objectFunctions
+				      capacity: capacity]);
 }
 
 - (instancetype)init
@@ -159,7 +163,7 @@ OF_DIRECT_MEMBERS
 		if (OFHashSeed != 0)
 			_rotation = OFRandom16() & 31;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -401,7 +405,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 				setObject(copy, _buckets[i]->key,
 				    _buckets[i]->object, _buckets[i]->hash);
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -569,20 +573,20 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (OFMapTableEnumerator *)keyEnumerator
 {
-	return [[[OFMapTableKeyEnumerator alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableKeyEnumerator alloc]
 	    of_initWithMapTable: self
 			buckets: _buckets
 		       capacity: _capacity
-	       mutationsPointer: &_mutations] autorelease];
+	       mutationsPointer: &_mutations]);
 }
 
 - (OFMapTableEnumerator *)objectEnumerator
 {
-	return [[[OFMapTableObjectEnumerator alloc]
+	return objc_autoreleaseReturnValue([[OFMapTableObjectEnumerator alloc]
 	    of_initWithMapTable: self
 			buckets: _buckets
 		       capacity: _capacity
-	       mutationsPointer: &_mutations] autorelease];
+	       mutationsPointer: &_mutations]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
@@ -666,7 +670,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
 	self = [super init];
 
-	_mapTable = [mapTable retain];
+	_mapTable = objc_retain(mapTable);
 	_buckets = buckets;
 	_capacity = capacity;
 	_mutations = *mutationsPtr;
@@ -677,7 +681,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (void)dealloc
 {
-	[_mapTable release];
+	objc_release(_mapTable);
 
 	[super dealloc];
 }
@@ -728,16 +732,16 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 {
 	self = [super init];
 
-	_enumerator = [enumerator retain];
-	_object = [object retain];
+	_enumerator = objc_retain(enumerator);
+	_object = objc_retain(object);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_enumerator release];
-	[_object release];
+	objc_release(_enumerator);
+	objc_release(_object);
 
 	[super dealloc];
 }

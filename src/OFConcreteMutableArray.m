@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -41,7 +45,7 @@
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
 							capacity: capacity];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -54,7 +58,7 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[_array addItem: &object];
-	[object retain];
+	objc_retain(object);
 
 	_mutations++;
 }
@@ -69,7 +73,7 @@
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
-	[object retain];
+	objc_retain(object);
 
 	_mutations++;
 }
@@ -86,7 +90,7 @@
 	}
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] retain];
+		objc_retain(objects[i]);
 
 	_mutations++;
 }
@@ -104,8 +108,8 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
-			[newObject retain];
-			[objects[i] release];
+			objc_retain(newObject);
+			objc_release(objects[i]);
 			objects[i] = newObject;
 		}
 	}
@@ -125,8 +129,8 @@
 		@throw [OFOutOfRangeException exception];
 
 	oldObject = objects[idx];
-	objects[idx] = [object retain];
-	[oldObject release];
+	objects[idx] = objc_retain(object);
+	objc_release(oldObject);
 }
 
 - (void)replaceObjectIdenticalTo: (id)oldObject withObject: (id)newObject
@@ -142,8 +146,8 @@
 
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
-			[newObject retain];
-			[objects[i] release];
+			objc_retain(newObject);
+			objc_release(objects[i]);
 			objects[i] = newObject;
 
 			return;
@@ -169,7 +173,7 @@
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[tmp release];
+			objc_release(tmp);
 
 			objects = _array.items;
 			i--;
@@ -195,7 +199,7 @@
 			[_array removeItemAtIndex: i];
 			_mutations++;
 
-			[object release];
+			objc_release(object);
 
 			objects = _array.items;
 			i--;
@@ -210,7 +214,7 @@
 #ifndef __clang_analyzer__
 	id object = [self objectAtIndex: idx];
 	[_array removeItemAtIndex: idx];
-	[object release];
+	objc_release(object);
 
 	_mutations++;
 #endif
@@ -222,7 +226,7 @@
 	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
-		[objects[i] release];
+		objc_release(objects[i]);
 
 	[_array removeAllItems];
 }
@@ -245,7 +249,7 @@
 		_mutations++;
 
 		for (size_t i = 0; i < range.length; i++)
-			[copy[i] release];
+			objc_release(copy[i]);
 	} @finally {
 		OFFreeMemory(copy);
 	}
@@ -262,7 +266,7 @@
 
 	object = [self objectAtIndex: count - 1];
 	[_array removeLastItem];
-	[object release];
+	objc_release(object);
 
 	_mutations++;
 #endif
@@ -328,9 +332,9 @@
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFArrayEnumerator alloc]
-	    initWithArray: self
-	     mutationsPtr: &_mutations] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFArrayEnumerator alloc] initWithArray: self
+					mutationsPtr: &_mutations]);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -369,8 +373,8 @@
 			@throw [OFInvalidArgumentException exception];
 
 		if (new != objects[i]) {
-			[objects[i] release];
-			objects[i] = [new retain];
+			objc_release(objects[i]);
+			objects[i] = objc_retain(new);
 		}
 	}
 }

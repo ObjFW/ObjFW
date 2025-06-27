@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -19,9 +23,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -33,8 +34,7 @@ typedef void (^OFNotificationCenterBlock)(OFNotification *notification);
 #endif
 
 /**
- * @class OFNotificationCenter OFNotificationCenter.h \
- *	  ObjFW/OFNotificationCenter.h
+ * @class OFNotificationCenter OFNotificationCenter.h ObjFW/ObjFW.h
  *
  * @brief A class to send and register for notifications.
  */
@@ -43,9 +43,6 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFNotificationCenter: OFObject
 {
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
-#endif
 	OFMutableDictionary *_handles;
 }
 
@@ -108,7 +105,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Removes an observer. The specified observer must be one returned by
- *	  @ref addObserver:selector:name:object:.
+ *	  @ref addObserverForName:object:usingBlock:.
  *
  * @param observer The object that was returned when adding the observer
  */

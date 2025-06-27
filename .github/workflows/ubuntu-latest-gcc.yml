@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gobjc libssl-dev gnutls-dev libmbedtls-dev
+        sudo apt-get install gobjc libsctp-dev libssl-dev gnutls-dev libmbedtls-dev
     - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -65,6 +69,9 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	ADD_UINT(@"ObjFW version minor", [OFSystemInfo ObjFWVersionMinor])
 	ADD(@"Operating system name", [OFSystemInfo operatingSystemName]);
 	ADD(@"Operating system version", [OFSystemInfo operatingSystemVersion]);
+#ifdef OF_WINDOWS
+	ADD(@"Wine version", [OFSystemInfo wineVersion]);
+#endif
 	ADD_ULONGLONG(@"Page size", [OFSystemInfo pageSize]);
 	ADD_ULONGLONG(@"Number of CPUs", [OFSystemInfo numberOfCPUs]);
 	ADD(@"User config IRI", [OFSystemInfo userConfigIRI].string);
@@ -125,8 +132,13 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	    [OFSystemInfo supportsAVX512BFloat16Instructions]);
 #endif
 
-#ifdef OF_POWERPC
+#if defined(OF_POWERPC) || defined(OF_POWERPC64)
 	ADD_BOOL(@"Supports AltiVec", [OFSystemInfo supportsAltiVec]);
+#endif
+
+#ifdef OF_LOONGARCH64
+	ADD_BOOL(@"Supports LSX", [OFSystemInfo supportsLSX]);
+	ADD_BOOL(@"Supports LASX", [OFSystemInfo supportsLASX]);
 #endif
 
 #undef ADD

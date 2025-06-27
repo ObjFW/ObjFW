@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,7 +22,9 @@
 #include <errno.h>
 
 #import "OFGnuTLSTLSStream.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFGnuTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -28,12 +34,26 @@
 #import "OFWriteFailedException.h"
 
 int _ObjFWTLS_reference;
-static gnutls_certificate_credentials_t systemTrustCreds;
 
 #ifndef GNUTLS_SAFE_PADDING_CHECK
 /* Some older versions don't have it. */
 # define GNUTLS_SAFE_PADDING_CHECK 0
 #endif
+
+static OFTLSStreamErrorCode
+certificateStatusToErrorCode(gnutls_certificate_status_t status)
+{
+	if (status & GNUTLS_CERT_UNEXPECTED_OWNER)
+		return OFTLSStreamErrorCodeCertificateNameMismatch;
+	if (status & GNUTLS_CERT_REVOKED)
+		return OFTLSStreamErrorCodeCertificateRevoked;
+	if (status & (GNUTLS_CERT_EXPIRED | GNUTLS_CERT_NOT_ACTIVATED))
+		return OFTLSStreamErrorCodeCertificatedExpired;
+	if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
+		return OFTLSStreamErrorCodeCertificateIssuerUntrusted;
+
+	return OFTLSStreamErrorCodeCertificateVerificationFailed;
+}
 
 @implementation OFGnuTLSTLSStream
 static ssize_t
@@ -82,17 +102,6 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		OFTLSStreamImplementation = self;
 }
 
-+ (void)initialize
-{
-	if (self != [OFGnuTLSTLSStream class])
-		return;
-
-	if (gnutls_certificate_allocate_credentials(&systemTrustCreds) !=
-	    GNUTLS_E_SUCCESS ||
-	    gnutls_certificate_set_x509_system_trust(systemTrustCreds) < 0)
-		@throw [OFInitializationFailedException exception];
-}
-
 - (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving,
 				     OFReadyForWritingObserving> *)stream
 {
@@ -101,7 +110,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	@try {
 		_underlyingStream.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -110,26 +119,31 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (void)dealloc
 {
-	if (_initialized)
-		[self close];
+	[self close];
 
-	[_host release];
+	objc_release(_host);
 
 	[super dealloc];
 }
 
 - (void)close
 {
-	if (!_initialized)
+	if (_session == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_handshakeDone)
 		gnutls_bye(_session, GNUTLS_SHUT_WR);
 
 	gnutls_deinit(_session);
-	_initialized = _handshakeDone = false;
 
-	[_host release];
+	if (_credentials != NULL)
+		gnutls_certificate_free_credentials(_credentials);
+
+	_session = NULL;
+	_credentials = NULL;
+	_handshakeDone = false;
+
+	objc_release(_host);
 	_host = nil;
 
 	[super close];
@@ -178,7 +192,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		/* FIXME: Translate error to errNo */
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
-						      bytesWritten: ret
+						      bytesWritten: 0
 							     errNo: 0];
 	}
 
@@ -191,8 +205,9 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	    gnutls_record_check_pending(_session) > 0);
 }
 
-- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
-				runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)of_asyncPerformHandshakeWithHost: (OFString *)host
+				  server: (bool)server
+			     runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	static const OFTLSStreamErrorCode initFailedErrorCode =
 	    OFTLSStreamErrorCodeInitializationFailed;
@@ -200,41 +215,74 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	id exception = nil;
 	int status;
 
-	if (_initialized)
+	if (_handshakeDone)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
-	if (gnutls_init(&_session, GNUTLS_CLIENT | GNUTLS_NONBLOCK |
-	    GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
+	if (gnutls_init(&_session, (server ? GNUTLS_SERVER : GNUTLS_CLIENT) |
+	    GNUTLS_NONBLOCK | GNUTLS_SAFE_PADDING_CHECK) != GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
-
-	_initialized = true;
 
 	gnutls_transport_set_ptr(_session, self);
 	gnutls_transport_set_pull_function(_session, readFunc);
 	gnutls_transport_set_push_function(_session, writeFunc);
 
 	if (gnutls_set_default_priority(_session) != GNUTLS_E_SUCCESS ||
-	    gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
-	    systemTrustCreds) != GNUTLS_E_SUCCESS)
+	    gnutls_certificate_allocate_credentials(&_credentials) !=
+	    GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
 
 	_host = [host copy];
+	_server = server;
 
-	if (gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
-	    _host.UTF8String, _host.UTF8StringLength) != GNUTLS_E_SUCCESS)
+	if (!server) {
+		if (gnutls_certificate_set_x509_system_trust(_credentials) <
+		    0 || gnutls_server_name_set(_session, GNUTLS_NAME_DNS,
+		    _host.UTF8String, _host.UTF8StringLength) !=
+		    GNUTLS_E_SUCCESS)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+
+		if (_verifiesCertificates)
+			gnutls_session_set_verify_cert(_session,
+			    _host.UTF8String, 0);
+	}
+
+	if (_certificateChain.count > 0) {
+		OFMutableData *certs = [OFMutableData
+		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
+			    capacity: _certificateChain.count];
+		gnutls_x509_privkey_t key =
+		    ((OFGnuTLSX509Certificate *)_certificateChain.firstObject)
+		    .of_privateKey;
+
+		for (OFGnuTLSX509Certificate *cert in _certificateChain) {
+			gnutls_x509_crt_t gnuTLSCert = cert.of_certificate;
+			[certs addItem: &gnuTLSCert];
+		}
+
+		if (gnutls_certificate_set_x509_key(_credentials,
+		    (gnutls_x509_crt_t *)certs.items, (unsigned int)certs.count,
+		    key) < 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+	}
+
+	if (gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
+	    _credentials) != GNUTLS_E_SUCCESS)
 		@throw [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
 			      errorCode: initFailedErrorCode];
-
-	if (_verifiesCertificates)
-		gnutls_session_set_verify_cert(_session, _host.UTF8String, 0);
 
 	status = gnutls_handshake(_session);
 
@@ -247,27 +295,56 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 							length: 0
 						   runLoopMode: runLoopMode];
 
-		[_delegate retain];
+		objc_retain(_delegate);
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
 	if (status == GNUTLS_E_SUCCESS)
 		_handshakeDone = true;
-	else
+	else {
+		OFTLSStreamErrorCode errorCode = OFTLSStreamErrorCodeUnknown;
+
+		if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+			errorCode = certificateStatusToErrorCode(
+			    gnutls_session_get_verify_cert_status(_session));
+
 		/* FIXME: Map to better errors */
 		exception = [OFTLSHandshakeFailedException
 		    exceptionWithStream: self
 				   host: host
-			      errorCode: OFTLSStreamErrorCodeUnknown];
+			      errorCode: errorCode];
+	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: host
-					    exception: exception];
+	if (server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: host
+						    exception: exception];
+	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncPerformClientHandshakeWithHost: (OFString *)host
+				runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: host
+					server: false
+				   runLoopMode: runLoopMode];
+}
+
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[self of_asyncPerformHandshakeWithHost: nil
+					server: true
+				   runLoopMode: runLoopMode];
 }
 
 -      (bool)stream: (OFStream *)stream
@@ -292,20 +369,37 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 		if (status == GNUTLS_E_SUCCESS)
 			_handshakeDone = true;
-		else
+		else {
+			OFTLSStreamErrorCode errorCode =
+			    OFTLSStreamErrorCodeUnknown;
+
+			if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+				errorCode = certificateStatusToErrorCode(
+				    gnutls_session_get_verify_cert_status(
+				    _session));
+
+			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: errorCode];
+		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return false;
 }
@@ -335,20 +429,37 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 		if (status == GNUTLS_E_SUCCESS)
 			_handshakeDone = true;
-		else
+		else {
+			OFTLSStreamErrorCode errorCode =
+			    OFTLSStreamErrorCodeUnknown;
+
+			if (status == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+				errorCode = certificateStatusToErrorCode(
+				    gnutls_session_get_verify_cert_status(
+				    _session));
+
+			/* FIXME: Map to better errors */
 			exception = [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: _host
-				      errorCode: OFTLSStreamErrorCodeUnknown];
+				      errorCode: errorCode];
+		}
 	}
 
-	if ([_delegate respondsToSelector:
-	    @selector(stream:didPerformClientHandshakeWithHost:exception:)])
-		[_delegate		       stream: self
-		    didPerformClientHandshakeWithHost: _host
-					    exception: exception];
+	if (_server) {
+		if ([_delegate respondsToSelector: @selector(
+		    streamDidPerformServerHandshake:exception:)])
+			[_delegate streamDidPerformServerHandshake: self
+							 exception: exception];
+	} else {
+		if ([_delegate respondsToSelector: @selector(stream:
+		    didPerformClientHandshakeWithHost:exception:)])
+			[_delegate		       stream: self
+			    didPerformClientHandshakeWithHost: _host
+						    exception: exception];
+	}
 
-	[_delegate release];
+	objc_release(_delegate);
 
 	return nil;
 }

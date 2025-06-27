@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gcc-multilib
+        sudo apt-get install g++-multilib
     - uses: actions/checkout@v4
     - name: autogen.sh
       run: ./autogen.sh
@@ -35,3 +35,7 @@ jobs:
       run: make check
     - name: make install
       run: sudo make install
+    - name: C++ test
+      run: |
+        objfw-compile -o cxxtest .github/workflows/CXXTest.mm
+        ./cxxtest

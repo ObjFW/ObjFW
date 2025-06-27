@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -29,26 +33,62 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when a packet has been received.
  *
+ * @deprecated Use @ref OFSequencedPacketSocketPacketReceivedHandler instead.
+ *
  * @param length The length of the packet
  * @param exception An exception which occurred while receiving or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^OFSequencedPacketSocketAsyncReceiveBlock)(size_t length,
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use OFSequencedPacketSocketPacketReceivedHandler instead");
+
+/**
+ * @brief A handler which is called when a packet has been received.
+ *
+ * @param socket The sequenced packet socket which received a packet
+ * @param buffer The buffer the packet has been written to
+ * @param length The length of the packet
+ * @param exception An exception which occurred while receiving or `nil` on
+ *		    success
+ * @return A bool whether the same handler should be used for the next receive
+ */
+typedef bool (^OFSequencedPacketSocketPacketReceivedHandler)(
+    OFSequencedPacketSocket *socket, void *buffer, size_t length,
     id _Nullable exception);
 
 /**
  * @brief A block which is called when a packet has been sent.
+ *
+ * @deprecated Use @ref OFSequencedPacketSocketDataSentHandler instead.
  *
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
  * @return The data to repeat the send with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^OFSequencedPacketSocketAsyncSendDataBlock)(
-    id _Nullable exception);
+    id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use OFSequencedPacketSocketDataSentHandler instead");
+
+/**
+ * @brief A handler which is called when a packet has been sent.
+ *
+ * @param socket The sequenced packet socket which sent a packet
+ * @param data The data which was sent
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return The data to repeat the send with or nil if it should not repeat
+ */
+typedef OFData *_Nullable (^OFSequencedPacketSocketDataSentHandler)(
+    OFSequencedPacketSocket *socket, OFData *data, id _Nullable exception);
 
 /**
  * @brief A block which is called when the socket accepted a connection.
+ *
+ * @deprecated Use OFSequencedPacketSocketAcceptedHandler instead.
  *
  * @param acceptedSocket The socket which has been accepted
  * @param exception An exception which occurred while accepting the socket or
@@ -57,12 +97,28 @@ typedef OFData *_Nullable (^OFSequencedPacketSocketAsyncSendDataBlock)(
  *	   connection
  */
 typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
-    OFSequencedPacketSocket *acceptedSocket, id _Nullable exception);
+    OFSequencedPacketSocket *acceptedSocket, id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use OFSequencedPacketSocketAcceptedHandler instead");
+
+/**
+ * @brief A handler which is called when the socket accepted a connection.
+ *
+ * @param socket The socket which accepted the connection
+ * @param acceptedSocket The socket which has been accepted
+ * @param exception An exception which occurred while accepting the socket or
+ *		    `nil` on success
+ * @return A bool whether the same handler should be used for the next incoming
+ *	   connection
+ */
+typedef bool (^OFSequencedPacketSocketAcceptedHandler)(
+    OFSequencedPacketSocket *socket, OFSequencedPacketSocket *acceptedSocket,
+    id _Nullable exception);
 #endif
 
 /**
- * @protocol OFSequencedPacketSocketDelegate OFSequencedPacketSocket.h \
- *	     ObjFW/OFSequencedPacketSocket.h
+ * @protocol OFSequencedPacketSocketDelegate OFSequencedPacketSocket.h
+ *	     ObjFW/ObjFW.h
  *
  * @brief A delegate for OFSequencedPacketSocket.
  */
@@ -76,7 +132,7 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @param length The length of the packet
  * @param exception An exception that occurred while receiving, or nil on
  *		    success
- * @return A bool whether the same block should be used for the next receive
+ * @return A bool whether the same handler should be used for the next receive
  */
 -	  (bool)socket: (OFSequencedPacketSocket *)socket
   didReceiveIntoBuffer: (void *)buffer
@@ -110,8 +166,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 @end
 
 /**
- * @class OFSequencedPacketSocket OFSequencedPacketSocket.h \
- *	  ObjFW/OFSequencedPacketSocket.h
+ * @class OFSequencedPacketSocket OFSequencedPacketSocket.h
+ *	  ObjFW/ObjFW.h
  *
  * @brief A base class for sequenced packet sockets.
  *
@@ -221,6 +277,8 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
  *
+ * @deprecated Use @ref asyncReceiveIntoBuffer:length:handler: instead.
+ *
  * If the buffer is too small, the receive operation fails.
  *
  * @param buffer The buffer to write the packet to
@@ -233,11 +291,36 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block;
+			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReceiveIntoBuffer:length:handler:] instead");
 
 /**
  * @brief Asynchronously receives a packet and stores it into the specified
  *	  buffer.
+ *
+ * If the buffer is too small, the receive operation fails.
+ *
+ * @param buffer The buffer to write the packet to
+ * @param length The length of the buffer
+ * @param handler The handler to call when the packet has been received. If the
+ *		  handler returns true, it will be called again with the same
+ *		  buffer and maximum length when more packets have been
+ *		  received. If you want the next method in the queue to handle
+ *		  the packet received next, you need to return false from the
+ *		  method.
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler;
+
+/**
+ * @brief Asynchronously receives a packet and stores it into the specified
+ *	  buffer.
+ *
+ * @deprecated Use @ref asyncReceiveIntoBuffer:length:runLoopMode:handler:
+ *	       instead.
  *
  * If the buffer is too small, the receive operation fails.
  *
@@ -254,7 +337,32 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 		   runLoopMode: (OFRunLoopMode)runLoopMode
-			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block;
+			 block: (OFSequencedPacketSocketAsyncReceiveBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncReceiveIntoBuffer:length:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously receives a packet and stores it into the specified
+ *	  buffer.
+ *
+ * If the buffer is too small, the receive operation fails.
+ *
+ * @param buffer The buffer to write the packet to
+ * @param length The length of the buffer
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      receive
+ * @param handler The handler to call when the packet has been received. If the
+ *		  handler returns true, it will be called again with the same
+ *		  buffer and maximum length when more packets have been
+ *		  received. If you want the next method in the queue to handle
+ *		  the packet received next, you need to return false from the
+ *		  method.
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketPacketReceivedHandler)
+				    handler;
 #endif
 
 /**
@@ -287,16 +395,32 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously sends the specified packet.
  *
+ * @deprecated Use @ref asyncSendData:handler: instead.
+ *
  * @param data The data to send as a packet
  * @param block The block to call when the packet has been sent. It should
  *		return the data for the next send with the same callback or nil
  *		if it should not repeat.
  */
 - (void)asyncSendData: (OFData *)data
-		block: (OFSequencedPacketSocketAsyncSendDataBlock)block;
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncSendData:handler:] instead");
 
 /**
  * @brief Asynchronously sends the specified packet.
+ *
+ * @param data The data to send as a packet
+ * @param handler The handler to call when the packet has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  nil if it should not repeat.
+ */
+- (void)asyncSendData: (OFData *)data
+	      handler: (OFSequencedPacketSocketDataSentHandler)handler;
+
+/**
+ * @brief Asynchronously sends the specified packet.
+ *
+ * @deprecated Use @ref asyncSendData:runLoopMode:handler: instead.
  *
  * @param data The data to send as a packet
  * @param runLoopMode The run loop mode in which to perform the asynchronous
@@ -307,7 +431,23 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  */
 - (void)asyncSendData: (OFData *)data
 	  runLoopMode: (OFRunLoopMode)runLoopMode
-		block: (OFSequencedPacketSocketAsyncSendDataBlock)block;
+		block: (OFSequencedPacketSocketAsyncSendDataBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncSendData:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously sends the specified packet.
+ *
+ * @param data The data to send as a packet
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      send
+ * @param handler The handler to call when the packet has been sent. It should
+ *		  return the data for the next send with the same callback or
+ *		  nil if it should not repeat.
+ */
+- (void)asyncSendData: (OFData *)data
+	  runLoopMode: (OFRunLoopMode)runLoopMode
+	      handler: (OFSequencedPacketSocketDataSentHandler)handler;
 #endif
 
 /**
@@ -353,14 +493,28 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
 /**
  * @brief Asynchronously accept an incoming connection.
  *
+ * @deprecated Use @ref asyncAcceptWithHandler: instead.
+ *
  * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block;
+- (void)asyncAcceptWithBlock: (OFSequencedPacketSocketAsyncAcceptBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2, "Use -[asyncAcceptWithHandler:] instead");
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * @param handler The handler to execute when a new connection has been
+ *		  accepted. Returns whether the next incoming connection
+ *		  should be accepted by the specified handler as well.
+ */
+- (void)asyncAcceptWithHandler: (OFSequencedPacketSocketAcceptedHandler)handler;
+
+/**
+ * @brief Asynchronously accept an incoming connection.
+ *
+ * @deprecated Use @ref asyncAcceptWithRunLoopMode:handler: instead.
  *
  * @param runLoopMode The run loop mode in which to perform the asynchronous
  *		      accept
@@ -370,7 +524,22 @@ typedef bool (^OFSequencedPacketSocketAsyncAcceptBlock)(
  */
 - (void)
     asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
-			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block;
+			 block: (OFSequencedPacketSocketAsyncAcceptBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncAcceptWithRunLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously accept an incoming connection.
+ *
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      accept
+ * @param handler The handler to execute when a new connection has been
+ *		  accepted. Returns whether the next incoming connection
+ *		  should be accepted by the specified handler as well.
+ */
+- (void)
+    asyncAcceptWithRunLoopMode: (OFRunLoopMode)runLoopMode
+		       handler: (OFSequencedPacketSocketAcceptedHandler)handler;
 #endif
 
 /**

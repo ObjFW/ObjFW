@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -66,11 +70,15 @@
 #import "OFTarArchiveEntry.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFZooArchive.h"
+#import "OFZooArchiveEntry.h"
 #import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
 #import "OFINIFile.h"
+#import "OFEmbeddedIRIHandler.h"
+#import "OFINICategory.h"
 #import "OFSettings.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
@@ -79,13 +87,18 @@
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 # import "OFTLSStream.h"
+# import "OFX509Certificate.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
 # ifdef OF_HAVE_UNIX_SOCKETS
 #  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXSequencedPacketSocket.h"
 #  import "OFUNIXStreamSocket.h"
 # endif
 # ifdef OF_HAVE_IPX
@@ -156,7 +169,9 @@
 #import "OFAllocFailedException.h"
 #import "OFAlreadyOpenException.h"
 #import "OFException.h"
-#import "OFChangeCurrentDirectoryFailedException.h"
+#ifdef OF_HAVE_FILES
+# import "OFChangeCurrentDirectoryFailedException.h"
+#endif
 #import "OFChecksumMismatchException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
@@ -176,7 +191,8 @@
 #import "OFInvalidJSONException.h"
 #import "OFInvalidServerResponseException.h"
 #import "OFLinkItemFailedException.h"
-#ifdef OF_HAVE_PLUGINS
+#ifdef OF_HAVE_MODULES
+# import "OFLoadModuleFailedException.h"
 # import "OFLoadPluginFailedException.h"
 #endif
 #import "OFLockFailedException.h"
@@ -236,7 +252,8 @@
 # import "OFThreadStillRunningException.h"
 # import "OFWaitForConditionFailedException.h"
 #endif
-#ifdef OF_HAVE_PLUGINS
+#ifdef OF_HAVE_MODULES
+# import "OFModule.h"
 # import "OFPlugin.h"
 #endif
 #ifdef OF_WINDOWS

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -36,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @class OFNumber OFNumber.h ObjFW/OFNumber.h
+ * @class OFNumber OFNumber.h ObjFW/ObjFW.h
  *
  * @brief Provides a way to store a number in an object.
  */
@@ -49,51 +53,81 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The OFNumber as a `signed char`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`signed char`
  */
 @property (readonly, nonatomic) signed char charValue;
 
 /**
  * @brief The OFNumber as a `short`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`short`
  */
 @property (readonly, nonatomic) short shortValue;
 
 /**
  * @brief The OFNumber as an `int`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`int`
  */
 @property (readonly, nonatomic) int intValue;
 
 /**
  * @brief The OFNumber as a `long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`long`
  */
 @property (readonly, nonatomic) long longValue;
 
 /**
  * @brief The OFNumber as a `long long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into a
+ *				`long long`
  */
 @property (readonly, nonatomic) long long longLongValue;
 
 /**
  * @brief The OFNumber as an `unsigned char`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned char`
  */
 @property (readonly, nonatomic) unsigned char unsignedCharValue;
 
 /**
  * @brief The OFNumber as an `unsigned short`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned short`
  */
 @property (readonly, nonatomic) unsigned short unsignedShortValue;
 
 /**
  * @brief The OFNumber as an `unsigned int`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned int`
  */
 @property (readonly, nonatomic) unsigned int unsignedIntValue;
 
 /**
  * @brief The OFNumber as an `unsigned long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned long`
  */
 @property (readonly, nonatomic) unsigned long unsignedLongValue;
 
 /**
  * @brief The OFNumber as an `unsigned long long`.
+ *
+ * @throw OFOutOfRangeException The value is too big or too small to fit into an
+ *				`unsigned long long`
  */
 @property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
 

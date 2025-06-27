@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -111,7 +115,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	}
 }
 
-@implementation OFHostAddressResolver: OFObject
+@implementation OFHostAddressResolver
 - (instancetype)initWithHost: (OFString *)host
 	       addressFamily: (OFSocketAddressFamily)addressFamily
 		    resolver: (OFDNSResolver *)resolver
@@ -124,12 +128,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	@try {
 		_host = [host copy];
 		_addressFamily = addressFamily;
-		_resolver = [resolver retain];
+		_resolver = objc_retain(resolver);
 		_settings = [settings copy];
 		_runLoopMode = [runLoopMode copy];
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -138,12 +142,12 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 - (void)dealloc
 {
-	[_host release];
-	[_resolver release];
-	[_settings release];
-	[_runLoopMode release];
-	[_delegate release];
-	[_addresses release];
+	objc_release(_host);
+	objc_release(_resolver);
+	objc_release(_settings);
+	objc_release(_runLoopMode);
+	objc_release(_delegate);
+	objc_release(_addresses);
 
 	[super dealloc];
 }
@@ -239,7 +243,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	[_addresses makeImmutable];
 
 	if (_addresses.count == 0) {
-		[_addresses release];
+		objc_release(_addresses);
 		_addresses = nil;
 
 		if ([exception isKindOfClass:
@@ -346,9 +350,9 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 	OFHostAddressResolverDelegate *delegate;
 	OFData *ret;
 
-	delegate = [[[OFHostAddressResolverDelegate alloc] init] autorelease];
+	delegate = [[OFHostAddressResolverDelegate alloc] init];
+	_delegate = delegate;
 	_runLoopMode = [resolveRunLoopMode copy];
-	_delegate = [delegate retain];
 
 	[self asyncResolve];
 
@@ -363,15 +367,15 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 
 	ret = [delegate->_addresses copy];
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 @end
 
 @implementation OFHostAddressResolverDelegate
 - (void)dealloc
 {
-	[_addresses release];
-	[_exception release];
+	objc_release(_addresses);
+	objc_release(_exception);
 
 	[super dealloc];
 }
@@ -382,7 +386,7 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
        exception: (id)exception
 {
 	_addresses = [addresses copy];
-	_exception = [exception retain];
+	_exception = objc_retain(exception);
 	_done = true;
 }
 @end

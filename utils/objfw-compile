@@ -1,17 +1,21 @@
 #!/bin/sh
 #
-#  Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+#  Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
 #
 #  All rights reserved.
 #
-#  This file is part of ObjFW. It may be distributed under the terms of the
-#  Q Public License 1.0, which can be found in the file LICENSE.QPL included in
-#  the packaging of this file.
+#  This program is free software: you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License version 3.0 only,
+#  as published by the Free Software Foundation.
 #
-#  Alternatively, it may be distributed under the terms of the GNU General
-#  Public License, either version 2 or 3, which can be found in the file
-#  LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
-#  file.
+#  This program is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+#  version 3.0 for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  version 3.0 along with this program. If not, see
+#  <https://www.gnu.org/licenses/>.
 #
 
 if test x"$(basename "$0")" != x"objfw-compile"; then
@@ -40,6 +44,21 @@ parse_packages() {
 }
 parse_packages "$@"
 
+parse_static_libs() {
+	static_libs="no"
+
+	while test x"$1" != "x"; do
+		case "$1" in
+		--static-libs)
+			static_libs="yes"
+			break
+			;;
+		esac
+		shift
+	done
+}
+parse_static_libs "$@"
+
 show_help() {
 	cat >&2 <<__EOF__
 Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
@@ -51,6 +70,7 @@ Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
     --plugin        Compile a plugin instead of an application
     --package name  Use the specified package
     --builddir dir  Place built objects into the specified directory
+    --static-libs   Link ObjFW and packages statically
     -D*  -D *       Pass the specified define to the compiler
     -framework *    Pass the specified -framework argument to the linker
                     (macOS / iOS only)
@@ -73,7 +93,11 @@ __EOF__
 CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG $packages --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
 OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG $packages --objcflags) -Wall -g"
-LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
+if test x"$static_libs" = x"yes"; then
+	LIBS="$LIBS $($OBJFW_CONFIG $packages --static-libs)"
+else
+	LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
+fi
 LDFLAGS="$LDFLAGS $($OBJFW_CONFIG $packages --ldflags --rpath)"
 
 if test x"$1" = "x"; then
@@ -117,6 +141,7 @@ link="no"
 link_stdcpp="no"
 lib="no"
 plugin="no"
+static="no"
 out_prefix=""
 out_suffix=""
 
@@ -168,6 +193,9 @@ while test x"$1" != "x"; do
 	--builddir)
 		shift
 		builddir="$1"
+		;;
+	--static-libs)
+		# Already handled separately.
 		;;
 	-D)
 		shift
@@ -324,16 +352,6 @@ test x"$link_stdcpp" = x"yes" && LIBS="$LIBS -lstdc++"
 if test x"$lib" = x"yes"; then
 	export SHARED_LIB="$out_prefix$out$out_suffix"
 	LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
-fi
-
-if test x"$plugin" = x"yes" -a x"$out_suffix" = x".bundle"; then
-	# If $out_suffix is .bundle, it means we are creating a macOS bundle.
-	# These are not just a single file, but have a certain directory
-	# structure. Therefore we amend the output path to match the expected
-	# directory structure.
-	mkdir -p $out$out_suffix/Contents/MacOS
-	out="$out$out_suffix/Contents/MacOS/$(basename $out)"
-	out_suffix=""
 fi
 
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then

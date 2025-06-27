@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -262,27 +266,16 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 }
 #endif
 
-+ (instancetype)alloc
-{
-	OFMatrix4x4 *instance;
-	float (*values)[4];
-
-	instance = OFAllocObject(self, 16 * sizeof(float), 16,
-	    (void **)&values);
-	instance->_values = values;
-
-	return instance;
-}
-
 + (OFMatrix4x4 *)identityMatrix
 {
-	return [[[OFMatrix4x4 alloc]
-	    initWithValues: identityValues] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFMatrix4x4 alloc] initWithValues: identityValues]);
 }
 
 + (instancetype)matrixWithValues: (const float [4][4])values
 {
-	return [[[self alloc] initWithValues: values] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithValues: values]);
 }
 
 - (instancetype)init
@@ -326,7 +319,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 	for (uint_fast8_t i = 0; i < 4; i++)
 		for (uint_fast8_t j = 0; j < 4; j++)
-			OFHashAddHash(&hash, OFFloatToRawUInt32(_values[i][j]));
+			OFHashAddHash(&hash,
+			    OFBitConvertFloatToUInt32(_values[i][j]));
 
 	OFHashFinalize(&hash);
 
@@ -358,7 +352,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 		{ 0, 0, 0, 1 }
 	    }];
 	[self multiplyWithMatrix: translation];
-	[translation release];
+	objc_release(translation);
 }
 
 - (void)scaleWithVector: (OFVector3D)vector
@@ -371,12 +365,12 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 		{ 0, 0, 0, 1 }
 	    }];
 	[self multiplyWithMatrix: scale];
-	[scale release];
+	objc_release(scale);
 }
 
 - (OFVector4D)transformedVector: (OFVector4D)vector
 {
-	OFVector4D copy = vector;
+	OF_ALIGN(16) OFVector4D copy = vector;
 
 	[self transformVectors: &copy count: 1];
 

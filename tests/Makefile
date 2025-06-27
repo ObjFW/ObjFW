@@ -1,17 +1,20 @@
 include ../extra.mk
 
-SUBDIRS = ${TESTPLUGIN}	\
-	  ${SUBPROCESS}	\
-	  ${OBJC_SYNC}	\
+SUBDIRS = ${TESTPLUGIN}		\
+	  ${SUBPROCESS}		\
+	  gamecontroller	\
+	  ${OBJC_SYNC}		\
 	  terminal
 
-CLEAN = EBOOT.PBP		\
-	boot.dol		\
-	${PROG_NOINST}.arm9	\
-	${PROG_NOINST}.nds	\
-	${PROG_NOINST}.nro	\
-	${PROG_NOINST}.rpx	\
-	testfile_bin.m		\
+CLEAN = EBOOT.PBP			\
+	boot.dol			\
+	${PROG_NOINST}.3dsx		\
+	${PROG_NOINST}.arm9		\
+	${PROG_NOINST}.nds		\
+	${PROG_NOINST}.nro		\
+	${PROG_NOINST}.rpx		\
+	big_dictionary_msgpack_gz.m	\
+	testfile_bin.m			\
 	testfile_ini.m
 DISTCLEAN = Info.plist
 
@@ -39,10 +42,12 @@ SRCS = ForwardingTests.m			\
        OFIRITests.m				\
        OFInvocationTests.m			\
        OFJSONTests.m				\
+       OFLHAArchiveTests.m			\
        OFListTests.m				\
        OFLocaleTests.m				\
        OFMatrix4x4Tests.m			\
        OFMemoryStreamTests.m			\
+       OFMessagePackTests.m			\
        OFMethodSignatureTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
@@ -60,21 +65,27 @@ SRCS = ForwardingTests.m			\
        OFStreamTests.m				\
        OFStringTests.m				\
        OFSystemInfoTests.m			\
+       OFTarArchiveTests.m			\
        OFUTF8StringTests.m			\
        OFValueTests.m				\
        OFXMLElementBuilderTests.m		\
        OFXMLNodeTests.m				\
        OFXMLParserTests.m			\
+       OFZIPArchiveTests.m			\
+       OFZooArchiveTests.m			\
        ${RUNTIME_ARC_TESTS_M}			\
        RuntimeTests.m				\
-       ${USE_SRCS_PLUGINS}			\
+       ${USE_SRCS_FILES}			\
+       ${USE_SRCS_MODULES}			\
        ${USE_SRCS_SOCKETS}			\
        ${USE_SRCS_SUBPROCESSES}			\
        ${USE_SRCS_THREADS}			\
        ${USE_SRCS_WINDOWS}			\
+       big_dictionary_msgpack_gz.m		\
        testfile_bin.m				\
        testfile_ini.m
-SRCS_PLUGINS = OFPluginTests.m
+SRCS_FILES = OFFileManagerTests.m
+SRCS_MODULES = OFModuleTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       ${OF_HTTP_CLIENT_TESTS_M}	\
 	       OFHTTPCookieManagerTests.m	\
@@ -85,12 +96,15 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
+	       ${USE_SRCS_SCTP}			\
 	       ${USE_SRCS_UNIX_SOCKETS}
 SRCS_APPLETALK = OFDDPSocketTests.m
 SRCS_IPX = OFIPXSocketTests.m		\
 	   OFSPXSocketTests.m		\
 	   OFSPXStreamSocketTests.m
-SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m	\
+SRCS_SCTP = OFSCTPSocketTests.m
+SRCS_UNIX_SOCKETS = OFUNIXDatagramSocketTests.m		\
+		    OFUNIXSequencedPacketSocketTests.m	\
 		    OFUNIXStreamSocketTests.m
 SRCS_SUBPROCESSES = OFSubprocessTests.m
 SRCS_THREADS = OFThreadTests.m
@@ -98,10 +112,12 @@ SRCS_WINDOWS = OFWindowsRegistryKeyTests.m
 
 include ../buildsys.mk
 
+big_dictionary_msgpack_gz.m: big_dictionary.msgpack.gz
+	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
-	${SHELL} ../utils/objfw-embed testfile.bin testfile.bin $@
+	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
-	${SHELL} ../utils/objfw-embed testfile.ini testfile.ini $@
+	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android
 run:
@@ -112,6 +128,12 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR}
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}
+	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll
+	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib
+	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib
+	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -122,7 +144,7 @@ run:
 	fi
 	if test -f ../src/objfw${OBJFW_LIB_MAJOR}.dll; then \
 		${LN_S} ../src/objfw${OBJFW_LIB_MAJOR}.dll \
-			objfw${OBJFW_LIB_MAJOR}.dll; \
+		    objfw${OBJFW_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
 		${LN_S} ../src/libobjfw.dylib \
@@ -133,23 +155,51 @@ run:
 		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
 		${LN_S} ../src/runtime/libobjfwrt.so \
 		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
-	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
-		${LN_S} ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	then \
+		${LN_S} \
+		    ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} \
+		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
 	if test -f ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll; then \
 		${LN_S} ../src/runtime/objfwrt${OBJFWRT_LIB_MAJOR}.dll \
-			objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
+		    objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	fi
 	if test -f ../src/runtime/libobjfwrt.dylib; then \
 		${LN_S} ../src/runtime/libobjfwrt.dylib \
 		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	fi
+	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
+		cp ../src/runtime/${OBJFWRT_AMIGA_LIB} ${OBJFWRT_AMIGA_LIB}; \
+	fi
+	if test -f ../src/hid/libobjfwhid.so; then \
+		${LN_S} ../src/hid/libobjfwhid.so \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
+		${LN_S} ../src/hid/libobjfwhid.so \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/hid/libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	then \
+		${LN_S} ../src/hid/libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR} \
+		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	fi
+	if test -f ../src/hid/objfwhid${OBJFWHID_LIB_MAJOR}.dll; then \
+		${LN_S} ../src/hid/objfwhid${OBJFWHID_LIB_MAJOR}.dll \
+		    objfwhid${OBJFWHID_LIB_MAJOR}.dll; \
+	fi
+	if test -f ../src/hid/libobjfwhid.dylib; then \
+		${LN_S} ../src/hid/libobjfwhid.dylib \
+		    libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
+	fi
+	if test -f ../src/hid/libobjfwbridge.dylib; then \
+		${LN_S} ../src/bridge/libobjfwbridge.dylib \
+		    libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib; \
+	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
-	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
+	DYLD_FRAMEWORK_PATH=../src:../src/runtime:../src/hid:../src/bridge$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
-	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
+	${WRAPPER} ./${PROG_NOINST} ${TESTCASES}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}; \
 	rm -f objfw${OBJFW_LIB_MAJOR}.dll; \
@@ -158,6 +208,11 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll; \
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
+	rm -f libobjfwhid.so.${OBJFWHID_LIB_MAJOR_MINOR}; \
+	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll; \
+	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib; \
+	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
 run-on-android: all
@@ -169,6 +224,10 @@ run-on-android: all
 	if test -f ../src/runtime/libobjfwrt.so; then \
 		adb push ../src/runtime/libobjfwrt.so \
 		    /data/local/tmp/objfw/libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
+	fi
+	if test -f ../src/hid/libobjfwhid.so; then \
+		adb push ../src/hid/libobjfwhid.so \
+		    /data/local/tmp/objfw/libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
@@ -188,7 +247,8 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP} ../src/test/libobjfwtest.a \
+		${LIBOBJFWHID_DEP}
 
 ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
@@ -200,7 +260,7 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9 testfile.txt
 	rm -fr nds-data
 	mkdir -p nds-data
 	cp testfile.txt nds-data
-	ndstool -c $@ -9 ${PROG_NOINST} -d nds-data
+	ndstool -c $@ -7 ${DEVKITPRO}/calico/bin/ds7_maine.elf -9 ${PROG_NOINST} -d nds-data
 	rm -fr nds-data
 
 ${PROG_NOINST}.nro: ${PROG_NOINST} testfile.txt
@@ -223,15 +283,15 @@ CPPFLAGS += -I../src				\
 	    -DOBJFWTEST_LOCAL_INCLUDES		\
 	    -DPROG_SUFFIX=\"${PROG_SUFFIX}\"
 OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
-# Repetition is required for Wii U, as otherwise it cannot find main. Just
-# moving -lobjfwtest later doesn't work either, as then the linker cannot find
-# ObjFW symbols. So the only solution is to list everything twice.
-LIBS := -L../src/test	\
-	-lobjfwtest	\
-	${TESTS_LIBS}	\
-	${LIBS}		\
-	-lobjfwtest	\
-	${TESTS_LIBS}	\
-	${LIBS}
+# Repetition of libraries is required for Wii U, as otherwise it cannot find
+# main. Just moving -lobjfwtest later doesn't work either, as then the linker
+# cannot find ObjFW symbols. So the only solution is to list everything twice,
+# but hide it behind a variable because listing it twice causes a warning on
+# macOS.
+LIBS := -L../src/test		\
+	-lobjfwtest		\
+	${TESTS_LIBS}		\
+	${LIBS}			\
+	${WII_U_TESTS_LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

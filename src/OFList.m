@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -33,9 +37,8 @@ OF_DIRECT_MEMBERS
 @interface OFListEnumerator: OFEnumerator
 {
 	OFList *_list;
-	OFListItem _Nullable _current;
-	unsigned long _mutations;
-	unsigned long *_Nullable _mutationsPtr;
+	OFListItem _current;
+	unsigned long _mutations, *_mutationsPtr;
 }
 
 - (instancetype)initWithList: (OFList *)list
@@ -65,7 +68,7 @@ OFListItemObject(OFListItem listItem)
 
 + (instancetype)list
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (void)dealloc
@@ -73,7 +76,7 @@ OFListItemObject(OFListItem listItem)
 	OFListItem next;
 
 	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
-		[iter->object release];
+		objc_release(iter->object);
 		next = iter->next;
 		OFFreeMemory(iter);
 	}
@@ -85,7 +88,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem listItem = OFAllocMemory(1, sizeof(*listItem));
 
-	listItem->object = [object retain];
+	listItem->object = objc_retain(object);
 	listItem->next = NULL;
 	listItem->previous = _lastListItem;
 
@@ -107,7 +110,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem listItem = OFAllocMemory(1, sizeof(*listItem));
 
-	listItem->object = [object retain];
+	listItem->object = objc_retain(object);
 	listItem->next = _firstListItem;
 	listItem->previous = NULL;
 
@@ -128,7 +131,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem newListItem = OFAllocMemory(1, sizeof(*newListItem));
 
-	newListItem->object = [object retain];
+	newListItem->object = objc_retain(object);
 	newListItem->next = listItem;
 	newListItem->previous = listItem->previous;
 
@@ -150,7 +153,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem newListItem = OFAllocMemory(1, sizeof(*newListItem));
 
-	newListItem->object = [object retain];
+	newListItem->object = objc_retain(object);
 	newListItem->next = listItem->next;
 	newListItem->previous = listItem;
 
@@ -183,7 +186,7 @@ OFListItemObject(OFListItem listItem)
 	_count--;
 	_mutations++;
 
-	[listItem->object release];
+	objc_release(listItem->object);
 	OFFreeMemory(listItem);
 }
 
@@ -261,7 +264,7 @@ OFListItemObject(OFListItem listItem)
 	_mutations++;
 
 	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
-		[iter->object release];
+		objc_release(iter->object);
 		next = iter->next;
 		OFFreeMemory(iter);
 	}
@@ -278,7 +281,7 @@ OFListItemObject(OFListItem listItem)
 		for (OFListItem iter = _firstListItem;
 		    iter != NULL; iter = iter->next) {
 			listItem = OFAllocMemory(1, sizeof(*listItem));
-			listItem->object = [iter->object retain];
+			listItem->object = objc_retain(iter->object);
 			listItem->next = NULL;
 			listItem->previous = previous;
 
@@ -292,7 +295,7 @@ OFListItemObject(OFListItem listItem)
 			previous = listItem;
 		}
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -374,9 +377,9 @@ OFListItemObject(OFListItem listItem)
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFListEnumerator alloc] initWithList: self
-				      mutationsPointer: &_mutations]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFListEnumerator alloc] initWithList: self
+				  mutationsPointer: &_mutations]);
 }
 @end
 
@@ -386,7 +389,7 @@ OFListItemObject(OFListItem listItem)
 {
 	self = [super init];
 
-	_list = [list retain];
+	_list = objc_retain(list);
 	_current = _list.firstListItem;
 	_mutations = *mutationsPtr;
 	_mutationsPtr = mutationsPtr;
@@ -396,7 +399,7 @@ OFListItemObject(OFListItem listItem)
 
 - (void)dealloc
 {
-	[_list release];
+	objc_release(_list);
 
 	[super dealloc];
 }

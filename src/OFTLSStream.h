@@ -1,25 +1,31 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStream.h"
 #import "OFRunLoop.h"
+#import "OFX509Certificate.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+@class OFArray OF_GENERIC(ObjectType);
 @class OFTLSStream;
 
 /**
@@ -29,15 +35,26 @@ typedef enum {
 	/** @brief An unknown error. */
 	OFTLSStreamErrorCodeUnknown,
 	/** @brief Initialization of the TLS context failed. */
-	OFTLSStreamErrorCodeInitializationFailed
+	OFTLSStreamErrorCodeInitializationFailed,
+	/** @brief Failed to verify certificate. */
+	OFTLSStreamErrorCodeCertificateVerificationFailed,
+	/** @brief The certificate has an untrusted or unknown issuer. */
+	OFTLSStreamErrorCodeCertificateIssuerUntrusted,
+	/** @brief The certificate is for a different name. */
+	OFTLSStreamErrorCodeCertificateNameMismatch,
+	/** @brief The certificate has expired or is not yet valid. */
+	OFTLSStreamErrorCodeCertificatedExpired,
+	/** @brief The certificate has been revoked. */
+	OFTLSStreamErrorCodeCertificateRevoked
 } OFTLSStreamErrorCode;
 
 /**
- * @protocol OFTLSStreamDelegate OFTLSStream.h ObjFW/OFTLSStream.h
+ * @protocol OFTLSStreamDelegate OFTLSStream.h ObjFW/ObjFW.h
  *
  * A delegate for OFTLSStream.
  */
 @protocol OFTLSStreamDelegate <OFStreamDelegate>
+@optional
 /**
  * @brief A method which is called when a TLS stream performed the client
  *	  handshake.
@@ -50,10 +67,21 @@ typedef enum {
 -		       (void)stream: (OFTLSStream *)stream
   didPerformClientHandshakeWithHost: (OFString *)host
 			  exception: (nullable id)exception;
+
+/**
+ * @brief A method which is called when a TLS stream performed the server
+ *	  handshake.
+ *
+ * @param stream The TLS stream which performed the handshake
+ * @param exception An exception that occurred during the handshake, or nil on
+ *		    success
+ */
+- (void)streamDidPerformServerHandshake: (OFTLSStream *)stream
+			      exception: (nullable id)exception;
 @end
 
 /**
- * @class OFTLSStream OFTLSStream.h ObjFW/OFTLSStream.h
+ * @class OFTLSStream OFTLSStream.h ObjFW/ObjFW.h
  *
  * @brief A class that provides Transport Layer Security on top of a stream.
  *
@@ -74,7 +102,8 @@ typedef enum {
 	OFStream <OFReadyForReadingObserving, OFReadyForWritingObserving>
 	    *_underlyingStream;
 	bool _verifiesCertificates;
-	OF_RESERVE_IVARS(OFTLSStream, 4)
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OF_RESERVE_IVARS(OFTLSStream, 3)
 }
 
 /**
@@ -96,6 +125,12 @@ typedef enum {
  * @brief Whether certificates are verified. Default is true.
  */
 @property (nonatomic) bool verifiesCertificates;
+
+/**
+ * @brief The certificate chain to use.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -153,8 +188,40 @@ typedef enum {
  * @param host The host to perform the handshake with
  * @throw OFTLSHandshakeFailedException The TLS handshake failed
  * @throw OFAlreadyOpenException The handshake was already performed
+ * @throw OFReadFailedException The underlying stream had a read error
+ * @throw OFWriteFailedException The underlying stream had a write error
  */
 - (void)performClientHandshakeWithHost: (OFString *)host;
+
+/**
+ * @brief Asynchronously performs the TLS server handshake and calls the
+ *	  delegate afterwards.
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ */
+- (void)asyncPerformServerHandshake;
+
+/**
+ * @brief Asynchronously performs the TLS server handshake and calls the
+ *	  delegate afterwards.
+ *
+ * @param runLoopMode The run loop mode in which to perform the async handshake
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ */
+- (void)asyncPerformServerHandshakeWithRunLoopMode: (OFRunLoopMode)runLoopMode;
+
+/**
+ * @brief Performs the TLS server handshake.
+ *
+ * @throw OFTLSHandshakeFailedException The TLS handshake failed
+ * @throw OFAlreadyOpenException The handshake was already performed
+ * @throw OFReadFailedException The underlying stream had a read error
+ * @throw OFWriteFailedException The underlying stream had a write error
+ */
+- (void)performServerHandshake;
 @end
 
 #ifdef __cplusplus
@@ -164,8 +231,8 @@ extern "C" {
  * @brief The implementation for OFTLSStream to use.
  *
  * This can be set to a class that is always used for OFTLSStream. This is
- * useful to either force a specific implementation or use one that ObjFW does
- * not know about.
+ * useful to either force a specific implementation or to use one that ObjFW
+ * does not know about.
  */
 extern Class OFTLSStreamImplementation;
 

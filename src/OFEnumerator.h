@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -21,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFEnumerator OF_GENERIC(ObjectType);
 
 /**
- * @protocol OFEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for getting an enumerator for the object.
  *
@@ -46,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * this as well.
  */
 /**
- * @struct OFFastEnumerationState OFEnumerator.h ObjFW/OFEnumerator.h
+ * @struct OFFastEnumerationState OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief State information for fast enumerations.
  */
@@ -60,12 +64,14 @@ typedef struct {
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } OFFastEnumerationState;
-#ifndef NSINTEGER_DEFINED
+#ifdef NSINTEGER_DEFINED
+# define OFFastEnumerationState NSFastEnumerationState
+#else
 typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 
 /**
- * @protocol OFFastEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFFastEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for fast enumeration.
  *
@@ -92,7 +98,7 @@ typedef OFFastEnumerationState NSFastEnumerationState;
 @end
 
 /**
- * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
+ * @class OFEnumerator OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to enumerate through collections.
  */

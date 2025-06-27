@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,23 +27,20 @@
 #import "OFConcreteDictionary.h"
 #import "OFData.h"
 #import "OFEnumerator.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 #import "OFUndefinedKeyException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
-@interface OFDictionary ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFDictionary () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderDictionary: OFDictionary
+@end
+
+@interface OFConcreteDictionarySingleton: OFConcreteDictionary
 @end
 
 OF_DIRECT_MEMBERS
@@ -52,6 +53,18 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
+static struct {
+	Class isa;
+} placeholder;
+
+static OFConcreteDictionarySingleton *emptyDictionary;
+
+static void
+emptyDictionaryInit(void)
+{
+	emptyDictionary = [[OFConcreteDictionarySingleton alloc] init];
+}
+
 @implementation OFPlaceholderDictionary
 #ifdef __clang__
 /* We intentionally don't call into super, so silence the warning. */
@@ -61,7 +74,9 @@ OF_DIRECT_MEMBERS
 #endif
 - (instancetype)init
 {
-	return (id)[[OFConcreteDictionary alloc] init];
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, emptyDictionaryInit);
+	return (id)emptyDictionary;
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
@@ -117,6 +132,10 @@ OF_DIRECT_MEMBERS
 OF_SINGLETON_METHODS
 @end
 
+@implementation OFConcreteDictionarySingleton
+OF_SINGLETON_METHODS
+@end
+
 @implementation OFDictionary
 + (void)initialize
 {
@@ -135,34 +154,37 @@ OF_SINGLETON_METHODS
 
 + (instancetype)dictionary
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)dictionaryWithDictionary: (OFDictionary *)dictionary
 {
-	return [[(OFDictionary *)[self alloc]
-	    initWithDictionary: dictionary] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [(OFDictionary *)[self alloc] initWithDictionary: dictionary]);
 }
 
 + (instancetype)dictionaryWithObject: (id)object forKey: (id)key
 {
-	return [[[self alloc] initWithObject: object forKey: key] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithObject: object
+								 forKey: key]);
 }
 
 + (instancetype)dictionaryWithObjects: (OFArray *)objects
 			      forKeys: (OFArray *)keys
 {
-	return [[[self alloc] initWithObjects: objects
-				      forKeys: keys] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				  forKeys: keys]);
 }
 
 + (instancetype)dictionaryWithObjects: (id const *)objects
 			      forKeys: (id const *)keys
 				count: (size_t)count
 {
-	return [[[self alloc] initWithObjects: objects
-				      forKeys: keys
-					count: count] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				  forKeys: keys
+				    count: count]);
 }
 
 + (instancetype)dictionaryWithKeysAndObjects: (id)firstKey, ...
@@ -171,11 +193,10 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[[self alloc] initWithKey: firstKey
-			       arguments: arguments] autorelease];
+	ret = [[self alloc] initWithKey: firstKey arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (instancetype)init
@@ -185,7 +206,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -213,7 +234,7 @@ OF_SINGLETON_METHODS
 		objects = objects_.objects;
 		keys = keys_.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -234,7 +255,7 @@ OF_SINGLETON_METHODS
 		if (key == nil || object == nil)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -256,7 +277,7 @@ OF_SINGLETON_METHODS
 		objects = objects_.objects;
 		keys = keys_.objects;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -341,7 +362,7 @@ OF_SINGLETON_METHODS
 		OFFreeMemory(objects);
 		OFFreeMemory(keys);
 
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -392,7 +413,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -521,8 +542,8 @@ OF_SINGLETON_METHODS
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFDictionaryObjectEnumerator alloc]
-	    initWithDictionary: self] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFDictionaryObjectEnumerator alloc] initWithDictionary: self]);
 }
 
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
@@ -674,10 +695,11 @@ OF_SINGLETON_METHODS
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *keyEnumerator = [self keyEnumerator];
-	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	OFArray *keys = self.allKeys;
 	size_t i, count = self.count;
-	id key, object;
+
+	if (options & OFJSONRepresentationOptionSorted)
+		keys = keys.sortedArray;
 
 	if (options & OFJSONRepresentationOptionPretty) {
 		OFMutableString *indentation = [OFMutableString string];
@@ -688,9 +710,9 @@ OF_SINGLETON_METHODS
 		[JSON appendString: @"\n"];
 
 		i = 0;
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil) {
+		for (id key in keys) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = [self objectForKey: key];
 			int identifierOptions =
 			    options | OFJSONRepresentationOptionIsIdentifier;
 
@@ -718,9 +740,9 @@ OF_SINGLETON_METHODS
 		[JSON appendString: indentation];
 	} else {
 		i = 0;
-		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil) {
+		for (id key in keys) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = [self objectForKey: key];
 			int identifierOptions =
 			    options | OFJSONRepresentationOptionIsIdentifier;
 
@@ -818,12 +840,12 @@ OF_SINGLETON_METHODS
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		_dictionary = [dictionary retain];
-		_keyEnumerator = [[_dictionary keyEnumerator] retain];
+		_dictionary = objc_retain(dictionary);
+		_keyEnumerator = objc_retain([_dictionary keyEnumerator]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -832,8 +854,8 @@ OF_SINGLETON_METHODS
 
 - (void)dealloc
 {
-	[_dictionary release];
-	[_keyEnumerator release];
+	objc_release(_dictionary);
+	objc_release(_keyEnumerator);
 
 	[super dealloc];
 }

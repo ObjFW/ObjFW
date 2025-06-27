@@ -1,19 +1,29 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
+
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
 
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
@@ -23,6 +33,8 @@
 .section .text
 .macro GENERATE_LOOKUP name notFound
 \name:
+	_CET_ENDBR
+
 	testq	%rcx, %rcx
 	jz	.LreturnNilMethod
 
@@ -58,11 +70,11 @@
 	jmp	\notFound
 
 .LtaggedPointer_\name:
-	xorq	objc_taggedPointerSecret(%rip), %rcx
+	xorq	_objc_taggedPointerSecret(%rip), %rcx
 	andb	$0xE, %cl
 	movzbl	%cl, %r8d
 
-	leaq	objc_taggedPointerClasses(%rip), %rax
+	leaq	_objc_taggedPointerClasses(%rip), %rax
 	movq	(%rax,%r8,4), %r8
 	movq	56(%r8), %r8
 
@@ -75,6 +87,8 @@
 
 .macro GENERATE_LOOKUP_SUPER name lookup
 \name:
+	_CET_ENDBR
+
 	movq	%rcx, %r8
 	movq	(%rcx), %rcx
 	testq	%rcx, %rcx
@@ -89,8 +103,8 @@
 .endef
 .endm
 
-GENERATE_LOOKUP objc_msg_lookup objc_methodNotFound
-GENERATE_LOOKUP objc_msg_lookup_stret objc_methodNotFound_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
 GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
@@ -99,5 +113,7 @@ GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 	ret
 
 .LnilMethod:
+	_CET_ENDBR
+
 	xorq	%rax, %rax
 	ret

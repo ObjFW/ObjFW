@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -160,17 +164,18 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	for (uint16_t i = 280; i <= 287; i++)
 		lengths[i] = 8;
 
-	fixedLitLenTree = OFHuffmanTreeNew(lengths, 288);
+	fixedLitLenTree = _OFHuffmanTreeNew(lengths, 288);
 
 	for (uint16_t i = 0; i <= 31; i++)
 		lengths[i] = 5;
 
-	fixedDistTree = OFHuffmanTreeNew(lengths, 32);
+	fixedDistTree = _OFHuffmanTreeNew(lengths, 32);
 }
 
 + (instancetype)streamWithStream: (OFStream *)stream
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream]);
 }
 
 - (instancetype)init
@@ -183,7 +188,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		/* 0-7 address the bit, 8 means fetch next byte */
 		_bitIndex = 8;
@@ -195,7 +200,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 #endif
 		_slidingWindow = OFAllocZeroedMemory(_slidingWindowMask + 1, 1);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -213,14 +218,14 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 		OFFreeMemory(_context.huffmanTree.lengths);
 
 		if (_context.huffmanTree.codeLenTree != NULL)
-			OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
+			_OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
 	}
 
 	if (_state == stateHuffmanTree || _state == stateHuffmanBlock) {
 		if (_context.huffman.litLenTree != fixedLitLenTree)
-			OFHuffmanTreeFree(_context.huffman.litLenTree);
+			_OFHuffmanTreeFree(_context.huffman.litLenTree);
 		if (_context.huffman.distTree != fixedDistTree)
-			OFHuffmanTreeFree(_context.huffman.distTree);
+			_OFHuffmanTreeFree(_context.huffman.distTree);
 	}
 
 	[super dealloc];
@@ -328,6 +333,9 @@ start:
 		tmp = (uint16_t)[_stream readIntoBuffer: buffer + bytesWritten
 						 length: tmp];
 
+		if OF_UNLIKELY (tmp == 0)
+			return bytesWritten;
+
 		slidingWindow = _slidingWindow;
 		slidingWindowIndex = _slidingWindowIndex;
 		for (uint_fast16_t i = 0; i < tmp; i++) {
@@ -388,7 +396,7 @@ start:
 				CTX.lengths[codeLengthsOrder[i]] = bits;
 			}
 
-			CTX.codeLenTree = OFHuffmanTreeNew(CTX.lengths, 19);
+			CTX.codeLenTree = _OFHuffmanTreeNew(CTX.lengths, 19);
 			CTX.treeIter = CTX.codeLenTree;
 
 			OFFreeMemory(CTX.lengths);
@@ -406,7 +414,7 @@ start:
 			uint8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
-				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
+				if OF_UNLIKELY (!_OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value)) {
 					CTX.receivedCount = i;
 					return bytesWritten;
@@ -473,12 +481,12 @@ start:
 			CTX.value = 0xFF;
 		}
 
-		OFHuffmanTreeFree(CTX.codeLenTree);
+		_OFHuffmanTreeFree(CTX.codeLenTree);
 		CTX.codeLenTree = NULL;
 
-		CTX.litLenTree = OFHuffmanTreeNew(CTX.lengths,
+		CTX.litLenTree = _OFHuffmanTreeNew(CTX.lengths,
 		    CTX.litLenCodesCount + 257);
-		CTX.distTree = OFHuffmanTreeNew(
+		CTX.distTree = _OFHuffmanTreeNew(
 		    CTX.lengths + CTX.litLenCodesCount + 257,
 		    CTX.distCodesCount + 1);
 
@@ -530,7 +538,7 @@ start:
 
 			/* Distance of length distance pair */
 			if (CTX.state == huffmanStateAwaitDistance) {
-				if OF_UNLIKELY (!OFHuffmanTreeWalk(self,
+				if OF_UNLIKELY (!_OFHuffmanTreeWalk(self,
 				    tryReadBits, &CTX.treeIter, &value))
 					return bytesWritten;
 
@@ -594,16 +602,16 @@ start:
 				CTX.treeIter = CTX.litLenTree;
 			}
 
-			if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+			if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 			    &CTX.treeIter, &value))
 				return bytesWritten;
 
 			/* End of block */
 			if OF_UNLIKELY (value == 256) {
 				if (CTX.litLenTree != fixedLitLenTree)
-					OFHuffmanTreeFree(CTX.litLenTree);
+					_OFHuffmanTreeFree(CTX.litLenTree);
 				if (CTX.distTree != fixedDistTree)
-					OFHuffmanTreeFree(CTX.distTree);
+					_OFHuffmanTreeFree(CTX.distTree);
 
 				_state = stateBlockHeader;
 				goto start;
@@ -690,7 +698,7 @@ start:
 			   length: _bufferLength - _bufferIndex];
 	_bufferIndex = _bufferLength = 0;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -32,7 +36,8 @@
 
 + (instancetype)streamWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream mode: mode]);
 }
 
 - (instancetype)init
@@ -50,11 +55,11 @@
 			    exceptionWithSelector: _cmd
 					   object: nil];
 
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 		_operatingSystemMadeOn = OFGZIPStreamOperatingSystemUnknown;
 		_CRC32 = ~0;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,8 +71,8 @@
 	if (_stream != nil)
 		[self close];
 
-	[_inflateStream release];
-	[_modificationDate release];
+	objc_release(_inflateStream);
+	objc_release(_modificationDate);
 
 	[super dealloc];
 }
@@ -81,7 +86,13 @@
 		uint8_t byte;
 		uint32_t CRC32, uncompressedSize;
 
-		if (_stream.atEndOfStream) {
+		/*
+		 * The inflate stream might have overread, causing _stream to
+		 * be at the end, but the inflate stream will unread it once it
+		 * has reached the end. Hence only check it if the state is not
+		 * OFGZIPStreamStateData.
+		 */
+		if (_state != OFGZIPStreamStateData && _stream.atEndOfStream) {
 			if (_state != OFGZIPStreamStateID1)
 				@throw [OFTruncatedDataException exception];
 
@@ -118,7 +129,7 @@
 			if (_bytesRead < 4)
 				return 0;
 
-			[_modificationDate release];
+			objc_release(_modificationDate);
 			_modificationDate = nil;
 
 			_modificationDate = [[OFDate alloc]
@@ -238,13 +249,13 @@
 				    readIntoBuffer: buffer
 					    length: length];
 
-				_CRC32 = OFCRC32(_CRC32, buffer, bytesRead);
-				_uncompressedSize += bytesRead;
+				_CRC32 = _OFCRC32(_CRC32, buffer, bytesRead);
+				_uncompressedSize += (uint32_t)bytesRead;
 
 				return bytesRead;
 			}
 
-			[_inflateStream release];
+			objc_release(_inflateStream);
 			_inflateStream = nil;
 
 			_state++;
@@ -308,6 +319,14 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	/*
+	 * The inflate stream might have overread, causing _stream to be at the
+	 * end, but the inflate stream will unread it once it has reached the
+	 * end.
+	 */
+	if (_state == OFGZIPStreamStateData && !_inflateStream.atEndOfStream)
+		return false;
+
 	return _stream.atEndOfStream;
 }
 
@@ -324,7 +343,7 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

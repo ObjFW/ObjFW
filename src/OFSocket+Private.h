@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -53,10 +57,10 @@
 # define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)
 # define hstrerror(err) "unknown (no hstrerror)"
 # define SOCKET_ERROR -1
-# if defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
-#  define SocketBase ((struct Library *)OFTLSKeyGet(OFSocketBaseKey))
+# ifdef OF_HAVE_THREADS
+#  define SocketBase ((struct Library *)OFTLSKeyGet(_OFSocketBaseKey))
 #  ifdef OF_AMIGAOS4
-#   define ISocket ((struct SocketIFace *)OFTLSKeyGet(OFSocketInterfaceKey))
+#   define ISocket ((struct SocketIFace *)OFTLSKeyGet(_OFSocketInterfaceKey))
 #  endif
 # endif
 # ifdef OF_MORPHOS
@@ -91,3 +95,30 @@ typedef uint32_t in_addr_t;
 typedef u32 in_addr_t;
 typedef u32 nfds_t;
 #endif
+
+OF_ASSUME_NONNULL_BEGIN
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern bool _OFSocketInit(void) OF_VISIBILITY_INTERNAL;
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+extern void _OFSocketDeinit(void) OF_VISIBILITY_INTERNAL;
+#endif
+extern int _OFSocketErrNo(void) OF_VISIBILITY_INTERNAL;
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen) OF_VISIBILITY_INTERNAL;
+#endif
+
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_INTERNAL;
+# ifdef OF_AMIGAOS4
+extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_INTERNAL;
+# endif
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+OF_ASSUME_NONNULL_END

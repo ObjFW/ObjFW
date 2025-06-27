@@ -1,19 +1,21 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define __NO_EXT_QNX
 
 #include "config.h"
 
@@ -59,19 +61,9 @@
 @synthesize execSignalMask = _execSignalMask;
 #endif
 
-+ (void)initialize
-{
-	if (self != [OFKernelEventObserver class])
-		return;
-
-	if (!OFSocketInit())
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-
 + (instancetype)observer
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)alloc
@@ -92,7 +84,17 @@
 	return [super alloc];
 }
 
++ (bool)handlesForeignEvents
+{
+	return false;
+}
+
 - (instancetype)init
+{
+	return [self initWithRunLoopMode: nil];
+}
+
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	self = [super init];
 
@@ -101,6 +103,10 @@
     !defined(OF_NINTENDO_3DS)
 		socklen_t cancelAddrLen;
 #endif
+
+		if (!_OFSocketInit())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
 
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
@@ -130,7 +136,7 @@
 			    exceptionWithClass: self.class];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (OFGetSockName(_cancelFD[0],
+		if (_OFGetSockName(_cancelFD[0],
 		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -150,14 +156,14 @@
 			if (ret == 0)
 				break;
 
-			if (OFSocketErrNo() != EADDRINUSE)
+			if (_OFSocketErrNo() != EADDRINUSE)
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: self.class];
 		}
 # endif
 #endif
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -176,8 +182,8 @@
 		closesocket(_cancelFD[1]);
 #endif
 
-	[_readObjects release];
-	[_writeObjects release];
+	objc_release(_readObjects);
+	objc_release(_writeObjects);
 
 	[super dealloc];
 }
@@ -202,25 +208,25 @@
 	[_writeObjects removeObjectIdenticalTo: object];
 }
 
-- (bool)of_processReadBuffers
+- (bool)processReadBuffers
 {
 	void *pool = objc_autoreleasePoolPush();
 	bool foundInReadBuffer = false;
 
-	for (id object in [[_readObjects copy] autorelease]) {
+	for (OFStream *stream in objc_autorelease([_readObjects copy])) {
 		void *pool2;
 
-		if (![object isKindOfClass: [OFStream class]])
+		if (![stream isKindOfClass: [OFStream class]])
 			continue;
 
 		pool2 = objc_autoreleasePoolPush();
 
-		if ([object hasDataInReadBuffer] &&
-		    (![object of_isWaitingForDelimiter] ||
-		    [object lowlevelHasDataInReadBuffer])) {
+		if (stream.hasDataInReadBuffer &&
+		    (!stream.of_waitingForDelimiter ||
+		    [stream lowlevelHasDataInReadBuffer])) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading: object];
+				[_delegate objectIsReadyForReading: stream];
 
 			foundInReadBuffer = true;
 		}
@@ -264,13 +270,16 @@
 
 	Permit();
 #elif defined(OF_HAVE_PIPE)
-	OFEnsure(write(_cancelFD[1], "", 1) > 0);
+	while (write(_cancelFD[1], "", 1) < 1)
+		OFEnsure(errno == EINTR);
 #elif defined(OF_WII)
-	OFEnsure(sendto(_cancelFD[1], "", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, 8) > 0);
+	while (sendto(_cancelFD[1], "", 1, 0,
+	    (struct sockaddr *)&_cancelAddr, 8) < 1)
+		OFEnsure(_OFSocketErrNo() == EINTR);
 #else
-	OFEnsure(sendto(_cancelFD[1], (void *)"", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) > 0);
+	while (sendto(_cancelFD[1], (void *)"", 1, 0,
+	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) < 1)
+		OFEnsure(_OFSocketErrNo() == EINTR);
 #endif
 }
 @end

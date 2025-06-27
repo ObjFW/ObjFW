@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -25,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFIRI OFIRI.h ObjFW/OFIRI.h
+ * @class OFIRI OFIRI.h ObjFW/ObjFW.h
  *
  * @brief A class for representing IRIs, URIs, URLs and URNs, for parsing them
  *	  as well as accessing parts of them.
@@ -114,6 +118,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, copy, nonatomic) OFString *lastPathComponent;
 
 /**
+ * @brief The path extension of the IRI.
+ */
+@property (readonly, copy, nonatomic) OFString *pathExtension;
+
+/**
  * @brief The query part of the IRI.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
@@ -160,6 +169,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The IRI with relative subpaths resolved.
  */
 @property (readonly, nonatomic) OFIRI *IRIByStandardizingPath;
+
+/**
+ * @brief The IRI with the last path component deleted.
+ */
+@property (readonly, nonatomic) OFIRI *IRIByDeletingLastPathComponent;
+
+/**
+ * @brief The IRI with the path extension deleted.
+ */
+@property (readonly, nonatomic) OFIRI *IRIByDeletingPathExtension;
 
 /**
  * @brief The IRI with percent-encoding added for all Unicode characters.
@@ -301,6 +320,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFIRI *)IRIByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory;
+
+/**
+ * @brief Returns a new IRI with the specified path extension appended.
+ *
+ * @param extension The path extension to append
+ * @return A new IRI with the specified path extension appended.
+ */
+- (OFIRI *)IRIByAppendingPathExtension: (OFString *)extension;
 @end
 
 @interface OFCharacterSet (IRICharacterSets)
@@ -380,15 +407,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFCharacterSet *)IRIFragmentAllowedCharacterSet;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern bool OFIRIIsIPv6Host(OFString *host);
-extern void OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool);
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END
 

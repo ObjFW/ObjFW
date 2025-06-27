@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -40,7 +44,7 @@
 @implementation OFHTTPClientTests
 - (void)dealloc
 {
-	[_response release];
+	objc_release(_response);
 
 	[super dealloc];
 }
@@ -59,8 +63,8 @@
 {
 	OTAssertNil(exception);
 
-	[_response release];
-	_response = [response_ retain];
+	objc_release(_response);
+	_response = objc_retain(response_);
 
 	[[OFRunLoop mainRunLoop] stop];
 }
@@ -73,7 +77,7 @@
 	OFHTTPClient *client;
 	OFData *data;
 
-	server = [[[HTTPClientTestsServer alloc] init] autorelease];
+	server = objc_autorelease([[HTTPClientTestsServer alloc] init]);
 	server.supportsSockets = true;
 
 	[server.condition lock];
@@ -121,7 +125,7 @@
 	@try {
 		_condition = [[OFCondition alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -130,7 +134,7 @@
 
 - (void)dealloc
 {
-	[_condition release];
+	objc_release(_condition);
 
 	[super dealloc];
 }
@@ -146,6 +150,7 @@
 	[_condition lock];
 
 	listener = [OFTCPSocket socket];
+	listener.allowsMPTCP = true;
 	address = [listener bindToHost: @"127.0.0.1" port: 0];
 	_port = OFSocketAddressIPPort(&address);
 	[listener listen];

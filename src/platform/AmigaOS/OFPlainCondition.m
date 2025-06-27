@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,6 +30,9 @@
 # include <clib/alib_protos.h>
 #endif
 #undef Class
+
+extern struct Device *TimerBase;
+extern struct Unit *MicroHZUnit;
 
 int
 OFPlainConditionNew(OFPlainCondition *condition)
@@ -87,7 +94,7 @@ int
 OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, ULONG *signalMask)
 {
-	struct OFPlainConditionWaitingTask waitingTask = {
+	struct _OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
@@ -108,9 +115,9 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	condition->waitingTasks = &waitingTask;
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask))
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.
@@ -138,7 +145,7 @@ int
 OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
     OFPlainMutex *mutex, OFTimeInterval timeout, ULONG *signalMask)
 {
-	struct OFPlainConditionWaitingTask waitingTask = {
+	struct _OFPlainConditionWaitingTask waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
@@ -164,6 +171,8 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 				.mn_ReplyPort = &port,
 				.mn_Length = sizeof(request)
 			},
+			.io_Device = TimerBase,
+			.io_Unit = MicroHZUnit,
 			.io_Command = TR_ADDREQUEST
 		},
 #ifdef OF_AMIGAOS4
@@ -173,8 +182,9 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 			    (timeout - request.Time.Seconds) * 1000000
 #else
 		.tr_time = {
-			.tv_sec = (ULONG)timeout,
-			.tv_micro = (timeout - request.tr_time.tv_sec) * 1000000
+			.tv_secs = (ULONG)timeout,
+			.tv_micro =
+			    (timeout - request.tr_time.tv_secs) * 1000000
 #endif
 		}
 	};
@@ -184,12 +194,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 	NewList(&port.mp_MsgList);
 
 	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
-		error = EAGAIN;
-		goto fail;
-	}
-
-	if (OpenDevice("timer.device", UNIT_MICROHZ,
-	    (struct IORequest *)&request, 0) != 0) {
 		error = EAGAIN;
 		goto fail;
 	}
@@ -208,16 +212,19 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
-	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
-		error = OFPlainMutexLock(mutex);
-	else if (mask & (1ul << port.mp_SigBit))
-		error = ETIMEDOUT;
-	else
-		/*
-		 * This should not happen - it means something interrupted the
-		 * Wait(), so the best we can do is return EINTR.
-		 */
-		error = EINTR;
+	error = OFPlainMutexLock(mutex);
+
+	if (!(mask & (1ul << waitingTask.sigBit)) && !(*signalMask &= mask)) {
+		if (mask & (1ul << port.mp_SigBit))
+			error = ETIMEDOUT;
+		else
+			/*
+			 * This should not happen - it means something
+			 * interrupted the Wait(), so the best we can do is
+			 * return EINTR.
+			 */
+			error = EINTR;
+	}
 
 	condition->waitingTasks = waitingTask.next;
 
@@ -225,7 +232,6 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 		AbortIO((struct IORequest *)&request);
 		WaitIO((struct IORequest *)&request);
 	}
-	CloseDevice((struct IORequest *)&request);
 
 	Permit();
 

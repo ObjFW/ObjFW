@@ -1,17 +1,21 @@
 #!/bin/sh
 #
-#  Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+#  Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
 #
 #  All rights reserved.
 #
-#  This file is part of ObjFW. It may be distributed under the terms of the
-#  Q Public License 1.0, which can be found in the file LICENSE.QPL included in
-#  the packaging of this file.
+#  This program is free software: you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License version 3.0 only,
+#  as published by the Free Software Foundation.
 #
-#  Alternatively, it may be distributed under the terms of the GNU General
-#  Public License, either version 2 or 3, which can be found in the file
-#  LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
-#  file.
+#  This program is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+#  version 3.0 for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  version 3.0 along with this program. If not, see
+#  <https://www.gnu.org/licenses/>.
 #
 
 prefix="@prefix@"
@@ -27,17 +31,17 @@ LIB_CFLAGS="@LIB_CFLAGS@"
 LIB_LDFLAGS="@LIB_LDFLAGS@"
 LIB_PREFIX="@LIB_PREFIX@"
 LIB_SUFFIX="@LIB_SUFFIX@"
-LDFLAGS="@LDFLAGS@"
+LDFLAGS="@OBJFW_LDFLAGS@"
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
-LIBS="-L${libdir} -lobjfw @RUNTIME_LIBS@ @LIBS@"
-FRAMEWORK_LIBS="-F${prefix}/Library/Frameworks -framework ObjFW"
-FRAMEWORK_LIBS="$FRAMEWORK_LIBS @RUNTIME_FRAMEWORK_LIBS@ @LIBS@"
+LIBS="-lobjfw @RUNTIME_LIBS@ @OBJFW_LIBS@"
+FRAMEWORK_LIBS="-framework ObjFW"
+FRAMEWORK_LIBS="$FRAMEWORK_LIBS @RUNTIME_FRAMEWORK_LIBS@ @OBJFW_LIBS@"
 PLUGIN_CFLAGS="@PLUGIN_CFLAGS@"
 PLUGIN_LDFLAGS="@PLUGIN_LDFLAGS@"
 PLUGIN_SUFFIX="@PLUGIN_SUFFIX@"
 PROG_SUFFIX="@EXEEXT@"
-STATIC_LIBS="${libdir}/libobjfw.a @LIBS@"
+STATIC_LIBS="${libdir}/libobjfw.a @RUNTIME_STATIC_LIBS@ @OBJFW_LIBS@"
 VERSION="@PACKAGE_VERSION@"
 
 show_help() {
@@ -50,7 +54,7 @@ objfw-config: Available arguments are:
     --cppflags        Outputs the required CPPFLAGS
     --cxxflags        Outputs the required CXXFLAGS
     --framework-libs  Outputs the required LIBS, preferring frameworks
-    --help            Print this help
+    --help            Prints the help
     --ldflags         Outputs the required LDFLAGS
     --libs            Outputs the required LIBS
     --lib-cflags      Outputs CFLAGS for building a library
@@ -68,7 +72,7 @@ objfw-config: Available arguments are:
     --reexport        Outputs LDFLAGS to reexport ObjFW
     --rpath           Outputs LDFLAGS for using rpath
     --static-libs     Outputs the required LIBS to link ObjFW statically
-    --version         Outputs the installed version
+    --version         Outputs the installed ObjFW version
 __EOF__
 	exit $1
 }
@@ -105,6 +109,11 @@ parse_packages() {
 	done
 }
 parse_packages "$@"
+
+# Add search directories after all packages have been processed so that they
+# always come first.
+LIBS="-L${libdir} $LIBS"
+FRAMEWORK_LIBS="-F${prefix}/Library/Frameworks $FRAMEWORK_LIBS"
 
 flag_printed="no"
 output_flag() {

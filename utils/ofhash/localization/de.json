@@ -1,7 +1,7 @@
 /*
  * German localization for ofhash.
  *
- * Copyright (c) 2017-2023 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
  *
  * Permission to use, copy, modify, and/or distribute this localization for
  * any purpose with or without fee is hereby granted.
@@ -12,7 +12,8 @@
 {
     usage: [
         "Benutzung: %[prog] [--md5] [--ripemd160] [--sha1] [--sha224] ",
-        "[--sha256] [--sha384] [--sha512] datei1 [datei2 ...]"
+        "[--sha256] [--sha384] [--sha512] [--iri] [--version] datei1 ",
+        "[datei2 ...]"
     ],
     unknown_long_option: "%[prog]: Unbekannte Option: --%[opt]",
     unknown_option: "%[prog]: Unbekannte Option: -%[opt]",

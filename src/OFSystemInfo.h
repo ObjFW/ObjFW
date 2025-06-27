@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -22,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFIRI;
 
 /**
- * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
+ * @class OFSystemInfo OFSystemInfo.h ObjFW/ObjFW.h
  *
  * @brief A class for querying information about the system.
  */
@@ -37,6 +41,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
+@property (class, readonly, nullable, nonatomic) OFString *wineVersion;
+#endif
 @property (class, readonly, nullable, nonatomic) OFIRI *userDataIRI;
 @property (class, readonly, nullable, nonatomic) OFIRI *userConfigIRI;
 @property (class, readonly, nullable, nonatomic) OFIRI *temporaryDirectoryIRI;
@@ -87,6 +94,10 @@ OF_SUBCLASSING_RESTRICTED
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
 # endif
+# if defined(OF_LOONGARCH64) || defined(DOXYGEN)
+@property (class, readonly, nonatomic) bool supportsLSX;
+@property (class, readonly, nonatomic) bool supportsLASX;
+# endif
 # if defined(OF_WINDOWS) || defined(DOXYGEN)
 @property (class, readonly, nonatomic, getter=isWindowsNT) bool windowsNT;
 # endif
@@ -103,6 +114,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Returns the number of CPUs installed in the system.
  *
  * A CPU with multiple cores counts as multiple CPUs.
+ *
+ * If the system has no CPU, the return value is undefined.
  *
  * @return The number of CPUs installed in the system
  */
@@ -145,6 +158,19 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (nullable OFString *)operatingSystemVersion;
 
+#if defined(OF_WINDOWS) || defined(DOXYGEN)
+/**
+ * @brief Returns the version of Wine the application is running on, or `nil`
+ *	  if not running on Wine (e.g. on Windows natively).
+ *
+ * @note This is only available on Windows.
+ *
+ * @return The version of Wine the application is running on, or `nil` if not
+ *	   running on Wine (e.g. on Windows natively)
+ */
++ (nullable OFString *)wineVersion;
+#endif
+
 /**
  * @brief Returns the path where user data for the application can be stored.
  *
@@ -175,7 +201,7 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief Returns a path where temporary files for can be stored.
- * 
+ *
  * If possible, returns a temporary directory for the user, otherwise returns a
  * global temporary directory.
  *
@@ -507,6 +533,26 @@ OF_SUBCLASSING_RESTRICTED
  * @return Whether the CPU and OS support AltiVec
  */
 + (bool)supportsAltiVec;
+#endif
+
+#if defined(OF_LOONGARCH64) || defined(DOXYGEN)
+/**
+ * @brief Returns whether the CPU and OS support LSX.
+ *
+ * @note This method is only available on LoongArch 64!
+ *
+ * @return Whether the CPU and OS support LSX
+ */
++ (bool)supportsLSX;
+
+/**
+ * @brief Returns whether the CPU and OS support LASX.
+ *
+ * @note This method is only available on LoongArch 64!
+ *
+ * @return Whether the CPU and OS support LASX
+ */
++ (bool)supportsLASX;
 #endif
 
 #if defined(OF_WINDOWS) || defined(DOXYGEN)

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -67,59 +71,65 @@ OF_SINGLETON_METHODS
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType
 {
-	return [[[OFValue alloc] initWithBytes: bytes
-				      objCType: objCType] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: bytes
+				  objCType: objCType]);
 }
 
 + (instancetype)valueWithPointer: (const void *)pointer
 {
-	return [[[OFValue alloc]
-	    initWithBytes: &pointer
-		 objCType: @encode(const void *)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &pointer
+				  objCType: @encode(const void *)]);
 }
 
 + (instancetype)valueWithNonretainedObject: (id)object
 {
-	return [[[OFValue alloc] initWithBytes: &object
-				      objCType: @encode(id)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &object
+				  objCType: @encode(id)]);
 }
 
 + (instancetype)valueWithRange: (OFRange)range
 {
-	return [[[OFValue alloc] initWithBytes: &range
-				      objCType: @encode(OFRange)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &range
+				  objCType: @encode(OFRange)]);
 }
 
 + (instancetype)valueWithPoint: (OFPoint)point
 {
-	return [[[OFValue alloc] initWithBytes: &point
-				      objCType: @encode(OFPoint)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &point
+				  objCType: @encode(OFPoint)]);
 }
 
 + (instancetype)valueWithSize: (OFSize)size
 {
-	return [[[OFValue alloc] initWithBytes: &size
-				      objCType: @encode(OFSize)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &size
+				  objCType: @encode(OFSize)]);
 }
 
 + (instancetype)valueWithRect: (OFRect)rect
 {
-	return [[[OFValue alloc] initWithBytes: &rect
-				      objCType: @encode(OFRect)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &rect
+				  objCType: @encode(OFRect)]);
 }
 
 + (instancetype)valueWithVector3D: (OFVector3D)vector3D
 {
-	return [[[OFValue alloc]
-	    initWithBytes: &vector3D
-		 objCType: @encode(OFVector3D)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &vector3D
+				  objCType: @encode(OFVector3D)]);
 }
 
 + (instancetype)valueWithVector4D: (OFVector4D)vector4D
 {
-	return [[[OFValue alloc]
-	    initWithBytes: &vector4D
-		 objCType: @encode(OFVector4D)] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFValue alloc] initWithBytes: &vector4D
+				  objCType: @encode(OFVector4D)]);
 }
 
 - (instancetype)initWithBytes: (const void *)bytes
@@ -129,7 +139,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -209,7 +219,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (const char *)objCType

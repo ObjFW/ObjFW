@@ -1,0 +1,4 @@
+package_format 1
+LIBS="-lobjfwtls @TLS_LIBS@ $LIBS"
+FRAMEWORK_LIBS="-framework ObjFWTLS @TLS_FRAMEWORK_LIBS@ $FRAMEWORK_LIBS"
+STATIC_LIBS="${libdir}/libobjfwtls.a @TLS_STATIC_LIBS@ $STATIC_LIBS"

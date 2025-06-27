@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -258,25 +262,28 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 2)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithChar: buffer[1]];
+		*object = [OFNumber numberWithChar: (int8_t)buffer[1]];
 		return 2;
 	case 0xD1: /* int 16 */
 		if (length < 3)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithShort: readUInt16(buffer + 1)];
+		*object = [OFNumber numberWithShort:
+		    (int16_t)readUInt16(buffer + 1)];
 		return 3;
 	case 0xD2: /* int 32 */
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithLong: readUInt32(buffer + 1)];
+		*object = [OFNumber numberWithLong:
+		    (int32_t)readUInt32(buffer + 1)];
 		return 5;
 	case 0xD3: /* int 64 */
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		*object = [OFNumber numberWithLongLong: readUInt64(buffer + 1)];
+		*object = [OFNumber numberWithLongLong:
+		    (int64_t)readUInt64(buffer + 1)];
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */
@@ -362,7 +369,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[2], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 3;
@@ -379,7 +386,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[3], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 4;
@@ -396,7 +403,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[5], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return count + 6;
@@ -408,7 +415,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 3;
@@ -420,7 +427,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 4;
@@ -432,7 +439,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 6;
@@ -444,7 +451,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 10;
@@ -456,7 +463,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		@try {
 			*object = createExtension(buffer[1], data);
 		} @finally {
-			[data release];
+			objc_release(data);
 		}
 
 		return 18;
@@ -549,10 +556,10 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 	if (parseObject(self.items, count, &object, depthLimit) != count)
 		@throw [OFInvalidFormatException exception];
 
-	[object retain];
+	objc_retain(object);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [object autorelease];
+	return objc_autoreleaseReturnValue(object);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -21,35 +25,20 @@
 #import "OFMethodSignature.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
+#import "OFThread.h"
 #import "OFValue.h"
 
 #import "OTTestCase.h"
+
+#import "OHGameController.h"
+#import "OHGameControllerButton.h"
+#import "OHGameControllerProfile.h"
 
 #import "OTAssertionFailedException.h"
 #import "OTTestSkippedException.h"
 
 #ifdef OF_IOS
 # include <CoreFoundation/CoreFoundation.h>
-#endif
-
-#ifdef OF_WII
-# define asm __asm__
-# include <gccore.h>
-# include <wiiuse/wpad.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_DS
-# define asm __asm__
-# include <nds.h>
-# undef asm
-#endif
-
-#ifdef OF_NINTENDO_3DS
-/* Newer versions of libctru started using id as a parameter name. */
-# define id id_3ds
-# include <3ds.h>
-# undef id
 #endif
 
 #ifdef OF_NINTENDO_SWITCH
@@ -64,10 +53,19 @@ updateConsole(bool force)
 {
 	if (force || lastConsoleUpdate.timeIntervalSinceNow <= -1.0 / 60) {
 		consoleUpdate(NULL);
-		[lastConsoleUpdate release];
+		objc_release(lastConsoleUpdate);
+		lastConsoleUpdate = nil;
 		lastConsoleUpdate = [[OFDate alloc] init];
 	}
 }
+#endif
+
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
+# define red maroon
+# define lime green
+# define yellow olive
+# define fuchsia purple
 #endif
 
 @interface OTAppDelegate: OFObject <OFApplicationDelegate>
@@ -113,59 +111,40 @@ isSubclassOfClass(Class class, Class superclass)
 	    [OFString stringWithUTF8String: (const char *)resourcesPath]];
 
 	CFRelease(resourcesURL);
-#elif defined(OF_WII)
-	GXRModeObj *mode;
-	void *nextFB;
-
-	VIDEO_Init();
-	WPAD_Init();
-
-	mode = VIDEO_GetPreferredMode(NULL);
-	nextFB = MEM_K0_TO_K1(SYS_AllocateFramebuffer(mode));
-	VIDEO_Configure(mode);
-	VIDEO_SetNextFramebuffer(nextFB);
-	VIDEO_SetBlack(FALSE);
-	VIDEO_Flush();
-
-	VIDEO_WaitVSync();
-	if (mode->viTVMode & VI_NON_INTERLACE)
-		VIDEO_WaitVSync();
-
-	CON_InitEx(mode, 2, 2, mode->fbWidth - 4, mode->xfbHeight - 4);
-	VIDEO_ClearFrameBuffer(mode, nextFB, COLOR_BLACK);
-#elif defined(OF_NINTENDO_DS)
-	consoleDemoInit();
-#elif defined(OF_NINTENDO_3DS)
-	gfxInitDefault();
-	atexit(gfxExit);
-
-	consoleInit(GFX_TOP, NULL);
+#elif defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	[OFStdIOStream setUpConsole];
 #elif defined(OF_NINTENDO_SWITCH)
 	consoleInit(NULL);
-	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 	updateConsole(true);
 #endif
 }
 
-- (OFSet OF_GENERIC(Class) *)testClasses
+- (OFMutableSet OF_GENERIC(Class) *)testClasses
 {
-	Class *classes = objc_copyClassList(NULL);
+	Class *classes;
+	int classesCount;
 	OFMutableSet *testClasses;
 
-	if (classes == NULL)
+	classesCount = objc_getClassList(NULL, 0);
+	if (classesCount < 1)
 		return nil;
 
+	classes = OFAllocMemory(classesCount, sizeof(Class));
 	@try {
+		if ((int)objc_getClassList(classes, classesCount) !=
+		    classesCount)
+			return nil;
+
 		testClasses = [OFMutableSet set];
 
-		for (Class *iter = classes; *iter != Nil; iter++) {
+		for (int i = 0; i < classesCount; i++) {
 			/*
 			 * Make sure the class is initialized.
 			 * Required for the ObjFW runtime, as otherwise
 			 * class_getSuperclass() crashes.
 			 */
 #ifdef OF_OBJFW_RUNTIME
-			[*iter class];
+			[classes[i] class];
 #endif
 
 			/*
@@ -173,8 +152,8 @@ isSubclassOfClass(Class class, Class superclass)
 			 * can return (presumably internal?) classes that don't
 			 * implement it, resulting in a crash.
 			 */
-			if (isSubclassOfClass(*iter, [OTTestCase class]))
-				[testClasses addObject: *iter];
+			if (isSubclassOfClass(classes[i], [OTTestCase class]))
+				[testClasses addObject: classes[i]];
 		}
 	} @finally {
 		OFFreeMemory(classes);
@@ -182,7 +161,6 @@ isSubclassOfClass(Class class, Class superclass)
 
 	[testClasses removeObject: [OTTestCase class]];
 
-	[testClasses makeImmutable];
 	return testClasses;
 }
 
@@ -240,47 +218,60 @@ isSubclassOfClass(Class class, Class superclass)
 {
 	switch (status) {
 	case StatusRunning:
-		if (OFStdOut.hasTerminal) {
-			[OFStdOut setForegroundColor: [OFColor olive]];
-			[OFStdOut writeFormat: @"-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor yellow]];
-			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor olive]];
-			[OFStdOut writeString: @"]: "];
-		} else
-			[OFStdOut writeFormat: @"-[%@ %s]: ",
-					       class, sel_getName(test)];
+		OFStdOut.foregroundColor = [OFColor olive];
+		[OFStdOut writeFormat: @"-[%@ ", class];
+		OFStdOut.bold = true;
+		OFStdOut.foregroundColor = [OFColor yellow];
+		[OFStdOut writeFormat: @"%s", sel_getName(test)];
+		OFStdOut.bold = false;
+		OFStdOut.foregroundColor = [OFColor olive];
+		[OFStdOut writeString: @"]: "];
 		break;
 	case StatusOk:
 		if (OFStdOut.hasTerminal) {
-			[OFStdOut setForegroundColor: [OFColor green]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor lime]];
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
+			OFStdOut.foregroundColor = [OFColor green];
+			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
+			OFStdOut.foregroundColor = [OFColor lime];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor green]];
+			OFStdOut.bold = false;
+			OFStdOut.foregroundColor = [OFColor green];
 			[OFStdOut writeLine: @"]: ok"];
 		} else
 			[OFStdOut writeLine: @"ok"];
 		break;
 	case StatusFailed:
 		if (OFStdOut.hasTerminal) {
-			[OFStdOut setForegroundColor: [OFColor maroon]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor red]];
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
+			OFStdOut.foregroundColor = [OFColor maroon];
+			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
+			OFStdOut.foregroundColor = [OFColor red];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor maroon]];
+			OFStdOut.bold = false;
+			OFStdOut.foregroundColor = [OFColor maroon];
 			[OFStdOut writeLine: @"]: failed"];
-			[OFStdOut writeLine: description];
 		} else
 			[OFStdOut writeLine: @"failed"];
+
+		if (description != nil)
+			[OFStdOut writeLine: description];
+
 		break;
 	case StatusSkipped:
 		if (OFStdOut.hasTerminal) {
-			[OFStdOut setForegroundColor: [OFColor gray]];
-			[OFStdOut writeFormat: @"\r-[%@ ", class];
-			[OFStdOut setForegroundColor: [OFColor silver]];
+			[OFStdOut setCursorColumn: 0];
+			[OFStdOut eraseLine];
+			OFStdOut.foregroundColor = [OFColor gray];
+			[OFStdOut writeFormat: @"-[%@ ", class];
+			OFStdOut.bold = true;
+			OFStdOut.foregroundColor = [OFColor silver];
 			[OFStdOut writeFormat: @"%s", sel_getName(test)];
-			[OFStdOut setForegroundColor: [OFColor gray]];
+			OFStdOut.bold = false;
+			OFStdOut.foregroundColor = [OFColor gray];
 			[OFStdOut writeLine: @"]: skipped"];
 		} else
 			[OFStdOut writeLine: @"skipped"];
@@ -292,53 +283,34 @@ isSubclassOfClass(Class class, Class superclass)
 	}
 
 	if (status == StatusFailed) {
-#if defined(OF_WII)
-		[OFStdOut setForegroundColor: [OFColor silver]];
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(OF_NINTENDO_SWITCH)
+		OFStdOut.foregroundColor = [OFColor silver];
 		[OFStdOut writeLine: @"Press A to continue"];
 
-		for (;;) {
-			WPAD_ScanPads();
-
-			if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
-				break;
-
-			VIDEO_WaitVSync();
-		}
-#elif defined(OF_NINTENDO_DS)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		for (;;) {
-			swiWaitForVBlank();
-			scanKeys();
-
-			if (keysDown() & KEY_A)
-				break;
-		}
-#elif defined(OF_NINTENDO_3DS)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
-		for (;;) {
-			hidScanInput();
-
-			if (hidKeysDown() & KEY_A)
-				break;
-
-			gspWaitForVBlank();
-		}
-#elif defined(OF_NINTENDO_SWITCH)
-		[OFStdOut setForegroundColor: [OFColor silver]];
-		[OFStdOut writeLine: @"Press A to continue"];
-
+# ifdef OF_NINTENDO_SWITCH
 		while (appletMainLoop()) {
-			PadState pad;
+# else
+		for (;;) {
+# endif
+			void *pool = objc_autoreleasePoolPush();
+			OHGameController *controller =
+			    [[OHGameController controllers] objectAtIndex: 0];
+			OHGameControllerButton *button =
+			    [controller.profile.buttons objectForKey: @"A"];
 
-			padUpdate(&pad);
-			updateConsole(true);
+			[controller updateState];
 
-			if (padGetButtonsDown(&pad) & HidNpadButton_A)
+			if (button.pressed)
 				break;
+
+# ifdef OF_NINTENDO_SWITCH
+			updateConsole(true);
+# else
+			[OFThread waitForVerticalBlank];
+# endif
+
+			objc_autoreleasePoolPop(pool);
 		}
 #endif
 	}
@@ -396,28 +368,49 @@ isSubclassOfClass(Class class, Class superclass)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-	OFSet OF_GENERIC(Class) *testClasses = [self testClasses];
+	OFMutableSet OF_GENERIC(Class) *testClasses;
 	size_t numSucceeded = 0, numFailed = 0, numSkipped = 0;
 	OFMutableDictionary *summaries = [OFMutableDictionary dictionary];
 
-	[OFStdOut setForegroundColor: [OFColor purple]];
-	[OFStdOut writeString: @"Found "];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
+	if ([OFApplication arguments].count > 0) {
+		testClasses = [OFMutableSet set];
+
+		for (OFString *className in [OFApplication arguments]) {
+			Class class = objc_lookUpClass([className
+			    cStringWithEncoding: OFStringEncodingASCII]);
+
+			if (class == Nil ||
+			    !isSubclassOfClass(class, [OTTestCase class])) {
+				[OFStdErr writeFormat: @"%@ is not a valid "
+						       @"test case!\n",
+						       className];
+				[OFApplication terminateWithStatus: 1];
+			}
+
+			[testClasses addObject: class];
+		}
+	} else
+		testClasses = [self testClasses];
+
+	OFStdOut.foregroundColor = [OFColor purple];
+	[OFStdOut writeString: @"Running "];
+	OFStdOut.bold = true;
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", testClasses.count];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.bold = false;
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test case%s\n",
 			       (testClasses.count != 1 ? "s" : "")];
 
 	for (Class class in testClasses) {
 		OFArray *summary;
 
-		[OFStdOut setForegroundColor: [OFColor teal]];
+		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeFormat: @"Running ", class];
-		[OFStdOut setForegroundColor: [OFColor aqua]];
+		OFStdOut.bold = true;
+		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
+		OFStdOut.bold = false;
 
 		for (OFValue *test in [self testsInClass: class]) {
 			void *pool = objc_autoreleasePoolPush();
@@ -429,11 +422,17 @@ isSubclassOfClass(Class class, Class superclass)
 					  status: StatusRunning
 				     description: nil];
 
-			instance = [[[class alloc] init] autorelease];
+			instance = objc_autorelease([[class alloc] init]);
 
 			@try {
+				SEL selector;
+				IMP method;
+
 				[instance setUp];
-				[instance performSelector: test.pointerValue];
+
+				selector = test.pointerValue;
+				method = [instance methodForSelector: selector];
+				((void (*)(id, SEL))method)(instance, selector);
 			} @catch (OTAssertionFailedException *e) {
 				/*
 				 * If an assertion fails during -[setUp], don't
@@ -519,81 +518,73 @@ isSubclassOfClass(Class class, Class superclass)
 	for (Class class in summaries) {
 		OFArray *summary = [summaries objectForKey: class];
 
-		[OFStdOut setForegroundColor: [OFColor teal]];
+		OFStdOut.foregroundColor = [OFColor teal];
 		[OFStdOut writeString: @"Summary for "];
-		[OFStdOut setForegroundColor: [OFColor aqua]];
+		OFStdOut.bold = true;
+		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
+		OFStdOut.bold = false;
 
 		for (OFPair *line in summary) {
-			[OFStdOut setForegroundColor: [OFColor navy]];
+			OFStdOut.foregroundColor = [OFColor navy];
 			[OFStdOut writeFormat: @"%@: ", line.firstObject];
-			[OFStdOut setForegroundColor: [OFColor blue]];
+			OFStdOut.bold = true;
+			OFStdOut.foregroundColor = [OFColor blue];
 			[OFStdOut writeFormat: @"%@\n", line.secondObject];
+			OFStdOut.bold = false;
 		}
 	}
 
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#else
-	[OFStdOut setForegroundColor: [OFColor purple]];
-#endif
+	OFStdOut.bold = true;
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.bold = false;
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s succeeded, ",
 			       (numSucceeded != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
+	OFStdOut.bold = true;
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numFailed];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.bold = false;
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s failed, ",
 			       (numFailed != 1 ? "s" : "")];
-#if !defined(OF_WII) && !defined(OF_NINTENDO_DS) && \
-    !defined(OF_NINTENDO_3DS) && !defined(OF_NINTENDO_SWITCH)
-	[OFStdOut setForegroundColor: [OFColor fuchsia]];
-#endif
+	OFStdOut.bold = true;
+	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSkipped];
-	[OFStdOut setForegroundColor: [OFColor purple]];
+	OFStdOut.bold = false;
+	OFStdOut.foregroundColor = [OFColor purple];
 	[OFStdOut writeFormat: @" test%s skipped\n",
 			       (numSkipped != 1 ? "s" : "")];
 	[OFStdOut reset];
 
-#if defined(OF_WII)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press home button to exit"];
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
+	OFStdOut.foregroundColor = [OFColor silver];
+# ifdef OF_WII
+	[OFStdOut writeLine: @"Press Home button to exit"];
+# else
+	[OFStdOut writeLine: @"Press Start button to exit"];
+# endif
 
 	for (;;) {
-		WPAD_ScanPads();
+		void *pool = objc_autoreleasePoolPush();
+		OHGameController *controller =
+		    [[OHGameController controllers] objectAtIndex: 0];
+		OHGameControllerButton *button =
+# ifdef OF_WII
+		    [controller.profile.buttons objectForKey: @"Home"];
+# else
+		    [controller.profile.buttons objectForKey: @"Start"];
+# endif
 
-		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
+		[controller updateState];
+
+		if (button.pressed)
 			break;
 
-		VIDEO_WaitVSync();
-	}
-#elif defined(OF_NINTENDO_DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
+		[OFThread waitForVerticalBlank];
 
-	for (;;) {
-		swiWaitForVBlank();
-		scanKeys();
-
-		if (keysDown() & KEY_START)
-			break;
-	}
-#elif defined(OF_NINTENDO_3DS)
-	[OFStdOut setForegroundColor: [OFColor silver]];
-	[OFStdOut writeLine: @"Press start button to exit"];
-
-	for (;;) {
-		hidScanInput();
-
-		if (hidKeysDown() & KEY_START)
-			break;
-
-		gspWaitForVBlank();
+		objc_autoreleasePoolPop(pool);
 	}
 #elif defined(OF_NINTENDO_SWITCH)
 	while (appletMainLoop())

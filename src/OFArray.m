@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -22,6 +26,7 @@
 #import "OFArray+Private.h"
 #import "OFConcreteArray.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFSubarray.h"
@@ -30,18 +35,26 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-static struct {
-	Class isa;
-} placeholder;
-
-@interface OFArray ()
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFArray () <OFJSONRepresentationPrivate>
 @end
 
 @interface OFPlaceholderArray: OFArray
 @end
+
+@interface OFConcreteArraySingleton: OFConcreteArray
+@end
+
+static struct {
+	Class isa;
+} placeholder;
+
+static OFConcreteArraySingleton *emptyArray;
+
+static void
+emptyArrayInit(void)
+{
+	emptyArray = [[OFConcreteArraySingleton alloc] init];
+}
 
 @implementation OFPlaceholderArray
 #ifdef __clang__
@@ -52,7 +65,9 @@ static struct {
 #endif
 - (instancetype)init
 {
-	return (id)[[OFConcreteArray alloc] init];
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, emptyArrayInit);
+	return (id)emptyArray;
 }
 
 - (instancetype)initWithObject: (id)object
@@ -98,6 +113,10 @@ static struct {
 OF_SINGLETON_METHODS
 @end
 
+@implementation OFConcreteArraySingleton
+OF_SINGLETON_METHODS
+@end
+
 @implementation OFArray
 + (void)initialize
 {
@@ -115,12 +134,13 @@ OF_SINGLETON_METHODS
 
 + (instancetype)array
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 + (instancetype)arrayWithObject: (id)object
 {
-	return [[[self alloc] initWithObject: object] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObject: object]);
 }
 
 + (instancetype)arrayWithObjects: (id)firstObject, ...
@@ -129,23 +149,24 @@ OF_SINGLETON_METHODS
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[[self alloc] initWithObject: firstObject
-				  arguments: arguments] autorelease];
+	ret = [[self alloc] initWithObject: firstObject
+				 arguments: arguments];
 	va_end(arguments);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 + (instancetype)arrayWithArray: (OFArray *)array
 {
-	return [[[self alloc] initWithArray: array] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithArray: array]);
 }
 
 + (instancetype)arrayWithObjects: (id const *)objects
 			   count: (size_t)count
 {
-	return [[[self alloc] initWithObjects: objects
-					count: count] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithObjects: objects
+				    count: count]);
 }
 
 - (instancetype)init
@@ -155,7 +176,7 @@ OF_SINGLETON_METHODS
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
-			[self release];
+			objc_release(self);
 			@throw e;
 		}
 
@@ -198,7 +219,7 @@ OF_SINGLETON_METHODS
 	@try {
 		objects = OFAllocMemory(count, sizeof(id));
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -230,7 +251,7 @@ OF_SINGLETON_METHODS
 		[array getObjects: objects
 			  inRange: OFMakeRange(0, count)];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -292,7 +313,7 @@ OF_SINGLETON_METHODS
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -411,8 +432,9 @@ OF_SINGLETON_METHODS
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [[[OFSubarray alloc] initWithArray: self
-						    range: range] autorelease];
+		return objc_autoreleaseReturnValue(
+		    [[OFSubarray alloc] initWithArray: self
+						range: range]);
 
 	buffer = OFAllocMemory(range.length, sizeof(*buffer));
 	@try {
@@ -574,7 +596,7 @@ OF_SINGLETON_METHODS
 		[ret replaceOccurrencesOfString: @"\n" withString: @"\n\t"];
 		[ret appendString: @"\n)"];
 	} @catch (id e) {
-		[ret release];
+		objc_release(ret);
 		@throw e;
 	}
 
@@ -582,7 +604,7 @@ OF_SINGLETON_METHODS
 
 	[ret makeImmutable];
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)JSONRepresentation
@@ -721,7 +743,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)sortedArray
 {
-	OFMutableArray *new = [[self mutableCopy] autorelease];
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sort];
 	[new makeImmutable];
 	return new;
@@ -730,7 +752,7 @@ OF_SINGLETON_METHODS
 - (OFArray *)sortedArrayUsingSelector: (SEL)selector
 			      options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = [[self mutableCopy] autorelease];
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingSelector: selector options: options];
 	[new makeImmutable];
 	return new;
@@ -740,7 +762,7 @@ OF_SINGLETON_METHODS
 			      context: (void *)context
 			      options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = [[self mutableCopy] autorelease];
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingFunction: compare context: context options: options];
 	[new makeImmutable];
 	return new;
@@ -750,7 +772,7 @@ OF_SINGLETON_METHODS
 - (OFArray *)sortedArrayUsingComparator: (OFComparator)comparator
 				options: (OFArraySortOptions)options
 {
-	OFMutableArray *new = [[self mutableCopy] autorelease];
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new sortUsingComparator: comparator options: options];
 	[new makeImmutable];
 	return new;
@@ -759,7 +781,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)reversedArray
 {
-	OFMutableArray *new = [[self mutableCopy] autorelease];
+	OFMutableArray *new = objc_autorelease([self mutableCopy]);
 	[new reverse];
 	[new makeImmutable];
 	return new;
@@ -792,8 +814,9 @@ OF_SINGLETON_METHODS
 
 - (OFEnumerator *)objectEnumerator
 {
-	return [[[OFArrayEnumerator alloc] initWithArray: self
-					    mutationsPtr: NULL] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFArrayEnumerator alloc] initWithArray: self
+					mutationsPtr: NULL]);
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -818,7 +841,7 @@ OF_SINGLETON_METHODS
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	ret = [[self mutableCopy] autorelease];
+	ret = objc_autorelease([self mutableCopy]);
 	[ret addObject: object];
 	[ret makeImmutable];
 
@@ -827,7 +850,7 @@ OF_SINGLETON_METHODS
 
 - (OFArray *)arrayByAddingObjectsFromArray: (OFArray *)array
 {
-	OFMutableArray *ret = [[self mutableCopy] autorelease];
+	OFMutableArray *ret = objc_autorelease([self mutableCopy]);
 	[ret addObjectsFromArray: array];
 	[ret makeImmutable];
 
@@ -886,26 +909,27 @@ OF_SINGLETON_METHODS
 	if (count == 0)
 		return nil;
 	if (count == 1)
-		return [[[self objectAtIndex: 0] retain] autorelease];
+		return objc_autoreleaseReturnValue(
+		    objc_retain([self objectAtIndex: 0]));
 
 	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {
 		id new;
 
 		if (idx == 0) {
-			current = [object retain];
+			current = objc_retain(object);
 			return;
 		}
 
 		@try {
-			new = [block(current, object) retain];
+			new = objc_retain(block(current, object));
 		} @finally {
-			[current release];
+			objc_release(current);
 		}
 		current = new;
 	}];
 
-	return [current autorelease];
+	return objc_autoreleaseReturnValue(current);
 }
 #endif
 @end
@@ -916,7 +940,7 @@ OF_SINGLETON_METHODS
 {
 	self = [super init];
 
-	_array = [array retain];
+	_array = objc_retain(array);
 	_count = [array count];
 	_mutations = (mutationsPtr != NULL ? *mutationsPtr : 0);
 	_mutationsPtr = mutationsPtr;
@@ -926,7 +950,7 @@ OF_SINGLETON_METHODS
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }

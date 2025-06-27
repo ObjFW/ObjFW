@@ -1,21 +1,25 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "OFString.h"
+#import "unicode.h"
 
 static const OFUnichar emptyPage[0x100] = { 0 };
 
@@ -74,7 +78,7 @@ static const OFUnichar uppercasePage1[0x100] = {
 	579, 0, 0, 386, 0, 388, 0, 0,
 	391, 0, 0, 0, 395, 0, 0, 0,
 	0, 0, 401, 0, 0, 502, 0, 0,
-	0, 408, 573, 0, 0, 0, 544, 0,
+	0, 408, 573, 42972, 0, 0, 544, 0,
 	0, 416, 0, 418, 0, 420, 0, 0,
 	423, 0, 0, 0, 0, 428, 0, 0,
 	431, 0, 0, 0, 435, 0, 437, 0,
@@ -102,7 +106,7 @@ static const OFUnichar uppercasePage2[0x100] = {
 	0, 584, 0, 586, 0, 588, 0, 590,
 	11375, 11373, 11376, 385, 390, 0, 393, 394,
 	0, 399, 0, 400, 42923, 0, 0, 0,
-	403, 42924, 0, 404, 0, 42893, 42922, 0,
+	403, 42924, 0, 404, 42955, 42893, 42922, 0,
 	407, 406, 42926, 11362, 42925, 0, 0, 412,
 	0, 11374, 413, 0, 0, 415, 0, 0,
 	0, 0, 0, 0, 0, 11364, 0, 0,
@@ -317,7 +321,7 @@ static const OFUnichar uppercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1042, 1044, 1054, 1057, 1058, 1058, 1066, 1122,
-	42570, 0, 0, 0, 0, 0, 0, 0,
+	42570, 0, 7305, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -640,9 +644,9 @@ static const OFUnichar uppercasePage167[0x100] = {
 	0, 0, 0, 0, 0, 42932, 0, 42934,
 	0, 42936, 0, 42938, 0, 42940, 0, 42942,
 	0, 42944, 0, 42946, 0, 0, 0, 0,
-	42951, 0, 42953, 0, 0, 0, 0, 0,
+	42951, 0, 42953, 0, 0, 42956, 0, 0,
 	0, 42960, 0, 0, 0, 0, 0, 42966,
-	0, 42968, 0, 0, 0, 0, 0, 0,
+	0, 42968, 0, 42970, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 42997, 0,
@@ -821,6 +825,41 @@ static const OFUnichar uppercasePage268[0x100] = {
 	68768, 68769, 68770, 68771, 68772, 68773, 68774, 68775,
 	68776, 68777, 68778, 68779, 68780, 68781, 68782, 68783,
 	68784, 68785, 68786, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+static const OFUnichar uppercasePage269[0x100] = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	68944, 68945, 68946, 68947, 68948, 68949, 68950, 68951,
+	68952, 68953, 68954, 68955, 68956, 68957, 68958, 68959,
+	68960, 68961, 68962, 68963, 68964, 68965, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -1227,7 +1266,7 @@ static const OFUnichar lowercasePage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 7306, 0, 0, 0, 0, 0, 0,
 	4304, 4305, 4306, 4307, 4308, 4309, 4310, 4311,
 	4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319,
 	4320, 4321, 4322, 4323, 4324, 4325, 4326, 4327,
@@ -1480,9 +1519,9 @@ static const OFUnichar lowercasePage167[0x100] = {
 	670, 647, 669, 43859, 42933, 0, 42935, 0,
 	42937, 0, 42939, 0, 42941, 0, 42943, 0,
 	42945, 0, 42947, 0, 42900, 642, 7566, 42952,
-	0, 42954, 0, 0, 0, 0, 0, 0,
+	0, 42954, 0, 612, 42957, 0, 0, 0,
 	42961, 0, 0, 0, 0, 0, 42967, 0,
-	42969, 0, 0, 0, 0, 0, 0, 0,
+	42969, 0, 42971, 0, 411, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 42998, 0, 0,
@@ -1629,6 +1668,41 @@ static const OFUnichar lowercasePage268[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+static const OFUnichar lowercasePage269[0x100] = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	68976, 68977, 68978, 68979, 68980, 68981, 68982, 68983,
+	68984, 68985, 68986, 68987, 68988, 68989, 68990, 68991,
+	68992, 68993, 68994, 68995, 68996, 68997, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 static const OFUnichar lowercasePage280[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -1754,7 +1828,7 @@ static const OFUnichar titlecasePage1[0x100] = {
 	579, 0, 0, 386, 0, 388, 0, 0,
 	391, 0, 0, 0, 395, 0, 0, 0,
 	0, 0, 401, 0, 0, 502, 0, 0,
-	0, 408, 573, 0, 0, 0, 544, 0,
+	0, 408, 573, 42972, 0, 0, 544, 0,
 	0, 416, 0, 418, 0, 420, 0, 0,
 	423, 0, 0, 0, 0, 428, 0, 0,
 	431, 0, 0, 0, 435, 0, 437, 0,
@@ -1962,7 +2036,7 @@ static const OFUnichar caseFoldingPage28[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1074, 1076, 1086, 1089, 1090, 1090, 1098, 1123,
-	42571, 0, 0, 0, 0, 0, 0, 0,
+	42571, 7306, 0, 0, 0, 0, 0, 0,
 	4304, 4305, 4306, 4307, 4308, 4309, 4310, 4311,
 	4312, 4313, 4314, 4315, 4316, 4317, 4318, 4319,
 	4320, 4321, 4322, 4323, 4324, 4325, 4326, 4327,
@@ -2119,7 +2193,7 @@ static const OFUnichar caseFoldingPage251[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeUppercaseTable[0x1EA] = {
 	uppercasePage0, uppercasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2187,7 +2261,7 @@ const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	uppercasePage260, uppercasePage261, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
-	uppercasePage268, emptyPage, emptyPage, emptyPage,
+	uppercasePage268, uppercasePage269, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	uppercasePage280, emptyPage, emptyPage, emptyPage,
@@ -2245,7 +2319,7 @@ const OFUnichar *const OFUnicodeUppercaseTable[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeLowercaseTable[0x1EA] = {
 	lowercasePage0, lowercasePage1, lowercasePage2, lowercasePage3,
 	lowercasePage4, lowercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2313,7 +2387,7 @@ const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	lowercasePage260, lowercasePage261, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
-	lowercasePage268, emptyPage, emptyPage, emptyPage,
+	lowercasePage268, lowercasePage269, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	lowercasePage280, emptyPage, emptyPage, emptyPage,
@@ -2371,7 +2445,7 @@ const OFUnichar *const OFUnicodeLowercaseTable[0x1EA] = {
 	emptyPage, lowercasePage489
 };
 
-const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeTitlecaseTable[0x1EA] = {
 	uppercasePage0, titlecasePage1, uppercasePage2, uppercasePage3,
 	uppercasePage4, uppercasePage5, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
@@ -2439,7 +2513,7 @@ const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	uppercasePage260, uppercasePage261, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
-	uppercasePage268, emptyPage, emptyPage, emptyPage,
+	uppercasePage268, uppercasePage269, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage, emptyPage,
 	uppercasePage280, emptyPage, emptyPage, emptyPage,
@@ -2497,7 +2571,7 @@ const OFUnichar *const OFUnicodeTitlecaseTable[0x1EA] = {
 	emptyPage, uppercasePage489
 };
 
-const OFUnichar *const OFUnicodeCaseFoldingTable[0x1EA] = {
+const OFUnichar *const _OFUnicodeCaseFoldingTable[0x1EA] = {
 	caseFoldingPage0, caseFoldingPage1, lowercasePage2,
 	caseFoldingPage3, lowercasePage4, lowercasePage5,
 	emptyPage, emptyPage, emptyPage,
@@ -2587,7 +2661,7 @@ const OFUnichar *const OFUnicodeCaseFoldingTable[0x1EA] = {
 	emptyPage, emptyPage, lowercasePage260,
 	lowercasePage261, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
-	emptyPage, lowercasePage268, emptyPage,
+	emptyPage, lowercasePage268, lowercasePage269,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,
 	emptyPage, emptyPage, emptyPage,

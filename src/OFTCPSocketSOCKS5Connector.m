@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -39,23 +43,23 @@ enum {
 			  port: (uint16_t)port
 		      delegate: (id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFTCPSocketAsyncConnectBlock)block
+		       handler: (OFTCPSocketConnectedHandler)handler
 #endif
 {
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 #ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
+		_handler = [handler copy];
 #endif
 
 		_socket.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -67,14 +71,14 @@ enum {
 	if (_socket.delegate == self)
 		_socket.delegate = _delegate;
 
-	[_socket release];
-	[_host release];
-	[_delegate release];
+	objc_release(_socket);
+	objc_release(_host);
+	objc_release(_delegate);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_handler);
 #endif
-	[_exception release];
-	[_request release];
+	objc_release(_exception);
+	objc_release(_request);
 
 	[super dealloc];
 }
@@ -84,8 +88,8 @@ enum {
 	_socket.delegate = _delegate;
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(_exception);
+	if (_handler != NULL)
+		_handler(_socket, _host, _port, _exception);
 	else {
 #endif
 		if ([_delegate respondsToSelector:
@@ -107,7 +111,7 @@ enum {
 	OFData *data;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return;
 	}
@@ -131,7 +135,7 @@ enum {
 	unsigned char *response, *addressLength;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return false;
 	}
@@ -152,7 +156,7 @@ enum {
 			return false;
 		}
 
-		[_request release];
+		objc_release(_request);
 		_request = [[OFMutableData alloc] init];
 
 		[_request addItems: "\x05\x01\x00\x03" count: 4];
@@ -280,7 +284,7 @@ enum {
 	OFRunLoopMode runLoopMode;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return nil;
 	}
@@ -295,7 +299,7 @@ enum {
 				 runLoopMode: runLoopMode];
 		return nil;
 	case stateSendRequest:
-		[_request release];
+		objc_release(_request);
 		_request = nil;
 
 		_SOCKS5State = stateReadResponse;

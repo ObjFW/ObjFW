@@ -15,20 +15,29 @@
     ],
     full_usage: [
         "Optionen:\n",
-        "    -a  --append      Zu Archiv hinzufügen\n",
-        "    -c  --create      Archiv erstellen\n",
-        "    -C  --directory=  In angegebenes Verzeichnis entpacken\n",
-        "    -E  --encoding=   Das Encoding des Archivs (nur tar-Dateien)\n",
-        "    -f  --force       Existierende Dateien überschreiben\n",
-        "    -h  --help        Diese Hilfe anzeigen\n",
-        "    -l  --list        Alle Dateien im Archiv auflisten\n",
-        "    -n  --no-clobber  Dateien niemals überschreiben\n",
-        "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",
-        "\n",
-        "    -q  --quiet       Ruhiger Modus (keine Ausgabe außer Fehler)\n",
-        "    -t  --type=       Archiv-Typ (gz, lha, tar, tgz, zip)\n",
-        "    -v  --verbose     Ausführlicher Modus für Datei-Liste\n",
-        "    -x  --extract     Dateien entpacken"
+        "    -a  --append            Zu Archiv hinzufügen\n",
+        "        --archive-comment=  Zu benutzender Archivkommentar beim ",
+        "Erstellen oder\n",
+        "                            Hinzufügen\n",
+        "    -c  --create            Archiv erstellen\n",
+        "    -C  --directory=        In angegebenes Verzeichnis entpacken\n",
+        "    -E  --encoding=         Das Encoding des Archivs\n",
+        "                            (nur tar-, lha- und zoo-Dateien)\n",
+        "    -f  --force             Existierende Dateien überschreiben\n",
+        "    -h  --help              Diese Hilfe anzeigen\n",
+        "        --iri               Eine IRI benutzen um auf das Archiv ",
+        "zuzugreifen\n",
+        "    -l  --list              Alle Dateien im Archiv auflisten\n",
+        "    -n  --no-clobber        Dateien niemals überschreiben\n",
+        "    -p  --print             Eine oder mehr Dateien aus dem Archiv ",
+        "ausgeben\n",
+        "    -q  --quiet             Ruhiger Modus (keine Ausgabe außer ",
+        "Fehler)\n",
+        "    -t  --type=             Archiv-Typ (gz, lha, tar, tgz, zip, ",
+        "zoo)\n",
+        "    -v  --verbose           Ausführlicher Modus für Datei-Liste\n",
+        "    -x  --extract           Dateien entpacken\n",
+        "        --version           Versionsinformationen anzeigen"
     ],
     "2_options_mutually_exclusive": [
         "Fehler: -%[shortopt1] / --%[longopt1] und ",
@@ -79,6 +88,7 @@
     cannot_print_specific_file_from_gz: [
         "Kann keine spezifische Datei aus einem .gz-Archiv ausgeben!"
     ],
+    list_archive_comment: "Archivkommentar:",
     list_size: [
         "Größe: ",
         [
@@ -90,8 +100,9 @@
     list_owner_account_id: "Besitzerkontennummer: %[id]",
     list_group_owner_account_id: "Gruppenbesitzerkontennummer: %[id]",
     list_owner_account_name: "Besitzerkontenname: %[name]",
-    list_group_owner_account_name: "Gruppebesitzerkontenname: %[name]",
+    list_group_owner_account_name: "Gruppenbesitzerkontenname: %[name]",
     list_header_level: "Header-Level: %[level]",
+    list_header_type: "Header-Typ: %[type]",
     list_modification_date: "Änderungsdatum: %[date]",
     list_type_normal: "Typ: Normale Datei",
     list_type_hardlink: "Typ: Harter Link",
@@ -127,6 +138,14 @@
     list_general_purpose_bit_flag: "General Purpose Bit Flag: %[gpbf]",
     list_extra_field: "Extra-Feld: %[extra]",
     list_comment: "Kommentar: %[comment]",
+    list_timezone: "Zeitzone: %[timezone]",
+    list_deleted: [
+        "Gelöscht: ",
+        [
+            {"deleted == 0": "Nein"},
+            {"": "Ja"}
+        ]
+    ],
     refusing_to_extract_file: "Verweigere Entpacken von %[file]!",
     file_not_in_archive: "Datei %[file] ist nicht im Archiv!",
     print_no_file_specified: [
@@ -138,4 +157,5 @@
     adding_file: "Füge %[file] hinzu...",
     adding_file_percent: "Füge %[file] hinzu... %[percent]%",
     adding_file_done: "Füge %[file] hinzu... fertig",
+    adding_file_skipped: "Füge %[file] hinzu... übersprungen",
 }
