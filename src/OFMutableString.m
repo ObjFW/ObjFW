@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -33,10 +37,16 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableStringPlaceholder: OFMutableString
+@interface OFPlaceholderMutableString: OFMutableString
 @end
 
-@implementation OFMutableStringPlaceholder
+@implementation OFPlaceholderMutableString
+#ifdef __clang__
+/* We intentionally don't call into super, so silence the warning. */
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunknown-pragmas"
+# pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+#endif
 - (instancetype)init
 {
 	return (id)[[OFMutableUTF8String alloc] init];
@@ -174,49 +184,31 @@ static struct {
 }
 #endif
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURL: URL];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfIRI: IRI];
 }
 
-- (instancetype)initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
 	return (id)[[OFMutableUTF8String alloc]
-	    initWithContentsOfURL: URL
+	    initWithContentsOfIRI: IRI
 			 encoding: encoding];
 }
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFMutableUTF8String alloc] initWithSerialization: element];
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
-}
+OF_SINGLETON_METHODS
 @end
 
 @implementation OFMutableString
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableStringPlaceholder class];
+		object_setClass((id)&placeholder,
+		    [OFPlaceholderMutableString class]);
 }
 
 + (instancetype)alloc
@@ -289,7 +281,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string =
 	    [OFString stringWithCharacters: &character length: 1];
-	[self replaceCharactersInRange: OFRangeMake(idx, 1) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 1) withString: string];
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -348,8 +340,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	va_list arguments;
 
 	va_start(arguments, format);
-	[self appendFormat: format
-		 arguments: arguments];
+	[self appendFormat: format arguments: arguments];
 	va_end(arguments);
 }
 
@@ -361,7 +352,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = OFVASPrintF(&UTF8String, format.UTF8String,
+	if ((UTF8StringLength = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -372,45 +363,29 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	}
 }
 
-- (void)prependString: (OFString *)string
-{
-	[self insertString: string atIndex: 0];
-}
-
-- (void)reverse
-{
-	size_t i, j, length = self.length;
-
-	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
-		OFUnichar tmp = [self characterAtIndex: j];
-		[self setCharacter: [self characterAtIndex: i] atIndex: j];
-		[self setCharacter: tmp atIndex: i];
-	}
-}
-
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
-	[self of_convertWithWordStartTable: OFUnicodeUppercaseTable
-			   wordMiddleTable: OFUnicodeUppercaseTable
-			wordStartTableSize: OFUnicodeUppercaseTableSize
-		       wordMiddleTableSize: OFUnicodeUppercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeUppercaseTable
+			   wordMiddleTable: _OFUnicodeUppercaseTable
+			wordStartTableSize: _OFUnicodeUppercaseTableSize
+		       wordMiddleTableSize: _OFUnicodeUppercaseTableSize];
 }
 
 - (void)lowercase
 {
-	[self of_convertWithWordStartTable: OFUnicodeLowercaseTable
-			   wordMiddleTable: OFUnicodeLowercaseTable
-			wordStartTableSize: OFUnicodeLowercaseTableSize
-		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeLowercaseTable
+			   wordMiddleTable: _OFUnicodeLowercaseTable
+			wordStartTableSize: _OFUnicodeLowercaseTableSize
+		       wordMiddleTableSize: _OFUnicodeLowercaseTableSize];
 }
 
 - (void)capitalize
 {
-	[self of_convertWithWordStartTable: OFUnicodeTitlecaseTable
-			   wordMiddleTable: OFUnicodeLowercaseTable
-			wordStartTableSize: OFUnicodeTitlecaseTableSize
-		       wordMiddleTableSize: OFUnicodeLowercaseTableSize];
+	[self of_convertWithWordStartTable: _OFUnicodeTitlecaseTable
+			   wordMiddleTable: _OFUnicodeLowercaseTable
+			wordStartTableSize: _OFUnicodeTitlecaseTableSize
+		       wordMiddleTableSize: _OFUnicodeLowercaseTableSize];
 }
 #else
 - (void)uppercase
@@ -431,7 +406,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 - (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: OFRangeMake(idx, 0) withString: string];
+	[self replaceCharactersInRange: OFMakeRange(idx, 0) withString: string];
 }
 
 - (void)deleteCharactersInRange: (OFRange)range
@@ -451,7 +426,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
 				 options: 0
-				   range: OFRangeMake(0, self.length)];
+				   range: OFMakeRange(0, self.length)];
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
@@ -485,7 +460,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;
 
-		[self replaceCharactersInRange: OFRangeMake(i, searchLength)
+		[self replaceCharactersInRange: OFMakeRange(i, searchLength)
 				    withString: replacement];
 
 		range.length -= searchLength;
@@ -517,7 +492,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: OFRangeMake(0, i)];
+	[self deleteCharactersInRange: OFMakeRange(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
@@ -544,7 +519,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	objc_autoreleasePoolPop(pool);
 
-	[self deleteCharactersInRange: OFRangeMake(length - d, d)];
+	[self deleteCharactersInRange: OFMakeRange(length - d, d)];
 }
 
 - (void)deleteEnclosingWhitespaces

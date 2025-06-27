@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -21,11 +25,11 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 /**
- * @struct OFMapTableFunctions OFMapTable.h ObjFW/OFMapTable.h
+ * @struct OFMapTableFunctions OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A struct describing the functions to be used by the map table.
  */
-struct OFMapTableFunctions {
+typedef struct {
 	/** The function to retain keys / objects */
 	void *_Nullable (*_Nullable retain)(void *_Nullable object);
 	/** The function to release keys / objects */
@@ -35,8 +39,7 @@ struct OFMapTableFunctions {
 	/** The function to compare keys / objects */
 	bool (*_Nullable equal)(void *_Nullable object1,
 	    void *_Nullable object2);
-};
-typedef struct OFMapTableFunctions OFMapTableFunctions;
+} OFMapTableFunctions;
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -64,7 +67,7 @@ typedef void *_Nullable (^OFMapTableReplaceBlock)(void *_Nullable key,
 @class OFMapTableEnumerator;
 
 /**
- * @class OFMapTable OFMapTable.h ObjFW/OFMapTable.h
+ * @class OFMapTable OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A class similar to OFDictionary, but providing more options how keys
  *	  and objects should be retained, released, compared and hashed.
@@ -74,8 +77,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMapTableFunctions _keyFunctions, _objectFunctions;
 	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
-	unsigned long _count, _capacity;
-	unsigned char _rotate;
+	uint32_t _count, _capacity;
+	unsigned char _rotation;
 	unsigned long _mutations;
 }
 
@@ -227,17 +230,20 @@ OF_SUBCLASSING_RESTRICTED
 @end
 
 /**
- * @class OFMapTableEnumerator OFMapTable.h ObjFW/OFMapTable.h
+ * @class OFMapTableEnumerator OFMapTable.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to enumerate through an OFMapTable's
  *	  keys or objects.
  */
+#ifndef OF_MAP_TABLE_M
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFMapTableEnumerator: OFObject
 {
 	OFMapTable *_mapTable;
 	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
-	unsigned long _capacity, _mutations, *_Nullable _mutationsPtr;
-	unsigned long _position;
+	uint32_t _capacity;
+	unsigned long _mutations, *_Nullable _mutationsPtr, _position;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

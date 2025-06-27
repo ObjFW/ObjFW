@@ -1,226 +1,295 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "OFDataTests.h"
 
-static OFString *module = @"OFData";
-const char *str = "Hello!";
-
-@implementation TestsAppDelegate (OFDataTests)
-- (void)dataTests
+@implementation OFDataTests
+- (Class)dataClass
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableData *mutable;
-	OFData *immutable;
-	void *raw[2];
+	return [OFData class];
+}
+
+- (void)setUp
+{
+	[super setUp];
+
+	memset(&_items[0], 0xFF, 4096);
+	memset(&_items[1], 0x42, 4096);
+
+	_data = [[self.dataClass alloc] initWithItems: _items
+						count: 2
+					     itemSize: 4096];
+}
+
+- (void)dealloc
+{
+	objc_release(_data);
+
+	[super dealloc];
+}
+
+- (void)testCount
+{
+	OTAssertEqual(_data.count, 2);
+}
+
+- (void)testItemSize
+{
+	OTAssertEqual(_data.itemSize, 4096);
+}
+
+- (void)testItems
+{
+	OTAssertEqual(memcmp(_data.items, _items, 2 * _data.itemSize), 0);
+}
+
+- (void)testItemAtIndex
+{
+	OTAssertEqual(
+	    memcmp([_data itemAtIndex: 1], &_items[1], _data.itemSize), 0);
+}
+
+- (void)testItemAtIndexThrowsOnOutOfRangeIndex
+{
+	OTAssertThrowsSpecific([_data itemAtIndex: _data.count],
+	    OFOutOfRangeException);
+}
+
+- (void)testFirstItem
+{
+	OTAssertEqual(memcmp(_data.firstItem, &_items[0], _data.itemSize), 0);
+}
+
+- (void)testLastItem
+{
+	OTAssertEqual(memcmp(_data.lastItem, &_items[1], _data.itemSize), 0);
+}
+
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(
+	    _data, [OFData dataWithItems: _items count: 2 itemSize: 4096]);
+	OTAssertNotEqualObjects(
+	    _data, [OFData dataWithItems: _items count: 1 itemSize: 4096]);
+}
+
+- (void)testHash
+{
+	OTAssertEqual(_data.hash,
+	    [[OFData dataWithItems: _items count: 2 itemSize: 4096] hash]);
+	OTAssertNotEqual(_data.hash,
+	    [[OFData dataWithItems: _items count: 1 itemSize: 4096] hash]);
+}
+
+- (void)testCompare
+{
+	OFData *data1 = [self.dataClass dataWithItems: "aa" count: 2];
+	OFData *data2 = [self.dataClass dataWithItems: "ab" count: 2];
+	OFData *data3 = [self.dataClass dataWithItems: "aaa" count: 3];
+
+	OTAssertEqual([data1 compare: data2], OFOrderedAscending);
+	OTAssertEqual([data2 compare: data1], OFOrderedDescending);
+	OTAssertEqual([data1 compare: data1], OFOrderedSame);
+	OTAssertEqual([data1 compare: data3], OFOrderedAscending);
+	OTAssertEqual([data2 compare: data3], OFOrderedDescending);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_data copy]), _data);
+}
+
+- (void)testRangeOfDataOptionsRange
+{
+	OFData *data = [self.dataClass dataWithItems: "aaabaccdacaabb"
+					       count: 7
+					    itemSize: 2];
 	OFRange range;
 
-	TEST(@"+[dataWithItemSize:]",
-	    (mutable = [OFMutableData dataWithItemSize: 4096]))
+	range = [data rangeOfData: [self.dataClass dataWithItems: "aa"
+							   count: 1
+							itemSize: 2]
+			  options: 0
+			    range: OFMakeRange(0, 7)];
+	OTAssertEqual(range.location, 0);
+	OTAssertEqual(range.length, 1);
 
-	raw[0] = OFAllocMemory(1, 4096);
-	raw[1] = OFAllocMemory(1, 4096);
-	memset(raw[0], 0xFF, 4096);
-	memset(raw[1], 0x42, 4096);
+	range = [data rangeOfData: [self.dataClass dataWithItems: "aa"
+							   count: 1
+							itemSize: 2]
+			  options: OFDataSearchBackwards
+			    range: OFMakeRange(0, 7)];
+	OTAssertEqual(range.location, 5);
+	OTAssertEqual(range.length, 1);
 
-	TEST(@"-[addItem:]", R([mutable addItem: raw[0]]) &&
-	    R([mutable addItem: raw[1]]))
+	range = [data rangeOfData: [self.dataClass dataWithItems: "ac"
+							   count: 1
+							itemSize: 2]
+			  options: 0
+			    range: OFMakeRange(0, 7)];
+	OTAssertEqual(range.location, 2);
+	OTAssertEqual(range.length, 1);
 
-	TEST(@"-[itemAtIndex:]",
-	    memcmp([mutable itemAtIndex: 0], raw[0], 4096) == 0 &&
-	    memcmp([mutable itemAtIndex: 1], raw[1], 4096) == 0)
+	range = [data rangeOfData: [self.dataClass dataWithItems: "aabb"
+							   count: 2
+							itemSize: 2]
+			  options: 0
+			    range: OFMakeRange(0, 7)];
+	OTAssertEqual(range.location, 5);
+	OTAssertEqual(range.length, 2);
 
-	TEST(@"-[lastItem]", memcmp(mutable.lastItem, raw[1], 4096) == 0)
+	range = [data rangeOfData: [self.dataClass dataWithItems: "aa"
+							   count: 1
+							itemSize: 2]
+			  options: 0
+			    range: OFMakeRange(1, 6)];
+	OTAssertEqual(range.location, 5);
+	OTAssertEqual(range.length, 1);
 
-	TEST(@"-[count]", mutable.count == 2)
+	range = [data rangeOfData: [self.dataClass dataWithItems: "aa"
+							   count: 1
+							itemSize: 2]
+			  options: OFDataSearchBackwards
+			    range: OFMakeRange(0, 5)];
+	OTAssertEqual(range.location, 0);
+	OTAssertEqual(range.length, 1);
+}
 
-	TEST(@"-[isEqual:]",
-	    (immutable = [OFData dataWithItems: mutable.items
-					 count: mutable.count
-				      itemSize: mutable.itemSize]) &&
-	    [immutable isEqual: mutable] &&
-	    R([mutable removeLastItem]) && ![mutable isEqual: immutable])
+- (void)testRangeOfDataOptionsRangeThrowsOnDifferentItemSize
+{
+	OTAssertThrowsSpecific(
+	    [_data rangeOfData: [OFData dataWithItems: "a" count: 1]
+		       options: 0
+			 range: OFMakeRange(0, 1)],
+	    OFInvalidArgumentException);
+}
 
-	TEST(@"-[mutableCopy]",
-	    (mutable = [[immutable mutableCopy] autorelease]) &&
-	    [mutable isEqual: immutable])
+- (void)testRangeOfDataOptionsRangeThrowsOnOutOfRangeRange
+{
+	OTAssertThrowsSpecific(
+	    [_data rangeOfData: [OFData dataWithItemSize: 4096]
+		       options: 0
+			 range: OFMakeRange(1, 2)],
+	    OFOutOfRangeException);
 
-	TEST(@"-[compare]", [mutable compare: immutable] == 0 &&
-	    R([mutable removeLastItem]) &&
-	    [immutable compare: mutable] == OFOrderedDescending &&
-	    [mutable compare: immutable] == OFOrderedAscending &&
-	    [[OFData dataWithItems: "aa" count: 2] compare:
-	    [OFData dataWithItems: "z" count: 1]] == OFOrderedAscending)
+	OTAssertThrowsSpecific(
+	    [_data rangeOfData: [OFData dataWithItemSize: 4096]
+		       options: 0
+			 range: OFMakeRange(2, 1)],
+	    OFOutOfRangeException);
+}
 
-	TEST(@"-[hash]", immutable.hash == 0x634A529F)
+- (void)testSubdataWithRange
+{
+	OFData *data1 = [self.dataClass dataWithItems: "aaabaccdacaabb"
+						count: 7
+					     itemSize: 2];
+	OFData *data2 = [self.dataClass dataWithItems: "abcde" count: 5];
 
-	mutable = [OFMutableData dataWithItems: "abcdef" count: 6];
+	OTAssertEqualObjects(
+	    [data1 subdataWithRange: OFMakeRange(2, 4)],
+	    [OFData dataWithItems: "accdacaa" count: 4 itemSize: 2]);
 
-	TEST(@"-[removeLastItem]", R([mutable removeLastItem]) &&
-	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
+	OTAssertEqualObjects(
+	    [data2 subdataWithRange: OFMakeRange(2, 3)],
+	    [OFData dataWithItems: "cde" count: 3]);
+}
 
-	TEST(@"-[removeItemsInRange:]",
-	    R([mutable removeItemsInRange: OFRangeMake(1, 2)]) &&
-	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
+- (void)testSubdataWithRangeThrowsOnOutOfRangeRange
+{
+	OFData *data1 = [self.dataClass dataWithItems: "aaabaccdacaabb"
+						count: 7
+					     itemSize: 2];
+	OFData *data2 = [self.dataClass dataWithItems: "abcde" count: 5];
 
-	TEST(@"-[insertItems:atIndex:count:]",
-	    R([mutable insertItems: "bc" atIndex: 1 count: 2]) &&
-	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
+	OTAssertThrowsSpecific([data1 subdataWithRange: OFMakeRange(7, 1)],
+	    OFOutOfRangeException);
 
-	immutable = [OFData dataWithItems: "aaabaccdacaabb"
-				    count: 7
-				 itemSize: 2];
+	OTAssertThrowsSpecific([data1 subdataWithRange: OFMakeRange(8, 0)],
+	    OFOutOfRangeException);
 
-	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							count: 1
-						     itemSize: 2]
-			       options: 0
-				 range: OFRangeMake(0, 7)];
-	TEST(@"-[rangeOfData:options:range:] #1",
-	    range.location == 0 && range.length == 1)
+	OTAssertThrowsSpecific([data2 subdataWithRange: OFMakeRange(6, 1)],
+	    OFOutOfRangeException);
+}
 
-	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							count: 1
-						     itemSize: 2]
-			       options: OFDataSearchBackwards
-				 range: OFRangeMake(0, 7)];
-	TEST(@"-[rangeOfData:options:range:] #2",
-	    range.location == 5 && range.length == 1)
+- (void)testStringByMD5Hashing
+{
+	OTAssertEqualObjects(_data.stringByMD5Hashing,
+	    @"37d65c8816008d58175b1d71ee892de3");
+}
 
-	range = [immutable rangeOfData: [OFData dataWithItems: "ac"
-							count: 1
-						     itemSize: 2]
-			       options: 0
-				 range: OFRangeMake(0, 7)];
-	TEST(@"-[rangeOfData:options:range:] #3",
-	    range.location == 2 && range.length == 1)
+- (void)testStringByRIPEMD160Hashing
+{
+	OTAssertEqualObjects(_data.stringByRIPEMD160Hashing,
+	    @"ab33a6a725f9fcec6299054dc604c0eb650cd889");
+}
 
-	range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
-							count: 2
-						     itemSize: 2]
-			       options: 0
-				 range: OFRangeMake(0, 7)];
-	TEST(@"-[rangeOfData:options:range:] #4",
-	    range.location == 5 && range.length == 2)
+- (void)testStringBySHA1Hashing
+{
+	OTAssertEqualObjects(_data.stringBySHA1Hashing,
+	    @"eb50cfcc29d0bed96b3bafe03e99110bcf6663b3");
+}
 
-	TEST(@"-[rangeOfData:options:range:] #5",
-	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							      count: 1
-							   itemSize: 2]
-				     options: 0
-				       range: OFRangeMake(1, 6)]) &&
-	    range.location == 5 && range.length == 1)
+- (void)testStringBySHA224Hashing
+{
+	OTAssertEqualObjects(_data.stringBySHA224Hashing,
+	    @"204f8418a914a6828f8eb27871e01f74366f6d8fac8936029ebf0041");
+}
 
-	range = [immutable rangeOfData: [OFData dataWithItems: "aa"
-							count: 1
-						     itemSize: 2]
-			       options: OFDataSearchBackwards
-				 range: OFRangeMake(0, 5)];
-	TEST(@"-[rangeOfData:options:range:] #6",
-	    range.location == 0 && range.length == 1)
+- (void)testStringBySHA256Hashing
+{
+	OTAssertEqualObjects(_data.stringBySHA256Hashing,
+	    @"27c521859f6f5b10aeac4e210a6d005c"
+	    @"85e382c594e2622af9c46c6da8906821");
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[rangeOfData:options:range:] failing on different itemSize",
-	    OFInvalidArgumentException,
-	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
-						    count: 1
-						 itemSize: 3]
-			   options: 0
-			     range: OFRangeMake(0, 1)])
+- (void)testStringBySHA384Hashing
+{
+	OTAssertEqualObjects(_data.stringBySHA384Hashing,
+	    @"af99a52c26c00f01fe649dcc53d7c7a0"
+	    @"a9ee0150b971955be2af395708966120"
+	    @"5f2634f70df083ef63b232d5b8549db4");
+}
 
-	EXPECT_EXCEPTION(
-	    @"-[rangeOfData:options:range:] failing on out of range",
-	    OFOutOfRangeException,
-	    [immutable rangeOfData: [OFData dataWithItems: ""
-						    count: 0
-						 itemSize: 2]
-			   options: 0
-			     range: OFRangeMake(8, 1)])
+- (void)testStringBySHA512Hashing
+{
+	OTAssertEqualObjects(_data.stringBySHA512Hashing,
+	    @"1cbd53bf8bed9b45a63edda645ee1217"
+	    @"24d2f0323c865e1039ba13320bc6c66e"
+	    @"c79b6cdf6d08395c612b7decb1e59ad1"
+	    @"e72bfa007c2f76a823d10204d47d2e2d");
+}
 
-	TEST(@"-[subdataWithRange:]",
-	    [[immutable subdataWithRange: OFRangeMake(2, 4)]
-	    isEqual: [OFData dataWithItems: "accdacaa"
-				     count: 4
-				  itemSize: 2]] &&
-	    [[mutable subdataWithRange: OFRangeMake(2, 3)]
-	    isEqual: [OFData dataWithItems: "cde"
-				     count: 3]])
+- (void)testStringByBase64Encoding
+{
+	OTAssertEqualObjects([[self.dataClass dataWithItems: "abcde" count: 5]
+	    stringByBase64Encoding], @"YWJjZGU=");
+}
 
-	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #1",
-	    OFOutOfRangeException,
-	    [immutable subdataWithRange: OFRangeMake(7, 1)])
-
-	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
-	    OFOutOfRangeException,
-	    [mutable subdataWithRange: OFRangeMake(6, 1)])
-
-	TEST(@"-[stringByMD5Hashing]", [mutable.stringByMD5Hashing
-	    isEqual: @"ab56b4d92b40713acc5af89985d4b786"])
-
-	TEST(@"-[stringByRIPEMD160Hashing]", [mutable.stringByRIPEMD160Hashing
-	    isEqual: @"973398b6e6c6cfa6b5e6a5173f195ce3274bf828"])
-
-	TEST(@"-[stringBySHA1Hashing]", [mutable.stringBySHA1Hashing
-	    isEqual: @"03de6c570bfe24bfc328ccd7ca46b76eadaf4334"])
-
-	TEST(@"-[stringBySHA224Hashing]", [mutable.stringBySHA224Hashing
-	    isEqual: @"bdd03d560993e675516ba5a50638b6531ac2ac3d5847c61916cfced6"
-	    ])
-
-	TEST(@"-[stringBySHA256Hashing]", [mutable.stringBySHA256Hashing
-	    isEqual: @"36bbe50ed96841d10443bcb670d6554f0a34b761be67ec9c4a8ad2c0"
-		     @"c44ca42c"])
-
-	TEST(@"-[stringBySHA384Hashing]", [mutable.stringBySHA384Hashing
-	    isEqual: @"4c525cbeac729eaf4b4665815bc5db0c84fe6300068a727cf74e2813"
-		     @"521565abc0ec57a37ee4d8be89d097c0d2ad52f0"])
-
-	TEST(@"-[stringBySHA512Hashing]", [mutable.stringBySHA512Hashing
-	    isEqual: @"878ae65a92e86cac011a570d4c30a7eaec442b85ce8eca0c2952b5e3"
-		     @"cc0628c2e79d889ad4d5c7c626986d452dd86374b6ffaa7cd8b67665"
-		     @"bef2289a5c70b0a1"])
-
-	TEST(@"-[stringByBase64Encoding]",
-	    [mutable.stringByBase64Encoding isEqual: @"YWJjZGU="])
-
-	TEST(@"+[dataWithBase64EncodedString:]",
-	    memcmp([[OFData dataWithBase64EncodedString: @"YWJjZGU="]
-	    items], "abcde", 5) == 0)
-
-	TEST(@"Building strings",
-	    (mutable = [OFMutableData dataWithItems: str count: 6]) &&
-	    R([mutable addItem: ""]) &&
-	    strcmp(mutable.items, str) == 0)
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
-	    OFOutOfRangeException, [mutable itemAtIndex: mutable.count])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
-	    OFOutOfRangeException, [mutable addItems: raw[0] count: SIZE_MAX])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
-	    OFOutOfRangeException,
-	    [mutable removeItemsInRange: OFRangeMake(mutable.count, 1)])
-
-	OFFreeMemory(raw[0]);
-	OFFreeMemory(raw[1]);
-
-	objc_autoreleasePoolPop(pool);
+- (void)testDataWithBase64EncodedString
+{
+	OTAssertEqualObjects(
+	    [self.dataClass dataWithBase64EncodedString: @"YWJjZGU="],
+	    [OFData dataWithItems: "abcde" count: 5]);
 }
 @end

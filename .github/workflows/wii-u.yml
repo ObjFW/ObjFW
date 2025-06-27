@@ -1,0 +1,52 @@
+name: wii-u
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: docker pull devkitpro/devkitppc
+    - uses: actions/checkout@v4
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c 'cd /objfw && ./configure --host=powerpc-eabi --with-wii-u'
+    - name: make
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw && make -j$(nproc)"
+    - name: make tests.rpx
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw/tests && make tests.rpx"
+    - name: make install
+      run: |
+        docker run \
+          -e DEVKITPRO=/opt/devkitpro \
+          -e PATH="/opt/devkitpro/devkitPPC/bin:/opt/devkitpro/tools/bin:$PATH" \
+          -v "$PWD:/objfw" \
+          devkitpro/devkitppc \
+          sh -c "cd /objfw && make install"
+    - name: Create objfw-tests
+      run: |
+        mkdir -p objfw-tests/objfw-tests
+        cp tests/tests.rpx tests/testfile.txt objfw-tests/objfw-tests
+    - name: Upload objfw-tests
+      uses: actions/upload-artifact@v4
+      with:
+        name: Wii U Tests
+        path: objfw-tests

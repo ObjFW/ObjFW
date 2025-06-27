@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFXMLNode.h"
@@ -26,13 +30,13 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLAttribute;
 
 /**
- * @class OFXMLElement OFXMLElement.h ObjFW/OFXMLElement.h
+ * @class OFXMLElement OFXMLElement.h ObjFW/ObjFW.h
  *
  * @brief A class which stores an XML element.
  */
 @interface OFXMLElement: OFXMLNode
 {
-	OFString *_name, *_Nullable _namespace, *_Nullable _defaultNamespace;
+	OFString *_name, *_Nullable _namespace;
 	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
 	    _namespaces;
@@ -52,14 +56,8 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *namespace;
 #else
 @property OF_NULLABLE_PROPERTY (copy, nonatomic,
-    getter=namespace, setter=setNamespace:) OFString *namespace_;
+    getter=namespace, setter=setNamespace:) OFString *nameSpace;
 #endif
-
-/**
- * @brief The default namespace for the element to be used if there is no
- *	  parent.
- */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *defaultNamespace;
 
 /**
  * @brief An array with the attributes of the element.
@@ -68,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /**
- * @brief An array of OFXMLNodes with all children of the element.
+ * @brief An array of @ref OFXMLNode with all children of the element.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFXMLNode *) *children;
@@ -101,41 +99,36 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new XML element with the specified name and namespace.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @return A new autoreleased OFXMLElement with the specified element name and
  *	   namespace
  */
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (nullable OFString *)namespace_;
+		      namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief Creates a new XML element with the specified name, namespace and
  * 	  string value.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @param stringValue The value for the element
  * @return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (nullable OFString *)namespace_
+		      namespace: (nullable OFString *)nameSpace
 		    stringValue: (nullable OFString *)stringValue;
-
-/**
- * @brief Creates a new element with the specified element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-+ (instancetype)elementWithElement: (OFXMLElement *)element;
 
 /**
  * @brief Parses the string and returns an OFXMLElement for it.
  *
  * @param string The string to parse
  * @return A new autoreleased OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithXMLString: (OFString *)string;
 
@@ -145,6 +138,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream to parse
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 + (instancetype)elementWithStream: (OFStream *)stream;
 
@@ -175,36 +172,27 @@ OF_ASSUME_NONNULL_BEGIN
  *	  and namespace.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @return An initialized OFXMLElement with the specified element name and
  *	   namespace
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_;
+		   namespace: (nullable OFString *)nameSpace
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFXMLElement with the specified name,
  *	  namespace and value.
  *
  * @param name The name for the element
- * @param namespace_ The namespace for the element
+ * @param nameSpace The namespace for the element
  * @param stringValue The value for the element
  * @return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
+		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (nullable OFString *)stringValue;
-
-/**
- * @brief Initializes an already allocated OFXMLElement with the specified
- *	  element.
- *
- * @param element An OFXMLElement to initialize the OFXMLElement with
- * @return A new autoreleased OFXMLElement with the contents of the specified
- *	   element
- */
-- (instancetype)initWithElement: (OFXMLElement *)element;
 
 /**
  * @brief Parses the string and initializes an already allocated OFXMLElement
@@ -212,6 +200,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string The string to parse
  * @return An initialized OFXMLElement with the contents of the string
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithXMLString: (OFString *)string;
 
@@ -221,26 +213,28 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param stream The stream to parse
  * @return An initialized OFXMLElement with the contents of the specified stream
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (instancetype)initWithStream: (OFStream *)stream;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
 
 /**
  * @brief Sets a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param namespace_ The namespace for which the prefix is set
+ * @param nameSpace The namespace for which the prefix is set
  */
-- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
+- (void)setPrefix: (OFString *)prefix forNamespace: (OFString *)nameSpace;
 
 /**
  * @brief Binds a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
- * @param namespace_ The namespace for which the prefix is bound
+ * @param nameSpace The namespace for which the prefix is bound
  */
-- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)namespace_;
+- (void)bindPrefix: (OFString *)prefix forNamespace: (OFString *)nameSpace;
 
 /**
  * @brief Adds the specified attribute.
@@ -272,11 +266,11 @@ OF_ASSUME_NONNULL_BEGIN
  * added.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The value of the attribute
  */
 - (void)addAttributeWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
+		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (OFString *)stringValue;
 
 /**
@@ -331,7 +325,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Inserts the specified children at the specified index.
  *
- * @param children An array of OFXMLNodes which are added as children
+ * @param children An array of @ref OFXMLNode which are added as children
  * @param index The index where the child is added
  */
 - (void)insertChildren: (OFArray OF_GENERIC(OFXMLNode *) *)children
@@ -349,8 +343,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param index The index of the child to remove
  */
-
 - (void)removeChildAtIndex: (size_t)index;
+
 /**
  * @brief Replaces the first child that is equal to the specified OFXMLNode
  *	  with the specified node.
@@ -373,8 +367,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return All children that have the specified namespace
  */
-- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForNamespace:
-    (nullable OFString *)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement *) *)
+    elementsForNamespace: (nullable OFString *)elementNS;
 
 /**
  * @brief Returns the first child element with the specified name.
@@ -390,8 +384,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementName The name of the elements
  * @return The child elements with the specified name
  */
-- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForName:
-    (OFString *)elementName;
+- (OFArray OF_GENERIC(OFXMLElement *) *)
+    elementsForName: (OFString *)elementName;
 
 /**
  * @brief Returns the first child element with the specified name and namespace.
@@ -413,8 +407,34 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFArray OF_GENERIC(OFXMLElement *) *)
     elementsForName: (OFString *)elementName
 	  namespace: (nullable OFString *)elementNS;
+
+/**
+ * @brief Returns an OFString representing the OFXMLElement as an XML string
+ *	  with the specified indentation per level.
+ *
+ * @param indentation The indentation per level
+ * @return An OFString representing the OFXMLNode as an XML string with
+ *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
+ */
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
+
+/**
+ * @brief Returns an OFString representing the OFXMLElement as an XML string
+ *	  with the specified default namespace and indentation per level.
+ *
+ * @param defaultNS The default namespace
+ * @param indentation The indentation per level
+ * @return An OFString representing the OFXMLNode as an XML string with
+ *	   indentation
+ * @throw OFUnboundNamespaceException The node uses a namespace that was not
+ *				      bound to a prefix in a context where it
+ *				      needs a prefix
+ */
+- (OFString *)XMLStringWithDefaultNamespace: (OFString *)defaultNS
+				indentation: (unsigned int)indentation;
 @end
 
 OF_ASSUME_NONNULL_END
-
-#import "OFXMLElement+Serialization.h"

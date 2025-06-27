@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,12 +27,12 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	beqz	$a0, 0f
 
 	andi	$t0, $a0, 1
-	bnez	$t0, .Ltagged_pointer_\name
+	bnez	$t0, .LtaggedPointer_\name
 
 	ld	$t0, ($a0)
 	ld	$t0, 64($t0)
@@ -72,28 +76,28 @@
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	daddu	$v0, $v0, $t9
-	ld	$v0, %got_disp(nil_method)($v0)
+	ld	$v0, %got_disp(.LnilMethod)($v0)
 	jr	$ra
 
 1:
 	lui	$t0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
 	daddu	$t0, $t0, $t9
-	ld	$t9, %got_disp(\not_found)($t0)
+	ld	$t9, %got_disp(\notFound)($t0)
 	jr	$t9
 
-.Ltagged_pointer_\name:
+.LtaggedPointer_\name:
 	lui	$t0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
 	daddu	$t0, $t0, $t9
 
-	ld	$t1, %got_disp(objc_tagged_pointer_secret)($t0)
+	ld	$t1, %got_disp(_objc_taggedPointerSecret)($t0)
 	ld	$t1, 0($t1)
 	xor	$t1, $a0, $t1
 	and	$t1, $t1, 0xE
 	dsll	$t1, $t1, 2
 
-	ld	$t0, %got_disp(objc_tagged_pointer_classes)($t0)
+	ld	$t0, %got_disp(_objc_taggedPointerClasses)($t0)
 	daddu	$t0, $t0, $t1
 	ld	$t0, ($t0)
 	ld	$t0, 64($t0)
@@ -103,7 +107,7 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	move	$t0, $a0
 	ld	$a0, ($a0)
@@ -119,21 +123,21 @@
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	daddu	$v0, $v0, $t9
-	ld	$v0, %got_disp(nil_method)($v0)
+	ld	$v0, %got_disp(.LnilMethod)($v0)
 	jr	$ra
 .type \name, %function
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-nil_method:
+.LnilMethod:
 	move	$v0, $zero
 	jr	$ra
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

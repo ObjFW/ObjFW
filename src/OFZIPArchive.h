@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -22,33 +26,67 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFSeekableStream;
 @class OFStream;
+@class OFZIPArchive;
 
 /**
- * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
+ * @protocol OFZIPArchiveDelegate OFZIPArchive.h ObjFW/ObjFW.h
+ *
+ * @brief A delegate for OFZIPArchive.
+ */
+@protocol OFZIPArchiveDelegate <OFObject>
+@optional
+/**
+ * @brief A callback that is called when an @ref OFZIPArchive wants to read a
+ *	  different archive part.
+ *
+ * @param archive The archive that wants to read another part
+ * @param partNumber The number of the part the archive wants to read
+ * @param lastPartNumber The number of the last archive part
+ * @return The stream to read the needed part, or `nil` if no such part exists
+ */
+- (nullable OFSeekableStream *)archive: (OFZIPArchive *)archive
+		     wantsPartNumbered: (unsigned int)partNumber
+			lastPartNumber: (unsigned int)lastPartNumber;
+@end
+
+/**
+ * @class OFZIPArchive OFZIPArchive.h ObjFW/ObjFW.h
  *
  * @brief A class for accessing and manipulating ZIP files.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
-	OFStream *_stream;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
+	OFObject <OFZIPArchiveDelegate> *_Nullable _delegate;
+	OF_KINDOF(OFStream *) _stream;
 	int64_t _offset;
-	enum {
-		OFZIPArchiveModeRead,
-		OFZIPArchiveModeWrite,
-		OFZIPArchiveModeAppend
-	} _mode;
-	uint32_t _diskNumber, _centralDirectoryDisk;
+	uint_least8_t _mode;
+	uint32_t _diskNumber, _lastDiskNumber;
+@protected
+	uint32_t _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
 	OFString *_Nullable _archiveComment;
+#ifdef OF_ZIP_ARCHIVE_M
+@public
+#endif
 	OFMutableArray OF_GENERIC(OFZIPArchiveEntry *) *_entries;
 	OFMutableDictionary OF_GENERIC(OFString *, OFZIPArchiveEntry *)
 	    *_pathToEntryMap;
 	OFStream *_Nullable _lastReturnedStream;
 }
+
+/**
+ * @brief The delegate of the ZIP archive.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    OFObject <OFZIPArchiveDelegate> *delegate;
 
 /**
  * @brief The archive comment.
@@ -75,21 +113,32 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
- * @param path The path to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
+
+/**
+ * @brief Creates an IRI for accessing the specified file within the specified
+ *	  ZIP archive.
+ *
+ * @param path The path of the file within the archive
+ * @param IRI The IRI of the archive
+ * @return An IRI for accessing the specified file within the specified ZIP
+ *	   archive
+ */
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -103,23 +152,23 @@ OF_SUBCLASSING_RESTRICTED
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
 - (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
-#ifdef OF_HAVE_FILES
 /**
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
- * @param path The path to the ZIP file
+ * @param IRI The IRI to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
+ * @throw OFInvalidFormatException The format is not that of a valid ZIP archive
  */
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
-#endif
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Returns a stream for reading the specified file from the archive.
@@ -137,6 +186,14 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in read mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed
+ * @throw OFInvalidFormatException The local header and the header in the
+ *				   central directory do not match enough
+ * @throw OFUnsupportedVersionException The file uses a version of the ZIP
+ *					format that is not supported
  */
 - (OFStream *)streamForReadingFile: (OFString *)path;
 
@@ -163,24 +220,25 @@ OF_SUBCLASSING_RESTRICTED
  *		  * The CRC32.
  *		  * Bit 3 and 11 of the general purpose bit flag.
  * @return A stream for writing the specified entry to the archive
+ * @throw OFNotOpenException The archive is not open
+ * @throw OFInvalidArgumentException The archive is not in write mode
+ * @throw OFOpenItemFailedException Opening the specified file within the
+ *				    archive failed. If
+ *				    @ref OFOpenItemFailedException#errNo is
+ *				    `EEXIST`, it failed because there is
+ *				    already a file with the same name in the
+ *				    archive.
+ * @throw OFNotImplementedException The desired compression method is not
+ *				    implemented
  */
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry;
 
 /**
  * @brief Closes the OFZIPArchive.
+ *
+ * @throw OFNotOpenException The archive is not open
  */
 - (void)close;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern uint32_t OFZIPArchiveReadField32(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull);
-extern uint64_t OFZIPArchiveReadField64(const uint8_t *_Nonnull *_Nonnull,
-    uint16_t *_Nonnull);
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

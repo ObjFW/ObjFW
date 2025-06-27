@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -21,17 +25,19 @@
 # include <complex.h>
 #endif
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFMethodSignature";
+@interface OFMethodSignatureTests: OTTestCase
+@end
 
-struct test1_struct {
+struct Test1Struct {
 	char c;
 	int i;
 	char d;
 };
 
-struct test2_struct {
+struct Test2Struct {
 	char c;
 	struct {
 		short s;
@@ -45,19 +51,19 @@ struct test2_struct {
 };
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
-struct test3_struct {
+struct Test3Struct {
 	char c;
 	complex double cd;
 };
 #endif
 
-union test3_union {
+union Test3Union {
 	char c;
 	int i;
 	double d;
 };
 
-union test4_union {
+union Test4Union {
 	char c;
 	struct {
 		short x, y;
@@ -69,109 +75,104 @@ union test4_union {
 	} u;
 };
 
-@implementation TestsAppDelegate (OFMethodSignatureTests)
-- (void)methodSignatureTests
+@implementation OFMethodSignatureTests
+- (void)testSignatureWithObjCTypes
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMethodSignature *ms;
+	OFMethodSignature *methodSignature;
 
-	TEST(@"-[signatureWithObjCTypes:] #1",
-	    (ms = [OFMethodSignature signatureWithObjCTypes:
-	    "i28@0:8S16*20"]) && ms.numberOfArguments == 4 &&
-	    strcmp(ms.methodReturnType, "i") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 2], "S") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 3], "*") == 0 &&
-	    ms.frameLength == 28 && [ms argumentOffsetAtIndex: 0] == 0 &&
-	    [ms argumentOffsetAtIndex: 1] == 8 &&
-	    [ms argumentOffsetAtIndex: 2] == 16 &&
-	    [ms argumentOffsetAtIndex: 3] == 20)
+	methodSignature =
+	    [OFMethodSignature signatureWithObjCTypes: "i28@0:8S16*20"];
+	OTAssertEqual(methodSignature.numberOfArguments, 4);
+	OTAssertEqual(strcmp(methodSignature.methodReturnType, "i"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 0], "@"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 1], ":"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 2], "S"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 3], "*"), 0);
+	OTAssertEqual(methodSignature.frameLength, 28);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 0], 0);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 1], 8);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 2], 16);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 3], 20);
 
-	TEST(@"-[signatureWithObjCTypes:] #2",
-	    (ms = [OFMethodSignature signatureWithObjCTypes:
+	methodSignature = [OFMethodSignature signatureWithObjCTypes:
 	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}24@0:8"
-	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}16"]) &&
-	    ms.numberOfArguments == 3 && strcmp(ms.methodReturnType,
-	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 2],
-	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
-	    ms.frameLength == 24 && [ms argumentOffsetAtIndex: 0] == 0 &&
-	    [ms argumentOffsetAtIndex: 1] == 8 &&
-	    [ms argumentOffsetAtIndex: 2] == 16)
+	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}16"];
+	OTAssertEqual(methodSignature.numberOfArguments, 3);
+	OTAssertEqual(strcmp(methodSignature.methodReturnType,
+	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 0], "@"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 1], ":"), 0);
+	OTAssertEqual(strcmp([methodSignature argumentTypeAtIndex: 2],
+	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}"), 0);
+	OTAssertEqual(methodSignature.frameLength, 24);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 0], 0);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 1], 8);
+	OTAssertEqual([methodSignature argumentOffsetAtIndex: 2], 16);
+}
 
-	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #3",
-	    OFInvalidFormatException,
-	    [OFMethodSignature signatureWithObjCTypes: "{ii"])
+- (void)testSignatureWithObjCTypesFailsWithInvalidFormat
+{
+	OTAssertThrowsSpecific(
+	    [OFMethodSignature signatureWithObjCTypes: "{ii"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #4",
-	    OFInvalidFormatException,
-	    [OFMethodSignature signatureWithObjCTypes: ""])
+	OTAssertThrowsSpecific([OFMethodSignature signatureWithObjCTypes: ""],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #5",
-	    OFInvalidFormatException,
-	    [OFMethodSignature signatureWithObjCTypes: "0"])
+	OTAssertThrowsSpecific([OFMethodSignature signatureWithObjCTypes: "0"],
+	    OFInvalidFormatException);
 
-	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #6",
-	    OFInvalidFormatException,
-	    [OFMethodSignature signatureWithObjCTypes: "{{}0"])
+	OTAssertThrowsSpecific(
+	    [OFMethodSignature signatureWithObjCTypes: "{{}0"],
+	    OFInvalidFormatException);
+}
 
-	TEST(@"OFSizeOfTypeEncoding() #1",
-	    OFSizeOfTypeEncoding(@encode(struct test1_struct)) ==
-	    sizeof(struct test1_struct))
+- (void)testSizeOfTypeEncoding
+{
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(struct Test1Struct)),
+	    sizeof(struct Test1Struct));
 
-	TEST(@"OFSizeOfTypeEncoding() #2",
-	    OFSizeOfTypeEncoding(@encode(struct test2_struct)) ==
-	    sizeof(struct test2_struct))
-
-#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
-    OF_GCC_VERSION >= 402
-	TEST(@"OFSizeOfTypeEncoding() #3",
-	    OFSizeOfTypeEncoding(@encode(struct test3_struct)) ==
-	    sizeof(struct test3_struct))
-#endif
-
-	TEST(@"OFSizeOfTypeEncoding() #4",
-	    OFSizeOfTypeEncoding(@encode(union test3_union)) ==
-	    sizeof(union test3_union))
-
-	TEST(@"OFSizeOfTypeEncoding() #5",
-	    OFSizeOfTypeEncoding(@encode(union test4_union)) ==
-	    sizeof(union test4_union))
-
-	TEST(@"OFSizeOfTypeEncoding() #6",
-	    OFSizeOfTypeEncoding(@encode(struct test1_struct [5])) ==
-	    sizeof(struct test1_struct [5]))
-
-	TEST(@"OFAlignmentOfTypeEncoding() #1",
-	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct)) ==
-	    OF_ALIGNOF(struct test1_struct))
-
-	TEST(@"OFAlignmentOfTypeEncoding() #2",
-	    OFAlignmentOfTypeEncoding(@encode(struct test2_struct)) ==
-	    OF_ALIGNOF(struct test2_struct))
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(struct Test2Struct)),
+	    sizeof(struct Test2Struct));
 
 #if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
     OF_GCC_VERSION >= 402
-	TEST(@"OFAlignmentOfTypeEncoding() #3",
-	    OFAlignmentOfTypeEncoding(@encode(struct test3_struct)) ==
-	    OF_ALIGNOF(struct test3_struct))
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(struct Test3Struct)),
+	    sizeof(struct Test3Struct));
 #endif
 
-	TEST(@"OFAlignmentOfTypeEncoding() #4",
-	    OFAlignmentOfTypeEncoding(@encode(union test3_union)) ==
-	    OF_ALIGNOF(union test3_union))
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(union Test3Union)),
+	    sizeof(union Test3Union));
 
-	TEST(@"OFAlignmentOfTypeEncoding() #5",
-	    OFAlignmentOfTypeEncoding(@encode(union test4_union)) ==
-	    OF_ALIGNOF(union test4_union))
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(union Test4Union)),
+	    sizeof(union Test4Union));
 
-	TEST(@"OFAlignmentOfTypeEncoding() #6",
-	    OFAlignmentOfTypeEncoding(@encode(struct test1_struct [5])) ==
-	    OF_ALIGNOF(struct test1_struct [5]))
+	OTAssertEqual(OFSizeOfTypeEncoding(@encode(struct Test1Struct [5])),
+	    sizeof(struct Test1Struct [5]));
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)testAlignmentOfTypeEncoding
+{
+	OTAssertEqual(OFAlignmentOfTypeEncoding(@encode(struct Test1Struct)),
+	    OF_ALIGNOF(struct Test1Struct));
+
+	OTAssertEqual(OFAlignmentOfTypeEncoding(@encode(struct Test2Struct)),
+	    OF_ALIGNOF(struct Test2Struct));
+
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H) && \
+    OF_GCC_VERSION >= 402
+	OTAssertEqual(OFAlignmentOfTypeEncoding(@encode(struct Test3Struct)),
+	    OF_ALIGNOF(struct Test3Struct));
+#endif
+
+	OTAssertEqual(OFAlignmentOfTypeEncoding(@encode(union Test3Union)),
+	    OF_ALIGNOF(union Test3Union));
+
+	OTAssertEqual(OFAlignmentOfTypeEncoding(@encode(union Test4Union)),
+	    OF_ALIGNOF(union Test4Union));
+
+	OTAssertEqual(
+	    OFAlignmentOfTypeEncoding(@encode(struct Test1Struct [5])),
+	    OF_ALIGNOF(struct Test1Struct [5]));
 }
 @end

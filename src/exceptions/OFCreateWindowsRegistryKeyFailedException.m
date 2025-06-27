@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,24 +22,26 @@
 #import "OFCreateWindowsRegistryKeyFailedException.h"
 
 @implementation OFCreateWindowsRegistryKeyFailedException
-@synthesize registryKey = _registryKey, path = _path, options = _options;
-@synthesize securityAndAccessRights = _securityAndAccessRights;
-@synthesize securityAttributes = _securityAttributes, status = _status;
+@synthesize registryKey = _registryKey, path = _path;
+@synthesize accessRights = _accessRights;
+@synthesize securityAttributes = _securityAttributes, options = _options;
+@synthesize status = _status;
 
 + (instancetype)
     exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
+		accessRights: (REGSAM)accessRights
 	  securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+		     options: (DWORD)options
 		      status: (LSTATUS)status
 {
-	return [[[self alloc] initWithRegistryKey: registryKey
-					     path: path
-					  options: options
-			  securityAndAccessRights: securityAndAccessRights
-			       securityAttributes: securityAttributes
-					   status: status] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRegistryKey: registryKey
+					 path: path
+				 accessRights: accessRights
+			   securityAttributes: securityAttributes
+				      options: options
+				       status: status]);
 }
 
 - (instancetype)init
@@ -43,25 +49,24 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)
-	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
-		     status: (LSTATUS)status
+- (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			       path: (OFString *)path
+		       accessRights: (REGSAM)accessRights
+		 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+			    options: (DWORD)options
+			     status: (LSTATUS)status
 {
 	self = [super init];
 
 	@try {
-		_registryKey = [registryKey retain];
+		_registryKey = objc_retain(registryKey);
 		_path = [path copy];
-		_options = options;
-		_securityAndAccessRights = securityAndAccessRights;
+		_accessRights = accessRights;
 		_securityAttributes = securityAttributes;
+		_options = options;
 		_status = status;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -70,8 +75,8 @@
 
 - (void)dealloc
 {
-	[_registryKey release];
-	[_path release];
+	objc_release(_registryKey);
+	objc_release(_path);
 
 	[super dealloc];
 }
@@ -80,6 +85,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to create subkey at path %@: %@",
-	    _path, OFWindowsStatusToString(_status)];
+	    _path, _OFWindowsStatusToString(_status)];
 }
 @end

@@ -1,67 +1,66 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFOpenItemFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURL.h"
 
 @implementation OFOpenItemFailedException
-@synthesize URL = _URL, path = _path, mode = _mode, errNo = _errNo;
+@synthesize IRI = _IRI, path = _path, mode = _mode, errNo = _errNo;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 			    mode: (OFString *)mode
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
-				     mode: mode
-				    errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+								mode: mode
+							       errNo: errNo]);
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
 			     mode: (OFString *)mode
 			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path
-				      mode: mode
-				     errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+								 mode: mode
+								errNo: errNo]);
 }
 
-- (instancetype)init
++ (instancetype)exception
 {
-	OF_INVALID_INIT_METHOD
+	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		       mode: (OFString *)mode
 		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_IRI = [IRI copy];
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -79,18 +78,23 @@
 		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	return self;
 }
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (void)dealloc
 {
-	[_URL release];
-	[_path release];
-	[_mode release];
+	objc_release(_IRI);
+	objc_release(_path);
+	objc_release(_mode);
 
 	[super dealloc];
 }
@@ -99,14 +103,14 @@
 {
 	id item = nil;
 
-	if (_URL != nil)
-		item = _URL;
+	if (_IRI != nil)
+		item = _IRI;
 	else if (_path != nil)
 		item = _path;
 
 	if (_mode != nil)
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@ with mode %@: %@",
+		    @"Failed to open file %@ with mode %@: %@",
 		    item, _mode, OFStrError(_errNo)];
 	else
 		return [OFString stringWithFormat:

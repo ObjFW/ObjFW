@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFException.h"
@@ -18,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFUndefinedKeyException \
- *	  OFUndefinedKeyException.h ObjFW/OFUndefinedKeyException.h
+ * @class OFUndefinedKeyException OFUndefinedKeyException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a key is undefined (e.g. for Key Value
  *	  Coding).
@@ -27,8 +30,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUndefinedKeyException: OFException
 {
 	id _object;
-	OFString *_key;
+	OFString *_Nullable _key;
 	id _Nullable _value;
+	OF_RESERVE_IVARS(OFUndefinedKeyException, 4)
 }
 
 /**
@@ -39,14 +43,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The key which is undefined.
  */
-@property (readonly, nonatomic) OFString *key;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *key;
 
 /**
  * @brief The value for the undefined key
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
-
-+ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Creates a new, autoreleased undefined key exception.
@@ -68,10 +70,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased undefined key exception
  */
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString *)key
+				key: (nullable OFString *)key
 			      value: (nullable id)value;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated undefined key exception.
@@ -93,8 +95,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized undefined key exception
  */
 - (instancetype)initWithObject: (id)object
-			   key: (OFString *)key
+			   key: (nullable OFString *)key
 			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

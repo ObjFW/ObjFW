@@ -1,58 +1,49 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
-#import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
 /*! @file */
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIRI;
 @class OFString;
-@class OFURL;
 
 /**
  * @brief Options for searching in data.
  *
  * This is a bit mask.
  */
-typedef enum OFDataSearchOptions {
+typedef enum {
 	/** Search backwards in the data */
 	OFDataSearchBackwards = 1
 } OFDataSearchOptions;
 
 /**
- * @class OFData OFData.h ObjFW/OFData.h
+ * @class OFData OFData.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary data in an array.
- *
- * For security reasons, serialization and deserialization is only implemented
- * for OFData with item size 1.
  */
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
-    OFSerialization, OFMessagePackRepresentation>
-{
-	unsigned char *_items;
-	size_t _count, _itemSize;
-	bool _freeWhenDone;
-@private
-	OFData *_parentData;
-	OF_RESERVE_IVARS(OFData, 4)
-}
-
+    OFMessagePackRepresentation>
 /**
  * @brief The size of a single item in the OFData in bytes.
  */
@@ -68,7 +59,8 @@ typedef enum OFDataSearchOptions {
  *
  * @warning The pointer is only valid until the OFData is changed!
  */
-@property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *items
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The first item of the OFData or `NULL`.
@@ -96,6 +88,21 @@ typedef enum OFDataSearchOptions {
 @property (readonly, nonatomic) OFString *stringByBase64Encoding;
 
 /**
+ * @brief Creates a new OFData that is empty with an item size of 1.
+ *
+ * @return A new autoreleased OFData
+ */
++ (instancetype)data;
+
+/**
+ * @brief Creates a new OFData that is empty with the specified item size.
+ *
+ * @param itemSize The size of a single element in the OFData
+ * @return A new autoreleased OFData
+ */
++ (instancetype)dataWithItemSize: (size_t)itemSize;
+
+/**
  * @brief Creates a new OFData with the specified `count` items of size 1.
  *
  * @param items The items to store in the OFData
@@ -121,6 +128,9 @@ typedef enum OFDataSearchOptions {
  * @brief Creates a new OFData with the specified `count` items of size 1 by
  *	  taking over ownership of the specified items pointer.
  *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * freed if `freeWhenDone` is true.
+ *
  * @param items The items to store in the OFData
  * @param count The number of items
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
@@ -134,6 +144,9 @@ typedef enum OFDataSearchOptions {
 /**
  * @brief Creates a new OFData with the specified `count` items of the
  *	  specified size by taking ownership of the specified items pointer.
+ *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -160,19 +173,21 @@ typedef enum OFDataSearchOptions {
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the specified URL.
+ *	  the specified IRI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param IRI The IRI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL;
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Creates a new OFData with an item size of 1, containing the data of
- *	  the string representation.
+ *	  the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithStringRepresentation: (OFString *)string;
 
@@ -182,11 +197,30 @@ typedef enum OFDataSearchOptions {
  *
  * @param string The string with the Base64-encoded data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData to be empty with an item size
+ *	  of 1.
+ *
+ * @return An initialized OFData
+ */
+- (instancetype)init;
+
+/**
+ * @brief Initializes an already allocated OFData to be empty with the
+ *	  specified item size.
+ *
+ * @param itemSize The size of a single element in the OFData
+ * @return An initialized OFData
+ */
+- (instancetype)initWithItemSize: (size_t)itemSize;
+
+/**
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of size 1.
  *
  * @param items The items to store in the OFData
@@ -196,7 +230,7 @@ typedef enum OFDataSearchOptions {
 - (instancetype)initWithItems: (const void *)items count: (size_t)count;
 
 /**
- * @brief Initialized an already allocated OFData with the specified `count`
+ * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size.
  *
  * @param items The items to store in the OFData
@@ -213,6 +247,9 @@ typedef enum OFDataSearchOptions {
  *	  items of size 1 by taking over ownership of the specified items
  *	  pointer.
  *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * freed if `freeWhenDone` is true.
+ *
  * @param items The items to store in the OFData
  * @param count The number of items
  * @param freeWhenDone Whether to free the pointer when it is no longer needed
@@ -227,6 +264,9 @@ typedef enum OFDataSearchOptions {
  * @brief Initializes an already allocated OFData with the specified `count`
  *	  items of the specified size by taking ownership of the specified
  *	  items pointer.
+ *
+ * If initialization fails for whatever reason, the passed memory is *not*
+ * freed if `freeWhenDone` is true.
  *
  * @param items The items to store in the OFData
  * @param count The number of items
@@ -253,19 +293,21 @@ typedef enum OFDataSearchOptions {
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the specified URL.
+ *	  containing the data of the specified IRI.
  *
- * @param URL The URL to the contents for the OFData
+ * @param IRI The IRI to the contents for the OFData
  * @return A new autoreleased OFData
  */
-- (instancetype)initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated OFData with an item size of 1,
- *	  containing the data of the string representation.
+ *	  containing the data of the hex string representation.
  *
- * @param string The string representation of the data
+ * @param string The hex string representation of the data
  * @return A new autoreleased OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithStringRepresentation: (OFString *)string;
 
@@ -275,6 +317,8 @@ typedef enum OFDataSearchOptions {
  *
  * @param string The string with the Base64-encoded data
  * @return An initialized OFData
+ * @throw OFInvalidFormatException The specified string is not correctly
+ *				   formatted
  */
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
@@ -325,11 +369,11 @@ typedef enum OFDataSearchOptions {
 #endif
 
 /**
- * @brief Writes the OFData to the specified URL.
+ * @brief Writes the OFData to the specified IRI.
  *
- * @param URL The URL to write to
+ * @param IRI The IRI to write to
  */
-- (void)writeToURL: (OFURL *)URL;
+- (void)writeToIRI: (OFIRI *)IRI;
 @end
 
 OF_ASSUME_NONNULL_END

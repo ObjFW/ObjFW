@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,12 +27,12 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	beqz	$a0, 0f
 
 	andi	$t0, $a0, 1
-	bnez	$t0, .Ltagged_pointer_\name
+	bnez	$t0, .LtaggedPointer_\name
 
 	lw	$t0, 0($a0)
 	lw	$t0, 32($t0)
@@ -66,7 +70,7 @@
 #ifdef OF_PIC
 	beqz	$t0, 1f
 #else
-	beqz	$t0, \not_found
+	beqz	$t0, \notFound
 #endif
 
 	move	$v0, $t0
@@ -74,9 +78,9 @@
 
 0:
 #ifdef OF_PIC
-	addiu	$v0, $t9, nil_method-\name
+	addiu	$v0, $t9, .LnilMethod-\name
 #else
-	la	$v0, nil_method
+	la	$v0, .LnilMethod
 #endif
 	jr	$ra
 
@@ -87,11 +91,11 @@
 	addu	$gp, $gp, $t9
 	addiu	$gp, $gp, 1b-\name
 
-	lw	$t9, %call16(\not_found)($gp)
+	lw	$t9, %call16(\notFound)($gp)
 	jr	$t9
 #endif
 
-.Ltagged_pointer_\name:
+.LtaggedPointer_\name:
 #ifdef OF_PIC
 0:
 	lui	$gp, %hi(_gp_disp)
@@ -99,9 +103,9 @@
 	addu	$gp, $gp, $t9
 	addiu	$gp, $gp, 0b-\name
 
-	lw	$t0, %got(objc_tagged_pointer_secret)($gp)
+	lw	$t0, %got(_objc_taggedPointerSecret)($gp)
 #else
-	la	$t0, objc_tagged_pointer_secret
+	la	$t0, _objc_taggedPointerSecret
 #endif
 	lw	$t0, 0($t0)
 	xor	$t0, $a0, $t0
@@ -109,9 +113,9 @@
 	sll	$t0, $t0, 1
 
 #ifdef OF_PIC
-	lw	$t1, %got(objc_tagged_pointer_classes)($gp)
+	lw	$t1, %got(_objc_taggedPointerClasses)($gp)
 #else
-	la	$t1, objc_tagged_pointer_classes
+	la	$t1, _objc_taggedPointerClasses
 #endif
 	addu	$t0, $t1, $t0
 	ld	$t0, ($t0)
@@ -122,7 +126,7 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	move	$t0, $a0
 	lw	$a0, 0($a0)
@@ -136,24 +140,24 @@
 
 0:
 #ifdef OF_PIC
-	addiu	$v0, $t9, nil_method-\name
+	addiu	$v0, $t9, .LnilMethod-\name
 #else
-	la	$v0, nil_method
+	la	$v0, .LnilMethod
 #endif
 	jr	$ra
 .type \name, %function
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-nil_method:
+.LnilMethod:
 	move	$v0, $zero
 	jr	$ra
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

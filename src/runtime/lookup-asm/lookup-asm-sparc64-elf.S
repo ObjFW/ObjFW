@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,11 +27,11 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
-	brz,pn	%o0, ret_nil
+	brz,pn	%o0, .LreturnNilMethod
 	 and	%o0, 1, %o2
-	brnz,pn	%o2, .Ltagged_pointer_\name
+	brnz,pn	%o2, .LtaggedPointer_\name
 	 nop
 
 	ldx	[%o0], %o2
@@ -60,10 +64,10 @@
 
 0:
 	mov	%o7, %g1
-	call	\not_found
+	call	\notFound
 	 mov	%g1, %o7
 
-.Ltagged_pointer_\name:
+.LtaggedPointer_\name:
 #ifdef OF_PIC
 	mov	%o7, %g1
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o3
@@ -74,8 +78,8 @@
 	mov	%g1, %o7
 #endif
 
-	sethi	%hi(objc_tagged_pointer_secret), %o2
-	or	%o2, %lo(objc_tagged_pointer_secret), %o2
+	sethi	%hi(_objc_taggedPointerSecret), %o2
+	or	%o2, %lo(_objc_taggedPointerSecret), %o2
 #ifdef OF_PIC
 	ldx	[%o3 + %o2], %o2
 #endif
@@ -84,8 +88,8 @@
 	and	%o0, 0xE, %o0
 	sll	%o0, 2, %o0
 
-	sethi	%hi(objc_tagged_pointer_classes), %o2
-	or	%o2, %lo(objc_tagged_pointer_classes), %o2
+	sethi	%hi(_objc_taggedPointerClasses), %o2
+	or	%o2, %lo(_objc_taggedPointerClasses), %o2
 #ifdef OF_PIC
 	ldx	[%o3 + %o2], %o2
 #endif
@@ -97,11 +101,11 @@
 .size \name, .-\name
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	mov	%o0, %o2
 	ldx	[%o0], %o0
-	brz,pn	%o0, ret_nil
+	brz,pn	%o0, .LreturnNilMethod
 	 nop
 
 	ldx	[%o2 + 8], %o2
@@ -111,12 +115,12 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
+.LreturnNilMethod:
 #ifdef OF_PIC
 	mov	%o7, %g1
 
@@ -126,21 +130,21 @@ ret_nil:
 0:
 	add	%o7, %o1, %o1
 
-	sethi	%hi(nil_method), %o0
-	or	%o0, %lo(nil_method), %o0
+	sethi	%hi(.LnilMethod), %o0
+	or	%o0, %lo(.LnilMethod), %o0
 
 	jmpl	%g1 + 8, %g0
 	 ldx	[%o1 + %o0], %o0
 #else
-	sethi	%hi(nil_method), %o0
+	sethi	%hi(.LnilMethod), %o0
 	retl
-	 or	%o0, %lo(nil_method), %o0
+	 or	%o0, %lo(.LnilMethod), %o0
 #endif
 
-nil_method:
+.LnilMethod:
 	retl
 	 clr	%o0
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

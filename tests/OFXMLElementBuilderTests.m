@@ -1,62 +1,74 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFXMLElementBuilder";
-static OFXMLNode *nodes[2];
-static size_t i = 0;
+@interface OFXMLElementBuilderTests: OTTestCase <OFXMLElementBuilderDelegate>
+{
+	OFXMLNode *_nodes[2];
+	size_t _i;
+}
+@end
 
-@implementation TestsAppDelegate (OFXMLElementBuilderTests)
+@implementation OFXMLElementBuilderTests
+- (void)dealloc
+{
+	objc_release(_nodes[0]);
+	objc_release(_nodes[1]);
+
+	[super dealloc];
+}
+
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
        didBuildElement: (OFXMLElement *)element
 {
-	OFEnsure(i == 0);
-	nodes[i++] = [element retain];
+	OTAssertEqual(_i, 0);
+	_nodes[_i++] = objc_retain(element);
 }
 
--   (void)elementBuilder: (OFXMLElementBuilder *)builder
-  didBuildParentlessNode: (OFXMLNode *)node
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+    didBuildOrphanNode: (OFXMLNode *)node
 {
-	OFEnsure(i == 1);
-	nodes[i++] = [node retain];
+	OTAssertEqual(_i, 1);
+	_nodes[_i++] = objc_retain(node);
 }
 
-- (void)XMLElementBuilderTests
+- (void)testElementBuilder
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLParser *p = [OFXMLParser parser];
+	OFXMLParser *parser = [OFXMLParser parser];
 	OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
-	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
+	OFString *string = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
 	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
-	p.delegate = builder;
+	parser.delegate = builder;
 	builder.delegate = self;
 
-	TEST(@"Building elements from parsed XML",
-	    R([p parseString: str]) &&
-	    nodes[0] != nil && [nodes[0].XMLString isEqual: str] &&
-	    R([p parseString: @"<!--foo-->"]) &&
-	    nodes[1] != nil && [nodes[1].XMLString isEqual: @"<!--foo-->"] &&
-	    i == 2)
+	[parser parseString: string];
+	OTAssertEqualObjects(_nodes[0].XMLString, string);
 
-	[nodes[0] release];
-	[nodes[1] release];
-	objc_autoreleasePoolPop(pool);
+	[parser parseString: @"<!--foo-->"];
+	OTAssertEqualObjects(_nodes[1].XMLString, @"<!--foo-->");
+
+	OTAssertEqual(_i, 2);
 }
 @end

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,6 +22,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -74,14 +79,32 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 @implementation OFTarArchiveEntry
-+ (instancetype)entryWithFileName: (OFString *)fileName
-{
-	return [[[self alloc] initWithFileName: fileName] autorelease];
-}
+/*
+ * The following is optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic fileComment;
 
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	self = [super init];
+
+	@try {
+		_type = OFTarArchiveEntryTypeFile;
+		_POSIXPermissions =
+		    [[OFNumber alloc] initWithUnsignedShort: 0644];
+		_modificationDate = [[OFDate alloc] init];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
@@ -94,14 +117,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
-		_mode = (unsigned long)octalValueFromBuffer(
-		    header + 100, 8, ULONG_MAX);
-		_UID = (unsigned long)octalValueFromBuffer(
-		    header + 108, 8, ULONG_MAX);
-		_GID = (unsigned long)octalValueFromBuffer(
-		    header + 116, 8, ULONG_MAX);
-		_size = (unsigned long long)octalValueFromBuffer(
+		_POSIXPermissions = [[OFNumber alloc] initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 100, 8, ULONG_MAX)];
+		_ownerAccountID = [[OFNumber alloc] initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 108, 8, ULONG_MAX)];
+		_groupOwnerAccountID = [[OFNumber alloc]
+		    initWithUnsignedLongLong:
+		    octalValueFromBuffer(header + 116, 8, ULONG_MAX)];
+		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
+		_compressedSize =
+		    _uncompressedSize + (512 - _uncompressedSize % 512);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
@@ -118,10 +144,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
 
-			_owner = [stringFromBuffer(header + 265, 32, encoding)
-			    copy];
-			_group = [stringFromBuffer(header + 297, 32, encoding)
-			    copy];
+			_ownerAccountName =
+			    [stringFromBuffer(header + 265, 32, encoding) copy];
+			_groupOwnerAccountName = [stringFromBuffer(header + 297,
+			    32, encoding) copy];
 
 			_deviceMajor = (unsigned long)octalValueFromBuffer(
 			    header + 329, 8, ULONG_MAX);
@@ -133,30 +159,14 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 				OFString *fileName = [OFString
 				    stringWithFormat: @"%@/%@",
 						      prefix, _fileName];
-				[_fileName release];
+				objc_release(_fileName);
 				_fileName = [fileName copy];
 			}
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithFileName: (OFString *)fileName
-{
-	self = [super init];
-
-	@try {
-		_fileName = [fileName copy];
-		_type = OFTarArchiveEntryTypeFile;
-		_mode = 0644;
-	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -165,18 +175,21 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 - (void)dealloc
 {
-	[_fileName release];
-	[_modificationDate release];
-	[_targetFileName release];
-	[_owner release];
-	[_group release];
+	objc_release(_fileName);
+	objc_release(_POSIXPermissions);
+	objc_release(_ownerAccountID);
+	objc_release(_groupOwnerAccountID);
+	objc_release(_modificationDate);
+	objc_release(_targetFileName);
+	objc_release(_ownerAccountName);
+	objc_release(_groupOwnerAccountName);
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (id)mutableCopy
@@ -185,17 +198,20 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    initWithFileName: _fileName];
 
 	@try {
-		copy->_mode = _mode;
-		copy->_size = _size;
+		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
+		copy->_ownerAccountID = objc_retain(_ownerAccountID);
+		copy->_groupOwnerAccountID = objc_retain(_groupOwnerAccountID);
+		copy->_compressedSize = _compressedSize;
+		copy->_uncompressedSize = _uncompressedSize;
 		copy->_modificationDate = [_modificationDate copy];
 		copy->_type = _type;
 		copy->_targetFileName = [_targetFileName copy];
-		copy->_owner = [_owner copy];
-		copy->_group = [_group copy];
+		copy->_ownerAccountName = [_ownerAccountName copy];
+		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
 		copy->_deviceMajor = _deviceMajor;
 		copy->_deviceMinor = _deviceMinor;
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -207,24 +223,29 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _fileName;
 }
 
-- (unsigned long)mode
+- (OFNumber *)POSIXPermissions
 {
-	return _mode;
+	return _POSIXPermissions;
 }
 
-- (unsigned long)UID
+- (OFNumber *)ownerAccountID
 {
-	return _UID;
+	return _ownerAccountID;
 }
 
-- (unsigned long)GID
+- (OFNumber *)groupOwnerAccountID
 {
-	return _GID;
+	return _groupOwnerAccountID;
 }
 
-- (unsigned long long)size
+- (unsigned long long)compressedSize
 {
-	return _size;
+	return _compressedSize;
+}
+
+- (unsigned long long)uncompressedSize
+{
+	return _uncompressedSize;
 }
 
 - (OFDate *)modificationDate
@@ -242,14 +263,14 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _targetFileName;
 }
 
-- (OFString *)owner
+- (OFString *)ownerAccountName
 {
-	return _owner;
+	return _ownerAccountName;
 }
 
-- (OFString *)group
+- (OFString *)groupOwnerAccountName
 {
-	return _group;
+	return _groupOwnerAccountName;
 }
 
 - (unsigned long)deviceMajor
@@ -265,49 +286,60 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *ret = [OFString stringWithFormat: @"<%@:\n"
+	OFString *POSIXPermissions = nil, *ret;
+
+	if (_POSIXPermissions != nil)
+		POSIXPermissions = [OFString stringWithFormat: @"%ho",
+		    _POSIXPermissions.unsignedShortValue];
+
+	ret = [OFString stringWithFormat: @"<%@:\n"
 	     @"\tFile name = %@\n"
-	     @"\tMode = %06o\n"
-	     @"\tUID = %u\n"
-	     @"\tGID = %u\n"
-	     @"\tSize = %" PRIu64 @"\n"
+	     @"\tPOSIX permissions = %@\n"
+	     @"\tOwner account ID = %@\n"
+	     @"\tGroup owner account ID = %@\n"
+	     @"\tCompressed size = %llu\n"
+	     @"\tUncompressed size = %llu\n"
 	     @"\tModification date = %@\n"
 	     @"\tType = %u\n"
 	     @"\tTarget file name = %@\n"
-	     @"\tOwner = %@\n"
-	     @"\tGroup = %@\n"
+	     @"\tOwner account name = %@\n"
+	     @"\tGroup owner account name = %@\n"
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
 	     @">",
-	    self.class, _fileName, _mode, _UID, _GID, _size, _modificationDate,
-	    _type, _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
+	    self.class, _fileName, POSIXPermissions, _ownerAccountID,
+	    _groupOwnerAccountID, _compressedSize, _uncompressedSize,
+	    _modificationDate, _type, _targetFileName,
+	    _ownerAccountName, _groupOwnerAccountName, _deviceMajor,
+	    _deviceMinor];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)of_writeToStream: (OFStream *)stream
 		encoding: (OFStringEncoding)encoding
 {
+	void *pool = objc_autoreleasePoolPush();
 	unsigned char buffer[512];
 	unsigned long long modificationDate;
 	uint16_t checksum = 0;
 
 	stringToBuffer(buffer, _fileName, 100, encoding);
 	stringToBuffer(buffer + 100,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _mode], 8,
-	    OFStringEncodingASCII);
+	    [OFString stringWithFormat: @"%06o ",
+	    _POSIXPermissions.unsignedShortValue], 8, OFStringEncodingASCII);
 	stringToBuffer(buffer + 108,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _UID], 8,
-	    OFStringEncodingASCII);
+	    [OFString stringWithFormat: @"%06o ",
+	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
 	stringToBuffer(buffer + 116,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8,
-	    OFStringEncodingASCII);
+	    [OFString stringWithFormat: @"%06o ",
+	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
 	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12,
+	    [OFString stringWithFormat: @"%011llo ", _uncompressedSize], 12,
 	    OFStringEncodingASCII);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
@@ -325,8 +357,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 
 	/* ustar */
 	memcpy(buffer + 257, "ustar\0" "00", 8);
-	stringToBuffer(buffer + 265, _owner, 32, encoding);
-	stringToBuffer(buffer + 297, _group, 32, encoding);
+	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding);
+	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding);
 	stringToBuffer(buffer + 329,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
 	    OFStringEncodingASCII);
@@ -343,5 +375,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    OFStringEncodingASCII);
 
 	[stream writeBuffer: buffer length: sizeof(buffer)];
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

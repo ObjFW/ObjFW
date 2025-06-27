@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -18,15 +22,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFValue OFValue.h ObjFW/OFValue.h
+ * @class OFValue OFValue.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary values in an object.
  */
 @interface OFValue: OFObject <OFCopying>
-{
-	OF_RESERVE_IVARS(OFValue, 4)
-}
-
 /**
  * @brief The ObjC type encoding of the value.
  */
@@ -35,44 +35,58 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The value as a pointer to void.
  *
- * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not pointer-sized
  */
 @property (readonly, nonatomic) void *pointerValue;
 
 /**
  * @brief The value as a non-retained object.
  *
- * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not pointer-sized
  */
 @property (readonly, nonatomic) id nonretainedObjectValue;
 
 /**
  * @brief The value as an OFRange.
  *
- * If the value is not OFRange-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFRange-sized
  */
 @property (readonly, nonatomic) OFRange rangeValue;
 
 /**
  * @brief The value as an OFPoint.
  *
- * If the value is not OFPoint-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFPoint-sized
  */
 @property (readonly, nonatomic) OFPoint pointValue;
 
 /**
  * @brief The value as an OFSize.
  *
- * If the value is not OFSize-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFSize-sized
  */
 @property (readonly, nonatomic) OFSize sizeValue;
 
 /**
- * @brief The value as a OFRect.
+ * @brief The value as an OFRect.
  *
- * If the value is not OFRect-sized, @ref OFOutOfRangeException is thrown.
+ * @throw OFOutOfRangeException The value is not OFRect-sized
  */
 @property (readonly, nonatomic) OFRect rectValue;
+
+/**
+ * @brief The value as an OFVector3D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector3D-sized
+ */
+@property (readonly, nonatomic) OFVector3D vector3DValue;
+
+/**
+ * @brief The value as an OFVector4D.
+ *
+ * @throw OFOutOfRangeException The value is not OFVector4D-sized
+ */
+@property (readonly, nonatomic) OFVector4D vector4DValue;
 
 /**
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -141,6 +155,24 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)valueWithRect: (OFRect)rect;
 
 /**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  3D vector.
+ *
+ * @param vector3D The 3D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector3D: (OFVector3D)vector3D;
+
+/**
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  4D vector.
+ *
+ * @param vector4D The 4D vector the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithVector4D: (OFVector4D)vector4D;
+
+/**
  * @brief Initializes an already allocated OFValue with the specified bytes of
  *	  the specified type.
  *
@@ -149,16 +181,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFValue
  */
 - (instancetype)initWithBytes: (const void *)bytes
-		     objCType: (const char *)objCType;
+		     objCType: (const char *)objCType OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Gets the value.
  *
- * If the specified size does not match, this raises an
- * @ref OFOutOfRangeException.
- *
  * @param value The buffer to copy the value into
  * @param size The size of the value
+ * @throw OFOutOfRangeException The specified size does not match the value
  */
 - (void)getValue: (void *)value size: (size_t)size;
 @end

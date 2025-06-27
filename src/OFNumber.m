@@ -1,78 +1,57 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#define OF_NUMBER_M
 
 #include "config.h"
 
 #include <math.h>
 
 #import "OFNumber.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
-#import "OFXMLAttribute.h"
+#import "OFConcreteNumber.h"
 #import "OFData.h"
+#import "OFJSONRepresentationPrivate.h"
+#import "OFString.h"
+#import "OFTaggedPointerNumber.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFNumber ()
-+ (instancetype)of_alloc;
-- (OFString *)
-    of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
-			       depth: (size_t)depth;
+@interface OFNumber () <OFJSONRepresentationPrivate>
 @end
 
-@interface OFNumberPlaceholder: OFNumber
+@interface OFPlaceholderNumber: OFNumber
 @end
 
-@interface OFNumberSingleton: OFNumber
+@interface OFConcreteNumberSingleton: OFConcreteNumber
 @end
-
-#ifdef OF_OBJFW_RUNTIME
-enum Tag {
-	tagChar,
-	tagShort,
-	tagInt,
-	tagLong,
-	tagLongLong,
-	tagUnsignedChar,
-	tagUnsignedShort,
-	tagUnsignedInt,
-	tagUnsignedLong,
-	tagUnsignedLongLong,
-};
-static const uint_fast8_t tagBits = 4;
-static const uintptr_t tagMask = 0xF;
-
-@interface OFTaggedPointerNumber: OFNumberSingleton
-@end
-#endif
 
 static struct {
 	Class isa;
 } placeholder;
 
-#define SINGLETON(var, sel, val)				\
-	static OFNumberSingleton *var;				\
-								\
-	static void						\
-	var##Init(void)						\
-	{							\
-		var = [[OFNumberSingleton alloc] sel val];	\
+#define SINGLETON(var, sel, val)					\
+	static OFConcreteNumberSingleton *var;				\
+									\
+	static void							\
+	var##Init(void)							\
+	{								\
+		var = [[OFConcreteNumberSingleton alloc] sel val];	\
 	}
 SINGLETON(falseNumber, initWithBool:, false)
 SINGLETON(trueNumber, initWithBool:, true)
@@ -90,24 +69,15 @@ SINGLETON(floatZeroNumber, initWithFloat:, 0)
 SINGLETON(doubleZeroNumber, initWithDouble:, 0)
 #undef SINGLETON
 
-#ifdef OF_OBJFW_RUNTIME
-static int numberTag;
-#endif
-
 static bool
 isUnsigned(OFNumber *number)
 {
 	switch (*number.objCType) {
 	case 'B':
-		return true;
 	case 'C':
-		return true;
 	case 'S':
-		return true;
 	case 'I':
-		return true;
 	case 'L':
-		return true;
 	case 'Q':
 		return true;
 	default:
@@ -120,13 +90,9 @@ isSigned(OFNumber *number)
 {
 	switch (*number.objCType) {
 	case 'c':
-		return true;
 	case 's':
-		return true;
 	case 'i':
-		return true;
 	case 'l':
-		return true;
 	case 'q':
 		return true;
 	default:
@@ -139,7 +105,6 @@ isFloat(OFNumber *number)
 {
 	switch (*number.objCType) {
 	case 'f':
-		return true;
 	case 'd':
 		return true;
 	default:
@@ -147,7 +112,7 @@ isFloat(OFNumber *number)
 	}
 }
 
-@implementation OFNumberPlaceholder
+@implementation OFPlaceholderNumber
 - (instancetype)initWithBool: (bool)value
 {
 	if (value) {
@@ -172,16 +137,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, charZeroNumberInit);
 		return (id)charZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if ((unsigned char)value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned char)value << tagBits) | tagChar);
+	} else if ((unsigned char)value <=
+	    (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithChar: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithChar: value];
+	return (id)[[OFConcreteNumber alloc] initWithChar: value];
 }
 
 - (instancetype)initWithShort: (short)value
@@ -191,16 +156,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, shortZeroNumberInit);
 		return (id)shortZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if ((unsigned short)value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned short)value << tagBits) | tagShort);
+	} else if ((unsigned short)value <=
+	    (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithShort: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithShort: value];
+	return (id)[[OFConcreteNumber alloc] initWithShort: value];
 }
 
 - (instancetype)initWithInt: (int)value
@@ -210,16 +175,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, intZeroNumberInit);
 		return (id)intZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if ((unsigned int)value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned int)value << tagBits) | tagInt);
+	} else if ((unsigned int)value <=
+	    (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithInt: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithInt: value];
+	return (id)[[OFConcreteNumber alloc] initWithInt: value];
 }
 
 - (instancetype)initWithLong: (long)value
@@ -229,16 +194,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, longZeroNumberInit);
 		return (id)longZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if ((unsigned long)value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned long)value << tagBits) | tagLong);
+	} else if ((unsigned long)value <=
+	    (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithLong: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithLong: value];
+	return (id)[[OFConcreteNumber alloc] initWithLong: value];
 }
 
 - (instancetype)initWithLongLong: (long long)value
@@ -248,17 +213,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, longLongZeroNumberInit);
 		return (id)longLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if ((unsigned long long)value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)(unsigned long long)value << tagBits) |
-		    tagLongLong);
+	} else if ((unsigned long long)value <=
+	    (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithLongLong: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithLongLong: value];
+	return (id)[[OFConcreteNumber alloc] initWithLongLong: value];
 }
 
 - (instancetype)initWithUnsignedChar: (unsigned char)value
@@ -268,16 +232,15 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, unsignedCharZeroNumberInit);
 		return (id)unsignedCharZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if (value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | tagUnsignedChar);
+	} else if (value <= (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithUnsignedChar: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedChar: value];
+	return (id)[[OFConcreteNumber alloc] initWithUnsignedChar: value];
 }
 
 - (instancetype)initWithUnsignedShort: (unsigned short)value
@@ -287,16 +250,15 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, unsignedShortZeroNumberInit);
 		return (id)unsignedShortZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if (value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | tagUnsignedShort);
+	} else if (value <= (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithUnsignedShort: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedShort: value];
+	return (id)[[OFConcreteNumber alloc] initWithUnsignedShort: value];
 }
 
 - (instancetype)initWithUnsignedInt: (unsigned int)value
@@ -306,16 +268,15 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, unsignedIntZeroNumberInit);
 		return (id)unsignedIntZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if (value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | tagUnsignedInt);
+	} else if (value <= (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithUnsignedInt: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedInt: value];
+	return (id)[[OFConcreteNumber alloc] initWithUnsignedInt: value];
 }
 
 - (instancetype)initWithUnsignedLong: (unsigned long)value
@@ -325,16 +286,15 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, unsignedLongZeroNumberInit);
 		return (id)unsignedLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if (value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | tagUnsignedLong);
+	} else if (value <= (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber numberWithUnsignedLong: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedLong: value];
+	return (id)[[OFConcreteNumber alloc] initWithUnsignedLong: value];
 }
 
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value
@@ -344,16 +304,16 @@ isFloat(OFNumber *number)
 		OFOnce(&onceControl, unsignedLongLongZeroNumberInit);
 		return (id)unsignedLongLongZeroNumber;
 #ifdef OF_OBJFW_RUNTIME
-	} else if (value <= (UINTPTR_MAX >> tagBits)) {
-		id ret = objc_createTaggedPointer(numberTag,
-		    ((uintptr_t)value << tagBits) | tagUnsignedLongLong);
+	} else if (value <= (UINTPTR_MAX >> OFTaggedPointerNumberTagBits)) {
+		id ret = [OFTaggedPointerNumber
+		    numberWithUnsignedLongLong: value];
 
 		if (ret != nil)
 			return ret;
 #endif
 	}
 
-	return (id)[[OFNumber of_alloc] initWithUnsignedLongLong: value];
+	return (id)[[OFConcreteNumber alloc] initWithUnsignedLongLong: value];
 }
 
 - (instancetype)initWithFloat: (float)value
@@ -364,7 +324,7 @@ isFloat(OFNumber *number)
 		return (id)floatZeroNumber;
 	}
 
-	return (id)[[OFNumber of_alloc] initWithFloat: value];
+	return (id)[[OFConcreteNumber alloc] initWithFloat: value];
 }
 
 - (instancetype)initWithDouble: (double)value
@@ -375,133 +335,24 @@ isFloat(OFNumber *number)
 		return (id)doubleZeroNumber;
 	}
 
-	return (id)[[OFNumber of_alloc] initWithDouble: value];
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	return (id)[[OFNumber of_alloc] initWithSerialization: element];
+	return (id)[[OFConcreteNumber alloc] initWithDouble: value];
 }
 #ifdef __clang__
 # pragma clang diagnostic pop
 #endif
+
+OF_SINGLETON_METHODS
 @end
 
-@implementation OFNumberSingleton
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OFMaxRetainCount;
-}
+@implementation OFConcreteNumberSingleton
+OF_SINGLETON_METHODS
 @end
-
-#ifdef OF_OBJFW_RUNTIME
-@implementation OFTaggedPointerNumber
-- (const char *)objCType
-{
-	uintptr_t value = object_getTaggedPointerValue(self);
-
-	switch (value & tagMask) {
-	case tagChar:
-		return @encode(signed char);
-	case tagShort:
-		return @encode(short);
-	case tagInt:
-		return @encode(int);
-	case tagLong:
-		return @encode(long);
-	case tagLongLong:
-		return @encode(long long);
-	case tagUnsignedChar:
-		return @encode(unsigned char);
-	case tagUnsignedShort:
-		return @encode(unsigned short);
-	case tagUnsignedInt:
-		return @encode(unsigned int);
-	case tagUnsignedLong:
-		return @encode(unsigned long);
-	case tagUnsignedLongLong:
-		return @encode(unsigned long long);
-	default:
-		@throw [OFInvalidArgumentException exception];
-	}
-}
-
-# define RETURN_VALUE							  \
-	uintptr_t value = object_getTaggedPointerValue(self);		  \
-									  \
-	switch (value & tagMask) {					  \
-	case tagChar:							  \
-		return (signed char)(unsigned char)(value >> tagBits);	  \
-	case tagShort:							  \
-		return (short)(unsigned short)(value >> tagBits);	  \
-	case tagInt:							  \
-		return (int)(unsigned int)(value >> tagBits);		  \
-	case tagLong:							  \
-		return (long)(unsigned long)(value >> tagBits);		  \
-	case tagLongLong:						  \
-		return (long long)(unsigned long long)(value >> tagBits); \
-	case tagUnsignedChar:						  \
-		return (unsigned char)(value >> tagBits);		  \
-	case tagUnsignedShort:						  \
-		return (unsigned short)(value >> tagBits);		  \
-	case tagUnsignedInt:						  \
-		return (unsigned int)(value >> tagBits);		  \
-	case tagUnsignedLong:						  \
-		return (unsigned long)(value >> tagBits);		  \
-	case tagUnsignedLongLong:					  \
-		return (unsigned long long)(value >> tagBits);		  \
-	default:							  \
-		@throw [OFInvalidArgumentException exception];		  \
-	}
-- (long long)longLongValue
-{
-	RETURN_VALUE
-}
-
-- (unsigned long long)unsignedLongLongValue
-{
-	RETURN_VALUE
-}
-
-- (double)doubleValue
-{
-	RETURN_VALUE
-}
-@end
-# undef RETURN_VALUE
-#endif
 
 @implementation OFNumber
 + (void)initialize
 {
-	if (self != [OFNumber class])
-		return;
-
-	placeholder.isa = [OFNumberPlaceholder class];
-
-#ifdef OF_OBJFW_RUNTIME
-	numberTag =
-	    objc_registerTaggedPointerClass([OFTaggedPointerNumber class]);
-#endif
-}
-
-+ (instancetype)of_alloc
-{
-	return [super alloc];
+	if (self == [OFNumber class])
+		object_setClass((id)&placeholder, [OFPlaceholderNumber class]);
 }
 
 + (instancetype)alloc
@@ -512,355 +363,187 @@ isFloat(OFNumber *number)
 	return [super alloc];
 }
 
++ (instancetype)valueWithPointer: (const void *)pointer
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithNonretainedObject: (id)object
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithRange: (OFRange)range
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithPoint: (OFPoint)point
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithSize: (OFSize)size
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)valueWithRect: (OFRect)rect
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)numberWithBool: (bool)value
 {
-	return [[[self alloc] initWithBool: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBool: value]);
 }
 
 + (instancetype)numberWithChar: (signed char)value
 {
-	return [[[self alloc] initWithChar: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithChar: value]);
 }
 
 + (instancetype)numberWithShort: (short)value
 {
-	return [[[self alloc] initWithShort: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithShort: value]);
 }
 
 + (instancetype)numberWithInt: (int)value
 {
-	return [[[self alloc] initWithInt: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithInt: value]);
 }
 
 + (instancetype)numberWithLong: (long)value
 {
-	return [[[self alloc] initWithLong: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithLong: value]);
 }
 
 + (instancetype)numberWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLongLong: value]);
 }
 
 + (instancetype)numberWithUnsignedChar: (unsigned char)value
 {
-	return [[[self alloc] initWithUnsignedChar: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedChar: value]);
 }
 
 + (instancetype)numberWithUnsignedShort: (unsigned short)value
 {
-	return [[[self alloc] initWithUnsignedShort: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedShort: value]);
 }
 
 + (instancetype)numberWithUnsignedInt: (unsigned int)value
 {
-	return [[[self alloc] initWithUnsignedInt: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedInt: value]);
 }
 
 + (instancetype)numberWithUnsignedLong: (unsigned long)value
 {
-	return [[[self alloc] initWithUnsignedLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLong: value]);
 }
 
 + (instancetype)numberWithUnsignedLongLong: (unsigned long long)value
 {
-	return [[[self alloc] initWithUnsignedLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithUnsignedLongLong: value]);
 }
 
 + (instancetype)numberWithFloat: (float)value
 {
-	return [[[self alloc] initWithFloat: value] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithFloat: value]);
 }
 
 + (instancetype)numberWithDouble: (double)value
 {
-	return [[[self alloc] initWithDouble: value] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithDouble: value]);
 }
 
 - (instancetype)initWithBool: (bool)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(bool);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(bool)];
 }
 
 - (instancetype)initWithChar: (signed char)value
 {
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(signed char);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(signed char)];
 }
 
 - (instancetype)initWithShort: (short)value
 {
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(short);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(short)];
 }
 
 - (instancetype)initWithInt: (int)value
 {
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(int);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(int)];
 }
 
 - (instancetype)initWithLong: (long)value
 {
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(long);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(long)];
 }
 
 - (instancetype)initWithLongLong: (long long)value
 {
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(long long);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(long long)];
 }
 
 - (instancetype)initWithUnsignedChar: (unsigned char)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(unsigned char)];
 }
 
 - (instancetype)initWithUnsignedShort: (unsigned short)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned short);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(unsigned short)];
 }
 
 - (instancetype)initWithUnsignedInt: (unsigned int)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned int);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(unsigned int)];
 }
 
 - (instancetype)initWithUnsignedLong: (unsigned long)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(unsigned long)];
 }
 
 - (instancetype)initWithUnsignedLongLong: (unsigned long long)value
 {
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(unsigned long long);
-
-	return self;
-}
-
-- (instancetype)initWithPtrDiff: (ptrdiff_t)value
-{
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(ptrdiff_t);
-
-	return self;
-}
-
-- (instancetype)initWithIntPtr: (intptr_t)value
-{
-	self = [super init];
-
-	_value.signed_ = value;
-	_typeEncoding = @encode(intptr_t);
-
-	return self;
-}
-
-- (instancetype)initWithUIntPtr: (uintptr_t)value
-{
-	self = [super init];
-
-	_value.unsigned_ = value;
-	_typeEncoding = @encode(uintptr_t);
-
-	return self;
+	return [self initWithBytes: &value
+			  objCType: @encode(unsigned long long)];
 }
 
 - (instancetype)initWithFloat: (float)value
 {
-	self = [super init];
-
-	_value.float_ = value;
-	_typeEncoding = @encode(float);
-
-	return self;
+	return [self initWithBytes: &value objCType: @encode(float)];
 }
 
 - (instancetype)initWithDouble: (double)value
 {
-	self = [super init];
-
-	_value.float_ = value;
-	_typeEncoding = @encode(double);
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFString *typeString;
-
-		if (![element.name isEqual: @"OFNumber"] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		typeString = [element attributeForName: @"type"].stringValue;
-
-		if ([typeString isEqual: @"bool"]) {
-			OFString *stringValue = element.stringValue;
-			if ([stringValue isEqual: @"true"])
-				self = [self initWithBool: true];
-			else if ([stringValue isEqual: @"false"])
-				self = [self initWithBool: false];
-			else
-				@throw [OFInvalidArgumentException exception];
-		} else if ([typeString isEqual: @"float"]) {
-			unsigned long long value =
-			    [element unsignedLongLongValueWithBase: 16];
-
-			if (value > UINT64_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			self = [self initWithDouble: OFFromBigEndianDouble(
-			    OFRawUInt64ToDouble(OFToBigEndian64(value)))];
-		} else if ([typeString isEqual: @"signed"])
-			self = [self initWithLongLong: element.longLongValue];
-		else if ([typeString isEqual: @"unsigned"])
-			self = [self initWithUnsignedLongLong:
-			    element.unsignedLongLongValue];
-		else
-			@throw [OFInvalidArgumentException exception];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (const char *)objCType
-{
-	return _typeEncoding;
-}
-
-- (void)getValue: (void *)value size: (size_t)size
-{
-	switch (*self.objCType) {
-#define CASE(enc, type, property)					\
-	case enc: {							\
-		type tmp = (type)self.property;				\
-									\
-		if (size != sizeof(type))				\
-			@throw [OFOutOfRangeException exception];	\
-									\
-		memcpy(value, &tmp, size);				\
-		break;							\
-	}
-	CASE('B', bool, unsignedLongLongValue)
-	CASE('c', signed char, longLongValue)
-	CASE('s', short, longLongValue)
-	CASE('i', int, longLongValue)
-	CASE('l', long, longLongValue)
-	CASE('q', long long, longLongValue)
-	CASE('C', unsigned char, unsignedLongLongValue)
-	CASE('S', unsigned short, unsignedLongLongValue)
-	CASE('I', unsigned int, unsignedLongLongValue)
-	CASE('L', unsigned long, unsignedLongLongValue)
-	CASE('Q', unsigned long long, unsignedLongLongValue)
-	CASE('f', float, doubleValue)
-	CASE('d', double, doubleValue)
-#undef CASE
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	return [self initWithBytes: &value objCType: @encode(double)];
 }
 
 - (long long)longLongValue
 {
-	if (isFloat(self))
-		return _value.float_;
-	else if (isSigned(self))
-		return _value.signed_;
-	else if (isUnsigned(self))
-		return _value.unsigned_;
-	else
-		@throw [OFInvalidFormatException exception];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (unsigned long long)unsignedLongLongValue
 {
-	if (isFloat(self))
-		return _value.float_;
-	else if (isSigned(self))
-		return _value.signed_;
-	else if (isUnsigned(self))
-		return _value.unsigned_;
-	else
-		@throw [OFInvalidFormatException exception];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (double)doubleValue
 {
-	if (isFloat(self))
-		return _value.float_;
-	else if (isSigned(self))
-		return _value.signed_;
-	else if (isUnsigned(self))
-		return _value.unsigned_;
-	else
-		@throw [OFInvalidFormatException exception];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (bool)boolValue
@@ -870,42 +553,82 @@ isFloat(OFNumber *number)
 
 - (signed char)charValue
 {
-	return (signed char)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SCHAR_MIN || value > SCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (signed char)value;
 }
 
 - (short)shortValue
 {
-	return (short)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < SHRT_MIN || value > SHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (short)value;
 }
 
 - (int)intValue
 {
-	return (int)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < INT_MIN || value > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)value;
 }
 
 - (long)longValue
 {
-	return (long)self.longLongValue;
+	long long value = self.longLongValue;
+
+	if (value < LONG_MIN || value > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (long)value;
 }
 
 - (unsigned char)unsignedCharValue
 {
-	return (unsigned char)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UCHAR_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned char)value;
 }
 
 - (unsigned short)unsignedShortValue
 {
-	return (unsigned short)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > USHRT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned short)value;
 }
 
 - (unsigned int)unsignedIntValue
 {
-	return (unsigned int)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned int)value;
 }
 
 - (unsigned long)unsignedLongValue
 {
-	return (unsigned long)self.unsignedLongLongValue;
+	unsigned long long value = self.unsignedLongLongValue;
+
+	if (value > ULONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (unsigned long)value;
 }
 
 - (float)floatValue
@@ -996,12 +719,12 @@ isFloat(OFNumber *number)
 		d = OFToLittleEndianDouble(self.doubleValue);
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OFHashAdd(&hash, ((char *)&d)[i]);
+			OFHashAddByte(&hash, ((char *)&d)[i]);
 	} else if (isSigned(self) || isUnsigned(self)) {
 		unsigned long long value = self.unsignedLongLongValue;
 
 		while (value != 0) {
-			OFHashAdd(&hash, value & 0xFF);
+			OFHashAddByte(&hash, value & 0xFF);
 			value >>= 8;
 		}
 	} else
@@ -1014,7 +737,7 @@ isFloat(OFNumber *number)
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFString *)description
@@ -1024,7 +747,7 @@ isFloat(OFNumber *number)
 
 - (OFString *)stringValue
 {
-	if (*self.objCType == 'B')
+	if (self.objCType[0] == 'B' && self.objCType[1] == '\0')
 		return (self.boolValue ? @"true" : @"false");
 	if (isFloat(self))
 		return [OFString stringWithFormat: @"%g", self.doubleValue];
@@ -1035,38 +758,6 @@ isFloat(OFNumber *number)
 						   self.unsignedLongLongValue];
 
 	@throw [OFInvalidFormatException exception];
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFXMLElement *element;
-
-	element = [OFXMLElement elementWithName: @"OFNumber"
-				      namespace: OFSerializationNS
-				    stringValue: self.description];
-
-	if (*self.objCType == 'B')
-		[element addAttributeWithName: @"type" stringValue: @"bool"];
-	else if (isFloat(self)) {
-		[element addAttributeWithName: @"type" stringValue: @"float"];
-		element.stringValue = [OFString
-		    stringWithFormat: @"%016" PRIx64,
-		    OFFromBigEndian64(OFDoubleToRawUInt64(OFToBigEndianDouble(
-		    self.doubleValue)))];
-	} else if (isSigned(self))
-		[element addAttributeWithName: @"type" stringValue: @"signed"];
-	else if (isUnsigned(self))
-		[element addAttributeWithName: @"type"
-				  stringValue: @"unsigned"];
-	else
-		@throw [OFInvalidFormatException exception];
-
-	[element retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [element autorelease];
 }
 
 - (OFString *)JSONRepresentation
@@ -1086,7 +777,7 @@ isFloat(OFNumber *number)
 {
 	double doubleValue;
 
-	if (*self.objCType == 'B')
+	if (self.objCType[0] == 'B' && self.objCType[1] == '\0')
 		return (self.boolValue ? @"true" : @"false");
 
 	doubleValue = self.doubleValue;
@@ -1107,6 +798,9 @@ isFloat(OFNumber *number)
 {
 	OFMutableData *data;
 	const char *typeEncoding = self.objCType;
+
+	if (typeEncoding[0] == '\0' || typeEncoding[1] != '\0')
+		@throw [OFInvalidFormatException exception];
 
 	if (*typeEncoding == 'B') {
 		uint8_t type = (self.boolValue ? 0xC3 : 0xC2);

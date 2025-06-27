@@ -1,23 +1,27 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
-#import "OFFileURLHandler.h"
+#import "OFFileIRIHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -142,7 +146,7 @@ int _OFString_PathAdditions_reference;
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)pathExtension
@@ -161,9 +165,9 @@ int _OFString_PathAdditions_reference;
 
 	ret = [fileName substringFromIndex: pos + 1];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByDeletingLastPathComponent
@@ -199,7 +203,7 @@ int _OFString_PathAdditions_reference;
 
 			objc_autoreleasePoolPop(pool);
 
-			return [ret autorelease];
+			return objc_autoreleaseReturnValue(ret);
 		}
 	}
 
@@ -216,17 +220,17 @@ int _OFString_PathAdditions_reference;
 	size_t pos;
 
 	if (self.length == 0)
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 
 	pool = objc_autoreleasePoolPush();
-	components = [[self.pathComponents mutableCopy] autorelease];
+	components = objc_autorelease([self.pathComponents mutableCopy]);
 	fileName = components.lastObject;
 
 	pos = [fileName rangeOfString: @"."
 			      options: OFStringSearchBackwards].location;
 	if (pos == OFNotFound || pos == 0) {
 		objc_autoreleasePoolPop(pool);
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 	}
 
 	fileName = [fileName substringToIndex: pos];
@@ -235,9 +239,9 @@ int _OFString_PathAdditions_reference;
 
 	ret = [OFString pathWithComponents: components];
 
-	[ret retain];
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByStandardizingPath
@@ -255,10 +259,10 @@ int _OFString_PathAdditions_reference;
 
 	if (components.count == 1) {
 		objc_autoreleasePoolPop(pool);
-		return [[self copy] autorelease];
+		return objc_autoreleaseReturnValue([self copy]);
 	}
 
-	array = [[components mutableCopy] autorelease];
+	array = objc_autorelease([components mutableCopy]);
 
 	while (!done) {
 		size_t length = array.count;
@@ -281,7 +285,7 @@ int _OFString_PathAdditions_reference;
 			if ([component isEqual: @".."] &&
 			    parent != nil && ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
-				    OFRangeMake(i - 1, 2)];
+				    OFMakeRange(i - 1, 2)];
 
 				done = false;
 				break;
@@ -292,19 +296,22 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @"/"])
 		[array addObject: @""];
 
-	ret = [[array componentsJoinedByString: @"/"] retain];
+	ret = objc_retain([array componentsJoinedByString: @"/"]);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
+	if (self.length == 0)
+		return component;
+
 	if ([self hasSuffix: @"/"])
 		return [self stringByAppendingString: component];
 	else {
-		OFMutableString *ret = [[self mutableCopy] autorelease];
+		OFMutableString *ret = objc_autorelease([self mutableCopy]);
 
 		[ret appendString: @"/"];
 		[ret appendString: component];
@@ -315,18 +322,41 @@ int _OFString_PathAdditions_reference;
 	}
 }
 
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension
+{
+	if ([self hasSuffix: @"/"]) {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableArray *components;
+		OFString *fileName, *ret;
+
+		components = objc_autorelease(
+		    [self.pathComponents mutableCopy]);
+		fileName = [components.lastObject
+		    stringByAppendingFormat: @".%@", extension];
+		[components replaceObjectAtIndex: components.count - 1
+				      withObject: fileName];
+
+		ret = objc_retain([OFString pathWithComponents: components]);
+		objc_autoreleasePoolPop(pool);
+		return objc_autoreleaseReturnValue(ret);
+	} else
+		return [self stringByAppendingFormat: @".%@", extension];
+}
+
 - (bool)of_isDirectoryPath
 {
 	return ([self hasSuffix: @"/"] ||
-	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+	    [OFFileIRIHandler of_directoryExistsAtPath: self]);
 }
 
-- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+- (OFString *)of_pathToIRIPathWithPercentEncodedHost:
+    (OFString **)percentEncodedHost
 {
-	return [self stringByPrependingString: @"/"];
+	return [@"/" stringByAppendingString: self];
 }
 
-- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+- (OFString *)of_IRIPathToPathWithPercentEncodedHost:
+    (OFString *)percentEncodedHost
 {
 	OFString *path = self;
 
@@ -336,7 +366,7 @@ int _OFString_PathAdditions_reference;
 	return [path substringFromIndex: 1];
 }
 
-- (OFString *)of_pathComponentToURLPathComponent
+- (OFString *)of_pathComponentToIRIPathComponent
 {
 	return self;
 }

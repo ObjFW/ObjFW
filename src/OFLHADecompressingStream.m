@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
-
-#include <assert.h>
 
 #import "OFLHADecompressingStream.h"
 #import "OFKernelEventObserver.h"
@@ -50,7 +52,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
-	assert(stream->_savedBitsLength < count);
+	OFAssert(stream->_savedBitsLength < count);
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {
@@ -99,7 +101,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		/* 0-7 address the bit, 8 means fetch next byte */
 		_bitIndex = 8;
@@ -111,7 +113,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		_slidingWindow = OFAllocMemory(_slidingWindowMask + 1, 1);
 		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -126,11 +128,11 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	OFFreeMemory(_slidingWindow);
 
 	if (_codeLenTree != NULL)
-		OFHuffmanTreeFree(_codeLenTree);
+		_OFHuffmanTreeFree(_codeLenTree);
 	if (_litLenTree != NULL)
-		OFHuffmanTreeFree(_litLenTree);
+		_OFHuffmanTreeFree(_litLenTree);
 	if (_distTree != NULL)
-		OFHuffmanTreeFree(_distTree);
+		_OFHuffmanTreeFree(_distTree);
 
 	OFFreeMemory(_codesLengths);
 
@@ -224,7 +226,7 @@ start:
 				_codesReceived++;
 		}
 
-		_codeLenTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_codeLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
@@ -234,7 +236,7 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 			return bytesWritten;
 
-		_codeLenTree = OFHuffmanTreeNewSingle(bits);
+		_codeLenTree = _OFHuffmanTreeNewSingle(bits);
 
 		_state = stateLitLenCodesCount;
 		goto start;
@@ -246,7 +248,7 @@ start:
 			@throw [OFInvalidFormatException exception];
 
 		if OF_UNLIKELY (bits == 0) {
-			OFHuffmanTreeFree(_codeLenTree);
+			_OFHuffmanTreeFree(_codeLenTree);
 			_codeLenTree = NULL;
 
 			_state = stateLitLenTreeSingle;
@@ -300,7 +302,7 @@ start:
 				continue;
 			}
 
-			if (!OFHuffmanTreeWalk(self, tryReadBits, &_treeIter,
+			if (!_OFHuffmanTreeWalk(self, tryReadBits, &_treeIter,
 			    &value))
 				return bytesWritten;
 
@@ -313,11 +315,11 @@ start:
 				_codesLengths[_codesReceived++] = value - 2;
 		}
 
-		_litLenTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_litLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
-		OFHuffmanTreeFree(_codeLenTree);
+		_OFHuffmanTreeFree(_codeLenTree);
 		_codeLenTree = NULL;
 
 		_state = stateDistCodesCount;
@@ -326,7 +328,7 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
 			return bytesWritten;
 
-		_litLenTree = OFHuffmanTreeNewSingle(bits);
+		_litLenTree = _OFHuffmanTreeNewSingle(bits);
 
 		_state = stateDistCodesCount;
 		goto start;
@@ -377,7 +379,7 @@ start:
 				_codesReceived++;
 		}
 
-		_distTree = OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_distTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
@@ -388,15 +390,15 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distanceBits))
 			return bytesWritten;
 
-		_distTree = OFHuffmanTreeNewSingle(bits);
+		_distTree = _OFHuffmanTreeNewSingle(bits);
 
 		_treeIter = _litLenTree;
 		_state = stateBlockLitLen;
 		goto start;
 	case stateBlockLitLen:
 		if OF_UNLIKELY (_symbolsLeft == 0) {
-			OFHuffmanTreeFree(_litLenTree);
-			OFHuffmanTreeFree(_distTree);
+			_OFHuffmanTreeFree(_litLenTree);
+			_OFHuffmanTreeFree(_distTree);
 			_litLenTree = _distTree = NULL;
 
 			_state = stateBlockHeader;
@@ -424,7 +426,7 @@ start:
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
 
-		if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+		if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 		    &_treeIter, &value))
 			return bytesWritten;
 
@@ -446,7 +448,7 @@ start:
 
 		goto start;
 	case stateBlockDistLength:
-		if OF_UNLIKELY (!OFHuffmanTreeWalk(self, tryReadBits,
+		if OF_UNLIKELY (!_OFHuffmanTreeWalk(self, tryReadBits,
 		    &_treeIter, &value))
 			return bytesWritten;
 
@@ -509,9 +511,9 @@ start:
 	    .fileDescriptorForReading;
 }
 
-- (bool)hasDataInReadBuffer
+- (bool)lowlevelHasDataInReadBuffer
 {
-	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer ||
+	return (_stream.hasDataInReadBuffer ||
 	    _bufferLength - _bufferIndex > 0);
 }
 
@@ -526,7 +528,7 @@ start:
 	_bytesConsumed -= _bufferLength - _bufferIndex;
 	_bufferIndex = _bufferLength = 0;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

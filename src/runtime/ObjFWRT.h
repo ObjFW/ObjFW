@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef OBJFWRT_OBJFWRT_H
@@ -134,7 +138,7 @@ typedef bool BOOL;
 #endif
 
 /**
- * @brief A method implemenation.
+ * @brief A method implementation.
  *
  * @param object The messaged object
  * @param selector The selector sent
@@ -146,14 +150,14 @@ typedef id _Nullable (*IMP)(id _Nonnull object, SEL _Nonnull selector, ...);
  *
  * @param exception The exception which was not caught.
  */
-typedef void (*objc_uncaught_exception_handler_t)(id _Nullable exception);
+typedef void (*objc_uncaught_exception_handler)(id _Nullable exception);
 
 /**
  * @brief A handler for mutation during enumeration.
  *
  * @param object The object that was mutated during enumeration
  */
-typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull object);
+typedef void (*objc_enumeration_mutation_handler)(id _Nonnull object);
 
 /**
  * @brief A struct representing a call to super.
@@ -173,10 +177,25 @@ struct objc_super {
 #endif
 };
 
+/**
+ * @brief A policy for object association, see @ref objc_setAssociatedObject.
+ */
+typedef enum objc_associationPolicy {
+	/** @brief Associate the object like an assigned property. */
+	OBJC_ASSOCIATION_ASSIGN	= 0,
+	/** @brief Associate the object like a retained, nonatomic property. */
+	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+	/** @brief Associate the object like a retained property. */
+	OBJC_ASSOCIATION_RETAIN = OBJC_ASSOCIATION_RETAIN_NONATOMIC | 0x300,
+	/** @brief Associate the object like a copied, nonatomic property. */
+	OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+	/** @brief Associate the object like a copied property. */
+	OBJC_ASSOCIATION_COPY = OBJC_ASSOCIATION_COPY_NONATOMIC | 0x300
+} objc_associationPolicy;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 /**
  * @brief Registers a selector with the specified name with the runtime.
  *
@@ -312,7 +331,7 @@ extern bool class_conformsToProtocol(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
@@ -327,7 +346,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
  *		   returned
- * @return The class's metod implementation for the specified selector
+ * @return The class's method implementation for the specified selector
  */
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
@@ -520,13 +539,13 @@ extern char *_Nullable property_copyAttributeValue(
     objc_property_t _Nonnull property, const char *_Nonnull name);
 
 /**
- * @brief Exits the Objective-C runtime.
+ * @brief Deinitializes the Objective-C runtime.
  *
  * This frees all data structures used by the runtime, after which Objective-C
  * can no longer be used inside the current process. This is only useful for
- * debugging.
+ * debugging and tests.
  */
-extern void objc_exit(void);
+extern void objc_deinit(void);
 
 /**
  * @brief Sets the handler for uncaught exceptions.
@@ -534,9 +553,9 @@ extern void objc_exit(void);
  * @param handler The new handler for uncaught exceptions
  * @return The old handler for uncaught exceptions
  */
-extern _Nullable objc_uncaught_exception_handler_t
+extern _Nullable objc_uncaught_exception_handler
     objc_setUncaughtExceptionHandler(
-    objc_uncaught_exception_handler_t _Nullable handler);
+    objc_uncaught_exception_handler _Nullable handler);
 
 /**
  * @brief Sets the forwarding handler for unimplemented methods.
@@ -554,11 +573,15 @@ extern void objc_setForwardHandler(IMP _Nullable forward,
  * @param handler The handler for mutations during enumeration
  */
 extern void objc_setEnumerationMutationHandler(
-    objc_enumeration_mutation_handler_t _Nullable handler);
+    objc_enumeration_mutation_handler _Nullable handler);
 
 /**
  * @brief Constructs an instance of the specified class in the specified array
  *	  of bytes.
+ *
+ * @warning Instances created using this *cannot* use the runtime's reference
+ *	    counting and will result in a crash. Use @ref class_createInstance
+ *	    instead!
  *
  * @param class_ The class of which to construct an instance
  * @param bytes An array of bytes of at least the length of the instance size.
@@ -575,6 +598,57 @@ extern id _Nullable objc_constructInstance(Class _Nullable class_,
  * @return The array of bytes that was used to back the instance
  */
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+
+/**
+ * @brief Creates a new instance of the specified class with the specified
+ *	  amount of extra space after the instance variables.
+ *
+ * @param class_ The class of which to create an instance
+ * @param extraBytes The amount of extra space after the instance variables
+ * @return The created instance
+ */
+extern id _Nullable class_createInstance(Class _Nullable class_,
+    size_t extraBytes);
+
+/**
+ * @brief Disposes of the specified object.
+ *
+ * This destructs the object and frees the memory.
+ *
+ * @param object The object to dispose of
+ * @return `nil`
+ */
+extern id _Nullable object_dispose(id _Nullable object);
+
+/**
+ * @brief Retains the specified object.
+ *
+ * This is only to be used to implement the `retain` method in a root class.
+ *
+ * @param object The object to retain
+ * @return The retained object
+ */
+extern id _Nonnull _objc_rootRetain(id _Nonnull object);
+
+/**
+ * @brief Returns the retain count for the specified object.
+ *
+ * This is only to be used to implement the `retainCount` method in a root
+ * class.
+ *
+ * @param object The object whose retain count to return
+ * @return The retain count of the specified object
+ */
+extern unsigned int _objc_rootRetainCount(id _Nonnull object);
+
+/**
+ * @brief Releases the specified object.
+ *
+ * This is only to be used to implement the `release` method in a root class.
+ *
+ * @param object The object to release
+ */
+extern void _objc_rootRelease(id _Nonnull object);
 
 /**
  * @brief Creates a new autorelease pool and puts it on top of the stack of
@@ -616,10 +690,10 @@ extern void objc_setTaggedPointerSecret(uintptr_t secret);
 /**
  * @brief Registers a class for tagged pointers.
  *
- * @param class The class to register for tagged pointers
+ * @param class_ The class to register for tagged pointers
  * @return The tagged pointer ID for the registered class
  */
-extern int objc_registerTaggedPointerClass(Class _Nonnull class);
+extern int objc_registerTaggedPointerClass(Class _Nonnull class_);
 
 /**
  * @brief Returns whether the specified object is a tagged pointer.
@@ -640,11 +714,42 @@ extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
 /**
  * @brief Creates a new tagged pointer.
  *
- * @param class The tag ID for the tagged pointer class to use
+ * @param class_ The tag ID for the tagged pointer class to use
  * @param value The value the tagged pointer should have
  * @return A tagged pointer, or `nil` if it could not be created
  */
-extern id _Nullable objc_createTaggedPointer(int class, uintptr_t value);
+extern id _Nullable objc_createTaggedPointer(int class_, uintptr_t value);
+
+/**
+ * @brief Sets an associated object on the specified object for the specified
+ *	  key.
+ *
+ * @param object The object on which to set an associated object
+ * @param key A unique pointer to use as the key for the association
+ * @param value The object to associate with the specified object
+ * @param policy The association policy, see @ref objc_associationPolicy
+ */
+extern void objc_setAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key, id _Nullable value,
+    objc_associationPolicy policy);
+
+/**
+ * @brief Returns the associated object on the specified object for the
+ *	  specified key.
+ *
+ * @param object The object on which to get the associated object
+ * @param key The key of the association
+ * @return The associated object on the specified object for the specified key
+ */
+extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key);
+
+/**
+ * @brief Removes all associated objects for the specified object.
+ *
+ * @param object The object on which to remove all associated objects
+ */
+extern void objc_removeAssociatedObjects(id _Nonnull object);
 
 /*
  * Used by the compiler, but can also be called manually.
@@ -652,8 +757,10 @@ extern id _Nullable objc_createTaggedPointer(int class, uintptr_t value);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
+#ifdef __clang__
 struct objc_module;
 extern void __objc_exec_class(struct objc_module *_Nonnull module);
+#endif
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

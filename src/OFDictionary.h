@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __STDC_LIMIT_MACROS
@@ -25,7 +29,6 @@
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
@@ -34,13 +37,37 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
+/**
+ * @brief A block for enumerating an OFDictionary.
+ *
+ * @param key The current key
+ * @param object The object for the current key
+ * @param stop A pointer to a variable that can be set to true to stop the
+ *	       enumeration.
+ */
 typedef void (^OFDictionaryEnumerationBlock)(id key, id object, bool *stop);
+
+/**
+ * @brief A block for filtering an OFDictionary.
+ *
+ * @param key The key to inspect
+ * @param object The object for the key to inspect
+ * @return Whether the object should be in the filtered dictionary.
+ */
 typedef bool (^OFDictionaryFilterBlock)(id key, id object);
+
+/**
+ * @brief A block for mapping keys to objects in an OFDictionary.
+ *
+ * @param key The key to map
+ * @param object The current object for the key
+ * @return The object to map the key to
+ */
 typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 #endif
 
 /**
- * @class OFDictionary OFDictionary.h ObjFW/OFDictionary.h
+ * @class OFDictionary OFDictionary.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for storing objects in a dictionary.
  *
@@ -53,7 +80,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  *	 @ref keyEnumerator.
  */
 @interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
-    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMutableCopying, OFCollection, OFJSONRepresentation,
     OFMessagePackRepresentation>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define KeyType id
@@ -68,11 +95,6 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  * @brief An array of all objects.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
-
-/**
- * @brief A URL-encoded string with the contents of the dictionary.
- */
-@property (readonly, nonatomic) OFString *stringByURLEncoding;
 
 /**
  * @brief Creates a new OFDictionary.
@@ -106,9 +128,8 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  * @param objects An array of objects
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)
-    dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
-		  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
++ (instancetype)dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+			      forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /**
  * @brief Creates a new OFDictionary with the specified keys and objects.
@@ -131,6 +152,13 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  */
 + (instancetype)dictionaryWithKeysAndObjects: (KeyType)firstKey, ...
     OF_SENTINEL;
+
+/**
+ * @brief Initializes an already allocated OFDictionary to be empty.
+ *
+ * @return An initialized OFDictionary
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified
@@ -174,7 +202,7 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
  */
 - (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 			forKeys: (KeyType const _Nonnull *_Nonnull)keys
-			  count: (size_t)count;
+			  count: (size_t)count OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -224,11 +252,11 @@ typedef id _Nonnull (^OFDictionaryMapBlock)(id key, id object);
 /**
  * @brief Sets a value for a key.
  *
- * This is equivalent to OFMutableDictionary#setObject:forKey:. If the
- * dictionary is immutable, an @ref OFUndefinedKeyException is thrown.
+ * This is equivalent to OFMutableDictionary#setObject:forKey:.
  *
  * @param key The key to set
  * @param value The value to set the key to
+ * @throw OFUndefinedKeyException The dictionary is immutable
  */
 - (void)setValue: (nullable id)value forKey: (OFString *)key;
 

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -23,8 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /**
- * @class OFWindowsRegistryKey \
- *	  OFWindowsRegistryKey.h ObjFW/OFWindowsRegistryKey.h
+ * @class OFWindowsRegistryKey OFWindowsRegistryKey.h ObjFW/ObjFW.h
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFWindowsRegistryKey: OFObject
@@ -74,64 +77,41 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Opens the subkey at the specified path.
  *
  * @param path The path of the subkey to open
- * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
- */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
-/**
- * @brief Opens the subkey at the specified path.
- *
- * @param path The path of the subkey to open
+ * @param accessRights Please refer to the `RegOpenKeyEx()` documentation for
+ *		       `samDesired`
  * @param options Please refer to the `RegOpenKeyEx()` documentation for
  *		  `ulOptions`. Usually 0.
- * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation for `samDesired`
- * @return The subkey with the specified path, or nil if it does not exist
- */
-- (nullable OFWindowsRegistryKey *)
-	   openSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
-/**
- * @brief Creates a subkey at the specified path or opens it if it already
- *	  exists.
- *
- * @param path The path of the subkey to create
- * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation for `samDesired`
  * @return The subkey with the specified path
+ * @throw OFOpenWindowsRegistryKeyFailedException Opening the key failed
  */
-- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights;
-
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+			      accessRights: (REGSAM)accessRights
+				   options: (DWORD)options;
 /**
  * @brief Creates a subkey at the specified path or opens it if it already
  *	  exists.
  *
  * @param path The path of the subkey to create
- * @param options Please refer to the `RegCreateKeyEx()` documentation.
- *		  Usually 0.
- * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation for `samDesired`
+ * @param accessRights Please refer to the `RegCreateKeyEx()` documentation for
+ *		       `samDesired`
  * @param securityAttributes Please refer to the `RegCreateKeyEx()`
  *			     documentation for `lpSecurityAttributes`. Usually
  *			     NULL.
- * @param disposition Whether the key was created or already existed. Please
+ * @param options Please refer to the `RegCreateKeyEx()` documentation for
+ *		  `dwOptions`. Usually 0.
+ * @param disposition A pointer to a variable that will be set to whether the
+ *		      key was created or already existed, or `NULL`. Please
  *		      refer to the `RegCreateKeyEx()` documentation for
  *		      `lpdwDisposition`.
  * @return The subkey with the specified path
+ * @throw OFCreateWindowsRegistryKeyFailedException Creating the key failed
  */
 - (OFWindowsRegistryKey *)
-	 createSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
-		disposition: (nullable DWORD *)disposition;
+    createSubkeyAtPath: (OFString *)path
+	  accessRights: (REGSAM)accessRights
+    securityAttributes: (nullable SECURITY_ATTRIBUTES *)securityAttributes
+	       options: (DWORD)options
+	   disposition: (nullable DWORD *)disposition;
 
 /**
  * @brief Returns the data for the specified value at the specified path.
@@ -139,6 +119,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The data for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
  */
 - (nullable OFData *)dataForValueNamed: (nullable OFString *)name
 				  type: (nullable DWORD *)type;
@@ -149,6 +130,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param data The data to set the value to
  * @param name The name of the value to set
  * @param type The type for the value
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setData: (nullable OFData *)data
   forValueNamed: (nullable OFString *)name
@@ -159,6 +141,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param name The name of the value to return
  * @return The string for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFInvalidEncodingException The encoding of the value is invalid
  */
 - (nullable OFString *)stringForValueNamed: (nullable OFString *)name;
 
@@ -168,6 +152,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param name The name of the value to return
  * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFInvalidEncodingException The encoding of the value is invalid
  */
 - (nullable OFString *)stringForValueNamed: (nullable OFString *)name
 				      type: (nullable DWORD *)type;
@@ -177,6 +163,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param string The string to set the value to
  * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name;
@@ -187,15 +174,55 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string to set the value to
  * @param name The name of the value to set
  * @param type The type for the value
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
  */
 - (void)setString: (nullable OFString *)string
     forValueNamed: (nullable OFString *)name
 	     type: (DWORD)type;
 
 /**
+ * @brief Returns the DWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The DWORD for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFUndefinedKeyException There is no value with the specified key
+ */
+- (uint32_t)DWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the DWORD for the specified value.
+ *
+ * @param dword The DWORD to set the value to
+ * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
+ */
+- (void)setDWORD: (uint32_t)dword forValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Returns the QWORD for the specified value at the specified path.
+ *
+ * @param name The name of the value to return
+ * @return The QWORD for the specified value
+ * @throw OFGetWindowsRegistryValueFailedException Getting the value failed
+ * @throw OFUndefinedKeyException There is no value with the specified key
+ */
+- (uint64_t)QWORDForValueNamed: (nullable OFString *)name;
+
+/**
+ * @brief Sets the QWORD for the specified value.
+ *
+ * @param qword The QWORD to set the value to
+ * @param name The name of the value to set
+ * @throw OFSetWindowsRegistryValueFailedException Setting the value failed
+ */
+- (void)setQWORD: (uint64_t)qword forValueNamed: (nullable OFString *)name;
+
+/**
  * @brief Deletes the specified value.
  *
  * @param name The value to delete
+ * @throw OFDeleteWindowsRegistryValueFailedException Deleting the value failed
  */
 - (void)deleteValueNamed: (nullable OFString *)name;
 
@@ -203,6 +230,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Deletes the specified subkey.
  *
  * @param subkeyPath The path of the subkey to delete
+ * @throw OFDeleteWindowsRegistryKeyFailedException Deleting the key failed
  */
 - (void)deleteSubkeyAtPath: (OFString *)subkeyPath;
 @end

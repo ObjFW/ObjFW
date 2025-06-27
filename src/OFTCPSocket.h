@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStreamSocket.h"
@@ -27,14 +31,29 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A block which is called when the socket connected.
  *
+ * @deprecated Use @ref OFTCPSocketConnectedHandler instead.
+ *
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
+typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception)
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFTCPSocketConnecetedHandler instead");
+
+/**
+ * @brief A handler which is called when the socket connected.
+ *
+ * @param socket The socket which connected
+ * @param host The host connected to
+ * @param port The port on the host connected to
+ * @param exception An exception which occurred while connecting the socket or
+ *		    `nil` on success
+ */
+typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
+    OFString *host, uint16_t port, id _Nullable exception);
 #endif
 
 /**
- * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/OFTCPSocket.h
+ * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/ObjFW.h
  *
  * A delegate for OFTCPSocket.
  */
@@ -56,7 +75,7 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 @end
 
 /**
- * @class OFTCPSocket OFTCPSocket.h ObjFW/OFTCPSocket.h
+ * @class OFTCPSocket OFTCPSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use TCP sockets.
  *
@@ -70,7 +89,8 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	OF_RESERVE_IVARS(OFTCPSocket, 4)
+	uintptr_t _flags;	/* Change to a smaller type on ABI bump */
+	OF_RESERVE_IVARS(OFTCPSocket, 3)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -80,22 +100,35 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /**
- * @brief Whether the socket sends keep alives for the connection.
+ * @brief Whether the socket sends keep-alives for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
+ *
+ * @throw OFGetOptionFailedException The option could not be retrieved
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool sendsKeepAlives;
 #endif
 
 #ifndef OF_WII
 /**
- * @brief Whether sending segments can be delayed. Setting this to NO sets
+ * @brief Whether sending segments can be delayed. Setting this to `false` sets
  *        TCP_NODELAY on the socket.
  *
  * @warning This is not available on the Wii!
+ *
+ * @throw OFGetOptionFailedException The option could not be retrieved
+ * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canDelaySendingSegments;
 #endif
+
+/**
+ * @brief Whether the socket allows MPTCP.
+ *
+ * If you want to use MPTCP, set this to true before connecting or binding.
+ */
+@property (nonatomic) bool allowsMPTCP;
 
 /**
  * @brief The host to use as a SOCKS5 proxy.
@@ -146,15 +179,17 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 + (uint16_t)SOCKS5Port;
 
 /**
- * @brief Connect the OFTCPSocket to the specified destination.
+ * @brief Connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
+ * @throw OFConnectIPSocketFailedException Connecting failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
 - (void)connectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -162,11 +197,12 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 - (void)asyncConnectToHost: (OFString *)host port: (uint16_t)port;
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
@@ -174,7 +210,9 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
 
 #ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
+ *
+ * @deprecated Use @ref asyncConnectToHost:port:handler: instead.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -182,40 +220,66 @@ typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception);
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		     block: (OFTCPSocketAsyncConnectBlock)block;
+		     block: (OFTCPSocketAsyncConnectBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncConnectToHost:port:handler:] instead");
 
 /**
- * @brief Asynchronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param runLoopMode The run loop mode in which to perform the async connect
+ * @param handler The handler to call once the connection has been established
+ */
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+		   handler: (OFTCPSocketConnectedHandler)handler;
+
+/**
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
+ *
+ * @deprecated Use @ref asyncConnectToHost:port:runLoopMode:handler: instead.
+ *
+ * @param host The host to connect to
+ * @param port The port on the host to connect to
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
  * @param block The block to execute once the connection has been established
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (OFRunLoopMode)runLoopMode
-		     block: (OFTCPSocketAsyncConnectBlock)block;
+		     block: (OFTCPSocketAsyncConnectBlock)block
+    OF_DEPRECATED(ObjFW, 1, 2,
+	"Use -[asyncConnectToHost:port:runLoopMode:handler:] instead");
+
+/**
+ * @brief Asynchronously connects the OFTCPSocket to the specified destination.
+ *
+ * @param host The host to connect to
+ * @param port The port on the host to connect to
+ * @param runLoopMode The run loop mode in which to perform the asynchronous
+ *		      connect
+ * @param handler The handler to call once the connection has been established
+ */
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+		   handler: (OFTCPSocketConnectedHandler)handler;
 #endif
 
 /**
- * @brief Bind the socket to the specified host and port.
+ * @brief Binds the socket to the specified host and port.
  *
  * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for
  *	       IPv6 to bind to all.
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
- * @return The port the socket was bound to
+ * @return The address the socket was bound to
+ * @throw OFBindIPSocketFailedException Binding failed
+ * @throw OFAlreadyOpenException The socket is already connected or bound
  */
-- (uint16_t)bindToHost: (OFString *)host port: (uint16_t)port;
+- (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern Class _Nullable OFTLSSocketClass;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

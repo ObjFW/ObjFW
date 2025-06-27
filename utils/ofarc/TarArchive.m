@@ -1,25 +1,34 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -27,15 +36,20 @@
 #import "TarArchive.h"
 #import "OFArc.h"
 
+#import "OFSetItemAttributesFailedException.h"
+
 static OFArc *app;
 
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	OFNumber *mode = [OFNumber numberWithUnsignedShort: entry.mode & 0777];
+	OFNumber *POSIXPermissions = [OFNumber numberWithUnsignedLongLong:
+	    entry.POSIXPermissions.longLongValue & 0777];
 	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: mode
+	    dictionaryWithObject: POSIXPermissions
 			  forKey: OFFilePOSIXPermissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -55,8 +69,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation TarArchive
@@ -66,18 +85,22 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
-{
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
-}
-
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
+}
+
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
@@ -88,7 +111,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (encoding != OFStringEncodingAutodetect)
 			_archive.encoding = encoding;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -97,7 +120,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_archive release];
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -109,19 +132,19 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
+		[app checkForCancellation];
+
 		[OFStdOut writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
 			OFString *date = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *size = [OFString stringWithFormat:
-			    @"%" PRIu64, entry.size];
-			OFString *mode = [OFString stringWithFormat:
-			    @"%06o", entry.mode];
-			OFString *UID = [OFString stringWithFormat:
-			    @"%u", entry.UID];
-			OFString *GID = [OFString stringWithFormat:
-			    @"%u", entry.GID];
+			    @"%llu", entry.uncompressedSize];
+			OFString *permissionsString = [OFString
+			    stringWithFormat:
+			    @"%llo", entry.POSIXPermissions
+			    .unsignedLongLongValue];
 
 			[OFStdOut writeString: @"\t"];
 			[OFStdOut writeLine: OF_LOCALIZED(@"list_size",
@@ -134,31 +157,34 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"]".objectByParsingJSON,
 			    @"size", size)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_mode",
-			    @"Mode: %[mode]",
-			    @"mode", mode)];
+			[OFStdOut writeLine:
+			    OF_LOCALIZED(@"list_posix_permissions",
+			    @"POSIX permissions: %[perm]",
+			    @"perm", permissionsString)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_uid",
-			    @"UID: %[uid]",
-			    @"uid", UID)];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_owner_account_id",
+			    @"Owner account ID: %[id]",
+			    @"id", entry.ownerAccountID)];
 			[OFStdOut writeString: @"\t"];
-			[OFStdOut writeLine: OF_LOCALIZED(@"list_gid",
-			    @"GID: %[gid]",
-			    @"gid", GID)];
+			[OFStdOut writeLine: OF_LOCALIZED(
+			    @"list_group_owner_account_id",
+			    @"Group owner account ID: %[id]",
+			    @"id", entry.groupOwnerAccountID)];
 
-			if (entry.owner != nil) {
+			if (entry.ownerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_owner",
-				    @"Owner: %[owner]",
-				    @"owner", entry.owner)];
+				    @"list_owner_account_name",
+				    @"Owner account name: %[name]",
+				    @"name", entry.ownerAccountName)];
 			}
-			if (entry.group != nil) {
+			if (entry.groupOwnerAccountName != nil) {
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_group",
-				    @"Group: %[group]",
-				    @"group", entry.group)];
+				    @"list_group_owner_account_name",
+				    @"Group owner account name: %[name]",
+				    @"name", entry.groupOwnerAccountName)];
 			}
 
 			[OFStdOut writeString: @"\t"];
@@ -270,6 +296,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
+	OFMutableArray *delayedModificationDates = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFTarArchiveEntry *entry;
@@ -281,8 +308,10 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
-		uint64_t written = 0, size = entry.size;
+		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
+
+		[app checkForCancellation];
 
 		if (!all && ![files containsObject: fileName])
 			continue;
@@ -290,7 +319,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (type != OFTarArchiveEntryTypeFile &&
 		    type != OFTarArchiveEntryTypeDirectory) {
 			if (app->_outputLevel >= 0)
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"skipping_file",
 				    @"Skipping %[file]...",
 				    @"file", fileName)];
@@ -311,7 +340,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -321,11 +350,18 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
-			setModificationDate(outFileName, entry);
+			/*
+			 * As creating a new file in a directory changes its
+			 * modification date, we can only set it once all files
+			 * have been created.
+			 */
+			[delayedModificationDates addObject:
+			    [OFPair pairWithFirstObject: outFileName
+					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -347,9 +383,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -367,8 +407,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeString: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -380,8 +420,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -390,6 +430,9 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
+
+	for (OFPair *pair in delayedModificationDates)
+		setModificationDate(pair.firstObject, pair.secondObject);
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -420,15 +463,21 @@ outer_loop_end:
 		OFString *fileName = entry.fileName;
 		OFStream *stream;
 
+		[app checkForCancellation];
+
 		if (![files containsObject: fileName])
 			continue;
 
 		stream = [_archive streamForReadingCurrentEntry];
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: OFStdOut
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: OFStdOut
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -452,15 +501,9 @@ outer_loop_end:
 }
 
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (OFString *)archiveComment
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-
-	if (files.count < 1) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
-		    @"Need one or more files to add!")];
-		app->_exitStatus = 1;
-		return;
-	}
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
@@ -469,8 +512,10 @@ outer_loop_end:
 		OFMutableTarArchiveEntry *entry;
 		OFStream *output;
 
+		[app checkForCancellation];
+
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
@@ -479,28 +524,32 @@ outer_loop_end:
 		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		entry.mode = attributes.filePOSIXPermissions;
+		entry.POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
 #endif
-		entry.size = attributes.fileSize;
+		entry.uncompressedSize = attributes.fileSize;
 		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		entry.UID = attributes.fileOwnerAccountID;
-		entry.GID = attributes.fileGroupOwnerAccountID;
-		entry.owner = attributes.fileOwnerAccountName;
-		entry.group = attributes.fileGroupOwnerAccountName;
+		entry.ownerAccountID =
+		    [attributes objectForKey: OFFileOwnerAccountID];
+		entry.groupOwnerAccountID =
+		    [attributes objectForKey: OFFileGroupOwnerAccountID];
+		entry.ownerAccountName = attributes.fileOwnerAccountName;
+		entry.groupOwnerAccountName =
+		    attributes.fileGroupOwnerAccountName;
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])
 			entry.type = OFTarArchiveEntryTypeFile;
 		else if ([type isEqual: OFFileTypeDirectory]) {
 			entry.type = OFTarArchiveEntryTypeDirectory;
-			entry.size = 0;
+			entry.uncompressedSize = 0;
 		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
 			entry.type = OFTarArchiveEntryTypeSymlink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
-			entry.size = 0;
+			entry.uncompressedSize = 0;
 		}
 
 		[entry makeImmutable];
@@ -508,17 +557,21 @@ outer_loop_end:
 		output = [_archive streamForWritingEntry: entry];
 
 		if (entry.type == OFTarArchiveEntryTypeFile) {
-			uint64_t written = 0, size = entry.size;
+			unsigned long long written = 0;
+			unsigned long long size = entry.uncompressedSize;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName
 							mode: @"r"];
 
 			while (!input.atEndOfStream) {
-				ssize_t length = [app
-				    copyBlockFromStream: input
-					       toStream: output
-					       fileName: fileName];
+				ssize_t length;
+
+				[app checkForCancellation];
+
+				length = [app copyBlockFromStream: input
+							 toStream: output
+							 fileName: fileName];
 
 				if (length < 0) {
 					app->_exitStatus = 1;
@@ -537,8 +590,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[OFStdOut writeString: @"\r"];
-					[OFStdOut writeString: OF_LOCALIZED(
+					[OFStdErr writeString: @"\r"];
+					[OFStdErr writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -548,8 +601,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

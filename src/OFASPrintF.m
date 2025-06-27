@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,7 +29,7 @@
 # include <wchar.h>
 #endif
 
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -36,8 +40,10 @@
 # include <sys/types.h>
 #endif
 
-#import "OFString.h"
+#import "OFASPrintF.h"
 #import "OFLocale.h"
+#import "OFString.h"
+#import "OFString+Private.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -53,7 +59,7 @@
 # define vasprintf vasprintf_
 #endif
 
-struct context {
+struct Context {
 	const char *format;
 	size_t formatLen;
 	char subformat[maxSubformatLen + 1];
@@ -83,7 +89,7 @@ struct context {
 	bool useLocale;
 };
 
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
 static locale_t cLocale;
 
 OF_CONSTRUCTOR()
@@ -148,7 +154,7 @@ asprintf(char **string, const char *format, ...)
 #endif
 
 static bool
-appendString(struct context *ctx, const char *append, size_t appendLen)
+appendString(struct Context *ctx, const char *append, size_t appendLen)
 {
 	char *newBuf;
 
@@ -168,7 +174,7 @@ appendString(struct context *ctx, const char *append, size_t appendLen)
 }
 
 static bool
-appendSubformat(struct context *ctx, const char *subformat,
+appendSubformat(struct Context *ctx, const char *subformat,
     size_t subformatLen)
 {
 	if (ctx->subformatLen + subformatLen > maxSubformatLen)
@@ -182,7 +188,7 @@ appendSubformat(struct context *ctx, const char *subformat,
 }
 
 static bool
-stringState(struct context *ctx)
+stringState(struct Context *ctx)
 {
 	if (ctx->format[ctx->i] == '%') {
 		if (ctx->i > 0)
@@ -201,7 +207,7 @@ stringState(struct context *ctx)
 }
 
 static bool
-formatFlagsState(struct context *ctx)
+formatFlagsState(struct Context *ctx)
 {
 	switch (ctx->format[ctx->i]) {
 	case '-':
@@ -228,7 +234,7 @@ formatFlagsState(struct context *ctx)
 }
 
 static bool
-formatFieldWidthState(struct context *ctx)
+formatFieldWidthState(struct Context *ctx)
 {
 	if ((ctx->format[ctx->i] >= '0' && ctx->format[ctx->i] <= '9') ||
 	    ctx->format[ctx->i] == '*' || ctx->format[ctx->i] == '.') {
@@ -243,7 +249,7 @@ formatFieldWidthState(struct context *ctx)
 }
 
 static bool
-formatLengthModifierState(struct context *ctx)
+formatLengthModifierState(struct Context *ctx)
 {
 	/* Only one allowed */
 	switch (ctx->format[ctx->i]) {
@@ -373,11 +379,11 @@ formatLengthModifierState(struct context *ctx)
 }
 
 static bool
-formatConversionSpecifierState(struct context *ctx)
+formatConversionSpecifierState(struct Context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
-#ifndef HAVE_ASPRINTF_L
+#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
 	OFString *point;
 #endif
 
@@ -418,7 +424,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 		{
 			char buffer[5];
-			size_t len = OFUTF8StringEncode(
+			size_t len = _OFUTF8StringEncode(
 			    va_arg(ctx->arguments, OFUnichar), buffer);
 
 			if (len == 0)
@@ -449,7 +455,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 			j = 0;
 			for (size_t i = 0; i < len; i++) {
-				size_t clen = OFUTF8StringEncode(arg[i],
+				size_t clen = _OFUTF8StringEncode(arg[i],
 				    buffer + j);
 
 				if (clen == 0) {
@@ -548,23 +554,37 @@ formatConversionSpecifierState(struct context *ctx)
 		switch (ctx->lengthModifier) {
 		case lengthModifierNone:
 		case lengthModifierL:
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, double));
 			else
+#elif defined(HAVE_USELOCALE)
+			if (!ctx->useLocale) {
+				locale_t previousLocale = uselocale(cLocale);
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, double));
+				uselocale(previousLocale);
+			} else
 #endif
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    va_arg(ctx->arguments, double));
 			break;
 		case lengthModifierCapitalL:
-#ifdef HAVE_ASPRINTF_L
+#if defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, long double));
 			else
+#elif defined(HAVE_USELOCALE)
+			if (!ctx->useLocale) {
+				locale_t previousLocale = uselocale(cLocale);
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, long double));
+				uselocale(previousLocale);
+			} else
 #endif
 				tmpLen = asprintf(&tmp, ctx->subformat,
 				    va_arg(ctx->arguments, long double));
@@ -573,16 +593,16 @@ formatConversionSpecifierState(struct context *ctx)
 			return false;
 		}
 
-#ifndef HAVE_ASPRINTF_L
+#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
 		if (tmpLen == -1)
 			return false;
 
 		/*
-		 * If there's no asprintf_l, we have no other choice than to
-		 * use this ugly hack to replace the locale's decimal point
-		 * back to ".".
+		 * If there's no asprintf_l and no uselocale, we have no other
+		 * choice than to use this ugly hack to replace the locale's
+		 * decimal point back to ".".
 		 */
-		point = [OFLocale decimalPoint];
+		point = [OFLocale decimalSeparator];
 
 		if (!ctx->useLocale && point != nil && ![point isEqual: @"."]) {
 			void *pool = objc_autoreleasePoolPush();
@@ -731,7 +751,7 @@ formatConversionSpecifierState(struct context *ctx)
 	return true;
 }
 
-static bool (*states[])(struct context *) = {
+static bool (*states[])(struct Context *) = {
 	stringState,
 	formatFlagsState,
 	formatFieldWidthState,
@@ -740,9 +760,9 @@ static bool (*states[])(struct context *) = {
 };
 
 int
-OFVASPrintF(char **string, const char *format, va_list arguments)
+_OFVASPrintF(char **string, const char *format, va_list arguments)
 {
-	struct context ctx;
+	struct Context ctx;
 
 	ctx.format = format;
 	ctx.formatLen = strlen(format);

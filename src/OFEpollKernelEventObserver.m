@@ -1,21 +1,24 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -31,16 +34,16 @@
 #import "OFNull.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 
 #define eventListSize 64
 
 static const OFMapTableFunctions mapFunctions = { NULL };
 
 @implementation OFEpollKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct epoll_event event;
@@ -72,7 +75,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -83,7 +86,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 {
 	close(_epfd);
 
-	[_FDToEvents release];
+	objc_release(_FDToEvents);
 
 	[super dealloc];
 }
@@ -104,8 +107,9 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 	if (epoll_ctl(_epfd, (events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
 	    fd, &event) == -1)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 
 	[_FDToEvents setObject: (void *)(events | addEvents)
 			forKey: (void *)((intptr_t)fd + 1)];
@@ -129,7 +133,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			 * returned when we try to remove it after it failed.
 			 */
 			if (errno != ENOENT)
-				@throw [OFObserveFailedException
+				@throw [OFObserveKernelEventsFailedException
 				    exceptionWithObserver: self
 						    errNo: errno];
 
@@ -142,7 +146,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 		event.data.ptr = object;
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
-			@throw [OFObserveFailedException
+			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
@@ -193,15 +197,15 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	struct epoll_event eventList[eventListSize];
 	int events;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
-	events = epoll_wait(_epfd, eventList, eventListSize,
-	    (timeInterval != -1 ? timeInterval * 1000 : -1));
-
-	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while ((events = epoll_wait(_epfd, eventList, eventListSize,
+	    (timeInterval != -1 ? timeInterval * 1000 : -1))) < 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {

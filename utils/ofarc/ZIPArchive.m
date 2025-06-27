@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,11 +22,16 @@
 #include <errno.h>
 
 #import "OFApplication.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
+#import "OFPair.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
 #import "OFString.h"
@@ -33,12 +42,15 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
+#import "OFSetItemAttributesFailedException.h"
 
 static OFArc *app;
 
 static void
 setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
+	[app quarantineFile: path];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
@@ -66,8 +78,13 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 	attributes = [OFDictionary
 	    dictionaryWithObject: modificationDate
 			  forKey: OFFileModificationDate];
-	[[OFFileManager defaultManager] setAttributes: attributes
-					 ofItemAtPath: path];
+	@try {
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
+	} @catch (OFSetItemAttributesFailedException *e) {
+		if (e.errNo != EISDIR)
+			@throw e;
+	}
 }
 
 @implementation ZIPArchive
@@ -77,26 +94,32 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
-			     mode: (OFString *)mode
-			 encoding: (OFStringEncoding)encoding
-{
-	return [[[self alloc] initWithStream: stream
-					mode: mode
-				    encoding: encoding] autorelease];
-}
-
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithIRI: (OFIRI *)IRI
+			stream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
 		      encoding: (OFStringEncoding)encoding
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			       stream: stream
+				 mode: mode
+			     encoding: encoding]);
+}
+
+- (instancetype)initWithIRI: (OFIRI *)IRI
+		     stream: (OF_KINDOF(OFStream *))stream
+		       mode: (OFString *)mode
+		   encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
+		_archiveIRI = [IRI copy];
 		_archive = [[OFZIPArchive alloc] initWithStream: stream
 							   mode: mode];
+		_archive.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -105,15 +128,57 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)dealloc
 {
-	[_archive release];
+	objc_release(_archiveIRI);
+	objc_release(_archive);
 
 	[super dealloc];
 }
 
+- (OFSeekableStream *)archive: (OFZIPArchive *)archive
+	    wantsPartNumbered: (unsigned int)partNumber
+	       lastPartNumber: (unsigned int)lastPartNumber
+{
+	OFIRI *IRI;
+
+	if ([_archiveIRI.pathExtension caseInsensitiveCompare: @"zip"] !=
+	    OFOrderedSame)
+		return nil;
+
+	if (partNumber > 98)
+		return nil;
+
+	if (partNumber == lastPartNumber)
+		IRI = _archiveIRI;
+	else {
+		OFMutableIRI *copy =
+		    objc_autorelease([_archiveIRI mutableCopy]);
+		[copy deletePathExtension];
+		[copy appendPathExtension: [OFString
+		    stringWithFormat: @"z%02u", partNumber + 1]];
+		[copy makeImmutable];
+		IRI = copy;
+	}
+
+	return (OFSeekableStream *)[OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+}
+
 - (void)listFiles
 {
+	if (app->_outputLevel >= 1 && _archive.archiveComment != nil) {
+		[OFStdOut writeLine: OF_LOCALIZED(
+		    @"list_archive_comment",
+		    @"Archive comment:")];
+		[OFStdOut writeString: @"\t"];
+		[OFStdOut writeLine: [_archive.archiveComment
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"]];
+		[OFStdOut writeLine: @""];
+	}
+
 	for (OFZIPArchiveEntry *entry in _archive.entries) {
 		void *pool = objc_autoreleasePoolPush();
+
+		[app checkForCancellation];
 
 		[OFStdOut writeLine: entry.fileName];
 
@@ -239,6 +304,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
+	OFMutableArray *delayedModificationDates = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 
@@ -248,8 +314,10 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		OFString *outFileName, *directory;
 		OFStream *stream;
 		OFFile *output;
-		uint64_t written = 0, size = entry.uncompressedSize;
+		unsigned long long written = 0, size = entry.uncompressedSize;
 		int8_t percent = -1, newPercent;
+
+		[app checkForCancellation];
 
 		if (!all && ![files containsObject: fileName])
 			continue;
@@ -268,7 +336,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		}
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"extracting_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"extracting_file",
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
@@ -276,11 +344,18 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
-			setModificationDate(outFileName, entry);
+			/*
+			 * As creating a new file in a directory changes its
+			 * modification date, we can only set it once all files
+			 * have been created.
+			 */
+			[delayedModificationDates addObject:
+			    [OFPair pairWithFirstObject: outFileName
+					   secondObject: entry]];
 
 			if (app->_outputLevel >= 0) {
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeLine: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"extracting_file_done",
 				    @"Extracting %[file]... done",
 				    @"file", fileName)];
@@ -302,9 +377,13 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		setPermissions(outFileName, entry);
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -322,8 +401,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				percentString = [OFString stringWithFormat:
 				    @"%3u", percent];
 
-				[OFStdOut writeString: @"\r"];
-				[OFStdOut writeString: OF_LOCALIZED(
+				[OFStdErr writeString: @"\r"];
+				[OFStdErr writeString: OF_LOCALIZED(
 				    @"extracting_file_percent",
 				    @"Extracting %[file]... %[percent]%",
 				    @"file", fileName,
@@ -335,8 +414,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
 			    @"Extracting %[file]... done",
 			    @"file", fileName)];
@@ -345,6 +424,9 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
+
+	for (OFPair *pair in delayedModificationDates)
+		setModificationDate(pair.firstObject, pair.secondObject);
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -385,9 +467,13 @@ outer_loop_end:
 		}
 
 		while (!stream.atEndOfStream) {
-			ssize_t length = [app copyBlockFromStream: stream
-							 toStream: OFStdOut
-							 fileName: path];
+			ssize_t length;
+
+			[app checkForCancellation];
+
+			length = [app copyBlockFromStream: stream
+						 toStream: OFStdOut
+						 fileName: path];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -400,15 +486,11 @@ outer_loop_end:
 }
 
 - (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+  archiveComment: (OFString *)archiveComment
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
-	if (files.count < 1) {
-		[OFStdErr writeLine: OF_LOCALIZED(@"add_no_file_specified",
-		    @"Need one or more files to add!")];
-		app->_exitStatus = 1;
-		return;
-	}
+	_archive.archiveComment = archiveComment;
 
 	for (OFString *localFileName in files) {
 		void *pool = objc_autoreleasePoolPush();
@@ -419,6 +501,8 @@ outer_loop_end:
 		OFMutableZIPArchiveEntry *entry;
 		unsigned long long size;
 		OFStream *output;
+
+		[app checkForCancellation];
 
 		components = localFileName.pathComponents;
 		fileName = [components componentsJoinedByString: @"/"];
@@ -432,18 +516,15 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0)
-			[OFStdOut writeString: OF_LOCALIZED(@"adding_file",
+			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 
 		size = (isDirectory ? 0 : attributes.fileSize);
-		if (size > INT64_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		entry.compressedSize = (int64_t)size;
-		entry.uncompressedSize = (int64_t)size;
+		entry.compressedSize = size;
+		entry.uncompressedSize = size;
 
 		entry.compressionMethod =
 		    OFZIPArchiveEntryCompressionMethodNone;
@@ -461,10 +542,13 @@ outer_loop_end:
 							mode: @"r"];
 
 			while (!input.atEndOfStream) {
-				ssize_t length = [app
-				    copyBlockFromStream: input
-					       toStream: output
-					       fileName: fileName];
+				ssize_t length;
+
+				[app checkForCancellation];
+
+				length = [app copyBlockFromStream: input
+							 toStream: output
+							 fileName: fileName];
 
 				if (length < 0) {
 					app->_exitStatus = 1;
@@ -483,8 +567,8 @@ outer_loop_end:
 					percentString = [OFString
 					    stringWithFormat: @"%3u", percent];
 
-					[OFStdOut writeString: @"\r"];
-					[OFStdOut writeString: OF_LOCALIZED(
+					[OFStdErr writeString: @"\r"];
+					[OFStdErr writeString: OF_LOCALIZED(
 					    @"adding_file_percent",
 					    @"Adding %[file]... %[percent]%",
 					    @"file", fileName,
@@ -494,8 +578,8 @@ outer_loop_end:
 		}
 
 		if (app->_outputLevel >= 0) {
-			[OFStdOut writeString: @"\r"];
-			[OFStdOut writeLine: OF_LOCALIZED(
+			[OFStdErr writeString: @"\r"];
+			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"adding_file_done",
 			    @"Adding %[file]... done",
 			    @"file", fileName)];

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,18 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
+#import "OFSystemInfo.h"
+
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2025 Jonathan Schleifer";
+#endif
 
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
 {
@@ -35,8 +47,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine:
-	    OF_LOCALIZED(@"usage",
+	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -44,18 +55,36 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n    "
-		    @"-c  --class "
+		    @"-c  --class= "
 		    @"  The DNS class to query (defaults to IN)\n    "
-		    @"-h  --help  "
+		    @"-h  --help   "
 		    @"  Show this help\n    "
-		    @"-s  --server"
+		    @"-s  --server="
 		    @"  The server to query\n    "
-		    @"-t  --type  "
-		    @"  The record type to query (defaults to ALL, can be "
-		    @"repeated)")];
+		    @"-t  --type=  "
+		    @"  The record type to query (defaults to AAAA and A,\n"
+		    @"                   can be repeated)\n    "
+		    @"    --tcp    "
+		    @"  Force using TCP for the query\n    "
+		    @"    --version"
+		    @"  Print the version information")];
 	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+version(void)
+{
+	[OFStdOut writeFormat: @"ofdns %@ (ObjFW %@) "
+			       @"<https://objfw.nil.im/>\n"
+			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"<js@nil.im>\n"
+			       @"Licensed under the LGPL 3.0 "
+			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
+			       @"\n",
+			       @PACKAGE_VERSION, [OFSystemInfo ObjFWVersion]];
+	[OFApplication terminate];
 }
 
 @implementation OFDNS
@@ -69,8 +98,7 @@ help(OFStream *stream, bool full, int status)
 	if (exception == nil)
 		[OFStdOut writeFormat: @"%@\n", response];
 	else {
-		[OFStdErr writeLine: OF_LOCALIZED(
-		    @"failed_to_resolve",
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
 		_errors++;
@@ -80,14 +108,17 @@ help(OFStream *stream, bool full, int status)
 		[OFApplication terminateWithStatus: _errors];
 }
 
-- (void)applicationDidFinishLaunching
+- (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
 	OFString *DNSClassString, *server;
+	bool forceTCP;
 	const OFOptionsParserOption options[] = {
-		{ 'c', @"class", 1, NULL, &DNSClassString },
-		{ 'h', @"help", 0, NULL, NULL },
-		{ 's', @"server", 1, NULL, &server },
-		{ 't', @"type", 1, NULL, NULL },
+		{ 'c',  @"class", 1, NULL, &DNSClassString },
+		{ 'h',  @"help", 0, NULL, NULL },
+		{ 's',  @"server", 1, NULL, &server },
+		{ 't',  @"type", 1, NULL, NULL },
+		{ '\0', @"tcp", 0, &forceTCP, NULL },
+		{ '\0', @"version", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFMutableArray OF_GENERIC(OFString *) *recordTypes;
@@ -99,9 +130,11 @@ help(OFStream *stream, bool full, int status)
 
 #ifdef OF_HAVE_FILES
 # ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 # else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofdns/lang"];
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofdns/localization"]];
 # endif
 #endif
 
@@ -113,7 +146,7 @@ help(OFStream *stream, bool full, int status)
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {
-		[sandbox release];
+		objc_release(sandbox);
 	}
 #endif
 
@@ -127,6 +160,10 @@ help(OFStream *stream, bool full, int status)
 			break;
 		case 'h':
 			help(OFStdOut, true, 0);
+			break;
+		case '-':
+			if ([optionsParser.lastLongOption isEqual: @"version"])
+				version();
 			break;
 		case ':':
 			if (optionsParser.lastLongOption != nil)
@@ -179,16 +216,19 @@ help(OFStream *stream, bool full, int status)
 		help(OFStdErr, false, 1);
 
 	resolver = [OFDNSResolver resolver];
+	resolver.configReloadInterval = 0;
+	resolver.forcesTCP = forceTCP;
+
 	DNSClass = (DNSClassString != nil
 	    ? OFDNSClassParseName(DNSClassString) : OFDNSClassIN);
 
-	if (recordTypes.count == 0)
-		[recordTypes addObject: @"ALL"];
-
-	if (server != nil) {
-		resolver.configReloadInterval = 0;
-		resolver.nameServers = [OFArray arrayWithObject: server];
+	if (recordTypes.count == 0) {
+		[recordTypes addObject: @"AAAA"];
+		[recordTypes addObject: @"A"];
 	}
+
+	if (server != nil)
+		resolver.nameServers = [OFArray arrayWithObject: server];
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {

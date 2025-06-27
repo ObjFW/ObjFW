@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFSeekableStream.h"
@@ -21,16 +25,14 @@
 typedef int OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-typedef struct OFFileHandle *OFFileHandle;
+typedef struct _OFFileHandle *OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFURL;
-
 /**
- * @class OFFile OFFile.h ObjFW/OFFile.h
+ * @class OFFile OFFile.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to read and write files.
  */
@@ -41,7 +43,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 {
 	OFFileHandle _handle;
-	bool _atEndOfStream;
+	bool _initialized, _atEndOfStream;
 }
 
 /**
@@ -62,28 +64,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a`            | Write-only, create or append
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
+ * @throw OFOpenItemFailedException Opening the file failed
  */
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode;
-
-/**
- * @brief Creates a new OFFile with the specified URL and mode.
- *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | Read-only
- *	       `r+`           | Read-write
- *	       `w`            | Write-only, create or truncate
- *	       `wx`           | Write-only, create or fail, exclusive
- *	       `w+`           | Read-write, create or truncate
- *	       `w+x`          | Read-write, create or fail, exclusive
- *	       `a`            | Write-only, create or append
- *	       `a+`           | Read-write, create or append
- * @return A new autoreleased OFFile
- */
-+ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Creates a new OFFile with the specified native file handle.
@@ -94,8 +77,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithHandle: (OFFileHandle)handle;
-
-- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -118,32 +99,9 @@ OF_SUBCLASSING_RESTRICTED
  *	       `a+`           | read-write, create, append
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
+ * @throw OFOpenItemFailedException Opening the file failed
  */
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode;
-
-/**
- * @brief Initializes an already allocated OFFile.
- *
- * @param URL The URL to the file to open
- * @param mode The mode in which the file should be opened.@n
- *	       Possible modes are:
- *	       Mode           | Description
- *	       ---------------|-------------------------------------
- *	       `r`            | read-only
- *	       `rb`           | read-only, binary
- *	       `r+`           | read-write
- *	       `rb+` or `r+b` | read-write, binary
- *	       `w`            | write-only, create, truncate
- *	       `wb`           | write-only, create, truncate, binary
- *	       `w`            | read-write, create, truncate
- *	       `wb+` or `w+b` | read-write, create, truncate, binary
- *	       `a`            | write-only, create, append
- *	       `ab`           | write-only, create, append, binary
- *	       `a+`           | read-write, create, append
- *	       `ab+` or `a+b` | read-write, create, append, binary
- * @return An initialized OFFile
- */
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode;
 
 /**
  * @brief Initializes an already allocated OFFile.
@@ -154,6 +112,8 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFFile
  */
 - (instancetype)initWithHandle: (OFFileHandle)handle OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

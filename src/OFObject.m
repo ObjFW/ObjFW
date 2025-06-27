@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,8 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
+#include "unistd_wrapper.h"
 
 #ifdef OF_APPLE_RUNTIME
 # include <dlfcn.h>
@@ -30,25 +33,21 @@
 #endif
 
 #import "OFObject.h"
+#import "OFApplication.h"
 #import "OFArray.h"
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "OFAtomic.h"
-#endif
 #import "OFLocale.h"
 #import "OFMethodSignature.h"
 #import "OFRunLoop.h"
-#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
-# import "OFPlainMutex.h"	/* For OFSpinlock */
-#endif
+#import "OFStdIOStream.h"
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
+#import "OFValue.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -64,30 +63,33 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
+# define USE_INLINE_STDARG
 # include <proto/exec.h>
+# include <clib/debug_protos.h>
+# define __NOLIBBASE_
+# include <proto/intuition.h>
+# undef __NOLIBBASE_
+# undef Class
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+extern id _objc_rootRetain(id object);
+extern uintptr_t _objc_rootRetainCount(id object);
+extern void _objc_rootRelease(id object);
+extern id _objc_rootAutorelease(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
-extern id OFForward(id, SEL, ...);
-extern struct stret OFForward_stret(id, SEL, ...);
+extern id _OFForward(id, SEL, ...);
+extern struct Stret _OFForward_stret(id, SEL, ...);
 #else
-# define OFForward OFMethodNotFound
-# define OFForward_stret OFMethodNotFound_stret
+# define _OFForward OFMethodNotFound
+# define _OFForward_stret OFMethodNotFound_stret
 #endif
 
-struct PreIvars {
-	int retainCount;
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	OFSpinlock retainCountSpinlock;
+#ifdef OF_WINDOWS
+static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
 #endif
-};
-
-#define PRE_IVARS_ALIGN ((sizeof(struct PreIvars) + \
-    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_IVARS ((struct PreIvars *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 static struct {
 	Class isa;
@@ -135,8 +137,10 @@ OFAllocZeroedMemory(size_t count, size_t size)
 void *
 OFResizeMemory(void *pointer, size_t count, size_t size)
 {
-	if OF_UNLIKELY (count == 0 || size == 0)
+	if OF_UNLIKELY (count == 0 || size == 0) {
+		free(pointer);
 		return NULL;
+	}
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
@@ -154,11 +158,23 @@ OFFreeMemory(void *pointer)
 	free(pointer);
 }
 
-#if !defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)
+#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
+    defined(OF_WINDOWS)
+static OFOnceControl randomOnceControl = OFOnceControlInitValue;
+
 static void
 initRandom(void)
 {
 	struct timeval tv;
+
+# ifdef OF_WINDOWS
+	HANDLE handle;
+
+	if ((handle = GetModuleHandleA("advapi32.dll")) != NULL &&
+	    (RtlGenRandomFuncPtr = (BOOLEAN NTAPI (*)(PVOID, ULONG))
+	    GetProcAddress(handle, "SystemFunction036")) != NULL)
+		return;
+# endif
 
 # ifdef HAVE_RANDOM
 	gettimeofday(&tv, NULL);
@@ -182,8 +198,16 @@ OFRandom16(void)
 
 	return buffer;
 #else
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initRandom);
+	OFOnce(&randomOnceControl, initRandom);
+
+# ifdef OF_WINDOWS
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint16_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 # ifdef HAVE_RANDOM
 	return random() & 0xFFFF;
 # else
@@ -204,6 +228,16 @@ OFRandom32(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint32_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint32_t)OFRandom16() << 16) | OFRandom16();
 #endif
 }
@@ -224,8 +258,24 @@ OFRandom64(void)
 
 	return buffer;
 #else
+# ifdef OF_WINDOWS
+	OFOnce(&randomOnceControl, initRandom);
+
+	if (RtlGenRandomFuncPtr != NULL) {
+		uint64_t buffer;
+		OFEnsure(RtlGenRandomFuncPtr(&buffer, sizeof(buffer)));
+		return buffer;
+	}
+# endif
+
 	return ((uint64_t)OFRandom32() << 32) | OFRandom32();
 #endif
+}
+
+void
+OFHashInit(unsigned long *hash)
+{
+	*hash = OFHashSeed;
 }
 
 static const char *
@@ -243,23 +293,112 @@ typeEncodingForSelector(Class class, SEL selector)
 static void
 uncaughtExceptionHandler(id exception)
 {
-	OFString *description = [exception description];
-	OFArray *backtrace = nil;
+# ifdef OF_AMIGAOS
+#  ifdef OF_HAVE_FILES
+	const char *programName = [OFApplication sharedApplication].programName
+	    .lastPathComponent.UTF8String;
+#  else
+	const char *programName = [OFApplication sharedApplication].programName
+	    .UTF8String;
+#  endif
+# endif
+	OFArray OF_GENERIC(OFValue *) *stackTraceAddresses = nil;
+	OFArray OF_GENERIC(OFString *) *stackTraceSymbols = nil;
 	OFStringEncoding encoding = [OFLocale encoding];
 
-	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: encoding]);
+# ifdef OF_AMIGAOS
+	kprintf("%s: Runtime error: Unhandled exception:\n", programName);
+	kprintf("%s: %s\n", programName, [[exception description] UTF8String]);
+# else
+	OFLog(@"Runtime error: Unhandled exception:");
+	OFLog(@"%@", exception);
+# endif
 
-	if ([exception respondsToSelector: @selector(backtrace)])
-		backtrace = [exception backtrace];
+	if ([exception respondsToSelector: @selector(stackTraceAddresses)])
+		stackTraceAddresses = [exception stackTraceAddresses];
 
-	if (backtrace != nil) {
-		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
-		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		    [s cStringWithEncoding: encoding]);
+	if (stackTraceAddresses != nil) {
+		size_t count = stackTraceAddresses.count;
+
+		if ([exception respondsToSelector:
+		    @selector(stackTraceSymbols)])
+			stackTraceSymbols = [exception stackTraceSymbols];
+
+		if (stackTraceSymbols.count != count)
+			stackTraceSymbols = nil;
+
+# ifdef OF_AMIGAOS
+		kprintf("%s:\n", programName);
+		kprintf("%s: Stack trace:\n", programName);
+# else
+		OFLog(@"");
+		OFLog(@"Stack trace:");
+# endif
+
+		if (stackTraceSymbols != nil) {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+				const char *symbol = [[stackTraceSymbols
+				    objectAtIndex: i]
+				    cStringWithEncoding: encoding];
+
+# ifdef OF_AMIGAOS
+				kprintf("%s:   %p  %s\n", programName,
+				    address, symbol);
+# else
+				OFLog(@"  %p  %s", address, symbol);
+# endif
+			}
+		} else {
+			for (size_t i = 0; i < count; i++) {
+				void *address = [[stackTraceAddresses
+				    objectAtIndex: i] pointerValue];
+
+# ifdef OF_AMIGAOS
+				kprintf("%s:   %p\n", programName, address);
+# else
+				OFLog(@"  %p", address);
+# endif
+			}
+		}
 	}
 
+# ifdef OF_AMIGAOS
+	struct Library *IntuitionBase;
+#  ifdef OF_AMIGAOS4
+	struct IntuitionIFace *IIntuition;
+#  endif
+	struct EasyStruct easy;
+
+	if ((IntuitionBase = OpenLibrary("intuition.library", 0)) == NULL)
+		abort();
+
+#  ifdef OF_AMIGAOS4
+	if ((IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase,
+	    "main", 1, NULL)) == NULL)
+		abort();
+#  endif
+
+	easy.es_StructSize = sizeof(easy);
+	easy.es_Flags = 0;
+	easy.es_Title = (void *)programName;
+	easy.es_TextFormat = (void *)"%s";
+	easy.es_GadgetFormat = (void *)"OK";
+
+	EasyRequest(NULL, &easy, NULL, (ULONG)[[OFString stringWithFormat:
+	    @"Runtime error: Unhandled exception:\n%@", exception] UTF8String]);
+
+#  ifdef OF_AMIGAOS4
+	DropInterface((struct Interface *)IIntuition);
+#  endif
+
+	CloseLibrary(IntuitionBase);
+
+	exit(1);
+# else
 	abort();
+# endif
 }
 #endif
 
@@ -299,34 +438,15 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	instanceSize = class_getInstanceSize(class);
 
 	if OF_UNLIKELY (extraAlignment > 1)
-		extraAlignment = ((instanceSize + extraAlignment - 1) &
-		    ~(extraAlignment - 1)) - extraAlignment;
+		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
+		    instanceSize) - instanceSize;
 
-	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
-	    extraAlignment + extraSize);
+	instance = class_createInstance(class, extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
-		allocFailedException.isa = [OFAllocFailedException class];
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
 		@throw (id)&allocFailedException;
-	}
-
-	((struct PreIvars *)instance)->retainCount = 1;
-
-#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
-	if OF_UNLIKELY (OFSpinlockNew(
-	    &((struct PreIvars *)instance)->retainCountSpinlock) != 0) {
-		free(instance);
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: class];
-	}
-#endif
-
-	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
-
-	if (!objc_constructInstance(class, instance)) {
-		free((char *)instance - PRE_IVARS_ALIGN);
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: class];
 	}
 
 	if OF_UNLIKELY (extra != NULL)
@@ -342,11 +462,10 @@ _NSPrintForDebugger(id object)
 }
 
 /* References for static linking */
-void
+void OF_VISIBILITY_INTERNAL
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;
-	_OFObject_Serialization_reference = 1;
 }
 
 @implementation OFObject
@@ -367,10 +486,10 @@ _references_to_categories_of_OFObject(void)
 	 * already been set, so this is the best we can do.
 	 */
 	if (dlsym(RTLD_DEFAULT, "NSFoundationVersionNumber") == NULL)
-		objc_setForwardHandler((void *)&OFForward,
-		    (void *)&OFForward_stret);
+		objc_setForwardHandler((void *)&_OFForward,
+		    (void *)&_OFForward_stret);
 #else
-	objc_setForwardHandler((IMP)&OFForward, (IMP)&OFForward_stret);
+	objc_setForwardHandler((IMP)&_OFForward, (IMP)&_OFForward_stret);
 #endif
 
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
@@ -395,12 +514,7 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return OFAllocObject(self, 0, 0, NULL);
-}
-
-+ (instancetype)new
-{
-	return [[self alloc] init];
+	return class_createInstance(self, 0);
 }
 
 + (Class)class
@@ -435,10 +549,8 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)conformsToProtocol: (Protocol *)protocol
 {
-	Class c;
-
-	for (c = self; c != Nil; c = class_getSuperclass(c))
-		if (class_conformsToProtocol(c, protocol))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
+		if (class_conformsToProtocol(iter, protocol))
 			return true;
 
 	return false;
@@ -540,12 +652,12 @@ _references_to_categories_of_OFObject(void)
 
 + (bool)resolveClassMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	return NO;
+	return false;
 }
 
 - (instancetype)init
@@ -1074,7 +1186,7 @@ _references_to_categories_of_OFObject(void)
 	OFHashInit(&hash);
 
 	for (size_t i = 0; i < sizeof(ptr); i++) {
-		OFHashAdd(&hash, ptr & 0xFF);
+		OFHashAddByte(&hash, ptr & 0xFF);
 		ptr >>= 8;
 	}
 
@@ -1101,67 +1213,23 @@ _references_to_categories_of_OFObject(void)
 							 object: self];
 }
 
+- (void)_usesRuntimeRR
+{
+}
+
 - (instancetype)retain
 {
-#if defined(OF_HAVE_ATOMIC_OPS)
-	OFAtomicIntIncrease(&PRE_IVARS->retainCount);
-#elif defined(OF_AMIGAOS)
-	/*
-	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
-	 * single instruction on M68K, we don't need Forbid() / Permit() on
-	 * M68K.
-	 */
-# ifndef OF_AMIGAOS_M68K
-	Forbid();
-# endif
-	PRE_IVARS->retainCount++;
-# ifndef OF_AMIGAOS_M68K
-	Permit();
-# endif
-#else
-	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
-	PRE_IVARS->retainCount++;
-	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
-#endif
-
-	return self;
+	return _objc_rootRetain(self);
 }
 
 - (unsigned int)retainCount
 {
-	assert(PRE_IVARS->retainCount >= 0);
-	return PRE_IVARS->retainCount;
+	return (unsigned int)_objc_rootRetainCount(self);
 }
 
 - (void)release
 {
-#if defined(OF_HAVE_ATOMIC_OPS)
-	OFReleaseMemoryBarrier();
-
-	if (OFAtomicIntDecrease(&PRE_IVARS->retainCount) <= 0) {
-		OFAcquireMemoryBarrier();
-
-		[self dealloc];
-	}
-#elif defined(OF_AMIGAOS)
-	int retainCount;
-
-	Forbid();
-	retainCount = --PRE_IVARS->retainCount;
-	Permit();
-
-	if (retainCount == 0)
-		[self dealloc];
-#else
-	int retainCount;
-
-	OFEnsure(OFSpinlockLock(&PRE_IVARS->retainCountSpinlock) == 0);
-	retainCount = --PRE_IVARS->retainCount;
-	OFEnsure(OFSpinlockUnlock(&PRE_IVARS->retainCountSpinlock) == 0);
-
-	if (retainCount == 0)
-		[self dealloc];
-#endif
+	_objc_rootRelease(self);
 }
 
 - (instancetype)autorelease
@@ -1193,9 +1261,7 @@ _references_to_categories_of_OFObject(void)
 
 - (void)dealloc
 {
-	objc_destructInstance(self);
-
-	free((char *)self - PRE_IVARS_ALIGN);
+	object_dispose(self);
 }
 
 /* Required to use properties with the Apple runtime */

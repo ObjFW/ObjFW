@@ -1,92 +1,139 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFNumber";
-
-@implementation TestsAppDelegate (OFNumberTests)
-- (void)numberTests
+@interface OFNumberTests: OTTestCase
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFNumber *num;
+	OFNumber *_number;
+}
+@end
 
-	TEST(@"+[numberWithLongLong:]",
-	    (num = [OFNumber numberWithLongLong: 123456789]))
+@implementation OFNumberTests
+- (void)setUp
+{
+	[super setUp];
 
-	TEST(@"-[isEqual:]",
-	    [num isEqual: [OFNumber numberWithLong: 123456789]])
+	_number = [[OFNumber alloc] initWithLongLong: 123456789];
+}
 
-	TEST(@"-[hash]", num.hash == 0x82D8BC42)
+- (void)dealloc
+{
+	objc_release(_number);
 
-	TEST(@"-[charValue]", num.charValue == 21)
+	[super dealloc];
+}
 
-	TEST(@"-[doubleValue]", num.doubleValue == 123456789.L)
+- (void)testIsEqual
+{
+	OTAssertEqualObjects(_number, [OFNumber numberWithLong: 123456789]);
+}
 
-	TEST(@"signed char minimum & maximum unmodified",
-	    (num = [OFNumber numberWithChar: SCHAR_MIN]) &&
-	    num.charValue == SCHAR_MIN &&
-	    (num = [OFNumber numberWithChar: SCHAR_MAX]) &&
-	    num.charValue == SCHAR_MAX)
+- (void)testHash
+{
+	OTAssertEqual(_number.hash,
+	    [[OFNumber numberWithLong: 123456789] hash]);
+}
 
-	TEST(@"short minimum & maximum unmodified",
-	    (num = [OFNumber numberWithShort: SHRT_MIN]) &&
-	    num.shortValue == SHRT_MIN &&
-	    (num = [OFNumber numberWithShort: SHRT_MAX]) &&
-	    num.shortValue == SHRT_MAX)
+- (void)testCharValue
+{
+	OTAssertEqual([[OFNumber numberWithChar: -127] charValue], -127);
+}
 
-	TEST(@"int minimum & maximum unmodified",
-	    (num = [OFNumber numberWithInt: INT_MIN]) &&
-	    num.intValue == INT_MIN &&
-	    (num = [OFNumber numberWithInt: INT_MAX]) &&
-	    num.intValue == INT_MAX)
+- (void)testCharValueOutOfRange
+{
+	OTAssertThrowsSpecific([_number charValue], OFOutOfRangeException);
+}
 
-	TEST(@"long minimum & maximum unmodified",
-	    (num = [OFNumber numberWithLong: LONG_MIN]) &&
-	    num.longValue == LONG_MIN &&
-	    (num = [OFNumber numberWithLong: LONG_MAX]) &&
-	    num.longValue == LONG_MAX)
+- (void)testDoubleValue
+{
+	OTAssertEqual(_number.doubleValue, 123456789.L);
+}
 
-	TEST(@"long long minimum & maximum unmodified",
-	    (num = [OFNumber numberWithLongLong: LLONG_MIN]) &&
-	    num.longLongValue == LLONG_MIN &&
-	    (num = [OFNumber numberWithLongLong: LLONG_MAX]) &&
-	    num.longLongValue == LLONG_MAX)
+- (void)testSignedCharMinAndMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithChar: SCHAR_MIN] charValue],
+	    SCHAR_MIN);
+	OTAssertEqual([[OFNumber numberWithChar: SCHAR_MAX] charValue],
+	    SCHAR_MAX);
+}
 
-	TEST(@"unsigned char maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedChar: UCHAR_MAX]) &&
-	    num.unsignedCharValue == UCHAR_MAX)
+- (void)testShortMinAndMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithShort: SHRT_MIN] shortValue],
+	    SHRT_MIN);
+	OTAssertEqual([[OFNumber numberWithShort: SHRT_MAX] shortValue],
+	    SHRT_MAX);
+}
 
-	TEST(@"unsigned short maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedShort: USHRT_MAX]) &&
-	    num.unsignedShortValue == USHRT_MAX)
+- (void)testIntMinAndMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithInt: INT_MIN] intValue], INT_MIN);
+	OTAssertEqual([[OFNumber numberWithInt: INT_MAX] intValue], INT_MAX);
+}
 
-	TEST(@"unsigned int maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedInt: UINT_MAX]) &&
-	    num.unsignedIntValue == UINT_MAX)
+- (void)testLongMinAndMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithLong: LONG_MIN] longValue],
+	    LONG_MIN);
+	OTAssertEqual([[OFNumber numberWithLong: LONG_MAX] longValue],
+	    LONG_MAX);;
+}
 
-	TEST(@"unsigned long maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedLong: ULONG_MAX]) &&
-	    num.unsignedLongValue == ULONG_MAX)
+- (void)testLongLongMinAndMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithLongLong: LLONG_MIN] longLongValue],
+	    LLONG_MIN);
+	OTAssertEqual([[OFNumber numberWithLongLong: LLONG_MAX] longLongValue],
+	    LLONG_MAX);
+}
 
-	TEST(@"unsigned long long maximum unmodified",
-	    (num = [OFNumber numberWithUnsignedLongLong: ULLONG_MAX]) &&
-	    num.unsignedLongLongValue == ULLONG_MAX)
+- (void)testUnsignedCharMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithUnsignedChar: UCHAR_MAX]
+	    unsignedCharValue], UCHAR_MAX);
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)testUnsignedShortMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithUnsignedShort: USHRT_MAX]
+	    unsignedShortValue], USHRT_MAX);
+}
+
+- (void)testUnsignedIntMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithUnsignedInt: UINT_MAX]
+	    unsignedIntValue], UINT_MAX);
+}
+
+- (void)testUnsignedLongMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithUnsignedLong: ULONG_MAX]
+	    unsignedLongValue], ULONG_MAX);
+}
+
+- (void)testUnsignedLongLongMaxUnmodified
+{
+	OTAssertEqual([[OFNumber numberWithUnsignedLongLong: ULLONG_MAX]
+	    unsignedLongLongValue], ULLONG_MAX);
 }
 @end

@@ -1,80 +1,315 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "OFArrayTests.h"
 
-static OFString *module = nil;
-static OFString *c_ary[] = {
+@interface CustomArray: OFArray
+{
+	OFArray *_array;
+}
+@end
+
+static OFString *const cArray[] = {
 	@"Foo",
 	@"Bar",
 	@"Baz"
 };
 
-@interface SimpleArray: OFArray
+@implementation OFArrayTests
+- (Class)arrayClass
 {
-	OFMutableArray *_array;
+	return [CustomArray class];
+}
+
+- (void)setUp
+{
+	[super setUp];
+
+	_array = [[self.arrayClass alloc]
+	    initWithObjects: cArray
+		      count: sizeof(cArray) / sizeof(*cArray)];
+}
+
+- (void)dealloc
+{
+	objc_release(_array);
+
+	[super dealloc];
+}
+
+- (void)testArray
+{
+	OFArray *array = [self.arrayClass array];
+
+	OTAssertNotNil(array);
+	OTAssertEqual(array.count, 0);
+}
+
+- (void)testArrayWithObjects
+{
+	OFArray *array = [self.arrayClass arrayWithObjects:
+	    @"Foo", @"Bar", @"Baz", nil];
+
+	OTAssertNotNil(array);
+	OTAssertEqual(array.count, 3);
+	OTAssertEqualObjects([array objectAtIndex: 0], @"Foo");
+	OTAssertEqualObjects([array objectAtIndex: 1], @"Bar");
+	OTAssertEqualObjects([array objectAtIndex: 2], @"Baz");
+}
+
+- (void)testArrayWithObjectsCount
+{
+	OFArray *array1 = [self.arrayClass arrayWithObjects:
+	    @"Foo", @"Bar", @"Baz", nil];
+	OFArray *array2 = [self.arrayClass arrayWithObjects: cArray count: 3];
+
+	OTAssertEqualObjects(array1, array2);
+}
+
+- (void)testDescription
+{
+	OTAssertEqualObjects(_array.description,
+	    @"(\n\tFoo,\n\tBar,\n\tBaz\n)");
+}
+
+- (void)testCount
+{
+	OTAssertEqual(_array.count, 3);
+}
+
+- (void)testIsEqual
+{
+	OFArray *array = [self.arrayClass arrayWithObjects: cArray count: 3];
+
+	OTAssertEqualObjects(array, _array);
+	OTAssertNotEqual(array, _array);
+}
+
+- (void)testHash
+{
+	OFArray *array = [self.arrayClass arrayWithObjects: cArray count: 3];
+
+	OTAssertEqual(array.hash, _array.hash);
+	OTAssertNotEqual(array.hash, [[OFArray array] hash]);
+}
+
+- (void)testCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_array copy]), _array);
+}
+
+- (void)testMutableCopy
+{
+	OTAssertEqualObjects(objc_autorelease([_array mutableCopy]), _array);
+}
+
+- (void)testObjectAtIndex
+{
+	OTAssertEqualObjects([_array objectAtIndex: 0], cArray[0]);
+	OTAssertEqualObjects([_array objectAtIndex: 1], cArray[1]);
+	OTAssertEqualObjects([_array objectAtIndex: 2], cArray[2]);
+}
+
+- (void)testObjectAtIndexFailsWhenOutOfRange
+{
+	OTAssertThrowsSpecific([_array objectAtIndex: _array.count],
+	    OFOutOfRangeException);
+}
+
+- (void)testContainsObject
+{
+	OTAssertTrue([_array containsObject: cArray[1]]);
+	OTAssertFalse([_array containsObject: @"nonexistent"]);
+}
+
+- (void)testContainsObjectIdenticalTo
+{
+	OTAssertTrue([_array containsObjectIdenticalTo: cArray[1]]);
+	OTAssertFalse([_array containsObjectIdenticalTo:
+	    [OFString stringWithString: cArray[1]]]);
+}
+
+- (void)testIndexOfObject
+{
+	OTAssertEqual([_array indexOfObject: cArray[1]], 1);
+	OTAssertEqual([_array indexOfObject: @"nonexistent"], OFNotFound);
+}
+
+- (void)testIndexOfObjectIdenticalTo
+{
+	OTAssertEqual([_array indexOfObjectIdenticalTo: cArray[1]], 1);
+	OTAssertEqual([_array indexOfObjectIdenticalTo:
+	    [OFString stringWithString: cArray[1]]],
+	    OFNotFound);
+}
+
+- (void)objectsInRange
+{
+	OTAssertEqualObjects([_array objectsInRange: OFMakeRange(1, 2)],
+	    ([self.arrayClass arrayWithObjects: cArray[1], cArray[2], nil]));
+}
+
+- (void)testEnumerator
+{
+	OFEnumerator *enumerator = [_array objectEnumerator];
+
+	OTAssertEqualObjects([enumerator nextObject], cArray[0]);
+	OTAssertEqualObjects([enumerator nextObject], cArray[1]);
+	OTAssertEqualObjects([enumerator nextObject], cArray[2]);
+	OTAssertNil([enumerator nextObject]);
+}
+
+- (void)testFastEnumeration
+{
+	size_t i = 0;
+
+	for (OFString *object in _array) {
+		OTAssertLessThan(i, 3);
+		OTAssertEqualObjects(object, cArray[i++]);
+	}
+}
+
+- (void)testComponentsJoinedByString
+{
+	OFArray *array;
+
+	array = [self.arrayClass arrayWithObjects: @"", @"a", @"b", @"c", nil];
+	OTAssertEqualObjects([array componentsJoinedByString: @" "],
+	    @" a b c");
+
+	array = [self.arrayClass arrayWithObject: @"foo"];
+	OTAssertEqualObjects([array componentsJoinedByString: @" "], @"foo");
+}
+
+- (void)testComponentsJoinedByStringOptions
+{
+	OFArray *array;
+
+	array = [self.arrayClass
+	    arrayWithObjects: @"", @"foo", @"", @"", @"bar", @"", nil];
+	OTAssertEqualObjects(
+	    [array componentsJoinedByString: @" "
+				    options: OFArraySkipEmptyComponents],
+	    @"foo bar");
+}
+
+- (void)testSortedArray
+{
+	OFArray *array = [_array arrayByAddingObjectsFromArray:
+	    [OFArray arrayWithObjects: @"0", @"z", nil]];
+
+	OTAssertEqualObjects([array sortedArray],
+	    ([OFArray arrayWithObjects: @"0", @"Bar", @"Baz", @"Foo", @"z",
+	    nil]));
+
+	OTAssertEqualObjects(
+	    [array sortedArrayUsingSelector: @selector(compare:)
+				    options: OFArraySortDescending],
+	    ([OFArray arrayWithObjects: @"z", @"Foo", @"Baz", @"Bar", @"0",
+	    nil]));
+}
+
+- (void)testReversedArray
+{
+	OTAssertEqualObjects(_array.reversedArray,
+	    ([OFArray arrayWithObjects: cArray[2], cArray[1], cArray[0], nil]));
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)testEnumerateObjectsUsingBlock
+{
+	__block size_t i = 0;
+
+	[_array enumerateObjectsUsingBlock:
+	    ^ (id object, size_t idx, bool *stop) {
+		OTAssertEqualObjects(object, [_array objectAtIndex: i++]);
+	}];
+
+	OTAssertEqual(i, _array.count);
+}
+
+- (void)testMappedArrayUsingBlock
+{
+	OTAssertEqualObjects(
+	    [_array mappedArrayUsingBlock: ^ id (id object, size_t idx) {
+		switch (idx) {
+		case 0:
+			return @"foobar";
+		case 1:
+			return @"qux";
+		}
+
+		return @"";
+	    }].description,
+	    @"(\n\tfoobar,\n\tqux,\n\t\n)");
+}
+
+- (void)testFilteredArrayUsingBlock
+{
+	OTAssertEqualObjects(
+	    [_array filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
+		return [object isEqual: @"Foo"];
+	    }].description,
+	    @"(\n\tFoo\n)");
+
+}
+
+- (void)testFoldUsingBlock
+{
+	OTAssertEqualObjects(
+	    [([self.arrayClass arrayWithObjects: [OFMutableString string],
+						 @"foo", @"bar", @"baz", nil])
+	    foldUsingBlock: ^ id (id left, id right) {
+		[left appendString: right];
+		return left;
+	    }],
+	    @"foobarbaz");
+}
+#endif
+
+- (void)testValueForKey
+{
+	OTAssertEqualObjects(
+	    [([self.arrayClass arrayWithObjects: @"foo", @"bar", @"quxqux",
+	    nil]) valueForKey: @"length"],
+	    ([self.arrayClass arrayWithObjects: [OFNumber numberWithInt: 3],
+	    [OFNumber numberWithInt: 3], [OFNumber numberWithInt: 6], nil]));
+
+	OTAssertEqualObjects(
+	    [([self.arrayClass arrayWithObjects: @"1", @"2", nil])
+	    valueForKey: @"@count"],
+	    [OFNumber numberWithInt: 2]);
 }
 @end
 
-@interface SimpleMutableArray: OFMutableArray
-{
-	OFMutableArray *_array;
-}
-@end
-
-@implementation SimpleArray
-- (instancetype)init
-{
-	self = [super init];
-
-	@try {
-		_array = [[OFMutableArray alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithObject: (id)object arguments: (va_list)arguments
-{
-	self = [super init];
-
-	@try {
-		_array = [[OFMutableArray alloc] initWithObject: object
-						      arguments: arguments];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
+@implementation CustomArray
 - (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	self = [super init];
 
 	@try {
-		_array = [[OFMutableArray alloc] initWithObjects: objects
-							   count: count];
+		_array = [[OFArray alloc] initWithObjects: objects
+						    count: count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -83,7 +318,7 @@ static OFString *c_ary[] = {
 
 - (void)dealloc
 {
-	[_array release];
+	objc_release(_array);
 
 	[super dealloc];
 }
@@ -96,344 +331,5 @@ static OFString *c_ary[] = {
 - (size_t)count
 {
 	return [_array count];
-}
-@end
-
-@implementation SimpleMutableArray
-+ (void)initialize
-{
-	if (self == [SimpleMutableArray class])
-		[self inheritMethodsFromClass: [SimpleArray class]];
-}
-
-- (void)insertObject: (id)object atIndex: (size_t)idx
-{
-	[_array insertObject: object atIndex: idx];
-}
-
-- (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
-{
-	[_array replaceObjectAtIndex: idx withObject: object];
-}
-
-- (void)removeObjectAtIndex: (size_t)idx
-{
-	[_array removeObjectAtIndex: idx];
-}
-@end
-
-@implementation TestsAppDelegate (OFArrayTests)
-- (void)arrayTestsWithClass: (Class)arrayClass
-	       mutableClass: (Class)mutableArrayClass
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFArray *a[3];
-	OFMutableArray *m[2];
-	OFEnumerator *enumerator;
-	id obj;
-	bool ok;
-	size_t i;
-
-	TEST(@"+[array]", (m[0] = [mutableArrayClass array]))
-
-	TEST(@"+[arrayWithObjects:]",
-	    (a[0] = [arrayClass arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
-
-	TEST(@"+[arrayWithObjects:count:]",
-	    (a[1] = [arrayClass arrayWithObjects: c_ary count: 3]) &&
-	    [a[1] isEqual: a[0]])
-
-	TEST(@"-[description]",
-	    [a[0].description isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
-
-	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
-	    R([m[0] addObject: c_ary[2]]))
-
-	TEST(@"-[insertObject:atIndex:]",
-	    R([m[0] insertObject: c_ary[1] atIndex: 1]))
-
-	TEST(@"-[count]", m[0].count == 3 && a[0].count == 3 && a[1].count == 3)
-
-	TEST(@"-[isEqual:]", [m[0] isEqual: a[0]] && [a[0] isEqual: a[1]])
-
-	TEST(@"-[objectAtIndex:]",
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
-	    [[a[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[0] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[0] objectAtIndex: 2] isEqual: c_ary[2]] &&
-	    [[a[1] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[a[1] objectAtIndex: 1] isEqual: c_ary[1]] &&
-	    [[a[1] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[containsObject:]",
-	    [a[0] containsObject: c_ary[1]] &&
-	    ![a[0] containsObject: @"nonexistent"])
-
-	TEST(@"-[containsObjectIdenticalTo:]",
-	    [a[0] containsObjectIdenticalTo: c_ary[1]] &&
-	    ![a[0] containsObjectIdenticalTo:
-	    [OFString stringWithString: c_ary[1]]])
-
-	TEST(@"-[indexOfObject:]", [a[0] indexOfObject: c_ary[1]] == 1)
-
-	TEST(@"-[indexOfObjectIdenticalTo:]",
-	    [a[1] indexOfObjectIdenticalTo: c_ary[1]] == 1)
-
-	TEST(@"-[objectsInRange:]",
-	    [[a[0] objectsInRange: OFRangeMake(1, 2)] isEqual:
-	    [arrayClass arrayWithObjects: c_ary[1], c_ary[2], nil]])
-
-	TEST(@"-[replaceObject:withObject:]",
-	    R([m[0] replaceObject: c_ary[1] withObject: c_ary[0]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[replaceObject:identicalTo:]",
-	    R([m[0] replaceObjectIdenticalTo: c_ary[0] withObject: c_ary[1]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[1]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[replaceObjectAtIndex:withObject:]",
-	    R([m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]]) &&
-	    [[m[0] objectAtIndex: 0] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 1] isEqual: c_ary[0]] &&
-	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
-
-	TEST(@"-[removeObject:]",
-	    R([m[0] removeObject: c_ary[0]]) && m[0].count == 2)
-
-	TEST(@"-[removeObjectIdenticalTo:]",
-	    R([m[0] removeObjectIdenticalTo: c_ary[2]]) && m[0].count == 1)
-
-	m[1] = [[a[0] mutableCopy] autorelease];
-	TEST(@"-[removeObjectAtIndex:]", R([m[1] removeObjectAtIndex: 1]) &&
-	    m[1].count == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
-
-	m[1] = [[a[0] mutableCopy] autorelease];
-	TEST(@"-[removeObjectsInRange:]",
-	    R([m[1] removeObjectsInRange: OFRangeMake(0, 2)]) &&
-	    m[1].count == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
-
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"qux"];
-	[m[1] addObject: @"last"];
-	TEST(@"-[reverse]",
-	    R([m[1] reverse]) && [m[1] isEqual: [arrayClass arrayWithObjects:
-	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
-
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"qux"];
-	[m[1] addObject: @"last"];
-	TEST(@"-[reversedArray]",
-	    [[m[1] reversedArray] isEqual: [arrayClass arrayWithObjects:
-	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
-
-	m[1] = [[a[0] mutableCopy] autorelease];
-	[m[1] addObject: @"0"];
-	[m[1] addObject: @"z"];
-	TEST(@"-[sortedArray]",
-	    [[m[1] sortedArray] isEqual: [arrayClass arrayWithObjects:
-	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
-	    [[m[1] sortedArrayUsingSelector: @selector(compare:)
-				    options: OFArraySortDescending]
-	    isEqual: [arrayClass arrayWithObjects:
-	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
-	    OFOutOfRangeException, [a[0] objectAtIndex: a[0].count])
-
-	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
-	    OFOutOfRangeException, [m[0] removeObjectsInRange:
-		OFRangeMake(0, m[0].count + 1)])
-
-	TEST(@"-[componentsJoinedByString:]",
-	    (a[1] = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
-	    nil]) &&
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @" a b c"] &&
-	    (a[1] = [arrayClass arrayWithObject: @"foo"]) &&
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
-
-	TEST(@"-[componentsJoinedByString:options]",
-	    (a[1] = [arrayClass arrayWithObjects: @"", @"foo", @"", @"", @"bar",
-	    @"", nil]) &&
-	    [[a[1] componentsJoinedByString: @" "
-				    options: OFArraySkipEmptyComponents]
-	    isEqual: @"foo bar"])
-
-	m[0] = [[a[0] mutableCopy] autorelease];
-	ok = true;
-	i = 0;
-
-	TEST(@"-[objectEnumerator]", (enumerator = [m[0] objectEnumerator]))
-
-	while ((obj = [enumerator nextObject]) != nil) {
-		if (![obj isEqual: c_ary[i]])
-			ok = false;
-		[m[0] replaceObjectAtIndex: i withObject: @""];
-		i++;
-	}
-
-	if (m[0].count != i)
-		ok = false;
-
-	TEST(@"OFEnumerator's -[nextObject]", ok)
-
-	[m[0] removeObjectAtIndex: 0];
-
-	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
-	    OFEnumerationMutationException, [enumerator nextObject])
-
-	m[0] = [[a[0] mutableCopy] autorelease];
-	ok = true;
-	i = 0;
-
-	for (OFString *s in m[0]) {
-		if (![s isEqual: c_ary[i]])
-			ok = false;
-		[m[0] replaceObjectAtIndex: i withObject: @""];
-		i++;
-	}
-
-	if (m[0].count != i)
-		ok = false;
-
-	TEST(@"Fast Enumeration", ok)
-
-	[m[0] replaceObjectAtIndex: 0 withObject: c_ary[0]];
-	[m[0] replaceObjectAtIndex: 1 withObject: c_ary[1]];
-	[m[0] replaceObjectAtIndex: 2 withObject: c_ary[2]];
-
-	ok = false;
-	i = 0;
-	@try {
-		for (OFString *s in m[0]) {
-			(void)s;
-
-			if (i == 0)
-				[m[0] addObject: @""];
-
-			i++;
-		}
-	} @catch (OFEnumerationMutationException *e) {
-		ok = true;
-	}
-
-	TEST(@"Detection of mutation during Fast Enumeration", ok)
-
-	[m[0] removeLastObject];
-
-#ifdef OF_HAVE_BLOCKS
-	{
-		__block bool blockOk = true;
-		__block size_t count = 0;
-		OFArray *cmp = a[0];
-		OFMutableArray *a2;
-
-		m[0] = [[a[0] mutableCopy] autorelease];
-		[m[0] enumerateObjectsUsingBlock:
-		    ^ (id object, size_t idx, bool *stop) {
-			    count++;
-			    if (![object isEqual: [cmp objectAtIndex: idx]])
-				    blockOk = false;
-		}];
-
-		if (count != cmp.count)
-			blockOk = false;
-
-		TEST(@"Enumeration using blocks", blockOk)
-
-		blockOk = false;
-		a2 = m[0];
-		@try {
-			[a2 enumerateObjectsUsingBlock:
-			    ^ (id object, size_t idx, bool *stop) {
-				[a2 removeObjectAtIndex: idx];
-			}];
-		} @catch (OFEnumerationMutationException *e) {
-			blockOk = true;
-		} @catch (OFOutOfRangeException *e) {
-			/*
-			 * Out of bounds access due to enumeration not being
-			 * detected.
-			 */
-		}
-
-		TEST(@"Detection of mutation during enumeration using blocks",
-		    blockOk)
-	}
-
-	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([m[0] replaceObjectsUsingBlock: ^ id (id object, size_t idx) {
-		switch (idx) {
-		case 0:
-			return @"foo";
-		case 1:
-			return @"bar";
-		}
-
-		return nil;
-	    }]) && [m[0].description isEqual: @"(\n\tfoo,\n\tbar\n)"])
-
-	TEST(@"-[mappedArrayUsingBlock:]",
-	    [[m[0] mappedArrayUsingBlock: ^ id (id object, size_t idx) {
-		switch (idx) {
-		case 0:
-			return @"foobar";
-		case 1:
-			return @"qux";
-		}
-
-		return nil;
-	    }].description isEqual: @"(\n\tfoobar,\n\tqux\n)"])
-
-	TEST(@"-[filteredArrayUsingBlock:]",
-	    [[m[0] filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
-		return [object isEqual: @"foo"];
-	    }].description isEqual: @"(\n\tfoo\n)"])
-
-	TEST(@"-[foldUsingBlock:]",
-	    [[arrayClass arrayWithObjects: [OFMutableString string], @"foo",
-	    @"bar", @"baz", nil] foldUsingBlock: ^ id (id left, id right) {
-		[left appendString: right];
-		return left;
-	    }])
-#endif
-
-	TEST(@"-[valueForKey:]",
-	    [[[arrayClass arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
-	    valueForKey: @"length"] isEqual:
-	    [arrayClass arrayWithObjects: [OFNumber numberWithInt: 3],
-	    [OFNumber numberWithInt: 3], [OFNumber numberWithInt: 6], nil]] &&
-	    [[[arrayClass arrayWithObjects: @"1", @"2", nil]
-	    valueForKey: @"@count"] isEqual: [OFNumber numberWithInt: 2]])
-
-	m[0] = [mutableArrayClass arrayWithObjects:
-	    [OFMutableURL URLWithString: @"http://foo.bar/"],
-	    [OFMutableURL URLWithString: @"http://bar.qux/"],
-	    [OFMutableURL URLWithString: @"http://qux.quxqux/"], nil];
-	TEST(@"-[setValue:forKey:]",
-	    R([m[0] setValue: [OFNumber numberWithShort: 1234]
-		      forKey: @"port"]) &&
-	    [m[0] isEqual: [arrayClass arrayWithObjects:
-	    [OFURL URLWithString: @"http://foo.bar:1234/"],
-	    [OFURL URLWithString: @"http://bar.qux:1234/"],
-	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)arrayTests
-{
-	module = @"OFArray";
-	[self arrayTestsWithClass: [SimpleArray class]
-		     mutableClass: [SimpleMutableArray class]];
-
-	module = @"OFArray_adjacent";
-	[self arrayTestsWithClass: [OFArray class]
-		     mutableClass: [OFMutableArray class]];
 }
 @end

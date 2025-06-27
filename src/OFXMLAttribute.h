@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFXMLNode.h"
@@ -20,10 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @class OFXMLAttribute OFXMLAttribute.h ObjFW/OFXMLAttribute.h
+ * @class OFXMLAttribute OFXMLAttribute.h ObjFW/ObjFW.h
  *
  * @brief A representation of an attribute of an XML element as an object.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLAttribute: OFXMLNode
 {
 #if defined(OF_XML_ELEMENT_M) || defined(OF_XML_PARSER_M)
@@ -31,7 +36,6 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFString *_name, *_Nullable _namespace, *_stringValue;
 	bool _useDoubleQuotes;
-	OF_RESERVE_IVARS(OFXMLAttribute, 4)
 }
 
 /**
@@ -46,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *namespace;
 #else
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, getter=namespace)
-    OFString *namespace_;
+    OFString *nameSpace;
 #endif
 
 /**
@@ -63,12 +67,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new XML attribute.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString *)name
-			namespace: (nullable OFString *)namespace_
+			namespace: (nullable OFString *)nameSpace
 		      stringValue: (OFString *)stringValue;
 
 /**
@@ -85,15 +89,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated OFXMLAttribute.
  *
  * @param name The name of the attribute
- * @param namespace_ The namespace of the attribute
+ * @param nameSpace The namespace of the attribute
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
 - (instancetype)initWithName: (OFString *)name
-		   namespace: (nullable OFString *)namespace_
-		 stringValue: (OFString *)stringValue;
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element;
+		   namespace: (nullable OFString *)nameSpace
+		 stringValue: (OFString *)stringValue OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

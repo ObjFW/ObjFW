@@ -1,20 +1,21 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
-
-#ifndef OBJFW_OF_OBJECT_H
-#define OBJFW_OF_OBJECT_H
 
 #include "objfw-defs.h"
 
@@ -29,10 +30,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <math.h>
 
 #include "macros.h"
 
-#include "OFOnce.h"
+#import "OFOnce.h"
 
 /*
  * Some versions of MinGW require <winsock2.h> to be included before
@@ -54,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A result of a comparison.
  */
-typedef enum OFComparisonResult {
+typedef enum {
 	/** The left object is smaller than the right */
 	OFOrderedAscending = -1,
 	/** Both objects are equal */
@@ -62,6 +64,17 @@ typedef enum OFComparisonResult {
 	/** The left object is bigger than the right */
 	OFOrderedDescending = 1
 } OFComparisonResult;
+
+/**
+ * @brief A function to compare two objects.
+ *
+ * @param left The left object
+ * @param right The right object
+ * @param context Context passed along for comparing
+ * @return The order of the objects
+ */
+typedef OFComparisonResult (*OFCompareFunction)(id _Nonnull left,
+    id _Nonnull right, void *_Nullable context);
 
 #ifdef OF_HAVE_BLOCKS
 /**
@@ -75,9 +88,9 @@ typedef OFComparisonResult (^OFComparator)(id _Nonnull left, id _Nonnull right);
 #endif
 
 /**
- * @brief An enum for storing endianess.
+ * @brief An enum for representing endianness.
  */
-typedef enum OFByteOrder {
+typedef enum {
 	/** Most significant byte first (big endian) */
 	OFByteOrderBigEndian,
 	/** Least significant byte first (little endian) */
@@ -91,27 +104,26 @@ typedef enum OFByteOrder {
 } OFByteOrder;
 
 /**
- * @struct OFRange OFObject.h ObjFW/OFObject.h
+ * @struct OFRange OFObject.h ObjFW/ObjFW.h
  *
  * @brief A range.
  */
-struct OF_BOXABLE OFRange {
+typedef struct OF_BOXABLE OFRange {
 	/** The start of the range */
 	size_t location;
 	/** The length of the range */
 	size_t length;
-};
-typedef struct OFRange OFRange;
+} OFRange;
 
 /**
  * @brief Creates a new OFRange.
  *
  * @param start The starting index of the range
  * @param length The length of the range
- * @return An OFRangeith the specified start and length
+ * @return An OFRange with the specified start and length
  */
 static OF_INLINE OFRange OF_CONST_FUNC
-OFRangeMake(size_t start, size_t length)
+OFMakeRange(size_t start, size_t length)
 {
 	OFRange range = { start, length };
 
@@ -126,7 +138,7 @@ OFRangeMake(size_t start, size_t length)
  * @return Whether the two ranges are equal
  */
 static OF_INLINE bool
-OFRangeEqual(OFRange range1, OFRange range2)
+OFEqualRanges(OFRange range1, OFRange range2)
 {
 	if (range1.location != range2.location)
 		return false;
@@ -143,17 +155,16 @@ OFRangeEqual(OFRange range1, OFRange range2)
 typedef double OFTimeInterval;
 
 /**
- * @struct OFPoint OFObject.h ObjFW/OFObject.h
+ * @struct OFPoint OFObject.h ObjFW/ObjFW.h
  *
- * @brief A point.
+ * @brief A point in 2D space.
  */
-struct OF_BOXABLE OFPoint {
+typedef struct OF_BOXABLE OFPoint {
 	/** The x coordinate of the point */
 	float x;
 	/** The y coordinate of the point */
 	float y;
-};
-typedef struct OFPoint OFPoint;
+} OFPoint;
 
 /**
  * @brief Creates a new OFPoint.
@@ -163,7 +174,7 @@ typedef struct OFPoint OFPoint;
  * @return An OFPoint with the specified coordinates
  */
 static OF_INLINE OFPoint OF_CONST_FUNC
-OFPointMake(float x, float y)
+OFMakePoint(float x, float y)
 {
 	OFPoint point = { x, y };
 
@@ -178,7 +189,7 @@ OFPointMake(float x, float y)
  * @return Whether the two points are equal
  */
 static OF_INLINE bool
-OFPointEqual(OFPoint point1, OFPoint point2)
+OFEqualPoints(OFPoint point1, OFPoint point2)
 {
 	if (point1.x != point2.x)
 		return false;
@@ -190,17 +201,16 @@ OFPointEqual(OFPoint point1, OFPoint point2)
 }
 
 /**
- * @struct OFSize OFObject.h ObjFW/OFObject.h
+ * @struct OFSize OFObject.h ObjFW/ObjFW.h
  *
  * @brief A size.
  */
-struct OF_BOXABLE OFSize {
+typedef struct OF_BOXABLE OFSize {
 	/** The width of the size */
 	float width;
 	/** The height of the size */
 	float height;
-};
-typedef struct OFSize OFSize;
+} OFSize;
 
 /**
  * @brief Creates a new OFSize.
@@ -210,7 +220,7 @@ typedef struct OFSize OFSize;
  * @return An OFSize with the specified width and height
  */
 static OF_INLINE OFSize OF_CONST_FUNC
-OFSizeMake(float width, float height)
+OFMakeSize(float width, float height)
 {
 	OFSize size = { width, height };
 
@@ -225,7 +235,7 @@ OFSizeMake(float width, float height)
  * @return Whether the two sizes are equal
  */
 static OF_INLINE bool
-OFSizeEqual(OFSize size1, OFSize size2)
+OFEqualSizes(OFSize size1, OFSize size2)
 {
 	if (size1.width != size2.width)
 		return false;
@@ -237,17 +247,16 @@ OFSizeEqual(OFSize size1, OFSize size2)
 }
 
 /**
- * @struct OFRect OFObject.h ObjFW/OFObject.h
+ * @struct OFRect OFObject.h ObjFW/ObjFW.h
  *
  * @brief A rectangle.
  */
-struct OF_BOXABLE OFRect {
+typedef struct OF_BOXABLE OFRect {
 	/** The point from where the rectangle originates */
 	OFPoint origin;
 	/** The size of the rectangle */
 	OFSize size;
-};
-typedef struct OFRect OFRect;
+} OFRect;
 
 /**
  * @brief Creates a new OFRect.
@@ -259,11 +268,11 @@ typedef struct OFRect OFRect;
  * @return An OFRect with the specified origin and size
  */
 static OF_INLINE OFRect OF_CONST_FUNC
-OFRectMake(float x, float y, float width, float height)
+OFMakeRect(float x, float y, float width, float height)
 {
 	OFRect rect = {
-		OFPointMake(x, y),
-		OFSizeMake(width, height)
+		OFMakePoint(x, y),
+		OFMakeSize(width, height)
 	};
 
 	return rect;
@@ -277,26 +286,327 @@ OFRectMake(float x, float y, float width, float height)
  * @return Whether the two rectangles are equal
  */
 static OF_INLINE bool
-OFRectEqual(OFRect rect1, OFRect rect2)
+OFEqualRects(OFRect rect1, OFRect rect2)
 {
-	if (!OFPointEqual(rect1.origin, rect2.origin))
+	if (!OFEqualPoints(rect1.origin, rect2.origin))
 		return false;
 
-	if (!OFSizeEqual(rect1.size, rect2.size))
+	if (!OFEqualSizes(rect1.size, rect2.size))
 		return false;
 
 	return true;
 }
 
+/**
+ * @struct OFVector3D OFObject.h ObjFW/ObjFW.h
+ *
+ * @brief A vector in 3D space.
+ */
+typedef struct OF_BOXABLE OFVector3D {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+} OFVector3D;
+
+/**
+ * @brief Creates a new OFVector3D.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @return An OFVector3D with the specified coordinates
+ */
+static OF_INLINE OFVector3D OF_CONST_FUNC
+OFMakeVector3D(float x, float y, float z)
+{
+	OFVector3D vector = { x, y, z };
+
+	return vector;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vector1 The first vector for the comparison
+ * @param vector2 The second vectors for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OFEqualVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	if (vector1.x != vector2.x)
+		return false;
+
+	if (vector1.y != vector2.y)
+		return false;
+
+	if (vector1.z != vector2.z)
+		return false;
+
+	return true;
+}
+
+/**
+ * @brief Adds the two specified vectors.
+ *
+ * @param vector1 The vector to add to
+ * @param vector2 The vector to add
+ * @return The sum of the two vectors
+ */
+static OF_INLINE OFVector3D
+OFAddVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return OFMakeVector3D(vector1.x + vector2.x, vector1.y + vector2.y,
+	    vector1.z + vector2.z);
+}
+
+/**
+ * @brief Subtracts the second vector from the first vector.
+ *
+ * @param vector1 The vector to subtract from
+ * @param vector2 The vector to subtract
+ * @return The second vector subtracted from the first vector
+ */
+static OF_INLINE OFVector3D
+OFSubtractVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return OFMakeVector3D(vector1.x - vector2.x, vector1.y - vector2.y,
+	    vector1.z - vector2.z);
+}
+
+/**
+ * @brief Multiplies the specified vector with a scalar.
+ *
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
+ */
+static OF_INLINE OFVector3D
+OFMultiplyVector3D(OFVector3D vector, float scalar)
+{
+	return OFMakeVector3D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar);
+}
+
+/**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z;
+}
+
+/**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors3D(OFVector3D vector1, OFVector3D vector2)
+{
+	OFVector3D difference = OFSubtractVectors3D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors3D(difference, difference));
+}
+
+/**
+ * @struct OFVector4D OFObject.h ObjFW/ObjFW.h
+ *
+ * @brief A vector in 4D space.
+ */
+typedef struct OF_BOXABLE OFVector4D {
+	/** The x coordinate of the vector */
+	float x;
+	/** The y coordinate of the vector */
+	float y;
+	/** The z coordinate of the vector */
+	float z;
+	/** The w coordinate of the vector */
+	float w;
+} OFVector4D;
+
+/**
+ * @brief Creates a new OFVector4D.
+ *
+ * @param x The x coordinate of the vector
+ * @param y The x coordinate of the vector
+ * @param z The z coordinate of the vector
+ * @param w The w coordinate of the vector
+ * @return An OFVector4D with the specified coordinates
+ */
+static OF_INLINE OFVector4D OF_CONST_FUNC
+OFMakeVector4D(float x, float y, float z, float w)
+{
+	OFVector4D vector = { x, y, z, w };
+
+	return vector;
+}
+
+/**
+ * @brief Returns whether the two vectors are equal.
+ *
+ * @param vector1 The first vector for the comparison
+ * @param vector2 The second vectors for the comparison
+ * @return Whether the two vectors are equal
+ */
+static OF_INLINE bool
+OFEqualVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	if (vector1.x != vector2.x)
+		return false;
+
+	if (vector1.y != vector2.y)
+		return false;
+
+	if (vector1.z != vector2.z)
+		return false;
+
+	if (vector1.w != vector2.w)
+		return false;
+
+	return true;
+}
+
+/**
+ * @brief Adds the two specified vectors.
+ *
+ * @param vector1 The vector to add to
+ * @param vector2 The vector to add
+ * @return The sum of the two vectors
+ */
+static OF_INLINE OFVector4D
+OFAddVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return OFMakeVector4D(vector1.x + vector2.x, vector1.y + vector2.y,
+	    vector1.z + vector2.z, vector1.w + vector2.w);
+}
+
+/**
+ * @brief Subtracts the second vector from the first vector.
+ *
+ * @param vector1 The vector to subtract from
+ * @param vector2 The vector to subtract
+ * @return The second vector subtracted from the first vector
+ */
+static OF_INLINE OFVector4D
+OFSubtractVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return OFMakeVector4D(vector1.x - vector2.x, vector1.y - vector2.y,
+	    vector1.z - vector2.z, vector1.w - vector2.w);
+}
+
+/**
+ * @brief Multiplies the specified vector with a scalar.
+ *
+ * @param vector The vector
+ * @param scalar The scalar to multiply with
+ * @return The vector multiplied with the scalar
+ */
+static OF_INLINE OFVector4D
+OFMultiplyVector4D(OFVector4D vector, float scalar)
+{
+	return OFMakeVector4D(vector.x * scalar, vector.y * scalar,
+	    vector.z * scalar, vector.w * scalar);
+}
+
+/**
+ * @brief Calculates the dot product of the two specified vectors.
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The dot product of the two vectors
+ */
+static OF_INLINE float
+OFDotProductOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	return vector1.x * vector2.x + vector1.y * vector2.y +
+	    vector1.z * vector2.z + vector1.w * vector2.w;
+}
+
+/**
+ * @brief Calculates the distance between two vectors
+ *
+ * @param vector1 The first vector
+ * @param vector2 The second vector
+ * @return The distance of the two vectors
+ */
+static OF_INLINE float
+OFDistanceOfVectors4D(OFVector4D vector1, OFVector4D vector2)
+{
+	OFVector4D difference = OFSubtractVectors4D(vector1, vector2);
+
+	return sqrtf(OFDotProductOfVectors4D(difference, difference));
+}
+
+/**
+ * @brief Adds the specified byte to the hash.
+ *
+ * @param hash A pointer to a hash to add the byte to
+ * @param byte The byte to add to the hash
+ */
+static OF_INLINE void
+OFHashAddByte(unsigned long *_Nonnull hash, unsigned char byte)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += byte;
+	tmp += tmp << 10;
+	tmp ^= tmp >> 6;
+
+	*hash = tmp;
+}
+
+/**
+ * @brief Adds the specified hash to the hash.
+ *
+ * @param hash A pointer to a hash to add the hash to
+ * @param otherHash The hash to add to the hash
+ */
+static OF_INLINE void
+OFHashAddHash(unsigned long *_Nonnull hash, unsigned long otherHash)
+{
+	OFHashAddByte(hash, (otherHash >> 24) & 0xFF);
+	OFHashAddByte(hash, (otherHash >> 16) & 0xFF);
+	OFHashAddByte(hash, (otherHash >>  8) & 0xFF);
+	OFHashAddByte(hash, otherHash & 0xFF);
+}
+
+/**
+ * @brief Finalizes the specified hash.
+ *
+ * @param hash A pointer to the hash to finalize
+ */
+static OF_INLINE void
+OFHashFinalize(unsigned long *_Nonnull hash)
+{
+	uint32_t tmp = (uint32_t)*hash;
+
+	tmp += tmp << 3;
+	tmp ^= tmp >> 11;
+	tmp += tmp << 15;
+
+	*hash = tmp;
+}
+
 static const size_t OFNotFound = SIZE_MAX;
 
-#ifdef __OBJC__
 @class OFMethodSignature;
 @class OFString;
 @class OFThread;
 
 /**
- * @protocol OFObject OFObject.h ObjFW/OFObject.h
+ * @protocol OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The protocol which all root classes implement.
  */
@@ -316,7 +626,7 @@ static const size_t OFNotFound = SIZE_MAX;
 - (nullable Class)superclass;
 
 /**
- * @brief Returns a 32 bit hash for the object.
+ * @brief Returns a hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -325,7 +635,7 @@ static const size_t OFNotFound = SIZE_MAX;
  *	    to behave in a way compatible to your reimplementation of this
  *	    method!
  *
- * @return A 32 bit hash for the object
+ * @return A hash for the object
  */
 - (unsigned long)hash;
 
@@ -344,16 +654,9 @@ static const size_t OFNotFound = SIZE_MAX;
 - (bool)isProxy;
 
 /**
- * @brief Returns whether the object allows weak references.
+ * @brief Returns a boolean whether the object is of the specified kind.
  *
- * @return Whether the object allows weak references
- */
-- (bool)allowsWeakReference;
-
-/**
- * @brief Returns a boolean whether the object of the specified kind.
- *
- * @param class_ The class whose kind is checked
+ * @param class_ The class for which the receiver is checked
  * @return A boolean whether the object is of the specified kind
  */
 - (bool)isKindOfClass: (Class)class_;
@@ -507,45 +810,50 @@ static const size_t OFNotFound = SIZE_MAX;
 - (instancetype)self;
 
 /**
+ * @brief Returns whether the object allows a weak reference.
+ *
+ * @return Whether the object allows a weak references
+ */
+- (bool)allowsWeakReference;
+
+/**
  * @brief Retain a weak reference to this object.
  *
  * @return Whether a weak reference to this object has been retained
  */
 - (bool)retainWeakReference;
 @end
-#endif
 
 /**
- * @class OFObject OFObject.h ObjFW/OFObject.h
+ * @class OFObject OFObject.h ObjFW/ObjFW.h
  *
  * @brief The root class for all other classes inside ObjFW.
  */
-#ifdef __OBJC__
 OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @private
-# ifndef __clang_analyzer__
+#ifndef __clang_analyzer__
 	Class _isa;
-# else
+#else
 	Class _isa __attribute__((__unused__));
-# endif
+#endif
 }
 
-# ifdef OF_HAVE_CLASS_PROPERTIES
-#  ifndef __cplusplus
+#ifdef OF_HAVE_CLASS_PROPERTIES
+# ifndef __cplusplus
 @property (class, readonly, nonatomic) Class class;
-#  else
+# else
 @property (class, readonly, nonatomic, getter=class) Class class_;
-#  endif
+# endif
 @property (class, readonly, nonatomic) OFString *className;
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
-# endif
+#endif
 
-# ifndef __cplusplus
+#ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
-# else
+#else
 @property (readonly, nonatomic, getter=class) Class class_;
 #endif
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
@@ -573,6 +881,10 @@ OF_ROOT_CLASS
  *
  * Derived classes can override this to execute their own code when the class
  * is loaded.
+ *
+ * @warning You cannot make use of other classes from inside this method! Only
+ *	    the class itself, its superclasses and instances of the class or
+ *	    its superclassses can be messaged!
  */
 + (void)load;
 
@@ -583,10 +895,9 @@ OF_ROOT_CLASS
  * is unloaded.
  *
  * @warning This is not supported by the Apple runtime and currently only
- *	    called by the ObjFW runtime when objc_unregister_class() or
- *	    objc_exit() has been called!
+ *	    called by the ObjFW runtime when @ref objc_deinit has been called!
  *	    In the future, this might also be called by the ObjFW runtime when
- *	    the class is part of a plugin that has been unloaded.
+ *	    the class is part of a plugin that is being unloaded.
  */
 + (void)unload;
 
@@ -605,19 +916,14 @@ OF_ROOT_CLASS
  * @brief Allocates memory for an instance of the class and sets up the memory
  *	  pool for the object.
  *
- * This method will never return `nil`, instead, it will throw an
- * @ref OFAllocFailedException.
+ * This method will never return `nil`.
  *
  * @return The allocated object
+ * @throw OFAllocFailedException There was not enough memory to allocate the
+ *				 object
+ * @throw OFInitializationFailedException The instance could not be constructed
  */
 + (instancetype)alloc;
-
-/**
- * @brief Calls @ref alloc on `self` and then `init` on the returned object.
- *
- * @return An allocated and initialized object
- */
-+ (instancetype)new;
 
 /**
  * @brief Returns the class.
@@ -778,7 +1084,7 @@ OF_ROOT_CLASS
  * @try {
  *         // Custom initialization code goes here.
  * } @catch (id e) {
- *         [self release];
+ *         objc_release(self);
  *         @throw e;
  * }
  *
@@ -897,7 +1203,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object4
 	     afterDelay: (OFTimeInterval)delay;
 
-# ifdef OF_HAVE_THREADS
+#ifdef OF_HAVE_THREADS
 /**
  * @brief Performs the specified selector on the specified thread.
  *
@@ -1155,7 +1461,7 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object3
 	     withObject: (nullable id)object4
 	     afterDelay: (OFTimeInterval)delay;
-# endif
+#endif
 
 /**
  * @brief This method is called when @ref resolveClassMethod: or
@@ -1177,16 +1483,13 @@ OF_ROOT_CLASS
  *	    returns!
  *
  * @param selector The selector not understood by the receiver
+ * @throw OFNotImplementedException The method is not implemented
  */
 - (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
-#else
-typedef void OFObject;
-#endif
 
-#ifdef __OBJC__
 /**
- * @protocol OFCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of copies.
  */
@@ -1204,7 +1507,7 @@ typedef void OFObject;
 @end
 
 /**
- * @protocol OFMutableCopying OFObject.h ObjFW/OFObject.h
+ * @protocol OFMutableCopying OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for the creation of mutable copies.
  *
@@ -1221,11 +1524,12 @@ typedef void OFObject;
 @end
 
 /**
- * @protocol OFComparing OFObject.h ObjFW/OFObject.h
+ * @protocol OFComparing OFObject.h ObjFW/ObjFW.h
  *
  * @brief A protocol for comparing objects.
  *
- * This protocol is implemented by objects that can be compared. Its only method, @ref compare:, should be overridden with a stronger type.
+ * This protocol is implemented by objects that can be compared. Its only
+ * method, @ref compare:, should be overridden with a stronger type.
  */
 @protocol OFComparing
 /**
@@ -1236,7 +1540,6 @@ typedef void OFObject;
  */
 - (OFComparisonResult)compare: (id <OFComparing>)object;
 @end
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1247,16 +1550,16 @@ extern "C" {
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param count The number of items to allocate
  * @param size The size of each item to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Allocates memory for the specified number of items of the specified
@@ -1264,16 +1567,16 @@ extern void *_Nullable OFAllocMemory(size_t count, size_t size)
  *
  * To free the allocated memory, use @ref OFFreeMemory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param size The size of each item to allocate
  * @param count The number of items to allocate
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
-    OF_WARN_UNUSED_RESULT;
+    OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
  * @brief Resizes memory to the specified number of items of the specified size.
@@ -1283,13 +1586,14 @@ extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
  * If the pointer is NULL, this is equivalent to allocating memory.
  * If the size or number of items is 0, this is equivalent to freeing memory.
  *
- * Throws @ref OFOutOfMemoryException if allocating failed and
- * @ref OFOutOfRangeException if the requested size exceeds the address space.
- *
  * @param pointer A pointer to the already allocated memory
  * @param size The size of each item to resize to
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
+ * @throw OFOutOfMemoryException The reallocation failed due to not enough
+ *				 memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
  */
 extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
     size_t size) OF_WARN_UNUSED_RESULT;
@@ -1298,7 +1602,7 @@ extern void *_Nullable OFResizeMemory(void *_Nullable pointer, size_t count,
  * @brief Frees memory allocated by @ref OFAllocMemory, @ref OFAllocZeroedMemory
  *	  or @ref OFResizeMemory.
  *
- * @param pointer A pointer to the memory to free or nil (passing nil ooes
+ * @param pointer A pointer to the memory to free or nil (passing nil does
  *		  nothing)
  */
 extern void OFFreeMemory(void *_Nullable pointer);
@@ -1306,15 +1610,94 @@ extern void OFFreeMemory(void *_Nullable pointer);
 #ifdef OF_APPLE_RUNTIME
 extern void *_Null_unspecified objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
-# ifndef __OBJC2__
+extern id _Nullable objc_retain(id _Nullable object);
+extern id _Nullable objc_retainBlock(id _Nullable block);
+extern id _Nullable objc_retainAutorelease(id _Nullable object);
+extern void objc_release(id _Nullable object);
+extern id _Nullable objc_autorelease(id _Nullable object);
+extern id _Nullable objc_autoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleasedReturnValue(id _Nullable object);
+extern id _Nullable objc_storeStrong(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_storeWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_loadWeakRetained(id _Nullable *_Nonnull object);
+extern _Nullable id objc_initWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern void objc_destroyWeak(id _Nullable *_Nonnull object);
+extern id _Nullable objc_loadWeak(id _Nullable *_Nonnull object);
+extern void objc_copyWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
+extern void objc_moveWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
+# ifdef OF_DECLARE_CONSTRUCT_INSTANCE
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 extern void *_Nullable objc_destructInstance(id _Nullable object);
 # endif
+# ifdef OF_DECLARE_SET_ASSOCIATED_OBJECT
+typedef enum objc_associationPolicy {
+	OBJC_ASSOCIATION_ASSIGN	= 0,
+	OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+	OBJC_ASSOCIATION_RETAIN = OBJC_ASSOCIATION_RETAIN_NONATOMIC | 0x300,
+	OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+	OBJC_ASSOCIATION_COPY = OBJC_ASSOCIATION_COPY_NONATOMIC | 0x300
+} objc_associationPolicy;
+extern void objc_setAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key, id _Nullable value,
+    objc_associationPolicy policy);
+extern id _Nullable objc_getAssociatedObject(id _Nonnull object,
+    const void *_Nonnull key);
+extern void objc_removeAssociatedObjects(id _Nonnull object);
+# endif
 #endif
+
+/**
+ * @brief Allocates a new object.
+ *
+ * This is useful to override @ref OFObject#alloc in a subclass that can then
+ * allocate extra memory in the same memory allocation.
+ *
+ * @param class_ The class of which to allocate an object
+ * @param extraSize Extra space after the ivars to allocate
+ * @param extraAlignment Alignment of the extra space after the ivars
+ * @param extra A pointer to set to a pointer to the extra space
+ * @return The allocated object
+ */
 extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
     void *_Nullable *_Nullable extra);
+
+/**
+ * @brief This function is called when a method is not found.
+ *
+ * It can also be called intentionally to indicate that a method is not
+ * implemetned, for example in an abstract method. However, instead of calling
+ * OFMethodNotFound directly, it is preferred to do the following:
+ *
+ *     - (void)abstractMethod
+ *     {
+ *     	OF_UNRECOGNIZED_SELECTOR
+ *     }
+ *
+ * However, do not use this for init methods. Instead, use the following:
+ *
+ *     - (instancetype)init
+ *     {
+ *     	OF_INVALID_INIT_METHOD
+ *     }
+ *
+ * @param self The object which does not have the method
+ * @param _cmd The selector of the method that does not exist
+ */
 extern void OF_NO_RETURN_FUNC OFMethodNotFound(id self, SEL _cmd);
+
+/**
+ * @brief Initializes the specified hash.
+ *
+ * @param hash A pointer to the hash to initialize
+ */
+extern void OFHashInit(unsigned long *_Nonnull hash);
 
 /**
  * @brief Returns 16 bit or non-cryptographical randomness.
@@ -1342,11 +1725,5 @@ extern uint64_t OFRandom64(void);
 
 OF_ASSUME_NONNULL_END
 
-#include "OFBlock.h"
-
-#ifdef __OBJC__
-# import "OFObject+KeyValueCoding.h"
-# import "OFObject+Serialization.h"
-#endif
-
-#endif
+#import "OFBlock.h"
+#import "OFObject+KeyValueCoding.h"

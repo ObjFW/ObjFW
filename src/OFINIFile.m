@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,17 +23,19 @@
 
 #import "OFINIFile.h"
 #import "OFArray.h"
+#import "OFINISection.h"
+#import "OFINISection+Private.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFStream.h"
 #import "OFString.h"
-#import "OFFile.h"
-#import "OFINICategory.h"
-#import "OFINICategory+Private.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFINIFile ()
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding;
+- (void)of_parseIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding;
 @end
 
 static bool
@@ -46,18 +52,18 @@ isWhitespaceLine(OFString *line)
 }
 
 @implementation OFINIFile
-@synthesize categories = _categories;
+@synthesize sections = _sections;
 
-+ (instancetype)fileWithPath: (OFString *)path
++ (instancetype)fileWithIRI: (OFIRI *)IRI
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
 }
 
-+ (instancetype)fileWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
++ (instancetype)fileWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
-	return [[[self alloc] initWithPath: path
-				  encoding: encoding] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			     encoding: encoding]);
 }
 
 - (instancetype)init
@@ -65,22 +71,23 @@ isWhitespaceLine(OFString *line)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
+- (instancetype)initWithIRI: (OFIRI *)IRI
 {
-	return [self initWithPath: path encoding: OFStringEncodingUTF8];
+	return [self initWithIRI: IRI encoding: OFStringEncodingAutodetect];
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		    encoding: (OFStringEncoding)encoding
+- (instancetype)initWithIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
 
 	@try {
-		_categories = [[OFMutableArray alloc] init];
+		OFINISection *section = objc_autorelease(
+		    [[OFINISection alloc] of_initWithName: @""]);
+		_sections = [[OFMutableArray alloc] initWithObject: section];
 
-		[self of_parseFile: path encoding: encoding];
+		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -89,37 +96,51 @@ isWhitespaceLine(OFString *line)
 
 - (void)dealloc
 {
-	[_categories release];
+	objc_release(_sections);
 
 	[super dealloc];
 }
 
-- (OFINICategory *)categoryForName: (OFString *)name
+- (OFArray OF_GENERIC(OFINISection *) *)categories
+{
+	return self.sections;
+}
+
+- (OFINISection *)sectionForName: (OFString *)name
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFINICategory *category;
+	OFINISection *section;
 
-	for (category in _categories)
-		if ([category.name isEqual: name])
-			return category;
+	for (section in _sections)
+		if ([section.name isEqual: name])
+			return section;
 
-	category = [[[OFINICategory alloc] of_initWithName: name] autorelease];
-	[_categories addObject: category];
+	section = objc_autorelease(
+	    [[OFINISection alloc] of_initWithName: name]);
+	[_sections addObject: section];
 
 	objc_autoreleasePoolPop(pool);
 
-	return category;
+	return section;
 }
 
-- (void)of_parseFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (OFINISection *)categoryForName: (OFString *)name
+{
+	return [self sectionForName: name];
+}
+
+- (void)of_parseIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file;
-	OFINICategory *category = nil;
+	OFStream *file;
+	OFINISection *section = nil;
 	OFString *line;
 
+	if (encoding == OFStringEncodingAutodetect)
+		encoding = OFStringEncodingUTF8;
+
 	@try {
-		file = [OFFile fileWithPath: path mode: @"r"];
+		file = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if (e.errNo == ENOENT)
@@ -128,47 +149,52 @@ isWhitespaceLine(OFString *line)
 		@throw e;
 	}
 
-	while ((line = [file readLineWithEncoding: encoding]) != nil) {
+	file.encoding = encoding;
+
+	while ((line = [file readLine]) != nil) {
 		if (isWhitespaceLine(line))
 			continue;
 
 		if ([line hasPrefix: @"["]) {
-			OFString *categoryName;
+			OFString *sectionName;
 
 			if (![line hasSuffix: @"]"])
 				@throw [OFInvalidFormatException exception];
 
-			categoryName = [line substringWithRange:
-			    OFRangeMake(1, line.length - 2)];
-			category = [[[OFINICategory alloc]
-			    of_initWithName: categoryName] autorelease];
-			[_categories addObject: category];
-		} else {
-			if (category == nil)
+			sectionName = [line substringWithRange:
+			    OFMakeRange(1, line.length - 2)];
+			if (sectionName.length == 0)
 				@throw [OFInvalidFormatException exception];
 
-			[category of_parseLine: line];
+			section = objc_autorelease([[OFINISection alloc]
+			    of_initWithName: sectionName]);
+			[_sections addObject: section];
+		} else {
+			if (section == nil)
+				section = [self sectionForName: @""];
+
+			[section of_parseLine: line];
 		}
 	}
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeToFile: (OFString *)path
+- (void)writeToIRI: (OFIRI *)IRI
 {
-	[self writeToFile: path encoding: OFStringEncodingUTF8];
+	[self writeToIRI: IRI encoding: OFStringEncodingUTF8];
 }
 
-- (void)writeToFile: (OFString *)path encoding: (OFStringEncoding)encoding
+- (void)writeToIRI: (OFIRI *)IRI encoding: (OFStringEncoding)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path mode: @"w"];
+	OFStream *file = [OFIRIHandler openItemAtIRI: IRI mode: @"w"];
 	bool first = true;
 
-	for (OFINICategory *category in _categories)
-		if ([category of_writeToStream: file
-				      encoding: encoding
-					 first: first])
+	file.encoding = encoding;
+
+	for (OFINISection *section in _sections)
+		if ([section of_writeToStream: file first: first])
 			first = false;
 
 	objc_autoreleasePoolPop(pool);
@@ -177,6 +203,6 @@ isWhitespaceLine(OFString *line)
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",
-					   self.class, _categories];
+					   self.class, _sections];
 }
 @end

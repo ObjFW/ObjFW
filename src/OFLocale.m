@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,10 +22,16 @@
 #include <locale.h>
 
 #import "OFLocale.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFFileManager.h"
+#import "OFIRI.h"
 #import "OFNumber.h"
+#import "OFStdIOStream.h"
+#import "OFString.h"
+#import "OFString+Private.h"
+
+#import "OFOnce.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -29,20 +39,34 @@
 #import "OFOpenItemFailedException.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/dos.h>
 # include <proto/exec.h>
 # include <proto/locale.h>
+# undef Class
 #endif
 
+OF_DIRECT_MEMBERS
+@interface OFLocale ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+@end
+
+static OFOnceControl initLocaleControl = OFOnceControlInitValue;
 static OFLocale *currentLocale = nil;
 static OFDictionary *operatorPrecedences = nil;
+
+static void
+initLocale(void)
+{
+	currentLocale = [[OFLocale alloc] of_init];
+}
 
 #ifndef OF_AMIGAOS
 static void
 parseLocale(char *locale, OFStringEncoding *encoding,
-    OFString **language, OFString **territory)
+    OFString **languageCode, OFString **countryCode)
 {
-	locale = OFStrDup(locale);
+	locale = _OFStrDup(locale);
 
 	@try {
 		OFStringEncoding enc = OFStringEncodingASCII;
@@ -65,18 +89,19 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 			}
 		}
 
-		/* Territory */
+		/* Country code */
 		if ((tmp = strrchr(locale, '_')) != NULL) {
 			*tmp++ = '\0';
 
-			if (territory != NULL)
-				*territory = [OFString stringWithCString: tmp
-								encoding: enc];
+			if (countryCode != NULL)
+				*countryCode = [OFString
+				    stringWithCString: tmp
+					     encoding: enc];
 		}
 
-		if (language != NULL)
-			*language = [OFString stringWithCString: locale
-						       encoding: enc];
+		if (languageCode != NULL)
+			*languageCode = [OFString stringWithCString: locale
+							   encoding: enc];
 	} @finally {
 		OFFreeMemory(locale);
 	}
@@ -86,7 +111,7 @@ parseLocale(char *locale, OFStringEncoding *encoding,
 static bool
 evaluateCondition(OFString *condition_, OFDictionary *variables)
 {
-	OFMutableString *condition = [[condition_ mutableCopy] autorelease];
+	OFMutableString *condition = objc_autorelease([condition_ mutableCopy]);
 	OFMutableArray *tokens, *operators, *stack;
 
 	/* Empty condition is the fallback that's always true */
@@ -303,15 +328,18 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 }
 
 @implementation OFLocale
-@synthesize language = _language, territory = _territory, encoding = _encoding;
-@synthesize decimalPoint = _decimalPoint;
+@synthesize languageCode = _languageCode, countryCode = _countryCode;
+@synthesize encoding = _encoding, decimalSeparator = _decimalSeparator;
 
 + (void)initialize
 {
+	void *pool;
 	OFNumber *one, *two, *three, *four;
 
 	if (self != [OFLocale class])
 		return;
+
+	pool = objc_autoreleasePoolPush();
 
 	/* 1 is also used to denote a unary operator. */
 	one = [OFNumber numberWithUnsignedInt: 1];
@@ -333,41 +361,65 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 	    @"!", one,
 	    @"is_real", one,
 	    nil];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 + (OFLocale *)currentLocale
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale;
 }
 
-+ (OFString *)language
++ (OFString *)languageCode
 {
-	return currentLocale.language;
+	OFOnce(&initLocaleControl, initLocale);
+
+	return currentLocale.languageCode;
 }
 
-+ (OFString *)territory
++ (OFString *)countryCode
 {
-	return currentLocale.territory;
+	OFOnce(&initLocaleControl, initLocale);
+
+	return currentLocale.countryCode;
 }
 
 + (OFStringEncoding)encoding
 {
+	OFOnce(&initLocaleControl, initLocale);
+
 	return currentLocale.encoding;
 }
 
-+ (OFString *)decimalPoint
++ (OFString *)decimalSeparator
 {
-	return currentLocale.decimalPoint;
+	OFOnce(&initLocaleControl, initLocale);
+
+	return currentLocale.decimalSeparator;
 }
 
-#ifdef OF_HAVE_FILES
-+ (void)addLanguageDirectory: (OFString *)path
++ (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
-	[currentLocale addLanguageDirectory: path];
+	[currentLocale addLocalizationDirectoryIRI: IRI];
 }
-#endif
 
 - (instancetype)init
+{
+	/*
+	 * In the past, applications not using OFApplication were required to
+	 * create an instance of OFLocale manually. This is no longer needed
+	 * and +[currentLocale] creates the singleton. However, in order to not
+	 * break old applications, this method needs to just return the
+	 * singleton now.
+	 */
+	objc_release(self);
+
+	return [OFLocale currentLocale];
+}
+
+- (instancetype)of_init
 {
 	self = [super init];
 
@@ -375,16 +427,16 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 #ifndef OF_AMIGAOS
 		char *locale, *messagesLocale = NULL;
 
-		if (currentLocale != nil)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
-
+# ifdef OF_MSDOS
+		_encoding = OFStringEncodingCodepage437;
+# else
 		_encoding = OFStringEncodingUTF8;
-		_decimalPoint = @".";
+# endif
+		_decimalSeparator = @".";
 		_localizedStrings = [[OFMutableArray alloc] init];
 
 		if ((locale = setlocale(LC_ALL, "")) != NULL)
-			_decimalPoint = [[OFString alloc]
+			_decimalSeparator = [[OFString alloc]
 			    initWithCString: localeconv()->decimal_point
 				   encoding: _encoding];
 
@@ -398,10 +450,10 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			void *pool = objc_autoreleasePoolPush();
 
 			parseLocale(messagesLocale, &_encoding,
-			    &_language, &_territory);
+			    &_languageCode, &_countryCode);
 
-			[_language retain];
-			[_territory retain];
+			objc_retain(_languageCode);
+			objc_retain(_countryCode);
 
 			objc_autoreleasePoolPop(pool);
 		}
@@ -426,7 +478,7 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 			OFStringEncoding ASCII = OFStringEncodingASCII;
 
 			@try {
-				_encoding = OFStringEncodingForName(
+				_encoding = OFStringEncodingParseName(
 				    [OFString stringWithCString: buffer
 						       encoding: ASCII]);
 			} @catch (OFInvalidArgumentException *e) {
@@ -439,31 +491,31 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 		 * Get it via localeconv() instead of from the Locale struct,
 		 * to make sure we and printf etc. have the same expectations.
 		 */
-		_decimalPoint = [[OFString alloc]
+		_decimalSeparator = [[OFString alloc]
 		    initWithCString: localeconv()->decimal_point
 			   encoding: _encoding];
 
 		_localizedStrings = [[OFMutableArray alloc] init];
 
 		if (GetVar("Language", buffer, sizeof(buffer), 0) > 0)
-			_language = [[OFString alloc]
+			_languageCode = [[OFString alloc]
 			    initWithCString: buffer
 				   encoding: _encoding];
 
 		if ((locale = OpenLocale(NULL)) != NULL) {
 			@try {
-				uint32_t territory;
+				uint32_t countryCode;
 				size_t length;
 
-				territory =
+				countryCode =
 				    OFToBigEndian32(locale->loc_CountryCode);
 
 				for (length = 0; length < 4; length++)
-					if (((char *)&territory)[length] == 0)
+					if (((char *)&countryCode)[length] == 0)
 						break;
 
-				_territory = [[OFString alloc]
-				    initWithCString: (char *)&territory
+				_countryCode = [[OFString alloc]
+				    initWithCString: (char *)&countryCode
 					   encoding: _encoding
 					     length: length];
 			} @finally {
@@ -473,71 +525,81 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		objc_autoreleasePoolPop(pool);
 #endif
+
+		if (OFStdIn.hasTerminal)
+			OFStdIn.encoding = _encoding;
+		if (OFStdOut.hasTerminal)
+			OFStdOut.encoding = _encoding;
+		if (OFStdErr.hasTerminal)
+			OFStdErr.encoding = _encoding;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
-
-	currentLocale = self;
 
 	return self;
 }
 
-- (void)dealloc
-{
-	[_language release];
-	[_territory release];
-	[_decimalPoint release];
-	[_localizedStrings release];
+OF_SINGLETON_METHODS
 
-	[super dealloc];
-}
-
-#ifdef OF_HAVE_FILES
-- (void)addLanguageDirectory: (OFString *)path
+- (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
 	void *pool;
-	OFString *mapPath, *language, *territory, *languageFile;
+	OFFileManager *fileManager;
+	OFIRI *mapIRI, *localizationIRI, *compressedLocalizationIRI;
+	OFString *languageCode, *countryCode, *localizationFile;
 	OFDictionary *map;
 
-	if (_language == nil)
+	if (_languageCode == nil)
 		return;
 
 	pool = objc_autoreleasePoolPush();
 
-	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
+	mapIRI = [IRI IRIByAppendingPathComponent: @"localizations.json"];
 	@try {
-		map = [[OFString stringWithContentsOfFile: mapPath]
+		map = [[OFString stringWithContentsOfIRI: mapIRI]
 		     objectByParsingJSON];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	language = _language.lowercaseString;
-	territory = _territory.lowercaseString;
+	languageCode = _languageCode.lowercaseString;
+	countryCode = _countryCode.lowercaseString;
 
-	if (territory == nil)
-		territory = @"";
+	if (countryCode == nil)
+		countryCode = @"";
 
-	languageFile = [[map objectForKey: language] objectForKey: territory];
-	if (languageFile == nil)
-		languageFile = [[map objectForKey: language] objectForKey: @""];
+	localizationFile = [[map objectForKey: languageCode]
+	    objectForKey: countryCode];
+	if (localizationFile == nil)
+		localizationFile = [[map objectForKey: languageCode]
+		    objectForKey: @""];
 
-	if (languageFile == nil) {
+	if (localizationFile == nil) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	languageFile = [path stringByAppendingPathComponent:
-	    [languageFile stringByAppendingString: @".json"]];
+	fileManager = [OFFileManager defaultManager];
 
-	[_localizedStrings addObject: [[OFString stringWithContentsOfFile:
-	    languageFile] objectByParsingJSON]];
+	localizationIRI = [IRI IRIByAppendingPathComponent:
+	    [localizationFile stringByAppendingString: @".json"]];
+	compressedLocalizationIRI = [IRI IRIByAppendingPathComponent:
+	    [localizationFile stringByAppendingString: @".json.gz"]];
+
+	if (![fileManager fileExistsAtIRI: localizationIRI] &&
+	    [fileManager fileExistsAtIRI: compressedLocalizationIRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = compressedLocalizationIRI.string;
+		localizationIRI = tmp;
+	}
+
+	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:
+	    localizationIRI] objectByParsingJSON]];
 
 	objc_autoreleasePoolPop(pool);
 }
-#endif
 
 - (OFString *)localizedStringForID: (OFConstantString *)ID
 			  fallback: (id)fallback, ...

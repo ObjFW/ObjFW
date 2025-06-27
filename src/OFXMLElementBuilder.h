@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -23,8 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLElementBuilder;
 
 /**
- * @protocol OFXMLElementBuilderDelegate
- *	     OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ * @protocol OFXMLElementBuilderDelegate OFXMLElementBuilder.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for
  * OFXMLElementBuilder.
@@ -54,8 +57,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which built the OFXMLNode without parent
  * @param node The OFXMLNode the OFXMLElementBuilder built
  */
--   (void)elementBuilder: (OFXMLElementBuilder *)builder
-  didBuildParentlessNode: (OFXMLNode *)node;
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+    didBuildOrphanNode: (OFXMLNode *)node;
 
 /**
  * @brief This callback is called when the OFXMLElementBuilder gets a close tag
@@ -73,12 +76,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which did not expect the close tag
  * @param name The name of the close tag
  * @param prefix The prefix of the close tag
- * @param namespace_ The namespace of the close tag
+ * @param nameSpace The namespace of the close tag
  */
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
   didNotExpectCloseTag: (OFString *)name
 		prefix: (nullable OFString *)prefix
-	     namespace: (nullable OFString *)namespace_;
+	     namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief This callback is called when the XML parser for the element builder
@@ -93,7 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/ObjFW.h
  *
  * @brief A class implementing the OFXMLParserDelegate protocol that can build
  * OFXMLElements from the document parsed by the OFXMLParser.
@@ -102,11 +105,11 @@ OF_ASSUME_NONNULL_BEGIN
  * first parsing stuff using the OFXMLParser with another delegate and then
  * setting the OFXMLElementBuilder as delegate for the parser.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
-	OF_RESERVE_IVARS(OFXMLElementBuilder, 4)
 }
 
 /**

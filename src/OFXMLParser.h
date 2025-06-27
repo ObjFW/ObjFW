@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -27,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFXMLParser;
 
 /**
- * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/OFXMLParser.h
+ * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/ObjFW.h
  *
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
@@ -39,11 +43,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param parser The parser which found a processing instruction
  * @param target The target of the processing instruction
- * @param data The data of the processing instruction
+ * @param text The text of the processing instruction
  */
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data;
+				  text: (nullable OFString *)text;
 
 /**
  * @brief This callback is called when the XML parser found the start of a new
@@ -52,14 +56,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a new tag
  * @param name The name of the tag which just started
  * @param prefix The prefix of the tag which just started or `nil`
- * @param ns The namespace of the tag which just started or `nil`
+ * @param nameSpace The namespace of the tag which just started or `nil`
  * @param attributes The attributes included in the tag which just started or
  *		     `nil`
  */
 -    (void)parser: (OFXMLParser *)parser
   didStartElement: (OFString *)name
 	   prefix: (nullable OFString *)prefix
-	namespace: (nullable OFString *)ns
+	namespace: (nullable OFString *)nameSpace
        attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
 
 /**
@@ -68,12 +72,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found the end of a tag
  * @param name The name of the tag which just ended
  * @param prefix The prefix of the tag which just ended or `nil`
- * @param ns The namespace of the tag which just ended or `nil`
+ * @param nameSpace The namespace of the tag which just ended or `nil`
  */
 -  (void)parser: (OFXMLParser *)parser
   didEndElement: (OFString *)name
 	 prefix: (nullable OFString *)prefix
-      namespace: (nullable OFString *)ns;
+      namespace: (nullable OFString *)nameSpace;
 
 /**
  * @brief This callback is called when the XML parser found characters.
@@ -119,7 +123,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFXMLParser OFXMLParser.h ObjFW/OFXMLParser.h
+ * @class OFXMLParser OFXMLParser.h ObjFW/ObjFW.h
  *
  * @brief An event-based XML parser.
  *
@@ -130,28 +134,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFXMLParser: OFObject
 {
 	id <OFXMLParserDelegate> _Nullable _delegate;
-	enum {
-		OFXMLParserStateInByteOrderMark,
-		OFXMLParserStateOutsideTag,
-		OFXMLParserStateTagOpened,
-		OFXMLParserStateInProcessingInstruction,
-		OFXMLParserStateInTagName,
-		OFXMLParserStateInCloseTagName,
-		OFXMLParserStateInTag,
-		OFXMLParserStateInAttributeName,
-		OFXMLParserStateExpectAttributeEqualSign,
-		OFXMLParserStateExpectAttributeDelimiter,
-		OFXMLParserStateInAttributeValue,
-		OFXMLParserStateExpectTagClose,
-		OFXMLParserStateExpectSpaceOrTagClose,
-		OFXMLParserStateInExclamationMark,
-		OFXMLParserStateInCDATAOpening,
-		OFXMLParserStateInCDATA,
-		OFXMLParserStateInCommentOpening,
-		OFXMLParserStateInComment1,
-		OFXMLParserStateInComment2,
-		OFXMLParserStateInDOCTYPE
-	} _state;
+	uint_least8_t _state;
 	size_t _i, _last;
 	const char *_Nullable _data;
 	OFMutableData *_buffer;
@@ -185,7 +168,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Whether the XML parser has finished parsing.
  */
-@property (readonly, nonatomic) bool hasFinishedParsing;
+@property (readonly, nonatomic, getter=hasFinishedParsing) bool finishedParsing;
 
 /**
  * @brief The depth limit for the XML parser.
@@ -208,6 +191,10 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param buffer The buffer to parse
  * @param length The length of the buffer
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseBuffer: (const char *)buffer length: (size_t)length;
 
@@ -215,6 +202,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified string.
  *
  * @param string The string to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseString: (OFString *)string;
 
@@ -222,6 +213,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Parses the specified stream.
  *
  * @param stream The stream to parse
+ * @throw OFMalformedXMLException The XML was malformed
+ * @throw OFUnboundPrefixException A prefix was used that was not bound to any
+ *				   namespace
+ * @throw OFInvalidEncodingException The XML is not in the encoding it specified
  */
 - (void)parseStream: (OFStream *)stream;
 @end

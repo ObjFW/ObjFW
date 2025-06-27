@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,22 +22,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef OF_OBJFW_RUNTIME
-# import "ObjFWRT.h"
-# import "private.h"
-#else
-# import <objc/runtime.h>
-#endif
+#import "ObjFWRT.h"
+#import "private.h"
 
 #import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "OFTLSKey.h"
-#endif
-
-#ifndef OF_OBJFW_RUNTIME
-@interface DummyObject
-- (void)release;
-@end
 #endif
 
 #if defined(OF_HAVE_COMPILER_TLS)
@@ -51,14 +45,14 @@ static uintptr_t size = 0;
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 OF_CONSTRUCTOR()
 {
-	OFEnsure(OFTLSKeyNew(&objectsKey) == 0);
-	OFEnsure(OFTLSKeyNew(&countKey) == 0);
-	OFEnsure(OFTLSKeyNew(&sizeKey) == 0);
+	if (OFTLSKeyNew(&objectsKey) != 0 || OFTLSKeyNew(&countKey) != 0 ||
+	    OFTLSKeyNew(&sizeKey) != 0)
+		_OBJC_ERROR("Failed to create TLS keys!");
 }
 #endif
 
 void *
-objc_autoreleasePoolPush()
+objc_autoreleasePoolPush(void)
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	uintptr_t count = (uintptr_t)OFTLSKeyGet(countKey);
@@ -82,7 +76,7 @@ objc_autoreleasePoolPop(void *pool)
 	}
 
 	for (uintptr_t i = idx; i < count; i++) {
-		[objects[i] release];
+		objc_release(objects[i]);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		objects = OFTLSKeyGet(objectsKey);
@@ -98,13 +92,15 @@ objc_autoreleasePoolPop(void *pool)
 #if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
 		size = 0;
 #else
-		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
-		OFEnsure(OFTLSKeySet(sizeKey, (void *)0) == 0);
+		if (OFTLSKeySet(objectsKey, objects) != 0 ||
+		    OFTLSKeySet(sizeKey, (void *)0) != 0)
+			_OBJC_ERROR("Failed to set TLS key!");
 #endif
 	}
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
+	if (OFTLSKeySet(countKey, (void *)count) != 0)
+		_OBJC_ERROR("Failed to set TLS key!");
 #endif
 }
 
@@ -123,19 +119,21 @@ _objc_rootAutorelease(id object)
 		else
 			size *= 2;
 
-		OFEnsure((objects =
-		    realloc(objects, size * sizeof(id))) != NULL);
+		if ((objects = realloc(objects, size * sizeof(id))) == NULL)
+			_OBJC_ERROR("Failed to resize autorelease pool!");
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-		OFEnsure(OFTLSKeySet(objectsKey, objects) == 0);
-		OFEnsure(OFTLSKeySet(sizeKey, (void *)size) == 0);
+		if (OFTLSKeySet(objectsKey, objects) != 0 ||
+		    OFTLSKeySet(sizeKey, (void *)size) != 0)
+			_OBJC_ERROR("Failed to set TLS key!");
 #endif
 	}
 
 	objects[count++] = object;
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OFEnsure(OFTLSKeySet(countKey, (void *)count) == 0);
+	if (OFTLSKeySet(countKey, (void *)count) != 0)
+		_OBJC_ERROR("Failed to set TLS key!");
 #endif
 
 	return object;

@@ -1,21 +1,24 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #import "OFTCPSocketSOCKS5Connector.h"
@@ -23,7 +26,16 @@
 #import "OFRunLoop.h"
 #import "OFString.h"
 
-#import "OFConnectionFailedException.h"
+#import "OFConnectIPSocketFailedException.h"
+
+enum {
+	stateSendAuthentication = 1,
+	stateReadVersion,
+	stateSendRequest,
+	stateReadResponse,
+	stateReadAddress,
+	stateReadAddressLength,
+};
 
 @implementation OFTCPSocketSOCKS5Connector
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
@@ -31,23 +43,23 @@
 			  port: (uint16_t)port
 		      delegate: (id <OFTCPSocketDelegate>)delegate
 #ifdef OF_HAVE_BLOCKS
-			 block: (OFTCPSocketAsyncConnectBlock)block
+		       handler: (OFTCPSocketConnectedHandler)handler
 #endif
 {
 	self = [super init];
 
 	@try {
-		_socket = [sock retain];
+		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
-		_delegate = [delegate retain];
+		_delegate = objc_retain(delegate);
 #ifdef OF_HAVE_BLOCKS
-		_block = [block copy];
+		_handler = [handler copy];
 #endif
 
 		_socket.delegate = self;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -59,14 +71,14 @@
 	if (_socket.delegate == self)
 		_socket.delegate = _delegate;
 
-	[_socket release];
-	[_host release];
-	[_delegate release];
+	objc_release(_socket);
+	objc_release(_host);
+	objc_release(_delegate);
 #ifdef OF_HAVE_BLOCKS
-	[_block release];
+	objc_release(_handler);
 #endif
-	[_exception release];
-	[_request release];
+	objc_release(_exception);
+	objc_release(_request);
 
 	[super dealloc];
 }
@@ -76,8 +88,8 @@
 	_socket.delegate = _delegate;
 
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(_exception);
+	if (_handler != NULL)
+		_handler(_socket, _host, _port, _exception);
 	else {
 #endif
 		if ([_delegate respondsToSelector:
@@ -99,14 +111,14 @@
 	OFData *data;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return;
 	}
 
 	data = [OFData dataWithItems: "\x05\x01\x00" count: 3];
 
-	_SOCKS5State = OFSOCKS5StateSendAuthentication;
+	_SOCKS5State = stateSendAuthentication;
 	[_socket asyncWriteData: data
 		    runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 }
@@ -123,7 +135,7 @@
 	unsigned char *response, *addressLength;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return false;
 	}
@@ -131,11 +143,11 @@
 	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
-	case OFSOCKS5StateReadVersion:
+	case stateReadVersion:
 		SOCKSVersion = buffer;
 
 		if (SOCKSVersion[0] != 5 || SOCKSVersion[1] != 0) {
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -144,7 +156,7 @@
 			return false;
 		}
 
-		[_request release];
+		objc_release(_request);
 		_request = [[OFMutableData alloc] init];
 
 		[_request addItems: "\x05\x01\x00\x03" count: 4];
@@ -157,14 +169,14 @@
 		port[1] = _port & 0xFF;
 		[_request addItems: port count: 2];
 
-		_SOCKS5State = OFSOCKS5StateSendRequest;
+		_SOCKS5State = stateSendRequest;
 		[_socket asyncWriteData: _request runLoopMode: runLoopMode];
 		return false;
-	case OFSOCKS5StateReadResponse:
+	case stateReadResponse:
 		response = buffer;
 
 		if (response[0] != 5 || response[2] != 0) {
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -207,7 +219,7 @@
 				break;
 			}
 
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: _socket
@@ -219,25 +231,25 @@
 		/* Skip the rest of the response */
 		switch (response[3]) {
 		case 1: /* IPv4 */
-			_SOCKS5State = OFSOCKS5StateReadAddress;
+			_SOCKS5State = stateReadAddress;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 4 + 2
 					 runLoopMode: runLoopMode];
 			return false;
 		case 3: /* Domain name */
-			_SOCKS5State = OFSOCKS5StateReadAddressLength;
+			_SOCKS5State = stateReadAddressLength;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 1
 					 runLoopMode: runLoopMode];
 			return false;
 		case 4: /* IPv6 */
-			_SOCKS5State = OFSOCKS5StateReadAddress;
+			_SOCKS5State = stateReadAddress;
 			[_socket asyncReadIntoBuffer: _buffer
 					 exactLength: 16 + 2
 					 runLoopMode: runLoopMode];
 			return false;
 		default:
-			_exception = [[OFConnectionFailedException alloc]
+			_exception = [[OFConnectIPSocketFailedException alloc]
 			    initWithHost: _host
 				    port: _port
 				  socket: self
@@ -247,19 +259,19 @@
 		}
 
 		return false;
-	case OFSOCKS5StateReadAddress:
+	case stateReadAddress:
 		[self didConnect];
 		return false;
-	case OFSOCKS5StateReadAddressLength:
+	case stateReadAddressLength:
 		addressLength = buffer;
 
-		_SOCKS5State = OFSOCKS5StateReadAddress;
+		_SOCKS5State = stateReadAddress;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: addressLength[0] + 2
 				 runLoopMode: runLoopMode];
 		return false;
 	default:
-		assert(0);
+		OFAssert(0);
 		return false;
 	}
 }
@@ -272,7 +284,7 @@
 	OFRunLoopMode runLoopMode;
 
 	if (exception != nil) {
-		_exception = [exception retain];
+		_exception = objc_retain(exception);
 		[self didConnect];
 		return nil;
 	}
@@ -280,23 +292,23 @@
 	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
-	case OFSOCKS5StateSendAuthentication:
-		_SOCKS5State = OFSOCKS5StateReadVersion;
+	case stateSendAuthentication:
+		_SOCKS5State = stateReadVersion;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 2
 				 runLoopMode: runLoopMode];
 		return nil;
-	case OFSOCKS5StateSendRequest:
-		[_request release];
+	case stateSendRequest:
+		objc_release(_request);
 		_request = nil;
 
-		_SOCKS5State = OFSOCKS5StateReadResponse;
+		_SOCKS5State = stateReadResponse;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 4
 				 runLoopMode: runLoopMode];
 		return nil;
 	default:
-		assert(0);
+		OFAssert(0);
 		return nil;
 	}
 }

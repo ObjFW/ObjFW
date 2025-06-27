@@ -1,23 +1,28 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#define _LARGEFILE64_SOURCE
+#ifndef _LARGEFILE64_SOURCE
+# define _LARGEFILE64_SOURCE 1
+#endif
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -33,7 +38,6 @@
 #import "OFLocale.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
-#import "OFURL.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -49,6 +53,13 @@
 # include <windows.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# define Class IntuitionClass
+# include <proto/exec.h>
+# include <proto/dos.h>
+# undef Class
+#endif
+
 #ifdef OF_WII
 # include <fat.h>
 #endif
@@ -58,9 +69,10 @@
 # include <filesystem.h>
 #endif
 
-#ifdef OF_AMIGAOS
-# include <proto/exec.h>
-# include <proto/dos.h>
+#ifdef OF_NINTENDO_SWITCH
+# define id nx_id
+# include <switch.h>
+# undef id
 #endif
 
 #ifndef O_BINARY
@@ -79,8 +91,8 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-static struct OFFileHandle
-	struct OFFileHandle *previous, *next;
+static struct _OFFileHandle {
+	struct _OFFileHandle *previous, *next;
 	BPTR handle;
 	bool append;
 } *firstHandle = NULL;
@@ -90,6 +102,8 @@ closeHandle(OFFileHandle handle)
 {
 	Close(handle->handle);
 
+	Forbid();
+
 	if (handle->previous != NULL)
 		handle->previous->next = handle->next;
 	if (handle->next != NULL)
@@ -97,6 +111,8 @@ closeHandle(OFFileHandle handle)
 
 	if (firstHandle == handle)
 		firstHandle = handle->next;
+
+	Permit();
 
 	OFFreeMemory(handle);
 }
@@ -180,26 +196,27 @@ parseMode(const char *mode, bool *append)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif
+
+#ifdef OF_NINTENDO_SWITCH
+	if (R_SUCCEEDED(romfsInit()))
+		/*
+		 * Errors are intentionally ignored, as it's possible we just
+		 * have no romfs.
+		 */
+		atexit((void (*)(void))romfsExit);
+#endif
 }
 
 + (instancetype)fileWithPath: (OFString *)path mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path mode: mode] autorelease];
-}
-
-+ (instancetype)fileWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	return [[[self alloc] initWithURL: URL mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithPath: path
+								 mode: mode]);
 }
 
 + (instancetype)fileWithHandle: (OFFileHandle)handle
 {
-	return [[[self alloc] initWithHandle: handle] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithHandle: handle]);
 }
 
 - (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
@@ -292,6 +309,8 @@ parseMode(const char *mode, bool *append)
 				}
 			}
 
+			Forbid();
+
 			handle->previous = NULL;
 			handle->next = firstHandle;
 
@@ -299,6 +318,8 @@ parseMode(const char *mode, bool *append)
 				firstHandle->previous = handle;
 
 			firstHandle = handle;
+
+			Permit();
 		} @catch (id e) {
 			OFFreeMemory(handle);
 			@throw e;
@@ -307,7 +328,7 @@ parseMode(const char *mode, bool *append)
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -321,32 +342,19 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- (instancetype)initWithURL: (OFURL *)URL mode: (OFString *)mode
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *fileSystemRepresentation;
-
-	@try {
-		fileSystemRepresentation = URL.fileSystemRepresentation;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	self = [self initWithPath: fileSystemRepresentation mode: mode];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
-}
-
 - (instancetype)initWithHandle: (OFFileHandle)handle
 {
 	self = [super init];
 
 	_handle = handle;
+	_initialized = true;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (bool)lowlevelIsAtEndOfStream
@@ -451,20 +459,39 @@ parseMode(const char *mode, bool *append)
 	return (size_t)bytesWritten;
 }
 
-- (OFFileOffset)lowlevelSeekToOffset: (OFFileOffset)offset whence: (int)whence
+- (OFStreamOffset)lowlevelSeekToOffset: (OFStreamOffset)offset
+				whence: (OFSeekWhence)whence
 {
-	OFFileOffset ret;
+	OFStreamOffset ret;
 
 	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_AMIGAOS
+	int translatedWhence;
+
+	switch (whence) {
+	case OFSeekSet:
+		translatedWhence = SEEK_SET;
+		break;
+	case OFSeekCurrent:
+		translatedWhence = SEEK_CUR;
+		break;
+	case OFSeekEnd:
+		translatedWhence = SEEK_END;
+		break;
+	default:
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence
+							    errNo: EINVAL];
+	}
 # if defined(OF_WINDOWS)
-	ret = _lseeki64(_handle, offset, whence);
+	ret = _lseeki64(_handle, offset, translatedWhence);
 # elif defined(HAVE_LSEEK64)
-	ret = lseek64(_handle, offset, whence);
+	ret = lseek64(_handle, offset, translatedWhence);
 # else
-	ret = lseek(_handle, offset, whence);
+	ret = lseek(_handle, offset, translatedWhence);
 # endif
 
 	if (ret == -1)
@@ -476,13 +503,13 @@ parseMode(const char *mode, bool *append)
 	LONG translatedWhence;
 
 	switch (whence) {
-	case SEEK_SET:
+	case OFSeekSet:
 		translatedWhence = OFFSET_BEGINNING;
 		break;
-	case SEEK_CUR:
+	case OFSeekCurrent:
 		translatedWhence = OFFSET_CURRENT;
 		break;
-	case SEEK_END:
+	case OFSeekEnd:
 		translatedWhence = OFFSET_END;
 		break;
 	default:
@@ -536,7 +563,7 @@ parseMode(const char *mode, bool *append)
 
 - (void)dealloc
 {
-	if (_handle != OFInvalidFileHandle)
+	if (_initialized && _handle != OFInvalidFileHandle)
 		[self close];
 
 	[super dealloc];

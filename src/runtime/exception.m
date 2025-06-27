@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -26,25 +30,24 @@
 
 #import "macros.h"
 #ifdef OF_HAVE_THREADS
-# include "OFPlainMutex.h"
+# import "OFPlainMutex.h"
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 # include <windows.h>
 #endif
 
-#if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_v0
-# define CXX_PERSONALITY_STR "__gxx_personality_v0"
-#elif defined(HAVE_SJLJ_EXCEPTIONS)
+#if defined(__SEH__)
+# define PERSONALITY gnu_objc_personality
+# define CXX_PERSONALITY_STR "__gxx_personality_seh0"
+#elif defined(__USING_SJLJ_EXCEPTIONS__)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define CXX_PERSONALITY_STR "__gxx_personality_sj0"
 # define _Unwind_RaiseException _Unwind_SjLj_RaiseException
 # define __builtin_eh_return_data_regno(i) (i)
-#elif defined(HAVE_SEH_EXCEPTIONS)
-# define PERSONALITY	 gnu_objc_personality
 #else
-# error Unknown exception type!
+# define PERSONALITY __gnu_objc_personality_v0
+# define CXX_PERSONALITY_STR "__gxx_personality_v0"
 #endif
 
 #if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
@@ -69,38 +72,44 @@
 #define GNUCCXX0_EXCEPTION_CLASS UINT64_C(0x474E5543432B2B00) /* GNUCC++\0 */
 #define CLNGCXX0_EXCEPTION_CLASS UINT64_C(0x434C4E47432B2B00) /* CLNGC++\0 */
 
-#define NUM_EMERGENCY_EXCEPTIONS 4
+#define numEmergencyExceptions 4
 
-#define _UA_SEARCH_PHASE  0x01
-#define _UA_CLEANUP_PHASE 0x02
-#define _UA_HANDLER_FRAME 0x04
-#define _UA_FORCE_UNWIND  0x08
+enum {
+	_UA_SEARCH_PHASE  = 0x01,
+	_UA_CLEANUP_PHASE = 0x02,
+	_UA_HANDLER_FRAME = 0x04,
+	_UA_FORCE_UNWIND  = 0x08
+};
 
-#define DW_EH_PE_absptr	  0x00
+enum {
+	DW_EH_PE_absptr	  = 0x00,
 
-#define DW_EH_PE_uleb128  0x01
-#define DW_EH_PE_udata2	  0x02
-#define DW_EH_PE_udata4	  0x03
-#define DW_EH_PE_udata8	  0x04
+	DW_EH_PE_uleb128  = 0x01,
+	DW_EH_PE_udata2	  = 0x02,
+	DW_EH_PE_udata4	  = 0x03,
+	DW_EH_PE_udata8	  = 0x04,
 
-#define DW_EH_PE_signed	  0x08
-#define DW_EH_PE_sleb128  (DW_EH_PE_signed | DW_EH_PE_uleb128)
-#define DW_EH_PE_sdata2	  (DW_EH_PE_signed | DW_EH_PE_udata2)
-#define DW_EH_PE_sdata4	  (DW_EH_PE_signed | DW_EH_PE_udata4)
-#define DW_EH_PE_sdata8	  (DW_EH_PE_signed | DW_EH_PE_udata8)
+	DW_EH_PE_signed	  = 0x08,
+	DW_EH_PE_sleb128  = (DW_EH_PE_signed | DW_EH_PE_uleb128),
+	DW_EH_PE_sdata2	  = (DW_EH_PE_signed | DW_EH_PE_udata2),
+	DW_EH_PE_sdata4	  = (DW_EH_PE_signed | DW_EH_PE_udata4),
+	DW_EH_PE_sdata8	  = (DW_EH_PE_signed | DW_EH_PE_udata8),
 
-#define DW_EH_PE_pcrel	  0x10
-#define DW_EH_PE_textrel  0x20
-#define DW_EH_PE_datarel  0x30
-#define DW_EH_PE_funcrel  0x40
-#define DW_EH_PE_aligned  0x50
+	DW_EH_PE_pcrel	  = 0x10,
+	DW_EH_PE_textrel  = 0x20,
+	DW_EH_PE_datarel  = 0x30,
+	DW_EH_PE_funcrel  = 0x40,
+	DW_EH_PE_aligned  = 0x50,
 
-#define DW_EH_PE_indirect 0x80
+	DW_EH_PE_indirect = 0x80,
 
-#define DW_EH_PE_omit	  0xFF
+	DW_EH_PE_omit	  = 0xFF
+};
 
-#define CLEANUP_FOUND	  0x01
-#define HANDLER_FOUND	  0x02
+enum {
+	CLEANUP_FOUND = 0x01,
+	HANDLER_FOUND = 0x02
+};
 
 struct _Unwind_Context;
 
@@ -120,7 +129,7 @@ struct objc_exception {
 		void (*cleanup)(
 		    _Unwind_Reason_Code, struct _Unwind_Exception *);
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
-# ifndef HAVE_SEH_EXCEPTIONS
+# ifndef __SEH__
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
@@ -158,7 +167,7 @@ struct objc_exception {
 #endif
 };
 
-struct lsda {
+struct LSDA {
 	uintptr_t regionStart, landingpadsStart;
 	uint8_t typesTableEnc;
 	const uint8_t *typesTable;
@@ -229,25 +238,52 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
-#ifdef CXX_PERSONALITY
+#if defined(OF_WINDOWS)
+# ifdef __SEH__
+static EXCEPTION_DISPOSITION (*cxx_personality)(PEXCEPTION_RECORD, void *,
+    PCONTEXT, PDISPATCHER_CONTEXT);
+# else
+static PERSONALITY_FUNC((*cxx_personality));
+# endif
+
+OF_CONSTRUCTOR()
+{
+	/*
+	 * This only works if the application uses libc++.dll or
+	 * libstdc++-6.dll. There is unfortunately no other way, as Windows
+	 * does not support proper weak linking.
+	 */
+
+	HMODULE module;
+
+	module = GetModuleHandle("libc++");
+
+	if (module == NULL)
+		module = GetModuleHandle("libstdc++-6");
+
+	if (module != NULL)
+		cxx_personality = (__typeof__(cxx_personality))
+		    GetProcAddress(module, CXX_PERSONALITY_STR);
+}
+#elif !defined(OF_AMIGAOS_M68K)
 static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code (*)(int, int, uint64_t,
     struct _Unwind_Exception *, struct _Unwind_Context *));
 #endif
 
-static objc_uncaught_exception_handler_t uncaughtExceptionHandler;
-static struct objc_exception emergencyExceptions[NUM_EMERGENCY_EXCEPTIONS];
+static objc_uncaught_exception_handler uncaughtExceptionHandler;
+static struct objc_exception emergencyExceptions[numEmergencyExceptions];
 #ifdef OF_HAVE_THREADS
 static OFSpinlock emergencyExceptionsSpinlock;
 
 OF_CONSTRUCTOR()
 {
 	if (OFSpinlockNew(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot create spinlock!");
+		_OBJC_ERROR("Failed to create spinlock!");
 }
 #endif
 
@@ -308,7 +344,7 @@ getBase(struct _Unwind_Context *ctx, uint8_t enc)
 #endif
 	}
 
-	OBJC_ERROR("Unknown encoding!");
+	_OBJC_ERROR("Unknown encoding!");
 }
 
 static size_t
@@ -328,7 +364,7 @@ sizeForEncoding(uint8_t enc)
 		return 8;
 	}
 
-	OBJC_ERROR("Unknown encoding!");
+	_OBJC_ERROR("Unknown encoding!");
 }
 
 static uint64_t
@@ -375,7 +411,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 	case DW_EH_PE_sdata8:
 		READ(int64_t)
 	default:
-		OBJC_ERROR("Unknown encoding!");
+		_OBJC_ERROR("Unknown encoding!");
 	}
 #undef READ
 
@@ -399,7 +435,7 @@ resolveValue(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 #endif
 
 static void
-readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *LSDA)
+readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct LSDA *LSDA)
 {
 	uint8_t landingpadsStartEnc;
 	uintptr_t callsitesSize;
@@ -427,7 +463,7 @@ readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *LSDA)
 }
 
 static bool
-findCallsite(struct _Unwind_Context *ctx, struct lsda *LSDA,
+findCallsite(struct _Unwind_Context *ctx, struct LSDA *LSDA,
     uintptr_t *landingpad, const uint8_t **actionRecords)
 {
 	uintptr_t IP = _Unwind_GetIP(ctx);
@@ -436,7 +472,7 @@ findCallsite(struct _Unwind_Context *ctx, struct lsda *LSDA,
 	*landingpad = 0;
 	*actionRecords = NULL;
 
-#ifndef HAVE_SJLJ_EXCEPTIONS
+#ifndef __USING_SJLJ_EXCEPTIONS__
 	while (ptr < LSDA->actionTable) {
 		uintptr_t callsiteStart, callsiteLength, callsiteLandingpad;
 		uintptr_t callsiteAction;
@@ -504,7 +540,7 @@ classMatches(Class class, id object)
 }
 
 static uint8_t
-findActionRecord(const uint8_t *actionRecords, struct lsda *LSDA, int actions,
+findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
     bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
 	const uint8_t *ptr;
@@ -564,13 +600,13 @@ findActionRecord(const uint8_t *actionRecords, struct lsda *LSDA, int actions,
 		} else if (filter == 0)
 			return CLEANUP_FOUND;
 		else if (filter < 0)
-			OBJC_ERROR("Invalid filter!");
+			_OBJC_ERROR("Invalid filter!");
 	} while (displacement != 0);
 
 	return 0;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
+#ifdef __SEH__
 static
 #endif
 PERSONALITY_FUNC(PERSONALITY)
@@ -600,14 +636,14 @@ PERSONALITY_FUNC(PERSONALITY)
 	struct objc_exception *e = (struct objc_exception *)ex;
 	bool foreign = (exClass != GNUCOBJC_EXCEPTION_CLASS);
 	const uint8_t *LSDAAddr, *actionRecords;
-	struct lsda LSDA;
+	struct LSDA LSDA;
 	uintptr_t landingpad = 0;
 	uint8_t found = 0;
 	intptr_t filter = 0;
 
 	if (foreign) {
 		switch (exClass) {
-#ifdef CXX_PERSONALITY
+#if !defined(__SEH__) && !defined(OF_AMIGAOS_M68K)
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (cxx_personality != NULL)
@@ -696,7 +732,7 @@ PERSONALITY_FUNC(PERSONALITY)
 		return _URC_INSTALL_CONTEXT;
 	}
 
-	OBJC_ERROR(
+	_OBJC_ERROR(
 	    "Neither _UA_SEARCH_PHASE nor _UA_CLEANUP_PHASE in actions!");
 }
 
@@ -712,14 +748,14 @@ emergencyExceptionCleanup(_Unwind_Reason_Code reason,
 {
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-		OBJC_ERROR("Cannot unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
@@ -732,10 +768,10 @@ objc_exception_throw(id object)
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
-		for (uint_fast8_t i = 0; i < NUM_EMERGENCY_EXCEPTIONS; i++) {
+		for (uint_fast8_t i = 0; i < numEmergencyExceptions; i++) {
 			if (emergencyExceptions[i].exception.class == 0) {
 				e = &emergencyExceptions[i];
 				e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
@@ -747,12 +783,12 @@ objc_exception_throw(id object)
 
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&emergencyExceptionsSpinlock) != 0)
-			OBJC_ERROR("Cannot lock spinlock!");
+			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 	}
 
 	if (e == NULL)
-		OBJC_ERROR("Not enough memory to allocate exception!");
+		_OBJC_ERROR("Not enough memory to allocate exception!");
 
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 	e->exception.cleanup = (emergency
@@ -764,39 +800,19 @@ objc_exception_throw(id object)
 	if (uncaughtExceptionHandler != NULL)
 		uncaughtExceptionHandler(object);
 
-	OBJC_ERROR("_Unwind_RaiseException() returned!");
+	_OBJC_ERROR("_Unwind_RaiseException() returned!");
 }
 
-objc_uncaught_exception_handler_t
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler_t handler)
+objc_uncaught_exception_handler
+objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 {
-	objc_uncaught_exception_handler_t old = uncaughtExceptionHandler;
+	objc_uncaught_exception_handler old = uncaughtExceptionHandler;
 	uncaughtExceptionHandler = handler;
 
 	return old;
 }
 
-#ifdef HAVE_SEH_EXCEPTIONS
-typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void *,
-    PCONTEXT, PDISPATCHER_CONTEXT);
-static seh_personality_fn __gxx_personality_seh0;
-
-OF_CONSTRUCTOR()
-{
-	/*
-	 * This only works if the application uses libstdc++-6.dll.
-	 * There is unfortunately no other way, as Windows does not support
-	 * proper weak linking.
-	 */
-
-	HMODULE module;
-	if ((module = GetModuleHandle("libstdc++-6")) == NULL)
-		return;
-
-	__gxx_personality_seh0 = (seh_personality_fn)
-	    GetProcAddress(module, "__gxx_personality_seh0");
-}
-
+#ifdef __SEH__
 EXCEPTION_DISPOSITION
 __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
     PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
@@ -807,8 +823,8 @@ __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
 	switch (ex->class) {
 	case GNUCCXX0_EXCEPTION_CLASS:
 	case CLNGCXX0_EXCEPTION_CLASS:
-		if (__gxx_personality_seh0 != NULL)
-			return __gxx_personality_seh0(ms_exc, this_frame,
+		if (cxx_personality != NULL)
+			return cxx_personality(ms_exc, this_frame,
 			    ms_orig_context, ms_disp);
 	}
 

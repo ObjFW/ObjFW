@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFStream.h"
@@ -22,51 +26,64 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 
 /**
- * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
+ * @class OFHTTPResponse OFHTTPResponse.h ObjFW/ObjFW.h
  *
- * @brief A class for representing an HTTP request reply as a stream.
+ * @brief A class for representing an HTTP request response as a stream.
  */
+#if !defined(OF_HTTP_CLIENT_M) && !defined(OF_HTTP_SERVER_M)
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFHTTPResponse: OFStream
 {
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OF_RESERVE_IVARS(OFHTTPResponse, 4)
 }
 
 /**
- * @brief The protocol version of the HTTP request reply.
+ * @brief The protocol version of the HTTP request response.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
  */
 @property (nonatomic) OFHTTPRequestProtocolVersion protocolVersion;
 
 /**
- * @brief The protocol version of the HTTP request reply as a string.
+ * @brief The protocol version of the HTTP request response as a string.
+ *
+ * @throw OFUnsupportedVersionException The specified version cannot be set
+ *					because it is not supported
+ * @throw OFInvalidFormatException The specified version cannot be set because
+ *				   it is not in a valid format
  */
 @property (copy, nonatomic) OFString *protocolVersionString;
 
 /**
- * @brief The status code of the reply to the HTTP request.
+ * @brief The status code of the response to the HTTP request.
  */
 @property (nonatomic) short statusCode;
 
 /**
- * @brief The headers of the reply to the HTTP request.
+ * @brief The headers of the response to the HTTP request.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
     *headers;
 
 /**
- * @brief The reply as a string, trying to detect the encoding.
- */
-@property (readonly, nonatomic) OFString *string;
-
-/**
- * @brief Returns the reply as a string, trying to detect the encoding and
+ * @brief Read the response as a string, trying to detect the encoding and
  *	  falling back to the specified encoding if not detectable.
  *
- * @return The reply as a string
+ * @return The response as a string
  */
-- (OFString *)stringWithEncoding: (OFStringEncoding)encoding;
+- (OFString *)readString;
+
+/**
+ * @brief Read the response as a string, trying to detect the encoding and
+ *	  falling back to the specified encoding if not detectable.
+ *
+ * @return The response as a string
+ */
+- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 @end
 
 #ifdef __cplusplus

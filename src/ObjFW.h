@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -45,11 +49,17 @@
 
 #import "OFNumber.h"
 #import "OFDate.h"
-#import "OFURL.h"
-#import "OFURLHandler.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFUUID.h"
 #import "OFColor.h"
 
+#import "OFNotification.h"
+#import "OFNotificationCenter.h"
+
 #import "OFStream.h"
+#import "OFSeekableStream.h"
+#import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
@@ -60,34 +70,46 @@
 #import "OFTarArchiveEntry.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFZooArchive.h"
+#import "OFZooArchiveEntry.h"
 #import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
-# import "OFINIFile.h"
-# import "OFSettings.h"
 #endif
+#import "OFINIFile.h"
+#import "OFEmbeddedIRIHandler.h"
+#import "OFINICategory.h"
+#import "OFSettings.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
-# import "OFTLSSocket.h"
+# import "OFTLSStream.h"
+# import "OFX509Certificate.h"
 # import "OFKernelEventObserver.h"
 # import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
+# ifdef OF_HAVE_SCTP
+#  import "OFSCTPSocket.h"
+# endif
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFUNIXDatagramSocket.h"
+#  import "OFUNIXSequencedPacketSocket.h"
+#  import "OFUNIXStreamSocket.h"
+# endif
 # ifdef OF_HAVE_IPX
 #  import "OFIPXSocket.h"
 #  import "OFSPXSocket.h"
 #  import "OFSPXStreamSocket.h"
 # endif
-#endif
-#ifdef OF_HAVE_SOCKETS
-# ifdef OF_HAVE_THREADS
-#  import "OFHTTPClient.h"
+# ifdef OF_HAVE_APPLETALK
+#  import "OFDDPSocket.h"
 # endif
+# import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"
 # import "OFHTTPRequest.h"
@@ -130,101 +152,57 @@
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
 
+#import "OFMatrix4x4.h"
+
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
 #endif
 
 #import "OFAllocFailedException.h"
+#import "OFAlreadyOpenException.h"
 #import "OFException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFAcceptFailedException.h"
-# import "OFAlreadyConnectedException.h"
-# import "OFBindFailedException.h"
+#ifdef OF_HAVE_FILES
+# import "OFChangeCurrentDirectoryFailedException.h"
 #endif
-#import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChecksumMismatchException.h"
-#ifdef OF_HAVE_THREADS
-# import "OFConditionBroadcastFailedException.h"
-# import "OFConditionSignalFailedException.h"
-# import "OFConditionStillWaitingException.h"
-# import "OFConditionWaitFailedException.h"
-#endif
-#ifdef OF_HAVE_SOCKETS
-# import "OFConnectionFailedException.h"
-#endif
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
-#ifdef OF_WINDOWS
-# import "OFCreateWindowsRegistryKeyFailedException.h"
-#endif
-#ifdef OF_HAVE_SOCKETS
-# import "OFDNSQueryFailedException.h"
-#endif
-#ifdef OF_WINDOWS
-# import "OFDeleteWindowsRegistryKeyFailedException.h"
-# import "OFDeleteWindowsRegistryValueFailedException.h"
-#endif
 #import "OFEnumerationMutationException.h"
 #ifdef OF_HAVE_FILES
-# import "OFGetCurrentDirectoryPathFailedException.h"
+# import "OFGetCurrentDirectoryFailedException.h"
 #endif
+#import "OFGetItemAttributesFailedException.h"
 #import "OFGetOptionFailedException.h"
-#ifdef OF_WINDOWS
-# import "OFGetWindowsRegistryValueFailedException.h"
-#endif
 #import "OFHashAlreadyCalculatedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFHTTPRequestFailedException.h"
-#endif
+#import "OFHashNotCalculatedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidJSONException.h"
-#import "OFInvalidServerReplyException.h"
-#import "OFLinkFailedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFListenFailedException.h"
-#endif
-#ifdef OF_HAVE_PLUGINS
+#import "OFInvalidServerResponseException.h"
+#import "OFLinkItemFailedException.h"
+#ifdef OF_HAVE_MODULES
+# import "OFLoadModuleFailedException.h"
 # import "OFLoadPluginFailedException.h"
 #endif
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
-#import "OFMemoryNotPartOfObjectException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFObserveFailedException.h"
-#endif
 #import "OFOpenItemFailedException.h"
-#ifdef OF_WINDOWS
-# import "OFOpenWindowsRegistryKeyFailedException.h"
-#endif
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFResolveHostFailedException.h"
-#endif
-#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"
-#ifdef OF_WINDOWS
-# import "OFSetWindowsRegistryValueFailedException.h"
-#endif
 #import "OFStillLockedException.h"
-#ifdef OF_HAVE_THREADS
-# import "OFThreadJoinFailedException.h"
-# import "OFThreadStartFailedException.h"
-# import "OFThreadStillRunningException.h"
-#endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
 #import "OFUnboundPrefixException.h"
@@ -234,9 +212,50 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
-
-#ifdef OF_HAVE_PLUGINS
+#ifdef OF_HAVE_SOCKETS
+# import "OFAcceptSocketFailedException.h"
+# import "OFBindIPSocketFailedException.h"
+# import "OFBindSocketFailedException.h"
+# import "OFConnectIPSocketFailedException.h"
+# import "OFConnectSocketFailedException.h"
+# import "OFDNSQueryFailedException.h"
+# import "OFHTTPRequestFailedException.h"
+# import "OFListenOnSocketFailedException.h"
+# import "OFObserveKernelEventsFailedException.h"
+# import "OFResolveHostFailedException.h"
+# import "OFTLSHandshakeFailedException.h"
+# ifdef OF_HAVE_UNIX_SOCKETS
+#  import "OFBindUNIXSocketFailedException.h"
+#  import "OFConnectUNIXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_IPX
+#  import "OFBindIPXSocketFailedException.h"
+#  import "OFConnectSPXSocketFailedException.h"
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  import "OFBindDDPSocketFailedException.h"
+# endif
+#endif
+#ifdef OF_HAVE_THREADS
+# import "OFBroadcastConditionFailedException.h"
+# import "OFConditionStillWaitingException.h"
+# import "OFJoinThreadFailedException.h"
+# import "OFSignalConditionFailedException.h"
+# import "OFStartThreadFailedException.h"
+# import "OFThreadStillRunningException.h"
+# import "OFWaitForConditionFailedException.h"
+#endif
+#ifdef OF_HAVE_MODULES
+# import "OFModule.h"
 # import "OFPlugin.h"
+#endif
+#ifdef OF_WINDOWS
+# import "OFCreateWindowsRegistryKeyFailedException.h"
+# import "OFDeleteWindowsRegistryKeyFailedException.h"
+# import "OFDeleteWindowsRegistryValueFailedException.h"
+# import "OFGetWindowsRegistryValueFailedException.h"
+# import "OFOpenWindowsRegistryKeyFailedException.h"
+# import "OFSetWindowsRegistryValueFailedException.h"
 #endif
 
 #ifdef OF_HAVE_ATOMIC_OPS
@@ -253,14 +272,7 @@
 # import "OFPlainThread.h"
 # import "OFRecursiveMutex.h"
 # import "OFTLSKey.h"
-# import "OFThreadPool.h"
 #endif
 
-#import "OFASPrintF.h"
-#import "OFBase64.h"
-#import "OFCRC16.h"
-#import "OFCRC32.h"
-#import "OFHuffmanTree.h"
 #import "OFPBKDF2.h"
 #import "OFScrypt.h"
-#import "OFStrPTime.h"

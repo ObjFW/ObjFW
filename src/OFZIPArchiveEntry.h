@@ -1,25 +1,30 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
+#import "OFArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
-typedef enum OFZIPArchiveEntryCompressionMethod {
+typedef enum {
 	OFZIPArchiveEntryCompressionMethodNone		=  0,
 	OFZIPArchiveEntryCompressionMethodShrink	=  1,
 	OFZIPArchiveEntryCompressionMethodReduceFactor1 =  2,
@@ -38,7 +43,7 @@ typedef enum OFZIPArchiveEntryCompressionMethod {
 /**
  * @brief Attribute compatibility part of ZIP versions.
  */
-typedef enum OFZIPArchiveEntryAttributeCompatibility {
+typedef enum {
 	/** MS-DOS and OS/2 */
 	OFZIPArchiveEntryAttributeCompatibilityMSDOS	    =  0,
 	/** Amiga */
@@ -84,7 +89,7 @@ typedef enum OFZIPArchiveEntryAttributeCompatibility {
 /**
  * @brief Tags for the extra field.
  */
-typedef enum OFZIPArchiveEntryExtraFieldTag {
+typedef enum {
 	/** ZIP64 extra field tag */
 	OFZIPArchiveEntryExtraFieldTagZIP64 = 0x0001
 } OFZIPArchiveEntryExtraFieldTag;
@@ -95,12 +100,13 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
 @class OFDate;
 
 /**
- * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/OFZIPArchiveEntry.h
+ * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */
-@interface OFZIPArchiveEntry: OFObject <OFCopying, OFMutableCopying>
+@interface OFZIPArchiveEntry: OFObject <OFArchiveEntry, OFCopying,
+    OFMutableCopying>
 {
 	OFZIPArchiveEntryAttributeCompatibility _versionMadeBy;
 	OFZIPArchiveEntryAttributeCompatibility _minVersionNeeded;
@@ -108,7 +114,7 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
 	OFZIPArchiveEntryCompressionMethod _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
-	uint64_t _compressedSize, _uncompressedSize;
+	unsigned long long _compressedSize, _uncompressedSize;
 	OFString *_fileName;
 	OFData *_Nullable _extraField;
 	OFString *_Nullable _fileComment;
@@ -118,17 +124,6 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
 	int64_t _localFileHeaderOffset;
 	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
 }
-
-/**
- * @brief The file name of the entry.
- */
-@property (readonly, copy, nonatomic) OFString *fileName;
-
-/**
- * @brief The comment of the entry's file.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *fileComment;
 
 /**
  * @brief The extra field of the entry.
@@ -158,13 +153,6 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
     OFZIPArchiveEntryAttributeCompatibility minVersionNeeded;
 
 /**
- * @brief The last modification date of the entry's file.
- *
- * @note Due to limitations of the ZIP format, this has only 2 second precision.
- */
-@property (readonly, retain, nonatomic) OFDate *modificationDate;
-
-/**
  * @brief The compression method of the entry.
  *
  * Supported values are:
@@ -178,16 +166,6 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readonly, nonatomic) uint64_t compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readonly, nonatomic) uint64_t uncompressedSize;
 
 /**
  * @brief The CRC32 checksum of the entry's file.
@@ -209,24 +187,7 @@ typedef enum OFZIPArchiveEntryExtraFieldTag {
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
-/**
- * @brief Creates a new OFZIPArchiveEntry with the specified file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return A new, autoreleased OFZIPArchiveEntry
- */
-+ (instancetype)entryWithFileName: (OFString *)fileName;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
- *	  file name.
- *
- * @param fileName The file name for the OFZIPArchiveEntry
- * @return An initialized OFZIPArchiveEntry
- */
-- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 #ifdef __cplusplus
@@ -241,7 +202,7 @@ extern "C" {
 extern OFString *OFZIPArchiveEntryVersionToString(uint16_t version);
 
 /**
- * @brief Convers the ZIP entry compression method to a string.
+ * @brief Converts the ZIP entry compression method to a string.
  *
  * @param compressionMethod The ZIP entry compression method to convert to a
  *			    string

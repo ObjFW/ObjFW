@@ -1,0 +1,360 @@
+<amiga-library version='1.0' base='ObjFWRTBase'>
+  <include>ObjFWRT.h</include>
+  <include>private.h</include>
+  <!-- The following function is only for the linklib. -->
+  <function name='objc_init' return-type='bool'>
+    <argument name='version' type='unsigned int'/>
+    <argument name='ctx' type='struct objc_linklib_context *_Nonnull'/>
+  </function>
+  <!-- Used by the compiler, but can be called manually. -->
+  <function name='__objc_exec_class'>
+    <argument name='module' type='struct objc_module *_Nonnull'/>
+  </function>
+  <function name='objc_msg_lookup' return-type='IMP _Nonnull'>
+    <argument name='object' type='id _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='objc_msg_lookup_stret' return-type='IMP _Nonnull'>
+    <argument name='object' type='id _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='objc_msg_lookup_super' return-type='IMP _Nonnull'>
+    <argument name='super' type='struct objc_super *_Nonnull'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='objc_msg_lookup_super_stret' return-type='IMP _Nonnull'>
+    <argument name='super' type='struct objc_super *_Nonnull'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='objc_lookUpClass' return-type='Class _Nullable'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_getClass' return-type='Class _Nullable'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_getRequiredClass' return-type='Class _Nonnull'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_lookup_class' return-type='Class _Nullable'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_get_class' return-type='Class _Nonnull'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_exception_throw' noreturn='1'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='objc_sync_enter' return-type='int'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_sync_exit' return-type='int'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_getProperty' return-type='id _Nullable'>
+    <argument name='self' type='id _Nonnull'/>
+    <argument name='_cmd' type='SEL _Nonnull'/>
+    <argument name='offset' type='ptrdiff_t'/>
+    <argument name='atomic' type='bool'/>
+  </function>
+  <function name='objc_setProperty'>
+    <argument name='self' type='id _Nonnull'/>
+    <argument name='_cmd' type='SEL _Nonnull'/>
+    <argument name='offset' type='ptrdiff_t'/>
+    <argument name='value' type='id _Nullable'/>
+    <argument name='atomic' type='bool'/>
+    <argument name='copy' type='signed char'/>
+  </function>
+  <function name='objc_getPropertyStruct'>
+    <argument name='dest' type='void *_Nonnull'/>
+    <argument name='src' type='const void *_Nonnull'/>
+    <argument name='size' type='ptrdiff_t'/>
+    <argument name='atomic' type='bool'/>
+    <argument name='strong' type='bool'/>
+  </function>
+  <function name='objc_setPropertyStruct'>
+    <argument name='dest' type='void *_Nonnull'/>
+    <argument name='src' type='const void *_Nonnull'/>
+    <argument name='size' type='ptrdiff_t'/>
+    <argument name='atomic' type='bool'/>
+    <argument name='strong' type='bool'/>
+  </function>
+  <function name='objc_enumerationMutation'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='__gnu_objc_personality_v0' return-type='int'>
+    <argument name='version' type='int'/>
+    <argument name='actions' type='int'/>
+    <argument name='exClass' type='uint64_t _Nonnull'/>
+    <argument name='ex' type='void *_Nonnull'/>
+    <argument name='ctx' type='void *_Nonnull'/>
+  </function>
+  <function name='objc_retain' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_retainBlock' return-type='id _Nullable'>
+    <argument name='block' type='id _Nullable'/>
+  </function>
+  <function name='objc_retainAutorelease' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_release'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_autorelease' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_autoreleaseReturnValue' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_retainAutoreleaseReturnValue' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_retainAutoreleasedReturnValue'
+            return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_storeStrong' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+    <argument name='value' type='id _Nullable'/>
+  </function>
+  <function name='objc_storeWeak' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+    <argument name='value' type='id _Nullable'/>
+  </function>
+  <function name='objc_loadWeakRetained' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+  </function>
+  <function name='objc_initWeak' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+    <argument name='value' type='id _Nullable'/>
+  </function>
+  <function name='objc_destroyWeak'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+  </function>
+  <function name='objc_loadWeak' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable *_Nonnull'/>
+  </function>
+  <function name='objc_copyWeak'>
+    <argument name='dest' type='id _Nullable *_Nonnull'/>
+    <argument name='src' type='id _Nullable *_Nonnull'/>
+  </function>
+  <function name='objc_moveWeak'>
+    <argument name='dest' type='id _Nullable *_Nonnull'/>
+    <argument name='src' type='id _Nullable *_Nonnull'/>
+  </function>
+  <!-- Public API -->
+  <function name='sel_registerName' return-type='SEL _Nonnull'>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='sel_getName' return-type='const char *_Nonnull'>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='sel_isEqual' return-type='bool'>
+    <argument name='selector1' type='SEL _Nonnull'/>
+    <argument name='selector2' type='SEL _Nonnull'/>
+  </function>
+  <function name='objc_allocateClassPair' return-type='Class _Nonnull'>
+    <argument name='superclass' type='Class _Nullable'/>
+    <argument name='name' type='const char *_Nonnull'/>
+    <argument name='extraBytes' type='size_t'/>
+  </function>
+  <function name='objc_registerClassPair'>
+    <argument name='class_' type='Class _Nonnull'/>
+  </function>
+  <function name='objc_getClassList' return-type='unsigned int'>
+    <argument name='buffer' type='Class _Nonnull *_Nullable'/>
+    <argument name='count' type='unsigned int'/>
+  </function>
+  <function name='objc_copyClassList' return-type='Class _Nonnull *_Nonnull'>
+    <argument name='length' type='unsigned int *_Nullable'/>
+  </function>
+  <function name='class_isMetaClass' return-type='bool'>
+    <argument name='class_' type='Class _Nullable'/>
+  </function>
+  <function name='class_getName' return-type='const char *_Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+  </function>
+  <function name='class_getSuperclass' return-type='Class _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+  </function>
+  <function name='class_getInstanceSize' return-type='unsigned long'>
+    <argument name='class_' type='Class _Nullable'/>
+  </function>
+  <function name='class_respondsToSelector' return-type='bool'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='class_conformsToProtocol' return-type='bool'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='p' type='Protocol *_Nonnull'/>
+  </function>
+  <function name='class_getMethodImplementation' return-type='IMP _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='class_getMethodImplementation_stret'
+            return-type='IMP _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <!-- MorphOS started using it before the API was stable. -->
+  <function name='_class_getMethodTypeEncoding'
+            return-type='const char *_Nullable' condition='defined(OF_MORPHOS)'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='class_addMethod' return-type='bool'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+    <argument name='implementation' type='IMP _Nonnull'/>
+    <argument name='typeEncoding' type='const char *_Nullable'/>
+  </function>
+  <function name='class_replaceMethod' return-type='IMP _Nullable'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+    <argument name='implementation' type='IMP _Nonnull'/>
+    <argument name='typeEncoding' type='const char *_Nullable'/>
+  </function>
+  <function name='object_getClass' return-type='Class _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='object_setClass' return-type='Class _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+    <argument name='class_' type='Class _Nonnull'/>
+  </function>
+  <function name='object_getClassName' return-type='const char *_Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='protocol_getName' return-type='const char *_Nonnull'>
+    <argument name='protocol' type='Protocol *_Nonnull'/>
+  </function>
+  <function name='protocol_isEqual' return-type='bool'>
+    <argument name='protocol1' type='Protocol *_Nonnull'/>
+    <argument name='protocol2' type='Protocol *_Nonnull'/>
+  </function>
+  <function name='protocol_conformsToProtocol' return-type='bool'>
+    <argument name='protocol1' type='Protocol *_Nonnull'/>
+    <argument name='protocol2' type='Protocol *_Nonnull'/>
+  </function>
+  <function name='objc_setUncaughtExceptionHandler'
+            return-type='_Nullable objc_uncaught_exception_handler'>
+    <argument name='handler' type='objc_uncaught_exception_handler _Nullable'/>
+  </function>
+  <function name='objc_setForwardHandler'>
+    <argument name='forward' type='IMP _Nullable'/>
+    <argument name='stretForward' type='IMP _Nullable'/>
+  </function>
+  <function name='objc_setEnumerationMutationHandler'>
+    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'/>
+  </function>
+  <!-- MorphOS started using it before the API was stable. -->
+  <function name='_objc_zeroWeakReferences' condition='defined(OF_MORPHOS)'>
+    <argument name='value' type='id _Nullable'/>
+  </function>
+  <function name='objc_deinit'/>
+  <function name='class_copyIvarList' return-type='Ivar _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='outCount' type='unsigned int *_Nullable'/>
+  </function>
+  <function name='ivar_getName' return-type='const char *_Nonnull'>
+    <argument name='ivar' type='Ivar _Nonnull'/>
+  </function>
+  <function name='ivar_getTypeEncoding' return-type='const char *_Nonnull'>
+    <argument name='ivar' type='Ivar _Nonnull'/>
+  </function>
+  <function name='ivar_getOffset' return-type='ptrdiff_t'>
+    <argument name='ivar' type='Ivar _Nonnull'/>
+  </function>
+  <function name='class_registerAlias_np'>
+    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='class_getInstanceMethod' return-type='Method _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='selector' type='SEL _Nonnull'/>
+  </function>
+  <function name='class_copyMethodList'
+            return-type='Method _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='outCount' type='unsigned int *_Nullable'/>
+  </function>
+  <function name='method_getName' return-type='SEL _Nonnull'>
+    <argument name='method' type='Method _Nonnull'/>
+  </function>
+  <function name='method_getTypeEncoding' return-type='const char *_Nullable'>
+    <argument name='method' type='Method _Nonnull'/>
+  </function>
+  <function name='class_copyPropertyList'
+            return-type='objc_property_t _Nullable *_Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='outCount' type='unsigned int *_Nullable'/>
+  </function>
+  <function name='property_getName' return-type='const char *_Nonnull'>
+    <argument name='property' type='objc_property_t _Nonnull'/>
+  </function>
+  <function name='property_copyAttributeValue' return-type='char *_Nullable'>
+    <argument name='property' type='objc_property_t _Nonnull'/>
+    <argument name='name' type='const char *_Nonnull'/>
+  </function>
+  <function name='objc_constructInstance' return-type='id _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='bytes' type='void *_Nullable'/>
+  </function>
+  <function name='objc_destructInstance' return-type='void *_Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='class_createInstance' return-type='id _Nullable'>
+    <argument name='class_' type='Class _Nullable'/>
+    <argument name='extraBytes' type='size_t'/>
+  </function>
+  <function name='object_dispose' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='_objc_rootRetain' return-type='id _Nonnull'>
+    <argument name='object' type='id _Nonnull'/>>
+  </function>
+  <function name='_objc_rootRetainCount' return-type='unsigned int'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='_objc_rootRelease'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='objc_autoreleasePoolPush'
+            return-type='void *_Null_unspecified'>
+  </function>
+  <function name='objc_autoreleasePoolPop'>
+    <argument name='pool' type='void *_Null_unspecified'/>
+  </function>
+  <function name='_objc_rootAutorelease' return-type='id _Nullable'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='objc_setTaggedPointerSecret'>
+    <argument name='secret' type='uintptr_t'/>
+  </function>
+  <function name='objc_registerTaggedPointerClass' return-type='int'>
+    <argument name='class_' type='Class _Nonnull'/>
+  </function>
+  <function name='object_isTaggedPointer' return-type='bool'>
+    <argument name='object' type='id _Nullable'/>
+  </function>
+  <function name='object_getTaggedPointerValue' return-type='uintptr_t'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='objc_createTaggedPointer' return-type='id _Nullable'>
+    <argument name='class_' type='int'/>
+    <argument name='value' type='uintptr_t'/>
+  </function>
+  <function name='objc_setAssociatedObject'>
+    <argument name='object' type='id _Nonnull'/>
+    <argument name='key' type='const void *_Nonnull'/>
+    <argument name='value' type='id _Nullable'/>
+    <argument name='policy' type='objc_associationPolicy'/>
+  </function>
+  <function name='objc_getAssociatedObject' return-type='id _Nullable'>
+    <argument name='object' type='id _Nonnull'/>
+    <argument name='key' type='const void *_Nonnull'/>
+  </function>
+  <function name='objc_removeAssociatedObjects'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+</amiga-library>

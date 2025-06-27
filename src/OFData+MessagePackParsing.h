@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFData.h"
@@ -20,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFData_MessagePackParsing_reference;
+extern int _OFData_MessagePackParsing_reference OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif
@@ -29,6 +33,12 @@ extern int _OFData_MessagePackParsing_reference;
 /**
  * @brief The data interpreted as MessagePack representation and parsed as an
  *	  object.
+ *
+ * @throw OFInvalidFormatException The MessagePack representation contained in
+ *				   the data contained an invalid format
+ * @throw OFTruncatedDataException The MessagePack representation contained in
+ *				   the data is truncated
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingMessagePack;
 
@@ -38,6 +48,11 @@ extern int _OFData_MessagePackParsing_reference;
  * @param depthLimit The maximum depth the parser should accept (defaults to 32
  *		     if not specified, 0 means no limit (insecure!))
  * @return The MessagePack representation as an object
+ * @throw OFInvalidFormatException The MessagePack representation contained in
+ *				   the data contained an invalid format
+ * @throw OFTruncatedDataException The MessagePack representation contained in
+ *				   the data is truncated
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit;
 @end

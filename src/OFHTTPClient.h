@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -25,18 +29,20 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
+@class OFIRI;
 @class OFStream;
 @class OFTCPSocket;
-@class OFURL;
+@class OFTLSStream;
 
 /**
- * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
+ * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFHTTPClient.
  */
 @protocol OFHTTPClientDelegate <OFObject>
 /**
- * @brief A callback which is called when an OFHTTPClient performed a request.
+ * @brief A callback which is called when an @ref OFHTTPClient performed a
+ *	  request.
  *
  * @param client The OFHTTPClient which performed the request
  * @param request The request the OFHTTPClient performed
@@ -50,24 +56,38 @@ OF_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
- * @brief A callback which is called when an OFHTTPClient creates a socket.
+ * @brief A callback which is called when an @ref OFHTTPClient creates a TCP
+ *	  socket.
  *
- * This is useful if the connection is using HTTPS and the server requires a
- * client certificate. This callback can then be used to tell the TLS socket
- * about the certificate. Another use case is to tell the socket about a SOCKS5
- * proxy it should use for this connection.
+ * This can be used to tell the socket about a SOCKS5 proxy it should use for
+ * this connection.
  *
- * @param client The OFHTTPClient that created a socket
- * @param socket The socket created by the OFHTTPClient
- * @param request The request for which the socket was created
+ * @param client The OFHTTPClient that created a TCP socket
+ * @param TCPSocket The socket created by the OFHTTPClient
+ * @param request The request for which the TCP socket was created
  */
--    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OFTCPSocket *)socket
-	  request: (OFHTTPRequest *)request;
+-	(void)client: (OFHTTPClient *)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+	     request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient wants to send the
- *	  body for a request.
+ * @brief A callback which is called when an @ref OFHTTPClient creates a TLS
+ *	  stream.
+ *
+ * This can be used to tell the TLS stream about a client certificate it should
+ * use before performing the TLS handshake.
+ *
+ * @param client The OFHTTPClient that created a TLS stream
+ * @param TLSStream The TLS stream created by the OFHTTPClient
+ * @param request The request for which the TLS stream was created
+ */
+-	(void)client: (OFHTTPClient *)client
+  didCreateTLSStream: (OFTLSStream *)TLSStream
+	     request: (OFHTTPRequest *)request;
+
+/**
+ * @brief A callback which is called when an @ref OFHTTPClient wants to send
+ *	  the body for a request.
  *
  * @param client The OFHTTPClient that wants to send the body
  * @param requestBody A stream into which the body of the request should be
@@ -79,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
 	   request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient received headers.
+ * @brief A callback which is called when an @ref OFHTTPClient received headers.
  *
  * @param client The OFHTTPClient which received the headers
  * @param headers The headers received
@@ -93,8 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
 	    request: (OFHTTPRequest *)request;
 
 /**
- * @brief A callback which is called when an OFHTTPClient wants to follow a
- *	  redirect.
+ * @brief A callback which is called when an @ref OFHTTPClient wants to follow
+ *	  a redirect.
  *
  * If you want to get the headers and data for each redirect, set the number of
  * redirects to 0 and perform a new OFHTTPClient for each redirect. However,
@@ -106,38 +126,38 @@ OF_ASSUME_NONNULL_BEGIN
  * callback will not be called.
  *
  * @param client The OFHTTPClient which wants to follow a redirect
- * @param URL The URL to which it will follow a redirect
+ * @param IRI The IRI to which it will follow a redirect
  * @param statusCode The status code for the redirection
  * @param request The request for which the OFHTTPClient wants to redirect.
  *		  You are allowed to change the request's headers from this
  *		  callback and they will be used when following the redirect
- *		  (e.g. to set the cookies for the new URL), however, keep in
+ *		  (e.g. to set the cookies for the new IRI), however, keep in
  *		  mind that this will change the request you originally passed.
  * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
--	  (bool)client: (OFHTTPClient *)client
-  shouldFollowRedirect: (OFURL *)URL
-	    statusCode: (short)statusCode
-	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response;
+-	       (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirectToIRI: (OFIRI *)IRI
+		 statusCode: (short)statusCode
+		    request: (OFHTTPRequest *)request
+		   response: (OFHTTPResponse *)response;
 @end
 
 /**
- * @class OFHTTPClient OFHTTPClient.h ObjFW/OFHTTPClient.h
+ * @class OFHTTPClient OFHTTPClient.h ObjFW/ObjFW.h
  *
  * @brief A class for performing HTTP requests.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPClient: OFObject
 {
-#ifdef OF_HTTPCLIENT_M
+#ifdef OF_HTTP_CLIENT_M
 @public
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
 	bool _allowsInsecureRedirects, _inProgress;
-	OFTCPSocket *_Nullable _socket;
-	OFURL *_Nullable _lastURL;
+	OFStream *_Nullable _stream;
+	OFIRI *_Nullable _lastIRI;
 	bool _lastWasHEAD;
 	OFHTTPResponse *_Nullable _lastResponse;
 }
@@ -169,6 +189,11 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param request The request to perform
  * @return The OFHTTPResponse for the request
+ * @throw OFHTTPRequestFailedException The HTTP request failed
+ * @throw OFInvalidServerResponseException The server sent an invalid response
+ * @throw OFUnsupportedVersionException The server responded in an unsupported
+ *					version
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
 
@@ -184,6 +209,11 @@ OF_SUBCLASSING_RESTRICTED
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
  * @return The OFHTTPResponse for the request
+ * @throw OFHTTPRequestFailedException The HTTP request failed
+ * @throw OFInvalidServerResponseException The server sent an invalid response
+ * @throw OFUnsupportedVersionException The server responded in an unsupported
+ *					version
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects;
@@ -192,6 +222,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
@@ -202,6 +233,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
+ * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;

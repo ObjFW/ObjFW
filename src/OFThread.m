@@ -1,22 +1,25 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #define _POSIX_TIMERS
-#define __NO_EXT_QNX
 
 #include <errno.h>
 
@@ -32,18 +35,32 @@
 #include "platform.h"
 
 #ifdef OF_AMIGAOS
+# define Class IntuitionClass
 # include <proto/exec.h>
 # include <proto/dos.h>
+# undef Class
 #endif
 
 #ifdef OF_WII
+# define asm __asm__
 # define nanosleep ogc_nanosleep
+# include <gccore.h>
 # include <ogcsys.h>
 # undef nanosleep
+# undef asm
+#endif
+
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
 #endif
 
 #ifdef OF_NINTENDO_3DS
-# include <3ds/svc.h>
+/* Newer versions of libctru started using id as a parameter name. */
+# define id id_3ds
+# include <3ds.h>
+# undef id
 #endif
 
 #import "OFThread.h"
@@ -75,15 +92,21 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #ifdef OF_HAVE_THREADS
-# import "OFThreadJoinFailedException.h"
-# import "OFThreadStartFailedException.h"
+# import "OFJoinThreadFailedException.h"
+# import "OFStartThreadFailedException.h"
 # import "OFThreadStillRunningException.h"
+#endif
+
+#ifdef OF_MINT
+/* freemint-gcc does not have trunc() */
+# define trunc(x) ((int64_t)(x))
 #endif
 
 #if defined(OF_HAVE_THREADS)
 # import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 #  import "OFSocket.h"
+#  import "OFSocket+Private.h"
 # endif
 
 static OFTLSKey threadSelfKey;
@@ -117,7 +140,7 @@ callMain(id object)
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		if (!OFSocketInit())
+		if (!_OFSocketInit())
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: thread.class];
 #endif
@@ -128,11 +151,11 @@ callMain(id object)
 	 */
 	if (setjmp(thread->_exitEnv) == 0) {
 # ifdef OF_HAVE_BLOCKS
-		if (thread->_threadBlock != NULL)
-			thread->_returnValue = [thread->_threadBlock() retain];
+		if (thread->_block != NULL)
+			thread->_returnValue = objc_retain(thread->_block());
 		else
 # endif
-			thread->_returnValue = [[thread main] retain];
+			thread->_returnValue = objc_retain([thread main]);
 	}
 
 	[thread handleTermination];
@@ -145,17 +168,17 @@ callMain(id object)
 
 #if defined(OF_AMIGAOS) && !defined(OF_MORPHOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
-		OFSocketDeinit();
+		_OFSocketDeinit();
 #endif
 
 	thread->_running = OFThreadStateWaitingForJoin;
 
-	[thread release];
+	objc_release(thread);
 }
 
 @synthesize name = _name;
 # ifdef OF_HAVE_BLOCKS
-@synthesize threadBlock = _threadBlock;
+@synthesize block = _block;
 # endif
 
 + (void)initialize
@@ -170,13 +193,13 @@ callMain(id object)
 
 + (instancetype)thread
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock
++ (instancetype)threadWithBlock: (OFThreadBlock)block
 {
-	return [[[self alloc] initWithThreadBlock: threadBlock] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBlock: block]);
 }
 # endif
 
@@ -303,6 +326,23 @@ callMain(id object)
 #endif
 }
 
+#if defined(OF_WII)
++ (void)waitForVerticalBlank
+{
+	VIDEO_WaitVSync();
+}
+#elif defined(OF_NINTENDO_DS)
++ (void)waitForVerticalBlank
+{
+	swiWaitForVBlank();
+}
+#elif defined(OF_NINTENDO_3DS)
++ (void)waitForVerticalBlank
+{
+	gspWaitForVBlank();
+}
+#endif
+
 #ifdef OF_HAVE_THREADS
 + (void)terminate
 {
@@ -325,7 +365,7 @@ callMain(id object)
 
 	OFEnsure(thread != nil);
 
-	thread->_returnValue = [object retain];
+	thread->_returnValue = objc_retain(object);
 	longjmp(thread->_exitEnv, 1);
 
 	OF_UNREACHABLE
@@ -367,7 +407,7 @@ callMain(id object)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -375,14 +415,14 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock
+- (instancetype)initWithBlock: (OFThreadBlock)block
 {
 	self = [self init];
 
 	@try {
-		_threadBlock = [threadBlock copy];
+		_block = [block copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -401,13 +441,13 @@ callMain(id object)
 {
 	OFRunLoop *oldRunLoop = _runLoop;
 	_runLoop = nil;
-	[oldRunLoop release];
+	objc_release(oldRunLoop);
 
-	[_threadDictionary release];
+	objc_release(_threadDictionary);
 	_threadDictionary = nil;
 
 # ifdef OF_HAVE_SOCKETS
-	[_DNSResolver release];
+	objc_release(_DNSResolver);
 	_DNSResolver = nil;
 # endif
 }
@@ -422,17 +462,17 @@ callMain(id object)
 
 	if (_running == OFThreadStateWaitingForJoin) {
 		OFPlainThreadDetach(_thread);
-		[_returnValue release];
+		objc_release(_returnValue);
 	}
 
-	[self retain];
+	objc_retain(self);
 
 	_running = OFThreadStateRunning;
 
 	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
 	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
-		[self release];
-		@throw [OFThreadStartFailedException
+		objc_release(self);
+		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
 	}
@@ -443,12 +483,12 @@ callMain(id object)
 	int error;
 
 	if (_running == OFThreadStateNotRunning)
-		@throw [OFThreadJoinFailedException
+		@throw [OFJoinThreadFailedException
 		    exceptionWithThread: self
 				  errNo: EINVAL];
 
 	if ((error = OFPlainThreadJoin(_thread)) != 0)
-		@throw [OFThreadJoinFailedException exceptionWithThread: self
+		@throw [OFJoinThreadFailedException exceptionWithThread: self
 								  errNo: error];
 
 	_running = OFThreadStateNotRunning;
@@ -458,7 +498,7 @@ callMain(id object)
 
 - (id)copy
 {
-	return [self retain];
+	return objc_retain(self);
 }
 
 - (OFRunLoop *)runLoop
@@ -469,7 +509,7 @@ callMain(id object)
 
 		if (!OFAtomicPointerCompareAndSwap(
 		    (void **)&_runLoop, nil, tmp))
-			[tmp release];
+			objc_release(tmp);
 	}
 # else
 	@synchronized (self) {
@@ -536,9 +576,9 @@ callMain(id object)
 	if (_running == OFThreadStateWaitingForJoin)
 		OFPlainThreadDetach(_thread);
 
-	[_returnValue release];
+	objc_release(_returnValue);
 # ifdef OF_HAVE_BLOCKS
-	[_threadBlock release];
+	objc_release(_block);
 # endif
 
 	[super dealloc];

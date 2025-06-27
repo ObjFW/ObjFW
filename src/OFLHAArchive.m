@@ -1,30 +1,39 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
+#define OF_LHA_ARCHIVE_M
+
 #include "config.h"
+
+#include <errno.h>
 
 #import "OFLHAArchive.h"
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
+#import "OFArchiveIRIHandler.h"
 #import "OFCRC16.h"
-#ifdef OF_HAVE_FILES
-# import "OFFile.h"
-#endif
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFKernelEventObserver.h"
 #import "OFLHADecompressingStream.h"
-#import "OFStream.h"
 #import "OFSeekableStream.h"
+#import "OFStream.h"
 #import "OFString.h"
 
 #import "OFChecksumMismatchException.h"
@@ -33,37 +42,46 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
+
+enum {
+	modeRead,
+	modeWrite,
+	modeAppend
+};
 
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
+	OFLHAArchive *_archive;
 	OFStream *_stream, *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
-	uint32_t _toRead, _bytesConsumed;
+	unsigned long long _toRead;
 	uint16_t _CRC16;
 	bool _atEndOfStream, _skipped;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry;
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
+	OFLHAArchive *_archive;
 	OFMutableLHAArchiveEntry *_entry;
-	OFStringEncoding _encoding;
 	OFSeekableStream *_stream;
-	OFFileOffset _headerOffset;
-	uint32_t _bytesWritten;
+	OFStreamOffset _headerOffset;
+	uint64_t _bytesWritten;
 	uint16_t _CRC16;
 }
 
-- (instancetype)of_initWithStream: (OFSeekableStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (OFStringEncoding)encoding;
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry;
 @end
 
 @implementation OFLHAArchive
@@ -71,15 +89,20 @@ OF_DIRECT_MEMBERS
 
 + (instancetype)archiveWithStream: (OFStream *)stream mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithStream: stream
+								   mode: mode]);
 }
 
-#ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString *)path mode: (OFString *)mode
++ (instancetype)archiveWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path mode: mode] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI
+								mode: mode]);
 }
-#endif
+
++ (OFIRI *)IRIForFilePath: (OFString *)path inArchiveWithIRI: (OFIRI *)IRI
+{
+	return _OFArchiveIRIHandlerIRIForFileInArchive(@"lha", path, IRI);
+}
 
 - (instancetype)init
 {
@@ -91,71 +114,93 @@ OF_DIRECT_MEMBERS
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 
 		if ([mode isEqual: @"r"])
-			_mode = OFLHAArchiveModeRead;
+			_mode = modeRead;
 		else if ([mode isEqual: @"w"])
-			_mode = OFLHAArchiveModeWrite;
+			_mode = modeWrite;
 		else if ([mode isEqual: @"a"])
-			_mode = OFLHAArchiveModeAppend;
+			_mode = modeAppend;
 		else
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_mode == OFLHAArchiveModeWrite ||
-		    _mode == OFLHAArchiveModeAppend) &&
+		if ((_mode == modeWrite || _mode == modeAppend) &&
 		    ![_stream isKindOfClass: [OFSeekableStream class]])
 			@throw [OFInvalidArgumentException exception];
 
-		if (_mode == OFLHAArchiveModeAppend)
-			[(OFSeekableStream *)_stream seekToOffset: 0
-							   whence: SEEK_END];
-
-		_encoding = OFStringEncodingISO8859_1;
+		if (_mode == modeAppend)
+			/*
+			 * Only works with properly zero-terminated files that
+			 * have no trailing garbage. Unfortunately there is no
+			 * good way to check for this other than reading the
+			 * entire archive.
+			 */
+			[(OFSeekableStream *)_stream seekToOffset: -1
+							   whence: OFSeekEnd];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
 	return self;
 }
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithPath: (OFString *)path mode: (OFString *)mode
+- (instancetype)initWithIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	OFFile *file;
-
-	if ([mode isEqual: @"a"])
-		file = [[OFFile alloc] initWithPath: path mode: @"r+"];
-	else
-		file = [[OFFile alloc] initWithPath: path mode: mode];
+	void *pool = objc_autoreleasePoolPush();
+	OFStream *stream;
 
 	@try {
-		self = [self initWithStream: file mode: mode];
-	} @finally {
-		[file release];
+		if ([mode isEqual: @"a"])
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r+"];
+		else
+			stream = [OFIRIHandler openItemAtIRI: IRI mode: mode];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
 	}
+
+	self = [self initWithStream: stream mode: mode];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
-#endif
 
 - (void)dealloc
 {
 	if (_stream != nil)
 		[self close];
 
+	objc_release(_currentEntry);
+
 	[super dealloc];
 }
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	OFLHAArchiveEntry *entry;
 	char header[21];
 	size_t headerLen;
 
-	if (_mode != OFLHAArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
+
+	if (_currentEntry != nil && _lastReturnedStream == nil) {
+		/*
+		 * No read stream was created since the last call to
+		 * -[nextEntry]. Create it so that we can properly skip the
+		 *  data.
+		 */
+		void *pool = objc_autoreleasePoolPush();
+
+		[self streamForReadingCurrentEntry];
+
+		objc_autoreleasePoolPop(pool);
+	}
+
+	objc_release(_currentEntry);
+	_currentEntry = nil;
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
 	@try {
@@ -163,7 +208,6 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	for (headerLen = 0; headerLen < 21;) {
@@ -181,35 +225,48 @@ OF_DIRECT_MEMBERS
 					      length: 21 - headerLen];
 	}
 
-	entry = [[[OFLHAArchiveEntry alloc]
+	/*
+	 * Some archives have trailing garbage after the single byte 0
+	 * termination. However, a level 2 header uses 2 bytes for the size, so
+	 * could just have a header size that is a multiple of 256. Therefore,
+	 * consider it only the end of the archive if what follows would not be
+	 * a level 2 header.
+	 */
+	if (header[0] == 0 && header[20] != 2)
+		return nil;
+
+	_currentEntry = [[OFLHAArchiveEntry alloc]
 	    of_initWithHeader: header
 		       stream: _stream
-		     encoding: _encoding] autorelease];
+		     encoding: _encoding];
 
-	_lastReturnedStream = [[OFLHAArchiveFileReadStream alloc]
-	    of_initWithStream: _stream
-			entry: entry];
-
-	return entry;
+	return _currentEntry;
 }
 
 - (OFStream *)streamForReadingCurrentEntry
 {
-	if (_mode != OFLHAArchiveModeRead)
+	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_lastReturnedStream == nil)
+	if (_currentEntry == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFLHAArchiveFileReadStream *)_lastReturnedStream
-	    retain] autorelease];
+	_lastReturnedStream = objc_autoreleaseReturnValue(
+	    [[OFLHAArchiveFileReadStream alloc]
+	    of_initWithArchive: self
+			stream: _stream
+			 entry: _currentEntry]);
+	objc_release(_currentEntry);
+	_currentEntry = nil;
+
+	return _lastReturnedStream;
 }
 
 - (OFStream *)streamForWritingEntry: (OFLHAArchiveEntry *)entry
 {
 	OFString *compressionMethod;
 
-	if (_mode != OFLHAArchiveModeWrite && _mode != OFLHAArchiveModeAppend)
+	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
 	compressionMethod = entry.compressionMethod;
@@ -224,16 +281,16 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	_lastReturnedStream = [[OFLHAArchiveFileWriteStream alloc]
-	    of_initWithStream: (OFSeekableStream *)_stream
-			entry: entry
-		     encoding: _encoding];
+	_lastReturnedStream = objc_autoreleaseReturnValue(
+	    [[OFLHAArchiveFileWriteStream alloc]
+	    of_initWithArchive: self
+			stream: (OFSeekableStream *)_stream
+			 entry: entry]);
+	_hasWritten = true;
 
-	return [[(OFLHAArchiveFileWriteStream *)_lastReturnedStream
-	    retain] autorelease];
+	return _lastReturnedStream;
 }
 
 - (void)close
@@ -246,24 +303,30 @@ OF_DIRECT_MEMBERS
 	} @catch (OFNotOpenException *e) {
 		/* Might have already been closed by the user - that's fine. */
 	}
-	[_lastReturnedStream release];
+
+	/* LHA archives should be terminated with a header of size 0 */
+	if (_hasWritten)
+		[_stream writeBuffer: "" length: 1];
+
 	_lastReturnedStream = nil;
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 }
 @end
 
 @implementation OFLHAArchiveFileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
 		OFString *compressionMethod;
 
-		_stream = [stream retain];
+		_archive = objc_retain(archive);
+		_stream = objc_retain(stream);
 
 		compressionMethod = entry.compressionMethod;
 
@@ -283,13 +346,24 @@ OF_DIRECT_MEMBERS
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
+		else if ([compressionMethod isEqual: @"-lhx-"])
+			_decompressedStream = [[OFLHADecompressingStream alloc]
+			    of_initWithStream: stream
+				 distanceBits: 5
+			       dictionaryBits: 20];
+		else if ([compressionMethod isEqual: @"-lh0-"] ||
+		    [compressionMethod isEqual: @"-lhd-"] ||
+		    [compressionMethod isEqual: @"-lz4-"] ||
+		    [compressionMethod isEqual: @"-pm0-"])
+			_decompressedStream = objc_retain(stream);
 		else
-			_decompressedStream = [stream retain];
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: compressionMethod];
 
 		_entry = [entry copy];
 		_toRead = entry.uncompressedSize;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -298,10 +372,15 @@ OF_DIRECT_MEMBERS
 
 - (void)dealloc
 {
-	if (_stream != nil || _decompressedStream != nil)
+	if (_stream != nil && _decompressedStream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	objc_release(_archive);
 
 	[super dealloc];
 }
@@ -328,21 +407,21 @@ OF_DIRECT_MEMBERS
 		@throw [OFTruncatedDataException exception];
 
 	if (length > _toRead)
-		length = _toRead;
+		length = (size_t)_toRead;
 
 	ret = [_decompressedStream readIntoBuffer: buffer length: length];
 
 	_toRead -= ret;
-	_CRC16 = OFCRC16(_CRC16, buffer, ret);
+	_CRC16 = _OFCRC16(_CRC16, buffer, ret);
 
 	if (_toRead == 0) {
 		_atEndOfStream = true;
 
 		if (_CRC16 != _entry.CRC16) {
 			OFString *actualChecksum = [OFString stringWithFormat:
-			    @"%04" PRIX16, _CRC16];
+			    @"%04" @PRIX16, _CRC16];
 			OFString *expectedChecksum = [OFString stringWithFormat:
-			    @"%04" PRIX16, _entry.CRC16];
+			    @"%04" @PRIX16, _entry.CRC16];
 
 			@throw [OFChecksumMismatchException
 			    exceptionWithActualChecksum: actualChecksum
@@ -368,7 +447,7 @@ OF_DIRECT_MEMBERS
 - (void)of_skip
 {
 	OFStream *stream;
-	uint32_t toRead;
+	unsigned long long toRead;
 
 	if (_stream == nil || _skipped)
 		return;
@@ -393,18 +472,19 @@ OF_DIRECT_MEMBERS
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(OFFileOffset) > 4 || toRead < INT32_MAX))
-		[(OFSeekableStream *)stream seekToOffset: (OFFileOffset)toRead
-						  whence: SEEK_CUR];
+	    toRead < LLONG_MAX && (long long)toRead == (OFStreamOffset)toRead)
+		[(OFSeekableStream *)stream seekToOffset: (OFStreamOffset)toRead
+						  whence: OFSeekCurrent];
 	else {
 		while (toRead > 0) {
 			char buffer[512];
-			size_t min = toRead;
+			unsigned long long min = toRead;
 
 			if (min > 512)
 				min = 512;
 
-			toRead -= [stream readIntoBuffer: buffer length: min];
+			toRead -= [stream readIntoBuffer: buffer
+						  length: (size_t)min];
 		}
 	}
 
@@ -419,10 +499,10 @@ OF_DIRECT_MEMBERS
 
 	[self of_skip];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
-	[_decompressedStream release];
+	objc_release(_decompressedStream);
 	_decompressedStream = nil;
 
 	[super close];
@@ -430,26 +510,26 @@ OF_DIRECT_MEMBERS
 @end
 
 @implementation OFLHAArchiveFileWriteStream
-- (instancetype)of_initWithStream: (OFSeekableStream *)stream
-			    entry: (OFLHAArchiveEntry *)entry
-			 encoding: (OFStringEncoding)encoding
+- (instancetype)of_initWithArchive: (OFLHAArchive *)archive
+			    stream: (OFSeekableStream *)stream
+			     entry: (OFLHAArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
+		_archive = objc_retain(archive);
 		_entry = [entry mutableCopy];
-		_encoding = encoding;
 
-		_headerOffset = [stream seekToOffset: 0 whence: SEEK_CUR];
-		[_entry of_writeToStream: stream encoding: _encoding];
+		_headerOffset = [stream seekToOffset: 0 whence: OFSeekCurrent];
+		[_entry of_writeToStream: stream encoding: _archive.encoding];
 
 		/*
 		 * Retain stream last, so that -[close] called by -[dealloc]
 		 * doesn't write in case of an error.
 		 */
-		_stream = [stream retain];
+		_stream = objc_retain(stream);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -461,35 +541,42 @@ OF_DIRECT_MEMBERS
 	if (_stream != nil)
 		[self close];
 
-	[_entry release];
+	objc_release(_entry);
+
+	if (_archive->_lastReturnedStream == self)
+		_archive->_lastReturnedStream = nil;
+
+	objc_release(_archive);
 
 	[super dealloc];
 }
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	uint32_t bytesWritten;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (UINT32_MAX - _bytesWritten < length)
+	if (UINT64_MAX - _bytesWritten < length)
 		@throw [OFOutOfRangeException exception];
 
 	@try {
-		bytesWritten = (uint32_t)[_stream writeBuffer: buffer
-						       length: length];
+		[_stream writeBuffer: buffer length: length];
 	} @catch (OFWriteFailedException *e) {
-		_bytesWritten += e.bytesWritten;
-		_CRC16 = OFCRC16(_CRC16, buffer, e.bytesWritten);
+		OFEnsure(e.bytesWritten <= length);
+
+		_bytesWritten += (uint64_t)e.bytesWritten;
+		_CRC16 = _OFCRC16(_CRC16, buffer, e.bytesWritten);
+
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return e.bytesWritten;
 
 		@throw e;
 	}
 
-	_bytesWritten += (uint32_t)bytesWritten;
-	_CRC16 = OFCRC16(_CRC16, buffer, bytesWritten);
+	_bytesWritten += (uint64_t)length;
+	_CRC16 = _OFCRC16(_CRC16, buffer, length);
 
-	return bytesWritten;
+	return length;
 }
 
 - (bool)lowlevelIsAtEndOfStream
@@ -508,7 +595,7 @@ OF_DIRECT_MEMBERS
 
 - (void)close
 {
-	OFFileOffset offset;
+	OFStreamOffset offset;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -517,12 +604,12 @@ OF_DIRECT_MEMBERS
 	_entry.compressedSize = _bytesWritten;
 	_entry.CRC16 = _CRC16;
 
-	offset = [_stream seekToOffset: 0 whence: SEEK_CUR];
-	[_stream seekToOffset: _headerOffset whence: SEEK_SET];
-	[_entry of_writeToStream: _stream encoding: _encoding];
-	[_stream seekToOffset: offset whence: SEEK_SET];
+	offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
+	[_stream seekToOffset: _headerOffset whence: OFSeekSet];
+	[_entry of_writeToStream: _stream encoding: _archive.encoding];
+	[_stream seekToOffset: offset whence: OFSeekSet];
 
-	[_stream release];
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -38,28 +42,30 @@
 		for (size_t i = 0; i < length; i++) {
 			OFUnichar c = characters[i];
 
-			if (c / CHAR_BIT >= _size) {
+			if (c / OF_ULONG_BIT >= _size) {
 				size_t newSize;
 
 				if (UINT32_MAX - c < 1)
 					@throw [OFOutOfRangeException
 					    exception];
 
-				newSize = OFRoundUpToPowerOf2(CHAR_BIT, c + 1) /
-				    CHAR_BIT;
+				newSize = OFRoundUpToPowerOf2(OF_ULONG_BIT,
+				    c + 1) / OF_ULONG_BIT;
 
-				_bitset = OFResizeMemory(_bitset, newSize, 1);
-				memset(_bitset + _size, '\0', newSize - _size);
+				_bitSet = OFResizeMemory(_bitSet, newSize,
+				    sizeof(unsigned long));
+				memset(_bitSet + _size, '\0',
+				    (newSize - _size) * sizeof(unsigned long));
 
 				_size = newSize;
 			}
 
-			OFBitsetSet(_bitset, c);
+			OFBitSetSet(_bitSet, c);
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -68,16 +74,16 @@
 
 - (void)dealloc
 {
-	OFFreeMemory(_bitset);
+	OFFreeMemory(_bitSet);
 
 	[super dealloc];
 }
 
 - (bool)characterIsMember: (OFUnichar)character
 {
-	if (character / CHAR_BIT >= _size)
+	if (character / OF_ULONG_BIT >= _size)
 		return false;
 
-	return OFBitsetIsSet(_bitset, character);
+	return OFBitSetIsSet(_bitSet, character);
 }
 @end

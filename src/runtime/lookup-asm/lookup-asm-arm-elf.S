@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -23,13 +27,13 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
 	cmp	r0, #0
-	beq	ret_nil
+	beq	.LreturnNilMethod
 
 	tst	r0, #1
-	bne	.Ltagged_pointer_\name
+	bne	.LtaggedPointer_\name
 
 	ldr	r2, [r0, #0]
 	ldr	r2, [r2, #32]
@@ -56,23 +60,23 @@
 #endif
 
 	cmp	r2, #0
-	beq	\not_found(PLT)
+	beq	\notFound(PLT)
 
 	mov	r0, r2
 	bx	lr
 
-.Ltagged_pointer_\name:
-	ldr	r2, .Lgot$indirect_.Ltagged_pointer_\name
+.LtaggedPointer_\name:
+	ldr	r2, .Lgot$indirect_.LtaggedPointer_\name
 	add	r2, pc, r2
 
-	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+4
+	ldr	r3, .Lgot$indirect_.LtaggedPointer_\name+4
 	ldr	r3, [r2, r3]
 	ldr	r3, [r3]
 	eor	r0, r0, r3
 	and	r0, r0, #0xE
 	lsl	r0, r0, #1
 
-	ldr	r3, .Lgot$indirect_.Ltagged_pointer_\name+8
+	ldr	r3, .Lgot$indirect_.LtaggedPointer_\name+8
 	ldr	r3, [r2, r3]
 	ldr	r2, [r3, r0]
 	ldr	r2, [r2, #32]
@@ -81,18 +85,18 @@
 .type \name, %function
 .size \name, .-\name
 
-.Lgot$indirect_.Ltagged_pointer_\name:
-	.long	_GLOBAL_OFFSET_TABLE_-(.Ltagged_pointer_\name+12)
-	.long	objc_tagged_pointer_secret(GOT)
-	.long	objc_tagged_pointer_classes(GOT)
+.Lgot$indirect_.LtaggedPointer_\name:
+	.long	_GLOBAL_OFFSET_TABLE_-(.LtaggedPointer_\name+12)
+	.long	_objc_taggedPointerSecret(GOT)
+	.long	_objc_taggedPointerClasses(GOT)
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
 	mov	r2, r0
 	ldr	r0, [r0, #0]
 	cmp	r0, #0
-	beq	ret_nil
+	beq	.LreturnNilMethod
 
 	ldr	r2, [r2, #4]
 	ldr	r2, [r2, #32]
@@ -102,19 +106,19 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_method_not_found
-generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+GENERATE_LOOKUP objc_msg_lookup _objc_methodNotFound
+GENERATE_LOOKUP objc_msg_lookup_stret _objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super objc_msg_lookup
+GENERATE_LOOKUP_SUPER objc_msg_lookup_super_stret objc_msg_lookup_stret
 
-ret_nil:
-	adr	r0, nil_method
+.LreturnNilMethod:
+	adr	r0, .LnilMethod
 	bx	lr
 
-nil_method:
+.LnilMethod:
 	mov	r0, #0
 	bx	lr
 
-#ifdef OF_LINUX
+#if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)
 .section .note.GNU-stack, "", %progbits
 #endif

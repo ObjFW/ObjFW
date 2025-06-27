@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFSet.h"
@@ -18,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableSet OFSet.h ObjFW/OFSet.h
+ * @class OFMutableSet OFMutableSet.h ObjFW/ObjFW.h
  *
  * @brief An abstract class for a mutable unordered set of unique objects.
  *
@@ -39,13 +43,20 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)setWithCapacity: (size_t)capacity;
 
 /**
+ * @brief Initializes an already allocated OFMutableSet to be empty.
+ *
+ * @return An initialized OFMutableSet
+ */
+- (instancetype)init OF_DESIGNATED_INITIALIZER;
+
+/**
  * @brief Initializes an already allocated OFMutableSet with enough memory to
  *	  hold the specified number of objects.
  *
  * @param capacity The initial capacity for the OFMutableSet
  * @return An initialized OFMutableSet
  */
-- (instancetype)initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Adds the specified object to the set.

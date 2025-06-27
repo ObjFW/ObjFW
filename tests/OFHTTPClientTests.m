@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,75 +22,33 @@
 #include <inttypes.h>
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFHTTPClient";
-static OFCondition *cond;
-static OFHTTPResponse *response = nil;
-
-@interface TestsAppDelegate (HTTPClientTests) <OFHTTPClientDelegate>
+@interface OFHTTPClientTests: OTTestCase <OFHTTPClientDelegate>
+{
+	OFHTTPResponse *_response;
+}
 @end
 
 @interface HTTPClientTestsServer: OFThread
 {
-@public
+	OFCondition *_condition;
 	uint16_t _port;
 }
+
+@property (readonly, nonatomic) OFCondition *condition;
+@property (readonly) uint16_t port;
 @end
 
-@implementation HTTPClientTestsServer
-- (id)main
+@implementation OFHTTPClientTests
+- (void)dealloc
 {
-	OFTCPSocket *listener, *client;
-	char buffer[5];
+	objc_release(_response);
 
-	[cond lock];
-
-	listener = [OFTCPSocket socket];
-	_port = [listener bindToHost: @"127.0.0.1" port: 0];
-	[listener listen];
-
-	[cond signal];
-	[cond unlock];
-
-	client = [listener accept];
-
-	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
-		OFEnsure(0);
-
-	if (![[client readLine] hasPrefix: @"User-Agent:"])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual: @"Content-Length: 5"])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual:
-	    @"Content-Type: application/x-www-form-urlencoded; charset=UTF-8"])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual:
-	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
-		OFEnsure(0);
-
-	if (![[client readLine] isEqual: @""])
-		OFEnsure(0);
-
-	[client readIntoBuffer: buffer exactLength: 5];
-	if (memcmp(buffer, "Hello", 5) != 0)
-		OFEnsure(0);
-
-	[client writeString: @"HTTP/1.0 200 OK\r\n"
-			     @"cONTeNT-lENgTH: 7\r\n"
-			     @"\r\n"
-			     @"foo\n"
-			     @"bar"];
-	[client close];
-
-	return nil;
+	[super dealloc];
 }
-@end
 
-@implementation TestsAppDelegate (OFHTTPClientTests)
 -     (void)client: (OFHTTPClient *)client
   wantsRequestBody: (OFStream *)body
 	   request: (OFHTTPRequest *)request
@@ -99,59 +61,145 @@ static OFHTTPResponse *response = nil;
 	   response: (OFHTTPResponse *)response_
 	  exception: (id)exception
 {
-	OFEnsure(exception == nil);
+	OTAssertNil(exception);
 
-	response = [response_ retain];
+	objc_release(_response);
+	_response = objc_retain(response_);
 
 	[[OFRunLoop mainRunLoop] stop];
 }
 
-- (void)HTTPClientTests
+- (void)testClient
 {
-	void *pool = objc_autoreleasePoolPush();
 	HTTPClientTestsServer *server;
-	OFURL *URL;
-	OFHTTPClient *client;
+	OFIRI *IRI;
 	OFHTTPRequest *request;
+	OFHTTPClient *client;
 	OFData *data;
 
-	cond = [OFCondition condition];
-	[cond lock];
-
-	server = [[[HTTPClientTestsServer alloc] init] autorelease];
+	server = objc_autorelease([[HTTPClientTestsServer alloc] init]);
 	server.supportsSockets = true;
+
+	[server.condition lock];
+
 	[server start];
 
-	[cond wait];
-	[cond unlock];
+	[server.condition wait];
+	[server.condition unlock];
 
-	URL = [OFURL URLWithString:
+	IRI = [OFIRI IRIWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
-					server->_port]];
+					server.port]];
 
-	TEST(@"-[asyncPerformRequest:]",
-	    (client = [OFHTTPClient client]) && (client.delegate = self) &&
-	    (request = [OFHTTPRequest requestWithURL: URL]) &&
-	    (request.headers =
-	    [OFDictionary dictionaryWithObject: @"5"
-					forKey: @"Content-Length"]) &&
-	    R([client asyncPerformRequest: request]))
+	request = [OFHTTPRequest requestWithIRI: IRI];
+	request.headers = [OFDictionary
+	    dictionaryWithObject: @"5"
+			  forKey: @"Content-Length"];
+
+	client = [OFHTTPClient client];
+	client.delegate = self;
+	[client asyncPerformRequest: request];
 
 	[[OFRunLoop mainRunLoop] runUntilDate:
 	    [OFDate dateWithTimeIntervalSinceNow: 2]];
-	[response autorelease];
 
-	TEST(@"Asynchronous handling of requests", response != nil)
+	OTAssertNotNil(_response);
+	OTAssertNotNil([_response.headers objectForKey: @"Content-Length"]);
 
-	TEST(@"Normalization of server header keys",
-	    [response.headers objectForKey: @"Content-Length"] != nil)
+	data = [_response readDataUntilEndOfStream];
+	OTAssertEqual(data.count, 7);
+	OTAssertEqual(data.itemSize, 1);
+	OTAssertEqual(memcmp(data.items, "foo\nbar", 7), 0);
 
-	TEST(@"Correct parsing of data",
-	    (data = [response readDataUntilEndOfStream]) &&
-	    data.count == 7 && memcmp(data.items, "foo\nbar", 7) == 0)
+	OTAssertNil([server join]);
+}
+@end
 
-	[server join];
+@implementation HTTPClientTestsServer
+@synthesize condition = _condition, port = _port;
 
-	objc_autoreleasePoolPop(pool);
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_condition = [[OFCondition alloc] init];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_condition);
+
+	[super dealloc];
+}
+
+- (id)main
+{
+	OFTCPSocket *listener, *client;
+	OFSocketAddress address;
+	bool sawHost = false, sawContentLength = false, sawContentType = false;
+	bool sawUserAgent = false;
+	char buffer[5];
+
+	[_condition lock];
+
+	listener = [OFTCPSocket socket];
+	listener.allowsMPTCP = true;
+	address = [listener bindToHost: @"127.0.0.1" port: 0];
+	_port = OFSocketAddressIPPort(&address);
+	[listener listen];
+
+	[_condition signal];
+	[_condition unlock];
+	client = [listener accept];
+
+	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
+		return @"Wrong request";
+
+	for (size_t i = 0; i < 4; i++) {
+		OFString *line = [client readLine];
+
+		if ([line isEqual: [OFString stringWithFormat:
+		    @"Host: 127.0.0.1:%" @PRIu16, _port]])
+			sawHost = true;
+		else if ([line isEqual: @"Content-Length: 5"])
+			sawContentLength = true;
+		if ([line isEqual: @"Content-Type: application/"
+		    @"x-www-form-urlencoded; charset=UTF-8"])
+			sawContentType = true;
+		else if ([line hasPrefix: @"User-Agent:"])
+			sawUserAgent = true;
+	}
+
+	if (!sawHost)
+		return @"Missing host";
+	if (!sawContentLength)
+		return @"Missing content length";
+	if (!sawContentType)
+		return @"Missing content type";
+	if (!sawUserAgent)
+		return @"Missing user agent";
+
+	if (![[client readLine] isEqual: @""])
+		return @"Missing empty line";
+
+	[client readIntoBuffer: buffer exactLength: 5];
+	if (memcmp(buffer, "Hello", 5) != 0)
+		return @"Missing body";
+
+	[client writeString: @"HTTP/1.0 200 OK\r\n"
+			     @"cONTeNT-lENgTH: 7\r\n"
+			     @"\r\n"
+			     @"foo\n"
+			     @"bar"];
+	[client close];
+
+	return nil;
 }
 @end

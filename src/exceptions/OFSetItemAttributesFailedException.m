@@ -1,26 +1,30 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFSetItemAttributesFailedException.h"
+#import "OFIRI.h"
 #import "OFString.h"
-#import "OFURL.h"
 
 @implementation OFSetItemAttributesFailedException
-@synthesize URL = _URL, attributes = _attributes;
+@synthesize IRI = _IRI, attributes = _attributes;
 @synthesize failedAttribute = _failedAttribute, errNo = _errNo;
 
 + (instancetype)exception
@@ -28,15 +32,16 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithURL: (OFURL *)URL
++ (instancetype)exceptionWithIRI: (OFIRI *)IRI
 		      attributes: (OFFileAttributes)attributes
 		 failedAttribute: (OFFileAttributeKey)failedAttribute
 			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithURL: URL
-			       attributes: attributes
-			  failedAttribute: failedAttribute
-				    errNo: errNo] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIRI: IRI
+			   attributes: attributes
+		      failedAttribute: failedAttribute
+				errNo: errNo]);
 }
 
 - (instancetype)init
@@ -44,7 +49,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithURL: (OFURL *)URL
+- (instancetype)initWithIRI: (OFIRI *)IRI
 		 attributes: (OFFileAttributes)attributes
 	    failedAttribute: (OFFileAttributeKey)failedAttribute
 		      errNo: (int)errNo
@@ -52,12 +57,12 @@
 	self = [super init];
 
 	@try {
-		_URL = [URL copy];
+		_IRI = [IRI copy];
 		_attributes = [attributes copy];
 		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -66,9 +71,9 @@
 
 - (void)dealloc
 {
-	[_URL release];
-	[_attributes release];
-	[_failedAttribute release];
+	objc_release(_IRI);
+	objc_release(_attributes);
+	objc_release(_failedAttribute);
 
 	[super dealloc];
 }
@@ -77,6 +82,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set attribute %@ for item %@: %@",
-	    _failedAttribute, _URL, OFStrError(_errNo)];
+	    _failedAttribute, _IRI, OFStrError(_errNo)];
 }
 @end

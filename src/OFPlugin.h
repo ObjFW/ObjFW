@@ -1,71 +1,62 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-
-@class OFString;
-
-#ifndef OF_WINDOWS
-# include <dlfcn.h>
-typedef void *OFPluginHandle;
-
-typedef enum OFDLOpenFlags {
-	OFDLOpenFlagLazy = RTLD_LAZY,
-	OFDLOpenFlagNow  = RTLD_NOW
-} OFDLOpenFlags;
-#else
-# include <windows.h>
-typedef HMODULE OFPluginHandle;
-
-typedef enum OFDLOpenFlags {
-	OFDLOpenFlagLazy = 0,
-	OFDLOpenFlagNow  = 0
-} OFDLOpenFlags;
-#endif
+#import "OFModule.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-/**
- * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
- *
- * @brief Provides a system for loading plugins at runtime.
- */
-@interface OFPlugin: OFObject
-{
-	OFPluginHandle _pluginHandle;
-	OF_RESERVE_IVARS(OFPlugin, 4)
-}
+typedef OFModuleHandle OFPluginHandle
+    OF_DEPRECATED(ObjFW, 1, 3, "Use OFModuleHandle instead");
 
 /**
- * @brief Loads a plugin from a file.
+ * @class OFPlugin OFPlugin.h ObjFW/ObjFW.h
  *
- * @param path Path to the plugin file. The suffix is appended automatically.
- * @return The loaded plugin
+ * @deprecated Use OFModule instead.
+ *
+ * @brief A class representing a loaded plugin (shared library).
  */
-+ (OF_KINDOF(OFPlugin *))pluginWithPath: (OFString *)path;
+OF_SUBCLASSING_RESTRICTED
+OF_DEPRECATED(ObjFW, 1, 3, "Use OFModule instead")
+@interface OFPlugin: OFModule
+/**
+ * @brief Returns the plugin path for a plugin with the specified name.
+ *
+ * E.g. on ELF systems, it appends `.so`, while on macOS and iOS, it checks if
+ * there is a `.bundle` and if so uses the plugin contained in it, but
+ * otherwise falls back to appending `.dylib`.
+ *
+ * This can also be prefixed by a directory.
+ *
+ * @param name The name to return the plugin path for
+ * @return The plugin path
+ */
++ (OFString *)pathForName: (OFString *)name;
+
+/**
+ * @brief Creates a new OFPlugin by loading the plugin with the specified path.
+ *
+ * @param path The path to the plugin file. If `nil` is specified, the main
+ *	       binary is returned as a plugin.
+ * @return An new, autoreleased OFPlugin
+ * @throw OFLoadPluginFailedException The plugin could not be loaded
+ */
++ (instancetype)pluginWithPath: (nullable OFString *)path;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern OFPluginHandle OFDLOpen(OFString *path, OFDLOpenFlags flags);
-extern void *OFDLSym(OFPluginHandle handle, const char *symbol);
-extern OFString *_Nullable OFDLError(void);
-extern void OFDLClose(OFPluginHandle handle);
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

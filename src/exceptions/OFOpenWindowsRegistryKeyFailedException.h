@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFException.h"
@@ -21,9 +25,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFOpenWindowsRegistryKeyFailedException \
- *	  OFOpenWindowsRegistryKeyFailedException.h \
- *	  ObjFW/OFOpenWindowsRegistryKeyFailedException.h
+ * @class OFOpenWindowsRegistryKeyFailedException
+ *	  OFOpenWindowsRegistryKeyFailedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that opening a Windows registry key failed.
  */
@@ -31,10 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFWindowsRegistryKey *_registryKey;
 	OFString *_path;
-	DWORD _options;
-	REGSAM _securityAndAccessRights;
+	REGSAM _accessRights;
 	LPSECURITY_ATTRIBUTES _Nullable _securityAttributes;
+	DWORD _options;
 	LSTATUS _status;
+	OF_RESERVE_IVARS(OFOpenWindowsRegistryKeyFailedException, 4)
 }
 
 /**
@@ -48,15 +52,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *path;
 
 /**
+ * @brief The access rights for the subkey that could not be opened.
+ */
+@property (readonly, nonatomic) REGSAM accessRights;
+
+/**
  * @brief The options for the subkey that could not be opened.
  */
 @property (readonly, nonatomic) DWORD options;
-
-/**
- * @brief The security and access rights for the subkey that could not be
- *	  opened.
- */
-@property (readonly, nonatomic) REGSAM securityAndAccessRights;
 
 /**
  * @brief The status returned by RegOpenKeyEx().
@@ -69,20 +72,19 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which opening the subkey failed
  * @param path The path for the subkey that could not be opened
+ * @param accessRights The access rights for the sub key that could not be
+ *		       opened
  * @param options The options for the subkey that could not be opened
- * @param securityAndAccessRights The security and access rights for the sub
- *				  key that could not be opened
  * @param status The status returned by RegOpenKeyEx()
  * @return A new, autoreleased open Windows registry key failed exception
  */
-+ (instancetype)
-    exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
-		      status: (LSTATUS)status;
++ (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+				    path: (OFString *)path
+			    accessRights: (REGSAM)accessRights
+				 options: (DWORD)options
+				  status: (LSTATUS)status;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated open Windows registry key failed
@@ -90,18 +92,19 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param registryKey The registry key on which opening the subkey failed
  * @param path The path for the subkey that could not be opened
+ * @param accessRights The access rights for the sub key that could not be
+ *		       opened
  * @param options The options for the subkey that could not be opened
- * @param securityAndAccessRights The security and access rights for the sub
- *				  key that could not be opened
  * @param status The status returned by RegOpenKeyEx()
  * @return An initialized open Windows registry key failed exception
  */
-- (instancetype)
-	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-		     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			       path: (OFString *)path
+		       accessRights: (REGSAM)accessRights
+			    options: (DWORD)options
+			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFLHAArchiveEntry.h"
@@ -18,40 +22,19 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFMutableLHAArchiveEntry \
- *	  OFMutableLHAArchiveEntry.h ObjFW/OFMutableLHAArchiveEntry.h
+ * @class OFMutableLHAArchiveEntry OFMutableLHAArchiveEntry.h ObjFW/ObjFW.h
  *
  * @brief A class which represents a mutable entry in an LHA archive.
  */
-@interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry
+@interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry <OFMutableArchiveEntry>
 {
 	OF_RESERVE_IVARS(OFMutableLHAArchiveEntry, 4)
 }
 
 /**
- * @brief The file name of the entry.
- */
-@property (readwrite, copy, nonatomic) OFString *fileName;
-
-/**
  * @brief The compression method of the entry.
  */
 @property (readwrite, copy, nonatomic) OFString *compressionMethod;
-
-/**
- * @brief The compressed size of the entry's file.
- */
-@property (readwrite, nonatomic) uint32_t compressedSize;
-
-/**
- * @brief The uncompressed size of the entry's file.
- */
-@property (readwrite, nonatomic) uint32_t uncompressedSize;
-
-/**
- * @brief The date of the file.
- */
-@property (readwrite, retain, nonatomic) OFDate *date;
 
 /**
  * @brief The LHA level of the file.
@@ -69,46 +52,26 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint8_t operatingSystemIdentifier;
 
 /**
- * @brief The comment of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *fileComment;
-
-/**
- * @brief The mode of the entry.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *mode;
-
-/**
- * @brief The UID of the owner.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *UID;
-
-/**
- * @brief The GID of the group.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic) OFNumber *GID;
-
-/**
- * @brief The owner of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *owner;
-
-/**
- * @brief The group of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *group;
-
-/**
- * @brief The date of the last modification of the file.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
-    OFDate *modificationDate;
-
-/**
  * @brief The LHA extensions of the file.
  */
 @property (readwrite, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
+
+/**
+ * @brief Creates a new OFMutableLHAArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return A new, autoreleased OFLHAArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
+/**
+ * @brief Initializes an already allocated OFMutableLHAArchiveEntry with the
+ *	  specified file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return An initialized OFLHAArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
 
 /**
  * @brief Converts the OFMutableLHAArchiveEntry to an immutable

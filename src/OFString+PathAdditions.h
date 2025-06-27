@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFString.h"
@@ -20,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_PathAdditions_reference;
+extern int _OFString_PathAdditions_reference OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif
@@ -77,12 +81,20 @@ extern int _OFString_PathAdditions_reference;
  */
 - (OFString *)stringByAppendingPathComponent: (OFString *)component;
 
+/**
+ * @brief Creates a new string by appending a path extension.
+ *
+ * @param extension The extension to append
+ * @return A new, autoreleased OFString with the path extension appended
+ */
+- (OFString *)stringByAppendingPathExtension: (OFString *)extension;
+
 - (bool)of_isDirectoryPath;
-- (OFString *)of_pathToURLPathWithURLEncodedHost:
-    (OFString *__autoreleasing _Nullable *_Nonnull)URLEncodedHost;
-- (OFString *)of_URLPathToPathWithURLEncodedHost:
-    (nullable OFString *)URLEncodedHost;
-- (OFString *)of_pathComponentToURLPathComponent;
+- (OFString *)of_pathToIRIPathWithPercentEncodedHost:
+    (OFString *__autoreleasing _Nullable *_Nonnull)percentEncodedHost;
+- (OFString *)of_IRIPathToPathWithPercentEncodedHost:
+    (nullable OFString *)percentEncodedHost;
+- (OFString *)of_pathComponentToIRIPathComponent;
 @end
 
 OF_ASSUME_NONNULL_END

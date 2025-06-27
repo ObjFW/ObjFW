@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -20,58 +24,30 @@
 #import "OFXMLProcessingInstruction.h"
 #import "OFString.h"
 #import "OFXMLAttribute.h"
-#import "OFXMLElement.h"
 #import "OFXMLNode+Private.h"
 
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLProcessingInstruction
-@synthesize target = _target, data = _data;
+@synthesize target = _target, text = _text;
 
 + (instancetype)processingInstructionWithTarget: (OFString *)target
-					   data: (OFString *)data
+					   text: (OFString *)text
 {
-	return [[[self alloc] initWithTarget: target
-					data: data] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithTarget: target
+								   text: text]);
 }
 
 - (instancetype)initWithTarget: (OFString *)target
-			  data: (OFString *)data
+			  text: (OFString *)text
 {
 	self = [super of_init];
 
 	@try {
 		_target = [target copy];
-		_data = [data copy];
+		_text = [text copy];
 	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithSerialization: (OFXMLElement *)element
-{
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFXMLAttribute *targetAttr;
-
-		if (![element.name isEqual: self.className] ||
-		    ![element.namespace isEqual: OFSerializationNS])
-			@throw [OFInvalidArgumentException exception];
-
-		targetAttr = [element attributeForName: @"target"
-					     namespace: OFSerializationNS];
-		if (targetAttr.stringValue.length == 0)
-			@throw [OFInvalidArgumentException exception];
-
-		self = [self initWithTarget: targetAttr.stringValue
-				       data: element.stringValue];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -80,8 +56,8 @@
 
 - (void)dealloc
 {
-	[_target release];
-	[_data release];
+	objc_release(_target);
+	objc_release(_text);
 
 	[super dealloc];
 }
@@ -101,8 +77,8 @@
 	if (![processingInstruction->_target isEqual: _target])
 		return false;
 
-	if (processingInstruction->_data != _data &&
-	    ![processingInstruction->_data isEqual: _data])
+	if (processingInstruction->_text != _text &&
+	    ![processingInstruction->_text isEqual: _text])
 		return false;
 
 	return true;
@@ -114,7 +90,7 @@
 
 	OFHashInit(&hash);
 	OFHashAddHash(&hash, _target.hash);
-	OFHashAddHash(&hash, _data.hash);
+	OFHashAddHash(&hash, _text.hash);
 	OFHashFinalize(&hash);
 
 	return hash;
@@ -127,61 +103,15 @@
 
 - (OFString *)XMLString
 {
-	if (_data.length > 0)
+	if (_text.length > 0)
 		return [OFString stringWithFormat: @"<?%@ %@?>",
-						   _target, _data];
+						   _target, _text];
 	else
 		return [OFString stringWithFormat: @"<?%@?>", _target];
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-{
-	return self.XMLString;
-}
-
-- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
-				 level: (unsigned int)level
-{
-	if (indentation > 0 && level > 0) {
-		OFString *ret;
-		char *whitespaces = OFAllocMemory((level * indentation) + 1, 1);
-		memset(whitespaces, ' ', level * indentation);
-		whitespaces[level * indentation] = 0;
-
-		@try {
-			if (_data.length > 0)
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@ %@?>", whitespaces,
-				    _target, _data];
-			else
-				ret = [OFString stringWithFormat:
-				    @"%s<?%@?>", whitespaces, _target];
-		} @finally {
-			OFFreeMemory(whitespaces);
-		}
-
-		return ret;
-	} else
-		return self.XMLString;
 }
 
 - (OFString *)description
 {
 	return self.XMLString;
-}
-
-- (OFXMLElement *)XMLElementBySerializing
-{
-	OFXMLElement *ret = [OFXMLElement elementWithName: self.className
-						namespace: OFSerializationNS
-					      stringValue: _data];
-	void *pool = objc_autoreleasePoolPush();
-
-	[ret addAttribute: [OFXMLAttribute attributeWithName: @"target"
-						 stringValue: _target]];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
 }
 @end

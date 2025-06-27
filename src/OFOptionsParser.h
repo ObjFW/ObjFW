@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -21,11 +25,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @struct OFOptionsParserOption OFOptionsParser.h ObjFW/OFOptionsParser.h
+ * @struct OFOptionsParserOption OFOptionsParser.h ObjFW/ObjFW.h
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
-struct OFOptionsParserOption {
+typedef struct {
 	/** The short version (e.g. `-v`) of the option or `\0` for none. */
 	OFUnichar shortOption;
 
@@ -57,11 +61,10 @@ struct OFOptionsParserOption {
 	 * argument specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
-};
-typedef struct OFOptionsParserOption OFOptionsParserOption;
+} OFOptionsParserOption;
 
 /**
- * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
+ * @class OFOptionsParser OFOptionsParser.h ObjFW/ObjFW.h
  *
  * @brief A class for parsing the program options specified on the command line.
  */

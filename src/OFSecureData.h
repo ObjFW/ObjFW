@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFData.h"
@@ -18,7 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFSecureData OFSecureData.h ObjFW/OFSecureData.h
+ * @class OFSecureData OFSecureData.h ObjFW/ObjFW.h
  *
  * @brief A class for storing arbitrary data in secure (non-swappable) memory,
  *	  securely wiping it when it gets deallocated.
@@ -32,8 +36,10 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
-	struct page *_page;
-	bool _allowsSwappableMemory;
+	unsigned char *_Nullable _items;
+	size_t _count, _itemSize;
+	bool _freeWhenDone, _allowsSwappableMemory;
+	void *_page;
 }
 
 /**
@@ -64,7 +70,7 @@ OF_SUBCLASSING_RESTRICTED
 + (void)preallocateUnswappableMemoryWithSize: (size_t)size;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of item
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of item
  *	  size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -76,7 +82,7 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Creates a new, autoreleased OFSecureData with count items of the
+ * @brief Creates a new, autoreleased OFSecureData with `count` items of the
  *	  specified item size, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -104,12 +110,12 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-+ (instancetype)dataWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
++ (instancetype)dataWithContentsOfIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of
+ * @brief Initializes an already allocated OFSecureData with `count` items of
  *	  item size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
@@ -121,8 +127,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /**
- * @brief Initializes an already allocated OFSecureData with count items of the
- *	  specified item size, all set to zero.
+ * @brief Initializes an already allocated OFSecureData with `count` items of
+ *	  the specified item size, all set to zero.
  *
  * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
@@ -135,6 +141,8 @@ OF_SUBCLASSING_RESTRICTED
 	allowsSwappableMemory: (bool)allowsSwappableMemory
     OF_DESIGNATED_INITIALIZER;
 
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)initWithItemSize: (size_t)itemSize OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
 			count: (size_t)count OF_UNAVAILABLE;
 - (instancetype)initWithItems: (const void *)items
@@ -150,10 +158,9 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (instancetype)initWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
+- (instancetype)initWithContentsOfIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 - (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 - (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
-- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /**
  * @brief Returns a specific item of the OFSecureData.
@@ -187,8 +194,7 @@ OF_SUBCLASSING_RESTRICTED
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path OF_UNAVAILABLE;
 #endif
-- (void)writeToURL: (OFURL *)URL OF_UNAVAILABLE;
-- (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
+- (void)writeToIRI: (OFIRI *)IRI OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
 @end
 

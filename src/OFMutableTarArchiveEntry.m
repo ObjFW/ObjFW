@@ -1,27 +1,60 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFMutableTarArchiveEntry.h"
-#import "OFString.h"
+#import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFNumber.h"
+#import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
-@dynamic owner, group, deviceMajor, deviceMinor;
+@dynamic fileName, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic compressedSize, uncompressedSize, modificationDate, type;
+@dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
+@dynamic deviceMinor;
+/*
+ * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic fileComment;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [self of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {
@@ -36,34 +69,45 @@
 {
 	OFString *old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 }
 
-- (void)setMode: (unsigned long)mode
+- (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
-	_mode = mode;
+	OFNumber *old = _POSIXPermissions;
+	_POSIXPermissions = objc_retain(POSIXPermissions);
+	objc_release(old);
 }
 
-- (void)setUID: (unsigned long)UID
+- (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
-	_UID = UID;
+	OFNumber *old = _ownerAccountID;
+	_ownerAccountID = objc_retain(ownerAccountID);
+	objc_release(old);
 }
 
-- (void)setGID: (unsigned long)GID
+- (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
-	_GID = GID;
+	OFNumber *old = _groupOwnerAccountID;
+	_groupOwnerAccountID = objc_retain(groupOwnerAccountID);
+	objc_release(old);
 }
 
-- (void)setSize: (unsigned long long)size
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
-	_size = size;
+	_compressedSize = compressedSize;
+}
+
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
+{
+	_uncompressedSize = uncompressedSize;
 }
 
 - (void)setModificationDate: (OFDate *)modificationDate
 {
 	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
-	[old release];
+	_modificationDate = objc_retain(modificationDate);
+	objc_release(old);
 }
 
 - (void)setType: (OFTarArchiveEntryType)type
@@ -75,21 +119,21 @@
 {
 	OFString *old = _targetFileName;
 	_targetFileName = [targetFileName copy];
-	[old release];
+	objc_release(old);
 }
 
-- (void)setOwner: (OFString *)owner
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
-	OFString *old = _owner;
-	_owner = [owner copy];
-	[old release];
+	OFString *old = _ownerAccountName;
+	_ownerAccountName = [ownerAccountName copy];
+	objc_release(old);
 }
 
-- (void)setGroup: (OFString *)group
+- (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
-	OFString *old = _group;
-	_group = [group copy];
-	[old release];
+	OFString *old = _groupOwnerAccountName;
+	_groupOwnerAccountName = [groupOwnerAccountName copy];
+	objc_release(old);
 }
 
 - (void)setDeviceMajor: (unsigned long)deviceMajor

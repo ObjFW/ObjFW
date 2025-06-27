@@ -1,36 +1,103 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
-
-#ifdef OF_HAVE_THREADS
-# import "OFPlainMutex.h"
+#ifdef OF_OBJFW_RUNTIME
+# import "ObjFWRT.h"
+# import "private.h"
+#else
+# import "OFObject.h"
+# import "OFMapTable.h"
 #endif
 
-struct weakref {
+#import "pre_ivar.h"
+
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+
+struct WeakRef {
 	id **locations;
 	size_t count;
 };
 
-static struct objc_hashtable *hashtable;
+#ifdef OF_OBJFW_RUNTIME
+typedef struct objc_hashtable _objc_hashtable;
+
+/* Inlined for performance. */
+static OF_INLINE bool
+_object_isTaggedPointer_fast(id object)
+{
+	uintptr_t pointer = (uintptr_t)object;
+
+	return pointer & 1;
+}
+
+/* Inlined and unncessary checks dropped for performance. */
+static OF_INLINE Class
+_object_getClass_fast(id object_)
+{
+	struct objc_object *object = (struct objc_object *)object_;
+
+	return object->isa;
+}
+#else
+typedef OFMapTable _objc_hashtable;
+static const OFMapTableFunctions defaultFunctions = { NULL };
+
+static OF_INLINE _objc_hashtable *
+_objc_hashtable_new(uint32_t (*hash)(const void *key),
+    bool (*equal)(const void *key1, const void *key2), uint32_t size)
+{
+	return [[OFMapTable alloc] initWithKeyFunctions: defaultFunctions
+					objectFunctions: defaultFunctions];
+}
+
+static OF_INLINE void
+_objc_hashtable_set(_objc_hashtable *hashtable, const void *key,
+    const void *object)
+{
+	return [hashtable setObject: (void *)object forKey: (void *)key];
+}
+
+static OF_INLINE void *
+_objc_hashtable_get(_objc_hashtable *hashtable, const void *key)
+{
+	return [hashtable objectForKey: (void *)key];
+}
+
+static OF_INLINE void
+_objc_hashtable_delete(_objc_hashtable *hashtable, const void *key)
+{
+	[hashtable removeObjectForKey: (void *)key];
+}
+
+# define _OBJC_ERROR(...) abort()
+# define object_isTaggedPointer(obj) 0
+#endif
+
 #ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
 static OFSpinlock spinlock;
 #endif
+static _objc_hashtable *hashtable;
 
 static uint32_t
 hash(const void *object)
@@ -46,17 +113,25 @@ equal(const void *object1, const void *object2)
 
 OF_CONSTRUCTOR()
 {
-	hashtable = objc_hashtable_new(hash, equal, 2);
+	hashtable = _objc_hashtable_new(hash, equal, 2);
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockNew(&spinlock) != 0)
-		OBJC_ERROR("Failed to create spinlock!");
+		_OBJC_ERROR("Failed to create spinlock!");
 #endif
 }
 
 id
 objc_retain(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object == nil || _object_isTaggedPointer_fast(object))
+		return object;
+
+	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootRetain(object);
+#endif
+
 	return [object retain];
 }
 
@@ -69,18 +144,44 @@ objc_retainBlock(id block)
 id
 objc_retainAutorelease(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object == nil || _object_isTaggedPointer_fast(object))
+		return object;
+
+	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(_objc_rootRetain(object));
+#endif
+
 	return [[object retain] autorelease];
 }
 
 void
 objc_release(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object == nil || _object_isTaggedPointer_fast(object))
+		return;
+
+	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR) {
+		_objc_rootRelease(object);
+		return;
+	}
+#endif
+
 	[object release];
 }
 
 id
 objc_autorelease(id object)
 {
+#ifdef OF_OBJFW_RUNTIME
+	if (object == nil || _object_isTaggedPointer_fast(object))
+		return object;
+
+	if (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR)
+		return _objc_rootAutorelease(object);
+#endif
+
 	return [object autorelease];
 }
 
@@ -117,19 +218,19 @@ objc_storeStrong(id *object, id value)
 id
 objc_storeWeak(id *object, id value)
 {
-	struct weakref *old;
+	struct WeakRef *old;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*object != nil &&
-	    (old = objc_hashtable_get(hashtable, *object)) != NULL) {
+	    (old = _objc_hashtable_get(hashtable, *object)) != NULL) {
 		for (size_t i = 0; i < old->count; i++) {
 			if (old->locations[i] == object) {
 				if (--old->count == 0) {
-					objc_hashtable_delete(hashtable,
+					_objc_hashtable_delete(hashtable,
 					    *object);
 					free(old->locations);
 					free(old);
@@ -155,19 +256,29 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weakref *ref = objc_hashtable_get(hashtable, value);
+		struct WeakRef *ref;
+
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
+		if (!object_isTaggedPointer(value) &&
+		    (_object_getClass_fast(value)->info &
+		     _OBJC_CLASS_INFO_RUNTIME_RR))
+			OFAtomicIntOr(&_OBJC_PRE_IVARS(value)->info,
+			    _OBJC_OBJECT_INFO_WEAK_REFERENCES);
+#endif
+
+		ref = _objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
-				OBJC_ERROR("Not enough memory to allocate weak "
-				    "reference!");
+				_OBJC_ERROR("Not enough memory to allocate "
+				    "weak reference!");
 
-			objc_hashtable_set(hashtable, value, ref);
+			_objc_hashtable_set(hashtable, value, ref);
 		}
 
 		if ((ref->locations = realloc(ref->locations,
 		    (ref->count + 1) * sizeof(id *))) == NULL)
-			OBJC_ERROR("Not enough memory to allocate weak "
+			_OBJC_ERROR("Not enough memory to allocate weak "
 			    "reference!");
 
 		ref->locations[ref->count++] = object;
@@ -178,7 +289,7 @@ objc_storeWeak(id *object, id value)
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	return value;
@@ -188,20 +299,18 @@ id
 objc_loadWeakRetained(id *object)
 {
 	id value = nil;
-	struct weakref *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
-	if (*object != nil &&
-	    (ref = objc_hashtable_get(hashtable, *object)) != NULL)
+	if (*object != nil && _objc_hashtable_get(hashtable, *object) != NULL)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
 	if (class_respondsToSelector(object_getClass(value),
@@ -239,15 +348,15 @@ objc_copyWeak(id *dest, id *src)
 void
 objc_moveWeak(id *dest, id *src)
 {
-	struct weakref *ref;
+	struct WeakRef *ref;
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
 	if (*src != nil &&
-	    (ref = objc_hashtable_get(hashtable, *src)) != NULL) {
+	    (ref = _objc_hashtable_get(hashtable, *src)) != NULL) {
 		for (size_t i = 0; i < ref->count; i++) {
 			if (ref->locations[i] == src) {
 				ref->locations[i] = dest;
@@ -261,31 +370,41 @@ objc_moveWeak(id *dest, id *src)
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }
 
 void
-objc_zero_weak_references(id value)
+_objc_zeroWeakReferences(id value)
 {
-	struct weakref *ref;
+	struct WeakRef *ref;
+
+#if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
+	OFReleaseMemoryBarrier();
+
+	if (value != nil && !object_isTaggedPointer(value) &&
+	    (_object_getClass_fast(value)->info &
+	    _OBJC_CLASS_INFO_RUNTIME_RR) && !(_OBJC_PRE_IVARS(value)->info &
+	    _OBJC_OBJECT_INFO_WEAK_REFERENCES))
+		return;
+#endif
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockLock(&spinlock) != 0)
-		OBJC_ERROR("Failed to lock spinlock!");
+		_OBJC_ERROR("Failed to lock spinlock!");
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, value)) != NULL) {
+	if ((ref = _objc_hashtable_get(hashtable, value)) != NULL) {
 		for (size_t i = 0; i < ref->count; i++)
 			*ref->locations[i] = nil;
 
-		objc_hashtable_delete(hashtable, value);
+		_objc_hashtable_delete(hashtable, value);
 		free(ref->locations);
 		free(ref);
 	}
 
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
-		OBJC_ERROR("Failed to unlock spinlock!");
+		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 }

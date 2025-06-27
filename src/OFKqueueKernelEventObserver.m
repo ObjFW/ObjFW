@@ -1,21 +1,24 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -31,15 +34,15 @@
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFObserveFailedException.h"
+#import "OFObserveKernelEventsFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #define eventListSize 64
 
 @implementation OFKqueueKernelEventObserver
-- (instancetype)init
+- (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
-	self = [super init];
+	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
 		struct kevent event;
@@ -61,11 +64,12 @@
 
 		EV_SET(&event, _cancelFD[0], EVFILT_READ, EV_ADD, 0, 0, 0);
 
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: self.class];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -93,9 +97,11 @@
 	 */
 	event.udata = (__typeof__(event.udata))object;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super addObjectForReading: object];
 }
@@ -114,9 +120,11 @@
 	 */
 	event.udata = (__typeof__(event.udata))object;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super addObjectForWriting: object];
 }
@@ -130,9 +138,11 @@
 	event.filter = EVFILT_READ;
 	event.flags = EV_DELETE;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super removeObjectForReading: object];
 }
@@ -146,9 +156,11 @@
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_DELETE;
 
-	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	[super removeObjectForWriting: object];
 }
@@ -159,31 +171,31 @@
 	struct kevent eventList[eventListSize];
 	int events;
 
-	if ([self of_processReadBuffers])
+	if ([self processReadBuffers])
 		return;
 
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
 
-	events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
-	    (timeInterval != -1 ? &timeout : NULL));
-
-	if (events < 0)
-		@throw [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errno];
+	while ((events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
+	    (timeInterval != -1 ? &timeout : NULL))) < 0)
+		if (errno != EINTR)
+			@throw [OFObserveKernelEventsFailedException
+			    exceptionWithObserver: self
+					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
 		void *pool;
 
 		if (eventList[i].flags & EV_ERROR)
-			@throw [OFObserveFailedException
+			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: (int)eventList[i].data];
 
 		if (eventList[i].ident == (uintptr_t)_cancelFD[0]) {
 			char buffer;
 
-			assert(eventList[i].filter == EVFILT_READ);
+			OFAssert(eventList[i].filter == EVFILT_READ);
 			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
@@ -205,7 +217,7 @@
 				    (id)eventList[i].udata];
 			break;
 		default:
-			assert(0);
+			OFAssert(0);
 		}
 
 		objc_autoreleasePoolPop(pool);

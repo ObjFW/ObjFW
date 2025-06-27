@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -19,6 +23,7 @@
 #import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFHashNotCalculatedException.h"
 #import "OFInvalidArgumentException.h"
 
 @implementation OFHMAC
@@ -28,9 +33,9 @@
 + (instancetype)HMACWithHashClass: (Class <OFCryptographicHash>)class
 	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithHashClass: class
-			  allowsSwappableMemory: allowsSwappableMemory]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithHashClass: class
+		      allowsSwappableMemory: allowsSwappableMemory]);
 }
 
 - (instancetype)init
@@ -51,10 +56,10 @@
 
 - (void)dealloc
 {
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 
 	[super dealloc];
 }
@@ -72,10 +77,10 @@
 	unsigned char *outerKeyPadItems = outerKeyPad.mutableItems;
 	unsigned char *innerKeyPadItems = innerKeyPad.mutableItems;
 
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
 
 	@try {
@@ -84,6 +89,7 @@
 			    hashWithAllowsSwappableMemory:
 			    _allowsSwappableMemory];
 			[hash updateWithBuffer: key length: length];
+			[hash calculate];
 
 			length = hash.digestSize;
 			if OF_UNLIKELY (length > blockSize)
@@ -104,10 +110,10 @@
 			innerKeyPadItems[i] ^= 0x36;
 		}
 
-		_outerHash = [[_hashClass hashWithAllowsSwappableMemory:
-		    _allowsSwappableMemory] retain];
-		_innerHash = [[_hashClass hashWithAllowsSwappableMemory:
-		    _allowsSwappableMemory] retain];
+		_outerHash = objc_retain([_hashClass
+		    hashWithAllowsSwappableMemory: _allowsSwappableMemory]);
+		_innerHash = objc_retain([_hashClass
+		    hashWithAllowsSwappableMemory: _allowsSwappableMemory]);
 
 		[_outerHash updateWithBuffer: outerKeyPadItems
 				      length: blockSize];
@@ -140,17 +146,26 @@
 	[_innerHash updateWithBuffer: buffer length: length];
 }
 
-- (const unsigned char *)digest
+- (void)calculate
 {
+	if (_calculated)
+		@throw [OFHashAlreadyCalculatedException
+		    exceptionWithObject: self];
+
 	if (_outerHash == nil || _innerHash == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_calculated)
-		return _outerHash.digest;
-
+	[_innerHash calculate];
 	[_outerHash updateWithBuffer: _innerHash.digest
 			      length: _innerHash.digestSize];
+	[_outerHash calculate];
 	_calculated = true;
+}
+
+- (const unsigned char *)digest
+{
+	if (!_calculated)
+		@throw [OFHashNotCalculatedException exceptionWithObject: self];
 
 	return _outerHash.digest;
 }
@@ -162,8 +177,8 @@
 
 - (void)reset
 {
-	[_outerHash release];
-	[_innerHash release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
 	_outerHash = _innerHash = nil;
 
 	_outerHash = [_outerHashCopy copy];
@@ -174,10 +189,10 @@
 
 - (void)zero
 {
-	[_outerHash release];
-	[_innerHash release];
-	[_outerHashCopy release];
-	[_innerHashCopy release];
+	objc_release(_outerHash);
+	objc_release(_innerHash);
+	objc_release(_outerHashCopy);
+	objc_release(_innerHashCopy);
 	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
 
 	_calculated = false;

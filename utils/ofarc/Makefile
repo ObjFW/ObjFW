@@ -5,9 +5,11 @@ SRCS = GZIPArchive.m	\
        LHAArchive.m	\
        OFArc.m		\
        TarArchive.m	\
-       ZIPArchive.m
-DATA = lang/de.json		\
-       lang/languages.json
+       ZIPArchive.m	\
+       ZooArchive.m
+DATA = localization/de.json		\
+       localization/localizations.json
+MAN = ofarc.1
 
 include ../../buildsys.mk
 
@@ -15,13 +17,23 @@ PACKAGE_NAME = ofarc
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 
-CPPFLAGS += -I../../src					\
-	    -I../../src/runtime				\
-	    -I../../src/exceptions			\
-	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofarc/lang\"
-LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+CPPFLAGS += -I../../src							\
+	    -I../../src/runtime						\
+	    -I../../src/exceptions					\
+	    -I../../src/tls						\
+	    -I../..							\
+	    -DOBJFWTLS_LOCAL_INCLUDES					\
+	    -DLOCALIZATION_DIR=\"${datadir}/ofarc/localization\"	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src			\
+	-L../../src/runtime		\
+	-L../../src/runtime/linklib	\
+	-L../../src/tls			\
+	-L../../src/bridge		\
+	${OFHTTP_LIBS}			\
+	-lobjfw				\
+	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

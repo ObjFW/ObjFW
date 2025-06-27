@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <setjmp.h>
@@ -41,7 +45,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 #endif
 
 /**
- * @class OFThread OFThread.h ObjFW/OFThread.h
+ * @class OFThread OFThread.h ObjFW/ObjFW.h
  *
  * @brief A class which provides portable threads.
  *
@@ -74,7 +78,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 	void *_pool;
 # endif
 # ifdef OF_HAVE_BLOCKS
-	OFThreadBlock _Nullable _threadBlock;
+	OFThreadBlock _Nullable _block;
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
@@ -118,7 +122,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief The block to execute in the thread.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock threadBlock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThreadBlock block;
 # endif
 
 /**
@@ -134,6 +138,9 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * This is a value between -1.0 (meaning lowest priority that still schedules)
  * and +1.0 (meaning highest priority that still allows getting preempted)
  * with normal priority being 0.0 (meaning being the same as the main thread).
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the priority cannot be changed
  */
 @property (nonatomic) float priority;
 
@@ -141,6 +148,9 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief The stack size of the thread.
  *
  * @note This has to be set before the thread is started!
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the stack size cannot be changed
  */
 @property (nonatomic) size_t stackSize;
 
@@ -150,6 +160,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * Some operating systems such as AmigaOS need special per-thread
  * initialization of sockets. If you intend to use sockets in the thread, set
  * this property to true before starting the thread.
+ *
+ * @throw OFThreadStillRunningException The thread is already/still running and
+ *					thus the sockets support cannot be
+ *					enabled/disabled
  */
 @property (nonatomic) bool supportsSockets;
 
@@ -164,10 +178,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Creates a new thread with the specified block.
  *
- * @param threadBlock A block which is executed by the thread
+ * @param block A block which is executed by the thread
  * @return A new, autoreleased thread
  */
-+ (instancetype)threadWithThreadBlock: (OFThreadBlock)threadBlock;
++ (instancetype)threadWithBlock: (OFThreadBlock)block;
 # endif
 
 /**
@@ -204,9 +218,12 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Returns the DNS resolver for the current thread.
  *
+ * Constructs the DNS resolver is there is none yet, unless @ref currentThread
+ * is `nil`, in which case it returns `nil`.
+ *
  * @return The DNS resolver for the current thread
  */
-+ (OFDNSResolver *)DNSResolver;
++ (nullable OFDNSResolver *)DNSResolver;
 #endif
 
 /**
@@ -230,6 +247,16 @@ typedef id _Nullable (^OFThreadBlock)(void);
  */
 + (void)yield;
 
+#if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
+    defined(DOXYGEN)
+/**
+ * @brief Waits for the vertical blank.
+ *
+ * @note This method is only available on Wii, Nintendo DS and Nintendo 3DS.
+ */
++ (void)waitForVerticalBlank;
+#endif
+
 #ifdef OF_HAVE_THREADS
 /**
  * @brief Terminates the current thread, letting it return `nil`.
@@ -240,6 +267,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief Terminates the current thread, letting it return the specified object.
  *
  * @param object The object which the terminated thread will return
+ * @throw OFInvalidArgumentException The method was called from the main thread
  */
 + (void)terminateWithObject: (nullable id)object OF_NO_RETURN;
 
@@ -264,10 +292,10 @@ typedef id _Nullable (^OFThreadBlock)(void);
 /**
  * @brief Initializes an already allocated thread with the specified block.
  *
- * @param threadBlock A block which is executed by the thread
+ * @param block A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- (instancetype)initWithThreadBlock: (OFThreadBlock)threadBlock;
+- (instancetype)initWithBlock: (OFThreadBlock)block;
 # endif
 
 /**
@@ -281,12 +309,15 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief This routine is executed when the thread's main method has finished
  *	  executing or terminate has been called.
  *
- * @note Be sure to call [super handleTermination]!
+ * @note Be sure to call `[super handleTermination]`!
  */
 - (void)handleTermination OF_REQUIRES_SUPER;
 
 /**
  * @brief Starts the thread.
+ *
+ * @throw OFStartThreadFailedException Starting the thread failed
+ * @throw OFThreadStillRunningException The thread is still running
  */
 - (void)start;
 
@@ -294,6 +325,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  * @brief Joins a thread.
  *
  * @return The object returned by the main method of the thread.
+ * @throw OFJoinThreadFailedException Joining the thread failed
  */
 - (id)join;
 #else

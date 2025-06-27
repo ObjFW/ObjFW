@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -18,245 +22,266 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFXMLParser";
-static int i = 0;
+@interface OFXMLParserTests: OTTestCase <OFXMLParserDelegate>
+{
+	int _i;
+}
+@end
 
-enum event_type {
-	PROCESSING_INSTRUCTION,
-	TAG_OPEN,
-	TAG_CLOSE,
-	STRING,
-	CDATA,
-	COMMENT
+enum EventType {
+	eventTypeProcessingInstruction,
+	eventTypeTagOpen,
+	eventTypeTagClose,
+	eventTypeString,
+	eventTypeCDATA,
+	eventTypeComment
 };
 
-@implementation TestsAppDelegate (OFXMLParser)
+@implementation OFXMLParserTests
 -   (void)parser: (OFXMLParser *)parser
-  didCreateEvent: (enum event_type)type
+  didCreateEvent: (enum EventType)type
 	    name: (OFString *)name
 	  prefix: (OFString *)prefix
-       namespace: (OFString *)ns
+       namespace: (OFString *)namespace
       attributes: (OFArray *)attrs
 	  string: (OFString *)string
 {
-	OFString *msg;
-
-	i++;
-	msg = [OFString stringWithFormat: @"Parsing part #%d", i];
-
-	switch (i) {
+	switch (_i++) {
+	case 0:
+		OTAssertEqual(type, eventTypeProcessingInstruction);
+		OTAssertEqualObjects(name, @"xml");
+		OTAssertEqualObjects(string, @"version='1.0'");
+		break;
 	case 1:
-		TEST(msg, type == PROCESSING_INSTRUCTION &&
-		    [name isEqual: @"xml"] &&
-		    [string isEqual: @"version='1.0'"])
+		OTAssertEqual(type, eventTypeProcessingInstruction);
+		OTAssertEqualObjects(name, @"p?i");
+		OTAssertNil(string);
 		break;
 	case 2:
-		TEST(msg, type == PROCESSING_INSTRUCTION &&
-		    [name isEqual: @"p?i"] && string == nil)
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"root");
+		OTAssertNil(prefix);
+		OTAssertNil(namespace);
+		OTAssertEqual(attrs.count, 0);
 		break;
 	case 3:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"root"] &&
-		    prefix == nil && ns == nil && attrs.count == 0)
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n\n ");
 		break;
 	case 4:
-		TEST(msg, type == STRING && [string isEqual: @"\n\n "])
+		OTAssertEqual(type, eventTypeCDATA);
+		OTAssertEqualObjects(string, @"f<]]]oo]");
+		OTAssertEqual(parser.lineNumber, 3);
 		break;
 	case 5:
-		TEST(msg, type == CDATA && [string isEqual: @"f<]]]oo]"] &&
-		    parser.lineNumber == 3)
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"bar");
+		OTAssertNil(prefix);
+		OTAssertNil(namespace);
+		OTAssertNil(attrs);
 		break;
 	case 6:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"bar"] &&
-		    prefix == nil && ns == nil && attrs == nil)
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"bar");
+		OTAssertNil(prefix);
+		OTAssertNil(namespace);
+		OTAssertNil(attrs);
 		break;
 	case 7:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bar"] &&
-		    prefix == nil && ns == nil && attrs == nil)
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n ");
 		break;
 	case 8:
-		TEST(msg, type == STRING && [string isEqual: @"\n "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"foobar");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
+		OTAssertEqualObjects(attrs, [OFArray arrayWithObject:
+		    [OFXMLAttribute attributeWithName: @"xmlns"
+					  stringValue: @"urn:objfw:test:"
+						       @"foobar"]]);
 		break;
 	case 9:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"foobar"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    attrs.count == 1 &&
-		    /* xmlns attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
-		    [[attrs objectAtIndex: 0] namespace] == nil &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
-		    @"urn:objfw:test:foobar"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n  ");
 		break;
 	case 10:
-		TEST(msg, type == STRING && [string isEqual: @"\n  "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"qux");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
+		OTAssertEqualObjects(attrs, [OFArray arrayWithObject:
+		    [OFXMLAttribute attributeWithName: @"foo"
+					    namespace: @"http://www.w3.org/"
+						       @"2000/xmlns/"
+					  stringValue: @"urn:objfw:test:foo"]]);
 		break;
 	case 11:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"qux"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    attrs.count == 1 &&
-		    /* xmlns:foo attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"foo"] &&
-		    [[[attrs objectAtIndex: 0] namespace] isEqual:
-		    @"http://www.w3.org/2000/xmlns/"] &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
-		    @"urn:objfw:test:foo"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n   ");
 		break;
 	case 12:
-		TEST(msg, type == STRING && [string isEqual: @"\n   "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"bla");
+		OTAssertEqualObjects(prefix, @"foo");
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foo");
+		OTAssertEqualObjects(attrs, ([OFArray arrayWithObjects:
+		    [OFXMLAttribute attributeWithName: @"bla"
+					    namespace: @"urn:objfw:test:foo"
+					  stringValue: @"bla"],
+		    [OFXMLAttribute attributeWithName: @"blafoo"
+					  stringValue: @"foo"], nil]));
 		break;
 	case 13:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"bla"] &&
-		    [prefix isEqual: @"foo"] &&
-		    [ns isEqual: @"urn:objfw:test:foo"] &&
-		    attrs.count == 2 &&
-		    /* foo:bla attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
-		    [[[attrs objectAtIndex: 0] namespace] isEqual:
-		    @"urn:objfw:test:foo"] &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"bla"] &&
-		    /* blafoo attr */
-		    [[[attrs objectAtIndex: 1] name] isEqual: @"blafoo"] &&
-		    [[attrs objectAtIndex: 1] namespace] == nil &&
-		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"foo"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n    ");
 		break;
 	case 14:
-		TEST(msg, type == STRING && [string isEqual: @"\n    "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"blup");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
+		OTAssertEqualObjects(attrs, ([OFArray arrayWithObjects:
+		    [OFXMLAttribute attributeWithName: @"qux"
+					    namespace: @"urn:objfw:test:foo"
+					  stringValue: @"asd"],
+		    [OFXMLAttribute attributeWithName: @"quxqux"
+					  stringValue: @"test"], nil]));
 		break;
 	case 15:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"blup"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    attrs.count == 2 &&
-		    /* foo:qux attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"qux"] &&
-		    [[[attrs objectAtIndex: 0] namespace] isEqual:
-		    @"urn:objfw:test:foo"] &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual: @"asd"] &&
-		    /* quxqux attr */
-		    [[[attrs objectAtIndex: 1] name] isEqual: @"quxqux"] &&
-		    [[attrs objectAtIndex: 1] namespace] == nil &&
-		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"test"])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"blup");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
 		break;
 	case 16:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"blup"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n    ");
 		break;
 	case 17:
-		TEST(msg, type == STRING && [string isEqual: @"\n    "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"bla");
+		OTAssertEqualObjects(prefix, @"bla");
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:bla");
+		OTAssertEqualObjects(attrs, ([OFArray arrayWithObjects:
+		    [OFXMLAttribute attributeWithName: @"bla"
+					    namespace: @"http://www.w3.org/"
+						       @"2000/xmlns/"
+					  stringValue: @"urn:objfw:test:bla"],
+		    [OFXMLAttribute attributeWithName: @"qux"
+					  stringValue: @"qux"],
+		    [OFXMLAttribute attributeWithName: @"foo"
+					    namespace: @"urn:objfw:test:bla"
+					  stringValue: @"blafoo"], nil]));
 		break;
 	case 18:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"bla"] &&
-		    [prefix isEqual: @"bla"] &&
-		    [ns isEqual: @"urn:objfw:test:bla"] && attrs.count == 3 &&
-		    /* xmlns:bla attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
-		    [[[attrs objectAtIndex: 0] namespace] isEqual:
-		    @"http://www.w3.org/2000/xmlns/"] &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
-		    @"urn:objfw:test:bla"] &&
-		    /* qux attr */
-		    [[[attrs objectAtIndex: 1] name] isEqual: @"qux"] &&
-		    [[attrs objectAtIndex: 1] namespace] == nil &&
-		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"qux"] &&
-		    /* bla:foo attr */
-		    [[[attrs objectAtIndex: 2] name] isEqual: @"foo"] &&
-		    [[[attrs objectAtIndex: 2] namespace] isEqual:
-		    @"urn:objfw:test:bla"] &&
-		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"blafoo"])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"bla");
+		OTAssertEqualObjects(prefix, @"bla");
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:bla");
 		break;
 	case 19:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bla"] &&
-		    [prefix isEqual: @"bla"] &&
-		    [ns isEqual: @"urn:objfw:test:bla"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n    ");
 		break;
 	case 20:
-		TEST(msg, type == STRING && [string isEqual: @"\n    "])
+		OTAssertEqual(type, eventTypeTagOpen);
+		OTAssertEqualObjects(name, @"abc");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:abc");
+		OTAssertEqualObjects(attrs, ([OFArray arrayWithObjects:
+		    [OFXMLAttribute attributeWithName: @"xmlns"
+					  stringValue: @"urn:objfw:test:abc"],
+		    [OFXMLAttribute attributeWithName: @"abc"
+					  stringValue: @"abc"],
+		    [OFXMLAttribute attributeWithName: @"abc"
+					    namespace: @"urn:objfw:test:foo"
+					  stringValue: @"abc"], nil]));
 		break;
 	case 21:
-		TEST(msg, type == TAG_OPEN && [name isEqual: @"abc"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"] &&
-		    attrs.count == 3 &&
-		    /* xmlns attr */
-		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
-		    [[attrs objectAtIndex: 0] namespace] == nil &&
-		    [[[attrs objectAtIndex: 0] stringValue] isEqual:
-		    @"urn:objfw:test:abc"] &&
-		    /* abc attr */
-		    [[[attrs objectAtIndex: 1] name] isEqual: @"abc"] &&
-		    [[attrs objectAtIndex: 1] namespace] == nil &&
-		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"abc"] &&
-		    /* foo:abc attr */
-		    [[[attrs objectAtIndex: 2] name] isEqual: @"abc"] &&
-		    [[[attrs objectAtIndex: 2] namespace] isEqual:
-		    @"urn:objfw:test:foo"] &&
-		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"abc"])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"abc");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:abc");
 		break;
 	case 22:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"abc"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n   ");
 		break;
 	case 23:
-		TEST(msg, type == STRING && [string isEqual: @"\n   "])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"bla");
+		OTAssertEqualObjects(prefix, @"foo");
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foo");
 		break;
 	case 24:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bla"] &&
-		    [prefix isEqual: @"foo"] &&
-		    [ns isEqual: @"urn:objfw:test:foo"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n   ");
 		break;
 	case 25:
-		TEST(msg, type == STRING && [string isEqual: @"\n   "])
+		OTAssertEqual(type, eventTypeComment);
+		OTAssertEqualObjects(string, @" commänt ");
 		break;
 	case 26:
-		TEST(msg, type == COMMENT && [string isEqual: @" commänt "])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n  ");
 		break;
 	case 27:
-		TEST(msg, type == STRING && [string isEqual: @"\n  "])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"qux");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
 		break;
 	case 28:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"qux"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n ");
 		break;
 	case 29:
-		TEST(msg, type == STRING && [string isEqual: @"\n "])
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"foobar");
+		OTAssertNil(prefix);
+		OTAssertEqualObjects(namespace, @"urn:objfw:test:foobar");
 		break;
 	case 30:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"foobar"] &&
-		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
+		OTAssertEqual(type, eventTypeString);
+		OTAssertEqualObjects(string, @"\n");
 		break;
 	case 31:
-		TEST(msg, type == STRING && [string isEqual: @"\n"])
-		break;
-	case 32:
-		TEST(msg, type == TAG_CLOSE && [name isEqual: @"root"] &&
-		    prefix == nil && ns == nil);
+		OTAssertEqual(type, eventTypeTagClose);
+		OTAssertEqualObjects(name, @"root");
+		OTAssertNil(prefix);
+		OTAssertNil(namespace);
 		break;
 	}
 }
 
 -			  (void)parser: (OFXMLParser *)parser
   foundProcessingInstructionWithTarget: (OFString *)target
-				  data: (OFString *)data
+				  text: (OFString *)text
 {
 	[self	    parser: parser
-	    didCreateEvent: PROCESSING_INSTRUCTION
+	    didCreateEvent: eventTypeProcessingInstruction
 		      name: target
 		    prefix: nil
 		 namespace: nil
 		attributes: nil
-		    string: data];
+		    string: text];
 }
 
 -    (void)parser: (OFXMLParser *)parser
   didStartElement: (OFString *)name
 	   prefix: (OFString *)prefix
-	namespace: (OFString *)ns
+	namespace: (OFString *)namespace
        attributes: (OFArray *)attrs
 {
 	[self	    parser: parser
-	    didCreateEvent: TAG_OPEN
+	    didCreateEvent: eventTypeTagOpen
 		      name: name
 		    prefix: prefix
-		 namespace: ns
+		 namespace: namespace
 		attributes: attrs
 		    string: nil];
 }
@@ -264,13 +289,13 @@ enum event_type {
 -  (void)parser: (OFXMLParser *)parser
   didEndElement: (OFString *)name
 	 prefix: (OFString *)prefix
-      namespace: (OFString *)ns
+      namespace: (OFString *)namespace
 {
 	[self	    parser: parser
-	    didCreateEvent: TAG_CLOSE
+	    didCreateEvent: eventTypeTagClose
 		      name: name
 		    prefix: prefix
-		 namespace: ns
+		 namespace: namespace
 		attributes: nil
 		    string: nil];
 }
@@ -278,7 +303,7 @@ enum event_type {
 - (void)parser: (OFXMLParser *)parser foundCharacters: (OFString *)string
 {
 	[self	    parser: parser
-	    didCreateEvent: STRING
+	    didCreateEvent: eventTypeString
 		      name: nil
 		    prefix: nil
 		 namespace: nil
@@ -286,21 +311,21 @@ enum event_type {
 		    string: string];
 }
 
-- (void)parser: (OFXMLParser *)parser foundCDATA: (OFString *)cdata
+- (void)parser: (OFXMLParser *)parser foundCDATA: (OFString *)CDATA
 {
 	[self	    parser: parser
-	    didCreateEvent: CDATA
+	    didCreateEvent: eventTypeCDATA
 		      name: nil
 		    prefix: nil
 		 namespace: nil
 		attributes: nil
-		    string: cdata];
+		    string: CDATA];
 }
 
 - (void)parser: (OFXMLParser *)parser foundComment: (OFString *)comment
 {
 	[self	    parser: parser
-	    didCreateEvent: COMMENT
+	    didCreateEvent: eventTypeComment
 		      name: nil
 		    prefix: nil
 		 namespace: nil
@@ -317,10 +342,9 @@ enum event_type {
 	return nil;
 }
 
-- (void)XMLParserTests
+- (void)testParser
 {
-	void *pool = objc_autoreleasePoolPush();
-	const char *str = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
+	static const char *string = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
 	    "<!DOCTYPE foo><root>\r\r"
 	    " <![CDATA[f<]]]oo]]]><bar/>\n"
 	    " <foobar xmlns='urn:objfw:test:foobar'>\r\n"
@@ -336,57 +360,60 @@ enum event_type {
 	    " </foobar>\n"
 	    "</root>";
 	OFXMLParser *parser;
-	size_t j, len;
+	size_t j, length;
 
-	TEST(@"+[parser]", (parser = [OFXMLParser parser]))
-
-	TEST(@"-[setDelegate:]", (parser.delegate = self))
+	parser = [OFXMLParser parser];
+	parser.delegate = self;
 
 	/* Simulate a stream where we only get chunks */
-	len = strlen(str);
+	length = strlen(string);
 
-	for (j = 0; j < len; j+= 2) {
+	for (j = 0; j < length; j+= 2) {
 		if (parser.hasFinishedParsing)
 			abort();
 
-		if (j + 2 > len)
-			[parser parseBuffer: str + j length: 1];
+		if (j + 2 > length)
+			[parser parseBuffer: string + j length: 1];
 		else
-			[parser parseBuffer: str + j length: 2];
+			[parser parseBuffer: string + j length: 2];
 	}
 
-	TEST(@"Checking if everything was parsed",
-	    i == 32 && parser.lineNumber == 18)
+	OTAssertEqual(_i, 32);
+	OTAssertEqual(parser.lineNumber, 18);
+	OTAssertTrue(parser.hasFinishedParsing);
 
-	TEST(@"-[hasFinishedParsing]", parser.hasFinishedParsing)
+	/* Parsing whitespaces after the document */
+	[parser parseString: @" \t\r\n "];
 
-	TEST(@"Parsing whitespaces after the document",
-	    R([parser parseString: @" \t\r\n "]))
+	/* Parsing comments after the document */
+	[parser parseString: @" \t<!-- foo -->\r<!--bar-->\n "];
 
-	TEST(@"Parsing comments after the document",
-	    R([parser parseString: @" \t<!-- foo -->\r<!--bar-->\n "]))
+	/* Detection of junk after the document */
+	OTAssertThrowsSpecific([parser parseString: @"a"],
+	    OFMalformedXMLException);
+	OTAssertThrowsSpecific([parser parseString: @"<!["],
+	    OFMalformedXMLException);
+}
 
-	EXPECT_EXCEPTION(@"Detection of junk after the document #1",
-	    OFMalformedXMLException, [parser parseString: @"a"])
-
-	EXPECT_EXCEPTION(@"Detection of junk after the document #2",
-	    OFMalformedXMLException, [parser parseString: @"<!["])
-
-	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #1",
-	    OFMalformedXMLException,
-	    [parser parseString: @"<?xml version='2.0'?>"])
-
-	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #2",
-	    OFInvalidEncodingException,
-	    [parser parseString: @"<?xml encoding='UTF-7'?>"])
+- (void)testDetectionOfInvalidXMLProcessingInstructions
+{
+	OFXMLParser *parser;
 
 	parser = [OFXMLParser parser];
-	EXPECT_EXCEPTION(@"Detection of invalid XML processing instruction #3",
-	    OFMalformedXMLException,
-	    [parser parseString: @"<x><?xml?></x>"])
+	OTAssertThrowsSpecific([parser parseString: @"<?xml version='2.0'?>"],
+	    OFMalformedXMLException);
 
-	objc_autoreleasePoolPop(pool);
+	parser = [OFXMLParser parser];
+	OTAssertThrowsSpecific([parser parseString: @"<x><?xml?></x>"],
+	    OFMalformedXMLException);
+}
+
+- (void)testDetectionOfInvalidEncoding
+{
+	OFXMLParser *parser = [OFXMLParser parser];
+
+	OTAssertThrowsSpecific(
+	    [parser parseString: @"<?xml encoding='UTF-7'?>"],
+	    OFInvalidEncodingException);
 }
 @end

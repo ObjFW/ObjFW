@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B1E2CEF2B8294F200BB28B6 /* libobjfwtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */; };
 		4B6AB9CD202BA431007BAC7D /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD06201394F300280496 /* ObjFW.framework */; };
 		4BC7FD092013954B00280496 /* tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD082013954B00280496 /* tests.a */; };
 		4BC7FD0B2013956D00280496 /* ObjFW.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BC7FD06201394F300280496 /* ObjFW.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4BC7FD102013960600280496 /* testfile.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4BC7FD0C2013960600280496 /* testfile.txt */; };
 		4BC7FD112013960600280496 /* testfile.bin in Resources */ = {isa = PBXBuildFile; fileRef = 4BC7FD0D2013960600280496 /* testfile.bin */; };
-		4BC7FD122013960600280496 /* serialization.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4BC7FD0E2013960600280496 /* serialization.xml */; };
 		4BC7FD132013960600280496 /* testfile.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4BC7FD0F2013960600280496 /* testfile.ini */; };
 		4BEBFB6E2013934E002E8710 /* ImportTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEBFB6D2013934E002E8710 /* ImportTest.m */; };
 /* End PBXBuildFile section */
@@ -42,12 +42,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libobjfwtest.a; path = ../src/test/libobjfwtest.a; sourceTree = "<group>"; };
 		4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = TestPlugin.bundle; path = plugin/TestPlugin.bundle; sourceTree = "<group>"; };
 		4BC7FD06201394F300280496 /* ObjFW.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjFW.framework; path = ../src/ObjFW.framework; sourceTree = "<group>"; };
 		4BC7FD082013954B00280496 /* tests.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = tests.a; sourceTree = "<group>"; };
 		4BC7FD0C2013960600280496 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile.txt; sourceTree = "<group>"; };
 		4BC7FD0D2013960600280496 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = testfile.bin; sourceTree = "<group>"; };
-		4BC7FD0E2013960600280496 /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = serialization.xml; sourceTree = "<group>"; };
 		4BC7FD0F2013960600280496 /* testfile.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile.ini; sourceTree = "<group>"; };
 		4BEBFB5B2013934E002E8710 /* tests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEBFB6C2013934E002E8710 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
@@ -59,8 +59,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */,
 				4BC7FD092013954B00280496 /* tests.a in Frameworks */,
+				4B1E2CEF2B8294F200BB28B6 /* libobjfwtest.a in Frameworks */,
+				4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +73,7 @@
 			children = (
 				4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */,
 				4BC7FD082013954B00280496 /* tests.a */,
+				4B1E2CEE2B8294F200BB28B6 /* libobjfwtest.a */,
 				4BC7FD06201394F300280496 /* ObjFW.framework */,
 			);
 			name = Frameworks;
@@ -99,7 +101,6 @@
 			children = (
 				4BEBFB6C2013934E002E8710 /* Info.plist */,
 				4BEBFB6D2013934E002E8710 /* ImportTest.m */,
-				4BC7FD0E2013960600280496 /* serialization.xml */,
 				4BC7FD0D2013960600280496 /* testfile.bin */,
 				4BC7FD0F2013960600280496 /* testfile.ini */,
 				4BC7FD0C2013960600280496 /* testfile.txt */,
@@ -135,7 +136,7 @@
 		4BEBFB532013934E002E8710 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1330;
 				ORGANIZATIONNAME = "Jonathan Schleifer";
 				TargetAttributes = {
 					4BEBFB5A2013934E002E8710 = {
@@ -168,7 +169,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4BC7FD102013960600280496 /* testfile.txt in Resources */,
-				4BC7FD122013960600280496 /* serialization.xml in Resources */,
 				4BC7FD132013960600280496 /* testfile.ini in Resources */,
 				4BC7FD112013960600280496 /* testfile.bin in Resources */,
 			);
@@ -202,6 +202,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -209,6 +210,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -257,6 +259,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -264,6 +267,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -304,8 +308,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../src/test",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = im.nil.objfw.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -324,8 +329,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../src/test",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = im.nil.objfw.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

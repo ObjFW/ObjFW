@@ -1,33 +1,49 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
 #import "OFCollection.h"
 #import "OFEnumerator.h"
-#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
+/*
+ * Make clang's -Wdocumentation shut up about about using @struct on something
+ * it thinks is not a struct. Doxygen requires it this way.
+ */
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 /**
- * @typedef OFListItem OFList.h ObjFW/OFList.h
+ * @struct OFListItem OFList.h ObjFW/ObjFW.h
  *
  * @brief A list item.
  *
  * See @ref OFListItemNext, @ref OFListItemPrevious and @ref OFListItemObject.
  */
-typedef struct OFListItem *OFListItem;
+typedef struct _OFListItem *OFListItem;
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +54,7 @@ extern "C" {
  * @param listItem The list item for which the next list item should be returned
  * @return The next list item of the list item
  */
-OFListItem OFListItemNext(OFListItem _Nonnull listItem);
+extern OFListItem _Nullable OFListItemNext(OFListItem _Nonnull listItem);
 
 /*!
  * @brief Returns the previous list item of the list item.
@@ -47,7 +63,7 @@ OFListItem OFListItemNext(OFListItem _Nonnull listItem);
  *		   returned
  * @return The previous list item of the list item
  */
-OFListItem OFListItemPrevious(OFListItem _Nonnull listItem);
+extern OFListItem _Nullable OFListItemPrevious(OFListItem _Nonnull listItem);
 
 /*!
  * @brief Returns the object of the list item.
@@ -58,18 +74,17 @@ OFListItem OFListItemPrevious(OFListItem _Nonnull listItem);
  * @param listItem The list item for which the object should be returned
  * @return The object of the list item
  */
-id OFListItemObject(OFListItem _Nonnull listItem);
+extern id _Nonnull OFListItemObject(OFListItem _Nonnull listItem);
 #ifdef __cplusplus
 }
 #endif
 
 /**
- * @class OFList OFList.h ObjFW/OFList.h
+ * @class OFList OFList.h ObjFW/ObjFW.h
  *
  * @brief A class which provides easy to use double-linked lists.
  */
-@interface OFList OF_GENERIC(ObjectType): OFObject <OFCopying, OFCollection,
-    OFSerialization>
+@interface OFList OF_GENERIC(ObjectType): OFObject <OFCopying, OFCollection>
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif

@@ -1,23 +1,29 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
-#import "TestsAppDelegate.h"
+#import "ObjFW.h"
+#import "ObjFWTest.h"
 
-static OFString *module = @"OFBlock";
+@interface OFBlockTests: OTTestCase
+@end
 
 #if defined(OF_OBJFW_RUNTIME)
 extern struct objc_class _NSConcreteStackBlock;
@@ -29,82 +35,108 @@ extern void *_NSConcreteGlobalBlock;
 extern void *_NSConcreteMallocBlock;
 #endif
 
-static void (^g)(void) = ^ {};
+/* Clang on Win32 generates broken code that crashes for global blocks. */
+#if !defined(OF_WINDOWS) || !defined(__clang__)
+static void (^globalBlock)(void) = ^ {};
+#endif
 
 static int
 (^returnStackBlock(void))(void)
 {
 	__block int i = 42;
 
-	return [Block_copy(^ int { return ++i; }) autorelease];
+	return objc_autorelease(Block_copy(^ int { return ++i; }));
 }
 
 static double
 forwardTest(void)
 {
 	__block double d;
-	void (^b)(void) = Block_copy(^ {
+	void (^block)(void) = Block_copy(^ {
 		d = 5;
 	});
 
-	b();
-	Block_release(b);
+	block();
+	Block_release(block);
 
 	return d;
 }
 
-@implementation TestsAppDelegate (OFBlockTests)
-- (void)blockTests
+@implementation OFBlockTests
+- (void)testClassOfStackBlock
 {
-	void *pool = objc_autoreleasePoolPush();
 	__block int x;
-	void (^s)(void) = ^ { x = 0; };
-	void (^m)(void);
-	int (^v)(void);
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
 
-	TEST(@"Class of stack block",
-	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
-	    [s isKindOfClass: [OFBlock class]])
+	OTAssertEqual((Class)&_NSConcreteStackBlock,
+	    objc_getClass("OFStackBlock"));
+	OTAssertTrue([stackBlock isKindOfClass: [OFBlock class]]);
+}
 
-#if !defined(OF_WINDOWS) || !defined(__clang__) || !defined(OF_NO_SHARED)
-	/*
-	 * Causes a linker error on Windows with Clang when compiling as a
-	 * static library. This is a bug in Clang.
-	 */
-	TEST(@"Class of global block",
-	    (Class)&_NSConcreteGlobalBlock == objc_getClass("OFGlobalBlock") &&
-	    [g isKindOfClass: [OFBlock class]])
+#if !defined(OF_WINDOWS) || !defined(__clang__)
+- (void)testClassOfGlobalBlock
+{
+	OTAssertEqual((Class)&_NSConcreteGlobalBlock,
+	    objc_getClass("OFGlobalBlock"));
+	OTAssertTrue([globalBlock isKindOfClass: [OFBlock class]]);
+}
 #endif
 
-	TEST(@"Class of a malloc block",
-	    (Class)&_NSConcreteMallocBlock == objc_getClass("OFMallocBlock"))
+- (void)testClassOfMallocBlock
+{
+	OTAssertEqual((Class)&_NSConcreteMallocBlock,
+	    objc_getClass("OFMallocBlock"));
+}
 
-	TEST(@"Copying a stack block",
-	    (m = [[s copy] autorelease]) &&
-	    [m class] == objc_getClass("OFMallocBlock") &&
-	    [m isKindOfClass: [OFBlock class]])
+- (void)testCopyStackBlock
+{
+	__block int x;
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
+	void (^mallocBlock)(void);
 
-	TEST(@"Copying a stack block and referencing its variable",
-	    forwardTest() == 5)
+	mallocBlock = objc_autorelease([stackBlock copy]);
+	OTAssertEqual([mallocBlock class], objc_getClass("OFMallocBlock"));
+	OTAssertTrue([mallocBlock isKindOfClass: [OFBlock class]]);
+}
 
-	TEST(@"Copying a stack block and using its copied variable",
-	    (v = returnStackBlock()) && v() == 43 && v() == 44 && v() == 45)
+- (void)testCopyStackBlockAndReferenceVariable
+{
+	OTAssertEqual(forwardTest(), 5);
+}
 
-	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
+- (void)testCopyStackBlockAndReferenceCopiedVariable
+{
+	int (^voidBlock)(void) = returnStackBlock();
 
-#ifndef __clang_analyzer__
-	TEST(@"Copying a malloc block",
-	    (id)m == [m copy] && [m retainCount] == 2)
+	OTAssertEqual(voidBlock(), 43);
+	OTAssertEqual(voidBlock(), 44);
+	OTAssertEqual(voidBlock(), 45);
+}
+
+#if !defined(OF_WINDOWS) || !defined(__clang__)
+- (void)testCopyGlobalBlock
+{
+	OTAssertEqual(objc_autorelease([globalBlock copy]), (id)globalBlock);
+}
 #endif
 
-	TEST(@"Autorelease a stack block", R([s autorelease]))
+- (void)testCopyMallocBlock
+{
+	__block int x;
+	void (^stackBlock)(void) = ^ {
+		x = 0;
+		(void)x;
+	};
+	void (^mallocBlock)(void);
 
-	TEST(@"Autorelease a global block", R([g autorelease]))
-
-#ifndef __clang_analyzer__
-	TEST(@"Autorelease a malloc block", R([m autorelease]))
-#endif
-
-	objc_autoreleasePoolPop(pool);
+	mallocBlock = objc_autorelease([stackBlock copy]);
+	OTAssertEqual(objc_autorelease([mallocBlock copy]), (id)mallocBlock);
+	OTAssertEqual([mallocBlock retainCount], 2);
 }
 @end

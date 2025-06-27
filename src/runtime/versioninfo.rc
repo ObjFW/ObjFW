@@ -1,0 +1,27 @@
+#include "config.h"
+#include "winver.h"
+
+1 VERSIONINFO
+    FILEVERSION OBJFWRT_LIB_MAJOR, OBJFWRT_LIB_MINOR, 0, 0
+    PRODUCTVERSION OBJFW_VERSION_MAJOR, OBJFW_VERSION_MINOR, 0, 0
+    FILEOS VOS__WINDOWS32
+    FILETYPE VFT_DLL
+{
+	BLOCK "StringFileInfo" {
+		BLOCK "040904E4" {
+			VALUE "ProductName", "ObjFW Runtime"
+			VALUE "ProductVersion", PACKAGE_VERSION
+			VALUE "FileVersion", OBJFWRT_LIB_VERSION
+			VALUE "FileDescription", "Objective-C runtime"
+			VALUE "LegalCopyright",
+			    "(c) 2008-2025 Jonathan Schleifer"
+			VALUE "InternalName", "ObjFWRT"
+			VALUE "OriginalFilename", OBJFWRT_SHARED_LIB
+		}
+
+	}
+
+	BLOCK "VarFileInfo" {
+		VALUE "Translation", 0x409, 1252
+	}
+}

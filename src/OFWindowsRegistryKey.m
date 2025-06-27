@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -31,6 +35,7 @@
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetWindowsRegistryValueFailedException.h"
+#import "OFUndefinedKeyException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFWindowsRegistryKey ()
@@ -40,32 +45,37 @@ OF_DIRECT_MEMBERS
 @implementation OFWindowsRegistryKey
 + (instancetype)classesRootKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CLASSES_ROOT
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CLASSES_ROOT
+				    close: false]);
 }
 
 + (instancetype)currentConfigKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CURRENT_CONFIG
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CURRENT_CONFIG
+				    close: false]);
 }
 
 + (instancetype)currentUserKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_CURRENT_USER
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_CURRENT_USER
+				    close: false]);
 }
 
 + (instancetype)localMachineKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_LOCAL_MACHINE
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_LOCAL_MACHINE
+				    close: false]);
 }
 
 + (instancetype)usersKey
 {
-	return [[[self alloc] of_initWithHKey: HKEY_USERS
-					close: false] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] of_initWithHKey: HKEY_USERS
+				    close: false]);
 }
 
 - (instancetype)of_initWithHKey: (HKEY)hKey close: (bool)close
@@ -92,16 +102,8 @@ OF_DIRECT_MEMBERS
 }
 
 - (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
-		   securityAndAccessRights: (REGSAM)securityAndAccessRights
-{
-	return [self openSubkeyAtPath: path
-			      options: 0
-	      securityAndAccessRights: securityAndAccessRights];
-}
-
-- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+			      accessRights: (REGSAM)accessRights
 				   options: (DWORD)options
-		   securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -109,49 +111,33 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		status = RegOpenKeyExW(_hKey, path.UTF16String, options,
-		    securityAndAccessRights, &subKey);
+		    accessRights, &subKey);
 	else
 		status = RegOpenKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], options,
-		    securityAndAccessRights, &subKey);
+		    accessRights, &subKey);
 
-	if (status != ERROR_SUCCESS) {
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
-
+	if (status != ERROR_SUCCESS)
 		@throw [OFOpenWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
+				accessRights: accessRights
 				     options: options
-		     securityAndAccessRights: securityAndAccessRights
 				      status: status];
-	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
-							close: true]
-	    autorelease];
-}
-
-- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights
-{
-	return [self createSubkeyAtPath: path
-				options: 0
-		securityAndAccessRights: securityAndAccessRights
-		     securityAttributes: NULL
-			    disposition: NULL];
+	return objc_autoreleaseReturnValue(
+	    [[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
+						    close: true]);
 }
 
 - (OFWindowsRegistryKey *)
-	 createSubkeyAtPath: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
-		disposition: (DWORD *)disposition
+    createSubkeyAtPath: (OFString *)path
+	  accessRights: (REGSAM)accessRights
+    securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
+	       options: (DWORD)options
+	   disposition: (DWORD *)disposition
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -159,28 +145,27 @@ OF_DIRECT_MEMBERS
 
 	if ([OFSystemInfo isWindowsNT])
 		status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
-		    NULL, options, securityAndAccessRights, securityAttributes,
-		    &subKey, NULL);
+		    NULL, options, accessRights, securityAttributes, &subKey,
+		    NULL);
 	else
 		status = RegCreateKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], 0, NULL,
-		    options, securityAndAccessRights, securityAttributes,
-		    &subKey, NULL);
+		    options, accessRights, securityAttributes, &subKey, NULL);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self
 					path: path
-				     options: options
-		     securityAndAccessRights: securityAndAccessRights
+				accessRights: accessRights
 			  securityAttributes: securityAttributes
+				     options: options
 				      status: status];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
-							close: true]
-	    autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
+						    close: true]);
 }
 
 - (OFData *)dataForValueNamed: (OFString *)name type: (DWORD *)type
@@ -210,11 +195,11 @@ OF_DIRECT_MEMBERS
 						       count: length];
 			} else {
 				[ret makeImmutable];
-				[ret retain];
+				objc_retain(ret);
 
 				objc_autoreleasePoolPop(pool);
 
-				return [ret autorelease];
+				return objc_autoreleaseReturnValue(ret);
 			}
 		case ERROR_FILE_NOT_FOUND:
 			objc_autoreleasePoolPop(pool);
@@ -333,7 +318,7 @@ OF_DIRECT_MEMBERS
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)setString: (OFString *)string forValueNamed: (OFString *)name
@@ -362,6 +347,71 @@ OF_DIRECT_MEMBERS
 
 	[self setData: data forValueNamed: name type: type];
 
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint32_t)DWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type, ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_DWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setDWORD: (uint32_t)dword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &dword count: sizeof(dword)];
+	[self setData: data forValueNamed: name type: REG_DWORD];
+	objc_autoreleasePoolPop(pool);
+}
+
+- (uint64_t)QWORDForValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
+	uint64_t ret;
+	OFData *data = [self dataForValueNamed: name type: &type];
+
+	if (data == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: name
+							      value: nil];
+
+	if (type != REG_QWORD)
+		@throw [OFInvalidEncodingException exception];
+
+	if (data.count != sizeof(ret) || data.itemSize != 1)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&ret, data.items, sizeof(ret));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (void)setQWORD: (uint64_t)qword forValueNamed: (OFString *)name
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [OFData dataWithItems: &qword count: sizeof(qword)];
+	[self setData: data forValueNamed: name type: REG_QWORD];
 	objc_autoreleasePoolPop(pool);
 }
 

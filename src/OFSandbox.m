@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -25,7 +29,7 @@
 
 + (instancetype)sandbox
 {
-	return [[[self alloc] init] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
 - (instancetype)init
@@ -35,7 +39,7 @@
 	@try {
 		_unveiledPaths = [[OFMutableArray alloc] init];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -44,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_unveiledPaths release];
+	objc_release(_unveiledPaths);
 
 	[super dealloc];
 }
@@ -473,36 +477,36 @@
 
 	OFHashInit(&hash);
 
-	OFHashAdd(&hash, _allowsStdIO);
-	OFHashAdd(&hash, _allowsReadingFiles);
-	OFHashAdd(&hash, _allowsWritingFiles);
-	OFHashAdd(&hash, _allowsCreatingFiles);
-	OFHashAdd(&hash, _allowsCreatingSpecialFiles);
-	OFHashAdd(&hash, _allowsTemporaryFiles);
-	OFHashAdd(&hash, _allowsIPSockets);
-	OFHashAdd(&hash, _allowsMulticastSockets);
-	OFHashAdd(&hash, _allowsChangingFileAttributes);
-	OFHashAdd(&hash, _allowsFileOwnerChanges);
-	OFHashAdd(&hash, _allowsFileLocks);
-	OFHashAdd(&hash, _allowsUNIXSockets);
-	OFHashAdd(&hash, _allowsDNS);
-	OFHashAdd(&hash, _allowsUserDatabaseReading);
-	OFHashAdd(&hash, _allowsFileDescriptorSending);
-	OFHashAdd(&hash, _allowsFileDescriptorReceiving);
-	OFHashAdd(&hash, _allowsTape);
-	OFHashAdd(&hash, _allowsTTY);
-	OFHashAdd(&hash, _allowsProcessOperations);
-	OFHashAdd(&hash, _allowsExec);
-	OFHashAdd(&hash, _allowsProtExec);
-	OFHashAdd(&hash, _allowsSetTime);
-	OFHashAdd(&hash, _allowsPS);
-	OFHashAdd(&hash, _allowsVMInfo);
-	OFHashAdd(&hash, _allowsChangingProcessRights);
-	OFHashAdd(&hash, _allowsPF);
-	OFHashAdd(&hash, _allowsAudio);
-	OFHashAdd(&hash, _allowsBPF);
-	OFHashAdd(&hash, _allowsUnveil);
-	OFHashAdd(&hash, _returnsErrors);
+	OFHashAddByte(&hash, _allowsStdIO);
+	OFHashAddByte(&hash, _allowsReadingFiles);
+	OFHashAddByte(&hash, _allowsWritingFiles);
+	OFHashAddByte(&hash, _allowsCreatingFiles);
+	OFHashAddByte(&hash, _allowsCreatingSpecialFiles);
+	OFHashAddByte(&hash, _allowsTemporaryFiles);
+	OFHashAddByte(&hash, _allowsIPSockets);
+	OFHashAddByte(&hash, _allowsMulticastSockets);
+	OFHashAddByte(&hash, _allowsChangingFileAttributes);
+	OFHashAddByte(&hash, _allowsFileOwnerChanges);
+	OFHashAddByte(&hash, _allowsFileLocks);
+	OFHashAddByte(&hash, _allowsUNIXSockets);
+	OFHashAddByte(&hash, _allowsDNS);
+	OFHashAddByte(&hash, _allowsUserDatabaseReading);
+	OFHashAddByte(&hash, _allowsFileDescriptorSending);
+	OFHashAddByte(&hash, _allowsFileDescriptorReceiving);
+	OFHashAddByte(&hash, _allowsTape);
+	OFHashAddByte(&hash, _allowsTTY);
+	OFHashAddByte(&hash, _allowsProcessOperations);
+	OFHashAddByte(&hash, _allowsExec);
+	OFHashAddByte(&hash, _allowsProtExec);
+	OFHashAddByte(&hash, _allowsSetTime);
+	OFHashAddByte(&hash, _allowsPS);
+	OFHashAddByte(&hash, _allowsVMInfo);
+	OFHashAddByte(&hash, _allowsChangingProcessRights);
+	OFHashAddByte(&hash, _allowsPF);
+	OFHashAddByte(&hash, _allowsAudio);
+	OFHashAddByte(&hash, _allowsBPF);
+	OFHashAddByte(&hash, _allowsUnveil);
+	OFHashAddByte(&hash, _returnsErrors);
 
 	OFHashFinalize(&hash);
 
@@ -579,11 +583,11 @@
 
 	ret = [pledges componentsJoinedByString: @" "];
 
-	[ret retain];
+	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return objc_autoreleaseReturnValue(ret);
 }
 #endif
 
@@ -599,6 +603,6 @@
 
 - (OFArray OF_GENERIC(OFSandboxUnveilPath) *)unveiledPaths
 {
-	return [[_unveiledPaths copy] autorelease];
+	return objc_autoreleaseReturnValue([_unveiledPaths copy]);
 }
 @end

@@ -2,8 +2,9 @@ include ../../extra.mk
 
 PROG = ofhash${PROG_SUFFIX}
 SRCS = OFHash.m
-DATA = lang/de.json		\
-       lang/languages.json
+DATA = localization/de.json		\
+       localization/localizations.json
+MAN = ofhash.1
 
 include ../../buildsys.mk
 
@@ -11,13 +12,23 @@ PACKAGE_NAME = ofhash
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 
-CPPFLAGS += -I../../src					\
-	    -I../../src/runtime				\
-	    -I../../src/exceptions			\
-	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofhash/lang\"
-LIBS := -L../../src -lobjfw						\
-	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+CPPFLAGS += -I../../src							\
+	    -I../../src/runtime						\
+	    -I../../src/exceptions					\
+	    -I../../src/tls						\
+	    -I../..							\
+	    -DOBJFWTLS_LOCAL_INCLUDES					\
+	    -DLOCALIZATION_DIR=\"${datadir}/ofhash/localization\"	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+OBJCFLAGS += ${PIE_CFLAGS}
+LIBS := -L../../src			\
+	-L../../src/runtime		\
+	-L../../src/runtime/linklib	\
+	-L../../src/tls			\
+	-L../../src/bridge		\
+	${OFHASH_LIBS}			\
+	-lobjfw				\
+	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}
-LDFLAGS += ${LDFLAGS_RPATH}
+LDFLAGS += ${PIE_LDFLAGS} ${LDFLAGS_RPATH}

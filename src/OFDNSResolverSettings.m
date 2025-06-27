@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -22,7 +26,10 @@
 #import "OFCharacterSet.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFFile.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+# import "OFFileManager.h"
+#endif
 #import "OFLocale.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
@@ -32,8 +39,12 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFOpenWindowsRegistryKeyFailedException.h"
+#endif
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUndefinedKeyException.h"
 
 #ifdef OF_WINDOWS
 # define interface struct
@@ -48,6 +59,11 @@
 # undef id
 #endif
 
+#if defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+# define Class IntuitionClass
+# include <proto/dos.h>
+# undef Class
+#endif
 #ifdef OF_MORPHOS
 # include <proto/rexxsyslib.h>
 # include <rexx/errors.h>
@@ -57,20 +73,21 @@
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
-#elif defined(OF_AMIGAOS4)
-# define HOSTS_PATH @"DEVS:Internet/hosts"
-#elif defined(OF_AMIGAOS)
-# define HOSTS_PATH @"AmiTCP:db/hosts"
-# define RESOLV_CONF_PATH @"AmiTCP:db/resolv.conf"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
+#endif
+
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 255
 #endif
 
 #ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
 {
+	OFString *ret;
+
 	if (hostname == nil)
 		return nil;
 
@@ -81,16 +98,18 @@ domainFromHostname(OFString *hostname)
 		 * If we are still here, the host name is a valid IP address.
 		 * We can't use that as local domain.
 		 */
-		return nil;
+		ret = nil;
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
-		size_t pos = [hostname rangeOfString: @"."].location;
+		OFRange range = [hostname rangeOfString: @"."];
 
-		if (pos == OFNotFound)
-			return nil;
-
-		return [hostname substringFromIndex: pos + 1];
+		if (range.location != OFNotFound)
+			ret = [hostname substringFromIndex: range.location + 1];
+		else
+			ret = nil;
 	}
+
+	return ret;
 }
 #endif
 
@@ -98,13 +117,24 @@ domainFromHostname(OFString *hostname)
 static OFString *
 obtainHostname(void)
 {
-	char hostname[256];
+	char hostname[HOST_NAME_MAX + 1];
 
-	if (gethostname(hostname, 256) != 0)
+	if (gethostname(hostname, HOST_NAME_MAX + 1) != 0)
 		return nil;
 
 	return [OFString stringWithCString: hostname
 				  encoding: [OFLocale encoding]];
+}
+#endif
+
+#ifdef OF_AMIGAOS_M68K
+static bool
+assignExists(const char *assign)
+{
+	struct DosList *list = LockDosList(LDF_ASSIGNS | LDF_READ);
+	bool found = (FindDosEntry(list, assign, LDF_ASSIGNS) != NULL);
+	UnLockDosList(LDF_ASSIGNS | LDF_READ);
+	return found;
 }
 #endif
 
@@ -174,7 +204,10 @@ parseNetStackArray(OFString *string)
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
 		return nil;
 
-	string = [string substringWithRange: OFRangeMake(1, string.length - 2)];
+	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
+
+	if (string.length == 0)
+		return [OFArray array];
 
 	return [string componentsSeparatedByString: @"|"];
 }
@@ -183,11 +216,11 @@ parseNetStackArray(OFString *string)
 @implementation OFDNSResolverSettings
 - (void)dealloc
 {
-	[_staticHosts release];
-	[_nameServers release];
-	[_localDomain release];
-	[_searchDomains release];
-	[_lastConfigReload release];
+	objc_release(_staticHosts);
+	objc_release(_nameServers);
+	objc_release(_localDomain);
+	objc_release(_searchDomains);
+	objc_release(_lastConfigReload);
 
 	[super dealloc];
 }
@@ -205,11 +238,11 @@ parseNetStackArray(OFString *string)
 		copy->_maxAttempts = _maxAttempts;
 		copy->_minNumberOfDotsInAbsoluteName =
 		    _minNumberOfDotsInAbsoluteName;
-		copy->_usesTCP = _usesTCP;
+		copy->_forcesTCP = _forcesTCP;
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
 	} @catch (id e) {
-		[copy release];
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -218,22 +251,22 @@ parseNetStackArray(OFString *string)
 
 - (void)setDefaults
 {
-	[_staticHosts release];
+	objc_release(_staticHosts);
 	_staticHosts = nil;
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = nil;
 
-	[_localDomain release];
+	objc_release(_localDomain);
 	_localDomain = nil;
 
-	[_searchDomains release];
+	objc_release(_searchDomains);
 	_searchDomains = nil;
 
 	_timeout = 2;
 	_maxAttempts = 3;
 	_minNumberOfDotsInAbsoluteName = 1;
-	_usesTCP = false;
+	_forcesTCP = false;
 #ifndef OF_NINTENDO_3DS
 	_configReloadInterval = 2;
 #else
@@ -247,6 +280,8 @@ parseNetStackArray(OFString *string)
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
+	OFCharacterSet *commentCharacters =
+	    [OFCharacterSet characterSetWithCharactersInString: @"#;"];
 	OFMutableDictionary *staticHosts;
 	OFFile *file;
 	OFString *line;
@@ -258,16 +293,18 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	staticHosts = [OFMutableDictionary dictionary];
 
 	while ((line = [file readLine]) != nil) {
 		OFArray *components, *hosts;
-		size_t pos;
+		OFRange range;
 		OFString *address;
 
-		pos = [line rangeOfString: @"#"].location;
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -278,11 +315,13 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -301,40 +340,25 @@ parseNetStackArray(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-# if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
+# ifndef OF_WINDOWS
 - (void)parseResolvConfOption: (OFString *)option
 {
 	@try {
 		if ([option hasPrefix: @"ndots:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 6];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_minNumberOfDotsInAbsoluteName = (unsigned int)number;
+			_minNumberOfDotsInAbsoluteName =
+			    option.unsignedIntValue;
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringFromIndex: 8];
-
 			_timeout = option.unsignedLongLongValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
-			unsigned long long number;
-
 			option = [option substringFromIndex: 9];
-			number = option.unsignedLongLongValue;
-
-			if (number > UINT_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_maxAttempts = (unsigned int)number;
+			_maxAttempts = option.unsignedIntValue;
 		} else if ([option hasPrefix: @"reload-period:"]) {
 			option = [option substringFromIndex: 14];
-
 			_configReloadInterval = option.unsignedLongLongValue;
 		} else if ([option isEqual: @"tcp"])
-			_usesTCP = true;
+			_forcesTCP = true;
 	} @catch (OFInvalidFormatException *e) {
 	}
 }
@@ -346,7 +370,8 @@ parseNetStackArray(OFString *string)
 	    [OFCharacterSet whitespaceCharacterSet];
 	OFCharacterSet *commentCharacters = [OFCharacterSet
 	    characterSetWithCharactersInString: @"#;"];
-	OFMutableArray *nameServers = [[_nameServers mutableCopy] autorelease];
+	OFMutableArray *nameServers =
+	    objc_autorelease([_nameServers mutableCopy]);
 	OFFile *file;
 	OFString *line;
 
@@ -357,18 +382,20 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
+	file.encoding = [OFLocale encoding];
+
 	if (nameServers == nil)
 		nameServers = [OFMutableArray array];
 
 	while ((line = [file readLine]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
-		size_t pos;
+		OFRange range;
 		OFArray *components, *arguments;
 		OFString *option;
 
-		pos = [line indexOfCharacterFromSet: commentCharacters];
-		if (pos != OFNotFound)
-			line = [line substringToIndex: pos];
+		range = [line rangeOfCharacterFromSet: commentCharacters];
+		if (range.location != OFNotFound)
+			line = [line substringToIndex: range.location];
 
 		components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
@@ -379,9 +406,9 @@ parseNetStackArray(OFString *string)
 			continue;
 		}
 
-		option = components.firstObject;
+		option = [components.firstObject lowercaseString];
 		arguments = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
 			if (arguments.count != 1) {
@@ -396,10 +423,10 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[_localDomain release];
+			objc_release(_localDomain);
 			_localDomain = [arguments.firstObject copy];
 		} else if ([option isEqual: @"search"]) {
-			[_searchDomains release];
+			objc_release(_searchDomains);
 			_searchDomains = [arguments copy];
 		} else if ([option isEqual: @"options"])
 			for (OFString *argument in arguments)
@@ -410,7 +437,7 @@ parseNetStackArray(OFString *string)
 
 	[nameServers makeImmutable];
 
-	[_nameServers release];
+	objc_release(_nameServers);
 	_nameServers = [nameServers copy];
 
 	objc_autoreleasePoolPop(pool);
@@ -437,10 +464,15 @@ parseNetStackArray(OFString *string)
 
 	nameServers = [OFMutableArray array];
 
-	for (iter = &fixedInfo->DnsServerList; iter != NULL; iter = iter->Next)
-		[nameServers addObject:
+	for (iter = &fixedInfo->DnsServerList; iter != NULL;
+	    iter = iter->Next) {
+		OFString *nameServer =
 		    [OFString stringWithCString: iter->IpAddress.String
-				       encoding: encoding]];
+				       encoding: encoding];
+
+		if (nameServer.length > 0)
+			[nameServers addObject: nameServer];
+	}
 
 	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
@@ -480,11 +512,13 @@ parseNetStackArray(OFString *string)
 
 		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    OFRangeMake(1, components.count - 1)];
+		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses =
-			    [staticHosts objectForKey: host];
+			OFMutableArray *addresses;
+
+			host = host.lowercaseString;
+			addresses = [staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
@@ -504,13 +538,22 @@ parseNetStackArray(OFString *string)
 }
 #endif
 
-#ifdef OF_AMIGAOS4
-- (void)obtainAmigaOS4SystemConfig
+#if defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+- (bool)obtainRoadshowSystemConfig
 {
-	OFMutableArray *nameServers = [OFMutableArray array];
-	OFStringEncoding encoding = [OFLocale encoding];
-	struct List *nameServerList = ObtainDomainNameServerList();
+	OFMutableArray *nameServers;
+	OFStringEncoding encoding;
+	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
+	LONG hasDNSAPI;
+
+	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_DNS_API), (ULONG)&hasDNSAPI,
+	    TAG_END) != 0 || !hasDNSAPI)
+		return false;
+
+	nameServers = [OFMutableArray array];
+	encoding = [OFLocale encoding];
+	nameServerList = ObtainDomainNameServerList();
 
 	if (nameServerList == NULL)
 		@throw [OFOutOfMemoryException exception];
@@ -544,6 +587,8 @@ parseNetStackArray(OFString *string)
 	if (GetDefaultDomainName(buffer, sizeof(buffer)))
 		_localDomain = [[OFString alloc] initWithCString: buffer
 							encoding: encoding];
+
+	return true;
 }
 #endif
 
@@ -592,10 +637,13 @@ parseNetStackArray(OFString *string)
 
 - (void)reload
 {
-	void *pool;
 #ifdef OF_WINDOWS
-	OFString *path;
+	OFString *path = nil;
 #endif
+#if (defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)) && defined(OF_HAVE_FILES)
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+#endif
+	void *pool;
 
 	/*
 	 * TODO: Rather than reparsing every time, check what actually changed
@@ -612,13 +660,22 @@ parseNetStackArray(OFString *string)
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
-	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
-		   openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-				     @"Tcpip\\Parameters"
-	    securityAndAccessRights: KEY_QUERY_VALUE];
-	path = [[[key stringForValueNamed: @"DataBasePath"]
-	    stringByAppendingPathComponent: @"hosts"]
-	    stringByExpandingWindowsEnvironmentStrings];
+	@try {
+		OFWindowsRegistryKey *key;
+
+		key = [[OFWindowsRegistryKey localMachineKey]
+		    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				      @"Tcpip\\Parameters"
+			accessRights: KEY_QUERY_VALUE
+			     options: 0];
+		path = [[[key stringForValueNamed: @"DataBasePath"]
+		   stringByAppendingPathComponent: @"hosts"]
+		   stringByExpandingWindowsEnvironmentStrings];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		/* Ignore */
+	} @catch (OFUndefinedKeyException *e) {
+		/* Ignore */
+	}
 
 	if (path != nil)
 		[self parseHosts: path];
@@ -627,9 +684,25 @@ parseNetStackArray(OFString *string)
 	[self obtainWindowsSystemConfig];
 #elif defined(OF_MORPHOS)
 	[self obtainMorphOSSystemConfig];
-#elif defined(OF_AMIGAOS4)
-	[self parseHosts: HOSTS_PATH];
-	[self obtainAmigaOS4SystemConfig];
+#elif defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+# ifdef OF_HAVE_FILES
+	if (![self obtainRoadshowSystemConfig]) {
+		if (assignExists("AmiTCP"))
+			/*
+			 * FIXME: The installer puts it there, but theoretically
+			 *	  it could also be in AmiTCP:db/netdb or any of
+			 *	  the files included there.
+			 */
+			[self parseResolvConf: @"AmiTCP:db/netdb-myhost"];
+	}
+
+	if ([fileManager fileExistsAtPath: @"DEVS:Internet/hosts"])
+		[self parseHosts: @"DEVS:Internet/hosts"];
+	else if (assignExists("AmiTCP"))
+		[self parseHosts: @"AmiTCP:db/hosts"];
+# else
+	[self obtainRoadshowSystemConfig];
+# endif
 #elif defined(OF_NINTENDO_3DS)
 	[self obtainNintendo3DSSytemConfig];
 #elif defined(OF_HAVE_FILES)

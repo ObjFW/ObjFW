@@ -1,19 +1,29 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
+
+#ifdef HAVE_CET_H
+# include <cet.h>
+#else
+# define _CET_ENDBR
+#endif
 
 .globl _objc_msg_lookup
 .globl _objc_msg_lookup_stret
@@ -21,14 +31,16 @@
 .globl _objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found
+.macro GENERATE_LOOKUP name notFound
 \name:
+	_CET_ENDBR
+
 	movl	4(%esp), %edx
 	testl	%edx, %edx
-	jz	ret_nil
+	jz	.LreturnNilMethod
 
 	testb	$1, %dl
-	jnz	.Ltagged_pointer_\name
+	jnz	.LtaggedPointer_\name
 
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
@@ -46,16 +58,16 @@
 	movl	(%edx,%ecx,4), %eax
 
 	testl	%eax, %eax
-	jz	\not_found
+	jz	\notFound
 
 	ret
 
-.Ltagged_pointer_\name:
-	xorl	_objc_tagged_pointer_secret, %edx
+.LtaggedPointer_\name:
+	xorl	__objc_taggedPointerSecret, %edx
 	andb	$0xE, %dl
 	movzbl	%dl, %edx
 
-	movl	_objc_tagged_pointer_classes(,%edx,2), %edx
+	movl	__objc_taggedPointerClasses(,%edx,2), %edx
 	movl	32(%edx), %edx
 
 	jmp	.Lmain_\name
@@ -65,32 +77,43 @@
 .endef
 .endm
 
-.macro generate_lookup_super name lookup
+.macro GENERATE_LOOKUP_SUPER name lookup
 \name:
+	_CET_ENDBR
+
 	movl	4(%esp), %edx
 	movl	(%edx), %eax
-	test	%eax, %eax
-	jz	ret_nil
+	testl	%eax, %eax
+	jz	.LreturnNilMethod
 
+	subl	$16, %esp
+	movl	%eax, (%esp)
+	movl	24(%esp), %eax
 	movl	%eax, 4(%esp)
+
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
-	jmp	.Lmain_\lookup
+	call	.Lmain_\lookup
+
+	addl	$16, %esp
+	ret
 .def \name
 .scl 2
 .type 32
 .endef
 .endm
 
-generate_lookup _objc_msg_lookup _objc_method_not_found
-generate_lookup _objc_msg_lookup_stret _objc_method_not_found_stret
-generate_lookup_super _objc_msg_lookup_super _objc_msg_lookup
-generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
+GENERATE_LOOKUP _objc_msg_lookup __objc_methodNotFound
+GENERATE_LOOKUP _objc_msg_lookup_stret __objc_methodNotFound_stret
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super _objc_msg_lookup
+GENERATE_LOOKUP_SUPER _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
-ret_nil:
-	movl	$nil_method, %eax
+.LreturnNilMethod:
+	movl	$.LnilMethod, %eax
 	ret
 
-nil_method:
+.LnilMethod:
+	_CET_ENDBR
+
 	xorl	%eax, %eax
 	ret

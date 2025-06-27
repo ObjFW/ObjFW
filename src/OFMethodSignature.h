@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -20,15 +24,15 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableData;
 
 /**
- * @class OFMethodSignature OFMethodSignature.h ObjFW/OFMethodSignature.h
+ * @class OFMethodSignature OFMethodSignature.h ObjFW/ObjFW.h
  *
  * @brief A class for parsing type encodings and accessing them.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMethodSignature: OFObject
 {
 	char *_types;
 	OFMutableData *_typesPointers, *_offsets;
-	OF_RESERVE_IVARS(OFMethodSignature, 4)
 }
 
 /**
@@ -53,8 +57,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param types The ObjC types of the method
  * @return A new, autoreleased OFMethodSignature
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 + (instancetype)signatureWithObjCTypes: (const char *)types;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OFMethodSignature with the specified
@@ -62,8 +69,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param types The ObjC types of the method
  * @return An Initialized OFMethodSignature
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
-- (instancetype)initWithObjCTypes: (const char *)types;
+- (instancetype)initWithObjCTypes: (const char *)types
+    OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Returns the ObjC type for the argument at the specified index.
@@ -93,6 +102,7 @@ extern "C" {
  *
  * @param type The type encoding to return the size for
  * @return The size for the specified type encoding
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 extern size_t OFSizeOfTypeEncoding(const char *type);
 
@@ -101,6 +111,7 @@ extern size_t OFSizeOfTypeEncoding(const char *type);
  *
  * @param type The type encoding to return the alignment for
  * @return The alignment for the specified type encoding
+ * @throw OFInvalidFormatException The type encoding is invalid
  */
 extern size_t OFAlignmentOfTypeEncoding(const char *type);
 #ifdef __cplusplus

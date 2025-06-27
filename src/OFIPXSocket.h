@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFDatagramSocket.h"
@@ -20,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/OFIPXSocket.h
+ * @protocol OFIPXSocketDelegate OFIPXSocket.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFIPXSocket.
  */
@@ -28,15 +32,15 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * @class OFIPXSocket OFIPXSocket.h ObjFW/OFIPXSocket.h
+ * @class OFIPXSocket OFIPXSocket.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to create and use IPX sockets.
  *
  * Addresses are of type @ref OFSocketAddress. You can use
  * @ref OFSocketAddressMakeIPX to create an address or
  * @ref OFSocketAddressIPXNetwork to get the IPX network,
- * @ref OFSocketAddressIpxNode to get the IPX node and
- * @ref OFSocketAddressPort to get the port (sometimes also called
+ * @ref OFSocketAddressGetIPXNode to get the IPX node and
+ * @ref OFSocketAddressIPXPort to get the port (sometimes also called
  * socket number).
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
@@ -67,12 +71,21 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Bind the socket to the specified network, node and port with the
  *	  specified packet type.
  *
+ * @param network The IPX network to bind to. 0 means the current network.
+ * @param node The IPX network to bind to. An all zero node means the
+ *	       computer's node.
  * @param port The port (sometimes called socket number) to bind to. 0 means to
- *	       pick one and return it.
+ *	       pick one and return via the returned socket address.
  * @param packetType The packet type to use on the socket
  * @return The address on which this socket can be reached
+ * @throw OFBindIPXSocketFailedException Binding failed
+ * @throw OFAlreadyOpenException The socket is already bound
  */
-- (OFSocketAddress)bindToPort: (uint16_t)port packetType: (uint8_t)packetType;
+- (OFSocketAddress)
+    bindToNetwork: (uint32_t)network
+	     node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
+	     port: (uint16_t)port
+       packetType: (uint8_t)packetType;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -6,8 +6,8 @@ SRCS = init.m		\
 
 include ../../../buildsys.mk
 
-CPPFLAGS += -I..  -I../..  -I../../..				\
+CPPFLAGS += -I.. -I../.. -I../../..				\
 	    -DOBJC_COMPILING_AMIGA_LINKLIB			\
 	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
 	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}
-LD = ${OBJC}
+AMIGA_LIB_CFLAGS += -DOBJC_AMIGA_LIB

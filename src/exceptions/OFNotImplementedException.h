@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFException.h"
@@ -18,8 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFNotImplementedException \
- *	  OFNotImplementedException.h ObjFW/OFNotImplementedException.h
+ * @class OFNotImplementedException OFNotImplementedException.h ObjFW/ObjFW.h
  *
  * @brief An exception indicating that a method or part of it is not
  *        implemented.
@@ -28,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	SEL _selector;
 	id _Nullable _object;
+	OF_RESERVE_IVARS(OFNotImplementedException, 4)
 }
 
 /**
@@ -38,9 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The object which does not (fully) implement the selector.
  */
-@property (readonly, nonatomic) id object;
-
-+ (instancetype)exception OF_UNAVAILABLE;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id object;
 
 /**
  * @brief Creates a new, autoreleased not implemented exception.
@@ -52,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (nullable id)object;
 
-- (instancetype)init OF_UNAVAILABLE;
++ (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated not implemented exception.
@@ -63,6 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSelector: (SEL)selector
 			  object: (nullable id)object OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

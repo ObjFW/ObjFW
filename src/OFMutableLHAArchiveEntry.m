@@ -1,22 +1,26 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
 
 #import "OFMutableLHAArchiveEntry.h"
-
+#import "OFLHAArchiveEntry+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
@@ -24,9 +28,30 @@
 #import "OFString.h"
 
 @implementation OFMutableLHAArchiveEntry
-@dynamic fileName, compressionMethod, compressedSize, uncompressedSize, date;
-@dynamic headerLevel, CRC16, operatingSystemIdentifier, fileComment, mode, UID;
-@dynamic GID, owner, group, modificationDate, extensions;
+@dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
+@dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
+@dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
+@dynamic ownerAccountName, groupOwnerAccountName, extensions;
+
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithFileName: fileName]);
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [self of_init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
 
 - (id)copy
 {
@@ -41,9 +66,9 @@
 {
 	OFString *old = _fileName;
 	_fileName = [fileName copy];
-	[old release];
+	objc_release(old);
 
-	[_directoryName release];
+	objc_release(_directoryName);
 	_directoryName = nil;
 }
 
@@ -51,24 +76,24 @@
 {
 	OFString *old = _compressionMethod;
 	_compressionMethod = [compressionMethod copy];
-	[old release];
+	objc_release(old);
 }
 
-- (void)setCompressedSize: (uint32_t)compressedSize
+- (void)setCompressedSize: (unsigned long long)compressedSize
 {
 	_compressedSize = compressedSize;
 }
 
-- (void)setUncompressedSize: (uint32_t)uncompressedSize
+- (void)setUncompressedSize: (unsigned long long)uncompressedSize
 {
 	_uncompressedSize = uncompressedSize;
 }
 
-- (void)setDate: (OFDate *)date
+- (void)setModificationDate: (OFDate *)modificationDate
 {
-	OFDate *old = _date;
-	_date = [date retain];
-	[old release];
+	OFDate *old = _modificationDate;
+	_modificationDate = objc_retain(modificationDate);
+	objc_release(old);
 }
 
 - (void)setHeaderLevel: (uint8_t)headerLevel
@@ -90,56 +115,49 @@
 {
 	OFString *old = _fileComment;
 	_fileComment = [fileComment copy];
-	[old release];
+	objc_release(old);
 }
 
-- (void)setMode: (OFNumber *)mode
+- (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
-	OFNumber *old = _mode;
-	_mode = [mode retain];
-	[old release];
+	OFNumber *old = _POSIXPermissions;
+	_POSIXPermissions = objc_retain(POSIXPermissions);
+	objc_release(old);
 }
 
-- (void)setUID: (OFNumber *)UID
+- (void)setOwnerAccountID: (OFNumber *)ownerAccountID
 {
-	OFNumber *old = _UID;
-	_UID = [UID retain];
-	[old release];
+	OFNumber *old = _ownerAccountID;
+	_ownerAccountID = objc_retain(ownerAccountID);
+	objc_release(old);
 }
 
-- (void)setGID: (OFNumber *)GID
+- (void)setGroupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 {
-	OFNumber *old = _GID;
-	_GID = [GID retain];
-	[old release];
+	OFNumber *old = _groupOwnerAccountID;
+	_groupOwnerAccountID = objc_retain(groupOwnerAccountID);
+	objc_release(old);
 }
 
-- (void)setOwner: (OFString *)owner
+- (void)setOwnerAccountName: (OFString *)ownerAccountName
 {
-	OFString *old = _owner;
-	_owner = [owner copy];
-	[old release];
+	OFString *old = _ownerAccountName;
+	_ownerAccountName = [ownerAccountName copy];
+	objc_release(old);
 }
 
-- (void)setGroup: (OFString *)group
+- (void)setGroupOwnerAccountName: (OFString *)groupOwnerAccountName
 {
-	OFString *old = _group;
-	_group = [group copy];
-	[old release];
-}
-
-- (void)setModificationDate: (OFDate *)modificationDate
-{
-	OFDate *old = _modificationDate;
-	_modificationDate = [modificationDate retain];
-	[old release];
+	OFString *old = _groupOwnerAccountName;
+	_groupOwnerAccountName = [groupOwnerAccountName copy];
+	objc_release(old);
 }
 
 - (void)setExtensions: (OFArray OF_GENERIC(OFData *) *)extensions
 {
 	OFArray OF_GENERIC(OFData *) *old = _extensions;
 	_extensions = [extensions copy];
-	[old release];
+	objc_release(old);
 }
 
 - (void)makeImmutable

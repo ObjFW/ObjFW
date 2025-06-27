@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2008-2021 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
- * This file is part of ObjFW. It may be distributed under the terms of the
- * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
- * the packaging of this file.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
  *
- * Alternatively, it may be distributed under the terms of the GNU General
- * Public License, either version 2 or 3, which can be found in the file
- * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
- * file.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #import "OFObject.h"
@@ -21,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFEnumerator OF_GENERIC(ObjectType);
 
 /**
- * @protocol OFEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for getting an enumerator for the object.
  *
@@ -46,12 +50,10 @@ OF_ASSUME_NONNULL_BEGIN
  * this as well.
  */
 /**
- * @struct OFFastEnumerationState OFEnumerator.h ObjFW/OFEnumerator.h
+ * @struct OFFastEnumerationState OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief State information for fast enumerations.
  */
-#define OFFastEnumerationState NSFastEnumerationState
-#ifndef NSINTEGER_DEFINED
 typedef struct {
 	/** Arbitrary state information for the enumeration */
 	unsigned long state;
@@ -62,10 +64,14 @@ typedef struct {
 	/** Additional arbitrary state information */
 	unsigned long extra[5];
 } OFFastEnumerationState;
+#ifdef NSINTEGER_DEFINED
+# define OFFastEnumerationState NSFastEnumerationState
+#else
+typedef OFFastEnumerationState NSFastEnumerationState;
 #endif
 
 /**
- * @protocol OFFastEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ * @protocol OFFastEnumeration OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A protocol for fast enumeration.
  *
@@ -82,6 +88,8 @@ typedef struct {
  * @param count The number of objects that can be stored at objects
  * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
+ * @throw OFEnumerationMutationException The object was mutated during
+ *					 enumeration
  */
 - (int)countByEnumeratingWithState: (OFFastEnumerationState *)state
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
@@ -90,7 +98,7 @@ typedef struct {
 @end
 
 /**
- * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
+ * @class OFEnumerator OFEnumerator.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to enumerate through collections.
  */
@@ -98,14 +106,12 @@ typedef struct {
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(OFEnumerator, 4)
-}
-
 /**
  * @brief Returns the next object or `nil` if there is none left.
  *
  * @return The next object or `nil` if there is none left
+ * @throw OFEnumerationMutationException The object was mutated during
+ *					 enumeration
  */
 - (nullable ObjectType)nextObject;
 
