@@ -380,17 +380,11 @@ _OFStrDup(const char *string)
 static bool
 isASCIIWithoutNull(const char *string, size_t length)
 {
-	uint8_t combined = 0;
-	bool containsNull = false;
+	for (size_t i = 0; i < length; i++)
+		if ((unsigned char)string[i] >= 0x80 || string[i] == '\0')
+			return false;
 
-	for (size_t i = 0; i < length; i++) {
-		combined |= string[i];
-
-		if (string[i] == '\0')
-			containsNull = true;
-	}
-
-	return !(combined & ~0x7F) && !containsNull;
+	return true;
 }
 #endif
 
