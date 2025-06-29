@@ -150,6 +150,48 @@ OFEqualRanges(OFRange range1, OFRange range2)
 }
 
 /**
+ * @brief Returns the end of the range, which is its location + its length.
+ *
+ * @param range The range whose end to return
+ * @return The end of the range
+ */
+static OF_INLINE size_t
+OFEndOfRange(OFRange range)
+{
+	return range.location + range.length;
+}
+
+/**
+ * @brief Returns whether the specified location is in the specified range.
+ *
+ * @param location The location
+ * @param range The range
+ * @return Whether the specified location is in the specified range
+ */
+static OF_INLINE bool
+OFLocationInRange(size_t location, OFRange range)
+{
+	return (location >= range.location &&
+	    location < OFEndOfRange(range));
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief Merges two ranges if they are overlapping or adjacent, otherwise
+ *	  returns a range with location @ref OFNotFound and length 0.
+ *
+ * @param range1 The first range
+ * @param range2 The second range
+ * @return The two ranges merged
+ */
+extern OFRange OFMergeRanges(OFRange range1, OFRange range2);
+#ifdef __cplusplus
+}
+#endif
+
+/**
  * @brief A time interval in seconds.
  */
 typedef double OFTimeInterval;

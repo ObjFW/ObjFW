@@ -58,6 +58,7 @@ SRCS = ForwardingTests.m			\
        OFObjectTests.m				\
        OFPBKDF2Tests.m				\
        OFPropertyListTests.m			\
+       OFRangeTests.m				\
        OFScryptTests.m				\
        OFSetTests.m				\
        OFStreamTests.m				\
