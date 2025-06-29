@@ -33,6 +33,7 @@ SRCS = OFApplication.m			\
        OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
+       OFIndexSet.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -50,6 +51,7 @@ SRCS = OFApplication.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
        OFMutableIRI.m			\
+       OFMutableIndexSet.m		\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\

@@ -44,6 +44,8 @@
 
 #import "OFNull.h"
 
+#import "OFIndexSet.h"
+
 #import "OFMethodSignature.h"
 #import "OFInvocation.h"
 

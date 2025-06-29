@@ -38,6 +38,7 @@ SRCS = ForwardingTests.m			\
        OFHMACTests.m				\
        OFINIFileTests.m				\
        OFIRITests.m				\
+       OFIndexSetTests.m			\
        OFInvocationTests.m			\
        OFJSONTests.m				\
        OFLHAArchiveTests.m			\
@@ -50,6 +51,7 @@ SRCS = ForwardingTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
        OFMutableDictionaryTests.m		\
+       OFMutableIndexSetTests.m			\
        OFMutableSetTests.m			\
        OFMutableStringTests.m			\
        OFMutableUTF8StringTests.m		\
