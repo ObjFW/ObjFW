@@ -144,5 +144,20 @@
 	OTAssertEqual(indexSet.of_ranges.count, 1);
 	ranges = indexSet.of_ranges.items;
 	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(0, 20)));
+
+	indexSet = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexSet addIndex: 2];
+	[indexSet addIndex: 4];
+	OTAssertEqual(indexSet.count, 3);
+	OTAssertEqual(indexSet.of_ranges.count, 3);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(0, 1)));
+	OTAssert(OFEqualRanges(ranges[1], OFMakeRange(2, 1)));
+	OTAssert(OFEqualRanges(ranges[2], OFMakeRange(4, 1)));
+	[indexSet addIndexesInRange: OFMakeRange(0, 4)];
+	OTAssertEqual(indexSet.count, 5);
+	OTAssertEqual(indexSet.of_ranges.count, 1);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(0, 5)));
 }
 @end
