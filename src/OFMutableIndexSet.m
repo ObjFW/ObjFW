@@ -37,6 +37,11 @@
 	return self;
 }
 
+- (id)copy
+{
+	return [[OFIndexSet alloc] initWithIndexSet: self];
+}
+
 - (void)addIndex: (size_t)index
 {
 	[self addIndexesInRange: OFMakeRange(index, 1)];

@@ -33,6 +33,12 @@
 	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
++ (instancetype)indexSetWithIndexSet: (OFIndexSet *)indexSet
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithIndexSet: indexSet]);
+}
+
 + (instancetype)indexSetWithIndex: (size_t)index
 {
 	return objc_autoreleaseReturnValue([[self alloc] initWithIndex: index]);
@@ -47,6 +53,21 @@
 - (instancetype)init
 {
 	return [super init];
+}
+
+- (instancetype)initWithIndexSet: (OFIndexSet *)indexSet
+{
+	self = [super init];
+
+	@try {
+		_ranges = [indexSet->_ranges mutableCopy];
+		_count = indexSet->_count;
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)initWithIndex: (size_t)index
@@ -79,6 +100,31 @@
 	objc_release(_ranges);
 
 	[super dealloc];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFIndexSet *other = object;
+
+	if (![object isKindOfClass: [OFIndexSet class]])
+		return false;
+
+	return [other->_ranges isEqual: _ranges];
+}
+
+- (unsigned long)hash
+{
+	return _ranges.hash;
+}
+
+- (id)copy
+{
+	return objc_retain(self);
+}
+
+- (id)mutableCopy
+{
+	return [[OFMutableIndexSet alloc] initWithIndexSet: self];
 }
 
 - (bool)containsIndex: (size_t)index

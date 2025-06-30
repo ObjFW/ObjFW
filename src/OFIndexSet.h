@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A class storing a set of indexes as sorted ranges.
  */
-@interface OFIndexSet: OFObject
+@interface OFIndexSet: OFObject <OFCopying, OFMutableCopying>
 {
 	OFMutableData *_ranges;
 	size_t _count;
@@ -39,25 +39,33 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t count;
 
 /**
- * @brief Creates an empty index set.
+ * @brief Creates a new empty index set.
  *
- * @return An empty index set
+ * @return A new empty index set
  */
 + (instancetype)indexSet;
 
 /**
- * @brief Creates an index set only containing the specified index.
+ * @brief Creates a new index set from the specified index set.
+ *
+ * @param indexSet The index set to create a new index set from
+ * @return A new index set created from the specified index set
+ */
++ (instancetype)indexSetWithIndexSet: (OFIndexSet *)indexSet;
+
+/**
+ * @brief Creates a new index set only containing the specified index.
  *
  * @param index The index the index set should contain
- * @return An index set only containing the specified index
+ * @return A new index set only containing the specified index
  */
 + (instancetype)indexSetWithIndex: (size_t)index;
 
 /**
- * @brief Creates an index set containing the indexes in the specified range.
+ * @brief Creates a new index set containing the indexes in the specified range.
  *
  * @param range The range of indexes the index set should contain
- * @return An index set containing the indexes in the specified range
+ * @return A new index set containing the indexes in the specified range
  */
 + (instancetype)indexSetWithIndexesInRange: (OFRange)range;
 
@@ -67,6 +75,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized empty index set
  */
 - (instancetype)init;
+
+/**
+ * @brief Initializes an index set from the specified index set.
+ *
+ * @param indexSet The index set to initialize the index set from
+ * @return An index set initialized from the specified index set
+ */
+- (instancetype)initWithIndexSet: (OFIndexSet *)indexSet;
 
 /**
  * @brief Initializes an index set to only contain the specified index.
