@@ -26,26 +26,26 @@
 @end
 
 @implementation OFRangeTests
-- (void)testMergeRanges
+- (void)testUnionRange
 {
 	OFRange range1, range2, range;
 
 	range1 = OFMakeRange(1, 2);
 	range2 = OFMakeRange(2, 2);
 	range = OFMakeRange(1, 3);
-	OTAssert(OFEqualRanges(OFMergeRanges(range1, range2), range));
-	OTAssert(OFEqualRanges(OFMergeRanges(range2, range1), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range2, range1), range));
 
 	range1 = OFMakeRange(1, 2);
 	range2 = OFMakeRange(3, 1);
 	range = OFMakeRange(1, 3);
-	OTAssert(OFEqualRanges(OFMergeRanges(range1, range2), range));
-	OTAssert(OFEqualRanges(OFMergeRanges(range2, range1), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range2, range1), range));
 
 	range1 = OFMakeRange(1, 1);
 	range2 = OFMakeRange(3, 1);
 	range = OFMakeRange(OFNotFound, 0);
-	OTAssert(OFEqualRanges(OFMergeRanges(range1, range2), range));
-	OTAssert(OFEqualRanges(OFMergeRanges(range2, range1), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFUnionRange(range2, range1), range));
 }
 @end

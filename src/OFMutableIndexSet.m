@@ -54,25 +54,25 @@
 	bool found = false;
 
 	for (size_t i = 0; i < count; i++) {
-		OFRange merged = OFMergeRanges(range, ranges[i]);
+		OFRange unionRange = OFUnionRange(range, ranges[i]);
 
-		if (merged.location == OFNotFound)
+		if (unionRange.location == OFNotFound)
 			continue;
 
 		found = true;
 
 		_count -= ranges[i].length;
-		ranges[i] = merged;
+		ranges[i] = unionRange;
 
 		/* Check if we can merge with the previous one. */
 		if (i > 0) {
-			merged = OFMergeRanges(merged, ranges[i - 1]);
+			unionRange = OFUnionRange(unionRange, ranges[i - 1]);
 
-			if (merged.location == OFNotFound)
+			if (unionRange.location == OFNotFound)
 				continue;
 
 			_count -= ranges[i - 1].length;
-			ranges[i - 1] = merged;
+			ranges[i - 1] = unionRange;
 
 			[_ranges removeItemAtIndex: i];
 			ranges = _ranges.mutableItems;
@@ -81,7 +81,7 @@
 			i--;
 		}
 
-		_count += merged.length;
+		_count += unionRange.length;
 	}
 
 	if (!found) {

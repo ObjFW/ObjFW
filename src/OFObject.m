@@ -456,7 +456,7 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 }
 
 OFRange
-OFMergeRanges(OFRange range1, OFRange range2)
+OFUnionRange(OFRange range1, OFRange range2)
 {
 	OFRange range;
 

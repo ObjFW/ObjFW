@@ -179,14 +179,14 @@ OFLocationInRange(size_t location, OFRange range)
 extern "C" {
 #endif
 /**
- * @brief Merges two ranges if they are overlapping or adjacent, otherwise
- *	  returns a range with location @ref OFNotFound and length 0.
+ * @brief The union of the two ranges if they are overlapping or adjacent,
+ *	  otherwise returns a range with location @ref OFNotFound and length 0.
  *
  * @param range1 The first range
  * @param range2 The second range
  * @return The two ranges merged
  */
-extern OFRange OFMergeRanges(OFRange range1, OFRange range2);
+extern OFRange OFUnionRange(OFRange range1, OFRange range2);
 #ifdef __cplusplus
 }
 #endif
