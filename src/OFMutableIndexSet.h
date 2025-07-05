@@ -28,13 +28,24 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFMutableIndexSet: OFIndexSet
 /**
  * @brief Adds the specified index to the index set.
+ *
+ * @param index The index to add
  */
 - (void)addIndex: (size_t)index;
 
 /**
  * @brief Adds the indexes in the specified range to the index set.
+ *
+ * @param range The range of indexes to add
  */
 - (void)addIndexesInRange: (OFRange)range;
+
+/**
+ * @brief Adds the specified indexes to the index set.
+ *
+ * @param indexes The indexes to add
+ */
+- (void)addIndexes: (OFIndexSet *)indexes;
 @end
 
 OF_ASSUME_NONNULL_END

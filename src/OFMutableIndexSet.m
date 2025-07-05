@@ -97,4 +97,13 @@
 		_count += range.length;
 	}
 }
+
+- (void)addIndexes: (OFIndexSet *)indexes
+{
+	const OFRange *ranges = indexes->_ranges.items;
+	size_t count = indexes->_ranges.count;
+
+	for (size_t i = 0; i < count; i++)
+		[self addIndexesInRange: ranges[i]];
+}
 @end
