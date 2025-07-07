@@ -46,6 +46,32 @@ OF_SUBCLASSING_RESTRICTED
  * @param indexes The indexes to add
  */
 - (void)addIndexes: (OFIndexSet *)indexes;
+
+/**
+ * @brief Removes the specified index from the index set.
+ *
+ * @param index The index to remove
+ */
+- (void)removeIndex: (size_t)index;
+
+/**
+ * @brief Removes the indexes in the specified range from the index set.
+ *
+ * @param range The range of indexes to remove
+ */
+- (void)removeIndexesInRange: (OFRange)range;
+
+/**
+ * @brief Removes the specified indexes from the index set.
+ *
+ * @param indexes The indexes to remove
+ */
+- (void)removeIndexes: (OFIndexSet *)indexes;
+
+/**
+ * @brief Removes all indexes from the index set.
+ */
+- (void)removeAllIndexes;
 @end
 
 OF_ASSUME_NONNULL_END

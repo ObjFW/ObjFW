@@ -160,4 +160,77 @@
 	ranges = indexSet.of_ranges.items;
 	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(0, 5)));
 }
+
+- (void)testRemoveIndexesInRange
+{
+	OFMutableIndexSet *indexSet;
+	const OFRange *ranges;
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(1, 5)];
+	OTAssertEqual(indexSet.count, 3);
+	OTAssertEqual(indexSet.of_ranges.count, 1);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(7, 3)));
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(8, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(2, 5)];
+	OTAssertEqual(indexSet.count, 3);
+	OTAssertEqual(indexSet.of_ranges.count, 1);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(8, 3)));
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(0, 11)];
+	OTAssertEqual(indexSet.count, 0);
+	OTAssertEqual(indexSet.of_ranges.count, 0);
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(2, 1)];
+	OTAssertEqual(indexSet.count, 6);
+	OTAssertEqual(indexSet.of_ranges.count, 2);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(3, 3)));
+	OTAssert(OFEqualRanges(ranges[1], OFMakeRange(7, 3)));
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(4, 2)];
+	OTAssertEqual(indexSet.count, 5);
+	OTAssertEqual(indexSet.of_ranges.count, 2);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(2, 2)));
+	OTAssert(OFEqualRanges(ranges[1], OFMakeRange(7, 3)));
+
+	indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+	[indexSet removeIndexesInRange: OFMakeRange(3, 2)];
+	OTAssertEqual(indexSet.count, 5);
+	OTAssertEqual(indexSet.of_ranges.count, 3);
+	ranges = indexSet.of_ranges.items;
+	OTAssert(OFEqualRanges(ranges[0], OFMakeRange(2, 1)));
+	OTAssert(OFEqualRanges(ranges[1], OFMakeRange(5, 1)));
+	OTAssert(OFEqualRanges(ranges[2], OFMakeRange(7, 3)));
+}
+
+- (void)removeAllIndexes
+{
+	OFMutableIndexSet *indexSet =
+	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
+	[indexSet addIndexesInRange: OFMakeRange(7, 3)];
+
+	[indexSet removeAllIndexes];
+	OTAssertEqual(indexSet.count, 0);
+	OTAssertEqual(indexSet.of_ranges.count, 0);
+}
 @end
