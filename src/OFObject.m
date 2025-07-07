@@ -455,24 +455,6 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	return instance;
 }
 
-OFRange
-OFUnionRange(OFRange range1, OFRange range2)
-{
-	OFRange range;
-
-	if (range2.location > OFEndOfRange(range1) ||
-	    range1.location > OFEndOfRange(range2))
-		return OFMakeRange(OFNotFound, 0);
-
-	range.location = (range1.location < range2.location
-	    ? range1.location : range2.location);
-	range.length = (OFEndOfRange(range1) > OFEndOfRange(range2))
-	    ? OFEndOfRange(range1) - range.location
-	    : OFEndOfRange(range2) - range.location;
-
-	return range;
-}
-
 const char *
 _NSPrintForDebugger(id object)
 {

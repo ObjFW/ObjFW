@@ -26,6 +26,29 @@
 @end
 
 @implementation OFRangeTests
+- (void)testIntersectionRange
+{
+	OFRange range1, range2, range;
+
+	range1 = OFMakeRange(1, 1);
+	range2 = OFMakeRange(1, 2);
+	range = OFMakeRange(1, 1);
+	OTAssert(OFEqualRanges(OFIntersectionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFIntersectionRange(range2, range1), range));
+
+	range1 = OFMakeRange(1, 2);
+	range2 = OFMakeRange(2, 2);
+	range = OFMakeRange(2, 1);
+	OTAssert(OFEqualRanges(OFIntersectionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFIntersectionRange(range2, range1), range));
+
+	range1 = OFMakeRange(1, 2);
+	range2 = OFMakeRange(3, 2);
+	range = OFMakeRange(OFNotFound, 0);
+	OTAssert(OFEqualRanges(OFIntersectionRange(range1, range2), range));
+	OTAssert(OFEqualRanges(OFIntersectionRange(range2, range1), range));
+}
+
 - (void)testUnionRange
 {
 	OFRange range1, range2, range;

@@ -53,6 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+static const size_t OFNotFound = SIZE_MAX;
+
 /**
  * @brief A result of a comparison.
  */
@@ -175,21 +177,58 @@ OFLocationInRange(size_t location, OFRange range)
 	    location < OFEndOfRange(range));
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
- * @brief The union of the two ranges if they are overlapping or adjacent,
- *	  otherwise returns a range with location @ref OFNotFound and length 0.
+ * @brief Returns the intersection of the two ranges or @ref OFNotFound and
+ *	  length 0 if they don't intersect.
+ *
+ * @param range1 The first range
+ * @param range2 The second range
+ * @return The intersection of both ranges
+ */
+static OF_INLINE OFRange
+OFIntersectionRange(OFRange range1, OFRange range2)
+{
+	OFRange range;
+
+	if (range1.location >= OFEndOfRange(range2) ||
+	    range2.location >= OFEndOfRange(range1))
+		return OFMakeRange(OFNotFound, 0);
+
+	range.location = (range1.location > range2.location
+	    ? range1.location : range2.location);
+	range.length = (OFEndOfRange(range1) < OFEndOfRange(range2))
+	    ? OFEndOfRange(range1) - range.location
+	    : OFEndOfRange(range2) - range.location;
+
+	return range;
+}
+
+/**
+ * @brief Returns the union of the two ranges if they are overlapping or
+ *	  adjacent, otherwise returns a range with location @ref OFNotFound and
+ *	  length 0.
  *
  * @param range1 The first range
  * @param range2 The second range
  * @return The two ranges merged
  */
-extern OFRange OFUnionRange(OFRange range1, OFRange range2);
-#ifdef __cplusplus
+static OF_INLINE OFRange
+OFUnionRange(OFRange range1, OFRange range2)
+{
+	OFRange range;
+
+	if (range1.location > OFEndOfRange(range2) ||
+	    range2.location > OFEndOfRange(range1))
+		return OFMakeRange(OFNotFound, 0);
+
+	range.location = (range1.location < range2.location
+	    ? range1.location : range2.location);
+	range.length = (OFEndOfRange(range1) > OFEndOfRange(range2))
+	    ? OFEndOfRange(range1) - range.location
+	    : OFEndOfRange(range2) - range.location;
+
+	return range;
 }
-#endif
 
 /**
  * @brief A time interval in seconds.
@@ -640,8 +679,6 @@ OFHashFinalize(unsigned long *_Nonnull hash)
 
 	*hash = tmp;
 }
-
-static const size_t OFNotFound = SIZE_MAX;
 
 @class OFMethodSignature;
 @class OFString;
