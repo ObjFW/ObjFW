@@ -171,10 +171,7 @@
 		    oldLength - ranges[i].length - intersection.length);
 		[_ranges insertItem: &secondRange atIndex: i + 1];
 
-		ranges = _ranges.mutableItems;
-		count++;
-
-		i++;
+		return;
 	}
 }
 
