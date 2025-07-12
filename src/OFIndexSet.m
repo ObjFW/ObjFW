@@ -25,6 +25,31 @@
 
 #import "OFInvalidArgumentException.h"
 
+static size_t
+findLocation(const OFRange *ranges, size_t count, size_t location)
+{
+	size_t min = 0, max = count - 1;
+
+	if (count == 0)
+		return OFNotFound;
+
+	while (min <= max) {
+		size_t middle = min + (max - min) / 2;
+
+		if (OFLocationInRange(location, ranges[middle]))
+			return middle;
+
+		if (location >= OFEndOfRange(ranges[middle]))
+			min = middle + 1;
+		else if (location < ranges[middle].location && middle > 0)
+			max = middle - 1;
+		else
+			return OFNotFound;
+	}
+
+	return OFNotFound;
+}
+
 @implementation OFIndexSet
 @synthesize count = _count, of_ranges = _ranges;
 
@@ -132,31 +157,18 @@
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count;
 
-	for (size_t i = 0; i < count; i++) {
-		if (OFLocationInRange(index, ranges[i]))
-			return true;
-
-		if (OFEndOfRange(ranges[i]) >= index)
-			return false;
-	}
-
-	return false;
+	return findLocation(ranges, count, index) != OFNotFound;
 }
 
 - (bool)containsIndexesInRange: (OFRange)range
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count;
+	size_t index;
 
-	for (size_t i = 0; i < count; i++) {
-		if (range.location >= ranges[i].location &&
-		    OFEndOfRange(range) <= OFEndOfRange(ranges[i]))
-			return true;
+	if ((index = findLocation(ranges, count, range.location)) == OFNotFound)
+		return false;
 
-		if (OFEndOfRange(ranges[i]) >= range.location)
-			return false;
-	}
-
-	return false;
+	return (OFEndOfRange(range) <= OFEndOfRange(ranges[index]));
 }
 @end
