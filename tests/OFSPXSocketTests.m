@@ -207,7 +207,7 @@
   didAcceptSocket: (OFSequencedPacketSocket *)accepted
 	exception: (id)exception
 {
-	OFEnsure(!_accepted);
+	OTAssertFalse(_accepted);
 
 	_accepted = (sock == _expectedServerSocket && accepted != nil &&
 	    exception == nil);
@@ -224,7 +224,7 @@
 		 port: (uint16_t)port
 	    exception: (id)exception
 {
-	OFEnsure(!_connected);
+	OTAssertFalse(_connected);
 
 	_connected = (sock == _expectedClientSocket &&
 	    network == _expectedNetwork &&

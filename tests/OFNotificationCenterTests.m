@@ -43,8 +43,8 @@ static const OFNotificationName otherNotificationName =
 @implementation OFNotificationCenterTestClass
 - (void)handleNotification: (OFNotification *)notification
 {
-	OFEnsure([notification.name isEqual: notificationName]);
-	OFEnsure(_expectedObject == nil ||
+	OTAssertEqualObjects(notification.name, notificationName);
+	OTAssert(_expectedObject == nil ||
 	    notification.object == _expectedObject);
 
 	_received++;

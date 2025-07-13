@@ -64,16 +64,16 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	OFFile *funcArray =
 	    [OFFile fileWithPath: funcArrayIRI.fileSystemRepresentation
 			    mode: @"w"];
-	LinkLibGenerator *linkLibGenerator = [[[LinkLibGenerator alloc]
-	    initWithLibrary: library
-	     implementation: linkLib] autorelease];
-	GlueGenerator *glueGenerator = [[[GlueGenerator alloc]
-		  initWithLibrary: library
-			   header: glueHeader
-		   implementation: glue] autorelease];
-	FuncArrayGenerator *funcArrayGenerator = [[[FuncArrayGenerator alloc]
-	    initWithLibrary: library
-		    include: funcArray] autorelease];
+	LinkLibGenerator *linkLibGenerator = objc_autorelease(
+	    [[LinkLibGenerator alloc] initWithLibrary: library
+				       implementation: linkLib]);
+	GlueGenerator *glueGenerator = objc_autorelease(
+	    [[GlueGenerator alloc] initWithLibrary: library
+					    header: glueHeader
+				    implementation: glue]);
+	FuncArrayGenerator *funcArrayGenerator = objc_autorelease(
+	    [[FuncArrayGenerator alloc] initWithLibrary: library
+						include: funcArray]);
 
 	[linkLibGenerator generate];
 	[glueGenerator generate];

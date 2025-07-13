@@ -17,46 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OFIndexSet.h"
 
-#import "OFConcreteColor.h"
+OF_ASSUME_NONNULL_BEGIN
 
-#import "OFInvalidArgumentException.h"
-
-@implementation OFConcreteColor
-- (instancetype)initWithRed: (float)red
-		      green: (float)green
-		       blue: (float)blue
-		      alpha: (float)alpha
-{
-	self = [super init];
-
-	@try {
-		if (alpha < 0.0 || alpha > 1.0)
-			@throw [OFInvalidArgumentException exception];
-
-		_red = red;
-		_green = green;
-		_blue = blue;
-		_alpha = alpha;
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)getRed: (float *)red
-	 green: (float *)green
-	  blue: (float *)blue
-	 alpha: (float *)alpha
-{
-	*red = _red;
-	*green = _green;
-	*blue = _blue;
-
-	if (alpha != NULL)
-		*alpha = _alpha;
-}
+@interface OFIndexSet ()
+@property (retain, nonatomic) OFMutableData *of_ranges;
 @end
+
+OF_ASSUME_NONNULL_END

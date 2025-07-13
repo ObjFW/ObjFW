@@ -50,11 +50,11 @@
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: version.stringValue];
 
-		_library = [library retain];
-		_header = [header retain];
-		_impl = [impl retain];
+		_library = objc_retain(library);
+		_header = objc_retain(header);
+		_impl = objc_retain(impl);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -63,9 +63,9 @@
 
 - (void)dealloc
 {
-	[_library release];
-	[_header release];
-	[_impl release];
+	objc_release(_library);
+	objc_release(_header);
+	objc_release(_impl);
 
 	[super dealloc];
 }
