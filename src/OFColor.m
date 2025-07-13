@@ -48,19 +48,22 @@ static const float allowedImprecision = 0.0000001;
 		      alpha: (float)alpha
 {
 #ifdef OF_OBJFW_RUNTIME
-	uint8_t redInt = roundf(red * 255);
-	uint8_t greenInt = roundf(green * 255);
-	uint8_t blueInt = roundf(blue * 255);
+	if (red >= 0.0f && red <= 1.0f && green >= 0.0f && green <= 1.0f &&
+	    blue >= 0.0f && blue <= 1.0f && alpha == 1.0f) {
+		uint8_t redInt = roundf(red * 255);
+		uint8_t greenInt = roundf(green * 255);
+		uint8_t blueInt = roundf(blue * 255);
 
-	if (fabsf(red * 255 - redInt) < allowedImprecision &&
-	    fabsf(green * 255 - greenInt) < allowedImprecision &&
-	    fabsf(blue * 255 - blueInt) < allowedImprecision && alpha == 1.0f) {
-		id ret = [OFTaggedPointerColor colorWithRed: redInt
-						      green: greenInt
-						       blue: blueInt];
+		if (fabsf(red * 255 - redInt) < allowedImprecision &&
+		    fabsf(green * 255 - greenInt) < allowedImprecision &&
+		    fabsf(blue * 255 - blueInt) < allowedImprecision) {
+			id ret = [OFTaggedPointerColor colorWithRed: redInt
+							      green: greenInt
+							       blue: blueInt];
 
-		if (ret != nil)
-			return ret;
+			if (ret != nil)
+				return ret;
+		}
 	}
 #endif
 

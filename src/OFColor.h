@@ -52,9 +52,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new color with the specified red, green, blue and alpha
  *	  value.
  *
- * @param red The red value of the color, between 0.0 and 1.0
- * @param green The green value of the color, between 0.0 and 1.0
- * @param blue The blue value of the color, between 0.0 and 1.0
+ * @param red The red value of the color
+ * @param green The green value of the color
+ * @param blue The blue value of the color
  * @param alpha The alpha value of the color, between 0.0 and 1.0
  * @return A new color with the specified red, green, blue and alpha value
  */
@@ -222,9 +222,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated color with the specified red, green,
  *	  blue and alpha value.
  *
- * @param red The red value of the color, between 0.0 and 1.0
- * @param green The green value of the color, between 0.0 and 1.0
- * @param blue The blue value of the color, between 0.0 and 1.0
+ * @param red The red value of the color
+ * @param green The green value of the color
+ * @param blue The blue value of the color
  * @param alpha The alpha value of the color, between 0.0 and 1.0
  * @return A color initialized with the specified red, green, blue and alpha
  *	   value
