@@ -28,7 +28,8 @@
 	self = [super init];
 
 	@try {
-		_ranges = [[OFMutableData alloc] init];
+		_ranges = [[OFMutableData alloc]
+		    initWithItemSize: sizeof(OFRange)];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

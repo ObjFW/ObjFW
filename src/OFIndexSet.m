@@ -24,17 +24,15 @@
 #import "OFData.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 static size_t
-findLocation(const OFRange *ranges, size_t count, size_t location)
+positionForIndex(const OFRange *ranges, size_t count, size_t location)
 {
-	size_t min = 0, max = count - 1;
-
-	if (count == 0)
-		return OFNotFound;
+	size_t min = 0, max = count - 1, middle = 0;
 
 	while (min <= max) {
-		size_t middle = min + (max - min) / 2;
+		middle = min + (max - min) / 2;
 
 		if (OFLocationInRange(location, ranges[middle]))
 			return middle;
@@ -44,10 +42,10 @@ findLocation(const OFRange *ranges, size_t count, size_t location)
 		else if (location < ranges[middle].location && middle > 0)
 			max = middle - 1;
 		else
-			return OFNotFound;
+			return middle;
 	}
 
-	return OFNotFound;
+	return middle;
 }
 
 @implementation OFIndexSet
@@ -155,20 +153,127 @@ findLocation(const OFRange *ranges, size_t count, size_t location)
 - (bool)containsIndex: (size_t)index
 {
 	const OFRange *ranges = _ranges.items;
-	size_t count = _ranges.count;
+	size_t count = _ranges.count, position;
 
-	return findLocation(ranges, count, index) != OFNotFound;
+	if (count == 0)
+		return false;
+
+	position = positionForIndex(ranges, count, index);
+
+	return OFLocationInRange(index, ranges[position]);
 }
 
 - (bool)containsIndexesInRange: (OFRange)range
 {
 	const OFRange *ranges = _ranges.items;
-	size_t count = _ranges.count;
-	size_t index;
+	size_t count = _ranges.count, position;
 
-	if ((index = findLocation(ranges, count, range.location)) == OFNotFound)
+	if (count == 0)
 		return false;
 
-	return (OFEndOfRange(range) <= OFEndOfRange(ranges[index]));
+	position = positionForIndex(ranges, count, range.location);
+
+	return (range.location >= ranges[position].location &&
+	    OFEndOfRange(range) <= OFEndOfRange(ranges[position]));
+}
+
+- (size_t)firstIndex
+{
+	if (_ranges.count == 0)
+		return OFNotFound;
+
+	return ((OFRange *)_ranges.items)[0].location;
+}
+
+- (size_t)lastIndex
+{
+	if (_ranges.count == 0)
+		return OFNotFound;
+
+	return OFEndOfRange(((OFRange *)_ranges.items)[_ranges.count - 1]) - 1;
+}
+
+- (size_t)indexGreaterThanIndex: (size_t)index
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, position;
+
+	if (count == 0)
+		return OFNotFound;
+
+	position = positionForIndex(ranges, count, index + 1);
+
+	if (OFLocationInRange(index + 1, ranges[position]))
+		return index + 1;
+
+	for (; position < count; position++)
+		if (ranges[position].location > index)
+			return ranges[position].location;
+
+	return OFNotFound;
+}
+
+- (size_t)indexGreaterThanOrEqualToIndex: (size_t)index
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, position;
+
+	if (count == 0)
+		return OFNotFound;
+
+	position = positionForIndex(ranges, count, index);
+
+	if (OFLocationInRange(index, ranges[position]))
+		return index;
+
+	for (; position < count; position++)
+		if (ranges[position].location >= index)
+			return ranges[position].location;
+
+	return OFNotFound;
+}
+
+- (size_t)indexLessThanIndex: (size_t)index
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, position;
+
+	if (index == 0 || count == 0)
+		return OFNotFound;
+
+	position = positionForIndex(ranges, count, index - 1);
+	if (position > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (OFLocationInRange(index - 1, ranges[position]))
+		return index - 1;
+
+	for (; (ssize_t)position >= 0; position--)
+		if (OFEndOfRange(ranges[position]) - 1 < index)
+			return OFEndOfRange(ranges[position]) - 1;
+
+	return OFNotFound;
+}
+
+- (size_t)indexLessThanOrEqualToIndex: (size_t)index
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, position;
+
+	if (count == 0)
+		return OFNotFound;
+
+	position = positionForIndex(ranges, count, index);
+	if (position > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (OFLocationInRange(index, ranges[position]))
+		return index;
+
+	for (; (ssize_t)position >= 0; position--)
+		if (OFEndOfRange(ranges[position]) - 1 <= index)
+			return OFEndOfRange(ranges[position]) - 1;
+
+	return OFNotFound;
 }
 @end

@@ -39,6 +39,16 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t count;
 
 /**
+ * @brief The first index in the index set or @ref OFNotFound.
+ */
+@property (readonly, nonatomic) size_t firstIndex;
+
+/**
+ * @brief The last index in the index set or @ref OFNotFound.
+ */
+@property (readonly, nonatomic) size_t lastIndex;
+
+/**
  * @brief Creates a new empty index set.
  *
  * @return A new empty index set
@@ -117,6 +127,44 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the specified range of indexes is in the index set
  */
 - (bool)containsIndexesInRange: (OFRange)range;
+
+/**
+ * @brief Returns the closest index greater than the specified index or
+ *	  @ref OFNotFound.
+ *
+ * @param index The index for which to find an index that is greater
+ * @return The closest index greater than the specified index or @ref OFNotFound
+ */
+- (size_t)indexGreaterThanIndex: (size_t)index;
+
+/**
+ * @brief Returns the closest index greater than or equal to the specified
+ *	  index or @ref OFNotFound.
+ *
+ * @param index The index for which to find an index that is greater or equal
+ * @return The closest index greater than or equal to the specified index or
+ *	   @ref OFNotFound
+ */
+- (size_t)indexGreaterThanOrEqualToIndex: (size_t)index;
+
+/**
+ * @brief Returns the closest index less than the specified index or
+ *	  @ref OFNotFound.
+ *
+ * @param index The index for which to find an index that is less
+ * @return The closest index less than the specified index or @ref OFNotFound
+ */
+- (size_t)indexLessThanIndex: (size_t)index;
+
+/**
+ * @brief Returns the closest index less than or equal to the specified index
+ *	  or @ref OFNotFound.
+ *
+ * @param index The index for which to find an index that is less or equal
+ * @return The closest index less than or equal to the specified index or
+ *	   @ref OFNotFound
+ */
+- (size_t)indexLessThanOrEqualToIndex: (size_t)index;
 @end
 
 OF_ASSUME_NONNULL_END
