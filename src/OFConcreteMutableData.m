@@ -24,6 +24,8 @@
 
 #import "OFConcreteMutableData.h"
 #import "OFConcreteData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -120,6 +122,40 @@
 	memcpy(_items + idx * _itemSize, items, count * _itemSize);
 
 	_count += count;
+}
+
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes
+{
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count, count = _count;
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (ranges[i].length > SIZE_MAX - count)
+			@throw [OFOutOfRangeException exception];
+
+		count += ranges[i].length;
+	}
+
+	if (count > _capacity) {
+		_items = OFResizeMemory(_items, count, _itemSize);
+		_capacity = count;
+	}
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		OFRange range = ranges[i];
+
+		if (range.location > _count)
+			@throw [OFOutOfRangeException exception];
+
+		memmove(_items + (range.location + range.length) * _itemSize,
+		    _items + range.location * _itemSize,
+		    (_count - range.location) * _itemSize);
+		memcpy(_items + range.location * _itemSize, items,
+		    range.length * _itemSize);
+
+		items = (char *)items + range.length * _itemSize;
+		_count += range.length;
+	}
 }
 
 - (void)increaseCountBy: (size_t)count
