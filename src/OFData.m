@@ -582,8 +582,7 @@ OF_SINGLETON_METHODS
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableData class]])
@@ -645,8 +644,7 @@ OF_SINGLETON_METHODS
 	const char *search;
 	size_t searchLength;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > count)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	if (data == nil || data.itemSize != itemSize)

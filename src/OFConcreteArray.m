@@ -183,8 +183,7 @@
 	id const *objects = _array.items;
 	size_t count = _array.count;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > count)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	for (size_t i = 0; i < range.length; i++)
@@ -229,8 +228,7 @@
 
 - (OFArray *)objectsInRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _array.count)
+	if (OFEndOfRange(range) > _array.count)
 		@throw [OFOutOfRangeException exception];
 
 	if ([self isKindOfClass: [OFMutableArray class]])

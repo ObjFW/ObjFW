@@ -22,6 +22,12 @@
 #import "OFOutOfRangeException.h"
 #import "OFString.h"
 
+void OF_NO_RETURN_FUNC
+_OFThrowOutOfRangeException(void)
+{
+	@throw [OFOutOfRangeException exception];
+}
+
 @implementation OFOutOfRangeException
 - (OFString *)description
 {

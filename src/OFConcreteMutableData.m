@@ -147,7 +147,7 @@
 		if (range.location > _count)
 			@throw [OFOutOfRangeException exception];
 
-		memmove(_items + (range.location + range.length) * _itemSize,
+		memmove(_items + OFEndOfRange(range) * _itemSize,
 		    _items + range.location * _itemSize,
 		    (_count - range.location) * _itemSize);
 		memcpy(_items + range.location * _itemSize, items,
@@ -174,12 +174,11 @@
 
 - (void)removeItemsInRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
+	if (OFEndOfRange(range) > _count)
 		@throw [OFOutOfRangeException exception];
 
 	memmove(_items + range.location * _itemSize,
-	    _items + (range.location + range.length) * _itemSize,
+	    _items + OFEndOfRange(range) * _itemSize,
 	    (_count - range.location - range.length) * _itemSize);
 
 	_count -= range.length;
@@ -205,12 +204,11 @@
 	for (size_t i = count; i > 0; i--) {
 		OFRange range = ranges[i - 1];
 
-		if (range.length > SIZE_MAX - range.location ||
-		    range.location + range.length > _count)
+		if (OFEndOfRange(range) > _count)
 			@throw [OFOutOfRangeException exception];
 
 		memmove(_items + range.location * _itemSize,
-		    _items + (range.location + range.length) * _itemSize,
+		    _items + OFEndOfRange(range) * _itemSize,
 		    (_count - range.location - range.length) * _itemSize);
 
 		_count -= range.length;

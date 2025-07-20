@@ -224,8 +224,7 @@ OF_SINGLETON_METHODS
 {
 	size_t itemSize;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	itemSize = self.itemSize;
