@@ -21,18 +21,18 @@
 
 #include <string.h>
 
-#import "OFDataTests.h"
+#import "OFMutableDataTests.h"
 
-@interface OFMutableDataTests: OFDataTests
+@interface CustomMutableData: OFMutableData
 {
-	OFMutableData *_mutableData;
+	OFMutableData *_data;
 }
 @end
 
 @implementation OFMutableDataTests
 - (Class)dataClass
 {
-	return [OFMutableData class];
+	return [CustomMutableData class];
 }
 
 - (void)setUp
@@ -130,5 +130,97 @@
 
 	OTAssertEqualObjects(_mutableData,
 	    [OFData dataWithItems: "a123b45cdef67" count: 13]);
+}
+@end
+
+@implementation CustomMutableData
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFMutableData alloc] initWithItemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFMutableData alloc] initWithItems: items
+						       count: count
+						    itemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFMutableData alloc]
+		    initWithItemsNoCopy: items
+				  count: count
+			       itemSize: itemSize
+			   freeWhenDone: freeWhenDone];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (size_t)count
+{
+	return _data.count;
+}
+
+- (size_t)itemSize
+{
+	return _data.itemSize;
+}
+
+- (const void *)items
+{
+	return _data.items;
+}
+
+- (void *)mutableItems
+{
+	return _data.mutableItems;
+}
+
+- (void)insertItems: (const void *)items
+	    atIndex: (size_t)idx
+	      count: (size_t)count
+{
+	[_data insertItems: items atIndex: idx count: count];
+}
+
+- (void)increaseCountBy: (size_t)count
+{
+	[_data increaseCountBy: count];
+}
+
+- (void)removeItemsInRange: (OFRange)range
+{
+	[_data removeItemsInRange: range];
 }
 @end

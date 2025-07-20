@@ -26,8 +26,10 @@ SRCS = ForwardingTests.m			\
        OFCharacterSetTests.m			\
        OFColorTests.m				\
        OFConcreteArrayTests.m			\
+       OFConcreteDataTests.m			\
        OFConcreteDictionaryTests.m		\
        OFConcreteMutableArrayTests.m		\
+       OFConcreteMutableDataTests.m		\
        OFConcreteMutableDictionaryTests.m	\
        OFConcreteMutableSetTests.m		\
        OFConcreteSetTests.m			\
