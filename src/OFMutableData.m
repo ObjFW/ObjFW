@@ -25,6 +25,8 @@
 
 #import "OFMutableData.h"
 #import "OFConcreteMutableData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -253,6 +255,24 @@ OF_SINGLETON_METHODS
 	      count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+	size_t itemSize = self.itemSize;
+
+	for (size_t i = 0; i < count; i++) {
+		[self insertItems: items
+			  atIndex: ranges[i].location
+			    count: ranges[i].length];
+
+		items = (char *)items + ranges[i].length * itemSize;
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)increaseCountBy: (size_t)count

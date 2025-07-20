@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIndexSet;
+
 /**
  * @class OFMutableData OFMutableData.h ObjFW/ObjFW.h
  *
@@ -134,6 +136,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)insertItems: (const void *)items
 	    atIndex: (size_t)index
 	      count: (size_t)count;
+
+/**
+ * @brief Adds items from a C array to the OFMutableData at the specified
+ *	  indexes.
+ *
+ * @param items A C array containing the items to add
+ * @param indexes The indexes where the items should be added
+ */
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes;
 
 /**
  * @brief Increases the count by the specified number. The new items are all

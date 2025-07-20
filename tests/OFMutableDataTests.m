@@ -118,4 +118,17 @@
 	    [_mutableData insertItems: "a" atIndex: 7 count: 1],
 	    OFOutOfRangeException);
 }
+
+- (void)testInsertItemsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSet];
+	[indexes addIndexesInRange: OFMakeRange(1, 3)];
+	[indexes addIndexesInRange: OFMakeRange(5, 2)];
+	[indexes addIndexesInRange: OFMakeRange(11, 2)];
+
+	[_mutableData insertItems: "1234567" atIndexes: indexes];
+
+	OTAssertEqualObjects(_mutableData,
+	    [OFData dataWithItems: "a123b45cdef67" count: 13]);
+}
 @end
