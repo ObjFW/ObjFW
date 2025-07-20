@@ -169,6 +169,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)removeItemsInRange: (OFRange)range;
 
 /**
+ * @brief Removes the items at the specified indexes.
+ *
+ * @param indexes The indexes of the items to remove
+ */
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes;
+
+/**
  * @brief Removes the last item.
  */
 - (void)removeLastItem;

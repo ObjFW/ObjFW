@@ -290,6 +290,23 @@ OF_SINGLETON_METHODS
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--)
+		[self removeItemsInRange: ranges[i - 1]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)removeLastItem
 {
 	size_t count = self.count;

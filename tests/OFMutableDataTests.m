@@ -104,6 +104,31 @@
 	    OFOutOfRangeException);
 }
 
+- (void)testRemoveItemsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSet];
+
+	[indexes addIndex: 1];
+	[indexes addIndex: 3];
+	[_mutableData removeItemsAtIndexes: indexes];
+
+	OTAssertEqualObjects(_mutableData,
+	    [OFData dataWithItems: "acef" count: 4]);
+}
+
+- (void)testRemoveItemsAtIndexesThrowsOnOutOfRangeRange
+{
+	OFIndexSet *indexes;
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(6, 1)];
+	OTAssertThrowsSpecific([_mutableData removeItemsAtIndexes: indexes],
+	    OFOutOfRangeException);
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(7, 0)];
+	OTAssertThrowsSpecific([_mutableData removeItemsAtIndexes: indexes],
+	    OFOutOfRangeException);
+}
+
 - (void)testInsertItemsAtIndexCount
 {
 	[_mutableData insertItems: "BC" atIndex: 1 count: 2];
@@ -130,6 +155,15 @@
 
 	OTAssertEqualObjects(_mutableData,
 	    [OFData dataWithItems: "a123b45cdef67" count: 13]);
+}
+
+- (void)testInsertItemsAtIndexesThrowsOnOutOfRangeIndex
+{
+	OFIndexSet *indexes =
+	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(7, 1)];
+	OTAssertThrowsSpecific(
+	    [_mutableData insertItems: "a" atIndexes: indexes],
+	    OFOutOfRangeException);
 }
 @end
 
