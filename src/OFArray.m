@@ -426,7 +426,7 @@ OF_SINGLETON_METHODS
 	id *buffer;
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length < self.count)
+	    range.location + range.length > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
