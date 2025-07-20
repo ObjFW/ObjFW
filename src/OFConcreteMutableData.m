@@ -191,6 +191,41 @@
 	}
 }
 
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--) {
+		OFRange range = ranges[i - 1];
+
+		if (range.length > SIZE_MAX - range.location ||
+		    range.location + range.length > _count)
+			@throw [OFOutOfRangeException exception];
+
+		memmove(_items + range.location * _itemSize,
+		    _items + (range.location + range.length) * _itemSize,
+		    (_count - range.location - range.length) * _itemSize);
+
+		_count -= range.length;
+	}
+
+	@try {
+		_items = OFResizeMemory(_items, _count, _itemSize);
+		_capacity = _count;
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)removeLastItem
 {
 	if (_count == 0)
