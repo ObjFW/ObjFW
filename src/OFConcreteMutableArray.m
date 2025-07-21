@@ -25,6 +25,7 @@
 #import "OFConcreteArray.h"
 #import "OFArray+Private.h"
 #import "OFData.h"
+#import "OFIndexSet.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -85,6 +86,26 @@
 
 	@try {
 		[_array insertItems: objects atIndex: idx count: count];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exception];
+	}
+
+	for (size_t i = 0; i < count; i++)
+		objc_retain(objects[i]);
+
+	_mutations++;
+}
+
+- (void)insertObjects: (OFArray *)array atIndexes: (OFIndexSet *)indexes
+{
+	id const *objects = array.objects;
+	size_t count = array.count;
+
+	if (indexes.count != count)
+		@throw [OFOutOfRangeException exception];
+
+	@try {
+		[_array insertItems: objects atIndexes: indexes];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}

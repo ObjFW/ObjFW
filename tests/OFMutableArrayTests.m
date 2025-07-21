@@ -100,8 +100,15 @@ static OFString *const cArray[] = {
 
 - (void)testInsertObjectsAtIndexesThrowsOnOutOfRangeIndex
 {
-	OFIndexSet *indexes =
-	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(4, 1)];
+	OFIndexSet *indexes;
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(4, 1)];
+	OTAssertThrowsSpecific(
+	    [_mutableArray insertObjects: [OFArray arrayWithObject: @"Qux"]
+			       atIndexes: indexes],
+	    OFOutOfRangeException);
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(3, 2)];
 	OTAssertThrowsSpecific(
 	    [_mutableArray insertObjects: [OFArray arrayWithObject: @"Qux"]
 			       atIndexes: indexes],
