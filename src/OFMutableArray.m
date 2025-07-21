@@ -24,6 +24,9 @@
 
 #import "OFMutableArray.h"
 #import "OFConcreteMutableArray.h"
+#import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -213,6 +216,29 @@ OF_SINGLETON_METHODS
 
 	for (id object in array)
 		[self insertObject: object atIndex: idx + i++];
+}
+
+- (void)insertObjects: (OFArray *)array atIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+	size_t arrayIndex = 0;
+
+	for (size_t i = 0; i < count; i++) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFArray *objects = [array objectsInRange:
+		    OFMakeRange(arrayIndex, ranges[i].length)];
+
+		[self insertObjectsFromArray: objects
+				     atIndex: ranges[i].location];
+
+		arrayIndex += ranges[i].length;
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object

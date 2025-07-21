@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIndexSet;
+
 /** @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -103,6 +105,16 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  */
 - (void)insertObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)array
 		       atIndex: (size_t)index;
+
+/**
+ * @brief Inserts the objects from the specified OFArray at the specified
+ *	  indexes.
+ *
+ * @param array An array of objects
+ * @param indexes The indexes where the objects should be inserted
+ */
+- (void)insertObjects: (OFArray OF_GENERIC(ObjectType) *)array
+	    atIndexes: (OFIndexSet *)indexes;
 
 /**
  * @brief Replaces all objects equivalent to the specified object with the
