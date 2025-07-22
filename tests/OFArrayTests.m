@@ -163,6 +163,9 @@ static OFString *const cArray[] = {
 
 - (void)testObjectsInRange
 {
+	OTAssertEqualObjects([_array objectsInRange: OFMakeRange(0, 1)],
+	    [self.arrayClass arrayWithObject: cArray[0]]);
+
 	OTAssertEqualObjects([_array objectsInRange: OFMakeRange(1, 2)],
 	    ([self.arrayClass arrayWithObjects: cArray[1], cArray[2], nil]));
 }
