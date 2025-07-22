@@ -161,10 +161,32 @@ static OFString *const cArray[] = {
 	    OFNotFound);
 }
 
-- (void)objectsInRange
+- (void)testObjectsInRange
 {
 	OTAssertEqualObjects([_array objectsInRange: OFMakeRange(1, 2)],
 	    ([self.arrayClass arrayWithObjects: cArray[1], cArray[2], nil]));
+}
+
+- (void)testObjectsInRangeThrowsForOutOfRange
+{
+	OTAssertThrowsSpecific([_array objectsInRange: OFMakeRange(3, 1)],
+	    OFOutOfRangeException);
+}
+
+- (void)testObjectsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexes addIndex: 2];
+
+	OTAssertEqualObjects([_array objectsAtIndexes: indexes],
+	    ([self.arrayClass arrayWithObjects: cArray[0], cArray[2], nil]));
+}
+
+- (void)testObjectsAtIndexesThrowsForOutOfRange
+{
+	OTAssertThrowsSpecific(
+	    [_array objectsAtIndexes: [OFIndexSet indexSetWithIndex: 3]],
+	    OFOutOfRangeException);
 }
 
 - (void)testEnumerator

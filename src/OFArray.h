@@ -36,6 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+@class OFIndexSet;
 @class OFString;
 
 /**
@@ -341,6 +342,14 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  * @return The subarray as a new autoreleased OFArray
  */
 - (OFArray OF_GENERIC(ObjectType) *)objectsInRange: (OFRange)range;
+
+/**
+ * @brief Returns the objects at the specified indexes as a new OFArray.
+ *
+ * @param indexes The indexes contained in the new array
+ * @return A new autoreleased OFArray containing the specified indexes
+ */
+- (OFArray OF_GENERIC(ObjectType) *)objectsAtIndexes: (OFIndexSet *)indexes;
 
 /**
  * @brief Creates a string by joining all objects of the array.

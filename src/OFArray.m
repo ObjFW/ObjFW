@@ -26,6 +26,8 @@
 #import "OFArray+Private.h"
 #import "OFConcreteArray.h"
 #import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 #import "OFJSONRepresentationPrivate.h"
 #import "OFNull.h"
 #import "OFString.h"
@@ -443,6 +445,25 @@ OF_SINGLETON_METHODS
 	} @finally {
 		OFFreeMemory(buffer);
 	}
+
+	return ret;
+}
+
+- (OFArray *)objectsAtIndexes: (OFIndexSet *)indexes
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: indexes.count];
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+
+	for (size_t i = 0; i < rangesCount; i++)
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++)
+			[ret addObject: [self objectAtIndex: j]];
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
