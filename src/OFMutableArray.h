@@ -185,6 +185,13 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 - (void)removeObjectsInRange: (OFRange)range;
 
 /**
+ * @brief Removes the objects at the specified indexes.
+ *
+ * @param indexes The indexes of the objects to remove
+ */
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes;
+
+/**
  * @brief Removes the last object.
  */
 - (void)removeLastObject;

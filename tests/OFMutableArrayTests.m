@@ -184,6 +184,23 @@ static OFString *const cArray[] = {
 	    OFMakeRange(0, _mutableArray.count + 1)], OFOutOfRangeException);
 }
 
+- (void)testRemoveObjectsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexes addIndex: 2];
+
+	[_mutableArray removeObjectsAtIndexes: indexes];
+	OTAssertEqualObjects(_mutableArray, [OFArray arrayWithObject: @"Bar"]);
+}
+
+- (void)testRemoveObjectsAtIndexesFailsWhenOutOfRange
+{
+	OFIndexSet *indexes = [OFIndexSet indexSetWithIndex: 3];
+
+	OTAssertThrowsSpecific([_mutableArray removeObjectsAtIndexes: indexes],
+	    OFOutOfRangeException);
+}
+
 - (void)testReverse
 {
 	[_mutableArray reverse];

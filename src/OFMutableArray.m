@@ -330,6 +330,23 @@ OF_SINGLETON_METHODS
 		[self removeObjectAtIndex: range.location];
 }
 
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--)
+		[self removeObjectsInRange: ranges[i - 1]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)removeLastObject
 {
 	size_t count = self.count;
