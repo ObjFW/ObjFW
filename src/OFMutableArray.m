@@ -246,6 +246,13 @@ OF_SINGLETON_METHODS
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (void)replaceObjectsInRange: (OFRange)range
+	 withObjectsFromArray: (OFArray *)objects
+{
+	[self removeObjectsInRange: range];
+	[self insertObjectsFromArray: objects atIndex: range.location];
+}
+
 - (void)setObject: (id)object atIndexedSubscript: (size_t)idx
 {
 	[self replaceObjectAtIndex: idx withObject: object];

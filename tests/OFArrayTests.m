@@ -170,7 +170,7 @@ static OFString *const cArray[] = {
 	    ([self.arrayClass arrayWithObjects: cArray[1], cArray[2], nil]));
 }
 
-- (void)testObjectsInRangeThrowsForOutOfRange
+- (void)testObjectsInRangeThrowsOnOutOfRangeRange
 {
 	OTAssertThrowsSpecific([_array objectsInRange: OFMakeRange(3, 1)],
 	    OFOutOfRangeException);
@@ -185,7 +185,7 @@ static OFString *const cArray[] = {
 	    ([self.arrayClass arrayWithObjects: cArray[0], cArray[2], nil]));
 }
 
-- (void)testObjectsAtIndexesThrowsForOutOfRange
+- (void)testObjectsAtIndexesThrowsOnOutOfRangeIndex
 {
 	OTAssertThrowsSpecific(
 	    [_array objectsAtIndexes: [OFIndexSet indexSetWithIndex: 3]],

@@ -134,6 +134,16 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 - (void)replaceObjectAtIndex: (size_t)index withObject: (ObjectType)object;
 
 /**
+ * @brief Replaces the objects in the specified object with the specified
+ *	  objects.
+ *
+ * @param range The range of the objects to replace
+ * @param objects The objects to replace the objects in the specified range with
+ */
+- (void)replaceObjectsInRange: (OFRange)range
+	 withObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)objects;
+
+/**
  * @brief Replaces the object at the specified index with the specified object.
  *
  * This method is the same as @ref replaceObjectAtIndex:withObject:.

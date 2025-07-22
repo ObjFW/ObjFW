@@ -75,6 +75,17 @@ static OFString *const cArray[] = {
 	    ([OFArray arrayWithObjects: @"Foo", @"Bar", @"Bar", @"Baz", nil]));
 }
 
+- (void)testInsertObjectsFromArrayAtIndex
+{
+	OFArray *array = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	[_mutableArray insertObjectsFromArray: array atIndex: 1];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"Foo", @"a", @"b", @"Bar", @"Baz",
+	    nil]));
+}
+
 - (void)testInsertObjectsAtIndexes
 {
 	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSet];
@@ -145,6 +156,17 @@ static OFString *const cArray[] = {
 
 	OTAssertEqualObjects(_mutableArray,
 	    ([OFArray arrayWithObjects: @"Foo", @"Foo", @"Baz", nil]));
+}
+
+- (void)testReplaceObjectsInRangeWithObjectsFromArray
+{
+	OFArray *replacement = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	[_mutableArray replaceObjectsInRange: OFMakeRange(0, 2)
+			withObjectsFromArray: replacement];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"a", @"b", @"Baz", nil]));
 }
 
 - (void)testRemoveObject
