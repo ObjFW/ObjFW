@@ -160,13 +160,67 @@ static OFString *const cArray[] = {
 
 - (void)testReplaceObjectsInRangeWithObjectsFromArray
 {
-	OFArray *replacement = [OFArray arrayWithObjects: @"a", @"b", nil];
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
 
 	[_mutableArray replaceObjectsInRange: OFMakeRange(0, 2)
-			withObjectsFromArray: replacement];
+			withObjectsFromArray: replacements];
 
 	OTAssertEqualObjects(_mutableArray,
 	    ([OFArray arrayWithObjects: @"a", @"b", @"Baz", nil]));
+}
+
+- (void)testReplaceObjectsInRangeWithObjectsFromArrayThrowsOnOutOfRangeRange
+{
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsInRange: OFMakeRange(3, 1)
+	     withObjectsFromArray: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjects
+{
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexes addIndex: 2];
+
+	[_mutableArray replaceObjectsAtIndexes: indexes
+				   withObjects: replacements];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"a", @"Bar", @"b", nil]));
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnOutOfRangeIndex
+{
+	OFIndexSet *indexes = [OFIndexSet indexSetWithIndex: 3];
+
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsAtIndexes: indexes
+			withObjects: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnTooShortObjectsArray
+{
+	OFIndexSet *indexes =
+	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(0, 2)];
+
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsAtIndexes: indexes
+			withObjects: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnTooLongObjectsArray
+{
+	OFIndexSet *indexes =
+	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(0, 1)];
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	OTAssertThrowsSpecific(
+	    [_mutableArray replaceObjectsAtIndexes: indexes
+				       withObjects: replacements],
+	    OFOutOfRangeException);
 }
 
 - (void)testRemoveObject

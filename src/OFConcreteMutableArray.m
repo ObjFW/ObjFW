@@ -177,6 +177,33 @@
 	}
 }
 
+- (void)replaceObjectsAtIndexes: (OFIndexSet *)indexes
+		    withObjects: (OFArray *)objects
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	id const *objectsObjects = objects.objects;
+	size_t objectsCount = objects.count;
+	size_t objectsIndex = 0;
+	id *items = _array.mutableItems;
+	size_t count = _array.count;
+
+	if (objectsCount != indexes.count)
+		@throw [OFOutOfRangeException exception];
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (OFEndOfRange(ranges[i]) > count)
+			@throw [OFOutOfRangeException exception];
+
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++)
+			items[j] = objectsObjects[objectsIndex++];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)removeObject: (id)object
 {
 	id const *objects;
