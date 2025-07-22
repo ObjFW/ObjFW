@@ -26,6 +26,7 @@
 #import "OFArray+Private.h"
 #import "OFData.h"
 #import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -258,18 +259,49 @@
 	size_t count = _array.count;
 	id *copy;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location >= count || range.length > count - range.location)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	copy = OFAllocMemory(range.length, sizeof(*copy));
-	memcpy(copy, objects + range.location, range.length * sizeof(id));
+	memcpy(copy, objects + range.location, range.length * sizeof(*copy));
 
 	@try {
 		[_array removeItemsInRange: range];
 		_mutations++;
 
 		for (size_t i = 0; i < range.length; i++)
+			objc_release(copy[i]);
+	} @finally {
+		OFFreeMemory(copy);
+	}
+}
+
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes
+{
+	size_t indexesCount = indexes.count;
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	id const *objects = _array.items;
+	size_t count = _array.count;
+	size_t copyIndex = 0;
+	id *copy;
+
+	copy = OFAllocMemory(indexesCount, sizeof(*copy));
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (OFEndOfRange(ranges[i]) > count)
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(copy + copyIndex, objects + ranges[i].location,
+		    ranges[i].length * sizeof(*copy));
+		copyIndex += ranges[i].length;
+	}
+
+	@try {
+		[_array removeItemsAtIndexes: indexes];
+		_mutations++;
+
+		for (size_t i = 0; i < indexesCount; i++)
 			objc_release(copy[i]);
 	} @finally {
 		OFFreeMemory(copy);
