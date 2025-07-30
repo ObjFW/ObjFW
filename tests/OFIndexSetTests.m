@@ -216,4 +216,15 @@
 	OTAssertEqual(indexes[0], 4);
 	OTAssertEqual(indexes[1], 5);
 }
+
+- (void)testCountOfIndexesInRange
+{
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(0, 11)], 7);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(0, 6)], 4);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(10, 10)],
+	    1);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(5, 3)], 2);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(11, 10)],
+	    0);
+}
 @end

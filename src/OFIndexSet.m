@@ -318,4 +318,35 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 
 	return written;
 }
+
+- (size_t)countOfIndexesInRange: (OFRange)range
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, indexes = 0, position, rangeEnd;
+
+	if (count == 0)
+		return 0;
+
+	position = positionForIndex(ranges, count, range.location);
+	rangeEnd = OFEndOfRange(range);
+
+	for (; position < count; position++) {
+		size_t start = ranges[position].location;
+		size_t end = OFEndOfRange(ranges[position]);
+
+		if (start > rangeEnd)
+			break;
+
+		if (start < range.location) {
+			start = range.location;
+			if (!OFLocationInRange(start, ranges[position]))
+				continue;
+		}
+
+		for (size_t i = start; i < end && i < rangeEnd; i++)
+			indexes++;
+	}
+
+	return indexes;
+}
 @end

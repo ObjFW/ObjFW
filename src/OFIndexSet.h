@@ -177,6 +177,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (size_t)getIndexes: (size_t *)indexes
 	    maxCount: (size_t)maxCount
 	inIndexRange: (nullable OFRange *)range;
+
+/**
+ * @brief Returns the number of indexes in the specified range.
+ *
+ * @return The number of indexes in the specified range
+ */
+- (size_t)countOfIndexesInRange: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END
