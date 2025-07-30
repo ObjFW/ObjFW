@@ -276,4 +276,46 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 
 	return OFNotFound;
 }
+
+- (size_t)getIndexes: (size_t *)indexes
+	    maxCount: (size_t)maxCount
+	inIndexRange: (OFRange *)rangePtr
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, written = 0, rangeStart, rangeEnd;
+	size_t position;
+
+	if (count == 0)
+		return 0;
+
+	if (rangePtr != NULL) {
+		rangeStart = rangePtr->location;
+		rangeEnd = OFEndOfRange(*rangePtr);
+	} else {
+		rangeStart = ranges[0].location;
+		rangeEnd = OFEndOfRange(ranges[count - 1]);
+	}
+
+	position = positionForIndex(ranges, count, rangeStart);
+
+	for (; position < count && written < maxCount; position++) {
+		size_t start = ranges[position].location;
+		size_t end = OFEndOfRange(ranges[position]);
+
+		if (start > rangeEnd)
+			break;
+
+		if (start < rangeStart) {
+			start = rangeStart;
+			if (!OFLocationInRange(start, ranges[position]))
+				continue;
+		}
+
+		for (size_t i = start; i < end && i < rangeEnd &&
+		    written < maxCount; i++)
+			indexes[written++] = i;
+	}
+
+	return written;
+}
 @end
