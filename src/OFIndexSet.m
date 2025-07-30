@@ -22,6 +22,7 @@
 #import "OFIndexSet.h"
 #import "OFIndexSet+Private.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -348,5 +349,33 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	}
 
 	return indexes;
+}
+
+- (OFString *)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count;
+	OFMutableString *indexes = [OFMutableString string];
+	OFString *ret;
+
+	for (size_t i = 0; i < count; i++) {
+		if (indexes.length > 0)
+			[indexes appendString: @", "];
+
+		if (ranges[i].length == 1)
+			[indexes appendFormat: @"%zu", ranges[i].location];
+		else
+			[indexes appendFormat:
+			    @"%zu-%zu",
+			    ranges[i].location, OFEndOfRange(ranges[i]) - 1];
+	}
+
+	ret = [[OFString alloc] initWithFormat: @"<%@: %@>",
+						self.class, indexes];
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
 }
 @end
