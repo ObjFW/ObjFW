@@ -107,6 +107,10 @@
 # endif
 #endif
 
+#ifdef OF_MORPHOS
+# include <dos/dostags.h>
+#endif
+
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 typedef struct {
 	OFStreamOffset st_size;
@@ -312,7 +316,18 @@ statWrapper(OFString *path, Stat *buffer)
 		return lastError();
 
 # if defined(OF_MORPHOS)
-	if (!Examine64(lock, &fib, TAG_DONE)) {
+	struct TagItem tags[] = {
+#  ifdef EX64TAG_PosixDate
+		{ EX64TAG_PosixDate, TRUE },
+#  endif
+		{ TAG_DONE, 0 }
+	};
+
+#  ifdef FIBEXTF_POSIXDATE
+	fib.fib_ActExtFlags = 0;
+#  endif
+
+	if (!Examine64(lock, &fib, tags)) {
 # elif defined(OF_AMIGAOS4)
 	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
 # else
@@ -338,25 +353,35 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
-	timeInterval = 252460800;	/* 1978-01-01 */
+# if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
+	if (fib.fib_ActExtFlags & FIBEXTF_POSIXDATE)
+		timeInterval = fib.fib_PosixDate.pds_Sec;
+	else {
+# endif
 
-	locale = OpenLocale(NULL);
-	/*
-	 * FIXME: This does not take DST into account. But unfortunately, there
-	 * is no way to figure out if DST was in effect when the file was
-	 * modified.
-	 */
-	timeInterval += locale->loc_GMTOffset * 60.0;
-	CloseLocale(locale);
+		timeInterval = 252460800;	/* 1978-01-01 */
+
+		locale = OpenLocale(NULL);
+		/*
+		 * FIXME: This does not take DST into account. But
+		 * unfortunately, there is no way to figure out if DST was in
+		 * effect when the file was modified.
+		 */
+		timeInterval += locale->loc_GMTOffset * 60.0;
+		CloseLocale(locale);
 
 # ifdef OF_AMIGAOS4
-	date = &ed->Date;
+		date = &ed->Date;
 # else
-	date = &fib.fib_Date;
+		date = &fib.fib_Date;
 # endif
-	timeInterval += date->ds_Days * 86400.0;
-	timeInterval += date->ds_Minute * 60.0;
-	timeInterval += date->ds_Tick / (OFTimeInterval)TICKS_PER_SECOND;
+		timeInterval += date->ds_Days * 86400.0;
+		timeInterval += date->ds_Minute * 60.0;
+		timeInterval +=
+		    date->ds_Tick / (OFTimeInterval)TICKS_PER_SECOND;
+# if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
+	}
+# endif
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
 
