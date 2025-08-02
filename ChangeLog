@@ -4,6 +4,31 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.3.2 -> ObjFW 1.4, 2025-08-03
+ * Memory management for objects was moved to the runtime, making many
+   optimizations possible.
+ * Many runtime optimizations were added.
+ + Adds new classes: OFIndexSet, OFMutableIndexSet.
+ + Adds new methods using OFIndexSet to OFArray, OFMutableArray and
+   OFMutableData.
+ + Adds support for asynchronously opening an item to OFIRIHandler.
+ + Adds support for building the runtime as a .library on MorphOS.
+ + Adds support for abstract UNIX sockets on Linux.
+ + Adds basic math operations for OFVector3D and OFVector4D.
+ + Adds support for hiding / showing the cursor to OFStdIOStream.
+ + Adds support for compressed localizations to OFLocale.
+ + Adds new util ofgctester to test game controllers using ObjFWHID.
+ + Starts using OF_DIRECT with the ObjFW runtime when using Clang >= 21.
+ + OFTLSSocket now supports client certificates officially instead of being an
+   unsupported byproduct of support for server certificates (the only change
+   is that this fixes mbedTLS using the certificate chain to verify the server
+   when it should only be used for the client certificate).
+ * Many fixes for AmigaOS and MorphOS.
+ * Everything is built with RELRO, _FORTIFY_SOURCE=3 and -fstack-protector by
+   default now.
+ * Utils are now always built as PIE if possible.
+ * Utils now write status messages to stderr instead of stdout.
+
 ObjFW 1.3.1 -> ObjFW 1.3.2, 2025-06-08
  * Fixes handling of truncated writes in OFRunLoop.
  * Makes OFHTTPServer more reliable.
@@ -25,8 +50,8 @@ ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
  * Fixes inconsistent nullability in OFMutablePair and OFMutableTriple.
 
 ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
- + OFStdIOStream adds support truecolor, 256 colors, bold, italic, underlined
-   and italic.
+ + OFStdIOStream adds support for truecolor, 256 colors, bold, italic,
+   underlined and italic.
  * OFStdIOStream now keeps track of state to reduce the amount of escape codes
    used.
  + Adds support for getting peer credentials to UNIX sockets.
