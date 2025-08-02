@@ -1,7 +1,7 @@
 include ../../extra.mk
 
-PROG = ofgctest${PROG_SUFFIX}
-SRCS = OFGCTest.m
+PROG = ofgctester${PROG_SUFFIX}
+SRCS = OFGCTester.m
 
 include ../../buildsys.mk
 

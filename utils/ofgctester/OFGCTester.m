@@ -64,13 +64,13 @@ static size_t buttonsPerLine = 5;
 #endif
 
 #ifdef OF_AMIGAOS
-const char *VER = "$VER: ofgctest "
+const char *VER = "$VER: ofgctester "
     OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
     "\xA9 2008-2025 Jonathan Schleifer";
 #endif
 
-@interface OFGCTest: OFObject <OFApplicationDelegate>
+@interface OFGCTester: OFObject <OFApplicationDelegate>
 {
 	OFArray OF_GENERIC(OHGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
@@ -78,7 +78,7 @@ const char *VER = "$VER: ofgctest "
 }
 @end
 
-OF_APPLICATION_DELEGATE(OFGCTest)
+OF_APPLICATION_DELEGATE(OFGCTester)
 
 static void
 printProfile(id <OHGameControllerProfile> profile)
@@ -238,7 +238,7 @@ printProfile(id <OHGameControllerProfile> profile)
 		[OFStdOut writeString: @"\n"];
 }
 
-@implementation OFGCTest
+@implementation OFGCTester
 - (void)updateOutput
 {
 	OHLeftJoyCon *leftJoyCon = nil;

@@ -2551,12 +2551,12 @@ case "$host_os" in
 linux*)
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
-		AC_SUBST(OFGCTEST, ofgctest)
+		AC_SUBST(OFGCTESTER, ofgctester)
 	])
 	;;
 mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
-	AC_SUBST(OFGCTEST, ofgctest)
+	AC_SUBST(OFGCTESTER, ofgctester)
 	;;
 darwin*)
 	AC_MSG_CHECKING(new enough GameController.framework)
@@ -2573,7 +2573,7 @@ darwin*)
 	], [
 		AC_MSG_RESULT(yes)
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
-		AC_SUBST(OFGCTEST, ofgctest)
+		AC_SUBST(OFGCTESTER, ofgctester)
 		AC_DEFINE(OF_HAVE_GCF, 1,
 			[Whether we have GameController.framework])
 		tmp="-framework GameController"
