@@ -46,12 +46,6 @@
 /tests/PARAM.SFO
 /tests/big_dictionary_msgpack_gz.m
 /tests/boot.dol
-/tests/gamecontroller/boot.dol
-/tests/gamecontroller/tests
-/tests/gamecontroller/tests.3dsx
-/tests/gamecontroller/tests.arm9
-/tests/gamecontroller/tests.nds
-/tests/gamecontroller/tests.nro
 /tests/iOS.xcodeproj/*.pbxuser
 /tests/iOS.xcodeproj/project.xcworkspace
 /tests/iOS.xcodeproj/xcuserdata
@@ -71,5 +65,6 @@
 /utils/objfw-new/objfw-new
 /utils/ofarc/ofarc
 /utils/ofdns/ofdns
+/utils/ofgctest/ofgctest
 /utils/ofhash/ofhash
 /utils/ofhttp/ofhttp

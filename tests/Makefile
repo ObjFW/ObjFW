@@ -2,7 +2,6 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}		\
 	  ${SUBPROCESS}		\
-	  gamecontroller	\
 	  ${OBJC_SYNC}		\
 	  terminal
 
