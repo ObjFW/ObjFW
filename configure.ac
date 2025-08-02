@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.4-dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.4, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
@@ -9,9 +9,9 @@ AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
 	[The major version of ObjFW])
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
 	[The minor version of ObjFW])
-dnl This may only be set to 1.4 once 1.4 is released
-AC_SUBST(BUNDLE_VERSION, 1.3.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.3)
+dnl This may only be set to 1.5 once 1.5 is released
+AC_SUBST(BUNDLE_VERSION, 1.4.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.4)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
@@ -2251,8 +2251,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
 
 	AC_ARG_ENABLE(werror,
-		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
-	AS_IF([test x"$enable_werror" != x"no"], [
+		AS_HELP_STRING([--enable-werror], [build with -Werror]))
+	AS_IF([test x"$enable_werror" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -Werror"
 	])
 
