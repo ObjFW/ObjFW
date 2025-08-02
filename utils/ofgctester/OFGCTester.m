@@ -50,6 +50,8 @@ static size_t buttonsPerLine = 3;
 static size_t buttonsPerLine = 5;
 #endif
 
+static sig_atomic_t SIGINTReceived = false;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(OF_NINTENDO_SWITCH)
 # define red maroon
@@ -244,6 +246,12 @@ printProfile(id <OHGameControllerProfile> profile)
 	OHLeftJoyCon *leftJoyCon = nil;
 	OHRightJoyCon *rightJoyCon = nil;
 
+	if (SIGINTReceived) {
+		OFStdOut.cursorVisible = true;
+		[OFStdOut reset];
+		[OFApplication terminate];
+	}
+
 	if (_lastControllersUpdate == nil ||
 	    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
 		objc_release(_joyConPair);
@@ -305,6 +313,8 @@ printProfile(id <OHGameControllerProfile> profile)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+	OFStdOut.cursorVisible = false;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdIOStream setUpConsole];
 #endif
@@ -324,5 +334,10 @@ printProfile(id <OHGameControllerProfile> profile)
 				       selector: @selector(updateOutput)
 					repeats: true];
 #endif
+}
+
+- (void)applicationDidReceiveSIGINT
+{
+	SIGINTReceived = true;
 }
 @end
