@@ -299,9 +299,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
 		    .of_chain;
 
-		mbedtls_ssl_conf_ca_chain(&_config,
-		    chain.certificate->next, NULL);
-
 		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
 		    chain.privateKey) != 0)
 			@throw [OFTLSHandshakeFailedException
