@@ -53,6 +53,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+/**
+ * @brief A special not found index.
+ */
 static const size_t OFNotFound = SIZE_MAX;
 
 /**
