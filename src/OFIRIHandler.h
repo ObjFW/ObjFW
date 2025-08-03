@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @protocol OFIRIHandlerDelegate OFIRIHandlerDelegate.h ObjFW/ObjFW.h
+ * @protocol OFIRIHandlerDelegate OFIRIHandler.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFIRIHandler operations.
  */
