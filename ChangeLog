@@ -11,6 +11,8 @@ ObjFW 1.3.2 -> ObjFW 1.4, 2025-08-03
  + Adds new classes: OFIndexSet, OFMutableIndexSet.
  + Adds new methods using OFIndexSet to OFArray, OFMutableArray and
    OFMutableData.
+ + OFStream now supports setting a default encoding for the stream that will
+   be used for all string operations that don't specify an encoding.
  + Adds support for asynchronously opening an item to OFIRIHandler.
  + Adds support for building the runtime as a .library on MorphOS.
  + Adds support for abstract UNIX sockets on Linux.
