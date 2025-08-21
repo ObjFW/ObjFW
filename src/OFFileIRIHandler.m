@@ -111,7 +111,7 @@
 # include <dos/dostags.h>
 #endif
 
-#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+#if defined(OF_WINDOWS) || (defined(OF_AMIGAOS) && !defined(OF_MORPHOS))
 typedef struct {
 	OFStreamOffset st_size;
 	unsigned int st_mode;
