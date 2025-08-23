@@ -1030,36 +1030,54 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	struct Locale *locale;
 	struct DateStamp date;
 
-	modificationTime -= 252460800;	/* 1978-01-01 */
+# if defined(OF_MORPHOS) && defined(SetFilePosixDate)
+	if (LIB_MINVER(&DOSBase->dl_lib, 51, 66)) {
+		struct PosixDateStamp POSIXDate = {
+			.pds_Sec = modificationTime
+		};
 
-	if (modificationTime < 0)
-		@throw [OFOutOfRangeException exception];
+		if (!SetFilePosixDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &POSIXDate, TAG_END) != 0)
+			@throw [OFSetItemAttributesFailedException
+				exceptionWithIRI: IRI
+				      attributes: attributes
+				 failedAttribute: attributeKey
+					   errNo: lastError()];
+	} else {
+# endif
+		modificationTime -= 252460800;	/* 1978-01-01 */
 
-	locale = OpenLocale(NULL);
-	/*
-	 * FIXME: This does not take DST into account. But unfortunately, there
-	 *	  is no way to figure out if DST should be in effect for the
-	 *	  timestamp.
-	 */
-	modificationTime -= locale->loc_GMTOffset * 60.0;
-	CloseLocale(locale);
+		if (modificationTime < 0)
+			@throw [OFOutOfRangeException exception];
 
-	date.ds_Days = modificationTime / 86400;
-	date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
-	date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
+		locale = OpenLocale(NULL);
+		/*
+		 * FIXME: This does not take DST into account. But
+		 *	  unfortunately, there is no way to figure out if DST
+		 *	  should be in effect for the timestamp.
+		 */
+		modificationTime -= locale->loc_GMTOffset * 60.0;
+		CloseLocale(locale);
+
+		date.ds_Days = modificationTime / 86400;
+		date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
+		date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
 
 # ifdef OF_AMIGAOS4
-	if (!SetDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0)
+		if (!SetDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &date) != 0)
 # else
-	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0)
+		if (!SetFileDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &date) != 0)
 # endif
-		@throw [OFSetItemAttributesFailedException
-		    exceptionWithIRI: IRI
-			  attributes: attributes
-		     failedAttribute: attributeKey
-			       errNo: lastError()];
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: lastError()];
+# if defined(OF_MORPHOS) && defined(SetFilePosixDate)
+	}
+# endif
 #else
 # ifdef HAVE_UTIMENSAT
 #  if defined(OF_MACOS) || defined(OF_IOS)
