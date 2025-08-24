@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Creates a new XML element with the specified name, namespace and
- * 	  string value.
+ *	  string value.
  *
  * @param name The name for the element
  * @param nameSpace The namespace for the element
