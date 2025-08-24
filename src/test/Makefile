@@ -38,7 +38,7 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I. 			\
+CPPFLAGS += -I.				\
 	    -I..			\
 	    -I../..			\
 	    -I../exceptions		\
