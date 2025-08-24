@@ -2,6 +2,7 @@ include ../../extra.mk
 
 PROG = ofgctester${PROG_SUFFIX}
 SRCS = OFGCTester.m
+MAN = ofgctester.1
 
 include ../../buildsys.mk
 
