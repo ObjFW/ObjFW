@@ -16,14 +16,14 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw-config 1
+.TH objfw\-config 1
 .SH NAME
-objfw-config - print flags required for compiling with ObjFW
+objfw\-config - print flags required for compiling with ObjFW
 .SH SYNOPSIS
-.B objfw-config
+.B objfw\-config
 [\fBoptions\fR]
 .SH DESCRIPTION
-.B objfw-config
+.B objfw\-config
 is a program which outputs various flags needed to compile software using ObjFW.
 .SH OPTIONS
 .TP
@@ -105,10 +105,10 @@ Outputs the installed ObjFW version.
 .SH EXAMPLES
 Print \fBOBJCFLAGS\fR and \fBCPPFLAGS\fR:
 .PP
-	objfw-config \-\-objcflags \-\-cppflags
+	objfw\-config \-\-objcflags \-\-cppflags
 .PP
 Print \fBLIBS\fR and \fBLDFLAGS\fR for ObjFW and ObjFWTLS:
 .PP
-	objfw-config \-\-libs \-\-ldflags --package ObjFWTLS
+	objfw\-config \-\-libs \-\-ldflags \-\-package ObjFWTLS
 .SH SEE ALSO
-\fIobjfw-compile\fR(1)
+\fIobjfw\-compile\fR(1)

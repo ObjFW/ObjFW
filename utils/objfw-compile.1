@@ -16,16 +16,16 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw-compile 1
+.TH objfw\-compile 1
 .SH NAME
-objfw-compile - compile simple projects using ObjFW
+objfw\-compile - compile simple projects using ObjFW
 .SH SYNOPSIS
-.B objfw-config
+.B objfw\-config
 [\fBoptions\fR]
 \fB\-o\fR \fIoutname\fR
 \fIsources\fR
 .SH DESCRIPTION
-.B objfw-compile
+.B objfw\-compile
 is a program to compile simple projects using ObjFW.
 .SH OPTIONS
 .TP
@@ -94,10 +94,10 @@ Show the help.
 .SH EXAMPLES
 Compile a program with two source files:
 .PP
-	objfw-compile -o myprog MyProg.m SomeClass.m
+	objfw\-compile \-o myprog MyProg.m SomeClass.m
 .PP
 Compile a library with library version 1.0:
 .PP
-	objfw-compile --lib 1.0 -o mylib Class1.m Class2.m
+	objfw\-compile \-\-lib 1.0 \-o mylib Class1.m Class2.m
 .SH SEE ALSO
-\fIobjfw-config\fR(1)
+\fIobjfw\-config\fR(1)
