@@ -72,9 +72,9 @@ Download \fBhttps://example.com/testfile.bin\fR:
 .PP
 Download \fBhttps://example.com/testfile.bin\fR via Tor:
 .PP
-	ofhttp -P 127.0.0.1:9050 https://example.com/testfile.bin
+	ofhttp \-P 127.0.0.1:9050 https://example.com/testfile.bin
 .PP
 Send a \fBPOST\fR request to an endpoint expecting JSON and only print the
 response:
 .PP
-	echo '{"a":"b"}' | ofhttp -mPOST -b- -qo- https://example.com/json
+	echo '{"a":"b"}' | ofhttp \-mPOST \-b\- \-qo\- https://example.com/json
