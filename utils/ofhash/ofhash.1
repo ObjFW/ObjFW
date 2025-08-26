@@ -18,11 +18,11 @@
 .\"
 .TH ofhash 1
 .SH NAME
-ofhash - hash files
+ofhash \- hash files
 .SH SYNOPSIS
 .B ofhash
-[\fB--md5\fR] [\fB--ripemd160\fR] [\fB--sha1\fR] [\fB--sha224\fR]
-[\fB--sha256\fR] [\fB--sha384\fR] [\fB--sha512\fR] [\fB--iri\fR]
+[\fB\-\-md5\fR] [\fB\-\-ripemd160\fR] [\fB\-\-sha1\fR] [\fB\-\-sha224\fR]
+[\fB\-\-sha256\fR] [\fB\-\-sha384\fR] [\fB\-\-sha512\fR] [\fB\-\-iri\fR]
 \fIfile1\fR [\fIfile2\fR ...]
 .SH DESCRIPTION
 .B ofhash
@@ -33,31 +33,31 @@ is a program to calculate the cryptographic hashes of files.
 Calculate MD5 hashes.
 .TP
 .BR \fB\-\-ripemd160\fR ", " \fB\-\-rmd160\fR
-Calculate RIPEMD-160 hashes.
+Calculate RIPEMD\-160 hashes.
 .TP
 .BR \fB\-\-sha1\fR
-Calculate SHA-1 hashes.
+Calculate SHA\-1 hashes.
 .TP
 .BR \fB\-\-sha224\fR
-Calculate SHA-224 hashes.
+Calculate SHA\-224 hashes.
 .TP
 .BR \fB\-\-sha256\fR
-Calculate SHA-256 hashes.
+Calculate SHA\-256 hashes.
 .TP
 .BR \fB\-\-sha384\fR
-Calculate SHA-384 hashes.
+Calculate SHA\-384 hashes.
 .TP
 .BR \fB\-\-sha512\fR
-Calculate SHA-512 hashes.
+Calculate SHA\-512 hashes.
 .TP
 .BR \fB\-\-iri\fR
 Treat the specified files as IRIs instead.
 .SH EXAMPLES
-Calculate the \fBSHA-256\fR and \fBSHA-512\fR hash of \fBfile1\fR and
+Calculate the \fBSHA\-256\fR and \fBSHA\-512\fR hash of \fBfile1\fR and
 \fBfile2\fR:
 .PP
 	ofhash \-\-sha256 \-\-sha512 file1 file2
 .PP
-Calculate the \fBSHA-256\fR hash of \fBhttps://example.com/\fR:
+Calculate the \fBSHA\-256\fR hash of \fBhttps://example.com/\fR:
 .PP
 	ofhash \-\-sha256 \-\-iri https://example.com/
