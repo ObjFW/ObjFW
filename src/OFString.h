@@ -1623,7 +1623,7 @@ OF_ASSUME_NONNULL_END
 #import "OFString+XMLEscaping.h"
 #import "OFString+XMLUnescaping.h"
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#ifndef NSINTEGER_DEFINED
 /*
  * Very *ugly* hack required for string boxing literals to work.
  *
