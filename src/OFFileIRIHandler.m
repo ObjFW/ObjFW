@@ -133,6 +133,16 @@ typedef struct stat Stat;
 # define S_ISLNK(mode) (mode & S_IFLNK)
 #endif
 
+#if !defined(HAVE_STRUCT_STAT_ST_ATIM) && defined(HAVE_STRUCT_STAT_ST_ATIMESPEC)
+# define st_atim st_atimespec
+#endif
+#if !defined(HAVE_STRUCT_STAT_ST_MTIM) && defined(HAVE_STRUCT_STAT_ST_MTIMESPEC)
+# define st_mtim st_mtimespec
+#endif
+#if !defined(HAVE_STRUCT_STAT_ST_CTIM) && defined(HAVE_STRUCT_STAT_ST_CTIMESPEC)
+# define st_ctim st_ctimespec
+#endif
+
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 
@@ -493,17 +503,38 @@ setTypeAttribute(OFMutableFileAttributes attributes, Stat *s)
 static void
 setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
-	/* FIXME: We could be more precise on some OSes */
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_atime]
-	       forKey: OFFileLastAccessDate];
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_mtime]
-	       forKey: OFFileModificationDate];
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_ctime]
-	       forKey: OFFileStatusChangeDate];
-#ifdef HAVE_STRUCT_STAT_ST_BIRTHTIME
+	OFDate *date;
+
+#ifdef HAVE_STRUCT_STAT_ST_ATIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_atim.tv_sec +
+	    (OFTimeInterval)s->st_atim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_atime];
+#endif
+	[attributes setObject: date forKey: OFFileLastAccessDate];
+
+#ifdef HAVE_STRUCT_STAT_ST_MTIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtim.tv_sec +
+	    (OFTimeInterval)s->st_mtim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtime];
+#endif
+	[attributes setObject: date forKey: OFFileModificationDate];
+
+#ifdef HAVE_STRUCT_STAT_ST_CTIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctim.tv_sec +
+	    (OFTimeInterval)s->st_ctim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctime];
+#endif
+	[attributes setObject: date forKey: OFFileStatusChangeDate];
+
+#if defined(HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC)
+	date = [OFDate dateWithTimeIntervalSince1970:
+	    s->st_birthtimespec.tv_sec +
+	    (OFTimeInterval)s->st_birthtimespec.tv_nsec / 1000000000];
+	[attributes setObject: date forKey: OFFileCreationDate];
+#elif defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_birthtime]
 	       forKey: OFFileCreationDate];
