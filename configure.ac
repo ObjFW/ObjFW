@@ -1419,16 +1419,10 @@ AS_IF([test x"$enable_files" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 	])
 	AC_CHECK_FUNCS([lstat lutimes utimensat])
-	AC_CHECK_MEMBERS(m4_normalize([
-		struct stat.st_atim,
-		struct stat.st_mtim,
-		struct stat.st_ctim,
-		struct stat.st_birthtime,
-		struct stat.st_atimespec,
-		struct stat.st_mtimespec,
-		struct stat.st_ctimespec,
-		struct stat.st_birthtimespec
-	]), [], [], [
+	AC_CHECK_MEMBERS([struct stat.st_atim, struct stat.st_mtim,
+	    struct stat.st_ctim, struct stat.st_birthtime,
+	    struct stat.st_atimespec, struct stat.st_mtimespec,
+	    struct stat.st_ctimespec, struct stat.st_birthtimespec], [], [], [
 		#include <sys/stat.h>
 	])
 ])
