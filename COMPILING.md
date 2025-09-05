@@ -87,46 +87,27 @@ install via MSYS2 are cryptographically signed.
 Setting up MSYS2
 ----------------
 
-MSYS2 currently supports 7 different
+MSYS2 currently supports 5 different
 [environments](https://www.msys2.org/docs/environments/). All of them except
 for the one called just "MSYS" are supported, but which packages you need to
 install depends on the environment(s) you want to use. If you only want to
-target Windows 10 and newer, the CLANG64 and CLANG32 environments are the
-recommended ones.
+target Windows 10 and newer, the CLANG64 environment is the recommended one.
 
 For CLANG64, use:
 
-    pacman -Syu mingw-w64-clang-x86_64-clang \
-                mingw-w64-clang-x86_64-git \
-                mingw-w64-clang-x86_64-openssl
+    pacman -Syu mingw-w64-clang-x86_64-{clang,openssl}
 
-For CLANG32, use:
+For CLANGARM64, use:
 
-    pacman -Syu mingw-w64-clang-i686-clang \
-                mingw-w64-clang-i686-git \
-                mingw-w64-clang-i686-openssl
-
-For CLANGARM64, use (you need to use Git via another environment):
-
-    pacman -Syu mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-openssl
+    pacman -Syu mingw-w64-clang-aarch64-{clang,openssl}
 
 For MINGW64, use:
 
-    pacman -Syu mingw-w64-x86_64-clang \
-                mingw-w64-x86_64-git \
-                mingw-w64-x86_64-openssl
-
-For MINGW32, use:
-
-    pacman -Syu mingw-w64-i686-clang \
-                mingw-w64-i686-git \
-                mingw-w64-i686-openssl
+    pacman -Syu mingw-w64-x86_64-{clang,openssl}
 
 For UCRT64, use:
 
-    pacman -Syu mingw-w64-ucrt-x86_64-clang \
-                mingw-w64-ucrt-x86_64-git \
-                mingw-w64-ucrt-x86_64-openssl
+    pacman -Syu mingw-w64-ucrt-x86_64-{clang,openssl}
 
 When using `pacman` to install the packages, `pacman` might tell you to close
 the window. If it does so, close the window, restart MSYS2 and execute the
