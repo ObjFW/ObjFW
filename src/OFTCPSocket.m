@@ -255,6 +255,11 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		    NULL, NULL) != 0) {
 			int oldErrNo = _OFSocketErrNo(), newSock, flags;
 
+			if (oldErrNo != EPERM) {
+				*errNo = oldErrNo;
+				return false;
+			}
+
 			if ((newSock = socket(
 			    ((struct sockaddr *)&address->sockaddr)->sa_family,
 			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
