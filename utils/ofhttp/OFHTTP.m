@@ -860,34 +860,46 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			if (statusCode / 100 == 2 && _currentFileName != nil) {
 				[OFStdErr writeString: @"  "];
-				[OFStdErr writeLine: OF_LOCALIZED(
-				    @"info_name_unaligned",
-				    @"Name: %[name]",
-				    @"name", _currentFileName)];
+				OFStdErr.bold = true;
+				[OFStdErr writeString: OF_LOCALIZED(
+				    @"info_name_unaligned", @"Name: ")];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine: _currentFileName];
 			}
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
-			    (object = [objectEnumerator nextObject]) != nil)
-				[OFStdErr writeFormat: @"  %@: %@\n",
-						       key, object];
+			    (object = [objectEnumerator nextObject]) != nil) {
+				[OFStdErr writeString: @"  "];
+				OFStdErr.bold = true;
+				[OFStdErr writeFormat: @"  %@: ", key];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine: object];
+			}
 
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
 			[OFStdErr writeString: @"  "];
 
-			if (_currentFileName != nil)
-				[OFStdErr writeLine: OF_LOCALIZED(@"info_name",
-				    @"Name: %[name]",
-				    @"name", _currentFileName)];
+			if (_currentFileName != nil) {
+				OFStdErr.bold = true;
+				[OFStdErr writeString:
+				    OF_LOCALIZED(@"info_name", @"Name: ")];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine: _currentFileName];
+			}
 
 			[OFStdErr writeString: @"  "];
-			[OFStdErr writeLine: OF_LOCALIZED(@"info_type",
-			    @"Type: %[type]",
-			    @"type", type)];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_type", @"Type: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine: type];
 			[OFStdErr writeString: @"  "];
-			[OFStdErr writeLine: OF_LOCALIZED(@"info_size",
-			    @"Size: %[size]",
-			    @"size", lengthString)];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_size", @"Size: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine: lengthString];
 		}
 	}
 }
@@ -1226,9 +1238,13 @@ next:
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdErr writeFormat: @"⇣ %@", IRI.string];
+			[OFStdErr writeString: @"⇣ "];
 		else
-			[OFStdErr writeFormat: @"v %@", IRI.string];
+			[OFStdErr writeString: @"v "];
+
+		OFStdErr.underlined = true;
+		[OFStdErr writeString: IRI.string];
+		OFStdErr.underlined = false;
 	}
 
 	request = [OFHTTPRequest requestWithIRI: IRI];
