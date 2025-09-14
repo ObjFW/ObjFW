@@ -150,8 +150,10 @@ OFLogV(OFConstantString *format, va_list arguments)
 
 #ifdef OF_MSDOS
 int
-colorToMSDOS(OFColor *color)
+colorToMSDOS(OFColor *color, int default_)
 {
+	if (color == nil)
+		return default_;
 	if (color == [OFColor black])
 		return BLACK;
 	if (color == [OFColor navy])
@@ -766,7 +768,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		return;
 
 #ifdef OF_MSDOS
-	if ((code = colorToMSDOS(color)) == -1)
+	if ((code = colorToMSDOS(color, LIGHTGRAY)) == -1)
 		return;
 
 	textcolor(code);
@@ -816,7 +818,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		return;
 
 #ifdef OF_MSDOS
-	if ((code = colorToMSDOS(color)) == -1)
+	if ((code = colorToMSDOS(color, BLACK)) == -1)
 		return;
 
 	textbackground(code);
