@@ -721,9 +721,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdErr writeFormat: @"☇ %@", IRI.string];
+			[OFStdErr writeFormat: @"☇ "];
 		else
-			[OFStdErr writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"< "];
+
+		OFStdErr.underlined = true;
+		[OFStdErr writeString: IRI.string];
+		OFStdErr.underlined = false;
 	}
 
 	_length = 0;
