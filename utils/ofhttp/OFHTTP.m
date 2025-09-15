@@ -21,6 +21,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFColor.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -803,9 +804,25 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
 		if (_useUnicode)
-			[OFStdErr writeFormat: @" ➜ %hd\n", statusCode];
+			[OFStdErr writeFormat: @" ➜ "];
 		else
-			[OFStdErr writeFormat: @" -> %hd\n", statusCode];
+			[OFStdErr writeFormat: @" -> "];
+
+
+		switch (statusCode / 100) {
+		case 2:
+			OFStdErr.foregroundColor = [OFColor green];
+			break;
+		case 3:
+			OFStdErr.foregroundColor = [OFColor teal];
+			break;
+		case 4:
+		case 5:
+			OFStdErr.foregroundColor = [OFColor maroon];
+			break;
+		}
+		[OFStdErr writeFormat: @"%hd\n", statusCode];
+		OFStdErr.foregroundColor = nil;
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
