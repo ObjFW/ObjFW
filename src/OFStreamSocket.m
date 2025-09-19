@@ -321,6 +321,8 @@
 		break;
 	}
 
+	client.canBlock = self.canBlock;
+
 	return client;
 }
 
