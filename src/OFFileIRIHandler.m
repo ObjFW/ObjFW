@@ -376,12 +376,30 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
+	if (!(fib.fib_Protection & FIBF_READ))
+		buffer->st_mode |= 0400;
+	if (!(fib.fib_Protection & FIBF_WRITE))
+		buffer->st_mode |= 0200;
+	if (!(fib.fib_Protection & FIBF_EXECUTE))
+		buffer->st_mode |= 0100;
+	if (fib.fib_Protection & FIBF_GRP_READ)
+		buffer->st_mode |= 0040;
+	if (fib.fib_Protection & FIBF_GRP_WRITE)
+		buffer->st_mode |= 0020;
+	if (fib.fib_Protection & FIBF_GRP_EXECUTE)
+		buffer->st_mode |= 0010;
+	if (fib.fib_Protection & FIBF_OTR_READ)
+		buffer->st_mode |= 0004;
+	if (fib.fib_Protection & FIBF_OTR_WRITE)
+		buffer->st_mode |= 0002;
+	if (fib.fib_Protection & FIBF_OTR_EXECUTE)
+		buffer->st_mode |= 0001;
+
 # if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
 	if (fib.fib_ActExtFlags & FIBEXTF_POSIXDATE)
 		timeInterval = fib.fib_PosixDate.pds_Sec;
 	else {
 # endif
-
 		timeInterval = 252460800;	/* 1978-01-01 */
 
 		locale = OpenLocale(NULL);
@@ -1214,7 +1232,79 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		   ofItemAtIRI: (OFIRI *)IRI
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+#if defined(OF_AMIGAOS)
+	const char *path;
+	mode_t mode = (mode_t)permissions.unsignedLongValue;
+	BPTR lock;
+# ifdef OF_AMIGAOS4
+	struct ExamineData *ed;
+# else
+	struct FileInfoBlock fib;
+# endif
+
+	if ([attributes objectForKey: OFFileAmigaProtection] != nil)
+		/* Amiga file protection trumps POSIX permissions */
+		return;
+
+	path = [IRI.fileSystemRepresentation
+	    cStringWithEncoding: [OFLocale encoding]];
+
+	if ((lock = Lock(path, SHARED_LOCK)) == 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFilePOSIXPermissions
+			       errNo: lastError()];
+
+# if defined(OF_MORPHOS)
+	if (!Examine64(lock, &fib, TAG_END)) {
+# elif defined(OF_AMIGAOS4)
+	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
+# else
+	if (!Examine(lock, &fib)) {
+# endif
+		int error = lastError();
+		UnLock(lock);
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFilePOSIXPermissions
+			       errNo: error];
+	}
+
+	UnLock(lock);
+
+	/* Remove the bits that can be derived from POSIX permissions */
+	fib.fib_Protection &= ~(FIBF_READ | FIBF_WRITE | FIBF_EXECUTE |
+	    FIBF_GRP_READ | FIBF_GRP_WRITE | FIBF_GRP_EXECUTE |
+	    FIBF_OTR_READ | FIBF_OTR_WRITE | FIBF_OTR_EXECUTE);
+
+	if (!(mode & 0400))
+		fib.fib_Protection |= FIBF_READ;
+	if (!(mode & 0200))
+		fib.fib_Protection |= FIBF_WRITE;
+	if (!(mode & 0100))
+		fib.fib_Protection |= FIBF_EXECUTE;
+	if (mode & 0040)
+		fib.fib_Protection |= FIBF_GRP_READ;
+	if (mode & 0020)
+		fib.fib_Protection |= FIBF_GRP_WRITE;
+	if (mode & 0010)
+		fib.fib_Protection |= FIBF_GRP_EXECUTE;
+	if (mode & 0004)
+		fib.fib_Protection |= FIBF_OTR_READ;
+	if (mode & 0002)
+		fib.fib_Protection |= FIBF_OTR_WRITE;
+	if (mode & 0001)
+		fib.fib_Protection |= FIBF_OTR_EXECUTE;
+
+	if (!SetProtection(path, fib.fib_Protection))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaProtection
+			       errNo: lastError()];
+#elif defined(OF_FILE_MANAGER_SUPPORTS_PERMISSIONS)
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
 	OFString *path = IRI.fileSystemRepresentation;
 	int status;
@@ -1311,12 +1401,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 
 	if (!SetProtection([path cStringWithEncoding: [OFLocale encoding]],
-	    [protection unsignedLongValue]))
+	    protection.unsignedLongValue))
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
 		     failedAttribute: OFFileAmigaProtection
-			       errNo: 0];
+			       errNo: lastError()];
 }
 
 - (void)of_setAmigaComment: (OFString *)comment
