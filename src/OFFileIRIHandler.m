@@ -561,9 +561,9 @@ static void
 setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_uid]
+	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_uid]
 		       forKey: OFFileOwnerAccountID];
-	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_gid]
+	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_gid]
 		       forKey: OFFileGroupOwnerAccountID];
 
 # ifdef OF_HAVE_THREADS
@@ -993,12 +993,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (s.st_size < 0)
 		@throw [OFOutOfRangeException exception];
 
-	[ret setObject: [NSNumber numberWithUnsignedLongLong: s.st_size]
+	[ret setObject: [OFNumber numberWithUnsignedLongLong: s.st_size]
 		forKey: OFFileSize];
 
 	setTypeAttribute(ret, &s);
 
-	[ret setObject: [NSNumber numberWithUnsignedLong: s.st_mode]
+	[ret setObject: [OFNumber numberWithUnsignedLong: s.st_mode]
 		forKey: OFFilePOSIXPermissions];
 
 	setOwnerAndGroupAttributes(ret, &s);
