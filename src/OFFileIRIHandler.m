@@ -111,7 +111,16 @@
 # include <dos/dostags.h>
 #endif
 
-#if defined(OF_WINDOWS) || (defined(OF_AMIGAOS) && !defined(OF_MORPHOS))
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+# ifdef st_atime
+#  undef st_atime
+# endif
+# ifdef st_mtime
+#  undef st_mtime
+# endif
+# ifdef st_ctime
+#  undef st_ctime
+# endif
 typedef struct {
 	OFStreamOffset st_size;
 	unsigned int st_mode;
@@ -120,6 +129,10 @@ typedef struct {
 #  define HAVE_STRUCT_STAT_ST_BIRTHTIME
 	OFTimeInterval st_birthtime;
 	DWORD fileAttributes;
+# endif
+# ifdef OF_AMIGAOS
+	unsigned long protection;
+	char comment[80];
 # endif
 } Stat;
 #elif defined(HAVE_STAT64)
@@ -394,6 +407,9 @@ statWrapper(OFString *path, Stat *buffer)
 # endif
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
+
+	buffer->protection = fib.fib_Protection;
+	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
 
 # ifdef OF_AMIGAOS4
 	FreeDosObject(DOS_EXAMINEDATA, ed);
@@ -997,6 +1013,19 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	setExtendedAttributes(ret, IRI);
 #endif
 
+#ifdef OF_AMIGAOS
+	[ret setObject: [OFNumber numberWithUnsignedLong: s.protection]
+		forKey: OFFileAmigaProtection];
+
+	if (strlen(s.comment) > 0) {
+		OFStringEncoding encoding = [OFLocale encoding];
+
+		[ret setObject: [OFString stringWithCString: s.comment
+						   encoding: encoding]
+			forKey: OFFileAmigaComment];
+	}
+#endif
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -1274,6 +1303,39 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 }
 
+#ifdef OF_AMIGAOS
+- (void)of_setAmigaProtection: (OFNumber *)protection
+		  ofItemAtIRI: (OFIRI *)IRI
+		   attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+
+	if (!SetProtection([path cStringWithEncoding: [OFLocale encoding]],
+	    [protection unsignedLongValue]))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaProtection
+			       errNo: 0];
+}
+
+- (void)of_setAmigaComment: (OFString *)comment
+	       ofItemAtIRI: (OFIRI *)IRI
+		attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	if (!SetComment([path cStringWithEncoding: encoding],
+	    [comment cStringWithEncoding: encoding]))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaComment
+			       errNo: 0];
+}
+#endif
+
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1313,6 +1375,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 					 ofItemAtIRI: IRI
 					attributeKey: key
 					  attributes: attributes];
+#ifdef OF_AMIGAOS
+		else if ([key isEqual: OFFileAmigaProtection])
+			[self of_setAmigaProtection: object
+					ofItemAtIRI: IRI
+					 attributes: attributes];
+		else if ([key isEqual: OFFileAmigaComment])
+			[self of_setAmigaComment: object
+				     ofItemAtIRI: IRI
+				      attributes: attributes];
+#endif
 		else
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd

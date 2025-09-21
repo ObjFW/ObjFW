@@ -51,7 +51,19 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFConstantString;
 @class OFDate;
 @class OFIRI;
+@class OFNumber;
 @class OFString;
+
+enum {
+	OFFileAmigaDeleteProtected  = 0x01,
+	OFFileAmigaExecuteProtected = 0x02,
+	OFFileAmigaWriteProtected   = 0x04,
+	OFFileAmigaReadProtected    = 0x08,
+	OFFileAmigaArchived         = 0x10,
+	OFFileAmigaPure             = 0x20,
+	OFFileAmigaScript           = 0x40,
+	OFFileAmigaHold             = 0x80
+};
 
 /**
  * @brief A key for a file attribute in the file attributes dictionary.
@@ -71,6 +83,8 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFFileCreationDate
  *  * @ref OFFileSymbolicLinkDestination
  *  * @ref OFFileExtendedAttributesNames
+ *  * @ref OFFileAmigaProtection
+ *  * @ref OFFileAmigaComment
  *
  * Other IRI schemes might not have all keys and might have keys not listed.
  */
@@ -216,6 +230,28 @@ extern const OFFileAttributeKey OFFileSymbolicLinkDestination;
  * via @ref OFDictionary#fileExtendedAttributesNames.
  */
 extern const OFFileAttributeKey OFFileExtendedAttributesNames;
+
+/**
+ * @brief The Amiga file protection as an @ref OFNumber.
+ *
+ * This is a bit mask of the following values:
+ * Value                       | Description
+ * ----------------------------|---------------------------------------
+ * OFFileAmigaDeleteProtected  | The file cannot be deleted
+ * OFFileAmigaExecuteProtected | The file cannot be executed
+ * OFFileAmigaWriteProtected   | The file cannot be written to
+ * OFFileAmigaReadProtected    | The file cannot be read
+ * OFFileAmigaArchived         | The file has been archived
+ * OFFileAmigaPure             | The file is executable and reentrant
+ * OFFileAmigaScript           | The file is a script
+ * OFFileAmigaHold             | The file is made resident on execution
+ */
+extern const OFFileAttributeKey OFFileAmigaProtection;
+
+/**
+ * @brief The Amiga comment as an @ref OFString.
+ */
+extern const OFFileAttributeKey OFFileAmigaComment;
 
 /**
  * @brief A regular file.
@@ -1002,6 +1038,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFString *) *fileExtendedAttributesNames;
+
+/**
+ * @brief The @ref OFFileAmigaProtection key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) uint32_t fileAmigaProtection;
+
+/**
+ * @brief The @ref OFFileAmigaComment key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) OFString *fileAmigaComment;
 @end
 
 OF_ASSUME_NONNULL_END
