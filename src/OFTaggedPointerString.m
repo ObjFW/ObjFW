@@ -116,8 +116,7 @@ lengthForValue(uintptr_t value)
 {
 	uintptr_t value = object_getTaggedPointerValue(self);
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > lengthForValue(value))
+	if (OFEndOfRange(range) > lengthForValue(value))
 		@throw [OFOutOfRangeException exception];
 
 	for (size_t i = 0; i < range.length; i++)

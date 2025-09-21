@@ -34,6 +34,8 @@ const OFFileAttributeKey OFFileSymbolicLinkDestination =
     @"OFFileSymbolicLinkDestination";
 const OFFileAttributeKey OFFileExtendedAttributesNames =
     @"OFFileExtendedAttributesNames";
+const OFFileAttributeKey OFFileAmigaProtection = @"OFFileAmigaProtection";
+const OFFileAttributeKey OFFileAmigaComment = @"OFFileAmigaComment";
 
 const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
 const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";

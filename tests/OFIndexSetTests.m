@@ -165,4 +165,66 @@
 	OTAssertEqual([_indexSet indexLessThanOrEqualToIndex: 10], 10);
 	OTAssertEqual([_indexSet indexLessThanOrEqualToIndex: 11], 10);
 }
+
+- (void)testGetIndexesMaxCountInIndexRange
+{
+	size_t indexes[7];
+	OFRange range;
+
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 7
+			       inIndexRange: NULL], 7);
+	OTAssertEqual(indexes[0], 1);
+	OTAssertEqual(indexes[1], 2);
+	OTAssertEqual(indexes[2], 4);
+	OTAssertEqual(indexes[3], 5);
+	OTAssertEqual(indexes[4], 6);
+	OTAssertEqual(indexes[5], 9);
+	OTAssertEqual(indexes[6], 10);
+
+	range = OFMakeRange(0, 6);
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 7
+			       inIndexRange: &range], 4);
+	OTAssertEqual(indexes[0], 1);
+	OTAssertEqual(indexes[1], 2);
+	OTAssertEqual(indexes[2], 4);
+	OTAssertEqual(indexes[3], 5);
+
+	range = OFMakeRange(10, 10);
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 7
+			       inIndexRange: &range], 1);
+	OTAssertEqual(indexes[0], 10);
+
+	range = OFMakeRange(5, 3);
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 7
+			       inIndexRange: &range], 2);
+	OTAssertEqual(indexes[0], 5);
+	OTAssertEqual(indexes[1], 6);
+
+	range = OFMakeRange(11, 10);
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 7
+			       inIndexRange: &range], 0);
+
+	range = OFMakeRange(3, 10);
+	OTAssertEqual([_indexSet getIndexes: indexes
+				   maxCount: 2
+			       inIndexRange: &range], 2);
+	OTAssertEqual(indexes[0], 4);
+	OTAssertEqual(indexes[1], 5);
+}
+
+- (void)testCountOfIndexesInRange
+{
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(0, 11)], 7);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(0, 6)], 4);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(10, 10)],
+	    1);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(5, 3)], 2);
+	OTAssertEqual([_indexSet countOfIndexesInRange: OFMakeRange(11, 10)],
+	    0);
+}
 @end

@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFIndexSet;
+
 /** @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -105,6 +107,16 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
 		       atIndex: (size_t)index;
 
 /**
+ * @brief Inserts the objects from the specified OFArray at the specified
+ *	  indexes.
+ *
+ * @param array An array of objects
+ * @param indexes The indexes where the objects should be inserted
+ */
+- (void)insertObjects: (OFArray OF_GENERIC(ObjectType) *)array
+	    atIndexes: (OFIndexSet *)indexes;
+
+/**
  * @brief Replaces all objects equivalent to the specified object with the
  *	  other specified object.
  *
@@ -120,6 +132,26 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  * @param object The replacement object
  */
 - (void)replaceObjectAtIndex: (size_t)index withObject: (ObjectType)object;
+
+/**
+ * @brief Replaces the objects in the specified object with the specified
+ *	  objects.
+ *
+ * @param range The range of the objects to replace
+ * @param objects The objects to replace the objects in the specified range with
+ */
+- (void)replaceObjectsInRange: (OFRange)range
+	 withObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)objects;
+
+/**
+ * @brief Replaces the objects at the specified indexes with the specified
+ *	  objects.
+ *
+ * @param indexes The indexes of the objects to replace
+ * @param objects The objects to replace the specified objects with
+ */
+- (void)replaceObjectsAtIndexes: (OFIndexSet *)indexes
+		    withObjects: (OFArray OF_GENERIC(ObjectType) *)objects;
 
 /**
  * @brief Replaces the object at the specified index with the specified object.
@@ -171,6 +203,13 @@ typedef id _Nonnull (^OFArrayReplaceBlock)(id object, size_t index);
  * @param range The range of the objects to remove
  */
 - (void)removeObjectsInRange: (OFRange)range;
+
+/**
+ * @brief Removes the objects at the specified indexes.
+ *
+ * @param indexes The indexes of the objects to remove
+ */
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes;
 
 /**
  * @brief Removes the last object.

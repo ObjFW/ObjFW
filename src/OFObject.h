@@ -53,6 +53,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+/**
+ * @brief A special not found index.
+ */
 static const size_t OFNotFound = SIZE_MAX;
 
 /**
@@ -160,6 +163,11 @@ OFEqualRanges(OFRange range1, OFRange range2)
 static OF_INLINE size_t
 OFEndOfRange(OFRange range)
 {
+	if (range.length > SIZE_MAX - range.location) {
+		extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+		_OFThrowOutOfRangeException();
+	}
+
 	return range.location + range.length;
 }
 
@@ -1756,14 +1764,14 @@ extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
  *
  *     - (void)abstractMethod
  *     {
- *     	OF_UNRECOGNIZED_SELECTOR
+ *             OF_UNRECOGNIZED_SELECTOR
  *     }
  *
  * However, do not use this for init methods. Instead, use the following:
  *
  *     - (instancetype)init
  *     {
- *     	OF_INVALID_INIT_METHOD
+ *             OF_INVALID_INIT_METHOD
  *     }
  *
  * @param self The object which does not have the method

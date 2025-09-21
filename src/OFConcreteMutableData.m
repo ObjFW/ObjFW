@@ -24,6 +24,8 @@
 
 #import "OFConcreteMutableData.h"
 #import "OFConcreteData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -122,6 +124,40 @@
 	_count += count;
 }
 
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes
+{
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count, count = _count;
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (ranges[i].length > SIZE_MAX - count)
+			@throw [OFOutOfRangeException exception];
+
+		count += ranges[i].length;
+	}
+
+	if (count > _capacity) {
+		_items = OFResizeMemory(_items, count, _itemSize);
+		_capacity = count;
+	}
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		OFRange range = ranges[i];
+
+		if (range.location > _count)
+			@throw [OFOutOfRangeException exception];
+
+		memmove(_items + OFEndOfRange(range) * _itemSize,
+		    _items + range.location * _itemSize,
+		    (_count - range.location) * _itemSize);
+		memcpy(_items + range.location * _itemSize, items,
+		    range.length * _itemSize);
+
+		items = (char *)items + range.length * _itemSize;
+		_count += range.length;
+	}
+}
+
 - (void)increaseCountBy: (size_t)count
 {
 	if (count > SIZE_MAX - _count)
@@ -138,12 +174,11 @@
 
 - (void)removeItemsInRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
+	if (OFEndOfRange(range) > _count)
 		@throw [OFOutOfRangeException exception];
 
 	memmove(_items + range.location * _itemSize,
-	    _items + (range.location + range.length) * _itemSize,
+	    _items + OFEndOfRange(range) * _itemSize,
 	    (_count - range.location - range.length) * _itemSize);
 
 	_count -= range.length;
@@ -153,6 +188,40 @@
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
+}
+
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--) {
+		OFRange range = ranges[i - 1];
+
+		if (OFEndOfRange(range) > _count)
+			@throw [OFOutOfRangeException exception];
+
+		memmove(_items + range.location * _itemSize,
+		    _items + OFEndOfRange(range) * _itemSize,
+		    (_count - range.location - range.length) * _itemSize);
+
+		_count -= range.length;
+	}
+
+	@try {
+		_items = OFResizeMemory(_items, _count, _itemSize);
+		_capacity = _count;
+	} @catch (OFOutOfMemoryException *e) {
+		/* We don't really care, as we only made it smaller */
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeLastItem

@@ -443,8 +443,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	if (string == nil || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (searchLength > range.length) {

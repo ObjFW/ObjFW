@@ -17,20 +17,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OFDataTests.h"
 
-#import "OFOutOfRangeException.h"
-#import "OFString.h"
-
-void OF_NO_RETURN_FUNC
-_OFThrowOutOfRangeException(void)
+@interface OFMutableDataTests: OFDataTests
 {
-	@throw [OFOutOfRangeException exception];
-}
-
-@implementation OFOutOfRangeException
-- (OFString *)description
-{
-	return @"Value out of range!";
+	OFMutableData *_mutableData;
 }
 @end

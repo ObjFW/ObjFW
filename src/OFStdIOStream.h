@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The current foreground color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
- * unsupported.
+ * unsupported. `nil` represents the default color.
  *
  * If the specified color is @ref OFColor#black, @ref OFColor#silver,
  * @ref OFColor#gray, @ref OFColor#white, @ref OFColor#maroon, @ref OFColor#red,
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The current background color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
- * unsupported.
+ * unsupported. `nil` represents the default color.
  *
  * If the specified color is @ref OFColor#black, @ref OFColor#silver,
  * @ref OFColor#gray, @ref OFColor#white, @ref OFColor#maroon, @ref OFColor#red,

@@ -107,7 +107,20 @@
 # endif
 #endif
 
+#ifdef OF_MORPHOS
+# include <dos/dostags.h>
+#endif
+
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+# ifdef st_atime
+#  undef st_atime
+# endif
+# ifdef st_mtime
+#  undef st_mtime
+# endif
+# ifdef st_ctime
+#  undef st_ctime
+# endif
 typedef struct {
 	OFStreamOffset st_size;
 	unsigned int st_mode;
@@ -116,6 +129,10 @@ typedef struct {
 #  define HAVE_STRUCT_STAT_ST_BIRTHTIME
 	OFTimeInterval st_birthtime;
 	DWORD fileAttributes;
+# endif
+# ifdef OF_AMIGAOS
+	unsigned long protection;
+	char comment[80];
 # endif
 } Stat;
 #elif defined(HAVE_STAT64)
@@ -127,6 +144,16 @@ typedef struct stat Stat;
 #ifdef OF_WINDOWS
 # define S_IFLNK 0x10000
 # define S_ISLNK(mode) (mode & S_IFLNK)
+#endif
+
+#if !defined(HAVE_STRUCT_STAT_ST_ATIM) && defined(HAVE_STRUCT_STAT_ST_ATIMESPEC)
+# define st_atim st_atimespec
+#endif
+#if !defined(HAVE_STRUCT_STAT_ST_MTIM) && defined(HAVE_STRUCT_STAT_ST_MTIMESPEC)
+# define st_mtim st_mtimespec
+#endif
+#if !defined(HAVE_STRUCT_STAT_ST_CTIM) && defined(HAVE_STRUCT_STAT_ST_CTIMESPEC)
+# define st_ctim st_ctimespec
 #endif
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
@@ -312,7 +339,18 @@ statWrapper(OFString *path, Stat *buffer)
 		return lastError();
 
 # if defined(OF_MORPHOS)
-	if (!Examine64(lock, &fib, TAG_DONE)) {
+	struct TagItem tags[] = {
+#  ifdef EX64TAG_PosixDate
+		{ EX64TAG_PosixDate, TRUE },
+#  endif
+		{ TAG_DONE, 0 }
+	};
+
+#  ifdef FIBEXTF_POSIXDATE
+	fib.fib_ActExtFlags = 0;
+#  endif
+
+	if (!Examine64(lock, &fib, tags)) {
 # elif defined(OF_AMIGAOS4)
 	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
 # else
@@ -338,27 +376,40 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
-	timeInterval = 252460800;	/* 1978-01-01 */
+# if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
+	if (fib.fib_ActExtFlags & FIBEXTF_POSIXDATE)
+		timeInterval = fib.fib_PosixDate.pds_Sec;
+	else {
+# endif
 
-	locale = OpenLocale(NULL);
-	/*
-	 * FIXME: This does not take DST into account. But unfortunately, there
-	 * is no way to figure out if DST was in effect when the file was
-	 * modified.
-	 */
-	timeInterval += locale->loc_GMTOffset * 60.0;
-	CloseLocale(locale);
+		timeInterval = 252460800;	/* 1978-01-01 */
+
+		locale = OpenLocale(NULL);
+		/*
+		 * FIXME: This does not take DST into account. But
+		 * unfortunately, there is no way to figure out if DST was in
+		 * effect when the file was modified.
+		 */
+		timeInterval += locale->loc_GMTOffset * 60.0;
+		CloseLocale(locale);
 
 # ifdef OF_AMIGAOS4
-	date = &ed->Date;
+		date = &ed->Date;
 # else
-	date = &fib.fib_Date;
+		date = &fib.fib_Date;
 # endif
-	timeInterval += date->ds_Days * 86400.0;
-	timeInterval += date->ds_Minute * 60.0;
-	timeInterval += date->ds_Tick / (OFTimeInterval)TICKS_PER_SECOND;
+		timeInterval += date->ds_Days * 86400.0;
+		timeInterval += date->ds_Minute * 60.0;
+		timeInterval +=
+		    date->ds_Tick / (OFTimeInterval)TICKS_PER_SECOND;
+# if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
+	}
+# endif
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
+
+	buffer->protection = fib.fib_Protection;
+	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
 
 # ifdef OF_AMIGAOS4
 	FreeDosObject(DOS_EXAMINEDATA, ed);
@@ -468,17 +519,38 @@ setTypeAttribute(OFMutableFileAttributes attributes, Stat *s)
 static void
 setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
-	/* FIXME: We could be more precise on some OSes */
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_atime]
-	       forKey: OFFileLastAccessDate];
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_mtime]
-	       forKey: OFFileModificationDate];
-	[attributes
-	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_ctime]
-	       forKey: OFFileStatusChangeDate];
-#ifdef HAVE_STRUCT_STAT_ST_BIRTHTIME
+	OFDate *date;
+
+#ifdef HAVE_STRUCT_STAT_ST_ATIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_atim.tv_sec +
+	    (OFTimeInterval)s->st_atim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_atime];
+#endif
+	[attributes setObject: date forKey: OFFileLastAccessDate];
+
+#ifdef HAVE_STRUCT_STAT_ST_MTIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtim.tv_sec +
+	    (OFTimeInterval)s->st_mtim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtime];
+#endif
+	[attributes setObject: date forKey: OFFileModificationDate];
+
+#ifdef HAVE_STRUCT_STAT_ST_CTIM
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctim.tv_sec +
+	    (OFTimeInterval)s->st_ctim.tv_nsec / 1000000000];
+#else
+	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctime];
+#endif
+	[attributes setObject: date forKey: OFFileStatusChangeDate];
+
+#if defined(HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC)
+	date = [OFDate dateWithTimeIntervalSince1970:
+	    s->st_birthtimespec.tv_sec +
+	    (OFTimeInterval)s->st_birthtimespec.tv_nsec / 1000000000];
+	[attributes setObject: date forKey: OFFileCreationDate];
+#elif defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_birthtime]
 	       forKey: OFFileCreationDate];
@@ -489,9 +561,9 @@ static void
 setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_uid]
+	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_uid]
 		       forKey: OFFileOwnerAccountID];
-	[attributes setObject: [NSNumber numberWithUnsignedLong: s->st_gid]
+	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_gid]
 		       forKey: OFFileGroupOwnerAccountID];
 
 # ifdef OF_HAVE_THREADS
@@ -921,12 +993,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (s.st_size < 0)
 		@throw [OFOutOfRangeException exception];
 
-	[ret setObject: [NSNumber numberWithUnsignedLongLong: s.st_size]
+	[ret setObject: [OFNumber numberWithUnsignedLongLong: s.st_size]
 		forKey: OFFileSize];
 
 	setTypeAttribute(ret, &s);
 
-	[ret setObject: [NSNumber numberWithUnsignedLong: s.st_mode]
+	[ret setObject: [OFNumber numberWithUnsignedLong: s.st_mode]
 		forKey: OFFilePOSIXPermissions];
 
 	setOwnerAndGroupAttributes(ret, &s);
@@ -939,6 +1011,19 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 	setExtendedAttributes(ret, IRI);
+#endif
+
+#ifdef OF_AMIGAOS
+	[ret setObject: [OFNumber numberWithUnsignedLong: s.protection]
+		forKey: OFFileAmigaProtection];
+
+	if (strlen(s.comment) > 0) {
+		OFStringEncoding encoding = [OFLocale encoding];
+
+		[ret setObject: [OFString stringWithCString: s.comment
+						   encoding: encoding]
+			forKey: OFFileAmigaComment];
+	}
 #endif
 
 	objc_autoreleasePoolPop(pool);
@@ -957,8 +1042,9 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	if (lastAccessDate == nil)
 		lastAccessDate = modificationDate;
-	if (modificationDate == nil)
+	if (modificationDate == nil) {
 		modificationDate = lastAccessDate;
+	}
 
 #if defined(OF_WINDOWS)
 	FILETIME accessTime = timeIntervalToFiletime(
@@ -1004,88 +1090,123 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	struct Locale *locale;
 	struct DateStamp date;
 
-	modificationTime -= 252460800;	/* 1978-01-01 */
+# if defined(OF_MORPHOS) && defined(SetFilePosixDate)
+	if (LIB_MINVER(&DOSBase->dl_lib, 51, 66)) {
+		struct PosixDateStamp POSIXDate = {
+			.pds_Sec = modificationTime
+		};
 
-	if (modificationTime < 0)
-		@throw [OFOutOfRangeException exception];
+		if (!SetFilePosixDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &POSIXDate, TAG_END) != 0)
+			@throw [OFSetItemAttributesFailedException
+				exceptionWithIRI: IRI
+				      attributes: attributes
+				 failedAttribute: attributeKey
+					   errNo: lastError()];
+	} else {
+# endif
+		modificationTime -= 252460800;	/* 1978-01-01 */
 
-	locale = OpenLocale(NULL);
-	/*
-	 * FIXME: This does not take DST into account. But unfortunately, there
-	 *	  is no way to figure out if DST should be in effect for the
-	 *	  timestamp.
-	 */
-	modificationTime -= locale->loc_GMTOffset * 60.0;
-	CloseLocale(locale);
+		if (modificationTime < 0)
+			@throw [OFOutOfRangeException exception];
 
-	date.ds_Days = modificationTime / 86400;
-	date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
-	date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
+		locale = OpenLocale(NULL);
+		/*
+		 * FIXME: This does not take DST into account. But
+		 *	  unfortunately, there is no way to figure out if DST
+		 *	  should be in effect for the timestamp.
+		 */
+		modificationTime -= locale->loc_GMTOffset * 60.0;
+		CloseLocale(locale);
+
+		date.ds_Days = modificationTime / 86400;
+		date.ds_Minute = ((LONG)modificationTime % 86400) / 60;
+		date.ds_Tick = fmod(modificationTime, 60) * TICKS_PER_SECOND;
 
 # ifdef OF_AMIGAOS4
-	if (!SetDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0)
+		if (!SetDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &date) != 0)
 # else
-	if (!SetFileDate([path cStringWithEncoding: [OFLocale encoding]],
-	    &date) != 0)
+		if (!SetFileDate([path cStringWithEncoding:
+		    [OFLocale encoding]], &date) != 0)
 # endif
-		@throw [OFSetItemAttributesFailedException
-		    exceptionWithIRI: IRI
-			  attributes: attributes
-		     failedAttribute: attributeKey
-			       errNo: lastError()];
-#elif defined(HAVE_UTIMENSAT)
-	OFTimeInterval lastAccessTime = lastAccessDate.timeIntervalSince1970;
-	OFTimeInterval modificationTime =
-	    modificationDate.timeIntervalSince1970;
-	struct timespec times[2] = {
-		{
-			.tv_sec = (time_t)lastAccessTime,
-			.tv_nsec = (int)((lastAccessTime -
-			    (time_t)lastAccessTime) * 1000000000)
-		},
-		{
-			.tv_sec = (time_t)modificationTime,
-			.tv_nsec = (long)((modificationTime -
-			    (time_t)modificationTime) * 1000000000)
-		},
-	};
-
-	if (utimensat(AT_FDCWD, [path cStringWithEncoding: [OFLocale encoding]],
-	    times, AT_SYMLINK_NOFOLLOW) != 0)
-		@throw [OFSetItemAttributesFailedException
-		    exceptionWithIRI: IRI
-			  attributes: attributes
-		     failedAttribute: attributeKey
-			       errNo: errno];
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: lastError()];
+# if defined(OF_MORPHOS) && defined(SetFilePosixDate)
+	}
+# endif
 #else
-	OFTimeInterval lastAccessTime = lastAccessDate.timeIntervalSince1970;
-	OFTimeInterval modificationTime =
-	    modificationDate.timeIntervalSince1970;
-	struct timeval times[2] = {
-		{
-			.tv_sec = (time_t)lastAccessTime,
-			.tv_usec = (int)((lastAccessTime -
-			    (time_t)lastAccessTime) * 1000000)
-		},
-		{
-			.tv_sec = (time_t)modificationTime,
-			.tv_usec = (int)((modificationTime -
-			    (time_t)modificationTime) * 1000000)
-		},
-	};
+# ifdef HAVE_UTIMENSAT
+#  if defined(OF_MACOS) || defined(OF_IOS)
+	if (@available(macOS 10.13, iOS 11, *)) {
+#  endif
+		OFTimeInterval lastAccessTime =
+		    lastAccessDate.timeIntervalSince1970;
+		OFTimeInterval modificationTime =
+		    modificationDate.timeIntervalSince1970;
+		struct timespec times[2] = {
+			{
+				.tv_sec = (time_t)lastAccessTime,
+				.tv_nsec = (int)((lastAccessTime -
+				    (time_t)lastAccessTime) * 1000000000)
+			},
+			{
+				.tv_sec = (time_t)modificationTime,
+				.tv_nsec = (long)((modificationTime -
+				    (time_t)modificationTime) * 1000000000)
+			},
+		};
+
+		if (utimensat(AT_FDCWD, [path cStringWithEncoding:
+		    [OFLocale encoding]], times, AT_SYMLINK_NOFOLLOW) != 0) {
+			@throw [OFSetItemAttributesFailedException
+				exceptionWithIRI: IRI
+				      attributes: attributes
+				 failedAttribute: attributeKey
+					   errNo: errno];
+		}
+#  if defined(OF_MACOS) || defined(OF_IOS)
+	} else {
+#  endif
+# endif
+# if !defined(HAVE_UTIMENSAT) || defined(OF_MACOS) || defined(OF_IOS)
+		OFTimeInterval lastAccessTime =
+		    lastAccessDate.timeIntervalSince1970;
+		OFTimeInterval modificationTime =
+		    modificationDate.timeIntervalSince1970;
+		struct timeval times[2] = {
+			{
+				.tv_sec = (time_t)lastAccessTime,
+				.tv_usec = (int)((lastAccessTime -
+					(time_t)lastAccessTime) * 1000000)
+			},
+			{
+				.tv_sec = (time_t)modificationTime,
+				.tv_usec = (int)((modificationTime -
+					(time_t)modificationTime) * 1000000)
+			},
+		};
 
 # ifdef HAVE_LUTIMES
-	if (lutimes([path cStringWithEncoding: [OFLocale encoding]], times) !=
-	    0)
+		if (lutimes([path cStringWithEncoding: [OFLocale encoding]],
+		    times) != 0) {
 # else
-	if (utimes([path cStringWithEncoding: [OFLocale encoding]], times) != 0)
+		if (utimes([path cStringWithEncoding: [OFLocale encoding]],
+		    times) != 0) {
 # endif
-		@throw [OFSetItemAttributesFailedException
-		    exceptionWithIRI: IRI
-			  attributes: attributes
-		     failedAttribute: attributeKey
-			       errNo: errno];
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: attributeKey
+				       errNo: errno];
+		}
+#  if defined(HAVE_UTIMENSAT) && (defined(OF_MACOS) || defined(OF_IOS))
+	}
+#  endif
+# endif
 #endif
 }
 
@@ -1182,6 +1303,39 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 }
 
+#ifdef OF_AMIGAOS
+- (void)of_setAmigaProtection: (OFNumber *)protection
+		  ofItemAtIRI: (OFIRI *)IRI
+		   attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+
+	if (!SetProtection([path cStringWithEncoding: [OFLocale encoding]],
+	    [protection unsignedLongValue]))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaProtection
+			       errNo: 0];
+}
+
+- (void)of_setAmigaComment: (OFString *)comment
+	       ofItemAtIRI: (OFIRI *)IRI
+		attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	if (!SetComment([path cStringWithEncoding: encoding],
+	    [comment cStringWithEncoding: encoding]))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaComment
+			       errNo: 0];
+}
+#endif
+
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1221,6 +1375,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 					 ofItemAtIRI: IRI
 					attributeKey: key
 					  attributes: attributes];
+#ifdef OF_AMIGAOS
+		else if ([key isEqual: OFFileAmigaProtection])
+			[self of_setAmigaProtection: object
+					ofItemAtIRI: IRI
+					 attributes: attributes];
+		else if ([key isEqual: OFFileAmigaComment])
+			[self of_setAmigaComment: object
+				     ofItemAtIRI: IRI
+				      attributes: attributes];
+#endif
 		else
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd

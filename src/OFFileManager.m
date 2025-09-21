@@ -1175,4 +1175,15 @@ OF_SINGLETON_METHODS
 {
 	return attributeForKeyOrException(self, OFFileExtendedAttributesNames);
 }
+
+- (OFFileAmigaProtectionBits)fileAmigaProtection
+{
+	return [attributeForKeyOrException(self,
+	    OFFileAmigaProtection) intValue];
+}
+
+- (OFString *)fileAmigaComment
+{
+	return attributeForKeyOrException(self, OFFileAmigaComment);
+}
 @end

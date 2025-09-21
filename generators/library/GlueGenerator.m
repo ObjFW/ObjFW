@@ -100,7 +100,7 @@
 	if (includes > 0)
 		[_header writeString: @"\n"];
 
-	[_impl writeString: 
+	[_impl writeString:
 	    @"\n"
 	    @"__asm__ (\n"
 	    @"    \".section .text\\n\"\n"

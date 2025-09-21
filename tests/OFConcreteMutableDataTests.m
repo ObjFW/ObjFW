@@ -19,18 +19,16 @@
 
 #include "config.h"
 
-#import "OFOutOfRangeException.h"
-#import "OFString.h"
+#import "OFMutableDataTests.h"
 
-void OF_NO_RETURN_FUNC
-_OFThrowOutOfRangeException(void)
-{
-	@throw [OFOutOfRangeException exception];
-}
+#import "OFConcreteMutableData.h"
 
-@implementation OFOutOfRangeException
-- (OFString *)description
+@interface OFConcreteMutableDataTests: OFMutableDataTests
+@end
+
+@implementation OFConcreteMutableDataTests
+- (Class)dataClass
 {
-	return @"Value out of range!";
+	return [OFConcreteMutableData class];
 }
 @end

@@ -105,11 +105,11 @@ OF_ASSUME_NONNULL_BEGIN
  * first parsing stuff using the OFXMLParser with another delegate and then
  * setting the OFXMLElementBuilder as delegate for the parser.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
+	OF_RESERVE_IVARS(OFXMLElementBuilder, 4)
 }
 
 /**

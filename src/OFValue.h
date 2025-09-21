@@ -197,7 +197,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_ASSUME_NONNULL_END
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#ifndef NSINTEGER_DEFINED
 /* Required for array literals to work */
 @compatibility_alias NSValue OFValue;
 #endif

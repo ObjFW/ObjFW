@@ -107,10 +107,10 @@
         ]
     ],
     size_unknown: "unbekannt",
-    info_name_unaligned: "Name: %[name]",
-    info_name: "Name:  %[name]",
-    info_type: "Typ:   %[type]",
-    info_size: "Größe: %[size]",
+    info_name_unaligned: "Name: ",
+    info_name: "Name:  ",
+    info_type: "Typ:   ",
+    info_size: "Größe: ",
     output_already_exists: "%[prog]: Datei %[filename] existiert bereits!",
     failed_to_open_output: [
         "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]"

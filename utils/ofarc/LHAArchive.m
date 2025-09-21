@@ -355,8 +355,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[app checkForCancellation];
 
 			length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;

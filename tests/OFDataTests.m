@@ -23,10 +23,16 @@
 
 #import "OFDataTests.h"
 
+@interface CustomData: OFData
+{
+	OFData *_data;
+}
+@end
+
 @implementation OFDataTests
 - (Class)dataClass
 {
-	return [OFData class];
+	return [CustomData class];
 }
 
 - (void)setUp
@@ -291,5 +297,74 @@
 	OTAssertEqualObjects(
 	    [self.dataClass dataWithBase64EncodedString: @"YWJjZGU="],
 	    [OFData dataWithItems: "abcde" count: 5]);
+}
+@end
+
+@implementation CustomData
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItems: items
+						count: count
+					     itemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItemsNoCopy: items
+						      count: count
+						   itemSize: itemSize
+					       freeWhenDone: freeWhenDone];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (size_t)count
+{
+	return _data.count;
+}
+
+- (size_t)itemSize
+{
+	return _data.itemSize;
+}
+
+- (const void *)items
+{
+	return _data.items;
 }
 @end

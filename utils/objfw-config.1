@@ -16,14 +16,14 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw-config 1
+.TH objfw\-config 1
 .SH NAME
-objfw-config - print flags required for compiling with ObjFW
+objfw\-config \- print flags required for compiling with ObjFW
 .SH SYNOPSIS
-.B objfw-config
+.B objfw\-config
 [\fBoptions\fR]
 .SH DESCRIPTION
-.B objfw-config
+.B objfw\-config
 is a program which outputs various flags needed to compile software using ObjFW.
 .SH OPTIONS
 .TP
@@ -42,7 +42,7 @@ Outputs the required \fBCPPFLAGS\fR.
 .BR \fB\-\-cxxflags\fR
 Outputs the required \fBCXXFLAGS\fR.
 .TP
-.BR \fB\-\-framework-libs\fR
+.BR \fB\-\-framework\-libs\fR
 Outputs the required \fBLIBS\fR, preferring frameworks.
 .TP
 .BR \fB\-\-help\fR
@@ -54,16 +54,16 @@ Outputs the required \fBLDFLAGS\fR.
 .BR \fB\-\-libs\fR
 Outputs the required \fBLIBS\fR.
 .TP
-.BR \fB\-\-lib-cflags\fR
+.BR \fB\-\-lib\-cflags\fR
 Outputs \fBCFLAGS\fR for building a library.
 .TP
-.BR \fB\-\-lib-ldflags\fR
+.BR \fB\-\-lib\-ldflags\fR
 Outputs \fBLDFLAGS\fR for building a library.
 .TP
-.BR \fB\-\-lib-prefix\fR
+.BR \fB\-\-lib\-prefix\fR
 Outputs the prefix for libraries.
 .TP
-.BR \fB\-\-lib-suffix\fR
+.BR \fB\-\-lib\-suffix\fR
 Outputs the suffix for libraries.
 .TP
 .BR \fB\-\-objc\fR
@@ -76,19 +76,19 @@ Outputs the required \fBOBJCFLAGS\fR.
 .BR \fB\-\-package\fR " " \fIname\fR
 Additionally outputs the flags for the specified package.
 .TP
-.BR \fB\-\-packages-dir\fR
+.BR \fB\-\-packages\-dir\fR
 Outputs the directory where flags for packages are stored.
 .TP
-.BR \fB\-\-plugin-cflags\fR
+.BR \fB\-\-plugin\-cflags\fR
 Outputs \fBCFLAGS\fR for building a plugin.
 .TP
-.BR \fB\-\-plugin-ldflags\fR
+.BR \fB\-\-plugin\-ldflags\fR
 Outputs \fBLDFLAGS\fR for building a plugin.
 .TP
-.BR \fB\-\-plugin-suffix\fR
+.BR \fB\-\-plugin\-suffix\fR
 Outputs the suffix for plugins.
 .TP
-.BR \fB\-\-prog-suffix\fR
+.BR \fB\-\-prog\-suffix\fR
 Outputs the suffix for binaries.
 .TP
 .BR \fB\-\-reexport\fR
@@ -97,7 +97,7 @@ Outputs \fBLDFLAGS\fR to reexport ObjFW.
 .BR \fB\-\-rpath\fR
 Outputs \fBLDFLAGS\fR for using rpath.
 .TP
-.BR \fB\-\-static-libs\fR
+.BR \fB\-\-static\-libs\fR
 Outputs the required \fBLIBS\fR to link ObjFW statically.
 .TP
 .BR \fB\-\-version\fR
@@ -105,10 +105,10 @@ Outputs the installed ObjFW version.
 .SH EXAMPLES
 Print \fBOBJCFLAGS\fR and \fBCPPFLAGS\fR:
 .PP
-	objfw-config \-\-objcflags \-\-cppflags
+	objfw\-config \-\-objcflags \-\-cppflags
 .PP
 Print \fBLIBS\fR and \fBLDFLAGS\fR for ObjFW and ObjFWTLS:
 .PP
-	objfw-config \-\-libs \-\-ldflags --package ObjFWTLS
+	objfw\-config \-\-libs \-\-ldflags \-\-package ObjFWTLS
 .SH SEE ALSO
-\fIobjfw-compile\fR(1)
+\fIobjfw\-compile\fR(1)

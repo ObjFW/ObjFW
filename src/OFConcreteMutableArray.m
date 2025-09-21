@@ -25,6 +25,8 @@
 #import "OFConcreteArray.h"
 #import "OFArray+Private.h"
 #import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -95,6 +97,26 @@
 	_mutations++;
 }
 
+- (void)insertObjects: (OFArray *)array atIndexes: (OFIndexSet *)indexes
+{
+	id const *objects = array.objects;
+	size_t count = array.count;
+
+	if (indexes.count != count)
+		@throw [OFOutOfRangeException exception];
+
+	@try {
+		[_array insertItems: objects atIndexes: indexes];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFOutOfRangeException exception];
+	}
+
+	for (size_t i = 0; i < count; i++)
+		objc_retain(objects[i]);
+
+	_mutations++;
+}
+
 - (void)replaceObject: (id)oldObject withObject: (id)newObject
 {
 	id *objects;
@@ -153,6 +175,33 @@
 			return;
 		}
 	}
+}
+
+- (void)replaceObjectsAtIndexes: (OFIndexSet *)indexes
+		    withObjects: (OFArray *)objects
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	id const *objectsObjects = objects.objects;
+	size_t objectsCount = objects.count;
+	size_t objectsIndex = 0;
+	id *items = _array.mutableItems;
+	size_t count = _array.count;
+
+	if (objectsCount != indexes.count)
+		@throw [OFOutOfRangeException exception];
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (OFEndOfRange(ranges[i]) > count)
+			@throw [OFOutOfRangeException exception];
+
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++)
+			items[j] = objectsObjects[objectsIndex++];
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeObject: (id)object
@@ -237,18 +286,49 @@
 	size_t count = _array.count;
 	id *copy;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location >= count || range.length > count - range.location)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	copy = OFAllocMemory(range.length, sizeof(*copy));
-	memcpy(copy, objects + range.location, range.length * sizeof(id));
+	memcpy(copy, objects + range.location, range.length * sizeof(*copy));
 
 	@try {
 		[_array removeItemsInRange: range];
 		_mutations++;
 
 		for (size_t i = 0; i < range.length; i++)
+			objc_release(copy[i]);
+	} @finally {
+		OFFreeMemory(copy);
+	}
+}
+
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes
+{
+	size_t indexesCount = indexes.count;
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	id const *objects = _array.items;
+	size_t count = _array.count;
+	size_t copyIndex = 0;
+	id *copy;
+
+	copy = OFAllocMemory(indexesCount, sizeof(*copy));
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (OFEndOfRange(ranges[i]) > count)
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(copy + copyIndex, objects + ranges[i].location,
+		    ranges[i].length * sizeof(*copy));
+		copyIndex += ranges[i].length;
+	}
+
+	@try {
+		[_array removeItemsAtIndexes: indexes];
+		_mutations++;
+
+		for (size_t i = 0; i < indexesCount; i++)
 			objc_release(copy[i]);
 	} @finally {
 		OFFreeMemory(copy);

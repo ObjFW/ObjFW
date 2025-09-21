@@ -18,7 +18,7 @@
 .\"
 .TH ofarc 1
 .SH NAME
-ofarc - list, extract, create and append to archives
+ofarc \- list, extract, create and append to archives
 .SH SYNOPSIS
 .B ofarc
 [\fBoptions\fR] \fIarchive\fR [\fIfile1\fR \fIfile2\fR ...]
@@ -74,16 +74,16 @@ Extract files.
 .SH EXAMPLES
 Extract all files in an archive:
 .PP
-	ofarc -x archive.tar.gz
+	ofarc \-x archive.tar.gz
 .PP
 Create a new archive with the directory \fBfoo\fR and all its files:
 .PP
-	ofarc -c foo.zip foo
+	ofarc \-c foo.zip foo
 .PP
 List all files in an archive without downloading it:
 .PP
-	ofarc --iri -l https://example.com/archive.lha
+	ofarc \-\-iri \-l https://example.com/archive.lha
 .PP
 Print file \fBREADME\fR in \fBarchive.tar.gz\fR:
 .PP
-	ofarc -p archive.tar.gz README
+	ofarc \-p archive.tar.gz README

@@ -21,6 +21,7 @@
 
 #include <math.h>
 
+#import "OFColor.h"
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
@@ -147,7 +148,7 @@ static const OFTimeInterval updateInterval = 0.1;
 				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdErr writeFormat: @"▏ %,6.2f%% ", percent];
+		[OFStdErr writeString: @"▏ "];
 	} else {
 		[OFStdErr writeString: @"\r  ["];
 
@@ -169,8 +170,17 @@ static const OFTimeInterval updateInterval = 0.1;
 				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdErr writeFormat: @"] %,6.2f%% ", percent];
+		[OFStdErr writeString: @"] "];
 	}
+
+	OFStdErr.foregroundColor = [OFColor
+	    colorWithRed: (percent < 50 ? 1.0f : 1.0f - ((percent - 50) / 50.f))
+		   green: (percent < 50 ? percent / 50.f : 1.0f)
+		    blue: 0.0f
+		   alpha: 1.0f];
+	[OFStdErr writeFormat: @"%,6.2f%%", percent];
+	OFStdErr.foregroundColor = nil;
+	[OFStdErr writeString: @" "];
 
 	if (percent == 100) {
 		double timeInterval = -_startDate.timeIntervalSinceNow;

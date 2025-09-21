@@ -16,15 +16,15 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw-new 1
+.TH objfw\-new 1
 .SH NAME
-objfw-new - create source code from templates
+objfw\-new \- create source code from templates
 .SH SYNOPSIS
-.B objfw-new
-\fB\-\-app\fR|\fB\-\-class\fR|\fB\-\-test\fR [\fR--superclass=\fIclass\fR]
+.B objfw\-new
+\fB\-\-app\fR|\fB\-\-class\fR|\fB\-\-test\fR [\fR\-\-superclass=\fIclass\fR]
 [\fB\-\-property=\fIproperty\fR] \fIname\fR
 .SH DESCRIPTION
-.B objfw-new
+.B objfw\-new
 is a program which creates source code from templates.
 .SH OPTIONS
 .TP
@@ -47,15 +47,15 @@ Create a new test.
 .SH EXAMPLES
 Create a new application:
 .PP
-	objfw-new -a MyApp
+	objfw\-new \-a MyApp
 .PP
 Create a new class \fBDog\fR with a property \fBname\fR and superclass
 \fBAnimal\fR:
 .PP
-	objfw-new -c -s Animal -p '(copy, nonatomic) OFString *name' Dog
+	objfw\-new \-c \-s Animal \-p '(copy, nonatomic) OFString *name' Dog
 .PP
 Create a new test:
 .PP
-	objfw-new -t DogTest
+	objfw\-new \-t DogTest
 .SH SEE ALSO
-\fIobjfw-compile\fR(1)
+\fIobjfw\-compile\fR(1)

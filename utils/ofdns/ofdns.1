@@ -18,7 +18,7 @@
 .\"
 .TH ofdns 1
 .SH NAME
-ofdns - perform DNS lookups
+ofdns \- perform DNS lookups
 .SH SYNOPSIS
 .B ofdns
 [\fBoptions\fR] \fIdomain1\fR [\fIdomain2\fR ...]
@@ -48,8 +48,8 @@ Query the \fBA\fR and \fBAAAA\fR record for \fBexample.com\fR:
 .PP
 Query the \fBCNAME\fR record for \fBwww.example.com\fR:
 .PP
-	ofdns -t CNAME example.com
+	ofdns \-t CNAME example.com
 .PP
 Query \fB2001:db8::1\fR for the \fBAAAA\fR record for \fBexample.com\fR:
 .PP
-	ofdns -s 2001:db8::1 -t AAAA example.com
+	ofdns \-s 2001:db8::1 \-t AAAA example.com

@@ -1,17 +1,17 @@
-AC_INIT(ObjFW, 1.4-dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.5-dev, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 objfw_version_major=1
-objfw_version_minor=4
+objfw_version_minor=5
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
 	[The major version of ObjFW])
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
 	[The minor version of ObjFW])
-dnl This may only be set to 1.4 once 1.4 is released
-AC_SUBST(BUNDLE_VERSION, 1.3.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.3)
+dnl This may only be set to 1.5 once 1.5 is released
+AC_SUBST(BUNDLE_VERSION, 1.4.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.4)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
@@ -936,31 +936,31 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 	[AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
-AC_MSG_CHECKING(for floating point endianess)
-fp_endianess="unknown"
+AC_MSG_CHECKING(for floating point endianness)
+fp_endianness="unknown"
 AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
-			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
+			double endianness = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
 		])
 	], [
 		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
 		    $EGREP BigEnd >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
 				[Whether floats are big endian])
-			fp_endianess="big endian"
+			fp_endianness="big endian"
 		], [
 			AS_IF([$SED 's/[[^[:print:]]]//g' \
 			    <conftest.$ac_objext | $EGREP dnEgiB >/dev/null], [
-				fp_endianess="little endian"
+				fp_endianness="little endian"
 			])
 		])
 	])
 ], [
-	fp_endianess="universal"
+	fp_endianness="universal"
 ])
-AC_MSG_RESULT($fp_endianess)
-AS_IF([test x"$fp_endianess" = x"unknown"], [
+AC_MSG_RESULT($fp_endianness)
+AS_IF([test x"$fp_endianness" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
@@ -1440,7 +1440,10 @@ AS_IF([test x"$enable_files" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 	])
 	AC_CHECK_FUNCS([lstat lutimes utimensat])
-	AC_CHECK_MEMBERS([struct stat.st_birthtime], [], [], [
+	AC_CHECK_MEMBERS([struct stat.st_atim, struct stat.st_mtim,
+	    struct stat.st_ctim, struct stat.st_birthtime,
+	    struct stat.st_atimespec, struct stat.st_mtimespec,
+	    struct stat.st_ctimespec, struct stat.st_birthtimespec], [], [], [
 		#include <sys/stat.h>
 	])
 ])
@@ -2428,7 +2431,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 				abort();				\
 									\
 				_Pragma("clang diagnostic push");	\
-			       	_Pragma("clang diagnostic ignored	\
+				_Pragma("clang diagnostic ignored	\
 				    \"-Wunreachable-code\"");		\
 				[super dealloc];			\
 				_Pragma("clang diagnostic pop");
@@ -2572,10 +2575,12 @@ case "$host_os" in
 linux*)
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
+		AC_SUBST(OFGCTESTER, ofgctester)
 	])
 	;;
 mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
+	AC_SUBST(OFGCTESTER, ofgctester)
 	;;
 darwin*)
 	AC_MSG_CHECKING(new enough GameController.framework)
@@ -2592,6 +2597,7 @@ darwin*)
 	], [
 		AC_MSG_RESULT(yes)
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
+		AC_SUBST(OFGCTESTER, ofgctester)
 		AC_DEFINE(OF_HAVE_GCF, 1,
 			[Whether we have GameController.framework])
 		tmp="-framework GameController"

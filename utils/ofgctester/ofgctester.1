@@ -16,21 +16,13 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw\-embed 1
+.TH ofgctester 1
 .SH NAME
-objfw\-embed \- create source code to embed a file into a program
+ofgctester \- test game controllers using ObjFWHID
 .SH SYNOPSIS
-.B objfw\-embed
-.I source_file
-.I filename
-.I output
+.B ofgctester
 .SH DESCRIPTION
-.B objfw\-embed
-is a program which creates source code to embed a file into a program, which
-can then be accessed using the \fBembedded:\fR IRI scheme in ObjFW.
-.SH EXAMPLES
-Create the source file \fBlogo.png.m\fR for the file \fBassets/logo.png\fR,
-which will be registered under the path \fBlogo.png\fR so that it can be
-accessed under the IRI \fBembedded:logo.png\fR:
+.B ofgctester
+is an interactive program to test game controllers using ObjFWHID.
 .PP
-	objfw\-embed assets/logo.png logo.png logo.png.m
+It takes no options and it can be quit using Ctrl\-C.

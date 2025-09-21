@@ -165,6 +165,25 @@ OF_ASSUME_NONNULL_BEGIN
  *	   @ref OFNotFound
  */
 - (size_t)indexLessThanOrEqualToIndex: (size_t)index;
+
+/**
+ * @brief Copies the indexes in the specified range to the specified buffer.
+ *
+ * @param indexes A pointer to an array of indexes
+ * @param maxCount The maximum number of indexes to copy
+ * @param range The range the copied indexes should be in
+ * @return The number of indexes copied
+ */
+- (size_t)getIndexes: (size_t *)indexes
+	    maxCount: (size_t)maxCount
+	inIndexRange: (nullable OFRange *)range;
+
+/**
+ * @brief Returns the number of indexes in the specified range.
+ *
+ * @return The number of indexes in the specified range
+ */
+- (size_t)countOfIndexesInRange: (OFRange)range;
 @end
 
 OF_ASSUME_NONNULL_END

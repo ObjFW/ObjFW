@@ -2132,8 +2132,7 @@ OF_SINGLETON_METHODS
 	void *pool;
 	OFString *ret;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();

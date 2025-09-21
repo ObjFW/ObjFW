@@ -332,7 +332,7 @@ OF_ASSUME_NONNULL_END
 
 #import "OFMutableDictionary.h"
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#ifndef NSINTEGER_DEFINED
 /* Required for dictionary literals to work */
 @compatibility_alias NSDictionary OFDictionary;
 #endif

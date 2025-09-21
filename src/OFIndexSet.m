@@ -22,6 +22,7 @@
 #import "OFIndexSet.h"
 #import "OFIndexSet+Private.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -275,5 +276,106 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 			return OFEndOfRange(ranges[position]) - 1;
 
 	return OFNotFound;
+}
+
+- (size_t)getIndexes: (size_t *)indexes
+	    maxCount: (size_t)maxCount
+	inIndexRange: (OFRange *)rangePtr
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, written = 0, rangeStart, rangeEnd;
+	size_t position;
+
+	if (count == 0)
+		return 0;
+
+	if (rangePtr != NULL) {
+		rangeStart = rangePtr->location;
+		rangeEnd = OFEndOfRange(*rangePtr);
+	} else {
+		rangeStart = ranges[0].location;
+		rangeEnd = OFEndOfRange(ranges[count - 1]);
+	}
+
+	position = positionForIndex(ranges, count, rangeStart);
+
+	for (; position < count && written < maxCount; position++) {
+		size_t start = ranges[position].location;
+		size_t end = OFEndOfRange(ranges[position]);
+
+		if (start > rangeEnd)
+			break;
+
+		if (start < rangeStart) {
+			start = rangeStart;
+			if (!OFLocationInRange(start, ranges[position]))
+				continue;
+		}
+
+		for (size_t i = start; i < end && i < rangeEnd &&
+		    written < maxCount; i++)
+			indexes[written++] = i;
+	}
+
+	return written;
+}
+
+- (size_t)countOfIndexesInRange: (OFRange)range
+{
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count, indexes = 0, position, rangeEnd;
+
+	if (count == 0)
+		return 0;
+
+	position = positionForIndex(ranges, count, range.location);
+	rangeEnd = OFEndOfRange(range);
+
+	for (; position < count; position++) {
+		size_t start = ranges[position].location;
+		size_t end = OFEndOfRange(ranges[position]);
+
+		if (start > rangeEnd)
+			break;
+
+		if (start < range.location) {
+			start = range.location;
+			if (!OFLocationInRange(start, ranges[position]))
+				continue;
+		}
+
+		for (size_t i = start; i < end && i < rangeEnd; i++)
+			indexes++;
+	}
+
+	return indexes;
+}
+
+- (OFString *)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = _ranges.items;
+	size_t count = _ranges.count;
+	OFMutableString *indexes = [OFMutableString string];
+	OFString *ret;
+
+	for (size_t i = 0; i < count; i++) {
+		if (indexes.length > 0)
+			[indexes appendString: @", "];
+
+		if (ranges[i].length == 1)
+			[indexes appendFormat: @"%zu", ranges[i].location];
+		else
+			[indexes appendFormat:
+			    @"%zu-%zu",
+			    ranges[i].location, OFEndOfRange(ranges[i]) - 1];
+	}
+
+	ret = [[OFString alloc] initWithFormat: @"<%@: %@>",
+						self.class, indexes];
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
 }
 @end
