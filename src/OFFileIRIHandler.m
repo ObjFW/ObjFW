@@ -1328,10 +1328,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 }
 
-- (void)of_setOwnerAccountName: (OFString *)owner
-      andGroupOwnerAccountName: (OFString *)group
+- (void)of_setOwnerAccountName: (OFString *)ownerAccountName
+      andGroupOwnerAccountName: (OFString *)groupOwnerAccountName
+		ownerAccountID: (OFNumber *)ownerAccountID
+	   groupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 		   ofItemAtIRI: (OFIRI *)IRI
-		  attributeKey: (OFFileAttributeKey)attributeKey
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
@@ -1340,39 +1341,66 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	gid_t gid = -1;
 	OFStringEncoding encoding;
 
-	if (owner == nil && group == nil)
+	if (ownerAccountName == nil && groupOwnerAccountName == nil &&
+	    ownerAccountID == nil && groupOwnerAccountID == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	encoding = [OFLocale encoding];
+
+	if (ownerAccountID != nil) {
+		unsigned long tmp = ownerAccountID.unsignedLongValue;
+
+		if (tmp > ~(uid_t)0)
+			@throw [OFOutOfRangeException exception];
+
+		uid = (uid_t)tmp;
+	}
+
+	if (groupOwnerAccountID != nil) {
+		unsigned long tmp = groupOwnerAccountID.unsignedLongValue;
+
+		if (tmp > ~(gid_t)0)
+			@throw [OFOutOfRangeException exception];
+
+		uid = (gid_t)tmp;
+	}
 
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
 	@try {
 # endif
-		if (owner != nil) {
+		if (ownerAccountName != nil) {
 			struct passwd *passwd;
 
-			if ((passwd = getpwnam([owner
+			errno = 0;
+
+			if ((passwd = getpwnam([ownerAccountName
 			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFSetItemAttributesFailedException
 				    exceptionWithIRI: IRI
 					  attributes: attributes
-				     failedAttribute: attributeKey
+				     failedAttribute: OFFileOwnerAccountName
 					       errNo: errno];
 
 			uid = passwd->pw_uid;
 		}
 
-		if (group != nil) {
+		if (groupOwnerAccountName != nil) {
 			struct group *group_;
 
-			if ((group_ = getgrnam([group
-			    cStringWithEncoding: encoding])) == NULL)
+			errno = 0;
+
+			if ((group_ = getgrnam([groupOwnerAccountName
+			    cStringWithEncoding: encoding])) == NULL) {
+				OFFileAttributeKey key =
+				    OFFileGroupOwnerAccountName;
+
 				@throw [OFSetItemAttributesFailedException
 				    exceptionWithIRI: IRI
 					  attributes: attributes
-				     failedAttribute: attributeKey
+				     failedAttribute: key
 					       errNo: errno];
+			}
 
 			gid = group_->gr_gid;
 		}
@@ -1382,12 +1410,26 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 # endif
 
-	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
+	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0) {
+		OFFileAttributeKey key;
+
+		if (ownerAccountName != nil)
+			key = OFFileOwnerAccountName;
+		else if (groupOwnerAccountName != nil)
+			key = OFFileGroupOwnerAccountName;
+		else if (ownerAccountID != nil)
+			key = OFFileOwnerAccountID;
+		else if (groupOwnerAccountID != nil)
+			key = OFFileGroupOwnerAccountID;
+		else
+			OFAssert(0);
+
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
-		     failedAttribute: attributeKey
+		     failedAttribute: key
 			       errNo: errno];
+	}
 #else
 	OF_UNRECOGNIZED_SELECTOR
 #endif
@@ -1433,6 +1475,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFEnumerator *objectEnumerator;
 	OFFileAttributeKey key;
 	id object;
+	OFString *ownerAccountName, *groupOwnerAccountName;
+	OFNumber *ownerAccountID, *groupOwnerAccountID;
 	OFDate *lastAccessDate, *modificationDate;
 
 	if (IRI == nil)
@@ -1446,24 +1490,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: OFFileModificationDate] ||
+		if ([key isEqual: OFFileOwnerAccountName] ||
+		    [key isEqual: OFFileOwnerAccountID] ||
+		    [key isEqual: OFFileGroupOwnerAccountName] ||
+		    [key isEqual: OFFileGroupOwnerAccountID] ||
+		    [key isEqual: OFFileModificationDate] ||
 		    [key isEqual: OFFileLastAccessDate])
 			continue;
 		else if ([key isEqual: OFFilePOSIXPermissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtIRI: IRI
-					  attributes: attributes];
-		else if ([key isEqual: OFFileOwnerAccountName])
-			[self of_setOwnerAccountName: object
-			    andGroupOwnerAccountName: nil
-					 ofItemAtIRI: IRI
-					attributeKey: key
-					  attributes: attributes];
-		else if ([key isEqual: OFFileGroupOwnerAccountName])
-			[self of_setOwnerAccountName: nil
-			    andGroupOwnerAccountName: object
-					 ofItemAtIRI: IRI
-					attributeKey: key
 					  attributes: attributes];
 #ifdef OF_AMIGAOS
 		else if ([key isEqual: OFFileAmigaProtection])
@@ -1480,6 +1516,22 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    exceptionWithSelector: _cmd
 					   object: self];
 	}
+
+	ownerAccountName = [attributes objectForKey: OFFileOwnerAccountName];
+	groupOwnerAccountName = [attributes
+	    objectForKey: OFFileGroupOwnerAccountName];
+	ownerAccountID = [attributes objectForKey: OFFileOwnerAccountID];
+	groupOwnerAccountID = [attributes
+	    objectForKey: OFFileGroupOwnerAccountID];
+
+	if (ownerAccountName != nil || groupOwnerAccountName != nil ||
+	    ownerAccountID != nil || groupOwnerAccountID != nil)
+		[self of_setOwnerAccountName: ownerAccountName
+		    andGroupOwnerAccountName: groupOwnerAccountName
+			      ownerAccountID: ownerAccountID
+			 groupOwnerAccountID: groupOwnerAccountID
+				 ofItemAtIRI: IRI
+				  attributes: attributes];
 
 	lastAccessDate = [attributes objectForKey: OFFileLastAccessDate];
 	modificationDate = [attributes objectForKey: OFFileModificationDate];
