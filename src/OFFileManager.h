@@ -54,16 +54,44 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 @class OFString;
 
-enum {
-	OFFileAmigaDeleteProtected  = 0x01,
-	OFFileAmigaExecuteProtected = 0x02,
-	OFFileAmigaWriteProtected   = 0x04,
-	OFFileAmigaReadProtected    = 0x08,
-	OFFileAmigaArchived         = 0x10,
-	OFFileAmigaPure             = 0x20,
-	OFFileAmigaScript           = 0x40,
-	OFFileAmigaHold             = 0x80
-};
+/**
+ * @brief Amiga file protection bits. This is a bit mask and the values are
+ *	  ORed.
+ */
+typedef enum OFFileAmigaProtectionBits {
+	/** @brief The file cannot be deleted. */
+	OFFileAmigaDeleteProtected  = 0x0001,
+	/** @brief The file cannot be executed. */
+	OFFileAmigaExecuteProtected = 0x0002,
+	/** @brief The file cannot be written to. */
+	OFFileAmigaWriteProtected   = 0x0004,
+	/** @brief The file cannot be read. */
+	OFFileAmigaReadProtected    = 0x0008,
+	/** @brief The file has not been changed since it was archived. */
+	OFFileAmigaArchived         = 0x0010,
+	/** @brief The file is a reentrant program and can be made resident. */
+	OFFileAmigaPure             = 0x0020,
+	/** @brief The file is a script. */
+	OFFileAmigaScript           = 0x0040,
+	/** @brief The file is made resident on first execution. */
+	OFFileAmigaHold             = 0x0080,
+	/** @brief The file can be deleted by the group. */
+	OFFileAmigaGroupDeletable   = 0x0100,
+	/** @brief The file can be executed by the group. */
+	OFFileAmigaGroupExecutable  = 0x0200,
+	/** @brief The file can be written to by the group. */
+	OFFileAmigaGroupWritable    = 0x0400,
+	/** @brief The file can be read by group. */
+	OFFileAmigaGroupReadable    = 0x0800,
+	/** @brief The file can be deleted by others. */
+	OFFileAmigaOtherDeletable   = 0x1000,
+	/** @brief The file can be executed by others. */
+	OFFileAmigaOtherExecutable  = 0x2000,
+	/** @brief The file can be written to by others. */
+	OFFileAmigaOtherWritable    = 0x4000,
+	/** @brief The file can be read by others. */
+	OFFileAmigaOtherReadable    = 0x8000
+} OFFileAmigaProtectionBits;
 
 /**
  * @brief A key for a file attribute in the file attributes dictionary.
@@ -234,17 +262,7 @@ extern const OFFileAttributeKey OFFileExtendedAttributesNames;
 /**
  * @brief The Amiga file protection as an @ref OFNumber.
  *
- * This is a bit mask of the following values:
- * Value                       | Description
- * ----------------------------|---------------------------------------
- * OFFileAmigaDeleteProtected  | The file cannot be deleted
- * OFFileAmigaExecuteProtected | The file cannot be executed
- * OFFileAmigaWriteProtected   | The file cannot be written to
- * OFFileAmigaReadProtected    | The file cannot be read
- * OFFileAmigaArchived         | The file has been archived
- * OFFileAmigaPure             | The file is executable and reentrant
- * OFFileAmigaScript           | The file is a script
- * OFFileAmigaHold             | The file is made resident on execution
+ * See @ref OFFileAmigaProtectionBits for possible values.
  */
 extern const OFFileAttributeKey OFFileAmigaProtection;
 
@@ -1044,7 +1062,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @throw OFUndefinedKeyException The key is missing
  */
-@property (readonly, nonatomic) uint32_t fileAmigaProtection;
+@property (readonly, nonatomic) OFFileAmigaProtectionBits fileAmigaProtection;
 
 /**
  * @brief The @ref OFFileAmigaComment key from the dictionary.
