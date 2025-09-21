@@ -112,8 +112,6 @@ users, the following venues are available:
  * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
  * A [Discord room](https://objfw.nil.im/discord), bridged to the Matrix room
    above
- * A [Signal room](https://objfw.nil.im/signal), bridged to the Matrix room
-   above
  * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
  * A [Slack room](https://objfw.nil.im/slack), bridged to the Matrix room above
  * An IRC channel named `#objfw` on `irc.libera.chat`
