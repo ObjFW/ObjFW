@@ -1176,10 +1176,15 @@ OF_SINGLETON_METHODS
 	return attributeForKeyOrException(self, OFFileExtendedAttributesNames);
 }
 
-- (OFFileAmigaProtectionBits)fileAmigaProtection
+- (uint32_t)fileAmigaProtection
 {
-	return [attributeForKeyOrException(self,
-	    OFFileAmigaProtection) intValue];
+	unsigned long protection = [attributeForKeyOrException(self,
+	    OFFileAmigaProtection) unsignedLongValue];
+
+	if (protection > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (uint32_t)protection;
 }
 
 - (OFString *)fileAmigaComment

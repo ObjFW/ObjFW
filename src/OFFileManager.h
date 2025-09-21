@@ -1062,7 +1062,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @throw OFUndefinedKeyException The key is missing
  */
-@property (readonly, nonatomic) OFFileAmigaProtectionBits fileAmigaProtection;
+@property (readonly, nonatomic) uint32_t fileAmigaProtection;
 
 /**
  * @brief The @ref OFFileAmigaComment key from the dictionary.
