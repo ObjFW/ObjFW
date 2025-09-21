@@ -131,7 +131,8 @@ typedef struct {
 	DWORD fileAttributes;
 # endif
 # ifdef OF_AMIGAOS
-	unsigned long protection;
+	uint32_t st_uid, st_gid, protection;
+	/* TODO: Allow more on AmigaOS 4? */
 	char comment[80];
 # endif
 } Stat;
@@ -343,7 +344,7 @@ statWrapper(OFString *path, Stat *buffer)
 #  ifdef EX64TAG_PosixDate
 		{ EX64TAG_PosixDate, TRUE },
 #  endif
-		{ TAG_DONE, 0 }
+		{ TAG_END, 0 }
 	};
 
 #  ifdef FIBEXTF_POSIXDATE
@@ -376,23 +377,40 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
-	if (!(fib.fib_Protection & FIBF_READ))
+# ifdef OF_AMIGAOS4
+	buffer->st_uid = ed->OwnerUID;
+	buffer->st_gid = ed->OwnerGID;
+	buffer->protection = ed->Protection;
+
+	if (ed->CommentSize > 80) {
+		memcpy(buffer->comment, ed->Comment, 79);
+		buffer->comment[79] = '\0';
+	} else
+		memcpy(buffer->comment, ed->Comment, ed->CommentSize);
+# else
+	buffer->st_uid = fib.fib_OwnerUID;
+	buffer->st_gid = fib.fib_OwnerGID;
+	buffer->protection = fib.fib_Protection;
+	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
+# endif
+
+	if (!(buffer->protection & FIBF_READ))
 		buffer->st_mode |= 0400;
-	if (!(fib.fib_Protection & FIBF_WRITE))
+	if (!(buffer->protection & FIBF_WRITE))
 		buffer->st_mode |= 0200;
-	if (!(fib.fib_Protection & FIBF_EXECUTE))
+	if (!(buffer->protection & FIBF_EXECUTE))
 		buffer->st_mode |= 0100;
-	if (fib.fib_Protection & FIBF_GRP_READ)
+	if (buffer->protection & FIBF_GRP_READ)
 		buffer->st_mode |= 0040;
-	if (fib.fib_Protection & FIBF_GRP_WRITE)
+	if (buffer->protection & FIBF_GRP_WRITE)
 		buffer->st_mode |= 0020;
-	if (fib.fib_Protection & FIBF_GRP_EXECUTE)
+	if (buffer->protection & FIBF_GRP_EXECUTE)
 		buffer->st_mode |= 0010;
-	if (fib.fib_Protection & FIBF_OTR_READ)
+	if (buffer->protection & FIBF_OTR_READ)
 		buffer->st_mode |= 0004;
-	if (fib.fib_Protection & FIBF_OTR_WRITE)
+	if (buffer->protection & FIBF_OTR_WRITE)
 		buffer->st_mode |= 0002;
-	if (fib.fib_Protection & FIBF_OTR_EXECUTE)
+	if (buffer->protection & FIBF_OTR_EXECUTE)
 		buffer->st_mode |= 0001;
 
 # if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
@@ -425,9 +443,6 @@ statWrapper(OFString *path, Stat *buffer)
 # endif
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
-
-	buffer->protection = fib.fib_Protection;
-	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
 
 # ifdef OF_AMIGAOS4
 	FreeDosObject(DOS_EXAMINEDATA, ed);
@@ -1241,6 +1256,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 # else
 	struct FileInfoBlock fib;
 # endif
+	uint32_t protection;
 
 	if ([attributes objectForKey: OFFileAmigaProtection] != nil)
 		/* Amiga file protection trumps POSIX permissions */
@@ -1274,31 +1290,37 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	UnLock(lock);
 
+# ifdef OF_AMIGAOS4
+	protection = ed->Protection;
+# else
+	protection = fib.fib_Protection;
+# endif
+
 	/* Remove the bits that can be derived from POSIX permissions */
-	fib.fib_Protection &= ~(FIBF_READ | FIBF_WRITE | FIBF_EXECUTE |
+	protection &= ~(FIBF_READ | FIBF_WRITE | FIBF_EXECUTE |
 	    FIBF_GRP_READ | FIBF_GRP_WRITE | FIBF_GRP_EXECUTE |
 	    FIBF_OTR_READ | FIBF_OTR_WRITE | FIBF_OTR_EXECUTE);
 
 	if (!(mode & 0400))
-		fib.fib_Protection |= FIBF_READ;
+		protection |= FIBF_READ;
 	if (!(mode & 0200))
-		fib.fib_Protection |= FIBF_WRITE;
+		protection |= FIBF_WRITE;
 	if (!(mode & 0100))
-		fib.fib_Protection |= FIBF_EXECUTE;
+		protection |= FIBF_EXECUTE;
 	if (mode & 0040)
-		fib.fib_Protection |= FIBF_GRP_READ;
+		protection |= FIBF_GRP_READ;
 	if (mode & 0020)
-		fib.fib_Protection |= FIBF_GRP_WRITE;
+		protection |= FIBF_GRP_WRITE;
 	if (mode & 0010)
-		fib.fib_Protection |= FIBF_GRP_EXECUTE;
+		protection |= FIBF_GRP_EXECUTE;
 	if (mode & 0004)
-		fib.fib_Protection |= FIBF_OTR_READ;
+		protection |= FIBF_OTR_READ;
 	if (mode & 0002)
-		fib.fib_Protection |= FIBF_OTR_WRITE;
+		protection |= FIBF_OTR_WRITE;
 	if (mode & 0001)
-		fib.fib_Protection |= FIBF_OTR_EXECUTE;
+		protection |= FIBF_OTR_EXECUTE;
 
-	if (!SetProtection(path, fib.fib_Protection))
+	if (!SetProtection(path, protection))
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
@@ -1335,7 +1357,103 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		   ofItemAtIRI: (OFIRI *)IRI
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+#if defined(OF_AMIGAOS)
+	const char *path;
+	BPTR lock;
+# ifndef OF_AMIGAOS4
+	struct FileInfoBlock fib;
+# endif
+	uint32_t uid;
+	uint32_t gid;
+
+	if (ownerAccountName != nil || groupOwnerAccountName != nil)
+		@throw [OFNotImplementedException
+		    exceptionWithSelector: @selector(setAttributes:ofItemAtIRI:)
+				   object: self];
+
+	if (ownerAccountID == nil && groupOwnerAccountID == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	path = [IRI.fileSystemRepresentation
+	    cStringWithEncoding: [OFLocale encoding]];
+
+	if (ownerAccountID == nil || groupOwnerAccountID == nil) {
+# ifdef OF_AMIGAOS4
+		if (!GetOwnerInfo(OI_StringNameInput, path,
+		    OI_OwnerUID, &uid, OI_OwnerGID, &gid, TAG_END)) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: lastError()];
+		}
+# else
+		if ((lock = Lock(path, SHARED_LOCK)) == 0) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: lastError()];
+		}
+
+		if (!Examine(lock, &fib)) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+			int error = lastError();
+			UnLock(lock);
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: error];
+		}
+
+		UnLock(lock);
+
+		uid = fib.fib_OwnerUID;
+		gid = fib.fib_OwnerGID;
+# endif
+	}
+
+	if (ownerAccountID != nil) {
+		unsigned long tmp = ownerAccountID.unsignedLongValue;
+		if (tmp > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+		uid = (uint32_t)tmp;
+	}
+
+	if (groupOwnerAccountID != nil) {
+		unsigned long tmp = groupOwnerAccountID.unsignedLongValue;
+		if (tmp > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+		gid = (uint32_t)tmp;
+	}
+
+# ifdef OF_AMIGAOS4
+	if (!SetOwnerInfo(OI_StringNameInput, path, OI_OwnerUID, uid,
+	    OI_OwnerGID, gid, TAG_END)) {
+# else
+	if (uid > UINT16_MAX || gid > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (!SetOwner(path, uid << 16 | gid)) {
+# endif
+		OFFileAttributeKey key = (ownerAccountID != nil
+		    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: key
+			       errNo: lastError()];
+	}
+#elif defined(OF_FILE_MANAGER_SUPPORTS_OWNER)
 	OFString *path = IRI.fileSystemRepresentation;
 	uid_t uid = -1;
 	gid_t gid = -1;

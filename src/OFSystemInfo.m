@@ -1039,7 +1039,7 @@ cpucfg(uint32_t word)
 	uint32_t supportsAltiVec;
 
 	if (NewGetSystemAttrs(&supportsAltiVec, sizeof(supportsAltiVec),
-	    SYSTEMINFOTYPE_PPC_ALTIVEC, TAG_DONE) > 0)
+	    SYSTEMINFOTYPE_PPC_ALTIVEC, TAG_END) > 0)
 		return supportsAltiVec;
 # endif
 

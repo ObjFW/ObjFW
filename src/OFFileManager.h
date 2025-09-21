@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 # if (defined(OF_HAVE_CHMOD) && !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 # endif
-# if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
+# if defined(OF_HAVE_CHOWN) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
 # if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && \
