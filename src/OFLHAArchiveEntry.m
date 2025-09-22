@@ -751,7 +751,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[data addItems: &tmp16 count: sizeof(tmp16)];
 
 	/* Operating system identifier */
-	[data addItem: "U"];
+	if (_operatingSystemIdentifier != 0)
+		[data addItem: &_operatingSystemIdentifier];
+	else
+		[data addItem: "U"];
 
 	/* Common header. Contains CRC16, which is written at the end. */
 	tmp16 = OFToLittleEndian16(5);
