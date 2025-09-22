@@ -52,6 +52,20 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint8_t operatingSystemIdentifier;
 
 /**
+ * @brief The Amiga Protection bits of the file.
+ *
+ * See @ref OFFileAmigaProtectionBits.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFNumber *amigaProtection;
+
+/**
+ * @brief The Amiga comment of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFString *amigaComment;
+
+/**
  * @brief The LHA extensions of the file.
  */
 @property (readwrite, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;

@@ -48,8 +48,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFNumber *_Nullable _groupOwnerAccountID;
 	OFString *_Nullable _ownerAccountName;
 	OFString *_Nullable _groupOwnerAccountName;
+	OFNumber *_Nullable _amigaProtection;
+	OFString *_Nullable _amigaComment;
 	OFMutableArray OF_GENERIC(OFData *) *_extensions;
-	OF_RESERVE_IVARS(OFLHAArchiveEntry, 4)
+	OF_RESERVE_IVARS(OFLHAArchiveEntry, 2)
 }
 
 /**
@@ -71,6 +73,20 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The operating system identifier of the file.
  */
 @property (readonly, nonatomic) uint8_t operatingSystemIdentifier;
+
+/**
+ * @brief The Amiga Protection bits of the file.
+ *
+ * See @ref OFFileAmigaProtectionBits.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFNumber *amigaProtection;
+
+/**
+ * @brief The Amiga comment of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *amigaComment;
 
 /**
  * @brief The LHA extensions of the file.

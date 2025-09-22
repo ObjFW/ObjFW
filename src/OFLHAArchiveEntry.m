@@ -221,6 +221,36 @@ parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_uncompressedSize = OFFromLittleEndian64(tmp);
 }
 
+static void
+parseAmigaProtectionExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	uint16_t tmp;
+
+	if (extension.count != 3)
+		@throw [OFInvalidFormatException exception];
+
+	objc_release(entry->_amigaProtection);
+	entry->_amigaProtection = nil;
+
+	memcpy(&tmp, (char *)extension.items + 1, 2);
+	entry->_amigaProtection = [OFNumber numberWithUnsignedShort:
+	    OFFromLittleEndian16(tmp)];
+}
+
+static void
+parseAmigaCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	objc_release(entry->_amigaComment);
+	entry->_amigaComment = nil;
+
+	entry->_amigaComment = [[OFString alloc]
+	    initWithCString: (char *)extension.items + 1
+		   encoding: encoding
+		     length: [extension count] - 1];
+}
+
 static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding, bool allowFileName)
@@ -239,6 +269,10 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	case 0x3F:
 		function = parseCommentExtension;
 		break;
+	case 0x40:
+		if (entry->_operatingSystemIdentifier == 'A')
+			function = parseAmigaProtectionExtension;
+		break;
 	case 0x42:
 		function = parseFileSizeExtension;
 		break;
@@ -256,6 +290,10 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		break;
 	case 0x54:
 		function = parseModificationDateExtension;
+		break;
+	case 0x71:
+		if (entry->_operatingSystemIdentifier == 'A')
+			function = parseAmigaCommentExtension;
 		break;
 	}
 
@@ -646,6 +684,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _groupOwnerAccountName;
 }
 
+- (OFNumber *)amigaProtection
+{
+	return _amigaProtection;
+}
+
+- (OFString *)amigaComment
+{
+	return _amigaComment;
+}
+
 - (OFArray OF_GENERIC(OFData *) *)extensions
 {
 	return _extensions;
@@ -879,13 +927,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tGroup owner account ID = %@\n"
 	    @"\tOwner account name = %@\n"
 	    @"\tGroup owner accounut name = %@\n"
+	    @"\tAmiga protection = %@\n"
+	    @"\tAmiga comment = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
 	    self.class, self.fileName, _compressionMethod, _compressedSize,
 	    _uncompressedSize, _modificationDate, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, POSIXPermissions,
 	    _ownerAccountID, _groupOwnerAccountID, _ownerAccountName,
-	    _groupOwnerAccountName, extensions];
+	    _groupOwnerAccountName, _amigaProtection, _amigaComment,
+	    extensions];
 
 	objc_retain(ret);
 

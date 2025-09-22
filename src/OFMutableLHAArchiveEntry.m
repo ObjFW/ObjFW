@@ -31,7 +31,8 @@
 @dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
 @dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
 @dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName, extensions;
+@dynamic ownerAccountName, groupOwnerAccountName, amigaProtection, amigaComment;
+@dynamic extensions;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -150,6 +151,20 @@
 {
 	OFString *old = _groupOwnerAccountName;
 	_groupOwnerAccountName = [groupOwnerAccountName copy];
+	objc_release(old);
+}
+
+- (void)setAmigaProtection: (OFNumber *)amigaProtection
+{
+	OFNumber *old = _amigaProtection;
+	_amigaProtection = objc_retain(amigaProtection);
+	objc_release(old);
+}
+
+- (void)setAmigaComment: (OFString *)amigaComment
+{
+	OFString *old = _amigaComment;
+	_amigaComment = [amigaComment copy];
 	objc_release(old);
 }
 

@@ -230,6 +230,25 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				    @"Group: %[name]",
 				    @"name", entry.groupOwnerAccountName)];
 			}
+			if (entry.amigaProtection != nil) {
+				OFString *protectionString = [OFString
+				    stringWithFormat: @"%04lx",
+				    entry.amigaProtection
+				    .unsignedLongValue];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_protection",
+				    @"Amiga protection bits: %[prot]",
+				    @"prot", protectionString)];
+			}
+			if (entry.amigaComment != nil) {
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_comment",
+				    @"Amiga comment: %[comment]",
+				    @"comment", entry.amigaComment)];
+			}
 
 			if (app->_outputLevel >= 2) {
 				OFString *headerLevel = [OFString
