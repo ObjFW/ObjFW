@@ -255,8 +255,10 @@ void *__objc_class_name_OFWaitForConditionFailedException;
 /* Only used by tests. */
 void *__objc_class_name_OFBitSetCharacterSet;
 void *__objc_class_name_OFConcreteArray;
+void *__objc_class_name_OFConcreteData;
 void *__objc_class_name_OFConcreteDictionary;
 void *__objc_class_name_OFConcreteMutableArray;
+void *__objc_class_name_OFConcreteMutableData;
 void *__objc_class_name_OFConcreteMutableDictionary;
 void *__objc_class_name_OFConcreteMutableSet;
 void *__objc_class_name_OFConcreteSet;
