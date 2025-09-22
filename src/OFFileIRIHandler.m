@@ -606,10 +606,11 @@ setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_gid]
 		       forKey: OFFileGroupOwnerAccountID];
 
-# ifdef OF_HAVE_THREADS
+# ifndef OF_AMIGAOS
+#  ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
 	@try {
-# endif
+#  endif
 		OFStringEncoding encoding = [OFLocale encoding];
 		struct passwd *passwd = getpwuid(s->st_uid);
 		struct group *group_ = getgrgid(s->st_gid);
@@ -631,10 +632,11 @@ setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 			[attributes setObject: group
 				       forKey: OFFileGroupOwnerAccountName];
 		}
-# ifdef OF_HAVE_THREADS
+#  ifdef OF_HAVE_THREADS
 	} @finally {
 		[passwdMutex unlock];
 	}
+#  endif
 # endif
 #endif
 }
