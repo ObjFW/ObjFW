@@ -157,6 +157,13 @@ typedef struct stat Stat;
 # define st_ctim st_ctimespec
 #endif
 
+#ifndef UID_MAX
+# define UID_MAX ((unsigned long)~(uid_t)0)
+#endif
+#ifndef GID_MAX
+# define GID_MAX ((unsigned long)~(gid_t)0)
+#endif
+
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 
@@ -1468,7 +1475,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (ownerAccountID != nil) {
 		unsigned long tmp = ownerAccountID.unsignedLongValue;
 
-		if (tmp > ~(uid_t)0)
+		if (tmp > UID_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		uid = (uid_t)tmp;
@@ -1477,7 +1484,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	if (groupOwnerAccountID != nil) {
 		unsigned long tmp = groupOwnerAccountID.unsignedLongValue;
 
-		if (tmp > ~(gid_t)0)
+		if (tmp > GID_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		uid = (gid_t)tmp;
