@@ -91,7 +91,7 @@ help(OFStream *stream, bool full, int status)
 		    @"directory\n"
 		    @"    -E  --encoding=         The encoding used by the "
 		    @"archive\n"
-		    @"                            (only tar, lha and zoo files)"
+		    @"                            (only Tar, LHA and Zoo files)"
 		    @"\n"
 		    @"    -f  --force             Force / overwrite files\n"
 		    @"    -h  --help              Show this help\n"
