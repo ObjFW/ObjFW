@@ -543,7 +543,9 @@ outer_loop_end:
 		OFFileAttributes attributes;
 		OFFileAttributeType type;
 		OFMutableLHAArchiveEntry *entry;
+#ifdef OF_AMIGAOS
 		OFNumber *amigaProtection;
+#endif
 		OFStream *output;
 
 		[app checkForCancellation];
