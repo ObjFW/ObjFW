@@ -627,6 +627,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		copy->_ownerAccountName = [_ownerAccountName copy];
 		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
 		copy->_extensions = [_extensions copy];
+		copy->_MSDOSAttributes = objc_retain(_MSDOSAttributes);
+		copy->_amigaComment = [_amigaComment copy];
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
