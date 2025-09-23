@@ -31,7 +31,7 @@
 @dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
 @dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
 @dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName, amigaProtection, amigaComment;
+@dynamic ownerAccountName, groupOwnerAccountName, MSDOSAttributes, amigaComment;
 @dynamic extensions;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
@@ -154,10 +154,10 @@
 	objc_release(old);
 }
 
-- (void)setAmigaProtection: (OFNumber *)amigaProtection
+- (void)setMSDOSAttributes: (OFNumber *)MSDOSAttributes
 {
-	OFNumber *old = _amigaProtection;
-	_amigaProtection = objc_retain(amigaProtection);
+	OFNumber *old = _MSDOSAttributes;
+	_MSDOSAttributes = objc_retain(MSDOSAttributes);
 	objc_release(old);
 }
 

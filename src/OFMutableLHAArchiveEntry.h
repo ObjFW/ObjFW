@@ -52,12 +52,13 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint8_t operatingSystemIdentifier;
 
 /**
- * @brief The Amiga Protection bits of the file.
+ * @brief The MS-DOS attributes of the file.
  *
- * See @ref OFFileAmigaProtectionBits.
+ * If @ref operatingSystemIdentifier is 'A', these are Amiga Protection bits
+ * instead (see @ref OFFileAmigaProtectionBits).
  */
 @property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
-    OFNumber *amigaProtection;
+    OFNumber *MSDOSAttributes;
 
 /**
  * @brief The Amiga comment of the file.

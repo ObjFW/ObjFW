@@ -230,17 +230,24 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				    @"Group: %[name]",
 				    @"name", entry.groupOwnerAccountName)];
 			}
-			if (entry.amigaProtection != nil) {
-				OFString *protectionString = [OFString
+			if (entry.MSDOSAttributes != nil) {
+				OFString *attributesString = [OFString
 				    stringWithFormat: @"%04lx",
-				    entry.amigaProtection
-				    .unsignedLongValue];
+				    entry.MSDOSAttributes.unsignedLongValue];
 
-				[OFStdOut writeString: @"\t"];
-				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_amiga_protection",
-				    @"Amiga protection bits: %[prot]",
-				    @"prot", protectionString)];
+				if (entry.operatingSystemIdentifier == 'A') {
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_amiga_protection",
+					    @"Amiga protection bits: %[prot]",
+					    @"prot", attributesString)];
+				} else {
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_msdos_attributes",
+					    @"MS-DOS attributes: %[attr]",
+					    @"attr", attributesString)];
+				}
 			}
 			if (entry.amigaComment != nil) {
 				[OFStdOut writeString: @"\t"];

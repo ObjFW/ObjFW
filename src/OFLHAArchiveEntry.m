@@ -222,7 +222,7 @@ parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
 }
 
 static void
-parseAmigaProtectionExtension(OFLHAArchiveEntry *entry, OFData *extension,
+parseMSDOSAttributesExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
 {
 	uint16_t tmp;
@@ -230,11 +230,11 @@ parseAmigaProtectionExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 3)
 		@throw [OFInvalidFormatException exception];
 
-	objc_release(entry->_amigaProtection);
-	entry->_amigaProtection = nil;
+	objc_release(entry->_MSDOSAttributes);
+	entry->_MSDOSAttributes = nil;
 
 	memcpy(&tmp, (char *)extension.items + 1, 2);
-	entry->_amigaProtection = [OFNumber numberWithUnsignedShort:
+	entry->_MSDOSAttributes = [OFNumber numberWithUnsignedShort:
 	    OFFromLittleEndian16(tmp)];
 }
 
@@ -270,8 +270,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		function = parseCommentExtension;
 		break;
 	case 0x40:
-		if (entry->_operatingSystemIdentifier == 'A')
-			function = parseAmigaProtectionExtension;
+		function = parseMSDOSAttributesExtension;
 		break;
 	case 0x42:
 		function = parseFileSizeExtension;
@@ -446,6 +445,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 						      withString: @"/"];
 			_fileName = [fileName copy];
 
+			_MSDOSAttributes = [[OFNumber alloc]
+			    initWithUnsignedChar: header[19]];
+
 			_CRC16 = [stream readLittleEndianInt16];
 
 			extendedAreaSize =
@@ -566,6 +568,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	objc_release(_groupOwnerAccountID);
 	objc_release(_ownerAccountName);
 	objc_release(_groupOwnerAccountName);
+	objc_release(_MSDOSAttributes);
+	objc_release(_amigaComment);
 	objc_release(_extensions);
 
 	[super dealloc];
@@ -684,9 +688,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _groupOwnerAccountName;
 }
 
-- (OFNumber *)amigaProtection
+- (OFNumber *)MSDOSAttributes
 {
-	return _amigaProtection;
+	return _MSDOSAttributes;
 }
 
 - (OFString *)amigaComment
@@ -801,6 +805,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[data addItems: &tmp64 count: sizeof(tmp64)];
 	tmp64 = OFToLittleEndian64(_uncompressedSize);
 	[data addItems: &tmp64 count: sizeof(tmp64)];
+
+	if (_MSDOSAttributes != nil) {
+		tmp16 = OFToLittleEndian16(5);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+		[data addItem: "\x40"];
+
+		tmp16 =
+		    OFToLittleEndian16(_MSDOSAttributes.unsignedShortValue);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+	}
 
 	if (_POSIXPermissions != nil) {
 		tmp16 = OFToLittleEndian16(5);
@@ -930,7 +944,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tGroup owner account ID = %@\n"
 	    @"\tOwner account name = %@\n"
 	    @"\tGroup owner accounut name = %@\n"
-	    @"\tAmiga protection = %@\n"
+	    @"\tMS-DOS attributes = %@\n"
 	    @"\tAmiga comment = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
@@ -938,7 +952,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    _uncompressedSize, _modificationDate, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, POSIXPermissions,
 	    _ownerAccountID, _groupOwnerAccountID, _ownerAccountName,
-	    _groupOwnerAccountName, _amigaProtection, _amigaComment,
+	    _groupOwnerAccountName, _MSDOSAttributes, _amigaComment,
 	    extensions];
 
 	objc_retain(ret);
