@@ -336,7 +336,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
-	OFMutableArray *delayedModificationDates = [OFMutableArray array];
+	OFMutableArray *delayed = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFLHAArchiveEntry *entry;
@@ -376,14 +376,14 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		if ([fileName hasSuffix: @"/"]) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
-			setPermissions(outFileName, entry);
-			setAmigaProtection(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
-			 * have been created.
+			 * have been created. Also, restricting permissions
+			 * (e.g. removing write permissions) before all files
+			 * in a directory have been written would also fail.
 			 */
-			[delayedModificationDates addObject:
+			[delayed addObject:
 			    [OFPair pairWithFirstObject: outFileName
 					   secondObject: entry]];
 
@@ -464,8 +464,11 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	for (OFPair *pair in delayedModificationDates)
+	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
+		setPermissions(pair.firstObject, pair.secondObject);
+		setAmigaProtection(pair.firstObject, pair.secondObject);
+	}
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
