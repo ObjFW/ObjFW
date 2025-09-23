@@ -72,6 +72,40 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 }
 
 static void
+setAmigaProtection(OFString *path, OFLHAArchiveEntry *entry)
+{
+#ifdef OF_AMIGAOS
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
+	OFString *amigaComment = entry.amigaComment;
+
+	/*
+	 * Header level 0 does not store the operating system identifier, so
+	 * for header level 0, we don't know what is actually stored in the
+	 * MS-DOS attributes, as Amiga LHA stored the Amiga protection bits in
+	 * there. However, as we are running on an AmigaOS-like system, the
+	 * user is most likely trying to extract a file made by Amiga LHA.
+	 */
+	if (MSDOSAttributes != nil && (entry.operatingSystemIdentifier == 'A' ||
+	    entry.headerLevel == 0)) {
+		OFFileAttributes attributes = [OFDictionary
+		    dictionaryWithObject: MSDOSAttributes
+				  forKey: OFFileAmigaProtection];
+
+		[fileManager setAttributes: attributes ofItemAtPath: path];
+	}
+
+	if (amigaComment != nil) {
+		OFFileAttributes attributes = [OFDictionary
+		    dictionaryWithObject: amigaComment
+				  forKey: OFFileAmigaComment];
+
+		[fileManager setAttributes: attributes ofItemAtPath: path];
+	}
+#endif
+}
+
+static void
 setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFFileAttributes attributes = [OFDictionary
@@ -343,6 +377,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
+			setAmigaProtection(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
@@ -410,6 +445,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		}
 
 		[output close];
+		/*
+		 * Amiga protection applies immediately, so needs to be set
+		 * after the file is closed.
+		 */
+		setAmigaProtection(outFileName, entry);
 		setModificationDate(outFileName, entry);
 
 		if (app->_outputLevel >= 0) {
@@ -503,6 +543,7 @@ outer_loop_end:
 		OFFileAttributes attributes;
 		OFFileAttributeType type;
 		OFMutableLHAArchiveEntry *entry;
+		OFNumber *amigaProtection;
 		OFStream *output;
 
 		[app checkForCancellation];
@@ -531,6 +572,18 @@ outer_loop_end:
 		    [attributes objectForKey: OFFileOwnerAccountName];
 		entry.groupOwnerAccountName =
 		    [attributes objectForKey: OFFileGroupOwnerAccountName];
+#endif
+
+#ifdef OF_AMIGAOS
+		amigaProtection =
+		    [attributes objectForKey: OFFileAmigaProtection];
+		if (amigaProtection != nil) {
+			entry.operatingSystemIdentifier = 'A';
+			entry.MSDOSAttributes = amigaProtection;
+		}
+
+		entry.amigaComment =
+		    [attributes objectForKey: OFFileAmigaComment];
 #endif
 
 		if ([type isEqual: OFFileTypeDirectory]) {
