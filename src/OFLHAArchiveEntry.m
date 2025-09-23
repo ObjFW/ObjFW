@@ -428,8 +428,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		case 1:;
 			void *pool = objc_autoreleasePoolPush();
 			uint8_t extendedAreaSize;
+			char fileNameBuffer[255];
 			uint8_t fileNameLength;
 			OFString *fileName;
+			char *amigaCommentPtr;
 
 			if (header[0] < (21 - 2) + 1 + 2)
 				@throw [OFInvalidFormatException exception];
@@ -437,12 +439,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_modificationDate = objc_retain(parseMSDOSDate(date));
 
 			fileNameLength = [stream readInt8];
-			fileName = [stream readStringWithLength: fileNameLength
-						       encoding: encoding];
-			fileName = [fileName
-			    stringByReplacingOccurrencesOfString: @"\\"
-						      withString: @"/"];
-			_fileName = [fileName copy];
+			[stream readIntoBuffer: fileNameBuffer
+				   exactLength: fileNameLength];
 
 			_MSDOSAttributes = [[OFNumber alloc]
 			    initWithUnsignedChar: header[19]];
@@ -466,6 +464,29 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 				 */
 				extendedAreaSize -= 1 + 2;
 			}
+
+			amigaCommentPtr = memchr(fileNameBuffer, '\0',
+			    fileNameLength);
+			if (amigaCommentPtr != NULL) {
+				size_t newFileNameLength =
+				    (amigaCommentPtr - fileNameBuffer);
+
+				_amigaComment = [[OFString alloc]
+				    initWithCString: amigaCommentPtr + 1
+					   encoding: encoding
+					     length: fileNameLength -
+						     newFileNameLength - 1];
+
+				fileNameLength = newFileNameLength;
+			}
+
+			fileName = [OFString stringWithCString: fileNameBuffer
+						      encoding: encoding
+							length: fileNameLength];
+			fileName = [fileName
+			    stringByReplacingOccurrencesOfString: @"\\"
+						      withString: @"/"];
+			_fileName = [fileName copy];
 
 			/* Skip extended area */
 			if ([stream isKindOfClass: [OFSeekableStream class]])
