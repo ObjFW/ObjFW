@@ -291,8 +291,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		function = parseModificationDateExtension;
 		break;
 	case 0x71:
-		if (entry->_operatingSystemIdentifier == 'A')
-			function = parseAmigaCommentExtension;
+		function = parseAmigaCommentExtension;
 		break;
 	}
 
@@ -869,6 +868,20 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		[data addItem: "\x53"];
 		[data addItems: [_ownerAccountName
 				    cStringWithEncoding: encoding]
+			 count: length];
+	}
+
+	if (_amigaComment != nil) {
+		size_t length =
+		    [_amigaComment cStringLengthWithEncoding: encoding];
+
+		if (length > UINT16_MAX - 3)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OFToLittleEndian16((uint16_t)length + 3);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+		[data addItem: "\x71"];
+		[data addItems: [_amigaComment cStringWithEncoding: encoding]
 			 count: length];
 	}
 
