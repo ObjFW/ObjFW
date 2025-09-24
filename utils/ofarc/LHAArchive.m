@@ -51,31 +51,23 @@ indent(OFString *string)
 static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
 	if (POSIXPermissions != nil) {
-		OFFileAttributes attributes;
-
 		POSIXPermissions = [OFNumber numberWithUnsignedShort:
 		    POSIXPermissions.unsignedShortValue & 0777];
-		attributes = [OFDictionary
-		    dictionaryWithObject: POSIXPermissions
-				  forKey: OFFilePOSIXPermissions];
 
-		[[OFFileManager defaultManager] setAttributes: attributes
-						 ofItemAtPath: path];
+		[attributes setObject: POSIXPermissions
+			       forKey: OFFilePOSIXPermissions];
 	}
 #endif
-}
 
-static void
-setAmigaProtection(OFString *path, OFLHAArchiveEntry *entry)
-{
 #ifdef OF_AMIGAOS
-	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
 	OFString *amigaComment = entry.amigaComment;
 
@@ -87,22 +79,16 @@ setAmigaProtection(OFString *path, OFLHAArchiveEntry *entry)
 	 * user is most likely trying to extract a file made by Amiga LHA.
 	 */
 	if (MSDOSAttributes != nil && (entry.operatingSystemIdentifier == 'A' ||
-	    entry.headerLevel == 0)) {
-		OFFileAttributes attributes = [OFDictionary
-		    dictionaryWithObject: MSDOSAttributes
-				  forKey: OFFileAmigaProtection];
+	    entry.headerLevel == 0))
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileAmigaProtection];
 
-		[fileManager setAttributes: attributes ofItemAtPath: path];
-	}
-
-	if (amigaComment != nil) {
-		OFFileAttributes attributes = [OFDictionary
-		    dictionaryWithObject: amigaComment
-				  forKey: OFFileAmigaComment];
-
-		[fileManager setAttributes: attributes ofItemAtPath: path];
-	}
+	if (amigaComment != nil)
+		[attributes setObject: amigaComment forKey: OFFileAmigaComment];
 #endif
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
 }
 
 static void
@@ -408,7 +394,14 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifndef OF_AMIGAOS
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -445,12 +438,15 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		}
 
 		[output close];
-		/*
-		 * Amiga protection applies immediately, so needs to be set
-		 * after the file is closed.
-		 */
-		setAmigaProtection(outFileName, entry);
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifdef OF_AMIGAOS
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
@@ -467,7 +463,6 @@ outer_loop_end:
 	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
 		setPermissions(pair.firstObject, pair.secondObject);
-		setAmigaProtection(pair.firstObject, pair.secondObject);
 	}
 
 	if (missing.count > 0) {

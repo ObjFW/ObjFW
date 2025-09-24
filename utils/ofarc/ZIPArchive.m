@@ -375,7 +375,14 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		stream = [_archive streamForReadingFile: fileName];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifndef OF_AMIGAOS
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -413,6 +420,14 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifdef OF_AMIGAOS
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
