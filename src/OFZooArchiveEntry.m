@@ -163,7 +163,7 @@
 				[stream readIntoBuffer: attributes
 					   exactLength: 3];
 
-				if (attributes[2] & (1 << 6)) {
+				if ((attributes[2] & 0xC0) == 0x40) {
 					uint16_t mode = (attributes[0] |
 					    (attributes[1] << 8)) & 0777;
 
