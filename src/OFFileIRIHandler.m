@@ -121,6 +121,15 @@
 # ifdef st_ctime
 #  undef st_ctime
 # endif
+# ifdef HAVE_STRUCT_STAT_ST_ATIM
+#  undef HAVE_STRUCT_STAT_ST_ATIM
+# endif
+# ifdef HAVE_STRUCT_STAT_ST_MTIM
+#  undef HAVE_STRUCT_STAT_ST_MTIM
+# endif
+# ifdef HAVE_STRUCT_STAT_ST_CTIM
+#  undef HAVE_STRUCT_STAT_ST_CTIM
+# endif
 typedef struct {
 	OFStreamOffset st_size;
 	unsigned int st_mode;
