@@ -540,9 +540,11 @@ outer_loop_end:
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 		entry.minVersionNeeded =
-		    45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8);
+		    (OFZIPArchiveEntryAttributeCompatibility)
+		    (45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8));
 		entry.versionMadeBy =
-		    45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8);
+		    (OFZIPArchiveEntryAttributeCompatibility)
+		    (45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8));
 
 		size = (isDirectory ? 0 : attributes.fileSize);
 		entry.compressedSize = size;
