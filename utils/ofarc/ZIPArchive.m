@@ -559,7 +559,7 @@ outer_loop_end:
 		    [attributes objectForKey: OFFilePOSIXPermissions];
 		if (POSIXPermissions != nil) {
 			unsigned long versionSpecificAttributes =
-			    POSIXPermissions.unsignedLongValue;
+			    POSIXPermissions.unsignedLongValue << 16;
 
 			if (versionSpecificAttributes > UINT32_MAX)
 				@throw [OFOutOfRangeException exception];
