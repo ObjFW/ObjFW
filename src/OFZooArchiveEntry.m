@@ -411,6 +411,15 @@
 	strncpy(fileNameBuffer, [_fileName cStringWithEncoding: encoding], 12);
 	[data addItems: fileNameBuffer count: 13];
 
+	/*
+	 * Include \0. Needs to be done here so the written variable length is
+	 * correct.
+	 */
+	if (fileNameLength > 0)
+		fileNameLength++;
+	if (directoryNameLength > 0)
+		directoryNameLength++;
+
 	/* Variable length. */
 	tmp16 = OFToLittleEndian16(fileNameLength + directoryNameLength + 4 +
 	    (_POSIXPermissions != nil ? 3 : 0));
@@ -423,12 +432,6 @@
 	 * include the next header offset.
 	 */
 	[data increaseCountBy: 2];
-
-	/* Include \0 */
-	if (fileNameLength > 0)
-		fileNameLength++;
-	if (directoryNameLength > 0)
-		directoryNameLength++;
 
 	tmp8 = (uint8_t)fileNameLength;
 	[data addItem: &tmp8];
