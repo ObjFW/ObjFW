@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Amiga file protection bits. This is a bit mask and the values are
  *	  ORed.
  */
-typedef enum OFFileAmigaProtectionBits {
+typedef enum {
 	/** @brief The file cannot be deleted. */
 	OFFileAmigaDeleteProtected  = 0x0001,
 	/** @brief The file cannot be executed. */

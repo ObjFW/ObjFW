@@ -62,14 +62,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The compression method of the entry.
  *
- * Supported values are:
- * Value                                       | Description
- * --------------------------------------------|---------------
- * OFZIPArchiveEntryCompressionMethodNone      | No compression
- * OFZIPArchiveEntryCompressionMethodDeflate   | Deflate
- * OFZIPArchiveEntryCompressionMethodDeflate64 | Deflate64
+ * See @ref OFZIPArchiveEntryCompressionMethod.
  *
- * Other values may be returned, but the file cannot be extracted then.
+ * Only @ref OFZIPArchiveEntryCompressionMethodNone,
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate and
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate64 can be extracted.
  */
 @property (readwrite, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
