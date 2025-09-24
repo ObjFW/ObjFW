@@ -539,6 +539,10 @@ outer_loop_end:
 			    @"file", fileName)];
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
+		entry.minVersionNeeded =
+		    45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8);
+		entry.versionMadeBy =
+		    45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8);
 
 		size = (isDirectory ? 0 : attributes.fileSize);
 		entry.compressedSize = size;
@@ -547,6 +551,21 @@ outer_loop_end:
 		entry.compressionMethod =
 		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+		OFNumber *POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
+		if (POSIXPermissions != nil) {
+			unsigned long versionSpecificAttributes =
+			    POSIXPermissions.unsignedLongValue;
+
+			if (versionSpecificAttributes > UINT32_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			entry.versionSpecificAttributes =
+			    (uint32_t)versionSpecificAttributes;
+		}
+#endif
 
 		[entry makeImmutable];
 
