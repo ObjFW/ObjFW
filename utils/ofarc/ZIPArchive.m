@@ -49,21 +49,32 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
-		OFNumber *mode = [OFNumber numberWithUnsignedShort:
+		OFNumber *permissions = [OFNumber numberWithUnsignedShort:
 		    (entry.versionSpecificAttributes >> 16) & 0777];
-		OFFileAttributes attributes = [OFDictionary
-		    dictionaryWithObject: mode
-				  forKey: OFFilePOSIXPermissions];
-
-		[[OFFileManager defaultManager] setAttributes: attributes
-						 ofItemAtPath: path];
+		[attributes setObject: permissions
+			       forKey: OFFilePOSIXPermissions];
 	}
 #endif
+
+#ifdef OF_AMIGAOS
+	if ((entry.versionMadeBy >> 8) ==
+	    OFZIPArchiveEntryAttributeCompatibilityAmiga) {
+		OFNumber *protection = [OFNumber numberWithUnsignedLong:
+		    (entry.versionSpecificAttributes >> 16)];
+		[attributes setObject: protection
+			       forKey: OFFileAmigaProtection];
+	}
+#endif
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
 }
 
 static void
@@ -236,9 +247,6 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 			if (app->_outputLevel >= 2) {
 				uint16_t versionMadeBy = entry.versionMadeBy;
-				OFZIPArchiveEntryAttributeCompatibility UNIX =
-				    OFZIPArchiveEntryAttributeCompatibilityUNIX;
-
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_version_made_by",
@@ -254,17 +262,33 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				    OFZIPArchiveEntryVersionToString(
 				    entry.minVersionNeeded))];
 
-				if ((versionMadeBy >> 8) == UNIX) {
-					uint32_t mode = entry
+#define VerUNIX OFZIPArchiveEntryAttributeCompatibilityUNIX
+#define VerAMIGA OFZIPArchiveEntryAttributeCompatibilityAmiga
+				if ((versionMadeBy >> 8) == VerUNIX) {
+					uint32_t permissions = entry
 					    .versionSpecificAttributes >> 16;
-					OFString *modeString = [OFString
-					    stringWithFormat: @"%06o", mode];
+					OFString *permissionsString = [OFString
+					    stringWithFormat:
+					    @"%06o", permissions];
 					[OFStdOut writeString: @"\t"];
 					[OFStdOut writeLine: OF_LOCALIZED(
-					    @"list_mode",
-					    @"Mode: %[mode]",
-					    @"mode", modeString)];
+					    @"list_posix_permissions",
+					    @"POSIX permissions: %[perm]",
+					    @"perm", permissionsString)];
+				} else if ((versionMadeBy >> 8) == VerAMIGA) {
+					uint32_t protection = entry
+					    .versionSpecificAttributes >> 16;
+					OFString *protectionString = [OFString
+					    stringWithFormat:
+					    @"%04x", protection];
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_amiga_protection",
+					    @"Amiga protection bits: %[prot]",
+					    @"prot", protectionString)];
 				}
+#undef VerUNIX
+#undef VerAMIGA
 			}
 
 			if (app->_outputLevel >= 3) {
@@ -517,6 +541,10 @@ outer_loop_end:
 		OFFileAttributes attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
+		uint16_t version = 45;
+#ifdef OF_AMIGAOS
+		OFNumber *amigaProtection;
+#endif
 		unsigned long long size;
 		OFStream *output;
 
@@ -539,12 +567,20 @@ outer_loop_end:
 			    @"file", fileName)];
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
-		entry.minVersionNeeded =
-		    (OFZIPArchiveEntryAttributeCompatibility)
-		    (45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8));
-		entry.versionMadeBy =
-		    (OFZIPArchiveEntryAttributeCompatibility)
-		    (45 | (OFZIPArchiveEntryAttributeCompatibilityUNIX << 8));
+
+#ifdef OF_AMIGAOS
+		amigaProtection =
+		    [attributes objectForKey: OFFileAmigaProtection];
+		if (amigaProtection != nil)
+			version |=
+			    OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
+		else
+#endif
+			version |=
+			    OFZIPArchiveEntryAttributeCompatibilityUNIX << 8;
+
+		entry.minVersionNeeded = version;
+		entry.versionMadeBy = version;
 
 		size = (isDirectory ? 0 : attributes.fileSize);
 		entry.compressedSize = size;
@@ -554,18 +590,34 @@ outer_loop_end:
 		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
 
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		OFNumber *POSIXPermissions =
-		    [attributes objectForKey: OFFilePOSIXPermissions];
-		if (POSIXPermissions != nil) {
+#ifdef OF_AMIGAOS
+		if (amigaProtection != nil) {
 			unsigned long versionSpecificAttributes =
-			    POSIXPermissions.unsignedLongValue << 16;
+			    amigaProtection.unsignedLongValue << 16;
 
 			if (versionSpecificAttributes > UINT32_MAX)
 				@throw [OFOutOfRangeException exception];
 
 			entry.versionSpecificAttributes =
 			    (uint32_t)versionSpecificAttributes;
+		} else {
+#endif
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+			OFNumber *POSIXPermissions =
+			    [attributes objectForKey: OFFilePOSIXPermissions];
+			if (POSIXPermissions != nil) {
+				unsigned long versionSpecificAttributes =
+				    POSIXPermissions.unsignedLongValue << 16;
+
+				if (versionSpecificAttributes > UINT32_MAX)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				entry.versionSpecificAttributes =
+				    (uint32_t)versionSpecificAttributes;
+			}
+#endif
+#ifdef OF_AMIGAOS
 		}
 #endif
 

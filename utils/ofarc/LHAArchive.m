@@ -61,7 +61,6 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 	if (POSIXPermissions != nil) {
 		POSIXPermissions = [OFNumber numberWithUnsignedShort:
 		    POSIXPermissions.unsignedShortValue & 0777];
-
 		[attributes setObject: POSIXPermissions
 			       forKey: OFFilePOSIXPermissions];
 	}
