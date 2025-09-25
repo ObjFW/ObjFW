@@ -42,7 +42,7 @@ parseMSDOSDate(uint32_t MSDOSDate)
 {
 	uint16_t year = ((MSDOSDate & 0xFE000000) >> 25) + 1980;
 	uint8_t month = (MSDOSDate & 0x1E00000) >> 21;
-	uint8_t day = (MSDOSDate & 0x1F);
+	uint8_t day = (MSDOSDate & 0x1F0000) >> 16;
 	uint8_t hour = (MSDOSDate & 0xF800) >> 11;
 	uint8_t minute = (MSDOSDate & 0x7E0) >> 5;
 	uint8_t second = (MSDOSDate & 0x1F) << 1;
