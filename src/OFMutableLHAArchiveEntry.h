@@ -54,8 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The MS-DOS attributes of the file.
  *
- * If @ref operatingSystemIdentifier is 'A', these are Amiga Protection bits
- * instead (see @ref OFFileAmigaProtectionBits).
+ * If @ref operatingSystemIdentifier is 'A', this is the Amiga Protection
+ * instead (see @ref OFFileAmigaProtectionMask).
  */
 @property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
     OFNumber *MSDOSAttributes;

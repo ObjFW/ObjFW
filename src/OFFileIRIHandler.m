@@ -111,6 +111,10 @@
 # include <dos/dostags.h>
 #endif
 
+#ifdef DJGPP
+# include <io.h>
+#endif
+
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 # ifdef st_atime
 #  undef st_atime
@@ -1075,6 +1079,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 						   encoding: encoding]
 			forKey: OFFileAmigaComment];
 	}
+#endif
+
+#ifdef OF_DJGPP
+	int attrs = _chmod([path cStringWithEncoding: [OFLocale encoding]], 0);
+
+	if (attrs != -1)
+		[ret setObject: [OFNumber numberWithInt: attrs]
+			forKey: OFFileMSDOSAttributes];
 #endif
 
 	objc_autoreleasePoolPop(pool);

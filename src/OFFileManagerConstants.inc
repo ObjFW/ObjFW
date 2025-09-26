@@ -36,6 +36,7 @@ const OFFileAttributeKey OFFileExtendedAttributesNames =
     @"OFFileExtendedAttributesNames";
 const OFFileAttributeKey OFFileAmigaProtection = @"OFFileAmigaProtection";
 const OFFileAttributeKey OFFileAmigaComment = @"OFFileAmigaComment";
+const OFFileAttributeKey OFFileMSDOSAttributes = @"OFFileMSDOSAttributes";
 
 const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
 const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
