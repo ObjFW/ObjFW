@@ -757,12 +757,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			OFRange range =
 			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
-			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = _OFZIPArchiveReadField64(
-				    &ZIP64, &ZIP64Size);
-			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = _OFZIPArchiveReadField64(
-				    &ZIP64, &ZIP64Size);
+			_uncompressedSize = _OFZIPArchiveReadField64(
+			    &ZIP64, &ZIP64Size);
+			_compressedSize = _OFZIPArchiveReadField64(
+			    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0)
 				@throw [OFInvalidFormatException exception];
