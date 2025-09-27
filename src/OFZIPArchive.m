@@ -792,9 +792,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry
 {
-	if (_compressionMethod != entry.compressionMethod ||
-	    _lastModifiedFileTime != entry.of_lastModifiedFileTime ||
-	    _lastModifiedFileDate != entry.of_lastModifiedFileDate)
+	if (_compressionMethod != entry.compressionMethod)
 		return false;
 
 	if (!(_generalPurposeBitFlag & (1u << 3)))
