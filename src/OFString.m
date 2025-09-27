@@ -76,6 +76,14 @@
 # define strtod __strtod
 #endif
 
+/*
+ * strtod() in dosbox-staging doesn't work correctly on non-x86 hardware.
+ * strtof() and strtold() both seem fine, though.
+ */
+#ifdef OF_DJGPP
+# define strtod strtold
+#endif
+
 #ifndef HAVE_STRTOF
 # define strtof strtod
 #endif
