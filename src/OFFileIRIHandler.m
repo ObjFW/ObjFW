@@ -1591,7 +1591,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 
 	if (!SetProtection([path cStringWithEncoding: [OFLocale encoding]],
-	    protection.unsignedLongValue))
+	    protection.intValue))
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
@@ -1613,6 +1613,24 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			  attributes: attributes
 		     failedAttribute: OFFileAmigaComment
 			       errNo: 0];
+}
+#endif
+
+#ifdef OF_DJGPP
+- (void)of_setMSDOSAttributes: (OFNumber *)MSDOSAttributes
+		  ofItemAtIRI: (OFIRI *)IRI
+		   attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+
+	if (_chmod([path cStringWithEncoding: [OFLocale encoding]], 1,
+	    MSDOSAttributes.intValue & ~(OFFileMSDOSAttributeVolumeLabel |
+	    OFFileMSDOSAttributeDirectory)) == -1)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileMSDOSAttributes
+			       errNo: errno];
 }
 #endif
 
@@ -1658,6 +1676,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			[self of_setAmigaComment: object
 				     ofItemAtIRI: IRI
 				      attributes: attributes];
+#endif
+#ifdef OF_DJGPP
+		else if ([key isEqual: OFFileMSDOSAttributes])
+			[self of_setMSDOSAttributes: object
+					ofItemAtIRI: IRI
+					 attributes: attributes];
 #endif
 		else
 			@throw [OFNotImplementedException
