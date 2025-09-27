@@ -243,7 +243,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
 		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
-		if (ZIP64Index != OFNotFound) {
+		if (ZIP64Index != OFNotFound && ZIP64Size > 0) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
 			OFRange range =
