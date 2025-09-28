@@ -66,7 +66,7 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 	}
 #endif
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS)
 	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
 	OFString *amigaComment = entry.amigaComment;
 
@@ -84,6 +84,11 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 
 	if (amigaComment != nil)
 		[attributes setObject: amigaComment forKey: OFFileAmigaComment];
+#elif defined(OF_MSDOS)
+	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
+	if (MSDOSAttributes != nil)
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileMSDOSAttributes];
 #endif
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -397,8 +402,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		 * Permissions on AmigaOS apply even to already opened files,
 		 * so need to be set after the file is written and the
 		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
 		 */
-#ifndef OF_AMIGAOS
+#if !defined(OF_AMIGAOS) && !defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
 #endif
 
@@ -442,8 +450,11 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		 * Permissions on AmigaOS apply even to already opened files,
 		 * so need to be set after the file is written and the
 		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
 		 */
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
 #endif
 
@@ -540,9 +551,6 @@ outer_loop_end:
 		OFFileAttributes attributes;
 		OFFileAttributeType type;
 		OFMutableLHAArchiveEntry *entry;
-#ifdef OF_AMIGAOS
-		OFNumber *amigaProtection;
-#endif
 		OFStream *output;
 
 		[app checkForCancellation];
@@ -573,7 +581,11 @@ outer_loop_end:
 		    [attributes objectForKey: OFFileGroupOwnerAccountName];
 #endif
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS)
+		OFNumber *amigaProtection;
+
+		entry.operatingSystemIdentifier = 'A';
+
 		amigaProtection =
 		    [attributes objectForKey: OFFileAmigaProtection];
 		if (amigaProtection != nil) {
@@ -583,6 +595,12 @@ outer_loop_end:
 
 		entry.amigaComment =
 		    [attributes objectForKey: OFFileAmigaComment];
+#elif defined(OF_MSDOS)
+		entry.operatingSystemIdentifier = 'M';
+		entry.MSDOSAttributes =
+		    [attributes objectForKey: OFFileMSDOSAttributes];
+#else
+		entry.operatingSystemIdentifier = 'U';
 #endif
 
 		if ([type isEqual: OFFileTypeDirectory]) {
