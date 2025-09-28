@@ -73,6 +73,16 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	}
 #endif
 
+#ifdef OF_MSDOS
+	if ((entry.versionMadeBy >> 8) ==
+	    OFZIPArchiveEntryAttributeCompatibilityMSDOS) {
+		OFNumber *MSDOSAttributes = [OFNumber numberWithUnsignedLong:
+		    (entry.versionSpecificAttributes >> 16)];
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileMSDOSAttributes];
+	}
+#endif
+
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
 }
@@ -263,7 +273,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				    entry.minVersionNeeded))];
 
 #define VerUNIX OFZIPArchiveEntryAttributeCompatibilityUNIX
-#define VerAMIGA OFZIPArchiveEntryAttributeCompatibilityAmiga
+#define VerAmiga OFZIPArchiveEntryAttributeCompatibilityAmiga
+#define VerMSDOS OFZIPArchiveEntryAttributeCompatibilityMSDOS
 				if ((versionMadeBy >> 8) == VerUNIX) {
 					uint32_t permissions = entry
 					    .versionSpecificAttributes >> 16;
@@ -275,7 +286,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 					    @"list_posix_permissions",
 					    @"POSIX permissions: %[perm]",
 					    @"perm", permissionsString)];
-				} else if ((versionMadeBy >> 8) == VerAMIGA) {
+				} else if ((versionMadeBy >> 8) == VerAmiga) {
 					uint32_t protection = entry
 					    .versionSpecificAttributes >> 16;
 					OFString *protectionString = [OFString
@@ -286,9 +297,21 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 					    @"list_amiga_protection",
 					    @"Amiga protection bits: %[prot]",
 					    @"prot", protectionString)];
+				} else if ((versionMadeBy >> 8) == VerMSDOS) {
+					uint32_t attributes = entry
+					    .versionSpecificAttributes >> 16;
+					OFString *attributesString = [OFString
+					    stringWithFormat:
+					    @"%04x", attributes];
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_msdos_attributes",
+					    @"MS-DOS attributes: %[attr]",
+					    @"attr", attributesString)];
 				}
 #undef VerUNIX
 #undef VerAMIGA
+#undef VerMSDOS
 			}
 
 			if (app->_outputLevel >= 3) {
@@ -403,8 +426,11 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		 * Permissions on AmigaOS apply even to already opened files,
 		 * so need to be set after the file is written and the
 		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
 		 */
-#ifndef OF_AMIGAOS
+#if !defined(OF_AMIGAOS) && !defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
 #endif
 
@@ -448,8 +474,11 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		 * Permissions on AmigaOS apply even to already opened files,
 		 * so need to be set after the file is written and the
 		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
 		 */
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) || defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
 #endif
 
@@ -542,9 +571,6 @@ outer_loop_end:
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
 		uint16_t version = 45;
-#ifdef OF_AMIGAOS
-		OFNumber *amigaProtection;
-#endif
 		unsigned long long size;
 		OFStream *output;
 
@@ -568,16 +594,13 @@ outer_loop_end:
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 
-#ifdef OF_AMIGAOS
-		amigaProtection =
-		    [attributes objectForKey: OFFileAmigaProtection];
-		if (amigaProtection != nil)
-			version |=
-			    OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
-		else
+#if defined(OF_AMIGAOS)
+		version |= OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
+#elif defined(OF_MSDOS)
+		version |= OFZIPArchiveEntryAttributeCompatibilityMSDOS << 8;
+#else
+		version |= OFZIPArchiveEntryAttributeCompatibilityUNIX << 8;
 #endif
-			version |=
-			    OFZIPArchiveEntryAttributeCompatibilityUNIX << 8;
 
 		entry.minVersionNeeded = version;
 		entry.versionMadeBy = version;
@@ -590,34 +613,24 @@ outer_loop_end:
 		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
 
-#ifdef OF_AMIGAOS
-		if (amigaProtection != nil) {
+#if defined(OF_AMIGAOS)
+		entry.versionSpecificAttributes =
+		    (uint32_t)attributes.fileAmigaPermissions << 16;
+#elif defined(OF_MSDOS)
+		entry.versionSpecificAttributes =
+		    (uint32_t)attributes.fileMSDOSAttributes << 16;
+#else
+		OFNumber *POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
+		if (POSIXPermissions != nil) {
 			unsigned long versionSpecificAttributes =
-			    amigaProtection.unsignedLongValue << 16;
+			    POSIXPermissions.unsignedLongValue << 16;
 
 			if (versionSpecificAttributes > UINT32_MAX)
 				@throw [OFOutOfRangeException exception];
 
 			entry.versionSpecificAttributes =
 			    (uint32_t)versionSpecificAttributes;
-		} else {
-#endif
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-			OFNumber *POSIXPermissions =
-			    [attributes objectForKey: OFFilePOSIXPermissions];
-			if (POSIXPermissions != nil) {
-				unsigned long versionSpecificAttributes =
-				    POSIXPermissions.unsignedLongValue << 16;
-
-				if (versionSpecificAttributes > UINT32_MAX)
-					@throw [OFOutOfRangeException
-					    exception];
-
-				entry.versionSpecificAttributes =
-				    (uint32_t)versionSpecificAttributes;
-			}
-#endif
-#ifdef OF_AMIGAOS
 		}
 #endif
 
