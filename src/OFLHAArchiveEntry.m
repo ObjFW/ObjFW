@@ -517,6 +517,21 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
 
+			if (_operatingSystemIdentifier == 'A') {
+				/*
+				 * Amiga LHA uses seconds since 1970-01-01 in
+				 * local time rather than UTC.
+				 */
+				OFString *tmpStr = [_modificationDate
+				    dateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+				OFDate *tmpDate = [OFDate
+				    dateWithLocalDateString: tmpStr
+						     format: @"%Y-%m-%d "
+							     @"%H:%M:%S"];
+				objc_release(_modificationDate);
+				_modificationDate = objc_retain(tmpDate);
+			}
+
 			if (_headerLevel == 3)
 				/* Size of entire header */
 				padding = [stream readLittleEndianInt32];
@@ -762,8 +777,21 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	tmp32 = OFToLittleEndian32((uint32_t)_uncompressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OFToLittleEndian32(
-	    (uint32_t)_modificationDate.timeIntervalSince1970);
+	if (_operatingSystemIdentifier == 'A') {
+		/*
+		 * Amiga LHA uses seconds since 1970-01-01 in local time rather
+		 * than UTC.
+		 */
+		OFString *tmpStr = [_modificationDate
+		    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+		OFDate *tmpDate = [OFDate
+		    dateWithDateString: tmpStr
+				format: @"%Y-%m-%d %H:%M:%S"];
+		tmp32 = OFToLittleEndian32(
+		    (uint32_t)tmpDate.timeIntervalSince1970);
+	} else
+		tmp32 = OFToLittleEndian32(
+		    (uint32_t)_modificationDate.timeIntervalSince1970);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	/* Reserved */
