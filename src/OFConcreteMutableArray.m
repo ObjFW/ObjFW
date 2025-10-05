@@ -70,11 +70,8 @@
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	@try {
-		[_array insertItem: &object atIndex: idx];
-	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exception];
-	}
+	[_array insertItem: &object atIndex: idx];
+
 	objc_retain(object);
 
 	_mutations++;
@@ -85,11 +82,7 @@
 	id const *objects = array.objects;
 	size_t count = array.count;
 
-	@try {
-		[_array insertItems: objects atIndex: idx count: count];
-	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exception];
-	}
+	[_array insertItems: objects atIndex: idx count: count];
 
 	for (size_t i = 0; i < count; i++)
 		objc_retain(objects[i]);
@@ -105,11 +98,7 @@
 	if (indexes.count != count)
 		@throw [OFOutOfRangeException exception];
 
-	@try {
-		[_array insertItems: objects atIndexes: indexes];
-	} @catch (OFOutOfRangeException *e) {
-		@throw [OFOutOfRangeException exception];
-	}
+	[_array insertItems: objects atIndexes: indexes];
 
 	for (size_t i = 0; i < count; i++)
 		objc_retain(objects[i]);
