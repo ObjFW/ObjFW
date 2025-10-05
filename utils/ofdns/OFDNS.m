@@ -22,12 +22,16 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFData.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
+#import "OFThread.h"
+
+#import "OFInvalidFormatException.h"
 
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
@@ -227,8 +231,30 @@ version(void)
 		[recordTypes addObject: @"A"];
 	}
 
-	if (server != nil)
-		resolver.nameServers = [OFArray arrayWithObject: server];
+	if (server != nil) {
+		@try {
+			OFSocketAddressParseIP(server, 0);
+
+			resolver.nameServers =
+			    [OFArray arrayWithObject: server];
+		} @catch (OFInvalidFormatException *e) {
+			/* Not an IP. Try resolving. */
+			OFData *addressesData = [[OFThread DNSResolver]
+			    resolveAddressesForHost: server
+				      addressFamily: OFSocketAddressFamilyAny];
+			const OFSocketAddress *addresses = addressesData.items;
+			size_t count = addressesData.count;
+			OFMutableArray *servers = [OFMutableArray
+			    arrayWithCapacity: count];
+
+			for (size_t i = 0; i < count; i++)
+				[servers addObject:
+				    OFSocketAddressString(&addresses[i])];
+
+			[servers makeImmutable];
+			resolver.nameServers = servers;
+		}
+	}
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {
