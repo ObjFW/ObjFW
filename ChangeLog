@@ -4,6 +4,23 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.4.1 -> ObjFW 1.4.2, 2025-10-05
+ * Fixes compatibility with C++ 20 and up.
+ * Fixes +[alloc] being able to return nil.
+ * Fixes -[canBlock] being inherited for sockets returned by
+   -[OFStreamSocket accept] being OS-dependent.
+ * Fixes MPTCP being used on old macOS versions that don't support it.
+ * Fixes parsing of ZIP64 local headers in OFZIPArchive when only some values
+   in the regular local header are set to -1.
+ * Fixes handling of 0 byte ZIP64 extra field in OFZIPArchiveEntry.
+ * OFZIPArchive no longer verifies the local header date to better deal with
+   broken archives.
+ * Fixes parsing of header level 0/1 dates in OFLHAArchiveEntry.
+ * Fixes OFZooArchiveEntry emitting the wrong length for the variable length.
+ * Fixes ofarc setting directory permissions before extracting its files.
+ * Fixes setting OFStdIOStream colors to `nil` on MS-DOS.
+ + Adds support for aarch64_be in the runtime lookup assembly.
+
 ObjFW 1.4 -> ObjFW 1.4.1, 2025-08-25
  * Optimizes CRC16 and CRC32 calculation, thereby fixing bad extraction speed
    for OFGZIPStream, OFLHAArchive, OFZIPArchive & OFZooArchive. This speeds up
