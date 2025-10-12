@@ -29,9 +29,9 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Adds the specified index to the index set.
  *
- * @param index The index to add
+ * @param idx The index to add
  */
-- (void)addIndex: (size_t)index;
+- (void)addIndex: (size_t)idx;
 
 /**
  * @brief Adds the indexes in the specified range to the index set.
@@ -50,9 +50,9 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Removes the specified index from the index set.
  *
- * @param index The index to remove
+ * @param idx The index to remove
  */
-- (void)removeIndex: (size_t)index;
+- (void)removeIndex: (size_t)idx;
 
 /**
  * @brief Removes the indexes in the specified range from the index set.

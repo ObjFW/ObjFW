@@ -66,10 +66,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new index set only containing the specified index.
  *
- * @param index The index the index set should contain
+ * @param idx The index the index set should contain
  * @return A new index set only containing the specified index
  */
-+ (instancetype)indexSetWithIndex: (size_t)index;
++ (instancetype)indexSetWithIndex: (size_t)idx;
 
 /**
  * @brief Creates a new index set containing the indexes in the specified range.
@@ -97,10 +97,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Initializes an index set to only contain the specified index.
  *
- * @param index The index the index set should contain
+ * @param idx The index the index set should contain
  * @return An initialized index set only containing the specified index
  */
-- (instancetype)initWithIndex: (size_t)index;
+- (instancetype)initWithIndex: (size_t)idx;
 
 /**
  * @brief Initializes an index set to contain the indexes in the specified
@@ -115,10 +115,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns whether the specified index is in the index set.
  *
- * @param index The index to check the index set for
+ * @param idx The index to check the index set for
  * @return Whether the specified index is in the index set
  */
-- (bool)containsIndex: (size_t)index;
+- (bool)containsIndex: (size_t)idx;
 
 /**
  * @brief Returns whether the specified range of indexes is in the index set.
@@ -132,39 +132,39 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the closest index greater than the specified index or
  *	  @ref OFNotFound.
  *
- * @param index The index for which to find an index that is greater
+ * @param idx The index for which to find an index that is greater
  * @return The closest index greater than the specified index or @ref OFNotFound
  */
-- (size_t)indexGreaterThanIndex: (size_t)index;
+- (size_t)indexGreaterThanIndex: (size_t)idx;
 
 /**
  * @brief Returns the closest index greater than or equal to the specified
  *	  index or @ref OFNotFound.
  *
- * @param index The index for which to find an index that is greater or equal
+ * @param idx The index for which to find an index that is greater or equal
  * @return The closest index greater than or equal to the specified index or
  *	   @ref OFNotFound
  */
-- (size_t)indexGreaterThanOrEqualToIndex: (size_t)index;
+- (size_t)indexGreaterThanOrEqualToIndex: (size_t)idx;
 
 /**
  * @brief Returns the closest index less than the specified index or
  *	  @ref OFNotFound.
  *
- * @param index The index for which to find an index that is less
+ * @param idx The index for which to find an index that is less
  * @return The closest index less than the specified index or @ref OFNotFound
  */
-- (size_t)indexLessThanIndex: (size_t)index;
+- (size_t)indexLessThanIndex: (size_t)idx;
 
 /**
  * @brief Returns the closest index less than or equal to the specified index
  *	  or @ref OFNotFound.
  *
- * @param index The index for which to find an index that is less or equal
+ * @param idx The index for which to find an index that is less or equal
  * @return The closest index less than or equal to the specified index or
  *	   @ref OFNotFound
  */
-- (size_t)indexLessThanOrEqualToIndex: (size_t)index;
+- (size_t)indexLessThanOrEqualToIndex: (size_t)idx;
 
 /**
  * @brief Copies the indexes in the specified range to the specified buffer.

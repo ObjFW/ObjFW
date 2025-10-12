@@ -43,9 +43,9 @@
 	return [[OFIndexSet alloc] initWithIndexSet: self];
 }
 
-- (void)addIndex: (size_t)index
+- (void)addIndex: (size_t)idx
 {
-	[self addIndexesInRange: OFMakeRange(index, 1)];
+	[self addIndexesInRange: OFMakeRange(idx, 1)];
 }
 
 - (void)addIndexesInRange: (OFRange)range
@@ -111,9 +111,9 @@
 		[self addIndexesInRange: ranges[i]];
 }
 
-- (void)removeIndex: (size_t)index
+- (void)removeIndex: (size_t)idx
 {
-	[self removeIndexesInRange: OFMakeRange(index, 1)];
+	[self removeIndexesInRange: OFMakeRange(idx, 1)];
 }
 
 - (void)removeIndexesInRange: (OFRange)range
