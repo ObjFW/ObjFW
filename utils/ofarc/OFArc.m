@@ -773,7 +773,12 @@ error:
 		    @"file", fileName)];
 		[OFStdErr writeString: @" "];
 
-		line = [OFStdIn readLine];
+		if ([OFStdIn hasTerminal])
+			line = [OFStdIn readLine];
+		else {
+			line = @"n";
+			[OFStdErr writeLine: line];
+		}
 
 		if ([line isEqual: @"?"])
 			[OFStdErr writeLine: OF_LOCALIZED(
