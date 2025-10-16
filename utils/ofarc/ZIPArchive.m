@@ -67,7 +67,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityAmiga) {
 		OFNumber *protection = [OFNumber numberWithUnsignedLong:
-		    (entry.versionSpecificAttributes >> 16)];
+		    (entry.versionSpecificAttributes >> 16) ^ 0xF];
 		[attributes setObject: protection
 			       forKey: OFFileAmigaProtection];
 	}
@@ -287,8 +287,9 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 					    @"POSIX permissions: %[perm]",
 					    @"perm", permissionsString)];
 				} else if ((versionMadeBy >> 8) == VerAmiga) {
-					uint32_t protection = entry
-					    .versionSpecificAttributes >> 16;
+					uint32_t protection = (entry
+					    .versionSpecificAttributes >> 16) ^
+					    0xF;
 					OFString *protectionString = [OFString
 					    stringWithFormat:
 					    @"%04x", protection];
@@ -615,7 +616,7 @@ outer_loop_end:
 
 #if defined(OF_AMIGAOS)
 		entry.versionSpecificAttributes =
-		    (uint32_t)attributes.fileAmigaProtection << 16;
+		    ((uint32_t)attributes.fileAmigaProtection << 16) ^ 0xF;
 #elif defined(OF_MSDOS)
 		entry.versionSpecificAttributes =
 		    (uint32_t)attributes.fileMSDOSAttributes << 16;
