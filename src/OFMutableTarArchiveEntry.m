@@ -115,7 +115,7 @@
 	objc_release(old);
 }
 
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -123,7 +123,7 @@
 {
 	_fileType = type;
 }
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic pop
 #endif
 

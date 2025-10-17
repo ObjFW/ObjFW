@@ -259,7 +259,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -267,7 +267,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 {
 	return _fileType;
 }
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic pop
 #endif
 

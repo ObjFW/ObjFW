@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @deprecated Use @ref OFArchiveEntryFileType instead.
  */
 typedef OFArchiveEntryFileType OFTarArchiveEntryType
-#if OF_GCC_VERSION >= 402
+#if defined(__clang__) || OF_GCC_VERSION >= 405
     OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveEntryFileType instead")
 #endif
 ;
@@ -139,13 +139,13 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
  *
  * @deprecated Use @ref OFArchiveEntry#fileType instead.
  */
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 @property (readonly, nonatomic) OFTarArchiveEntryType type
     OF_DEPRECATED(ObjFW, 1, 5, "Use -[OFArchiveEntry fileType] instead");
-#if OF_GCC_VERSION >= 402
+#if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic pop
 #endif
 
