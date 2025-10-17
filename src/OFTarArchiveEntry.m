@@ -259,10 +259,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (OFTarArchiveEntryType)type
 {
 	return _fileType;
 }
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic pop
+#endif
 
 - (OFString *)targetFileName
 {

@@ -36,8 +36,15 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @deprecated Use @ref OFMutableArchiveEntry#fileType instead.
  */
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 @property (readwrite, nonatomic) OFTarArchiveEntryType type
     OF_DEPRECATED(ObjFW, 1, 5, "Use -[OFMutableArchiveEntry fileType] instead");
+#if OF_GCC_VERSION >= 402
+# pragma GCC diagnostic pop
+#endif
 
 /**
  * @brief Creates a new OFMutableTarArchiveEntry with the specified file name.

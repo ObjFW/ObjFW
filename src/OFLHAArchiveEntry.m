@@ -57,6 +57,12 @@ parseMSDOSDate(uint32_t MSDOSDate)
 }
 
 @implementation OFLHAArchiveEntry
+/*
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic targetFileName, deviceMajor, deviceMinor;
+
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)

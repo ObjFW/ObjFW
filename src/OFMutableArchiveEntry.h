@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, copy, nonatomic) OFString *fileName;
 
 /**
- * @brief The type of the entry.
+ * @brief The file type of the entry.
  */
 @property (readwrite, nonatomic) OFArchiveEntryFileType fileType;
 

@@ -33,11 +33,11 @@
 
 @implementation OFZooArchiveEntry
 /*
- * The following properties are not implemented, but old Apple GCC requries
- * @dynamic for @optional properties.
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
  */
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
-@dynamic groupOwnerAccountName;
+@dynamic groupOwnerAccountName, targetFileName, deviceMajor, deviceMinor;
 
 - (instancetype)init
 {

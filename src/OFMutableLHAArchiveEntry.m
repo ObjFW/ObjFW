@@ -35,6 +35,11 @@
 @dynamic operatingSystemIdentifier, fileComment, POSIXPermissions;
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
 @dynamic groupOwnerAccountName, MSDOSAttributes, amigaComment, extensions;
+/*
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic targetFileName, deviceMajor, deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {

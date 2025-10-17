@@ -183,7 +183,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
  * and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 - (instancetype)init
 {

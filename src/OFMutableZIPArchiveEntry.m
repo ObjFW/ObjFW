@@ -29,15 +29,17 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFMutableZIPArchiveEntry
-@dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
-@dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
-@dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
+@dynamic fileName, fileType, fileComment, extraField, versionMadeBy;
+@dynamic minVersionNeeded, modificationDate, compressionMethod, compressedSize;
+@dynamic uncompressedSize, CRC32, versionSpecificAttributes;
+@dynamic generalPurposeBitFlag;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {

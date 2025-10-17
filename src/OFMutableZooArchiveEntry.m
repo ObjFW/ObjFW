@@ -30,14 +30,14 @@
 @implementation OFMutableZooArchiveEntry
 @dynamic headerType, compressionMethod, modificationDate, CRC16;
 @dynamic uncompressedSize, compressedSize, minVersionNeeded, deleted;
-@dynamic fileComment, fileName, operatingSystemIdentifier, POSIXPermissions;
-@dynamic timeZone;
+@dynamic fileComment, fileName, fileType, operatingSystemIdentifier;
+@dynamic POSIXPermissions, timeZone;
 /*
- * The following properties are not implemented, but old Apple GCC requries
- * @dynamic for @optional properties.
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
  */
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
-@dynamic groupOwnerAccountName;
+@dynamic groupOwnerAccountName, targetFileName, deviceMajor, deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
