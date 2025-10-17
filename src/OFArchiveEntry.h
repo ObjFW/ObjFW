@@ -22,8 +22,37 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 @class OFDate;
 @class OFNumber;
+
+/**
+ * @brief The file type of an archive entry.
+ *
+ * Values between 0 and 0xFF are Tar file types. Types not representable by Tar
+ * files therefore use values > 0xFF.
+ */
+typedef enum {
+	/** Regular file. */
+	OFArchiveEntryFileTypeRegular         = '0',
+	/** Hard link. */
+	OFArchiveEntryFileTypeLink            = '1',
+	/** Symbolic link. */
+	OFArchiveEntryFileTypeSymbolicLink    = '2',
+	/** Character device. */
+	OFArchiveEntryFileTypeCharacterDevice = '3',
+	/** Block device. */
+	OFArchiveEntryFileTypeBlockDevice     = '4',
+	/** Directory. */
+	OFArchiveEntryFileTypeDirectory       = '5',
+	/** FIFO. */
+	OFArchiveEntryFileTypeFIFO            = '6',
+	/** Contiguous file */
+	OFArchiveEntryFileTypeContiguousFile  = '7',
+	/** Unknown. The implementation most likely cannot handle this entry. */
+	OFArchiveEntryFileTypeUnknown         = 0x100,
+} OFArchiveEntryFileType;
 
 /**
  * @protocol OFArchiveEntry OFArchiveEntry.h ObjFW/ObjFW.h
@@ -36,6 +65,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
+
+/**
+ * @brief The file type of the entry.
+ */
+@property (readonly, nonatomic) OFArchiveEntryFileType fileType;
 
 /**
  * @brief The compressed size of the entry's file.
@@ -88,6 +122,22 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
     OFString *groupOwnerAccountName;
+
+/**
+ * @brief The file name of the target (for a hard link or symbolic link).
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *targetFileName;
+
+/**
+ * @brief The device major (if the file is a device).
+ */
+@property (readonly, nonatomic) unsigned long deviceMajor;
+
+/**
+ * @brief The device major (if the file is a device).
+ */
+@property (readonly, nonatomic) unsigned long deviceMinor;
 @end
 
 OF_ASSUME_NONNULL_END

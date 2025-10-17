@@ -27,12 +27,14 @@
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFMutableLHAArchiveEntry
-@dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
-@dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
-@dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName, MSDOSAttributes, amigaComment;
-@dynamic extensions;
+@dynamic fileName, fileType, compressionMethod, compressedSize;
+@dynamic uncompressedSize, modificationDate, headerLevel, CRC16;
+@dynamic operatingSystemIdentifier, fileComment, POSIXPermissions;
+@dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
+@dynamic groupOwnerAccountName, MSDOSAttributes, amigaComment, extensions;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -71,6 +73,32 @@
 
 	objc_release(_directoryName);
 	_directoryName = nil;
+}
+
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	switch (fileType) {
+	case OFArchiveEntryFileTypeDirectory:
+		if (![_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			self.fileName =
+			    [self.fileName stringByAppendingString: @"/"];
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	case OFArchiveEntryFileTypeRegular:
+		if ([_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *fileName = self.fileName;
+			fileName =
+			    [fileName substringToIndex: fileName.length - 1];
+			self.fileName = fileName;
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
 }
 
 - (void)setCompressionMethod: (OFString *)compressionMethod

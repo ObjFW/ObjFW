@@ -320,6 +320,12 @@
 	return [OFString stringWithFormat: @"%@/%@", _directoryName, _fileName];
 }
 
+- (OFArchiveEntryFileType)fileType
+{
+	/* Zoo supports nothing else. */
+	return OFArchiveEntryFileTypeRegular;
+}
+
 - (uint16_t)operatingSystemIdentifier
 {
 	return _operatingSystemIdentifier;

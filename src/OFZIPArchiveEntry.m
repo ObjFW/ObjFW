@@ -331,6 +331,14 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _fileName;
 }
 
+- (OFArchiveEntryFileType)fileType
+{
+	if ([_fileName hasSuffix: @"/"])
+		return OFArchiveEntryFileTypeDirectory;
+
+	return OFArchiveEntryFileTypeRegular;
+}
+
 - (OFString *)fileComment
 {
 	return _fileComment;

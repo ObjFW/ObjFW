@@ -88,6 +88,32 @@
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	switch (fileType) {
+	case OFArchiveEntryFileTypeDirectory:
+		if (![_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			self.fileName =
+			    [self.fileName stringByAppendingString: @"/"];
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	case OFArchiveEntryFileTypeRegular:
+		if ([_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *fileName = self.fileName;
+			fileName =
+			    [fileName substringToIndex: fileName.length - 1];
+			self.fileName = fileName;
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}
+
 - (void)setFileComment: (OFString *)fileComment
 {
 	void *pool = objc_autoreleasePoolPush();

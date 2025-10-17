@@ -660,6 +660,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return [_directoryName stringByAppendingString: _fileName];
 }
 
+- (OFArchiveEntryFileType)fileType
+{
+	if ([_fileName hasSuffix: @"/"])
+		return OFArchiveEntryFileTypeDirectory;
+
+	return OFArchiveEntryFileTypeRegular;
+}
+
 - (OFString *)compressionMethod
 {
 	return _compressionMethod;

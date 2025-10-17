@@ -72,6 +72,11 @@
 	objc_release(old);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	_fileType = fileType;
+}
+
 - (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
 	OFNumber *old = _POSIXPermissions;
@@ -112,7 +117,7 @@
 
 - (void)setType: (OFTarArchiveEntryType)type
 {
-	_type = type;
+	_fileType = type;
 }
 
 - (void)setTargetFileName: (OFString *)targetFileName

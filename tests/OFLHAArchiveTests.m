@@ -64,4 +64,17 @@
 
 	OTAssertNil([archive nextEntry]);
 }
+
+- (void)testEntryFileType
+{
+	OFMutableLHAArchiveEntry *entry;
+
+	entry = [OFMutableLHAArchiveEntry entryWithFileName: @"test"];
+	entry.fileType = OFArchiveEntryFileTypeDirectory;
+	OTAssertEqualObjects(entry.fileName, @"test/");
+
+	entry = [OFMutableLHAArchiveEntry entryWithFileName: @"test/"];
+	entry.fileType = OFArchiveEntryFileTypeRegular;
+	OTAssertEqualObjects(entry.fileName, @"test");
+}
 @end

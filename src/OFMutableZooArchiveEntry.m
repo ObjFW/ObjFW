@@ -25,6 +25,8 @@
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFMutableZooArchiveEntry
 @dynamic headerType, compressionMethod, modificationDate, CRC16;
 @dynamic uncompressedSize, compressedSize, minVersionNeeded, deleted;
@@ -161,6 +163,12 @@
 	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	if (fileType != OFArchiveEntryFileTypeRegular)
+		@throw [OFInvalidArgumentException exception];
 }
 
 - (void)setOperatingSystemIdentifier: (uint16_t)operatingSystemIdentifier
