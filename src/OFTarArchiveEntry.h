@@ -38,6 +38,10 @@ typedef OFArchiveEntryFileType OFTarArchiveEntryType
 #endif
 ;
 
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 /**
  * @brief Normal file.
  *
@@ -113,6 +117,9 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
     OF_DEPRECATED(ObjFW, 1, 5,
 	"Use OFArchiveEntryFileTypeContiguousFile instead") =
     (OFTarArchiveEntryType)'7';
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 /**
  * @class OFTarArchiveEntry OFTarArchiveEntry.h ObjFW/ObjFW.h
