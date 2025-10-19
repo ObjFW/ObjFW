@@ -285,6 +285,10 @@ initOperatingSystemVersion(void)
 # endif
 #elif defined(OF_ANDROID)
 	/* TODO */
+#elif defined(OF_AMIGAOS4)
+	operatingSystemVersion = [[OFString alloc]
+	    initWithFormat: @"Kickstart %u.%u",
+			    SysBase->lib_Version, SysBase->lib_Revision];
 #elif defined(OF_AMIGAOS)
 	operatingSystemVersion = [[OFString alloc]
 	    initWithFormat: @"Kickstart %u.%u",
