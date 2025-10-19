@@ -73,6 +73,9 @@
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
+#elif defined(OF_AMIGAOS4)
+# define HOSTS_PATH @"DEVS:Internet/hosts"
+# define RESOLV_CONF_PATH @"DEVS:Internet/name_resolution"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
@@ -640,7 +643,7 @@ parseNetStackArray(OFString *string)
 #ifdef OF_WINDOWS
 	OFString *path = nil;
 #endif
-#if (defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)) && defined(OF_HAVE_FILES)
+#if defined(OF_AMIGAOS_M68K) && defined(OF_HAVE_FILES)
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 #endif
 	void *pool;
@@ -684,7 +687,7 @@ parseNetStackArray(OFString *string)
 	[self obtainWindowsSystemConfig];
 #elif defined(OF_MORPHOS)
 	[self obtainMorphOSSystemConfig];
-#elif defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+#elif defined(OF_AMIGAOS_M68K)
 # ifdef OF_HAVE_FILES
 	if (![self obtainRoadshowSystemConfig]) {
 		if (assignExists("AmiTCP"))
