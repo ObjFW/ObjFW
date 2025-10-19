@@ -103,7 +103,7 @@
 # include <proto/locale.h>
 # undef Class
 # ifdef OF_AMIGAOS4
-#  define DeleteFile(path) Delete(path)
+#  include <dos/obsolete.h>
 # endif
 #endif
 
@@ -1389,8 +1389,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 {
 #if defined(OF_AMIGAOS)
 	const char *path;
-	BPTR lock;
 # ifndef OF_AMIGAOS4
+	BPTR lock;
 	struct FileInfoBlock fib;
 # endif
 	uint32_t uid;
@@ -1409,7 +1409,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	if (ownerAccountID == nil || groupOwnerAccountID == nil) {
 # ifdef OF_AMIGAOS4
-		if (!GetOwnerInfo(OI_StringNameInput, path,
+		if (!GetOwnerInfoTags(OI_StringNameInput, path,
 		    OI_OwnerUID, &uid, OI_OwnerGID, &gid, TAG_END)) {
 			OFFileAttributeKey key = (ownerAccountID != nil
 			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
@@ -1466,7 +1466,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 
 # ifdef OF_AMIGAOS4
-	if (!SetOwnerInfo(OI_StringNameInput, path, OI_OwnerUID, uid,
+	if (!SetOwnerInfoTags(OI_StringNameInput, path, OI_OwnerUID, uid,
 	    OI_OwnerGID, gid, TAG_END)) {
 # else
 	if (uid > UINT16_MAX || gid > UINT16_MAX)
