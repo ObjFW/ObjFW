@@ -1945,18 +1945,27 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		break
 	])
 
-	AS_IF([test x"$with_wii" = x"yes"], [
-		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
-			"OFPollKernelEventObserver.m")
-	], [
-		AC_CHECK_HEADERS(poll.h)
-		AC_CHECK_FUNC(poll, [
+	case "$host_os" in
+	amigaos*)
+		dnl Don't try to use poll on AmigaOS, as we need WaitSelect to
+		dnl handle signals at the same time.
+		;;
+	*)
+		AS_IF([test x"$with_wii" = x"yes"], [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
+		], [
+			AC_CHECK_HEADERS(poll.h)
+			AC_CHECK_FUNC(poll, [
+				AC_DEFINE(HAVE_POLL, 1,
+					[Whether we have poll()])
+				AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
+					"OFPollKernelEventObserver.m")
+			])
 		])
-	])
+		;;
+	esac
 
 	case "$host_os" in
 	amigaos* | mingw* | morphos*)
