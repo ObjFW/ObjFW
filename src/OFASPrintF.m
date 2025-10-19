@@ -29,7 +29,8 @@
 # include <wchar.h>
 #endif
 
-#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE))
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -89,7 +90,8 @@ struct Context {
 	bool useLocale;
 };
 
-#if defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_ASPRINTF_L) || defined(HAVE_USELOCALE))
 static locale_t cLocale;
 
 OF_CONSTRUCTOR()
@@ -383,7 +385,8 @@ formatConversionSpecifierState(struct Context *ctx)
 {
 	char *tmp = NULL;
 	int tmpLen = 0;
-#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
+#if !defined(HAVE_NEWLOCALE) || \
+    (!defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE))
 	OFString *point;
 #endif
 
@@ -554,13 +557,13 @@ formatConversionSpecifierState(struct Context *ctx)
 		switch (ctx->lengthModifier) {
 		case lengthModifierNone:
 		case lengthModifierL:
-#if defined(HAVE_ASPRINTF_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, double));
 			else
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 			if (!ctx->useLocale) {
 				locale_t previousLocale = uselocale(cLocale);
 				tmpLen = asprintf(&tmp, ctx->subformat,
@@ -572,13 +575,13 @@ formatConversionSpecifierState(struct Context *ctx)
 				    va_arg(ctx->arguments, double));
 			break;
 		case lengthModifierCapitalL:
-#if defined(HAVE_ASPRINTF_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
 				tmpLen = asprintf_l(&tmp, cLocale,
 				    ctx->subformat,
 				    va_arg(ctx->arguments, long double));
 			else
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 			if (!ctx->useLocale) {
 				locale_t previousLocale = uselocale(cLocale);
 				tmpLen = asprintf(&tmp, ctx->subformat,
@@ -593,7 +596,8 @@ formatConversionSpecifierState(struct Context *ctx)
 			return false;
 		}
 
-#if !defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE)
+#if !defined(HAVE_NEWLOCALE) || \
+    (!defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE))
 		if (tmpLen == -1)
 			return false;
 

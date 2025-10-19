@@ -26,7 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -96,7 +97,8 @@ static struct {
 	Class isa;
 } placeholder;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 static locale_t cLocale;
 #endif
 
@@ -723,7 +725,8 @@ OF_SINGLETON_METHODS
 
 	object_setClass((id)&placeholder, [OFPlaceholderString class]);
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -2699,7 +2702,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE))
 	const char *UTF8String = self.UTF8String;
 #else
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
@@ -2725,9 +2729,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	float value;
 
 	errno = 0;
-#if defined(HAVE_STRTOF_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_STRTOF_L)
 	value = strtof_l(UTF8String, &endPtr, cLocale);
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 	locale_t previousLocale = uselocale(cLocale);
 	value = strtof(UTF8String, &endPtr);
 	uselocale(previousLocale);
@@ -2766,7 +2770,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 	const char *UTF8String = self.UTF8String;
 #else
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
@@ -2792,9 +2797,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	double value;
 
 	errno = 0;
-#if defined(HAVE_STRTOD_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_STRTOD_L)
 	value = strtod_l(UTF8String, &endPtr, cLocale);
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 	locale_t previousLocale = uselocale(cLocale);
 	value = strtod(UTF8String, &endPtr);
 	uselocale(previousLocale);
