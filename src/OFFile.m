@@ -150,22 +150,32 @@ parseMode(const char *mode)
 }
 #else
 static int
-parseMode(const char *mode, bool *append)
+parseMode(const char *mode, bool *truncate, bool *exclusive, bool *append)
 {
+	*truncate = false;
+	*exclusive = false;
 	*append = false;
 
 	if (strcmp(mode, "r") == 0)
 		return MODE_OLDFILE;
 	if (strcmp(mode, "r+") == 0)
 		return MODE_OLDFILE;
-	if (strcmp(mode, "w") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "wx") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "w+") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "w+x") == 0)
-		return MODE_NEWFILE;
+	if (strcmp(mode, "w") == 0) {
+		*truncate = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "wx") == 0) {
+		*exclusive = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "w+") == 0) {
+		*truncate = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "w+x") == 0) {
+		*exclusive = true;
+		return MODE_READWRITE;
+	}
 	if (strcmp(mode, "a") == 0) {
 		*append = true;
 		return MODE_READWRITE;
@@ -176,6 +186,25 @@ parseMode(const char *mode, bool *append)
 	}
 
 	return -1;
+}
+
+static int
+ioErrToErrNo()
+{
+	switch (IoErr()) {
+	case ERROR_OBJECT_IN_USE:
+	case ERROR_DISK_NOT_VALIDATED:
+		return EBUSY;
+	case ERROR_OBJECT_NOT_FOUND:
+		return ENOENT;
+	case ERROR_DISK_WRITE_PROTECTED:
+		return EROFS;
+	case ERROR_WRITE_PROTECTED:
+	case ERROR_READ_PROTECTED:
+		return EACCES;
+	default:
+		return EIO;
+	}
 }
 #endif
 
@@ -257,39 +286,39 @@ parseMode(const char *mode, bool *append)
 #else
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
-			if ((flags = parseMode(mode.UTF8String,
-			    &handle->append)) == -1)
+			bool truncate, exclusive;
+			const char *pathCStr = [path cStringWithEncoding:
+			    [OFLocale encoding]];
+
+			if ((flags = parseMode(mode.UTF8String, &truncate,
+			    &exclusive, &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
 
-			if ((handle->handle = Open([path cStringWithEncoding:
-			    [OFLocale encoding]], flags)) == 0) {
-				int errNo;
+			if (exclusive) {
+				BPTR lock = Lock(pathCStr, SHARED_LOCK);
 
-				switch (IoErr()) {
-				case ERROR_OBJECT_IN_USE:
-				case ERROR_DISK_NOT_VALIDATED:
-					errNo = EBUSY;
-					break;
-				case ERROR_OBJECT_NOT_FOUND:
-					errNo = ENOENT;
-					break;
-				case ERROR_DISK_WRITE_PROTECTED:
-					errNo = EROFS;
-					break;
-				case ERROR_WRITE_PROTECTED:
-				case ERROR_READ_PROTECTED:
-					errNo = EACCES;
-					break;
-				default:
-					errNo = 0;
-					break;
+				if (lock != 0) {
+					UnLock(lock);
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: EEXIST];
 				}
+			}
 
+			if ((handle->handle = Open(pathCStr, flags)) == 0)
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode
-						errNo: errNo];
-			}
+						errNo: ioErrToErrNo()];
+
+			if (truncate)
+				if (SetFileSize(handle->handle, 0,
+				    OFFSET_BEGINNING) == -1)
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: ioErrToErrNo()];
 
 			if (handle->append) {
 # if defined(OF_MORPHOS)
