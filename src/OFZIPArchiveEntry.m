@@ -134,7 +134,7 @@ OFZIPArchiveEntryCompressionMethodName(
 	case OFZIPArchiveEntryCompressionMethodDeflate64:
 		return @"Deflate64";
 	case OFZIPArchiveEntryCompressionMethodBZIP2:
-		return @"BZip2";
+		return @"BZIP2";
 	case OFZIPArchiveEntryCompressionMethodLZMA:
 		return @"LZMA";
 	case OFZIPArchiveEntryCompressionMethodWavPack:

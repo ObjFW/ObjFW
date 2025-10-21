@@ -1021,7 +1021,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tOwner account ID = %@\n"
 	    @"\tGroup owner account ID = %@\n"
 	    @"\tOwner account name = %@\n"
-	    @"\tGroup owner accounut name = %@\n"
+	    @"\tGroup owner account name = %@\n"
 	    @"\tMS-DOS attributes = %@\n"
 	    @"\tAmiga comment = %@\n"
 	    @"\tExtensions: %@"

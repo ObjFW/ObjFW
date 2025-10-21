@@ -245,7 +245,8 @@
     <argument name='stretForward' type='IMP _Nullable'/>
   </function>
   <function name='objc_setEnumerationMutationHandler'>
-    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'/>
+    <argument name='handler'
+              type='objc_enumeration_mutation_handler _Nullable'/>
   </function>
   <!-- MorphOS started using it before the API was stable. -->
   <function name='_objc_zeroWeakReferences' condition='defined(OF_MORPHOS)'>

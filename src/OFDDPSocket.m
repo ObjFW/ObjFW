@@ -53,7 +53,7 @@
 # include <netat/ddp.h>
 # include <sys/ioctl.h>
 
-/* Unfortulately, there is no struct for the following in userland headers */
+/* Unfortunately, there is no struct for the following in userland headers */
 struct ATInterfaceConfig {
 	char interfaceName[16];
 	unsigned int flags;

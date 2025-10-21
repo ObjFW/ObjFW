@@ -347,7 +347,7 @@ formatLengthModifierState(struct Context *ctx)
 
 		break;
 #ifdef OF_WINDOWS
-	case 'I': /* win32 strangeness (I64 instead of ll or j) */
+	case 'I': /* Win32 strangeness (I64 instead of ll or j) */
 		if (ctx->formatLen > ctx->i + 2 &&
 		    ctx->format[ctx->i + 1] == '6' &&
 		    ctx->format[ctx->i + 2] == '4') {
@@ -458,15 +458,15 @@ formatConversionSpecifierState(struct Context *ctx)
 
 			j = 0;
 			for (size_t i = 0; i < len; i++) {
-				size_t clen = _OFUTF8StringEncode(arg[i],
+				size_t cLen = _OFUTF8StringEncode(arg[i],
 				    buffer + j);
 
-				if (clen == 0) {
+				if (cLen == 0) {
 					free(buffer);
 					return false;
 				}
 
-				j += clen;
+				j += cLen;
 			}
 			buffer[j] = 0;
 

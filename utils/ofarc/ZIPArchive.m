@@ -311,7 +311,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 					    @"attr", attributesString)];
 				}
 #undef VerUNIX
-#undef VerAMIGA
+#undef VerAmiga
 #undef VerMSDOS
 			}
 

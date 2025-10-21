@@ -411,7 +411,7 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 	int PIState = 0;
 	OFString *attribute = nil;
 	OFMutableString *value = nil;
-	char piDelimiter = 0;
+	char PIDelimiter = 0;
 	bool hasVersion = false;
 
 	if (!self->_acceptProlog)
@@ -451,13 +451,13 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 			if (cString[i] != '\'' && cString[i] != '"')
 				return false;
 
-			piDelimiter = cString[i];
+			PIDelimiter = cString[i];
 			last = i + 1;
 			PIState = 3;
 
 			break;
 		case 3:
-			if (cString[i] != piDelimiter)
+			if (cString[i] != PIDelimiter)
 				continue;
 
 			value = [OFMutableString

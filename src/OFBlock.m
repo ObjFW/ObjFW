@@ -148,7 +148,7 @@ struct class {
 	struct class *isa, *superclass;
 	const char *name;
 	long version, info, instanceSize;
-	struct ivar_list *iVars;
+	struct ivar_list *ivars;
 	struct method_list **methodList;
 	struct cache *cache;
 	struct protocol_list *protocols;

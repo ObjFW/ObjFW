@@ -1,7 +1,7 @@
 Donating
 ========
 
-**Please check for the most up to date version
+**Please check for the most up-to-date version
 [here](https://git.nil.im/ObjFW/ObjFW/src/branch/main/DONATING.md) to avoid
 using a method that no longer works!**
 

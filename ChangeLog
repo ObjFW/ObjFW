@@ -1,5 +1,5 @@
 Legend:
- * Changes of existing features or bugfixes
+ * Changes of existing features or bug fixes
  + New features
 
 This file only contains the most significant changes.
@@ -50,7 +50,7 @@ ObjFW 1.3.2 -> ObjFW 1.4, 2025-08-03
  + Starts using OF_DIRECT with the ObjFW runtime when using Clang >= 21.
  + OFTLSSocket now supports client certificates officially instead of being an
    unsupported byproduct of support for server certificates (the only change
-   is that this fixes mbedTLS using the certificate chain to verify the server
+   is that this fixes Mbed TLS using the certificate chain to verify the server
    when it should only be used for the client certificate).
  * Many fixes for AmigaOS and MorphOS.
  * Everything is built with RELRO, _FORTIFY_SOURCE=3 and -fstack-protector by
@@ -64,7 +64,7 @@ ObjFW 1.3.1 -> ObjFW 1.3.2, 2025-06-08
  * Fixes handling of write errors when using OpenSSL.
  * Fixes reporting of written bytes in OFWriteFailedException when using GnuTLS.
  * Fixes reporting of written bytes in OFWriteFailedException when using
-   MbedTLS.
+   Mbed TLS.
  * Fixes handling of EPIPE and ECONNRESET when using Secure Transport.
 
 ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
@@ -73,13 +73,13 @@ ObjFW 1.3 -> ObjFW 1.3.1, 2025-06-07
  * Fixes using async I/O on OFHTTPServer's request body or response.
  * Fixes configure on Solaris / Illumos.
  * Improves configure check for GameController.framework.
- * Removes unncessary promotion to double in OFColor.
+ * Removes unnecessary promotion to double in OFColor.
  * Fixes handling the last disk number on ZIP64 archives.
  * Fixes OFLHAArchiveEntry on big endian systems.
  * Fixes inconsistent nullability in OFMutablePair and OFMutableTriple.
 
 ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
- + OFStdIOStream adds support for truecolor, 256 colors, bold, italic,
+ + OFStdIOStream adds support for true color, 256 colors, bold, italic,
    underlined and italic.
  * OFStdIOStream now keeps track of state to reduce the amount of escape codes
    used.
@@ -97,7 +97,7 @@ ObjFW 1.2.4 -> ObjFW 1.3, 2025-03-22
  + Adds OFX509Certificate with support for PKCS #12 and PEM files.
  + Adds server mode for OFTLSStream.
  + Adds support for TLS to OFHTTPServer.
- + Adds support for mbedTLS 3 to ObjFWTLS.
+ + Adds support for Mbed TLS 3 to ObjFWTLS.
  * Fixes handling of unexpected stream end in OFOpenSSLTLSStream.
  + OFRunLoop now supports interacting with foreign run loops.
  + ObjFWBridge now provides an OFKernelEventObserver implementation that uses
@@ -135,7 +135,7 @@ ObjFW 1.2.2 -> ObjFW 1.2.3, 2024-12-15
 
 ObjFW 1.2.1 -> ObjFW 1.2.2, 2024-12-07
  * Fixes OFTLSSocket not sending shutdown when using OpenSSL.
- * Fixes OFTLSSocket initialization when using MbedTLS.
+ * Fixes OFTLSSocket initialization when using Mbed TLS.
  * Fixes imports in ObjFWTLS.h.
  * OFINIFile now properly quotes ; and #.
  * Ensures ofarc and ofhash link ObjFWTLS.
@@ -209,7 +209,7 @@ ObjFW 1.1.3 -> ObjFW 1.1.4, 2024-05-22
  * Fixes ofarc failing to extract from stdin on macOS.
  * Fixes the workaround for missing blx on ARM.
  * Avoids Clang's integrated assembler on MIPS64 for .S files (as it cannot
-   calcualte the offset between two labels).
+   calculate the offset between two labels).
  * Fixes X32 being mistaken for AMD64.
 
 ObjFW 1.1.2 -> ObjFW 1.1.3, 2024-05-12
@@ -328,7 +328,7 @@ ObjFW 1.0.6 -> ObjFW 1.0.7, 2024-01-21
  * Fixes dealloc in OFSubprocess when -[closeForWriting] was called.
  + Adds tests for OFSubprocess.
  * Changes the key for +[OFSystemInfo networkInterfaces] to the adapter name
-   on Windows XP and newer to avoid a possible collission on the adapter index.
+   on Windows XP and newer to avoid a possible collision on the adapter index.
  * Fixes compilation with old MinGW versions.
  * Fixes the documentation for OFSRVDNSResourceRecord.
 
@@ -363,7 +363,7 @@ ObjFW 1.0.1 -> ObjFW 1.0.2, 2023-09-11
 
 ObjFW 1.0 -> ObjFW 1.0.1, 2023-09-10
  * Hanging connections with OFTLSStream have been fixed when using OpenSSL
- * The same fix as for OpenSSL has been applied to GnuTLS and SecureTransport
+ * The same fix as for OpenSSL has been applied to GnuTLS and Secure Transport
    out of caution, even though there have been no hangs in practice
  * The build system has been updated to fix building .frameworks among other
    minor changes
@@ -552,7 +552,7 @@ ObjFW 0.5.3 -> ObjFW 0.5.4, 2011-08-30
  * Various small fixes
 
 ObjFW 0.5.2 -> ObjFW 0.5.3, 2011-07-01
- * Lots of bugfixes, see Git log for details
+ * Lots of bug fixes, see Git log for details
 
 ObjFW 0.5.1 -> ObjFW 0.5.2, 2011-04-25
  * Fix double-retain in OFList
@@ -589,7 +589,7 @@ ObjFW 0.4-alpha1 -> 0.5, 2011-04-09
  + Support for Base64
  + Use a real Xcode project instead of just calling make
  + Add Haiku to the list of supported platforms
- * Lots of small bugfixes and countless small changes. Read the commits!
+ * Lots of small bug fixes and countless small changes. Read the commits!
 
 ObjFW 0.3.1 -> 0.4-alpha1, 2011-01-03
  * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3

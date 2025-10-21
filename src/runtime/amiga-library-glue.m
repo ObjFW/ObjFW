@@ -406,9 +406,9 @@ glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 }
 
 void __saveds
-glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
+glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable handler)
 {
-	objc_setEnumerationMutationHandler(hadler);
+	objc_setEnumerationMutationHandler(handler);
 }
 
 #if defined(OF_MORPHOS)
