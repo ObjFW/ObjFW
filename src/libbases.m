@@ -42,7 +42,11 @@ struct LocaleIFace *ILocale;
 #endif
 struct Device *TimerBase;
 struct Unit *MicroHZUnit;
+#ifdef OF_AMIGAOS4
+static struct TimeRequest timeRequest;
+#else
 static struct timerequest timeRequest;
+#endif
 
 OF_CONSTRUCTOR()
 {
@@ -64,18 +68,31 @@ OF_CONSTRUCTOR()
 		@throw [OFInitializationFailedException exception];
 #endif
 
+#ifdef OF_AMIGAOS4
+	if (OpenDevice("timer.device", UNIT_MICROHZ,
+	    &timeRequest.Request, 0) != 0)
+		@throw [OFInitializationFailedException exception];
+
+	TimerBase = timeRequest.Request.io_Device;
+	MicroHZUnit = timeRequest.Request.io_Unit;
+#else
 	if (OpenDevice("timer.device", UNIT_MICROHZ,
 	    &timeRequest.tr_node, 0) != 0)
 		@throw [OFInitializationFailedException exception];
 
 	TimerBase = timeRequest.tr_node.io_Device;
 	MicroHZUnit = timeRequest.tr_node.io_Unit;
+#endif
 }
 
 OF_DESTRUCTOR()
 {
 	if (TimerBase != NULL)
+#ifdef OF_AMIGAOS4
+		CloseDevice(&timeRequest.Request);
+#else
 		CloseDevice(&timeRequest.tr_node);
+#endif
 
 #ifdef OF_AMIGAOS4
 	if (ILocale != NULL)
