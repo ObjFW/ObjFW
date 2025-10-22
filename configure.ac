@@ -59,6 +59,8 @@ m68k-*-amigaos*)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
