@@ -59,6 +59,8 @@ m68k-*-amigaos*)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+	LDFLAGS="$LDFLAGS -athread=native"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -athread=native"
 	LIBS="-ldebug $LIBS"
 	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
