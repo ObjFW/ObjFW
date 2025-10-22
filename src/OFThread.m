@@ -115,6 +115,12 @@ static OFThread *mainThread;
 static OFDNSResolver *DNSResolver;
 #endif
 
+#if defined(OF_AMIGAOS4)
+extern struct TimeRequest OFTimeRequest;
+#elif defined(OF_AMIGAOS)
+extern struct timerequest OFTimeRequest;
+#endif
+
 @implementation OFThread
 #ifdef OF_HAVE_THREADS
 static void
@@ -273,7 +279,17 @@ callMain(id object)
 
 	svcSleepThread((int64_t)(timeInterval * 1000000000));
 #elif defined(OF_AMIGAOS)
-	struct timerequest request = *DOSBase->dl_TimeReq;
+# ifdef OF_AMIGAOS4
+	struct TimeRequest request = OFTimeRequest;
+
+	request.Request.io_Message.mn_ReplyPort =
+	    &((struct Process *)FindTask(NULL))->pr_MsgPort;
+	request.Request.io_Command = TR_ADDREQUEST;
+	request.Time.Seconds = (ULONG)timeInterval;
+	request.Time.Microseconds = (ULONG)
+	    ((timeInterval - (unsigned int)timeInterval) * 1000000);
+# else
+	struct timerequest request = OFTimeRequest;
 
 	request.tr_node.io_Message.mn_ReplyPort =
 	    &((struct Process *)FindTask(NULL))->pr_MsgPort;
@@ -281,6 +297,7 @@ callMain(id object)
 	request.tr_time.tv_secs = (ULONG)timeInterval;
 	request.tr_time.tv_micro = (ULONG)
 	    ((timeInterval - (unsigned int)timeInterval) * 1000000);
+# endif
 
 	DoIO((struct IORequest *)&request);
 #elif defined(HAVE_NANOSLEEP)

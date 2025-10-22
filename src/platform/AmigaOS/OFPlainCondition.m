@@ -31,8 +31,11 @@
 #endif
 #undef Class
 
-extern struct Device *TimerBase;
-extern struct Unit *MicroHZUnit;
+#ifdef OF_AMIGAOS4
+extern struct TimeRequest OFTimeRequest;
+#else
+extern struct timerequest OFTimeRequest;
+#endif
 
 int
 OFPlainConditionNew(OFPlainCondition *condition)
@@ -171,8 +174,13 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 				.mn_ReplyPort = &port,
 				.mn_Length = sizeof(request)
 			},
-			.io_Device = TimerBase,
-			.io_Unit = MicroHZUnit,
+#ifdef OF_AMIGAOS4
+			.io_Device = OFTimeRequest.Request.io_Device,
+			.io_Unit = OFTimeRequest.Request.io_Unit,
+#else
+			.io_Device = OFTimeRequest.tr_node.io_Device,
+			.io_Unit = OFTimeRequest.tr_node.io_Unit,
+#endif
 			.io_Command = TR_ADDREQUEST
 		},
 #ifdef OF_AMIGAOS4
