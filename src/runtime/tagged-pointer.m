@@ -17,6 +17,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #import "ObjFWRT.h"
 
 #import "private.h"
