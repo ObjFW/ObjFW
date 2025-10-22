@@ -313,8 +313,13 @@ ioErrToErrNo()
 						errNo: ioErrToErrNo()];
 
 			if (truncate)
+# ifdef OF_AMIGAOS4
+				if (ChangeFileSize(handle->handle, 0,
+				    OFFSET_BEGINNING) == -1)
+# else
 				if (SetFileSize(handle->handle, 0,
 				    OFFSET_BEGINNING) == -1)
+# endif
 					@throw [OFOpenItemFailedException
 					    exceptionWithPath: path
 							 mode: mode
