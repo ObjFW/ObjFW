@@ -901,8 +901,20 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 ], [
 	AC_MSG_RESULT(no)
 	AC_CHECK_SIZEOF(uintptr_t)
-	AC_DEFINE(UINTPTR_MAX,
-		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
+	case "$ac_cv_sizeof_uintptr_t" in
+	4)
+		uintptr_max="0xFFFFFFFF"
+		;;
+	8)
+		uintptr_max="0xFFFFFFFFFFFFFFFF"
+		;;
+	*)
+		AC_MSG_ERROR(Could not determine UINTPTR_MAX!)
+		;;
+	esac
+
+	AC_DEFINE_UNQUOTED(UINTPTR_MAX, $uintptr_max,
+		[Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
