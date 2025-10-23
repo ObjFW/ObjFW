@@ -436,7 +436,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			uint8_t extendedAreaSize;
 			char fileNameBuffer[255];
 			uint8_t fileNameLength;
-			OFString *fileName;
 			char *amigaCommentPtr;
 
 			if (header[0] < (21 - 2) + 1 + 2)
@@ -486,13 +485,15 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 				fileNameLength = newFileNameLength;
 			}
 
-			fileName = [OFString stringWithCString: fileNameBuffer
-						      encoding: encoding
-							length: fileNameLength];
-			fileName = [fileName
-			    stringByReplacingOccurrencesOfString: @"\\"
-						      withString: @"/"];
-			_fileName = [fileName copy];
+			for (size_t i = 0; i < fileNameLength; i++)
+				if (fileNameBuffer[i] == '\xFF' ||
+				    fileNameBuffer[i] == '\\')
+					fileNameBuffer[i] = '/';
+
+			_fileName = [[OFString alloc]
+			    initWithCString: fileNameBuffer
+				   encoding: encoding
+				     length: fileNameLength];
 
 			/* Skip extended area */
 			if ([stream isKindOfClass: [OFSeekableStream class]])
