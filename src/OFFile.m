@@ -314,8 +314,8 @@ ioErrToErrNo()
 
 			if (truncate)
 # ifdef OF_AMIGAOS4
-				if (ChangeFileSize(handle->handle, 0,
-				    OFFSET_BEGINNING) == -1)
+				if (!ChangeFileSize(handle->handle, 0,
+				    OFFSET_BEGINNING))
 # else
 				if (SetFileSize(handle->handle, 0,
 				    OFFSET_BEGINNING) == -1)
@@ -330,8 +330,8 @@ ioErrToErrNo()
 				if (Seek64(handle->handle, 0,
 				    OFFSET_END) == -1) {
 # elif defined(OF_AMIGAOS4)
-				if (ChangeFilePosition(handle->handle, 0,
-				    OFFSET_END) == -1) {
+				if (!ChangeFilePosition(handle->handle, 0,
+				    OFFSET_END)) {
 # else
 				if (Seek(handle->handle, 0, OFFSET_END) == -1) {
 # endif
