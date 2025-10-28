@@ -387,7 +387,7 @@ statWrapper(OFString *path, Stat *buffer)
 # if defined(OF_MORPHOS)
 	buffer->st_size = fib.fib_Size64;
 # elif defined(OF_AMIGAOS4)
-	buffer->st_size = ed->FileSize;
+	buffer->st_size = (ed->FileSize != -1 ? ed->FileSize : 0);
 # else
 	buffer->st_size = fib.fib_Size;
 # endif
