@@ -720,6 +720,9 @@ next:
 	OFEnumerator *enumerator;
 	OFMutableDictionary *interface;
 
+	if (!_OFSocketInit())
+		return nil;
+
 	success |= queryNetworkInterfaceIndices(ret);
 	success |= queryNetworkInterfaceIPv4Addresses(ret);
 #ifdef OF_HAVE_IPV6
