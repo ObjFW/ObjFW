@@ -124,8 +124,12 @@
 								 errNo: errno];
 
 	_canBlock = canBlock;
-#elif defined(OF_WINDOWS)
-	u_long v = !canBlock;
+#elif defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+# ifdef OF_MORPHOS
+	char v = !canBlock;
+# else
+	unsigned long v = !canBlock;
+# endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException

@@ -169,7 +169,11 @@
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 - (void)setCanBlock: (bool)canBlock
 {
-	long v = !canBlock;
+# ifdef OF_MORPHOS
+	char v = !canBlock;
+# else
+	unsigned long v = !canBlock;
+# endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException

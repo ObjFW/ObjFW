@@ -59,7 +59,7 @@
 		for (struct Node *node = list->lh_Head; node->ln_Succ != NULL;
 		    node = node->ln_Succ) {
 			long unit;
-			UBYTE HWAddr[16];
+			unsigned char HWAddr[16];
 			unsigned long HWAddrSize;
 			OFSocketAddress address;
 			struct TagItem QITags[] = {
