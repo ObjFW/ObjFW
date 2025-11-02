@@ -142,8 +142,9 @@ OFLogV(OFConstantString *format, va_list arguments)
 	msg = objc_autorelease([[OFString alloc] initWithFormat: format
 						      arguments: arguments]);
 
-	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-			       date.microsecond / 1000, me, getpid(), msg];
+	[OFStdErr writeFormat: @"[%@.%03d %@(%ld)] %@\n", dateString,
+			       date.microsecond / 1000, me,
+			       [OFApplication processID], msg];
 
 	objc_autoreleasePoolPop(pool);
 }
