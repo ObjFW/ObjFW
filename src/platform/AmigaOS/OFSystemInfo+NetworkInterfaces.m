@@ -32,16 +32,20 @@
 @implementation OFSystemInfo (NetworkInterfaces)
 + (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
 {
+	long hasInterfaceAPI = 0;
+	struct TagItem SBTags[] = {
+		{ SBTM_GETREF(SBTC_HAVE_INTERFACE_API),
+		    (unsigned long)&hasInterfaceAPI },
+		{ TAG_END, 0 }
+	};
 	void *pool;
 	OFMutableDictionary *ret;
-	LONG hasInterfaceAPI = 0;
 	struct List *list;
 
 	if (!_OFSocketInit())
 		return nil;
 
-	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_INTERFACE_API),
-	    (ULONG)&hasInterfaceAPI, TAG_END) != 0 || !hasInterfaceAPI)
+	if (SocketBaseTagList(SBTags) != 0 || !hasInterfaceAPI)
 		return nil;
 
 	if ((list = ObtainInterfaceList()) == NULL)
@@ -54,20 +58,23 @@
 
 		for (struct Node *node = list->lh_Head; node->ln_Succ != NULL;
 		    node = node->ln_Succ) {
-			LONG unit;
+			long unit;
 			UBYTE HWAddr[16];
-			ULONG HWAddrSize;
+			unsigned long HWAddrSize;
 			OFSocketAddress address;
-
+			struct TagItem QITags[] = {
+				{ IFQ_DeviceUnit, (unsigned long)&unit },
+				{ IFQ_HardwareAddress, (unsigned long)&HWAddr },
+				{ IFQ_HardwareAddressSize,
+				    (unsigned long)&HWAddrSize },
+				{ IFQ_Address,
+				    (unsigned long)&address.sockaddr.in },
+				{ TAG_END, 0 }
+			};
 			OFString *name;
 			OFMutableDictionary *interface;
 
-			if (QueryInterfaceTags(node->ln_Name,
-			    IFQ_DeviceUnit, &unit,
-			    IFQ_HardwareAddress, &HWAddr,
-			    IFQ_HardwareAddressSize, &HWAddrSize,
-			    IFQ_Address, &address.sockaddr.in,
-			    TAG_END) != 0) {
+			if (QueryInterfaceTagList(node->ln_Name, QITags) != 0) {
 				objc_autoreleasePoolPop(pool);
 				return nil;
 			}

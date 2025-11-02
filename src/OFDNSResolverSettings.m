@@ -548,10 +548,13 @@ parseNetStackArray(OFString *string)
 	OFStringEncoding encoding;
 	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
-	LONG hasDNSAPI = 0;
+	long hasDNSAPI = 0;
+	struct TagItem tags[] = {
+		{ SBTM_GETREF(SBTC_HAVE_DNS_API), (unsigned long)&hasDNSAPI },
+		{ TAG_END, 0 }
+	};
 
-	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_DNS_API), (ULONG)&hasDNSAPI,
-	    TAG_END) != 0 || !hasDNSAPI)
+	if (SocketBaseTagList(tags) != 0 || !hasDNSAPI)
 		return false;
 
 	nameServers = [OFMutableArray array];
