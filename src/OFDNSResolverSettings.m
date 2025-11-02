@@ -548,7 +548,7 @@ parseNetStackArray(OFString *string)
 	OFStringEncoding encoding;
 	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
-	LONG hasDNSAPI;
+	LONG hasDNSAPI = 0;
 
 	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_DNS_API), (ULONG)&hasDNSAPI,
 	    TAG_END) != 0 || !hasDNSAPI)

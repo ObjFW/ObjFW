@@ -714,14 +714,17 @@ next:
 
 + (OFDictionary OF_GENERIC(OFString *, OFNetworkInterface) *)networkInterfaces
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
+	void *pool;
+	OFMutableDictionary *ret;
 	bool success = false;
 	OFEnumerator *enumerator;
 	OFMutableDictionary *interface;
 
 	if (!_OFSocketInit())
 		return nil;
+
+	pool = objc_autoreleasePoolPush();
+	ret = [OFMutableDictionary dictionary];
 
 	success |= queryNetworkInterfaceIndices(ret);
 	success |= queryNetworkInterfaceIPv4Addresses(ret);

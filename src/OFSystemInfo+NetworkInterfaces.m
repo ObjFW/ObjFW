@@ -23,8 +23,10 @@
 
 #include "OFSystemInfo+NetworkInterfacesConstants.inc"
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS)
 # include "platform/Windows/OFSystemInfo+NetworkInterfaces.m"
+#elif defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+# include "platform/AmigaOS/OFSystemInfo+NetworkInterfaces.m"
 #else
 # include "platform/POSIX/OFSystemInfo+NetworkInterfaces.m"
 #endif
