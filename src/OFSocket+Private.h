@@ -68,6 +68,7 @@ typedef uint32_t in_addr_t;
 # endif
 #elif !defined(OF_WINDOWS) && !defined(OF_WII)
 # define closesocket(sock) close(sock)
+# define ioctlsocket(...) ioctl(__VA_ARGS__)
 #endif
 
 #ifdef OF_WII
