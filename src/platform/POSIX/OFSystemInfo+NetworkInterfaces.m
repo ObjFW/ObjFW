@@ -127,7 +127,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 		memset(&lifc, 0, sizeof(lifc));
 		lifc.lifc_buf = (void *)lifrs;
 		lifc.lifc_len = 128 * sizeof(struct lifreq);
-		if (ioctlsocket(sock, SIOCGLIFCONF, &lifc) < 0)
+		if (ioctlsocket(sock, SIOCGLIFCONF, (void *)&lifc) < 0)
 			return false;
 
 		for (buffer = lifc.lifc_buf;
@@ -195,7 +195,7 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
 		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
-		if (ioctlsocket(sock, SIOCGIFCONF, &ifc) < 0)
+		if (ioctlsocket(sock, SIOCGIFCONF, (void *)&ifc) < 0)
 			return false;
 
 		buffer = ifc.ifc_buf;
@@ -592,7 +592,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 		memcpy(&lifr.lifr_name, [name cStringWithEncoding: encoding],
 		    nameLength);
 
-		if (ioctlsocket(sock, SIOCGLIFHWADDR, &lifr) < 0)
+		if (ioctlsocket(sock, SIOCGLIFHWADDR, (void *)&lifr) < 0)
 			continue;
 
 		if (lifr.lifr_addr.ss_family != AF_LINK)
@@ -627,7 +627,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 		memcpy(&ifr.ifr_name, [name cStringWithEncoding: encoding],
 		    nameLength);
 
-		if (ioctlsocket(sock, SIOCGIFHWADDR, &ifr) < 0)
+		if (ioctlsocket(sock, SIOCGIFHWADDR, (void *)&ifr) < 0)
 			continue;
 
 		if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER)
@@ -663,7 +663,7 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 		memset(&ifc, 0, sizeof(ifc));
 		ifc.ifc_buf = (void *)ifrs;
 		ifc.ifc_len = 128 * (int)sizeof(struct ifreq);
-		if (ioctlsocket(sock, SIOCGIFCONF, &ifc) < 0)
+		if (ioctlsocket(sock, SIOCGIFCONF, (void *)&ifc) < 0)
 			return false;
 
 		buffer = ifc.ifc_buf;
