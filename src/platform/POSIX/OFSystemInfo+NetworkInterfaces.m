@@ -98,7 +98,7 @@ queryNetworkInterfaceIndices(OFMutableDictionary *ret)
 #endif
 }
 
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+#ifdef HAVE_NET_IF_H
 static bool
 queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
     OFNetworkInterfaceKey key, OFSocketAddressFamily addressFamily, int family,
@@ -275,7 +275,7 @@ next:
 static bool
 queryNetworkInterfaceIPv4Addresses(OFMutableDictionary *ret)
 {
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+#ifdef HAVE_NET_IF_H
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPv4Addresses, OFSocketAddressFamilyIPv4,
 	    AF_INET, sizeof(struct sockaddr_in));
@@ -373,7 +373,7 @@ next_line:
 		    makeImmutable];
 
 	return false;
-# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPv6Addresses, OFSocketAddressFamilyIPv6,
 	    AF_INET6, sizeof(struct sockaddr_in6));
@@ -465,7 +465,7 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 		    makeImmutable];
 
 	return false;
-# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPXAddresses, OFSocketAddressFamilyIPX,
 	    AF_IPX, sizeof(struct sockaddr_ipx));
@@ -558,7 +558,7 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		    makeImmutable];
 
 	return false;
-# elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H)
+# elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceAppleTalkAddresses,
 	    OFSocketAddressFamilyAppleTalk, AF_APPLETALK,
@@ -572,7 +572,7 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 static bool
 queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 {
-#if defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && defined(SIOCGLIFHWADDR)
+#if defined(HAVE_NET_IF_H) && defined(SIOCGLIFHWADDR)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -607,8 +607,8 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 	}
 
 	return true;
-#elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
-    defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
+#elif defined(HAVE_NET_IF_H) && defined(SIOCGIFHWADDR) && \
+    defined(HAVE_STRUCT_IFREQ_IFR_HWADDR)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -641,8 +641,8 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 	}
 
 	return true;
-#elif defined(HAVE_IOCTL) && defined(HAVE_NET_IF_H) && \
-    defined(HAVE_STRUCT_SOCKADDR_DL) && defined(IFT_ETHER)
+#elif defined(HAVE_NET_IF_H) && defined(HAVE_STRUCT_SOCKADDR_DL) && \
+    defined(IFT_ETHER)
 	OFStringEncoding encoding = [OFLocale encoding];
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct ifconf ifc;
