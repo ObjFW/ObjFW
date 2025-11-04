@@ -1,0 +1,31 @@
+name: macos-15
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: macos-15
+    strategy:
+      matrix:
+        configure_flags:
+          -
+          - --disable-threads
+          - --disable-threads --disable-sockets
+          - --disable-threads --disable-files
+          - --disable-threads --disable-sockets --disable-files
+          - --disable-sockets
+          - --disable-sockets --disable-files
+          - --disable-files
+          - --disable-shared
+    steps:
+    - name: Install dependencies
+      run: brew install autoconf automake
+    - uses: actions/checkout@v4
+    - name: autogen.sh
+      run: ./autogen.sh
+    - name: configure
+      run: ./configure ${{ matrix.configure_flags }}
+    - name: make
+      run: make -j$(sysctl -n hw.logicalcpu)
+    - name: make check
+      run: make check
+    - name: make install
+      run: sudo make install
