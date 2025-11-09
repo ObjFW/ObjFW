@@ -134,7 +134,7 @@ OFZIPArchiveEntryCompressionMethodName(
 	case OFZIPArchiveEntryCompressionMethodDeflate64:
 		return @"Deflate64";
 	case OFZIPArchiveEntryCompressionMethodBZIP2:
-		return @"BZip2";
+		return @"BZIP2";
 	case OFZIPArchiveEntryCompressionMethodLZMA:
 		return @"LZMA";
 	case OFZIPArchiveEntryCompressionMethodWavPack:
@@ -183,7 +183,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
  * and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 - (instancetype)init
 {
@@ -243,7 +244,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
 		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
-		if (ZIP64Index != OFNotFound) {
+		if (ZIP64Index != OFNotFound && ZIP64Size > 0) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
 			OFRange range =
@@ -329,6 +330,14 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 - (OFString *)fileName
 {
 	return _fileName;
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	if ([_fileName hasSuffix: @"/"])
+		return OFArchiveEntryFileTypeDirectory;
+
+	return OFArchiveEntryFileTypeRegular;
 }
 
 - (OFString *)fileComment

@@ -197,13 +197,13 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (app->_outputLevel >= 2) {
 			[OFStdOut writeString: @"\t"];
 
-			switch (entry.type) {
-			case OFTarArchiveEntryTypeFile:
+			switch (entry.fileType) {
+			case OFArchiveEntryFileTypeRegular:
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_type_normal",
-				    @"Type: Normal file")];
+				    @"list_type_regular",
+				    @"Type: Regular file")];
 				break;
-			case OFTarArchiveEntryTypeLink:
+			case OFArchiveEntryFileTypeLink:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_hardlink",
 				    @"Type: Hard link")];
@@ -213,7 +213,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OFTarArchiveEntryTypeSymlink:
+			case OFArchiveEntryFileTypeSymbolicLink:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_symlink",
 				    @"Type: Symbolic link")];
@@ -223,7 +223,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OFTarArchiveEntryTypeCharacterDevice: {
+			case OFArchiveEntryFileTypeCharacterDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -244,7 +244,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OFTarArchiveEntryTypeBlockDevice: {
+			case OFArchiveEntryFileTypeBlockDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -265,17 +265,17 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OFTarArchiveEntryTypeDirectory:
+			case OFArchiveEntryFileTypeDirectory:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_directory",
 				    @"Type: Directory")];
 				break;
-			case OFTarArchiveEntryTypeFIFO:
+			case OFArchiveEntryFileTypeFIFO:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_fifo",
 				    @"Type: FIFO")];
 				break;
-			case OFTarArchiveEntryTypeContiguousFile:
+			case OFArchiveEntryFileTypeContiguousFile:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_contiguous_file",
 				    @"Type: Contiguous file")];
@@ -296,7 +296,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
-	OFMutableArray *delayedModificationDates = [OFMutableArray array];
+	OFMutableArray *delayed = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFTarArchiveEntry *entry;
@@ -304,7 +304,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = entry.fileName;
-		OFTarArchiveEntryType type = entry.type;
+		OFArchiveEntryFileType fileType = entry.fileType;
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
@@ -316,8 +316,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (!all && ![files containsObject: fileName])
 			continue;
 
-		if (type != OFTarArchiveEntryTypeFile &&
-		    type != OFTarArchiveEntryTypeDirectory) {
+		if (fileType != OFArchiveEntryFileTypeRegular &&
+		    fileType != OFArchiveEntryFileTypeDirectory) {
 			if (app->_outputLevel >= 0)
 				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"skipping_file",
@@ -344,18 +344,19 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
-		if (type == OFTarArchiveEntryTypeDirectory ||
-		    (type == OFTarArchiveEntryTypeFile &&
+		if (fileType == OFArchiveEntryFileTypeDirectory ||
+		    (fileType == OFArchiveEntryFileTypeRegular &&
 		    [fileName hasSuffix: @"/"])) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
-			setPermissions(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
-			 * have been created.
+			 * have been created. Also, restricting permissions
+			 * (e.g. removing write permissions) before all files
+			 * in a directory have been written would also fail.
 			 */
-			[delayedModificationDates addObject:
+			[delayed addObject:
 			    [OFPair pairWithFirstObject: outFileName
 					   secondObject: entry]];
 
@@ -380,7 +381,14 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifndef OF_AMIGAOS
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -418,6 +426,14 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifdef OF_AMIGAOS
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
@@ -431,8 +447,10 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	for (OFPair *pair in delayedModificationDates)
+	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
+		setPermissions(pair.firstObject, pair.secondObject);
+	}
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -541,12 +559,12 @@ outer_loop_end:
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])
-			entry.type = OFTarArchiveEntryTypeFile;
+			entry.fileType = OFArchiveEntryFileTypeRegular;
 		else if ([type isEqual: OFFileTypeDirectory]) {
-			entry.type = OFTarArchiveEntryTypeDirectory;
+			entry.fileType = OFArchiveEntryFileTypeDirectory;
 			entry.uncompressedSize = 0;
 		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
-			entry.type = OFTarArchiveEntryTypeSymlink;
+			entry.fileType = OFArchiveEntryFileTypeSymbolicLink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
 			entry.uncompressedSize = 0;
@@ -556,7 +574,7 @@ outer_loop_end:
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if (entry.type == OFTarArchiveEntryTypeFile) {
+		if (entry.fileType == OFArchiveEntryFileTypeRegular) {
 			unsigned long long written = 0;
 			unsigned long long size = entry.uncompressedSize;
 			int8_t percent = -1, newPercent;

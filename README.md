@@ -72,7 +72,7 @@ build system, you can get the necessary flags from `objfw-config`.
 Documentation
 =============
 
-You can find the documentation for latest released version of ObjFW
+You can find the documentation for the latest released version of ObjFW
 [here](https://objfw.nil.im/docs/).
 
 In order to build the documentation yourself (necessary to have documentation
@@ -107,12 +107,10 @@ Support and community
 If you have any questions about ObjFW or would like to talk to other ObjFW
 users, the following venues are available:
 
- * A [discussions repo](https://git.nil.im/ObjFW/discussions) in which you can
-   open an issue to start a discussion topic
+ * A [discussions repository](https://git.nil.im/ObjFW/discussions) in which
+   you can open an issue to start a discussion topic
  * A [Matrix room](https://matrix.to/#/%23objfw:nil.im)
  * A [Discord room](https://objfw.nil.im/discord), bridged to the Matrix room
-   above
- * A [Signal room](https://objfw.nil.im/signal), bridged to the Matrix room
    above
  * A [Telegram room](https://t.me/objfw), bridged to the Matrix room above
  * A [Slack room](https://objfw.nil.im/slack), bridged to the Matrix room above

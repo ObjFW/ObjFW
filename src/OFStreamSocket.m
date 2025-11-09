@@ -169,13 +169,9 @@
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 - (void)setCanBlock: (bool)canBlock
 {
-# ifdef OF_WINDOWS
-	u_long v = !canBlock;
-# else
-	char v = !canBlock;
-# endif
+	unsigned long v = !canBlock;
 
-	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
+	if (ioctlsocket(_socket, FIONBIO, (void *)&v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
 				  errNo: _OFSocketErrNo()];

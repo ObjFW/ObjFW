@@ -88,10 +88,10 @@ iOS
 Linux
 -----
 
-  * Architectures: Alpha, AMD64, ARMv5, ARMv6, ARMv7, ARM64, Itanium,
+  * Architectures: Alpha, AMD64, ARMv5, ARMv6, ARMv7, ARM64 (LE & BE), Itanium,
                    LoongArch 64, m68k, MIPS (O32), MIPS64 (N64), RISC-V 64,
                    PA-RISC, PowerPC, PowerPC 64, S390x, SuperH-4, x86
-  * Compilers: Clang 3.0-18.1.1, GCC 4.6-14.1.1
+  * Compilers: Clang 3.0-20.1.8, GCC 4.6-14.1.1
   * C libraries: glibc, musl
   * Runtimes: ObjFW
 
@@ -213,10 +213,10 @@ Windows
 
   * OS Versions: 98 SE, NT 4.0, XP, 7, 8, 8.1, 10, 11, Wine
   * Architectures: AArch64, AMD64, x86
-  * Compilers: GCC 5.3.0 & 6.2.0 from msys2 (AMD64 & x86),
-               Clang 3.9.0 from msys2 (x86),
-               Clang 10.0 from msys2 (AMD64 & x86),
-               Clang 14.0.4 from msys2 (AArch64)
+  * Compilers: GCC 5.3.0 & 6.2.0 from MSYS2 (AMD64 & x86),
+               Clang 3.9.0 from MSYS2 (x86),
+               Clang 10.0 from MSYS2 (AMD64 & x86),
+               Clang 14.0.4 from MSYS2 (AArch64)
   * Runtimes: ObjFW
 
 Others

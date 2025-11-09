@@ -124,7 +124,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 		    oh_elementWithName: @"Left Thumbstick Y"
 				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Left Thumnstick"
+		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];

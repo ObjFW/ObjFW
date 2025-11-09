@@ -34,25 +34,17 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The type of the archive entry.
  *
- * See @ref OFTarArchiveEntryType.
+ * @deprecated Use @ref OFMutableArchiveEntry#fileType instead.
  */
-@property (readwrite, nonatomic) OFTarArchiveEntryType type;
-
-/**
- * @brief The file name of the target (for a hard link or symbolic link).
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *targetFileName;
-
-/**
- * @brief The device major (if the file is a device).
- */
-@property (readwrite, nonatomic) unsigned long deviceMajor;
-
-/**
- * @brief The device major (if the file is a device).
- */
-@property (readwrite, nonatomic) unsigned long deviceMinor;
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+@property (readwrite, nonatomic) OFTarArchiveEntryType type
+    OF_DEPRECATED(ObjFW, 1, 5, "Use -[OFMutableArchiveEntry fileType] instead");
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 /**
  * @brief Creates a new OFMutableTarArchiveEntry with the specified file name.

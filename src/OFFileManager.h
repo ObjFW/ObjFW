@@ -25,11 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 #ifdef OF_HAVE_FILES
-# if (defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS) && \
-    !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
+# if (defined(OF_HAVE_CHMOD) && !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 # endif
-# if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
+# if defined(OF_HAVE_CHOWN) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
 # if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && \
@@ -55,10 +54,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /**
- * @brief Amiga file protection bits. This is a bit mask and the values are
- *	  ORed.
+ * @brief Amiga file protection. This is a bit mask and the values are ORed.
  */
-typedef enum OFFileAmigaProtectionBits {
+typedef enum {
 	/** @brief The file cannot be deleted. */
 	OFFileAmigaDeleteProtected  = 0x0001,
 	/** @brief The file cannot be executed. */
@@ -91,7 +89,25 @@ typedef enum OFFileAmigaProtectionBits {
 	OFFileAmigaOtherWritable    = 0x4000,
 	/** @brief The file can be read by others. */
 	OFFileAmigaOtherReadable    = 0x8000
-} OFFileAmigaProtectionBits;
+} OFFileAmigaProtectionMask;
+
+/**
+ * @brief MS-DOS attributes. This is a bit mask and the values are ORed.
+ */
+typedef enum {
+	/** @brief The file is read-only. */
+	OFFileMSDOSAttributeReadOnly    = 0x01,
+	/** @brief The file is hidden. */
+	OFFileMSDOSAttributeHidden      = 0x02,
+	/** @brief The file is a system file. */
+	OFFileMSDOSAttributeSystem      = 0x04,
+	/** @brief The file is a volume label. */
+	OFFileMSDOSAttributeVolumeLabel = 0x08,
+	/** @brief The file is a directory. */
+	OFFileMSDOSAttributeDirectory   = 0x10,
+	/** @brief The file should be archived. */
+	OFFileMSDOSAttributeArchive     = 0x20,
+} OFFileMSDOSAttributesMask;
 
 /**
  * @brief A key for a file attribute in the file attributes dictionary.
@@ -113,6 +129,7 @@ typedef enum OFFileAmigaProtectionBits {
  *  * @ref OFFileExtendedAttributesNames
  *  * @ref OFFileAmigaProtection
  *  * @ref OFFileAmigaComment
+ *  * @ref OFFileMSDOSAttributes
  *
  * Other IRI schemes might not have all keys and might have keys not listed.
  */
@@ -262,7 +279,7 @@ extern const OFFileAttributeKey OFFileExtendedAttributesNames;
 /**
  * @brief The Amiga file protection as an @ref OFNumber.
  *
- * See @ref OFFileAmigaProtectionBits for possible values.
+ * See @ref OFFileAmigaProtectionMask for possible values.
  */
 extern const OFFileAttributeKey OFFileAmigaProtection;
 
@@ -270,6 +287,13 @@ extern const OFFileAttributeKey OFFileAmigaProtection;
  * @brief The Amiga comment as an @ref OFString.
  */
 extern const OFFileAttributeKey OFFileAmigaComment;
+
+/**
+ * @brief The MS-DOS attributes as an @ref OFNumber.
+ *
+ * See @ref OFFileMSDOSAttributesMask for possible values.
+ */
+extern const OFFileAttributeKey OFFileMSDOSAttributes;
 
 /**
  * @brief A regular file.
@@ -1062,7 +1086,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @throw OFUndefinedKeyException The key is missing
  */
-@property (readonly, nonatomic) OFFileAmigaProtectionBits fileAmigaProtection;
+@property (readonly, nonatomic) OFFileAmigaProtectionMask fileAmigaProtection;
 
 /**
  * @brief The @ref OFFileAmigaComment key from the dictionary.
@@ -1070,6 +1094,13 @@ OF_SUBCLASSING_RESTRICTED
  * @throw OFUndefinedKeyException The key is missing
  */
 @property (readonly, nonatomic) OFString *fileAmigaComment;
+
+/**
+ * @brief The @ref OFFileMSDOSAttributes key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) OFFileMSDOSAttributesMask fileMSDOSAttributes;
 @end
 
 OF_ASSUME_NONNULL_END

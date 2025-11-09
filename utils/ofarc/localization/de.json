@@ -1,7 +1,7 @@
 /*
  * German localization for ofarc.
  *
- * Copyright (c) 2017-2024 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2017-2025 Jonathan Schleifer <js@nil.im>
  *
  * Permission to use, copy, modify, and/or distribute this localization for
  * any purpose with or without fee is hereby granted.
@@ -22,10 +22,10 @@
         "    -c  --create            Archiv erstellen\n",
         "    -C  --directory=        In angegebenes Verzeichnis entpacken\n",
         "    -E  --encoding=         Das Encoding des Archivs\n",
-        "                            (nur tar-, lha- und zoo-Dateien)\n",
+        "                            (nur Tar-, LHA- und Zoo-Dateien)\n",
         "    -f  --force             Existierende Dateien überschreiben\n",
         "    -h  --help              Diese Hilfe anzeigen\n",
-        "        --iri               Eine IRI benutzen um auf das Archiv ",
+        "        --iri               Eine IRI benutzen, um auf das Archiv ",
         "zuzugreifen\n",
         "    -l  --list              Alle Dateien im Archiv auflisten\n",
         "    -n  --no-clobber        Dateien niemals überschreiben\n",
@@ -104,7 +104,7 @@
     list_header_level: "Header-Level: %[level]",
     list_header_type: "Header-Typ: %[type]",
     list_modification_date: "Änderungsdatum: %[date]",
-    list_type_normal: "Typ: Normale Datei",
+    list_type_regular: "Typ: Reguläre Datei",
     list_type_hardlink: "Typ: Harter Link",
     list_type_symlink: "Typ: Symbolischer Link",
     list_link_target: "Zieldateiname: %[target]",
@@ -136,6 +136,9 @@
     list_version_made_by: "Erstellt mit Version: %[version]",
     list_min_version_needed: "Mindestens benötigte Version: %[version]",
     list_general_purpose_bit_flag: "General Purpose Bit Flag: %[gpbf]",
+    list_msdos_attributes: "MS-DOS-Attribute: %[attr]",
+    list_amiga_protection: "Amiga-Schutzbits: %[prot]",
+    list_amiga_comment: "Amiga-Kommentar: %[comment]",
     list_extra_field: "Extra-Feld: %[extra]",
     list_comment: "Kommentar: %[comment]",
     list_timezone: "Zeitzone: %[timezone]",

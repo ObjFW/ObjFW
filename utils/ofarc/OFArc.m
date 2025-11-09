@@ -91,7 +91,7 @@ help(OFStream *stream, bool full, int status)
 		    @"directory\n"
 		    @"    -E  --encoding=         The encoding used by the "
 		    @"archive\n"
-		    @"                            (only tar, lha and zoo files)"
+		    @"                            (only Tar, LHA and Zoo files)"
 		    @"\n"
 		    @"    -f  --force             Force / overwrite files\n"
 		    @"    -h  --help              Show this help\n"
@@ -773,7 +773,12 @@ error:
 		    @"file", fileName)];
 		[OFStdErr writeString: @" "];
 
-		line = [OFStdIn readLine];
+		if ([OFStdIn hasTerminal])
+			line = [OFStdIn readLine];
+		else {
+			line = @"n";
+			[OFStdErr writeLine: line];
+		}
 
 		if ([line isEqual: @"?"])
 			[OFStdErr writeLine: OF_LOCALIZED(

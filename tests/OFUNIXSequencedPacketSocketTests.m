@@ -86,7 +86,7 @@
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectory:RI is
+	 * We also use this code path for iOS, as the temporaryDirectoryIRI is
 	 * too long on the iOS simulator.
 	 */
 	OFString *path = [OFString stringWithFormat:

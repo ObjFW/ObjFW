@@ -29,25 +29,97 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The type of the archive entry.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileType instead.
  */
-typedef enum {
-	/** Normal file */
-	OFTarArchiveEntryTypeFile	     = '0',
-	/** Hard link */
-	OFTarArchiveEntryTypeLink	     = '1',
-	/** Symbolic link */
-	OFTarArchiveEntryTypeSymlink	     = '2',
-	/** Character device */
-	OFTarArchiveEntryTypeCharacterDevice = '3',
-	/** Block device */
-	OFTarArchiveEntryTypeBlockDevice     = '4',
-	/** Directory */
-	OFTarArchiveEntryTypeDirectory	     = '5',
-	/** FIFO */
-	OFTarArchiveEntryTypeFIFO	     = '6',
-	/** Contiguous file */
-	OFTarArchiveEntryTypeContiguousFile  = '7',
-} OFTarArchiveEntryType;
+typedef OFArchiveEntryFileType OFTarArchiveEntryType
+#if defined(__clang__) || OF_GCC_VERSION >= 405
+    OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveEntryFileType instead")
+#endif
+;
+
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+/**
+ * @brief Normal file.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeRegular instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeFile
+    OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveFileEntryTypeRegular instead") =
+    (OFTarArchiveEntryType)'0';
+
+/**
+ * @brief Hard link.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeLink instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeLink
+    OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveEntryFileTypeLink instead") =
+    (OFTarArchiveEntryType)'1';
+
+/**
+ * @brief Symbolic link.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeSymbolicLink instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeSymlink
+    OF_DEPRECATED(ObjFW, 1, 5,
+	"Use OFArchiveEntryFileTypeSymbolicLink instead") =
+    (OFTarArchiveEntryType)'2';
+
+/**
+ * @brief Character device.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeCharacterDevice instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeCharacterDevice
+    OF_DEPRECATED(ObjFW, 1, 5,
+	"Use OFArchiveEntryFileTypeCharacterDevice instead") =
+    (OFTarArchiveEntryType)'3';
+
+/**
+ * @brief Block device.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeBlockDevice instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeBlockDevice
+    OF_DEPRECATED(ObjFW, 1, 5,
+	"Use OFArchiveEntryFileTypeBlockDevice instead") =
+    (OFTarArchiveEntryType)'4';
+
+/**
+ * @brief Directory.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeDirectory instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeDirectory
+    OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveEntryFileTypeDirectory instead") =
+    (OFTarArchiveEntryType)'5';
+
+/**
+ * @brief FIFO.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeFIFO instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeFIFO
+    OF_DEPRECATED(ObjFW, 1, 5, "Use OFArchiveEntryFileTypeFIFO instead") =
+    (OFTarArchiveEntryType)'6';
+
+/**
+ * @brief Contiguous file.
+ *
+ * @deprecated Use @ref OFArchiveEntryFileTypeContiguousFile instead.
+ */
+static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
+    OF_DEPRECATED(ObjFW, 1, 5,
+	"Use OFArchiveEntryFileTypeContiguousFile instead") =
+    (OFTarArchiveEntryType)'7';
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 /**
  * @class OFTarArchiveEntry OFTarArchiveEntry.h ObjFW/ObjFW.h
@@ -61,7 +133,7 @@ typedef enum {
 	OFNumber *_POSIXPermissions, *_ownerAccountID, *_groupOwnerAccountID;
 	unsigned long long _compressedSize, _uncompressedSize;
 	OFDate *_modificationDate;
-	OFTarArchiveEntryType _type;
+	OFArchiveEntryFileType _fileType;
 	OFString *_Nullable _targetFileName;
 	OFString *_Nullable _ownerAccountName;
 	OFString *_Nullable _groupOwnerAccountName;
@@ -72,25 +144,17 @@ typedef enum {
 /**
  * @brief The type of the archive entry.
  *
- * See @ref OFTarArchiveEntryType.
+ * @deprecated Use @ref OFArchiveEntry#fileType instead.
  */
-@property (readonly, nonatomic) OFTarArchiveEntryType type;
-
-/**
- * @brief The file name of the target (for a hard link or symbolic link).
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
-    OFString *targetFileName;
-
-/**
- * @brief The device major (if the file is a device).
- */
-@property (readonly, nonatomic) unsigned long deviceMajor;
-
-/**
- * @brief The device major (if the file is a device).
- */
-@property (readonly, nonatomic) unsigned long deviceMinor;
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+@property (readonly, nonatomic) OFTarArchiveEntryType type
+    OF_DEPRECATED(ObjFW, 1, 5, "Use -[OFArchiveEntry fileType] instead");
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

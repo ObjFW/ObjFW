@@ -103,12 +103,16 @@
 # include <proto/locale.h>
 # undef Class
 # ifdef OF_AMIGAOS4
-#  define DeleteFile(path) Delete(path)
+#  include <dos/obsolete.h>
 # endif
 #endif
 
 #ifdef OF_MORPHOS
 # include <dos/dostags.h>
+#endif
+
+#ifdef DJGPP
+# include <io.h>
 #endif
 
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
@@ -121,6 +125,15 @@
 # ifdef st_ctime
 #  undef st_ctime
 # endif
+# ifdef HAVE_STRUCT_STAT_ST_ATIM
+#  undef HAVE_STRUCT_STAT_ST_ATIM
+# endif
+# ifdef HAVE_STRUCT_STAT_ST_MTIM
+#  undef HAVE_STRUCT_STAT_ST_MTIM
+# endif
+# ifdef HAVE_STRUCT_STAT_ST_CTIM
+#  undef HAVE_STRUCT_STAT_ST_CTIM
+# endif
 typedef struct {
 	OFStreamOffset st_size;
 	unsigned int st_mode;
@@ -131,7 +144,8 @@ typedef struct {
 	DWORD fileAttributes;
 # endif
 # ifdef OF_AMIGAOS
-	unsigned long protection;
+	uint32_t st_uid, st_gid, protection;
+	/* TODO: Allow more on AmigaOS 4? */
 	char comment[80];
 # endif
 } Stat;
@@ -154,6 +168,13 @@ typedef struct stat Stat;
 #endif
 #if !defined(HAVE_STRUCT_STAT_ST_CTIM) && defined(HAVE_STRUCT_STAT_ST_CTIMESPEC)
 # define st_ctim st_ctimespec
+#endif
+
+#ifndef UID_MAX
+# define UID_MAX ((unsigned long)~(uid_t)0)
+#endif
+#ifndef GID_MAX
+# define GID_MAX ((unsigned long)~(gid_t)0)
 #endif
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
@@ -343,7 +364,7 @@ statWrapper(OFString *path, Stat *buffer)
 #  ifdef EX64TAG_PosixDate
 		{ EX64TAG_PosixDate, TRUE },
 #  endif
-		{ TAG_DONE, 0 }
+		{ TAG_END, 0 }
 	};
 
 #  ifdef FIBEXTF_POSIXDATE
@@ -366,7 +387,7 @@ statWrapper(OFString *path, Stat *buffer)
 # if defined(OF_MORPHOS)
 	buffer->st_size = fib.fib_Size64;
 # elif defined(OF_AMIGAOS4)
-	buffer->st_size = ed->FileSize;
+	buffer->st_size = (ed->FileSize != -1 ? ed->FileSize : 0);
 # else
 	buffer->st_size = fib.fib_Size;
 # endif
@@ -376,12 +397,47 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 # endif
 
+# ifdef OF_AMIGAOS4
+	buffer->st_uid = ed->OwnerUID;
+	buffer->st_gid = ed->OwnerGID;
+	buffer->protection = ed->Protection;
+
+	if (ed->CommentSize > 80) {
+		memcpy(buffer->comment, ed->Comment, 79);
+		buffer->comment[79] = '\0';
+	} else
+		memcpy(buffer->comment, ed->Comment, ed->CommentSize);
+# else
+	buffer->st_uid = fib.fib_OwnerUID;
+	buffer->st_gid = fib.fib_OwnerGID;
+	buffer->protection = fib.fib_Protection;
+	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
+# endif
+
+	if (!(buffer->protection & FIBF_READ))
+		buffer->st_mode |= 0400;
+	if (!(buffer->protection & FIBF_WRITE))
+		buffer->st_mode |= 0200;
+	if (!(buffer->protection & FIBF_EXECUTE))
+		buffer->st_mode |= 0100;
+	if (buffer->protection & FIBF_GRP_READ)
+		buffer->st_mode |= 0040;
+	if (buffer->protection & FIBF_GRP_WRITE)
+		buffer->st_mode |= 0020;
+	if (buffer->protection & FIBF_GRP_EXECUTE)
+		buffer->st_mode |= 0010;
+	if (buffer->protection & FIBF_OTR_READ)
+		buffer->st_mode |= 0004;
+	if (buffer->protection & FIBF_OTR_WRITE)
+		buffer->st_mode |= 0002;
+	if (buffer->protection & FIBF_OTR_EXECUTE)
+		buffer->st_mode |= 0001;
+
 # if defined(OF_MORPHOS) && defined(FIBEXTF_POSIXDATE)
 	if (fib.fib_ActExtFlags & FIBEXTF_POSIXDATE)
 		timeInterval = fib.fib_PosixDate.pds_Sec;
 	else {
 # endif
-
 		timeInterval = 252460800;	/* 1978-01-01 */
 
 		locale = OpenLocale(NULL);
@@ -407,9 +463,6 @@ statWrapper(OFString *path, Stat *buffer)
 # endif
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
-
-	buffer->protection = fib.fib_Protection;
-	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
 
 # ifdef OF_AMIGAOS4
 	FreeDosObject(DOS_EXAMINEDATA, ed);
@@ -566,10 +619,11 @@ setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 	[attributes setObject: [OFNumber numberWithUnsignedLong: s->st_gid]
 		       forKey: OFFileGroupOwnerAccountID];
 
-# ifdef OF_HAVE_THREADS
+# ifndef OF_AMIGAOS
+#  ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
 	@try {
-# endif
+#  endif
 		OFStringEncoding encoding = [OFLocale encoding];
 		struct passwd *passwd = getpwuid(s->st_uid);
 		struct group *group_ = getgrgid(s->st_gid);
@@ -591,10 +645,11 @@ setOwnerAndGroupAttributes(OFMutableFileAttributes attributes, Stat *s)
 			[attributes setObject: group
 				       forKey: OFFileGroupOwnerAccountName];
 		}
-# ifdef OF_HAVE_THREADS
+#  ifdef OF_HAVE_THREADS
 	} @finally {
 		[passwdMutex unlock];
 	}
+#  endif
 # endif
 #endif
 }
@@ -1026,6 +1081,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 #endif
 
+#ifdef OF_DJGPP
+	int attrs = _chmod([path cStringWithEncoding: [OFLocale encoding]], 0);
+
+	if (attrs != -1)
+		[ret setObject: [OFNumber numberWithInt: attrs]
+			forKey: OFFileMSDOSAttributes];
+#endif
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -1214,7 +1277,86 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		   ofItemAtIRI: (OFIRI *)IRI
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+#if defined(OF_AMIGAOS)
+	const char *path;
+	mode_t mode = (mode_t)permissions.unsignedLongValue;
+	BPTR lock;
+# ifdef OF_AMIGAOS4
+	struct ExamineData *ed;
+# else
+	struct FileInfoBlock fib;
+# endif
+	uint32_t protection;
+
+	if ([attributes objectForKey: OFFileAmigaProtection] != nil)
+		/* Amiga file protection trumps POSIX permissions */
+		return;
+
+	path = [IRI.fileSystemRepresentation
+	    cStringWithEncoding: [OFLocale encoding]];
+
+	if ((lock = Lock(path, SHARED_LOCK)) == 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFilePOSIXPermissions
+			       errNo: lastError()];
+
+# if defined(OF_MORPHOS)
+	if (!Examine64(lock, &fib, TAG_END)) {
+# elif defined(OF_AMIGAOS4)
+	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
+# else
+	if (!Examine(lock, &fib)) {
+# endif
+		int error = lastError();
+		UnLock(lock);
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFilePOSIXPermissions
+			       errNo: error];
+	}
+
+	UnLock(lock);
+
+# ifdef OF_AMIGAOS4
+	protection = ed->Protection;
+# else
+	protection = fib.fib_Protection;
+# endif
+
+	/* Remove the bits that can be derived from POSIX permissions */
+	protection &= ~(FIBF_READ | FIBF_WRITE | FIBF_EXECUTE |
+	    FIBF_GRP_READ | FIBF_GRP_WRITE | FIBF_GRP_EXECUTE |
+	    FIBF_OTR_READ | FIBF_OTR_WRITE | FIBF_OTR_EXECUTE);
+
+	if (!(mode & 0400))
+		protection |= FIBF_READ;
+	if (!(mode & 0200))
+		protection |= FIBF_WRITE;
+	if (!(mode & 0100))
+		protection |= FIBF_EXECUTE;
+	if (mode & 0040)
+		protection |= FIBF_GRP_READ;
+	if (mode & 0020)
+		protection |= FIBF_GRP_WRITE;
+	if (mode & 0010)
+		protection |= FIBF_GRP_EXECUTE;
+	if (mode & 0004)
+		protection |= FIBF_OTR_READ;
+	if (mode & 0002)
+		protection |= FIBF_OTR_WRITE;
+	if (mode & 0001)
+		protection |= FIBF_OTR_EXECUTE;
+
+	if (!SetProtection(path, protection))
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileAmigaProtection
+			       errNo: lastError()];
+#elif defined(OF_FILE_MANAGER_SUPPORTS_PERMISSIONS)
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
 	OFString *path = IRI.fileSystemRepresentation;
 	int status;
@@ -1238,51 +1380,175 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 }
 
-- (void)of_setOwnerAccountName: (OFString *)owner
-      andGroupOwnerAccountName: (OFString *)group
+- (void)of_setOwnerAccountName: (OFString *)ownerAccountName
+      andGroupOwnerAccountName: (OFString *)groupOwnerAccountName
+		ownerAccountID: (OFNumber *)ownerAccountID
+	   groupOwnerAccountID: (OFNumber *)groupOwnerAccountID
 		   ofItemAtIRI: (OFIRI *)IRI
-		  attributeKey: (OFFileAttributeKey)attributeKey
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+#if defined(OF_AMIGAOS)
+	const char *path;
+# ifndef OF_AMIGAOS4
+	BPTR lock;
+	struct FileInfoBlock fib;
+# endif
+	uint32_t uid;
+	uint32_t gid;
+
+	if (ownerAccountName != nil || groupOwnerAccountName != nil)
+		@throw [OFNotImplementedException
+		    exceptionWithSelector: @selector(setAttributes:ofItemAtIRI:)
+				   object: self];
+
+	if (ownerAccountID == nil && groupOwnerAccountID == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	path = [IRI.fileSystemRepresentation
+	    cStringWithEncoding: [OFLocale encoding]];
+
+	if (ownerAccountID == nil || groupOwnerAccountID == nil) {
+# ifdef OF_AMIGAOS4
+		if (!GetOwnerInfoTags(OI_StringNameInput, path,
+		    OI_OwnerUID, &uid, OI_OwnerGID, &gid, TAG_END)) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: lastError()];
+		}
+# else
+		if ((lock = Lock(path, SHARED_LOCK)) == 0) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: lastError()];
+		}
+
+		if (!Examine(lock, &fib)) {
+			OFFileAttributeKey key = (ownerAccountID != nil
+			    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+			int error = lastError();
+			UnLock(lock);
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: key
+				       errNo: error];
+		}
+
+		UnLock(lock);
+
+		uid = fib.fib_OwnerUID;
+		gid = fib.fib_OwnerGID;
+# endif
+	}
+
+	if (ownerAccountID != nil) {
+		unsigned long tmp = ownerAccountID.unsignedLongValue;
+		if (tmp > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+		uid = (uint32_t)tmp;
+	}
+
+	if (groupOwnerAccountID != nil) {
+		unsigned long tmp = groupOwnerAccountID.unsignedLongValue;
+		if (tmp > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+		gid = (uint32_t)tmp;
+	}
+
+# ifdef OF_AMIGAOS4
+	if (!SetOwnerInfoTags(OI_StringNameInput, path, OI_OwnerUID, uid,
+	    OI_OwnerGID, gid, TAG_END)) {
+# else
+	if (uid > UINT16_MAX || gid > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (!SetOwner(path, uid << 16 | gid)) {
+# endif
+		OFFileAttributeKey key = (ownerAccountID != nil
+		    ? OFFileOwnerAccountID : OFFileGroupOwnerAccountID);
+
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: key
+			       errNo: lastError()];
+	}
+#elif defined(OF_FILE_MANAGER_SUPPORTS_OWNER)
 	OFString *path = IRI.fileSystemRepresentation;
 	uid_t uid = -1;
 	gid_t gid = -1;
 	OFStringEncoding encoding;
 
-	if (owner == nil && group == nil)
+	if (ownerAccountName == nil && groupOwnerAccountName == nil &&
+	    ownerAccountID == nil && groupOwnerAccountID == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	encoding = [OFLocale encoding];
+
+	if (ownerAccountID != nil) {
+		unsigned long tmp = ownerAccountID.unsignedLongValue;
+
+		if (tmp > UID_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		uid = (uid_t)tmp;
+	}
+
+	if (groupOwnerAccountID != nil) {
+		unsigned long tmp = groupOwnerAccountID.unsignedLongValue;
+
+		if (tmp > GID_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		uid = (gid_t)tmp;
+	}
 
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
 	@try {
 # endif
-		if (owner != nil) {
+		if (ownerAccountName != nil) {
 			struct passwd *passwd;
 
-			if ((passwd = getpwnam([owner
+			errno = 0;
+
+			if ((passwd = getpwnam([ownerAccountName
 			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFSetItemAttributesFailedException
 				    exceptionWithIRI: IRI
 					  attributes: attributes
-				     failedAttribute: attributeKey
+				     failedAttribute: OFFileOwnerAccountName
 					       errNo: errno];
 
 			uid = passwd->pw_uid;
 		}
 
-		if (group != nil) {
+		if (groupOwnerAccountName != nil) {
 			struct group *group_;
 
-			if ((group_ = getgrnam([group
-			    cStringWithEncoding: encoding])) == NULL)
+			errno = 0;
+
+			if ((group_ = getgrnam([groupOwnerAccountName
+			    cStringWithEncoding: encoding])) == NULL) {
+				OFFileAttributeKey key =
+				    OFFileGroupOwnerAccountName;
+
 				@throw [OFSetItemAttributesFailedException
 				    exceptionWithIRI: IRI
 					  attributes: attributes
-				     failedAttribute: attributeKey
+				     failedAttribute: key
 					       errNo: errno];
+			}
 
 			gid = group_->gr_gid;
 		}
@@ -1292,12 +1558,26 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	}
 # endif
 
-	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
+	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0) {
+		OFFileAttributeKey key;
+
+		if (ownerAccountName != nil)
+			key = OFFileOwnerAccountName;
+		else if (groupOwnerAccountName != nil)
+			key = OFFileGroupOwnerAccountName;
+		else if (ownerAccountID != nil)
+			key = OFFileOwnerAccountID;
+		else if (groupOwnerAccountID != nil)
+			key = OFFileGroupOwnerAccountID;
+		else
+			OFAssert(0);
+
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
-		     failedAttribute: attributeKey
+		     failedAttribute: key
 			       errNo: errno];
+	}
 #else
 	OF_UNRECOGNIZED_SELECTOR
 #endif
@@ -1311,12 +1591,12 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFString *path = IRI.fileSystemRepresentation;
 
 	if (!SetProtection([path cStringWithEncoding: [OFLocale encoding]],
-	    [protection unsignedLongValue]))
+	    protection.intValue))
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
 		     failedAttribute: OFFileAmigaProtection
-			       errNo: 0];
+			       errNo: lastError()];
 }
 
 - (void)of_setAmigaComment: (OFString *)comment
@@ -1336,6 +1616,24 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 }
 #endif
 
+#ifdef OF_DJGPP
+- (void)of_setMSDOSAttributes: (OFNumber *)MSDOSAttributes
+		  ofItemAtIRI: (OFIRI *)IRI
+		   attributes: (OFFileAttributes)attributes OF_DIRECT
+{
+	OFString *path = IRI.fileSystemRepresentation;
+
+	if (_chmod([path cStringWithEncoding: [OFLocale encoding]], 1,
+	    MSDOSAttributes.intValue & ~(OFFileMSDOSAttributeVolumeLabel |
+	    OFFileMSDOSAttributeDirectory)) == -1)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithIRI: IRI
+			  attributes: attributes
+		     failedAttribute: OFFileMSDOSAttributes
+			       errNo: errno];
+}
+#endif
+
 - (void)setAttributes: (OFFileAttributes)attributes ofItemAtIRI: (OFIRI *)IRI
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1343,6 +1641,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	OFEnumerator *objectEnumerator;
 	OFFileAttributeKey key;
 	id object;
+	OFString *ownerAccountName, *groupOwnerAccountName;
+	OFNumber *ownerAccountID, *groupOwnerAccountID;
 	OFDate *lastAccessDate, *modificationDate;
 
 	if (IRI == nil)
@@ -1356,24 +1656,16 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		if ([key isEqual: OFFileModificationDate] ||
+		if ([key isEqual: OFFileOwnerAccountName] ||
+		    [key isEqual: OFFileOwnerAccountID] ||
+		    [key isEqual: OFFileGroupOwnerAccountName] ||
+		    [key isEqual: OFFileGroupOwnerAccountID] ||
+		    [key isEqual: OFFileModificationDate] ||
 		    [key isEqual: OFFileLastAccessDate])
 			continue;
 		else if ([key isEqual: OFFilePOSIXPermissions])
 			[self of_setPOSIXPermissions: object
 					 ofItemAtIRI: IRI
-					  attributes: attributes];
-		else if ([key isEqual: OFFileOwnerAccountName])
-			[self of_setOwnerAccountName: object
-			    andGroupOwnerAccountName: nil
-					 ofItemAtIRI: IRI
-					attributeKey: key
-					  attributes: attributes];
-		else if ([key isEqual: OFFileGroupOwnerAccountName])
-			[self of_setOwnerAccountName: nil
-			    andGroupOwnerAccountName: object
-					 ofItemAtIRI: IRI
-					attributeKey: key
 					  attributes: attributes];
 #ifdef OF_AMIGAOS
 		else if ([key isEqual: OFFileAmigaProtection])
@@ -1385,11 +1677,33 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 				     ofItemAtIRI: IRI
 				      attributes: attributes];
 #endif
+#ifdef OF_DJGPP
+		else if ([key isEqual: OFFileMSDOSAttributes])
+			[self of_setMSDOSAttributes: object
+					ofItemAtIRI: IRI
+					 attributes: attributes];
+#endif
 		else
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];
 	}
+
+	ownerAccountName = [attributes objectForKey: OFFileOwnerAccountName];
+	groupOwnerAccountName = [attributes
+	    objectForKey: OFFileGroupOwnerAccountName];
+	ownerAccountID = [attributes objectForKey: OFFileOwnerAccountID];
+	groupOwnerAccountID = [attributes
+	    objectForKey: OFFileGroupOwnerAccountID];
+
+	if (ownerAccountName != nil || groupOwnerAccountName != nil ||
+	    ownerAccountID != nil || groupOwnerAccountID != nil)
+		[self of_setOwnerAccountName: ownerAccountName
+		    andGroupOwnerAccountName: groupOwnerAccountName
+			      ownerAccountID: ownerAccountID
+			 groupOwnerAccountID: groupOwnerAccountID
+				 ofItemAtIRI: IRI
+				  attributes: attributes];
 
 	lastAccessDate = [attributes objectForKey: OFFileLastAccessDate];
 	modificationDate = [attributes objectForKey: OFFileModificationDate];

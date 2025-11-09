@@ -198,7 +198,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) < 0) {
 		/*
 		 * The underlying stream might have had data ready, but not
-		 * enough for MbedTLS to return decrypted data. This means the
+		 * enough for Mbed TLS to return decrypted data. This means the
 		 * caller might have observed the TLS stream for reading, got a
 		 * ready signal and read - and expects the read to succeed, not
 		 * to fail with EWOULDBLOCK/EAGAIN, as it was signaled ready.
@@ -290,7 +290,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	if (_certificateChain.count > 0) {
 		/*
-		 * MbedTLS does not allow storing the certificates
+		 * Mbed TLS does not allow storing the certificates
 		 * independently, so the chain has to be kept. This means we
 		 * can just get the first certificate and get the entire chain
 		 * from it.

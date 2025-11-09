@@ -971,7 +971,7 @@ OF_ROOT_CLASS
  *
  * @warning You cannot make use of other classes from inside this method! Only
  *	    the class itself, its superclasses and instances of the class or
- *	    its superclassses can be messaged!
+ *	    its superclasses can be messaged!
  */
 + (void)load;
 
@@ -1759,7 +1759,7 @@ extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
  * @brief This function is called when a method is not found.
  *
  * It can also be called intentionally to indicate that a method is not
- * implemetned, for example in an abstract method. However, instead of calling
+ * implemented, for example in an abstract method. However, instead of calling
  * OFMethodNotFound directly, it is preferred to do the following:
  *
  *     - (void)abstractMethod

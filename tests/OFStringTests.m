@@ -873,7 +873,7 @@ static const char *range80ToFF =
 {
 #if (defined(OF_SOLARIS) && defined(OF_X86)) || defined(OF_AMIGAOS_M68K)
 	/*
-	 * Solaris' strtod() has weird rounding on x86, but not on AMD64.
+	 * Solaris's strtod() has weird rounding on x86, but not on AMD64.
 	 * AmigaOS 3 with libnix has weird rounding as well.
 	 */
 	OTAssertEqual([[self.stringClass stringWithString:

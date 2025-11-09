@@ -63,9 +63,9 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	    [[self alloc] initWithIndexSet: indexSet]);
 }
 
-+ (instancetype)indexSetWithIndex: (size_t)index
++ (instancetype)indexSetWithIndex: (size_t)idx
 {
-	return objc_autoreleaseReturnValue([[self alloc] initWithIndex: index]);
+	return objc_autoreleaseReturnValue([[self alloc] initWithIndex: idx]);
 }
 
 + (instancetype)indexSetWithIndexesInRange: (OFRange)range
@@ -94,9 +94,9 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	return self;
 }
 
-- (instancetype)initWithIndex: (size_t)index
+- (instancetype)initWithIndex: (size_t)idx
 {
-	return [self initWithIndexesInRange: OFMakeRange(index, 1)];
+	return [self initWithIndexesInRange: OFMakeRange(idx, 1)];
 }
 
 - (instancetype)initWithIndexesInRange: (OFRange)range
@@ -151,7 +151,7 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	return [[OFMutableIndexSet alloc] initWithIndexSet: self];
 }
 
-- (bool)containsIndex: (size_t)index
+- (bool)containsIndex: (size_t)idx
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count, position;
@@ -159,9 +159,9 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	if (count == 0)
 		return false;
 
-	position = positionForIndex(ranges, count, index);
+	position = positionForIndex(ranges, count, idx);
 
-	return OFLocationInRange(index, ranges[position]);
+	return OFLocationInRange(idx, ranges[position]);
 }
 
 - (bool)containsIndexesInRange: (OFRange)range
@@ -194,7 +194,7 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	return OFEndOfRange(((OFRange *)_ranges.items)[_ranges.count - 1]) - 1;
 }
 
-- (size_t)indexGreaterThanIndex: (size_t)index
+- (size_t)indexGreaterThanIndex: (size_t)idx
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count, position;
@@ -202,19 +202,19 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	if (count == 0)
 		return OFNotFound;
 
-	position = positionForIndex(ranges, count, index + 1);
+	position = positionForIndex(ranges, count, idx + 1);
 
-	if (OFLocationInRange(index + 1, ranges[position]))
-		return index + 1;
+	if (OFLocationInRange(idx + 1, ranges[position]))
+		return idx + 1;
 
 	for (; position < count; position++)
-		if (ranges[position].location > index)
+		if (ranges[position].location > idx)
 			return ranges[position].location;
 
 	return OFNotFound;
 }
 
-- (size_t)indexGreaterThanOrEqualToIndex: (size_t)index
+- (size_t)indexGreaterThanOrEqualToIndex: (size_t)idx
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count, position;
@@ -222,41 +222,41 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	if (count == 0)
 		return OFNotFound;
 
-	position = positionForIndex(ranges, count, index);
+	position = positionForIndex(ranges, count, idx);
 
-	if (OFLocationInRange(index, ranges[position]))
-		return index;
+	if (OFLocationInRange(idx, ranges[position]))
+		return idx;
 
 	for (; position < count; position++)
-		if (ranges[position].location >= index)
+		if (ranges[position].location >= idx)
 			return ranges[position].location;
 
 	return OFNotFound;
 }
 
-- (size_t)indexLessThanIndex: (size_t)index
+- (size_t)indexLessThanIndex: (size_t)idx
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count, position;
 
-	if (index == 0 || count == 0)
+	if (idx == 0 || count == 0)
 		return OFNotFound;
 
-	position = positionForIndex(ranges, count, index - 1);
+	position = positionForIndex(ranges, count, idx - 1);
 	if (position > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (OFLocationInRange(index - 1, ranges[position]))
-		return index - 1;
+	if (OFLocationInRange(idx - 1, ranges[position]))
+		return idx - 1;
 
 	for (; (ssize_t)position >= 0; position--)
-		if (OFEndOfRange(ranges[position]) - 1 < index)
+		if (OFEndOfRange(ranges[position]) - 1 < idx)
 			return OFEndOfRange(ranges[position]) - 1;
 
 	return OFNotFound;
 }
 
-- (size_t)indexLessThanOrEqualToIndex: (size_t)index
+- (size_t)indexLessThanOrEqualToIndex: (size_t)idx
 {
 	const OFRange *ranges = _ranges.items;
 	size_t count = _ranges.count, position;
@@ -264,15 +264,15 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 	if (count == 0)
 		return OFNotFound;
 
-	position = positionForIndex(ranges, count, index);
+	position = positionForIndex(ranges, count, idx);
 	if (position > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (OFLocationInRange(index, ranges[position]))
-		return index;
+	if (OFLocationInRange(idx, ranges[position]))
+		return idx;
 
 	for (; (ssize_t)position >= 0; position--)
-		if (OFEndOfRange(ranges[position]) - 1 <= index)
+		if (OFEndOfRange(ranges[position]) - 1 <= idx)
 			return OFEndOfRange(ranges[position]) - 1;
 
 	return OFNotFound;

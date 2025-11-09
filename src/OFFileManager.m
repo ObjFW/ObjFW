@@ -1176,7 +1176,7 @@ OF_SINGLETON_METHODS
 	return attributeForKeyOrException(self, OFFileExtendedAttributesNames);
 }
 
-- (OFFileAmigaProtectionBits)fileAmigaProtection
+- (OFFileAmigaProtectionMask)fileAmigaProtection
 {
 	return [attributeForKeyOrException(self,
 	    OFFileAmigaProtection) intValue];
@@ -1185,5 +1185,11 @@ OF_SINGLETON_METHODS
 - (OFString *)fileAmigaComment
 {
 	return attributeForKeyOrException(self, OFFileAmigaComment);
+}
+
+- (OFFileMSDOSAttributesMask)fileMSDOSAttributes
+{
+	return [attributeForKeyOrException(self,
+	    OFFileMSDOSAttributes) intValue];
 }
 @end

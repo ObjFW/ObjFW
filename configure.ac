@@ -59,6 +59,10 @@ m68k-*-amigaos*)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+	LDFLAGS="$LDFLAGS -athread=native"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -athread=native"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -482,6 +486,7 @@ BUILDSYS_STACK_PROTECTOR
 BUILDSYS_RELRO
 OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
 LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
+OBJFW_LDFLAGS="$OBJFW_LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
 
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
@@ -914,8 +919,20 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 ], [
 	AC_MSG_RESULT(no)
 	AC_CHECK_SIZEOF(uintptr_t)
-	AC_DEFINE(UINTPTR_MAX,
-		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
+	case "$ac_cv_sizeof_uintptr_t" in
+	4)
+		uintptr_max="0xFFFFFFFF"
+		;;
+	8)
+		uintptr_max="0xFFFFFFFFFFFFFFFF"
+		;;
+	*)
+		AC_MSG_ERROR(Could not determine UINTPTR_MAX!)
+		;;
+	esac
+
+	AC_DEFINE_UNQUOTED(UINTPTR_MAX, $uintptr_max,
+		[Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
@@ -1465,7 +1482,7 @@ amigaos* | morphos*)
 esac
 
 AC_CHECK_HEADERS(xlocale.h)
-AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l uselocale])
+AC_CHECK_FUNCS([newlocale uselocale strtod_l strtof_l asprintf_l])
 AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
@@ -1965,18 +1982,27 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		break
 	])
 
-	AS_IF([test x"$with_wii" = x"yes"], [
-		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
-			"OFPollKernelEventObserver.m")
-	], [
-		AC_CHECK_HEADERS(poll.h)
-		AC_CHECK_FUNC(poll, [
+	case "$host_os" in
+	amigaos*)
+		dnl Don't try to use poll on AmigaOS, as we need WaitSelect to
+		dnl handle signals at the same time.
+		;;
+	*)
+		AS_IF([test x"$with_wii" = x"yes"], [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
+		], [
+			AC_CHECK_HEADERS(poll.h)
+			AC_CHECK_FUNC(poll, [
+				AC_DEFINE(HAVE_POLL, 1,
+					[Whether we have poll()])
+				AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
+					"OFPollKernelEventObserver.m")
+			])
 		])
-	])
+		;;
+	esac
 
 	case "$host_os" in
 	amigaos* | mingw* | morphos*)

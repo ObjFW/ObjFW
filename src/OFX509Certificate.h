@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the certificate chain from the PKCS #12 file at the specified
  *	  IRI.
  *
- * @note This is not available when using mbedTLS! Use
+ * @note This is not available when using Mbed TLS! Use
  *	 @ref certificateChainFromPEMFileAtIRI:privateKeyIRI: instead!
  *
  * @param IRI The IRI to the PKCS #12 file with the certificate chain

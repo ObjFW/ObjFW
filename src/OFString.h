@@ -1088,7 +1088,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Returns the range of the string in the specified range.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour
+ * @param options Options modifying search behavior
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
  *	   `OFNotFound` as start position if it was not found

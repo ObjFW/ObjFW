@@ -26,6 +26,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 static OFString *
@@ -95,7 +96,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	self = [super init];
 
 	@try {
-		_type = OFTarArchiveEntryTypeFile;
+		_fileType = OFArchiveEntryFileTypeRegular;
 		_POSIXPermissions =
 		    [[OFNumber alloc] initWithUnsignedShort: 0644];
 		_modificationDate = [[OFDate alloc] init];
@@ -132,14 +133,14 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
 		    header + 136, 12, ULLONG_MAX)];
-		_type = header[156];
+		_fileType = header[156];
 
 		targetFileName = stringFromBuffer(header + 157, 100, encoding);
 		if (targetFileName.length > 0)
 			_targetFileName = [targetFileName copy];
 
-		if (_type == '\0')
-			_type = OFTarArchiveEntryTypeFile;
+		if (_fileType == '\0')
+			_fileType = OFArchiveEntryFileTypeRegular;
 
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
@@ -204,7 +205,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
 		copy->_modificationDate = [_modificationDate copy];
-		copy->_type = _type;
+		copy->_fileType = _fileType;
 		copy->_targetFileName = [_targetFileName copy];
 		copy->_ownerAccountName = [_ownerAccountName copy];
 		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
@@ -221,6 +222,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (OFString *)fileName
 {
 	return _fileName;
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	return _fileType;
 }
 
 - (OFNumber *)POSIXPermissions
@@ -253,10 +259,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (OFTarArchiveEntryType)type
 {
-	return _type;
+	return _fileType;
 }
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 - (OFString *)targetFileName
 {
@@ -309,7 +322,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	     @">",
 	    self.class, _fileName, POSIXPermissions, _ownerAccountID,
 	    _groupOwnerAccountID, _compressedSize, _uncompressedSize,
-	    _modificationDate, _type, _targetFileName,
+	    _modificationDate, _fileType, _targetFileName,
 	    _ownerAccountName, _groupOwnerAccountName, _deviceMajor,
 	    _deviceMinor];
 
@@ -352,7 +365,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	 */
 	memset(buffer + 148, ' ', 8);
 
-	buffer[156] = _type;
+	if (_fileType > 0xFF)
+		@throw [OFInvalidArgumentException exception];
+
+	buffer[156] = _fileType;
 	stringToBuffer(buffer + 157, _targetFileName, 100, encoding);
 
 	/* ustar */

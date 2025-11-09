@@ -49,21 +49,42 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityUNIX) {
-		OFNumber *mode = [OFNumber numberWithUnsignedShort:
+		OFNumber *permissions = [OFNumber numberWithUnsignedShort:
 		    (entry.versionSpecificAttributes >> 16) & 0777];
-		OFFileAttributes attributes = [OFDictionary
-		    dictionaryWithObject: mode
-				  forKey: OFFilePOSIXPermissions];
-
-		[[OFFileManager defaultManager] setAttributes: attributes
-						 ofItemAtPath: path];
+		[attributes setObject: permissions
+			       forKey: OFFilePOSIXPermissions];
 	}
 #endif
+
+#ifdef OF_AMIGAOS
+	if ((entry.versionMadeBy >> 8) ==
+	    OFZIPArchiveEntryAttributeCompatibilityAmiga) {
+		OFNumber *protection = [OFNumber numberWithUnsignedLong:
+		    (entry.versionSpecificAttributes >> 16) ^ 0xF];
+		[attributes setObject: protection
+			       forKey: OFFileAmigaProtection];
+	}
+#endif
+
+#ifdef OF_MSDOS
+	if ((entry.versionMadeBy >> 8) ==
+	    OFZIPArchiveEntryAttributeCompatibilityMSDOS) {
+		OFNumber *MSDOSAttributes = [OFNumber numberWithUnsignedLong:
+		    (entry.versionSpecificAttributes >> 16)];
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileMSDOSAttributes];
+	}
+#endif
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
 }
 
 static void
@@ -236,9 +257,6 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 			if (app->_outputLevel >= 2) {
 				uint16_t versionMadeBy = entry.versionMadeBy;
-				OFZIPArchiveEntryAttributeCompatibility UNIX =
-				    OFZIPArchiveEntryAttributeCompatibilityUNIX;
-
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_version_made_by",
@@ -254,17 +272,47 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 				    OFZIPArchiveEntryVersionToString(
 				    entry.minVersionNeeded))];
 
-				if ((versionMadeBy >> 8) == UNIX) {
-					uint32_t mode = entry
+#define VerUNIX OFZIPArchiveEntryAttributeCompatibilityUNIX
+#define VerAmiga OFZIPArchiveEntryAttributeCompatibilityAmiga
+#define VerMSDOS OFZIPArchiveEntryAttributeCompatibilityMSDOS
+				if ((versionMadeBy >> 8) == VerUNIX) {
+					uint32_t permissions = entry
 					    .versionSpecificAttributes >> 16;
-					OFString *modeString = [OFString
-					    stringWithFormat: @"%06o", mode];
+					OFString *permissionsString = [OFString
+					    stringWithFormat:
+					    @"%06o", permissions];
 					[OFStdOut writeString: @"\t"];
 					[OFStdOut writeLine: OF_LOCALIZED(
-					    @"list_mode",
-					    @"Mode: %[mode]",
-					    @"mode", modeString)];
+					    @"list_posix_permissions",
+					    @"POSIX permissions: %[perm]",
+					    @"perm", permissionsString)];
+				} else if ((versionMadeBy >> 8) == VerAmiga) {
+					uint32_t protection = (entry
+					    .versionSpecificAttributes >> 16) ^
+					    0xF;
+					OFString *protectionString = [OFString
+					    stringWithFormat:
+					    @"%04x", protection];
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_amiga_protection",
+					    @"Amiga protection bits: %[prot]",
+					    @"prot", protectionString)];
+				} else if ((versionMadeBy >> 8) == VerMSDOS) {
+					uint32_t attributes = entry
+					    .versionSpecificAttributes >> 16;
+					OFString *attributesString = [OFString
+					    stringWithFormat:
+					    @"%04x", attributes];
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_msdos_attributes",
+					    @"MS-DOS attributes: %[attr]",
+					    @"attr", attributesString)];
 				}
+#undef VerUNIX
+#undef VerAmiga
+#undef VerMSDOS
 			}
 
 			if (app->_outputLevel >= 3) {
@@ -304,7 +352,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
-	OFMutableArray *delayedModificationDates = [OFMutableArray array];
+	OFMutableArray *delayed = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 
@@ -343,13 +391,14 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		if ([fileName hasSuffix: @"/"]) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
-			setPermissions(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
-			 * have been created.
+			 * have been created. Also, restricting permissions
+			 * (e.g. removing write permissions) before all files
+			 * in a directory have been written would also fail.
 			 */
-			[delayedModificationDates addObject:
+			[delayed addObject:
 			    [OFPair pairWithFirstObject: outFileName
 					   secondObject: entry]];
 
@@ -374,7 +423,17 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		stream = [_archive streamForReadingFile: fileName];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
+		 */
+#if !defined(OF_AMIGAOS) && !defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -412,6 +471,17 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
+		 */
+#if defined(OF_AMIGAOS) || defined(OF_MSDOS)
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
@@ -425,8 +495,10 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	for (OFPair *pair in delayedModificationDates)
+	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
+		setPermissions(pair.firstObject, pair.secondObject);
+	}
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -499,6 +571,7 @@ outer_loop_end:
 		OFFileAttributes attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
+		uint16_t version = 45;
 		unsigned long long size;
 		OFStream *output;
 
@@ -522,6 +595,17 @@ outer_loop_end:
 
 		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
 
+#if defined(OF_AMIGAOS)
+		version |= OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
+#elif defined(OF_MSDOS)
+		version |= OFZIPArchiveEntryAttributeCompatibilityMSDOS << 8;
+#else
+		version |= OFZIPArchiveEntryAttributeCompatibilityUNIX << 8;
+#endif
+
+		entry.minVersionNeeded = version;
+		entry.versionMadeBy = version;
+
 		size = (isDirectory ? 0 : attributes.fileSize);
 		entry.compressedSize = size;
 		entry.uncompressedSize = size;
@@ -529,6 +613,27 @@ outer_loop_end:
 		entry.compressionMethod =
 		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
+
+#if defined(OF_AMIGAOS)
+		entry.versionSpecificAttributes =
+		    ((uint32_t)attributes.fileAmigaProtection << 16) ^ 0xF;
+#elif defined(OF_MSDOS)
+		entry.versionSpecificAttributes =
+		    (uint32_t)attributes.fileMSDOSAttributes << 16;
+#else
+		OFNumber *POSIXPermissions =
+		    [attributes objectForKey: OFFilePOSIXPermissions];
+		if (POSIXPermissions != nil) {
+			unsigned long versionSpecificAttributes =
+			    POSIXPermissions.unsignedLongValue << 16;
+
+			if (versionSpecificAttributes > UINT32_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			entry.versionSpecificAttributes =
+			    (uint32_t)versionSpecificAttributes;
+		}
+#endif
 
 		[entry makeImmutable];
 

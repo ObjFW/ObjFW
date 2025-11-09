@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFSHA1Hash: OFObject <OFCryptographicHash>
 {
-	OFSecureData *_iVarsData;
+	OFSecureData *_ivarsData;
 	struct {
 		uint32_t state[5];
 		uint64_t bits;
@@ -40,7 +40,7 @@ OF_SUBCLASSING_RESTRICTED
 			uint32_t words[80];
 		} buffer;
 		size_t bufferLength;
-	} *_iVars;
+	} *_ivars;
 	bool _allowsSwappableMemory;
 	bool _calculated;
 }

@@ -36,13 +36,13 @@ static const size_t digestSize = 32;
 
 - (void)of_resetState
 {
-	_iVars->state[0] = 0x6A09E667;
-	_iVars->state[1] = 0xBB67AE85;
-	_iVars->state[2] = 0x3C6EF372;
-	_iVars->state[3] = 0xA54FF53A;
-	_iVars->state[4] = 0x510E527F;
-	_iVars->state[5] = 0x9B05688C;
-	_iVars->state[6] = 0x1F83D9AB;
-	_iVars->state[7] = 0x5BE0CD19;
+	_ivars->state[0] = 0x6A09E667;
+	_ivars->state[1] = 0xBB67AE85;
+	_ivars->state[2] = 0x3C6EF372;
+	_ivars->state[3] = 0xA54FF53A;
+	_ivars->state[4] = 0x510E527F;
+	_ivars->state[5] = 0x9B05688C;
+	_ivars->state[6] = 0x1F83D9AB;
+	_ivars->state[7] = 0x5BE0CD19;
 }
 @end

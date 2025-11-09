@@ -26,10 +26,10 @@
 #import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic compressedSize, uncompressedSize, modificationDate, type;
-@dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
-@dynamic deviceMinor;
+@dynamic fileName, fileType, POSIXPermissions, ownerAccountID;
+@dynamic groupOwnerAccountID, compressedSize, uncompressedSize;
+@dynamic modificationDate, type, targetFileName, ownerAccountName;
+@dynamic groupOwnerAccountName, deviceMajor, deviceMinor;
 /*
  * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -72,6 +72,11 @@
 	objc_release(old);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	_fileType = fileType;
+}
+
 - (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
 	OFNumber *old = _POSIXPermissions;
@@ -110,10 +115,17 @@
 	objc_release(old);
 }
 
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (void)setType: (OFTarArchiveEntryType)type
 {
-	_type = type;
+	_fileType = type;
 }
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 - (void)setTargetFileName: (OFString *)targetFileName
 {
