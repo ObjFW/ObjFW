@@ -86,7 +86,7 @@ powerpc-*-amigaos*)
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-		t="-mresident32 -ffreestanding -noixemul"
+		t="-mresident32 -ffreestanding -noixemul -O1"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		t="$t -laboxstubs -labox -lmath -ldebug -lc"
