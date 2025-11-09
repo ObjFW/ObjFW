@@ -695,7 +695,14 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 			       forKey: OFNetworkInterfaceHardwareAddress];
 
 next:
-# ifdef _SIZEOF_ADDR_IFREQ
+# if defined(OF_MORPHOS)
+			if (current->ifr_addr.sa_len +
+			    sizeof(current->ifr_name) > sizeof(struct ifreq))
+				buffer += current->ifr_addr.sa_len +
+				    sizeof(current->ifr_name);
+			else
+				buffer += sizeof(struct ifreq);
+# elif defined(_SIZEOF_ADDR_IFREQ)
 			buffer += _SIZEOF_ADDR_IFREQ(*current);
 # else
 			buffer += sizeof(struct ifreq);
