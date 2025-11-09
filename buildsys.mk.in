@@ -461,7 +461,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} \
 	    -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -471,7 +471,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${LIB_CFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} \
 	    ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -481,7 +481,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${AMIGA_LIB_CFLAGS} ${CFLAGS_$<} \
 	    ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
@@ -491,7 +491,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${PLUGIN_CFLAGS} ${CFLAGS_$<} \
 	    ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -502,7 +502,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} \
+	if ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} \
 	    ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -512,7 +512,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} \
+	if ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LIB_CFLAGS} ${CXXFLAGS_$<} \
 	    ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -522,7 +522,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${AMIGA_LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} \
+	if ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${AMIGA_LIB_CFLAGS} ${CXXFLAGS_$<} \
 	    ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
@@ -532,7 +532,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${PLUGIN_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} \
+	if ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${PLUGIN_CFLAGS} ${CXXFLAGS_$<} \
 	    ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -581,7 +581,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} \
+	if ${OBJC} ${CPPFLAGS} ${OBJCFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} \
 	    ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -591,7 +591,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} \
+	if ${OBJC} ${CPPFLAGS} ${OBJCFLAGS} ${LIB_CFLAGS} ${OBJCFLAGS_$<} \
 	    ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -601,7 +601,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${AMIGA_LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} \
+	if ${OBJC} ${CPPFLAGS} ${OBJCFLAGS} ${AMIGA_LIB_CFLAGS} \
 	    ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
@@ -611,7 +611,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${PLUGIN_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} \
+	if ${OBJC} ${CPPFLAGS} ${OBJCFLAGS} ${PLUGIN_CFLAGS} ${OBJCFLAGS_$<} \
 	    ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -622,7 +622,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} \
+	if ${OBJCXX} ${CPPFLAGS} ${OBJCXXFLAGS} ${OBJCXXFLAGS_$<} \
 	    ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -632,7 +632,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} \
+	if ${OBJCXX} ${CPPFLAGS} ${OBJCXXFLAGS} ${LIB_CFLAGS} \
 	    ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ \
 	    $<; then \
 		${COMPILE_LIB_OK}; \
@@ -643,7 +643,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${AMIGA_LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} \
+	if ${OBJCXX} ${CPPFLAGS} ${OBJCXXFLAGS} ${AMIGA_LIB_CFLAGS} \
 	    ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ \
 	    $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
@@ -654,7 +654,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${PLUGIN_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} \
+	if ${OBJCXX} ${CPPFLAGS} ${OBJCXXFLAGS} ${PLUGIN_CFLAGS} \
 	    ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ \
 	    $<; then \
 		${COMPILE_PLUGIN_OK}; \
@@ -697,7 +697,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} \
+	if ${AS} ${CPPFLAGS} ${ASFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} \
 	    ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -707,7 +707,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} \
+	if ${AS} ${CPPFLAGS} ${ASFLAGS} ${LIB_CFLAGS} ${ASFLAGS_$<} \
 	    ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -717,7 +717,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${AMIGA_LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} \
+	if ${AS} ${CPPFLAGS} ${ASFLAGS} ${AMIGA_LIB_CFLAGS} ${ASFLAGS_$<} \
 	    ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
@@ -727,7 +727,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${PLUGIN_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} \
+	if ${AS} ${CPPFLAGS} ${ASFLAGS} ${PLUGIN_CFLAGS} ${ASFLAGS_$<} \
 	    ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -738,7 +738,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ \
 	    $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -748,7 +748,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${LIB_CFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} \
 	    -x c -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -758,7 +758,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${AMIGA_LIB_CFLAGS} ${CFLAGS_$<} \
 	    ${CFLAGS_$@} -x c -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
@@ -768,7 +768,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} \
+	if ${CC} ${CPPFLAGS} ${CFLAGS} ${PLUGIN_CFLAGS} ${CFLAGS_$<} \
 	    ${CFLAGS_$@} -x c -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \

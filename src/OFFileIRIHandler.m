@@ -1393,8 +1393,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	BPTR lock;
 	struct FileInfoBlock fib;
 # endif
-	uint32_t uid;
-	uint32_t gid;
+	uint32_t uid = 0;
+	uint32_t gid = 0;
 
 	if (ownerAccountName != nil || groupOwnerAccountName != nil)
 		@throw [OFNotImplementedException
