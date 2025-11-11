@@ -23,6 +23,8 @@
 
 #include <setjmp.h>
 
+#define OFLibraryTrampolineSize 3
+
 typedef void (*sighandler_t)(int);
 
 struct OFLinklibContext {
@@ -72,3 +74,5 @@ struct OFLinklibContext {
 
 extern bool OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx);
 extern unsigned long *OFHashSeedRef(void);
+extern void OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
+    IMP function) OF_VISIBILITY_INTERNAL;

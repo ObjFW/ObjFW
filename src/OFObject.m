@@ -73,6 +73,10 @@
 # undef Class
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+# import "amiga-library.h"
+#endif
+
 #ifdef OF_APPLE_RUNTIME
 extern id _objc_rootRetain(id object);
 extern uintptr_t _objc_rootRetainCount(id object);
@@ -310,6 +314,9 @@ typeEncodingForSelector(Class class, SEL selector)
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+# endif
 uncaughtExceptionHandler(id exception)
 {
 # ifdef OF_AMIGAOS
@@ -422,6 +429,9 @@ uncaughtExceptionHandler(id exception)
 #endif
 
 static void
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+#endif
 enumerationMutationHandler(id object)
 {
 	@throw [OFEnumerationMutationException exceptionWithObject: object];
@@ -490,8 +500,28 @@ _references_to_categories_of_OFObject(void)
 @implementation OFObject
 + (void)load
 {
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+	static uint32_t trampolines[OFLibraryTrampolineSize * 4];
+
+	OFCreateLibraryTrampoline(&trampolines[0 * OFLibraryTrampolineSize],
+	    (IMP)uncaughtExceptionHandler);
+	OFCreateLibraryTrampoline(&trampolines[1 * OFLibraryTrampolineSize],
+	    (IMP)_OFForward);
+	OFCreateLibraryTrampoline(&trampolines[2 * OFLibraryTrampolineSize],
+	    (IMP)_OFForward_stret);
+	OFCreateLibraryTrampoline(&trampolines[3 * OFLibraryTrampolineSize],
+	    (IMP)enumerationMutationHandler);
+	CacheFlushDataInstArea(trampolines, sizeof(trampolines));
+#endif
+
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setUncaughtExceptionHandler(
+	    (objc_uncaught_exception_handler)(uintptr_t)
+	    &trampolines[0 * OFLibraryTrampolineSize]);
+# else
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
+# endif
 #endif
 
 #if defined(OF_APPLE_RUNTIME)
@@ -508,10 +538,22 @@ _references_to_categories_of_OFObject(void)
 		objc_setForwardHandler((void *)&_OFForward,
 		    (void *)&_OFForward_stret);
 #else
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setForwardHandler(
+	    (IMP)(uintptr_t)&trampolines[1 * OFLibraryTrampolineSize],
+	    (IMP)(uintptr_t)&trampolines[2 * OFLibraryTrampolineSize]);
+# else
 	objc_setForwardHandler((IMP)&_OFForward, (IMP)&_OFForward_stret);
+# endif
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setEnumerationMutationHandler(
+	    (objc_enumeration_mutation_handler)(uintptr_t)
+	    &trampolines[3 * OFLibraryTrampolineSize]);
+#else
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
+#endif
 
 	do {
 		OFHashSeed = OFRandom32();
