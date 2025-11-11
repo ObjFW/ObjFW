@@ -9,3 +9,4 @@ SRCS = forwarding.S
 include ../../buildsys.mk
 
 ASFLAGS += -I../.. -I..
+ASFLAGS_forwarding.amigalib.o += -DOF_BASEREL
