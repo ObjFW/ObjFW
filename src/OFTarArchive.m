@@ -27,6 +27,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFArchiveIRIHandler.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
@@ -76,6 +77,63 @@ OF_DIRECT_MEMBERS
 			    stream: (OFStream *)stream
 			     entry: (OFTarArchiveEntry *)entry;
 @end
+
+static OFDictionary *
+parsePAXExtendedHeader(OFStream *stream)
+{
+	OFMutableDictionary *header = [OFMutableDictionary dictionary];
+
+	for (;;) {
+		uint8_t byte;
+		size_t size, consumed = 0;
+		OFMutableData *name;
+		OFData *value;
+
+		if ([stream readIntoBuffer: &byte length: 1] == 0)
+			break;
+
+		if (byte < '0' || byte > '9')
+			@throw [OFInvalidFormatException exception];
+
+		size = byte - '0';
+		consumed++;
+
+		while ((byte = [stream readInt8]) != ' ') {
+			if (byte < '0' || byte > '9')
+				@throw [OFInvalidFormatException exception];
+
+			if (size > SIZE_MAX / 10 ||
+			    (uint8_t)(byte - '0') > SIZE_MAX - size * 10)
+				@throw [OFOutOfRangeException exception];
+
+			size *= 10;
+			size += byte - '0';
+			consumed++;
+		}
+		consumed++;
+
+		name = [OFMutableData data];
+		while ((byte = [stream readInt8]) != '=')
+			[name addItem: &byte];
+		consumed += name.count + 1;
+
+		if (consumed + 1 > size)
+			@throw [OFOutOfRangeException exception];
+
+		value = [stream readDataWithCount: size - consumed - 1];
+
+		[header setObject: value
+			   forKey: [OFString stringWithUTF8String: name.items
+							   length: name.count]];
+
+		if ([stream readInt8] != '\n')
+			@throw [OFInvalidFormatException exception];
+	}
+
+	[header makeImmutable];
+
+	return header;
+}
 
 @implementation OFTarArchive
 @synthesize encoding = _encoding;
@@ -233,7 +291,35 @@ OF_DIRECT_MEMBERS
 
 	_currentEntry = [[OFTarArchiveEntry alloc]
 	    of_initWithHeader: (unsigned char *)buffer
+	       extendedHeader: nil
 		     encoding: _encoding];
+
+	if (_currentEntry.fileType == OFArchiveEntryFileTypePAXExtendedHeader) {
+		void *pool = objc_autoreleasePoolPush();
+		OFDictionary *extendedHeader =
+		    parsePAXExtendedHeader([self streamForReadingCurrentEntry]);
+
+		[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
+		[_lastReturnedStream close];
+		_lastReturnedStream = nil;
+
+		[_stream readIntoBuffer: buffer exactLength: 512];
+
+		empty = true;
+		for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
+			if (buffer[i] != 0)
+				empty = false;
+
+		if (empty)
+			@throw [OFInvalidFormatException exception];
+
+		_currentEntry = [[OFTarArchiveEntry alloc]
+		    of_initWithHeader: (unsigned char *)buffer
+		       extendedHeader: extendedHeader
+			     encoding: _encoding];
+
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return _currentEntry;
 }

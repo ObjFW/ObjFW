@@ -22,6 +22,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
@@ -109,6 +110,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
+		   extendedHeader: (OFDictionary *)extendedHeader
 			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
