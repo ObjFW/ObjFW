@@ -78,11 +78,9 @@ OF_DIRECT_MEMBERS
 			     entry: (OFTarArchiveEntry *)entry;
 @end
 
-static OFDictionary *
-parsePAXExtendedHeader(OFStream *stream)
+static void
+parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 {
-	OFMutableDictionary *header = [OFMutableDictionary dictionary];
-
 	for (;;) {
 		uint8_t byte;
 		size_t size, consumed = 0;
@@ -129,10 +127,6 @@ parsePAXExtendedHeader(OFStream *stream)
 		if ([stream readInt8] != '\n')
 			@throw [OFInvalidFormatException exception];
 	}
-
-	[header makeImmutable];
-
-	return header;
 }
 
 @implementation OFTarArchive
@@ -233,6 +227,7 @@ parsePAXExtendedHeader(OFStream *stream)
 {
 	[self close];
 
+	objc_release(_globalExtendedHeader);
 	objc_release(_currentEntry);
 
 	[super dealloc];
@@ -291,13 +286,29 @@ parsePAXExtendedHeader(OFStream *stream)
 
 	_currentEntry = [[OFTarArchiveEntry alloc]
 	    of_initWithHeader: (unsigned char *)buffer
-	       extendedHeader: nil
+	       extendedHeader: _globalExtendedHeader
 		     encoding: _encoding];
 
-	if (_currentEntry.fileType == OFArchiveEntryFileTypePAXExtendedHeader) {
+	while (_currentEntry.fileType ==
+	    OFArchiveEntryFileTypePAXExtendedHeader ||
+	    _currentEntry.fileType ==
+	    OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
 		void *pool = objc_autoreleasePoolPush();
-		OFDictionary *extendedHeader =
-		    parsePAXExtendedHeader([self streamForReadingCurrentEntry]);
+		OFMutableDictionary *extendedHeader;
+
+		if (_currentEntry.fileType ==
+		    OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
+			if (_globalExtendedHeader == nil)
+				_globalExtendedHeader =
+				    [[OFMutableDictionary alloc] init];
+
+			extendedHeader = _globalExtendedHeader;
+		} else
+			extendedHeader = objc_autorelease(
+			    [_globalExtendedHeader mutableCopy]);
+
+		parsePAXExtendedHeader(
+		    [self streamForReadingCurrentEntry], extendedHeader);
 
 		[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
 		[_lastReturnedStream close];
