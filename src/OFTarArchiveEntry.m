@@ -110,7 +110,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
-		   extendedHeader: (OFDictionary *)extendedHeader
+		   extendedHeader: (OFMutableDictionary *)extendedHeader
 			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
@@ -167,6 +167,9 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			}
 		}
 
+		[extendedHeader makeImmutable];
+		_extendedHeader = objc_retain(extendedHeader);
+
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
@@ -186,6 +189,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	objc_release(_targetFileName);
 	objc_release(_ownerAccountName);
 	objc_release(_groupOwnerAccountName);
+	objc_release(_extendedHeader);
 
 	[super dealloc];
 }
@@ -296,6 +300,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (unsigned long)deviceMinor
 {
 	return _deviceMinor;
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OFData *) *)extendedHeader
+{
+	return _extendedHeader;
 }
 
 - (OFString *)description

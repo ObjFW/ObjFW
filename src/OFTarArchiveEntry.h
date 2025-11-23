@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 @class OFDate;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
 
 /**
@@ -138,7 +139,8 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
 	OFString *_Nullable _ownerAccountName;
 	OFString *_Nullable _groupOwnerAccountName;
 	unsigned long _deviceMajor, _deviceMinor;
-	OF_RESERVE_IVARS(OFTarArchiveEntry, 4)
+	OFDictionary OF_GENERIC(OFString *, OFData *) *_extendedHeader;
+	OF_RESERVE_IVARS(OFTarArchiveEntry, 3)
 }
 
 /**
@@ -155,6 +157,14 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
 #if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic pop
 #endif
+
+/**
+ * @brief The PAX extended header of the Tar archive entry.
+ *
+ * This is a map of @ref OFString to @ref OFData.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString *, OFData *) *extendedHeader;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

@@ -22,6 +22,7 @@
 #import "OFMutableTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFString.h"
 
@@ -29,7 +30,7 @@
 @dynamic fileName, fileType, POSIXPermissions, ownerAccountID;
 @dynamic groupOwnerAccountID, compressedSize, uncompressedSize;
 @dynamic modificationDate, type, targetFileName, ownerAccountName;
-@dynamic groupOwnerAccountName, deviceMajor, deviceMinor;
+@dynamic groupOwnerAccountName, deviceMajor, deviceMinor, extendedHeader;
 /*
  * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -156,6 +157,14 @@
 - (void)setDeviceMinor: (unsigned long)deviceMinor
 {
 	_deviceMinor = deviceMinor;
+}
+
+- (void)setExtendedHeader:
+    (OFDictionary OF_GENERIC(OFString *, OFData *) *)extendedHeader
+{
+	OFDictionary *old = _extendedHeader;
+	_extendedHeader = [extendedHeader copy];
+	objc_release(old);
 }
 
 - (void)makeImmutable
