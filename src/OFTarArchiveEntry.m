@@ -21,6 +21,7 @@
 
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
@@ -28,6 +29,7 @@
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
 static OFString *
@@ -118,6 +120,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *targetFileName;
+		OFData *value;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
 		_POSIXPermissions = [[OFNumber alloc] initWithUnsignedLongLong:
@@ -165,6 +168,61 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 				objc_release(_fileName);
 				_fileName = [fileName copy];
 			}
+		}
+
+		if ((value = [extendedHeader objectForKey: @"size"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			_uncompressedSize = 0;
+			for (size_t i = 0; i < count; i++) {
+				if (items[i] < '0' || items[i] > '9')
+					@throw [OFInvalidFormatException
+					    exception];
+
+				if (_uncompressedSize > ULLONG_MAX / 10 ||
+				    (uint8_t)(items[i] - '0') >
+				    ULLONG_MAX - _uncompressedSize * 10)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				_uncompressedSize *= 10;
+				_uncompressedSize += items[i] - '0';
+			}
+
+			_compressedSize =
+			    _uncompressedSize + (512 - _uncompressedSize % 512);
+
+			[extendedHeader removeObjectForKey: @"size"];
+		}
+
+		if ((value = [extendedHeader objectForKey: @"path"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			objc_release(_fileName);
+			_fileName = nil;
+
+			_fileName = [[OFString alloc]
+			    initWithUTF8String: items
+					length: count];
+
+			[extendedHeader removeObjectForKey: @"path"];
+		}
+
+		if ((value =
+		    [extendedHeader objectForKey: @"linkpath"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			objc_release(_targetFileName);
+			_targetFileName = nil;
+
+			_targetFileName = [[OFString alloc]
+			    initWithUTF8String: items
+					length: count];
+
+			[extendedHeader removeObjectForKey: @"linkpath"];
 		}
 
 		[extendedHeader makeImmutable];
