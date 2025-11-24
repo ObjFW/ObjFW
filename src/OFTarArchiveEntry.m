@@ -126,8 +126,9 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    octalValueFromBuffer(header + 116, 8, ULONG_MAX)];
 		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
-		_compressedSize =
-		    _uncompressedSize + (512 - _uncompressedSize % 512);
+		_compressedSize = _uncompressedSize;
+		if (_compressedSize % 512 != 0)
+			_compressedSize += 512 - _compressedSize % 512;
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
