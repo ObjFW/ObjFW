@@ -459,6 +459,68 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
 	    OFStringEncodingASCII);
 
+	if (_extendedHeader.count > 0 &&
+	    _fileType != OFArchiveEntryFileTypePAXExtendedHeader &&
+	    _fileType != OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
+		OFMutableData *header = [OFMutableData dataWithCapacity: 512];
+		OFMutableTarArchiveEntry *headerEntry;
+
+		for (OFString *key in _extendedHeader) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFData *value = [_extendedHeader objectForKey: key];
+			size_t length, digits, nextDigitAt;
+			OFString *string;
+
+			/*
+			 * The length contains the length itself. But let's
+			 * first calculate it without it.
+			 */
+			length = 1 + key.UTF8StringLength + 1 +
+			    value.count * value.itemSize + 1;
+
+			/*
+			 * Calculate the number of digits and the next number
+			 * at which we would need another digit.
+			 */
+			digits = 0;
+			nextDigitAt = 1;
+			for (size_t i = length; i > 0; i /= 10) {
+				digits++;
+				nextDigitAt *= 10;
+			}
+
+			length += digits;
+			/*
+			 * See if adding the length made us need an extra
+			 * digit.
+			 */
+			if (length >= nextDigitAt)
+				length++;
+
+			string = [OFString stringWithFormat:
+			    @"%zu %@=", length, key];
+			[header addItems: string.UTF8String
+				   count: string.UTF8StringLength];
+			[header addItems: value.items
+				   count: value.count * value.itemSize];
+			[header addItem: "\n"];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+
+		headerEntry = [OFMutableTarArchiveEntry entryWithFileName:
+		    [OFString stringWithFormat: @"PAX Extended Headers/%@",
+						_fileName]];
+		headerEntry.fileType = OFArchiveEntryFileTypePAXExtendedHeader;
+		headerEntry.uncompressedSize = header.count;
+		headerEntry.compressedSize = headerEntry.uncompressedSize +
+		    (512 - header.count % 512);
+		[headerEntry of_writeToStream: stream encoding: encoding];
+
+		[header increaseCountBy: (512 - header.count % 512)];
+		[stream writeData: header];
+	}
+
 	[stream writeBuffer: buffer length: sizeof(buffer)];
 
 	objc_autoreleasePoolPop(pool);
