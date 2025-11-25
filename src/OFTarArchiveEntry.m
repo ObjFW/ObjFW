@@ -398,12 +398,13 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	     @"\tGroup owner account name = %@\n"
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
+	     @"\tExtended header = %@\n"
 	     @">",
 	    self.class, _fileName, POSIXPermissions, _ownerAccountID,
 	    _groupOwnerAccountID, _compressedSize, _uncompressedSize,
 	    _modificationDate, _fileType, _targetFileName,
 	    _ownerAccountName, _groupOwnerAccountName, _deviceMajor,
-	    _deviceMinor];
+	    _deviceMinor, _extendedHeader];
 
 	objc_retain(ret);
 
