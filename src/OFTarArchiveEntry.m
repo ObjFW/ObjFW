@@ -45,19 +45,27 @@ stringFromBuffer(const unsigned char *buffer, size_t length,
 				    length: length];
 }
 
-static void
+static bool
 stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
-    OFStringEncoding encoding)
+    OFStringEncoding encoding, bool truncate)
 {
 	size_t cStringLength = [string cStringLengthWithEncoding: encoding];
+	bool fits = true;
 
-	if (cStringLength > length)
-		@throw [OFOutOfRangeException exception];
+	if (cStringLength > length) {
+		if (truncate) {
+			cStringLength = length;
+			fits = false;
+		} else
+			@throw [OFOutOfRangeException exception];
+	}
 
 	memcpy(buffer, [string cStringWithEncoding: encoding], cStringLength);
 
 	for (size_t i = cStringLength; i < length; i++)
 		buffer[i] = '\0';
+
+	return fits;
 }
 
 static unsigned long long
@@ -411,24 +419,47 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	unsigned char buffer[512];
 	unsigned long long modificationDate;
 	uint16_t checksum = 0;
+	OFMutableDictionary *extendedHeader =
+	    objc_autorelease([_extendedHeader mutableCopy]);
 
-	stringToBuffer(buffer, _fileName, 100, encoding);
+	if (extendedHeader == nil)
+		extendedHeader = [OFMutableDictionary dictionary];
+
+	if (!stringToBuffer(buffer, _fileName, 100, encoding, true)) {
+		OFData *data = [OFData
+		    dataWithItems: _fileName.UTF8String
+			    count: _fileName.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"path"];
+	}
 	stringToBuffer(buffer + 100,
 	    [OFString stringWithFormat: @"%06o ",
-	    _POSIXPermissions.unsignedShortValue], 8, OFStringEncodingASCII);
+	    _POSIXPermissions.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
 	stringToBuffer(buffer + 108,
 	    [OFString stringWithFormat: @"%06o ",
-	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
+	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
 	stringToBuffer(buffer + 116,
 	    [OFString stringWithFormat: @"%06o ",
-	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
-	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011llo ", _uncompressedSize], 12,
-	    OFStringEncodingASCII);
+	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
+	if (_uncompressedSize > 077777777777) {
+		OFString *string = [OFString
+		    stringWithFormat: @"%zu", _uncompressedSize];
+		OFData *data = [OFData dataWithItems: string.UTF8String
+					       count: string.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"size"];
+
+		stringToBuffer(buffer + 124, @"77777777777 ", 12,
+		    OFStringEncodingASCII, false);
+	} else
+		stringToBuffer(buffer + 124,
+		    [OFString stringWithFormat: @"%011llo ", _uncompressedSize],
+		    12, OFStringEncodingASCII, false);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
 	    [OFString stringWithFormat: @"%011llo", modificationDate],
-	    12, OFStringEncodingASCII);
+	    12, OFStringEncodingASCII, false);
 
 	/*
 	 * During checksumming, the checksum field is expected to be set to 8
@@ -440,18 +471,25 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		@throw [OFInvalidArgumentException exception];
 
 	buffer[156] = _fileType;
-	stringToBuffer(buffer + 157, _targetFileName, 100, encoding);
+	if (!stringToBuffer(buffer + 157, _targetFileName, 100, encoding,
+	    true)) {
+		OFData *data = [OFData
+		    dataWithItems: _targetFileName.UTF8String
+			    count: _targetFileName.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"linkpath"];
+	}
 
 	/* ustar */
 	memcpy(buffer + 257, "ustar\0" "00", 8);
-	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding);
-	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding);
+	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding, false);
+	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding,
+	    false);
 	stringToBuffer(buffer + 329,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
 	stringToBuffer(buffer + 337,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
 	memset(buffer + 345, '\0', 155 + 12);
 
 	/* Fill in the checksum */
@@ -459,17 +497,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		checksum += buffer[i];
 	stringToBuffer(buffer + 148,
 	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
 
-	if (_extendedHeader.count > 0 &&
+	if (extendedHeader.count > 0 &&
 	    _fileType != OFArchiveEntryFileTypePAXExtendedHeader &&
 	    _fileType != OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
 		OFMutableData *header = [OFMutableData dataWithCapacity: 512];
 		OFMutableTarArchiveEntry *headerEntry;
 
-		for (OFString *key in _extendedHeader) {
+		for (OFString *key in extendedHeader) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFData *value = [_extendedHeader objectForKey: key];
+			OFData *value = [extendedHeader objectForKey: key];
 			size_t length, digits, nextDigitAt;
 			OFString *string;
 
