@@ -307,6 +307,9 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 			extendedHeader = objc_autorelease(
 			    [_globalExtendedHeader mutableCopy]);
 
+		if (extendedHeader == nil)
+			extendedHeader = [OFMutableDictionary dictionary];
+
 		parsePAXExtendedHeader(
 		    [self streamForReadingCurrentEntry], extendedHeader);
 
