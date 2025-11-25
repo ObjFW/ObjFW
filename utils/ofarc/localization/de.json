@@ -149,6 +149,7 @@
             {"": "Ja"}
         ]
     ],
+    list_extended_header: "Erweiterter Header: %[header]",
     refusing_to_extract_file: "Verweigere Entpacken von %[file]!",
     file_not_in_archive: "Datei %[file] ist nicht im Archiv!",
     print_no_file_specified: [

@@ -286,6 +286,18 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Type: Unknown")];
 				break;
 			}
+
+			if (entry.extendedHeader != nil) {
+				OFString *header =
+				    [entry.extendedHeader.description
+				    stringByReplacingOccurrencesOfString: @"\n"
+				    withString: @"\n\t"];
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_extended_header",
+				    @"Extended header: %[header]",
+				    @"header", header)];
+			}
 		}
 
 		objc_autoreleasePoolPop(pool);
