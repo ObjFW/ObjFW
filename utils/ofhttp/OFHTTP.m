@@ -892,7 +892,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    (object = [objectEnumerator nextObject]) != nil) {
 				[OFStdErr writeString: @"  "];
 				OFStdErr.bold = true;
-				[OFStdErr writeFormat: @"  %@: ", key];
+				[OFStdErr writeFormat: @"%@: ", key];
 				OFStdErr.bold = false;
 				[OFStdErr writeLine: object];
 			}
