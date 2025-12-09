@@ -46,12 +46,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
+@interface OFPlaceholderData: OFString
+@end
+
 static struct {
 	Class isa;
 } placeholder;
-
-@interface OFPlaceholderData: OFString
-@end
 
 /* References for static linking */
 void OF_VISIBILITY_INTERNAL

@@ -33,6 +33,7 @@ SRCS = OFApplication.m			\
        OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
+       OFImage.m			\
        OFIndexSet.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
@@ -213,6 +214,7 @@ SRCS += OFASPrintF.m			\
 	OFConcreteData.m		\
 	OFConcreteDate.m		\
 	OFConcreteDictionary.m		\
+	OFConcreteImage.m		\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
 	OFConcreteMutableDictionary.m	\
