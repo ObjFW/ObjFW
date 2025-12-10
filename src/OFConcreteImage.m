@@ -25,34 +25,34 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFConcreteImage
-- (instancetype)initWithWidth: (size_t)width
-		       height: (size_t)height
-		  pixelFormat: (OFPixelFormat)pixelFormat
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
 {
 	self = [super init];
 
 	@try {
 		unsigned int bitsPerPixel;
-		size_t size;
+		size_t width, height, count;
 
-		_width = width;
-		_height = height;
+		width = size.width;
+		height = size.height;
+
+		if (width != size.width || height != size.height)
+			@throw [OFInvalidArgumentException exception];
+
+		_size = size;
 		_pixelFormat = pixelFormat;
 
 		bitsPerPixel = self.bitsPerPixel;
 		if (bitsPerPixel % CHAR_BIT != 0)
 			@throw [OFInvalidArgumentException exception];
 
-		if (SIZE_MAX / _width < _height)
+		if (SIZE_MAX / width < height)
 			@throw [OFOutOfRangeException exception];
 
-		size = _width * _height;
-		if (SIZE_MAX / size < bitsPerPixel / CHAR_BIT)
-			@throw [OFOutOfRangeException exception];
+		count = width * height;
 
-		size *= bitsPerPixel / CHAR_BIT;
-
-		_pixels = OFAllocZeroedMemory(1, size);
+		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -68,14 +68,9 @@
 	[super dealloc];
 }
 
-- (size_t)width
+- (OFSize)size
 {
-	return _width;
-}
-
-- (size_t)height
-{
-	return _height;
+	return _size;
 }
 
 - (OFPixelFormat)pixelFormat

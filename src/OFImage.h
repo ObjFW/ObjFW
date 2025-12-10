@@ -42,19 +42,14 @@ typedef enum {
  */
 @interface OFImage: OFObject
 {
-	float _horizontalDotsPerInch, _verticalDotsPerInch;
+	OFSize _dotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
 }
 
 /**
- * @brief The width of the image in pixels.
+ * @brief The size of the image in pixels.
  */
-@property (readonly, nonatomic) size_t width;
-
-/**
- * @brief The height of the image in pixels.
- */
-@property (readonly, nonatomic) size_t height;
+@property (readonly, nonatomic) OFSize size;
 
 /**
  * @brief The bits per pixel.
@@ -72,41 +67,32 @@ typedef enum {
 @property (readonly, nonatomic) void *pixels;
 
 /**
- * @brief The horizontal dots per inch of the image or 0 if unknown.
+ * @brief The dots per inch of the image or (0, 0) if unknown.
  */
-@property (nonatomic) float horizontalDotsPerInch;
-
-/**
- * @brief The vertical dots per inch of the image or 0 if unknown.
- */
-@property (nonatomic) float verticalDotsPerInch;
+@property (nonatomic) OFSize dotsPerInch;
 
 /**
  * @brief Creates a new image with the specified size and pixel format.
  *
- * @param width The width for the new image in pixels
- * @param height The height for the new image in pixels
+ * @param size The size for the new image in pixels
  * @param pixelFormat The pixel format for the new image
  *
  * @return A new autoreleased image
  */
-+ (instancetype)imageWithWidth: (size_t)width
-			height: (size_t)height
-		   pixelFormat: (OFPixelFormat)pixelFormat;
++ (instancetype)imageWithSize: (OFSize)size
+		  pixelFormat: (OFPixelFormat)pixelFormat;
 
 /**
  * @brief Initializes an already allocated image with the specified size and
  *	  pixel format.
  *
- * @param width The width for the new image in pixels
- * @param height The height for the new image in pixels
+ * @param size The size for the new image in pixels
  * @param pixelFormat The pixel format for the new image
  *
  * @return An initialized image
  */
-- (instancetype)initWithWidth: (size_t)width
-		       height: (size_t)height
-		  pixelFormat: (OFPixelFormat)pixelFormat;
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat;
 @end
 
 OF_ASSUME_NONNULL_END

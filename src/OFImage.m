@@ -37,13 +37,11 @@ static struct {
 	return (id)[[OFConcreteImage alloc] init];
 }
 
-- (instancetype)initWithWidth: (size_t)width
-		       height: (size_t)height
-		  pixelFormat: (OFPixelFormat)pixelFormat
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
 {
-	return (id)[[OFConcreteImage alloc] initWithWidth: width
-						   height: height
-					      pixelFormat: pixelFormat];
+	return (id)[[OFConcreteImage alloc] initWithSize: size
+					     pixelFormat: pixelFormat];
 }
 @end
 
@@ -62,14 +60,12 @@ static struct {
 	return [super alloc];
 }
 
-+ (instancetype)imageWithWidth: (size_t)width
-			height: (size_t)height
-		   pixelFormat: (OFPixelFormat)pixelFormat
++ (instancetype)imageWithSize: (OFSize)size
+		  pixelFormat: (OFPixelFormat)pixelFormat
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithWidth: width
-				 height: height
-			    pixelFormat: pixelFormat]);
+	    [[self alloc] initWithSize: size
+			   pixelFormat: pixelFormat]);
 }
 
 - (instancetype)init
@@ -88,19 +84,13 @@ static struct {
 	return [super init];
 }
 
-- (instancetype)initWithWidth: (size_t)width
-		       height: (size_t)height
-		  pixelFormat: (OFPixelFormat)pixelFormat
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (size_t)width
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (size_t)height
+- (OFSize)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -133,29 +123,16 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setHorizontalDotsPerInch: (float)horizontalDotsPerInch
+- (void)setDotsPerInch: (OFSize)dotsPerInch
 {
-	if (horizontalDotsPerInch < 0)
+	if (dotsPerInch.width < 0 || dotsPerInch.height < 0)
 		@throw [OFInvalidArgumentException exception];
 
-	_horizontalDotsPerInch = horizontalDotsPerInch;
+	_dotsPerInch = dotsPerInch;
 }
 
-- (float)horizontalDotsPerInch
+- (OFSize)dotsPerInch
 {
-	return _horizontalDotsPerInch;
-}
-
-- (void)setVerticalDotsPerInch: (float)verticalDotsPerInch
-{
-	if (verticalDotsPerInch < 0)
-		@throw [OFInvalidArgumentException exception];
-
-	_verticalDotsPerInch = verticalDotsPerInch;
-}
-
-- (float)verticalDotsPerInch
-{
-	return _verticalDotsPerInch;
+	return _dotsPerInch;
 }
 @end

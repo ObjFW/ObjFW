@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFConcreteImage: OFImage
 {
-	size_t _width, _height;
+	OFSize _size;
 	OFPixelFormat _pixelFormat;
 	void *_pixels;
 }
