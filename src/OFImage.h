@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFColor;
+
 /**
  * @brief A pixel format.
  */
@@ -76,8 +78,8 @@ typedef enum {
  *
  * @param size The size for the new image in pixels
  * @param pixelFormat The pixel format for the new image
- *
  * @return A new autoreleased image
+ * @throw OFInvalidArgumentException The specified size is not integral
  */
 + (instancetype)imageWithSize: (OFSize)size
 		  pixelFormat: (OFPixelFormat)pixelFormat;
@@ -88,11 +90,40 @@ typedef enum {
  *
  * @param size The size for the new image in pixels
  * @param pixelFormat The pixel format for the new image
- *
  * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
  */
 - (instancetype)initWithSize: (OFSize)size
 		 pixelFormat: (OFPixelFormat)pixelFormat;
+
+/**
+ * @brief Returns the color for the pixel at the specified position.
+ *
+ * @warning This method is expensive! You should use @ref pixels instead to get
+ *	    a buffer and use that instead.
+ *
+ * @param position The position of the pixel whose color to return
+ * @return The color for the pixel at the specified position
+ * @throw OFOutOfRangeException The specified position is outside of the
+ *				image's bounds
+ * @throw OFInvalidArgumentException The specified position is not integral
+ */
+- (OFColor *)colorForPixelAtPosition: (OFPoint)position;
+
+/**
+ * @brief Sets the color for the pixel at the specified position.
+ *
+ * @warning This method is expensive! You should use @ref pixels instead to get
+ *	    a buffer and use that instead.
+ *
+ * @param position The position of the pixel whose color to set
+ * @param color The color for the pixel at the specified position
+ * @throw OFOutOfRangeException The specified position is outside of the
+ *				image's bounds or the specified color is outside
+ *				the range supported by the image's format
+ * @throw OFInvalidArgumentException The specified position is not integral
+ */
+- (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position;
 @end
 
 OF_ASSUME_NONNULL_END

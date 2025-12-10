@@ -39,6 +39,7 @@ SRCS = ForwardingTests.m			\
        OFHMACTests.m				\
        OFINIFileTests.m				\
        OFIRITests.m				\
+       OFImageTests.m				\
        OFIndexSetTests.m			\
        OFInvocationTests.m			\
        OFJSONTests.m				\
