@@ -37,10 +37,14 @@ typedef enum {
 	OFPixelFormatRGB888,
 	/** RGBA with 8 bits per channel. */
 	OFPixelFormatRGBA8888,
+	/** ARGB with 8 bits per channel. */
+	OFPixelFormatARGB8888,
 	/** BGR with 5 bits for red, 6 bits for green and 5 bits for blue. */
 	OFPixelFormatBGR565,
 	/** BGR with 8 bits per channel. */
 	OFPixelFormatBGR888,
+	/** ABGR with 8 bits per channel. */
+	OFPixelFormatABGR8888,
 	/** BGRA with 8 bits per channel. */
 	OFPixelFormatBGRA8888,
 } OFPixelFormat;
