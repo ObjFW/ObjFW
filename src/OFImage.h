@@ -42,7 +42,7 @@ typedef enum {
  */
 @interface OFImage: OFObject
 {
-	float _pixelsPerInch;
+	float _horizontalDotsPerInch, _verticalDotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
 }
 
@@ -72,9 +72,14 @@ typedef enum {
 @property (readonly, nonatomic) void *pixels;
 
 /**
- * @brief The pixels per inch of the image or 0 if unknown.
+ * @brief The horizontal dots per inch of the image or 0 if unknown.
  */
-@property (nonatomic) float pixelsPerInch;
+@property (nonatomic) float horizontalDotsPerInch;
+
+/**
+ * @brief The vertical dots per inch of the image or 0 if unknown.
+ */
+@property (nonatomic) float verticalDotsPerInch;
 
 /**
  * @brief Creates a new image with the specified size and pixel format.

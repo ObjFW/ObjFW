@@ -133,16 +133,29 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setPixelsPerInch: (float)pixelsPerInch
+- (void)setHorizontalDotsPerInch: (float)horizontalDotsPerInch
 {
-	if (pixelsPerInch < 0)
+	if (horizontalDotsPerInch < 0)
 		@throw [OFInvalidArgumentException exception];
 
-	_pixelsPerInch = pixelsPerInch;
+	_horizontalDotsPerInch = horizontalDotsPerInch;
 }
 
-- (float)pixelsPerInch
+- (float)horizontalDotsPerInch
 {
-	return _pixelsPerInch;
+	return _horizontalDotsPerInch;
+}
+
+- (void)setVerticalDotsPerInch: (float)verticalDotsPerInch
+{
+	if (verticalDotsPerInch < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	_verticalDotsPerInch = verticalDotsPerInch;
+}
+
+- (float)verticalDotsPerInch
+{
+	return _verticalDotsPerInch;
 }
 @end
