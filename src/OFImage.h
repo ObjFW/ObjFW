@@ -31,16 +31,32 @@ typedef enum {
 	OFPixelFormatUnknown,
 	/** 8-bit grayscale. */
 	OFPixelFormatGrayscale8,
-	/** RGB with 5 bits for red, 6 bits for green and 5 bits for blue. */
-	OFPixelFormatRGB565,
+	/**
+	 * RGB with 5 bits for red, 6 bits for green and 5 bits for blue in big
+	 * endian.
+	 */
+	OFPixelFormatRGB565BE,
+	/**
+	 * RGB with 5 bits for red, 6 bits for green and 5 bits for blue in
+	 * little endian.
+	 */
+	OFPixelFormatRGB565LE,
 	/** RGB with 8 bits per channel. */
 	OFPixelFormatRGB888,
 	/** RGBA with 8 bits per channel. */
 	OFPixelFormatRGBA8888,
 	/** ARGB with 8 bits per channel. */
 	OFPixelFormatARGB8888,
-	/** BGR with 5 bits for red, 6 bits for green and 5 bits for blue. */
-	OFPixelFormatBGR565,
+	/**
+	 * BGR with 5 bits for red, 6 bits for green and 5 bits for blue in big
+	 * endian.
+	 */
+	OFPixelFormatBGR565BE,
+	/**
+	 * BGR with 5 bits for red, 6 bits for green and 5 bits for blue in
+	 * little endian.
+	 */
+	OFPixelFormatBGR565LE,
 	/** BGR with 8 bits per channel. */
 	OFPixelFormatBGR888,
 	/** ABGR with 8 bits per channel. */
