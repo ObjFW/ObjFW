@@ -36,140 +36,140 @@ static struct {
 
 static OF_INLINE void
 readGrayscale8Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
-	*red = *green = *blue = pixels[x + y * width] / 255.0f;
+	*red = *green = *blue = pixels[x + y * width];
 }
 
 static OF_INLINE void
 readRGB565BEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	uint16_t value;
 
 	pixels += (x + y * width) * 2;
 	value = (pixels[0] << 8 | pixels[1]);
 
-	*red = ((value >> 11) * 8) / 255.0f;
-	*green = (((value >> 5) & 0x3F) * 4) / 255.0f;
-	*blue = ((value & 0x1F) * 8) / 255.0f;
+	*red = (value & 0xF800) >> 8;
+	*green = (value & 0x7E0) >> 3;
+	*blue = (value & 0x1F) << 3;
 }
 
 static OF_INLINE void
 readRGB565LEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	uint16_t value;
 
 	pixels += (x + y * width) * 2;
 	value = (pixels[1] << 8 | pixels[0]);
 
-	*red = ((value >> 11) * 8) / 255.0f;
-	*green = (((value >> 5) & 0x3F) * 4) / 255.0f;
-	*blue = ((value & 0x1F) * 8) / 255.0f;
+	*red = (value & 0xF800) >> 8;
+	*green = (value & 0x7E0) >> 3;
+	*blue = (value & 0x1F) << 3;
 }
 
 static OF_INLINE void
 readRGB888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	pixels += (x + y * width) * 3;
 
-	*red = pixels[0] / 255.0f;
-	*green = pixels[1] / 255.0f;
-	*blue = pixels[2] / 255.0f;
+	*red = pixels[0];
+	*green = pixels[1];
+	*blue = pixels[2];
 }
 
 static OF_INLINE void
 readRGBA8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue, float *alpha)
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	*red = pixels[0] / 255.0f;
-	*green = pixels[1] / 255.0f;
-	*blue = pixels[2] / 255.0f;
-	*alpha = pixels[3] / 255.0f;
+	*red = pixels[0];
+	*green = pixels[1];
+	*blue = pixels[2];
+	*alpha = pixels[3];
 }
 
 static OF_INLINE void
 readARGB8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue, float *alpha)
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	*alpha = pixels[0] / 255.0f;
-	*red = pixels[1] / 255.0f;
-	*green = pixels[2] / 255.0f;
-	*blue = pixels[3] / 255.0f;
+	*alpha = pixels[0];
+	*red = pixels[1];
+	*green = pixels[2];
+	*blue = pixels[3];
 }
 
 static OF_INLINE void
 readBGR565BEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	uint16_t value;
 
 	pixels += (x + y * width) * 2;
 	value = (pixels[0] << 8 | pixels[1]);
 
-	*blue = ((value >> 11) * 8) / 255.0f;
-	*green = (((value >> 5) & 0x3F) * 4) / 255.0f;
-	*red = ((value & 0x1F) * 8) / 255.0f;
+	*blue = (value & 0xF800) >> 8;
+	*green = (value & 0x7E0) >> 3;
+	*red = (value & 0x1F) << 3;
 }
 
 static OF_INLINE void
 readBGR565LEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	uint16_t value;
 
 	pixels += (x + y * width) * 2;
 	value = (pixels[1] << 8 | pixels[0]);
 
-	*blue = ((value >> 11) * 8) / 255.0f;
-	*green = (((value >> 5) & 0x3F) * 4) / 255.0f;
-	*red = ((value & 0x1F) * 8) / 255.0f;
+	*blue = (value & 0xF800) >> 8;
+	*green = (value & 0x7E0) >> 3;
+	*red = (value & 0x1F) << 3;
 }
 
 static OF_INLINE void
 readBGR888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue)
+    uint8_t *red, uint8_t *green, uint8_t *blue)
 {
 	pixels += (x + y * width) * 3;
 
-	*blue = pixels[0] / 255.0f;
-	*green = pixels[1] / 255.0f;
-	*red = pixels[2] / 255.0f;
+	*blue = pixels[0];
+	*green = pixels[1];
+	*red = pixels[2];
 }
 
 static OF_INLINE void
 readABGR8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue, float *alpha)
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	*alpha = pixels[0] / 255.0f;
-	*blue = pixels[1] / 255.0f;
-	*green = pixels[2] / 255.0f;
-	*red = pixels[3] / 255.0f;
+	*alpha = pixels[0];
+	*blue = pixels[1];
+	*green = pixels[2];
+	*red = pixels[3];
 }
 
 static OF_INLINE void
 readBGRA8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    float *red, float *green, float *blue, float *alpha)
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	*blue = pixels[0] / 255.0f;
-	*green = pixels[1] / 255.0f;
-	*red = pixels[2] / 255.0f;
-	*alpha = pixels[3] / 255.0f;
+	*blue = pixels[0];
+	*green = pixels[1];
+	*red = pixels[2];
+	*alpha = pixels[3];
 }
 
 static OF_INLINE bool
 readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, float *red, float *green, float *blue, float *alpha)
+    size_t width, uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
 	switch (format) {
 	case OFPixelFormatGrayscale8:
@@ -212,18 +212,17 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 
 static OF_INLINE void
 writeGrayscale8Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
-	pixels[x + y * width] = (uint8_t)(red * 255.0f);
+	pixels[x + y * width] = red;
 }
 
 static OF_INLINE void
 writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
-	uint16_t value = (((uint8_t)(red * 255.0f) / 8) << 11) |
-	    (((uint8_t)(green * 255.0f) / 4) << 5) |
-	    ((uint8_t)(blue * 255.0f) / 8);
+	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
+	    (blue >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value >> 8;
@@ -232,11 +231,10 @@ writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
-	uint16_t value = (((uint8_t)(red * 255.0f) / 8) << 11) |
-	    (((uint8_t)(green * 255.0f) / 4) << 5) |
-	    ((uint8_t)(blue * 255.0f) / 8);
+	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
+	    (blue >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value;
@@ -245,46 +243,45 @@ writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
 	pixels += (x + y * width) * 3;
 
-	pixels[0] = (uint8_t)(red * 255.0f);
-	pixels[1] = (uint8_t)(green * 255.0f);
-	pixels[2] = (uint8_t)(blue * 255.0f);
+	pixels[0] = red;
+	pixels[1] = green;
+	pixels[2] = blue;
 }
 
 static OF_INLINE void
 writeRGBA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue, float alpha)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	pixels[0] = (uint8_t)(red * 255.0f);
-	pixels[1] = (uint8_t)(green * 255.0f);
-	pixels[2] = (uint8_t)(blue * 255.0f);
-	pixels[3] = (uint8_t)(alpha * 255.0f);
+	pixels[0] = red;
+	pixels[1] = green;
+	pixels[2] = blue;
+	pixels[3] = alpha;
 }
 
 static OF_INLINE void
 writeARGB8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue, float alpha)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	pixels[0] = (uint8_t)(alpha * 255.0f);
-	pixels[1] = (uint8_t)(red * 255.0f);
-	pixels[2] = (uint8_t)(green * 255.0f);
-	pixels[3] = (uint8_t)(blue * 255.0f);
+	pixels[0] = alpha;
+	pixels[1] = red;
+	pixels[2] = green;
+	pixels[3] = blue;
 }
 
 static OF_INLINE void
 writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
-	uint16_t value = (((uint8_t)(blue * 255.0f) / 8) << 11) |
-	    (((uint8_t)(green * 255.0f) / 4) << 5) |
-	    ((uint8_t)(red * 255.0f) / 8);
+	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
+	    (red >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value >> 8;
@@ -293,11 +290,10 @@ writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
-	uint16_t value = (((uint8_t)(blue * 255.0f) / 8) << 11) |
-	    (((uint8_t)(green * 255.0f) / 4) << 5) |
-	    ((uint8_t)(red * 255.0f) / 8);
+	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
+	    (red >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value;
@@ -306,69 +302,64 @@ writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue)
+    uint8_t red, uint8_t green, uint8_t blue)
 {
 	pixels += (x + y * width) * 3;
 
-	pixels[0] = (uint8_t)(blue * 255.0f);
-	pixels[1] = (uint8_t)(green * 255.0f);
-	pixels[2] = (uint8_t)(red * 255.0f);
+	pixels[0] = blue;
+	pixels[1] = green;
+	pixels[2] = red;
 }
 
 static OF_INLINE void
 writeABGR8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue, float alpha)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	pixels[0] = (uint8_t)(alpha * 255.0f);
-	pixels[1] = (uint8_t)(blue * 255.0f);
-	pixels[2] = (uint8_t)(green * 255.0f);
-	pixels[3] = (uint8_t)(red * 255.0f);
+	pixels[0] = alpha;
+	pixels[1] = blue;
+	pixels[2] = green;
+	pixels[3] = red;
 }
 
 static OF_INLINE void
 writeBGRA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    float red, float green, float blue, float alpha)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 	pixels += (x + y * width) * 4;
 
-	pixels[0] = (uint8_t)(blue * 255.0f);
-	pixels[1] = (uint8_t)(green * 255.0f);
-	pixels[2] = (uint8_t)(red * 255.0f);
-	pixels[3] = (uint8_t)(alpha * 255.0f);
+	pixels[0] = blue;
+	pixels[1] = green;
+	pixels[2] = red;
+	pixels[3] = alpha;
 }
 
 static OF_INLINE bool
 writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, float red, float green, float blue, float alpha)
+    size_t width, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	/* All currently supported formats only allow 0.0 to 1.0 */
-	if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
-	    blue < 0.0f || blue > 1.0f || alpha < 0.0f || alpha > 1.0f)
-		@throw [OFOutOfRangeException exception];
-
 	switch (format) {
 	case OFPixelFormatGrayscale8:
-		if (red != green || red != blue || alpha != 1.0f)
+		if (red != green || red != blue || alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeGrayscale8Pixel(pixels, x, y, width, red, green, blue);
 		return true;
 	case OFPixelFormatRGB565BE:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeRGB565BEPixel(pixels, x, y, width, red, green, blue);
 		return true;
 	case OFPixelFormatRGB565LE:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeRGB565LEPixel(pixels, x, y, width, red, green, blue);
 		return true;
 	case OFPixelFormatRGB888:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeRGB888Pixel(pixels, x, y, width, red, green, blue);
@@ -382,19 +373,19 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		    alpha);
 		return true;
 	case OFPixelFormatBGR565BE:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeBGR565BEPixel(pixels, x, y, width, red, green, blue);
 		return true;
 	case OFPixelFormatBGR565LE:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeBGR565LEPixel(pixels, x, y, width, red, green, blue);
 		return true;
 	case OFPixelFormatBGR888:
-		if (alpha != 1.0f)
+		if (alpha != 255)
 			@throw [OFOutOfRangeException exception];
 
 		writeBGR888Pixel(pixels, x, y, width, red, green, blue);
@@ -529,7 +520,7 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	size_t x = position.x, y = position.y;
 	OFSize size = self.size;
 	size_t width = size.width, height = size.height;
-	float red, green, blue, alpha = 1.0f;
+	uint8_t red, green, blue, alpha = 255;
 
 	if (x != position.x || y != position.y ||
 	    width != size.width || height != size.height)
@@ -543,7 +534,10 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	return [OFColor colorWithRed: red green: green blue: blue alpha: alpha];
+	return [OFColor colorWithRed: red / 255.0f
+			       green: green / 255.0f
+				blue: blue / 255.0f
+			       alpha: alpha / 255.0f];
 }
 
 - (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position
@@ -562,8 +556,13 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	if (!writePixel(self.pixels, self.pixelFormat, x, y, width, red,
-	    green, blue, alpha))
+	/* All currently supported formats only allow 0.0 to 1.0 */
+	if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
+	    blue < 0.0f || blue > 1.0f || alpha < 0.0f || alpha > 1.0f)
+		@throw [OFOutOfRangeException exception];
+
+	if (!writePixel(self.pixels, self.pixelFormat, x, y, width,
+	    red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }
