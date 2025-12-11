@@ -73,4 +73,9 @@
 {
 	return _pixels;
 }
+
+- (void)makeImmutable
+{
+	object_setClass(self, [OFConcreteImage class]);
+}
 @end

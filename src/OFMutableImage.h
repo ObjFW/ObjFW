@@ -72,6 +72,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFInvalidArgumentException The specified position is not integral
  */
 - (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position;
+
+/**
+ * @brief Converts the mutable image to an immutable image.
+ */
+- (void)makeImmutable;
 @end
 
 OF_ASSUME_NONNULL_END

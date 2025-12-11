@@ -514,4 +514,16 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 
 	return hash;
 }
+
+- (id)copy
+{
+	return objc_retain(self);
+}
+
+- (id)mutableCopy
+{
+	return [[OFMutableImage alloc] initWithPixels: self.pixels
+					  pixelFormat: self.pixelFormat
+						 size: self.size];
+}
 @end

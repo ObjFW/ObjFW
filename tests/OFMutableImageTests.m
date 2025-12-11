@@ -737,4 +737,19 @@
 	    [image setColor: color forPixelAtPosition: OFMakePoint(0, 0)],
 	    OFOutOfRangeException);
 }
+
+- (void)testCopy
+{
+	static const uint8_t pixels[] = {
+		32, 64, 128, 255
+	};
+	OFImage *image = [OFMutableImage
+	    imageWithPixels: pixels
+		pixelFormat: OFPixelFormatGrayscale8
+		       size: OFMakeSize(2, 2)];
+	OFImage *copy = objc_autorelease([image copy]);
+
+	OTAssertNotEqual(image, copy);
+	OTAssertEqualObjects(image, copy);
+}
 @end

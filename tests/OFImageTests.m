@@ -240,4 +240,35 @@
 	    [image colorForPixelAtPosition: OFMakePoint(0.5f, 0.5f)],
 	    OFInvalidArgumentException);
 }
+
+- (void)testCopy
+{
+	static const uint8_t pixels[] = {
+		32, 64, 128, 255
+	};
+	OFImage *image = [OFImage imageWithPixels: pixels
+				      pixelFormat: OFPixelFormatGrayscale8
+					     size: OFMakeSize(2, 2)];
+	OFImage *copy = objc_autorelease([image copy]);
+
+	OTAssertEqual(image, copy);
+	OTAssertEqualObjects(image, copy);
+}
+
+- (void)testMutableCopy
+{
+	static const uint8_t pixels[] = {
+		32, 64, 128, 255
+	};
+	OFImage *image = [OFImage imageWithPixels: pixels
+				      pixelFormat: OFPixelFormatGrayscale8
+					     size: OFMakeSize(2, 2)];
+	OFMutableImage *copy = objc_autorelease([image mutableCopy]);
+
+	OTAssertNotEqual(image, copy);
+	OTAssertEqualObjects(image, copy);
+
+	[copy setColor: [OFColor black] forPixelAtPosition: OFMakePoint(0, 0)];
+	OTAssertNotEqualObjects(image, copy);
+}
 @end

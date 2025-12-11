@@ -342,4 +342,15 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }
+
+- (id)copy
+{
+	return [[OFImage alloc] initWithPixels: self.pixels
+				   pixelFormat: self.pixelFormat
+					  size: self.size];
+}
+
+- (void)makeImmutable
+{
+}
 @end

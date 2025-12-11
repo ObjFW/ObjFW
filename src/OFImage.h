@@ -68,7 +68,7 @@ typedef enum {
 /**
  * @brief A class representing an image.
  */
-@interface OFImage: OFObject
+@interface OFImage: OFObject <OFCopying, OFMutableCopying>
 {
 	OFSize _dotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
