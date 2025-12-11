@@ -38,7 +38,7 @@ static OF_INLINE void
 writeGrayscale8Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	if (red != green || red != blue || alpha != 255)
+	if OF_UNLIKELY (red != green || red != blue || alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	pixels[x + y * width] = red;
@@ -50,7 +50,7 @@ writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 {
 	uint16_t value;
 
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
@@ -66,7 +66,7 @@ writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 {
 	uint16_t value;
 
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
@@ -80,7 +80,7 @@ static OF_INLINE void
 writeRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	pixels += (x + y * width) * 3;
@@ -120,7 +120,7 @@ writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 {
 	uint16_t value;
 
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
@@ -136,7 +136,7 @@ writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 {
 	uint16_t value;
 
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
@@ -150,7 +150,7 @@ static OF_INLINE void
 writeBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	if (alpha != 255)
+	if OF_UNLIKELY (alpha != 255)
 		@throw [OFOutOfRangeException exception];
 
 	pixels += (x + y * width) * 3;
@@ -323,22 +323,23 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	size_t width = size.width, height = size.height;
 	float red, green, blue, alpha;
 
-	if (x != point.x || y != point.y ||
+	if OF_UNLIKELY (x != point.x || y != point.y ||
 	    width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
 
-	if (x >= width || y >= height)
+	if OF_UNLIKELY (x >= width || y >= height)
 		@throw [OFOutOfRangeException exception];
 
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
 	/* All currently supported formats only allow 0.0 to 1.0 */
-	if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
-	    blue < 0.0f || blue > 1.0f || alpha < 0.0f || alpha > 1.0f)
+	if OF_UNLIKELY (red < 0.0f || red > 1.0f || green < 0.0f ||
+	    green > 1.0f || blue < 0.0f || blue > 1.0f || alpha < 0.0f ||
+	    alpha > 1.0f)
 		@throw [OFOutOfRangeException exception];
 
-	if (!writePixel(self.mutablePixels, self.pixelFormat, x, y, width,
-	    red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f))
+	if OF_UNLIKELY (!writePixel(self.mutablePixels, self.pixelFormat, x, y,
+	    width, red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }

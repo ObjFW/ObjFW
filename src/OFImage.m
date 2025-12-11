@@ -224,7 +224,7 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 {
 	uint8_t redInt, greenInt, blueInt, alphaInt;
 
-	if (!readPixelInt(pixels, format, x, y, width,
+	if OF_UNLIKELY (!readPixelInt(pixels, format, x, y, width,
 	    &redInt, &greenInt, &blueInt, &alphaInt))
 		return false;
 
@@ -384,15 +384,15 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	size_t width = size.width, height = size.height;
 	float red, green, blue, alpha;
 
-	if (x != point.x || y != point.y ||
+	if OF_UNLIKELY (x != point.x || y != point.y ||
 	    width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
 
-	if (x >= width || y >= height)
+	if OF_UNLIKELY (x >= width || y >= height)
 		@throw [OFOutOfRangeException exception];
 
-	if (!readPixel(self.pixels, self.pixelFormat, x, y, width, &red,
-	    &green, &blue, &alpha))
+	if OF_UNLIKELY (!readPixel(self.pixels, self.pixelFormat, x, y, width,
+	    &red, &green, &blue, &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
@@ -445,20 +445,22 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 			float red, green, blue, alpha;
 			float otherRed, otherGreen, otherBlue, otherAlpha;
 
-			if (!readPixel(pixels, format, x, y, width,
+			if OF_UNLIKELY (!readPixel(pixels, format, x, y, width,
 			    &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if (!readPixel(otherPixels, otherFormat, x, y, width,
-			    &otherRed, &otherGreen, &otherBlue, &otherAlpha))
+			if OF_UNLIKELY (!readPixel(otherPixels, otherFormat,
+			    x, y, width, &otherRed, &otherGreen, &otherBlue,
+			    &otherAlpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if (red != otherRed || green != otherGreen ||
-			    blue != otherBlue || alpha != otherAlpha)
+			if OF_UNLIKELY (red != otherRed ||
+			    green != otherGreen || blue != otherBlue ||
+			    alpha != otherAlpha)
 				return false;
 		}
 	}
@@ -486,7 +488,7 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		for (size_t x = 0; x < width; x++) {
 			float red, green, blue, alpha, tmp;
 
-			if (!readPixel(pixels, format, x, y, width,
+			if OF_UNLIKELY (!readPixel(pixels, format, x, y, width,
 			    &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
