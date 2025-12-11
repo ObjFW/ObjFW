@@ -19,15 +19,21 @@
 
 #include "config.h"
 
+#import "OFConcreteMutableImage.h"
 #import "OFConcreteImage.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFConcreteImage
-- (instancetype)initWithPixels: (const void *)pixels
-		   pixelFormat: (OFPixelFormat)pixelFormat
-			  size: (OFSize)size
+@implementation OFConcreteMutableImage
++ (void)initialize
+{
+	if (self == [OFConcreteMutableImage class])
+		[self inheritMethodsFromClass: [OFConcreteImage class]];
+}
+
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
 {
 	self = [super init];
 
@@ -55,8 +61,6 @@
 
 		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
 		_freeWhenDone = true;
-
-		memcpy(_pixels, pixels, count * (bitsPerPixel / CHAR_BIT));
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -65,49 +69,7 @@
 	return self;
 }
 
-- (instancetype)initWithPixelsNoCopy: (const void *)pixels
-			 pixelFormat: (OFPixelFormat)pixelFormat
-				size: (OFSize)size
-			freeWhenDone: (bool)freeWhenDone
-{
-	self = [super init];
-
-	@try {
-		if (size.width != (size_t)size.width ||
-		    size.height != (size_t)size.height)
-			@throw [OFInvalidArgumentException exception];
-
-		_pixels = (void *)pixels;
-		_pixelFormat = pixelFormat;
-		_size = size;
-		_freeWhenDone = freeWhenDone;
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	if (_freeWhenDone)
-		OFFreeMemory(_pixels);
-
-	[super dealloc];
-}
-
-- (OFSize)size
-{
-	return _size;
-}
-
-- (OFPixelFormat)pixelFormat
-{
-	return _pixelFormat;
-}
-
-- (const void *)pixels
+- (void *)mutablePixels
 {
 	return _pixels;
 }

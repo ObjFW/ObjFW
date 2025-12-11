@@ -210,210 +210,30 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
-static OF_INLINE void
-writeGrayscale8Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	pixels[x + y * width] = red;
-}
-
-static OF_INLINE void
-writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (blue >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value >> 8;
-	pixels[1] = value;
-}
-
-static OF_INLINE void
-writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (blue >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value;
-	pixels[1] = value >> 8;
-}
-
-static OF_INLINE void
-writeRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	pixels += (x + y * width) * 3;
-
-	pixels[0] = red;
-	pixels[1] = green;
-	pixels[2] = blue;
-}
-
-static OF_INLINE void
-writeRGBA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = red;
-	pixels[1] = green;
-	pixels[2] = blue;
-	pixels[3] = alpha;
-}
-
-static OF_INLINE void
-writeARGB8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = alpha;
-	pixels[1] = red;
-	pixels[2] = green;
-	pixels[3] = blue;
-}
-
-static OF_INLINE void
-writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (red >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value >> 8;
-	pixels[1] = value;
-}
-
-static OF_INLINE void
-writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (red >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value;
-	pixels[1] = value >> 8;
-}
-
-static OF_INLINE void
-writeBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
-{
-	pixels += (x + y * width) * 3;
-
-	pixels[0] = blue;
-	pixels[1] = green;
-	pixels[2] = red;
-}
-
-static OF_INLINE void
-writeABGR8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = alpha;
-	pixels[1] = blue;
-	pixels[2] = green;
-	pixels[3] = red;
-}
-
-static OF_INLINE void
-writeBGRA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = blue;
-	pixels[1] = green;
-	pixels[2] = red;
-	pixels[3] = alpha;
-}
-
-static OF_INLINE bool
-writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	switch (format) {
-	case OFPixelFormatGrayscale8:
-		if (red != green || red != blue || alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeGrayscale8Pixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatRGB565BE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB565BEPixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatRGB565LE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB565LEPixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatRGB888:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB888Pixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatRGBA8888:
-		writeRGBA8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatARGB8888:
-		writeARGB8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGR565BE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR565BEPixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatBGR565LE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR565LEPixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatBGR888:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR888Pixel(pixels, x, y, width, red, green, blue);
-		return true;
-	case OFPixelFormatABGR8888:
-		writeABGR8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGRA8888:
-		writeBGRA8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	default:
-		return false;
-	}
-}
-
 @implementation OFPlaceholderImage
 - (instancetype)init
 {
 	return (id)[[OFConcreteImage alloc] init];
 }
 
-- (instancetype)initWithSize: (OFSize)size
-		 pixelFormat: (OFPixelFormat)pixelFormat
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size
 {
-	return (id)[[OFConcreteImage alloc] initWithSize: size
-					     pixelFormat: pixelFormat];
+	return (id)[[OFConcreteImage alloc] initWithPixels: pixels
+					       pixelFormat: pixelFormat
+						      size: size];
+}
+
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			freeWhenDone: (bool)freeWhenDone
+{
+	return (id)[[OFConcreteImage alloc] initWithPixelsNoCopy: pixels
+						     pixelFormat: pixelFormat
+							    size: size
+						    freeWhenDone: freeWhenDone];
 }
 @end
 
@@ -432,17 +252,32 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	return [super alloc];
 }
 
-+ (instancetype)imageWithSize: (OFSize)size
-		  pixelFormat: (OFPixelFormat)pixelFormat
++ (instancetype)imageWithPixels: (const void *)pixels
+		    pixelFormat: (OFPixelFormat)pixelFormat
+			   size: (OFSize)size
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithSize: size
-			   pixelFormat: pixelFormat]);
+	    [[self alloc] initWithPixels: pixels
+			     pixelFormat: pixelFormat
+				    size: size]);
+}
+
++ (instancetype)imageWithPixelsNoCopy: (const void *)pixels
+			  pixelFormat: (OFPixelFormat)pixelFormat
+				 size: (OFSize)size
+			 freeWhenDone: (bool)freeWhenDone
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithPixelsNoCopy: pixels
+				   pixelFormat: pixelFormat
+					  size: size
+				  freeWhenDone: freeWhenDone]);
 }
 
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFImage class]]) {
+	if ([self isMemberOfClass: [OFImage class]] ||
+	    [self isMemberOfClass: [OFMutableImage class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
@@ -456,8 +291,17 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	return [super init];
 }
 
-- (instancetype)initWithSize: (OFSize)size
-		 pixelFormat: (OFPixelFormat)pixelFormat
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			freeWhenDone: (bool)freeWhenDone
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -497,17 +341,9 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void *)pixels
+- (const void *)pixels
 {
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)setDotsPerInch: (OFSize)dotsPerInch
-{
-	if (dotsPerInch.width < 0 || dotsPerInch.height < 0)
-		@throw [OFInvalidArgumentException exception];
-
-	_dotsPerInch = dotsPerInch;
 }
 
 - (OFSize)dotsPerInch
@@ -538,32 +374,5 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 			       green: green / 255.0f
 				blue: blue / 255.0f
 			       alpha: alpha / 255.0f];
-}
-
-- (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position
-{
-	size_t x = position.x, y = position.y;
-	OFSize size = self.size;
-	size_t width = size.width, height = size.height;
-	float red, green, blue, alpha;
-
-	if (x != position.x || y != position.y ||
-	    width != size.width || height != size.height)
-		@throw [OFInvalidArgumentException exception];
-
-	if (x >= width || y >= height)
-		@throw [OFOutOfRangeException exception];
-
-	[color getRed: &red green: &green blue: &blue alpha: &alpha];
-
-	/* All currently supported formats only allow 0.0 to 1.0 */
-	if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
-	    blue < 0.0f || blue > 1.0f || alpha < 0.0f || alpha > 1.0f)
-		@throw [OFOutOfRangeException exception];
-
-	if (!writePixel(self.pixels, self.pixelFormat, x, y, width,
-	    red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f))
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
 }
 @end

@@ -92,35 +92,76 @@ typedef enum {
 /**
  * @brief The raw pixels using the @ref pixelFormat.
  */
-@property (readonly, nonatomic) void *pixels;
+@property (readonly, nonatomic) const void *pixels;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.
  */
-@property (nonatomic) OFSize dotsPerInch;
+@property (readonly, nonatomic) OFSize dotsPerInch;
 
 /**
- * @brief Creates a new image with the specified size and pixel format.
+ * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size.
  *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
  * @param size The size for the new image in pixels
- * @param pixelFormat The pixel format for the new image
- * @return A new autoreleased image
+ * @return A new image
  * @throw OFInvalidArgumentException The specified size is not integral
  */
-+ (instancetype)imageWithSize: (OFSize)size
-		  pixelFormat: (OFPixelFormat)pixelFormat;
++ (instancetype)imageWithPixels: (const void *)pixels
+		    pixelFormat: (OFPixelFormat)pixelFormat
+			   size: (OFSize)size;
 
 /**
- * @brief Initializes an already allocated image with the specified size and
- *	  pixel format.
+ * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size by taking over ownership of the
+ *	  specified pixels pointer.
  *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
  * @param size The size for the new image in pixels
- * @param pixelFormat The pixel format for the new image
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return A new image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithPixelsNoCopy: (const void *)pixels
+			  pixelFormat: (OFPixelFormat)pixelFormat
+				 size: (OFSize)size
+			 freeWhenDone: (bool)freeWhenDone;
+
+/**
+ * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
  * @return An initialized image
  * @throw OFInvalidArgumentException The specified size is not integral
  */
-- (instancetype)initWithSize: (OFSize)size
-		 pixelFormat: (OFPixelFormat)pixelFormat;
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size;
+
+/**
+ * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size by taking over
+ *	  ownership of the specified pixels pointer.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			freeWhenDone: (bool)freeWhenDone;
 
 /**
  * @brief Returns the color for the pixel at the specified position.
@@ -135,21 +176,8 @@ typedef enum {
  * @throw OFInvalidArgumentException The specified position is not integral
  */
 - (OFColor *)colorForPixelAtPosition: (OFPoint)position;
-
-/**
- * @brief Sets the color for the pixel at the specified position.
- *
- * @warning This method is expensive! You should use @ref pixels instead to get
- *	    a buffer and use that instead.
- *
- * @param position The position of the pixel whose color to set
- * @param color The color for the pixel at the specified position
- * @throw OFOutOfRangeException The specified position is outside of the
- *				image's bounds or the specified color is outside
- *				the range supported by the image's format
- * @throw OFInvalidArgumentException The specified position is not integral
- */
-- (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position;
 @end
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableImage.h"

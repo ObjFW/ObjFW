@@ -21,7 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFConcreteImage: OFImage
+@interface OFConcreteMutableImage: OFMutableImage
 {
 	OFSize _size;
 	OFPixelFormat _pixelFormat;

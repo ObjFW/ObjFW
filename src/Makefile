@@ -52,6 +52,7 @@ SRCS = OFApplication.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
        OFMutableIRI.m			\
+       OFMutableImage.m			\
        OFMutableIndexSet.m		\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
@@ -218,6 +219,7 @@ SRCS += OFASPrintF.m			\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
 	OFConcreteMutableDictionary.m	\
+	OFConcreteMutableImage.m	\
 	OFConcreteMutableSet.m		\
 	OFConcreteNumber.m		\
 	OFConcreteSet.m			\

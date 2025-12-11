@@ -53,6 +53,7 @@ SRCS = ForwardingTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
        OFMutableDictionaryTests.m		\
+       OFMutableImageTests.m			\
        OFMutableIndexSetTests.m			\
        OFMutableSetTests.m			\
        OFMutableStringTests.m			\
