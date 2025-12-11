@@ -36,17 +36,24 @@ static struct {
 
 static OF_INLINE void
 writeGrayscale8Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
+	if (red != green || red != blue || alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
 	pixels[x + y * width] = red;
 }
 
 static OF_INLINE void
 writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (blue >> 3);
+	uint16_t value;
+
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
+	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value >> 8;
@@ -55,10 +62,14 @@ writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	uint16_t value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (blue >> 3);
+	uint16_t value;
+
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
+	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value;
@@ -67,8 +78,11 @@ writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
 	pixels += (x + y * width) * 3;
 
 	pixels[0] = red;
@@ -102,10 +116,14 @@ writeARGB8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (red >> 3);
+	uint16_t value;
+
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
+	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value >> 8;
@@ -114,10 +132,14 @@ writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	uint16_t value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) |
-	    (red >> 3);
+	uint16_t value;
+
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
+	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
 
 	pixels += (x + y * width) * 2;
 	pixels[0] = value;
@@ -126,8 +148,11 @@ writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 
 static OF_INLINE void
 writeBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue)
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
+	if (alpha != 255)
+		@throw [OFOutOfRangeException exception];
+
 	pixels += (x + y * width) * 3;
 
 	pixels[0] = blue;
@@ -165,28 +190,19 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 {
 	switch (format) {
 	case OFPixelFormatGrayscale8:
-		if (red != green || red != blue || alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeGrayscale8Pixel(pixels, x, y, width, red, green, blue);
+		writeGrayscale8Pixel(pixels, x, y, width, red, green, blue,
+		    alpha);
 		return true;
 	case OFPixelFormatRGB565BE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB565BEPixel(pixels, x, y, width, red, green, blue);
+		writeRGB565BEPixel(pixels, x, y, width, red, green, blue,
+		    alpha);
 		return true;
 	case OFPixelFormatRGB565LE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB565LEPixel(pixels, x, y, width, red, green, blue);
+		writeRGB565LEPixel(pixels, x, y, width, red, green, blue,
+		    alpha);
 		return true;
 	case OFPixelFormatRGB888:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeRGB888Pixel(pixels, x, y, width, red, green, blue);
+		writeRGB888Pixel(pixels, x, y, width, red, green, blue, alpha);
 		return true;
 	case OFPixelFormatRGBA8888:
 		writeRGBA8888Pixel(pixels, x, y, width, red, green, blue,
@@ -197,22 +213,15 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		    alpha);
 		return true;
 	case OFPixelFormatBGR565BE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR565BEPixel(pixels, x, y, width, red, green, blue);
+		writeBGR565BEPixel(pixels, x, y, width, red, green, blue,
+		    alpha);
 		return true;
 	case OFPixelFormatBGR565LE:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR565LEPixel(pixels, x, y, width, red, green, blue);
+		writeBGR565LEPixel(pixels, x, y, width, red, green, blue,
+		    alpha);
 		return true;
 	case OFPixelFormatBGR888:
-		if (alpha != 255)
-			@throw [OFOutOfRangeException exception];
-
-		writeBGR888Pixel(pixels, x, y, width, red, green, blue);
+		writeBGR888Pixel(pixels, x, y, width, red, green, blue, alpha);
 		return true;
 	case OFPixelFormatABGR8888:
 		writeABGR8888Pixel(pixels, x, y, width, red, green, blue,

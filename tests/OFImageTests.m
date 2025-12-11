@@ -28,7 +28,7 @@
 @implementation OFImageTests
 - (void)testImageWithPixels
 {
-	const uint8_t pixels[] = {
+	static const uint8_t pixels[] = {
 		64, 128, 255, 224,
 		32, 64, 128, 112,
 		16, 32, 64, 56,
@@ -62,7 +62,7 @@
 
 - (void)testImageWithPixelsNoCopy
 {
-	const uint8_t pixels[] = {
+	static const uint8_t pixels[] = {
 		64, 128, 255,
 		32, 64, 128,
 		16, 32, 64,
@@ -140,9 +140,66 @@
 	    OFInvalidArgumentException);
 }
 
+- (void)testIsEqual
+{
+	static const uint8_t pixels1[] = {
+		32, 32, 32, 255,
+		64, 64, 64, 255,
+		128, 128, 128, 255,
+		255, 255, 255, 255
+	};
+	static const uint8_t pixels2[] = {
+		32, 64, 128, 255
+	};
+	OFImage *image1 = [OFImage imageWithPixels: pixels1
+				       pixelFormat: OFPixelFormatRGBA8888
+					      size: OFMakeSize(2, 2)];
+	OFImage *image2 = [OFImage imageWithPixels: pixels2
+				       pixelFormat: OFPixelFormatGrayscale8
+					      size: OFMakeSize(2, 2)];
+	OFImage *image3 = [OFImage imageWithPixels: pixels1
+				       pixelFormat: OFPixelFormatARGB8888
+					      size: OFMakeSize(2, 2)];
+	OFImage *image4 = [OFImage imageWithPixels: pixels1
+				       pixelFormat: OFPixelFormatARGB8888
+					      size: OFMakeSize(2, 2)];
+
+	OTAssertEqualObjects(image1, image1);
+	OTAssertEqualObjects(image1, image2);
+	OTAssertEqualObjects(image2, image1);
+	OTAssertEqualObjects(image3, image4);
+	OTAssertNotEqualObjects(image1, image3);
+	OTAssertNotEqualObjects(image2, image3);
+}
+
+- (void)testHash
+{
+	static const uint8_t pixels1[] = {
+		32, 32, 32, 255,
+		64, 64, 64, 255,
+		128, 128, 128, 255,
+		255, 255, 255, 255
+	};
+	static const uint8_t pixels2[] = {
+		32, 64, 128, 255
+	};
+	OFImage *image1 = [OFImage imageWithPixels: pixels1
+				       pixelFormat: OFPixelFormatRGBA8888
+					      size: OFMakeSize(2, 2)];
+	OFImage *image2 = [OFImage imageWithPixels: pixels2
+				       pixelFormat: OFPixelFormatGrayscale8
+					      size: OFMakeSize(2, 2)];
+	OFImage *image3 = [OFImage imageWithPixels: pixels1
+				       pixelFormat: OFPixelFormatARGB8888
+					      size: OFMakeSize(2, 2)];
+
+	OTAssertEqual(image1.hash, image2.hash);
+	OTAssertNotEqual(image1.hash, image3.hash);
+}
+
 - (void)testReadOutOfBoundsThrows
 {
-	const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
 		      pixelFormat: OFPixelFormatGrayscale8
@@ -164,7 +221,7 @@
 
 - (void)testReadNonIntegralPositionThrows
 {
-	const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
 		      pixelFormat: OFPixelFormatGrayscale8
