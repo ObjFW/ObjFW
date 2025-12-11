@@ -164,18 +164,18 @@ typedef enum {
 			freeWhenDone: (bool)freeWhenDone;
 
 /**
- * @brief Returns the color for the pixel at the specified position.
+ * @brief Returns the color at the specified point.
  *
  * @warning This method is expensive! You should use @ref pixels instead to get
  *	    a buffer and use that instead.
  *
- * @param position The position of the pixel whose color to return
- * @return The color for the pixel at the specified position
- * @throw OFOutOfRangeException The specified position is outside of the
- *				image's bounds
- * @throw OFInvalidArgumentException The specified position is not integral
+ * @param point The point whose color to return
+ * @return The color for the specified point
+ * @throw OFOutOfRangeException The specified point is outside of the image's
+ *				bounds
+ * @throw OFInvalidArgumentException The specified point is not integral
  */
-- (OFColor *)colorForPixelAtPosition: (OFPoint)position;
+- (OFColor *)colorAtPoint: (OFPoint)point;
 @end
 
 OF_ASSUME_NONNULL_END

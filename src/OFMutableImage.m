@@ -316,14 +316,14 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	_dotsPerInch = dotsPerInch;
 }
 
-- (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position
+- (void)setColor: (OFColor *)color atPoint: (OFPoint)point
 {
-	size_t x = position.x, y = position.y;
+	size_t x = point.x, y = point.y;
 	OFSize size = self.size;
 	size_t width = size.width, height = size.height;
 	float red, green, blue, alpha;
 
-	if (x != position.x || y != position.y ||
+	if (x != point.x || y != point.y ||
 	    width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
 

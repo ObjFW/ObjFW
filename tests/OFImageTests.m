@@ -38,22 +38,22 @@
 				      pixelFormat: OFPixelFormatRGBA8888
 					     size: OFMakeSize(2, 2)];
 
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
 	    [OFColor colorWithRed: 64 / 255.0f
 			    green: 128 / 255.0f
 			     blue: 255 / 255.0f
 			    alpha: 224 / 255.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
 	    [OFColor colorWithRed: 32 / 255.0f
 			    green: 64 / 255.0f
 			     blue: 128 / 255.0f
 			    alpha: 112 / 255.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
 	    [OFColor colorWithRed: 16 / 255.0f
 			    green: 32 / 255.0f
 			     blue: 64 / 255.0f
 			    alpha: 56 / 255.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
 	    [OFColor colorWithRed: 8 / 255.0f
 			    green: 16 / 255.0f
 			     blue: 32 / 255.0f
@@ -73,22 +73,22 @@
 						   size: OFMakeSize(2, 2)
 					   freeWhenDone: false];
 
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
 	    [OFColor colorWithRed: 64 / 255.0f
 			    green: 128 / 255.0f
 			     blue: 255 / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
 	    [OFColor colorWithRed: 32 / 255.0f
 			    green: 64 / 255.0f
 			     blue: 128 / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
 	    [OFColor colorWithRed: 16 / 255.0f
 			    green: 32 / 255.0f
 			     blue: 64 / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorForPixelAtPosition: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
 	    [OFColor colorWithRed: 8 / 255.0f
 			    green: 16 / 255.0f
 			     blue: 32 / 255.0f
@@ -206,20 +206,17 @@
 			     size: OFMakeSize(2, 3)
 		     freeWhenDone: false];
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(0, 3)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0, 3)],
 	    OFOutOfRangeException);
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(2, 0)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2, 0)],
 	    OFOutOfRangeException);
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(2, 3)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2, 3)],
 	    OFOutOfRangeException);
 }
 
-- (void)testReadNonIntegralPositionThrows
+- (void)testReadNonIntegralPointThrows
 {
 	static const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
@@ -228,16 +225,13 @@
 			     size: OFMakeSize(2, 3)
 		     freeWhenDone: false];
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(0.0f, 0.5f)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.0f, 0.5f)],
 	    OFInvalidArgumentException);
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(0.5f, 0.0f)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.0f)],
 	    OFInvalidArgumentException);
 
-	OTAssertThrowsSpecific(
-	    [image colorForPixelAtPosition: OFMakePoint(0.5f, 0.5f)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.5f)],
 	    OFInvalidArgumentException);
 }
 
@@ -268,7 +262,7 @@
 	OTAssertNotEqual(image, copy);
 	OTAssertEqualObjects(image, copy);
 
-	[copy setColor: [OFColor black] forPixelAtPosition: OFMakePoint(0, 0)];
+	[copy setColor: [OFColor black] atPoint: OFMakePoint(0, 0)];
 	OTAssertNotEqualObjects(image, copy);
 }
 @end

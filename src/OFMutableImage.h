@@ -59,19 +59,19 @@ OF_ASSUME_NONNULL_BEGIN
 		 pixelFormat: (OFPixelFormat)pixelFormat;
 
 /**
- * @brief Sets the color for the pixel at the specified position.
+ * @brief Sets the color at the specified point.
  *
  * @warning This method is expensive! You should use @ref pixels instead to get
  *	    a buffer and use that instead.
  *
- * @param position The position of the pixel whose color to set
- * @param color The color for the pixel at the specified position
- * @throw OFOutOfRangeException The specified position is outside of the
- *				image's bounds or the specified color is outside
- *				the range supported by the image's format
- * @throw OFInvalidArgumentException The specified position is not integral
+ * @param point The point whose color to set
+ * @param color The color for the specified poiint
+ * @throw OFOutOfRangeException The specified point is outside of the image's
+ *				bounds or the specified color is outside the
+ *				range supported by the image's format
+ * @throw OFInvalidArgumentException The specified point is not integral
  */
-- (void)setColor: (OFColor *)color forPixelAtPosition: (OFPoint)position;
+- (void)setColor: (OFColor *)color atPoint: (OFPoint)point;
 
 /**
  * @brief Converts the mutable image to an immutable image.

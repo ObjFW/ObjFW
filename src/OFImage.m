@@ -377,14 +377,14 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	return _dotsPerInch;
 }
 
-- (OFColor *)colorForPixelAtPosition: (OFPoint)position
+- (OFColor *)colorAtPoint: (OFPoint)point
 {
-	size_t x = position.x, y = position.y;
+	size_t x = point.x, y = point.y;
 	OFSize size = self.size;
 	size_t width = size.width, height = size.height;
 	float red, green, blue, alpha;
 
-	if (x != position.x || y != position.y ||
+	if (x != point.x || y != point.y ||
 	    width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
 
