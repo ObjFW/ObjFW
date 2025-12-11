@@ -46,21 +46,21 @@ extern "C" {
  *
  * This maps to an @ref OFNumber.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIndex;
 
 /**
  * @brief The hardware address of a network interface.
  *
  * This maps to an @ref OFData.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress;
 
 /**
  * @brief The IPv4 addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
 
 #ifdef OF_HAVE_IPV6
 /**
@@ -68,7 +68,7 @@ extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
 #endif
 
 #ifdef OF_HAVE_IPX
@@ -77,7 +77,7 @@ extern OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
 #endif
 
 #ifdef OF_HAVE_APPLETALK
@@ -86,7 +86,7 @@ extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
 #endif
 #ifdef __cplusplus
 }

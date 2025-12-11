@@ -21,20 +21,21 @@
 
 #import "OFSystemInfo.h"
 
-OFNetworkInterfaceKey OFNetworkInterfaceIndex = @"OFNetworkInterfaceIndex";
-OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
+const OFNetworkInterfaceKey OFNetworkInterfaceIndex =
+    @"OFNetworkInterfaceIndex";
+const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
     @"OFNetworkInterfaceHardwareAddress";
-OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
     @"OFNetworkInterfaceIPv4Addresses";
 #ifdef OF_HAVE_IPV6
-OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
     @"OFNetworkInterfaceIPv6Addresses";
 #endif
 #ifdef OF_HAVE_IPX
-OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
+const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
     @"OFNetworkInterfaceIPXAddresses";
 #endif
 #ifdef OF_HAVE_APPLETALK
-OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
+const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
     @"OFNetworkInterfaceAppleTalkAddresses";
 #endif
