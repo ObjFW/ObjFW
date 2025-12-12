@@ -19,45 +19,9 @@
 
 #include "config.h"
 
-#import "OFUnsupportedProtocolException.h"
-#import "OFIRI.h"
-#import "OFString.h"
+#import "OFImage.h"
 
-@implementation OFUnsupportedProtocolException
-@synthesize IRI = _IRI;
-
-+ (instancetype)exceptionWithIRI: (OFIRI *)IRI
-{
-	return objc_autoreleaseReturnValue([[self alloc] initWithIRI: IRI]);
-}
-
-- (instancetype)initWithIRI: (OFIRI *)IRI
-{
-	self = [super init];
-
-	@try {
-		_IRI = [IRI copy];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	objc_release(_IRI);
-
-	[super dealloc];
-}
-
-- (OFString *)description
-{
-	if (_IRI != nil)
-		return [OFString stringWithFormat:
-		    @"The protocol of IRI %@ is not supported!", _IRI];
-	else
-		return @"The requested protocol is unsupported!";
-}
-@end
+const OFImageFormat OFImageFormatBMP = @"OFImageFormatBMP";
+const OFImageFormat OFImageFormatGIF = @"OFImageFormatGIF";
+const OFImageFormat OFImageFormatJPEG = @"OFImageFormatJPEG";
+const OFImageFormat OFImageFormatPNG = @"OFImageFormatPNG";

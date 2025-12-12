@@ -34,6 +34,7 @@ SRCS = OFApplication.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
        OFImage.m			\
+       OFImageFormatHandler.m		\
        OFIndexSet.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\

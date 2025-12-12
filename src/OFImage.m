@@ -22,6 +22,7 @@
 #import "OFImage.h"
 #import "OFColor.h"
 #import "OFConcreteImage.h"
+#import "OFImageFormatHandler.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
@@ -29,6 +30,8 @@
 
 @interface OFPlaceholderImage: OFImage
 @end
+
+#include "OFImageConstants.inc"
 
 static struct {
 	Class isa;
@@ -276,6 +279,15 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		return (id)&placeholder;
 
 	return [super alloc];
+}
+
++ (OFImage *)readFromStream: (OFStream *)stream
+		imageFormat: (OFImageFormat)format
+{
+	OFImageFormatHandler *handler =
+	    [OFImageFormatHandler handlerForImageFormat: format];
+
+	return [handler readImageFromStream: stream];
 }
 
 + (instancetype)imageWithPixels: (const void *)pixels
@@ -527,5 +539,15 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	return [[OFMutableImage alloc] initWithPixels: self.pixels
 					  pixelFormat: self.pixelFormat
 						 size: self.size];
+}
+
+- (void)writeToStream: (OFStream *)stream
+	  imageFormat: (OFImageFormat)format
+	      options: (OFDictionary OF_GENERIC(OFString *, id) *)options
+{
+	OFImageFormatHandler *handler =
+	    [OFImageFormatHandler handlerForImageFormat: format];
+
+	[handler writeImage: self toStream: stream options: options];
 }
 @end

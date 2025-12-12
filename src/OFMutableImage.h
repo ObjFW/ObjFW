@@ -17,11 +17,13 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "OFImage.h"
+#import "OFImage.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
+ * @class OFMutableImage OFMutableImage.h ObjFW/ObjFW.h
+ *
  * @brief A class representing a mutable image.
  */
 @interface OFMutableImage: OFImage

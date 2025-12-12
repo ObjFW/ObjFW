@@ -17,11 +17,14 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "OFObject.h"
+#import "OFObject.h"
+#import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFColor;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFStream;
 
 /**
  * @brief A pixel format.
@@ -66,6 +69,46 @@ typedef enum {
 } OFPixelFormat;
 
 /**
+ * @brief An identifier for an image format.
+ *
+ * Possible values are:
+ *
+ *   * @ref OFImageFormatBMP
+ *   * @ref OFImageFormatGIF
+ *   * @ref OFImageFormatJPEG
+ *   * @ref OFImageFormatPNG
+ */
+typedef OFConstantString *OFImageFormat;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief The BMP image format.
+ */
+extern const OFImageFormat OFImageFormatBMP;
+
+/**
+ * @brief The GIF image format.
+ */
+extern const OFImageFormat OFImageFormatGIF;
+
+/**
+ * @brief The JPEG image format.
+ */
+extern const OFImageFormat OFImageFormatJPEG;
+
+/**
+ * @brief The PNG image format.
+ */
+extern const OFImageFormat OFImageFormatPNG;
+#ifdef __cplusplus
+}
+#endif
+
+/**
+ * @class OFImage OFImage.h ObjFW/ObjFW.h
+ *
  * @brief A class representing an image.
  */
 @interface OFImage: OFObject <OFCopying, OFMutableCopying>
@@ -98,6 +141,23 @@ typedef enum {
  * @brief The dots per inch of the image or (0, 0) if unknown.
  */
 @property (readonly, nonatomic) OFSize dotsPerInch;
+
+/**
+ * @brief Creates a new image from the specified stream.
+ *
+ * @param stream The stream to create the image from
+ * @param format The image format of the stream
+ * @return A new image
+ * @throw OFInvalidFormatExcepetion The stream's format was invalid
+ * @throw OFTruncatedDataException The stream ended before all required data
+ *				   was read
+ * @throw OFOutOfRangeException The image read from the stream is too big for
+ *				an OFImage
+ * @throw OFNotImplementedException There is no implementation for the
+ *				    specified format
+ */
++ (OFImage *)readFromStream: (OFStream *)stream
+		imageFormat: (OFImageFormat)format;
 
 /**
  * @brief Creates a new image with the specified pixels in the specified pixel
@@ -176,6 +236,21 @@ typedef enum {
  * @throw OFInvalidArgumentException The specified point is not integral
  */
 - (OFColor *)colorAtPoint: (OFPoint)point;
+
+/**
+ * @brief Writes the image to the specified stream in the specified format.
+ *
+ * @param stream The stream to write the image to
+ * @param format The image format to use to write the image to the stream
+ * @param options Additional format-specific options to write the image to
+ *		  the stream
+ * @throw OFNotImplementedException There is no implementation for the
+ *				    specified format
+ */
+- (void)
+    writeToStream: (OFStream *)stream
+      imageFormat: (OFImageFormat)format
+	  options: (nullable OFDictionary OF_GENERIC(OFString *, id) *)options;
 @end
 
 OF_ASSUME_NONNULL_END

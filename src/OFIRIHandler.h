@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Registers the specified class as the handler for the specified scheme.
  *
- * If the same class is specified for two schemes, one instance of it is
+ * If the same class is specified for multiple schemes, one instance of it is
  * created per scheme.
  *
  * @param class_ The class to register as the handler for the specified scheme
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the handler for the specified IRI.
  *
- * @return The handler for the specified IRI.
+ * @return The handler for the specified IRI
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
 + (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI;
