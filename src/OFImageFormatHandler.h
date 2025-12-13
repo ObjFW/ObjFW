@@ -81,8 +81,10 @@ OF_ASSUME_NONNULL_BEGIN
  *				   was read
  * @throw OFOutOfRangeException The image read from the stream is too big for
  *				an OFImage
+ * @throw OFReadFailedException Reading from the stream failed
+ * @throw OFSeekFailedException Seeking the stream failed
  */
-- (OFImage *)readImageFromStream: (OFStream *)stream;
+- (OFImage *)readImageFromStream: (OFSeekableStream *)stream;
 
 /**
  * @brief Writes the specified image to the specified stream with the specified
@@ -91,9 +93,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream to write the image to
  * @param options Additional format-specific options to write the image to
  *		  the stream
+ * @throw OFWriteFailedException Writing to the stream failed
+ * @throw OFSeekFailedException Seeking the stream failed
  */
 - (void)writeImage: (OFImage *)image
-	  toStream: (OFStream *)stream
+	  toStream: (OFSeekableStream *)stream
 	   options: (nullable OFDictionary OF_GENERIC(OFString *, id) *)options;
 @end
 

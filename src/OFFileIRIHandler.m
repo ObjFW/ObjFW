@@ -1002,7 +1002,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	return S_ISDIR(s.st_mode);
 }
 
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;

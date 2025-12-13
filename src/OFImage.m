@@ -281,7 +281,7 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	return [super alloc];
 }
 
-+ (OFImage *)readFromStream: (OFStream *)stream
++ (OFImage *)readFromStream: (OFSeekableStream *)stream
 		imageFormat: (OFImageFormat)format
 {
 	OFImageFormatHandler *handler =
@@ -541,7 +541,7 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 						 size: self.size];
 }
 
-- (void)writeToStream: (OFStream *)stream
+- (void)writeToStream: (OFSeekableStream *)stream
 	  imageFormat: (OFImageFormat)format
 	      options: (OFDictionary OF_GENERIC(OFString *, id) *)options
 {

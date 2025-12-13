@@ -206,6 +206,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 
 SRCS += OFASPrintF.m			\
 	OFArchiveIRIHandler.m		\
+	OFBMPImageFormatHandler.m	\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFCRC16.m			\

@@ -119,7 +119,7 @@ processQueueLocked(void)
 }
 #endif
 
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OFString *path;
 

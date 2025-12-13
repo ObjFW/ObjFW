@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFColor;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFStream;
+@class OFSeekableStream;
 
 /**
  * @brief A pixel format.
@@ -153,10 +153,12 @@ extern const OFImageFormat OFImageFormatPNG;
  *				   was read
  * @throw OFOutOfRangeException The image read from the stream is too big for
  *				an OFImage
+ * @throw OFReadFailedException Reading from the stream failed
+ * @throw OFSeekFailedException Seeking the stream failed
  * @throw OFNotImplementedException There is no implementation for the
  *				    specified format
  */
-+ (OFImage *)readFromStream: (OFStream *)stream
++ (OFImage *)readFromStream: (OFSeekableStream *)stream
 		imageFormat: (OFImageFormat)format;
 
 /**
@@ -244,11 +246,13 @@ extern const OFImageFormat OFImageFormatPNG;
  * @param format The image format to use to write the image to the stream
  * @param options Additional format-specific options to write the image to
  *		  the stream
+ * @throw OFWriteFailedException Writing to the stream failed
+ * @throw OFSeekFailedException Seeking the stream failed
  * @throw OFNotImplementedException There is no implementation for the
  *				    specified format
  */
 - (void)
-    writeToStream: (OFStream *)stream
+    writeToStream: (OFSeekableStream *)stream
       imageFormat: (OFImageFormat)format
 	  options: (nullable OFDictionary OF_GENERIC(OFString *, id) *)options;
 @end

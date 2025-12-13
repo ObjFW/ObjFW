@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFImageFormatHandler.h"
+#import "OFBMPImageFormatHandler.h"
 #import "OFDictionary.h"
 
 #import "OFNotImplementedException.h"
@@ -36,6 +37,9 @@ static OFMutableDictionary OF_GENERIC(OFImageFormat, OFImageFormatHandler *)
 		return;
 
 	handlers = [[OFMutableDictionary alloc] init];
+
+	[self registerClass: [OFBMPImageFormatHandler class]
+	     forImageFormat: OFImageFormatBMP];
 }
 
 + (bool)registerClass: (Class)class forImageFormat: (OFImageFormat)imageFormat
@@ -98,13 +102,13 @@ static OFMutableDictionary OF_GENERIC(OFImageFormat, OFImageFormatHandler *)
 	[super dealloc];
 }
 
-- (OFImage *)readImageFromStream: (OFStream *)stream
+- (OFImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)writeImage: (OFImage *)image
-	  toStream: (OFStream *)stream
+	  toStream: (OFSeekableStream *)stream
 	   options: (OFDictionary OF_GENERIC(OFString *, id) *)options
 {
 	OF_UNRECOGNIZED_SELECTOR

@@ -54,6 +54,7 @@
 /tests/subprocess/subprocess
 /tests/terminal/terminal_tests
 /tests/testfile_bin.m
+/tests/testfile_bmp.m
 /tests/testfile_ini.m
 /tests/tests
 /tests/tests.3dsx

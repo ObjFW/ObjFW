@@ -14,6 +14,7 @@ CLEAN = EBOOT.PBP			\
 	${PROG_NOINST}.rpx		\
 	big_dictionary_msgpack_gz.m	\
 	testfile_bin.m			\
+	testfile_bmp.m			\
 	testfile_ini.m
 DISTCLEAN = Info.plist
 
@@ -87,6 +88,7 @@ SRCS = ForwardingTests.m			\
        ${USE_SRCS_WINDOWS}			\
        big_dictionary_msgpack_gz.m		\
        testfile_bin.m				\
+       testfile_bmp.m				\
        testfile_ini.m
 SRCS_FILES = OFFileManagerTests.m
 SRCS_MODULES = OFModuleTests.m
@@ -119,6 +121,8 @@ include ../buildsys.mk
 big_dictionary_msgpack_gz.m: big_dictionary.msgpack.gz
 	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
+	../utils/objfw-embed $? $? $@
+testfile_bmp.m: testfile.bmp
 	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
 	../utils/objfw-embed $? $? $@

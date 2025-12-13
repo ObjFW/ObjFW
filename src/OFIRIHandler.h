@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)IRIHandler: (OFIRIHandler *)IRIHandler
   didOpenItemAtIRI: (OFIRI *)IRI
-	    stream: (nullable OFStream *)stream
+	    stream: (nullable OF_KINDOF(OFStream *))stream
 	 exception: (nullable id)exception;
 @end
 
@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
-+ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
++ (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.
@@ -176,7 +176,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFUnsupportedProtocolException The specified IRI is not supported by
  *					 the handler
  */
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.

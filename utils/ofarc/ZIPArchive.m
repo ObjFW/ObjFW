@@ -180,7 +180,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		IRI = copy;
 	}
 
-	return (OFSeekableStream *)[OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+	return [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 }
 
 - (void)listFiles
