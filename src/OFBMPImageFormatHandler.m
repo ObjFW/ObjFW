@@ -33,14 +33,13 @@
 {
 	uint32_t dataStart, headerSize, compressionMethod;
 	int32_t tmp32;
-	size_t width, height, lineLength, paddedLineLength;
+	size_t width, height, lineLength, linePadding = 0;
 	bool flipped = false;
 	OFSize size;
 	uint16_t bitsPerPixel;
 	OFPixelFormat format;
 	OFMutableImage *image;
 	uint8_t *pixels;
-	uint8_t *lineBuffer;
 
 	/* File header */
 
@@ -93,13 +92,8 @@
 		@throw [OFOutOfRangeException exception];
 
 	lineLength = width * (bitsPerPixel / CHAR_BIT);
-	paddedLineLength = lineLength;
-	if (paddedLineLength % 4 != 0) {
-		if (SIZE_MAX - paddedLineLength < 4 - (paddedLineLength % 4))
-			@throw [OFOutOfRangeException exception];
-
-		paddedLineLength += 4 - (paddedLineLength % 4);
-	}
+	if (lineLength % 4 != 0)
+		linePadding = 4 - (lineLength % 4);
 
 	compressionMethod = [stream readLittleEndianInt32];
 	if (compressionMethod != 0) {
@@ -133,29 +127,30 @@
 	image = [OFMutableImage imageWithSize: size pixelFormat: format];
 	pixels = image.mutablePixels;
 
-	lineBuffer = OFAllocMemory(1, paddedLineLength);
-	@try {
-		if (flipped) {
-			pixels += lineLength * height;
+	if (flipped) {
+		pixels += lineLength * height;
 
-			for (size_t i = 0; i < height; i++) {
-				[stream readIntoBuffer: lineBuffer
-					   exactLength: paddedLineLength];
+		for (size_t i = 0; i < height; i++) {
+			pixels -= lineLength;
 
-				pixels -= lineLength;
-				memcpy(pixels, lineBuffer, lineLength);
-			}
-		} else {
-			for (size_t i = 0; i < height; i++) {
-				[stream readIntoBuffer: lineBuffer
-					   exactLength: paddedLineLength];
-
-				memcpy(pixels, lineBuffer, lineLength);
-				pixels += lineLength;
+			[stream readIntoBuffer: pixels exactLength: lineLength];
+			if (linePadding > 0) {
+				char padding[3];
+				[stream readIntoBuffer: padding
+					   exactLength: linePadding];
 			}
 		}
-	} @finally {
-		OFFreeMemory(lineBuffer);
+	} else {
+		for (size_t i = 0; i < height; i++) {
+			[stream readIntoBuffer: pixels exactLength: lineLength];
+			if (linePadding > 0) {
+				char padding[3];
+				[stream readIntoBuffer: padding
+					   exactLength: linePadding];
+			}
+
+			pixels += lineLength;
+		}
 	}
 
 	return image;
