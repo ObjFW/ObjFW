@@ -32,7 +32,7 @@
 - (OFImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	uint32_t dataStart, headerSize, compressionMethod;
-	int32_t tmp32;
+	int32_t tmp32, horizPixelPerMeter, vertPixelPerMeter;
 	size_t width, height, lineLength, linePadding = 0;
 	bool flipped = false;
 	OFSize size;
@@ -104,8 +104,8 @@
 	}
 
 	/* dataSize = */ [stream readLittleEndianInt32];
-	/* horizPixelPerMeter = */ [stream readLittleEndianInt32];
-	/* vertPixelPerMeter = */ [stream readLittleEndianInt32];
+	horizPixelPerMeter = [stream readLittleEndianInt32];
+	vertPixelPerMeter = [stream readLittleEndianInt32];
 
 	/* Number of colors in palette */
 	if ([stream readLittleEndianInt32] != 0)
@@ -152,6 +152,9 @@
 			pixels += lineLength;
 		}
 	}
+
+	image.dotsPerInch = OFMakeSize(horizPixelPerMeter * 0.0254,
+	    vertPixelPerMeter * 0.0254);
 
 	return image;
 }

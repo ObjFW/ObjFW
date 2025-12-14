@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
@@ -295,5 +297,8 @@
 			    alpha: 1.0f]);
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 1)],
 	    [OFColor white]);
+
+	OTAssertLessThan(fabsf(image.dotsPerInch.width - 72), 0.01);
+	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72), 0.01);
 }
 @end
