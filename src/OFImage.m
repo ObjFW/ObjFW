@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFImage.h"
+#import "OFImage+Private.h"
 #import "OFColor.h"
 #import "OFConcreteImage.h"
 #import "OFImageFormatHandler.h"
@@ -36,208 +37,6 @@
 static struct {
 	Class isa;
 } placeholder;
-
-static OF_INLINE void
-readGrayscale8Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	*red = *green = *blue = pixels[x + y * width];
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readRGB565BEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	uint16_t value;
-
-	pixels += (x + y * width) * 2;
-	value = (pixels[0] << 8 | pixels[1]);
-
-	*red = (value & 0xF800) >> 8;
-	*green = (value & 0x7E0) >> 3;
-	*blue = (value & 0x1F) << 3;
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readRGB565LEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	uint16_t value;
-
-	pixels += (x + y * width) * 2;
-	value = (pixels[1] << 8 | pixels[0]);
-
-	*red = (value & 0xF800) >> 8;
-	*green = (value & 0x7E0) >> 3;
-	*blue = (value & 0x1F) << 3;
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readRGB888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 3;
-
-	*red = pixels[0];
-	*green = pixels[1];
-	*blue = pixels[2];
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readRGBA8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	*red = pixels[0];
-	*green = pixels[1];
-	*blue = pixels[2];
-	*alpha = pixels[3];
-}
-
-static OF_INLINE void
-readARGB8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	*red = pixels[1];
-	*green = pixels[2];
-	*blue = pixels[3];
-	*alpha = pixels[0];
-}
-
-static OF_INLINE void
-readBGR565BEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	uint16_t value;
-
-	pixels += (x + y * width) * 2;
-	value = (pixels[0] << 8 | pixels[1]);
-
-	*red = (value & 0x1F) << 3;
-	*green = (value & 0x7E0) >> 3;
-	*blue = (value & 0xF800) >> 8;
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readBGR565LEPixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	uint16_t value;
-
-	pixels += (x + y * width) * 2;
-	value = (pixels[1] << 8 | pixels[0]);
-
-	*red = (value & 0x1F) << 3;
-	*green = (value & 0x7E0) >> 3;
-	*blue = (value & 0xF800) >> 8;
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readBGR888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 3;
-
-	*blue = pixels[0];
-	*green = pixels[1];
-	*red = pixels[2];
-	*alpha = 255;
-}
-
-static OF_INLINE void
-readABGR8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	*red = pixels[3];
-	*green = pixels[2];
-	*blue = pixels[1];
-	*alpha = pixels[0];
-}
-
-static OF_INLINE void
-readBGRA8888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	*red = pixels[2];
-	*green = pixels[1];
-	*blue = pixels[0];
-	*alpha = pixels[3];
-}
-
-static OF_INLINE bool
-readPixelInt(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	switch (format) {
-	case OFPixelFormatGrayscale8:
-		readGrayscale8Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatRGB565BE:
-		readRGB565BEPixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatRGB565LE:
-		readRGB565LEPixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatRGB888:
-		readRGB888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatRGBA8888:
-		readRGBA8888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatARGB8888:
-		readARGB8888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatBGR565BE:
-		readBGR565BEPixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatBGR565LE:
-		readBGR565LEPixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatBGR888:
-		readBGR888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatABGR8888:
-		readABGR8888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatBGRA8888:
-		readBGRA8888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	default:
-		return false;
-	}
-}
-
-static OF_INLINE bool
-readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, float *red, float *green, float *blue, float *alpha)
-{
-	uint8_t redInt, greenInt, blueInt, alphaInt;
-
-	if OF_UNLIKELY (!readPixelInt(pixels, format, x, y, width,
-	    &redInt, &greenInt, &blueInt, &alphaInt))
-		return false;
-
-	*red = redInt / 255.0f;
-	*green = greenInt / 255.0f;
-	*blue = blueInt / 255.0f;
-	*alpha = alphaInt / 255.0f;
-
-	return true;
-}
 
 @implementation OFPlaceholderImage
 - (instancetype)init
@@ -403,8 +202,8 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	if OF_UNLIKELY (x >= width || y >= height)
 		@throw [OFOutOfRangeException exception];
 
-	if OF_UNLIKELY (!readPixel(self.pixels, self.pixelFormat, x, y, width,
-	    &red, &green, &blue, &alpha))
+	if OF_UNLIKELY (!_OFReadPixel(self.pixels, self.pixelFormat, x, y,
+	    width, &red, &green, &blue, &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
@@ -457,13 +256,13 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 			float red, green, blue, alpha;
 			float otherRed, otherGreen, otherBlue, otherAlpha;
 
-			if OF_UNLIKELY (!readPixel(pixels, format, x, y, width,
-			    &red, &green, &blue, &alpha))
+			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
+			    width, &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if OF_UNLIKELY (!readPixel(otherPixels, otherFormat,
+			if OF_UNLIKELY (!_OFReadPixel(otherPixels, otherFormat,
 			    x, y, width, &otherRed, &otherGreen, &otherBlue,
 			    &otherAlpha))
 				@throw [OFNotImplementedException
@@ -500,8 +299,8 @@ readPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 		for (size_t x = 0; x < width; x++) {
 			float red, green, blue, alpha, tmp;
 
-			if OF_UNLIKELY (!readPixel(pixels, format, x, y, width,
-			    &red, &green, &blue, &alpha))
+			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
+			    width, &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];

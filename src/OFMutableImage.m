@@ -19,9 +19,10 @@
 
 #include "config.h"
 
-#import "OFImage.h"
+#import "OFMutableImage.h"
 #import "OFColor.h"
 #import "OFConcreteMutableImage.h"
+#import "OFImage+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
@@ -33,208 +34,6 @@
 static struct {
 	Class isa;
 } placeholder;
-
-static OF_INLINE void
-writeGrayscale8Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	if OF_UNLIKELY (red != green || red != blue || alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	pixels[x + y * width] = red;
-}
-
-static OF_INLINE void
-writeRGB565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	uint16_t value;
-
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value >> 8;
-	pixels[1] = value;
-}
-
-static OF_INLINE void
-writeRGB565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	uint16_t value;
-
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value;
-	pixels[1] = value >> 8;
-}
-
-static OF_INLINE void
-writeRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	pixels += (x + y * width) * 3;
-
-	pixels[0] = red;
-	pixels[1] = green;
-	pixels[2] = blue;
-}
-
-static OF_INLINE void
-writeRGBA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = red;
-	pixels[1] = green;
-	pixels[2] = blue;
-	pixels[3] = alpha;
-}
-
-static OF_INLINE void
-writeARGB8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = alpha;
-	pixels[1] = red;
-	pixels[2] = green;
-	pixels[3] = blue;
-}
-
-static OF_INLINE void
-writeBGR565BEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	uint16_t value;
-
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value >> 8;
-	pixels[1] = value;
-}
-
-static OF_INLINE void
-writeBGR565LEPixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	uint16_t value;
-
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	value = ((blue & 0xF8) << 8) | ((green & 0xFC) << 3) | (red >> 3);
-
-	pixels += (x + y * width) * 2;
-	pixels[0] = value;
-	pixels[1] = value >> 8;
-}
-
-static OF_INLINE void
-writeBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
-	pixels += (x + y * width) * 3;
-
-	pixels[0] = blue;
-	pixels[1] = green;
-	pixels[2] = red;
-}
-
-static OF_INLINE void
-writeABGR8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = alpha;
-	pixels[1] = blue;
-	pixels[2] = green;
-	pixels[3] = red;
-}
-
-static OF_INLINE void
-writeBGRA8888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 4;
-
-	pixels[0] = blue;
-	pixels[1] = green;
-	pixels[2] = red;
-	pixels[3] = alpha;
-}
-
-static OF_INLINE bool
-writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
-    size_t width, uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	switch (format) {
-	case OFPixelFormatGrayscale8:
-		writeGrayscale8Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatRGB565BE:
-		writeRGB565BEPixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatRGB565LE:
-		writeRGB565LEPixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatRGB888:
-		writeRGB888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatRGBA8888:
-		writeRGBA8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatARGB8888:
-		writeARGB8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGR565BE:
-		writeBGR565BEPixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGR565LE:
-		writeBGR565LEPixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGR888:
-		writeBGR888Pixel(pixels, x, y, width, red, green, blue, alpha);
-		return true;
-	case OFPixelFormatABGR8888:
-		writeABGR8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGRA8888:
-		writeBGRA8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	default:
-		return false;
-	}
-}
 
 @implementation OFPlaceholderMutableImage
 - (instancetype)init
@@ -338,8 +137,9 @@ writePixel(uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	    alpha > 1.0f)
 		@throw [OFOutOfRangeException exception];
 
-	if OF_UNLIKELY (!writePixel(self.mutablePixels, self.pixelFormat, x, y,
-	    width, red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f))
+	if OF_UNLIKELY (!_OFWritePixel(self.mutablePixels, self.pixelFormat,
+	    x, y, width, red * 255.0f, green * 255.0f, blue * 255.0f,
+	    alpha * 255.0f))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }

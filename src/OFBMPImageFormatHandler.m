@@ -20,10 +20,13 @@
 #include "config.h"
 
 #import "OFBMPImageFormatHandler.h"
+#import "OFImage+Private.h"
 #import "OFSeekableStream.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
@@ -157,5 +160,81 @@
 	    vertPixelPerMeter * 0.0254);
 
 	return image;
+}
+
+- (void)writeImage: (OFImage *)image
+	  toStream: (OFSeekableStream *)stream
+	   options: (OFDictionary OF_GENERIC(OFString *, id) *)options
+{
+	OFSize size = image.size;
+	uint32_t width = size.width, height = size.height;
+	uint32_t lineLength, linePadding = 0;
+	const void *pixels;
+	OFPixelFormat format;
+
+	if (width != size.width || height != size.height ||
+	    (int32_t)width < 0 || (int32_t)height < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (UINT32_MAX / width < 3)
+		@throw [OFOutOfRangeException exception];
+
+	lineLength = width * 3;
+	if (lineLength % 4 != 0)
+		linePadding = 4 - (lineLength % 4);
+
+	if (UINT32_MAX - lineLength < linePadding ||
+	    UINT32_MAX / (lineLength + linePadding) < height)
+		@throw [OFOutOfRangeException exception];
+
+	pixels = image.pixels;
+	format = image.pixelFormat;
+
+	/* File header */
+	[stream writeString: @"BM"];
+	[stream writeLittleEndianInt32:
+	    54 + height * (lineLength + linePadding)];
+	[stream writeLittleEndianInt16: 0]; /* reserved1 */
+	[stream writeLittleEndianInt16: 0]; /* reserved2 */
+	[stream writeLittleEndianInt32: 54]; /* dataStart */
+
+	/* DIB header */
+	[stream writeLittleEndianInt32: 40]; /* headerSize */
+	[stream writeLittleEndianInt32: width];
+	[stream writeLittleEndianInt32: height];
+	[stream writeLittleEndianInt16: 1]; /* Number of color planes */
+	[stream writeLittleEndianInt16: 24]; /* bitsPerPixel */
+	[stream writeLittleEndianInt32: 0]; /* compressionMethod */
+	[stream writeLittleEndianInt32:
+	    height * (lineLength + linePadding)]; /* dataSize */
+	[stream writeLittleEndianInt32: image.dotsPerInch.width / 0.0254];
+	[stream writeLittleEndianInt32: image.dotsPerInch.height / 0.0254];
+	[stream writeLittleEndianInt32: 0]; /* Number of colors in palette */
+	[stream writeLittleEndianInt32: 0]; /* Number of important colors */
+
+	for (uint32_t i = height; i > 0; i--) {
+		uint32_t y = i - 1;
+
+		for (uint32_t x = 0; x < width; x++) {
+			uint8_t buffer[4];
+
+			if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y,
+			    width, &buffer[3], &buffer[2], &buffer[1],
+			    &buffer[0]))
+				@throw [OFNotImplementedException
+				    exceptionWithSelector: _cmd
+						   object: self];
+
+			if OF_UNLIKELY (buffer[0] != 255)
+				@throw [OFInvalidArgumentException exception];
+
+			[stream writeBuffer: buffer + 1 length: 3];
+		}
+
+		if (linePadding > 0) {
+			static const uint8_t padding[3] = { 0 };
+			[stream writeBuffer: padding length: linePadding];
+		}
+	}
 }
 @end
