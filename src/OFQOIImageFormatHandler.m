@@ -36,6 +36,7 @@
 	OFMutableImage *image;
 	uint8_t *pixels;
 	uint8_t pixel[4] = { 0, 0, 0, 0xFF }, dict[256] = { 0 };
+	char endMarker[8];
 
 	[stream readIntoBuffer: magic exactLength: 4];
 	if (memcmp(magic, "qoif", 4) != 0)
@@ -101,6 +102,10 @@
 		    pixel[3] * 11) % 64;
 		memcpy(dict + hash * 4, pixel, 4);
 	}
+
+	[stream readIntoBuffer: endMarker exactLength: 8];
+	if (memcmp(endMarker, "\0\0\0\0\0\0\0\x01", 8) != 0)
+		@throw [OFInvalidFormatException exception];
 
 	return image;
 }
