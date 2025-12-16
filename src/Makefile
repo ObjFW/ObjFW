@@ -232,6 +232,7 @@ SRCS += OFASPrintF.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMutableUTF8String.m		\
+	OFQOIImageFormatHandler.m	\
 	OFRangeCharacterSet.m		\
 	OFSandbox.m			\
 	OFStrFTime.m			\

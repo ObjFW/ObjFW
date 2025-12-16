@@ -34,6 +34,7 @@
 @implementation OFBMPImageFormatHandler
 - (OFImage *)readImageFromStream: (OFSeekableStream *)stream
 {
+	char magic[2];
 	uint32_t dataStart, headerSize, compressionMethod;
 	int32_t tmp32, horizPixelPerMeter, vertPixelPerMeter;
 	size_t width, height, lineLength, linePadding = 0;
@@ -46,7 +47,6 @@
 
 	/* File header */
 
-	char magic[2];
 	[stream readIntoBuffer: magic exactLength: 2];
 	if (memcmp(magic, "BM", 2) != 0)
 		@throw [OFInvalidFormatException exception];

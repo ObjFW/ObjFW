@@ -15,7 +15,8 @@ CLEAN = EBOOT.PBP			\
 	big_dictionary_msgpack_gz.m	\
 	testfile_bin.m			\
 	testfile_bmp.m			\
-	testfile_ini.m
+	testfile_ini.m			\
+	testfile_qoi.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -89,7 +90,8 @@ SRCS = ForwardingTests.m			\
        big_dictionary_msgpack_gz.m		\
        testfile_bin.m				\
        testfile_bmp.m				\
-       testfile_ini.m
+       testfile_ini.m				\
+       testfile_qoi.m
 SRCS_FILES = OFFileManagerTests.m
 SRCS_MODULES = OFModuleTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
@@ -125,6 +127,8 @@ testfile_bin.m: testfile.bin
 testfile_bmp.m: testfile.bmp
 	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
+	../utils/objfw-embed $? $? $@
+testfile_qoi.m: testfile.qoi
 	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android

@@ -17,12 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#import "OFImageFormatHandler.h"
 
-#import "OFImage.h"
+OF_ASSUME_NONNULL_BEGIN
 
-const OFImageFormat OFImageFormatBMP = @"OFImageFormatBMP";
-const OFImageFormat OFImageFormatGIF = @"OFImageFormatGIF";
-const OFImageFormat OFImageFormatJPEG = @"OFImageFormatJPEG";
-const OFImageFormat OFImageFormatPNG = @"OFImageFormatPNG";
-const OFImageFormat OFImageFormatQOI = @"OFImageFormatQOI";
+@interface OFQOIImageFormatHandler: OFImageFormatHandler
+@end
+
+OF_ASSUME_NONNULL_END

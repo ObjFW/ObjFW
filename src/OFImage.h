@@ -55,6 +55,7 @@ typedef enum {
  *   * @ref OFImageFormatGIF
  *   * @ref OFImageFormatJPEG
  *   * @ref OFImageFormatPNG
+ *   * @ref OFImageFormatQOI
  */
 typedef OFConstantString *OFImageFormat;
 
@@ -80,6 +81,11 @@ extern const OFImageFormat OFImageFormatJPEG;
  * @brief The PNG image format.
  */
 extern const OFImageFormat OFImageFormatPNG;
+
+/**
+ * @brief The Quite Okay Image Format.
+ */
+extern const OFImageFormat OFImageFormatQOI;
 #ifdef __cplusplus
 }
 #endif

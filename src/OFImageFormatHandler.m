@@ -22,6 +22,7 @@
 #import "OFImageFormatHandler.h"
 #import "OFBMPImageFormatHandler.h"
 #import "OFDictionary.h"
+#import "OFQOIImageFormatHandler.h"
 
 #import "OFNotImplementedException.h"
 
@@ -40,6 +41,8 @@ static OFMutableDictionary OF_GENERIC(OFImageFormat, OFImageFormatHandler *)
 
 	[self registerClass: [OFBMPImageFormatHandler class]
 	     forImageFormat: OFImageFormatBMP];
+	[self registerClass: [OFQOIImageFormatHandler class]
+	     forImageFormat: OFImageFormatQOI];
 }
 
 + (bool)registerClass: (Class)class forImageFormat: (OFImageFormat)imageFormat

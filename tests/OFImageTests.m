@@ -342,4 +342,35 @@
 
 	OTAssertEqualObjects(image, image2);
 }
+
+- (void)testReadFromStreamWithImageFormatQOI
+{
+	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.qoi"];
+	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+	OFImage *image = [OFImage readFromStream: stream
+				     imageFormat: OFImageFormatQOI];
+
+	OFAssert(OFEqualSizes(image.size, OFMakeSize(3, 2)));
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	    [OFColor colorWithRed: 237 / 255.0f
+			    green: 28 / 255.0f
+			     blue: 36 / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 0)],
+	    [OFColor colorWithRed: 34 / 255.0f
+			    green: 177 / 255.0f
+			     blue: 76 / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	    [OFColor white]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	    [OFColor colorWithRed: 255 / 255.0f
+			    green: 242 / 255.0f
+			     blue: 0 / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 1)],
+	    [OFColor white]);
+}
 @end
