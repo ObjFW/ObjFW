@@ -32,39 +32,17 @@ OF_ASSUME_NONNULL_BEGIN
 typedef enum {
 	/** Unknown pixel format. */
 	OFPixelFormatUnknown,
-	/** 8-bit grayscale. */
-	OFPixelFormatGrayscale8,
-	/**
-	 * RGB with 5 bits for red, 6 bits for green and 5 bits for blue in big
-	 * endian.
-	 */
-	OFPixelFormatRGB565BE,
-	/**
-	 * RGB with 5 bits for red, 6 bits for green and 5 bits for blue in
-	 * little endian.
-	 */
-	OFPixelFormatRGB565LE,
 	/** RGB with 8 bits per channel. */
 	OFPixelFormatRGB888,
-	/** RGBA with 8 bits per channel. */
+	/** RGBA (in big endian) with 8 bits per channel, 4 byte aligned. */
 	OFPixelFormatRGBA8888,
-	/** ARGB with 8 bits per channel. */
+	/** ARGB (in big endian) with 8 bits per channel, 4 byte aligned. */
 	OFPixelFormatARGB8888,
-	/**
-	 * BGR with 5 bits for red, 6 bits for green and 5 bits for blue in big
-	 * endian.
-	 */
-	OFPixelFormatBGR565BE,
-	/**
-	 * BGR with 5 bits for red, 6 bits for green and 5 bits for blue in
-	 * little endian.
-	 */
-	OFPixelFormatBGR565LE,
 	/** BGR with 8 bits per channel. */
 	OFPixelFormatBGR888,
-	/** ABGR with 8 bits per channel. */
+	/** ABGR (in big endian) with 8 bits per channel, 4 byte aligned. */
 	OFPixelFormatABGR8888,
-	/** BGRA with 8 bits per channel. */
+	/** BGRA (in big endian) with 8 bits per channel, 4 byte aligned. */
 	OFPixelFormatBGRA8888,
 } OFPixelFormat;
 

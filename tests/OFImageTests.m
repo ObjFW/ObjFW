@@ -100,20 +100,20 @@
 - (void)testImageWithPixelsWithNonIntegralSizeThrows
 {
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixels: ""
-			 pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixels: "\0\0\0"
+			 pixelFormat: OFPixelFormatRGB888
 				size: OFMakeSize(0.0f, 0.5f)],
 	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixels: ""
-			 pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixels: "\0\0\0"
+			 pixelFormat: OFPixelFormatRGB888
 				size: OFMakeSize(0.5f, 0.0f)],
 	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixels: ""
-			 pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixels: "\0\0\0"
+			 pixelFormat: OFPixelFormatRGB888
 				size: OFMakeSize(0.5f, 0.5f)],
 	    OFInvalidArgumentException);
 }
@@ -121,22 +121,22 @@
 - (void)testImageWithPixelsNoCopyWithNonIntegralSizeThrows
 {
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixelsNoCopy: ""
-			       pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixelsNoCopy: "\0\0\0"
+			       pixelFormat: OFPixelFormatRGB888
 				      size: OFMakeSize(0.0f, 0.5f)
 			      freeWhenDone: false],
 	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixelsNoCopy: ""
-			       pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixelsNoCopy: "\0\0\0"
+			       pixelFormat: OFPixelFormatRGB888
 				      size: OFMakeSize(0.5f, 0.0f)
 			      freeWhenDone: false],
 	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific(
-	    [OFImage imageWithPixelsNoCopy: ""
-			       pixelFormat: OFPixelFormatGrayscale8
+	    [OFImage imageWithPixelsNoCopy: "\0\0\0"
+			       pixelFormat: OFPixelFormatRGB888
 				      size: OFMakeSize(0.5f, 0.5f)
 			      freeWhenDone: false],
 	    OFInvalidArgumentException);
@@ -144,20 +144,23 @@
 
 - (void)testIsEqual
 {
-	static const uint8_t pixels1[] = {
-		32, 32, 32, 255,
-		64, 64, 64, 255,
-		128, 128, 128, 255,
-		255, 255, 255, 255
+	static const uint32_t pixels1[] = {
+		OFToBigEndian32(0x202020FF),
+		OFToBigEndian32(0x404040FF),
+		OFToBigEndian32(0x808080FF),
+		OFToBigEndian32(0xFFFFFFFF)
 	};
 	static const uint8_t pixels2[] = {
-		32, 64, 128, 255
+		32, 32, 32,
+		64, 64, 64,
+		128, 128, 128,
+		255, 255, 255
 	};
 	OFImage *image1 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatRGBA8888
 					      size: OFMakeSize(2, 2)];
 	OFImage *image2 = [OFImage imageWithPixels: pixels2
-				       pixelFormat: OFPixelFormatGrayscale8
+				       pixelFormat: OFPixelFormatRGB888
 					      size: OFMakeSize(2, 2)];
 	OFImage *image3 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatARGB8888
@@ -176,20 +179,23 @@
 
 - (void)testHash
 {
-	static const uint8_t pixels1[] = {
-		32, 32, 32, 255,
-		64, 64, 64, 255,
-		128, 128, 128, 255,
-		255, 255, 255, 255
+	static const uint32_t pixels1[] = {
+		OFToBigEndian32(0x202020FF),
+		OFToBigEndian32(0x404040FF),
+		OFToBigEndian32(0x808080FF),
+		OFToBigEndian32(0xFFFFFFFF)
 	};
 	static const uint8_t pixels2[] = {
-		32, 64, 128, 255
+		32, 32, 32,
+		64, 64, 64,
+		128, 128, 128,
+		255, 255, 255
 	};
 	OFImage *image1 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatRGBA8888
 					      size: OFMakeSize(2, 2)];
 	OFImage *image2 = [OFImage imageWithPixels: pixels2
-				       pixelFormat: OFPixelFormatGrayscale8
+				       pixelFormat: OFPixelFormatRGB888
 					      size: OFMakeSize(2, 2)];
 	OFImage *image3 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatARGB8888
@@ -201,10 +207,10 @@
 
 - (void)testReadOutOfBoundsThrows
 {
-	static const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
-		      pixelFormat: OFPixelFormatGrayscale8
+		      pixelFormat: OFPixelFormatRGBA8888
 			     size: OFMakeSize(2, 3)
 		     freeWhenDone: false];
 
@@ -220,10 +226,10 @@
 
 - (void)testReadNonIntegralPointThrows
 {
-	static const uint8_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
-		      pixelFormat: OFPixelFormatGrayscale8
+		      pixelFormat: OFPixelFormatRGBA8888
 			     size: OFMakeSize(2, 3)
 		     freeWhenDone: false];
 
@@ -240,10 +246,13 @@
 - (void)testCopy
 {
 	static const uint8_t pixels[] = {
-		32, 64, 128, 255
+		32, 32, 32,
+		64, 64, 64,
+		128, 128, 128,
+		255, 255, 255
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
-				      pixelFormat: OFPixelFormatGrayscale8
+				      pixelFormat: OFPixelFormatRGB888
 					     size: OFMakeSize(2, 2)];
 	OFImage *copy = objc_autorelease([image copy]);
 
@@ -254,10 +263,13 @@
 - (void)testMutableCopy
 {
 	static const uint8_t pixels[] = {
-		32, 64, 128, 255
+		32, 32, 32,
+		64, 64, 64,
+		128, 128, 128,
+		255, 255, 255
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
-				      pixelFormat: OFPixelFormatGrayscale8
+				      pixelFormat: OFPixelFormatRGB888
 					     size: OFMakeSize(2, 2)];
 	OFMutableImage *copy = objc_autorelease([image mutableCopy]);
 
@@ -268,7 +280,7 @@
 	OTAssertNotEqualObjects(image, copy);
 }
 
-- (void)testReadFromStreamWithBMPImageFormat
+- (void)testReadFromStreamWithImageFormatBMP
 {
 	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.bmp"];
 	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
@@ -302,7 +314,7 @@
 	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72), 0.01);
 }
 
-- (void)testWriteToStreamWithBMPImageFormat
+- (void)testWriteToStreamWithImageFormatBMP
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(3, 2)

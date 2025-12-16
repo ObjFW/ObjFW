@@ -153,13 +153,6 @@ static struct {
 	switch (self.pixelFormat) {
 	case OFPixelFormatUnknown:
 		return 0;
-	case OFPixelFormatGrayscale8:
-		return 8;
-	case OFPixelFormatRGB565BE:
-	case OFPixelFormatRGB565LE:
-	case OFPixelFormatBGR565BE:
-	case OFPixelFormatBGR565LE:
-		return 16;
 	case OFPixelFormatRGB888:
 	case OFPixelFormatBGR888:
 		return 24;
