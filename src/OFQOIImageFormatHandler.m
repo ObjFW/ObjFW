@@ -84,10 +84,11 @@
 			pixel[2] += (byte & 0x03) - 2;
 		/* QOI_OP_LUMA */
 		} else if ((byte & 0xC0) == 0x80) {
+			uint8_t greenDiff = (byte & 0x3F) - 32;
 			uint8_t byte2 = [stream readInt8];
-			pixels[1] += (byte & 0x3F) - 32;
-			pixels[0] += pixels[1] + ((byte2 & 0xF0) >> 4) - 8;
-			pixels[2] += pixels[1] + (byte2 & 0x0F) - 8;
+			pixel[0] += greenDiff + ((byte2 & 0xF0) >> 4) - 8;
+			pixel[1] += greenDiff;
+			pixel[2] += greenDiff + (byte2 & 0x0F) - 8;
 		/* QOI_OP_RUN */
 		} else if ((byte & 0xC0) == 0xC0) {
 			if (pixelsRead + (byte & 0x3F) >= width * height)
