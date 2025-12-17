@@ -168,18 +168,34 @@
 {
 	OFSize size = image.size;
 	uint32_t width = size.width, height = size.height;
-	uint32_t lineLength, linePadding = 0;
+	uint32_t headerSize, lineLength, linePadding = 0;
 	const void *pixels;
 	OFPixelFormat format;
+	uint16_t bitsPerPixel;
 
 	if (width != size.width || height != size.height ||
 	    (int32_t)width < 0 || (int32_t)height < 0)
 		@throw [OFInvalidArgumentException exception];
 
-	if (UINT32_MAX / width < 3)
+	pixels = image.pixels;
+	format = image.pixelFormat;
+
+	switch (format) {
+	case OFPixelFormatRGB888:
+	case OFPixelFormatBGR888:
+		headerSize = 40;
+		bitsPerPixel = 24;
+		break;
+	default:
+		headerSize = 108;
+		bitsPerPixel = 32;
+		break;
+	}
+
+	if (UINT32_MAX / width < bitsPerPixel / CHAR_BIT)
 		@throw [OFOutOfRangeException exception];
 
-	lineLength = width * 3;
+	lineLength = width * (bitsPerPixel / CHAR_BIT);
 	if (lineLength % 4 != 0)
 		linePadding = 4 - (lineLength % 4);
 
@@ -187,30 +203,43 @@
 	    UINT32_MAX / (lineLength + linePadding) < height)
 		@throw [OFOutOfRangeException exception];
 
-	pixels = image.pixels;
-	format = image.pixelFormat;
+	if (UINT32_MAX - height * (lineLength + linePadding) < 14 + headerSize)
+		@throw [OFOutOfRangeException exception];
 
 	/* File header */
 	[stream writeString: @"BM"];
 	[stream writeLittleEndianInt32:
-	    54 + height * (lineLength + linePadding)];
+	    14 + headerSize + height * (lineLength + linePadding)];
 	[stream writeLittleEndianInt16: 0]; /* reserved1 */
 	[stream writeLittleEndianInt16: 0]; /* reserved2 */
-	[stream writeLittleEndianInt32: 54]; /* dataStart */
+	[stream writeLittleEndianInt32: headerSize + 14] /* dataStart */;
 
 	/* DIB header */
-	[stream writeLittleEndianInt32: 40]; /* headerSize */
+	[stream writeLittleEndianInt32: headerSize];
 	[stream writeLittleEndianInt32: width];
 	[stream writeLittleEndianInt32: height];
 	[stream writeLittleEndianInt16: 1]; /* Number of color planes */
-	[stream writeLittleEndianInt16: 24]; /* bitsPerPixel */
-	[stream writeLittleEndianInt32: 0]; /* compressionMethod */
+	[stream writeLittleEndianInt16: bitsPerPixel];
+	[stream writeLittleEndianInt32:
+	    (bitsPerPixel == 24 ? 0 : 3)]; /* compressionMethod */
 	[stream writeLittleEndianInt32:
 	    height * (lineLength + linePadding)]; /* dataSize */
 	[stream writeLittleEndianInt32: image.dotsPerInch.width / 0.0254];
 	[stream writeLittleEndianInt32: image.dotsPerInch.height / 0.0254];
 	[stream writeLittleEndianInt32: 0]; /* Number of colors in palette */
 	[stream writeLittleEndianInt32: 0]; /* Number of important colors */
+	if (headerSize == 108) {
+		static const uint8_t colorspaceEndpoints[36] = { 0 };
+		[stream writeLittleEndianInt32: 0xFF000000]; /* Red mask */
+		[stream writeLittleEndianInt32: 0x00FF0000]; /* Green mask */
+		[stream writeLittleEndianInt32: 0x0000FF00]; /* Blue mask */
+		[stream writeLittleEndianInt32: 0x000000FF]; /* Alpha mask */
+		[stream writeString: @"BGRs"]; /* Color space */
+		[stream writeBuffer: colorspaceEndpoints length: 36];
+		[stream writeLittleEndianInt32: 0]; /* Red gamma */
+		[stream writeLittleEndianInt32: 0]; /* Green gamma */
+		[stream writeLittleEndianInt32: 0]; /* Blue gamma */
+	}
 
 	for (uint32_t i = height; i > 0; i--) {
 		uint32_t y = i - 1;
@@ -225,10 +254,14 @@
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if OF_UNLIKELY (buffer[0] != 255)
-				@throw [OFInvalidArgumentException exception];
+			if (bitsPerPixel == 24) {
+				if OF_UNLIKELY (buffer[0] != 255)
+					@throw [OFInvalidArgumentException
+					    exception];
 
-			[stream writeBuffer: buffer + 1 length: 3];
+				[stream writeBuffer: buffer + 1 length: 3];
+			} else
+				[stream writeBuffer: buffer length: 4];
 		}
 
 		if (linePadding > 0) {

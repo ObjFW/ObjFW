@@ -314,11 +314,11 @@
 	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72), 0.01);
 }
 
-- (void)testWriteToStreamWithImageFormatBMP
+- (void)testWriteToStreamWithImageFormatBMPRGB888
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(3, 2)
-	      pixelFormat: OFPixelFormatRGBA8888];
+	      pixelFormat: OFPixelFormatRGB888];
 	OFImage *image2;
 	uint8_t memory[78];
 	OFMemoryStream *stream;
