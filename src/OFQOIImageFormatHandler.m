@@ -131,48 +131,46 @@ writeRunLength(OFStream *stream, size_t runLength)
 static OF_INLINE bool
 calcDiff(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t *diff)
 {
-	int redDiff, greenDiff, blueDiff;
+	uint8_t redDiff, greenDiff, blueDiff;
 
 	if (pixel[3] != previousPixel[3])
 		return false;
 
-	redDiff = pixel[0] - previousPixel[0];
-	greenDiff = pixel[1] - previousPixel[1];
-	blueDiff = pixel[2] - previousPixel[2];
+	redDiff = pixel[0] - previousPixel[0] + 2;
+	greenDiff = pixel[1] - previousPixel[1] + 2;
+	blueDiff = pixel[2] - previousPixel[2] + 2;
 
-	if (redDiff < -2 || redDiff > 1 || blueDiff < -2 || blueDiff > 1 ||
-	    greenDiff < -2 || greenDiff > 1)
+	if (redDiff > 3 || greenDiff > 3 || blueDiff > 3)
 		return false;
 
-	*diff = 0x40 | (redDiff + 2) << 4 | (greenDiff + 2) << 2 |
-	    (blueDiff + 2);
+	*diff = 0x40 | redDiff << 4 | greenDiff << 2 | blueDiff;
 	return true;
 }
 
 static OF_INLINE bool
 calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 {
-	int redDiff, greenDiff, blueDiff, greenRedDiff, greenBlueDiff;
+	uint8_t redDiff, greenDiff, blueDiff, greenRedDiff, greenBlueDiff;
 
 	if (pixel[3] != previousPixel[3])
 		return false;
 
-	redDiff = pixel[0] - previousPixel[0];
-	greenDiff = pixel[1] - previousPixel[1];
-	blueDiff = pixel[2] - previousPixel[2];
+	/* Do the calculation unsigned so that we have defined wrap around. */
+	redDiff = pixel[0] - previousPixel[0] + 32;
+	greenDiff = pixel[1] - previousPixel[1] + 32;
+	blueDiff = pixel[2] - previousPixel[2] + 32;
 
-	if (greenDiff < -32 || greenDiff > 31)
+	if (greenDiff > 63)
 		return false;
 
-	greenRedDiff = redDiff - greenDiff;
-	greenBlueDiff = blueDiff - greenDiff;
+	greenRedDiff = redDiff - greenDiff + 8;
+	greenBlueDiff = blueDiff - greenDiff + 8;
 
-	if (greenRedDiff < -8 || greenRedDiff > 7 ||
-	    greenBlueDiff < -8 || greenBlueDiff > 7)
+	if (greenRedDiff > 15 || greenBlueDiff > 15)
 		return false;
 
-	luma[0] = 0x80 | (greenDiff + 32);
-	luma[1] = (greenRedDiff + 8) << 4 | (greenBlueDiff + 8);
+	luma[0] = 0x80 | greenDiff;
+	luma[1] = greenRedDiff << 4 | greenBlueDiff;
 	return true;
 }
 
