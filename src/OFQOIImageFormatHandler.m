@@ -23,10 +23,19 @@
 #import "OFImage+Private.h"
 #import "OFSeekableStream.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
 @implementation OFQOIImageFormatHandler
+static OF_INLINE uint8_t
+hashPixel(uint8_t pixel[4])
+{
+	return (pixel[0] * 3 + pixel[1] * 5 + pixel[2] * 7 +
+	    pixel[3] * 11) % 64;
+}
+
 - (OFImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	char magic[4];
@@ -35,7 +44,7 @@
 	OFPixelFormat format;
 	OFMutableImage *image;
 	uint8_t *pixels;
-	uint8_t pixel[4] = { 0, 0, 0, 0xFF }, dict[256] = { 0 };
+	uint8_t pixel[4] = { 0, 0, 0, 255 }, dict[256] = { 0 };
 	char endMarker[8];
 
 	[stream readIntoBuffer: magic exactLength: 4];
@@ -66,7 +75,7 @@
 	pixels = image.mutablePixels;
 
 	for (size_t pixelsRead = 0; pixelsRead < width * height; pixelsRead++) {
-		uint8_t byte = [stream readInt8], hash;
+		uint8_t byte = [stream readInt8];
 
 		/* QOI_OP_RGB */
 		if (byte == 0xFE)
@@ -99,9 +108,7 @@
 		}
 
 		memcpy(pixels + pixelsRead * 4, pixel, 4);
-		hash = (pixel[0] * 3 + pixel[1] * 5 + pixel[2] * 7 +
-		    pixel[3] * 11) % 64;
-		memcpy(dict + hash * 4, pixel, 4);
+		memcpy(dict + hashPixel(pixel) * 4, pixel, 4);
 	}
 
 	[stream readIntoBuffer: endMarker exactLength: 8];
@@ -109,5 +116,138 @@
 		@throw [OFInvalidFormatException exception];
 
 	return image;
+}
+
+static OF_INLINE void
+writeRunLength(OFStream *stream, size_t runLength)
+{
+	while (runLength > 0) {
+		size_t len = (runLength <= 62 ? runLength : 62);
+		[stream writeInt8: 0xC0 | (len - 1)];
+		runLength -= len;
+	}
+}
+
+static OF_INLINE bool
+calcDiff(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t *diff)
+{
+	int redDiff, greenDiff, blueDiff;
+
+	if (pixel[3] != previousPixel[3])
+		return false;
+
+	redDiff = pixel[0] - previousPixel[0];
+	greenDiff = pixel[1] - previousPixel[1];
+	blueDiff = pixel[2] - previousPixel[2];
+
+	if (redDiff < -2 || redDiff > 1 || blueDiff < -2 || blueDiff > 1 ||
+	    greenDiff < -2 || greenDiff > 1)
+		return false;
+
+	*diff = 0x40 | (redDiff + 2) << 4 | (greenDiff + 2) << 2 |
+	    (blueDiff + 2);
+	return true;
+}
+
+static OF_INLINE bool
+calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
+{
+	int redDiff, greenDiff, blueDiff, greenRedDiff, greenBlueDiff;
+
+	if (pixel[3] != previousPixel[3])
+		return false;
+
+	redDiff = pixel[0] - previousPixel[0];
+	greenDiff = pixel[1] - previousPixel[1];
+	blueDiff = pixel[2] - previousPixel[2];
+
+	if (greenDiff < -32 || greenDiff > 31)
+		return false;
+
+	greenRedDiff = redDiff - greenDiff;
+	greenBlueDiff = blueDiff - greenDiff;
+
+	if (greenRedDiff < -8 || greenRedDiff > 7 ||
+	    greenBlueDiff < -8 || greenBlueDiff > 7)
+		return false;
+
+	luma[0] = 0x80 | (greenDiff + 32);
+	luma[1] = (greenRedDiff + 8) << 4 | (greenBlueDiff + 8);
+	return true;
+}
+
+- (void)writeImage: (OFImage *)image
+	  toStream: (OFSeekableStream *)stream
+	   options: (OFDictionary OF_GENERIC(OFString *, id) *)options
+{
+	OFSize size = image.size;
+	uint32_t width = size.width, height = size.height;
+	const void *pixels;
+	OFPixelFormat format;
+	uint8_t previousPixel[4] = { 0, 0, 0, 255 }, dict[256] = { 0 };
+	size_t runLength = 0;
+
+	if (width != size.width || height != size.height)
+		@throw [OFInvalidArgumentException exception];
+
+	[stream writeString: @"qoif"];
+	[stream writeBigEndianInt32: width];
+	[stream writeBigEndianInt32: height];
+
+	pixels = image.pixels;
+	format = image.pixelFormat;
+
+	switch (format) {
+	case OFPixelFormatRGB888:
+	case OFPixelFormatBGR888:
+		[stream writeInt8: 3];
+		break;
+	default:
+		[stream writeInt8: 4];
+		break;
+	}
+
+	[stream writeInt8: 0]; /* colorspace */
+
+	for (size_t y = 0; y < height; y++) {
+		for (size_t x = 0; x < width; x++) {
+			uint8_t pixel[4], hash, diff, luma[2];
+
+			if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y,
+			    width, &pixel[0], &pixel[1], &pixel[2], &pixel[3]))
+				@throw [OFNotImplementedException
+				    exceptionWithSelector: _cmd
+						   object: self];
+
+			if (memcmp(pixel, previousPixel, 4) == 0) {
+				runLength++;
+				continue;
+			}
+
+			writeRunLength(stream, runLength);
+			runLength = 0;
+
+			hash = hashPixel(pixel);
+			if (memcmp(dict + hash * 4, pixel, 4) == 0)
+				[stream writeInt8: hash];
+			else if (calcDiff(pixel, previousPixel, &diff))
+				[stream writeInt8: diff];
+			else if (calcLuma(pixel, previousPixel, luma))
+				[stream writeBuffer: luma length: 2];
+			else if (pixel[3] == previousPixel[3]) {
+				[stream writeInt8: 0xFE];
+				[stream writeBuffer: pixel length: 3];
+			} else {
+				[stream writeInt8: 0xFF];
+				[stream writeBuffer: pixel length: 4];
+			}
+
+			memcpy(dict + hash * 4, pixel, 4);
+			memcpy(previousPixel, pixel, 4);
+		}
+	}
+	writeRunLength(stream, runLength);
+
+	[stream writeBuffer: "\0\0\0\0\0\0\0\x01" length: 8];
 }
 @end

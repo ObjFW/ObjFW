@@ -373,4 +373,33 @@
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 1)],
 	    [OFColor white]);
 }
+
+- (void)testWriteToStreamWithImageFormatQOI
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(3, 2)
+	      pixelFormat: OFPixelFormatRGB888];
+	OFImage *image2;
+	uint8_t memory[46];
+	OFMemoryStream *stream;
+
+	[image setColor: [OFColor red] atPoint: OFMakePoint(0, 0)];
+	[image setColor: [OFColor green] atPoint: OFMakePoint(1, 0)];
+	[image setColor: [OFColor blue] atPoint: OFMakePoint(2, 0)];
+	[image setColor: [OFColor black] atPoint: OFMakePoint(0, 1)];
+	[image setColor: [OFColor purple] atPoint: OFMakePoint(1, 1)];
+	[image setColor: [OFColor olive] atPoint: OFMakePoint(2, 1)];
+
+	stream = [OFMemoryStream streamWithMemoryAddress: memory
+						    size: sizeof(memory)
+						writable: true];
+	[image writeToStream: stream
+		 imageFormat: OFImageFormatQOI
+		     options: nil];
+
+	[stream seekToOffset: 0 whence: OFSeekSet];
+	image2 = [OFImage readFromStream: stream imageFormat: OFImageFormatQOI];
+
+	OTAssertEqualObjects(image, image2);
+}
 @end
