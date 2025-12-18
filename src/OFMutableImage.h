@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	    a buffer and use that instead.
  *
  * @param point The point whose color to set
- * @param color The color for the specified poiint
+ * @param color The color for the specified point
  * @throw OFOutOfRangeException The specified point is outside of the image's
  *				bounds or the specified color is outside the
  *				range supported by the image's format
