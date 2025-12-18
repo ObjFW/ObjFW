@@ -59,7 +59,7 @@
 	/* DIB header */
 
 	headerSize = [stream readLittleEndianInt32];
-	if (headerSize != 40) {
+	if (headerSize != 40 && headerSize != 108 && headerSize != 124) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"header size %u\"", headerSize];
 		@throw [OFUnsupportedVersionException
@@ -99,7 +99,8 @@
 		linePadding = 4 - (lineLength % 4);
 
 	compressionMethod = [stream readLittleEndianInt32];
-	if (compressionMethod != 0) {
+	if (compressionMethod != 0 &&
+	    (headerSize < 108 || compressionMethod != 3)) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"compression method %u\"", compressionMethod];
 		@throw [OFUnsupportedVersionException
@@ -114,15 +115,44 @@
 	if ([stream readLittleEndianInt32] != 0)
 		@throw [OFInvalidFormatException exception];
 
+	/* Number of important colors = */ [stream readLittleEndianInt32];
+
 	switch (bitsPerPixel) {
 	case 24:
 		format = OFPixelFormatBGR888;
 		break;
+	case 32:
+		if (headerSize >= 108 && compressionMethod == 3)
+			break;
+		/* Fall through */
 	default:;
 		OFString *version = [OFString stringWithFormat:
 		    @"\"%u bits per pixel\"", bitsPerPixel];
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
+	}
+
+	if (headerSize >= 108 && compressionMethod == 3) {
+		uint32_t redMask = [stream readLittleEndianInt32];
+		uint32_t greenMask = [stream readLittleEndianInt32];
+		uint32_t blueMask = [stream readLittleEndianInt32];
+		uint32_t alphaMask = [stream readLittleEndianInt32];
+
+		if (redMask == 0xFF000000 || greenMask == 0x00FF0000 ||
+		    blueMask == 0x0000FF00 || alphaMask == 0x000000FF)
+			format = OFPixelFormatABGR8888;
+		else if (redMask == 0x00FF0000 || greenMask == 0x0000FF00 ||
+		    blueMask == 0x000000FF || alphaMask == 0xFF000000)
+			format = OFPixelFormatBGRA8888;
+		else if (redMask == 0x000000FF || greenMask == 0x0000FF00 ||
+		    blueMask == 0x00FF00FF || alphaMask == 0xFF000000)
+			format = OFPixelFormatRGBA8888;
+		else if (redMask == 0x0000FF00 || greenMask == 0x00FF0000 ||
+		    blueMask == 0xFF000000 || alphaMask == 0x000000FF)
+			format = OFPixelFormatARGB8888;
+		else
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: @"\"bit fields\""];
 	}
 
 	[stream seekToOffset: dataStart whence: OFSeekSet];

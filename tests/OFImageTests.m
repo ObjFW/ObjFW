@@ -344,6 +344,36 @@
 	OTAssertEqualObjects(image, image2);
 }
 
+- (void)testWriteToStreamWithImageFormatBMPRGBA8888
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(3, 2)
+	      pixelFormat: OFPixelFormatRGBA8888];
+	OFImage *image2;
+	uint8_t memory[146];
+	OFMemoryStream *stream;
+
+	[image setColor: [OFColor red] atPoint: OFMakePoint(0, 0)];
+	[image setColor: [OFColor green] atPoint: OFMakePoint(1, 0)];
+	[image setColor: [OFColor blue] atPoint: OFMakePoint(2, 0)];
+	[image setColor: [OFColor black] atPoint: OFMakePoint(0, 1)];
+	[image setColor: [OFColor purple] atPoint: OFMakePoint(1, 1)];
+	[image setColor: [OFColor olive] atPoint: OFMakePoint(2, 1)];
+
+	stream = [OFMemoryStream streamWithMemoryAddress: memory
+						    size: sizeof(memory)
+						writable: true];
+	[image writeToStream: stream
+		 imageFormat: OFImageFormatBMP
+		     options: nil];
+
+	[stream seekToOffset: 0 whence: OFSeekSet];
+	image2 = [OFImage imageWithStream: stream
+			      imageFormat: OFImageFormatBMP];
+
+	OTAssertEqualObjects(image, image2);
+}
+
 - (void)testImageWithStreamImageFormatQOI
 {
 	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.qoi"];
