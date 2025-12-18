@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFReadFailedException Reading from the stream failed
  * @throw OFSeekFailedException Seeking the stream failed
  */
-- (OFImage *)readImageFromStream: (OFSeekableStream *)stream;
+- (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream;
 
 /**
  * @brief Writes the specified image to the specified stream with the specified

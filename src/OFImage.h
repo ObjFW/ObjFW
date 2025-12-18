@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFColor;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableImage;
 @class OFSeekableStream;
 
 /**
@@ -127,7 +128,7 @@ extern const OFImageFormat OFImageFormatQOI;
 @property (readonly, nonatomic) OFSize dotsPerInch;
 
 /**
- * @brief Creates a new image from the specified stream.
+ * @brief Creates a new mutable image from the specified stream.
  *
  * @param stream The stream to create the image from
  * @param format The image format of the stream
@@ -142,8 +143,8 @@ extern const OFImageFormat OFImageFormatQOI;
  * @throw OFNotImplementedException There is no implementation for the
  *				    specified format
  */
-+ (OFImage *)readFromStream: (OFSeekableStream *)stream
-		imageFormat: (OFImageFormat)format;
++ (OFMutableImage *)imageWithStream: (OFSeekableStream *)stream
+			imageFormat: (OFImageFormat)format;
 
 /**
  * @brief Creates a new image with the specified pixels in the specified pixel

@@ -105,7 +105,7 @@ static OFMutableDictionary OF_GENERIC(OFImageFormat, OFImageFormatHandler *)
 	[super dealloc];
 }
 
-- (OFImage *)readImageFromStream: (OFSeekableStream *)stream
+- (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

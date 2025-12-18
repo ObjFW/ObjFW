@@ -280,12 +280,12 @@
 	OTAssertNotEqualObjects(image, copy);
 }
 
-- (void)testReadFromStreamWithImageFormatBMP
+- (void)testImageWithStreamImageFormatBMP
 {
 	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.bmp"];
 	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
-	OFImage *image = [OFImage readFromStream: stream
-				     imageFormat: OFImageFormatBMP];
+	OFImage *image = [OFImage imageWithStream: stream
+				      imageFormat: OFImageFormatBMP];
 
 	OFAssert(OFEqualSizes(image.size, OFMakeSize(3, 2)));
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
@@ -338,17 +338,18 @@
 		     options: nil];
 
 	[stream seekToOffset: 0 whence: OFSeekSet];
-	image2 = [OFImage readFromStream: stream imageFormat: OFImageFormatBMP];
+	image2 = [OFImage imageWithStream: stream
+			      imageFormat: OFImageFormatBMP];
 
 	OTAssertEqualObjects(image, image2);
 }
 
-- (void)testReadFromStreamWithImageFormatQOI
+- (void)testImageWithStreamImageFormatQOI
 {
 	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile.qoi"];
 	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
-	OFImage *image = [OFImage readFromStream: stream
-				     imageFormat: OFImageFormatQOI];
+	OFImage *image = [OFImage imageWithStream: stream
+				      imageFormat: OFImageFormatQOI];
 
 	OFAssert(OFEqualSizes(image.size, OFMakeSize(3, 2)));
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
@@ -398,7 +399,8 @@
 		     options: nil];
 
 	[stream seekToOffset: 0 whence: OFSeekSet];
-	image2 = [OFImage readFromStream: stream imageFormat: OFImageFormatQOI];
+	image2 = [OFImage imageWithStream: stream
+			      imageFormat: OFImageFormatQOI];
 
 	OTAssertEqualObjects(image, image2);
 }

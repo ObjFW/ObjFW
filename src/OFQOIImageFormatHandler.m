@@ -36,7 +36,7 @@ hashPixel(uint8_t pixel[4])
 	    pixel[3] * 11) % 64;
 }
 
-- (OFImage *)readImageFromStream: (OFSeekableStream *)stream
+- (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	char magic[4];
 	uint32_t width, height;

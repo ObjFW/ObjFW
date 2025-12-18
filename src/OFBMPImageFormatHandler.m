@@ -32,7 +32,7 @@
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFBMPImageFormatHandler
-- (OFImage *)readImageFromStream: (OFSeekableStream *)stream
+- (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream
 {
 	char magic[2];
 	uint32_t dataStart, headerSize, compressionMethod;

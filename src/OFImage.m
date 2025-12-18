@@ -80,8 +80,8 @@ static struct {
 	return [super alloc];
 }
 
-+ (OFImage *)readFromStream: (OFSeekableStream *)stream
-		imageFormat: (OFImageFormat)format
++ (OFMutableImage *)imageWithStream: (OFSeekableStream *)stream
+			imageFormat: (OFImageFormat)format
 {
 	OFImageFormatHandler *handler =
 	    [OFImageFormatHandler handlerForImageFormat: format];
