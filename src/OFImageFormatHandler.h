@@ -90,6 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Writes the specified image to the specified stream with the specified
  *	  options.
  *
+ * @param image The image to write to the stream
  * @param stream The stream to write the image to
  * @param options Additional format-specific options to write the image to
  *		  the stream
