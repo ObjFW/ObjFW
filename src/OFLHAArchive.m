@@ -180,7 +180,7 @@ OF_DIRECT_MEMBERS
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	char header[21];
+	uint8_t header[21];
 	size_t headerLen;
 
 	if (_mode != modeRead)
