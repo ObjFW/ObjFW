@@ -91,6 +91,7 @@ _OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 		}
 
 		code = 0;
+		lengthCount[0] = 0;
 		for (size_t i = 1; i <= maxBit; i++) {
 			code = (code + lengthCount[i - 1]) << 1;
 			nextCode[i] = code;
