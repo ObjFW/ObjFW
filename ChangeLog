@@ -4,6 +4,18 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.4.2 -> ObjFW 1.4.3, 2025-12-20
+ * Fixes a bug where calling -[OFTimer invalidate] multiple times would also
+   release its block multiple times.
+ * Fixes incomplete initialization in OFHuffmanTree, which is used by Deflate,
+   LHA and Zoo.
+ * Fixes OFLHAArchiveEntry accidentally doing bit shifts on signed integers,
+   resulting in being unable to list or extract some archives.
+ * Fixes -[OFTarArchive compressedSize] being too big when the file size is a
+   multiple of 512.
+ * +[OFSystemInfo networkInterfaces] makes sure now sockets are initialized.
+ * Fixes ofarc waiting for user confirmation even if there is no TTY.
+
 ObjFW 1.4.1 -> ObjFW 1.4.2, 2025-10-05
  * Fixes compatibility with C++ 20 and up.
  * Fixes +[alloc] being able to return nil.
