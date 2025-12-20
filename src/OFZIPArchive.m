@@ -25,19 +25,19 @@
 
 #import "OFZIPArchive.h"
 #import "OFZIPArchive+Private.h"
-#import "OFZIPArchiveEntry.h"
-#import "OFZIPArchiveEntry+Private.h"
 #import "OFArchiveIRIHandler.h"
 #import "OFArray.h"
 #import "OFCRC32.h"
 #import "OFData.h"
+#import "OFDeflate64Stream.h"
+#import "OFDeflateStream.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
-#import "OFInflate64Stream.h"
-#import "OFInflateStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
+#import "OFZIPArchiveEntry.h"
+#import "OFZIPArchiveEntry+Private.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -824,12 +824,14 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			_decompressedStream = objc_retain(_archive->_stream);
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate:
-			_decompressedStream = [[OFInflateStream alloc]
-			    initWithStream: _archive->_stream];
+			_decompressedStream = [[OFDeflateStream alloc]
+			    initWithStream: _archive->_stream
+				      mode: @"r"];
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate64:
-			_decompressedStream = [[OFInflate64Stream alloc]
-			    initWithStream: _archive->_stream];
+			_decompressedStream = [[OFDeflate64Stream alloc]
+			    initWithStream: _archive->_stream
+				      mode: @"r"];
 			break;
 		default:
 			@throw [OFNotImplementedException

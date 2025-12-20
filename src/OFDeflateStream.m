@@ -22,20 +22,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef OF_INFLATE64_STREAM_M
-# import "OFInflateStream.h"
-#else
-# import "OFInflate64Stream.h"
-# define OFInflateStream OFInflate64Stream
+#import "OFDeflateStream.h"
+#ifdef OF_DEFLATE64_STREAM_M
+# import "OFDeflate64Stream.h"
+# define OFDeflateStream OFDeflate64Stream
 #endif
 #import "OFHuffmanTree.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 
-#ifndef OF_INFLATE64_STREAM_M
+#ifndef OF_DEFLATE64_STREAM_M
 # define bufferSize OFInflateStreamBufferSize
 #else
 # define bufferSize OFInflate64StreamBufferSize
@@ -58,7 +59,7 @@ enum HuffmanState {
 	huffmanStateProcessPair
 };
 
-#ifndef OF_INFLATE64_STREAM_M
+#ifndef OF_DEFLATE64_STREAM_M
 static const uint8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -103,46 +104,45 @@ static const uint8_t codeLengthsOrder[19] = {
 };
 static OFHuffmanTree fixedLitLenTree, fixedDistTree;
 
-@implementation OFInflateStream
+@implementation OFDeflateStream
 @synthesize underlyingStream = _stream;
 
 static OF_INLINE bool
-tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
+tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 {
-	uint16_t ret = stream->_savedBits;
+	struct OFInflateContext *ctx = stream->_inflateCtx;
+	uint16_t ret = ctx->savedBits;
 
-	OFAssert(stream->_savedBitsLength < count);
+	OFAssert(ctx->savedBitsLength < count);
 
-	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
-		if OF_UNLIKELY (stream->_bitIndex == 8) {
-			if OF_LIKELY (stream->_bufferIndex <
-			    stream->_bufferLength)
-				stream->_byte =
-				    stream->_buffer[stream->_bufferIndex++];
+	for (uint_fast8_t i = ctx->savedBitsLength; i < count; i++) {
+		if OF_UNLIKELY (ctx->bitIndex == 8) {
+			if OF_LIKELY (ctx->bufferIndex < ctx->bufferLength)
+				ctx->byte = ctx->buffer[ctx->bufferIndex++];
 			else {
 				size_t length = [stream->_stream
-				    readIntoBuffer: stream->_buffer
+				    readIntoBuffer: ctx->buffer
 					    length: bufferSize];
 
 				if OF_UNLIKELY (length < 1) {
-					stream->_savedBits = ret;
-					stream->_savedBitsLength = i;
+					ctx->savedBits = ret;
+					ctx->savedBitsLength = i;
 					return false;
 				}
 
-				stream->_byte = stream->_buffer[0];
-				stream->_bufferIndex = 1;
-				stream->_bufferLength = (uint16_t)length;
+				ctx->byte = ctx->buffer[0];
+				ctx->bufferIndex = 1;
+				ctx->bufferLength = (uint16_t)length;
 			}
 
-			stream->_bitIndex = 0;
+			ctx->bitIndex = 0;
 		}
 
-		ret |= ((stream->_byte >> stream->_bitIndex++) & 1) << i;
+		ret |= ((ctx->byte >> ctx->bitIndex++) & 1) << i;
 	}
 
-	stream->_savedBits = 0;
-	stream->_savedBitsLength = 0;
+	ctx->savedBits = 0;
+	ctx->savedBitsLength = 0;
 	*bits = ret;
 
 	return true;
@@ -152,7 +152,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint8_t lengths[288];
 
-	if (self != [OFInflateStream class])
+	if (self != [OFDeflateStream class])
 		return;
 
 	for (uint16_t i = 0; i <= 143; i++)
@@ -178,6 +178,13 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	    [[self alloc] initWithStream: stream]);
 }
 
++ (instancetype)streamWithStream: (OFStream *)stream mode: (OFString *)mode
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStream: stream
+				    mode: mode]);
+}
+
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
@@ -185,20 +192,35 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 - (instancetype)initWithStream: (OFStream *)stream
 {
+	return [self initWithStream: stream mode: @"r"];
+}
+
+- (instancetype)initWithStream: (OFStream *)stream mode: (OFString *)mode
+{
 	self = [super init];
 
 	@try {
 		_stream = objc_retain(stream);
 
-		/* 0-7 address the bit, 8 means fetch next byte */
-		_bitIndex = 8;
-
-#ifdef OF_INFLATE64_STREAM_M
+#ifdef OF_DEFLATE64_STREAM_M
 		_slidingWindowMask = 0xFFFF;
 #else
 		_slidingWindowMask = 0x7FFF;
 #endif
 		_slidingWindow = OFAllocZeroedMemory(_slidingWindowMask + 1, 1);
+
+		if ([mode isEqual: @"r"]) {
+			_inflateCtx = OFAllocZeroedMemory(1,
+			    sizeof(*_inflateCtx));
+
+			/* 0-7 address the bit, 8 means fetch next byte */
+			_inflateCtx->bitIndex = 8;
+		} else if ([mode isEqual: @"w"])
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: nil];
+		else
+			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -214,18 +236,27 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 	OFFreeMemory(_slidingWindow);
 
-	if (_state == stateHuffmanTree) {
-		OFFreeMemory(_context.huffmanTree.lengths);
+	if (_inflateCtx != NULL) {
+		if (_inflateCtx->state == stateHuffmanTree) {
+			OFFreeMemory(_inflateCtx->ctx.huffmanTree.lengths);
 
-		if (_context.huffmanTree.codeLenTree != NULL)
-			_OFHuffmanTreeFree(_context.huffmanTree.codeLenTree);
-	}
+			if (_inflateCtx->ctx.huffmanTree.codeLenTree != NULL)
+				_OFHuffmanTreeFree(
+				    _inflateCtx->ctx.huffmanTree.codeLenTree);
+		}
 
-	if (_state == stateHuffmanTree || _state == stateHuffmanBlock) {
-		if (_context.huffman.litLenTree != fixedLitLenTree)
-			_OFHuffmanTreeFree(_context.huffman.litLenTree);
-		if (_context.huffman.distTree != fixedDistTree)
-			_OFHuffmanTreeFree(_context.huffman.distTree);
+		if (_inflateCtx->state == stateHuffmanTree ||
+		    _inflateCtx->state == stateHuffmanBlock) {
+			if (_inflateCtx->ctx.huffman.litLenTree !=
+			    fixedLitLenTree)
+				_OFHuffmanTreeFree(
+				    _inflateCtx->ctx.huffman.litLenTree);
+			if (_inflateCtx->ctx.huffman.distTree != fixedDistTree)
+				_OFHuffmanTreeFree(
+				    _inflateCtx->ctx.huffman.distTree);
+		}
+
+		OFFreeMemory(_inflateCtx);
 	}
 
 	[super dealloc];
@@ -239,21 +270,25 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	size_t bytesWritten = 0;
 	unsigned char *slidingWindow;
 	uint16_t slidingWindowIndex;
+	struct OFInflateContext *ctx;
 
-	if (_stream == nil)
+	if (_stream == nil || _inflateCtx == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_atEndOfStream)
 		return 0;
 
+	ctx = _inflateCtx;
+
 start:
-	switch ((enum State)_state) {
+	switch ((enum State)ctx->state) {
 	case stateBlockHeader:
-		if OF_UNLIKELY (_inLastBlock) {
-			[_stream unreadFromBuffer: _buffer + _bufferIndex
-					   length: _bufferLength -
-						   _bufferIndex];
-			_bufferIndex = _bufferLength = 0;
+		if OF_UNLIKELY (ctx->inLastBlock) {
+			[_stream unreadFromBuffer: ctx->buffer +
+						   ctx->bufferIndex
+					   length: ctx->bufferLength -
+						   ctx->bufferIndex];
+			ctx->bufferIndex = ctx->bufferLength = 0;
 
 			_atEndOfStream = true;
 			return bytesWritten;
@@ -262,30 +297,30 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 3))
 			return bytesWritten;
 
-		_inLastBlock = (bits & 1);
+		ctx->inLastBlock = (bits & 1);
 
 		switch (bits >> 1) {
 		case 0: /* No compression */
-			_state = stateUncompressedBlockHeader;
-			_bitIndex = 8;
-			_context.uncompressedHeader.position = 0;
-			memset(_context.uncompressedHeader.length, 0, 4);
+			ctx->state = stateUncompressedBlockHeader;
+			ctx->bitIndex = 8;
+			ctx->ctx.uncompressedHeader.position = 0;
+			memset(ctx->ctx.uncompressedHeader.length, 0, 4);
 			break;
 		case 1: /* Fixed Huffman */
-			_state = stateHuffmanBlock;
-			_context.huffman.state = huffmanStateAwaitCode;
-			_context.huffman.litLenTree = fixedLitLenTree;
-			_context.huffman.distTree = fixedDistTree;
-			_context.huffman.treeIter = fixedLitLenTree;
+			ctx->state = stateHuffmanBlock;
+			ctx->ctx.huffman.state = huffmanStateAwaitCode;
+			ctx->ctx.huffman.litLenTree = fixedLitLenTree;
+			ctx->ctx.huffman.distTree = fixedDistTree;
+			ctx->ctx.huffman.treeIter = fixedLitLenTree;
 			break;
 		case 2: /* Dynamic Huffman */
-			_state = stateHuffmanTree;
-			_context.huffmanTree.lengths = NULL;
-			_context.huffmanTree.receivedCount = 0;
-			_context.huffmanTree.value = 0xFE;
-			_context.huffmanTree.litLenCodesCount = 0xFF;
-			_context.huffmanTree.distCodesCount = 0xFF;
-			_context.huffmanTree.codeLenCodesCount = 0xFF;
+			ctx->state = stateHuffmanTree;
+			ctx->ctx.huffmanTree.lengths = NULL;
+			ctx->ctx.huffmanTree.receivedCount = 0;
+			ctx->ctx.huffmanTree.value = 0xFE;
+			ctx->ctx.huffmanTree.litLenCodesCount = 0xFF;
+			ctx->ctx.huffmanTree.distCodesCount = 0xFF;
+			ctx->ctx.huffmanTree.codeLenCodesCount = 0xFF;
 			break;
 		default:
 			@throw [OFInvalidFormatException exception];
@@ -293,11 +328,12 @@ start:
 
 		goto start;
 	case stateUncompressedBlockHeader:
-#define CTX _context.uncompressedHeader
+#define CTX ctx->ctx.uncompressedHeader
 		/* FIXME: This can be done more efficiently than unreading */
-		[_stream unreadFromBuffer: _buffer + _bufferIndex
-				   length: _bufferLength - _bufferIndex];
-		_bufferIndex = _bufferLength = 0;
+		[_stream unreadFromBuffer: ctx->buffer + ctx->bufferIndex
+				   length: ctx->bufferLength -
+					   ctx->bufferIndex];
+		ctx->bufferIndex = ctx->bufferLength = 0;
 
 		CTX.position += [_stream
 		    readIntoBuffer: CTX.length + CTX.position
@@ -310,20 +346,20 @@ start:
 		    (uint16_t)~(CTX.length[2] | (CTX.length[3] << 8)))
 			@throw [OFInvalidFormatException exception];
 
-		_state = stateUncompressedBlock;
+		ctx->state = stateUncompressedBlock;
 
 		/*
 		 * Do not reorder! _context.uncompressed.position and
 		 * _context.uncompressedHeader.length overlap!
 		 */
-		_context.uncompressed.length =
+		ctx->ctx.uncompressed.length =
 		    CTX.length[0] | (CTX.length[1] << 8);
-		_context.uncompressed.position = 0;
+		ctx->ctx.uncompressed.position = 0;
 
 		goto start;
 #undef CTX
 	case stateUncompressedBlock:
-#define CTX _context.uncompressed
+#define CTX ctx->ctx.uncompressed
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
 
@@ -351,12 +387,12 @@ start:
 
 		CTX.position += tmp;
 		if OF_UNLIKELY (CTX.position == CTX.length)
-			_state = stateBlockHeader;
+			ctx->state = stateBlockHeader;
 
 		goto start;
 #undef CTX
 	case stateHuffmanTree:
-#define CTX _context.huffmanTree
+#define CTX ctx->ctx.huffmanTree
 		if OF_LIKELY (CTX.value == 0xFE) {
 			if OF_LIKELY (CTX.litLenCodesCount == 0xFF) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
@@ -497,14 +533,14 @@ start:
 		 * _context.huffman and _context.huffmanTree, thus no need to
 		 * set them.
 		 */
-		_state = stateHuffmanBlock;
-		_context.huffman.state = huffmanStateAwaitCode;
-		_context.huffman.treeIter = CTX.litLenTree;
+		ctx->state = stateHuffmanBlock;
+		ctx->ctx.huffman.state = huffmanStateAwaitCode;
+		ctx->ctx.huffman.treeIter = CTX.litLenTree;
 
 		goto start;
 #undef CTX
 	case stateHuffmanBlock:
-#define CTX _context.huffman
+#define CTX ctx->ctx.huffman
 		for (;;) {
 			uint8_t extraBits, lengthCodeIndex;
 
@@ -613,7 +649,7 @@ start:
 				if (CTX.distTree != fixedDistTree)
 					_OFHuffmanTreeFree(CTX.distTree);
 
-				_state = stateBlockHeader;
+				ctx->state = stateBlockHeader;
 				goto start;
 			}
 
@@ -684,8 +720,8 @@ start:
 
 - (bool)lowlevelHasDataInReadBuffer
 {
-	return (_stream.hasDataInReadBuffer ||
-	    _bufferLength - _bufferIndex > 0);
+	return (_stream.hasDataInReadBuffer || (_inflateCtx != NULL &&
+	    _inflateCtx->bufferLength - _inflateCtx->bufferIndex > 0));
 }
 
 - (void)close
@@ -693,10 +729,14 @@ start:
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	/* Give back our buffer to the stream, in case it's shared */
-	[_stream unreadFromBuffer: _buffer + _bufferIndex
-			   length: _bufferLength - _bufferIndex];
-	_bufferIndex = _bufferLength = 0;
+	if (_inflateCtx != NULL) {
+		/* Give back our buffer to the stream, in case it's shared */
+		[_stream unreadFromBuffer: _inflateCtx->buffer +
+					   _inflateCtx->bufferIndex
+				   length: _inflateCtx->bufferLength -
+					   _inflateCtx->bufferIndex];
+		_inflateCtx->bufferIndex = _inflateCtx->bufferLength = 0;
+	}
 
 	objc_release(_stream);
 	_stream = nil;

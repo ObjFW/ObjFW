@@ -17,5 +17,5 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#define OF_INFLATE64_STREAM_M
-#include "OFInflateStream.m"
+#define OF_DEFLATE64_STREAM_M
+#include "OFDeflateStream.m"

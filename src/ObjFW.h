@@ -65,6 +65,8 @@
 #import "OFSeekableStream.h"
 #import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
+#import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 #import "OFGZIPStream.h"
