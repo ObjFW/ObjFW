@@ -22,8 +22,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OFInflate64StreamBufferSize 4096
-
 /**
  * @class OFDeflate64Stream OFDeflate64Stream.h ObjFW/ObjFW.h
  *

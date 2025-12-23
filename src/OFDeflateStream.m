@@ -36,12 +36,6 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 
-#ifndef OF_DEFLATE64_STREAM_M
-# define bufferSize OFInflateStreamBufferSize
-#else
-# define bufferSize OFInflate64StreamBufferSize
-#endif
-
 enum State {
 	stateBlockHeader,
 	stateUncompressedBlockHeader,
@@ -60,6 +54,7 @@ enum HuffmanState {
 };
 
 #ifndef OF_DEFLATE64_STREAM_M
+static const uint16_t slidingWindowMask = 0x7FFF;
 static const uint8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -79,6 +74,7 @@ static const uint8_t distanceExtraBits[30] = {
 	10, 11, 11, 12, 12, 13, 13
 };
 #else
+static const uint16_t slidingWindowMask = 0xFFFF;
 static const uint8_t numDistanceCodes = 32;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -122,7 +118,7 @@ tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 			else {
 				size_t length = [stream->_stream
 				    readIntoBuffer: ctx->buffer
-					    length: bufferSize];
+					    length: OFInflateStreamBufferSize];
 
 				if OF_UNLIKELY (length < 1) {
 					ctx->savedBits = ret;
@@ -201,13 +197,7 @@ tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 
 	@try {
 		_stream = objc_retain(stream);
-
-#ifdef OF_DEFLATE64_STREAM_M
-		_slidingWindowMask = 0xFFFF;
-#else
-		_slidingWindowMask = 0x7FFF;
-#endif
-		_slidingWindow = OFAllocZeroedMemory(_slidingWindowMask + 1, 1);
+		_slidingWindow = OFAllocZeroedMemory(slidingWindowMask + 1, 1);
 
 		if ([mode isEqual: @"r"]) {
 			_inflateCtx = OFAllocZeroedMemory(1,
@@ -378,7 +368,7 @@ start:
 			slidingWindow[slidingWindowIndex] =
 			    buffer[bytesWritten + i];
 			slidingWindowIndex = (slidingWindowIndex + 1) &
-			    _slidingWindowMask;
+			    slidingWindowMask;
 		}
 		_slidingWindowIndex = slidingWindowIndex;
 
@@ -554,7 +544,7 @@ start:
 				_slidingWindow[_slidingWindowIndex] = CTX.value;
 				_slidingWindowIndex =
 				    (_slidingWindowIndex + 1) &
-				    _slidingWindowMask;
+				    slidingWindowMask;
 
 				CTX.state = huffmanStateAwaitCode;
 				CTX.treeIter = CTX.litLenTree;
@@ -621,7 +611,7 @@ start:
 					}
 
 					idx = (_slidingWindowIndex -
-					    CTX.distance) & _slidingWindowMask;
+					    CTX.distance) & slidingWindowMask;
 					value = _slidingWindow[idx];
 
 					buffer[bytesWritten++] = value;
@@ -631,7 +621,7 @@ start:
 					    value;
 					_slidingWindowIndex =
 					    (_slidingWindowIndex + 1) &
-					    _slidingWindowMask;
+					    slidingWindowMask;
 				}
 
 				CTX.state = huffmanStateAwaitCode;
@@ -667,7 +657,7 @@ start:
 				_slidingWindow[_slidingWindowIndex] = value;
 				_slidingWindowIndex =
 				    (_slidingWindowIndex + 1) &
-				    _slidingWindowMask;
+				    slidingWindowMask;
 
 				CTX.treeIter = CTX.litLenTree;
 				continue;
