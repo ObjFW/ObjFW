@@ -186,8 +186,8 @@
 		}
 	}
 
-	image.dotsPerInch = OFMakeSize(horizPixelPerMeter * 0.0254,
-	    vertPixelPerMeter * 0.0254);
+	image.dotsPerInch = OFMakeSize(horizPixelPerMeter * 0.0254f,
+	    vertPixelPerMeter * 0.0254f);
 
 	return image;
 }
@@ -254,8 +254,8 @@
 	    (bitsPerPixel == 24 ? 0 : 3)]; /* compressionMethod */
 	[stream writeLittleEndianInt32:
 	    height * (lineLength + linePadding)]; /* dataSize */
-	[stream writeLittleEndianInt32: image.dotsPerInch.width / 0.0254];
-	[stream writeLittleEndianInt32: image.dotsPerInch.height / 0.0254];
+	[stream writeLittleEndianInt32: image.dotsPerInch.width / 0.0254f];
+	[stream writeLittleEndianInt32: image.dotsPerInch.height / 0.0254f];
 	[stream writeLittleEndianInt32: 0]; /* Number of colors in palette */
 	[stream writeLittleEndianInt32: 0]; /* Number of important colors */
 	if (headerSize == 108) {

@@ -159,7 +159,7 @@ static OF_INLINE bool
 _OFReadPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
 {
-	uint8_t redInt, greenInt, blueInt, alphaInt;
+	uint8_t redInt = 0, greenInt = 0, blueInt = 0, alphaInt = 0;
 
 	if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y, width,
 	    &redInt, &greenInt, &blueInt, &alphaInt))

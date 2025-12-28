@@ -186,7 +186,7 @@ static struct {
 	size_t x = point.x, y = point.y;
 	OFSize size = self.size;
 	size_t width = size.width, height = size.height;
-	float red, green, blue, alpha;
+	float red = 0, green = 0, blue = 0, alpha = 0;
 
 	if OF_UNLIKELY (x != point.x || y != point.y ||
 	    width != size.width || height != size.height)
@@ -246,8 +246,9 @@ static struct {
 
 	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
-			float red, green, blue, alpha;
-			float otherRed, otherGreen, otherBlue, otherAlpha;
+			float red = 0, green = 0, blue = 0, alpha = 0;
+			float otherRed = 0, otherGreen = 0, otherBlue = 0;
+			float otherAlpha = 0;
 
 			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
 			    width, &red, &green, &blue, &alpha))
@@ -290,7 +291,7 @@ static struct {
 
 	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
-			float red, green, blue, alpha, tmp;
+			float red = 0, green = 0, blue = 0, alpha = 0, tmp;
 
 			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
 			    width, &red, &green, &blue, &alpha))

@@ -34,7 +34,7 @@
 	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific(
-	    [OFMutableImage imageWithSize: OFMakeSize(0.5, 0.0f)
+	    [OFMutableImage imageWithSize: OFMakeSize(0.5f, 0.0f)
 			      pixelFormat: OFPixelFormatRGB888],
 	    OFInvalidArgumentException);
 
