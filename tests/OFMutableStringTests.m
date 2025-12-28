@@ -246,7 +246,7 @@ static OFString *const whitespace[] = {
 	    OFOutOfRangeException);
 }
 
-- (void)deleteLeadingWhitespaces
+- (void)testDeleteLeadingWhitespaces
 {
 	OFMutableString *string;
 
@@ -259,7 +259,7 @@ static OFString *const whitespace[] = {
 	OTAssertEqualObjects(string, @"");
 }
 
-- (void)deleteTrailingWhitespaces
+- (void)testDeleteTrailingWhitespaces
 {
 	OFMutableString *string;
 
@@ -272,7 +272,7 @@ static OFString *const whitespace[] = {
 	OTAssertEqualObjects(string, @"");
 }
 
-- (void)deleteEnclosingWhitespaces
+- (void)testDeleteEnclosingWhitespaces
 {
 	OFMutableString *string;
 
