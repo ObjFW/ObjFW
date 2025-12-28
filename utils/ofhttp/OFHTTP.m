@@ -333,8 +333,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_method = OFHTTPRequestMethodGet;
 
 		_clientHeaders = [[OFMutableDictionary alloc]
-		    initWithObject: @"OFHTTP"
-			    forKey: @"User-Agent"];
+		    initWithKeysAndObjects:
+		    @"User-Agent", @"OFHTTP",
+		    @"Accept", @"*/*", nil];
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
