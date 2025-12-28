@@ -166,7 +166,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *modificationDate = [entry.modificationDate

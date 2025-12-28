@@ -191,6 +191,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		    @"Archive comment:")];
 		[OFStdOut writeString: @"\t"];
 		[OFStdOut writeLine: [_archive.archiveComment
+		    .stringByReplacingControlCharacters
 		    stringByReplacingOccurrencesOfString: @"\n"
 					      withString: @"\n\t"]];
 		[OFStdOut writeLine: @""];
@@ -201,7 +202,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *compressedSize = [OFString
