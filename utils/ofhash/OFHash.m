@@ -114,7 +114,8 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	for (size_t i = 0; i < digestSize; i++)
 		[OFStdOut writeFormat: @"%02x", digest[i]];
 
-	[OFStdOut writeFormat: @"  %@\n", path];
+	[OFStdOut writeFormat: @"  %@\n",
+			       path.stringByReplacingControlCharacters];
 }
 
 @implementation OFHash
