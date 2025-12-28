@@ -683,8 +683,13 @@ OF_SINGLETON_METHODS
 						  length: i - last];
 				OFString *value = [variables objectForKey: var];
 
-				if (value != nil)
-					[ret appendString: value.description];
+				if (value != nil) {
+					value = value.description;
+					value = value
+					    .stringByReplacingControlCharacters;
+
+					[ret appendString: value];
+				}
 
 				last = i + 1;
 				state = 0;
