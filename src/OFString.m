@@ -2261,7 +2261,13 @@ OF_SINGLETON_METHODS
 
 - (OFString *)stringByReplacingControlCharacters
 {
-	OFMutableString *new = objc_autorelease([self mutableCopy]);
+	OFMutableString *new;
+
+	if ([self rangeOfCharacterFromSet:
+	    [OFCharacterSet controlCharacterSet]].location == OFNotFound)
+		return self;
+
+	new = objc_autorelease([self mutableCopy]);
 	[new replaceControlCharacters];
 	[new makeImmutable];
 	return new;
