@@ -2259,6 +2259,14 @@ OF_SINGLETON_METHODS
 	return new;
 }
 
+- (OFString *)stringByReplacingControlCharacters
+{
+	OFMutableString *new = objc_autorelease([self mutableCopy]);
+	[new replaceControlCharacters];
+	[new makeImmutable];
+	return new;
+}
+
 - (bool)hasPrefix: (OFString *)prefix
 {
 	OFUnichar *tmp;

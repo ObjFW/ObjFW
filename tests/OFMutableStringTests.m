@@ -284,6 +284,39 @@ static OFString *const whitespace[] = {
 	[string deleteEnclosingWhitespaces];
 	OTAssertEqualObjects(string, @"");
 }
+
+- (void)testReplaceControlCharacters
+{
+	OFMutableString *string;
+
+	string = [self.stringClass stringWithString: @"foo\0bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␀bar");
+
+	string = [self.stringClass stringWithString: @"foo\x1F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␟bar");
+
+	string = [self.stringClass stringWithString: @"foo\x20" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo bar");
+
+	string = [self.stringClass stringWithString: @"foo\x7F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␡bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\x80" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␛@bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\x9F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␛_bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\xA0" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo\xC2\xA0" @"bar");
+}
 @end
 
 @implementation CustomMutableString

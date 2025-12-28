@@ -206,6 +206,12 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)deleteEnclosingWhitespaces;
 
 /**
+ * @brief Replaces all control characters in the string with a description of
+ *	  the replaces control character.
+ */
+- (void)replaceControlCharacters;
+
+/**
  * @brief Converts the mutable string to an immutable string.
  */
 - (void)makeImmutable;

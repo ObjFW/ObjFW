@@ -358,6 +358,12 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
+/**
+ * @brief The string with all control characters replaced with a description of
+ *	  the replaced control character.
+ */
+@property (readonly, nonatomic) OFString *stringByReplacingControlCharacters;
+
 #if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
  * @brief The string with the Windows Environment Strings expanded.
