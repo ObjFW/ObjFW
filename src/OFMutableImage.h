@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The raw pixels using the @ref pixelFormat.
  */
-@property (readonly, nonatomic) void *mutablePixels;
+@property (readonly, nonatomic) void *mutablePixels OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.

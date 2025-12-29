@@ -120,7 +120,7 @@ extern const OFImageFormat OFImageFormatQOI;
 /**
  * @brief The raw pixels using the @ref pixelFormat.
  */
-@property (readonly, nonatomic) const void *pixels;
+@property (readonly, nonatomic) const void *pixels OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.
