@@ -741,7 +741,17 @@ static OFRunLoop *mainRunLoop = nil;
 	OFString *newString, *oldString;
 
 	@try {
-		const char *cString = [_string cStringWithEncoding: _encoding];
+		const char *cString;
+		bool allowsLossyEncoding = false;
+
+		if ([object respondsToSelector: @selector(allowsLossyEncoding)])
+			allowsLossyEncoding = [object allowsLossyEncoding];
+
+		if (allowsLossyEncoding)
+			cString = [_string cStringWithEncoding: _encoding];
+		else
+			cString = [_string lossyCStringWithEncoding: _encoding];
+
 		length = cStringLength - _writtenLength;
 		[object writeBuffer: cString + _writtenLength length: length];
 	} @catch (OFWriteFailedException *e) {
