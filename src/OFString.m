@@ -186,16 +186,16 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"ascii"] || [string isEqual: @"us-ascii"])
 		encoding = OFStringEncodingASCII;
 	else if ([string isEqual: @"iso-8859-1"] ||
-	    [string isEqual: @"iso_8859-1"])
+	    [string isEqual: @"iso_8859-1"] || [string isEqual: @"iso8859-1"])
 		encoding = OFStringEncodingISO8859_1;
 	else if ([string isEqual: @"iso-8859-2"] ||
-	    [string isEqual: @"iso_8859-2"])
+	    [string isEqual: @"iso_8859-2"] || [string isEqual: @"iso8859-2"])
 		encoding = OFStringEncodingISO8859_2;
 	else if ([string isEqual: @"iso-8859-3"] ||
-	    [string isEqual: @"iso_8859-3"])
+	    [string isEqual: @"iso_8859-3"] || [string isEqual: @"iso8859-3"])
 		encoding = OFStringEncodingISO8859_3;
 	else if ([string isEqual: @"iso-8859-15"] ||
-	    [string isEqual: @"iso_8859-15"])
+	    [string isEqual: @"iso_8859-15"] || [string isEqual: @"iso8859-15"])
 		encoding = OFStringEncodingISO8859_15;
 	else if ([string isEqual: @"windows-1250"] ||
 	    [string isEqual: @"cp1250"] || [string isEqual: @"cp-1250"] ||
