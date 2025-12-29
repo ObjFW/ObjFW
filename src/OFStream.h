@@ -286,7 +286,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-@protected
+@private
 	uintptr_t _encoding;
 	OF_RESERVE_IVARS(OFStream, 3)
 }
