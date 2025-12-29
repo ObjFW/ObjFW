@@ -528,10 +528,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		if (OFStdIn.hasTerminal)
 			OFStdIn.encoding = _encoding;
-		if (OFStdOut.hasTerminal)
+		if (OFStdOut.hasTerminal) {
 			OFStdOut.encoding = _encoding;
-		if (OFStdErr.hasTerminal)
+			OFStdOut.allowsLossyEncoding = true;
+		}
+		if (OFStdErr.hasTerminal) {
 			OFStdErr.encoding = _encoding;
+			OFStdErr.allowsLossyEncoding = true;
+		}
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
