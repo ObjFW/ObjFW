@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -134,7 +134,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *date = [entry.modificationDate
@@ -285,6 +286,18 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"list_type_unknown",
 				    @"Type: Unknown")];
 				break;
+			}
+
+			if (entry.extendedHeader != nil) {
+				OFString *header =
+				    [entry.extendedHeader.description
+				    stringByReplacingOccurrencesOfString: @"\n"
+				    withString: @"\n\t"];
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_extended_header",
+				    @"Extended header: %[header]",
+				    @"header", header)];
 			}
 		}
 

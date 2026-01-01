@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -528,10 +528,14 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 		if (OFStdIn.hasTerminal)
 			OFStdIn.encoding = _encoding;
-		if (OFStdOut.hasTerminal)
+		if (OFStdOut.hasTerminal) {
 			OFStdOut.encoding = _encoding;
-		if (OFStdErr.hasTerminal)
+			OFStdOut.allowsLossyEncoding = true;
+		}
+		if (OFStdErr.hasTerminal) {
 			OFStdErr.encoding = _encoding;
+			OFStdErr.allowsLossyEncoding = true;
+		}
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -683,8 +687,13 @@ OF_SINGLETON_METHODS
 						  length: i - last];
 				OFString *value = [variables objectForKey: var];
 
-				if (value != nil)
-					[ret appendString: value.description];
+				if (value != nil) {
+					value = value.description;
+					value = value
+					    .stringByReplacingControlCharacters;
+
+					[ret appendString: value];
+				}
 
 				last = i + 1;
 				state = 0;

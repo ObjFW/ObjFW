@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -59,7 +59,7 @@
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofarc " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
-    "\xA9 2008-2025 Jonathan Schleifer";
+    "\xA9 2008-2026 Jonathan Schleifer";
 #endif
 
 #ifdef HAVE_TLS_SUPPORT
@@ -121,7 +121,7 @@ version(void)
 {
 	[OFStdOut writeFormat: @"ofarc %@ (ObjFW %@) "
 			       @"<https://objfw.nil.im/>\n"
-			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"Copyright (c) 2008-2026 Jonathan Schleifer "
 			       @"<js@nil.im>\n"
 			       @"Licensed under the LGPL 3.0 "
 			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"

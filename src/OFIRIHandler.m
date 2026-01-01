@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,7 +84,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 + (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI
 {
-	OF_KINDOF(OFIRIHandler *) handler;
+	OFIRIHandler *handler;
 
 	@synchronized (handlers) {
 		handler = [handlers objectForKey: IRI.scheme];
@@ -96,7 +96,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return handler;
 }
 
-+ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
++ (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	return [[self handlerForIRI: IRI] openItemAtIRI: IRI mode: mode];
 }
@@ -136,7 +136,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	[super dealloc];
 }
 
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,6 +45,14 @@ OF_ASSUME_NONNULL_BEGIN
 #if OF_GCC_VERSION >= 405
 # pragma GCC diagnostic pop
 #endif
+
+/**
+ * @brief The PAX extended header of the Tar archive entry.
+ *
+ * This is a map of @ref OFString to @ref OFData.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString *, OFData *) *extendedHeader;
 
 /**
  * @brief Creates a new OFMutableTarArchiveEntry with the specified file name.

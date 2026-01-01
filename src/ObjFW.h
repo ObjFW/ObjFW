@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -55,6 +55,8 @@
 #import "OFIRIHandler.h"
 #import "OFUUID.h"
 #import "OFColor.h"
+#import "OFImage.h"
+#import "OFImageFormatHandler.h"
 
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"
@@ -63,6 +65,8 @@
 #import "OFSeekableStream.h"
 #import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
+#import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 #import "OFGZIPStream.h"

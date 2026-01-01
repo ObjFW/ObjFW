@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -64,7 +64,7 @@
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
-    "\xA9 2008-2025 Jonathan Schleifer";
+    "\xA9 2008-2026 Jonathan Schleifer";
 #endif
 
 #define KIBIBYTE 1024
@@ -164,7 +164,7 @@ version(void)
 {
 	[OFStdOut writeFormat: @"ofhttp %@ (ObjFW %@) "
 			       @"<https://objfw.nil.im/>\n"
-			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"Copyright (c) 2008-2026 Jonathan Schleifer "
 			       @"<js@nil.im>\n"
 			       @"Licensed under the LGPL 3.0 "
 			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
@@ -334,8 +334,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_method = OFHTTPRequestMethodGet;
 
 		_clientHeaders = [[OFMutableDictionary alloc]
-		    initWithObject: @"OFHTTP"
-			    forKey: @"User-Agent"];
+		    initWithKeysAndObjects:
+		    @"User-Agent", @"OFHTTP",
+		    @"Accept", @"*/*", nil];
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
@@ -713,8 +714,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *key, *object;
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil)
+		    (object = [objectEnumerator nextObject]) != nil) {
+			key = [key description]
+			    .stringByReplacingControlCharacters;
+			object = [object description]
+			    .stringByReplacingControlCharacters;
+
 			[OFStdErr writeFormat: @"  %@: %@\n", key, object];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -726,7 +733,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[OFStdErr writeFormat: @"< "];
 
 		OFStdErr.underlined = true;
-		[OFStdErr writeString: IRI.string];
+		[OFStdErr writeString:
+		    IRI.string.stringByReplacingControlCharacters];
 		OFStdErr.underlined = false;
 	}
 
@@ -885,16 +893,21 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[OFStdErr writeString: OF_LOCALIZED(
 				    @"info_name_unaligned", @"Name: ")];
 				OFStdErr.bold = false;
-				[OFStdErr writeLine: _currentFileName];
+				[OFStdErr writeLine: _currentFileName
+				    .stringByReplacingControlCharacters];
 			}
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil) {
 				[OFStdErr writeString: @"  "];
 				OFStdErr.bold = true;
-				[OFStdErr writeFormat: @"  %@: ", key];
+				[OFStdErr writeFormat: @"%@: ",
+				    [key description]
+				    .stringByReplacingControlCharacters];
 				OFStdErr.bold = false;
-				[OFStdErr writeLine: object];
+				[OFStdErr writeLine:
+				    [object description]
+				    .stringByReplacingControlCharacters];
 			}
 
 			objc_autoreleasePoolPop(pool);
@@ -906,7 +919,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				[OFStdErr writeString:
 				    OF_LOCALIZED(@"info_name", @"Name: ")];
 				OFStdErr.bold = false;
-				[OFStdErr writeLine: _currentFileName];
+				[OFStdErr writeLine: _currentFileName
+				    .stringByReplacingControlCharacters];
 			}
 
 			[OFStdErr writeString: @"  "];
@@ -914,7 +928,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[OFStdErr writeString:
 			    OF_LOCALIZED(@"info_type", @"Type: ")];
 			OFStdErr.bold = false;
-			[OFStdErr writeLine: type];
+			[OFStdErr writeLine:
+			    type.stringByReplacingControlCharacters];
 			[OFStdErr writeString: @"  "];
 			OFStdErr.bold = true;
 			[OFStdErr writeString:
@@ -1204,9 +1219,11 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdErr writeFormat: @"⠒ %@", IRI.string];
+				[OFStdErr writeFormat: @"⠒ %@", IRI.string
+				    .stringByReplacingControlCharacters];
 			else
-				[OFStdErr writeFormat: @"? %@", IRI.string];
+				[OFStdErr writeFormat: @"? %@", IRI.string
+				    .stringByReplacingControlCharacters];
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];
@@ -1264,7 +1281,8 @@ next:
 			[OFStdErr writeString: @"v "];
 
 		OFStdErr.underlined = true;
-		[OFStdErr writeString: IRI.string];
+		[OFStdErr writeString:
+		    IRI.string.stringByReplacingControlCharacters];
 		OFStdErr.underlined = false;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -246,7 +246,7 @@ static OFString *const whitespace[] = {
 	    OFOutOfRangeException);
 }
 
-- (void)deleteLeadingWhitespaces
+- (void)testDeleteLeadingWhitespaces
 {
 	OFMutableString *string;
 
@@ -259,7 +259,7 @@ static OFString *const whitespace[] = {
 	OTAssertEqualObjects(string, @"");
 }
 
-- (void)deleteTrailingWhitespaces
+- (void)testDeleteTrailingWhitespaces
 {
 	OFMutableString *string;
 
@@ -272,7 +272,7 @@ static OFString *const whitespace[] = {
 	OTAssertEqualObjects(string, @"");
 }
 
-- (void)deleteEnclosingWhitespaces
+- (void)testDeleteEnclosingWhitespaces
 {
 	OFMutableString *string;
 
@@ -283,6 +283,39 @@ static OFString *const whitespace[] = {
 	string = [self.stringClass stringWithString: whitespace[1]];
 	[string deleteEnclosingWhitespaces];
 	OTAssertEqualObjects(string, @"");
+}
+
+- (void)testReplaceControlCharacters
+{
+	OFMutableString *string;
+
+	string = [self.stringClass stringWithString: @"foo\0bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␀bar");
+
+	string = [self.stringClass stringWithString: @"foo\x1F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␟bar");
+
+	string = [self.stringClass stringWithString: @"foo\x20" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo bar");
+
+	string = [self.stringClass stringWithString: @"foo\x7F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␡bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\x80" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␛@bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\x9F" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo␛_bar");
+
+	string = [self.stringClass stringWithString: @"foo\xC2\xA0" @"bar"];
+	[string replaceControlCharacters];
+	OTAssertEqualObjects(string, @"foo\xC2\xA0" @"bar");
 }
 @end
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,6 +39,16 @@
 
 int _ObjFWTLS_reference;
 static SSL_CTX *clientContext, *serverContext;
+
+#ifdef OF_MORPHOS
+struct Library *OpenSSL4Base;
+
+OF_DESTRUCTOR()
+{
+	if (OpenSSL4Base != NULL)
+		CloseLibrary(OpenSSL4Base);
+}
+#endif
 
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const SSL *SSL_)
@@ -89,6 +99,12 @@ errToErrorCode(const SSL *SSL_)
 {
 	if (self != [OFOpenSSLTLSStream class])
 		return;
+
+#ifdef OF_MORPHOS
+	if ((OpenSSL4Base = OpenLibrary("openssl4.library", 0)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
 
 	SSL_load_error_strings();
 	SSL_library_init();

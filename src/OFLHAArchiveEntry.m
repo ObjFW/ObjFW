@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -408,7 +408,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return self;
 }
 
-- (instancetype)of_initWithHeader: (char [21])header
+- (instancetype)of_initWithHeader: (uint8_t [21])header
 			   stream: (OFStream *)stream
 			 encoding: (OFStringEncoding)encoding
 {
@@ -585,7 +585,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			@throw [OFInvalidFormatException exception];
 
 		_compressionMethod = [[OFString alloc]
-		    initWithCString: header + 2
+		    initWithCString: (const char *)header + 2
 			   encoding: OFStringEncodingASCII
 			     length: 5];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -180,7 +180,7 @@ OF_DIRECT_MEMBERS
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	char header[21];
+	uint8_t header[21];
 	size_t headerLen;
 
 	if (_mode != modeRead)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -286,9 +286,10 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-@protected
+@private
 	uintptr_t _encoding;
-	OF_RESERVE_IVARS(OFStream, 3)
+	uintptr_t _allowsLossyEncoding;
+	OF_RESERVE_IVARS(OFStream, 2)
 }
 
 /**
@@ -313,6 +314,16 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * Defaults to UTF-8.
  */
 @property (nonatomic) OFStringEncoding encoding;
+
+/**
+ * @brief Whether the stream allows the specified encoding to be lossy.
+ *
+ * This means that if a character cannot be represented in the stream's
+ * encoding, a `?` will be written instead. This is mostly useful for writing
+ * to standard output, as a user would prefer unrepresentable characters
+ * replaced over an exception and seeing nothing.
+ */
+@property (nonatomic) bool allowsLossyEncoding;
 
 /**
  * @brief Whether the stream can block.

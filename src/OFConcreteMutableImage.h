@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,5 +17,17 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#define OF_INFLATE64_STREAM_M
-#include "OFInflateStream.m"
+#import "OFImage.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@interface OFConcreteMutableImage: OFMutableImage
+{
+	OFSize _size;
+	OFPixelFormat _pixelFormat;
+	void *_pixels;
+	bool _freeWhenDone;
+}
+@end
+
+OF_ASSUME_NONNULL_END

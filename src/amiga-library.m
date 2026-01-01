@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -51,7 +51,7 @@ __start(void)
 const char *VER = "$VER: " OBJFW_AMIGA_LIB " "
     OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
     OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
-    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer";
+    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer";
 
 static struct ObjFWBase {
 	struct Library library;
@@ -610,7 +610,7 @@ struct Resident resident = {
 	.rt_IdString = (char *)OBJFW_AMIGA_LIB " "
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
-	    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer",
+	    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer",
 	.rt_Init = &initTable,
 	.rt_Revision = OBJFW_LIB_PATCH,
 	.rt_Tags = NULL,

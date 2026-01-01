@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,23 +35,27 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** Regular file. */
-	OFArchiveEntryFileTypeRegular         = '0',
+	OFArchiveEntryFileTypeRegular                 = '0',
 	/** Hard link. */
-	OFArchiveEntryFileTypeLink            = '1',
+	OFArchiveEntryFileTypeLink                    = '1',
 	/** Symbolic link. */
-	OFArchiveEntryFileTypeSymbolicLink    = '2',
+	OFArchiveEntryFileTypeSymbolicLink            = '2',
 	/** Character device. */
-	OFArchiveEntryFileTypeCharacterDevice = '3',
+	OFArchiveEntryFileTypeCharacterDevice         = '3',
 	/** Block device. */
-	OFArchiveEntryFileTypeBlockDevice     = '4',
+	OFArchiveEntryFileTypeBlockDevice             = '4',
 	/** Directory. */
-	OFArchiveEntryFileTypeDirectory       = '5',
+	OFArchiveEntryFileTypeDirectory               = '5',
 	/** FIFO. */
-	OFArchiveEntryFileTypeFIFO            = '6',
+	OFArchiveEntryFileTypeFIFO                    = '6',
 	/** Contiguous file */
-	OFArchiveEntryFileTypeContiguousFile  = '7',
+	OFArchiveEntryFileTypeContiguousFile          = '7',
+	/** PAX global extended header. */
+	OFArchiveEntryFileTypePAXGlobalExtendedHeader = 'g',
+	/** PAX extended header. */
+	OFArchiveEntryFileTypePAXExtendedHeader       = 'x',
 	/** Unknown. The implementation most likely cannot handle this entry. */
-	OFArchiveEntryFileTypeUnknown         = 0x100,
+	OFArchiveEntryFileTypeUnknown                 = 0x100,
 } OFArchiveEntryFileType;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1580,8 +1580,12 @@ retry:
 	pool = objc_autoreleasePoolPush();
 	length = [string cStringLengthWithEncoding: encoding];
 
-	[self writeBuffer: [string cStringWithEncoding: encoding]
-		   length: length];
+	if (_allowsLossyEncoding)
+		[self writeBuffer: [string lossyCStringWithEncoding: encoding]
+			   length: length];
+	else
+		[self writeBuffer: [string cStringWithEncoding: encoding]
+			   length: length];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1599,8 +1603,13 @@ retry:
 	buffer = OFAllocMemory(stringLength + 1, 1);
 
 	@try {
-		memcpy(buffer, [string cStringWithEncoding: encoding],
-		    stringLength);
+		if (_allowsLossyEncoding)
+			memcpy(buffer, [string lossyCStringWithEncoding:
+			    encoding], stringLength);
+		else
+			memcpy(buffer, [string cStringWithEncoding: encoding],
+			    stringLength);
+
 		buffer[stringLength] = '\n';
 
 		[self writeBuffer: buffer length: stringLength + 1];
@@ -1661,6 +1670,16 @@ retry:
 - (void)setEncoding: (OFStringEncoding)encoding
 {
 	_encoding = encoding;
+}
+
+- (bool)allowsLossyEncoding
+{
+	return _allowsLossyEncoding;
+}
+
+- (void)setAllowsLossyEncoding: (bool)allowsLossyEncoding
+{
+	_allowsLossyEncoding = allowsLossyEncoding;
 }
 
 - (bool)canBlock

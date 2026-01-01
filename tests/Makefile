@@ -14,7 +14,9 @@ CLEAN = EBOOT.PBP			\
 	${PROG_NOINST}.rpx		\
 	big_dictionary_msgpack_gz.m	\
 	testfile_bin.m			\
-	testfile_ini.m
+	testfile_bmp.m			\
+	testfile_ini.m			\
+	testfile_qoi.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -39,6 +41,7 @@ SRCS = ForwardingTests.m			\
        OFHMACTests.m				\
        OFINIFileTests.m				\
        OFIRITests.m				\
+       OFImageTests.m				\
        OFIndexSetTests.m			\
        OFInvocationTests.m			\
        OFJSONTests.m				\
@@ -52,6 +55,7 @@ SRCS = ForwardingTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
        OFMutableDictionaryTests.m		\
+       OFMutableImageTests.m			\
        OFMutableIndexSetTests.m			\
        OFMutableSetTests.m			\
        OFMutableStringTests.m			\
@@ -85,7 +89,9 @@ SRCS = ForwardingTests.m			\
        ${USE_SRCS_WINDOWS}			\
        big_dictionary_msgpack_gz.m		\
        testfile_bin.m				\
-       testfile_ini.m
+       testfile_bmp.m				\
+       testfile_ini.m				\
+       testfile_qoi.m
 SRCS_FILES = OFFileManagerTests.m
 SRCS_MODULES = OFModuleTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
@@ -118,7 +124,11 @@ big_dictionary_msgpack_gz.m: big_dictionary.msgpack.gz
 	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
 	../utils/objfw-embed $? $? $@
+testfile_bmp.m: testfile.bmp
+	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
+	../utils/objfw-embed $? $? $@
+testfile_qoi.m: testfile.qoi
 	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android

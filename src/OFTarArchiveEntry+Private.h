@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,14 +22,16 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFStream;
 
 OF_DIRECT_MEMBERS
 @interface OFTarArchiveEntry ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
-			 encoding: (OFStringEncoding)encoding
-    OF_METHOD_FAMILY(init);
+- (instancetype)
+    of_initWithHeader: (unsigned char [_Nonnull 512])header
+       extendedHeader: (nullable OFMutableDictionary *)extendedHeader
+	     encoding: (OFStringEncoding)encoding OF_METHOD_FAMILY(init);
 - (void)of_writeToStream: (OFStream *)stream
 		encoding: (OFStringEncoding)encoding;
 @end

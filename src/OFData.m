@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,12 +46,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
+@interface OFPlaceholderData: OFString
+@end
+
 static struct {
 	Class isa;
 } placeholder;
-
-@interface OFPlaceholderData: OFString
-@end
 
 /* References for static linking */
 void OF_VISIBILITY_INTERNAL

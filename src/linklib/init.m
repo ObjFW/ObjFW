@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -72,6 +72,8 @@ void *__objc_class_name_OFCreateDirectoryFailedException;
 void *__objc_class_name_OFCreateSymbolicLinkFailedException;
 void *__objc_class_name_OFData;
 void *__objc_class_name_OFDate;
+void *__objc_class_name_OFDeflate64Stream;
+void *__objc_class_name_OFDeflateStream;
 void *__objc_class_name_OFDictionary;
 void *__objc_class_name_OFEnumerationMutationException;
 void *__objc_class_name_OFEnumerator;
@@ -88,9 +90,9 @@ void *__objc_class_name_OFINIFile;
 void *__objc_class_name_OFINISection;
 void *__objc_class_name_OFIRI;
 void *__objc_class_name_OFIRIHandler;
+void *__objc_class_name_OFImage;
+void *__objc_class_name_OFImageFormatHandler;
 void *__objc_class_name_OFIndexSet;
-void *__objc_class_name_OFInflate64Stream;
-void *__objc_class_name_OFInflateStream;
 void *__objc_class_name_OFInitializationFailedException;
 void *__objc_class_name_OFInvalidArgumentException;
 void *__objc_class_name_OFInvalidEncodingException;
@@ -116,6 +118,7 @@ void *__objc_class_name_OFMutableArray;
 void *__objc_class_name_OFMutableData;
 void *__objc_class_name_OFMutableDictionary;
 void *__objc_class_name_OFMutableIRI;
+void *__objc_class_name_OFMutableImage;
 void *__objc_class_name_OFMutableIndexSet;
 void *__objc_class_name_OFMutableLHAArchiveEntry;
 void *__objc_class_name_OFMutablePair;
@@ -268,6 +271,7 @@ void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
 #include "OFFileManagerConstants.inc"
+#include "OFImageConstants.inc"
 #include "OFRunLoopConstants.inc"
 #ifdef OF_HAVE_SOCKETS
 # include "OFSystemInfo+NetworkInterfacesConstants.inc"

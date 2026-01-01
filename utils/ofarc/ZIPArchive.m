@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -180,7 +180,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		IRI = copy;
 	}
 
-	return (OFSeekableStream *)[OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+	return [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 }
 
 - (void)listFiles
@@ -191,6 +191,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 		    @"Archive comment:")];
 		[OFStdOut writeString: @"\t"];
 		[OFStdOut writeLine: [_archive.archiveComment
+		    .stringByReplacingControlCharacters
 		    stringByReplacingOccurrencesOfString: @"\n"
 					      withString: @"\n\t"]];
 		[OFStdOut writeLine: @""];
@@ -201,7 +202,8 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *compressedSize = [OFString
