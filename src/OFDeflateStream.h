@@ -38,7 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	unsigned char *_Nullable _slidingWindow;
-	uint16_t _slidingWindowIndex, _slidingWindowMask;
+	uint16_t _slidingWindowIndex;
 	struct OFInflateContext {
 		unsigned char buffer[OFInflateStreamBufferSize];
 		uint16_t bufferIndex, bufferLength;
@@ -73,7 +73,7 @@ OF_SUBCLASSING_RESTRICTED
 			} huffman;
 		} ctx;
 		bool inLastBlock;
-	} *_inflateCtx;
+	} *_Nullable _inflateCtx;
 	bool _atEndOfStream;
 }
 

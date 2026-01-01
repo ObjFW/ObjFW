@@ -36,8 +36,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFStream *_stream;
 	unsigned char *_Nullable _slidingWindow;
-	uint16_t _slidingWindowIndex, _slidingWindowMask;
-	struct OFInflateContext *_inflateCtx;
+	uint16_t _slidingWindowIndex;
+	struct OFInflateContext *_Nullable _inflateCtx;
 	bool _atEndOfStream;
 }
 
