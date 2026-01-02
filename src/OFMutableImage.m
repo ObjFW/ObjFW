@@ -131,15 +131,8 @@ static struct {
 
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	/* All currently supported formats only allow 0.0 to 1.0 */
-	if OF_UNLIKELY (red < 0.0f || red > 1.0f || green < 0.0f ||
-	    green > 1.0f || blue < 0.0f || blue > 1.0f || alpha < 0.0f ||
-	    alpha > 1.0f)
-		@throw [OFOutOfRangeException exception];
-
 	if OF_UNLIKELY (!_OFWritePixel(self.mutablePixels, self.pixelFormat,
-	    x, y, width, red * 255.0f, green * 255.0f, blue * 255.0f,
-	    alpha * 255.0f))
+	    x, y, width, red, green, blue, alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }
