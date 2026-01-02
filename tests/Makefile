@@ -24,6 +24,7 @@ STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m			\
        OFArrayTests.m				\
        ${OF_BLOCK_TESTS_M}			\
+       OFCanvasTests.m				\
        OFCharacterSetTests.m			\
        OFColorTests.m				\
        OFConcreteArrayTests.m			\

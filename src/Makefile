@@ -14,6 +14,7 @@ LIB_PATCH = ${OBJFW_LIB_PATCH}
 SRCS = OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
+       OFCanvas.m			\
        OFCharacterSet.m			\
        OFColor.m			\
        OFConstantString.m		\

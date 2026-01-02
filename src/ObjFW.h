@@ -57,6 +57,7 @@
 #import "OFColor.h"
 #import "OFImage.h"
 #import "OFImageFormatHandler.h"
+#import "OFCanvas.h"
 
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"
