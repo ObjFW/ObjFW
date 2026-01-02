@@ -33,10 +33,10 @@
 {
 	[super setUp];
 
-	_color = [[OFColor alloc] initWithRed: 63.f / 255
-					green: 127.f / 255
-					 blue: 1
-					alpha: 1];
+	_color = [[OFColor alloc] initWithRed: 63.f / 255.f
+					green: 127.f / 255.f
+					 blue: 1.f
+					alpha: 1.f];
 }
 
 - (void)dealloc

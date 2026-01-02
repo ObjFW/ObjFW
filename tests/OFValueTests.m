@@ -111,7 +111,7 @@
 
 - (void)testPoint
 {
-	OFPoint point = OFMakePoint(1.5f, 3.0f), point2;
+	OFPoint point = OFMakePoint(1.5f, 3.f), point2;
 	OFValue *value = [OFValue valueWithPoint: point];
 
 	OTAssert(OFEqualPoints(value.pointValue, point));
@@ -130,7 +130,7 @@
 
 - (void)testSize
 {
-	OFSize size = OFMakeSize(4.5f, 5.0f), size2;
+	OFSize size = OFMakeSize(4.5f, 5.f), size2;
 	OFValue *value = [OFValue valueWithSize: size];
 
 	OTAssert(OFEqualSizes(value.sizeValue, size));
@@ -149,7 +149,7 @@
 
 - (void)testRect
 {
-	OFRect rect = OFMakeRect(1.5f, 3.0f, 4.5f, 6.0f), rect2;
+	OFRect rect = OFMakeRect(1.5f, 3.f, 4.5f, 6.f), rect2;
 	OFValue *value = [OFValue valueWithRect: rect];
 
 	OTAssert(OFEqualRects(value.rectValue, rect));
@@ -167,7 +167,7 @@
 
 - (void)testIsEqual
 {
-	OFRect rect = OFMakeRect(1.5f, 3.0f, 4.5f, 6.0f);
+	OFRect rect = OFMakeRect(1.5f, 3.f, 4.5f, 6.f);
 
 	OTAssertEqualObjects([OFValue valueWithRect: rect],
 	    [OFValue valueWithBytes: &rect

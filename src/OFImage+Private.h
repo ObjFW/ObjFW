@@ -165,10 +165,10 @@ _OFReadPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	    &redInt, &greenInt, &blueInt, &alphaInt))
 		return false;
 
-	*red = redInt / 255.0f;
-	*green = greenInt / 255.0f;
-	*blue = blueInt / 255.0f;
-	*alpha = alphaInt / 255.0f;
+	*red = redInt / 255.f;
+	*green = greenInt / 255.f;
+	*blue = blueInt / 255.f;
+	*alpha = alphaInt / 255.f;
 
 	return true;
 }
@@ -284,11 +284,10 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
 	/* All currently supported formats only allow 0.0 to 1.0 */
-	if OF_UNLIKELY (red < 0.0f || red > 1.0f || green < 0.0f ||
-	    green > 1.0f || blue < 0.0f || blue > 1.0f || alpha < 0.0f ||
-	    alpha > 1.0f)
+	if OF_UNLIKELY (red < 0.f || red > 1.f || green < 0.f || green > 1.f ||
+	    blue < 0.f || blue > 1.f || alpha < 0.f || alpha > 1.f)
 		@throw [OFOutOfRangeException exception];
 
 	return _OFWritePixelInt(pixels, format, x, y, width,
-	    red * 255.0f, green * 255.0f, blue * 255.0f, alpha * 255.0f);
+	    red * 255.f, green * 255.f, blue * 255.f, alpha * 255.f);
 }
