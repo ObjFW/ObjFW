@@ -205,7 +205,7 @@
 	OTAssertNotEqual(image1.hash, image3.hash);
 }
 
-- (void)testReadOutOfBoundsThrows
+- (void)testColorAtPointOutOfBoundsThrows
 {
 	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
@@ -224,23 +224,37 @@
 	    OFOutOfRangeException);
 }
 
-- (void)testReadNonIntegralPointThrows
+- (void)testColorAtNonIntegralPoint
 {
-	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint8_t pixels[] = {
+		0, 0, 0,
+		255, 0, 0,
+		0, 255, 0,
+		0, 0, 255
+	};
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
-		      pixelFormat: OFPixelFormatRGBA8888
-			     size: OFMakeSize(2.f, 3.f)
+		      pixelFormat: OFPixelFormatRGB888
+			     size: OFMakeSize(2.f, 2.f)
 		     freeWhenDone: false];
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.f, 0.5f)],
-	    OFInvalidArgumentException);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.5f, 0.f)],
+	    [OFColor colorWithRed: 0.5f
+			    green: 0.f
+			     blue: 0.f
+			    alpha: 1.f]);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.f)],
-	    OFInvalidArgumentException);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.f, 0.5f)],
+	    [OFColor colorWithRed: 0.f
+			    green: 0.5f
+			     blue: 0.f
+			    alpha: 1.f]);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.5f)],
-	    OFInvalidArgumentException);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.5f, 0.5f)],
+	    [OFColor colorWithRed: 0.25f
+			    green: 0.25f
+			     blue: 0.25f
+			    alpha: 1.f]);
 }
 
 - (void)testCopy

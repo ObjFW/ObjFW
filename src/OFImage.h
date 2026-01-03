@@ -213,6 +213,9 @@ extern const OFImageFormat OFImageFormatQOI;
 /**
  * @brief Returns the color at the specified point.
  *
+ * If the point is non-integral, the weighted average of the neighboring pixels
+ * is returned.
+ *
  * @warning This method is expensive! You should use @ref pixels instead to get
  *	    a buffer and use that instead.
  *
@@ -220,7 +223,6 @@ extern const OFImageFormat OFImageFormatQOI;
  * @return The color for the specified point
  * @throw OFOutOfRangeException The specified point is outside of the image's
  *				bounds
- * @throw OFInvalidArgumentException The specified point is not integral
  */
 - (OFColor *)colorAtPoint: (OFPoint)point;
 

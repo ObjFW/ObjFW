@@ -188,15 +188,14 @@ static struct {
 	size_t width = size.width, height = size.height;
 	float red = 0, green = 0, blue = 0, alpha = 0;
 
-	if OF_UNLIKELY (x != point.x || y != point.y ||
-	    width != size.width || height != size.height)
+	if OF_UNLIKELY (width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
 
 	if OF_UNLIKELY (x >= width || y >= height)
 		@throw [OFOutOfRangeException exception];
 
-	if OF_UNLIKELY (!_OFReadPixel(self.pixels, self.pixelFormat, x, y,
-	    width, &red, &green, &blue, &alpha))
+	if OF_UNLIKELY (!_OFReadAveragedPixel(self.pixels, self.pixelFormat,
+	    point.x, point.y, width, height, &red, &green, &blue, &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 

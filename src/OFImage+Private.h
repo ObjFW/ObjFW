@@ -156,7 +156,7 @@ _OFReadPixelInt(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 }
 
 static OF_INLINE bool
-_OFReadPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
+_OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
 {
 	uint8_t redInt = 0, greenInt = 0, blueInt = 0, alphaInt = 0;
@@ -169,6 +169,56 @@ _OFReadPixel(const uint8_t *pixels, OFPixelFormat format, size_t x, size_t y,
 	*green = greenInt / 255.f;
 	*blue = blueInt / 255.f;
 	*alpha = alphaInt / 255.f;
+
+	return true;
+}
+
+static OF_INLINE bool
+_OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
+    size_t width, size_t height, float *red, float *green, float *blue,
+    float *alpha)
+{
+	size_t xInt = x, yInt = y, nextXInt = xInt + 1, nextYInt = yInt + 1;
+	float reds[4], greens[4], blues[4], alphas[4];
+	float scales[4];
+
+	if (x == xInt && y == yInt)
+		return _OFReadPixel(pixels, format, xInt, yInt, width,
+		    red, green, blue, alpha);
+
+	if (nextXInt >= width || x == xInt)
+		nextXInt = xInt;
+	if (nextYInt >= height || y == yInt)
+		nextYInt = yInt;
+
+	if (!_OFReadPixel(pixels, format, xInt, yInt, width,
+	    &reds[0], &greens[0], &blues[0], &alphas[0]))
+		return false;
+
+	if (!_OFReadPixel(pixels, format, nextXInt, yInt, width,
+	    &reds[1], &greens[1], &blues[1], &alphas[1]))
+		return false;
+
+	if (!_OFReadPixel(pixels, format, xInt, nextYInt, width,
+	    &reds[2], &greens[2], &blues[2], &alphas[2]))
+		return false;
+
+	if (!_OFReadPixel(pixels, format, nextXInt, nextYInt, width,
+	    &reds[3], &greens[3], &blues[3], &alphas[3]))
+		return false;
+
+	scales[0] = (1.f - (x - xInt)) * (1.f - (y - yInt));
+	scales[1] = (x - xInt) * (1.f - (y - yInt));
+	scales[2] = (1.f - (x - xInt)) * (y - yInt);
+	scales[3] = (x - xInt) * (y - yInt);
+
+	*red = *green = *blue = *alpha = 0.f;
+	for (uint_fast8_t i = 0; i < 4; i++) {
+		*red += scales[i] * reds[i];
+		*green += scales[i] * greens[i];
+		*blue += scales[i] * blues[i];
+		*alpha += scales[i] * alphas[i];
+	}
 
 	return true;
 }
