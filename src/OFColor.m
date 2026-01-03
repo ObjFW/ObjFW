@@ -38,7 +38,7 @@ static struct {
 } placeholder;
 
 #ifdef OF_OBJFW_RUNTIME
-static const float allowedImprecision = 0.0000001;
+static const float allowedImprecision = 0.0000001f;
 #endif
 
 @implementation OFPlaceholderColor

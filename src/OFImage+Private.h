@@ -220,6 +220,19 @@ _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
 		*alpha += scales[i] * alphas[i];
 	}
 
+	/*
+	 * Fix values being over 1.0 due to imprecision, as it causes problems
+	 * in many places due to the expected 0.0 - 1.0 range.
+	 */
+	if (*red > 1.f && *red <= 1.00000012f)
+		*red = 1.f;
+	if (*green > 1.f && *green <= 1.00000012f)
+		*green = 1.f;
+	if (*blue > 1.f && *blue <= 1.00000012f)
+		*blue = 1.f;
+	if (*alpha > 1.f && *alpha <= 1.00000012f)
+		*alpha = 1.f;
+
 	return true;
 }
 
