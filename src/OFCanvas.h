@@ -41,9 +41,27 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Clears the specified rectangle with the background color.
  *
  * @param rect The rectangle to clear
- * @throw OFInvalidArgumentException The specified rectangle is not integral
+ * @throw OFInvalidArgumentException The specified rectangle is not integral or
+ *				     has a negative component
  */
 - (void)clearRect: (OFRect)rect;
+
+/**
+ * @brief Draws the specified rectangle of the specified image in the specified
+ *	  rectangle on the canvas.
+ *
+ * @param image The image to draw on the canvas
+ * @param sourceRect A rectangle of the specified image to draw into the canvas
+ * @param destinationRect A recangle on the canvas to draw the image in
+ * @throw OFInvalidArgumentException One or both of the specified rectangles
+ *				     are not integral or have a negative
+ *				     component
+ * @throw OFOutOfRangeException The specified source rectangle is outside of the
+ *				specified image
+ */
+- (void)drawImage: (OFImage *)image
+       sourceRect: (OFRect)sourceRect
+  destinationRect: (OFRect)destinationRect;
 @end
 
 /**

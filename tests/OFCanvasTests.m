@@ -80,4 +80,83 @@
 
 	OTAssertEqualObjects(_image, reference);
 }
+
+- (void)testDrawImageSourceRectDestinationRect
+{
+	static const uint8_t pixels[] = {
+		0, 0, 0, 255,
+		0, 0, 0, 255,
+		0, 0, 0, 255,
+		0, 0, 0, 255,
+
+		0, 0, 0, 255,
+		255, 255, 255, 255,
+		255, 0, 0, 255,
+		0, 0, 0, 255,
+
+		0, 0, 0, 255,
+		0, 255, 0, 255,
+		0, 0, 255, 255,
+		0, 0, 0, 255
+	};
+	OFImage *image = [OFImage imageWithPixelsNoCopy: pixels
+					    pixelFormat: OFPixelFormatRGBA8888
+						   size: OFMakeSize(4.f, 3.f)
+					   freeWhenDone: false];
+
+	[_canvas clearRect: OFMakeRect(0.f, 0.f, 4.f, 3.f)];
+	[_canvas drawImage: image
+		sourceRect: OFMakeRect(1.f, 1.f, 2.f, 2.f)
+	   destinationRect: OFMakeRect(1.f, 0.f, 3.f, 3.f)];
+
+	/*
+	 * This test checks every pixel individually instead of checking
+	 * against a test image see what exactly failed, if anything.
+	 */
+
+	/* Check the non-interpolated pixels are exact. */
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 0.f)],
+	    [OFColor white]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 0.f)],
+	    [OFColor red]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 2.f)],
+	    [OFColor lime]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 2.f)],
+	    [OFColor blue]);
+
+	/* Check left row is unchanged. */
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 0.f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 1.f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 2.f)],
+	    [OFColor black]);
+
+	/* Check interpolated pixels. */
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 0.f)],
+	    [OFColor colorWithRed: 1.f
+			    green: 84.f / 255.f
+			     blue: 84.f / 255.f
+			    alpha: 1.f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 1.f)],
+	    [OFColor colorWithRed: 84.f / 255.f
+			    green: 1.f
+			     blue: 84.f / 255.f
+			    alpha: 1.f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 1.f)],
+	    [OFColor colorWithRed: 84.f / 255.f
+			    green: 84.f / 255.f
+			     blue: 141.f / 255.f
+			    alpha: 1.f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 1.f)],
+	    [OFColor colorWithRed: 84.f / 255.f
+			    green: 0.f
+			     blue: 170.f / 255.f
+			    alpha: 1.f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 2.f)],
+	    [OFColor colorWithRed: 0.f
+			    green: 84.f / 255.f
+			     blue: 170.f / 255.f
+			    alpha: 1.f]);
+}
 @end

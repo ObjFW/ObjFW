@@ -195,7 +195,8 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if OF_UNLIKELY (!_OFReadAveragedPixel(self.pixels, self.pixelFormat,
-	    point.x, point.y, width, height, &red, &green, &blue, &alpha))
+	    point.x, point.y, width, width, height, &red, &green, &blue,
+	    &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 

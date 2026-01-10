@@ -26,6 +26,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFCanvas
 @synthesize backgroundColor = _backgroundColor;
@@ -104,5 +105,75 @@
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
+}
+
+- (void)drawImage: (OFImage *)image
+       sourceRect: (OFRect)sourceRect
+  destinationRect: (OFRect)destinationRect
+{
+	const void *imagePixels = image.pixels;
+	OFPixelFormat imagePixelFormat = image.pixelFormat;
+	OFSize imageSize = image.size;
+	size_t imageWidth = imageSize.width;
+	size_t sourceClampX, sourceClampY;
+	float xScale, yScale;
+	size_t destX, destY, destWidth, destHeight;
+
+	if (imageWidth != imageSize.width)
+		@throw [OFInvalidArgumentException exception];
+
+	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
+	    sourceRect.size.width < 0 || sourceRect.size.height < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (sourceRect.origin.x + sourceRect.size.width > imageSize.width ||
+	    sourceRect.origin.y + sourceRect.size.height > imageSize.height)
+		@throw [OFOutOfRangeException exception];
+
+	sourceClampX = sourceRect.origin.x + sourceRect.size.width;
+	sourceClampY = sourceRect.origin.y + sourceRect.size.height;
+
+	if (sourceClampX != sourceRect.origin.x + sourceRect.size.width ||
+	    sourceClampY != sourceRect.origin.y + sourceRect.size.height)
+		@throw [OFInvalidArgumentException exception];
+
+	/*
+	 * Scale needs to be calculated before clamping destination to canvas.
+	 */
+	xScale = sourceRect.size.width / destinationRect.size.width;
+	yScale = sourceRect.size.height / destinationRect.size.height;
+
+	destinationRect = OFIntersectionRect(_rect, destinationRect);
+	destX = destinationRect.origin.x;
+	destY = destinationRect.origin.y;
+	destWidth = destinationRect.size.width;
+	destHeight = destinationRect.size.height;
+
+	if (destX != destinationRect.origin.x ||
+	    destY != destinationRect.origin.y ||
+	    destWidth != destinationRect.size.width ||
+	    destHeight != destinationRect.size.height)
+		@throw [OFInvalidArgumentException exception];
+
+	for (size_t i = destY; i < destY + destHeight; i++) {
+		for (size_t j = destX; j < destX + destWidth; j++) {
+			float red, green, blue, alpha;
+
+			if (!_OFReadAveragedPixel(imagePixels, imagePixelFormat,
+			    sourceRect.origin.x + (j - destX) * xScale,
+			    sourceRect.origin.y + (i - destY) * yScale,
+			    imageWidth, sourceClampX, sourceClampY,
+			    &red, &green, &blue, &alpha))
+				@throw [OFNotImplementedException
+				    exceptionWithSelector: _cmd
+						   object: self];
+
+			if (!_OFWritePixel(_pixels, _pixelFormat, j, i, _width,
+			    red, green, blue, alpha))
+				@throw [OFNotImplementedException
+				    exceptionWithSelector: _cmd
+						   object: self];
+		}
+	}
 }
 @end

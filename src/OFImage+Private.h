@@ -175,8 +175,8 @@ _OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 
 static OF_INLINE bool
 _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
-    size_t width, size_t height, float *red, float *green, float *blue,
-    float *alpha)
+    size_t width, size_t clampX, size_t clampY, float *red, float *green,
+    float *blue, float *alpha)
 {
 	size_t xInt = x, yInt = y, nextXInt = xInt + 1, nextYInt = yInt + 1;
 	float reds[4], greens[4], blues[4], alphas[4];
@@ -186,9 +186,9 @@ _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
 		return _OFReadPixel(pixels, format, xInt, yInt, width,
 		    red, green, blue, alpha);
 
-	if (nextXInt >= width || x == xInt)
+	if (nextXInt >= clampX || x == xInt)
 		nextXInt = xInt;
-	if (nextYInt >= height || y == yInt)
+	if (nextYInt >= clampY || y == yInt)
 		nextYInt = yInt;
 
 	if (!_OFReadPixel(pixels, format, xInt, yInt, width,
