@@ -352,5 +352,6 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
 		@throw [OFOutOfRangeException exception];
 
 	return _OFWritePixelInt(pixels, format, x, y, width,
-	    red * 255.f, green * 255.f, blue * 255.f, alpha * 255.f);
+	    roundf(red * 255.f), roundf(green * 255.f), roundf(blue * 255.f),
+	    roundf(alpha * 255.f));
 }

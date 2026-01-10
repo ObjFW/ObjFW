@@ -135,27 +135,27 @@
 	/* Check interpolated pixels. */
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 0.f)],
 	    [OFColor colorWithRed: 1.f
-			    green: 84.f / 255.f
-			     blue: 84.f / 255.f
+			    green: 85.f / 255.f
+			     blue: 85.f / 255.f
 			    alpha: 1.f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 1.f)],
-	    [OFColor colorWithRed: 84.f / 255.f
+	    [OFColor colorWithRed: 85.f / 255.f
 			    green: 1.f
-			     blue: 84.f / 255.f
+			     blue: 85.f / 255.f
 			    alpha: 1.f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 1.f)],
-	    [OFColor colorWithRed: 84.f / 255.f
-			    green: 84.f / 255.f
-			     blue: 141.f / 255.f
+	    [OFColor colorWithRed: 85.f / 255.f
+			    green: 85.f / 255.f
+			     blue: 142.f / 255.f
 			    alpha: 1.f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 1.f)],
-	    [OFColor colorWithRed: 84.f / 255.f
+	    [OFColor colorWithRed: 85.f / 255.f
 			    green: 0.f
 			     blue: 170.f / 255.f
 			    alpha: 1.f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 2.f)],
 	    [OFColor colorWithRed: 0.f
-			    green: 84.f / 255.f
+			    green: 85.f / 255.f
 			     blue: 170.f / 255.f
 			    alpha: 1.f]);
 }
