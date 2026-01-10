@@ -100,8 +100,8 @@
 
 	for (size_t i = y; i < y + height; i++)
 		for (size_t j = x; j < x + width; j++)
-			if (!_OFWritePixel(_pixels, _pixelFormat, j, i, _width,
-			    red, green, blue, alpha))
+			if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat,
+			    j, i, _width, red, green, blue, alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
@@ -159,7 +159,8 @@
 		for (size_t j = destX; j < destX + destWidth; j++) {
 			float red, green, blue, alpha;
 
-			if (!_OFReadAveragedPixel(imagePixels, imagePixelFormat,
+			if OF_UNLIKELY (!_OFReadAveragedPixel(imagePixels,
+			    imagePixelFormat,
 			    sourceRect.origin.x + (j - destX) * xScale,
 			    sourceRect.origin.y + (i - destY) * yScale,
 			    imageWidth, sourceClampX, sourceClampY,
@@ -168,8 +169,8 @@
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if (!_OFWritePixel(_pixels, _pixelFormat, j, i, _width,
-			    red, green, blue, alpha))
+			if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat,
+			    j, i, _width, red, green, blue, alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];

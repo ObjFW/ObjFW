@@ -29,21 +29,23 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief A pixel format.
+ *
+ * All pixel formats are in native endianness unless otherwise specified.
  */
 typedef enum {
 	/** Unknown pixel format. */
 	OFPixelFormatUnknown,
-	/** RGB with 8 bits per channel. */
+	/** RGB with 8 bits per channel as 3 consecutive bytes. */
 	OFPixelFormatRGB888,
-	/** RGBA (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** RGBA with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatRGBA8888,
-	/** ARGB (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** ARGB with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatARGB8888,
-	/** BGR with 8 bits per channel. */
+	/** BGR with 8 bits per channel as 3 consecutive bytes. */
 	OFPixelFormatBGR888,
-	/** ABGR (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** ABGR with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatABGR8888,
-	/** BGRA (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** BGRA with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatBGRA8888,
 } OFPixelFormat;
 

@@ -30,11 +30,9 @@
 @implementation OFImageTests
 - (void)testImageWithPixels
 {
-	static const uint8_t pixels[] = {
-		64, 128, 255, 224,
-		32, 64, 128, 112,
-		16, 32, 64, 56,
-		8, 16, 32, 28
+	static const uint32_t pixels[] = {
+		0x4080FFE0, 0x20408070,
+		0x10204038, 0x0810201C
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
 				      pixelFormat: OFPixelFormatRGBA8888
@@ -145,10 +143,8 @@
 - (void)testIsEqual
 {
 	static const uint32_t pixels1[] = {
-		OFToBigEndian32(0x202020FF),
-		OFToBigEndian32(0x404040FF),
-		OFToBigEndian32(0x808080FF),
-		OFToBigEndian32(0xFFFFFFFF)
+		0x202020FF, 0x404040FF,
+		0x808080FF, 0xFFFFFFFF
 	};
 	static const uint8_t pixels2[] = {
 		32, 32, 32,
@@ -180,10 +176,8 @@
 - (void)testHash
 {
 	static const uint32_t pixels1[] = {
-		OFToBigEndian32(0x202020FF),
-		OFToBigEndian32(0x404040FF),
-		OFToBigEndian32(0x808080FF),
-		OFToBigEndian32(0xFFFFFFFF)
+		0x202020FF, 0x404040FF,
+		0x808080FF, 0xFFFFFFFF
 	};
 	static const uint8_t pixels2[] = {
 		32, 32, 32,

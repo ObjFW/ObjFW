@@ -63,7 +63,11 @@ hashPixel(uint8_t pixel[4])
 	switch ([stream readInt8]) {
 	case 3:
 	case 4:
+#ifdef OF_BIG_ENDIAN
 		format = OFPixelFormatRGBA8888;
+#else
+		format = OFPixelFormatABGR8888;
+#endif
 		break;
 	default:
 		@throw [OFInvalidFormatException exception];
@@ -211,7 +215,7 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 		for (size_t x = 0; x < width; x++) {
 			uint8_t pixel[4], hash, diff, luma[2];
 
-			if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y,
+			if OF_UNLIKELY (!_OFReadPixelInt8(pixels, format, x, y,
 			    width, &pixel[0], &pixel[1], &pixel[2], &pixel[3]))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd

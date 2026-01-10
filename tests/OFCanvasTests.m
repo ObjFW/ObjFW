@@ -49,21 +49,10 @@
 
 - (void)testClearRect
 {
-	static const uint8_t pixels[] = {
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-
-		0, 0, 0, 255,
-		32, 64, 128, 255,
-		32, 64, 128, 255,
-		0, 0, 0, 255,
-
-		0, 0, 0, 255,
-		32, 64, 128, 255,
-		32, 64, 128, 255,
-		0, 0, 0, 255
+	static const uint32_t pixels[] = {
+		0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF,
+		0x000000FF, 0x204080FF, 0x204080FF, 0x000000FF,
+		0x000000FF, 0x204080FF, 0x204080FF, 0x000000FF
 	};
 	OFImage *reference = [OFImage
 	    imageWithPixelsNoCopy: pixels
@@ -83,21 +72,10 @@
 
 - (void)testDrawImageSourceRectDestinationRect
 {
-	static const uint8_t pixels[] = {
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-		0, 0, 0, 255,
-
-		0, 0, 0, 255,
-		255, 255, 255, 255,
-		255, 0, 0, 255,
-		0, 0, 0, 255,
-
-		0, 0, 0, 255,
-		0, 255, 0, 255,
-		0, 0, 255, 255,
-		0, 0, 0, 255
+	static const uint32_t pixels[] = {
+		0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF,
+		0x000000FF, 0xFFFFFFFF, 0xFF0000FF, 0x000000FF,
+		0x000000FF, 0x00FF00FF, 0x0000FFFF, 0x000000FF
 	};
 	OFImage *image = [OFImage imageWithPixelsNoCopy: pixels
 					    pixelFormat: OFPixelFormatRGBA8888

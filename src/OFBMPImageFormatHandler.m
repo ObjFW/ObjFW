@@ -133,23 +133,24 @@
 	}
 
 	if (headerSize >= 108 && compressionMethod == 3) {
-		uint32_t redMask = [stream readLittleEndianInt32];
-		uint32_t greenMask = [stream readLittleEndianInt32];
-		uint32_t blueMask = [stream readLittleEndianInt32];
-		uint32_t alphaMask = [stream readLittleEndianInt32];
+		struct {
+			uint32_t red, green, blue, alpha;
+		} masks;
 
-		if (redMask == 0xFF000000 || greenMask == 0x00FF0000 ||
-		    blueMask == 0x0000FF00 || alphaMask == 0x000000FF)
-			format = OFPixelFormatABGR8888;
-		else if (redMask == 0x00FF0000 || greenMask == 0x0000FF00 ||
-		    blueMask == 0x000000FF || alphaMask == 0xFF000000)
-			format = OFPixelFormatBGRA8888;
-		else if (redMask == 0x000000FF || greenMask == 0x0000FF00 ||
-		    blueMask == 0x00FF00FF || alphaMask == 0xFF000000)
+		[stream readIntoBuffer: &masks exactLength: 16];
+
+		if (masks.red == 0xFF000000 || masks.green == 0x00FF0000 ||
+		    masks.blue == 0x0000FF00 || masks.alpha == 0x000000FF)
 			format = OFPixelFormatRGBA8888;
-		else if (redMask == 0x0000FF00 || greenMask == 0x00FF0000 ||
-		    blueMask == 0xFF000000 || alphaMask == 0x000000FF)
+		else if (masks.red == 0x00FF0000 || masks.green == 0x0000FF00 ||
+		    masks.blue == 0x000000FF || masks.alpha == 0xFF000000)
 			format = OFPixelFormatARGB8888;
+		else if (masks.red == 0x000000FF || masks.green == 0x0000FF00 ||
+		    masks.blue == 0x00FF0000 || masks.alpha == 0xFF000000)
+			format = OFPixelFormatABGR8888;
+		else if (masks.red == 0x0000FF00 || masks.green == 0x00FF0000 ||
+		    masks.blue == 0xFF000000 || masks.alpha == 0x000000FF)
+			format = OFPixelFormatBGRA8888;
 		else
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: @"\"bit fields\""];
@@ -277,7 +278,7 @@
 		for (uint32_t x = 0; x < width; x++) {
 			uint8_t buffer[4];
 
-			if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y,
+			if OF_UNLIKELY (!_OFReadPixelInt8(pixels, format, x, y,
 			    width, &buffer[3], &buffer[2], &buffer[1],
 			    &buffer[0]))
 				@throw [OFNotImplementedException
