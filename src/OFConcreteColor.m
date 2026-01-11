@@ -21,8 +21,6 @@
 
 #import "OFConcreteColor.h"
 
-#import "OFInvalidArgumentException.h"
-
 @implementation OFConcreteColor
 - (instancetype)initWithRed: (float)red
 		      green: (float)green
@@ -32,9 +30,6 @@
 	self = [super init];
 
 	@try {
-		if (alpha < 0.0f || alpha > 1.0f)
-			@throw [OFInvalidArgumentException exception];
-
 		_red = red;
 		_green = green;
 		_blue = blue;

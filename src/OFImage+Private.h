@@ -19,8 +19,6 @@
 
 #import "OFImage.h"
 
-#import "OFOutOfRangeException.h"
-
 static OF_INLINE void
 _OFReadRGB888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
@@ -192,19 +190,6 @@ _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
 		*alpha += scales[i] * alphas[i];
 	}
 
-	/*
-	 * Fix values being over 1.0 due to imprecision, as it causes problems
-	 * in many places due to the expected 0.0 - 1.0 range.
-	 */
-	if (*red > 1.0f && *red <= 1.00000012f)
-		*red = 1.0f;
-	if (*green > 1.0f && *green <= 1.00000012f)
-		*green = 1.0f;
-	if (*blue > 1.0f && *blue <= 1.00000012f)
-		*blue = 1.0f;
-	if (*alpha > 1.0f && *alpha <= 1.00000012f)
-		*alpha = 1.0f;
-
 	return true;
 }
 
@@ -212,9 +197,6 @@ static OF_INLINE void
 _OFWriteRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
 	pixels += (x + y * width) * 3;
 
 	pixels[0] = red;
@@ -240,9 +222,6 @@ static OF_INLINE void
 _OFWriteBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	if OF_UNLIKELY (alpha != 255)
-		@throw [OFOutOfRangeException exception];
-
 	pixels += (x + y * width) * 3;
 
 	pixels[0] = blue;
@@ -303,10 +282,22 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
 	/* All currently supported formats only allow 0.0 to 1.0 */
-	if OF_UNLIKELY (red < 0.0f || red > 1.0f || green < 0.0f ||
-	    green > 1.0f || blue < 0.0f || blue > 1.0f || alpha < 0.0f ||
-	    alpha > 1.0f)
-		@throw [OFOutOfRangeException exception];
+	if OF_UNLIKELY (red > 1.0f)
+		red = 1.0f;
+	else if OF_UNLIKELY (red < 0.0f)
+		red = 0.0f;
+	if OF_UNLIKELY (green > 1.0f)
+		green = 1.0f;
+	else if OF_UNLIKELY (green < 0.0f)
+		green = 0.0f;
+	if OF_UNLIKELY (blue > 1.0f)
+		blue = 1.0f;
+	else if OF_UNLIKELY (blue < 0.0f)
+		blue = 0.0f;
+	if OF_UNLIKELY (alpha > 1.0f)
+		alpha = 1.0f;
+	else if OF_UNLIKELY (alpha < 0.0f)
+		alpha = 0.0f;
 
 	return _OFWritePixelInt8(pixels, format, x, y, width,
 	    roundf(red * 255.0f), roundf(green * 255.0f), roundf(blue * 255.0f),

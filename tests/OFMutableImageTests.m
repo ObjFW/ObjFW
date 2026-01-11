@@ -358,7 +358,7 @@
 	    OFInvalidArgumentException);
 }
 
-- (void)testRGB888WriteOutOfRangeColorThrows
+- (void)testRGB888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -366,14 +366,17 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testRGBA8888WriteOutOfRangeColorThrows
+- (void)testRGBA8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -381,14 +384,17 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testARGB8888WriteOutOfRangeColorThrows
+- (void)testARGB8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -396,14 +402,17 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testBGR888WriteOutOfRangeColorThrows
+- (void)testBGR888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -411,14 +420,17 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testABGR8888WriteOutOfRangeColorThrows
+- (void)testABGR8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -426,14 +438,17 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testBGRA888WriteOutOfRangeColorThrows
+- (void)testBGRA888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
 	    imageWithSize: OFMakeSize(1.0f, 1.0f)
@@ -441,11 +456,14 @@
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
 - (void)testCopy
