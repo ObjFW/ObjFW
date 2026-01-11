@@ -1629,7 +1629,7 @@ OF_ASSUME_NONNULL_END
 #import "OFString+XMLEscaping.h"
 #import "OFString+XMLUnescaping.h"
 
-#ifndef NSINTEGER_DEFINED
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(objc_modules)
 /*
  * Very *ugly* hack required for string boxing literals to work.
  *
