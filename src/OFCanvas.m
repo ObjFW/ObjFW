@@ -169,6 +169,26 @@
 				    exceptionWithSelector: _cmd
 						   object: self];
 
+			if OF_UNLIKELY (alpha != 1.0f) {
+				float oldRed, oldGreen, oldBlue, oldAlpha;
+
+				if OF_UNLIKELY (!_OFReadPixel(_pixels,
+				    _pixelFormat, j, i, _width, &oldRed,
+				    &oldGreen, &oldBlue, &oldAlpha))
+					@throw [OFNotImplementedException
+					    exceptionWithSelector: _cmd
+							   object: self];
+
+				red *= alpha;
+				green *= alpha;
+				blue *= alpha;
+
+				red += oldRed * (1.0f - alpha);
+				green += oldGreen * (1.0f - alpha);
+				blue += oldBlue * (1.0f - alpha);
+				alpha += oldAlpha * (1.0f - alpha);
+			}
+
 			if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat,
 			    j, i, _width, red, green, blue, alpha))
 				@throw [OFNotImplementedException
