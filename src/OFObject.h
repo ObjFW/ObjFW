@@ -412,9 +412,9 @@ OFIntersectionRect(OFRect rect1, OFRect rect2)
 	    ? rect1.origin.y + rect1.size.height
 	    : rect2.origin.y + rect2.size.height) - rect.origin.y;
 
-	if (rect.size.width <= 0.f || rect.size.height <= 0.f) {
-		rect.origin.x = rect.origin.y = 0.f;
-		rect.size.width = rect.size.height = 0.f;
+	if (rect.size.width <= 0.0f || rect.size.height <= 0.0f) {
+		rect.origin.x = rect.origin.y = 0.0f;
+		rect.size.width = rect.size.height = 0.0f;
 	}
 
 	return rect;

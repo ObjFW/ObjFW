@@ -32,7 +32,7 @@
 	self = [super init];
 
 	@try {
-		if (alpha < 0.0 || alpha > 1.0)
+		if (alpha < 0.0f || alpha > 1.0f)
 			@throw [OFInvalidArgumentException exception];
 
 		_red = red;

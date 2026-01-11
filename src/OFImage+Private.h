@@ -137,10 +137,10 @@ _OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	    &redInt8, &greenInt8, &blueInt8, &alphaInt8))
 		return false;
 
-	*red = redInt8 / 255.f;
-	*green = greenInt8 / 255.f;
-	*blue = blueInt8 / 255.f;
-	*alpha = alphaInt8 / 255.f;
+	*red = redInt8 / 255.0f;
+	*green = greenInt8 / 255.0f;
+	*blue = blueInt8 / 255.0f;
+	*alpha = alphaInt8 / 255.0f;
 
 	return true;
 }
@@ -179,12 +179,12 @@ _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
 	    &reds[3], &greens[3], &blues[3], &alphas[3]))
 		return false;
 
-	scales[0] = (1.f - (x - xInt)) * (1.f - (y - yInt));
-	scales[1] = (x - xInt) * (1.f - (y - yInt));
-	scales[2] = (1.f - (x - xInt)) * (y - yInt);
+	scales[0] = (1.0f - (x - xInt)) * (1.0f - (y - yInt));
+	scales[1] = (x - xInt) * (1.0f - (y - yInt));
+	scales[2] = (1.0f - (x - xInt)) * (y - yInt);
 	scales[3] = (x - xInt) * (y - yInt);
 
-	*red = *green = *blue = *alpha = 0.f;
+	*red = *green = *blue = *alpha = 0.0f;
 	for (uint_fast8_t i = 0; i < 4; i++) {
 		*red += scales[i] * reds[i];
 		*green += scales[i] * greens[i];
@@ -196,14 +196,14 @@ _OFReadAveragedPixel(const void *pixels, OFPixelFormat format, float x, float y,
 	 * Fix values being over 1.0 due to imprecision, as it causes problems
 	 * in many places due to the expected 0.0 - 1.0 range.
 	 */
-	if (*red > 1.f && *red <= 1.00000012f)
-		*red = 1.f;
-	if (*green > 1.f && *green <= 1.00000012f)
-		*green = 1.f;
-	if (*blue > 1.f && *blue <= 1.00000012f)
-		*blue = 1.f;
-	if (*alpha > 1.f && *alpha <= 1.00000012f)
-		*alpha = 1.f;
+	if (*red > 1.0f && *red <= 1.00000012f)
+		*red = 1.0f;
+	if (*green > 1.0f && *green <= 1.00000012f)
+		*green = 1.0f;
+	if (*blue > 1.0f && *blue <= 1.00000012f)
+		*blue = 1.0f;
+	if (*alpha > 1.0f && *alpha <= 1.00000012f)
+		*alpha = 1.0f;
 
 	return true;
 }
@@ -303,11 +303,12 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
 	/* All currently supported formats only allow 0.0 to 1.0 */
-	if OF_UNLIKELY (red < 0.f || red > 1.f || green < 0.f || green > 1.f ||
-	    blue < 0.f || blue > 1.f || alpha < 0.f || alpha > 1.f)
+	if OF_UNLIKELY (red < 0.0f || red > 1.0f || green < 0.0f ||
+	    green > 1.0f || blue < 0.0f || blue > 1.0f || alpha < 0.0f ||
+	    alpha > 1.0f)
 		@throw [OFOutOfRangeException exception];
 
 	return _OFWritePixelInt8(pixels, format, x, y, width,
-	    roundf(red * 255.f), roundf(green * 255.f), roundf(blue * 255.f),
-	    roundf(alpha * 255.f));
+	    roundf(red * 255.0f), roundf(green * 255.0f), roundf(blue * 255.0f),
+	    roundf(alpha * 255.0f));
 }

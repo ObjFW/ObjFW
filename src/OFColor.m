@@ -48,18 +48,18 @@ static const float allowedImprecision = 0.0000001f;
 		      alpha: (float)alpha
 {
 #ifdef OF_OBJFW_RUNTIME
-	if (red >= 0.f && red <= 1.f && green >= 0.f && green <= 1.f &&
-	    blue >= 0.f && blue <= 1.f && alpha == 1.f) {
-		uint8_t redInt = roundf(red * 255.f);
-		uint8_t greenInt = roundf(green * 255.f);
-		uint8_t blueInt = roundf(blue * 255.f);
+	if (red >= 0.0f && red <= 1.0f && green >= 0.0f && green <= 1.0f &&
+	    blue >= 0.0f && blue <= 1.0f && alpha == 1.0f) {
+		uint8_t redInt8 = roundf(red * 255.0f);
+		uint8_t greenInt8 = roundf(green * 255.0f);
+		uint8_t blueInt8 = roundf(blue * 255.0f);
 
-		if (fabsf(red * 255.f - redInt) < allowedImprecision &&
-		    fabsf(green * 255.f - greenInt) < allowedImprecision &&
-		    fabsf(blue * 255.f - blueInt) < allowedImprecision) {
-			id ret = [OFTaggedPointerColor colorWithRed: redInt
-							      green: greenInt
-							       blue: blueInt];
+		if (fabsf(red * 255.0f - redInt8) < allowedImprecision &&
+		    fabsf(green * 255.0f - greenInt8) < allowedImprecision &&
+		    fabsf(blue * 255.0f - blueInt8) < allowedImprecision) {
+			id ret = [OFTaggedPointerColor colorWithRed: redInt8
+							      green: greenInt8
+							       blue: blueInt8];
 
 			if (ret != nil)
 				return ret;
@@ -105,7 +105,7 @@ OF_SINGLETON_METHODS
 		    initWithRed: redValue				   \
 			  green: greenValue				   \
 			   blue: blueValue				   \
-			  alpha: 1.f];					   \
+			  alpha: 1.0f];					   \
 	}								   \
 									   \
 	+ (OFColor *)name						   \

@@ -33,10 +33,10 @@
 {
 	[super setUp];
 
-	_color = [[OFColor alloc] initWithRed: 63.f / 255.f
-					green: 127.f / 255.f
-					 blue: 1.f
-					alpha: 1.f];
+	_color = [[OFColor alloc] initWithRed: 63.0f / 255.0f
+					green: 127.0f / 255.0f
+					 blue: 1.0f
+					alpha: 1.0f];
 }
 
 - (void)dealloc
@@ -58,9 +58,9 @@
 	float red, green, blue, alpha;
 
 	[_color getRed: &red green: &green blue: &blue alpha: &alpha];
-	OTAssertEqual(red, 63.f / 255);
-	OTAssertEqual(green, 127.f / 255);
-	OTAssertEqual(blue, 1);
-	OTAssertEqual(alpha, 1);
+	OTAssertEqual(red, 63.0f / 255);
+	OTAssertEqual(green, 127.0f / 255);
+	OTAssertEqual(blue, 1.0f);
+	OTAssertEqual(alpha, 1.0f);
 }
 @end

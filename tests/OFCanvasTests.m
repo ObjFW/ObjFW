@@ -34,7 +34,7 @@
 {
 	[super setUp];
 
-	_image = [[OFMutableImage alloc] initWithSize: OFMakeSize(4.f, 3.f)
+	_image = [[OFMutableImage alloc] initWithSize: OFMakeSize(4.0f, 3.0f)
 					  pixelFormat: OFPixelFormatRGBA8888];
 	_canvas = [[OFCanvas alloc] initWithDestinationImage: _image];
 }
@@ -57,15 +57,15 @@
 	OFImage *reference = [OFImage
 	    imageWithPixelsNoCopy: pixels
 		      pixelFormat: OFPixelFormatRGBA8888
-			     size: OFMakeSize(4.f, 3.f)
+			     size: OFMakeSize(4.0f, 3.0f)
 		     freeWhenDone: false];
 
-	[_canvas clearRect: OFMakeRect(0.f, 0.f, 4.f, 3.f)];
-	_canvas.backgroundColor = [OFColor colorWithRed: 32.f / 255.f
-						  green: 64.f / 255.f
-						   blue: 128.f / 255.f
-						  alpha: 1.f];
-	[_canvas clearRect: OFMakeRect(1.f, 1.f, 2.f, 3.f)];
+	[_canvas clearRect: OFMakeRect(0.0f, 0.0f, 4.0f, 3.0f)];
+	_canvas.backgroundColor = [OFColor colorWithRed: 32.0f / 255.0f
+						  green: 64.0f / 255.0f
+						   blue: 128.0f / 255.0f
+						  alpha: 1.0f];
+	[_canvas clearRect: OFMakeRect(1.0f, 1.0f, 2.0f, 3.0f)];
 
 	OTAssertEqualObjects(_image, reference);
 }
@@ -79,13 +79,13 @@
 	};
 	OFImage *image = [OFImage imageWithPixelsNoCopy: pixels
 					    pixelFormat: OFPixelFormatRGBA8888
-						   size: OFMakeSize(4.f, 3.f)
+						   size: OFMakeSize(4.0f, 3.0f)
 					   freeWhenDone: false];
 
-	[_canvas clearRect: OFMakeRect(0.f, 0.f, 4.f, 3.f)];
+	[_canvas clearRect: OFMakeRect(0.0f, 0.0f, 4.0f, 3.0f)];
 	[_canvas drawImage: image
-		sourceRect: OFMakeRect(1.f, 1.f, 2.f, 2.f)
-	   destinationRect: OFMakeRect(1.f, 0.f, 3.f, 3.f)];
+		sourceRect: OFMakeRect(1.0f, 1.0f, 2.0f, 2.0f)
+	   destinationRect: OFMakeRect(1.0f, 0.0f, 3.0f, 3.0f)];
 
 	/*
 	 * This test checks every pixel individually instead of checking
@@ -93,48 +93,48 @@
 	 */
 
 	/* Check the non-interpolated pixels are exact. */
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 0.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    [OFColor white]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 0.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.0f, 0.0f)],
 	    [OFColor red]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 2.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    [OFColor lime]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 2.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.0f, 2.0f)],
 	    [OFColor blue]);
 
 	/* Check left row is unchanged. */
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 0.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 1.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.f, 2.f)],
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    [OFColor black]);
 
 	/* Check interpolated pixels. */
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 0.f)],
-	    [OFColor colorWithRed: 1.f
-			    green: 85.f / 255.f
-			     blue: 85.f / 255.f
-			    alpha: 1.f]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.f, 1.f)],
-	    [OFColor colorWithRed: 85.f / 255.f
-			    green: 1.f
-			     blue: 85.f / 255.f
-			    alpha: 1.f]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 1.f)],
-	    [OFColor colorWithRed: 85.f / 255.f
-			    green: 85.f / 255.f
-			     blue: 142.f / 255.f
-			    alpha: 1.f]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.f, 1.f)],
-	    [OFColor colorWithRed: 85.f / 255.f
-			    green: 0.f
-			     blue: 170.f / 255.f
-			    alpha: 1.f]);
-	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.f, 2.f)],
-	    [OFColor colorWithRed: 0.f
-			    green: 85.f / 255.f
-			     blue: 170.f / 255.f
-			    alpha: 1.f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 85.0f / 255.0f
+			     blue: 85.0f / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 85.0f / 255.0f
+			    green: 1.0f
+			     blue: 85.0f / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
+	    [OFColor colorWithRed: 85.0f / 255.0f
+			    green: 85.0f / 255.0f
+			     blue: 142.0f / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.0f, 1.0f)],
+	    [OFColor colorWithRed: 85.0f / 255.0f
+			    green: 0.0f
+			     blue: 170.0f / 255.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 2.0f)],
+	    [OFColor colorWithRed: 0.0f
+			    green: 85.0f / 255.0f
+			     blue: 170.0f / 255.0f
+			    alpha: 1.0f]);
 }
 @end

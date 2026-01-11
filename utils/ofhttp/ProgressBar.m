@@ -174,11 +174,11 @@ static const OFTimeInterval updateInterval = 0.1;
 	}
 
 	OFStdErr.foregroundColor = [OFColor
-	    colorWithRed: (percent < 50.f
-			      ? 1.f : 1.f - ((percent - 50.f) / 50.f))
-		   green: (percent < 50.f ? percent / 50.f : 1.f)
-		    blue: 0.f
-		   alpha: 1.f];
+	    colorWithRed: (percent < 50.0f
+			      ? 1.0f : 1.0f - ((percent - 50.0f) / 50.0f))
+		   green: (percent < 50.0f ? percent / 50.0f : 1.0f)
+		    blue: 0.0f
+		   alpha: 1.0f];
 	[OFStdErr writeFormat: @"%,6.2f%%", percent];
 	OFStdErr.foregroundColor = nil;
 	[OFStdErr writeString: @" "];

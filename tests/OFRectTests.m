@@ -30,24 +30,24 @@
 {
 	OFRect rect1, rect2, rect;
 
-	rect1 = OFMakeRect(0.f, 0.f, 3.f, 3.f);
-	rect2 = OFMakeRect(1.f, 1.f, 1.f, 1.f);
-	rect = OFMakeRect(1.f, 1.f, 1.f, 1.f);
+	rect1 = OFMakeRect(0.0f, 0.0f, 3.0f, 3.0f);
+	rect2 = OFMakeRect(1.0f, 1.0f, 1.0f, 1.0f);
+	rect = OFMakeRect(1.0f, 1.0f, 1.0f, 1.0f);
 	OTAssert(OFEqualRects(OFIntersectionRect(rect1, rect2), rect));
 
-	rect1 = OFMakeRect(0.f, 0.f, 1.f, 1.f);
-	rect2 = OFMakeRect(0.f, 1.f, 1.f, 1.f);
-	rect = OFMakeRect(0.f, 0.f, 0.f, 0.f);
+	rect1 = OFMakeRect(0.0f, 0.0f, 1.0f, 1.0f);
+	rect2 = OFMakeRect(0.0f, 1.0f, 1.0f, 1.0f);
+	rect = OFMakeRect(0.0f, 0.0f, 0.0f, 0.0f);
 	OTAssert(OFEqualRects(OFIntersectionRect(rect1, rect2), rect));
 
-	rect1 = OFMakeRect(0.f, 0.f, 3.f, 3.f);
-	rect2 = OFMakeRect(1.f, 1.f, 4.f, 5.f);
-	rect = OFMakeRect(1.f, 1.f, 2.f, 2.f);
+	rect1 = OFMakeRect(0.0f, 0.0f, 3.0f, 3.0f);
+	rect2 = OFMakeRect(1.0f, 1.0f, 4.0f, 5.0f);
+	rect = OFMakeRect(1.0f, 1.0f, 2.0f, 2.0f);
 	OTAssert(OFEqualRects(OFIntersectionRect(rect1, rect2), rect));
 
-	rect1 = OFMakeRect(2.f, 2.f, 3.f, 3.f);
-	rect2 = OFMakeRect(1.f, 1.f, 5.f, 2.f);
-	rect = OFMakeRect(2.f, 2.f, 3.f, 1.f);
+	rect1 = OFMakeRect(2.0f, 2.0f, 3.0f, 3.0f);
+	rect2 = OFMakeRect(1.0f, 1.0f, 5.0f, 2.0f);
+	rect = OFMakeRect(2.0f, 2.0f, 3.0f, 1.0f);
 	OTAssert(OFEqualRects(OFIntersectionRect(rect1, rect2), rect));
 }
 @end

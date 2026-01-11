@@ -186,7 +186,7 @@ static struct {
 	size_t x = point.x, y = point.y;
 	OFSize size = self.size;
 	size_t width = size.width, height = size.height;
-	float red = 0.f, green = 0.f, blue = 0.f, alpha = 0.f;
+	float red = 0.0f, green = 0.0f, blue = 0.0f, alpha = 0.0f;
 
 	if OF_UNLIKELY (width != size.width || height != size.height)
 		@throw [OFInvalidArgumentException exception];
@@ -246,9 +246,9 @@ static struct {
 
 	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
-			float red = 0.f, green = 0.f, blue = 0.f, alpha = 0.f;
-			float otherRed = 0.f, otherGreen = 0.f, otherBlue = 0.f;
-			float otherAlpha = 0.f;
+			float red = 0.0f, green = 0.0f, blue = 0.0f;
+			float alpha = 0.0f, otherRed = 0.0f, otherGreen = 0.0f;
+			float otherBlue = 0.0f, otherAlpha = 0.0f;
 
 			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
 			    width, &red, &green, &blue, &alpha))
@@ -291,8 +291,8 @@ static struct {
 
 	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
-			float red = 0.f, green = 0.f, blue = 0.f, alpha = 0.f;
-			float tmp;
+			float red = 0.0f, green = 0.0f, blue = 0.0f;
+			float alpha = 0.0f, tmp;
 
 			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
 			    width, &red, &green, &blue, &alpha))

@@ -329,9 +329,9 @@ scale(float value, float min, float max, bool inverted)
 			continue;
 
 		if (OFBitSetIsSet(keyState, OHEvdevButtonIDs[i]))
-			button.value = 1.f;
+			button.value = 1.0f;
 		else
-			button.value = 0.f;
+			button.value = 0.0f;
 	}
 
 	if (OFBitSetIsSet(_evBits, EV_ABS)) {
@@ -407,9 +407,9 @@ scale(float value, float min, float max, bool inverted)
 				continue;
 
 			if (event.value)
-				button.value = 1.f;
+				button.value = 1.0f;
 			else
-				button.value = 0.f;
+				button.value = 0.0f;
 
 			break;
 		case EV_ABS:

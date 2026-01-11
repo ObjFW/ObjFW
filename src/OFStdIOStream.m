@@ -781,13 +781,13 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		uint8_t redInt, greenInt, blueInt;
 
 		[color getRed: &red green: &green blue: &blue alpha: &alpha];
-		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
-		    green > 1 || blue < 0 || blue > 1)
+		if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
+		    blue < 0.0f || blue > 1.0f || alpha != 1.0f)
 			return;
 
-		redInt = roundf(red * 255.f);
-		greenInt = roundf(green * 255.f);
-		blueInt = roundf(blue * 255.f);
+		redInt = roundf(red * 255.0f);
+		greenInt = roundf(green * 255.0f);
+		blueInt = roundf(blue * 255.0f);
 
 		if (self.colors == 16777216)
 			[self writeFormat: @"\033[38;2;%u;%u;%um",
@@ -831,13 +831,13 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		uint8_t redInt, greenInt, blueInt;
 
 		[color getRed: &red green: &green blue: &blue alpha: &alpha];
-		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
-		    green > 1 || blue < 0 || blue > 1)
+		if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
+		    blue < 0.0f || blue > 1.0f || alpha != 1.0f)
 			return;
 
-		redInt = roundf(red * 255.f);
-		greenInt = roundf(green * 255.f);
-		blueInt = roundf(blue * 255.f);
+		redInt = roundf(red * 255.0f);
+		greenInt = roundf(green * 255.0f);
+		blueInt = roundf(blue * 255.0f);
 
 		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
 			[self writeFormat: @"\033[48;5;%um", code];
