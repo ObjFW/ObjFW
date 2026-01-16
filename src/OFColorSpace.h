@@ -47,7 +47,6 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
-@property (class, readonly, retain, nonatomic) OFColorSpace *CIEXYZColorSpace;
 @property (class, readonly, retain, nonatomic) OFColorSpace *sRGBColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *linearSRGBColorSpace;
@@ -90,11 +89,6 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 			      OETF: (OFColorSpaceTransferFunction)OETF
 		 RGBToCIEXYZMatrix: (OFMatrix4x4 *)RGBToCIEXYZMatrix
 		 CIEXYZToRGBMatrix: (OFMatrix4x4 *)CIEXYZToRGBMatrix;
-
-/**
- * @brief The CIE XYZ color space.
- */
-+ (OFColorSpace *)CIEXYZColorSpace;
 
 /**
  * @brief The sRGB color space.

@@ -25,7 +25,7 @@
 @interface OFColorSpaceSingleton: OFColorSpace
 @end
 
-static OFColorSpace *CIEXYZColorSpace, *sRGBColorSpace, *linearSRGBColorSpace;
+static OFColorSpace *sRGBColorSpace, *linearSRGBColorSpace;
 
 static void
 identityTF(OFColorSpace *colorSpace, float *red, float *green, float *blue)
@@ -64,20 +64,6 @@ sRGBOETF(OFColorSpace *colorSpace, float *red, float *green, float *blue)
 	*red = sRGBOETFPrimitive(*red);
 	*green = sRGBOETFPrimitive(*green);
 	*blue = sRGBOETFPrimitive(*blue);
-}
-
-static void
-initCIEXYZColorSpace(void)
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	CIEXYZColorSpace = [[OFColorSpaceSingleton alloc]
-		 initWithEOTF: identityTF
-			 OETF: identityTF
-	    RGBToCIEXYZMatrix: [OFMatrix4x4 identityMatrix]
-	    CIEXYZToRGBMatrix: [OFMatrix4x4 identityMatrix]];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 static void
@@ -154,14 +140,6 @@ OF_SINGLETON_METHODS
 				  OETF: OETF
 		     RGBToCIEXYZMatrix: RGBToCIEXYZMatrix
 		     CIEXYZToRGBMatrix: CIEXYZToRGBMatrix]);
-}
-
-+ (OFColorSpace *)CIEXYZColorSpace
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initCIEXYZColorSpace);
-
-	return CIEXYZColorSpace;
 }
 
 + (OFColorSpace *)sRGBColorSpace
