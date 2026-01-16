@@ -17,6 +17,7 @@ SRCS = OFApplication.m			\
        OFCanvas.m			\
        OFCharacterSet.m			\
        OFColor.m			\
+       OFColorSpace.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
