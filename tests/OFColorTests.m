@@ -22,6 +22,8 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
+static const float allowedImprecision = 0.0000001f;
+
 @interface OFColorTests: OTTestCase
 {
 	OFColor *_color;
@@ -62,5 +64,24 @@
 	OTAssertEqual(green, 127.0f / 255);
 	OTAssertEqual(blue, 1.0f);
 	OTAssertEqual(alpha, 1.0f);
+}
+
+- (void)testColorUsingColorSpace
+{
+	OFColor *color;
+	float red, green, blue, alpha;
+
+	color = [OFColor colorWithRed: 0.5f
+				green: 0.5f
+				 blue: 0.5f
+				alpha: 1.0f];
+	color = [color colorUsingColorSpace:
+	    [OFColorSpace linearSRGBColorSpace]];
+	[color getRed: &red green: &green blue: &blue alpha: &alpha];
+
+	OTAssertLessThan(fabs(red - 0.214041140f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.214041140f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.214041140f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
 }
 @end

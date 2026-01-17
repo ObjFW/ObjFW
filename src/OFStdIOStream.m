@@ -35,6 +35,7 @@
 #import "OFStdIOStream+Private.h"
 #import "OFApplication.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_WINDOWS
@@ -762,6 +763,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 {
 	int code;
 
+	color = [color colorUsingColorSpace: [OFColorSpace sRGBColorSpace]];
+
 	if (color == _foregroundColor)
 		return;
 
@@ -811,6 +814,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 - (void)setBackgroundColor: (OFColor *)color
 {
 	int code;
+
+	color = [color colorUsingColorSpace: [OFColorSpace sRGBColorSpace]];
 
 	if (color == _backgroundColor)
 		return;

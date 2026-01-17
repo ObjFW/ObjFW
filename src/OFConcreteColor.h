@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFConcreteColor: OFColor
 {
 	float _red, _green, _blue, _alpha;
+	OFColorSpace *_colorSpace;
 }
 @end
 

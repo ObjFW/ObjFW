@@ -28,7 +28,7 @@
 static OFColorSpace *sRGBColorSpace, *linearSRGBColorSpace;
 
 static void
-identityTF(OFColorSpace *colorSpace, float *red, float *green, float *blue)
+identityTF(OFColorSpace *colorSpace, OFVector4D *vector)
 {
 }
 
@@ -51,19 +51,19 @@ sRGBOETFPrimitive(float value)
 }
 
 static void
-sRGBEOTF(OFColorSpace *colorSpace, float *red, float *green, float *blue)
+sRGBEOTF(OFColorSpace *colorSpace, OFVector4D *vector)
 {
-	*red = sRGBEOTFPrimitive(*red);
-	*green = sRGBEOTFPrimitive(*green);
-	*blue = sRGBEOTFPrimitive(*blue);
+	vector->x = sRGBEOTFPrimitive(vector->x);
+	vector->y = sRGBEOTFPrimitive(vector->y);
+	vector->z = sRGBEOTFPrimitive(vector->z);
 }
 
 static void
-sRGBOETF(OFColorSpace *colorSpace, float *red, float *green, float *blue)
+sRGBOETF(OFColorSpace *colorSpace, OFVector4D *vector)
 {
-	*red = sRGBOETFPrimitive(*red);
-	*green = sRGBOETFPrimitive(*green);
-	*blue = sRGBOETFPrimitive(*blue);
+	vector->x = sRGBOETFPrimitive(vector->x);
+	vector->y = sRGBOETFPrimitive(vector->y);
+	vector->z = sRGBOETFPrimitive(vector->z);
 }
 
 static void

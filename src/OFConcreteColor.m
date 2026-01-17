@@ -26,6 +26,7 @@
 		      green: (float)green
 		       blue: (float)blue
 		      alpha: (float)alpha
+		 colorSpace: (OFColorSpace *)colorSpace
 {
 	self = [super init];
 
@@ -34,12 +35,20 @@
 		_green = green;
 		_blue = blue;
 		_alpha = alpha;
+		_colorSpace = objc_retain(colorSpace);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_colorSpace);
+
+	[super dealloc];
 }
 
 - (void)getRed: (float *)red
@@ -53,5 +62,10 @@
 
 	if (alpha != NULL)
 		*alpha = _alpha;
+}
+
+- (OFColorSpace *)colorSpace
+{
+	return _colorSpace;
 }
 @end

@@ -30,9 +30,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A transfer function for a color space.
  *
  * The same type is used for both the EOTF and the OETF.
+ *
+ * The vector needs to be 16 byte aligned.
  */
 typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
-    float *red, float *green, float *blue);
+    OFVector4D *vector);
 
 /**
  * @class OFColorSpace OFColorSpace.h ObjFW/ObjFW.h
