@@ -52,6 +52,13 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 @property (class, readonly, retain, nonatomic) OFColorSpace *sRGBColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *linearSRGBColorSpace;
+@property (class, readonly, retain, nonatomic)
+    OFColorSpace *displayP3ColorSpace;
+@property (class, readonly, retain, nonatomic)
+    OFColorSpace *linearDisplayP3ColorSpace;
+@property (class, readonly, retain, nonatomic) OFColorSpace *adobeRGBColorSpace;
+@property (class, readonly, retain, nonatomic)
+    OFColorSpace *linearAdobeRGBColorSpace;
 #endif
 
 /**
@@ -111,6 +118,16 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
  * @brief The Display P3 color space with linear transfer function.
  */
 + (OFColorSpace *)linearDisplayP3ColorSpace;
+
+/**
+ * @brief The Adobe RGB (1998) color space.
+ */
++ (OFColorSpace *)adobeRGBColorSpace;
+
+/**
+ * @brief The Adobe RGB (1998) color space with linear transfer function.
+ */
++ (OFColorSpace *)linearAdobeRGBColorSpace;
 
 /**
  * @brief Initializes the color space with the specified parameters.

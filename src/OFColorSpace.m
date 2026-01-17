@@ -33,6 +33,10 @@ static OFColorSpace *displayP3ColorSpace, *linearDisplayP3ColorSpace;
 static OFMatrix4x4 *displayP3ToXYZMatrix, *XYZToDisplayP3Matrix;
 static OFOnceControl displayP3MatricesOnceControl = OFOnceControlInitValue;
 
+static OFColorSpace *adobeRGBColorSpace, *linearAdobeRGBColorSpace;
+static OFMatrix4x4 *adobeRGBToXYZMatrix, *XYZToAdobeRGBMatrix;
+static OFOnceControl adobeRGBMatricesOnceControl = OFOnceControlInitValue;
+
 static void
 identityTF(OFColorSpace *colorSpace, OFVector4D *vector)
 {
@@ -158,6 +162,77 @@ initLinearDisplayP3ColorSpace(void)
 	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
 }
 
+static OF_INLINE float
+adobeRGBEOTFPrimitive(float value)
+{
+	return powf(value, 563.0f / 256.0f);
+}
+
+static OF_INLINE float
+adobeRGBOETFPrimitive(float value)
+{
+	return powf(value, 256.0f / 563.0f);
+}
+
+static void
+adobeRGBEOTF(OFColorSpace *colorSpace, OFVector4D *vector)
+{
+	vector->x = adobeRGBEOTFPrimitive(vector->x);
+	vector->y = adobeRGBEOTFPrimitive(vector->y);
+	vector->z = adobeRGBEOTFPrimitive(vector->z);
+}
+
+static void
+adobeRGBOETF(OFColorSpace *colorSpace, OFVector4D *vector)
+{
+	vector->x = adobeRGBOETFPrimitive(vector->x);
+	vector->y = adobeRGBOETFPrimitive(vector->y);
+	vector->z = adobeRGBOETFPrimitive(vector->z);
+}
+
+static void
+initAdobeRGBMatrices(void)
+{
+	adobeRGBToXYZMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 0.5766690f, 0.1855582f, 0.1882286f, 0.0f },
+		{ 0.2973450f, 0.6273636f, 0.0752915f, 0.0f },
+		{ 0.0270314f, 0.0706889f, 0.9913375f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+	XYZToAdobeRGBMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 2.0415879f, -0.5650070f, -0.3447314f, 0.0f },
+		{ -0.9692436f, 1.8759675f, 0.0415551f, 0.0f },
+		{ 0.0134443f, -0.1183624f, 1.0151750f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+}
+
+static void
+initAdobeRGBColorSpace(void)
+{
+	OFOnce(&adobeRGBMatricesOnceControl, initAdobeRGBMatrices);
+
+	adobeRGBColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: adobeRGBEOTF
+		      OETF: adobeRGBOETF
+	    RGBToXYZMatrix: adobeRGBToXYZMatrix
+	    XYZToRGBMatrix: XYZToAdobeRGBMatrix];
+}
+
+static void
+initLinearAdobeRGBColorSpace(void)
+{
+	OFOnce(&displayP3MatricesOnceControl, initDisplayP3Matrices);
+
+	linearAdobeRGBColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: identityTF
+		      OETF: identityTF
+	    RGBToXYZMatrix: adobeRGBToXYZMatrix
+	    XYZToRGBMatrix: XYZToAdobeRGBMatrix];
+}
+
 @implementation OFColorSpaceSingleton
 OF_SINGLETON_METHODS
 @end
@@ -208,6 +283,22 @@ OF_SINGLETON_METHODS
 	OFOnce(&onceControl, initLinearDisplayP3ColorSpace);
 
 	return linearDisplayP3ColorSpace;
+}
+
++ (OFColorSpace *)adobeRGBColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initAdobeRGBColorSpace);
+
+	return adobeRGBColorSpace;
+}
+
++ (OFColorSpace *)linearAdobeRGBColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initLinearAdobeRGBColorSpace);
+
+	return linearAdobeRGBColorSpace;
 }
 
 - (instancetype)initWithEOTF: (OFColorSpaceTransferFunction)EOTF
