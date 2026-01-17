@@ -44,7 +44,7 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 @interface OFColorSpace: OFObject
 {
 	OFColorSpaceTransferFunction _EOTF, _OETF;
-	OFMatrix4x4 *_RGBToCIEXYZMatrix, *_CIEXYZToRGBMatrix;
+	OFMatrix4x4 *_RGBToXYZMatrix, *_XYZToRGBMatrix;
 	OF_RESERVE_IVARS(OFColorSpace, 4)
 }
 
@@ -71,26 +71,26 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 /**
  * @brief A matrix to map a linear RGB value to a CIE XYZ value.
  */
-@property (readonly, retain, nonatomic) OFMatrix4x4 *RGBToCIEXYZMatrix;
+@property (readonly, retain, nonatomic) OFMatrix4x4 *RGBToXYZMatrix;
 
 /**
  * @brief A matrix to map a CIE XYZ value to a linear RGB value.
  */
-@property (readonly, retain, nonatomic) OFMatrix4x4 *CIEXYZToRGBMatrix;
+@property (readonly, retain, nonatomic) OFMatrix4x4 *XYZToRGBMatrix;
 
 /**
  * @brief Creates a new color space with the specified parameters.
  *
  * @param EOTF The EOTF for the color space
  * @param OETF The OETF for the color space
- * @param RGBToCIEXYZMatrix The RGB to CIE XYZ matrix for the color space
- * @param CIEXYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
+ * @param RGBToXYZMatrix The RGB to CIE XYZ matrix for the color space
+ * @param XYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
  * @return An new, autoreleased color space
  */
 + (instancetype)colorSpaceWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			      OETF: (OFColorSpaceTransferFunction)OETF
-		 RGBToCIEXYZMatrix: (OFMatrix4x4 *)RGBToCIEXYZMatrix
-		 CIEXYZToRGBMatrix: (OFMatrix4x4 *)CIEXYZToRGBMatrix;
+		    RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
+		    XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix;
 
 /**
  * @brief The sRGB color space.
@@ -98,23 +98,33 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 + (OFColorSpace *)sRGBColorSpace;
 
 /**
- * @brief The linear sRGB color space.
+ * @brief The sRGB color space with linear transfer function.
  */
 + (OFColorSpace *)linearSRGBColorSpace;
+
+/**
+ * @brief The Display P3 color space.
+ */
++ (OFColorSpace *)displayP3ColorSpace;
+
+/**
+ * @brief The Display P3 color space with linear transfer function.
+ */
++ (OFColorSpace *)linearDisplayP3ColorSpace;
 
 /**
  * @brief Initializes the color space with the specified parameters.
  *
  * @param EOTF The EOTF for the color space
  * @param OETF The OETF for the color space
- * @param RGBToCIEXYZMatrix The RGB to CIE XYZ matrix for the color space
- * @param CIEXYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
+ * @param RGBToXYZMatrix The RGB to CIE XYZ matrix for the color space
+ * @param XYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
  * @return An initialized color space
  */
 - (instancetype)initWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			OETF: (OFColorSpaceTransferFunction)OETF
-	   RGBToCIEXYZMatrix: (OFMatrix4x4 *)RGBToCIEXYZMatrix
-	   CIEXYZToRGBMatrix: (OFMatrix4x4 *)CIEXYZToRGBMatrix;
+	      RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
+	      XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix;
 @end
 
 OF_ASSUME_NONNULL_END

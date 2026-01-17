@@ -26,6 +26,12 @@
 @end
 
 static OFColorSpace *sRGBColorSpace, *linearSRGBColorSpace;
+static OFMatrix4x4 *sRGBToXYZMatrix, *XYZToSRGBMatrix;
+static OFOnceControl sRGBMatricesOnceControl = OFOnceControlInitValue;
+
+static OFColorSpace *displayP3ColorSpace, *linearDisplayP3ColorSpace;
+static OFMatrix4x4 *displayP3ToXYZMatrix, *XYZToDisplayP3Matrix;
+static OFOnceControl displayP3MatricesOnceControl = OFOnceControlInitValue;
 
 static void
 identityTF(OFColorSpace *colorSpace, OFVector4D *vector)
@@ -67,59 +73,89 @@ sRGBOETF(OFColorSpace *colorSpace, OFVector4D *vector)
 }
 
 static void
+initSRGBMatrices(void)
+{
+	sRGBToXYZMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 0.4123908f, 0.3575843f, 0.1804808f, 0.0f },
+		{ 0.2126390f, 0.7151687f, 0.0721923f, 0.0f },
+		{ 0.0193308f, 0.1191948f, 0.9505322f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+	XYZToSRGBMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 3.2409699f, -1.5373832f, -0.4986108f, 0.0f },
+		{ -0.9692436f, 1.8759675f, 0.0415551f, 0.0f },
+		{ 0.0556301f, -0.2039770f, 1.0569715f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+}
+
+static void
 initSRGBColorSpace(void)
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMatrix4x4 *RGBToCIEXYZMatrix, *CIEXYZToRGBMatrix;
-
-	RGBToCIEXYZMatrix = [OFMatrix4x4 matrixWithValues: (const float[4][4]) {
-		{ 0.4124f, 0.3576f, 0.1805f, 0.0f },
-		{ 0.2126f, 0.7152f, 0.0722f, 0.0f },
-		{ 0.0193f, 0.1192f, 0.9505f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	}];
-	CIEXYZToRGBMatrix = [OFMatrix4x4 matrixWithValues: (const float[4][4]) {
-		{ 3.2406255f, -1.5372080f, -0.4986286f, 0.0f },
-		{ -0.9689307f, 1.8757561f, 0.0415175f, 0.0f },
-		{ 0.0557101f, -0.2040211f, 1.0569959f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	}];
+	OFOnce(&sRGBMatricesOnceControl, initSRGBMatrices);
 
 	sRGBColorSpace = [[OFColorSpaceSingleton alloc]
-		 initWithEOTF: sRGBEOTF
-			 OETF: sRGBOETF
-	    RGBToCIEXYZMatrix: RGBToCIEXYZMatrix
-	    CIEXYZToRGBMatrix: CIEXYZToRGBMatrix];
-
-	objc_autoreleasePoolPop(pool);
+	      initWithEOTF: sRGBEOTF
+		      OETF: sRGBOETF
+	    RGBToXYZMatrix: sRGBToXYZMatrix
+	    XYZToRGBMatrix: XYZToSRGBMatrix];
 }
 
 static void
 initLinearSRGBColorSpace(void)
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMatrix4x4 *RGBToCIEXYZMatrix, *CIEXYZToRGBMatrix;
-
-	RGBToCIEXYZMatrix = [OFMatrix4x4 matrixWithValues: (const float[4][4]) {
-		{ 0.4124f, 0.3576f, 0.1805f, 0.0f },
-		{ 0.2126f, 0.7152f, 0.0722f, 0.0f },
-		{ 0.0193f, 0.1192f, 0.9505f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	}];
-	CIEXYZToRGBMatrix = [OFMatrix4x4 matrixWithValues: (const float[4][4]) {
-		{ 3.2406255f, -1.5372080f, -0.4986286f, 0.0f },
-		{ -0.9689307f, 1.8757561f, 0.0415175f, 0.0f },
-		{ 0.0557101f, -0.2040211f, 1.0569959f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	}];
+	OFOnce(&sRGBMatricesOnceControl, initSRGBMatrices);
 
 	linearSRGBColorSpace = [[OFColorSpaceSingleton alloc]
-		 initWithEOTF: identityTF
-			 OETF: identityTF
-	    RGBToCIEXYZMatrix: RGBToCIEXYZMatrix
-	    CIEXYZToRGBMatrix: CIEXYZToRGBMatrix];
+	      initWithEOTF: identityTF
+		      OETF: identityTF
+	    RGBToXYZMatrix: sRGBToXYZMatrix
+	    XYZToRGBMatrix: XYZToSRGBMatrix];
+}
 
-	objc_autoreleasePoolPop(pool);
+static void
+initDisplayP3Matrices(void)
+{
+	displayP3ToXYZMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 0.4865709f, 0.2656677f, 0.1982173f, 0.0f },
+		{ 0.2289746f, 0.6917385f, 0.0792869f, 0.0f },
+		{ 0.0f, 0.0451134f, 1.0439444f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+	XYZToDisplayP3Matrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float[4][4]) {
+		{ 2.4934969f, -0.9313836f, -0.4027108f, 0.0f },
+		{ -0.8294890f, 1.7626641f, 0.0236247f, 0.0f },
+		{ 0.0358458f, -0.0761724f, 0.9568845f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+}
+
+static void
+initDisplayP3ColorSpace(void)
+{
+	OFOnce(&displayP3MatricesOnceControl, initDisplayP3Matrices);
+
+	displayP3ColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: sRGBEOTF
+		      OETF: sRGBOETF
+	    RGBToXYZMatrix: displayP3ToXYZMatrix
+	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
+}
+
+static void
+initLinearDisplayP3ColorSpace(void)
+{
+	OFOnce(&displayP3MatricesOnceControl, initDisplayP3Matrices);
+
+	linearDisplayP3ColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: identityTF
+		      OETF: identityTF
+	    RGBToXYZMatrix: displayP3ToXYZMatrix
+	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
 }
 
 @implementation OFColorSpaceSingleton
@@ -127,19 +163,19 @@ OF_SINGLETON_METHODS
 @end
 
 @implementation OFColorSpace
-@synthesize EOTF = _EOTF, OETF = _OETF, RGBToCIEXYZMatrix = _RGBToCIEXYZMatrix;
-@synthesize CIEXYZToRGBMatrix = _CIEXYZToRGBMatrix;
+@synthesize EOTF = _EOTF, OETF = _OETF, RGBToXYZMatrix = _RGBToXYZMatrix;
+@synthesize XYZToRGBMatrix = _XYZToRGBMatrix;
 
 + (instancetype)colorSpaceWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			      OETF: (OFColorSpaceTransferFunction)OETF
-		 RGBToCIEXYZMatrix: (OFMatrix4x4 *)RGBToCIEXYZMatrix
-		 CIEXYZToRGBMatrix: (OFMatrix4x4 *)CIEXYZToRGBMatrix
+		    RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
+		    XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithEOTF: EOTF
 				  OETF: OETF
-		     RGBToCIEXYZMatrix: RGBToCIEXYZMatrix
-		     CIEXYZToRGBMatrix: CIEXYZToRGBMatrix]);
+			RGBToXYZMatrix: RGBToXYZMatrix
+			XYZToRGBMatrix: XYZToRGBMatrix]);
 }
 
 + (OFColorSpace *)sRGBColorSpace
@@ -158,25 +194,41 @@ OF_SINGLETON_METHODS
 	return linearSRGBColorSpace;
 }
 
++ (OFColorSpace *)displayP3ColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initDisplayP3ColorSpace);
+
+	return displayP3ColorSpace;
+}
+
++ (OFColorSpace *)linearDisplayP3ColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initLinearDisplayP3ColorSpace);
+
+	return linearDisplayP3ColorSpace;
+}
+
 - (instancetype)initWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			OETF: (OFColorSpaceTransferFunction)OETF
-	   RGBToCIEXYZMatrix: (OFMatrix4x4 *)RGBToCIEXYZMatrix
-	   CIEXYZToRGBMatrix: (OFMatrix4x4 *)CIEXYZToRGBMatrix
+	      RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
+	      XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
 {
 	self = [super init];
 
 	_EOTF = EOTF;
 	_OETF = OETF;
-	_RGBToCIEXYZMatrix = objc_retain(RGBToCIEXYZMatrix);
-	_CIEXYZToRGBMatrix = objc_retain(CIEXYZToRGBMatrix);
+	_RGBToXYZMatrix = objc_retain(RGBToXYZMatrix);
+	_XYZToRGBMatrix = objc_retain(XYZToRGBMatrix);
 
 	return self;
 }
 
 - (void)dealloc
 {
-	objc_release(_RGBToCIEXYZMatrix);
-	objc_release(_CIEXYZToRGBMatrix);
+	objc_release(_RGBToXYZMatrix);
+	objc_release(_XYZToRGBMatrix);
 
 	[super dealloc];
 }
