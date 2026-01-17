@@ -56,6 +56,9 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
     OFColorSpace *displayP3ColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *linearDisplayP3ColorSpace;
+@property (class, readonly, retain, nonatomic) OFColorSpace *BT2020ColorSpace;
+@property (class, readonly, retain, nonatomic)
+    OFColorSpace *linearBT2020ColorSpace;
 @property (class, readonly, retain, nonatomic) OFColorSpace *adobeRGBColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *linearAdobeRGBColorSpace;
@@ -118,6 +121,17 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
  * @brief The Display P3 color space with linear transfer function.
  */
 + (OFColorSpace *)linearDisplayP3ColorSpace;
+
+/**
+ * @brief The ITU-R Recommendation BT.2020 color space.
+ */
++ (OFColorSpace *)BT2020ColorSpace;
+
+/**
+ * @brief The ITU-R Recommendation BT.2020 color space with linear transfer
+ *	  function.
+ */
++ (OFColorSpace *)linearBT2020ColorSpace;
 
 /**
  * @brief The Adobe RGB (1998) color space.

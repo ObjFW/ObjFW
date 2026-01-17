@@ -101,6 +101,18 @@ static const float allowedImprecision = 0.0000001f;
 				green: 0.5f
 				 blue: 0.1f
 				alpha: 1.0f];
+	color = [color colorUsingColorSpace: [OFColorSpace BT2020ColorSpace]];
+	[color getRed: &red green: &green blue: &blue alpha: &alpha];
+
+	OTAssertLessThan(fabs(red - 0.2758016f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.4325840f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.1219162f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+
+	color = [OFColor colorWithRed: 0.2f
+				green: 0.5f
+				 blue: 0.1f
+				alpha: 1.0f];
 	color = [color colorUsingColorSpace: [OFColorSpace adobeRGBColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 

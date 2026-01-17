@@ -33,6 +33,10 @@ static OFColorSpace *displayP3ColorSpace, *linearDisplayP3ColorSpace;
 static OFMatrix4x4 *displayP3ToXYZMatrix, *XYZToDisplayP3Matrix;
 static OFOnceControl displayP3MatricesOnceControl = OFOnceControlInitValue;
 
+static OFColorSpace *BT2020ColorSpace, *linearBT2020ColorSpace;
+static OFMatrix4x4 *BT2020ToXYZMatrix, *XYZToBT2020Matrix;
+static OFOnceControl BT2020MatricesOnceControl = OFOnceControlInitValue;
+
 static OFColorSpace *adobeRGBColorSpace, *linearAdobeRGBColorSpace;
 static OFMatrix4x4 *adobeRGBToXYZMatrix, *XYZToAdobeRGBMatrix;
 static OFOnceControl adobeRGBMatricesOnceControl = OFOnceControlInitValue;
@@ -80,14 +84,14 @@ static void
 initSRGBMatrices(void)
 {
 	sRGBToXYZMatrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 0.4123908f, 0.3575843f, 0.1804808f, 0.0f },
 		{ 0.2126390f, 0.7151687f, 0.0721923f, 0.0f },
 		{ 0.0193308f, 0.1191948f, 0.9505322f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	}];
 	XYZToSRGBMatrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 3.2409699f, -1.5373832f, -0.4986108f, 0.0f },
 		{ -0.9692436f, 1.8759675f, 0.0415551f, 0.0f },
 		{ 0.0556301f, -0.2039770f, 1.0569715f, 0.0f },
@@ -123,14 +127,14 @@ static void
 initDisplayP3Matrices(void)
 {
 	displayP3ToXYZMatrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 0.4865709f, 0.2656677f, 0.1982173f, 0.0f },
 		{ 0.2289746f, 0.6917385f, 0.0792869f, 0.0f },
 		{ 0.0f, 0.0451134f, 1.0439444f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	}];
 	XYZToDisplayP3Matrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 2.4934969f, -0.9313836f, -0.4027108f, 0.0f },
 		{ -0.8294890f, 1.7626641f, 0.0236247f, 0.0f },
 		{ 0.0358458f, -0.0761724f, 0.9568845f, 0.0f },
@@ -160,6 +164,83 @@ initLinearDisplayP3ColorSpace(void)
 		      OETF: identityTF
 	    RGBToXYZMatrix: displayP3ToXYZMatrix
 	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
+}
+
+static OF_INLINE float
+BT2020OETFPrimitive(float value)
+{
+	if (value < 0.0181f)
+		return 4.5f * value;
+	else
+		return 1.0993f * powf(value, 0.45f) - 0.0993f;
+}
+
+static OF_INLINE float
+BT2020EOTFPrimitive(float value)
+{
+	if (value < BT2020OETFPrimitive(0.0181f))
+		return value / 4.5f;
+	else
+		return powf((value + 0.0993f) / 1.0993f, 1.0f / 0.45f);
+}
+
+static void
+BT2020EOTF(OFColorSpace *colorSpace, OFVector4D *vector)
+{
+	vector->x = BT2020EOTFPrimitive(vector->x);
+	vector->y = BT2020EOTFPrimitive(vector->y);
+	vector->z = BT2020EOTFPrimitive(vector->z);
+}
+
+static void
+BT2020OETF(OFColorSpace *colorSpace, OFVector4D *vector)
+{
+	vector->x = BT2020OETFPrimitive(vector->x);
+	vector->y = BT2020OETFPrimitive(vector->y);
+	vector->z = BT2020OETFPrimitive(vector->z);
+}
+
+static void
+initBT2020Matrices(void)
+{
+	BT2020ToXYZMatrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float [4][4]) {
+		{ 0.6369580f, 0.1446169f, 0.1688810, 0.0f },
+		{ 0.2627002f, 0.6779981f, 0.0593017, 0.0f },
+		{ 0.0f, 0.0280727f, 1.0609851, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+	XYZToBT2020Matrix = [[OFMatrix4x4 alloc]
+	    initWithValues: (const float [4][4]) {
+		{ 1.7166512f, -0.3556708f, -0.2533663f, 0.0f },
+		{ -0.6666844f, 1.6164812f, 0.0157685f, 0.0f },
+		{ 0.0176399f, -0.0427706f, 0.9421031f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	}];
+}
+
+static void
+initBT2020ColorSpace(void)
+{
+	OFOnce(&BT2020MatricesOnceControl, initBT2020Matrices);
+
+	BT2020ColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: BT2020EOTF
+		      OETF: BT2020OETF
+	    RGBToXYZMatrix: BT2020ToXYZMatrix
+	    XYZToRGBMatrix: XYZToBT2020Matrix];
+}
+
+static void
+initLinearBT2020ColorSpace(void)
+{
+	OFOnce(&BT2020MatricesOnceControl, initBT2020Matrices);
+
+	linearBT2020ColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: identityTF
+		      OETF: identityTF
+	    RGBToXYZMatrix: BT2020ToXYZMatrix
+	    XYZToRGBMatrix: XYZToBT2020Matrix];
 }
 
 static OF_INLINE float
@@ -194,14 +275,14 @@ static void
 initAdobeRGBMatrices(void)
 {
 	adobeRGBToXYZMatrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 0.5766690f, 0.1855582f, 0.1882286f, 0.0f },
 		{ 0.2973450f, 0.6273636f, 0.0752915f, 0.0f },
 		{ 0.0270314f, 0.0706889f, 0.9913375f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	}];
 	XYZToAdobeRGBMatrix = [[OFMatrix4x4 alloc]
-	    initWithValues: (const float[4][4]) {
+	    initWithValues: (const float [4][4]) {
 		{ 2.0415879f, -0.5650070f, -0.3447314f, 0.0f },
 		{ -0.9692436f, 1.8759675f, 0.0415551f, 0.0f },
 		{ 0.0134443f, -0.1183624f, 1.0151750f, 0.0f },
@@ -283,6 +364,22 @@ OF_SINGLETON_METHODS
 	OFOnce(&onceControl, initLinearDisplayP3ColorSpace);
 
 	return linearDisplayP3ColorSpace;
+}
+
++ (OFColorSpace *)BT2020ColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initBT2020ColorSpace);
+
+	return BT2020ColorSpace;
+}
+
++ (OFColorSpace *)linearBT2020ColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initLinearBT2020ColorSpace);
+
+	return linearBT2020ColorSpace;
 }
 
 + (OFColorSpace *)adobeRGBColorSpace
