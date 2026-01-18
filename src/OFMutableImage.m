@@ -21,6 +21,7 @@
 
 #import "OFMutableImage.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFImage+Private.h"
 
 #import "OFInvalidArgumentException.h"
@@ -28,7 +29,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFMutableImage
-@dynamic dotsPerInch;
+@dynamic colorSpace, dotsPerInch;
 
 + (instancetype)imageWithSize: (OFSize)size
 		  pixelFormat: (OFPixelFormat)pixelFormat
@@ -38,8 +39,27 @@
 			   pixelFormat: pixelFormat]);
 }
 
++ (instancetype)imageWithSize: (OFSize)size
+		  pixelFormat: (OFPixelFormat)pixelFormat
+		   colorSpace: (OFColorSpace *)colorSpace
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithSize: size
+			   pixelFormat: pixelFormat
+			    colorSpace: colorSpace]);
+}
+
 - (instancetype)initWithSize: (OFSize)size
 		 pixelFormat: (OFPixelFormat)pixelFormat
+{
+	return [self initWithSize: size
+		      pixelFormat: pixelFormat
+		       colorSpace: [OFColorSpace sRGBColorSpace]];
+}
+
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
+		  colorSpace: (OFColorSpace *)colorSpace
 {
 	self = [self of_init];
 
@@ -58,6 +78,7 @@
 
 		_size = size;
 		_pixelFormat = pixelFormat;
+		_colorSpace = objc_retain(colorSpace);
 
 		bitsPerPixel = self.bitsPerPixel;
 		if (bitsPerPixel % CHAR_BIT != 0)
@@ -79,6 +100,13 @@
 	return _pixels;
 }
 
+- (void)setColorSpace: (OFColorSpace *)colorSpace
+{
+	OFColorSpace *old = _colorSpace;
+	_colorSpace = objc_retain(colorSpace);
+	objc_release(old);
+}
+
 - (void)setDotsPerInch: (OFSize)dotsPerInch
 {
 	if (dotsPerInch.width < 0 || dotsPerInch.height < 0)
@@ -90,6 +118,8 @@
 - (void)setColor: (OFColor *)color atPoint: (OFPoint)point
 {
 	float red, green, blue, alpha;
+
+	color = [color colorUsingColorSpace: _colorSpace];
 
 	if OF_UNLIKELY (point.x < 0 || point.y < 0 ||
 	    point.x >= _size.width || point.y >= _size.height)
@@ -111,7 +141,8 @@
 {
 	return [[OFImage alloc] initWithPixels: _pixels
 				   pixelFormat: _pixelFormat
-					  size: _size];
+					  size: _size
+				    colorSpace: _colorSpace];
 }
 
 - (void)makeImmutable

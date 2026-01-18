@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFQOIImageFormatHandler.h"
+#import "OFColorSpace.h"
 #import "OFImage+Private.h"
 #import "OFSeekableStream.h"
 
@@ -42,6 +43,7 @@ hashPixel(uint8_t pixel[4])
 	uint32_t width, height;
 	OFSize size;
 	OFPixelFormat format;
+	OFColorSpace *colorSpace;
 	OFMutableImage *image;
 	uint8_t *pixels;
 	uint8_t pixel[4] = { 0, 0, 0, 255 }, dict[256] = { 0 };
@@ -73,9 +75,20 @@ hashPixel(uint8_t pixel[4])
 		@throw [OFInvalidFormatException exception];
 	}
 
-	/* colorspace = */ [stream readInt8];
+	switch ([stream readInt8]) {
+	case 0:
+		colorSpace = [OFColorSpace sRGBColorSpace];
+		break;
+	case 1:
+		colorSpace = [OFColorSpace linearSRGBColorSpace];
+		break;
+	default:
+		@throw [OFInvalidFormatException exception];
+	}
 
-	image = [OFMutableImage imageWithSize: size pixelFormat: format];
+	image = [OFMutableImage imageWithSize: size
+				  pixelFormat: format
+				   colorSpace: colorSpace];
 	pixels = image.mutablePixels;
 
 	for (size_t pixelsRead = 0; pixelsRead < width * height; pixelsRead++) {
@@ -186,6 +199,8 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 	uint32_t width = size.width, height = size.height;
 	const void *pixels;
 	OFPixelFormat format;
+	OFColorSpace *colorSpace;
+	uint8_t formatInt8, colorSpaceInt8;
 	uint8_t previousPixel[4] = { 0, 0, 0, 255 }, dict[256] = { 0 };
 	size_t runLength = 0;
 
@@ -198,18 +213,27 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 
 	pixels = image.pixels;
 	format = image.pixelFormat;
+	colorSpace = image.colorSpace;
 
 	switch (format) {
 	case OFPixelFormatRGB888:
 	case OFPixelFormatBGR888:
-		[stream writeInt8: 3];
+		formatInt8 = 3;
 		break;
 	default:
-		[stream writeInt8: 4];
+		formatInt8 = 4;
 		break;
 	}
 
-	[stream writeInt8: 0]; /* colorspace */
+	if ([colorSpace isEqual: [OFColorSpace sRGBColorSpace]])
+		colorSpaceInt8 = 0;
+	else if ([colorSpace isEqual: [OFColorSpace linearSRGBColorSpace]])
+		colorSpaceInt8 = 1;
+	else
+		@throw [OFInvalidArgumentException exception];
+
+	[stream writeInt8: formatInt8];
+	[stream writeInt8: colorSpaceInt8];
 
 	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {

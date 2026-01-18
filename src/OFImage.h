@@ -23,6 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFColor;
+@class OFColorSpace;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableImage;
 @class OFSeekableStream;
@@ -103,6 +104,7 @@ extern const OFImageFormat OFImageFormatQOI;
 	void *_pixels;
 	OFPixelFormat _pixelFormat;
 	OFSize _size;
+	OFColorSpace *_colorSpace;
 	bool _freeWhenDone;
 	OFSize _dotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
@@ -122,6 +124,14 @@ extern const OFImageFormat OFImageFormatQOI;
  * @brief The size of the image in pixels.
  */
 @property (readonly, nonatomic) OFSize size;
+
+/**
+ * @brief The color space of the image.
+ *
+ * Setting this property does not convert the image, but changes how the image
+ * is interpreted.
+ */
+@property (readonly, retain, nonatomic) OFColorSpace *colorSpace;
 
 /**
  * @brief The bits per pixel.
@@ -168,6 +178,22 @@ extern const OFImageFormat OFImageFormatQOI;
 
 /**
  * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size in the specified color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @return A new image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithPixels: (const void *)pixels
+		    pixelFormat: (OFPixelFormat)pixelFormat
+			   size: (OFSize)size
+		     colorSpace: (OFColorSpace *)colorSpace;
+
+/**
+ * @brief Creates a new image with the specified pixels in the specified pixel
  *	  format and the specified size by taking over ownership of the
  *	  specified pixels pointer.
  *
@@ -182,6 +208,26 @@ extern const OFImageFormat OFImageFormatQOI;
 + (instancetype)imageWithPixelsNoCopy: (const void *)pixels
 			  pixelFormat: (OFPixelFormat)pixelFormat
 				 size: (OFSize)size
+			 freeWhenDone: (bool)freeWhenDone;
+
+/**
+ * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size by taking over ownership of the
+ *	  specified pixels pointer in the specified color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return A new image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithPixelsNoCopy: (const void *)pixels
+			  pixelFormat: (OFPixelFormat)pixelFormat
+				 size: (OFSize)size
+			   colorSpace: (OFColorSpace *)colorSpace
 			 freeWhenDone: (bool)freeWhenDone;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -202,6 +248,23 @@ extern const OFImageFormat OFImageFormatQOI;
 
 /**
  * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size in the specified
+ *	  color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size
+		    colorSpace: (OFColorSpace *)colorSpace;
+
+/**
+ * @brief Initializes an already allocated image with the specified pixels in
  *	  the specified pixel format and the specified size by taking over
  *	  ownership of the specified pixels pointer.
  *
@@ -216,6 +279,27 @@ extern const OFImageFormat OFImageFormatQOI;
 - (instancetype)initWithPixelsNoCopy: (const void *)pixels
 			 pixelFormat: (OFPixelFormat)pixelFormat
 				size: (OFSize)size
+			freeWhenDone: (bool)freeWhenDone;
+
+/**
+ * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size by taking over
+ *	  ownership of the specified pixels pointer in the specified color
+ *	  space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			  colorSpace: (OFColorSpace *)colorSpace
 			freeWhenDone: (bool)freeWhenDone;
 
 /**

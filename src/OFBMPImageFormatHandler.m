@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFBMPImageFormatHandler.h"
+#import "OFColorSpace.h"
 #import "OFImage+Private.h"
 #import "OFSeekableStream.h"
 #import "OFString.h"
@@ -136,6 +137,7 @@
 		struct {
 			uint32_t red, green, blue, alpha;
 		} masks;
+		char colorSpace[4];
 
 		[stream readIntoBuffer: &masks exactLength: 16];
 
@@ -154,6 +156,12 @@
 		else
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: @"\"bit fields\""];
+
+		[stream readIntoBuffer: &colorSpace exactLength: 4];
+
+		if (memcmp(colorSpace, "BGRs", 4) != 0)
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: @"\"color space\""];
 	}
 
 	[stream seekToOffset: dataStart whence: OFSeekSet];
@@ -236,6 +244,9 @@
 
 	if (UINT32_MAX - height * (lineLength + linePadding) < 14 + headerSize)
 		@throw [OFOutOfRangeException exception];
+
+	if (![image.colorSpace isEqual: [OFColorSpace sRGBColorSpace]])
+		@throw [OFInvalidArgumentException exception];
 
 	/* File header */
 	[stream writeString: @"BM"];

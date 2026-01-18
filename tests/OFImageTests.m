@@ -296,6 +296,7 @@
 				      imageFormat: OFImageFormatBMP];
 
 	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
@@ -390,6 +391,7 @@
 				      imageFormat: OFImageFormatQOI];
 
 	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],

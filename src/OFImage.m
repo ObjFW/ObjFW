@@ -22,6 +22,7 @@
 #import "OFImage.h"
 #import "OFImage+Private.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFImageFormatHandler.h"
 
 #import "OFInvalidArgumentException.h"
@@ -41,6 +42,18 @@
 				    size: size]);
 }
 
++ (instancetype)imageWithPixels: (const void *)pixels
+		    pixelFormat: (OFPixelFormat)pixelFormat
+			   size: (OFSize)size
+		     colorSpace: (OFColorSpace *)colorSpace
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithPixels: pixels
+			     pixelFormat: pixelFormat
+				    size: size
+			      colorSpace: colorSpace]);
+}
+
 + (instancetype)imageWithPixelsNoCopy: (const void *)pixels
 			  pixelFormat: (OFPixelFormat)pixelFormat
 				 size: (OFSize)size
@@ -50,6 +63,20 @@
 	    [[self alloc] initWithPixelsNoCopy: pixels
 				   pixelFormat: pixelFormat
 					  size: size
+				  freeWhenDone: freeWhenDone]);
+}
+
++ (instancetype)imageWithPixelsNoCopy: (const void *)pixels
+			  pixelFormat: (OFPixelFormat)pixelFormat
+				 size: (OFSize)size
+			   colorSpace: (OFColorSpace *)colorSpace
+			 freeWhenDone: (bool)freeWhenDone
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithPixelsNoCopy: pixels
+				   pixelFormat: pixelFormat
+					  size: size
+				    colorSpace: colorSpace
 				  freeWhenDone: freeWhenDone]);
 }
 
@@ -74,6 +101,17 @@
 		   pixelFormat: (OFPixelFormat)pixelFormat
 			  size: (OFSize)size
 {
+	return [self initWithPixels: pixels
+			pixelFormat: pixelFormat
+			       size: size
+			 colorSpace: [OFColorSpace sRGBColorSpace]];
+}
+
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size
+		    colorSpace: (OFColorSpace *)colorSpace
+{
 	self = [super init];
 
 	@try {
@@ -91,6 +129,7 @@
 
 		_size = size;
 		_pixelFormat = pixelFormat;
+		_colorSpace = objc_retain(colorSpace);
 
 		bitsPerPixel = self.bitsPerPixel;
 		if (bitsPerPixel % CHAR_BIT != 0)
@@ -115,6 +154,19 @@
 				size: (OFSize)size
 			freeWhenDone: (bool)freeWhenDone
 {
+	return [self initWithPixelsNoCopy: pixels
+			      pixelFormat: pixelFormat
+				     size: size
+			       colorSpace: [OFColorSpace sRGBColorSpace]
+			     freeWhenDone: freeWhenDone];
+}
+
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			  colorSpace: (OFColorSpace *)colorSpace
+			freeWhenDone: (bool)freeWhenDone
+{
 	self = [super init];
 
 	@try {
@@ -128,6 +180,7 @@
 		_pixels = (void *)pixels;
 		_pixelFormat = pixelFormat;
 		_size = size;
+		_colorSpace = objc_retain(colorSpace);
 		_freeWhenDone = freeWhenDone;
 	} @catch (id e) {
 		objc_release(self);
@@ -139,6 +192,8 @@
 
 - (void)dealloc
 {
+	objc_release(_colorSpace);
+
 	if (_freeWhenDone)
 		OFFreeMemory(_pixels);
 
@@ -158,6 +213,11 @@
 - (OFSize)size
 {
 	return _size;
+}
+
+- (OFColorSpace *)colorSpace
+{
+	return _colorSpace;
 }
 
 - (unsigned int)bitsPerPixel
@@ -197,7 +257,11 @@
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	return [OFColor colorWithRed: red green: green blue: blue alpha: alpha];
+	return [OFColor colorWithRed: red
+			       green: green
+				blue: blue
+			       alpha: alpha
+			  colorSpace: _colorSpace];
 }
 
 - (bool)isEqual: (id)otherObject
@@ -222,6 +286,9 @@
 
 	width = _size.width;
 	height = _size.height;
+
+	if (![otherImage.colorSpace isEqual: _colorSpace])
+		return false;
 
 	otherPixels = otherImage.pixels;
 	otherFormat = otherImage.pixelFormat;
@@ -311,7 +378,8 @@
 {
 	return [[OFMutableImage alloc] initWithPixels: _pixels
 					  pixelFormat: _pixelFormat
-						 size: _size];
+						 size: _size
+					   colorSpace: _colorSpace];
 }
 
 - (void)writeToStream: (OFSeekableStream *)stream
