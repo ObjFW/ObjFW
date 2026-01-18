@@ -221,11 +221,9 @@ SRCS += OFASPrintF.m			\
 	OFConcreteData.m		\
 	OFConcreteDate.m		\
 	OFConcreteDictionary.m		\
-	OFConcreteImage.m		\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
 	OFConcreteMutableDictionary.m	\
-	OFConcreteMutableImage.m	\
 	OFConcreteMutableSet.m		\
 	OFConcreteNumber.m		\
 	OFConcreteSet.m			\

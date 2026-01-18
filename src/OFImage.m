@@ -22,73 +22,15 @@
 #import "OFImage.h"
 #import "OFImage+Private.h"
 #import "OFColor.h"
-#import "OFConcreteImage.h"
 #import "OFImageFormatHandler.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFPlaceholderImage: OFImage
-@end
-
 #include "OFImageConstants.inc"
 
-static struct {
-	Class isa;
-} placeholder;
-
-@implementation OFPlaceholderImage
-- (instancetype)init
-{
-	return (id)[[OFConcreteImage alloc] init];
-}
-
-- (instancetype)initWithPixels: (const void *)pixels
-		   pixelFormat: (OFPixelFormat)pixelFormat
-			  size: (OFSize)size
-{
-	return (id)[[OFConcreteImage alloc] initWithPixels: pixels
-					       pixelFormat: pixelFormat
-						      size: size];
-}
-
-- (instancetype)initWithPixelsNoCopy: (const void *)pixels
-			 pixelFormat: (OFPixelFormat)pixelFormat
-				size: (OFSize)size
-			freeWhenDone: (bool)freeWhenDone
-{
-	return (id)[[OFConcreteImage alloc] initWithPixelsNoCopy: pixels
-						     pixelFormat: pixelFormat
-							    size: size
-						    freeWhenDone: freeWhenDone];
-}
-@end
-
 @implementation OFImage
-+ (void)initialize
-{
-	if (self == [OFImage class])
-		object_setClass((id)&placeholder, [OFPlaceholderImage class]);
-}
-
-+ (instancetype)alloc
-{
-	if (self == [OFImage class])
-		return (id)&placeholder;
-
-	return [super alloc];
-}
-
-+ (OFMutableImage *)imageWithStream: (OFSeekableStream *)stream
-			imageFormat: (OFImageFormat)format
-{
-	OFImageFormatHandler *handler =
-	    [OFImageFormatHandler handlerForImageFormat: format];
-
-	return [handler readImageFromStream: stream];
-}
-
 + (instancetype)imageWithPixels: (const void *)pixels
 		    pixelFormat: (OFPixelFormat)pixelFormat
 			   size: (OFSize)size
@@ -111,20 +53,20 @@ static struct {
 				  freeWhenDone: freeWhenDone]);
 }
 
++ (OFMutableImage *)imageWithStream: (OFSeekableStream *)stream
+			imageFormat: (OFImageFormat)format
+{
+	return [[OFImageFormatHandler handlerForImageFormat: format]
+	    readImageFromStream: stream];
+}
+
 - (instancetype)init
 {
-	if ([self isMemberOfClass: [OFImage class]] ||
-	    [self isMemberOfClass: [OFMutableImage class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			objc_release(self);
-			@throw e;
-		}
+	OF_INVALID_INIT_METHOD
+}
 
-		abort();
-	}
-
+- (instancetype)of_init
+{
 	return [super init];
 }
 
@@ -132,7 +74,40 @@ static struct {
 		   pixelFormat: (OFPixelFormat)pixelFormat
 			  size: (OFSize)size
 {
-	OF_INVALID_INIT_METHOD
+	self = [super init];
+
+	@try {
+		unsigned int bitsPerPixel;
+		size_t width, height, count;
+
+		width = size.width;
+		height = size.height;
+
+		if (width != size.width || height != size.height)
+			@throw [OFInvalidArgumentException exception];
+
+		_size = size;
+		_pixelFormat = pixelFormat;
+
+		bitsPerPixel = self.bitsPerPixel;
+		if (bitsPerPixel % CHAR_BIT != 0)
+			@throw [OFInvalidArgumentException exception];
+
+		if (SIZE_MAX / width < height)
+			@throw [OFOutOfRangeException exception];
+
+		count = width * height;
+
+		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
+		_freeWhenDone = true;
+
+		memcpy(_pixels, pixels, count * (bitsPerPixel / CHAR_BIT));
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)initWithPixelsNoCopy: (const void *)pixels
@@ -140,17 +115,51 @@ static struct {
 				size: (OFSize)size
 			freeWhenDone: (bool)freeWhenDone
 {
-	OF_INVALID_INIT_METHOD
+	self = [super init];
+
+	@try {
+		if (size.width != (size_t)size.width ||
+		    size.height != (size_t)size.height)
+			@throw [OFInvalidArgumentException exception];
+
+		_pixels = (void *)pixels;
+		_pixelFormat = pixelFormat;
+		_size = size;
+		_freeWhenDone = freeWhenDone;
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	if (_freeWhenDone)
+		OFFreeMemory(_pixels);
+
+	[super dealloc];
+}
+
+- (const void *)pixels
+{
+	return _pixels;
+}
+
+- (OFPixelFormat)pixelFormat
+{
+	return _pixelFormat;
 }
 
 - (OFSize)size
 {
-	OF_UNRECOGNIZED_SELECTOR
+	return _size;
 }
 
 - (unsigned int)bitsPerPixel
 {
-	switch (self.pixelFormat) {
+	switch (_pixelFormat) {
 	case OFPixelFormatUnknown:
 		return 0;
 	case OFPixelFormatRGB888:
@@ -166,16 +175,6 @@ static struct {
 	}
 }
 
-- (OFPixelFormat)pixelFormat
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (const void *)pixels
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (OFSize)dotsPerInch
 {
 	return _dotsPerInch;
@@ -184,11 +183,10 @@ static struct {
 - (OFColor *)colorAtPoint: (OFPoint)point
 {
 	size_t x = point.x, y = point.y;
-	OFSize size = self.size;
-	size_t width = size.width, height = size.height;
+	size_t width = _size.width, height = _size.height;
 	float red = 0.0f, green = 0.0f, blue = 0.0f, alpha = 0.0f;
 
-	if OF_UNLIKELY (width != size.width || height != size.height)
+	if OF_UNLIKELY (width != _size.width || height != _size.height)
 		@throw [OFInvalidArgumentException exception];
 
 	if OF_UNLIKELY (x >= width || y >= height)
@@ -206,10 +204,10 @@ static struct {
 - (bool)isEqual: (id)otherObject
 {
 	OFImage *otherImage;
-	OFSize size, otherSize;
+	OFSize otherSize;
 	size_t width, height;
-	const void *pixels, *otherPixels;
-	OFPixelFormat format, otherFormat;
+	const void *otherPixels;
+	OFPixelFormat otherFormat;
 
 	if (otherObject == self)
 		return true;
@@ -219,29 +217,26 @@ static struct {
 
 	otherImage = otherObject;
 
-	size = self.size;
 	otherSize = otherImage.size;
 
-	if (!OFEqualSizes(size, otherSize))
+	if (!OFEqualSizes(_size, otherSize))
 		return false;
 
-	width = size.width;
-	height = size.height;
+	width = _size.width;
+	height = _size.height;
 
-	if (width != size.width || height != size.height ||
+	if (width != _size.width || height != _size.height ||
 	    otherSize.width != (size_t)otherSize.width ||
 	    otherSize.height != (size_t)otherSize.height)
 		@throw [OFInvalidArgumentException exception];
 
-	pixels = self.pixels;
 	otherPixels = otherImage.pixels;
-	format = self.pixelFormat;
 	otherFormat = otherImage.pixelFormat;
 
-	if (otherFormat == format) {
+	if (otherFormat == _pixelFormat) {
 		size_t length = width * height * (self.bitsPerPixel / CHAR_BIT);
 
-		return (memcmp(pixels, otherPixels, length) == 0);
+		return (memcmp(_pixels, otherPixels, length) == 0);
 	}
 
 	for (size_t y = 0; y < height; y++) {
@@ -250,8 +245,8 @@ static struct {
 			float alpha = 0.0f, otherRed = 0.0f, otherGreen = 0.0f;
 			float otherBlue = 0.0f, otherAlpha = 0.0f;
 
-			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
-			    width, &red, &green, &blue, &alpha))
+			if OF_UNLIKELY (!_OFReadPixel(_pixels, _pixelFormat,
+			    x, y, width, &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
@@ -275,17 +270,11 @@ static struct {
 
 - (unsigned long)hash
 {
-	OFSize size = self.size;
-	size_t width = size.width, height = size.height;
-	const void *pixels;
-	OFPixelFormat format;
+	size_t width = _size.width, height = _size.height;
 	unsigned long hash;
 
-	if (width != size.width || height != size.height)
+	if (width != _size.width || height != _size.height)
 		@throw [OFInvalidArgumentException exception];
-
-	pixels = self.pixels;
-	format = self.pixelFormat;
 
 	OFHashInit(&hash);
 
@@ -294,8 +283,8 @@ static struct {
 			float red = 0.0f, green = 0.0f, blue = 0.0f;
 			float alpha = 0.0f, tmp;
 
-			if OF_UNLIKELY (!_OFReadPixel(pixels, format, x, y,
-			    width, &red, &green, &blue, &alpha))
+			if OF_UNLIKELY (!_OFReadPixel(_pixels, _pixelFormat,
+			    x, y, width, &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
@@ -330,9 +319,9 @@ static struct {
 
 - (id)mutableCopy
 {
-	return [[OFMutableImage alloc] initWithPixels: self.pixels
-					  pixelFormat: self.pixelFormat
-						 size: self.size];
+	return [[OFMutableImage alloc] initWithPixels: _pixels
+					  pixelFormat: _pixelFormat
+						 size: _size];
 }
 
 - (void)writeToStream: (OFSeekableStream *)stream

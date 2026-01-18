@@ -19,6 +19,8 @@
 
 #import "OFImage.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 static OF_INLINE void
 _OFReadRGB888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
     uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
@@ -303,3 +305,10 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
 	    roundf(red * 255.0f), roundf(green * 255.0f), roundf(blue * 255.0f),
 	    roundf(alpha * 255.0f));
 }
+
+OF_DIRECT_MEMBERS
+@interface OFImage ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+@end
+
+OF_ASSUME_NONNULL_END

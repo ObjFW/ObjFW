@@ -100,9 +100,23 @@ extern const OFImageFormat OFImageFormatQOI;
  */
 @interface OFImage: OFObject <OFCopying, OFMutableCopying>
 {
+	void *_pixels;
+	OFPixelFormat _pixelFormat;
+	OFSize _size;
+	bool _freeWhenDone;
 	OFSize _dotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
 }
+
+/**
+ * @brief The raw pixels using the @ref pixelFormat.
+ */
+@property (readonly, nonatomic) const void *pixels OF_RETURNS_INNER_POINTER;
+
+/**
+ * @brief The pixel format used by the image.
+ */
+@property (readonly, nonatomic) OFPixelFormat pixelFormat;
 
 /**
  * @brief The size of the image in pixels.
@@ -113,16 +127,6 @@ extern const OFImageFormat OFImageFormatQOI;
  * @brief The bits per pixel.
  */
 @property (readonly, nonatomic) unsigned int bitsPerPixel;
-
-/**
- * @brief The pixel format used by the image.
- */
-@property (readonly, nonatomic) OFPixelFormat pixelFormat;
-
-/**
- * @brief The raw pixels using the @ref pixelFormat.
- */
-@property (readonly, nonatomic) const void *pixels OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.
@@ -179,6 +183,8 @@ extern const OFImageFormat OFImageFormatQOI;
 			  pixelFormat: (OFPixelFormat)pixelFormat
 				 size: (OFSize)size
 			 freeWhenDone: (bool)freeWhenDone;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated image with the specified pixels in

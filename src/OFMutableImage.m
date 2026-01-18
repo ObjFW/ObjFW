@@ -21,72 +21,14 @@
 
 #import "OFMutableImage.h"
 #import "OFColor.h"
-#import "OFConcreteMutableImage.h"
 #import "OFImage+Private.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
-@interface OFPlaceholderMutableImage: OFImage
-@end
-
-static struct {
-	Class isa;
-} placeholder;
-
-@implementation OFPlaceholderMutableImage
-- (instancetype)init
-{
-	return (id)[[OFConcreteMutableImage alloc] init];
-}
-
-- (instancetype)initWithPixels: (const void *)pixels
-		   pixelFormat: (OFPixelFormat)pixelFormat
-			  size: (OFSize)size
-{
-	return (id)[[OFConcreteMutableImage alloc] initWithPixels: pixels
-						      pixelFormat: pixelFormat
-							     size: size];
-}
-
-- (instancetype)initWithPixelsNoCopy: (const void *)pixels
-			 pixelFormat: (OFPixelFormat)pixelFormat
-				size: (OFSize)size
-			freeWhenDone: (bool)freeWhenDone
-{
-	return (id)[[OFConcreteMutableImage alloc]
-	    initWithPixelsNoCopy: pixels
-		     pixelFormat: pixelFormat
-			    size: size
-		    freeWhenDone: freeWhenDone];
-}
-
-- (instancetype)initWithSize: (OFSize)size
-		 pixelFormat: (OFPixelFormat)pixelFormat
-{
-	return (id)[[OFConcreteMutableImage alloc] initWithSize: size
-						    pixelFormat: pixelFormat];
-}
-@end
-
 @implementation OFMutableImage
 @dynamic dotsPerInch;
-
-+ (void)initialize
-{
-	if (self == [OFMutableImage class])
-		object_setClass((id)&placeholder,
-		    [OFPlaceholderMutableImage class]);
-}
-
-+ (instancetype)alloc
-{
-	if (self == [OFMutableImage class])
-		return (id)&placeholder;
-
-	return [super alloc];
-}
 
 + (instancetype)imageWithSize: (OFSize)size
 		  pixelFormat: (OFPixelFormat)pixelFormat
@@ -99,12 +41,43 @@ static struct {
 - (instancetype)initWithSize: (OFSize)size
 		 pixelFormat: (OFPixelFormat)pixelFormat
 {
-	OF_INVALID_INIT_METHOD
+	self = [self of_init];
+
+	@try {
+		unsigned int bitsPerPixel;
+		size_t width, height, count;
+
+		width = size.width;
+		height = size.height;
+
+		if (width != size.width || height != size.height)
+			@throw [OFInvalidArgumentException exception];
+
+		_size = size;
+		_pixelFormat = pixelFormat;
+
+		bitsPerPixel = self.bitsPerPixel;
+		if (bitsPerPixel % CHAR_BIT != 0)
+			@throw [OFInvalidArgumentException exception];
+
+		if (SIZE_MAX / width < height)
+			@throw [OFOutOfRangeException exception];
+
+		count = width * height;
+
+		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
+		_freeWhenDone = true;
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
 }
 
 - (void *)mutablePixels
 {
-	OF_UNRECOGNIZED_SELECTOR
+	return _pixels;
 }
 
 - (void)setDotsPerInch: (OFSize)dotsPerInch
@@ -118,12 +91,11 @@ static struct {
 - (void)setColor: (OFColor *)color atPoint: (OFPoint)point
 {
 	size_t x = point.x, y = point.y;
-	OFSize size = self.size;
-	size_t width = size.width, height = size.height;
+	size_t width = _size.width, height = _size.height;
 	float red, green, blue, alpha;
 
 	if OF_UNLIKELY (x != point.x || y != point.y ||
-	    width != size.width || height != size.height)
+	    width != _size.width || height != _size.height)
 		@throw [OFInvalidArgumentException exception];
 
 	if OF_UNLIKELY (x >= width || y >= height)
@@ -131,20 +103,21 @@ static struct {
 
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	if OF_UNLIKELY (!_OFWritePixel(self.mutablePixels, self.pixelFormat,
-	    x, y, width, red, green, blue, alpha))
+	if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat, x, y,
+	    width, red, green, blue, alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }
 
 - (id)copy
 {
-	return [[OFImage alloc] initWithPixels: self.pixels
-				   pixelFormat: self.pixelFormat
-					  size: self.size];
+	return [[OFImage alloc] initWithPixels: _pixels
+				   pixelFormat: _pixelFormat
+					  size: _size];
 }
 
 - (void)makeImmutable
 {
+	object_setClass(self, [OFImage class]);
 }
 @end
