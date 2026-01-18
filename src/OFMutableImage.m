@@ -45,13 +45,16 @@
 
 	@try {
 		unsigned int bitsPerPixel;
-		size_t width, height, count;
+		size_t width, height;
 
 		width = size.width;
 		height = size.height;
 
 		if (width != size.width || height != size.height)
 			@throw [OFInvalidArgumentException exception];
+
+		if (SIZE_MAX / width < height)
+			@throw [OFOutOfRangeException exception];
 
 		_size = size;
 		_pixelFormat = pixelFormat;
@@ -60,12 +63,8 @@
 		if (bitsPerPixel % CHAR_BIT != 0)
 			@throw [OFInvalidArgumentException exception];
 
-		if (SIZE_MAX / width < height)
-			@throw [OFOutOfRangeException exception];
-
-		count = width * height;
-
-		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
+		_pixels = OFAllocZeroedMemory(width * height,
+		    bitsPerPixel / CHAR_BIT);
 		_freeWhenDone = true;
 	} @catch (id e) {
 		objc_release(self);
@@ -90,21 +89,20 @@
 
 - (void)setColor: (OFColor *)color atPoint: (OFPoint)point
 {
-	size_t x = point.x, y = point.y;
-	size_t width = _size.width, height = _size.height;
 	float red, green, blue, alpha;
 
-	if OF_UNLIKELY (x != point.x || y != point.y ||
-	    width != _size.width || height != _size.height)
-		@throw [OFInvalidArgumentException exception];
-
-	if OF_UNLIKELY (x >= width || y >= height)
+	if OF_UNLIKELY (point.x < 0 || point.y < 0 ||
+	    point.x >= _size.width || point.y >= _size.height)
 		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY (point.x != (size_t)point.x ||
+	    point.y != (size_t)point.y)
+		@throw [OFInvalidArgumentException exception];
 
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat, x, y,
-	    width, red, green, blue, alpha))
+	if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat, point.x, point.y,
+	    _size.width, red, green, blue, alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 }

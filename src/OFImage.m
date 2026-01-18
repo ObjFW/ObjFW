@@ -86,15 +86,15 @@
 		if (width != size.width || height != size.height)
 			@throw [OFInvalidArgumentException exception];
 
+		if (SIZE_MAX / width < height)
+			@throw [OFOutOfRangeException exception];
+
 		_size = size;
 		_pixelFormat = pixelFormat;
 
 		bitsPerPixel = self.bitsPerPixel;
 		if (bitsPerPixel % CHAR_BIT != 0)
 			@throw [OFInvalidArgumentException exception];
-
-		if (SIZE_MAX / width < height)
-			@throw [OFOutOfRangeException exception];
 
 		count = width * height;
 
@@ -121,6 +121,9 @@
 		if (size.width != (size_t)size.width ||
 		    size.height != (size_t)size.height)
 			@throw [OFInvalidArgumentException exception];
+
+		if (SIZE_MAX / (size_t)size.width < (size_t)size.height)
+			@throw [OFOutOfRangeException exception];
 
 		_pixels = (void *)pixels;
 		_pixelFormat = pixelFormat;
@@ -182,19 +185,15 @@
 
 - (OFColor *)colorAtPoint: (OFPoint)point
 {
-	size_t x = point.x, y = point.y;
-	size_t width = _size.width, height = _size.height;
 	float red = 0.0f, green = 0.0f, blue = 0.0f, alpha = 0.0f;
 
-	if OF_UNLIKELY (width != _size.width || height != _size.height)
-		@throw [OFInvalidArgumentException exception];
-
-	if OF_UNLIKELY (x >= width || y >= height)
+	if OF_UNLIKELY (point.x < 0 || point.y < 0 ||
+	    point.x >= _size.width || point.y >= _size.height)
 		@throw [OFOutOfRangeException exception];
 
 	if OF_UNLIKELY (!_OFReadAveragedPixel(self.pixels, self.pixelFormat,
-	    point.x, point.y, width, width, height, &red, &green, &blue,
-	    &alpha))
+	    point.x, point.y, _size.width, _size.width, _size.height,
+	    &red, &green, &blue, &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
@@ -216,7 +215,6 @@
 		return false;
 
 	otherImage = otherObject;
-
 	otherSize = otherImage.size;
 
 	if (!OFEqualSizes(_size, otherSize))
@@ -224,11 +222,6 @@
 
 	width = _size.width;
 	height = _size.height;
-
-	if (width != _size.width || height != _size.height ||
-	    otherSize.width != (size_t)otherSize.width ||
-	    otherSize.height != (size_t)otherSize.height)
-		@throw [OFInvalidArgumentException exception];
 
 	otherPixels = otherImage.pixels;
 	otherFormat = otherImage.pixelFormat;
@@ -272,9 +265,6 @@
 {
 	size_t width = _size.width, height = _size.height;
 	unsigned long hash;
-
-	if (width != _size.width || height != _size.height)
-		@throw [OFInvalidArgumentException exception];
 
 	OFHashInit(&hash);
 

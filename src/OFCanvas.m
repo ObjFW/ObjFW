@@ -119,9 +119,6 @@
 	float xScale, yScale;
 	size_t destX, destY, destWidth, destHeight;
 
-	if (imageWidth != imageSize.width)
-		@throw [OFInvalidArgumentException exception];
-
 	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
 	    sourceRect.size.width < 0 || sourceRect.size.height < 0)
 		@throw [OFInvalidArgumentException exception];
