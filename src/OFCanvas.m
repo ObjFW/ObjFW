@@ -116,6 +116,8 @@
 	OFSize imageSize = image.size;
 	size_t imageWidth = imageSize.width;
 	size_t sourceClampX, sourceClampY;
+	OFColorSpace *sourceColorSpace;
+	OFColorSpaceTransferFunction sourceEOTF = NULL, sourceOETF = NULL;
 	float xScale, yScale;
 	size_t destX, destY, destWidth, destHeight;
 
@@ -133,6 +135,12 @@
 	if (sourceClampX != sourceRect.origin.x + sourceRect.size.width ||
 	    sourceClampY != sourceRect.origin.y + sourceRect.size.height)
 		@throw [OFInvalidArgumentException exception];
+
+	sourceColorSpace = image.colorSpace;
+	if (!sourceColorSpace.linear) {
+		sourceEOTF = sourceColorSpace.EOTF;
+		sourceOETF = sourceColorSpace.OETF;
+	}
 
 	/*
 	 * Scale needs to be calculated before clamping destination to canvas.
@@ -160,8 +168,8 @@
 			    imagePixelFormat,
 			    sourceRect.origin.x + (j - destX) * xScale,
 			    sourceRect.origin.y + (i - destY) * yScale,
-			    imageWidth, sourceClampX, sourceClampY,
-			    &red, &green, &blue, &alpha))
+			    imageWidth, sourceClampX, sourceClampY, sourceEOTF,
+			    sourceOETF, &red, &green, &blue, &alpha))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];

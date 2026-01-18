@@ -29,12 +29,18 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A transfer function for a color space.
  *
+ * The function transforms an array of vectors in-place. The `w` component of
+ * the vectors should not be touched.
+ *
  * The same type is used for both the EOTF and the OETF.
  *
- * The vector needs to be 16 byte aligned.
+ * @note The vectors needs to be 16 byte aligned.
+ *
+ * @param vectors The vectors to transform in-place
+ * @param count The number of vectors to transform
  */
-typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
-    OFVector4D *vector);
+typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
+    size_t count);
 
 /**
  * @class OFColorSpace OFColorSpace.h ObjFW/ObjFW.h
@@ -45,6 +51,7 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 {
 	OFColorSpaceTransferFunction _EOTF, _OETF;
 	OFMatrix4x4 *_RGBToXYZMatrix, *_XYZToRGBMatrix;
+	bool _linear;
 	OF_RESERVE_IVARS(OFColorSpace, 4)
 }
 
@@ -89,6 +96,11 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 @property (readonly, retain, nonatomic) OFMatrix4x4 *XYZToRGBMatrix;
 
 /**
+ * @brief Whether the color space is linear.
+ */
+@property (readonly, nonatomic, getter=isLinear) bool linear;
+
+/**
  * @brief Creates a new color space with the specified parameters.
  *
  * @param EOTF The EOTF for the color space
@@ -100,7 +112,8 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 + (instancetype)colorSpaceWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			      OETF: (OFColorSpaceTransferFunction)OETF
 		    RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
-		    XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix;
+		    XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
+			    linear: (bool)linear;
 
 /**
  * @brief The sRGB color space.
@@ -155,7 +168,8 @@ typedef void (*OFColorSpaceTransferFunction)(OFColorSpace *colorSpace,
 - (instancetype)initWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			OETF: (OFColorSpaceTransferFunction)OETF
 	      RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
-	      XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix;
+	      XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
+		      linear: (bool)linear;
 @end
 
 OF_ASSUME_NONNULL_END

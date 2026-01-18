@@ -121,28 +121,28 @@
 	/* Check interpolated pixels. */
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
 	    [OFColor colorWithRed: 1.0f
-			    green: 85.0f / 255.0f
-			     blue: 85.0f / 255.0f
+			    green: 156.0f / 255.0f
+			     blue: 156.0f / 255.0f
 			    alpha: 1.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
-	    [OFColor colorWithRed: 85.0f / 255.0f
+	    [OFColor colorWithRed: 156.0f / 255.0f
 			    green: 1.0f
-			     blue: 85.0f / 255.0f
+			     blue: 156.0f / 255.0f
 			    alpha: 1.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
-	    [OFColor colorWithRed: 85.0f / 255.0f
-			    green: 85.0f / 255.0f
-			     blue: 142.0f / 255.0f
+	    [OFColor colorWithRed: 156.0f / 255.0f
+			    green: 156.0f / 255.0f
+			     blue: 197.0f / 255.0f
 			    alpha: 1.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(3.0f, 1.0f)],
-	    [OFColor colorWithRed: 85.0f / 255.0f
+	    [OFColor colorWithRed: 156.0f / 255.0f
 			    green: 0.0f
-			     blue: 170.0f / 255.0f
+			     blue: 213.0f / 255.0f
 			    alpha: 1.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 2.0f)],
 	    [OFColor colorWithRed: 0.0f
-			    green: 85.0f / 255.0f
-			     blue: 170.0f / 255.0f
+			    green: 156.0f / 255.0f
+			     blue: 213.0f / 255.0f
 			    alpha: 1.0f]);
 
 	/* Test alpha blending. */
@@ -169,14 +169,14 @@
 	   destinationRect: OFMakeRect(1.0f, 1.0f, 2.0f, 2.0f)];
 
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
-	    [OFColor colorWithRed: 42.0f / 255.0f
+	    [OFColor colorWithRed: 78.0f / 255.0f
 			    green: 127.0f / 255.0f
-			     blue: 42.0f / 255.0f
+			     blue: 78.0f / 255.0f
 			    alpha: 160.0f / 255.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
-	    [OFColor colorWithRed: 170.0f / 255.0f
-			    green: 170.0f / 255.0f
-			     blue: 199.0f / 255.0f
+	    [OFColor colorWithRed: 206.0f / 255.0f
+			    green: 206.0f / 255.0f
+			     blue: 226.0f / 255.0f
 			    alpha: 192.0f / 255.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    [OFColor colorWithRed: 64.0f / 255.0f
@@ -185,8 +185,8 @@
 			    alpha: 207.0f / 255.0f]);
 	OTAssertEqualObjects([_image colorAtPoint: OFMakePoint(2.0f, 2.0f)],
 	    [OFColor colorWithRed: 0.0f
-			    green: 64.0f / 255.0f
-			     blue: 127.0f / 255.0f
+			    green: 117.0f / 255.0f
+			     blue: 160.0f / 255.0f
 			    alpha: 1.0f]);
 }
 @end

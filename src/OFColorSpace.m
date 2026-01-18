@@ -42,7 +42,7 @@ static OFMatrix4x4 *adobeRGBToXYZMatrix, *XYZToAdobeRGBMatrix;
 static OFOnceControl adobeRGBMatricesOnceControl = OFOnceControlInitValue;
 
 static void
-identityTF(OFColorSpace *colorSpace, OFVector4D *vector)
+identityTF(OFVector4D *vectors, size_t count)
 {
 }
 
@@ -65,19 +65,23 @@ sRGBOETFPrimitive(float value)
 }
 
 static void
-sRGBEOTF(OFColorSpace *colorSpace, OFVector4D *vector)
+sRGBEOTF(OFVector4D *vectors, size_t count)
 {
-	vector->x = sRGBEOTFPrimitive(vector->x);
-	vector->y = sRGBEOTFPrimitive(vector->y);
-	vector->z = sRGBEOTFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = sRGBEOTFPrimitive(vectors[i].x);
+		vectors[i].y = sRGBEOTFPrimitive(vectors[i].y);
+		vectors[i].z = sRGBEOTFPrimitive(vectors[i].z);
+	}
 }
 
 static void
-sRGBOETF(OFColorSpace *colorSpace, OFVector4D *vector)
+sRGBOETF(OFVector4D *vectors, size_t count)
 {
-	vector->x = sRGBOETFPrimitive(vector->x);
-	vector->y = sRGBOETFPrimitive(vector->y);
-	vector->z = sRGBOETFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = sRGBOETFPrimitive(vectors[i].x);
+		vectors[i].y = sRGBOETFPrimitive(vectors[i].y);
+		vectors[i].z = sRGBOETFPrimitive(vectors[i].z);
+	}
 }
 
 static void
@@ -108,7 +112,8 @@ initSRGBColorSpace(void)
 	      initWithEOTF: sRGBEOTF
 		      OETF: sRGBOETF
 	    RGBToXYZMatrix: sRGBToXYZMatrix
-	    XYZToRGBMatrix: XYZToSRGBMatrix];
+	    XYZToRGBMatrix: XYZToSRGBMatrix
+		    linear: false];
 }
 
 static void
@@ -120,7 +125,8 @@ initLinearSRGBColorSpace(void)
 	      initWithEOTF: identityTF
 		      OETF: identityTF
 	    RGBToXYZMatrix: sRGBToXYZMatrix
-	    XYZToRGBMatrix: XYZToSRGBMatrix];
+	    XYZToRGBMatrix: XYZToSRGBMatrix
+		    linear: true];
 }
 
 static void
@@ -151,7 +157,8 @@ initDisplayP3ColorSpace(void)
 	      initWithEOTF: sRGBEOTF
 		      OETF: sRGBOETF
 	    RGBToXYZMatrix: displayP3ToXYZMatrix
-	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
+	    XYZToRGBMatrix: XYZToDisplayP3Matrix
+		    linear: false];
 }
 
 static void
@@ -163,7 +170,8 @@ initLinearDisplayP3ColorSpace(void)
 	      initWithEOTF: identityTF
 		      OETF: identityTF
 	    RGBToXYZMatrix: displayP3ToXYZMatrix
-	    XYZToRGBMatrix: XYZToDisplayP3Matrix];
+	    XYZToRGBMatrix: XYZToDisplayP3Matrix
+		    linear: true];
 }
 
 static OF_INLINE float
@@ -185,19 +193,23 @@ BT2020EOTFPrimitive(float value)
 }
 
 static void
-BT2020EOTF(OFColorSpace *colorSpace, OFVector4D *vector)
+BT2020EOTF(OFVector4D *vectors, size_t count)
 {
-	vector->x = BT2020EOTFPrimitive(vector->x);
-	vector->y = BT2020EOTFPrimitive(vector->y);
-	vector->z = BT2020EOTFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = BT2020EOTFPrimitive(vectors[i].x);
+		vectors[i].y = BT2020EOTFPrimitive(vectors[i].y);
+		vectors[i].z = BT2020EOTFPrimitive(vectors[i].z);
+	}
 }
 
 static void
-BT2020OETF(OFColorSpace *colorSpace, OFVector4D *vector)
+BT2020OETF(OFVector4D *vectors, size_t count)
 {
-	vector->x = BT2020OETFPrimitive(vector->x);
-	vector->y = BT2020OETFPrimitive(vector->y);
-	vector->z = BT2020OETFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = BT2020OETFPrimitive(vectors[i].x);
+		vectors[i].y = BT2020OETFPrimitive(vectors[i].y);
+		vectors[i].z = BT2020OETFPrimitive(vectors[i].z);
+	}
 }
 
 static void
@@ -228,7 +240,8 @@ initBT2020ColorSpace(void)
 	      initWithEOTF: BT2020EOTF
 		      OETF: BT2020OETF
 	    RGBToXYZMatrix: BT2020ToXYZMatrix
-	    XYZToRGBMatrix: XYZToBT2020Matrix];
+	    XYZToRGBMatrix: XYZToBT2020Matrix
+		    linear: false];
 }
 
 static void
@@ -240,7 +253,8 @@ initLinearBT2020ColorSpace(void)
 	      initWithEOTF: identityTF
 		      OETF: identityTF
 	    RGBToXYZMatrix: BT2020ToXYZMatrix
-	    XYZToRGBMatrix: XYZToBT2020Matrix];
+	    XYZToRGBMatrix: XYZToBT2020Matrix
+		    linear: true];
 }
 
 static OF_INLINE float
@@ -256,19 +270,23 @@ adobeRGBOETFPrimitive(float value)
 }
 
 static void
-adobeRGBEOTF(OFColorSpace *colorSpace, OFVector4D *vector)
+adobeRGBEOTF(OFVector4D *vectors, size_t count)
 {
-	vector->x = adobeRGBEOTFPrimitive(vector->x);
-	vector->y = adobeRGBEOTFPrimitive(vector->y);
-	vector->z = adobeRGBEOTFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = adobeRGBEOTFPrimitive(vectors[i].x);
+		vectors[i].y = adobeRGBEOTFPrimitive(vectors[i].y);
+		vectors[i].z = adobeRGBEOTFPrimitive(vectors[i].z);
+	}
 }
 
 static void
-adobeRGBOETF(OFColorSpace *colorSpace, OFVector4D *vector)
+adobeRGBOETF(OFVector4D *vectors, size_t count)
 {
-	vector->x = adobeRGBOETFPrimitive(vector->x);
-	vector->y = adobeRGBOETFPrimitive(vector->y);
-	vector->z = adobeRGBOETFPrimitive(vector->z);
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = adobeRGBOETFPrimitive(vectors[i].x);
+		vectors[i].y = adobeRGBOETFPrimitive(vectors[i].y);
+		vectors[i].z = adobeRGBOETFPrimitive(vectors[i].z);
+	}
 }
 
 static void
@@ -299,7 +317,8 @@ initAdobeRGBColorSpace(void)
 	      initWithEOTF: adobeRGBEOTF
 		      OETF: adobeRGBOETF
 	    RGBToXYZMatrix: adobeRGBToXYZMatrix
-	    XYZToRGBMatrix: XYZToAdobeRGBMatrix];
+	    XYZToRGBMatrix: XYZToAdobeRGBMatrix
+		    linear: false];
 }
 
 static void
@@ -311,7 +330,8 @@ initLinearAdobeRGBColorSpace(void)
 	      initWithEOTF: identityTF
 		      OETF: identityTF
 	    RGBToXYZMatrix: adobeRGBToXYZMatrix
-	    XYZToRGBMatrix: XYZToAdobeRGBMatrix];
+	    XYZToRGBMatrix: XYZToAdobeRGBMatrix
+		    linear: true];
 }
 
 @implementation OFColorSpaceSingleton
@@ -320,18 +340,20 @@ OF_SINGLETON_METHODS
 
 @implementation OFColorSpace
 @synthesize EOTF = _EOTF, OETF = _OETF, RGBToXYZMatrix = _RGBToXYZMatrix;
-@synthesize XYZToRGBMatrix = _XYZToRGBMatrix;
+@synthesize XYZToRGBMatrix = _XYZToRGBMatrix, linear = _linear;
 
 + (instancetype)colorSpaceWithEOTF: (OFColorSpaceTransferFunction)EOTF
 			      OETF: (OFColorSpaceTransferFunction)OETF
 		    RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
 		    XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
+			    linear: (bool)linear
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithEOTF: EOTF
 				  OETF: OETF
 			RGBToXYZMatrix: RGBToXYZMatrix
-			XYZToRGBMatrix: XYZToRGBMatrix]);
+			XYZToRGBMatrix: XYZToRGBMatrix
+				linear: linear]);
 }
 
 + (OFColorSpace *)sRGBColorSpace
@@ -402,6 +424,7 @@ OF_SINGLETON_METHODS
 			OETF: (OFColorSpaceTransferFunction)OETF
 	      RGBToXYZMatrix: (OFMatrix4x4 *)RGBToXYZMatrix
 	      XYZToRGBMatrix: (OFMatrix4x4 *)XYZToRGBMatrix
+		      linear: (bool)linear
 {
 	self = [super init];
 
@@ -409,6 +432,7 @@ OF_SINGLETON_METHODS
 	_OETF = OETF;
 	_RGBToXYZMatrix = objc_retain(RGBToXYZMatrix);
 	_XYZToRGBMatrix = objc_retain(XYZToRGBMatrix);
+	_linear = linear;
 
 	return self;
 }

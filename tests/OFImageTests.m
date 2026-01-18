@@ -27,6 +27,8 @@
 @interface OFImageTests: OTTestCase
 @end
 
+static const float allowedImprecision = 0.0000001f;
+
 @implementation OFImageTests
 - (void)testImageWithPixels
 {
@@ -231,24 +233,34 @@
 		      pixelFormat: OFPixelFormatRGB888
 			     size: OFMakeSize(2.0f, 2.0f)
 		     freeWhenDone: false];
+	float red, green, blue, alpha;
 
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.5f, 0.0f)],
-	    [OFColor colorWithRed: 0.5f
-			    green: 0.0f
-			     blue: 0.0f
-			    alpha: 1.0f]);
+	[[image colorAtPoint: OFMakePoint(0.5f, 0.0f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabs(red - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
 
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.5f)],
-	    [OFColor colorWithRed: 0.0f
-			    green: 0.5f
-			     blue: 0.0f
-			    alpha: 1.0f]);
+	[[image colorAtPoint: OFMakePoint(0.0f, 0.5f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabs(red - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
 
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.5f, 0.5f)],
-	    [OFColor colorWithRed: 0.25f
-			    green: 0.25f
-			     blue: 0.25f
-			    alpha: 1.0f]);
+	[[image colorAtPoint: OFMakePoint(0.5f, 0.5f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabs(red - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
 }
 
 - (void)testCopy

@@ -292,11 +292,11 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		blue: &colorVec.z
 	       alpha: &colorVec.w];
 
-	oldCS.EOTF(oldCS, &colorVec);
+	oldCS.EOTF(&colorVec, 1);
 	[oldCS.RGBToXYZMatrix transformVectors: &colorVec count: 1];
 
 	[colorSpace.XYZToRGBMatrix transformVectors: &colorVec count: 1];
-	colorSpace.OETF(colorSpace, &colorVec);
+	colorSpace.OETF(&colorVec, 1);
 
 	return [OFColor colorWithRed: colorVec.x
 			       green: colorVec.y

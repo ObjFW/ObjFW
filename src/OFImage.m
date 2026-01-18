@@ -246,14 +246,20 @@
 - (OFColor *)colorAtPoint: (OFPoint)point
 {
 	float red = 0.0f, green = 0.0f, blue = 0.0f, alpha = 0.0f;
+	OFColorSpaceTransferFunction EOTF = NULL, OETF = NULL;
 
 	if OF_UNLIKELY (point.x < 0 || point.y < 0 ||
 	    point.x >= _size.width || point.y >= _size.height)
 		@throw [OFOutOfRangeException exception];
 
+	if (!_colorSpace.linear) {
+		EOTF = _colorSpace.EOTF;
+		OETF = _colorSpace.OETF;
+	}
+
 	if OF_UNLIKELY (!_OFReadAveragedPixel(self.pixels, self.pixelFormat,
 	    point.x, point.y, _size.width, _size.width, _size.height,
-	    &red, &green, &blue, &alpha))
+	    EOTF, OETF, &red, &green, &blue, &alpha))
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 

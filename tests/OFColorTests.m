@@ -22,13 +22,13 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
-static const float allowedImprecision = 0.0000001f;
-
 @interface OFColorTests: OTTestCase
 {
 	OFColor *_color;
 }
 @end
+
+static const float allowedImprecision = 0.0000001f;
 
 @implementation OFColorTests
 - (void)setUp
