@@ -326,6 +326,7 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
+#ifdef HAVE__FLOAT16
 static OF_INLINE void
 _OFWriteRGBA16161616FPPixel(_Float16 *pixels, size_t x, size_t y, size_t width,
     float red, float green, float blue, float alpha)
@@ -335,6 +336,7 @@ _OFWriteRGBA16161616FPPixel(_Float16 *pixels, size_t x, size_t y, size_t width,
 	pixels[(x + y * width) * 4 + 2] = blue;
 	pixels[(x + y * width) * 4 + 3] = alpha;
 }
+#endif
 
 static OF_INLINE void
 _OFWriteRGBA32323232FPPixel(float *pixels, size_t x, size_t y, size_t width,
