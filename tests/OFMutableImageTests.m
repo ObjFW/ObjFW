@@ -318,7 +318,7 @@
 	    transparentBlack);
 }
 
-#if defined(HAVE__FLOAT16) && (defined(__clang__) || !defined(OF_X86))
+#ifdef HAVE__FLOAT16
 - (void)testRGBA16161616FPWriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage

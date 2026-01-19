@@ -128,7 +128,7 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
-#if defined(HAVE__FLOAT16) && (defined(__clang__) || !defined(OF_X86))
+#ifdef HAVE__FLOAT16
 __extension__ static OF_INLINE void
 _OFReadRGBA16161616FPPixel(const _Float16 *pixels, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
@@ -157,7 +157,7 @@ _OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	uint8_t redInt8 = 0, greenInt8 = 0, blueInt8 = 0, alphaInt8 = 0;
 
 	switch (format) {
-#if defined(HAVE__FLOAT16) && (defined(__clang__) || !defined(OF_X86))
+#ifdef HAVE__FLOAT16
 	case OFPixelFormatRGBA16161616FP:
 		_OFReadRGBA16161616FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);
@@ -326,7 +326,7 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
-#if defined(HAVE__FLOAT16) && (defined(__clang__) || !defined(OF_X86))
+#ifdef HAVE__FLOAT16
 __extension__ static OF_INLINE void
 _OFWriteRGBA16161616FPPixel(_Float16 *pixels, size_t x, size_t y, size_t width,
     float red, float green, float blue, float alpha)
@@ -353,7 +353,7 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
 	switch (format) {
-#if defined(HAVE__FLOAT16) && (defined(__clang__) || !defined(OF_X86))
+#ifdef HAVE__FLOAT16
 	case OFPixelFormatRGBA16161616FP:
 		_OFWriteRGBA16161616FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);

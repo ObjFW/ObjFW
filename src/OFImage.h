@@ -55,15 +55,9 @@ typedef enum {
 	OFPixelFormatABGR8888,
 	/** BGRA with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatBGRA8888,
-	/**
-	 * RGBA with 16 bit per channel as 4 consecutive 16 bit floating point
-	 * numbers.
-	 */
+	/** RGBA with 16 bit per channel as 4 consecutive `_Float16`s. */
 	OFPixelFormatRGBA16161616FP = _OFPixelFormatFP16 + 2,
-	/**
-	 * RGBA with 32 bit per channel as 4 consecutive 32 bit floating point
-	 * numbers.
-	 */
+	/** RGBA with 32 bit per channel as 4 consecutive `float`s. */
 	OFPixelFormatRGBA32323232FP = _OFPixelFormatFP32 + 2
 } OFPixelFormat;
 
