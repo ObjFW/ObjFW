@@ -934,6 +934,7 @@ AC_CHECK_SIZEOF(double)
 AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 	[AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
+AC_CHECK_TYPES(_Float16)
 
 AC_MSG_CHECKING(for floating point endianness)
 fp_endianness="unknown"

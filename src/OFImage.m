@@ -233,6 +233,10 @@
 	case OFPixelFormatABGR8888:
 	case OFPixelFormatBGRA8888:
 		return 32;
+	case OFPixelFormatRGBA16161616FP:
+		return 64;
+	case OFPixelFormatRGBA32323232FP:
+		return 128;
 	default:
 		@throw [OFInvalidArgumentException exception];
 	}

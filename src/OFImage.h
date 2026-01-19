@@ -34,20 +34,37 @@ OF_ASSUME_NONNULL_BEGIN
  * All pixel formats are in native endianness unless otherwise specified.
  */
 typedef enum {
+	/* Private */
+	_OFPixelFormatInt8  = 0x10000,
+	_OFPixelFormatInt16 = 0x20000,
+	_OFPixelFormatInt32 = 0x30000,
+	_OFPixelFormatFP16  = 0x50000,
+	_OFPixelFormatFP32  = 0x60000,
+
 	/** Unknown pixel format. */
-	OFPixelFormatUnknown,
+	OFPixelFormatUnknown = 0,
 	/** RGB with 8 bits per channel as 3 consecutive bytes. */
-	OFPixelFormatRGB888,
-	/** RGBA with 8 bits per channel in 32 bit integers. */
-	OFPixelFormatRGBA8888,
-	/** ARGB with 8 bits per channel in 32 bit integers. */
-	OFPixelFormatARGB8888,
+	OFPixelFormatRGB888 = _OFPixelFormatInt8,
 	/** BGR with 8 bits per channel as 3 consecutive bytes. */
 	OFPixelFormatBGR888,
+	/** RGBA with 8 bits per channel in 32 bit integers. */
+	OFPixelFormatRGBA8888 = _OFPixelFormatInt32,
+	/** ARGB with 8 bits per channel in 32 bit integers. */
+	OFPixelFormatARGB8888,
 	/** ABGR with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatABGR8888,
 	/** BGRA with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatBGRA8888,
+	/**
+	 * RGBA with 16 bit per channel as 4 consecutive 16 bit floating point
+	 * numbers.
+	 */
+	OFPixelFormatRGBA16161616FP = _OFPixelFormatFP16 + 2,
+	/**
+	 * RGBA with 32 bit per channel as 4 consecutive 32 bit floating point
+	 * numbers.
+	 */
+	OFPixelFormatRGBA32323232FP = _OFPixelFormatFP32 + 2
 } OFPixelFormat;
 
 /**

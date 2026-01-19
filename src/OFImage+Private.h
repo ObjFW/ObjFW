@@ -35,6 +35,18 @@ _OFReadRGB888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
 }
 
 static OF_INLINE void
+_OFReadBGR888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
+{
+	pixels += (x + y * width) * 3;
+
+	*red = pixels[2];
+	*green = pixels[1];
+	*blue = pixels[0];
+	*alpha = 255;
+}
+
+static OF_INLINE void
 _OFReadRGBA8888Pixel(const uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
@@ -56,18 +68,6 @@ _OFReadARGB8888Pixel(const uint32_t *pixels, size_t x, size_t y, size_t width,
 	*green = (value & 0x0000FF00) >>  8;
 	*blue  = (value & 0x000000FF);
 	*alpha = (value & 0xFF000000) >> 24;
-}
-
-static OF_INLINE void
-_OFReadBGR888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
-{
-	pixels += (x + y * width) * 3;
-
-	*red = pixels[2];
-	*green = pixels[1];
-	*blue = pixels[0];
-	*alpha = 255;
 }
 
 static OF_INLINE void
@@ -103,16 +103,16 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 		_OFReadRGB888Pixel(pixels, x, y, width, red, green, blue,
 		    alpha);
 		return true;
+	case OFPixelFormatBGR888:
+		_OFReadBGR888Pixel(pixels, x, y, width, red, green, blue,
+		    alpha);
+		return true;
 	case OFPixelFormatRGBA8888:
 		_OFReadRGBA8888Pixel(pixels, x, y, width, red, green, blue,
 		    alpha);
 		return true;
 	case OFPixelFormatARGB8888:
 		_OFReadARGB8888Pixel(pixels, x, y, width, red, green, blue,
-		    alpha);
-		return true;
-	case OFPixelFormatBGR888:
-		_OFReadBGR888Pixel(pixels, x, y, width, red, green, blue,
 		    alpha);
 		return true;
 	case OFPixelFormatABGR8888:
@@ -128,11 +128,48 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
+#ifdef HAVE__FLOAT16
+static OF_INLINE void
+_OFReadRGBA16161616FPPixel(const _Float16 *pixels, size_t x, size_t y,
+    size_t width, float *red, float *green, float *blue, float *alpha)
+{
+	*red = pixels[(x + y * width) * 4];
+	*green = pixels[(x + y * width) * 4 + 1];
+	*blue = pixels[(x + y * width) * 4 + 2];
+	*alpha = pixels[(x + y * width) * 4 + 3];
+}
+#endif
+
+static OF_INLINE void
+_OFReadRGBA32323232FPPixel(const float *pixels, size_t x, size_t y,
+    size_t width, float *red, float *green, float *blue, float *alpha)
+{
+	*red = pixels[(x + y * width) * 4];
+	*green = pixels[(x + y * width) * 4 + 1];
+	*blue = pixels[(x + y * width) * 4 + 2];
+	*alpha = pixels[(x + y * width) * 4 + 3];
+}
+
 static OF_INLINE bool
 _OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
 {
 	uint8_t redInt8 = 0, greenInt8 = 0, blueInt8 = 0, alphaInt8 = 0;
+
+	switch (format) {
+#ifdef HAVE__FLOAT16
+	case OFPixelFormatRGBA16161616FP:
+		_OFReadRGBA16161616FPPixel(pixels, x, y, width, red, green,
+		    blue, alpha);
+		return true;
+#endif
+	case OFPixelFormatRGBA32323232FP:
+		_OFReadRGBA32323232FPPixel(pixels, x, y, width, red, green,
+		    blue, alpha);
+		return true;
+	default:
+		break;
+	}
 
 	if OF_UNLIKELY (!_OFReadPixelInt8(pixels, format, x, y, width,
 	    &redInt8, &greenInt8, &blueInt8, &alphaInt8))
@@ -217,6 +254,17 @@ _OFWriteRGB888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 }
 
 static OF_INLINE void
+_OFWriteBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+{
+	pixels += (x + y * width) * 3;
+
+	pixels[0] = blue;
+	pixels[1] = green;
+	pixels[2] = red;
+}
+
+static OF_INLINE void
 _OFWriteRGBA8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
@@ -228,17 +276,6 @@ _OFWriteARGB8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 	pixels[x + y * width] = alpha << 24 | red << 16 | green << 8 | blue;
-}
-
-static OF_INLINE void
-_OFWriteBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
-    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-{
-	pixels += (x + y * width) * 3;
-
-	pixels[0] = blue;
-	pixels[1] = green;
-	pixels[2] = red;
 }
 
 static OF_INLINE void
@@ -289,11 +326,45 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
+static OF_INLINE void
+_OFWriteRGBA16161616FPPixel(_Float16 *pixels, size_t x, size_t y, size_t width,
+    float red, float green, float blue, float alpha)
+{
+	pixels[(x + y * width) * 4] = red;
+	pixels[(x + y * width) * 4 + 1] = green;
+	pixels[(x + y * width) * 4 + 2] = blue;
+	pixels[(x + y * width) * 4 + 3] = alpha;
+}
+
+static OF_INLINE void
+_OFWriteRGBA32323232FPPixel(float *pixels, size_t x, size_t y, size_t width,
+    float red, float green, float blue, float alpha)
+{
+	pixels[(x + y * width) * 4] = red;
+	pixels[(x + y * width) * 4 + 1] = green;
+	pixels[(x + y * width) * 4 + 2] = blue;
+	pixels[(x + y * width) * 4 + 3] = alpha;
+}
+
 static OF_INLINE bool
 _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
-	/* All currently supported formats only allow 0.0 to 1.0 */
+	switch (format) {
+#ifdef HAVE__FLOAT16
+	case OFPixelFormatRGBA16161616FP:
+		_OFWriteRGBA16161616FPPixel(pixels, x, y, width, red, green,
+		    blue, alpha);
+		return true;
+#endif
+	case OFPixelFormatRGBA32323232FP:
+		_OFWriteRGBA32323232FPPixel(pixels, x, y, width, red, green,
+		    blue, alpha);
+		return true;
+	default:
+		break;
+	}
+
 	if OF_UNLIKELY (red > 1.0f)
 		red = 1.0f;
 	else if OF_UNLIKELY (red < 0.0f)
