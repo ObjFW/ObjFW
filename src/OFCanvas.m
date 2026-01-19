@@ -115,11 +115,13 @@
 	OFPixelFormat imagePixelFormat = image.pixelFormat;
 	OFSize imageSize = image.size;
 	size_t imageWidth = imageSize.width;
-	size_t sourceClampX, sourceClampY;
-	OFColorSpace *sourceColorSpace;
-	OFColorSpaceTransferFunction sourceEOTF = NULL, sourceOETF = NULL;
+	size_t srcClampX, srcClampY;
+	OFColorSpace *srcColorSpace;
+	OFColorSpaceTransferFunction srcEOTF = NULL, srcOETF = NULL;
 	float xScale, yScale;
 	size_t destX, destY, destWidth, destHeight;
+	OFColorSpace *destColorSpace;
+	OFColorSpaceTransferFunction destEOTF = NULL, destOETF = NULL;
 
 	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
 	    sourceRect.size.width < 0 || sourceRect.size.height < 0)
@@ -129,17 +131,17 @@
 	    sourceRect.origin.y + sourceRect.size.height > imageSize.height)
 		@throw [OFOutOfRangeException exception];
 
-	sourceClampX = sourceRect.origin.x + sourceRect.size.width;
-	sourceClampY = sourceRect.origin.y + sourceRect.size.height;
+	srcClampX = sourceRect.origin.x + sourceRect.size.width;
+	srcClampY = sourceRect.origin.y + sourceRect.size.height;
 
-	if (sourceClampX != sourceRect.origin.x + sourceRect.size.width ||
-	    sourceClampY != sourceRect.origin.y + sourceRect.size.height)
+	if (srcClampX != sourceRect.origin.x + sourceRect.size.width ||
+	    srcClampY != sourceRect.origin.y + sourceRect.size.height)
 		@throw [OFInvalidArgumentException exception];
 
-	sourceColorSpace = image.colorSpace;
-	if (!sourceColorSpace.linear) {
-		sourceEOTF = sourceColorSpace.EOTF;
-		sourceOETF = sourceColorSpace.OETF;
+	srcColorSpace = image.colorSpace;
+	if (!srcColorSpace.linear) {
+		srcEOTF = srcColorSpace.EOTF;
+		srcOETF = srcColorSpace.OETF;
 	}
 
 	/*
@@ -160,42 +162,52 @@
 	    destHeight != destinationRect.size.height)
 		@throw [OFInvalidArgumentException exception];
 
+	destColorSpace = _destinationImage.colorSpace;
+	if (!destColorSpace.linear) {
+		destEOTF = destColorSpace.EOTF;
+		destOETF = destColorSpace.OETF;
+	}
+
 	for (size_t i = destY; i < destY + destHeight; i++) {
 		for (size_t j = destX; j < destX + destWidth; j++) {
-			float red, green, blue, alpha;
+			OF_ALIGN(16) OFVector4D vec[2];
 
 			if OF_UNLIKELY (!_OFReadAveragedPixel(imagePixels,
 			    imagePixelFormat,
 			    sourceRect.origin.x + (j - destX) * xScale,
 			    sourceRect.origin.y + (i - destY) * yScale,
-			    imageWidth, sourceClampX, sourceClampY, sourceEOTF,
-			    sourceOETF, &red, &green, &blue, &alpha))
+			    imageWidth, srcClampX, srcClampY, srcEOTF, srcOETF,
+			    &vec[0].x, &vec[0].y, &vec[0].z, &vec[0].w))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if OF_UNLIKELY (alpha != 1.0f) {
-				float oldRed, oldGreen, oldBlue, oldAlpha;
-
+			if OF_UNLIKELY (vec[0].w != 1.0f) {
 				if OF_UNLIKELY (!_OFReadPixel(_pixels,
-				    _pixelFormat, j, i, _width, &oldRed,
-				    &oldGreen, &oldBlue, &oldAlpha))
+				    _pixelFormat, j, i, _width,
+				    &vec[1].x, &vec[1].y, &vec[1].z, &vec[1].w))
 					@throw [OFNotImplementedException
 					    exceptionWithSelector: _cmd
 							   object: self];
 
-				red *= alpha;
-				green *= alpha;
-				blue *= alpha;
+				if (destEOTF != NULL)
+					destEOTF(vec, 2);
 
-				red += oldRed * (1.0f - alpha);
-				green += oldGreen * (1.0f - alpha);
-				blue += oldBlue * (1.0f - alpha);
-				alpha += oldAlpha * (1.0f - alpha);
+				vec[0].x *= vec[0].w;
+				vec[0].y *= vec[0].w;
+				vec[0].z *= vec[0].w;
+
+				vec[0] = OFAddVectors4D(vec[0],
+				    OFMultiplyVector4D(
+				    vec[1], 1.0f - vec[0].w));
+
+				if (destOETF != NULL)
+					destOETF(vec, 1);
 			}
 
 			if OF_UNLIKELY (!_OFWritePixel(_pixels, _pixelFormat,
-			    j, i, _width, red, green, blue, alpha))
+			    j, i, _width, vec[0].x, vec[0].y, vec[0].z,
+			    vec[0].w))
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
