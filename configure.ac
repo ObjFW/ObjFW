@@ -909,8 +909,8 @@ AC_CHECK_HEADER(sys/types.h,
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
-AC_CHECK_TYPE(wchar_t)
-AC_CHECK_HEADER(wchar.h)
+AC_CHECK_TYPES(wchar_t)
+AC_CHECK_HEADERS(wchar.h)
 
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
