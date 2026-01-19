@@ -935,20 +935,26 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 	[AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
-AC_MSG_CHECKING(for working _Float16)
-AC_LINK_IFELSE([
-	AC_LANG_PROGRAM([
-		_Float16 f16;
-		float f32;
+case "$host_os" in
+mingw*)
+	dnl _Float16 is broken in MinGW.
+	;;
+*)
+	AC_MSG_CHECKING(for working _Float16)
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			_Float16 f16;
+			float f32;
+		], [
+			f32 = f16;
+		])
 	], [
-		f32 = f16;
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE__FLOAT16, 1, [Whether we have _Float16])
+	], [
+		AC_MSG_RESULT(no)
 	])
-], [
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE__FLOAT16, 1, [Whether we have _Float16])
-], [
-	AC_MSG_RESULT(no)
-])
+esac
 
 AC_MSG_CHECKING(for floating point endianness)
 fp_endianness="unknown"
