@@ -318,7 +318,6 @@
 	    transparentBlack);
 }
 
-#ifdef HAVE__FLOAT16
 - (void)testRGBA16161616FPWriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
@@ -365,7 +364,6 @@
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 }
-#endif
 
 - (void)testRGBA32323232FPWriteAndRead
 {

@@ -950,7 +950,7 @@ mingw*)
 		])
 	], [
 		AC_MSG_RESULT(yes)
-		AC_DEFINE(HAVE__FLOAT16, 1, [Whether we have _Float16])
+		AC_DEFINE(OF_HAVE__FLOAT16, 1, [Whether we have _Float16])
 	], [
 		AC_MSG_RESULT(no)
 	])

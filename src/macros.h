@@ -954,6 +954,76 @@ OFByteSwapDouble(double d)
 
 #define OF_ULONG_BIT (sizeof(unsigned long) * CHAR_BIT)
 
+#ifdef OF_HAVE__FLOAT16
+static OF_INLINE uint16_t
+OFFloatToFloat16(float f32)
+{
+	__extension__ _Float16 f16 = f32;
+	uint16_t u16;
+	memcpy(&u16, &f16, 2);
+	return u16;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(uint16_t u16)
+{
+	__extension__ _Float16 f16;
+	memcpy(&f16, &u16, 2);
+	return f16;
+}
+#else
+static OF_INLINE uint16_t
+OFFloatToFloat16(float f32)
+{
+	uint32_t u32 = OFBitConvertFloatToUInt32(f32);
+	uint16_t u16;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	u32 = OFByteSwap32(u32);
+# endif
+
+	u16 = (u32 >> 16) & 0x8000;
+
+	if (u32 & 0x7F800000)
+		u16 |= (((u32 & 0x7F800000) - 0x38000000) >> 13) & 0x7C00;
+
+	u16 |= (u32 >> 13) & 0x3FF;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	u16 = OFByteSwap16(u16);
+# endif
+
+	return u16;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(uint16_t u16)
+{
+	uint32_t u32;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	u16 = OFByteSwap16(u16);
+# endif
+
+	u32 = (u16 & 0x8000) << 16;
+
+	if (u16 & 0x7C00)
+		u32 |= (((u16 & 0x7C00) + 0x1C000) & 0x3FC00) << 13;
+
+	u32 |= (u16 & 0x3FF) << 13;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	u32 = OFByteSwap32(u32);
+# endif
+
+	return OFBitConvertUInt32ToFloat(u32);
+}
+#endif
+
 static OF_INLINE bool
 OFBitSetIsSet(unsigned long *_Nonnull storage, size_t idx)
 {

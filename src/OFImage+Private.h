@@ -128,17 +128,15 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
-#ifdef HAVE__FLOAT16
-__extension__ static OF_INLINE void
-_OFReadRGBA16161616FPPixel(const _Float16 *pixels, size_t x, size_t y,
+static OF_INLINE void
+_OFReadRGBA16161616FPPixel(const uint16_t *pixels, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
 {
-	*red = pixels[(x + y * width) * 4];
-	*green = pixels[(x + y * width) * 4 + 1];
-	*blue = pixels[(x + y * width) * 4 + 2];
-	*alpha = pixels[(x + y * width) * 4 + 3];
+	*red = OFFloat16ToFloat(pixels[(x + y * width) * 4]);
+	*green = OFFloat16ToFloat(pixels[(x + y * width) * 4 + 1]);
+	*blue = OFFloat16ToFloat(pixels[(x + y * width) * 4 + 2]);
+	*alpha = OFFloat16ToFloat(pixels[(x + y * width) * 4 + 3]);
 }
-#endif
 
 static OF_INLINE void
 _OFReadRGBA32323232FPPixel(const float *pixels, size_t x, size_t y,
@@ -157,12 +155,10 @@ _OFReadPixel(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 	uint8_t redInt8 = 0, greenInt8 = 0, blueInt8 = 0, alphaInt8 = 0;
 
 	switch (format) {
-#ifdef HAVE__FLOAT16
 	case OFPixelFormatRGBA16161616FP:
 		_OFReadRGBA16161616FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);
 		return true;
-#endif
 	case OFPixelFormatRGBA32323232FP:
 		_OFReadRGBA32323232FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);
@@ -326,17 +322,15 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 	}
 }
 
-#ifdef HAVE__FLOAT16
-__extension__ static OF_INLINE void
-_OFWriteRGBA16161616FPPixel(_Float16 *pixels, size_t x, size_t y, size_t width,
+static OF_INLINE void
+_OFWriteRGBA16161616FPPixel(uint16_t *pixels, size_t x, size_t y, size_t width,
     float red, float green, float blue, float alpha)
 {
-	pixels[(x + y * width) * 4] = red;
-	pixels[(x + y * width) * 4 + 1] = green;
-	pixels[(x + y * width) * 4 + 2] = blue;
-	pixels[(x + y * width) * 4 + 3] = alpha;
+	pixels[(x + y * width) * 4] = OFFloatToFloat16(red);
+	pixels[(x + y * width) * 4 + 1] = OFFloatToFloat16(green);
+	pixels[(x + y * width) * 4 + 2] = OFFloatToFloat16(blue);
+	pixels[(x + y * width) * 4 + 3] = OFFloatToFloat16(alpha);
 }
-#endif
 
 static OF_INLINE void
 _OFWriteRGBA32323232FPPixel(float *pixels, size_t x, size_t y, size_t width,
@@ -353,12 +347,10 @@ _OFWritePixel(void *pixels, OFPixelFormat format, size_t x, size_t y,
     size_t width, float red, float green, float blue, float alpha)
 {
 	switch (format) {
-#ifdef HAVE__FLOAT16
 	case OFPixelFormatRGBA16161616FP:
 		_OFWriteRGBA16161616FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);
 		return true;
-#endif
 	case OFPixelFormatRGBA32323232FP:
 		_OFWriteRGBA32323232FPPixel(pixels, x, y, width, red, green,
 		    blue, alpha);
