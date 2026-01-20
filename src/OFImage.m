@@ -330,8 +330,16 @@
 
 			if OF_UNLIKELY (red != otherRed ||
 			    green != otherGreen || blue != otherBlue ||
-			    alpha != otherAlpha)
+			    alpha != otherAlpha) {
+				/*
+				 * Workaround for an x86 codegen bug in
+				 * Clang 18.1.3. Changing *anything* at all
+				 * fixes it, even an empty __asm__ statement.
+				 */
+				__asm__ ("");
+
 				return false;
+			}
 		}
 	}
 
