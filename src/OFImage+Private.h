@@ -129,7 +129,7 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 }
 
 static OF_INLINE void
-_OFReadRGBA16161616FPPixel(const uint16_t *pixels, size_t x, size_t y,
+_OFReadRGBA16161616FPPixel(const OFFloat16 *pixels, size_t x, size_t y,
     size_t width, float *red, float *green, float *blue, float *alpha)
 {
 	*red = OFFloat16ToFloat(pixels[(x + y * width) * 4]);
@@ -323,13 +323,13 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 }
 
 static OF_INLINE void
-_OFWriteRGBA16161616FPPixel(uint16_t *pixels, size_t x, size_t y, size_t width,
+_OFWriteRGBA16161616FPPixel(OFFloat16 *pixels, size_t x, size_t y, size_t width,
     float red, float green, float blue, float alpha)
 {
-	pixels[(x + y * width) * 4] = OFFloatToFloat16(red);
-	pixels[(x + y * width) * 4 + 1] = OFFloatToFloat16(green);
-	pixels[(x + y * width) * 4 + 2] = OFFloatToFloat16(blue);
-	pixels[(x + y * width) * 4 + 3] = OFFloatToFloat16(alpha);
+	pixels[(x + y * width) * 4] = OFFloat16FromFloat(red);
+	pixels[(x + y * width) * 4 + 1] = OFFloat16FromFloat(green);
+	pixels[(x + y * width) * 4 + 2] = OFFloat16FromFloat(blue);
+	pixels[(x + y * width) * 4 + 3] = OFFloat16FromFloat(alpha);
 }
 
 static OF_INLINE void
