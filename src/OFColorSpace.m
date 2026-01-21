@@ -49,19 +49,25 @@ identityTF(OFVector4D *vectors, size_t count)
 static OF_INLINE float
 sRGBEOTFPrimitive(float value)
 {
-	if (value <= 0.04045f)
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue <= 0.04045f)
 		return value / 12.92f;
 	else
-		return powf((value + 0.055f) / 1.055f, 2.4f);
+		return sign * powf((absValue + 0.055f) / 1.055f, 2.4f);
 }
 
 static OF_INLINE float
 sRGBOETFPrimitive(float value)
 {
-	if (value <= 0.0031308f)
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue <= 0.0031308f)
 		return value * 12.92f;
 	else
-		return 1.055f * powf(value, 1.0f / 2.4f) - 0.055f;
+		return sign * (1.055f * powf(absValue, 1.0f / 2.4f) - 0.055f);
 }
 
 static void
@@ -132,19 +138,25 @@ initLinearSRGBColorSpace(void)
 static OF_INLINE float
 BT709EOTFPrimitive(float value)
 {
-	if (value < 0.081f)
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue < 0.081f)
 		return value / 4.5f;
 	else
-		return powf((value + 0.099f) / 1.099f, 1.0f / 0.45f);
+		return sign * powf((absValue + 0.099f) / 1.099f, 1.0f / 0.45f);
 }
 
 static OF_INLINE float
 BT709OETFPrimitive(float value)
 {
-	if (value < 0.018f)
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue < 0.018f)
 		return 4.5f * value;
 	else
-		return 1.099f * powf(value, 0.45f) - 0.099f;
+		return sign * (1.099f * powf(absValue, 0.45f) - 0.099f);
 }
 
 static void
@@ -228,19 +240,26 @@ initLinearDisplayP3ColorSpace(void)
 static OF_INLINE float
 BT2020OETFPrimitive(float value)
 {
-	if (value < 0.0181f)
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue < 0.0181f)
 		return 4.5f * value;
 	else
-		return 1.0993f * powf(value, 0.45f) - 0.0993f;
+		return sign * (1.0993f * powf(absValue, 0.45f) - 0.0993f);
 }
 
 static OF_INLINE float
 BT2020EOTFPrimitive(float value)
 {
-	if (value < BT2020OETFPrimitive(0.0181f))
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	if (absValue < BT2020OETFPrimitive(0.0181f))
 		return value / 4.5f;
 	else
-		return powf((value + 0.0993f) / 1.0993f, 1.0f / 0.45f);
+		return sign *
+		    powf((absValue + 0.0993f) / 1.0993f, 1.0f / 0.45f);
 }
 
 static void
@@ -311,13 +330,19 @@ initLinearBT2020ColorSpace(void)
 static OF_INLINE float
 adobeRGBEOTFPrimitive(float value)
 {
-	return powf(value, 563.0f / 256.0f);
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	return sign * powf(absValue, 563.0f / 256.0f);
 }
 
 static OF_INLINE float
 adobeRGBOETFPrimitive(float value)
 {
-	return powf(value, 256.0f / 563.0f);
+	float sign = (value < 0.0f ? -1.0f : 1.0f);
+	float absValue = fabs(value);
+
+	return sign * powf(absValue, 256.0f / 563.0f);
 }
 
 static void
