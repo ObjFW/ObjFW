@@ -23,6 +23,7 @@
 #import "OFColor.h"
 #import "OFImage.h"
 #import "OFImage+Private.h"
+#import "OFMatrix4x4.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
@@ -111,6 +112,7 @@
        sourceRect: (OFRect)sourceRect
   destinationRect: (OFRect)destinationRect
 {
+	void *pool = objc_autoreleasePoolPush();
 	const void *imagePixels = image.pixels;
 	OFPixelFormat imagePixelFormat = image.pixelFormat;
 	OFSize imageSize = image.size;
@@ -122,6 +124,8 @@
 	size_t destX, destY, destWidth, destHeight;
 	OFColorSpace *destColorSpace;
 	OFColorSpaceTransferFunction destEOTF = NULL, destOETF = NULL;
+	OFMatrix4x4 *transformCSMatrix = nil;
+	void (*transformVectors)(id, SEL, OFVector4D *, size_t) = NULL;
 
 	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
 	    sourceRect.size.width < 0 || sourceRect.size.height < 0)
@@ -168,6 +172,16 @@
 		destOETF = destColorSpace.OETF;
 	}
 
+	if (![srcColorSpace isEqual: destColorSpace]) {
+		transformCSMatrix = objc_autorelease(
+		    [srcColorSpace.RGBToXYZMatrix copy]);
+		[transformCSMatrix multiplyWithMatrix:
+		    destColorSpace.XYZToRGBMatrix];
+		transformVectors = (void (*)(id, SEL, OFVector4D *, size_t))
+		    [transformCSMatrix methodForSelector:
+		    @selector(transformVectors:count:)];
+	}
+
 	for (size_t i = destY; i < destY + destHeight; i++) {
 		for (size_t j = destX; j < destX + destWidth; j++) {
 			OF_ALIGN(16) OFVector4D vec[2];
@@ -181,6 +195,18 @@
 				@throw [OFNotImplementedException
 				    exceptionWithSelector: _cmd
 						   object: self];
+
+			if (transformCSMatrix != nil) {
+				if (srcEOTF != NULL)
+					srcEOTF(vec, 1);
+
+				transformVectors(transformCSMatrix,
+				    @selector(transformVectors:count:),
+				    vec, 1);
+
+				if (destOETF != NULL)
+					destOETF(vec, 1);
+			}
 
 			if OF_UNLIKELY (vec[0].w != 1.0f) {
 				if OF_UNLIKELY (!_OFReadPixel(_pixels,
@@ -213,5 +239,7 @@
 						   object: self];
 		}
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -74,17 +74,19 @@
 {
 	static const uint32_t pixels[] = {
 		0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF,
-		0x000000FF, 0xFFFFFFFF, 0xFF0000FF, 0x000000FF,
-		0x000000FF, 0x00FF00FF, 0x0000FFFF, 0x000000FF
+		0x000000FF, 0xFFFFFFFF, 0xEA3323FF, 0x000000FF,
+		0x000000FF, 0x74FB4CFF, 0x0000F5FF, 0x000000FF
 	};
 	static const uint32_t pixels2[] = {
 		0x00000080, 0xFFFFFF80,
 		0xFFFFFF40, 0x00000040
 	};
-	OFImage *image = [OFImage imageWithPixelsNoCopy: pixels
-					    pixelFormat: OFPixelFormatRGBA8888
-						   size: OFMakeSize(4.0f, 3.0f)
-					   freeWhenDone: false];
+	OFImage *image = [OFImage
+	    imageWithPixelsNoCopy: pixels
+		      pixelFormat: OFPixelFormatRGBA8888
+			     size: OFMakeSize(4.0f, 3.0f)
+		       colorSpace: [OFColorSpace displayP3ColorSpace]
+		     freeWhenDone: false];
 	OFImage *image2 = [OFImage imageWithPixelsNoCopy: pixels2
 					     pixelFormat: OFPixelFormatRGBA8888
 						    size: OFMakeSize(2.0f, 2.0f)
