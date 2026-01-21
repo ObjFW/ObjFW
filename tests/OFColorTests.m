@@ -84,6 +84,18 @@ static const float allowedImprecision = 0.0000001f;
 	OTAssertLessThan(fabs(blue - 0.21404114f), allowedImprecision);
 	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
 
+	color = [OFColor colorWithRed: 0.5f
+				green: 0.5f
+				 blue: 0.5f
+				alpha: 1.0f];
+	color = [color colorUsingColorSpace: [OFColorSpace BT709ColorSpace]];
+	[color getRed: &red green: &green blue: &blue alpha: &alpha];
+
+	OTAssertLessThan(fabs(red - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabs(green - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabs(blue - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+
 	color = [OFColor colorWithRed: 0.2f
 				green: 0.5f
 				 blue: 0.1f

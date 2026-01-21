@@ -25,7 +25,7 @@
 @interface OFColorSpaceSingleton: OFColorSpace
 @end
 
-static OFColorSpace *sRGBColorSpace, *linearSRGBColorSpace;
+static OFColorSpace *sRGBColorSpace, *linearSRGBColorSpace, *BT709ColorSpace;
 static OFMatrix4x4 *sRGBToXYZMatrix, *XYZToSRGBMatrix;
 static OFOnceControl sRGBMatricesOnceControl = OFOnceControlInitValue;
 
@@ -127,6 +127,57 @@ initLinearSRGBColorSpace(void)
 	    RGBToXYZMatrix: sRGBToXYZMatrix
 	    XYZToRGBMatrix: XYZToSRGBMatrix
 		    linear: true];
+}
+
+static OF_INLINE float
+BT709EOTFPrimitive(float value)
+{
+	if (value < 0.081f)
+		return value / 4.5f;
+	else
+		return powf((value + 0.099f) / 1.099f, 1.0f / 0.45f);
+}
+
+static OF_INLINE float
+BT709OETFPrimitive(float value)
+{
+	if (value < 0.018f)
+		return 4.5f * value;
+	else
+		return 1.099f * powf(value, 0.45f) - 0.099f;
+}
+
+static void
+BT709EOTF(OFVector4D *vectors, size_t count)
+{
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = BT709EOTFPrimitive(vectors[i].x);
+		vectors[i].y = BT709EOTFPrimitive(vectors[i].y);
+		vectors[i].z = BT709EOTFPrimitive(vectors[i].z);
+	}
+}
+
+static void
+BT709OETF(OFVector4D *vectors, size_t count)
+{
+	for (size_t i = 0; i < count; i++) {
+		vectors[i].x = BT709OETFPrimitive(vectors[i].x);
+		vectors[i].y = BT709OETFPrimitive(vectors[i].y);
+		vectors[i].z = BT709OETFPrimitive(vectors[i].z);
+	}
+}
+
+static void
+initBT709ColorSpace(void)
+{
+	OFOnce(&sRGBMatricesOnceControl, initSRGBMatrices);
+
+	BT709ColorSpace = [[OFColorSpaceSingleton alloc]
+	      initWithEOTF: BT709EOTF
+		      OETF: BT709OETF
+	    RGBToXYZMatrix: sRGBToXYZMatrix
+	    XYZToRGBMatrix: XYZToSRGBMatrix
+		    linear: false];
 }
 
 static void
@@ -370,6 +421,14 @@ OF_SINGLETON_METHODS
 	OFOnce(&onceControl, initLinearSRGBColorSpace);
 
 	return linearSRGBColorSpace;
+}
+
++ (OFColorSpace *)BT709ColorSpace
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initBT709ColorSpace);
+
+	return BT709ColorSpace;
 }
 
 + (OFColorSpace *)displayP3ColorSpace

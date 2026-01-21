@@ -59,6 +59,7 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
 @property (class, readonly, retain, nonatomic) OFColorSpace *sRGBColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *linearSRGBColorSpace;
+@property (class, readonly, retain, nonatomic) OFColorSpace *BT709ColorSpace;
 @property (class, readonly, retain, nonatomic)
     OFColorSpace *displayP3ColorSpace;
 @property (class, readonly, retain, nonatomic)
@@ -124,6 +125,14 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
  * @brief The sRGB color space with linear transfer function.
  */
 + (OFColorSpace *)linearSRGBColorSpace;
+
+/**
+ * @brief The BT.709 color space.
+ *
+ * @note There is no linear BT.709 color space as it is identical to the linear
+ *	 sRGB color space (see @ref linearSRGBColorSpace).
+ */
++ (OFColorSpace *)BT709ColorSpace;
 
 /**
  * @brief The Display P3 color space.
