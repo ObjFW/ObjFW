@@ -120,7 +120,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
-		   extendedHeader: (OFMutableDictionary *)extendedHeader
+		   extendedHeader: (OFDictionary *)extendedHeader
 			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
@@ -129,6 +129,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		void *pool = objc_autoreleasePoolPush();
 		OFString *targetFileName;
 		OFData *value;
+		OFMutableDictionary *mutableExtendedHeader;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
 		_POSIXPermissions = [[OFNumber alloc] initWithUnsignedLongLong:
@@ -179,7 +180,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			}
 		}
 
-		if ((value = [extendedHeader objectForKey: @"size"]) != nil) {
+		mutableExtendedHeader = [extendedHeader mutableCopy];
+		_extendedHeader = mutableExtendedHeader;
+
+		if ((value = [_extendedHeader objectForKey: @"size"]) != nil) {
 			const char *items = value.items;
 			size_t count = value.count;
 
@@ -203,10 +207,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			if (_compressedSize % 512 != 0)
 				_compressedSize += 512 - _compressedSize % 512;
 
-			[extendedHeader removeObjectForKey: @"size"];
+			[mutableExtendedHeader removeObjectForKey: @"size"];
 		}
 
-		if ((value = [extendedHeader objectForKey: @"path"]) != nil) {
+		if ((value = [_extendedHeader objectForKey: @"path"]) != nil) {
 			const char *items = value.items;
 			size_t count = value.count;
 
@@ -217,11 +221,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			    initWithUTF8String: items
 					length: count];
 
-			[extendedHeader removeObjectForKey: @"path"];
+			[mutableExtendedHeader removeObjectForKey: @"path"];
 		}
 
 		if ((value =
-		    [extendedHeader objectForKey: @"linkpath"]) != nil) {
+		    [_extendedHeader objectForKey: @"linkpath"]) != nil) {
 			const char *items = value.items;
 			size_t count = value.count;
 
@@ -232,11 +236,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			    initWithUTF8String: items
 					length: count];
 
-			[extendedHeader removeObjectForKey: @"linkpath"];
+			[mutableExtendedHeader removeObjectForKey: @"linkpath"];
 		}
 
-		[extendedHeader makeImmutable];
-		_extendedHeader = objc_retain(extendedHeader);
+		[mutableExtendedHeader makeImmutable];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
