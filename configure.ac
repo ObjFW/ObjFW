@@ -2024,33 +2024,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, openssl, gnutls, securetransport, mbedtls or
-			no)]))
+			(yes, openssl, gnutls, mbedtls or no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
-
-	AS_IF([test x"$with_tls" = x"securetransport" \
-	    -o x"$with_tls" = x"yes"], [
-		AC_CHECK_HEADERS(Security/SecureTransport.h, [
-			old_LIBS="$LIBS"
-			LIBS="-framework Security -framework Foundation $LIBS"
-
-			AC_CHECK_FUNC(SSLHandshake, [
-				tls_support="Secure Transport"
-				tmp="-framework Security -framework Foundation"
-				TLS_LIBS="-lobjfwbridge $tmp $TLS_LIBS"
-				tmp="-framework ObjFWBridge $tmp"
-				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
-
-				AC_SUBST(USE_SRCS_SECURETRANSPORT,
-					'${SRCS_SECURETRANSPORT}')
-
-				AC_CHECK_FUNCS(SSLCreateContext)
-			], [])
-
-			LIBS="$old_LIBS"
-		])
-	])
 
 	AS_IF([test x"$with_tls" = x"openssl" \
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
