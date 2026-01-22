@@ -21,6 +21,7 @@
 
 #import "OFImage.h"
 #import "OFImage+Private.h"
+#import "OFCanvas.h"
 #import "OFColor.h"
 #import "OFColorSpace.h"
 #import "OFImageFormatHandler.h"
@@ -398,6 +399,32 @@
 					  pixelFormat: _pixelFormat
 						 size: _size
 					   colorSpace: _colorSpace];
+}
+
+- (OFImage *)imageUsingPixelFormat: (OFPixelFormat)pixelFormat
+			colorSpace: (OFColorSpace *)colorSpace
+{
+	/*
+	 * FIXME: While OFCanvas has almost the same implementation we would
+	 *	  have here, there is some slight overhead because the new
+	 *	  image first gets initialized to zeros.
+	 */
+
+	OFMutableImage *ret = [OFMutableImage imageWithSize: _size
+						pixelFormat: pixelFormat
+						 colorSpace: colorSpace];
+	void *pool = objc_autoreleasePoolPush();
+	OFCanvas *canvas = [OFCanvas canvasWithDestinationImage: ret];
+	OFRect rect;
+
+	rect.origin = OFMakePoint(0.0f, 0.0f);
+	rect.size = _size;
+
+	[canvas drawImage: self sourceRect: rect destinationRect: rect];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (void)writeToStream: (OFSeekableStream *)stream

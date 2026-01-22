@@ -60,7 +60,8 @@
 		if (_width != size.width || height != size.height)
 			@throw [OFInvalidArgumentException exception];
 
-		_rect = OFMakeRect(0, 0, size.width, size.height);
+		_rect.origin = OFMakePoint(0.0f, 0.0f);
+		_rect.size = size;
 
 		_pixels = _destinationImage.mutablePixels;
 		_pixelFormat = _destinationImage.pixelFormat;

@@ -330,6 +330,18 @@ extern const OFImageFormat OFImageFormatQOI;
 - (OFColor *)colorAtPoint: (OFPoint)point;
 
 /**
+ * @brief Returns the image as a new image in the specified pixel format and
+ *	  color space.
+ *
+ * @param pixelFormat The pixel format for the new image
+ * @param colorSpace The color space for the new image
+ * @return The image as a new image in the specified pixel format and color
+ *	   space
+ */
+- (OFImage *)imageUsingPixelFormat: (OFPixelFormat)pixelFormat
+			colorSpace: (OFColorSpace *)colorSpace;
+
+/**
  * @brief Writes the image to the specified stream in the specified format.
  *
  * @param stream The stream to write the image to
