@@ -36,6 +36,8 @@
 #import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
+#import "OHDualShockGamepad.h"
+#import "OHDualShockGamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
@@ -209,13 +211,21 @@ scale(float value, float min, float max, bool inverted)
 			@throw [OFInitializationFailedException exception];
 
 		if (!OFBitSetIsSet(_keyBits, BTN_GAMEPAD) &&
-		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP) &&
-		    /*
-		     * Doesn't report itself as a gamepad, but still supported.
-		     */
-		    _vendorID != OHVendorIDDragonRise &&
-		    _productID != OHProductIDGameCubeControllerAdapter)
-			@throw [OFInvalidArgumentException exception];
+		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP)) {
+			/*
+			 * These are not reported as gamepads, but are still
+			 * supported.
+			 */
+			if (_vendorID == OHVendorIDDragonRise &&
+			    _productID == OHProductIDGameCubeControllerAdapter)
+				;
+			else if (_vendorID == OHVendorIDWiseGroup &&
+			    _productID ==
+			    OHProductIDPlayStationControllerAdapter)
+				;
+			else
+				@throw [OFInvalidArgumentException exception];
+		}
 
 		if (ioctl(_fd, EVIOCGNAME(sizeof(name)), name) == -1)
 			@throw [OFInitializationFailedException exception];
@@ -270,6 +280,9 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDDragonRise &&
 		    _productID == OHProductIDGameCubeControllerAdapter)
 			_profile = [[OHGameCubeController alloc] oh_init];
+		else if (_vendorID == OHVendorIDWiseGroup &&
+		    _productID == OHProductIDPlayStationControllerAdapter)
+			_profile = [[OHDualShockGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits

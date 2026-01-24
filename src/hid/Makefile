@@ -12,6 +12,7 @@ LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
 SRCS = OH8BitDoUltimate2CWirelessGamepad.m	\
        OHDualSenseGamepad.m			\
+       OHDualShockGamepad.m			\
        OHDualShock4Gamepad.m			\
        OHExtendedN64Controller.m		\
        OHExtendedSNESGamepad.m			\

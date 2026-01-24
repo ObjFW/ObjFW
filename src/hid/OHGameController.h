@@ -115,6 +115,7 @@ extern const uint16_t OHVendorIDMicrosoft;
 extern const uint16_t OHVendorIDGoogle;
 extern const uint16_t OHVendorID8BitDo;
 extern const uint16_t OHVendorIDDragonRise;
+extern const uint16_t OHVendorIDWiseGroup;
 extern const uint16_t OHProductIDDualShock4;
 extern const uint16_t OHProductIDDualSense;
 extern const uint16_t OHProductIDLeftJoyCon;
@@ -128,6 +129,7 @@ extern const uint16_t OHProductIDNES30Gamepad;
 extern const uint16_t OHProductIDUltimate2CWirelessBT;
 extern const uint16_t OHProductIDUltimate2CWirelessUSB;
 extern const uint16_t OHProductIDGameCubeControllerAdapter;
+extern const uint16_t OHProductIDPlayStationControllerAdapter;
 #ifdef __cplusplus
 }
 #endif
