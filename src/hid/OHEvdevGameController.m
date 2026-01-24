@@ -47,6 +47,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
+#import "OHGameCubeController.h"
+#import "OHGameCubeController+Private.h"
 #import "OHLeftJoyCon.h"
 #import "OHLeftJoyCon+Private.h"
 #import "OHN64Controller.h"
@@ -181,6 +183,12 @@ scale(float value, float min, float max, bool inverted)
 					 mode: @"r"
 					errNo: errno];
 
+		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		_vendorID = inputID.vendor;
+		_productID = inputID.product;
+
 		_evBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    EV_MAX) / OF_ULONG_BIT, sizeof(unsigned long));
 
@@ -201,14 +209,13 @@ scale(float value, float min, float max, bool inverted)
 			@throw [OFInitializationFailedException exception];
 
 		if (!OFBitSetIsSet(_keyBits, BTN_GAMEPAD) &&
-		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP))
+		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP) &&
+		    /*
+		     * Doesn't report itself as a gamepad, but still supported.
+		     */
+		    _vendorID != OHVendorIDDragonRise &&
+		    _productID != OHProductIDGameCubeControllerAdapter)
 			@throw [OFInvalidArgumentException exception];
-
-		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
-			@throw [OFInvalidArgumentException exception];
-
-		_vendorID = inputID.vendor;
-		_productID = inputID.product;
 
 		if (ioctl(_fd, EVIOCGNAME(sizeof(name)), name) == -1)
 			@throw [OFInitializationFailedException exception];
@@ -260,6 +267,9 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorID8BitDo &&
 		    _productID == OHProductIDNES30Gamepad)
 			_profile = [[OHNESGamepad alloc] oh_init];
+		else if (_vendorID == OHVendorIDDragonRise &&
+		    _productID == OHProductIDGameCubeControllerAdapter)
+			_profile = [[OHGameCubeController alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits

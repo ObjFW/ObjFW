@@ -51,6 +51,7 @@ const uint16_t OHVendorIDNintendo = 0x057E;
 const uint16_t OHVendorIDMicrosoft = 0x045E;
 const uint16_t OHVendorIDGoogle = 0x18D1;
 const uint16_t OHVendorID8BitDo = 0x2DC8;
+const uint16_t OHVendorIDDragonRise = 0x0079;
 const uint16_t OHProductIDDualShock4 = 0x09CC;
 const uint16_t OHProductIDDualSense = 0x0CE6;
 const uint16_t OHProductIDLeftJoyCon = 0x2006;
@@ -63,6 +64,7 @@ const uint16_t OHProductIDStadiaController = 0x9400;
 const uint16_t OHProductIDNES30Gamepad = 0x2820;
 const uint16_t OHProductIDUltimate2CWirelessBT = 0x301B;
 const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
+const uint16_t OHProductIDGameCubeControllerAdapter = 0x1846;
 
 @implementation OHGameController
 @dynamic name, profile;

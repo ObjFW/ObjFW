@@ -20,6 +20,7 @@ SRCS = OH8BitDoUltimate2CWirelessGamepad.m	\
        OHGameControllerButton.m			\
        OHGameControllerDirectionalPad.m		\
        OHGameControllerElement.m		\
+       OHGameCubeController.m			\
        OHJoyConPair.m				\
        OHLeftJoyCon.m				\
        OHN64Controller.m			\
