@@ -37,7 +37,9 @@
 #import "OFReadFailedException.h"
 
 #define asm __asm__
+#define id ogc_id
 #include <wiiuse/wpad.h>
+#undef id
 #undef asm
 
 static float
