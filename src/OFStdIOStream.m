@@ -66,7 +66,9 @@
 
 #ifdef OF_WII
 # define asm __asm__
+# define id ogc_id
 # include <gccore.h>
+# undef id
 # undef asm
 #endif
 

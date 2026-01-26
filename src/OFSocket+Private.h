@@ -79,6 +79,7 @@ typedef uint32_t in_addr_t;
 # define fcntl(fd, cmd, flags) net_fcntl(fd, cmd, flags)
 # define h_errno 0
 # define hstrerror(err) "unknown (no hstrerror)"
+# define ioctlsocket(...) net_ioctl(__VA_ARGS__)
 # define listen(sock, backlog) net_listen(sock, backlog)
 # define poll(fds, nfds, timeout) net_poll(fds, nfds, timeout)
 # define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)

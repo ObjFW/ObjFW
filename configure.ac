@@ -1941,17 +1941,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		break
 	])
 
-	AS_IF([test x"$with_wii" = x"yes"], [
+	AC_CHECK_HEADERS(poll.h)
+	AC_CHECK_FUNC(poll, [
 		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 			"OFPollKernelEventObserver.m")
-	], [
-		AC_CHECK_HEADERS(poll.h)
-		AC_CHECK_FUNC(poll, [
-			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
-				"OFPollKernelEventObserver.m")
-		])
 	])
 
 	case "$host_os" in
