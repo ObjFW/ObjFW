@@ -212,6 +212,18 @@ OF_ASSUME_NONNULL_BEGIN
  * @param position The position to move the cursor to
  */
 - (void)setRelativeCursorPosition: (OFPoint)position;
+
+/**
+ * @brief Sets the terminal's progress indicator.
+ *
+ * @param progress The progress indicate, between 0.0 and 1.0
+ */
+- (void)setProgressIndicator: (float)progress;
+
+/**
+ * @brief Removes the terminal's progress indicator.
+ */
+- (void)removeProgressIndicator;
 @end
 
 #ifdef __cplusplus

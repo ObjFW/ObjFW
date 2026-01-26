@@ -103,7 +103,7 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)_drawProgress
 {
-	float bars, percent;
+	float bars, progress, percent;
 	int columns, barWidth;
 
 	if ((columns = OFStdErr.columns) >= 0) {
@@ -114,10 +114,12 @@ static const OFTimeInterval updateInterval = 0.1;
 	} else
 		barWidth = 43;
 
-	bars = (float)(_resumedFrom + _received) /
-	    (float)(_resumedFrom + _length) * barWidth;
-	percent = (float)(_resumedFrom + _received) /
-	    (float)(_resumedFrom + _length) * 100;
+	progress = (float)(_resumedFrom + _received) /
+	    (float)(_resumedFrom + _length);
+	bars = progress * barWidth;
+	percent = progress * 100.0f;
+
+	[OFStdErr setProgressIndicator: progress];
 
 	if (_useUnicode) {
 		[OFStdErr writeString: @"\r  ▕"];
@@ -183,7 +185,7 @@ static const OFTimeInterval updateInterval = 0.1;
 	OFStdErr.foregroundColor = nil;
 	[OFStdErr writeString: @" "];
 
-	if (percent == 100) {
+	if (progress >= 1.0f) {
 		double timeInterval = -_startDate.timeIntervalSinceNow;
 
 		_BPS = (float)_received / (float)timeInterval;
@@ -332,6 +334,8 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)stop
 {
+	[OFStdErr removeProgressIndicator];
+
 	[_drawTimer invalidate];
 	[_BPSTimer invalidate];
 

@@ -1058,4 +1058,24 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
 #endif
 }
+
+- (void)setProgressIndicator: (float)progress
+{
+	if (!self.hasTerminal)
+		return;
+
+	progress = roundf(progress * 100);
+	if (progress < 0.0f || progress > 100.0f)
+		return;
+
+	[self writeFormat: @"\033]9;4;1;%u\033\\", (unsigned)progress];
+}
+
+- (void)removeProgressIndicator
+{
+	if (!self.hasTerminal)
+		return;
+
+	[self writeString: @"\033]9;4;0\033\\"];
+}
 @end
