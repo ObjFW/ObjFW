@@ -239,28 +239,28 @@ static const float allowedImprecision = 0.0000001f;
 							green: &green
 							 blue: &blue
 							alpha: &alpha];
-	OTAssertLessThan(fabs(red - 0.7353569f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.0f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.0f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	[[image colorAtPoint: OFMakePoint(0.0f, 0.5f)] getRed: &red
 							green: &green
 							 blue: &blue
 							alpha: &alpha];
-	OTAssertLessThan(fabs(red - 0.0f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.7353569f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.0f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	[[image colorAtPoint: OFMakePoint(0.5f, 0.5f)] getRed: &red
 							green: &green
 							 blue: &blue
 							alpha: &alpha];
-	OTAssertLessThan(fabs(red - 0.5370987f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.5370987f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.5370987f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 }
 
 - (void)testCopy

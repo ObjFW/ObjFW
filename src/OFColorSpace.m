@@ -50,7 +50,7 @@ static OF_INLINE float
 sRGBEOTFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue <= 0.04045f)
 		return value / 12.92f;
@@ -62,7 +62,7 @@ static OF_INLINE float
 sRGBOETFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue <= 0.0031308f)
 		return value * 12.92f;
@@ -139,7 +139,7 @@ static OF_INLINE float
 BT709EOTFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue < 0.081f)
 		return value / 4.5f;
@@ -151,7 +151,7 @@ static OF_INLINE float
 BT709OETFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue < 0.018f)
 		return 4.5f * value;
@@ -241,7 +241,7 @@ static OF_INLINE float
 BT2020OETFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue < 0.0181f)
 		return 4.5f * value;
@@ -253,7 +253,7 @@ static OF_INLINE float
 BT2020EOTFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	if (absValue < BT2020OETFPrimitive(0.0181f))
 		return value / 4.5f;
@@ -287,9 +287,9 @@ initBT2020Matrices(void)
 {
 	BT2020ToXYZMatrix = [[OFMatrix4x4 alloc]
 	    initWithValues: (const float [4][4]) {
-		{ 0.6369580f, 0.1446169f, 0.1688810, 0.0f },
-		{ 0.2627002f, 0.6779981f, 0.0593017, 0.0f },
-		{ 0.0f, 0.0280727f, 1.0609851, 0.0f },
+		{ 0.6369580f, 0.1446169f, 0.1688810f, 0.0f },
+		{ 0.2627002f, 0.6779981f, 0.0593017f, 0.0f },
+		{ 0.0f, 0.0280727f, 1.0609851f, 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	}];
 	XYZToBT2020Matrix = [[OFMatrix4x4 alloc]
@@ -331,7 +331,7 @@ static OF_INLINE float
 adobeRGBEOTFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	return sign * powf(absValue, 563.0f / 256.0f);
 }
@@ -340,7 +340,7 @@ static OF_INLINE float
 adobeRGBOETFPrimitive(float value)
 {
 	float sign = (value < 0.0f ? -1.0f : 1.0f);
-	float absValue = fabs(value);
+	float absValue = fabsf(value);
 
 	return sign * powf(absValue, 256.0f / 563.0f);
 }

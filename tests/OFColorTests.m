@@ -79,10 +79,10 @@ static const float allowedImprecision = 0.0000001f;
 	    [OFColorSpace linearSRGBColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	OTAssertLessThan(fabs(red - 0.21404114f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.21404114f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.21404114f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.21404114f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.21404114f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.21404114f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	color = [OFColor colorWithRed: 0.5f
 				green: 0.5f
@@ -91,10 +91,10 @@ static const float allowedImprecision = 0.0000001f;
 	color = [color colorUsingColorSpace: [OFColorSpace BT709ColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	OTAssertLessThan(fabs(red - 0.4501885f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.4501885f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.4501885f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.4501885f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	color = [OFColor colorWithRed: 0.2f
 				green: 0.5f
@@ -104,10 +104,10 @@ static const float allowedImprecision = 0.0000001f;
 	    [OFColorSpace displayP3ColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	OTAssertLessThan(fabs(red - 0.2832721f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.4934571f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.1725515f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.2832721f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.4934571f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.1725515f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	color = [OFColor colorWithRed: 0.2f
 				green: 0.5f
@@ -116,10 +116,10 @@ static const float allowedImprecision = 0.0000001f;
 	color = [color colorUsingColorSpace: [OFColorSpace BT2020ColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	OTAssertLessThan(fabs(red - 0.2758016f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.4325840f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.1219162f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.2758016f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.4325840f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.1219162f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
 	color = [OFColor colorWithRed: 0.2f
 				green: 0.5f
@@ -128,9 +128,9 @@ static const float allowedImprecision = 0.0000001f;
 	color = [color colorUsingColorSpace: [OFColorSpace adobeRGBColorSpace]];
 	[color getRed: &red green: &green blue: &blue alpha: &alpha];
 
-	OTAssertLessThan(fabs(red - 0.3253733f), allowedImprecision);
-	OTAssertLessThan(fabs(green - 0.4961037f), allowedImprecision);
-	OTAssertLessThan(fabs(blue - 0.1626379f), allowedImprecision);
-	OTAssertLessThan(fabs(alpha - 1.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(red - 0.3253733f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.4961037f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.1626379f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 }
 @end
