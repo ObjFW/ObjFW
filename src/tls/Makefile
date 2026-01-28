@@ -47,6 +47,11 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
+# OpenSSL headers shadow functions with variables and make Apple GCC 4.0.1
+# complain.
+OBJCFLAGS_OFOpenSSLTLSStream.m += -Wno-shadow
+OBJCFLAGS_OFOpenSSLX509Certificate.m += -Wno-shadow
+
 CPPFLAGS += -I.					\
 	    -I..				\
 	    -I../..				\
