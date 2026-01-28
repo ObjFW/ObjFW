@@ -141,17 +141,17 @@
 
 		[stream readIntoBuffer: &masks exactLength: 16];
 
-		if (masks.red == 0xFF000000 || masks.green == 0x00FF0000 ||
-		    masks.blue == 0x0000FF00 || masks.alpha == 0x000000FF)
+		if (masks.red == 0xFF000000 && masks.green == 0x00FF0000 &&
+		    masks.blue == 0x0000FF00 && masks.alpha == 0x000000FF)
 			format = OFPixelFormatRGBA8888;
-		else if (masks.red == 0x00FF0000 || masks.green == 0x0000FF00 ||
-		    masks.blue == 0x000000FF || masks.alpha == 0xFF000000)
+		else if (masks.red == 0x00FF0000 && masks.green == 0x0000FF00 &&
+		    masks.blue == 0x000000FF && masks.alpha == 0xFF000000)
 			format = OFPixelFormatARGB8888;
-		else if (masks.red == 0x000000FF || masks.green == 0x0000FF00 ||
-		    masks.blue == 0x00FF0000 || masks.alpha == 0xFF000000)
+		else if (masks.red == 0x000000FF && masks.green == 0x0000FF00 &&
+		    masks.blue == 0x00FF0000 && masks.alpha == 0xFF000000)
 			format = OFPixelFormatABGR8888;
-		else if (masks.red == 0x0000FF00 || masks.green == 0x00FF0000 ||
-		    masks.blue == 0xFF000000 || masks.alpha == 0x000000FF)
+		else if (masks.red == 0x0000FF00 && masks.green == 0x00FF0000 &&
+		    masks.blue == 0xFF000000 && masks.alpha == 0x000000FF)
 			format = OFPixelFormatBGRA8888;
 		else
 			@throw [OFUnsupportedVersionException
