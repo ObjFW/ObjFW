@@ -1,5 +1,5 @@
 .\"
-.\" Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+.\" Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
 .\"
 .\" All rights reserved.
 .\"
@@ -18,17 +18,17 @@
 .\"
 .TH ofhttp 1
 .SH NAME
-ofhttp - perform HTTP and HTTPS requests and download files
+ofhttp \- perform HTTP and HTTPS requests and download files
 .SH SYNOPSIS
 .B ofhttp
-[\fBoptions\fR] \firi1\fR [\fIiri2\fR ...]
+[\fBoptions\fR] \fIiri1\fR [\fIiri2\fR ...]
 .SH DESCRIPTION
 .B ofhttp
 is a program to perform HTTP and HTTPS requests and download files.
 .SH OPTIONS
 .TP
 .BR \fB\-b\fR " " \fIfile\fR ", " \fB\-\-body=\fIfile\fR
-Specify the file to send as body (\fB-\fR for standard input).
+Specify the file to send as body (\fB\-\fR for standard input).
 .TP
 .BR \fB\-c\fR ", " \fB\-\-continue\fR
 Continue download of existing file.
@@ -40,7 +40,7 @@ Force / overwrite existing file.
 Show the help.
 .TP
 .BR \fB\-H\fR " " \fIheader\fR ", " \fB\-\-header=\fIheader\fR
-Add a header (e.g. \fBX-Foo:Bar\fR).
+Add a header (e.g. \fBX\-Foo:Bar\fR).
 .TP
 .BR \fB\-m\fR " " \fImethod\fR ", " \fB\-\-method=\fImethod\fR
 Set the method of the HTTP request.
@@ -52,7 +52,7 @@ Specify the output file name.
 Do a HEAD request to detect the file name.
 .TP
 .BR \fB\-P\fR " " \fIproxy\fR ", " \fB\-\-proxy=\fIproxy\fR
-Sepcify SOCKS5 proxy.
+Specify SOCKS5 proxy.
 .TP
 .BR \fB\-q\fR ", " \fB\-\-quiet\fR
 Quiet mode (no output, except errors).
@@ -72,9 +72,9 @@ Download \fBhttps://example.com/testfile.bin\fR:
 .PP
 Download \fBhttps://example.com/testfile.bin\fR via Tor:
 .PP
-	ofhttp -P 127.0.0.1:9050 https://example.com/testfile.bin
+	ofhttp \-P 127.0.0.1:9050 https://example.com/testfile.bin
 .PP
 Send a \fBPOST\fR request to an endpoint expecting JSON and only print the
 response:
 .PP
-	echo '{"a":"b"}' | ofhttp -mPOST -b- -qo- https://example.com/json
+	echo '{"a":"b"}' | ofhttp \-mPOST \-b\- \-qo\- https://example.com/json

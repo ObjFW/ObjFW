@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -156,7 +156,7 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 @implementation OFApplication
 @synthesize programName = _programName, arguments = _arguments;
-@synthesize environment = _environment;
+@synthesize environment = _environment, processID = _processID;
 #ifdef OF_HAVE_SANDBOX
 @synthesize activeSandbox = _activeSandbox;
 @synthesize activeSandboxForChildProcesses = _activeSandboxForChildProcesses;
@@ -201,6 +201,11 @@ SIGNAL_HANDLER(SIGUSR2)
 + (OFDictionary *)environment
 {
 	return app.environment;
+}
+
++ (long)processID
+{
+	return app.processID;
 }
 
 + (void)terminate
@@ -473,6 +478,13 @@ SIGNAL_HANDLER(SIGUSR2)
 #endif
 
 		[_environment makeImmutable];
+
+#ifdef OF_MORPHOS
+		NewGetTaskAttrs(NULL, &_processID, sizeof(_processID),
+		    TASKINFOTYPE_PID, TAG_END);
+#else
+		_processID = (long)getpid();
+#endif
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

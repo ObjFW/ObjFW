@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1174,5 +1174,22 @@ OF_SINGLETON_METHODS
 - (OFArray OF_GENERIC(OFString *) *)fileExtendedAttributesNames
 {
 	return attributeForKeyOrException(self, OFFileExtendedAttributesNames);
+}
+
+- (OFFileAmigaProtectionMask)fileAmigaProtection
+{
+	return [attributeForKeyOrException(self,
+	    OFFileAmigaProtection) intValue];
+}
+
+- (OFString *)fileAmigaComment
+{
+	return attributeForKeyOrException(self, OFFileAmigaComment);
+}
+
+- (OFFileMSDOSAttributesMask)fileMSDOSAttributes
+{
+	return [attributeForKeyOrException(self,
+	    OFFileMSDOSAttributes) intValue];
 }
 @end

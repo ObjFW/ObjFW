@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -124,10 +124,10 @@
 								 errNo: errno];
 
 	_canBlock = canBlock;
-#elif defined(OF_WINDOWS)
-	u_long v = !canBlock;
+#elif defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+	unsigned long v = !canBlock;
 
-	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
+	if (ioctlsocket(_socket, FIONBIO, (void *)&v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
 				  errNo: _OFSocketErrNo()];

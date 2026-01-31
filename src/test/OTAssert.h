@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -194,7 +194,7 @@
 	}
 
 /**
- * @brief Skips the current test, making it neither fail nor succeeed.
+ * @brief Skips the current test, making it neither fail nor succeed.
  *
  * @param ... An optional format string to print why the test was skipped,
  *	      followed by optional arguments

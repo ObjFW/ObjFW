@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,9 @@
 
 #import "OFMutableArray.h"
 #import "OFConcreteMutableArray.h"
+#import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -215,9 +218,62 @@ OF_SINGLETON_METHODS
 		[self insertObject: object atIndex: idx + i++];
 }
 
+- (void)insertObjects: (OFArray *)array atIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+	size_t arrayIndex = 0;
+
+	for (size_t i = 0; i < count; i++) {
+		void *pool2 = objc_autoreleasePoolPush();
+		OFArray *objects = [array objectsInRange:
+		    OFMakeRange(arrayIndex, ranges[i].length)];
+
+		[self insertObjectsFromArray: objects
+				     atIndex: ranges[i].location];
+
+		arrayIndex += ranges[i].length;
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)replaceObjectAtIndex: (size_t)idx withObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)replaceObjectsInRange: (OFRange)range
+	 withObjectsFromArray: (OFArray *)objects
+{
+	[self removeObjectsInRange: range];
+	[self insertObjectsFromArray: objects atIndex: range.location];
+}
+
+- (void)replaceObjectsAtIndexes: (OFIndexSet *)indexes
+		    withObjects: (OFArray *)objects
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	size_t objectsIndex = 0;
+
+	if (objects.count != indexes.count)
+		@throw [OFOutOfRangeException exception];
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++) {
+			id object = [objects objectAtIndex: objectsIndex++];
+
+			[self replaceObjectAtIndex: j withObject: object];
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setObject: (id)object atIndexedSubscript: (size_t)idx
@@ -302,6 +358,23 @@ OF_SINGLETON_METHODS
 {
 	for (size_t i = 0; i < range.length; i++)
 		[self removeObjectAtIndex: range.location];
+}
+
+- (void)removeObjectsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--)
+		[self removeObjectsInRange: ranges[i - 1]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeLastObject

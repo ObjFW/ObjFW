@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,5 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#define OF_INFLATE64_STREAM_M
-#include "OFInflateStream.m"
+#import "OFIndexSet.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@interface OFIndexSet ()
+@property (retain, nonatomic) OFMutableData *of_ranges;
+@end
+
+OF_ASSUME_NONNULL_END

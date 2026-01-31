@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,6 +34,9 @@ const OFFileAttributeKey OFFileSymbolicLinkDestination =
     @"OFFileSymbolicLinkDestination";
 const OFFileAttributeKey OFFileExtendedAttributesNames =
     @"OFFileExtendedAttributesNames";
+const OFFileAttributeKey OFFileAmigaProtection = @"OFFileAmigaProtection";
+const OFFileAttributeKey OFFileAmigaComment = @"OFFileAmigaComment";
+const OFFileAttributeKey OFFileMSDOSAttributes = @"OFFileMSDOSAttributes";
 
 const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
 const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";

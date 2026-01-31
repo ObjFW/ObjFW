@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFConcreteColor: OFColor
 {
 	float _red, _green, _blue, _alpha;
+	OFColorSpace *_colorSpace;
 }
 @end
 

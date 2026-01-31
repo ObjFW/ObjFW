@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,33 +21,34 @@
 
 #import "OFConcreteColor.h"
 
-#import "OFInvalidArgumentException.h"
-
 @implementation OFConcreteColor
 - (instancetype)initWithRed: (float)red
 		      green: (float)green
 		       blue: (float)blue
 		      alpha: (float)alpha
+		 colorSpace: (OFColorSpace *)colorSpace
 {
 	self = [super init];
 
 	@try {
-		if (red < 0.0 || red > 1.0 ||
-		    green < 0.0 || green > 1.0 ||
-		    blue < 0.0 || blue > 1.0 ||
-		    alpha < 0.0 || alpha > 1.0)
-			@throw [OFInvalidArgumentException exception];
-
 		_red = red;
 		_green = green;
 		_blue = blue;
 		_alpha = alpha;
+		_colorSpace = objc_retain(colorSpace);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_colorSpace);
+
+	[super dealloc];
 }
 
 - (void)getRed: (float *)red
@@ -62,5 +63,9 @@
 	if (alpha != NULL)
 		*alpha = _alpha;
 }
-@end
 
+- (OFColorSpace *)colorSpace
+{
+	return _colorSpace;
+}
+@end

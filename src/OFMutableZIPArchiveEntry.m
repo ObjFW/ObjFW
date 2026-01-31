@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,15 +29,17 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFMutableZIPArchiveEntry
-@dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
-@dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
-@dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
+@dynamic fileName, fileType, fileComment, extraField, versionMadeBy;
+@dynamic minVersionNeeded, modificationDate, compressionMethod, compressedSize;
+@dynamic uncompressedSize, CRC32, versionSpecificAttributes;
+@dynamic generalPurposeBitFlag;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -86,6 +88,32 @@
 	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	switch (fileType) {
+	case OFArchiveEntryFileTypeDirectory:
+		if (![_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			self.fileName =
+			    [self.fileName stringByAppendingString: @"/"];
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	case OFArchiveEntryFileTypeRegular:
+		if ([_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *fileName = self.fileName;
+			fileName =
+			    [fileName substringToIndex: fileName.length - 1];
+			self.fileName = fileName;
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
 }
 
 - (void)setFileComment: (OFString *)fileComment

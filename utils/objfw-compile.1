@@ -1,5 +1,5 @@
 .\"
-.\" Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+.\" Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
 .\"
 .\" All rights reserved.
 .\"
@@ -16,16 +16,16 @@
 .\" version 3.0 along with this program. If not, see
 .\" <https://www.gnu.org/licenses/>.
 .\"
-.TH objfw-compile 1
+.TH objfw\-compile 1
 .SH NAME
-objfw-compile - compile simple projects using ObjFW
+objfw\-compile \- compile simple projects using ObjFW
 .SH SYNOPSIS
-.B objfw-config
+.B objfw\-config
 [\fBoptions\fR]
 \fB\-o\fR \fIoutname\fR
 \fIsources\fR
 .SH DESCRIPTION
-.B objfw-compile
+.B objfw\-compile
 is a program to compile simple projects using ObjFW.
 .SH OPTIONS
 .TP
@@ -51,53 +51,53 @@ Place built objects into the specified directory.
 Pass the specified define to the compiler.
 .TP
 .BR \fB\-framework\fR " " \fIframework\fR
-Pass the specified -framework argument to the linker (macOS / iOS only).
+Pass the specified \-framework argument to the linker (macOS / iOS only).
 .TP
 .BR \fB\-f\fIflag\fR
-Pass the specified -f flag to the compiler.
+Pass the specified \-f flag to the compiler.
 .TP
 .BR \fB\-F\fIdir\fR ", " \fB\-F\fR " " \fIdir\fR
-Pass the specified -F flag to the linker (macOS / iOS only).
+Pass the specified \-F flag to the linker (macOS / iOS only).
 .TP
 .BR \fB\-g\fIflag\fR
-Pass the specified -g flag to the compiler.
+Pass the specified \-g flag to the compiler.
 .TP
 .BR \fB\-I\fIdir\fR ", " \fB\-I\fR " " \fIdir\fR
-Pass the specified -I flag to the compiler.
+Pass the specified \-I flag to the compiler.
 .TP
 .BR \fB\-l\fIlib\fR ", " \fB\-l\fR " " \fIlib\fR
-Pass the specified -l flag to the linker.
+Pass the specified \-l flag to the linker.
 .TP
 .BR \fB\-L\fIdir\fR ", " \fB\-L\fR " " \fIdir\fR
-Pass the specified -L flag to the linker.
+Pass the specified \-L flag to the linker.
 .TP
 .BR \fB\-m\fIflag\fR
-Pass the specified -m flag to the compiler.
+Pass the specified \-m flag to the compiler.
 .TP
 .BR \fB\-O\fIlevel\fR
-Pass the specified -O flag to the compiler.
+Pass the specified \-O flag to the compiler.
 .TP
 .BR \fB\-pthread\fR
-Pass -pthread to the compiler and linker.
+Pass \-pthread to the compiler and linker.
 .TP
 .BR \fB\-std=\fIlang\fR
-Pass the specified -std= flag to the compiler.
+Pass the specified \-std= flag to the compiler.
 .TP
 .BR \fB\-Wl,\fIflag\fR
-Pass the specified -Wl, flag to the linker.
+Pass the specified \-Wl, flag to the linker.
 .TP
 .BR \fB\-W\fIwarning\fR
-Pass the specified -W flag to the compiler.
+Pass the specified \-W flag to the compiler.
 .TP
 .BR \fB\-\-help\fR
 Show the help.
 .SH EXAMPLES
 Compile a program with two source files:
 .PP
-	objfw-compile -o myprog MyProg.m SomeClass.m
+	objfw\-compile \-o myprog MyProg.m SomeClass.m
 .PP
 Compile a library with library version 1.0:
 .PP
-	objfw-compile --lib 1.0 -o mylib Class1.m Class2.m
+	objfw\-compile \-\-lib 1.0 \-o mylib Class1.m Class2.m
 .SH SEE ALSO
-\fIobjfw-config\fR(1)
+\fIobjfw\-config\fR(1)

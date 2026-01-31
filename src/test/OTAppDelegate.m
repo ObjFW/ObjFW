@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -535,6 +535,10 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
+#ifdef OF_AMIGAOS4
+	/* Work around a bug in AmigaOS 4 terminal. */
+	OFStdOut.foregroundColor = [OFColor purple];
+#endif
 	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];

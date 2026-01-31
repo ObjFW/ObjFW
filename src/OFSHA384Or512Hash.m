@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -156,10 +156,10 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	self = [super init];
 
 	@try {
-		_iVarsData = [[OFSecureData alloc]
-			    initWithCount: sizeof(*_iVars)
+		_ivarsData = [[OFSecureData alloc]
+			    initWithCount: sizeof(*_ivars)
 		    allowsSwappableMemory: allowsSwappableMemory];
-		_iVars = _iVarsData.mutableItems;
+		_ivars = _ivarsData.mutableItems;
 		_allowsSwappableMemory = allowsSwappableMemory;
 
 		if (self.class == [OFSHA384Or512Hash class]) {
@@ -188,7 +188,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 - (void)dealloc
 {
-	objc_release(_iVarsData);
+	objc_release(_ivarsData);
 
 	[super dealloc];
 }
@@ -207,8 +207,8 @@ processBlock(uint64_t *state, uint64_t *buffer)
 {
 	OFSHA384Or512Hash *copy = [[[self class] alloc] of_init];
 
-	copy->_iVarsData = [_iVarsData copy];
-	copy->_iVars = copy->_iVarsData.mutableItems;
+	copy->_ivarsData = [_ivarsData copy];
+	copy->_ivars = copy->_ivarsData.mutableItems;
 	copy->_allowsSwappableMemory = _allowsSwappableMemory;
 	copy->_calculated = _calculated;
 
@@ -226,26 +226,26 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	if (length > SIZE_MAX / 8)
 		@throw [OFOutOfRangeException exception];
 
-	if (UINT64_MAX - _iVars->bits[0] < (length * 8))
-		_iVars->bits[1]++;
-	_iVars->bits[0] += (length * 8);
+	if (UINT64_MAX - _ivars->bits[0] < (length * 8))
+		_ivars->bits[1]++;
+	_ivars->bits[0] += (length * 8);
 
 	while (length > 0) {
-		size_t min = 128 - _iVars->bufferLength;
+		size_t min = 128 - _ivars->bufferLength;
 
 		if (min > length)
 			min = length;
 
-		memcpy(_iVars->buffer.bytes + _iVars->bufferLength,
+		memcpy(_ivars->buffer.bytes + _ivars->bufferLength,
 		    buffer, min);
-		_iVars->bufferLength += min;
+		_ivars->bufferLength += min;
 
 		buffer += min;
 		length -= min;
 
-		if (_iVars->bufferLength == 128) {
-			processBlock(_iVars->state, _iVars->buffer.words);
-			_iVars->bufferLength = 0;
+		if (_ivars->bufferLength == 128) {
+			processBlock(_ivars->state, _ivars->buffer.words);
+			_ivars->bufferLength = 0;
 		}
 	}
 }
@@ -255,7 +255,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	if (!_calculated)
 		@throw [OFHashNotCalculatedException exceptionWithObject: self];
 
-	return (const unsigned char *)_iVars->state;
+	return (const unsigned char *)_ivars->state;
 }
 
 - (void)calculate
@@ -264,30 +264,30 @@ processBlock(uint64_t *state, uint64_t *buffer)
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithObject: self];
 
-	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
-	OFZeroMemory(_iVars->buffer.bytes + _iVars->bufferLength + 1,
-	    128 - _iVars->bufferLength - 1);
+	_ivars->buffer.bytes[_ivars->bufferLength] = 0x80;
+	OFZeroMemory(_ivars->buffer.bytes + _ivars->bufferLength + 1,
+	    128 - _ivars->bufferLength - 1);
 
-	if (_iVars->bufferLength >= 112) {
-		processBlock(_iVars->state, _iVars->buffer.words);
-		OFZeroMemory(_iVars->buffer.bytes, 128);
+	if (_ivars->bufferLength >= 112) {
+		processBlock(_ivars->state, _ivars->buffer.words);
+		OFZeroMemory(_ivars->buffer.bytes, 128);
 	}
 
-	_iVars->buffer.words[14] = OFToBigEndian64(_iVars->bits[1]);
-	_iVars->buffer.words[15] = OFToBigEndian64(_iVars->bits[0]);
+	_ivars->buffer.words[14] = OFToBigEndian64(_ivars->bits[1]);
+	_ivars->buffer.words[15] = OFToBigEndian64(_ivars->bits[0]);
 
-	processBlock(_iVars->state, _iVars->buffer.words);
-	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
-	byteSwapVectorIfLE(_iVars->state, 8);
+	processBlock(_ivars->state, _ivars->buffer.words);
+	OFZeroMemory(&_ivars->buffer, sizeof(_ivars->buffer));
+	byteSwapVectorIfLE(_ivars->state, 8);
 	_calculated = true;
 }
 
 - (void)reset
 {
 	[self of_resetState];
-	OFZeroMemory(_iVars->bits, sizeof(_iVars->bits));
-	OFZeroMemory(&_iVars->buffer, sizeof(_iVars->buffer));
-	_iVars->bufferLength = 0;
+	OFZeroMemory(_ivars->bits, sizeof(_ivars->bits));
+	OFZeroMemory(&_ivars->buffer, sizeof(_ivars->buffer));
+	_ivars->bufferLength = 0;
 	_calculated = false;
 }
 

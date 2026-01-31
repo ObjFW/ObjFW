@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,7 +52,7 @@
 		_library = objc_retain(library);
 		_impl = objc_retain(impl);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

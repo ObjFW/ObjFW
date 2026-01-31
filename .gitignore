@@ -46,12 +46,6 @@
 /tests/PARAM.SFO
 /tests/big_dictionary_msgpack_gz.m
 /tests/boot.dol
-/tests/gamecontroller/boot.dol
-/tests/gamecontroller/tests
-/tests/gamecontroller/tests.3dsx
-/tests/gamecontroller/tests.arm9
-/tests/gamecontroller/tests.nds
-/tests/gamecontroller/tests.nro
 /tests/iOS.xcodeproj/*.pbxuser
 /tests/iOS.xcodeproj/project.xcworkspace
 /tests/iOS.xcodeproj/xcuserdata
@@ -60,7 +54,9 @@
 /tests/subprocess/subprocess
 /tests/terminal/terminal_tests
 /tests/testfile_bin.m
+/tests/testfile_bmp.m
 /tests/testfile_ini.m
+/tests/testfile_qoi.m
 /tests/tests
 /tests/tests.3dsx
 /tests/tests.arm9
@@ -71,5 +67,6 @@
 /utils/objfw-new/objfw-new
 /utils/ofarc/ofarc
 /utils/ofdns/ofdns
+/utils/ofgctester/ofgctester
 /utils/ofhash/ofhash
 /utils/ofhttp/ofhttp

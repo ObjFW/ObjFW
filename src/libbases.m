@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -40,9 +40,11 @@ struct Library *LocaleBase;
 #ifdef OF_AMIGAOS4
 struct LocaleIFace *ILocale;
 #endif
-struct Device *TimerBase;
-struct Unit *MicroHZUnit;
-static struct timerequest timeRequest;
+#ifdef OF_AMIGAOS4
+struct TimeRequest OFTimeRequest;
+#else
+struct timerequest OFTimeRequest;
+#endif
 
 OF_CONSTRUCTOR()
 {
@@ -64,18 +66,26 @@ OF_CONSTRUCTOR()
 		@throw [OFInitializationFailedException exception];
 #endif
 
+#ifdef OF_AMIGAOS4
 	if (OpenDevice("timer.device", UNIT_MICROHZ,
-	    &timeRequest.tr_node, 0) != 0)
+	    &OFTimeRequest.Request, 0) != 0)
 		@throw [OFInitializationFailedException exception];
-
-	TimerBase = timeRequest.tr_node.io_Device;
-	MicroHZUnit = timeRequest.tr_node.io_Unit;
+#else
+	if (OpenDevice("timer.device", UNIT_MICROHZ,
+	    &OFTimeRequest.tr_node, 0) != 0)
+		@throw [OFInitializationFailedException exception];
+#endif
 }
 
 OF_DESTRUCTOR()
 {
-	if (TimerBase != NULL)
-		CloseDevice(&timeRequest.tr_node);
+#ifdef OF_AMIGAOS4
+	if (OFTimeRequest.Request.io_Device != NULL)
+		CloseDevice(&OFTimeRequest.Request);
+#else
+	if (OFTimeRequest.tr_node.io_Device != NULL)
+		CloseDevice(&OFTimeRequest.tr_node);
+#endif
 
 #ifdef OF_AMIGAOS4
 	if (ILocale != NULL)

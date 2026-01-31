@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,11 +21,15 @@
 
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
+#import "OFData.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
 static OFString *
@@ -41,19 +45,27 @@ stringFromBuffer(const unsigned char *buffer, size_t length,
 				    length: length];
 }
 
-static void
+static bool
 stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
-    OFStringEncoding encoding)
+    OFStringEncoding encoding, bool truncate)
 {
 	size_t cStringLength = [string cStringLengthWithEncoding: encoding];
+	bool fits = true;
 
-	if (cStringLength > length)
-		@throw [OFOutOfRangeException exception];
+	if (cStringLength > length) {
+		if (truncate) {
+			cStringLength = length;
+			fits = false;
+		} else
+			@throw [OFOutOfRangeException exception];
+	}
 
 	memcpy(buffer, [string cStringWithEncoding: encoding], cStringLength);
 
 	for (size_t i = cStringLength; i < length; i++)
 		buffer[i] = '\0';
+
+	return fits;
 }
 
 static unsigned long long
@@ -95,7 +107,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	self = [super init];
 
 	@try {
-		_type = OFTarArchiveEntryTypeFile;
+		_fileType = OFArchiveEntryFileTypeRegular;
 		_POSIXPermissions =
 		    [[OFNumber alloc] initWithUnsignedShort: 0644];
 		_modificationDate = [[OFDate alloc] init];
@@ -108,6 +120,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
+		   extendedHeader: (OFDictionary *)extendedHeader
 			 encoding: (OFStringEncoding)encoding
 {
 	self = [super init];
@@ -115,6 +128,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *targetFileName;
+		OFData *value;
+		OFMutableDictionary *mutableExtendedHeader;
 
 		_fileName = [stringFromBuffer(header, 100, encoding) copy];
 		_POSIXPermissions = [[OFNumber alloc] initWithUnsignedLongLong:
@@ -126,20 +141,21 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		    octalValueFromBuffer(header + 116, 8, ULONG_MAX)];
 		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
-		_compressedSize =
-		    _uncompressedSize + (512 - _uncompressedSize % 512);
+		_compressedSize = _uncompressedSize;
+		if (_compressedSize % 512 != 0)
+			_compressedSize += 512 - _compressedSize % 512;
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
 		    header + 136, 12, ULLONG_MAX)];
-		_type = header[156];
+		_fileType = header[156];
 
 		targetFileName = stringFromBuffer(header + 157, 100, encoding);
 		if (targetFileName.length > 0)
 			_targetFileName = [targetFileName copy];
 
-		if (_type == '\0')
-			_type = OFTarArchiveEntryTypeFile;
+		if (_fileType == '\0')
+			_fileType = OFArchiveEntryFileTypeRegular;
 
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
@@ -164,6 +180,67 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 			}
 		}
 
+		mutableExtendedHeader = [extendedHeader mutableCopy];
+		_extendedHeader = mutableExtendedHeader;
+
+		if ((value = [_extendedHeader objectForKey: @"size"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			_uncompressedSize = 0;
+			for (size_t i = 0; i < count; i++) {
+				if (items[i] < '0' || items[i] > '9')
+					@throw [OFInvalidFormatException
+					    exception];
+
+				if (_uncompressedSize > ULLONG_MAX / 10 ||
+				    (uint8_t)(items[i] - '0') >
+				    ULLONG_MAX - _uncompressedSize * 10)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				_uncompressedSize *= 10;
+				_uncompressedSize += items[i] - '0';
+			}
+
+			_compressedSize = _uncompressedSize;
+			if (_compressedSize % 512 != 0)
+				_compressedSize += 512 - _compressedSize % 512;
+
+			[mutableExtendedHeader removeObjectForKey: @"size"];
+		}
+
+		if ((value = [_extendedHeader objectForKey: @"path"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			objc_release(_fileName);
+			_fileName = nil;
+
+			_fileName = [[OFString alloc]
+			    initWithUTF8String: items
+					length: count];
+
+			[mutableExtendedHeader removeObjectForKey: @"path"];
+		}
+
+		if ((value =
+		    [_extendedHeader objectForKey: @"linkpath"]) != nil) {
+			const char *items = value.items;
+			size_t count = value.count;
+
+			objc_release(_targetFileName);
+			_targetFileName = nil;
+
+			_targetFileName = [[OFString alloc]
+			    initWithUTF8String: items
+					length: count];
+
+			[mutableExtendedHeader removeObjectForKey: @"linkpath"];
+		}
+
+		[mutableExtendedHeader makeImmutable];
+
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
@@ -183,6 +260,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	objc_release(_targetFileName);
 	objc_release(_ownerAccountName);
 	objc_release(_groupOwnerAccountName);
+	objc_release(_extendedHeader);
 
 	[super dealloc];
 }
@@ -204,7 +282,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
 		copy->_modificationDate = [_modificationDate copy];
-		copy->_type = _type;
+		copy->_fileType = _fileType;
 		copy->_targetFileName = [_targetFileName copy];
 		copy->_ownerAccountName = [_ownerAccountName copy];
 		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
@@ -221,6 +299,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 - (OFString *)fileName
 {
 	return _fileName;
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	return _fileType;
 }
 
 - (OFNumber *)POSIXPermissions
@@ -253,10 +336,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _modificationDate;
 }
 
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (OFTarArchiveEntryType)type
 {
-	return _type;
+	return _fileType;
 }
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 - (OFString *)targetFileName
 {
@@ -283,6 +373,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	return _deviceMinor;
 }
 
+- (OFDictionary OF_GENERIC(OFString *, OFData *) *)extendedHeader
+{
+	return _extendedHeader;
+}
+
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -306,12 +401,13 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	     @"\tGroup owner account name = %@\n"
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
+	     @"\tExtended header = %@\n"
 	     @">",
 	    self.class, _fileName, POSIXPermissions, _ownerAccountID,
 	    _groupOwnerAccountID, _compressedSize, _uncompressedSize,
-	    _modificationDate, _type, _targetFileName,
+	    _modificationDate, _fileType, _targetFileName,
 	    _ownerAccountName, _groupOwnerAccountName, _deviceMajor,
-	    _deviceMinor];
+	    _deviceMinor, _extendedHeader];
 
 	objc_retain(ret);
 
@@ -327,24 +423,47 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	unsigned char buffer[512];
 	unsigned long long modificationDate;
 	uint16_t checksum = 0;
+	OFMutableDictionary *extendedHeader =
+	    objc_autorelease([_extendedHeader mutableCopy]);
 
-	stringToBuffer(buffer, _fileName, 100, encoding);
+	if (extendedHeader == nil)
+		extendedHeader = [OFMutableDictionary dictionary];
+
+	if (!stringToBuffer(buffer, _fileName, 100, encoding, true)) {
+		OFData *data = [OFData
+		    dataWithItems: _fileName.UTF8String
+			    count: _fileName.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"path"];
+	}
 	stringToBuffer(buffer + 100,
 	    [OFString stringWithFormat: @"%06o ",
-	    _POSIXPermissions.unsignedShortValue], 8, OFStringEncodingASCII);
+	    _POSIXPermissions.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
 	stringToBuffer(buffer + 108,
 	    [OFString stringWithFormat: @"%06o ",
-	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
+	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
 	stringToBuffer(buffer + 116,
 	    [OFString stringWithFormat: @"%06o ",
-	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII);
-	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011llo ", _uncompressedSize], 12,
-	    OFStringEncodingASCII);
+	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    false);
+	if (_uncompressedSize > 077777777777) {
+		OFString *string = [OFString
+		    stringWithFormat: @"%zu", _uncompressedSize];
+		OFData *data = [OFData dataWithItems: string.UTF8String
+					       count: string.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"size"];
+
+		stringToBuffer(buffer + 124, @"77777777777 ", 12,
+		    OFStringEncodingASCII, false);
+	} else
+		stringToBuffer(buffer + 124,
+		    [OFString stringWithFormat: @"%011llo ", _uncompressedSize],
+		    12, OFStringEncodingASCII, false);
 	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
 	    [OFString stringWithFormat: @"%011llo", modificationDate],
-	    12, OFStringEncodingASCII);
+	    12, OFStringEncodingASCII, false);
 
 	/*
 	 * During checksumming, the checksum field is expected to be set to 8
@@ -352,19 +471,29 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	 */
 	memset(buffer + 148, ' ', 8);
 
-	buffer[156] = _type;
-	stringToBuffer(buffer + 157, _targetFileName, 100, encoding);
+	if (_fileType > 0xFF)
+		@throw [OFInvalidArgumentException exception];
+
+	buffer[156] = _fileType;
+	if (!stringToBuffer(buffer + 157, _targetFileName, 100, encoding,
+	    true)) {
+		OFData *data = [OFData
+		    dataWithItems: _targetFileName.UTF8String
+			    count: _targetFileName.UTF8StringLength];
+		[extendedHeader setObject: data forKey: @"linkpath"];
+	}
 
 	/* ustar */
 	memcpy(buffer + 257, "ustar\0" "00", 8);
-	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding);
-	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding);
+	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding, false);
+	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding,
+	    false);
 	stringToBuffer(buffer + 329,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
 	stringToBuffer(buffer + 337,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
 	memset(buffer + 345, '\0', 155 + 12);
 
 	/* Fill in the checksum */
@@ -372,7 +501,68 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		checksum += buffer[i];
 	stringToBuffer(buffer + 148,
 	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
-	    OFStringEncodingASCII);
+	    OFStringEncodingASCII, false);
+
+	if (extendedHeader.count > 0 &&
+	    _fileType != OFArchiveEntryFileTypePAXExtendedHeader &&
+	    _fileType != OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
+		OFMutableData *header = [OFMutableData dataWithCapacity: 512];
+		OFMutableTarArchiveEntry *headerEntry;
+
+		for (OFString *key in extendedHeader) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFData *value = [extendedHeader objectForKey: key];
+			size_t length, digits, nextDigitAt;
+			OFString *string;
+
+			/*
+			 * The length contains the length itself. But let's
+			 * first calculate it without it.
+			 */
+			length = 1 + key.UTF8StringLength + 1 +
+			    value.count * value.itemSize + 1;
+
+			/*
+			 * Calculate the number of digits and the next number
+			 * at which we would need another digit.
+			 */
+			digits = 0;
+			nextDigitAt = 1;
+			for (size_t i = length; i > 0; i /= 10) {
+				digits++;
+				nextDigitAt *= 10;
+			}
+
+			length += digits;
+			/*
+			 * See if adding the length made us need an extra
+			 * digit.
+			 */
+			if (length >= nextDigitAt)
+				length++;
+
+			string = [OFString stringWithFormat:
+			    @"%zu %@=", length, key];
+			[header addItems: string.UTF8String
+				   count: string.UTF8StringLength];
+			[header addItems: value.items
+				   count: value.count * value.itemSize];
+			[header addItem: "\n"];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+
+		headerEntry = [OFMutableTarArchiveEntry entryWithFileName:
+		    [OFString stringWithFormat: @"PAX Extended Headers/%@",
+						_fileName]];
+		headerEntry.fileType = OFArchiveEntryFileTypePAXExtendedHeader;
+		headerEntry.uncompressedSize = header.count;
+		[headerEntry of_writeToStream: stream encoding: encoding];
+
+		if (header.count % 512 != 0)
+			[header increaseCountBy: 512 - header.count % 512];
+		[stream writeData: header];
+	}
 
 	[stream writeBuffer: buffer length: sizeof(buffer)];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,7 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 # include <locale.h>
 #endif
 #ifdef HAVE_XLOCALE_H
@@ -76,6 +77,14 @@
 # define strtod __strtod
 #endif
 
+/*
+ * strtod() in dosbox-staging doesn't work correctly on non-x86 hardware.
+ * strtof() and strtold() both seem fine, though.
+ */
+#ifdef OF_DJGPP
+# define strtod strtold
+#endif
+
 #ifndef HAVE_STRTOF
 # define strtof strtod
 #endif
@@ -88,7 +97,8 @@ static struct {
 	Class isa;
 } placeholder;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 static locale_t cLocale;
 #endif
 
@@ -176,16 +186,16 @@ OFStringEncodingParseName(OFString *string)
 	else if ([string isEqual: @"ascii"] || [string isEqual: @"us-ascii"])
 		encoding = OFStringEncodingASCII;
 	else if ([string isEqual: @"iso-8859-1"] ||
-	    [string isEqual: @"iso_8859-1"])
+	    [string isEqual: @"iso_8859-1"] || [string isEqual: @"iso8859-1"])
 		encoding = OFStringEncodingISO8859_1;
 	else if ([string isEqual: @"iso-8859-2"] ||
-	    [string isEqual: @"iso_8859-2"])
+	    [string isEqual: @"iso_8859-2"] || [string isEqual: @"iso8859-2"])
 		encoding = OFStringEncodingISO8859_2;
 	else if ([string isEqual: @"iso-8859-3"] ||
-	    [string isEqual: @"iso_8859-3"])
+	    [string isEqual: @"iso_8859-3"] || [string isEqual: @"iso8859-3"])
 		encoding = OFStringEncodingISO8859_3;
 	else if ([string isEqual: @"iso-8859-15"] ||
-	    [string isEqual: @"iso_8859-15"])
+	    [string isEqual: @"iso_8859-15"] || [string isEqual: @"iso8859-15"])
 		encoding = OFStringEncodingISO8859_15;
 	else if ([string isEqual: @"windows-1250"] ||
 	    [string isEqual: @"cp1250"] || [string isEqual: @"cp-1250"] ||
@@ -411,17 +421,11 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 static bool
 isASCIIWithoutNull(const char *string, size_t length)
 {
-	uint8_t combined = 0;
-	bool containsNull = false;
+	for (size_t i = 0; i < length; i++)
+		if ((unsigned char)string[i] >= 0x80 || string[i] == '\0')
+			return false;
 
-	for (size_t i = 0; i < length; i++) {
-		combined |= string[i];
-
-		if (string[i] == '\0')
-			containsNull = true;
-	}
-
-	return !(combined & ~0x7F) && !containsNull;
+	return true;
 }
 #endif
 
@@ -536,12 +540,14 @@ isASCIIWithoutNull(const char *string, size_t length)
 		}
 #endif
 
-		string = OFAllocObject([OFUTF8String class], length + 1, 1,
-		    &storage);
+		if (encoding == OFStringEncodingUTF8) {
+			string = OFAllocObject([OFUTF8String class],
+			    length + 1, 1, &storage);
 
-		return (id)[string of_initWithUTF8String: cString
-						  length: length
-						 storage: storage];
+			return (id)[string of_initWithUTF8String: cString
+							  length: length
+							 storage: storage];
+		}
 	}
 
 	return (id)[[OFUTF8String alloc] initWithCString: cString
@@ -572,12 +578,14 @@ isASCIIWithoutNull(const char *string, size_t length)
 		}
 #endif
 
-		string = OFAllocObject([OFUTF8String class], cStringLength + 1,
-		    1, &storage);
+		if (encoding == OFStringEncodingUTF8) {
+			string = OFAllocObject([OFUTF8String class],
+			    cStringLength + 1, 1, &storage);
 
-		return (id)[string of_initWithUTF8String: cString
-						  length: cStringLength
-						 storage: storage];
+			return (id)[string of_initWithUTF8String: cString
+							  length: cStringLength
+							 storage: storage];
+		}
 	}
 
 	return (id)[[OFUTF8String alloc] initWithCString: cString
@@ -748,7 +756,8 @@ OF_SINGLETON_METHODS
 
 	object_setClass((id)&placeholder, [OFPlaceholderString class]);
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && (defined(HAVE_STRTOF_L) || \
+    defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -2165,8 +2174,7 @@ OF_SINGLETON_METHODS
 	void *pool;
 	OFString *ret;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	pool = objc_autoreleasePoolPush();
@@ -2278,6 +2286,20 @@ OF_SINGLETON_METHODS
 {
 	OFMutableString *new = objc_autorelease([self mutableCopy]);
 	[new deleteEnclosingWhitespaces];
+	[new makeImmutable];
+	return new;
+}
+
+- (OFString *)stringByReplacingControlCharacters
+{
+	OFMutableString *new;
+
+	if ([self rangeOfCharacterFromSet:
+	    [OFCharacterSet controlCharacterSet]].location == OFNotFound)
+		return self;
+
+	new = objc_autorelease([self mutableCopy]);
+	[new replaceControlCharacters];
 	[new makeImmutable];
 	return new;
 }
@@ -2725,7 +2747,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#if defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_STRTOF_L) || defined(HAVE_USELOCALE))
 	const char *UTF8String = self.UTF8String;
 #else
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
@@ -2751,9 +2774,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	float value;
 
 	errno = 0;
-#if defined(HAVE_STRTOF_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_STRTOF_L)
 	value = strtof_l(UTF8String, &endPtr, cLocale);
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 	locale_t previousLocale = uselocale(cLocale);
 	value = strtof(UTF8String, &endPtr);
 	uselocale(previousLocale);
@@ -2792,7 +2815,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	if ([stripped caseInsensitiveCompare: @"-NAN"] == OFOrderedSame)
 		return -NAN;
 
-#if defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE)
+#if defined(HAVE_NEWLOCALE) && \
+    (defined(HAVE_STRTOD_L) || defined(HAVE_USELOCALE))
 	const char *UTF8String = self.UTF8String;
 #else
 	OFString *decimalSeparator = [OFLocale decimalSeparator];
@@ -2818,9 +2842,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	double value;
 
 	errno = 0;
-#if defined(HAVE_STRTOD_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_STRTOD_L)
 	value = strtod_l(UTF8String, &endPtr, cLocale);
-#elif defined(HAVE_USELOCALE)
+#elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 	locale_t previousLocale = uselocale(cLocale);
 	value = strtod(UTF8String, &endPtr);
 	uselocale(previousLocale);

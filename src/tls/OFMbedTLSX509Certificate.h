@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,7 +32,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*
- * While MbedTLS does have a X.509 certificate type, it is a linked list that
+ * While Mbed TLS does have a X.509 certificate type, it is a linked list that
  * represents a chain. There is no way to remove a certificate from the chain
  * and store it separately. Therefore, it is necessary to store the entire
  * chain and have every wrapped certificate reference it.

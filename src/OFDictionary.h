@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -332,7 +332,7 @@ OF_ASSUME_NONNULL_END
 
 #import "OFMutableDictionary.h"
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(objc_modules)
 /* Required for dictionary literals to work */
 @compatibility_alias NSDictionary OFDictionary;
 #endif

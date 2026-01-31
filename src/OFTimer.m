@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -646,6 +646,9 @@
 	objc_release(_object3);
 	objc_release(_object4);
 
+#ifdef OF_HAVE_BLOCKS
+	_block = NULL;
+#endif
 	_target = nil;
 	_object1 = nil;
 	_object2 = nil;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+/**
+ * @brief ZIP compression method.
+ */
 typedef enum {
+	/** @brief No compression */
 	OFZIPArchiveEntryCompressionMethodNone		=  0,
 	OFZIPArchiveEntryCompressionMethodShrink	=  1,
 	OFZIPArchiveEntryCompressionMethodReduceFactor1 =  2,
@@ -32,7 +36,9 @@ typedef enum {
 	OFZIPArchiveEntryCompressionMethodReduceFactor3 =  4,
 	OFZIPArchiveEntryCompressionMethodReduceFactor4 =  5,
 	OFZIPArchiveEntryCompressionMethodImplode	=  6,
+	/** @brief Deflate */
 	OFZIPArchiveEntryCompressionMethodDeflate	=  8,
+	/** @brief Deflate64 */
 	OFZIPArchiveEntryCompressionMethodDeflate64	=  9,
 	OFZIPArchiveEntryCompressionMethodBZIP2		= 12,
 	OFZIPArchiveEntryCompressionMethodLZMA		= 14,
@@ -155,14 +161,11 @@ typedef enum {
 /**
  * @brief The compression method of the entry.
  *
- * Supported values are:
- * Value                                       | Description
- * --------------------------------------------|---------------
- * OFZIPArchiveEntryCompressionMethodNone      | No compression
- * OFZIPArchiveEntryCompressionMethodDeflate   | Deflate
- * OFZIPArchiveEntryCompressionMethodDeflate64 | Deflate64
+ * See @ref OFZIPArchiveEntryCompressionMethod.
  *
- * Other values may be returned, but the file cannot be extracted then.
+ * Only @ref OFZIPArchiveEntryCompressionMethodNone,
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate and
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate64 can be extracted.
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;

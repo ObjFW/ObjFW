@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,8 +43,8 @@ static const OFNotificationName otherNotificationName =
 @implementation OFNotificationCenterTestClass
 - (void)handleNotification: (OFNotification *)notification
 {
-	OFEnsure([notification.name isEqual: notificationName]);
-	OFEnsure(_expectedObject == nil ||
+	OTAssertEqualObjects(notification.name, notificationName);
+	OTAssert(_expectedObject == nil ||
 	    notification.object == _expectedObject);
 
 	_received++;

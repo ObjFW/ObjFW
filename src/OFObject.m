@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -514,7 +514,15 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return class_createInstance(self, 0);
+	OFObject *instance = class_createInstance(self, 0);
+
+	if OF_UNLIKELY (instance == nil) {
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
+		@throw (id)&allocFailedException;
+	}
+
+	return instance;
 }
 
 + (Class)class

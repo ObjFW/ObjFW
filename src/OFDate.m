@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -56,8 +56,8 @@
 #ifdef OF_MORPHOS
 # include <devices/timer.h>
 # include <ppcinline/timer.h>
-
-extern struct Device *TimerBase;
+# define TimerBase (OFTimeRequest.tr_node.io_Device)
+extern struct timerequest OFTimeRequest;
 #endif
 
 @interface OFPlaceholderDate: OFDate

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int rows;
 
 /**
- * @brief The number of colors supported by the underyling terminal or -1 if
+ * @brief The number of colors supported by the underlying terminal or -1 if
  *	  there is no underlying terminal.
  */
 @property (readonly, nonatomic) int colors;
@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The current foreground color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
- * unsupported.
+ * unsupported. `nil` represents the default color.
  *
  * If the specified color is @ref OFColor#black, @ref OFColor#silver,
  * @ref OFColor#gray, @ref OFColor#white, @ref OFColor#maroon, @ref OFColor#red,
@@ -94,8 +94,8 @@ OF_ASSUME_NONNULL_BEGIN
  * one of the 16 terminal colors will be used which doesn't necessarily match
  * the RGB value of the color. If you want an exact color, create a new
  * @ref OFColor with the RGB value you want. In that case, it will be
- * represented exactly on a truecolor terminal or by the closest color on a 256
- * color terminal.
+ * represented exactly on a true color terminal or by the closest color on a
+ * 256 color terminal.
  */
 @property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *foregroundColor;
 
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The current background color on the underlying terminal.
  *
  * Setting this does nothing if there is no underlying terminal or colors are
- * unsupported.
+ * unsupported. `nil` represents the default color.
  *
  * If the specified color is @ref OFColor#black, @ref OFColor#silver,
  * @ref OFColor#gray, @ref OFColor#white, @ref OFColor#maroon, @ref OFColor#red,
@@ -113,8 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
  * one of the 16 terminal colors will be used which doesn't necessarily match
  * the RGB value of the color. If you want an exact color, create a new
  * @ref OFColor with the RGB value you want. In that case, it will be
- * represented exactly on a truecolor terminal or by the closest color on a 256
- * color terminal.
+ * represented exactly on a true color terminal or by the closest color on a
+ * 256 color terminal.
  */
 @property OF_NULLABLE_PROPERTY (retain, nonatomic) OFColor *backgroundColor;
 
@@ -212,6 +212,18 @@ OF_ASSUME_NONNULL_BEGIN
  * @param position The position to move the cursor to
  */
 - (void)setRelativeCursorPosition: (OFPoint)position;
+
+/**
+ * @brief Sets the terminal's progress indicator.
+ *
+ * @param progress The progress indicate, between 0.0 and 1.0
+ */
+- (void)setProgressIndicator: (float)progress;
+
+/**
+ * @brief Removes the terminal's progress indicator.
+ */
+- (void)removeProgressIndicator;
 @end
 
 #ifdef __cplusplus

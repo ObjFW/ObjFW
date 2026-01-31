@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -63,5 +63,18 @@
 	OTAssertNil([entryStream readLine]);
 
 	OTAssertNil([archive nextEntry]);
+}
+
+- (void)testEntryFileType
+{
+	OFMutableLHAArchiveEntry *entry;
+
+	entry = [OFMutableLHAArchiveEntry entryWithFileName: @"test"];
+	entry.fileType = OFArchiveEntryFileTypeDirectory;
+	OTAssertEqualObjects(entry.fileName, @"test/");
+
+	entry = [OFMutableLHAArchiveEntry entryWithFileName: @"test/"];
+	entry.fileType = OFArchiveEntryFileTypeRegular;
+	OTAssertEqualObjects(entry.fileName, @"test");
 }
 @end

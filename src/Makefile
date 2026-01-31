@@ -14,14 +14,18 @@ LIB_PATCH = ${OBJFW_LIB_PATCH}
 SRCS = OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
+       OFCanvas.m			\
        OFCharacterSet.m			\
        OFColor.m			\
+       OFColorSpace.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
        OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
+       OFDeflate64Stream.m		\
+       OFDeflateStream.m		\
        OFDictionary.m			\
        OFEmbeddedIRIHandler.m		\
        OFEnumerator.m			\
@@ -33,8 +37,9 @@ SRCS = OFApplication.m			\
        OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
-       OFInflate64Stream.m		\
-       OFInflateStream.m		\
+       OFImage.m			\
+       OFImageFormatHandler.m		\
+       OFIndexSet.m			\
        OFInvocation.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\
@@ -50,6 +55,8 @@ SRCS = OFApplication.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
        OFMutableIRI.m			\
+       OFMutableImage.m			\
+       OFMutableIndexSet.m		\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
@@ -187,6 +194,8 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
+	    OFInflate64Stream.h			\
+	    OFInflateStream.h			\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
@@ -201,6 +210,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 
 SRCS += OFASPrintF.m			\
 	OFArchiveIRIHandler.m		\
+	OFBMPImageFormatHandler.m	\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFCRC16.m			\
@@ -224,6 +234,7 @@ SRCS += OFASPrintF.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMutableUTF8String.m		\
+	OFQOIImageFormatHandler.m	\
 	OFRangeCharacterSet.m		\
 	OFSandbox.m			\
 	OFStrFTime.m			\

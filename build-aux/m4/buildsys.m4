@@ -160,7 +160,7 @@ AC_DEFUN([_BUILDSYS_STACK_PROTECTOR_REAL], [
 		OBJCFLAGS="$old_OBJCFLAGS -fstack-protector"
 		OBJCXXFLAGS="$old_OBJCXXFLAGS -fstack-protector"
 		LDFLAGS="$old_LDFLAGS -fstack-protector"
-		
+
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
 				#include <stdio.h>
@@ -173,7 +173,7 @@ AC_DEFUN([_BUILDSYS_STACK_PROTECTOR_REAL], [
 			AC_MSG_RESULT(yes)
 			AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector)
 			AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector)
-		], [	
+		], [
 			AC_MSG_RESULT(no)
 		])
 	])

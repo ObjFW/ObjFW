@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -100,6 +100,12 @@
 			   stringValue: stringValue]);
 }
 
++ (instancetype)elementWithElement: (OFXMLElement *)element
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithElement: element]);
+}
+
 + (instancetype)elementWithXMLString: (OFString *)string
 {
 	return objc_autoreleaseReturnValue(
@@ -163,6 +169,23 @@
 	@try {
 		if (stringValue != nil)
 			self.stringValue = stringValue;
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithElement: (OFXMLElement *)element
+{
+	self = [self initWithName: element->_name
+			namespace: element->_namespace];
+
+	@try {
+		_attributes = [element->_attributes mutableCopy];
+		_namespaces = [element->_namespaces mutableCopy];
+		_children = [element->_children mutableCopy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -882,18 +905,6 @@
 
 - (id)copy
 {
-	OFXMLElement *copy = [[OFXMLElement alloc] of_init];
-	@try {
-		copy->_name = [_name copy];
-		copy->_namespace = [_namespace copy];
-		copy->_attributes = [_attributes mutableCopy];
-		copy->_namespaces = [_namespaces mutableCopy];
-		copy->_children = [_children mutableCopy];
-	} @catch (id e) {
-		objc_release(copy);
-		@throw e;
-	}
-
-	return copy;
+	return [[OFXMLElement alloc] initWithElement: self];
 }
 @end

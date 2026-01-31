@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -153,7 +153,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * use the result outside the scope of the current autorelease pool, you have to
  * copy it.
  */
-@property (readonly, nonatomic) const char *UTF8String;
+@property (readonly, nonatomic) const char *UTF8String OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The number of bytes the string needs in UTF-8 encoding.
@@ -314,7 +314,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is *not* null-terminated.
  */
-@property (readonly, nonatomic) const OFUnichar *characters;
+@property (readonly, nonatomic) const OFUnichar *characters
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The string in UTF-16 encoding with native byte order.
@@ -325,7 +326,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar16 *UTF16String;
+@property (readonly, nonatomic) const OFChar16 *UTF16String
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The length of the string in UTF-16 characters.
@@ -341,7 +343,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  *
  * The returned string is null-terminated.
  */
-@property (readonly, nonatomic) const OFChar32 *UTF32String;
+@property (readonly, nonatomic) const OFChar32 *UTF32String
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The string with leading whitespaces deleted.
@@ -370,6 +373,12 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
 @property (readonly, nonatomic)
     OFString *decomposedStringWithCompatibilityMapping;
 #endif
+
+/**
+ * @brief The string with all control characters replaced with a description of
+ *	  the replaced control character.
+ */
+@property (readonly, nonatomic) OFString *stringByReplacingControlCharacters;
 
 #if defined(OF_WINDOWS) || defined(DOXYGEN)
 /**
@@ -1004,7 +1013,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @throw OFInvalidEncodingException The string cannot be represented in the
  *				     specified encoding
  */
-- (const char *)cStringWithEncoding: (OFStringEncoding)encoding;
+- (const char *)cStringWithEncoding: (OFStringEncoding)encoding
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief Returns the OFString as a C string in the specified encoding,
@@ -1018,7 +1028,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding;
+- (const char *)lossyCStringWithEncoding: (OFStringEncoding)encoding
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief Returns the OFString as an insecure C string (meaning it can contain
@@ -1031,7 +1042,8 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char *)insecureCStringWithEncoding: (OFStringEncoding)encoding;
+- (const char *)insecureCStringWithEncoding: (OFStringEncoding)encoding
+    OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief Returns the number of bytes the string needs in the specified
@@ -1101,7 +1113,7 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * @brief Returns the range of the string in the specified range.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour
+ * @param options Options modifying search behavior
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
  *	   `OFNotFound` as start position if it was not found
@@ -1219,9 +1231,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big or too small to fit into
@@ -1235,9 +1247,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big or too small to fit into
@@ -1251,9 +1263,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big or too small to fit into
@@ -1267,9 +1279,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big or too small to fit into
@@ -1283,9 +1295,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big or too small to fit into
@@ -1299,9 +1311,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big to fit into an
@@ -1315,9 +1327,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big to fit into an
@@ -1331,9 +1343,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big to fit into an
@@ -1347,9 +1359,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big to fit into an
@@ -1364,9 +1376,9 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  * Leading and trailing whitespaces are ignored.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The value of the string in the specified base
  * @throw OFInvalidFormatException The string contains non-number characters
  * @throw OFOutOfRangeException The value is too big to fit into an
@@ -1636,7 +1648,7 @@ OF_ASSUME_NONNULL_END
 #import "OFString+XMLEscaping.h"
 #import "OFString+XMLUnescaping.h"
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(objc_modules)
 /*
  * Very *ugly* hack required for string boxing literals to work.
  *

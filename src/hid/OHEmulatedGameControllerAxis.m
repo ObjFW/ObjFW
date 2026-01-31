@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "config.h"
+#include "config.h"
 
 #import "OHEmulatedGameControllerAxis.h"
 #import "OHGameControllerButton.h"

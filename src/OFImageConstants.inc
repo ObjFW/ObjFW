@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,19 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#include "config.h"
 
-#include <Security/SecureTransport.h>
+#import "OFImage.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
-OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
-{
-	SSLContextRef _context;
-	bool _server;
-	OFString *_host;
-}
-@end
-
-OF_ASSUME_NONNULL_END
+const OFImageFormat OFImageFormatBMP = @"OFImageFormatBMP";
+const OFImageFormat OFImageFormatGIF = @"OFImageFormatGIF";
+const OFImageFormat OFImageFormatJPEG = @"OFImageFormatJPEG";
+const OFImageFormat OFImageFormatPNG = @"OFImageFormatPNG";
+const OFImageFormat OFImageFormatQOI = @"OFImageFormatQOI";

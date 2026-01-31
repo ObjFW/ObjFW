@@ -2,7 +2,6 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}		\
 	  ${SUBPROCESS}		\
-	  gamecontroller	\
 	  ${OBJC_SYNC}		\
 	  terminal
 
@@ -15,7 +14,9 @@ CLEAN = EBOOT.PBP			\
 	${PROG_NOINST}.rpx		\
 	big_dictionary_msgpack_gz.m	\
 	testfile_bin.m			\
-	testfile_ini.m
+	testfile_bmp.m			\
+	testfile_ini.m			\
+	testfile_qoi.m
 DISTCLEAN = Info.plist
 
 PROG_NOINST = tests${PROG_SUFFIX}
@@ -23,11 +24,14 @@ STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m			\
        OFArrayTests.m				\
        ${OF_BLOCK_TESTS_M}			\
+       OFCanvasTests.m				\
        OFCharacterSetTests.m			\
        OFColorTests.m				\
        OFConcreteArrayTests.m			\
+       OFConcreteDataTests.m			\
        OFConcreteDictionaryTests.m		\
        OFConcreteMutableArrayTests.m		\
+       OFConcreteMutableDataTests.m		\
        OFConcreteMutableDictionaryTests.m	\
        OFConcreteMutableSetTests.m		\
        OFConcreteSetTests.m			\
@@ -38,6 +42,8 @@ SRCS = ForwardingTests.m			\
        OFHMACTests.m				\
        OFINIFileTests.m				\
        OFIRITests.m				\
+       OFImageTests.m				\
+       OFIndexSetTests.m			\
        OFInvocationTests.m			\
        OFJSONTests.m				\
        OFLHAArchiveTests.m			\
@@ -50,6 +56,8 @@ SRCS = ForwardingTests.m			\
        OFMutableArrayTests.m			\
        OFMutableDataTests.m			\
        OFMutableDictionaryTests.m		\
+       OFMutableImageTests.m			\
+       OFMutableIndexSetTests.m			\
        OFMutableSetTests.m			\
        OFMutableStringTests.m			\
        OFMutableUTF8StringTests.m		\
@@ -58,6 +66,8 @@ SRCS = ForwardingTests.m			\
        OFObjectTests.m				\
        OFPBKDF2Tests.m				\
        OFPropertyListTests.m			\
+       OFRangeTests.m				\
+       OFRectTests.m				\
        OFScryptTests.m				\
        OFSetTests.m				\
        OFStreamTests.m				\
@@ -81,7 +91,9 @@ SRCS = ForwardingTests.m			\
        ${USE_SRCS_WINDOWS}			\
        big_dictionary_msgpack_gz.m		\
        testfile_bin.m				\
-       testfile_ini.m
+       testfile_bmp.m				\
+       testfile_ini.m				\
+       testfile_qoi.m
 SRCS_FILES = OFFileManagerTests.m
 SRCS_MODULES = OFModuleTests.m
 SRCS_SOCKETS = OFDNSResolverTests.m		\
@@ -114,7 +126,11 @@ big_dictionary_msgpack_gz.m: big_dictionary.msgpack.gz
 	../utils/objfw-embed $? $? $@
 testfile_bin.m: testfile.bin
 	../utils/objfw-embed $? $? $@
+testfile_bmp.m: testfile.bmp
+	../utils/objfw-embed $? $? $@
 testfile_ini.m: testfile.ini
+	../utils/objfw-embed $? $? $@
+testfile_qoi.m: testfile.qoi
 	../utils/objfw-embed $? $? $@
 
 .PHONY: run run-on-ios run-on-android
@@ -131,7 +147,7 @@ run:
 	rm -f objfwhid${OBJFWHID_LIB_MAJOR}.dll
 	rm -f libobjfwhid.${OBJFWHID_LIB_MAJOR}.dylib
 	rm -f libobjfwbridge.${OBJFWBRIDGE_LIB_MAJOR}.dylib
-	rm -f ${OBJFWRT_AMIGA_LIB}
+	rm -f "${OBJFWRT_AMIGA_LIB}"
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \

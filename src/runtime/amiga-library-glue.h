@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -86,7 +86,7 @@ extern bool glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnu
 extern bool glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
 extern _Nullable objc_uncaught_exception_handler glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler);
 extern void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward);
-extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler);
+extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable handler);
 #if defined(OF_MORPHOS)
 extern void glue__objc_zeroWeakReferences(id _Nullable value);
 #endif

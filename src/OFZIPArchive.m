@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,19 +25,19 @@
 
 #import "OFZIPArchive.h"
 #import "OFZIPArchive+Private.h"
-#import "OFZIPArchiveEntry.h"
-#import "OFZIPArchiveEntry+Private.h"
 #import "OFArchiveIRIHandler.h"
 #import "OFArray.h"
 #import "OFCRC32.h"
 #import "OFData.h"
+#import "OFDeflate64Stream.h"
+#import "OFDeflateStream.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
-#import "OFInflate64Stream.h"
-#import "OFInflateStream.h"
 #import "OFSeekableStream.h"
 #import "OFStream.h"
+#import "OFZIPArchiveEntry.h"
+#import "OFZIPArchiveEntry+Private.h"
 
 #import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
@@ -757,12 +757,10 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			OFRange range =
 			    OFMakeRange(ZIP64Index - 4, ZIP64Size + 4);
 
-			if (_uncompressedSize == 0xFFFFFFFF)
-				_uncompressedSize = _OFZIPArchiveReadField64(
-				    &ZIP64, &ZIP64Size);
-			if (_compressedSize == 0xFFFFFFFF)
-				_compressedSize = _OFZIPArchiveReadField64(
-				    &ZIP64, &ZIP64Size);
+			_uncompressedSize = _OFZIPArchiveReadField64(
+			    &ZIP64, &ZIP64Size);
+			_compressedSize = _OFZIPArchiveReadField64(
+			    &ZIP64, &ZIP64Size);
 
 			if (ZIP64Size > 0)
 				@throw [OFInvalidFormatException exception];
@@ -794,9 +792,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry
 {
-	if (_compressionMethod != entry.compressionMethod ||
-	    _lastModifiedFileTime != entry.of_lastModifiedFileTime ||
-	    _lastModifiedFileDate != entry.of_lastModifiedFileDate)
+	if (_compressionMethod != entry.compressionMethod)
 		return false;
 
 	if (!(_generalPurposeBitFlag & (1u << 3)))
@@ -828,12 +824,14 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 			_decompressedStream = objc_retain(_archive->_stream);
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate:
-			_decompressedStream = [[OFInflateStream alloc]
-			    initWithStream: _archive->_stream];
+			_decompressedStream = [[OFDeflateStream alloc]
+			    initWithStream: _archive->_stream
+				      mode: @"r"];
 			break;
 		case OFZIPArchiveEntryCompressionMethodDeflate64:
-			_decompressedStream = [[OFInflate64Stream alloc]
-			    initWithStream: _archive->_stream];
+			_decompressedStream = [[OFDeflate64Stream alloc]
+			    initWithStream: _archive->_stream
+				      mode: @"r"];
 			break;
 		default:
 			@throw [OFNotImplementedException

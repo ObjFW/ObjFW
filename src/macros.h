@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -495,33 +495,22 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	static void __attribute__((__destructor__(prio)))	\
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
-static OF_INLINE uint16_t OF_CONST_FUNC
-_OFByteSwap16Const(uint16_t i)
-{
-	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
-}
-
-static OF_INLINE uint32_t OF_CONST_FUNC
-_OFByteSwap32Const(uint32_t i)
-{
-	return (i & UINT32_C(0xFF000000)) >> 24 |
-	    (i & UINT32_C(0x00FF0000)) >> 8 |
-	    (i & UINT32_C(0x0000FF00)) << 8 |
-	    (i & UINT32_C(0x000000FF)) << 24;
-}
-
-static OF_INLINE uint64_t OF_CONST_FUNC
-_OFByteSwap64Const(uint64_t i)
-{
-	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
-	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
-	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
-	    (i & UINT64_C(0x000000FF00000000)) >> 8 |
-	    (i & UINT64_C(0x00000000FF000000)) << 8 |
-	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
-	    (i & UINT64_C(0x000000000000FF00)) << 40 |
-	    (i & UINT64_C(0x00000000000000FF)) << 56;
-}
+#define _OFByteSwap16Const(i)						\
+	(((i) & UINT16_C(0xFF00)) >> 8 | ((i) & UINT16_C(0x00FF)) << 8)
+#define _OFByteSwap32Const(i)				\
+	(((i) & UINT32_C(0xFF000000)) >> 24 |		\
+	    ((i) & UINT32_C(0x00FF0000)) >>  8 |	\
+	    ((i) & UINT32_C(0x0000FF00)) <<  8 |	\
+	    ((i) & UINT32_C(0x000000FF)) << 24)
+#define _OFByteSwap64Const(i)					\
+	(((i) & UINT64_C(0xFF00000000000000)) >> 56 |		\
+	    ((i) & UINT64_C(0x00FF000000000000)) >> 40 |	\
+	    ((i) & UINT64_C(0x0000FF0000000000)) >> 24 |	\
+	    ((i) & UINT64_C(0x000000FF00000000)) >>  8 |	\
+	    ((i) & UINT64_C(0x00000000FF000000)) <<  8 |	\
+	    ((i) & UINT64_C(0x0000000000FF0000)) << 24 |	\
+	    ((i) & UINT64_C(0x000000000000FF00)) << 40 |	\
+	    ((i) & UINT64_C(0x00000000000000FF)) << 56)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
 _OFByteSwap16NonConst(uint16_t i)
@@ -964,6 +953,78 @@ OFByteSwapDouble(double d)
     (((value) + (pow2) - 1) & ~((pow2) - 1))
 
 #define OF_ULONG_BIT (sizeof(unsigned long) * CHAR_BIT)
+
+#if defined(OF_HAVE__FLOAT16) || defined(DOXYGEN)
+/**
+ * @brief A type for 16 bit floating point numbers.
+ */
+__extension__ typedef _Float16 OFFloat16;
+
+static OF_INLINE OFFloat16
+OFFloat16FromFloat(float value)
+{
+	return value;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(OFFloat16 value)
+{
+	return value;
+}
+#else
+typedef uint16_t OFFloat16;
+
+static OF_INLINE OFFloat16
+OFFloat16FromFloat(float value)
+{
+	uint32_t uint32 = OFBitConvertFloatToUInt32(value);
+	uint16_t uint16;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint32 = OFByteSwap32(uint32);
+# endif
+
+	uint16 = (uint32 >> 16) & 0x8000;
+
+	if (uint32 & 0x7F800000)
+		uint16 |= (((uint32 & 0x7F800000) - 0x38000000) >> 13) & 0x7C00;
+
+	uint16 |= (uint32 >> 13) & 0x3FF;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint16 = OFByteSwap16(uint16);
+# endif
+
+	return uint16;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(OFFloat16 value)
+{
+	uint32_t uint32;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	value = OFByteSwap16(value);
+# endif
+
+	uint32 = (value & 0x8000) << 16;
+
+	if (value & 0x7C00)
+		uint32 |= (((value & 0x7C00) + 0x1C000) & 0x3FC00) << 13;
+
+	uint32 |= (value & 0x3FF) << 13;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint32 = OFByteSwap32(uint32);
+# endif
+
+	return OFBitConvertUInt32ToFloat(uint32);
+}
+#endif
 
 static OF_INLINE bool
 OFBitSetIsSet(unsigned long *_Nonnull storage, size_t idx)

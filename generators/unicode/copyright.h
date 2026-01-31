@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +21,7 @@
 
 #define COPYRIGHT							\
     @"/*\n"								\
-    @" * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>\n"	\
+    @" * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>\n"	\
     @" *\n"								\
     @" * All rights reserved.\n"					\
     @" *\n"								\

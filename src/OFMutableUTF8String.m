@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -521,7 +521,7 @@
 - (void)deleteCharactersInRange: (OFRange)range
 {
 	size_t start = range.location;
-	size_t end = range.location + range.length;
+	size_t end = OFEndOfRange(range);
 
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
 		@throw [OFOutOfRangeException exception];
@@ -560,7 +560,7 @@
 		      withString: (OFString *)replacement
 {
 	size_t start = range.location;
-	size_t end = range.location + range.length;
+	size_t end = OFEndOfRange(range);
 	size_t newCStringLength, newLength;
 	const char *replacementString;
 	size_t replacementLength;
@@ -665,8 +665,7 @@
 	if (string == nil || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {

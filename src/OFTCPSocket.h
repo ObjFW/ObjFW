@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    `nil` on success
  */
 typedef void (^OFTCPSocketAsyncConnectBlock)(id _Nullable exception)
-    OF_DEPRECATED(ObjFW, 1, 2, "Use OFTCPSocketConnecetedHandler instead");
+    OF_DEPRECATED(ObjFW, 1, 2, "Use OFTCPSocketConnectedHandler instead");
 
 /**
  * @brief A handler which is called when the socket connected.

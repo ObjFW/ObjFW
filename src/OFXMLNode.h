@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -99,9 +99,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @deprecated Use `[node.stringValue longLongValueWithBase:]` instead.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The contents of the receiver as a `long long` value in the specified
  *	   base
  */
@@ -116,11 +116,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @deprecated Use `[node.stringValue unsignedLongLongValueWithBase:]` instead.
  *
  * @param base The base to use. If the base is 0, base 16 is assumed if the
- * 	       string starts with 0x (after stripping white spaces). If the
- * 	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
- * 	       assumed.
+ *	       string starts with 0x (after stripping white spaces). If the
+ *	       string starts with 0, base 8 is assumed. Otherwise, base 10 is
+ *	       assumed.
  * @return The contents of the receiver as an `unsigned long long` value in the
- * 	   specified base
+ *	   specified base
  */
 - (unsigned long long)unsignedLongLongValueWithBase: (unsigned char)base
     OF_DEPRECATED(ObjFW, 1, 3,

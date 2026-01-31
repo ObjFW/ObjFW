@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,7 +53,7 @@
 # include <netat/ddp.h>
 # include <sys/ioctl.h>
 
-/* Unfortulately, there is no struct for the following in userland headers */
+/* Unfortunately, there is no struct for the following in userland headers */
 struct ATInterfaceConfig {
 	char interfaceName[16];
 	unsigned int flags;
@@ -165,7 +165,7 @@ struct ATInterfaceConfig {
 
 #ifdef OF_MACOS
 	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
-	    (socklen_t)sizeof(one)) != 0 || ioctl(_socket, _IOWR('a', 2,
+	    (socklen_t)sizeof(one)) != 0 || ioctlsocket(_socket, _IOWR('a', 2,
 	    struct ATInterfaceConfig), &config) != 0)
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network

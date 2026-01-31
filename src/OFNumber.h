@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -378,7 +378,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_ASSUME_NONNULL_END
 
-#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(objc_modules)
 /* Required for number literals to work */
 @compatibility_alias NSNumber OFNumber;
 #endif

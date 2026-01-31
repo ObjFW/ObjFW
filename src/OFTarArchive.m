@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,6 +27,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFArchiveIRIHandler.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFIRI.h"
 #import "OFIRIHandler.h"
@@ -76,6 +77,57 @@ OF_DIRECT_MEMBERS
 			    stream: (OFStream *)stream
 			     entry: (OFTarArchiveEntry *)entry;
 @end
+
+static void
+parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
+{
+	for (;;) {
+		uint8_t byte;
+		size_t size, consumed = 0;
+		OFMutableData *name;
+		OFData *value;
+
+		if ([stream readIntoBuffer: &byte length: 1] == 0)
+			break;
+
+		if (byte < '0' || byte > '9')
+			@throw [OFInvalidFormatException exception];
+
+		size = byte - '0';
+		consumed++;
+
+		while ((byte = [stream readInt8]) != ' ') {
+			if (byte < '0' || byte > '9')
+				@throw [OFInvalidFormatException exception];
+
+			if (size > SIZE_MAX / 10 ||
+			    (uint8_t)(byte - '0') > SIZE_MAX - size * 10)
+				@throw [OFOutOfRangeException exception];
+
+			size *= 10;
+			size += byte - '0';
+			consumed++;
+		}
+		consumed++;
+
+		name = [OFMutableData data];
+		while ((byte = [stream readInt8]) != '=')
+			[name addItem: &byte];
+		consumed += name.count + 1;
+
+		if (consumed + 1 > size)
+			@throw [OFOutOfRangeException exception];
+
+		value = [stream readDataWithCount: size - consumed - 1];
+
+		[header setObject: value
+			   forKey: [OFString stringWithUTF8String: name.items
+							   length: name.count]];
+
+		if ([stream readInt8] != '\n')
+			@throw [OFInvalidFormatException exception];
+	}
+}
 
 @implementation OFTarArchive
 @synthesize encoding = _encoding;
@@ -175,6 +227,7 @@ OF_DIRECT_MEMBERS
 {
 	[self close];
 
+	objc_release(_globalExtendedHeader);
 	objc_release(_currentEntry);
 
 	[super dealloc];
@@ -233,7 +286,54 @@ OF_DIRECT_MEMBERS
 
 	_currentEntry = [[OFTarArchiveEntry alloc]
 	    of_initWithHeader: (unsigned char *)buffer
+	       extendedHeader: _globalExtendedHeader
 		     encoding: _encoding];
+
+	while (_currentEntry.fileType ==
+	    OFArchiveEntryFileTypePAXExtendedHeader ||
+	    _currentEntry.fileType ==
+	    OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableDictionary *extendedHeader;
+
+		if (_currentEntry.fileType ==
+		    OFArchiveEntryFileTypePAXGlobalExtendedHeader) {
+			if (_globalExtendedHeader == nil)
+				_globalExtendedHeader =
+				    [[OFMutableDictionary alloc] init];
+
+			extendedHeader = _globalExtendedHeader;
+		} else
+			extendedHeader = objc_autorelease(
+			    [_globalExtendedHeader mutableCopy]);
+
+		if (extendedHeader == nil)
+			extendedHeader = [OFMutableDictionary dictionary];
+
+		parsePAXExtendedHeader(
+		    [self streamForReadingCurrentEntry], extendedHeader);
+
+		[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
+		[_lastReturnedStream close];
+		_lastReturnedStream = nil;
+
+		[_stream readIntoBuffer: buffer exactLength: 512];
+
+		empty = true;
+		for (size_t i = 0; i < 512 / sizeof(uint32_t); i++)
+			if (buffer[i] != 0)
+				empty = false;
+
+		if (empty)
+			@throw [OFInvalidFormatException exception];
+
+		_currentEntry = [[OFTarArchiveEntry alloc]
+		    of_initWithHeader: (unsigned char *)buffer
+		       extendedHeader: extendedHeader
+			     encoding: _encoding];
+
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return _currentEntry;
 }

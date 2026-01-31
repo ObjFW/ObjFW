@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,9 +22,10 @@
 #import "OFGZIPStream.h"
 #import "OFCRC32.h"
 #import "OFDate.h"
-#import "OFInflateStream.h"
+#import "OFDeflateStream.h"
 
 #import "OFChecksumMismatchException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -50,10 +51,14 @@
 	self = [super init];
 
 	@try {
-		if (![mode isEqual: @"r"])
-			@throw [OFNotImplementedException
-			    exceptionWithSelector: _cmd
-					   object: nil];
+		if (![mode isEqual: @"r"]) {
+			if ([mode isEqual: @"w"])
+				@throw [OFNotImplementedException
+				    exceptionWithSelector: _cmd
+						   object: nil];
+
+			@throw [OFInvalidArgumentException exception];
+		}
 
 		_stream = objc_retain(stream);
 		_operatingSystemMadeOn = OFGZIPStreamOperatingSystemUnknown;
@@ -71,7 +76,7 @@
 	if (_stream != nil)
 		[self close];
 
-	objc_release(_inflateStream);
+	objc_release(_deflateStream);
 	objc_release(_modificationDate);
 
 	[super dealloc];
@@ -87,8 +92,8 @@
 		uint32_t CRC32, uncompressedSize;
 
 		/*
-		 * The inflate stream might have overread, causing _stream to
-		 * be at the end, but the inflate stream will unread it once it
+		 * The deflate stream might have overread, causing _stream to
+		 * be at the end, but the deflate stream will unread it once it
 		 * has reached the end. Hence only check it if the state is not
 		 * OFGZIPStreamStateData.
 		 */
@@ -240,12 +245,13 @@
 			_state++;
 			break;
 		case OFGZIPStreamStateData:
-			if (_inflateStream == nil)
-				_inflateStream = [[OFInflateStream alloc]
-				    initWithStream: _stream];
+			if (_deflateStream == nil)
+				_deflateStream = [[OFDeflateStream alloc]
+				    initWithStream: _stream
+					      mode: @"r"];
 
-			if (!_inflateStream.atEndOfStream) {
-				size_t bytesRead = [_inflateStream
+			if (!_deflateStream.atEndOfStream) {
+				size_t bytesRead = [_deflateStream
 				    readIntoBuffer: buffer
 					    length: length];
 
@@ -255,8 +261,8 @@
 				return bytesRead;
 			}
 
-			objc_release(_inflateStream);
-			_inflateStream = nil;
+			objc_release(_deflateStream);
+			_deflateStream = nil;
 
 			_state++;
 			break;
@@ -320,11 +326,11 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	/*
-	 * The inflate stream might have overread, causing _stream to be at the
-	 * end, but the inflate stream will unread it once it has reached the
+	 * The deflate stream might have overread, causing _stream to be at the
+	 * end, but the deflate stream will unread it once it has reached the
 	 * end.
 	 */
-	if (_state == OFGZIPStreamStateData && !_inflateStream.atEndOfStream)
+	if (_state == OFGZIPStreamStateData && !_deflateStream.atEndOfStream)
 		return false;
 
 	return _stream.atEndOfStream;
@@ -333,7 +339,7 @@
 - (bool)lowlevelHasDataInReadBuffer
 {
 	if (_state == OFGZIPStreamStateData)
-		return _inflateStream.hasDataInReadBuffer;
+		return _deflateStream.hasDataInReadBuffer;
 	else
 		return _stream.hasDataInReadBuffer;
 }

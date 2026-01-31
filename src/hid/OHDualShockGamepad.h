@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,23 +17,25 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-
-#ifndef OF_IOS
-# include <Security/SecKeychain.h>
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
+/**
+ * @class OHDualShockGamepad OHDualShockGamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Sony DualShock 1 or 2.
+ */
 OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportKeychain: OFObject
+@interface OHDualShockGamepad: OFObject <OHExtendedGamepad>
 {
-	SecKeychainRef _keychain;
+	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
+	    *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
 }
 
-@property (readonly, nonatomic) SecKeychainRef keychain;
-
-+ (instancetype)temporaryKeychain;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
-#endif

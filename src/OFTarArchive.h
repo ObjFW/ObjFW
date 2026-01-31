@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFIRI;
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFStream;
 
 /**
@@ -37,6 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_stream;
 	uint_least8_t _mode;
 	OFStringEncoding _encoding;
+	OFMutableDictionary *_globalExtendedHeader;
 	OFTarArchiveEntry *_Nullable _currentEntry;
 #ifdef OF_TAR_ARCHIVE_M
 @public

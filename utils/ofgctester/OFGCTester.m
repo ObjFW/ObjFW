@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,6 +50,8 @@ static size_t buttonsPerLine = 3;
 static size_t buttonsPerLine = 5;
 #endif
 
+static sig_atomic_t SIGINTReceived = false;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS) || \
     defined(OF_NINTENDO_SWITCH)
 # define red maroon
@@ -63,7 +65,14 @@ static size_t buttonsPerLine = 5;
 # undef id
 #endif
 
-@interface GameControllerTests: OFObject <OFApplicationDelegate>
+#ifdef OF_AMIGAOS
+const char *VER = "$VER: ofgctester "
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
+    "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
+    "\xA9 2008-2026 Jonathan Schleifer";
+#endif
+
+@interface OFGCTester: OFObject <OFApplicationDelegate>
 {
 	OFArray OF_GENERIC(OHGameController *) *_controllers;
 	OFDate *_lastControllersUpdate;
@@ -71,7 +80,7 @@ static size_t buttonsPerLine = 5;
 }
 @end
 
-OF_APPLICATION_DELEGATE(GameControllerTests)
+OF_APPLICATION_DELEGATE(OFGCTester)
 
 static void
 printProfile(id <OHGameControllerProfile> profile)
@@ -231,11 +240,17 @@ printProfile(id <OHGameControllerProfile> profile)
 		[OFStdOut writeString: @"\n"];
 }
 
-@implementation GameControllerTests
+@implementation OFGCTester
 - (void)updateOutput
 {
 	OHLeftJoyCon *leftJoyCon = nil;
 	OHRightJoyCon *rightJoyCon = nil;
+
+	if (SIGINTReceived) {
+		OFStdOut.cursorVisible = true;
+		[OFStdOut reset];
+		[OFApplication terminate];
+	}
 
 	if (_lastControllersUpdate == nil ||
 	    -[_lastControllersUpdate timeIntervalSinceNow] > 1) {
@@ -250,7 +265,7 @@ printProfile(id <OHGameControllerProfile> profile)
 		[OFStdOut clear];
 	}
 
-	[OFStdOut setCursorPosition: OFMakePoint(0, 0)];
+	[OFStdOut setCursorPosition: OFMakePoint(0.0f, 0.0f)];
 
 	for (OHGameController *controller in _controllers) {
 		id <OHGameControllerProfile> profile = controller.profile;
@@ -298,6 +313,8 @@ printProfile(id <OHGameControllerProfile> profile)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+	OFStdOut.cursorVisible = false;
+
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)
 	[OFStdIOStream setUpConsole];
 #endif
@@ -312,10 +329,15 @@ printProfile(id <OHGameControllerProfile> profile)
 		objc_autoreleasePoolPop(pool);
 	}
 #else
-	[OFTimer scheduledTimerWithTimeInterval: 1.f / 60.f
+	[OFTimer scheduledTimerWithTimeInterval: 1.0f / 60.0f
 					 target: self
 				       selector: @selector(updateOutput)
 					repeats: true];
 #endif
+}
+
+- (void)applicationDidReceiveSIGINT
+{
+	SIGINTReceived = true;
 }
 @end

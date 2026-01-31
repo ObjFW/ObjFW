@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,7 +50,7 @@ _object_isTaggedPointer_fast(id object)
 	return pointer & 1;
 }
 
-/* Inlined and unncessary checks dropped for performance. */
+/* Inlined and unnecessary checks dropped for performance. */
 static OF_INLINE Class
 _object_getClass_fast(id object_)
 {

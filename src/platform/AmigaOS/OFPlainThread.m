@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -142,7 +142,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			ADD_TAG(NP_StackSize,
 			    ((struct Process *)FindTask(NULL))->pr_StackSize)
 
-		ADD_TAG(TAG_DONE, 0)
+		ADD_TAG(TAG_END, 0)
 #undef ADD_TAG
 
 		(*thread)->task = (struct Task *)CreateNewProc(tags.items);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param IRI The IRI whose protocol is unsupported
  * @return A new, autoreleased unsupported protocol exception
  */
-+ (instancetype)exceptionWithIRI: (nullable OFIRI*)IRI;
++ (instancetype)exceptionWithIRI: (nullable OFIRI *)IRI;
 
 /**
  * @brief Initializes an already allocated unsupported protocol exception
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param IRI The IRI whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- (instancetype)initWithIRI: (nullable OFIRI*)IRI OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithIRI: (nullable OFIRI *)IRI OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -51,24 +51,48 @@ indent(OFString *string)
 static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = entry.POSIXPermissions;
 
 	if (POSIXPermissions != nil) {
-		OFFileAttributes attributes;
-
 		POSIXPermissions = [OFNumber numberWithUnsignedShort:
 		    POSIXPermissions.unsignedShortValue & 0777];
-		attributes = [OFDictionary
-		    dictionaryWithObject: POSIXPermissions
-				  forKey: OFFilePOSIXPermissions];
-
-		[[OFFileManager defaultManager] setAttributes: attributes
-						 ofItemAtPath: path];
+		[attributes setObject: POSIXPermissions
+			       forKey: OFFilePOSIXPermissions];
 	}
 #endif
+
+#if defined(OF_AMIGAOS)
+	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
+	OFString *amigaComment = entry.amigaComment;
+
+	/*
+	 * Header level 0 does not store the operating system identifier, so
+	 * for header level 0, we don't know what is actually stored in the
+	 * MS-DOS attributes, as Amiga LHA stored the Amiga protection bits in
+	 * there. However, as we are running on an AmigaOS-like system, the
+	 * user is most likely trying to extract a file made by Amiga LHA.
+	 */
+	if (MSDOSAttributes != nil && (entry.operatingSystemIdentifier == 'A' ||
+	    entry.headerLevel == 0))
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileAmigaProtection];
+
+	if (amigaComment != nil)
+		[attributes setObject: amigaComment forKey: OFFileAmigaComment];
+#elif defined(OF_MSDOS)
+	OFNumber *MSDOSAttributes = entry.MSDOSAttributes;
+	if (MSDOSAttributes != nil)
+		[attributes setObject: MSDOSAttributes
+			       forKey: OFFileMSDOSAttributes];
+#endif
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
 }
 
 static void
@@ -142,7 +166,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *modificationDate = [entry.modificationDate
@@ -230,6 +255,32 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				    @"Group: %[name]",
 				    @"name", entry.groupOwnerAccountName)];
 			}
+			if (entry.MSDOSAttributes != nil) {
+				OFString *attributesString = [OFString
+				    stringWithFormat: @"%04lx",
+				    entry.MSDOSAttributes.unsignedLongValue];
+
+				if (entry.operatingSystemIdentifier == 'A') {
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_amiga_protection",
+					    @"Amiga protection bits: %[prot]",
+					    @"prot", attributesString)];
+				} else {
+					[OFStdOut writeString: @"\t"];
+					[OFStdOut writeLine: OF_LOCALIZED(
+					    @"list_msdos_attributes",
+					    @"MS-DOS attributes: %[attr]",
+					    @"attr", attributesString)];
+				}
+			}
+			if (entry.amigaComment != nil) {
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_comment",
+				    @"Amiga comment: %[comment]",
+				    @"comment", entry.amigaComment)];
+			}
 
 			if (app->_outputLevel >= 2) {
 				OFString *headerLevel = [OFString
@@ -276,7 +327,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
-	OFMutableArray *delayedModificationDates = [OFMutableArray array];
+	OFMutableArray *delayed = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFLHAArchiveEntry *entry;
@@ -316,13 +367,14 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 		if ([fileName hasSuffix: @"/"]) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
-			setPermissions(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
-			 * have been created.
+			 * have been created. Also, restricting permissions
+			 * (e.g. removing write permissions) before all files
+			 * in a directory have been written would also fail.
 			 */
-			[delayedModificationDates addObject:
+			[delayed addObject:
 			    [OFPair pairWithFirstObject: outFileName
 					   secondObject: entry]];
 
@@ -347,7 +399,17 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
+		 */
+#if !defined(OF_AMIGAOS) && !defined(OF_MSDOS)
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -355,8 +417,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 			[app checkForCancellation];
 
 			length = [app copyBlockFromStream: stream
-							 toStream: output
-							 fileName: fileName];
+						 toStream: output
+						 fileName: fileName];
 
 			if (length < 0) {
 				app->_exitStatus = 1;
@@ -385,6 +447,17 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 *
+		 * On MS-DOS, they need to be set last as otherwise the archive
+		 * bit is reset.
+		 */
+#if defined(OF_AMIGAOS) || defined(OF_MSDOS)
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
@@ -398,8 +471,10 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	for (OFPair *pair in delayedModificationDates)
+	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
+		setPermissions(pair.firstObject, pair.secondObject);
+	}
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -505,6 +580,28 @@ outer_loop_end:
 		    [attributes objectForKey: OFFileOwnerAccountName];
 		entry.groupOwnerAccountName =
 		    [attributes objectForKey: OFFileGroupOwnerAccountName];
+#endif
+
+#if defined(OF_AMIGAOS)
+		OFNumber *amigaProtection;
+
+		entry.operatingSystemIdentifier = 'A';
+
+		amigaProtection =
+		    [attributes objectForKey: OFFileAmigaProtection];
+		if (amigaProtection != nil) {
+			entry.operatingSystemIdentifier = 'A';
+			entry.MSDOSAttributes = amigaProtection;
+		}
+
+		entry.amigaComment =
+		    [attributes objectForKey: OFFileAmigaComment];
+#elif defined(OF_MSDOS)
+		entry.operatingSystemIdentifier = 'M';
+		entry.MSDOSAttributes =
+		    [attributes objectForKey: OFFileMSDOSAttributes];
+#else
+		entry.operatingSystemIdentifier = 'U';
 #endif
 
 		if ([type isEqual: OFFileTypeDirectory]) {

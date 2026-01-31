@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +16,8 @@
  * version 3.0 along with this program. If not, see
  * <https://www.gnu.org/licenses/>.
  */
+
+#include "config.h"
 
 #import "ObjFWRT.h"
 

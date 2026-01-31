@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -120,7 +120,7 @@ appendAddresses(OFMutableString *string, OFData *addresses, bool *firstAddress)
 	    [OFSystemInfo supportsAVX512VectorByteManipulationInstructions]);
 	ADD_BOOL(@"Supports AVX-512 Vector Population Count Instruction",
 	    [OFSystemInfo supportsAVX512VectorPopulationCountInstruction]);
-	ADD_BOOL(@"Supports AVX-512 Vector Neutral Network Instructions",
+	ADD_BOOL(@"Supports AVX-512 Vector Neural Network Instructions",
 	    [OFSystemInfo supportsAVX512VectorNeuralNetworkInstructions]);
 	ADD_BOOL(@"Supports AVX-512 Vector Byte Manipulation Instructions 2",
 	    [OFSystemInfo supportsAVX512VectorByteManipulationInstructions2]);

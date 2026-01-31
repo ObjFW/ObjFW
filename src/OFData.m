@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,12 +46,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
+@interface OFPlaceholderData: OFString
+@end
+
 static struct {
 	Class isa;
 } placeholder;
-
-@interface OFPlaceholderData: OFString
-@end
 
 /* References for static linking */
 void OF_VISIBILITY_INTERNAL
@@ -582,8 +582,7 @@ OF_SINGLETON_METHODS
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableData class]])
@@ -645,8 +644,7 @@ OF_SINGLETON_METHODS
 	const char *search;
 	size_t searchLength;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > count)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	if (data == nil || data.itemSize != itemSize)

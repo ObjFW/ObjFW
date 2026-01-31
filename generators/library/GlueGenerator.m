@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -100,7 +100,7 @@
 	if (includes > 0)
 		[_header writeString: @"\n"];
 
-	[_impl writeString: 
+	[_impl writeString:
 	    @"\n"
 	    @"__asm__ (\n"
 	    @"    \".section .text\\n\"\n"

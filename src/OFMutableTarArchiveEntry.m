@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,14 +22,15 @@
 #import "OFMutableTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFString.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic compressedSize, uncompressedSize, modificationDate, type;
-@dynamic targetFileName, ownerAccountName, groupOwnerAccountName, deviceMajor;
-@dynamic deviceMinor;
+@dynamic fileName, fileType, POSIXPermissions, ownerAccountID;
+@dynamic groupOwnerAccountID, compressedSize, uncompressedSize;
+@dynamic modificationDate, type, targetFileName, ownerAccountName;
+@dynamic groupOwnerAccountName, deviceMajor, deviceMinor, extendedHeader;
 /*
  * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -72,6 +73,11 @@
 	objc_release(old);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	_fileType = fileType;
+}
+
 - (void)setPOSIXPermissions: (OFNumber *)POSIXPermissions
 {
 	OFNumber *old = _POSIXPermissions;
@@ -110,10 +116,17 @@
 	objc_release(old);
 }
 
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 - (void)setType: (OFTarArchiveEntryType)type
 {
-	_type = type;
+	_fileType = type;
 }
+#if OF_GCC_VERSION >= 405
+# pragma GCC diagnostic pop
+#endif
 
 - (void)setTargetFileName: (OFString *)targetFileName
 {
@@ -144,6 +157,14 @@
 - (void)setDeviceMinor: (unsigned long)deviceMinor
 {
 	_deviceMinor = deviceMinor;
+}
+
+- (void)setExtendedHeader:
+    (OFDictionary OF_GENERIC(OFString *, OFData *) *)extendedHeader
+{
+	OFDictionary *old = _extendedHeader;
+	_extendedHeader = [extendedHeader copy];
+	objc_release(old);
 }
 
 - (void)makeImmutable

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -134,6 +134,7 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 		    @"Archive comment:")];
 		[OFStdOut writeString: @"\t"];
 		[OFStdOut writeLine: [_archive.archiveComment
+		    .stringByReplacingControlCharacters
 		    stringByReplacingOccurrencesOfString: @"\n"
 					      withString: @"\n\t"]];
 		[OFStdOut writeLine: @""];
@@ -149,7 +150,8 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 			continue;
 		}
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *modificationDate = [entry.modificationDate
@@ -352,7 +354,14 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifndef OF_AMIGAOS
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -390,6 +399,14 @@ setModificationDate(OFString *path, OFZooArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifdef OF_AMIGAOS
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];

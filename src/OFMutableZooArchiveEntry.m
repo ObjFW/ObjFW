@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,17 +25,19 @@
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFMutableZooArchiveEntry
 @dynamic headerType, compressionMethod, modificationDate, CRC16;
 @dynamic uncompressedSize, compressedSize, minVersionNeeded, deleted;
-@dynamic fileComment, fileName, operatingSystemIdentifier, POSIXPermissions;
-@dynamic timeZone;
+@dynamic fileComment, fileName, fileType, operatingSystemIdentifier;
+@dynamic POSIXPermissions, timeZone;
 /*
- * The following properties are not implemented, but old Apple GCC requries
- * @dynamic for @optional properties.
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
  */
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
-@dynamic groupOwnerAccountName;
+@dynamic groupOwnerAccountName, targetFileName, deviceMajor, deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -161,6 +163,12 @@
 	}
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	if (fileType != OFArchiveEntryFileTypeRegular)
+		@throw [OFInvalidArgumentException exception];
 }
 
 - (void)setOperatingSystemIdentifier: (uint16_t)operatingSystemIdentifier

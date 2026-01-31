@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -532,17 +532,18 @@ unescapeMutableString(OFMutableString *string)
 		pair = lines[i];
 
 		if ([pair->_key isEqual: key]) {
-			[_lines removeObjectAtIndex: i];
 
 			if (!replaced) {
-				[_lines insertObjectsFromArray: pairs
-						       atIndex: i];
+				[_lines replaceObjectsInRange: OFMakeRange(i, 1)
+					 withObjectsFromArray: pairs];
 
 				replaced = true;
 				/* Continue after inserted pairs */
 				i += arrayValue.count - 1;
-			} else
+			} else {
+				[_lines removeObjectAtIndex: i];
 				i--;	/* Continue at same position */
+			}
 
 			lines = _lines.objects;
 			count = _lines.count;

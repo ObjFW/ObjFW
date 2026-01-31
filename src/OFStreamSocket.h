@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -146,6 +146,8 @@ typedef bool (^OFStreamSocketAcceptedHandler)(OFStreamSocket *socket,
 /**
  * @brief Accept an incoming connection.
  *
+ * The accepted socket inherits @ref canBlock from the server socket.
+ *
  * @return An autoreleased OFStreamSocket for the accepted connection.
  * @throw OFAcceptSocketFailedException Accepting failed
  * @throw OFNotOpenException The socket is not open
@@ -154,11 +156,15 @@ typedef bool (^OFStreamSocketAcceptedHandler)(OFStreamSocket *socket,
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * The accepted socket inherits @ref canBlock from the server socket.
  */
 - (void)asyncAccept;
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * The accepted socket inherits @ref canBlock from the server socket.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  */
@@ -179,6 +185,8 @@ typedef bool (^OFStreamSocketAcceptedHandler)(OFStreamSocket *socket,
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * The accepted socket inherits @ref canBlock from the server socket.
  *
  * @param handler The handler to execute when a new connection has been
  *		  accepted. Returns whether the next incoming connection should
@@ -203,6 +211,8 @@ typedef bool (^OFStreamSocketAcceptedHandler)(OFStreamSocket *socket,
 
 /**
  * @brief Asynchronously accept an incoming connection.
+ *
+ * The accepted socket inherits @ref canBlock from the server socket.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
  * @param handler The handler to execute when a new connection has been

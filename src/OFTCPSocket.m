@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -253,8 +253,36 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
 		    NULL, NULL) != 0) {
-			*errNo = _OFSocketErrNo();
-			return false;
+			int oldErrNo = _OFSocketErrNo(), newSock, flags;
+
+			if (oldErrNo != EPERM) {
+				*errNo = oldErrNo;
+				return false;
+			}
+
+			if ((newSock = socket(
+			    ((struct sockaddr *)&address->sockaddr)->sa_family,
+			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
+			    OFInvalidSocketHandle) {
+				*errNo = oldErrNo;
+				return false;
+			}
+
+# if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+			if ((flags = fcntl(newSock, F_GETFD, 0)) != -1)
+				fcntl(newSock, F_SETFD, flags | FD_CLOEXEC);
+# endif
+
+			if (connect(newSock,
+			    (struct sockaddr *)&address->sockaddr,
+			    address->length) != 0) {
+				*errNo = _OFSocketErrNo();
+				closesocket(newSock);
+				return false;
+			}
+
+			closesocket(_socket);
+			_socket = newSock;
 		}
 	} else
 #endif

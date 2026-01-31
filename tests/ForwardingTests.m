@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -277,7 +277,7 @@ test(id self, SEL _cmd)
 				: (double)a2
 				: (double)a3
 {
-	OFEnsure(self == target);
+	OTAssertEqual(self, target);
 
 	if (a0 != (intptr_t)0xDEADBEEF)
 		return 0;
@@ -296,7 +296,7 @@ test(id self, SEL _cmd)
 	va_list args;
 	OFString *ret;
 
-	OFEnsure(self == target);
+	OTAssertEqual(self, target);
 
 	va_start(args, format);
 	ret = [[OFString alloc] initWithFormat: format arguments: args];
@@ -307,7 +307,7 @@ test(id self, SEL _cmd)
 
 - (long double)forwardingTargetFPRetTest
 {
-	OFEnsure(self == target);
+	OTAssertEqual(self, target);
 
 	return 12345678.00006103515625;
 }
@@ -316,7 +316,7 @@ test(id self, SEL _cmd)
 {
 	struct StretTest ret = { { 0 } };
 
-	OFEnsure(self == target);
+	OTAssertEqual(self, target);
 
 	memcpy(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
 

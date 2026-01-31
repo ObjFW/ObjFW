@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Another possibility is that the server failed to accept a socket. In this
  * case, the server will no longer accept incoming connections and you need to
- * call @ref start again.
+ * call @ref OFHTTPServer#start again.
  *
  * @param server The HTTP server which encountered an exception
  * @param exception The exception which occurred

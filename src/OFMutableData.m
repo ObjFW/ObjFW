@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,6 +25,8 @@
 
 #import "OFMutableData.h"
 #import "OFConcreteMutableData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -222,8 +224,7 @@ OF_SINGLETON_METHODS
 {
 	size_t itemSize;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	itemSize = self.itemSize;
@@ -255,6 +256,24 @@ OF_SINGLETON_METHODS
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+	size_t itemSize = self.itemSize;
+
+	for (size_t i = 0; i < count; i++) {
+		[self insertItems: items
+			  atIndex: ranges[i].location
+			    count: ranges[i].length];
+
+		items = (char *)items + ranges[i].length * itemSize;
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)increaseCountBy: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -268,6 +287,23 @@ OF_SINGLETON_METHODS
 - (void)removeItemsInRange: (OFRange)range
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t count = indexes.of_ranges.count;
+
+	if (count == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (size_t i = count; i > 0; i--)
+		[self removeItemsInRange: ranges[i - 1]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeLastItem

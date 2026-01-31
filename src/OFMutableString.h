@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -204,6 +204,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Deletes all whitespaces at the beginning and the end of the string.
  */
 - (void)deleteEnclosingWhitespaces;
+
+/**
+ * @brief Replaces all control characters in the string with a description of
+ *	  the replaces control character.
+ */
+- (void)replaceControlCharacters;
 
 /**
  * @brief Converts the mutable string to an immutable string.

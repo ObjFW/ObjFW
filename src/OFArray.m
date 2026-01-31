@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,6 +26,8 @@
 #import "OFArray+Private.h"
 #import "OFConcreteArray.h"
 #import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 #import "OFJSONRepresentationPrivate.h"
 #import "OFNull.h"
 #import "OFString.h"
@@ -427,8 +429,7 @@ OF_SINGLETON_METHODS
 	OFArray *ret;
 	id *buffer;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length < self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
@@ -444,6 +445,25 @@ OF_SINGLETON_METHODS
 	} @finally {
 		OFFreeMemory(buffer);
 	}
+
+	return ret;
+}
+
+- (OFArray *)objectsAtIndexes: (OFIndexSet *)indexes
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: indexes.count];
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+
+	for (size_t i = 0; i < rangesCount; i++)
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++)
+			[ret addObject: [self objectAtIndex: j]];
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -794,18 +814,15 @@ OF_SINGLETON_METHODS
 	static unsigned long dummyMutations;
 	OFRange range = OFMakeRange(state->state, count);
 
-	if (range.length > SIZE_MAX - range.location)
-		@throw [OFOutOfRangeException exception];
-
-	if (range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		range.length = self.count - range.location;
 
 	[self getObjects: objects inRange: range];
 
-	if (range.location + range.length > ULONG_MAX)
+	if (OFEndOfRange(range) > ULONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	state->state = (unsigned long)(range.location + range.length);
+	state->state = (unsigned long)OFEndOfRange(range);
 	state->itemsPtr = objects;
 	state->mutationsPtr = &dummyMutations;
 

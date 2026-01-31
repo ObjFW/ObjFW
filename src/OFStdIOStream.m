@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,6 +35,7 @@
 #import "OFStdIOStream+Private.h"
 #import "OFApplication.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_WINDOWS
@@ -66,7 +67,9 @@
 
 #ifdef OF_WII
 # define asm __asm__
+# define id ogc_id
 # include <gccore.h>
+# undef id
 # undef asm
 #endif
 
@@ -142,16 +145,19 @@ OFLogV(OFConstantString *format, va_list arguments)
 	msg = objc_autorelease([[OFString alloc] initWithFormat: format
 						      arguments: arguments]);
 
-	[OFStdErr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-			       date.microsecond / 1000, me, getpid(), msg];
+	[OFStdErr writeFormat: @"[%@.%03d %@(%ld)] %@\n", dateString,
+			       date.microsecond / 1000, me,
+			       [OFApplication processID], msg];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_MSDOS
 int
-colorToMSDOS(OFColor *color)
+colorToMSDOS(OFColor *color, int default_)
 {
+	if (color == nil)
+		return default_;
 	if (color == [OFColor black])
 		return BLACK;
 	if (color == [OFColor navy])
@@ -759,6 +765,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 {
 	int code;
 
+	color = [color colorUsingColorSpace: [OFColorSpace sRGBColorSpace]];
+
 	if (color == _foregroundColor)
 		return;
 
@@ -766,7 +774,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		return;
 
 #ifdef OF_MSDOS
-	if ((code = colorToMSDOS(color)) == -1)
+	if ((code = colorToMSDOS(color, LIGHTGRAY)) == -1)
 		return;
 
 	textcolor(code);
@@ -778,13 +786,13 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		uint8_t redInt, greenInt, blueInt;
 
 		[color getRed: &red green: &green blue: &blue alpha: &alpha];
-		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
-		    green > 1 || blue < 0 || blue > 1)
+		if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
+		    blue < 0.0f || blue > 1.0f || alpha != 1.0f)
 			return;
 
-		redInt = roundf(red * 255);
-		greenInt = roundf(green * 255);
-		blueInt = roundf(blue * 255);
+		redInt = roundf(red * 255.0f);
+		greenInt = roundf(green * 255.0f);
+		blueInt = roundf(blue * 255.0f);
 
 		if (self.colors == 16777216)
 			[self writeFormat: @"\033[38;2;%u;%u;%um",
@@ -809,6 +817,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 {
 	int code;
 
+	color = [color colorUsingColorSpace: [OFColorSpace sRGBColorSpace]];
+
 	if (color == _backgroundColor)
 		return;
 
@@ -816,7 +826,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		return;
 
 #ifdef OF_MSDOS
-	if ((code = colorToMSDOS(color)) == -1)
+	if ((code = colorToMSDOS(color, BLACK)) == -1)
 		return;
 
 	textbackground(code);
@@ -828,19 +838,21 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 		uint8_t redInt, greenInt, blueInt;
 
 		[color getRed: &red green: &green blue: &blue alpha: &alpha];
-		if (alpha != 1 || red < 0 || red > 1 || green < 0 ||
-		    green > 1 || blue < 0 || blue > 1)
+		if (red < 0.0f || red > 1.0f || green < 0.0f || green > 1.0f ||
+		    blue < 0.0f || blue > 1.0f || alpha != 1.0f)
 			return;
 
-		redInt = roundf(red * 255);
-		greenInt = roundf(green * 255);
-		blueInt = roundf(blue * 255);
+		redInt = roundf(red * 255.0f);
+		greenInt = roundf(green * 255.0f);
+		blueInt = roundf(blue * 255.0f);
 
-		if ((code = colorTo256Color(redInt, greenInt, blueInt)) != -1)
-			[self writeFormat: @"\033[48;5;%um", code];
-		else
+		if (self.colors == 16777216)
 			[self writeFormat: @"\033[48;2;%u;%u;%um",
 					   redInt, greenInt, blueInt];
+		else
+			[self writeFormat: @"\033[48;5;%um",
+					   colorTo256Color(redInt, greenInt,
+					       blueInt)];
 	}
 #endif
 
@@ -1047,5 +1059,25 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 	else if (position.y < 0)
 		[self writeFormat: @"\033[%uA", (unsigned)-position.y];
 #endif
+}
+
+- (void)setProgressIndicator: (float)progress
+{
+	if (!self.hasTerminal)
+		return;
+
+	progress = roundf(progress * 100);
+	if (progress < 0.0f || progress > 100.0f)
+		return;
+
+	[self writeFormat: @"\033]9;4;1;%u\033\\", (unsigned)progress];
+}
+
+- (void)removeProgressIndicator
+{
+	if (!self.hasTerminal)
+		return;
+
+	[self writeString: @"\033]9;4;0\033\\"];
 }
 @end

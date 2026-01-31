@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,7 +37,9 @@
 #import "OFReadFailedException.h"
 
 #define asm __asm__
+#define id ogc_id
 #include <wiiuse/wpad.h>
+#undef id
 #undef asm
 
 static float

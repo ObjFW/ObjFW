@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFMD5Hash: OFObject <OFCryptographicHash>
 {
-	OFSecureData *_iVarsData;
+	OFSecureData *_ivarsData;
 	struct {
 		uint32_t state[4];
 		uint64_t bits;
@@ -40,7 +40,7 @@ OF_SUBCLASSING_RESTRICTED
 			uint32_t words[16];
 		} buffer;
 		size_t bufferLength;
-	} *_iVars;
+	} *_ivars;
 	bool _allowsSwappableMemory;
 	bool _calculated;
 }

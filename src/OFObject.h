@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,6 +52,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
+
+/**
+ * @brief A special not found index.
+ */
+static const size_t OFNotFound = SIZE_MAX;
 
 /**
  * @brief A result of a comparison.
@@ -147,6 +152,90 @@ OFEqualRanges(OFRange range1, OFRange range2)
 		return false;
 
 	return true;
+}
+
+/**
+ * @brief Returns the end of the range, which is its location + its length.
+ *
+ * @param range The range whose end to return
+ * @return The end of the range
+ */
+static OF_INLINE size_t
+OFEndOfRange(OFRange range)
+{
+	if (range.length > SIZE_MAX - range.location) {
+		extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+		_OFThrowOutOfRangeException();
+	}
+
+	return range.location + range.length;
+}
+
+/**
+ * @brief Returns whether the specified location is in the specified range.
+ *
+ * @param location The location
+ * @param range The range
+ * @return Whether the specified location is in the specified range
+ */
+static OF_INLINE bool
+OFLocationInRange(size_t location, OFRange range)
+{
+	return (location >= range.location &&
+	    location < OFEndOfRange(range));
+}
+
+/**
+ * @brief Returns the intersection of the two ranges or @ref OFNotFound and
+ *	  length 0 if they don't intersect.
+ *
+ * @param range1 The first range
+ * @param range2 The second range
+ * @return The intersection of both ranges
+ */
+static OF_INLINE OFRange
+OFIntersectionRange(OFRange range1, OFRange range2)
+{
+	OFRange range;
+
+	if (range1.location >= OFEndOfRange(range2) ||
+	    range2.location >= OFEndOfRange(range1))
+		return OFMakeRange(OFNotFound, 0);
+
+	range.location = (range1.location > range2.location
+	    ? range1.location : range2.location);
+	range.length = (OFEndOfRange(range1) < OFEndOfRange(range2))
+	    ? OFEndOfRange(range1) - range.location
+	    : OFEndOfRange(range2) - range.location;
+
+	return range;
+}
+
+/**
+ * @brief Returns the union of the two ranges if they are overlapping or
+ *	  adjacent, otherwise returns a range with location @ref OFNotFound and
+ *	  length 0.
+ *
+ * @param range1 The first range
+ * @param range2 The second range
+ * @return The two ranges merged
+ */
+static OF_INLINE OFRange
+OFUnionRange(OFRange range1, OFRange range2)
+{
+	OFRange range;
+
+	if (range1.location > OFEndOfRange(range2) ||
+	    range2.location > OFEndOfRange(range1))
+		return OFMakeRange(OFNotFound, 0);
+
+	range.location = (range1.location < range2.location
+	    ? range1.location : range2.location);
+	range.length = (OFEndOfRange(range1) > OFEndOfRange(range2))
+	    ? OFEndOfRange(range1) - range.location
+	    : OFEndOfRange(range2) - range.location;
+
+	return range;
 }
 
 /**
@@ -295,6 +384,40 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 		return false;
 
 	return true;
+}
+
+/**
+ * @brief Returns the intersection of the two rectangles or a rectangle with x,
+ *	  y, width and height set to 0 if the two rectangles don't intersect.
+ *
+ * @param rect1 The first rectangle
+ * @param rect2 The second rectangle
+ * @return The intersection of both rectangles
+ */
+static OF_INLINE OFRect
+OFIntersectionRect(OFRect rect1, OFRect rect2)
+{
+	OFRect rect;
+
+	rect.origin.x = (rect1.origin.x >= rect2.origin.x
+	    ? rect1.origin.x : rect2.origin.x);
+	rect.origin.y = (rect1.origin.y >= rect2.origin.y
+	    ? rect1.origin.y : rect2.origin.y);
+	rect.size.width = (rect1.origin.x + rect1.size.width <
+	    rect2.origin.x + rect2.size.width
+	    ? rect1.origin.x + rect1.size.width
+	    : rect2.origin.x + rect2.size.width) - rect.origin.x;
+	rect.size.height = (rect1.origin.y + rect1.size.height <
+	    rect2.origin.y + rect2.size.height
+	    ? rect1.origin.y + rect1.size.height
+	    : rect2.origin.y + rect2.size.height) - rect.origin.y;
+
+	if (rect.size.width <= 0.0f || rect.size.height <= 0.0f) {
+		rect.origin.x = rect.origin.y = 0.0f;
+		rect.size.width = rect.size.height = 0.0f;
+	}
+
+	return rect;
 }
 
 /**
@@ -599,8 +722,6 @@ OFHashFinalize(unsigned long *_Nonnull hash)
 	*hash = tmp;
 }
 
-static const size_t OFNotFound = SIZE_MAX;
-
 @class OFMethodSignature;
 @class OFString;
 @class OFThread;
@@ -884,7 +1005,7 @@ OF_ROOT_CLASS
  *
  * @warning You cannot make use of other classes from inside this method! Only
  *	    the class itself, its superclasses and instances of the class or
- *	    its superclassses can be messaged!
+ *	    its superclasses can be messaged!
  */
 + (void)load;
 
@@ -1672,19 +1793,19 @@ extern id OFAllocObject(Class class_, size_t extraSize, size_t extraAlignment,
  * @brief This function is called when a method is not found.
  *
  * It can also be called intentionally to indicate that a method is not
- * implemetned, for example in an abstract method. However, instead of calling
+ * implemented, for example in an abstract method. However, instead of calling
  * OFMethodNotFound directly, it is preferred to do the following:
  *
  *     - (void)abstractMethod
  *     {
- *     	OF_UNRECOGNIZED_SELECTOR
+ *             OF_UNRECOGNIZED_SELECTOR
  *     }
  *
  * However, do not use this for init methods. Instead, use the following:
  *
  *     - (instancetype)init
  *     {
- *     	OF_INVALID_INIT_METHOD
+ *             OF_INVALID_INIT_METHOD
  *     }
  *
  * @param self The object which does not have the method

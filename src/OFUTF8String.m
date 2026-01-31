@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1069,8 +1069,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _s->length)
+	if (OFEndOfRange(range) > _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	memcpy(buffer, characters + range.location,
@@ -1088,8 +1087,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	size_t cStringLength = string.UTF8StringLength;
 	size_t rangeLocation, rangeLength;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _s->length)
+	if (OFEndOfRange(range) > _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
@@ -1162,7 +1160,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (OFString *)substringWithRange: (OFRange)range
 {
 	size_t start = range.location;
-	size_t end = range.location + range.length;
+	size_t end = OFEndOfRange(range);
 
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
 		@throw [OFOutOfRangeException exception];

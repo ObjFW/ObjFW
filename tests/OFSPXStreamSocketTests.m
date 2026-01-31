@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -210,7 +210,7 @@
   didAcceptSocket: (OFStreamSocket *)accepted
 	exception: (id)exception
 {
-	OFEnsure(!_accepted);
+	OTAssertFalse(_accepted);
 
 	_accepted = (sock == _expectedServerSocket && accepted != nil &&
 	    exception == nil);
@@ -227,7 +227,7 @@
 		 port: (uint16_t)port
 	    exception: (id)exception
 {
-	OFEnsure(!_connected);
+	OTAssertFalse(_connected);
 
 	_connected = (sock == _expectedClientSocket &&
 	    network == _expectedNetwork &&

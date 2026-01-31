@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -616,7 +616,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	 * HTTPS, we construct the complete request in a buffer string and then
 	 * send it all at once.
 	 *
-	 * We do not use the streams's write buffer in case we need to resend
+	 * We do not use the stream's write buffer in case we need to resend
 	 * the entire request (e.g. in case a keep-alive connection timed out).
 	 */
 

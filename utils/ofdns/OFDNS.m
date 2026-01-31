@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,17 +22,21 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFData.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
+#import "OFThread.h"
+
+#import "OFInvalidFormatException.h"
 
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
-    "\xA9 2008-2025 Jonathan Schleifer";
+    "\xA9 2008-2026 Jonathan Schleifer";
 #endif
 
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
@@ -78,7 +82,7 @@ version(void)
 {
 	[OFStdOut writeFormat: @"ofdns %@ (ObjFW %@) "
 			       @"<https://objfw.nil.im/>\n"
-			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"Copyright (c) 2008-2026 Jonathan Schleifer "
 			       @"<js@nil.im>\n"
 			       @"Licensed under the LGPL 3.0 "
 			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
@@ -227,8 +231,30 @@ version(void)
 		[recordTypes addObject: @"A"];
 	}
 
-	if (server != nil)
-		resolver.nameServers = [OFArray arrayWithObject: server];
+	if (server != nil) {
+		@try {
+			OFSocketAddressParseIP(server, 0);
+
+			resolver.nameServers =
+			    [OFArray arrayWithObject: server];
+		} @catch (OFInvalidFormatException *e) {
+			/* Not an IP. Try resolving. */
+			OFData *addressesData = [[OFThread DNSResolver]
+			    resolveAddressesForHost: server
+				      addressFamily: OFSocketAddressFamilyAny];
+			const OFSocketAddress *addresses = addressesData.items;
+			size_t count = addressesData.count;
+			OFMutableArray *servers = [OFMutableArray
+			    arrayWithCapacity: count];
+
+			for (size_t i = 0; i < count; i++)
+				[servers addObject:
+				    OFSocketAddressString(&addresses[i])];
+
+			[servers makeImmutable];
+			resolver.nameServers = servers;
+		}
+	}
 
 	for (OFString *domainName in remainingArguments) {
 		for (OFString *recordTypeString in recordTypes) {

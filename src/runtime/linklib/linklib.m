@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -715,14 +715,14 @@ objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 }
 
 void __attribute__((__weak__))
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
+objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable handler)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(hadler);
+	__extension__ ((void (*)(objc_enumeration_mutation_handler _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 400))(handler);
 }
 
 void __attribute__((__weak__))

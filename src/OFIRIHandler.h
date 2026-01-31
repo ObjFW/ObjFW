@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @protocol OFIRIHandlerDelegate OFIRIHandlerDelegate.h ObjFW/ObjFW.h
+ * @protocol OFIRIHandlerDelegate OFIRIHandler.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFIRIHandler operations.
  */
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)IRIHandler: (OFIRIHandler *)IRIHandler
   didOpenItemAtIRI: (OFIRI *)IRI
-	    stream: (nullable OFStream *)stream
+	    stream: (nullable OF_KINDOF(OFStream *))stream
 	 exception: (nullable id)exception;
 @end
 
@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Registers the specified class as the handler for the specified scheme.
  *
- * If the same class is specified for two schemes, one instance of it is
+ * If the same class is specified for multiple schemes, one instance of it is
  * created per scheme.
  *
  * @param class_ The class to register as the handler for the specified scheme
@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the handler for the specified IRI.
  *
- * @return The handler for the specified IRI.
+ * @return The handler for the specified IRI
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
 + (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI;
@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
-+ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
++ (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.
@@ -176,7 +176,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFUnsupportedProtocolException The specified IRI is not supported by
  *					 the handler
  */
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.

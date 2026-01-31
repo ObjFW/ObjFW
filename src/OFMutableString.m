@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -443,8 +443,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	if (string == nil || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (searchLength > range.length) {
@@ -526,6 +525,46 @@ convert(OFMutableString *self, char (*startFunction)(char),
 {
 	[self deleteLeadingWhitespaces];
 	[self deleteTrailingWhitespaces];
+}
+
+- (void)replaceControlCharacters
+{
+	void *pool;
+	const OFUnichar *characters;
+	size_t length = self.length;
+
+	if (length == 0)
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	characters = self.characters;
+
+	for (size_t i = 0; i < length; i++) {
+		if (characters[i] <= 0x1F) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFString *replacement = [OFString
+			    stringWithFormat: @"%C", characters[i] + 0x2400];
+
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: replacement];
+
+			objc_autoreleasePoolPop(pool2);
+		} else if (characters[i] == 0x7F)
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: @"␡"];
+		else if (characters[i] >= 0x80 && characters[i] <= 0x9F) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFString *replacement = [OFString
+			    stringWithFormat: @"␛%C", characters[i] - 0x40];
+
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: replacement];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (id)copy

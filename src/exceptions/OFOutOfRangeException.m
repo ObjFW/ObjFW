@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,6 +21,12 @@
 
 #import "OFOutOfRangeException.h"
 #import "OFString.h"
+
+void OF_NO_RETURN_FUNC
+_OFThrowOutOfRangeException(void)
+{
+	@throw [OFOutOfRangeException exception];
+}
 
 @implementation OFOutOfRangeException
 - (OFString *)description

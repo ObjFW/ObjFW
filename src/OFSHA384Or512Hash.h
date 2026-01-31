@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFSHA384Or512Hash: OFObject <OFCryptographicHash>
 {
 @private
-	OFSecureData *_iVarsData;
+	OFSecureData *_ivarsData;
 @protected
 	struct {
 		uint64_t state[8];
@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 			uint64_t words[80];
 		} buffer;
 		size_t bufferLength;
-	} *_iVars;
+	} *_ivars;
 @private
 	bool _allowsSwappableMemory;
 	bool _calculated;

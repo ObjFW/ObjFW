@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -390,7 +390,7 @@ OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 	    "cmpxchg{l}	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	    : "=&d" (r),	/* use d instead of r to avoid a GCC bug */
 	      "+a" (o)
 	    : "r" (n),
 	      "m" (*p)
@@ -410,7 +410,7 @@ OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
 	    "cmpxchg	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	    : "=&d" (r),	/* use d instead of r to avoid a GCC bug */
 	      "+a" (o)
 	    : "r" (n),
 	      "m" (*p)
@@ -431,7 +431,7 @@ OFAtomicPointerCompareAndSwap(void *volatile _Nullable *_Nonnull p,
 	    "cmpxchg	{ %2, %3 | %3, %2 }\n\t"
 	    "sete	%b0\n\t"
 	    "movz{bl|x}	{ %b0, %0 | %0, %b0 }"
-	    : "=&d" (r),	/* use d instead of r to avoid a gcc bug */
+	    : "=&d" (r),	/* use d instead of r to avoid a GCC bug */
 	      "+a" (o)
 	    : "r" (n),
 	      "m" (*p)

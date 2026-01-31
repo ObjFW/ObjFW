@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -96,21 +96,21 @@ OF_APPLICATION_DELEGATE(TerminalTests)
 	[OFStdOut clear];
 	[OFThread sleepForTimeInterval: 2];
 
-	[OFStdOut setCursorPosition: OFMakePoint(5, 3)];
+	[OFStdOut setCursorPosition: OFMakePoint(5.0f, 3.0f)];
 	[OFStdOut writeString: @"Text at (5, 3)"];
 	[OFThread sleepForTimeInterval: 2];
 
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(-2, 0)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(-2.0f, 0.0f)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(2, 0)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(2.0f, 0.0f)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(0, -2)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(0.0f, -2.0f)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(0, 2)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(0.0f, 2.0f)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(1, 1)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(1.0f, 1.0f)];
 	[OFThread sleepForTimeInterval: 2];
-	[OFStdOut setRelativeCursorPosition: OFMakePoint(-1, -1)];
+	[OFStdOut setRelativeCursorPosition: OFMakePoint(-1.0f, -1.0f)];
 	[OFThread sleepForTimeInterval: 2];
 
 	[OFStdOut setCursorColumn: 2];

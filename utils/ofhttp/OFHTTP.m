@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,6 +21,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFColor.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -63,7 +64,7 @@
 #ifdef OF_AMIGAOS
 const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
     "." OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
-    "\xA9 2008-2025 Jonathan Schleifer";
+    "\xA9 2008-2026 Jonathan Schleifer";
 #endif
 
 #define KIBIBYTE 1024
@@ -163,7 +164,7 @@ version(void)
 {
 	[OFStdOut writeFormat: @"ofhttp %@ (ObjFW %@) "
 			       @"<https://objfw.nil.im/>\n"
-			       @"Copyright (c) 2008-2025 Jonathan Schleifer "
+			       @"Copyright (c) 2008-2026 Jonathan Schleifer "
 			       @"<js@nil.im>\n"
 			       @"Licensed under the LGPL 3.0 "
 			       @"<https://www.gnu.org/licenses/lgpl-3.0.html>"
@@ -333,8 +334,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		_method = OFHTTPRequestMethodGet;
 
 		_clientHeaders = [[OFMutableDictionary alloc]
-		    initWithObject: @"OFHTTP"
-			    forKey: @"User-Agent"];
+		    initWithKeysAndObjects:
+		    @"User-Agent", @"OFHTTP",
+		    @"Accept", @"*/*", nil];
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
@@ -712,17 +714,28 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *key, *object;
 
 		while ((key = [keyEnumerator nextObject]) != nil &&
-		    (object = [objectEnumerator nextObject]) != nil)
+		    (object = [objectEnumerator nextObject]) != nil) {
+			key = [key description]
+			    .stringByReplacingControlCharacters;
+			object = [object description]
+			    .stringByReplacingControlCharacters;
+
 			[OFStdErr writeFormat: @"  %@: %@\n", key, object];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdErr writeFormat: @"☇ %@", IRI.string];
+			[OFStdErr writeFormat: @"☇ "];
 		else
-			[OFStdErr writeFormat: @"< %@", IRI.string];
+			[OFStdErr writeFormat: @"< "];
+
+		OFStdErr.underlined = true;
+		[OFStdErr writeString:
+		    IRI.string.stringByReplacingControlCharacters];
+		OFStdErr.underlined = false;
 	}
 
 	_length = 0;
@@ -803,9 +816,25 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		OFString *type = [headers objectForKey: @"Content-Type"];
 
 		if (_useUnicode)
-			[OFStdErr writeFormat: @" ➜ %hd\n", statusCode];
+			[OFStdErr writeFormat: @" ➜ "];
 		else
-			[OFStdErr writeFormat: @" -> %hd\n", statusCode];
+			[OFStdErr writeFormat: @" -> "];
+
+
+		switch (statusCode / 100) {
+		case 2:
+			OFStdErr.foregroundColor = [OFColor green];
+			break;
+		case 3:
+			OFStdErr.foregroundColor = [OFColor teal];
+			break;
+		case 4:
+		case 5:
+			OFStdErr.foregroundColor = [OFColor maroon];
+			break;
+		}
+		[OFStdErr writeFormat: @"%hd\n", statusCode];
+		OFStdErr.foregroundColor = nil;
 
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -860,34 +889,53 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 			if (statusCode / 100 == 2 && _currentFileName != nil) {
 				[OFStdErr writeString: @"  "];
-				[OFStdErr writeLine: OF_LOCALIZED(
-				    @"info_name_unaligned",
-				    @"Name: %[name]",
-				    @"name", _currentFileName)];
+				OFStdErr.bold = true;
+				[OFStdErr writeString: OF_LOCALIZED(
+				    @"info_name_unaligned", @"Name: ")];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine: _currentFileName
+				    .stringByReplacingControlCharacters];
 			}
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
-			    (object = [objectEnumerator nextObject]) != nil)
-				[OFStdErr writeFormat: @"  %@: %@\n",
-						       key, object];
+			    (object = [objectEnumerator nextObject]) != nil) {
+				[OFStdErr writeString: @"  "];
+				OFStdErr.bold = true;
+				[OFStdErr writeFormat: @"%@: ",
+				    [key description]
+				    .stringByReplacingControlCharacters];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine:
+				    [object description]
+				    .stringByReplacingControlCharacters];
+			}
 
 			objc_autoreleasePoolPop(pool);
 		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
 			[OFStdErr writeString: @"  "];
 
-			if (_currentFileName != nil)
-				[OFStdErr writeLine: OF_LOCALIZED(@"info_name",
-				    @"Name: %[name]",
-				    @"name", _currentFileName)];
+			if (_currentFileName != nil) {
+				OFStdErr.bold = true;
+				[OFStdErr writeString:
+				    OF_LOCALIZED(@"info_name", @"Name: ")];
+				OFStdErr.bold = false;
+				[OFStdErr writeLine: _currentFileName
+				    .stringByReplacingControlCharacters];
+			}
 
 			[OFStdErr writeString: @"  "];
-			[OFStdErr writeLine: OF_LOCALIZED(@"info_type",
-			    @"Type: %[type]",
-			    @"type", type)];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_type", @"Type: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine:
+			    type.stringByReplacingControlCharacters];
 			[OFStdErr writeString: @"  "];
-			[OFStdErr writeLine: OF_LOCALIZED(@"info_size",
-			    @"Size: %[size]",
-			    @"size", lengthString)];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_size", @"Size: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine: lengthString];
 		}
 	}
 }
@@ -1171,9 +1219,11 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdErr writeFormat: @"⠒ %@", IRI.string];
+				[OFStdErr writeFormat: @"⠒ %@", IRI.string
+				    .stringByReplacingControlCharacters];
 			else
-				[OFStdErr writeFormat: @"? %@", IRI.string];
+				[OFStdErr writeFormat: @"? %@", IRI.string
+				    .stringByReplacingControlCharacters];
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];
@@ -1226,9 +1276,14 @@ next:
 
 	if (!_quiet) {
 		if (_useUnicode)
-			[OFStdErr writeFormat: @"⇣ %@", IRI.string];
+			[OFStdErr writeString: @"⇣ "];
 		else
-			[OFStdErr writeFormat: @"v %@", IRI.string];
+			[OFStdErr writeString: @"v "];
+
+		OFStdErr.underlined = true;
+		[OFStdErr writeString:
+		    IRI.string.stringByReplacingControlCharacters];
+		OFStdErr.underlined = false;
 	}
 
 	request = [OFHTTPRequest requestWithIRI: IRI];
