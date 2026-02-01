@@ -4,6 +4,18 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.4.3 -> ObjFW 1.4.4, 2026-02-01
+ * Fixes Swift interoperability.
+ * Fixes building for Wii with new devkitPro.
+ * Fixes missing background color rounding in OFStdIOStream.
+ * Adds iso8859-* as an alias for iso-8859-*.
+ * Fixes objfw-compile not passing -f* and -m* to the linker
+ * Makes ofhttp always send an Accept header to avoid being flagged as
+   suspicious by some websites.
+ * Fixes ObjFWTLS with OpenSSL when using Apple GCC 4.0.1.
+ * Fixes a few missing OF_RETURNS_INNER_POINTER.
+ * Fixes some OFMutableStringTests not being run.
+
 ObjFW 1.4.2 -> ObjFW 1.4.3, 2025-12-20
  * Fixes a bug where calling -[OFTimer invalidate] multiple times would also
    release its block multiple times.
