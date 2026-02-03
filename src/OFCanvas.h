@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param image The image to draw on the canvas
  * @param sourceRect A rectangle of the specified image to draw into the canvas
- * @param destinationRect A recangle on the canvas to draw the image in
+ * @param destinationRect A rectangle on the canvas to draw the image in
  * @throw OFInvalidArgumentException One or both of the specified rectangles
  *				     are not integral or have a negative
  *				     component
