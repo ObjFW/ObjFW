@@ -37,7 +37,8 @@ OF_DIRECT_MEMBERS
     <OHGCFMapping>
 #endif
 
-- (instancetype)oh_init OF_METHOD_FAMILY(init);
+- (instancetype)oh_initWithVendorID: (uint16_t)vendorID
+			  productID: (uint16_t)productID OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

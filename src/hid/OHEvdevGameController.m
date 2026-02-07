@@ -273,9 +273,13 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDProController)
 			_profile = [[OHSwitchProController alloc] oh_init];
-		else if (_vendorID == OHVendorIDGoogle &&
-		    _productID == OHProductIDStadiaController)
-			_profile = [[OHStadiaGamepad alloc] oh_init];
+		else if ((_vendorID == OHVendorIDGoogle &&
+		    _productID == OHProductIDStadiaController) ||
+		    /* MOCUTE-053X-M35-HID */
+		    (_vendorID == 0 && _productID == 0x046E))
+			_profile = [[OHStadiaGamepad alloc]
+			    oh_initWithVendorID: _vendorID
+				      productID: _productID];
 		else if (_vendorID == OHVendorID8BitDo &&
 		    (_productID == OHProductIDUltimate2CWirelessBT ||
 		    _productID == OHProductIDUltimate2CWirelessUSB))
