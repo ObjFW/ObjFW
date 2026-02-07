@@ -22,9 +22,6 @@
 #import "OHDualShock3Gamepad.h"
 #import "OHDualShock3Gamepad+Private.h"
 #import "OFDictionary.h"
-#ifdef OF_HAVE_GCF
-# import "OFString+NSObject.h"
-#endif
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"

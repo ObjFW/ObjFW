@@ -22,9 +22,6 @@
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
 #endif
-#ifdef OF_HAVE_GCF
-# import "OHGCFGameController.h"
-#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
