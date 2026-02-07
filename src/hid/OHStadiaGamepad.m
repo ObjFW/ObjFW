@@ -26,6 +26,7 @@
 # import "OFString+NSObject.h"
 #endif
 #import "OHEmulatedGameControllerTriggerButton.h"
+#import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
