@@ -13,14 +13,15 @@ LIB_PATCH = ${OBJFWTLS_LIB_PATCH}
 INCLUDES := ObjFWTLS.h
 SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_MBEDTLS}		\
-       ${USE_SRCS_OPENSSL}
-
+       ${USE_SRCS_OPENSSL}		\
+       ${USE_SRCS_WINDOWS}
 SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
 	      OFGnuTLSX509Certificate.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
 	       OFMbedTLSX509Certificate.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
 	       OFOpenSSLX509Certificate.m
+SRCS_WINDOWS = versioninfo.rc
 
 includesubdir = ObjFWTLS
 
@@ -75,3 +76,8 @@ LIBS := -L..		\
 	-lobjfw		\
 	${RUNTIME_LIBS}	\
 	${LIBS}
+RCFLAGS = --use-temp-file						     \
+	  -DOBJFWTLS_LIB_MAJOR=${OBJFWTLS_LIB_MAJOR}			     \
+	  -DOBJFWTLS_LIB_MINOR=${OBJFWTLS_LIB_MINOR}			     \
+	  -DOBJFWTLS_LIB_VER=\"${OBJFWTLS_LIB_MAJOR}.${OBJFWTLS_LIB_MINOR}\" \
+	  -DOBJFWTLS_SHARED_LIB=\"${OBJFWTLS_SHARED_LIB}\"
