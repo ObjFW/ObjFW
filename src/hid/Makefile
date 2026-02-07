@@ -47,6 +47,7 @@ SRCS += OHEmulatedGameControllerAxis.m		\
 	${USE_SRCS_NINTENDO_DS}			\
 	${USE_SRCS_NINTENDO_SWITCH}		\
 	${USE_SRCS_WII}				\
+	${USE_SRCS_WINDOWS}			\
 	${USE_SRCS_XINPUT}
 SRCS_EVDEV = OHEvdevExtendedGamepad.m			\
 	     OHEvdevGameController.m			\
@@ -64,6 +65,7 @@ SRCS_WII = OHWiiClassicController.m	\
 	   OHWiiGameController.m	\
 	   OHWiimote.m			\
 	   OHWiimoteWithNunchuk.m
+SRCS_WINDOWS = versioninfo.rc
 SRCS_XINPUT = OHXInputGameController.m
 
 includesubdir = ObjFWHID
@@ -114,3 +116,8 @@ LIBS := -L..		\
 	-lobjfw		\
 	${RUNTIME_LIBS}	\
 	${LIBS}
+RCFLAGS = --use-temp-file						     \
+	  -DOBJFWHID_LIB_MAJOR=${OBJFWHID_LIB_MAJOR}			     \
+	  -DOBJFWHID_LIB_MINOR=${OBJFWHID_LIB_MINOR}			     \
+	  -DOBJFWHID_LIB_VER=\"${OBJFWHID_LIB_MAJOR}.${OBJFWHID_LIB_MINOR}\" \
+	  -DOBJFWHID_SHARED_LIB=\"${OBJFWHID_SHARED_LIB}\"

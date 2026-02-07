@@ -2,21 +2,21 @@
 #include "winver.h"
 
 1 VERSIONINFO
-    FILEVERSION OBJFWTLS_LIB_MAJOR, OBJFWTLS_LIB_MINOR, 0, 0
+    FILEVERSION OBJFWHID_LIB_MAJOR, OBJFWHID_LIB_MINOR, 0, 0
     PRODUCTVERSION OBJFW_VERSION_MAJOR, OBJFW_VERSION_MINOR, 0, 0
     FILEOS VOS__WINDOWS32
     FILETYPE VFT_DLL
 {
 	BLOCK "StringFileInfo" {
 		BLOCK "040904E4" {
-			VALUE "ProductName", "ObjFW TLS Support"
+			VALUE "ProductName", "ObjFW HID Support"
 			VALUE "ProductVersion", PACKAGE_VERSION
-			VALUE "FileVersion", OBJFWTLS_LIB_VER
-			VALUE "FileDescription", "ObjFW TLS library"
+			VALUE "FileVersion", OBJFWHID_LIB_VER
+			VALUE "FileDescription", "ObjFW HID library"
 			VALUE "LegalCopyright",
 			    "(c) 2008-2026 Jonathan Schleifer"
-			VALUE "InternalName", "ObjFWTLS"
-			VALUE "OriginalFilename", OBJFWTLS_SHARED_LIB
+			VALUE "InternalName", "ObjFWHID"
+			VALUE "OriginalFilename", OBJFWHID_SHARED_LIB
 		}
 
 	}
