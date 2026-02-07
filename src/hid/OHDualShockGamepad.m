@@ -191,17 +191,17 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerButton *)menuButton
 {
-	return [_buttons objectForKey: @"Options"];
+	return [_buttons objectForKey: @"Start"];
 }
 
 - (OHGameControllerButton *)optionsButton
 {
-	return [_buttons objectForKey: @"Share"];
+	return [_buttons objectForKey: @"Select"];
 }
 
 - (OHGameControllerButton *)homeButton
 {
-	return [_buttons objectForKey: @"PS"];
+	return nil;
 }
 
 - (OHGameControllerDirectionalPad *)leftThumbstick
