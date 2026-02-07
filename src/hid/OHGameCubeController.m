@@ -259,6 +259,10 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	case ABS_Z:
 		return [[_directionalPads objectForKey:
 		    @"Right Thumbstick"] yAxis];
+	case ABS_RX:
+		return [[_buttons objectForKey: @"L"] oh_axis];
+	case ABS_RY:
+		return [[_buttons objectForKey: @"R"] oh_axis];
 	case ABS_HAT0X:
 		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
 	case ABS_HAT0Y:
