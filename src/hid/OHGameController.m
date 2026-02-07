@@ -53,8 +53,10 @@ const uint16_t OHVendorIDGoogle = 0x18D1;
 const uint16_t OHVendorID8BitDo = 0x2DC8;
 const uint16_t OHVendorIDDragonRise = 0x0079;
 const uint16_t OHVendorIDWiseGroup = 0x0925;
+
 const uint16_t OHProductIDDualShock4 = 0x09CC;
 const uint16_t OHProductIDDualSense = 0x0CE6;
+const uint16_t OHProductIDPlayStation3Controller = 0x0268;
 const uint16_t OHProductIDLeftJoyCon = 0x2006;
 const uint16_t OHProductIDRightJoyCon = 0x2007;
 const uint16_t OHProductIDProController = 0x2009;

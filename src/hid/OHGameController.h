@@ -116,8 +116,10 @@ extern const uint16_t OHVendorIDGoogle;
 extern const uint16_t OHVendorID8BitDo;
 extern const uint16_t OHVendorIDDragonRise;
 extern const uint16_t OHVendorIDWiseGroup;
+
 extern const uint16_t OHProductIDDualShock4;
 extern const uint16_t OHProductIDDualSense;
+extern const uint16_t OHProductIDPlayStation3Controller;
 extern const uint16_t OHProductIDLeftJoyCon;
 extern const uint16_t OHProductIDRightJoyCon;
 extern const uint16_t OHProductIDProController;

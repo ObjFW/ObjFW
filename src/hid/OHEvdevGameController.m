@@ -38,6 +38,8 @@
 #import "OHDualSenseGamepad+Private.h"
 #import "OHDualShockGamepad.h"
 #import "OHDualShockGamepad+Private.h"
+#import "OHDualShock3Gamepad.h"
+#import "OHDualShock3Gamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
@@ -253,6 +255,9 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualShock4)
 			_profile = [[OHDualShock4Gamepad alloc] oh_init];
+		else if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDPlayStation3Controller)
+			_profile = [[OHDualShock3Gamepad alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDN64Controller)
 			_profile = [[OHExtendedN64Controller alloc] oh_init];
