@@ -170,7 +170,8 @@ OF_SUBCLASSING_RESTRICTED
  *	 pairs of variable names and variable values, which will be replaced
  *	 inside the localized string. For example, you can pass
  *	 `@"name", @"foo", nil`, causing `%[name]` to be replaced with `foo` in
- *	 the localized string.
+ *	 the localized string. If the variable name does not start with `@`,
+ *	 all control characters in the variable value will be replaced.
  *
  * @note Generally, you want to use @ref OF_LOCALIZED instead, which also takes
  *	 care of the `nil` sentinel automatically.
