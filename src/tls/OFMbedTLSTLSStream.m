@@ -37,12 +37,16 @@
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
 
-#include <mbedtls/ctr_drbg.h>
-#include <mbedtls/entropy.h>
+#if MBEDTLS_VERSION_MAJOR < 4
+# include <mbedtls/ctr_drbg.h>
+# include <mbedtls/entropy.h>
+#endif
 
 int _ObjFWTLS_reference;
+#if MBEDTLS_VERSION_MAJOR < 4
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
+#endif
 
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const mbedtls_ssl_context *SSL)
@@ -133,9 +137,13 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (self != [OFMbedTLSTLSStream class])
 		return;
 
+#if MBEDTLS_VERSION_MAJOR >= 4
+	if (psa_crypto_init() != PSA_SUCCESS)
+#else
 	mbedtls_entropy_init(&entropy);
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -268,7 +276,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				   host: host
 			      errorCode: initFailedErrorCode];
 
+#if MBEDTLS_VERSION_MAJOR < 4
 	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
+#endif
 
 	/* TODO: Add other ways to add a CA chain */
 	CAFilePath = [[OFApplication environment]

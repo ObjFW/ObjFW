@@ -26,10 +26,10 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"
 
-#include <mbedtls/ctr_drbg.h>
-#include <mbedtls/entropy.h>
+#if MBEDTLS_VERSION_MAJOR == 3
+# include <mbedtls/ctr_drbg.h>
+# include <mbedtls/entropy.h>
 
-#if MBEDTLS_VERSION_MAJOR >= 3
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
 #endif
@@ -73,19 +73,21 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		OFX509CertificateImplementation = self;
 }
 
-#if MBEDTLS_VERSION_MAJOR >= 3
 + (void)initialize
 {
 	if (self != [OFMbedTLSX509Certificate class])
 		return;
 
+#if MBEDTLS_VERSION_MAJOR >= 4
+	if (psa_crypto_init() != PSA_SUCCESS)
+#elif MBEDTLS_VERSION_MAJOR == 3
 	mbedtls_entropy_init(&entropy);
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
-#endif
 
 + (bool)supportsPEMFiles
 {
@@ -121,7 +123,7 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		/* Terminating zero byte required for PEM. */
 		[data addItem: ""];
 
-#if MBEDTLS_VERSION_MAJOR >= 3
+#if MBEDTLS_VERSION_MAJOR == 3
 		if (mbedtls_pk_parse_key(chain.privateKey,
 		    data.items, data.count * data.itemSize, NULL, 0,
 		    mbedtls_ctr_drbg_random, &CTRDRBG) != 0)
