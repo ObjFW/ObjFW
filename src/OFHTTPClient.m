@@ -695,6 +695,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	/* Can we reuse the last socket? */
 	if (_client->_stream != nil && !_client->_stream.atEndOfStream &&
+	    _client->_lastResponse.of_keepAlive &&
 	    [_client->_lastIRI.scheme isEqual: IRI.scheme] &&
 	    [_client->_lastIRI.host isEqual: IRI.host] &&
 	    (_client->_lastIRI.port == IRI.port ||
