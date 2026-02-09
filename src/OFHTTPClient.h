@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFHTTPClient;
+@class OFHTTPClientResponse;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFIRI;
@@ -164,7 +165,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _stream;
 	OFIRI *_Nullable _lastIRI;
 	bool _lastWasHEAD;
-	OFHTTPResponse *_Nullable _lastResponse;
+	OFHTTPClientResponse *_Nullable _lastResponse;
 }
 
 /**
