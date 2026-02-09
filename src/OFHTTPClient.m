@@ -319,7 +319,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
 	if ([_version isEqual: @"1.1"]) {
 		if (connectionHeader != nil)
-			keepAlive = [connectionHeader isEqual: @"close"];
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"close"] != OFOrderedSame);
 		else
 			keepAlive = true;
 	} else {
