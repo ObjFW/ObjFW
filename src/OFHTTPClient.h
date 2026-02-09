@@ -89,6 +89,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A callback which is called when an @ref OFHTTPClient wants to send
  *	  the body for a request.
  *
+ * @ref OFHTTPClient uses the same logic as RFC 2616 to determine whether a
+ * body should be sent, meaning either a `Content-Length` header is present in
+ * the request or the request has a `Transfer-Encoding` header that is
+ * `chunked`.
+ *
  * @param client The OFHTTPClient that wants to send the body
  * @param requestBody A stream into which the body of the request should be
  *		      written
