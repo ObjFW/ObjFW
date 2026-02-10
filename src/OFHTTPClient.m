@@ -768,7 +768,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		stream.delegate = self;
 
 		timer = [OFTimer timerWithTimeInterval: 0
-						target: stream
+						target: self
 					      selector: @selector(handleStream:)
 						object: stream
 					       repeats: false];
