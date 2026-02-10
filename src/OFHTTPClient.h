@@ -18,6 +18,7 @@
  */
 
 #import "OFObject.h"
+#import "OFRunLoop.h"
 
 #ifndef OF_HAVE_SOCKETS
 # error No sockets available!
@@ -243,6 +244,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;
+
+/**
+ * @brief Asynchronously performs the specified HTTP request.
+ *
+ * @param request The request to perform
+ * @param redirects The maximum number of redirects after which no further
+ *		    attempt is done to follow the redirect, but instead the
+ *		    redirect is treated as an OFHTTPResponse
+ * @param runLoopMode The run loop mode in which to perform the request
+ * @throw OFAlreadyOpenException The client is already performing a request
+ */
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
+		  redirects: (unsigned int)redirects
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Closes connections that are still open due to keep-alive.
