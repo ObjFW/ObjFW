@@ -96,6 +96,12 @@ OF_ASSUME_NONNULL_BEGIN
  * the request or the request has a `Transfer-Encoding` header that is
  * `chunked`.
  *
+ * The client waits for the request body stream to be completed (either by the
+ * specified `Content-Length` bytes being written or for `chunked`
+ * `Transfer-Encoding` by it being closed) without blocking, so the entire
+ * request body does not need to be written from inside the callback. It can be
+ * stored and written to later and it can also be written to asynchronously.
+ *
  * @param client The OFHTTPClient that wants to send the body
  * @param requestBody A stream into which the body of the request should be
  *		      written
