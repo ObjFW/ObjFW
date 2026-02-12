@@ -21,6 +21,7 @@
 
 #import "OFMutableTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
@@ -31,6 +32,7 @@
 @dynamic groupOwnerAccountID, compressedSize, uncompressedSize;
 @dynamic modificationDate, type, targetFileName, ownerAccountName;
 @dynamic groupOwnerAccountName, deviceMajor, deviceMinor, extendedHeader;
+@dynamic amigaProtection, amigaComment;
 /*
  * The following is optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -162,9 +164,43 @@
 - (void)setExtendedHeader:
     (OFDictionary OF_GENERIC(OFString *, OFData *) *)extendedHeader
 {
-	OFDictionary *old = _extendedHeader;
-	_extendedHeader = [extendedHeader copy];
+	OFMutableDictionary *old = _extendedHeader;
+	_extendedHeader = [extendedHeader mutableCopy];
 	objc_release(old);
+}
+
+- (void)setAmigaProtection: (OFNumber *)amigaProtection
+{
+	void *pool = objc_autoreleasePoolPush();
+	uint32_t tmp = OFToBigEndian32(
+	    (uint32_t)amigaProtection.unsignedLongValue);
+	OFData *data = [OFData dataWithItems: &tmp count: sizeof(tmp)];
+
+	if (_extendedHeader == nil)
+		_extendedHeader = [[OFMutableDictionary alloc] init];
+
+	[_extendedHeader setObject: data
+			    forKey: @"SCHILY.xattr.user.amiga.mode"];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setAmigaComment: (OFString *)amigaComment
+{
+	void *pool = objc_autoreleasePoolPush();
+	const char *cString = [amigaComment
+	    cStringWithEncoding: OFStringEncodingISO8859_1];
+	size_t length = [amigaComment
+	    cStringLengthWithEncoding: OFStringEncodingISO8859_1];
+	OFData *data = [OFData dataWithItems: cString count: length + 1];
+
+	if (_extendedHeader == nil)
+		_extendedHeader = [[OFMutableDictionary alloc] init];
+
+	[_extendedHeader setObject: data
+			    forKey: @"SCHILY.xattr.user.amiga.comment"];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)makeImmutable

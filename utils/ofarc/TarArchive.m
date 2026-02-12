@@ -43,18 +43,29 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = [OFNumber numberWithUnsignedLongLong:
 	    entry.POSIXPermissions.longLongValue & 0777];
-	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: POSIXPermissions
-			  forKey: OFFilePOSIXPermissions];
+	[attributes setObject: POSIXPermissions forKey: OFFilePOSIXPermissions];
+#endif
+
+#ifdef OF_AMIGAOS
+	OFNumber *amigaProtection = entry.amigaProtection;
+	OFString *amigaComment = entry.amigaComment;
+
+	if (amigaProtection != nil)
+		[attributes setObject: amigaProtection
+			       forKey: OFFileAmigaProtection];
+	if (amigaComment != nil)
+		[attributes setObject: amigaComment forKey: OFFileAmigaComment];
+#endif
 
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
-#endif
 }
 
 static void
@@ -193,6 +204,25 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"list_modification_date",
 			    @"Modification date: %[date]",
 			    @"date", date)];
+
+			if (entry.amigaProtection != nil) {
+				OFString *protectionString = [OFString
+				    stringWithFormat: @"%04lx",
+				    entry.amigaProtection.unsignedLongValue];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_protection",
+				    @"Amiga protection bits: %[prot]",
+				    @"prot", protectionString)];
+			}
+			if (entry.amigaComment != nil) {
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_comment",
+				    @"Amiga comment: %[comment]",
+				    @"comment", entry.amigaComment)];
+			}
 		}
 
 		if (app->_outputLevel >= 2) {
@@ -296,8 +326,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_extended_header",
-				    @"Extended header: %[header]",
-				    @"header", header)];
+				    @"Extended header: %[@header]",
+				    @"@header", header)];
 			}
 		}
 
@@ -566,9 +596,17 @@ outer_loop_end:
 		    [attributes objectForKey: OFFileOwnerAccountID];
 		entry.groupOwnerAccountID =
 		    [attributes objectForKey: OFFileGroupOwnerAccountID];
-		entry.ownerAccountName = attributes.fileOwnerAccountName;
+		entry.ownerAccountName =
+		    [attributes objectForKey: OFFileOwnerAccountName];
 		entry.groupOwnerAccountName =
-		    attributes.fileGroupOwnerAccountName;
+		    [attributes objectForKey: OFFileGroupOwnerAccountName];
+#endif
+
+#if defined(OF_AMIGAOS)
+		entry.amigaProtection =
+		    [attributes objectForKey: OFFileAmigaProtection];
+		entry.amigaComment =
+		    [attributes objectForKey: OFFileAmigaComment];
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])

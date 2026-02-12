@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
 
 /**
@@ -139,7 +140,7 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
 	OFString *_Nullable _ownerAccountName;
 	OFString *_Nullable _groupOwnerAccountName;
 	unsigned long _deviceMajor, _deviceMinor;
-	OFDictionary OF_GENERIC(OFString *, OFData *) *_extendedHeader;
+	OFMutableDictionary OF_GENERIC(OFString *, OFData *) *_extendedHeader;
 	OF_RESERVE_IVARS(OFTarArchiveEntry, 3)
 }
 
@@ -165,6 +166,18 @@ static const OFTarArchiveEntryType OFTarArchiveEntryTypeContiguousFile
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFData *) *extendedHeader;
+
+/**
+ * @brief The Amiga Protection of the file (see @ref OFFileAmigaProtectionMask).
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFNumber *amigaProtection;
+
+/**
+ * @brief The Amiga comment of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *amigaComment;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
