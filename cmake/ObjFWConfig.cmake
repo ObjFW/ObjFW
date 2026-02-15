@@ -1,0 +1,90 @@
+find_program(ObjFW_CONFIG_EXECUTABLE
+	objfw-config
+	DOC "objfw-config executable"
+)
+mark_as_advanced(ObjFW_CONFIG_EXECUTABLE)
+
+if(NOT ObjFW_CONFIG_EXECUTABLE)
+	if(ObjFW_FIND_REQUIRED)
+		message(FATAL_ERROR "objfw-config not found!")
+	else()
+		return()
+	endif()
+endif()
+
+set(_objfw_packages_flags "")
+foreach(package ${ObjFW_FIND_COMPONENTS})
+	execute_process(
+		COMMAND ${ObjFW_CONFIG_EXECUTABLE} --package ${package}
+		RESULT_VARIABLE _package_not_found
+		ERROR_QUIET
+	)
+
+	if(_package_not_found)
+		if(NOT ObjFW_FIND_REQUIRED)
+			return()
+		endif()
+
+		message(FATAL_ERROR
+			"ObjFW package ${package} not found")
+	else()
+		list(APPEND _objfw_packages_flags --package ${package})
+	endif()
+endforeach()
+
+set(ObjFW_FOUND TRUE)
+add_library(ObjFW INTERFACE)
+add_library(ObjFWARC INTERFACE)
+
+execute_process(
+	COMMAND ${ObjFW_CONFIG_EXECUTABLE} --cppflags --objcflags
+	${_objfw_packages_flags}
+	OUTPUT_VARIABLE _objfw_compile_options
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	COMMAND_ERROR_IS_FATAL ANY
+)
+execute_process(
+	COMMAND ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
+	${_objfw_packages_flags}
+	OUTPUT_VARIABLE _objfw_link_options
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	COMMAND_ERROR_IS_FATAL ANY
+)
+execute_process(
+	COMMAND ${ObjFW_CONFIG_EXECUTABLE} --arc
+	OUTPUT_VARIABLE _objfw_arc_options
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	COMMAND_ERROR_IS_FATAL ANY
+)
+
+string(REPLACE " " ";" _objfw_compile_options "${_objfw_compile_options}")
+string(REPLACE " " ";" _objfw_link_options "${_objfw_link_options}")
+string(REPLACE " " ";" _objfw_arc_options "${_objfw_arc_options}")
+
+foreach(flag ${_objfw_compile_options})
+	if(flag MATCHES "^-I")
+		string(REGEX REPLACE "^-I" "" dir ${flag})
+		target_include_directories(ObjFW INTERFACE ${dir})
+	elseif(flag MATCHES "^-D")
+		target_compile_definitions(ObjFW INTERFACE ${flag})
+	else()
+		target_compile_options(ObjFW INTERFACE
+			$<$<BOOL:$<OBJC_COMPILER_VERSION>>:${flag}>)
+	endif()
+endforeach()
+
+foreach(flag ${_objfw_link_options})
+	if(flag MATCHES "^-l")
+		string(REGEX REPLACE "^-l" "" lib ${flag})
+		target_link_libraries(ObjFW INTERFACE ${lib})
+	elseif(flag MATCHES "^-L")
+		string(REGEX REPLACE "^-L" "" dir ${flag})
+		target_link_directories(ObjFW INTERFACE ${flag})
+	else()
+		target_link_options(ObjFW INTERFACE ${flag})
+	endif()
+endforeach()
+
+foreach(flag ${_objfw_arc_options})
+	target_compile_options(ObjFWARC INTERFACE ${flag})
+endforeach()

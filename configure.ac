@@ -2652,6 +2652,7 @@ AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([
 	buildsys.mk
+	cmake/ObjFWConfigVersion.cmake
 	extra.mk
 	src/Info.plist
 	src/hid/Info.plist

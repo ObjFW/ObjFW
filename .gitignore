@@ -19,6 +19,7 @@
 /aclocal.m4
 /autom4te.cache
 /buildsys.mk
+/cmake/ObjFWConfigVersion.cmake
 /config.h
 /config.h.in
 /config.log
