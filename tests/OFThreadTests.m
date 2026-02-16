@@ -25,13 +25,14 @@
 @interface OFThreadTests: OTTestCase
 @end
 
-@interface TestThread: OFThread
+@interface OFThreadTestsThread: OFThread
 @end
 
-@implementation TestThread
+@implementation OFThreadTestsThread
 - (id)main
 {
-	[[OFThread threadDictionary] setObject: @"bar" forKey: @"foo"];
+	[[OFThreadTestsThread threadDictionary] setObject: @"bar"
+						   forKey: @"foo"];
 	OTAssertEqualObjects([[OFThread threadDictionary] objectForKey: @"foo"],
 	    @"bar");
 
@@ -42,7 +43,7 @@
 @implementation OFThreadTests
 - (void)testThread
 {
-	TestThread *thread = [TestThread thread];
+	OFThreadTestsThread *thread = [OFThreadTestsThread thread];
 
 	[thread start];
 
