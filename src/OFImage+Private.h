@@ -47,6 +47,18 @@ _OFReadBGR888Pixel(const uint8_t *pixels, size_t x, size_t y, size_t width,
 }
 
 static OF_INLINE void
+_OFReadRGB565Pixel(const uint16_t *pixels, size_t x, size_t y, size_t width,
+    uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
+{
+	uint16_t value = pixels[x + y * width];
+
+	*red   = (value & 0xF800) >> 8;
+	*green = (value & 0x07E0) >> 3;
+	*blue  = (value & 0x001F) << 3;
+	*alpha = 255;
+}
+
+static OF_INLINE void
 _OFReadRGBA8888Pixel(const uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t *red, uint8_t *green, uint8_t *blue, uint8_t *alpha)
 {
@@ -105,6 +117,10 @@ _OFReadPixelInt8(const void *pixels, OFPixelFormat format, size_t x, size_t y,
 		return true;
 	case OFPixelFormatBGR888:
 		_OFReadBGR888Pixel(pixels, x, y, width, red, green, blue,
+		    alpha);
+		return true;
+	case OFPixelFormatRGB565:
+		_OFReadRGB565Pixel(pixels, x, y, width, red, green, blue,
 		    alpha);
 		return true;
 	case OFPixelFormatRGBA8888:
@@ -261,6 +277,14 @@ _OFWriteBGR888Pixel(uint8_t *pixels, size_t x, size_t y, size_t width,
 }
 
 static OF_INLINE void
+_OFWriteRGB565Pixel(uint16_t *pixels, size_t x, size_t y, size_t width,
+    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+{
+	pixels[x + y * width] =
+	    (red >> 3) << 11 | (green >> 2) << 5 | blue >> 3;
+}
+
+static OF_INLINE void
 _OFWriteRGBA8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
@@ -299,6 +323,10 @@ _OFWritePixelInt8(void *pixels, OFPixelFormat format, size_t x, size_t y,
 		return true;
 	case OFPixelFormatRGBA8888:
 		_OFWriteRGBA8888Pixel(pixels, x, y, width, red, green, blue,
+		    alpha);
+		return true;
+	case OFPixelFormatRGB565:
+		_OFWriteRGB565Pixel(pixels, x, y, width, red, green, blue,
 		    alpha);
 		return true;
 	case OFPixelFormatARGB8888:

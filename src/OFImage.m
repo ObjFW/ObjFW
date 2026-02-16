@@ -229,6 +229,8 @@
 	case OFPixelFormatRGB888:
 	case OFPixelFormatBGR888:
 		return 24;
+	case OFPixelFormatRGB565:
+		return 16;
 	case OFPixelFormatRGBA8888:
 	case OFPixelFormatARGB8888:
 	case OFPixelFormatABGR8888:
