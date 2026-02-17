@@ -152,9 +152,9 @@
 	    [OFColor black]);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 8.0f / 255.0f
-				green: 84.0f / 255.0f
-				 blue: 136.0f / 255.0f
+	color = [OFColor colorWithRed: 1.0f / 31.0f
+				green: 21.0f / 63.0f
+				 blue: 17.0f / 31.0f
 				alpha: 1.0f];
 	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
 	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
