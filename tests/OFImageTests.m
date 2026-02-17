@@ -335,6 +335,41 @@ static const float allowedImprecision = 0.0000001f;
 	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72.0f), 0.01f);
 }
 
+- (void)testImageWithStreamImageFormatBMPRGB565
+{
+	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile565.bmp"];
+	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+	OFImage *image = [OFImage imageWithStream: stream
+				      imageFormat: OFImageFormatBMP];
+
+	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 29.0f / 31.0f
+			    green: 7.0f / 63.0f
+			     blue: 4.0f / 31.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
+	    [OFColor colorWithRed: 4.0f / 31.0f
+			    green: 44.0f / 63.0f
+			     blue: 9.0f / 31.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor white]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 31.0f / 31.0f
+			    green: 60.0f / 63.0f
+			     blue: 0.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
+	    [OFColor white]);
+
+	OTAssertLessThan(fabsf(image.dotsPerInch.width - 72.0f), 0.01f);
+	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72.0f), 0.01f);
+}
+
 - (void)testWriteToStreamWithImageFormatBMPRGB888
 {
 	OFMutableImage *image = [OFMutableImage

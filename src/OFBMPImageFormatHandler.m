@@ -32,6 +32,17 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
+static OF_INLINE void
+byteSwapLine(void *line, size_t length, size_t byteSwapSize)
+{
+	if (byteSwapSize == 16) {
+		uint16_t *iter = line;
+
+		for (size_t i = 0; i < length / 2; i++)
+			iter[i] = OFByteSwap16(iter[i]);
+	}
+}
+
 @implementation OFBMPImageFormatHandler
 - (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream
 {
@@ -45,6 +56,7 @@
 	OFPixelFormat format;
 	OFMutableImage *image;
 	uint8_t *pixels;
+	size_t byteSwapSize = 0;
 
 	/* File header */
 
@@ -60,7 +72,8 @@
 	/* DIB header */
 
 	headerSize = [stream readLittleEndianInt32];
-	if (headerSize != 40 && headerSize != 108 && headerSize != 124) {
+	if (headerSize != 40 && headerSize != 56 && headerSize != 108 &&
+	    headerSize != 124) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"header size %u\"", headerSize];
 		@throw [OFUnsupportedVersionException
@@ -101,7 +114,7 @@
 
 	compressionMethod = [stream readLittleEndianInt32];
 	if (compressionMethod != 0 &&
-	    (headerSize < 108 || compressionMethod != 3)) {
+	    (headerSize < 56 || compressionMethod != 3)) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"compression method %u\"", compressionMethod];
 		@throw [OFUnsupportedVersionException
@@ -122,8 +135,9 @@
 	case 24:
 		format = OFPixelFormatBGR888;
 		break;
+	case 16:
 	case 32:
-		if (headerSize >= 108 && compressionMethod == 3)
+		if (headerSize >= 56 && compressionMethod == 3)
 			break;
 		/* Fall through */
 	default:;
@@ -133,29 +147,45 @@
 		    exceptionWithVersion: version];
 	}
 
-	if (headerSize >= 108 && compressionMethod == 3) {
+	if (headerSize >= 56 && compressionMethod == 3) {
 		struct {
 			uint32_t red, green, blue, alpha;
 		} masks;
-		char colorSpace[4];
 
 		[stream readIntoBuffer: &masks exactLength: 16];
 
-		if (masks.red == 0xFF000000 && masks.green == 0x00FF0000 &&
-		    masks.blue == 0x0000FF00 && masks.alpha == 0x000000FF)
+		if (bitsPerPixel == 32 && masks.red == 0xFF000000 &&
+		    masks.green == 0x00FF0000 && masks.blue == 0x0000FF00 &&
+		    masks.alpha == 0x000000FF)
 			format = OFPixelFormatRGBA8888;
-		else if (masks.red == 0x00FF0000 && masks.green == 0x0000FF00 &&
-		    masks.blue == 0x000000FF && masks.alpha == 0xFF000000)
+		else if (bitsPerPixel == 32 && masks.red == 0x00FF0000 &&
+		    masks.green == 0x0000FF00 && masks.blue == 0x000000FF &&
+		    masks.alpha == 0xFF000000)
 			format = OFPixelFormatARGB8888;
-		else if (masks.red == 0x000000FF && masks.green == 0x0000FF00 &&
-		    masks.blue == 0x00FF0000 && masks.alpha == 0xFF000000)
+		else if (bitsPerPixel == 32 && masks.red == 0x000000FF &&
+		    masks.green == 0x0000FF00 && masks.blue == 0x00FF0000 &&
+		    masks.alpha == 0xFF000000)
 			format = OFPixelFormatABGR8888;
-		else if (masks.red == 0x0000FF00 && masks.green == 0x00FF0000 &&
-		    masks.blue == 0xFF000000 && masks.alpha == 0x000000FF)
+		else if (bitsPerPixel == 32 && masks.red == 0x0000FF00 &&
+		    masks.green == 0x00FF0000 && masks.blue == 0xFF000000 &&
+		    masks.alpha == 0x000000FF)
 			format = OFPixelFormatBGRA8888;
-		else
+		else if (bitsPerPixel == 16 && masks.red == 0x0000F800 &&
+		    masks.green == 0x000007E0 && masks.blue == 0x0000001F &&
+		    masks.alpha == 0x00000000)
+			format = OFPixelFormatRGB565;
+		else if (bitsPerPixel == 16 && masks.red == 0x00F80000 &&
+		    masks.green == 0xE0070000 && masks.blue == 0x1F000000 &&
+		    masks.alpha == 0x00000000) {
+			format = OFPixelFormatRGB565;
+			byteSwapSize = 16;
+		} else
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: @"\"bit fields\""];
+	}
+
+	if (headerSize >= 108) {
+		char colorSpace[4];
 
 		[stream readIntoBuffer: &colorSpace exactLength: 4];
 
@@ -176,6 +206,8 @@
 			pixels -= lineLength;
 
 			[stream readIntoBuffer: pixels exactLength: lineLength];
+			byteSwapLine(pixels, lineLength, byteSwapSize);
+
 			if (linePadding > 0) {
 				char padding[3];
 				[stream readIntoBuffer: padding
@@ -185,6 +217,8 @@
 	} else {
 		for (size_t i = 0; i < height; i++) {
 			[stream readIntoBuffer: pixels exactLength: lineLength];
+			byteSwapLine(pixels, lineLength, byteSwapSize);
+
 			if (linePadding > 0) {
 				char padding[3];
 				[stream readIntoBuffer: padding

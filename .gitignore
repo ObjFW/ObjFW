@@ -54,6 +54,7 @@
 /tests/plugin/Info.plist
 /tests/subprocess/subprocess
 /tests/terminal/terminal_tests
+/tests/testfile565_bmp.m
 /tests/testfile_bin.m
 /tests/testfile_bmp.m
 /tests/testfile_ini.m
