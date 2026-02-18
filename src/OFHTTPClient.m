@@ -383,8 +383,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFMutableDictionary *newHeaders =
 			    objc_autorelease([headers mutableCopy]);
 
-			if (![newIRI.host isEqual: IRI.host])
+			if (![newIRI.host isEqual: IRI.host]) {
 				[newHeaders removeObjectForKey: @"Host"];
+				[newHeaders
+				    removeObjectForKey: @"Authorization"];
+			}
 
 			/*
 			 * 303 means the request should be converted to a GET
