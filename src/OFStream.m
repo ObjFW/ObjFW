@@ -538,6 +538,10 @@ retry_2:
 	char *buffer = OFAllocMemory(length + 1, 1);
 	buffer[length] = 0;
 
+	if (SIZE_MAX - length < 1)
+		@throw [OFOutOfRangeException exception];
+
+	buffer = OFAllocMemory(length + 1, 1);
 	@try {
 		[self readIntoBuffer: buffer exactLength: length];
 		ret = [OFString stringWithCString: buffer encoding: encoding];
@@ -685,6 +689,9 @@ retry:
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
@@ -1002,6 +1009,9 @@ retry:
 
 		/* No \0 was found */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
