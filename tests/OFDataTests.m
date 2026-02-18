@@ -353,6 +353,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	objc_release(_data);
+
+	[super dealloc];
+}
+
 - (size_t)count
 {
 	return _data.count;
