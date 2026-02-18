@@ -728,6 +728,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	_length = 0;
 
+	if ((statusCode == 301 || statusCode == 302 || statusCode == 307) &&
+	    request.method != OFHTTPRequestMethodGet &&
+	    request.method != OFHTTPRequestMethodHead)
+		return false;
+
 	return true;
 }
 
