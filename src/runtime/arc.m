@@ -308,14 +308,14 @@ objc_loadWeakRetained(id *object)
 	if (*object != nil && _objc_hashtable_get(hashtable, *object) != NULL)
 		value = *object;
 
+	if (class_respondsToSelector(object_getClass(value),
+	    @selector(retainWeakReference)) && [value retainWeakReference])
+		return value;
+
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
 		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
-
-	if (class_respondsToSelector(object_getClass(value),
-	    @selector(retainWeakReference)) && [value retainWeakReference])
-		return value;
 
 	return nil;
 }
