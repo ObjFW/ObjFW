@@ -313,7 +313,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
 		copy->_extraField = [_extraField copy];
-		copy->_fileComment = [_extraField copy];
+		copy->_fileComment = [_fileComment copy];
 		copy->_startDiskNumber = _startDiskNumber;
 		copy->_internalAttributes = _internalAttributes;
 		copy->_versionSpecificAttributes = _versionSpecificAttributes;
