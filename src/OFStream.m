@@ -535,13 +535,13 @@ retry_2:
 			  encoding: (OFStringEncoding)encoding
 {
 	OFString *ret;
-	char *buffer = OFAllocMemory(length + 1, 1);
-	buffer[length] = 0;
+	char *buffer;
 
 	if (SIZE_MAX - length < 1)
 		@throw [OFOutOfRangeException exception];
 
 	buffer = OFAllocMemory(length + 1, 1);
+	buffer[length] = 0;
 	@try {
 		[self readIntoBuffer: buffer exactLength: length];
 		ret = [OFString stringWithCString: buffer encoding: encoding];
