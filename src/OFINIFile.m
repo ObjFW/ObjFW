@@ -30,6 +30,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
@@ -114,6 +115,9 @@ isWhitespaceLine(OFString *line)
 	for (section in _sections)
 		if ([section.name isEqual: name])
 			return section;
+
+	if ([name containsString: @"\n"] || [name containsString: @"\r"])
+		@throw [OFInvalidArgumentException exception];
 
 	section = objc_autorelease(
 	    [[OFINISection alloc] of_initWithName: name]);
