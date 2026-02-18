@@ -27,6 +27,7 @@
 #import "OFString.h"
 
 #import "OFConnectIPSocketFailedException.h"
+#import "OFOutOfRangeException.h"
 
 enum {
 	stateSendAuthentication = 1,
@@ -49,6 +50,9 @@ enum {
 	self = [super init];
 
 	@try {
+		if (_host.UTF8StringLength > 255)
+			@throw [OFOutOfRangeException exception];
+
 		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
