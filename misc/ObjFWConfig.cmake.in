@@ -1,16 +1,9 @@
-find_program(ObjFW_CONFIG_EXECUTABLE
-	objfw-config
-	DOC "objfw-config executable"
-)
+block(SCOPE_FOR VARIABLES PROPAGATE ObjFW_CONFIG_EXECUTABLE)
+	set(prefix "@prefix@")
+	set(exec_prefix "@exec_prefix@")
+	set(ObjFW_CONFIG_EXECUTABLE "@bindir@/@BIN_PREFIX@objfw-config")
+endblock()
 mark_as_advanced(ObjFW_CONFIG_EXECUTABLE)
-
-if(NOT ObjFW_CONFIG_EXECUTABLE)
-	if(ObjFW_FIND_REQUIRED)
-		message(FATAL_ERROR "objfw-config not found!")
-	else()
-		return()
-	endif()
-endif()
 
 set(_objfw_packages_flags "")
 foreach(package ${ObjFW_FIND_COMPONENTS})

@@ -28,6 +28,7 @@
 /extra.mk
 /generators/library/gen_libraries
 /generators/unicode/gen_tables
+/misc/ObjFWConfig.cmake
 /misc/ObjFWConfigVersion.cmake
 /src/Info.plist
 /src/bridge/Info.plist
