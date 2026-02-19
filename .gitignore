@@ -19,7 +19,6 @@
 /aclocal.m4
 /autom4te.cache
 /buildsys.mk
-/cmake/ObjFWConfigVersion.cmake
 /config.h
 /config.h.in
 /config.log
@@ -29,6 +28,7 @@
 /extra.mk
 /generators/library/gen_libraries
 /generators/unicode/gen_tables
+/misc/ObjFWConfigVersion.cmake
 /src/Info.plist
 /src/bridge/Info.plist
 /src/hid/Info.plist

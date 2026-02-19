@@ -23,11 +23,11 @@ docs:
 	rm -fr docs
 	doxygen >/dev/null
 
-install-extra: cmake/ObjFWConfig.cmake cmake/ObjFWConfigVersion.cmake
+install-extra: misc/ObjFWConfig.cmake misc/ObjFWConfigVersion.cmake
 	for i in ObjFWConfig.cmake ObjFWConfigVersion.cmake; do \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${libdir}/cmake/ObjFW && \
-		    ${INSTALL} -m 644 cmake/$$i \
+		    ${INSTALL} -m 644 misc/$$i \
 		    ${DESTDIR}${libdir}/cmake/ObjFW/$$i; then \
 			${INSTALL_OK}; \
 		else \
