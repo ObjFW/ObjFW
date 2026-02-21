@@ -82,9 +82,8 @@ isWhitespaceLine(OFString *line)
 	self = [super init];
 
 	@try {
-		OFINISection *section = objc_autorelease(
-		    [[OFINISection alloc] of_initWithName: @""]);
-		_sections = [[OFMutableArray alloc] initWithObject: section];
+		_sections = [[OFMutableArray alloc] init];
+		_sectionsMap = [[OFMutableDictionary alloc] init];
 
 		[self of_parseIRI: IRI encoding: encoding];
 	} @catch (id e) {
@@ -98,6 +97,7 @@ isWhitespaceLine(OFString *line)
 - (void)dealloc
 {
 	objc_release(_sections);
+	objc_release(_sectionsMap);
 
 	[super dealloc];
 }
@@ -112,9 +112,8 @@ isWhitespaceLine(OFString *line)
 	void *pool = objc_autoreleasePoolPush();
 	OFINISection *section;
 
-	for (section in _sections)
-		if ([section.name isEqual: name])
-			return section;
+	if ((section = [_sectionsMap objectForKey: name]) != nil)
+		return section;
 
 	if ([name containsString: @"\n"] || [name containsString: @"\r"])
 		@throw [OFInvalidArgumentException exception];
@@ -122,6 +121,7 @@ isWhitespaceLine(OFString *line)
 	section = objc_autorelease(
 	    [[OFINISection alloc] of_initWithName: name]);
 	[_sections addObject: section];
+	[_sectionsMap setObject: section forKey: name];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -170,9 +170,7 @@ isWhitespaceLine(OFString *line)
 			if (sectionName.length == 0)
 				@throw [OFInvalidFormatException exception];
 
-			section = objc_autorelease([[OFINISection alloc]
-			    of_initWithName: sectionName]);
-			[_sections addObject: section];
+			section = [self sectionForName: sectionName];
 		} else {
 			if (section == nil)
 				section = [self sectionForName: @""];

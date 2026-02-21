@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFIRI;
 @class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 
 /**
  * @class OFINIFile OFINIFile.h ObjFW/ObjFW.h
@@ -35,6 +36,8 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFINIFile: OFObject
 {
 	OFMutableArray OF_GENERIC(OFINISection *) *_sections;
+	OFMutableDictionary OF_GENERIC(OFString *, OFINISection *)
+	    *_sectionsMap;
 }
 
 /**
