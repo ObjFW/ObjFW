@@ -115,7 +115,8 @@ isWhitespaceLine(OFString *line)
 	if ((section = [_sectionsMap objectForKey: name]) != nil)
 		return section;
 
-	if ([name containsString: @"\n"] || [name containsString: @"\r"])
+	if ([name rangeOfCharacterFromSet:
+	    [OFCharacterSet whitespaceCharacterSet]].location != OFNotFound)
 		@throw [OFInvalidArgumentException exception];
 
 	section = objc_autorelease(

@@ -130,6 +130,7 @@ constructRequestString(OFHTTPRequest *request)
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	bool hasContentLength, chunked;
+	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
@@ -204,12 +205,21 @@ constructRequestString(OFHTTPRequest *request)
 				    @"urlencoded; charset=UTF-8"
 			    forKey: @"Content-Type"];
 
+	newlineCharacterSet = [OFCharacterSet newlineCharacterSet];
+
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil)
+	    (object = [objectEnumerator nextObject]) != nil) {
+		if ([key rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound ||
+		    [object rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound)
+			@throw [OFInvalidArgumentException exception];
+
 		[requestString appendFormat: @"%@: %@\r\n", key, object];
+	}
 
 	[requestString appendString: @"\r\n"];
 

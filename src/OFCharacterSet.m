@@ -31,6 +31,9 @@
 @interface OFWhitespaceCharacterSet: OFCharacterSet
 @end
 
+@interface OFNewlineCharacterSet: OFCharacterSet
+@end
+
 @interface OFControlCharacterSet: OFCharacterSet
 @end
 
@@ -39,12 +42,19 @@ static struct {
 } placeholder;
 
 static OFCharacterSet *whitespaceCharacterSet;
+static OFCharacterSet *newlineCharacterSet;
 static OFCharacterSet *controlCharacterSet;
 
 static void
 initWhitespaceCharacterSet(void)
 {
 	whitespaceCharacterSet = [[OFWhitespaceCharacterSet alloc] init];
+}
+
+static void
+initNewlineCharacterSet(void)
+{
+	newlineCharacterSet = [[OFNewlineCharacterSet alloc] init];
 }
 
 static void
@@ -106,6 +116,14 @@ OF_SINGLETON_METHODS
 	OFOnce(&onceControl, initWhitespaceCharacterSet);
 
 	return whitespaceCharacterSet;
+}
+
++ (OFCharacterSet *)newlineCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initNewlineCharacterSet);
+
+	return newlineCharacterSet;
 }
 
 + (OFCharacterSet *)controlCharacterSet
@@ -180,6 +198,19 @@ OF_SINGLETON_METHODS
 	default:
 		return false;
 	}
+}
+
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFNewlineCharacterSet
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if ((character >= 0x0A && character <= 0x0D) || character == 0x85 ||
+	    character == 0x2028 || character == 0x2029)
+		return true;
+
+	return false;
 }
 
 OF_SINGLETON_METHODS
