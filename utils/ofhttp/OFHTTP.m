@@ -1224,11 +1224,14 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdErr writeFormat: @"⠒ %@", IRI.string
-				    .stringByReplacingControlCharacters];
+				[OFStdErr writeString: @"⠒ "];
 			else
-				[OFStdErr writeFormat: @"? %@", IRI.string
-				    .stringByReplacingControlCharacters];
+				[OFStdErr writeString: @"? "];
+
+			OFStdErr.underlined = true;
+			[OFStdErr writeString:
+			    IRI.string.stringByReplacingControlCharacters];
+			OFStdErr.underlined = false;
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];
