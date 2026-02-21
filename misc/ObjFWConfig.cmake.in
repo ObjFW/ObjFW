@@ -3,7 +3,6 @@ block(SCOPE_FOR VARIABLES PROPAGATE ObjFW_CONFIG_EXECUTABLE)
 	set(exec_prefix "@exec_prefix@")
 	set(ObjFW_CONFIG_EXECUTABLE "@bindir@/@BIN_PREFIX@objfw-config")
 endblock()
-mark_as_advanced(ObjFW_CONFIG_EXECUTABLE)
 
 set(_objfw_packages_flags "")
 foreach(package ${ObjFW_FIND_COMPONENTS})
@@ -25,7 +24,6 @@ foreach(package ${ObjFW_FIND_COMPONENTS})
 	endif()
 endforeach()
 
-set(ObjFW_FOUND TRUE)
 add_library(ObjFW::ObjFW IMPORTED INTERFACE)
 add_library(ObjFW::ARC IMPORTED INTERFACE)
 
