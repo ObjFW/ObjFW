@@ -35,16 +35,28 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		COMMAND_ERROR_IS_FATAL ANY
 	)
-	execute_process(
-		COMMAND ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
-		${package_flags}
-		OUTPUT_VARIABLE link_options
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-		COMMAND_ERROR_IS_FATAL ANY
-	)
+	if(APPLE)
+		execute_process(
+			COMMAND ${ObjFW_CONFIG_EXECUTABLE}
+			--framework-libs --ldflags ${package_flags}
+			OUTPUT_VARIABLE link_options
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+	else()
+		execute_process(
+			COMMAND ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
+			${package_flags}
+			OUTPUT_VARIABLE link_options
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+	endif()
 
 	string(REPLACE " " ";" compile_options "${compile_options}")
 	string(REPLACE " " ";" link_options "${link_options}")
+	string(REPLACE "-framework;" "-framework "
+		link_options "${link_options}")
 
 	foreach(flag ${compile_options})
 		if(flag MATCHES "^-I")
@@ -69,6 +81,9 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 			string(REGEX REPLACE "^-L" "" dir ${flag})
 			target_link_directories(ObjFW::${package}
 				INTERFACE ${dir})
+		elseif(flag MATCHES "^-framework ")
+			target_link_libraries(ObjFW::${package}
+				INTERFACE ${flag})
 		else()
 			target_link_options(ObjFW::${package} INTERFACE ${flag})
 		endif()
