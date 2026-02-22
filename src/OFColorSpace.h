@@ -108,6 +108,7 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
  * @param OETF The OETF for the color space
  * @param RGBToXYZMatrix The RGB to CIE XYZ matrix for the color space
  * @param XYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
+ * @param linear Whether the color space is linear
  * @return An new, autoreleased color space
  */
 + (instancetype)colorSpaceWithEOTF: (OFColorSpaceTransferFunction)EOTF
@@ -172,6 +173,7 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
  * @param OETF The OETF for the color space
  * @param RGBToXYZMatrix The RGB to CIE XYZ matrix for the color space
  * @param XYZToRGBMatrix The CIE XYZ to RGB matrix for the color space
+ * @param linear Whether the color space is linear
  * @return An initialized color space
  */
 - (instancetype)initWithEOTF: (OFColorSpaceTransferFunction)EOTF

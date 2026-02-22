@@ -80,6 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param green The green value of the color
  * @param blue The blue value of the color
  * @param alpha The alpha value of the color, between 0.0 and 1.0
+ * @param colorSpace The color space the color is in
  * @return A new color with the specified red, green, blue and alpha value
  */
 + (instancetype)colorWithRed: (float)red
@@ -267,6 +268,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param green The green value of the color
  * @param blue The blue value of the color
  * @param alpha The alpha value of the color, between 0.0 and 1.0
+ * @param colorSpace The color space the color is in
  * @return A color initialized with the specified red, green, blue and alpha
  *	   value
  */
