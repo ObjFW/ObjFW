@@ -4,6 +4,86 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.4.4 -> ObjFW 1.5, 2026-02-22
+ + Adds OFColorSpace and adds support for color spaces to OFColor. Supports
+   sRGB, linear sRGB, BT.709, Display-P3, linear Display-P3, BT.2020, linear
+   BT.2020, Adobe RGB and linear Adobe RGB.
+ + Adds OFImage to store an image in various pixel formats and color spaces.
+ + Adds OFCanvas to create (draw) images, including bilinear image scaling and
+   alpha blending in linear color space and pixel format and color space
+   transformations when source and destination use a different pixel format
+   and/or color space.
+ + Adds OFImageFormatHandler as a generic interface to handle image formats
+   including a registry for image formats so that it can be extended by 3rd
+   parties.
+ + Adds an OFImageFormatHandler for BMP and QOI images.
+ + Adds support for CMake projects using ObjFW.
+ + Adds support for Unicode 17.
+ + Adds methods to OFString and OFMutableString to remove control characters.
+ + OFLocale now escapes all control characters in variables unless the
+   variable name starts with an `@`.
+ * OFStdOut and OFStdErr now allow writing with a lossy encoding if they have
+   an underlying terminal.
+ + OFStdOut and OFStdErr now support setting the terminal's progress
+   indicator.
+ * Revives support for AmigaOS 4 that had bitrotten over the years.
+ + OFFileIRIHandler now supports nanosecond precision on operating systems
+   that support it.
+ + OFFileIRIHandler now supports setting file owner and group on UNIX systems.
+ + OFFileIRIHandler now supports retrieving and setting of MS-DOS attributes,
+   Amiga file protection and Amiga file comments.
+ + OFArchiveEntry now has a file type property shared by all archive formats.
+ + OFLHAArchiveEntry now supports MS-DOS attributes, Amiga file protection and
+   Amiga file comments.
+ * OFLHAArchiveEntry now handles \xFF in level 0 header filenames.
+ * OFLHAArchiveEntry now works around Amiga LHA using broken UNIX time.
+ + OFTarArchive now supports PAX extended headers to allow for files > 8 GB.
+ + OFTarArchive now supports Amiga file protection and Amiga file comments.
+ * Fixes OFZIPArchiveEntry not correctly copying the comment when performing a
+   mutable copy.
+ + Adds a new type OFFloat16 for 16-bit floating point that is always
+   available, even when the platform does not support float16.
+ * OFHTTPClient now has improved logic when to use keep-alive connections.
+ + OFHTTPClient now supports custom run loop modes.
+ * OFHTTPClient now explicitly removes "Authorization" headers on redirects to
+   other hosts.
+ * OFHTTPClient no longer allows newline characters in headers.
+ * OFINIFile now rejects section names with newlines and merges repeated
+   sections.
+ * OFInflateStream has been renamed to OFDeflateStream in anticipation for
+   compression support.
+ * Fixes +[OFSystemInfo networkInterfaces] on MorphOS.
+ * objfw-config now includes flags for Stack Protector & RELRO in LDFLAGS to
+   avoid linker errors if ObjFW has been built with Stack Protector & RELRO.
+ * Fixes a potential race condition for weak references in the runtime.
+ * Removes support for Secure Transport.
+ + Adds support for Mbed TLS 4.
+ * openssl4.library is now lazily loaded on MorphOS to avoid a dependency on
+   it until it is actually needed.
+ + ObjFWHID adds support for the following controllers: GameCube controller
+   via adapter (Linux & macOS), DualShock 1/2 via adapter (Linux), DualShock 3
+   (Linux), MOCUTE-053X-M35-HID (Linux)
+ * ObjFWHID and ObjFWTLS now have proper version information in their .dll
+   files.
+ + ofarc now supports files > 8 GB in Tar files.
+ + ofarc now stores UNIX permissions in ZIP files.
+ + ofarc now preserves Amiga file protection and Amiga file comments in LHA,
+   Tar and ZIP files (creation and extraction).
+ + ofarc now preserves MS-DOS attributes for LHA and ZIP files (creation and
+   extraction).
+ * ofarc now removes all escape codes from output to stderr (except those used
+   for its own formatting).
+ + ofdns now supports passing a name server as a domain name itself to
+   --server=.
+ * ofhash now removes all escape codes from output to stderr (except those used
+   for its own formatting).
+ + ofhttp now uses color, bold and underlined for improved formatting and sets
+   the terminal's progress indicator.
+ * ofhttp no longer follows 301/302/307 redirects as a result of a non-GET and
+   non-HEAD request.
+ * ofhttp now removes all escape codes from output to stderr (except those used
+   for its own formatting).
+
 ObjFW 1.4.3 -> ObjFW 1.4.4, 2026-02-01
  * Fixes Swift interoperability.
  * Fixes building for Wii with new devkitPro.
