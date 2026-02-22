@@ -2270,8 +2270,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith"
 
 	AC_ARG_ENABLE(werror,
-		AS_HELP_STRING([--disable-werror], [do not build with -Werror]))
-	AS_IF([test x"$enable_werror" != x"yes"], [
+		AS_HELP_STRING([--enable-werror], [build with -Werror]))
+	AS_IF([test x"$enable_werror" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -Werror"
 	])
 
