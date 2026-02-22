@@ -74,6 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
 		bool inLastBlock;
 	} *_Nullable _inflateCtx;
 	bool _atEndOfStream;
+	OF_RESERVE_IVARS(OFDeflateStream, 4)
 }
 
 /**

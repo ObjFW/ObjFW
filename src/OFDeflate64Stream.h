@@ -38,6 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint16_t _slidingWindowIndex;
 	struct OFInflateContext *_Nullable _inflateCtx;
 	bool _atEndOfStream;
+	OF_RESERVE_IVARS(OFDeflate64Stream, 4)
 }
 
 /**
