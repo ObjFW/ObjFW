@@ -17,9 +17,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFDeflate64Stream.h"
+#include "config.h"
 
-OF_SUBCLASSING_RESTRICTED
-OF_DEPRECATED(ObjFW, 1, 5, "Use OFDeflate64Stream instead")
-@interface OFInflate64Stream: OFDeflate64Stream
+#import "OFInflateStream.h"
+
+@implementation OFInflateStream
 @end

@@ -40,6 +40,8 @@ SRCS = OFApplication.m			\
        OFImage.m			\
        OFImageFormatHandler.m		\
        OFIndexSet.m			\
+       OFInflate64Stream.m		\
+       OFInflateStream.m		\
        OFInvocation.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\
@@ -194,8 +196,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
-	    OFInflate64Stream.h			\
-	    OFInflateStream.h			\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
