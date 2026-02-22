@@ -59,9 +59,6 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
- * @note This is not available on iOS when using Secure Transport! Use
- *	 @ref certificateChainFromPKCS12FileAtIRI:passphrase: instead!
- *
  * @param certificatesIRI The IRI to the PEM file with the certificate chain
  * @param privateKeyIRI An optional IRI to the PEM file with the private key or
  *			`nil`
