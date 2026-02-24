@@ -4,6 +4,10 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.5 -> ObjFW 1.5.1, 2026-02-24
+ * Fixes a regression introduced in 1.5 that made weak references deadlock.
+ * Improves the unit test for weak references.
+
 ObjFW 1.4.4 -> ObjFW 1.5, 2026-02-22
  + Adds OFColorSpace and adds support for color spaces to OFColor. Supports
    sRGB, linear sRGB, BT.709, Display-P3, linear Display-P3, BT.2020, linear
