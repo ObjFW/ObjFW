@@ -37,12 +37,15 @@
 - (void)testWeakReferences
 {
 	id object = [[OFObject alloc] init];
-	__weak id weak = object;
+	__weak id weak1 = object;
+	__weak id weak2 = object;
 
-	OTAssertEqual(weak, object);
+	OTAssertEqual(weak1, object);
+	OTAssertEqual(weak2, object);
 
 	object = nil;
-	OTAssertNil(weak);
+	OTAssertNil(weak1);
+	OTAssertNil(weak2);
 }
 @end
 
