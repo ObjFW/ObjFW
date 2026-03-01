@@ -95,8 +95,8 @@ void *__objc_class_name_OFIRIHandler;
 void *__objc_class_name_OFImage;
 void *__objc_class_name_OFImageFormatHandler;
 void *__objc_class_name_OFIndexSet;
-void *__objc_class_name_OFInflate64Stream
-void *__objc_class_name_OFInflateStream
+void *__objc_class_name_OFInflate64Stream;
+void *__objc_class_name_OFInflateStream;
 void *__objc_class_name_OFInitializationFailedException;
 void *__objc_class_name_OFInvalidArgumentException;
 void *__objc_class_name_OFInvalidEncodingException;
@@ -232,7 +232,7 @@ void *__objc_class_name_OFLOCDNSResourceRecord;
 void *__objc_class_name_OFListenOnSocketFailedException;
 void *__objc_class_name_OFMXDNSResourceRecord;
 void *__objc_class_name_OFNSDNSResourceRecord;
-void *__objc_class_name_OFObserveKernelEventsFailedException
+void *__objc_class_name_OFObserveKernelEventsFailedException;
 void *__objc_class_name_OFPTRDNSResourceRecord;
 void *__objc_class_name_OFRPDNSResourceRecord;
 void *__objc_class_name_OFResolveHostFailedException;
