@@ -17,17 +17,25 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFImage.h"
+#import "OHExtendedGamepad.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFConcreteMutableImage: OFMutableImage
+/**
+ * @class OHDualShockGamepad OHDualShockGamepad.h ObjFWHID/ObjFWHID.h
+ *
+ * @brief A Sony DualShock 1 or 2.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OHDualShockGamepad: OFObject <OHExtendedGamepad>
 {
-	OFSize _size;
-	OFPixelFormat _pixelFormat;
-	void *_pixels;
-	bool _freeWhenDone;
+	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
+	    *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
 }
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

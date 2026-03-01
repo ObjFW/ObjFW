@@ -314,8 +314,8 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 				[OFStdOut writeString: @"\t"];
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_extensions",
-				    @"Extensions: %[extensions]",
-				    @"extensions", extensions)];
+				    @"Extensions: %[@extensions]",
+				    @"@extensions", extensions)];
 			}
 		}
 

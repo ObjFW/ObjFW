@@ -541,26 +541,37 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	for (size_t i = 0; i < length; i++) {
 		if (characters[i] <= 0x1F) {
-			void *pool2 = objc_autoreleasePoolPush();
 			OFString *replacement = [OFString
 			    stringWithFormat: @"%C", characters[i] + 0x2400];
 
 			[self replaceCharactersInRange: OFMakeRange(i, 1)
 					    withString: replacement];
 
-			objc_autoreleasePoolPop(pool2);
-		} else if (characters[i] == 0x7F)
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+		} else if (characters[i] == 0x7F) {
 			[self replaceCharactersInRange: OFMakeRange(i, 1)
 					    withString: @"␡"];
-		else if (characters[i] >= 0x80 && characters[i] <= 0x9F) {
-			void *pool2 = objc_autoreleasePoolPush();
+
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+		} else if (characters[i] >= 0x80 && characters[i] <= 0x9F) {
 			OFString *replacement = [OFString
 			    stringWithFormat: @"␛%C", characters[i] - 0x40];
 
 			[self replaceCharactersInRange: OFMakeRange(i, 1)
 					    withString: replacement];
 
-			objc_autoreleasePoolPop(pool2);
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+			length++;
+			i++;
 		}
 	}
 

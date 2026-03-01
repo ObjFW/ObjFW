@@ -18,6 +18,7 @@
  */
 
 #import "OFObject.h"
+#import "OFColorSpace.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -49,8 +50,16 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /**
- * @brief Creates a new color with the specified red, green, blue and alpha
- *	  value.
+ * @brief The color space in which the color is.
+ *
+ * The color's red, green and blue values should be interpreted according to
+ * the color space.
+ */
+@property (readonly, retain, nonatomic) OFColorSpace *colorSpace;
+
+/**
+ * @brief Creates a new color in the sRGB color space with the specified red,
+ *	  green, blue and alpha value.
  *
  * @param red The red value of the color
  * @param green The green value of the color
@@ -64,9 +73,26 @@ OF_ASSUME_NONNULL_BEGIN
 		       alpha: (float)alpha;
 
 /**
+ * @brief Creates a new color in the specified color space with the specified
+ *	  red, green, blue and alpha value.
+ *
+ * @param red The red value of the color
+ * @param green The green value of the color
+ * @param blue The blue value of the color
+ * @param alpha The alpha value of the color, between 0.0 and 1.0
+ * @param colorSpace The color space the color is in
+ * @return A new color with the specified red, green, blue and alpha value
+ */
++ (instancetype)colorWithRed: (float)red
+		       green: (float)green
+			blue: (float)blue
+		       alpha: (float)alpha
+		  colorSpace: (OFColorSpace *)colorSpace;
+
+/**
  * @brief Returns the HTML color `black`.
  *
- * The RGBA value is (0, 0, 0, 1).
+ * The RGBA value in the sRGB color space is (0, 0, 0, 1).
  *
  * @return The HTML color `black`
  */
@@ -75,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `silver`.
  *
- * The RGBA value is (0.75, 0.75, 0.75, 1).
+ * The RGBA value in the sRGB color space is (0.75, 0.75, 0.75, 1).
  *
  * @return The HTML color `silver`
  */
@@ -84,7 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `gray`.
  *
- * The RGBA value is (0.5, 0.5, 0.5, 1).
+ * The RGBA value in the sRGB color space is (0.5, 0.5, 0.5, 1).
  *
  * @return The HTML color `gray`
  */
@@ -95,7 +121,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @deprecated Use @ref gray instead.
  *
- * The RGBA value is (0.5, 0.5, 0.5, 1).
+ * The RGBA value in the sRGB color space is (0.5, 0.5, 0.5, 1).
  *
  * @return The HTML color `gray`
  */
@@ -104,7 +130,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `white`.
  *
- * The RGBA value is (1, 1, 1, 1).
+ * The RGBA value in the sRGB color space is (1, 1, 1, 1).
  *
  * @return The HTML color `white`
  */
@@ -113,7 +139,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `maroon`.
  *
- * The RGBA value is (0.5, 0, 0, 1).
+ * The RGBA value in the sRGB color space is (0.5, 0, 0, 1).
  *
  * @return The HTML color `maroon`
  */
@@ -122,7 +148,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `red`.
  *
- * The RGBA value is (1, 0, 0, 1).
+ * The RGBA value in the sRGB color space is (1, 0, 0, 1).
  *
  * @return The HTML color `red`
  */
@@ -131,7 +157,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `purple`.
  *
- * The RGBA value is (0.5, 0, 0.5, 1).
+ * The RGBA value in the sRGB color space is (0.5, 0, 0.5, 1).
  *
  * @return The HTML color `purple`
  */
@@ -140,7 +166,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `fuchsia`.
  *
- * The RGBA value is (1, 0, 1, 1).
+ * The RGBA value in the sRGB color space is (1, 0, 1, 1).
  *
  * @return The HTML color `fuchsia`
  */
@@ -149,7 +175,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `green`.
  *
- * The RGBA value is (0, 0.5, 0, 1).
+ * The RGBA value in the sRGB color space is (0, 0.5, 0, 1).
  *
  * @return The HTML color `green`
  */
@@ -158,7 +184,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `lime`.
  *
- * The RGBA value is (0, 1, 0, 1).
+ * The RGBA value in the sRGB color space is (0, 1, 0, 1).
  *
  * @return The HTML color `lime`
  */
@@ -167,7 +193,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `olive`.
  *
- * The RGBA value is (0.5, 0.5, 0, 1).
+ * The RGBA value in the sRGB color space is (0.5, 0.5, 0, 1).
  *
  * @return The HTML color `olive`
  */
@@ -176,7 +202,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `yellow`.
  *
- * The RGBA value is (1, 1, 0, 1).
+ * The RGBA value in the sRGB color space is (1, 1, 0, 1).
  *
  * @return The HTML color `yellow`
  */
@@ -185,7 +211,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `navy`.
  *
- * The RGBA value is (0, 0, 0.5, 1).
+ * The RGBA value in the sRGB color space is (0, 0, 0.5, 1).
  *
  * @return The HTML color `navy`
  */
@@ -194,7 +220,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `blue`.
  *
- * The RGBA value is (0, 0, 1, 1).
+ * The RGBA value in the sRGB color space is (0, 0, 1, 1).
  *
  * @return The HTML color `blue`
  */
@@ -203,7 +229,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `teal`.
  *
- * The RGBA value is (0, 0.5, 0.5, 1).
+ * The RGBA value in the sRGB color space is (0, 0.5, 0.5, 1).
  *
  * @return The HTML color `teal`
  */
@@ -212,15 +238,15 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the HTML color `aqua`.
  *
- * The RGBA value is (0, 1, 1, 1).
+ * The RGBA value in the sRGB color space is (0, 1, 1, 1).
  *
  * @return The HTML color `aqua`
  */
 + (OFColor *)aqua;
 
 /**
- * @brief Initializes an already allocated color with the specified red, green,
- *	  blue and alpha value.
+ * @brief Initializes an already allocated color in the sRGB color space with
+ *	  the specified red, green, blue and alpha value.
  *
  * @param red The red value of the color
  * @param green The green value of the color
@@ -235,6 +261,24 @@ OF_ASSUME_NONNULL_BEGIN
 		      alpha: (float)alpha;
 
 /**
+ * @brief Initializes an already allocated color in the specified color space
+ *	  with the specified red, green, blue and alpha value.
+ *
+ * @param red The red value of the color
+ * @param green The green value of the color
+ * @param blue The blue value of the color
+ * @param alpha The alpha value of the color, between 0.0 and 1.0
+ * @param colorSpace The color space the color is in
+ * @return A color initialized with the specified red, green, blue and alpha
+ *	   value
+ */
+- (instancetype)initWithRed: (float)red
+		      green: (float)green
+		       blue: (float)blue
+		      alpha: (float)alpha
+		 colorSpace: (OFColorSpace *)colorSpace;
+
+/**
  * @brief Returns the red, green, blue and alpha value of the color.
  *
  * @param red A pointer to store the red value of the color
@@ -246,6 +290,14 @@ OF_ASSUME_NONNULL_BEGIN
 	 green: (float *)green
 	  blue: (float *)blue
 	 alpha: (nullable float *)alpha;
+
+/**
+ * @brief Returns the color converted to the specified color space.
+ *
+ * @param colorSpace The color space to convert the color to
+ * @return The color converted to the specified color space
+ */
+- (OFColor *)colorUsingColorSpace: (OFColorSpace *)colorSpace;
 @end
 
 OF_ASSUME_NONNULL_END

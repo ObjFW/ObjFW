@@ -26,10 +26,10 @@
 #import "OFOnce.h"
 
 static const float identityValues[4][4] = {
-	{ 1, 0, 0, 0 },
-	{ 0, 1, 0, 0 },
-	{ 0, 0, 1, 0 },
-	{ 0, 0, 0, 1 }
+	{ 1.0f, 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f, 0.0f },
+	{ 0.0f, 0.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f }
 };
 
 @implementation OFMatrix4x4
@@ -346,10 +346,10 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	OFMatrix4x4 *translation = [[OFMatrix4x4 alloc] initWithValues:
 	    (const float [4][4]){
-		{ 1, 0, 0, vector.x },
-		{ 0, 1, 0, vector.y },
-		{ 0, 0, 1, vector.z },
-		{ 0, 0, 0, 1 }
+		{ 1.0f, 0.0f, 0.0f, vector.x },
+		{ 0.0f, 1.0f, 0.0f, vector.y },
+		{ 0.0f, 0.0f, 1.0f, vector.z },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	    }];
 	[self multiplyWithMatrix: translation];
 	objc_release(translation);
@@ -359,10 +359,10 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	OFMatrix4x4 *scale = [[OFMatrix4x4 alloc] initWithValues:
 	    (const float [4][4]){
-		{ vector.x, 0, 0, 0 },
-		{ 0, vector.y, 0, 0 },
-		{ 0, 0, vector.z, 0 },
-		{ 0, 0, 0, 1 }
+		{ vector.x, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, vector.y, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, vector.z, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	    }];
 	[self multiplyWithMatrix: scale];
 	objc_release(scale);

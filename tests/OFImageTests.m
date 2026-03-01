@@ -27,39 +27,39 @@
 @interface OFImageTests: OTTestCase
 @end
 
+static const float allowedImprecision = 0.0000001f;
+
 @implementation OFImageTests
 - (void)testImageWithPixels
 {
-	static const uint8_t pixels[] = {
-		64, 128, 255, 224,
-		32, 64, 128, 112,
-		16, 32, 64, 56,
-		8, 16, 32, 28
+	static const uint32_t pixels[] = {
+		0x4080FFE0, 0x20408070,
+		0x10204038, 0x0810201C
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
 				      pixelFormat: OFPixelFormatRGBA8888
-					     size: OFMakeSize(2, 2)];
+					     size: OFMakeSize(2.0f, 2.0f)];
 
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
-	    [OFColor colorWithRed: 64 / 255.0f
-			    green: 128 / 255.0f
-			     blue: 255 / 255.0f
-			    alpha: 224 / 255.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor colorWithRed: 32 / 255.0f
-			    green: 64 / 255.0f
-			     blue: 128 / 255.0f
-			    alpha: 112 / 255.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
-	    [OFColor colorWithRed: 16 / 255.0f
-			    green: 32 / 255.0f
-			     blue: 64 / 255.0f
-			    alpha: 56 / 255.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
-	    [OFColor colorWithRed: 8 / 255.0f
-			    green: 16 / 255.0f
-			     blue: 32 / 255.0f
-			    alpha: 28 / 255.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 64.0f / 255.0f
+			    green: 128.0f / 255.0f
+			     blue: 255.0f / 255.0f
+			    alpha: 224.0f / 255.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 32.0f / 255.0f
+			    green: 64.0f / 255.0f
+			     blue: 128.0f / 255.0f
+			    alpha: 112.0f / 255.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor colorWithRed: 16.0f / 255.0f
+			    green: 32.0f / 255.0f
+			     blue: 64.0f / 255.0f
+			    alpha: 56.0f / 255.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 8.0f / 255.0f
+			    green: 16.0f / 255.0f
+			     blue: 32.0f / 255.0f
+			    alpha: 28.0f / 255.0f]);
 }
 
 - (void)testImageWithPixelsNoCopy
@@ -72,28 +72,28 @@
 	};
 	OFImage *image = [OFImage imageWithPixelsNoCopy: pixels
 					    pixelFormat: OFPixelFormatRGB888
-						   size: OFMakeSize(2, 2)
+						   size: OFMakeSize(2.0f, 2.0f)
 					   freeWhenDone: false];
 
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
-	    [OFColor colorWithRed: 64 / 255.0f
-			    green: 128 / 255.0f
-			     blue: 255 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 64.0f / 255.0f
+			    green: 128.0f / 255.0f
+			     blue: 255.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor colorWithRed: 32 / 255.0f
-			    green: 64 / 255.0f
-			     blue: 128 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 32.0f / 255.0f
+			    green: 64.0f / 255.0f
+			     blue: 128.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
-	    [OFColor colorWithRed: 16 / 255.0f
-			    green: 32 / 255.0f
-			     blue: 64 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor colorWithRed: 16.0f / 255.0f
+			    green: 32.0f / 255.0f
+			     blue: 64.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
-	    [OFColor colorWithRed: 8 / 255.0f
-			    green: 16 / 255.0f
-			     blue: 32 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 8.0f / 255.0f
+			    green: 16.0f / 255.0f
+			     blue: 32.0f / 255.0f
 			    alpha: 1.0f]);
 }
 
@@ -145,10 +145,8 @@
 - (void)testIsEqual
 {
 	static const uint32_t pixels1[] = {
-		OFToBigEndian32(0x202020FF),
-		OFToBigEndian32(0x404040FF),
-		OFToBigEndian32(0x808080FF),
-		OFToBigEndian32(0xFFFFFFFF)
+		0x202020FF, 0x404040FF,
+		0x808080FF, 0xFFFFFFFF
 	};
 	static const uint8_t pixels2[] = {
 		32, 32, 32,
@@ -158,16 +156,16 @@
 	};
 	OFImage *image1 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatRGBA8888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *image2 = [OFImage imageWithPixels: pixels2
 				       pixelFormat: OFPixelFormatRGB888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *image3 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatARGB8888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *image4 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatARGB8888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 
 	OTAssertEqualObjects(image1, image1);
 	OTAssertEqualObjects(image1, image2);
@@ -180,10 +178,8 @@
 - (void)testHash
 {
 	static const uint32_t pixels1[] = {
-		OFToBigEndian32(0x202020FF),
-		OFToBigEndian32(0x404040FF),
-		OFToBigEndian32(0x808080FF),
-		OFToBigEndian32(0xFFFFFFFF)
+		0x202020FF, 0x404040FF,
+		0x808080FF, 0xFFFFFFFF
 	};
 	static const uint8_t pixels2[] = {
 		32, 32, 32,
@@ -193,54 +189,78 @@
 	};
 	OFImage *image1 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatRGBA8888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *image2 = [OFImage imageWithPixels: pixels2
 				       pixelFormat: OFPixelFormatRGB888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *image3 = [OFImage imageWithPixels: pixels1
 				       pixelFormat: OFPixelFormatARGB8888
-					      size: OFMakeSize(2, 2)];
+					      size: OFMakeSize(2.0f, 2.0f)];
 
 	OTAssertEqual(image1.hash, image2.hash);
 	OTAssertNotEqual(image1.hash, image3.hash);
 }
 
-- (void)testReadOutOfBoundsThrows
+- (void)testColorAtPointOutOfBoundsThrows
 {
 	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
 		      pixelFormat: OFPixelFormatRGBA8888
-			     size: OFMakeSize(2, 3)
+			     size: OFMakeSize(2.0f, 3.0f)
 		     freeWhenDone: false];
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0, 3)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.0f, 3.0f)],
 	    OFOutOfRangeException);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2, 0)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
 	    OFOutOfRangeException);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2, 3)],
+	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(2.0f, 3.0f)],
 	    OFOutOfRangeException);
 }
 
-- (void)testReadNonIntegralPointThrows
+- (void)testColorAtNonIntegralPoint
 {
-	static const uint32_t pixels[] = { 0, 0, 0, 0, 0, 0 };
+	static const uint8_t pixels[] = {
+		0, 0, 0,
+		255, 0, 0,
+		0, 255, 0,
+		0, 0, 255
+	};
 	OFImage *image = [OFMutableImage
 	    imageWithPixelsNoCopy: pixels
-		      pixelFormat: OFPixelFormatRGBA8888
-			     size: OFMakeSize(2, 3)
+		      pixelFormat: OFPixelFormatRGB888
+			     size: OFMakeSize(2.0f, 2.0f)
 		     freeWhenDone: false];
+	float red, green, blue, alpha;
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.0f, 0.5f)],
-	    OFInvalidArgumentException);
+	[[image colorAtPoint: OFMakePoint(0.5f, 0.0f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabsf(red - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.0f)],
-	    OFInvalidArgumentException);
+	[[image colorAtPoint: OFMakePoint(0.0f, 0.5f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabsf(red - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.7353569f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.0f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 
-	OTAssertThrowsSpecific([image colorAtPoint: OFMakePoint(0.5f, 0.5f)],
-	    OFInvalidArgumentException);
+	[[image colorAtPoint: OFMakePoint(0.5f, 0.5f)] getRed: &red
+							green: &green
+							 blue: &blue
+							alpha: &alpha];
+	OTAssertLessThan(fabsf(red - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(green - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(blue - 0.5370987f), allowedImprecision);
+	OTAssertLessThan(fabsf(alpha - 1.0f), allowedImprecision);
 }
 
 - (void)testCopy
@@ -253,7 +273,7 @@
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
 				      pixelFormat: OFPixelFormatRGB888
-					     size: OFMakeSize(2, 2)];
+					     size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *copy = objc_autorelease([image copy]);
 
 	OTAssertEqual(image, copy);
@@ -270,13 +290,13 @@
 	};
 	OFImage *image = [OFImage imageWithPixels: pixels
 				      pixelFormat: OFPixelFormatRGB888
-					     size: OFMakeSize(2, 2)];
+					     size: OFMakeSize(2.0f, 2.0f)];
 	OFMutableImage *copy = objc_autorelease([image mutableCopy]);
 
 	OTAssertNotEqual(image, copy);
 	OTAssertEqualObjects(image, copy);
 
-	[copy setColor: [OFColor black] atPoint: OFMakePoint(0, 0)];
+	[copy setColor: [OFColor black] atPoint: OFMakePoint(0.0f, 0.0f)];
 	OTAssertNotEqualObjects(image, copy);
 }
 
@@ -287,48 +307,84 @@
 	OFImage *image = [OFImage imageWithStream: stream
 				      imageFormat: OFImageFormatBMP];
 
-	OFAssert(OFEqualSizes(image.size, OFMakeSize(3, 2)));
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor colorWithRed: 237 / 255.0f
-			    green: 28 / 255.0f
-			     blue: 36 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 237.0f / 255.0f
+			    green: 28.0f / 255.0f
+			     blue: 36.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 0)],
-	    [OFColor colorWithRed: 34 / 255.0f
-			    green: 177 / 255.0f
-			     blue: 76 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
+	    [OFColor colorWithRed: 34.0f / 255.0f
+			    green: 177.0f / 255.0f
+			     blue: 76.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    [OFColor white]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
-	    [OFColor colorWithRed: 255 / 255.0f
-			    green: 242 / 255.0f
-			     blue: 0 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 255.0f / 255.0f
+			    green: 242.0f / 255.0f
+			     blue: 0.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
 	    [OFColor white]);
 
-	OTAssertLessThan(fabsf(image.dotsPerInch.width - 72), 0.01);
-	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72), 0.01);
+	OTAssertLessThan(fabsf(image.dotsPerInch.width - 72.0f), 0.01f);
+	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72.0f), 0.01f);
+}
+
+- (void)testImageWithStreamImageFormatBMPRGB565
+{
+	OFIRI *IRI = [OFIRI IRIWithString: @"embedded:testfile565.bmp"];
+	OFSeekableStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+	OFImage *image = [OFImage imageWithStream: stream
+				      imageFormat: OFImageFormatBMP];
+
+	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 29.0f / 31.0f
+			    green: 7.0f / 63.0f
+			     blue: 4.0f / 31.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
+	    [OFColor colorWithRed: 4.0f / 31.0f
+			    green: 44.0f / 63.0f
+			     blue: 9.0f / 31.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor white]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 31.0f / 31.0f
+			    green: 60.0f / 63.0f
+			     blue: 0.0f
+			    alpha: 1.0f]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
+	    [OFColor white]);
+
+	OTAssertLessThan(fabsf(image.dotsPerInch.width - 72.0f), 0.01f);
+	OTAssertLessThan(fabsf(image.dotsPerInch.height - 72.0f), 0.01f);
 }
 
 - (void)testWriteToStreamWithImageFormatBMPRGB888
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(3, 2)
+	    imageWithSize: OFMakeSize(3.0f, 2.0f)
 	      pixelFormat: OFPixelFormatRGB888];
 	OFImage *image2;
 	uint8_t memory[78];
 	OFMemoryStream *stream;
 
-	[image setColor: [OFColor red] atPoint: OFMakePoint(0, 0)];
-	[image setColor: [OFColor green] atPoint: OFMakePoint(1, 0)];
-	[image setColor: [OFColor blue] atPoint: OFMakePoint(2, 0)];
-	[image setColor: [OFColor black] atPoint: OFMakePoint(0, 1)];
-	[image setColor: [OFColor purple] atPoint: OFMakePoint(1, 1)];
-	[image setColor: [OFColor olive] atPoint: OFMakePoint(2, 1)];
+	[image setColor: [OFColor red] atPoint: OFMakePoint(0.0f, 0.0f)];
+	[image setColor: [OFColor green] atPoint: OFMakePoint(1.0f, 0.0f)];
+	[image setColor: [OFColor blue] atPoint: OFMakePoint(2.0f, 0.0f)];
+	[image setColor: [OFColor black] atPoint: OFMakePoint(0.0f, 1.0f)];
+	[image setColor: [OFColor purple] atPoint: OFMakePoint(1.0f, 1.0f)];
+	[image setColor: [OFColor olive] atPoint: OFMakePoint(2.0f, 1.0f)];
 
 	stream = [OFMemoryStream streamWithMemoryAddress: memory
 						    size: sizeof(memory)
@@ -347,18 +403,18 @@
 - (void)testWriteToStreamWithImageFormatBMPRGBA8888
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(3, 2)
+	    imageWithSize: OFMakeSize(3.0f, 2.0f)
 	      pixelFormat: OFPixelFormatRGBA8888];
 	OFImage *image2;
 	uint8_t memory[146];
 	OFMemoryStream *stream;
 
-	[image setColor: [OFColor red] atPoint: OFMakePoint(0, 0)];
-	[image setColor: [OFColor green] atPoint: OFMakePoint(1, 0)];
-	[image setColor: [OFColor blue] atPoint: OFMakePoint(2, 0)];
-	[image setColor: [OFColor black] atPoint: OFMakePoint(0, 1)];
-	[image setColor: [OFColor purple] atPoint: OFMakePoint(1, 1)];
-	[image setColor: [OFColor olive] atPoint: OFMakePoint(2, 1)];
+	[image setColor: [OFColor red] atPoint: OFMakePoint(0.0f, 0.0f)];
+	[image setColor: [OFColor green] atPoint: OFMakePoint(1.0f, 0.0f)];
+	[image setColor: [OFColor blue] atPoint: OFMakePoint(2.0f, 0.0f)];
+	[image setColor: [OFColor black] atPoint: OFMakePoint(0.0f, 1.0f)];
+	[image setColor: [OFColor purple] atPoint: OFMakePoint(1.0f, 1.0f)];
+	[image setColor: [OFColor olive] atPoint: OFMakePoint(2.0f, 1.0f)];
 
 	stream = [OFMemoryStream streamWithMemoryAddress: memory
 						    size: sizeof(memory)
@@ -381,45 +437,46 @@
 	OFImage *image = [OFImage imageWithStream: stream
 				      imageFormat: OFImageFormatQOI];
 
-	OFAssert(OFEqualSizes(image.size, OFMakeSize(3, 2)));
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OFAssert(OFEqualSizes(image.size, OFMakeSize(3.0f, 2.0f)));
+	OTAssertEqualObjects(image.colorSpace, [OFColorSpace sRGBColorSpace]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor colorWithRed: 237 / 255.0f
-			    green: 28 / 255.0f
-			     blue: 36 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor colorWithRed: 237.0f / 255.0f
+			    green: 28.0f / 255.0f
+			     blue: 36.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 0)],
-	    [OFColor colorWithRed: 34 / 255.0f
-			    green: 177 / 255.0f
-			     blue: 76 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 0.0f)],
+	    [OFColor colorWithRed: 34.0f / 255.0f
+			    green: 177.0f / 255.0f
+			     blue: 76.0f / 255.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    [OFColor white]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
-	    [OFColor colorWithRed: 255 / 255.0f
-			    green: 242 / 255.0f
-			     blue: 0 / 255.0f
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor colorWithRed: 255.0f / 255.0f
+			    green: 242.0f / 255.0f
+			     blue: 0.0f
 			    alpha: 1.0f]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(2.0f, 1.0f)],
 	    [OFColor white]);
 }
 
 - (void)testWriteToStreamWithImageFormatQOI
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(3, 2)
+	    imageWithSize: OFMakeSize(3.0f, 2.0f)
 	      pixelFormat: OFPixelFormatRGB888];
 	OFImage *image2;
 	uint8_t memory[46];
 	OFMemoryStream *stream;
 
-	[image setColor: [OFColor red] atPoint: OFMakePoint(0, 0)];
-	[image setColor: [OFColor green] atPoint: OFMakePoint(1, 0)];
-	[image setColor: [OFColor blue] atPoint: OFMakePoint(2, 0)];
-	[image setColor: [OFColor black] atPoint: OFMakePoint(0, 1)];
-	[image setColor: [OFColor purple] atPoint: OFMakePoint(1, 1)];
-	[image setColor: [OFColor olive] atPoint: OFMakePoint(2, 1)];
+	[image setColor: [OFColor red] atPoint: OFMakePoint(0.0f, 0.0f)];
+	[image setColor: [OFColor green] atPoint: OFMakePoint(1.0f, 0.0f)];
+	[image setColor: [OFColor blue] atPoint: OFMakePoint(2.0f, 0.0f)];
+	[image setColor: [OFColor black] atPoint: OFMakePoint(0.0f, 1.0f)];
+	[image setColor: [OFColor purple] atPoint: OFMakePoint(1.0f, 1.0f)];
+	[image setColor: [OFColor olive] atPoint: OFMakePoint(2.0f, 1.0f)];
 
 	stream = [OFMemoryStream streamWithMemoryAddress: memory
 						    size: sizeof(memory)

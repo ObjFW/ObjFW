@@ -62,9 +62,11 @@ void *__objc_class_name_OFAlreadyOpenException;
 void *__objc_class_name_OFApplication;
 void *__objc_class_name_OFArray;
 void *__objc_class_name_OFBlock;
+void *__objc_class_name_OFCanvas;
 void *__objc_class_name_OFCharacterSet;
 void *__objc_class_name_OFChecksumMismatchException;
 void *__objc_class_name_OFColor;
+void *__objc_class_name_OFColorSpace;
 void *__objc_class_name_OFConstantString;
 void *__objc_class_name_OFCopyItemFailedException;
 void *__objc_class_name_OFCountedSet;
@@ -93,6 +95,8 @@ void *__objc_class_name_OFIRIHandler;
 void *__objc_class_name_OFImage;
 void *__objc_class_name_OFImageFormatHandler;
 void *__objc_class_name_OFIndexSet;
+void *__objc_class_name_OFInflate64Stream
+void *__objc_class_name_OFInflateStream
 void *__objc_class_name_OFInitializationFailedException;
 void *__objc_class_name_OFInvalidArgumentException;
 void *__objc_class_name_OFInvalidEncodingException;
@@ -228,6 +232,7 @@ void *__objc_class_name_OFLOCDNSResourceRecord;
 void *__objc_class_name_OFListenOnSocketFailedException;
 void *__objc_class_name_OFMXDNSResourceRecord;
 void *__objc_class_name_OFNSDNSResourceRecord;
+void *__objc_class_name_OFObserveKernelEventsFailedException
 void *__objc_class_name_OFPTRDNSResourceRecord;
 void *__objc_class_name_OFRPDNSResourceRecord;
 void *__objc_class_name_OFResolveHostFailedException;

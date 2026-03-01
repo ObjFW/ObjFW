@@ -303,17 +303,16 @@
 	id *copy;
 
 	copy = OFAllocMemory(indexesCount, sizeof(*copy));
-
-	for (size_t i = 0; i < rangesCount; i++) {
-		if (OFEndOfRange(ranges[i]) > count)
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(copy + copyIndex, objects + ranges[i].location,
-		    ranges[i].length * sizeof(*copy));
-		copyIndex += ranges[i].length;
-	}
-
 	@try {
+		for (size_t i = 0; i < rangesCount; i++) {
+			if (OFEndOfRange(ranges[i]) > count)
+				@throw [OFOutOfRangeException exception];
+
+			memcpy(copy + copyIndex, objects + ranges[i].location,
+			    ranges[i].length * sizeof(*copy));
+			copyIndex += ranges[i].length;
+		}
+
 		[_array removeItemsAtIndexes: indexes];
 		_mutations++;
 

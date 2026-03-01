@@ -55,6 +55,18 @@ OF_ASSUME_NONNULL_BEGIN
     OFDictionary OF_GENERIC(OFString *, OFData *) *extendedHeader;
 
 /**
+ * @brief The Amiga Protection of the file (see @ref OFFileAmigaProtectionMask).
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+    OFNumber *amigaProtection;
+
+/**
+ * @brief The Amiga comment of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFString *amigaComment;
+
+/**
  * @brief Creates a new OFMutableTarArchiveEntry with the specified file name.
  *
  * @param fileName The file name for the OFTarArchiveEntry

@@ -55,8 +55,10 @@
 #import "OFIRIHandler.h"
 #import "OFUUID.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFImage.h"
 #import "OFImageFormatHandler.h"
+#import "OFCanvas.h"
 
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"

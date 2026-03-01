@@ -387,6 +387,40 @@ OFEqualRects(OFRect rect1, OFRect rect2)
 }
 
 /**
+ * @brief Returns the intersection of the two rectangles or a rectangle with x,
+ *	  y, width and height set to 0 if the two rectangles don't intersect.
+ *
+ * @param rect1 The first rectangle
+ * @param rect2 The second rectangle
+ * @return The intersection of both rectangles
+ */
+static OF_INLINE OFRect
+OFIntersectionRect(OFRect rect1, OFRect rect2)
+{
+	OFRect rect;
+
+	rect.origin.x = (rect1.origin.x >= rect2.origin.x
+	    ? rect1.origin.x : rect2.origin.x);
+	rect.origin.y = (rect1.origin.y >= rect2.origin.y
+	    ? rect1.origin.y : rect2.origin.y);
+	rect.size.width = (rect1.origin.x + rect1.size.width <
+	    rect2.origin.x + rect2.size.width
+	    ? rect1.origin.x + rect1.size.width
+	    : rect2.origin.x + rect2.size.width) - rect.origin.x;
+	rect.size.height = (rect1.origin.y + rect1.size.height <
+	    rect2.origin.y + rect2.size.height
+	    ? rect1.origin.y + rect1.size.height
+	    : rect2.origin.y + rect2.size.height) - rect.origin.y;
+
+	if (rect.size.width <= 0.0f || rect.size.height <= 0.0f) {
+		rect.origin.x = rect.origin.y = 0.0f;
+		rect.size.width = rect.size.height = 0.0f;
+	}
+
+	return rect;
+}
+
+/**
  * @struct OFVector3D OFObject.h ObjFW/ObjFW.h
  *
  * @brief A vector in 3D space.

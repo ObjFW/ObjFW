@@ -740,6 +740,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	_length = 0;
 
+	if ((statusCode == 301 || statusCode == 302 || statusCode == 307) &&
+	    request.method != OFHTTPRequestMethodGet &&
+	    request.method != OFHTTPRequestMethodHead)
+		return false;
+
 	return true;
 }
 
@@ -1219,11 +1224,14 @@ next:
 	if (_detectFileName && !_detectedFileName) {
 		if (!_quiet) {
 			if (_useUnicode)
-				[OFStdErr writeFormat: @"⠒ %@", IRI.string
-				    .stringByReplacingControlCharacters];
+				[OFStdErr writeString: @"⠒ "];
 			else
-				[OFStdErr writeFormat: @"? %@", IRI.string
-				    .stringByReplacingControlCharacters];
+				[OFStdErr writeString: @"? "];
+
+			OFStdErr.underlined = true;
+			[OFStdErr writeString:
+			    IRI.string.stringByReplacingControlCharacters];
+			OFStdErr.underlined = false;
 		}
 
 		request = [OFHTTPRequest requestWithIRI: IRI];

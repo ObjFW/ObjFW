@@ -26,6 +26,7 @@
 # import "OFString+NSObject.h"
 #endif
 #import "OHEmulatedGameControllerTriggerButton.h"
+#import "OHGameController.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
@@ -39,6 +40,8 @@
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L1", @"R1", @"L3", @"R3", @"Menu", @"Options",
+};
+static OFString *const extraButtonNames[] = {
 	@"Capture", @"Stadia",
 #ifndef OF_HAVE_GCF
 	/* Not supported by GameController.framework */
@@ -46,6 +49,8 @@ static OFString *const buttonNames[] = {
 #endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
+static const size_t numExtraButtons =
+    sizeof(extraButtonNames) / sizeof(*extraButtonNames);
 
 #ifdef OF_HAVE_GCF
 static OFDictionary<OFString *, NSString *> *buttonsMap;
@@ -95,7 +100,8 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)oh_init
+- (instancetype)oh_initWithVendorID: (uint16_t)vendorID
+			  productID: (uint16_t)productID
 {
 	self = [super init];
 
@@ -116,6 +122,17 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 			    oh_elementWithName: buttonNames[i]
 					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
+		}
+
+		if (vendorID == OHVendorIDGoogle &&
+		    productID == OHProductIDStadiaController) {
+			for (size_t i = 0; i < numExtraButtons; i++) {
+				button = [OHGameControllerButton
+				    oh_elementWithName: extraButtonNames[i]
+						analog: false];
+				[buttons setObject: button
+					    forKey: extraButtonNames[i]];
+			}
 		}
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)

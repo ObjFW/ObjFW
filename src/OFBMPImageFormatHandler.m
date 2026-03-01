@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFBMPImageFormatHandler.h"
+#import "OFColorSpace.h"
 #import "OFImage+Private.h"
 #import "OFSeekableStream.h"
 #import "OFString.h"
@@ -30,6 +31,17 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+
+static OF_INLINE void
+byteSwapLine(void *line, size_t length, size_t byteSwapSize)
+{
+	if (byteSwapSize == 16) {
+		uint16_t *iter = line;
+
+		for (size_t i = 0; i < length / 2; i++)
+			iter[i] = OFByteSwap16(iter[i]);
+	}
+}
 
 @implementation OFBMPImageFormatHandler
 - (OFMutableImage *)readImageFromStream: (OFSeekableStream *)stream
@@ -44,6 +56,7 @@
 	OFPixelFormat format;
 	OFMutableImage *image;
 	uint8_t *pixels;
+	size_t byteSwapSize = 0;
 
 	/* File header */
 
@@ -59,7 +72,8 @@
 	/* DIB header */
 
 	headerSize = [stream readLittleEndianInt32];
-	if (headerSize != 40 && headerSize != 108 && headerSize != 124) {
+	if (headerSize != 40 && headerSize != 56 && headerSize != 108 &&
+	    headerSize != 124) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"header size %u\"", headerSize];
 		@throw [OFUnsupportedVersionException
@@ -100,7 +114,7 @@
 
 	compressionMethod = [stream readLittleEndianInt32];
 	if (compressionMethod != 0 &&
-	    (headerSize < 108 || compressionMethod != 3)) {
+	    (headerSize < 56 || compressionMethod != 3)) {
 		OFString *version = [OFString stringWithFormat:
 		    @"\"compression method %u\"", compressionMethod];
 		@throw [OFUnsupportedVersionException
@@ -121,8 +135,9 @@
 	case 24:
 		format = OFPixelFormatBGR888;
 		break;
+	case 16:
 	case 32:
-		if (headerSize >= 108 && compressionMethod == 3)
+		if (headerSize >= 56 && compressionMethod == 3)
 			break;
 		/* Fall through */
 	default:;
@@ -132,27 +147,51 @@
 		    exceptionWithVersion: version];
 	}
 
-	if (headerSize >= 108 && compressionMethod == 3) {
-		uint32_t redMask = [stream readLittleEndianInt32];
-		uint32_t greenMask = [stream readLittleEndianInt32];
-		uint32_t blueMask = [stream readLittleEndianInt32];
-		uint32_t alphaMask = [stream readLittleEndianInt32];
+	if (headerSize >= 56 && compressionMethod == 3) {
+		struct {
+			uint32_t red, green, blue, alpha;
+		} masks;
 
-		if (redMask == 0xFF000000 || greenMask == 0x00FF0000 ||
-		    blueMask == 0x0000FF00 || alphaMask == 0x000000FF)
-			format = OFPixelFormatABGR8888;
-		else if (redMask == 0x00FF0000 || greenMask == 0x0000FF00 ||
-		    blueMask == 0x000000FF || alphaMask == 0xFF000000)
-			format = OFPixelFormatBGRA8888;
-		else if (redMask == 0x000000FF || greenMask == 0x0000FF00 ||
-		    blueMask == 0x00FF00FF || alphaMask == 0xFF000000)
+		[stream readIntoBuffer: &masks exactLength: 16];
+
+		if (bitsPerPixel == 32 && masks.red == 0xFF000000 &&
+		    masks.green == 0x00FF0000 && masks.blue == 0x0000FF00 &&
+		    masks.alpha == 0x000000FF)
 			format = OFPixelFormatRGBA8888;
-		else if (redMask == 0x0000FF00 || greenMask == 0x00FF0000 ||
-		    blueMask == 0xFF000000 || alphaMask == 0x000000FF)
+		else if (bitsPerPixel == 32 && masks.red == 0x00FF0000 &&
+		    masks.green == 0x0000FF00 && masks.blue == 0x000000FF &&
+		    masks.alpha == 0xFF000000)
 			format = OFPixelFormatARGB8888;
-		else
+		else if (bitsPerPixel == 32 && masks.red == 0x000000FF &&
+		    masks.green == 0x0000FF00 && masks.blue == 0x00FF0000 &&
+		    masks.alpha == 0xFF000000)
+			format = OFPixelFormatABGR8888;
+		else if (bitsPerPixel == 32 && masks.red == 0x0000FF00 &&
+		    masks.green == 0x00FF0000 && masks.blue == 0xFF000000 &&
+		    masks.alpha == 0x000000FF)
+			format = OFPixelFormatBGRA8888;
+		else if (bitsPerPixel == 16 && masks.red == 0x0000F800 &&
+		    masks.green == 0x000007E0 && masks.blue == 0x0000001F &&
+		    masks.alpha == 0x00000000)
+			format = OFPixelFormatRGB565;
+		else if (bitsPerPixel == 16 && masks.red == 0x00F80000 &&
+		    masks.green == 0xE0070000 && masks.blue == 0x1F000000 &&
+		    masks.alpha == 0x00000000) {
+			format = OFPixelFormatRGB565;
+			byteSwapSize = 16;
+		} else
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: @"\"bit fields\""];
+	}
+
+	if (headerSize >= 108) {
+		char colorSpace[4];
+
+		[stream readIntoBuffer: &colorSpace exactLength: 4];
+
+		if (memcmp(colorSpace, "BGRs", 4) != 0)
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: @"\"color space\""];
 	}
 
 	[stream seekToOffset: dataStart whence: OFSeekSet];
@@ -167,6 +206,8 @@
 			pixels -= lineLength;
 
 			[stream readIntoBuffer: pixels exactLength: lineLength];
+			byteSwapLine(pixels, lineLength, byteSwapSize);
+
 			if (linePadding > 0) {
 				char padding[3];
 				[stream readIntoBuffer: padding
@@ -176,6 +217,8 @@
 	} else {
 		for (size_t i = 0; i < height; i++) {
 			[stream readIntoBuffer: pixels exactLength: lineLength];
+			byteSwapLine(pixels, lineLength, byteSwapSize);
+
 			if (linePadding > 0) {
 				char padding[3];
 				[stream readIntoBuffer: padding
@@ -236,6 +279,9 @@
 	if (UINT32_MAX - height * (lineLength + linePadding) < 14 + headerSize)
 		@throw [OFOutOfRangeException exception];
 
+	if (![image.colorSpace isEqual: [OFColorSpace sRGBColorSpace]])
+		@throw [OFInvalidArgumentException exception];
+
 	/* File header */
 	[stream writeString: @"BM"];
 	[stream writeLittleEndianInt32:
@@ -277,7 +323,7 @@
 		for (uint32_t x = 0; x < width; x++) {
 			uint8_t buffer[4];
 
-			if OF_UNLIKELY (!_OFReadPixelInt(pixels, format, x, y,
+			if OF_UNLIKELY (!_OFReadPixelInt8(pixels, format, x, y,
 			    width, &buffer[3], &buffer[2], &buffer[1],
 			    &buffer[0]))
 				@throw [OFNotImplementedException

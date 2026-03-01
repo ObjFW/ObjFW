@@ -19,4 +19,7 @@
 
 #import "OFDeflateStream.h"
 
-@compatibility_alias OFInflateStream OFDeflateStream;
+OF_SUBCLASSING_RESTRICTED
+OF_DEPRECATED(ObjFW, 1, 5, "Use OFDeflateStream instead")
+@interface OFInflateStream: OFDeflateStream
+@end

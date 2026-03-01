@@ -36,6 +36,10 @@
 #import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
+#import "OHDualShockGamepad.h"
+#import "OHDualShockGamepad+Private.h"
+#import "OHDualShock3Gamepad.h"
+#import "OHDualShock3Gamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
@@ -47,6 +51,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
+#import "OHGameCubeController.h"
+#import "OHGameCubeController+Private.h"
 #import "OHLeftJoyCon.h"
 #import "OHLeftJoyCon+Private.h"
 #import "OHN64Controller.h"
@@ -74,6 +80,8 @@
 #import "evdev_compat.h"
 
 const uint16_t OHEvdevButtonIDs[] = {
+	BTN_TRIGGER, BTN_THUMB, BTN_THUMB2, BTN_TOP, BTN_TOP2, BTN_PINKIE,
+	BTN_BASE, BTN_BASE2, BTN_BASE3, BTN_BASE4, BTN_BASE5, BTN_BASE6,
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
 	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
 	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
@@ -181,6 +189,12 @@ scale(float value, float min, float max, bool inverted)
 					 mode: @"r"
 					errNo: errno];
 
+		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		_vendorID = inputID.vendor;
+		_productID = inputID.product;
+
 		_evBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    EV_MAX) / OF_ULONG_BIT, sizeof(unsigned long));
 
@@ -201,14 +215,21 @@ scale(float value, float min, float max, bool inverted)
 			@throw [OFInitializationFailedException exception];
 
 		if (!OFBitSetIsSet(_keyBits, BTN_GAMEPAD) &&
-		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP))
-			@throw [OFInvalidArgumentException exception];
-
-		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
-			@throw [OFInvalidArgumentException exception];
-
-		_vendorID = inputID.vendor;
-		_productID = inputID.product;
+		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP)) {
+			/*
+			 * These are not reported as gamepads, but are still
+			 * supported.
+			 */
+			if (_vendorID == OHVendorIDDragonRise &&
+			    _productID == OHProductIDGameCubeControllerAdapter)
+				;
+			else if (_vendorID == OHVendorIDWiseGroup &&
+			    _productID ==
+			    OHProductIDPlayStationControllerAdapter)
+				;
+			else
+				@throw [OFInvalidArgumentException exception];
+		}
 
 		if (ioctl(_fd, EVIOCGNAME(sizeof(name)), name) == -1)
 			@throw [OFInitializationFailedException exception];
@@ -234,6 +255,9 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDSony &&
 		    _productID == OHProductIDDualShock4)
 			_profile = [[OHDualShock4Gamepad alloc] oh_init];
+		else if (_vendorID == OHVendorIDSony &&
+		    _productID == OHProductIDPlayStation3Controller)
+			_profile = [[OHDualShock3Gamepad alloc] oh_init];
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDN64Controller)
 			_profile = [[OHExtendedN64Controller alloc] oh_init];
@@ -249,9 +273,13 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorIDNintendo &&
 		    _productID == OHProductIDProController)
 			_profile = [[OHSwitchProController alloc] oh_init];
-		else if (_vendorID == OHVendorIDGoogle &&
-		    _productID == OHProductIDStadiaController)
-			_profile = [[OHStadiaGamepad alloc] oh_init];
+		else if ((_vendorID == OHVendorIDGoogle &&
+		    _productID == OHProductIDStadiaController) ||
+		    /* MOCUTE-053X-M35-HID */
+		    (_vendorID == 0 && _productID == 0x046E))
+			_profile = [[OHStadiaGamepad alloc]
+			    oh_initWithVendorID: _vendorID
+				      productID: _productID];
 		else if (_vendorID == OHVendorID8BitDo &&
 		    (_productID == OHProductIDUltimate2CWirelessBT ||
 		    _productID == OHProductIDUltimate2CWirelessUSB))
@@ -260,6 +288,12 @@ scale(float value, float min, float max, bool inverted)
 		else if (_vendorID == OHVendorID8BitDo &&
 		    _productID == OHProductIDNES30Gamepad)
 			_profile = [[OHNESGamepad alloc] oh_init];
+		else if (_vendorID == OHVendorIDDragonRise &&
+		    _productID == OHProductIDGameCubeControllerAdapter)
+			_profile = [[OHGameCubeController alloc] oh_init];
+		else if (_vendorID == OHVendorIDWiseGroup &&
+		    _productID == OHProductIDPlayStationControllerAdapter)
+			_profile = [[OHDualShockGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits
@@ -329,9 +363,9 @@ scale(float value, float min, float max, bool inverted)
 			continue;
 
 		if (OFBitSetIsSet(keyState, OHEvdevButtonIDs[i]))
-			button.value = 1.f;
+			button.value = 1.0f;
 		else
-			button.value = 0.f;
+			button.value = 0.0f;
 	}
 
 	if (OFBitSetIsSet(_evBits, EV_ABS)) {
@@ -407,9 +441,9 @@ scale(float value, float min, float max, bool inverted)
 				continue;
 
 			if (event.value)
-				button.value = 1.f;
+				button.value = 1.0f;
 			else
-				button.value = 0.f;
+				button.value = 0.0f;
 
 			break;
 		case EV_ABS:

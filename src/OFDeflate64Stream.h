@@ -31,7 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class that handles Deflate decompression transparently for an
  *	  underlying stream.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFDeflate64Stream: OFStream <OFReadyForReadingObserving>
 {
 	OFStream *_stream;
@@ -39,6 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 	uint16_t _slidingWindowIndex;
 	struct OFInflateContext *_Nullable _inflateCtx;
 	bool _atEndOfStream;
+	OF_RESERVE_IVARS(OFDeflate64Stream, 4)
 }
 
 /**

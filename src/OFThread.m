@@ -43,10 +43,12 @@
 
 #ifdef OF_WII
 # define asm __asm__
+# define id ogc_id
 # define nanosleep ogc_nanosleep
 # include <gccore.h>
 # include <ogcsys.h>
 # undef nanosleep
+# undef id
 # undef asm
 #endif
 

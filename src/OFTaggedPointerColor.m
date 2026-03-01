@@ -53,5 +53,10 @@ static int colorTag;
 		*alpha = 1;
 }
 
+- (OFColorSpace *)colorSpace
+{
+	return [OFColorSpace sRGBColorSpace];
+}
+
 OF_SINGLETON_METHODS
 @end

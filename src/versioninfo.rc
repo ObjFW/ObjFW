@@ -11,7 +11,7 @@
 		BLOCK "040904E4" {
 			VALUE "ProductName", "ObjFW"
 			VALUE "ProductVersion", PACKAGE_VERSION
-			VALUE "FileVersion", OBJFW_LIB_VERSION
+			VALUE "FileVersion", OBJFW_LIB_VER
 			VALUE "FileDescription", "Objective-C framework"
 			VALUE "LegalCopyright",
 			    "(c) 2008-2026 Jonathan Schleifer"

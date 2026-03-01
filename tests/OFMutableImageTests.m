@@ -47,49 +47,136 @@
 - (void)testRGB888WriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatRGB888];
 	OFColor *color;
 
 	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    [OFColor black]);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
 				alpha: 1.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
 
 	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    [OFColor black]);
+}
+
+- (void)testBGR888WriteAndRead
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
+	      pixelFormat: OFPixelFormatBGR888];
+	OFColor *color;
+
+	/* Everything is initialized with 0. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    [OFColor black]);
+
+	/* Set one pixel. */
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
+				alpha: 1.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
+
+	/* Others must be unchanged. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    [OFColor black]);
+}
+
+- (void)testRGB565WriteAndRead
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
+	      pixelFormat: OFPixelFormatRGB565];
+	OFColor *color;
+
+	/* Everything is initialized with 0. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    [OFColor black]);
+
+	/* Set one pixel. */
+	color = [OFColor colorWithRed: 1.0f / 31.0f
+				green: 21.0f / 63.0f
+				 blue: 17.0f / 31.0f
+				alpha: 1.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
+
+	/* Others must be unchanged. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    [OFColor black]);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    [OFColor black]);
 }
 
 - (void)testRGBA8888WriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatRGBA8888];
 	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
 						    green: 0.0f
@@ -98,44 +185,45 @@
 	OFColor *color;
 
 	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
-				alpha: 53 / 255.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
+				alpha: 53.0f / 255.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
 
 	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 }
 
 - (void)testARGB8888WriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatARGB8888];
 	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
 						    green: 0.0f
@@ -144,86 +232,45 @@
 	OFColor *color;
 
 	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
-				alpha: 53 / 255.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
+				alpha: 53.0f / 255.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
 
 	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
-}
-
-- (void)testBGR888WriteAndRead
-{
-	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
-	      pixelFormat: OFPixelFormatBGR888];
-	OFColor *color;
-
-	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
-	    [OFColor black]);
-
-	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
-				alpha: 1.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
-
-	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
-	    [OFColor black]);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
-	    [OFColor black]);
 }
 
 - (void)testABGR8888WriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatABGR8888];
 	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
 						    green: 0.0f
@@ -232,44 +279,45 @@
 	OFColor *color;
 
 	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
-				alpha: 53 / 255.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
+				alpha: 53.0f / 255.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
 
 	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 }
 
 - (void)testBGRA8888WriteAndRead
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatBGRA8888];
 	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
 						    green: 0.0f
@@ -278,64 +326,159 @@
 	OFColor *color;
 
 	/* Everything is initialized with 0. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 
 	/* Set one pixel. */
-	color = [OFColor colorWithRed: 12 / 255.0f
-				green: 85 / 255.0f
-				 blue: 143 / 255.0f
-				alpha: 53 / 255.0f];
-	[image setColor: color atPoint: OFMakePoint(1, 1)];
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 1)], color);
+	color = [OFColor colorWithRed: 12.0f / 255.0f
+				green: 85.0f / 255.0f
+				 blue: 143.0f / 255.0f
+				alpha: 53.0f / 255.0f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
 
 	/* Others must be unchanged. */
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 1)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 0)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
 	    transparentBlack);
-	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1, 2)],
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    transparentBlack);
+}
+
+- (void)testRGBA16161616FPWriteAndRead
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
+	      pixelFormat: OFPixelFormatRGBA16161616FP];
+	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
+						    green: 0.0f
+						     blue: 0.0f
+						    alpha: 0.0f];
+	OFColor *color;
+
+	/* Everything is initialized with 0. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    transparentBlack);
+
+	/* Set one pixel. */
+	color = [OFColor colorWithRed: 0.25f
+				green: 0.5f
+				 blue: 1.5f
+				alpha: 0.75f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
+
+	/* Others must be unchanged. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    transparentBlack);
+}
+
+- (void)testRGBA32323232FPWriteAndRead
+{
+	OFMutableImage *image = [OFMutableImage
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
+	      pixelFormat: OFPixelFormatRGBA32323232FP];
+	OFColor *transparentBlack = [OFColor colorWithRed: 0.0f
+						    green: 0.0f
+						     blue: 0.0f
+						    alpha: 0.0f];
+	OFColor *color;
+
+	/* Everything is initialized with 0. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
+	    transparentBlack);
+
+	/* Set one pixel. */
+	color = [OFColor colorWithRed: 0.25f
+				green: 0.5f
+				 blue: 1.5f
+				alpha: 0.75f];
+	[image setColor: color atPoint: OFMakePoint(1.0f, 1.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 1.0f)],
+	    color);
+
+	/* Others must be unchanged. */
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 1.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 2.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 0.0f)],
+	    transparentBlack);
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(1.0f, 2.0f)],
 	    transparentBlack);
 }
 
 - (void)testWriteOutOfBoundsThrows
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatRGBA8888];
 	OFColor *color = [OFColor black];
 
 	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 3)],
+	    [image setColor: color atPoint: OFMakePoint(0.0f, 3.0f)],
 	    OFOutOfRangeException);
 
 	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(2, 0)],
+	    [image setColor: color atPoint: OFMakePoint(2.0f, 0.0f)],
 	    OFOutOfRangeException);
 
 	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(2, 3)],
+	    [image setColor: color atPoint: OFMakePoint(2.0f, 3.0f)],
 	    OFOutOfRangeException);
 }
 
 - (void)testWriteNonIntegralPointThrows
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(2, 3)
+	    imageWithSize: OFMakeSize(2.0f, 3.0f)
 	      pixelFormat: OFPixelFormatRGBA8888];
 	OFColor *color = [OFColor black];
 
@@ -352,94 +495,112 @@
 	    OFInvalidArgumentException);
 }
 
-- (void)testRGB888WriteOutOfRangeColorThrows
+- (void)testRGB888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatRGB888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testRGBA8888WriteOutOfRangeColorThrows
+- (void)testRGBA8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatRGBA8888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testARGB8888WriteOutOfRangeColorThrows
+- (void)testARGB8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatARGB8888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testBGR888WriteOutOfRangeColorThrows
+- (void)testBGR888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatBGR888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testABGR8888WriteOutOfRangeColorThrows
+- (void)testABGR8888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatABGR8888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
-- (void)testBGRA888WriteOutOfRangeColorThrows
+- (void)testBGRA888WriteClampsOutOfRangeColor
 {
 	OFMutableImage *image = [OFMutableImage
-	    imageWithSize: OFMakeSize(1, 1)
+	    imageWithSize: OFMakeSize(1.0f, 1.0f)
 	      pixelFormat: OFPixelFormatBGRA8888];
 	OFColor *color = [OFColor colorWithRed: 1.1f
 					 green: 1.1f
 					  blue: 1.1f
-					 alpha: 1.0f];
+					 alpha: 1.1f];
 
-	OTAssertThrowsSpecific(
-	    [image setColor: color atPoint: OFMakePoint(0, 0)],
-	    OFOutOfRangeException);
+	[image setColor: color atPoint: OFMakePoint(0.0f, 0.0f)];
+	OTAssertEqualObjects([image colorAtPoint: OFMakePoint(0.0f, 0.0f)],
+	    [OFColor colorWithRed: 1.0f
+			    green: 1.0f
+			     blue: 1.0f
+			    alpha: 1.0f]);
 }
 
 - (void)testCopy
@@ -453,7 +614,7 @@
 	OFImage *image = [OFMutableImage
 	    imageWithPixels: pixels
 		pixelFormat: OFPixelFormatRGB888
-		       size: OFMakeSize(2, 2)];
+		       size: OFMakeSize(2.0f, 2.0f)];
 	OFImage *copy = objc_autorelease([image copy]);
 
 	OTAssertNotEqual(image, copy);

@@ -23,28 +23,44 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFColor;
+@class OFColorSpace;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableImage;
 @class OFSeekableStream;
 
 /**
  * @brief A pixel format.
+ *
+ * All pixel formats are in native endianness unless otherwise specified.
  */
 typedef enum {
+	/* Private */
+	_OFPixelFormatInt8  = 0x10000,
+	_OFPixelFormatInt16 = 0x20000,
+	_OFPixelFormatInt32 = 0x30000,
+	_OFPixelFormatFP16  = 0x50000,
+	_OFPixelFormatFP32  = 0x60000,
+
 	/** Unknown pixel format. */
-	OFPixelFormatUnknown,
-	/** RGB with 8 bits per channel. */
-	OFPixelFormatRGB888,
-	/** RGBA (in big endian) with 8 bits per channel, 4 byte aligned. */
-	OFPixelFormatRGBA8888,
-	/** ARGB (in big endian) with 8 bits per channel, 4 byte aligned. */
-	OFPixelFormatARGB8888,
-	/** BGR with 8 bits per channel. */
+	OFPixelFormatUnknown = 0,
+	/** RGB with 8 bits per channel as 3 consecutive bytes. */
+	OFPixelFormatRGB888 = _OFPixelFormatInt8,
+	/** BGR with 8 bits per channel as 3 consecutive bytes. */
 	OFPixelFormatBGR888,
-	/** ABGR (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** RGB with 5/6/5 bits per channel in 16 bit integers. */
+	OFPixelFormatRGB565 = _OFPixelFormatInt16,
+	/** RGBA with 8 bits per channel in 32 bit integers. */
+	OFPixelFormatRGBA8888 = _OFPixelFormatInt32,
+	/** ARGB with 8 bits per channel in 32 bit integers. */
+	OFPixelFormatARGB8888,
+	/** ABGR with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatABGR8888,
-	/** BGRA (in big endian) with 8 bits per channel, 4 byte aligned. */
+	/** BGRA with 8 bits per channel in 32 bit integers. */
 	OFPixelFormatBGRA8888,
+	/** RGBA with 16 bit per channel as 4 consecutive `_Float16`s. */
+	OFPixelFormatRGBA16161616FP = _OFPixelFormatFP16 + 2,
+	/** RGBA with 32 bit per channel as 4 consecutive `float`s. */
+	OFPixelFormatRGBA32323232FP = _OFPixelFormatFP32 + 2
 } OFPixelFormat;
 
 /**
@@ -98,19 +114,19 @@ extern const OFImageFormat OFImageFormatQOI;
  */
 @interface OFImage: OFObject <OFCopying, OFMutableCopying>
 {
+	void *_pixels;
+	OFPixelFormat _pixelFormat;
+	OFSize _size;
+	OFColorSpace *_colorSpace;
+	bool _freeWhenDone;
 	OFSize _dotsPerInch;
 	OF_RESERVE_IVARS(OFImage, 4)
 }
 
 /**
- * @brief The size of the image in pixels.
+ * @brief The raw pixels using the @ref pixelFormat.
  */
-@property (readonly, nonatomic) OFSize size;
-
-/**
- * @brief The bits per pixel.
- */
-@property (readonly, nonatomic) unsigned int bitsPerPixel;
+@property (readonly, nonatomic) const void *pixels OF_RETURNS_INNER_POINTER;
 
 /**
  * @brief The pixel format used by the image.
@@ -118,9 +134,22 @@ extern const OFImageFormat OFImageFormatQOI;
 @property (readonly, nonatomic) OFPixelFormat pixelFormat;
 
 /**
- * @brief The raw pixels using the @ref pixelFormat.
+ * @brief The size of the image in pixels.
  */
-@property (readonly, nonatomic) const void *pixels OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) OFSize size;
+
+/**
+ * @brief The color space of the image.
+ *
+ * Setting this property does not convert the image, but changes how the image
+ * is interpreted.
+ */
+@property (readonly, retain, nonatomic) OFColorSpace *colorSpace;
+
+/**
+ * @brief The bits per pixel.
+ */
+@property (readonly, nonatomic) unsigned int bitsPerPixel;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.
@@ -162,6 +191,22 @@ extern const OFImageFormat OFImageFormatQOI;
 
 /**
  * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size in the specified color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @return A new image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithPixels: (const void *)pixels
+		    pixelFormat: (OFPixelFormat)pixelFormat
+			   size: (OFSize)size
+		     colorSpace: (OFColorSpace *)colorSpace;
+
+/**
+ * @brief Creates a new image with the specified pixels in the specified pixel
  *	  format and the specified size by taking over ownership of the
  *	  specified pixels pointer.
  *
@@ -179,6 +224,28 @@ extern const OFImageFormat OFImageFormatQOI;
 			 freeWhenDone: (bool)freeWhenDone;
 
 /**
+ * @brief Creates a new image with the specified pixels in the specified pixel
+ *	  format and the specified size by taking over ownership of the
+ *	  specified pixels pointer in the specified color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return A new image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithPixelsNoCopy: (const void *)pixels
+			  pixelFormat: (OFPixelFormat)pixelFormat
+				 size: (OFSize)size
+			   colorSpace: (OFColorSpace *)colorSpace
+			 freeWhenDone: (bool)freeWhenDone;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/**
  * @brief Initializes an already allocated image with the specified pixels in
  *	  the specified pixel format and the specified size.
  *
@@ -191,6 +258,23 @@ extern const OFImageFormat OFImageFormatQOI;
 - (instancetype)initWithPixels: (const void *)pixels
 		   pixelFormat: (OFPixelFormat)pixelFormat
 			  size: (OFSize)size;
+
+/**
+ * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size in the specified
+ *	  color space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithPixels: (const void *)pixels
+		   pixelFormat: (OFPixelFormat)pixelFormat
+			  size: (OFSize)size
+		    colorSpace: (OFColorSpace *)colorSpace;
 
 /**
  * @brief Initializes an already allocated image with the specified pixels in
@@ -211,7 +295,31 @@ extern const OFImageFormat OFImageFormatQOI;
 			freeWhenDone: (bool)freeWhenDone;
 
 /**
+ * @brief Initializes an already allocated image with the specified pixels in
+ *	  the specified pixel format and the specified size by taking over
+ *	  ownership of the specified pixels pointer in the specified color
+ *	  space.
+ *
+ * @param pixels The pixels for the new image
+ * @param pixelFormat The pixel format of the pixels for the new image
+ * @param size The size for the new image in pixels
+ * @param colorSpace The color space of the image
+ * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ *		       by the OFImage
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithPixelsNoCopy: (const void *)pixels
+			 pixelFormat: (OFPixelFormat)pixelFormat
+				size: (OFSize)size
+			  colorSpace: (OFColorSpace *)colorSpace
+			freeWhenDone: (bool)freeWhenDone;
+
+/**
  * @brief Returns the color at the specified point.
+ *
+ * If the point is non-integral, the weighted average of the neighboring pixels
+ * is returned.
  *
  * @warning This method is expensive! You should use @ref pixels instead to get
  *	    a buffer and use that instead.
@@ -220,9 +328,20 @@ extern const OFImageFormat OFImageFormatQOI;
  * @return The color for the specified point
  * @throw OFOutOfRangeException The specified point is outside of the image's
  *				bounds
- * @throw OFInvalidArgumentException The specified point is not integral
  */
 - (OFColor *)colorAtPoint: (OFPoint)point;
+
+/**
+ * @brief Returns the image as a new image in the specified pixel format and
+ *	  color space.
+ *
+ * @param pixelFormat The pixel format for the new image
+ * @param colorSpace The color space for the new image
+ * @return The image as a new image in the specified pixel format and color
+ *	   space
+ */
+- (OFImage *)imageUsingPixelFormat: (OFPixelFormat)pixelFormat
+			colorSpace: (OFColorSpace *)colorSpace;
 
 /**
  * @brief Writes the image to the specified stream in the specified format.

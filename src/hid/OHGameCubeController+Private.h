@@ -17,19 +17,27 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFTLSStream.h"
+#import "OHGameCubeController.h"
 
-#include <Security/SecureTransport.h>
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# import "OHEvdevGameController.h"
+#endif
+#ifdef OF_HAVE_GCF
+# import "OHGCFGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportTLSStream: OFTLSStream <OFStreamDelegate>
-{
-	SSLContextRef _context;
-	bool _server;
-	OFString *_host;
-}
+OF_DIRECT_MEMBERS
+@interface OHGameCubeController ()
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+    <OHEvdevMapping>
+#endif
+#ifdef OF_HAVE_GCF
+    <OHGCFMapping>
+#endif
+
+- (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

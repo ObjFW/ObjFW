@@ -689,8 +689,11 @@ OF_SINGLETON_METHODS
 
 				if (value != nil) {
 					value = value.description;
-					value = value
-					    .stringByReplacingControlCharacters;
+
+					if (![var hasPrefix: @"@"])
+#define SBRCC stringByReplacingControlCharacters
+						value = value.SBRCC;
+#undef SBRCC
 
 					[ret appendString: value];
 				}

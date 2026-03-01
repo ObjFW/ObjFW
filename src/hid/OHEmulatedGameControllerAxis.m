@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "config.h"
+#include "config.h"
 
 #import "OHEmulatedGameControllerAxis.h"
 #import "OHGameControllerButton.h"

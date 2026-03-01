@@ -38,6 +38,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameCubeController.h"
+#import "OHGameCubeController+Private.h"
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
 #import "OHLeftJoyCon.h"
@@ -112,9 +114,13 @@
 		else if ([_name isEqual: @"SNES Controller"])
 			_profile = [[OHSNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"Stadia Controller rev. A"])
-			_profile = [[OHStadiaGamepad alloc] oh_init];
+			_profile = [[OHStadiaGamepad alloc]
+			    oh_initWithVendorID: OHVendorIDGoogle
+				      productID: OHProductIDStadiaController];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
+		else if ([_name isEqual: @"GameCube Controller Adapter"])
+			_profile = [[OHGameCubeController alloc] oh_init];
 		else
 			_profile = [[OHGCFExtendedGamepad alloc]
 			    oh_initWithLiveInput:

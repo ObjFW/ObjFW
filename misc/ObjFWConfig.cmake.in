@@ -1,0 +1,103 @@
+block(SCOPE_FOR VARIABLES PROPAGATE ObjFW_CONFIG_EXECUTABLE)
+	set(prefix "@prefix@")
+	set(exec_prefix "@exec_prefix@")
+	set(ObjFW_CONFIG_EXECUTABLE "@bindir@/@BIN_PREFIX@objfw-config")
+endblock()
+
+foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
+	if(NOT package STREQUAL "ObjFW")
+		set(package_flags "--package;${package}")
+
+		execute_process(
+			COMMAND ${ObjFW_CONFIG_EXECUTABLE} ${package_flags}
+			RESULT_VARIABLE package_not_found
+			ERROR_QUIET
+		)
+
+		if(package_not_found)
+			if(NOT ObjFW_FIND_REQUIRED)
+				return()
+			endif()
+
+			message(FATAL_ERROR
+				"ObjFW package ${package} not found")
+		endif()
+	else()
+		set(package_flags "")
+	endif()
+
+	add_library(ObjFW::${package} IMPORTED INTERFACE)
+
+	execute_process(
+		COMMAND ${ObjFW_CONFIG_EXECUTABLE} --cppflags --objcflags
+		${package_flags}
+		OUTPUT_VARIABLE compile_options
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		COMMAND_ERROR_IS_FATAL ANY
+	)
+	if(APPLE)
+		execute_process(
+			COMMAND ${ObjFW_CONFIG_EXECUTABLE}
+			--framework-libs --ldflags ${package_flags}
+			OUTPUT_VARIABLE link_options
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+	else()
+		execute_process(
+			COMMAND ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
+			${package_flags}
+			OUTPUT_VARIABLE link_options
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+	endif()
+
+	string(REPLACE " " ";" compile_options "${compile_options}")
+	string(REPLACE " " ";" link_options "${link_options}")
+	string(REPLACE "-framework;" "-framework "
+		link_options "${link_options}")
+
+	foreach(flag ${compile_options})
+		if(flag MATCHES "^-I")
+			string(REGEX REPLACE "^-I" "" dir ${flag})
+			target_include_directories(ObjFW::${package}
+				INTERFACE ${dir})
+		elseif(flag MATCHES "^-D")
+			target_compile_definitions(ObjFW::${package}
+				INTERFACE ${flag})
+		else()
+			target_compile_options(ObjFW::${package} INTERFACE
+				$<$<BOOL:$<OBJC_COMPILER_VERSION>>:${flag}>)
+		endif()
+	endforeach()
+
+	foreach(flag ${link_options})
+		if(flag MATCHES "^-l")
+			string(REGEX REPLACE "^-l" "" lib ${flag})
+			target_link_libraries(ObjFW::${package}
+				INTERFACE ${lib})
+		elseif(flag MATCHES "^-L")
+			string(REGEX REPLACE "^-L" "" dir ${flag})
+			target_link_directories(ObjFW::${package}
+				INTERFACE ${dir})
+		elseif(flag MATCHES "^-framework ")
+			target_link_libraries(ObjFW::${package}
+				INTERFACE ${flag})
+		else()
+			target_link_options(ObjFW::${package} INTERFACE ${flag})
+		endif()
+	endforeach()
+endforeach()
+
+add_library(ObjFW::ARC IMPORTED INTERFACE)
+execute_process(
+	COMMAND ${ObjFW_CONFIG_EXECUTABLE} --arc
+	OUTPUT_VARIABLE _objfw_arc_options
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	COMMAND_ERROR_IS_FATAL ANY
+)
+string(REPLACE " " ";" _objfw_arc_options "${_objfw_arc_options}")
+foreach(flag ${_objfw_arc_options})
+	target_compile_options(ObjFW::ARC INTERFACE ${flag})
+endforeach()

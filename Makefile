@@ -23,6 +23,29 @@ docs:
 	rm -fr docs
 	doxygen >/dev/null
 
+install-extra: misc/ObjFWConfig.cmake misc/ObjFWConfigVersion.cmake
+	for i in ObjFWConfig.cmake ObjFWConfigVersion.cmake; do \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} ${DESTDIR}${libdir}/cmake/ObjFW && \
+		    ${INSTALL} -m 644 misc/$$i \
+		    ${DESTDIR}${libdir}/cmake/ObjFW/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+
+uninstall-extra:
+	for i in ObjFWConfig.cmake ObjFWConfigVersion.cmake; do \
+		if test -f ${DESTDIR}${libdir}/cmake/ObjFW/$$i; then \
+			if rm -f ${DESTDIR}${libdir}/cmake/ObjFW/$$i; then \
+				${DELETE_OK}; \
+			else \
+				${DELETE_FAILED}; \
+			fi \
+		fi \
+	done
+
 release: docs
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."
 	rm -fr objfw-${PACKAGE_VERSION} objfw-${PACKAGE_VERSION}.tar \

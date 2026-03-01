@@ -22,7 +22,9 @@
 #include <math.h>
 
 #import "OFColor.h"
+#import "OFColorSpace.h"
 #import "OFConcreteColor.h"
+#import "OFMatrix4x4.h"
 #import "OFOnce.h"
 #import "OFString.h"
 #import "OFTaggedPointerColor.h"
@@ -38,7 +40,7 @@ static struct {
 } placeholder;
 
 #ifdef OF_OBJFW_RUNTIME
-static const float allowedImprecision = 0.0000001;
+static const float allowedImprecision = 0.0000001f;
 #endif
 
 @implementation OFPlaceholderColor
@@ -46,20 +48,22 @@ static const float allowedImprecision = 0.0000001;
 		      green: (float)green
 		       blue: (float)blue
 		      alpha: (float)alpha
+		 colorSpace: (OFColorSpace *)colorSpace
 {
 #ifdef OF_OBJFW_RUNTIME
 	if (red >= 0.0f && red <= 1.0f && green >= 0.0f && green <= 1.0f &&
-	    blue >= 0.0f && blue <= 1.0f && alpha == 1.0f) {
-		uint8_t redInt = roundf(red * 255);
-		uint8_t greenInt = roundf(green * 255);
-		uint8_t blueInt = roundf(blue * 255);
+	    blue >= 0.0f && blue <= 1.0f && alpha == 1.0f &&
+	    [colorSpace isEqual: [OFColorSpace sRGBColorSpace]]) {
+		uint8_t redInt8 = roundf(red * 255.0f);
+		uint8_t greenInt8 = roundf(green * 255.0f);
+		uint8_t blueInt8 = roundf(blue * 255.0f);
 
-		if (fabsf(red * 255 - redInt) < allowedImprecision &&
-		    fabsf(green * 255 - greenInt) < allowedImprecision &&
-		    fabsf(blue * 255 - blueInt) < allowedImprecision) {
-			id ret = [OFTaggedPointerColor colorWithRed: redInt
-							      green: greenInt
-							       blue: blueInt];
+		if (fabsf(red * 255.0f - redInt8) < allowedImprecision &&
+		    fabsf(green * 255.0f - greenInt8) < allowedImprecision &&
+		    fabsf(blue * 255.0f - blueInt8) < allowedImprecision) {
+			id ret = [OFTaggedPointerColor colorWithRed: redInt8
+							      green: greenInt8
+							       blue: blueInt8];
 
 			if (ret != nil)
 				return ret;
@@ -70,7 +74,8 @@ static const float allowedImprecision = 0.0000001;
 	return (id)[[OFConcreteColor alloc] initWithRed: red
 						  green: green
 						   blue: blue
-						  alpha: alpha];
+						  alpha: alpha
+					     colorSpace: colorSpace];
 }
 
 OF_SINGLETON_METHODS
@@ -149,10 +154,37 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 							       alpha: alpha]);
 }
 
++ (instancetype)colorWithRed: (float)red
+		       green: (float)green
+			blue: (float)blue
+		       alpha: (float)alpha
+		  colorSpace: (OFColorSpace *)colorSpace
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRed: red
+				green: green
+				 blue: blue
+				alpha: alpha
+			   colorSpace: colorSpace]);
+}
+
 - (instancetype)initWithRed: (float)red
 		      green: (float)green
 		       blue: (float)blue
 		      alpha: (float)alpha
+{
+	return [self initWithRed: red
+			   green: green
+			    blue: blue
+			   alpha: alpha
+		      colorSpace: [OFColorSpace sRGBColorSpace]];
+}
+
+- (instancetype)initWithRed: (float)red
+		      green: (float)green
+		       blue: (float)blue
+		      alpha: (float)alpha
+		 colorSpace: (OFColorSpace *)colorSpace
 {
 	if ([self isMemberOfClass: [OFColor class]]) {
 		@try {
@@ -181,6 +213,10 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 		return false;
 
 	other = object;
+
+	if (![other.colorSpace isEqual: self.colorSpace])
+		return false;
+
 	[self getRed: &red green: &green blue: &blue alpha: &alpha];
 	[other getRed: &otherRed
 		green: &otherGreen
@@ -236,6 +272,36 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	 alpha: (float *)alpha
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFColorSpace *)colorSpace
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFColor *)colorUsingColorSpace: (OFColorSpace *)colorSpace
+{
+	OFColorSpace *oldCS = self.colorSpace;
+	OF_ALIGN(16) OFVector4D colorVec;
+
+	if ([colorSpace isEqual: oldCS])
+		return self;
+
+	[self getRed: &colorVec.x
+	       green: &colorVec.y
+		blue: &colorVec.z
+	       alpha: &colorVec.w];
+
+	oldCS.EOTF(&colorVec, 1);
+	[oldCS.RGBToXYZMatrix transformVectors: &colorVec count: 1];
+
+	[colorSpace.XYZToRGBMatrix transformVectors: &colorVec count: 1];
+	colorSpace.OETF(&colorVec, 1);
+
+	return [OFColor colorWithRed: colorVec.x
+			       green: colorVec.y
+				blue: colorVec.z
+			       alpha: colorVec.w];
 }
 
 - (OFString *)description

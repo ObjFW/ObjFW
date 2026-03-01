@@ -150,7 +150,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			    &param)) != 0)
 				return error;
 
-			if (attr->priority < 0) {
+			if (attr->priority < 0.0f) {
 				param.sched_priority = minPrio +
 				    (1.0f + attr->priority) *
 				    (normalPrio - minPrio);

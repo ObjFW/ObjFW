@@ -26,11 +26,11 @@
 
 #import "OFNotImplementedException.h"
 
-@implementation OFImageFormatHandler
-@synthesize imageFormat = _imageFormat;
-
 static OFMutableDictionary OF_GENERIC(OFImageFormat, OFImageFormatHandler *)
     *handlers;
+
+@implementation OFImageFormatHandler
+@synthesize imageFormat = _imageFormat;
 
 + (void)initialize
 {

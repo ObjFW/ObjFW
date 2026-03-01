@@ -74,13 +74,13 @@ Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
     -D*  -D *       Pass the specified define to the compiler
     -framework *    Pass the specified -framework argument to the linker
                     (macOS / iOS only)
-    -f*             Pass the specified -f flag to the compiler
+    -f*             Pass the specified -f flag to the compiler and linker
     -F* -F *        Pass the specified -F flag to the linker (macOS / iOS only)
     -g*             Pass the specified -g flag to the compiler
     -I*  -I *       Pass the specified -I flag to the compiler
     -l*  -l *       Pass the specified -l flag to the linker
     -L*  -L *       Pass the specified -L flag to the linker
-    -m*             Pass the specified -m flag to the compiler
+    -m*             Pass the specified -m flag to the compiler and linker
     -O*             Pass the specified -O flag to the compiler
     -pthread        Pass -pthread to the compiler and linker
     -std=*          Pass the specified -std= flag to the compiler
@@ -210,6 +210,7 @@ while test x"$1" != "x"; do
 		;;
 	-f*)
 		OBJCFLAGS="$OBJCFLAGS $1"
+		LDFLAGS="$LDFLAGS $1"
 		;;
 	-F)
 		shift
@@ -244,6 +245,7 @@ while test x"$1" != "x"; do
 		;;
 	-m*)
 		OBJCFLAGS="$OBJCFLAGS $1"
+		LDFLAGS="$LDFLAGS $1"
 		;;
 	-O*)
 		OBJCFLAGS="$OBJCFLAGS $1"

@@ -27,10 +27,22 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class representing a mutable image.
  */
 @interface OFMutableImage: OFImage
+{
+	OF_RESERVE_IVARS(OFMutableImage, 4)
+}
+
 /**
  * @brief The raw pixels using the @ref pixelFormat.
  */
 @property (readonly, nonatomic) void *mutablePixels OF_RETURNS_INNER_POINTER;
+
+/**
+ * @brief The color space of the image.
+ *
+ * Setting this property does not convert the image, but changes how the image
+ * is interpreted.
+ */
+@property (readwrite, retain, nonatomic) OFColorSpace *colorSpace;
 
 /**
  * @brief The dots per inch of the image or (0, 0) if unknown.
@@ -49,6 +61,20 @@ OF_ASSUME_NONNULL_BEGIN
 		  pixelFormat: (OFPixelFormat)pixelFormat;
 
 /**
+ * @brief Creates a new image with the specified size and pixel format in the
+ *	  specified color space.
+ *
+ * @param size The size for the new image in pixels
+ * @param pixelFormat The pixel format for the new image
+ * @param colorSpace The color space of the image
+ * @return A new autoreleased image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
++ (instancetype)imageWithSize: (OFSize)size
+		  pixelFormat: (OFPixelFormat)pixelFormat
+		   colorSpace: (OFColorSpace *)colorSpace;
+
+/**
  * @brief Initializes an already allocated image with the specified size and
  *	  pixel format.
  *
@@ -59,6 +85,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithSize: (OFSize)size
 		 pixelFormat: (OFPixelFormat)pixelFormat;
+
+/**
+ * @brief Initializes an already allocated image with the specified size and
+ *	  pixel format in the specified color space.
+ *
+ * @param size The size for the new image in pixels
+ * @param pixelFormat The pixel format for the new image
+ * @param colorSpace The color space of the image
+ * @return An initialized image
+ * @throw OFInvalidArgumentException The specified size is not integral
+ */
+- (instancetype)initWithSize: (OFSize)size
+		 pixelFormat: (OFPixelFormat)pixelFormat
+		  colorSpace: (OFColorSpace *)colorSpace;
 
 /**
  * @brief Sets the color at the specified point.

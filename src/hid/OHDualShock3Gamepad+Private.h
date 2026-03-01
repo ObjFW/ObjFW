@@ -17,37 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFX509Certificate.h"
+#import "OHDualShock3Gamepad.h"
 
-#include <Security/SecCertificate.h>
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+# import "OHEvdevGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFSecureTransportKeychain;
-
-OF_SUBCLASSING_RESTRICTED
-@interface OFSecureTransportX509Certificate: OFX509Certificate
-{
-	SecCertificateRef _certificate;
-#ifndef OF_IOS
-	SecKeychainItemRef _Nullable _privateKey;
-	OFSecureTransportKeychain *_keychain;
-#endif
-}
-
-@property (readonly, nonatomic) SecCertificateRef of_certificate;
-#ifndef OF_IOS
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    SecKeychainItemRef of_privateKey;
+OF_DIRECT_MEMBERS
+@interface OHDualShock3Gamepad ()
+#if defined(OF_LINUX) && defined(OF_HAVE_FILES)
+    <OHEvdevMapping>
 #endif
 
-#ifndef OF_IOS
-- (instancetype)of_initWithCertificate: (SecCertificateRef)certificate
-			    privateKey: (nullable SecKeychainItemRef)privateKey
-			      keychain: (OFSecureTransportKeychain *)keychain;
-#else
-- (instancetype)of_initWithCertificate: (SecCertificateRef)certificate;
-#endif
+- (instancetype)oh_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

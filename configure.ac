@@ -1,17 +1,17 @@
-AC_INIT(ObjFW, 1.5-dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.6-dev, js@nil.im, objfw, https://objfw.nil.im/)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 objfw_version_major=1
-objfw_version_minor=5
+objfw_version_minor=6
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
 	[The major version of ObjFW])
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
 	[The minor version of ObjFW])
-dnl This may only be set to 1.5 once 1.5 is released
-AC_SUBST(BUNDLE_VERSION, 1.4.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.4)
+dnl This may only be set to 1.6 once 1.6 is released
+AC_SUBST(BUNDLE_VERSION, 1.5.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.5)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
@@ -944,14 +944,35 @@ AC_CHECK_HEADER(sys/types.h,
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
-AC_CHECK_TYPE(wchar_t)
-AC_CHECK_HEADER(wchar.h)
+AC_CHECK_TYPES(wchar_t)
+AC_CHECK_HEADERS(wchar.h)
 
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
 AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 	[AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
+
+case "$host_os" in
+mingw*)
+	dnl _Float16 is broken in MinGW.
+	;;
+*)
+	AC_MSG_CHECKING(for working _Float16)
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			_Float16 f16;
+			float f32;
+		], [
+			f32 = f16;
+		])
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(OF_HAVE__FLOAT16, 1, [Whether we have _Float16])
+	], [
+		AC_MSG_RESULT(no)
+	])
+esac
 
 AC_MSG_CHECKING(for floating point endianness)
 fp_endianness="unknown"
@@ -1988,18 +2009,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		dnl handle signals at the same time.
 		;;
 	*)
-		AS_IF([test x"$with_wii" = x"yes"], [
+		AC_CHECK_HEADERS(poll.h)
+		AC_CHECK_FUNC(poll, [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
-		], [
-			AC_CHECK_HEADERS(poll.h)
-			AC_CHECK_FUNC(poll, [
-				AC_DEFINE(HAVE_POLL, 1,
-					[Whether we have poll()])
-				AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
-					"OFPollKernelEventObserver.m")
-			])
 		])
 		;;
 	esac
@@ -2024,33 +2038,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, openssl, gnutls, securetransport, mbedtls or
-			no)]))
+			(yes, openssl, gnutls, mbedtls or no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
-
-	AS_IF([test x"$with_tls" = x"securetransport" \
-	    -o x"$with_tls" = x"yes"], [
-		AC_CHECK_HEADERS(Security/SecureTransport.h, [
-			old_LIBS="$LIBS"
-			LIBS="-framework Security -framework Foundation $LIBS"
-
-			AC_CHECK_FUNC(SSLHandshake, [
-				tls_support="Secure Transport"
-				tmp="-framework Security -framework Foundation"
-				TLS_LIBS="-lobjfwbridge $tmp $TLS_LIBS"
-				tmp="-framework ObjFWBridge $tmp"
-				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
-
-				AC_SUBST(USE_SRCS_SECURETRANSPORT,
-					'${SRCS_SECURETRANSPORT}')
-
-				AC_CHECK_FUNCS(SSLCreateContext)
-			], [])
-
-			LIBS="$old_LIBS"
-		])
-	])
 
 	AS_IF([test x"$with_tls" = x"openssl" \
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
@@ -2684,6 +2674,8 @@ AC_SUBST(TESTS_LIBS)
 AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
+	misc/ObjFWConfig.cmake
+	misc/ObjFWConfigVersion.cmake
 	src/Info.plist
 	src/hid/Info.plist
 	src/hid/ObjFWHID.oc

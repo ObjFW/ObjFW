@@ -22,8 +22,10 @@ LIB_PATCH = ${OBJFW_LIB_PATCH}
 SRCS = OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
+       OFCanvas.m			\
        OFCharacterSet.m			\
        OFColor.m			\
+       OFColorSpace.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
@@ -46,6 +48,8 @@ SRCS = OFApplication.m			\
        OFImage.m			\
        OFImageFormatHandler.m		\
        OFIndexSet.m			\
+       OFInflate64Stream.m		\
+       OFInflateStream.m		\
        OFInvocation.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\
@@ -200,8 +204,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\
-	    OFInflate64Stream.h			\
-	    OFInflateStream.h			\
 	    OFJSONRepresentation.h		\
 	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
@@ -227,11 +229,9 @@ SRCS += OFASPrintF.m			\
 	OFConcreteData.m		\
 	OFConcreteDate.m		\
 	OFConcreteDictionary.m		\
-	OFConcreteImage.m		\
 	OFConcreteMutableArray.m	\
 	OFConcreteMutableData.m		\
 	OFConcreteMutableDictionary.m	\
-	OFConcreteMutableImage.m	\
 	OFConcreteMutableSet.m		\
 	OFConcreteNumber.m		\
 	OFConcreteSet.m			\
@@ -309,7 +309,7 @@ LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
-	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
+	  -DOBJFW_LIB_VER=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\"	\
 	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
 
 uninstall-extra:

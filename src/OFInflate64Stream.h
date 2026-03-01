@@ -19,4 +19,7 @@
 
 #import "OFDeflate64Stream.h"
 
-@compatibility_alias OFInflate64Stream OFDeflate64Stream;
+OF_SUBCLASSING_RESTRICTED
+OF_DEPRECATED(ObjFW, 1, 5, "Use OFDeflate64Stream instead")
+@interface OFInflate64Stream: OFDeflate64Stream
+@end

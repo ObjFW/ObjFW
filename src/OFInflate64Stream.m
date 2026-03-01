@@ -17,17 +17,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFImage.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFInflate64Stream.h"
 
-@interface OFConcreteImage: OFImage
-{
-	OFSize _size;
-	OFPixelFormat _pixelFormat;
-	void *_pixels;
-	bool _freeWhenDone;
-}
+@implementation OFInflate64Stream
 @end
-
-OF_ASSUME_NONNULL_END
