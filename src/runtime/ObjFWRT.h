@@ -691,7 +691,7 @@ extern void objc_setTaggedPointerSecret(uintptr_t secret);
  * @brief Registers a class for tagged pointers.
  *
  * @param class_ The class to register for tagged pointers
- * @return The tagged pointer ID for the registered class
+ * @return The tag ID for the class, or -1 if no tag ID is available anymore
  */
 extern int objc_registerTaggedPointerClass(Class _Nonnull class_);
 
@@ -716,7 +716,8 @@ extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
  *
  * @param class_ The tag ID for the tagged pointer class to use
  * @param value The value the tagged pointer should have
- * @return A tagged pointer, or `nil` if it could not be created
+ * @return A tagged pointer, or `nil` if it could not be created (either
+ *	   because the tag ID is invalid or the value is out of range)
  */
 extern id _Nullable objc_createTaggedPointer(int class_, uintptr_t value);
 
