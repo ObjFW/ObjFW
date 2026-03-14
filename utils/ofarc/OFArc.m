@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <string.h>
 
 #import "OFApplication.h"
@@ -601,7 +602,7 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		break;
 	case 'c':
 		modeString = @"w";
-		fileModeString = @"w+";
+		fileModeString = (_overwrite == 1 ? @"w+" : @"w+x");
 		break;
 	case 'l':
 	case 'p':
@@ -627,10 +628,45 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 			@throw [OFInvalidArgumentException exception];
 		}
 	} else {
+open_file:
 		@try {
 			file = [OFIRIHandler openItemAtIRI: IRI
 						      mode: fileModeString];
 		} @catch (OFOpenItemFailedException *e) {
+			if (mode == 'c' && _overwrite != -1 &&
+			    e.errNo == EEXIST) {
+				OFString *line;
+
+				do {
+					[OFStdErr writeString: @"\r"];
+					[OFStdErr writeString: OF_LOCALIZED(
+					    @"ask_overwrite_out",
+					    @"Overwrite %[iri]? [yn]",
+					    @"iri", IRI.string)];
+					[OFStdErr writeString: @" "];
+
+					if ([OFStdIn hasTerminal])
+						line = [OFStdIn readLine];
+					else {
+						line = @"n";
+						[OFStdErr writeLine: line];
+					}
+
+					if ([line isEqual: @"?"])
+						[OFStdErr writeLine:
+						    OF_LOCALIZED(
+						    @"ask_overwrite_out_help",
+						    @" y: yes\n"
+						    @" n: no")];
+				} while (![line isEqual: @"y"] &&
+				    ![line isEqual: @"n"]);
+
+				if ([line isEqual: @"y"]) {
+					fileModeString = @"w+";
+					goto open_file;
+				}
+			}
+
 			[OFStdErr writeString: @"\r"];
 			[OFStdErr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
