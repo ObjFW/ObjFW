@@ -136,11 +136,11 @@ parseMode(const char *mode)
 	if (strcmp(mode, "w") == 0)
 		return O_WRONLY | O_CREAT | O_TRUNC;
 	if (strcmp(mode, "wx") == 0)
-		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
+		return O_WRONLY | O_CREAT | O_EXCL;
 	if (strcmp(mode, "w+") == 0)
 		return O_RDWR | O_CREAT | O_TRUNC;
 	if (strcmp(mode, "w+x") == 0)
-		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
+		return O_RDWR | O_CREAT | O_EXCL;
 	if (strcmp(mode, "a") == 0)
 		return O_WRONLY | O_CREAT | O_APPEND;
 	if (strcmp(mode, "a+") == 0)
@@ -150,10 +150,10 @@ parseMode(const char *mode)
 }
 #else
 static int
-parseMode(const char *mode, bool *truncate, bool *exclusive, bool *append)
+parseMode(const char *mode, bool *truncate, bool *failIfExists, bool *append)
 {
 	*truncate = false;
-	*exclusive = false;
+	*failIfExists = false;
 	*append = false;
 
 	if (strcmp(mode, "r") == 0)
@@ -165,7 +165,7 @@ parseMode(const char *mode, bool *truncate, bool *exclusive, bool *append)
 		return MODE_READWRITE;
 	}
 	if (strcmp(mode, "wx") == 0) {
-		*exclusive = true;
+		*failIfExists = true;
 		return MODE_READWRITE;
 	}
 	if (strcmp(mode, "w+") == 0) {
@@ -173,7 +173,7 @@ parseMode(const char *mode, bool *truncate, bool *exclusive, bool *append)
 		return MODE_READWRITE;
 	}
 	if (strcmp(mode, "w+x") == 0) {
-		*exclusive = true;
+		*failIfExists = true;
 		return MODE_READWRITE;
 	}
 	if (strcmp(mode, "a") == 0) {
@@ -286,15 +286,15 @@ ioErrToErrNo()
 #else
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
-			bool truncate, exclusive;
+			bool truncate, failIfExists;
 			const char *pathCStr = [path cStringWithEncoding:
 			    [OFLocale encoding]];
 
 			if ((flags = parseMode(mode.UTF8String, &truncate,
-			    &exclusive, &handle->append)) == -1)
+			    &failIfExists, &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
 
-			if (exclusive) {
+			if (failIfExists) {
 				BPTR lock = Lock(pathCStr, SHARED_LOCK);
 
 				if (lock != 0) {
