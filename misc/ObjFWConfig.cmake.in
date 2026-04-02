@@ -4,12 +4,23 @@ block(SCOPE_FOR VARIABLES PROPAGATE ObjFW_CONFIG_EXECUTABLE)
 	set(ObjFW_CONFIG_EXECUTABLE "@bindir@/@BIN_PREFIX@objfw-config")
 endblock()
 
+macro(objfw_cygpath_to_win32 inpath outpath)
+	if(WIN32)
+		execute_process(
+			COMMAND cygpath -w "${${inpath}}"
+			OUTPUT_VARIABLE ${outpath}
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+	endif()
+endmacro()
+
 foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 	if(NOT package STREQUAL "ObjFW")
 		set(package_flags "--package;${package}")
 
 		execute_process(
-			COMMAND ${ObjFW_CONFIG_EXECUTABLE} ${package_flags}
+			COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} ${package_flags}
 			RESULT_VARIABLE package_not_found
 			ERROR_QUIET
 		)
@@ -29,7 +40,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 	add_library(ObjFW::${package} IMPORTED INTERFACE)
 
 	execute_process(
-		COMMAND ${ObjFW_CONFIG_EXECUTABLE} --cppflags --objcflags
+		COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --cppflags --objcflags
 		${package_flags}
 		OUTPUT_VARIABLE compile_options
 		OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -37,7 +48,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 	)
 	if(APPLE)
 		execute_process(
-			COMMAND ${ObjFW_CONFIG_EXECUTABLE}
+			COMMAND sh ${ObjFW_CONFIG_EXECUTABLE}
 			--framework-libs --ldflags ${package_flags}
 			OUTPUT_VARIABLE link_options
 			OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -45,7 +56,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 		)
 	else()
 		execute_process(
-			COMMAND ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
+			COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
 			${package_flags}
 			OUTPUT_VARIABLE link_options
 			OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -61,6 +72,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 	foreach(flag ${compile_options})
 		if(flag MATCHES "^-I")
 			string(REGEX REPLACE "^-I" "" dir ${flag})
+			objfw_cygpath_to_win32(dir dir)
 			target_include_directories(ObjFW::${package}
 				INTERFACE ${dir})
 		elseif(flag MATCHES "^-D")
@@ -79,6 +91,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 				INTERFACE ${lib})
 		elseif(flag MATCHES "^-L")
 			string(REGEX REPLACE "^-L" "" dir ${flag})
+			objfw_cygpath_to_win32(dir dir)
 			target_link_directories(ObjFW::${package}
 				INTERFACE ${dir})
 		elseif(flag MATCHES "^-framework ")
@@ -92,7 +105,7 @@ endforeach()
 
 add_library(ObjFW::ARC IMPORTED INTERFACE)
 execute_process(
-	COMMAND ${ObjFW_CONFIG_EXECUTABLE} --arc
+	COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --arc
 	OUTPUT_VARIABLE _objfw_arc_options
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 	COMMAND_ERROR_IS_FATAL ANY
