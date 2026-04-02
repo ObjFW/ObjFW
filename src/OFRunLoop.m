@@ -47,7 +47,7 @@
 #import "OFObserveKernelEventsFailedException.h"
 #import "OFWriteFailedException.h"
 
-#include "OFRunLoopConstants.inc"
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
 
 static OFRunLoop *mainRunLoop = nil;
 

@@ -30,7 +30,11 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
-#include "OFImageConstants.inc"
+const OFImageFormat OFImageFormatBMP = @"OFImageFormatBMP";
+const OFImageFormat OFImageFormatGIF = @"OFImageFormatGIF";
+const OFImageFormat OFImageFormatJPEG = @"OFImageFormatJPEG";
+const OFImageFormat OFImageFormatPNG = @"OFImageFormatPNG";
+const OFImageFormat OFImageFormatQOI = @"OFImageFormatQOI";
 
 @implementation OFImage
 + (instancetype)imageWithPixels: (const void *)pixels

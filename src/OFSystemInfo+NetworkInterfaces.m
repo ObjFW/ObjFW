@@ -21,7 +21,24 @@
 
 #import "OFSystemInfo.h"
 
-#include "OFSystemInfo+NetworkInterfacesConstants.inc"
+const OFNetworkInterfaceKey OFNetworkInterfaceIndex =
+    @"OFNetworkInterfaceIndex";
+const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
+    @"OFNetworkInterfaceHardwareAddress";
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+    @"OFNetworkInterfaceIPv4Addresses";
+#ifdef OF_HAVE_IPV6
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
+    @"OFNetworkInterfaceIPv6Addresses";
+#endif
+#ifdef OF_HAVE_IPX
+const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
+    @"OFNetworkInterfaceIPXAddresses";
+#endif
+#ifdef OF_HAVE_APPLETALK
+const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
+    @"OFNetworkInterfaceAppleTalkAddresses";
+#endif
 
 #if defined(OF_WINDOWS)
 # include "platform/Windows/OFSystemInfo+NetworkInterfaces.m"
