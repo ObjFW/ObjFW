@@ -35,49 +35,16 @@
 int _OFObject_KeyValueCoding_reference;
 
 @implementation OFObject (KeyValueCoding)
-- (id)valueForKey: (OFString *)key
+static id
+valueForKeyWithSelector(id self, OFString *key, SEL selector)
 {
 	void *pool = objc_autoreleasePoolPush();
-	SEL selector = sel_registerName(key.UTF8String);
 	OFMethodSignature *methodSignature =
 	    [self methodSignatureForSelector: selector];
-	id ret;
 
 	if (methodSignature == nil) {
-		size_t keyLength;
-		char *name;
-
-		if ((keyLength = key.UTF8StringLength) < 1) {
-			objc_autoreleasePoolPop(pool);
-			return [self valueForUndefinedKey: key];
-		}
-
-		name = OFAllocMemory(keyLength + 3, 1);
-		@try {
-			memcpy(name, "is", 2);
-			memcpy(name + 2, key.UTF8String, keyLength);
-			name[keyLength + 2] = '\0';
-
-			name[2] = OFASCIIToUpper(name[2]);
-
-			selector = sel_registerName(name);
-		} @finally {
-			OFFreeMemory(name);
-		}
-
-		methodSignature = [self methodSignatureForSelector: selector];
-
-		if (methodSignature == NULL) {
-			objc_autoreleasePoolPop(pool);
-			return [self valueForUndefinedKey: key];
-		}
-
-		switch (*methodSignature.methodReturnType) {
-		case '@':
-		case '#':
-			objc_autoreleasePoolPop(pool);
-			return [self valueForUndefinedKey: key];
-		}
+		objc_autoreleasePoolPop(pool);
+		return nil;
 	}
 
 	if (methodSignature.numberOfArguments != 2 ||
@@ -90,14 +57,15 @@ int _OFObject_KeyValueCoding_reference;
 	switch (*methodSignature.methodReturnType) {
 	case '@':
 	case '#':
-		ret = [self performSelector: selector];
-		break;
+		objc_autoreleasePoolPop(pool);
+		return [self performSelector: selector];
 #define CASE(encoding, type, method)					  \
 	case encoding:							  \
 		{							  \
+			objc_autoreleasePoolPop(pool);			  \
 			type (*getter)(id, SEL) = (type (*)(id, SEL))	  \
 			    [self methodForSelector: selector];		  \
-			ret = [OFNumber method getter(self, selector)]; \
+			return [OFNumber method getter(self, selector)];  \
 		}							  \
 		break;
 	CASE('B', bool, numberWithBool:)
@@ -113,17 +81,45 @@ int _OFObject_KeyValueCoding_reference;
 	CASE('Q', unsigned long long, numberWithUnsignedLongLong:)
 	CASE('f', float, numberWithFloat:)
 	CASE('d', double, numberWithDouble:)
-#undef CASE
 	default:
 		objc_autoreleasePoolPop(pool);
 		return [self valueForUndefinedKey: key];
+#undef CASE
+	}
+}
+
+- (id)valueForKey: (OFString *)key
+{
+	size_t keyLength;
+	SEL selector;
+	id ret;
+	char *name;
+
+	if ((keyLength = key.UTF8StringLength) < 1)
+		return [self valueForUndefinedKey: key];
+
+	selector = sel_registerName(key.UTF8String);
+
+	if ((ret = valueForKeyWithSelector(self, key, selector)) != nil)
+		return ret;
+
+	name = OFAllocMemory(keyLength + 3, 1);
+	@try {
+		memcpy(name, "is", 2);
+		memcpy(name + 2, key.UTF8String, keyLength);
+		name[keyLength + 2] = '\0';
+
+		name[2] = OFASCIIToUpper(name[2]);
+
+		selector = sel_registerName(name);
+	} @finally {
+		OFFreeMemory(name);
 	}
 
-	objc_retain(ret);
+	if ((ret = valueForKeyWithSelector(self, key, selector)) != nil)
+		return ret;
 
-	objc_autoreleasePoolPop(pool);
-
-	return objc_autoreleaseReturnValue(ret);
+	return [self valueForUndefinedKey: key];
 }
 
 - (id)valueForKeyPath: (OFString *)keyPath
