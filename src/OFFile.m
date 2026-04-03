@@ -152,7 +152,7 @@ parseMode(const char *mode)
 			ret |= O_RDWR;
 			break;
 		case 'x':
-			ret &= O_TRUNC;
+			ret &= ~O_TRUNC;
 			ret |= O_EXCL;
 			break;
 		default:
