@@ -41,6 +41,7 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 	void *pool = objc_autoreleasePoolPush();
 	OFMethodSignature *methodSignature =
 	    [self methodSignatureForSelector: selector];
+	const char *retType;
 
 	if (methodSignature == nil) {
 		objc_autoreleasePoolPop(pool);
@@ -54,7 +55,14 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 		return [self valueForUndefinedKey: key];
 	}
 
-	switch (*methodSignature.methodReturnType) {
+	retType = methodSignature.methodReturnType;
+
+	while (*retType == 'r' || *retType == 'n' || *retType == 'N' ||
+	    *retType == 'o' || *retType == 'O' || *retType == 'R' ||
+	    *retType == 'V')
+		retType++;
+
+	switch (*retType) {
 	case '@':
 	case '#':
 		objc_autoreleasePoolPop(pool);
@@ -81,10 +89,21 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 	CASE('Q', unsigned long long, numberWithUnsignedLongLong:)
 	CASE('f', float, numberWithFloat:)
 	CASE('d', double, numberWithDouble:)
+#undef CASE
+	case '^':
+	case '*':
+	case ':':
+		{
+			objc_autoreleasePoolPop(pool);
+			void *(*getter)(id, SEL) = (void *(*)(id, SEL))
+			    [self methodForSelector: selector];
+			return [OFValue valueWithPointer:
+			    getter(self, selector)];
+		}
+		break;
 	default:
 		objc_autoreleasePoolPop(pool);
 		return [self valueForUndefinedKey: key];
-#undef CASE
 	}
 }
 
@@ -184,6 +203,11 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 
 	valueType = [methodSignature argumentTypeAtIndex: 2];
 
+	while (*valueType == 'r' || *valueType == 'n' || *valueType == 'N' ||
+	    *valueType == 'o' || *valueType == 'O' || *valueType == 'R' ||
+	    *valueType == 'V')
+		valueType++;
+
 	if (*valueType != '@' && *valueType != '#' && value == nil) {
 		objc_autoreleasePoolPop(pool);
 		[self setNilValueForKey: key];
@@ -222,6 +246,16 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 	CASE('f', float, floatValue)
 	CASE('d', double, doubleValue)
 #undef CASE
+	case '^':
+	case '*':
+	case ':':
+		{
+			void (*setter)(id, SEL, void *) =
+			    (void (*)(id, SEL, void *))
+			    [self methodForSelector: selector];
+			setter(self, selector, [value pointerValue]);
+		}
+		break;
 	default:
 		objc_autoreleasePoolPop(pool);
 		[self setValue: value forUndefinedKey: key];

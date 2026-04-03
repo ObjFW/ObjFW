@@ -39,6 +39,9 @@
 	unsigned long long _unsignedLongLongValue;
 	float _floatValue;
 	double _doubleValue;
+	int *_pointerValue;
+	const char *_cStringValue;
+	SEL _selectorValue;
 }
 
 @property (nonatomic, retain) id objectValue;
@@ -56,6 +59,9 @@
 @property (nonatomic) unsigned long long unsignedLongLongValue;
 @property (nonatomic) float floatValue;
 @property (nonatomic) double doubleValue;
+@property (nonatomic) int *pointerValue;
+@property (nonatomic) const char *cStringValue;
+@property (nonatomic) SEL selectorValue;
 @end
 
 @interface OFObjectTests: OTTestCase
@@ -128,6 +134,8 @@
 
 - (void)testAutoWrappingOfValueForKey
 {
+	const char *cString = "test";
+
 	_myObject.boolValue = 1;
 	_myObject.charValue = 2;
 	_myObject.shortValue = 3;
@@ -141,6 +149,9 @@
 	_myObject.unsignedLongLongValue = 11;
 	_myObject.floatValue = 12;
 	_myObject.doubleValue = 13;
+	_myObject.pointerValue = &errno;
+	_myObject.cStringValue = cString;
+	_myObject.selectorValue = _cmd;
 
 	OTAssertEqualObjects([_myObject valueForKey: @"boolValue"],
 	    [OFNumber numberWithBool: 1]);
@@ -168,10 +179,18 @@
 	    [OFNumber numberWithFloat: 12]);
 	OTAssertEqualObjects([_myObject valueForKey: @"doubleValue"],
 	    [OFNumber numberWithDouble: 13]);
+	OTAssertEqualObjects([_myObject valueForKey: @"pointerValue"],
+	    [OFValue valueWithPointer: &errno]);
+	OTAssertEqualObjects([_myObject valueForKey: @"cStringValue"],
+	    [OFValue valueWithPointer: cString]);
+	OTAssertEqualObjects([_myObject valueForKey: @"selectorValue"],
+	    [OFValue valueWithPointer: _cmd]);
 }
 
 - (void)testAutoWrappingOfSetValueForKey
 {
+	const char *cString = "test";
+
 	[_myObject setValue: [OFNumber numberWithBool: 0]
 		     forKey: @"boolValue"];
 	[_myObject setValue: [OFNumber numberWithChar: 10]
@@ -198,6 +217,12 @@
 		     forKey: @"floatValue"];
 	[_myObject setValue: [OFNumber numberWithDouble: 120]
 		     forKey: @"doubleValue"];
+	[_myObject setValue: [OFValue valueWithPointer: &errno]
+		     forKey: @"pointerValue"];
+	[_myObject setValue: [OFValue valueWithPointer: cString]
+		     forKey: @"cStringValue"];
+	[_myObject setValue: [OFValue valueWithPointer: _cmd]
+		     forKey: @"selectorValue"];
 
 	OTAssertEqual(_myObject.isBoolValue, 0);
 	OTAssertEqual(_myObject.charValue, 10);
@@ -212,6 +237,9 @@
 	OTAssertEqual(_myObject.unsignedLongLongValue, 100);
 	OTAssertEqual(_myObject.floatValue, 110);
 	OTAssertEqual(_myObject.doubleValue, 120);
+	OTAssertEqual(_myObject.pointerValue, &errno);
+	OTAssertEqual(_myObject.cStringValue, cString);
+	OTAssertEqual(_myObject.selectorValue, _cmd);
 }
 
 - (void)testSetValueForKeyWithNilThrows
@@ -255,6 +283,8 @@
 @synthesize unsignedLongValue = _unsignedLongValue;
 @synthesize unsignedLongLongValue = _unsignedLongLongValue;
 @synthesize floatValue = _floatValue, doubleValue = _doubleValue;
+@synthesize pointerValue = _pointerValue, cStringValue = _cStringValue;
+@synthesize selectorValue = _selectorValue;
 
 - (void)dealloc
 {
