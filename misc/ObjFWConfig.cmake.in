@@ -81,6 +81,8 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 		else()
 			target_compile_options(ObjFW::${package} INTERFACE
 				$<$<BOOL:$<OBJC_COMPILER_VERSION>>:${flag}>)
+			target_compile_options(ObjFW::${package} INTERFACE
+				$<$<BOOL:$<OBJCXX_COMPILER_VERSION>>:${flag}>)
 		endif()
 	endforeach()
 
