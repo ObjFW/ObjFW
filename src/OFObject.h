@@ -154,6 +154,14 @@ OFEqualRanges(OFRange range1, OFRange range2)
 	return true;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+#ifdef __cplusplus
+}
+#endif
+
 /**
  * @brief Returns the end of the range, which is its location + its length.
  *
@@ -163,10 +171,8 @@ OFEqualRanges(OFRange range1, OFRange range2)
 static OF_INLINE size_t
 OFEndOfRange(OFRange range)
 {
-	if (range.length > SIZE_MAX - range.location) {
-		extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+	if (range.length > SIZE_MAX - range.location)
 		_OFThrowOutOfRangeException();
-	}
 
 	return range.location + range.length;
 }
