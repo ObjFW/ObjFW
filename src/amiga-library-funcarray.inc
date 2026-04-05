@@ -123,3 +123,4 @@
 (CONST_APTR)glue_OFZIPArchiveEntryCompressionMethodName,
 (CONST_APTR)glue_OFZIPArchiveEntryExtraFieldFind,
 (CONST_APTR)glue_OFStrError,
+(CONST_APTR)glue__OFThrowOutOfRangeException,

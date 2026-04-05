@@ -32,4 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

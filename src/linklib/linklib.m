@@ -46,6 +46,7 @@
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
+#import "exceptions/OFOutOfRangeException.h"
 
 extern struct Library *ObjFWBase;
 
@@ -1197,4 +1198,17 @@ OFStrError(int errNo)
 	);
 
 	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 646))(errNo);
+}
+
+void __attribute__((__weak__))
+_OFThrowOutOfRangeException()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWBase) : "r12"
+	);
+
+	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWBase) - 652))();
+
+	OF_UNREACHABLE
 }

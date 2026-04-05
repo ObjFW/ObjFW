@@ -654,3 +654,9 @@ glue_OFStrError(int errNo)
 {
 	return OFStrError(errNo);
 }
+
+void __saveds
+glue__OFThrowOutOfRangeException(void)
+{
+	_OFThrowOutOfRangeException();
+}

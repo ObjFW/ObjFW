@@ -385,4 +385,6 @@
   <function name='OFStrError' return-type='OFString *_Nonnull'>
     <argument name='errNo' type='int'/>
   </function>
+  <include>exceptions/OFOutOfRangeException.h</include>
+  <function name='_OFThrowOutOfRangeException' noreturn='1'/>
 </amiga-library>

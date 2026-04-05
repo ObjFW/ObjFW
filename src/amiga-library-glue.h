@@ -44,6 +44,7 @@
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
+#import "exceptions/OFOutOfRangeException.h"
 
 extern bool glue_OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx);
 extern void *_Nullable glue_OFAllocMemory(size_t count, size_t size);
@@ -149,3 +150,4 @@ extern OFString *_Nonnull glue_OFZIPArchiveEntryVersionToString(uint16_t version
 extern OFString *_Nonnull glue_OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compressionMethod);
 extern size_t glue_OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *_Nonnull size);
 extern OFString *_Nonnull glue_OFStrError(int errNo);
+extern void glue__OFThrowOutOfRangeException(void);
