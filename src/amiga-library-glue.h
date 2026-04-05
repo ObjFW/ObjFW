@@ -44,7 +44,6 @@
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
-#import "exceptions/OFOutOfRangeException.h"
 
 extern bool glue_OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx);
 extern void *_Nullable glue_OFAllocMemory(size_t count, size_t size);

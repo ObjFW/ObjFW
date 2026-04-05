@@ -46,7 +46,6 @@
 #import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
-#import "exceptions/OFOutOfRangeException.h"
 
 extern struct Library *ObjFWBase;
 
