@@ -30,7 +30,51 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 
-#include "OFImageConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFImageFormatBMP
+# undef OFImageFormatGIF
+# undef OFImageFormatJPEG
+# undef OFImageFormatPNG
+# undef OFImageFormatQOI
+#endif
+
+const OFImageFormat OFImageFormatBMP = @"OFImageFormatBMP";
+const OFImageFormat OFImageFormatGIF = @"OFImageFormatGIF";
+const OFImageFormat OFImageFormatJPEG = @"OFImageFormatJPEG";
+const OFImageFormat OFImageFormatPNG = @"OFImageFormatPNG";
+const OFImageFormat OFImageFormatQOI = @"OFImageFormatQOI";
+
+#ifdef OF_AMIGAOS
+const OFImageFormat *
+OFImageFormatBMPRef(void)
+{
+	return &OFImageFormatBMP;
+}
+
+const OFImageFormat *
+OFImageFormatGIFRef(void)
+{
+	return &OFImageFormatGIF;
+}
+
+const OFImageFormat *
+OFImageFormatJPEGRef(void)
+{
+	return &OFImageFormatJPEG;
+}
+
+const OFImageFormat *
+OFImageFormatPNGRef(void)
+{
+	return &OFImageFormatPNG;
+}
+
+const OFImageFormat *
+OFImageFormatQOIRef(void)
+{
+	return &OFImageFormatQOI;
+}
+#endif
 
 @implementation OFImage
 + (instancetype)imageWithPixels: (const void *)pixels

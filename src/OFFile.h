@@ -54,13 +54,13 @@ OF_SUBCLASSING_RESTRICTED
  *             @n
  *	       Possible modes are:
  *	       Mode           | Description
- *	       ---------------|-------------------------------------
+ *	       ---------------|---------------------------------------------
  *	       `r`            | Read-only
  *	       `r+`           | Read-write
  *	       `w`            | Write-only, create or truncate
- *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `wx`           | Write-only, create or fail if already exists
  *	       `w+`           | Read-write, create or truncate
- *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `w+x`          | Read-write, create or fail if already exists
  *	       `a`            | Write-only, create or append
  *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile

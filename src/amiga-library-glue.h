@@ -25,8 +25,10 @@
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
 #import "OFEmbeddedIRIHandler.h"
+#import "OFFileManager.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFImage.h"
 #import "OFList.h"
 #import "OFMethodSignature.h"
 #import "OFOnce.h"
@@ -34,11 +36,13 @@
 #import "OFPlainCondition.h"
 #import "OFPlainMutex.h"
 #import "OFPlainThread.h"
+#import "OFRunLoop.h"
 #import "OFScrypt.h"
 #import "OFSocket.h"
 #import "OFStdIOStream.h"
 #import "OFStrPTime.h"
 #import "OFString.h"
+#import "OFSystemInfo+NetworkInterfaces.h"
 #import "OFTLSKey.h"
 #import "OFTLSStream.h"
 #import "OFX509Certificate.h"
@@ -67,9 +71,38 @@ extern OFString *_Nonnull glue_OFDNSRecordTypeName(OFDNSRecordType recordType);
 extern OFDNSClass glue_OFDNSClassParseName(OFString *_Nonnull string);
 extern OFDNSRecordType glue_OFDNSRecordTypeParseName(OFString *_Nonnull string);
 extern void glue_OFRegisterEmbeddedFile(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, size_t size);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileSizeRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileTypeRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFilePOSIXPermissionsRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileGroupOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileGroupOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileLastAccessDateRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileModificationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileStatusChangeDateRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileCreationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileSymbolicLinkDestinationRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileExtendedAttributesNamesRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileAmigaProtectionRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileAmigaCommentRef(void);
+extern const OFFileAttributeKey *_Nonnull glue_OFFileMSDOSAttributesRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeRegularRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeDirectoryRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeSymbolicLinkRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeFIFORef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeCharacterSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeBlockSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeSocketRef(void);
+extern const OFFileAttributeType *_Nonnull glue_OFFileTypeUnknownRef(void);
 extern OFString *_Nullable glue_OFHTTPRequestMethodString(OFHTTPRequestMethod method);
 extern OFHTTPRequestMethod glue_OFHTTPRequestMethodParseString(OFString *string);
 extern OFString *_Nonnull glue_OFHTTPStatusCodeString(short code);
+extern const OFImageFormat *_Nonnull glue_OFImageFormatBMPRef(void);
+extern const OFImageFormat *_Nonnull glue_OFImageFormatGIFRef(void);
+extern const OFImageFormat *_Nonnull glue_OFImageFormatJPEGRef(void);
+extern const OFImageFormat *_Nonnull glue_OFImageFormatPNGRef(void);
+extern const OFImageFormat *_Nonnull glue_OFImageFormatQOIRef(void);
 extern OFListItem _Nullable glue_OFListItemNext(OFListItem _Nonnull listItem);
 extern OFListItem _Nullable glue_OFListItemPrevious(OFListItem _Nonnull listItem);
 extern id _Nonnull glue_OFListItemObject(OFListItem _Nonnull listItem);
@@ -102,6 +135,7 @@ extern int glue_OFPlainThreadJoin(OFPlainThread _Nonnull thread);
 extern int glue_OFPlainThreadDetach(OFPlainThread _Nonnull thread);
 extern OFPlainThread _Nonnull glue_OFCurrentPlainThread(void);
 extern bool glue_OFPlainThreadIsCurrent(OFPlainThread _Nonnull thread);
+extern const OFRunLoopMode *_Nonnull glue_OFDefaultRunLoopModeRef(void);
 extern void glue_OFScrypt(OFScryptParameters parameters);
 extern void glue__OFSalsa20_8Core(uint32_t *_Nonnull buffer);
 extern void glue__OFScryptBlockMix(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, size_t blockSize);
@@ -140,6 +174,9 @@ extern OFStringEncoding glue_OFStringEncodingParseName(OFString *_Nonnull string
 extern OFString *_Nullable glue_OFStringEncodingName(OFStringEncoding encoding);
 extern size_t glue_OFUTF16StringLength(const OFChar16 *_Nonnull string);
 extern size_t glue_OFUTF32StringLength(const OFChar32 *_Nonnull string);
+extern const OFNetworkInterfaceKey *_Nonnull glue_OFNetworkInterfaceIndexRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull glue_OFNetworkInterfaceHardwareAddressRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull glue_OFNetworkInterfaceIPv4AddressesRef(void);
 extern int glue_OFTLSKeyNew(OFTLSKey _Nonnull *_Nonnull key);
 extern int glue_OFTLSKeyFree(OFTLSKey _Nonnull key);
 extern Class _Nonnull *_Nullable glue_OFTLSStreamImplementationRef(void);

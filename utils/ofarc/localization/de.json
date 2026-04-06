@@ -77,6 +77,11 @@
         " A: Immer\n",
         " N: Nie"
     ],
+    ask_overwrite_out: "%[iri] überschreiben? [yn?]",
+    ask_overwrite_out_help: [
+        " y: Ja\n",
+        " n: Nein"
+    ],
     skipping_file: "Überspringe %[file]...",
     extracting_file: "Entpacke %[file]...",
     extracting_file_percent: "Entpacke %[file]... %[percent]%",

@@ -2599,7 +2599,7 @@ mingw*)
 	AC_SUBST(OFGCTESTER, ofgctester)
 	;;
 darwin*)
-	AC_MSG_CHECKING(new enough GameController.framework)
+	AC_MSG_CHECKING(for new enough GameController.framework)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
 			#import <GameController/GameController.h>

@@ -275,13 +275,6 @@ void *__objc_class_name_OFRangeCharacterSet;
 void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
-#include "OFFileManagerConstants.inc"
-#include "OFImageConstants.inc"
-#include "OFRunLoopConstants.inc"
-#ifdef OF_HAVE_SOCKETS
-# include "OFSystemInfo+NetworkInterfacesConstants.inc"
-#endif
-
 #ifndef OF_AMIGA_LIB
 struct Library *ObjFWBase;
 

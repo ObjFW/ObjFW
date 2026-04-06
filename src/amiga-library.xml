@@ -81,6 +81,55 @@
     <argument name='bytes' type='const uint8_t *_Nonnull'/>
     <argument name='size' type='size_t'/>
   </function>
+  <include>OFFileManager.h</include>
+  <function name='OFFileSizeRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileTypeRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFilePOSIXPermissionsRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileOwnerAccountIDRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileGroupOwnerAccountIDRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileOwnerAccountNameRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileGroupOwnerAccountNameRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileLastAccessDateRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileModificationDateRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileStatusChangeDateRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileCreationDateRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileSymbolicLinkDestinationRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileExtendedAttributesNamesRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileAmigaProtectionRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileAmigaCommentRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileMSDOSAttributesRef'
+            return-type='const OFFileAttributeKey *_Nonnull'/>
+  <function name='OFFileTypeRegularRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeDirectoryRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeSymbolicLinkRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeFIFORef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeCharacterSpecialRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeBlockSpecialRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeSocketRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
+  <function name='OFFileTypeUnknownRef'
+            return-type='const OFFileAttributeType *_Nonnull'/>
   <include>OFHTTPRequest.h</include>
   <function name='OFHTTPRequestMethodString' return-type='OFString *_Nullable'>
     <argument name='method' type='OFHTTPRequestMethod'/>
@@ -93,6 +142,17 @@
   <function name='OFHTTPStatusCodeString' return-type='OFString *_Nonnull'>
     <argument name='code' type='short'/>
   </function>
+  <include>OFImage.h</include>
+  <function name='OFImageFormatBMPRef'
+            return-type='const OFImageFormat *_Nonnull'/>
+  <function name='OFImageFormatGIFRef'
+            return-type='const OFImageFormat *_Nonnull'/>
+  <function name='OFImageFormatJPEGRef'
+            return-type='const OFImageFormat *_Nonnull'/>
+  <function name='OFImageFormatPNGRef'
+            return-type='const OFImageFormat *_Nonnull'/>
+  <function name='OFImageFormatQOIRef'
+            return-type='const OFImageFormat *_Nonnull'/>
   <include>OFList.h</include>
   <function name='OFListItemNext' return-type='OFListItem _Nullable'>
     <argument name='listItem' type='OFListItem _Nonnull'/>
@@ -207,6 +267,9 @@
   <function name='OFPlainThreadIsCurrent' return-type='bool'>
     <argument name='thread' type='OFPlainThread _Nonnull'/>
   </function>
+  <include>OFRunLoop.h</include>
+  <function name='OFDefaultRunLoopModeRef'
+            return-type='const OFRunLoopMode *_Nonnull'/>
   <include>OFScrypt.h</include>
   <function name='OFScrypt'>
     <argument name='parameters' type='OFScryptParameters'/>
@@ -350,6 +413,19 @@
   <function name='OFUTF32StringLength' return-type='size_t'>
     <argument name='string' type='const OFChar32 *_Nonnull'/>
   </function>
+  <include>OFSystemInfo+NetworkInterfaces.h</include>
+  <function name='OFNetworkInterfaceIndexRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
+  <function name='OFNetworkInterfaceHardwareAddressRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
+  <function name='OFNetworkInterfaceIPv4AddressesRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
+  <!--function name='OFNetworkInterfaceIPv6AddressesRef'
+               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
+  <!--function name='OFNetworkInterfaceIPXAddressesRef'
+               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
+  <!--function name='OFNetworkInterfaceAppleTalkAddressesRef'
+               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
   <include>OFTLSKey.h</include>
   <function name='OFTLSKeyNew' return-type='int'>
     <argument name='key' type='OFTLSKey _Nonnull *_Nonnull'/>

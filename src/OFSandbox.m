@@ -103,16 +103,6 @@
 	return _allowsCreatingSpecialFiles;
 }
 
-- (void)setAllowsTemporaryFiles: (bool)allowsTemporaryFiles
-{
-	_allowsTemporaryFiles = allowsTemporaryFiles;
-}
-
-- (bool)allowsTemporaryFiles
-{
-	return _allowsTemporaryFiles;
-}
-
 - (void)setAllowsIPSockets: (bool)allowsIPSockets
 {
 	_allowsIPSockets = allowsIPSockets;
@@ -362,7 +352,6 @@
 	copy->_allowsWritingFiles = _allowsWritingFiles;
 	copy->_allowsCreatingFiles = _allowsCreatingFiles;
 	copy->_allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
-	copy->_allowsTemporaryFiles = _allowsTemporaryFiles;
 	copy->_allowsIPSockets = _allowsIPSockets;
 	copy->_allowsMulticastSockets = _allowsMulticastSockets;
 	copy->_allowsChangingFileAttributes = _allowsChangingFileAttributes;
@@ -412,8 +401,6 @@
 	if (sandbox->_allowsCreatingFiles != _allowsCreatingFiles)
 		return false;
 	if (sandbox->_allowsCreatingSpecialFiles != _allowsCreatingSpecialFiles)
-		return false;
-	if (sandbox->_allowsTemporaryFiles != _allowsTemporaryFiles)
 		return false;
 	if (sandbox->_allowsIPSockets != _allowsIPSockets)
 		return false;
@@ -482,7 +469,6 @@
 	OFHashAddByte(&hash, _allowsWritingFiles);
 	OFHashAddByte(&hash, _allowsCreatingFiles);
 	OFHashAddByte(&hash, _allowsCreatingSpecialFiles);
-	OFHashAddByte(&hash, _allowsTemporaryFiles);
 	OFHashAddByte(&hash, _allowsIPSockets);
 	OFHashAddByte(&hash, _allowsMulticastSockets);
 	OFHashAddByte(&hash, _allowsChangingFileAttributes);
@@ -530,8 +516,6 @@
 		[pledges addObject: @"cpath"];
 	if (_allowsCreatingSpecialFiles)
 		[pledges addObject: @"dpath"];
-	if (_allowsTemporaryFiles)
-		[pledges addObject: @"tmppath"];
 	if (_allowsIPSockets)
 		[pledges addObject: @"inet"];
 	if (_allowsMulticastSockets)

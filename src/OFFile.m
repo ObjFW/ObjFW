@@ -129,63 +129,77 @@ OF_DESTRUCTOR()
 static int
 parseMode(const char *mode)
 {
-	if (strcmp(mode, "r") == 0)
-		return O_RDONLY;
-	if (strcmp(mode, "r+") == 0)
-		return O_RDWR;
-	if (strcmp(mode, "w") == 0)
-		return O_WRONLY | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "wx") == 0)
-		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "w+") == 0)
-		return O_RDWR | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "w+x") == 0)
-		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "a") == 0)
-		return O_WRONLY | O_CREAT | O_APPEND;
-	if (strcmp(mode, "a+") == 0)
-		return O_RDWR | O_CREAT | O_APPEND;
+	int ret = 0;
 
-	return -1;
+	switch (*mode) {
+	case 'r':
+		ret |= O_RDONLY;
+		break;
+	case 'w':
+		ret |= O_WRONLY | O_CREAT | O_TRUNC;
+		break;
+	case 'a':
+		ret |= O_WRONLY | O_CREAT | O_APPEND;
+		break;
+	default:
+		return -1;
+	}
+
+	for (mode++; *mode != '\0'; mode++) {
+		switch (*mode) {
+		case '+':
+			ret &= ~(O_RDONLY | O_WRONLY);
+			ret |= O_RDWR;
+			break;
+		case 'x':
+			ret &= ~O_TRUNC;
+			ret |= O_EXCL;
+			break;
+		default:
+			return -1;
+		}
+	}
+
+	return ret;
 }
 #else
 static int
-parseMode(const char *mode, bool *truncate, bool *exclusive, bool *append)
+parseMode(const char *mode, bool *truncate, bool *failIfExists, bool *append)
 {
+	int ret = 0;
 	*truncate = false;
-	*exclusive = false;
+	*failIfExists = false;
 	*append = false;
 
-	if (strcmp(mode, "r") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "r+") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "w") == 0) {
+	switch (*mode) {
+	case 'r':
+		ret |= MODE_OLDFILE;
+		break;
+	case 'w':
+		ret |= MODE_READWRITE;
 		*truncate = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "wx") == 0) {
-		*exclusive = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "w+") == 0) {
-		*truncate = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "w+x") == 0) {
-		*exclusive = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "a") == 0) {
+		break;
+	case 'a':
+		ret |= MODE_READWRITE;
 		*append = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "a+") == 0) {
-		*append = true;
-		return MODE_READWRITE;
+		break;
+	default:
+		return -1;
 	}
 
-	return -1;
+	for (mode++; *mode != '\0'; mode++) {
+		switch (*mode) {
+		case '+':
+			break;
+		case 'x':
+			*failIfExists = true;
+			break;
+		default:
+			return -1;
+		}
+	}
+
+	return ret;
 }
 
 static int
@@ -286,15 +300,15 @@ ioErrToErrNo()
 #else
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
-			bool truncate, exclusive;
+			bool truncate, failIfExists;
 			const char *pathCStr = [path cStringWithEncoding:
 			    [OFLocale encoding]];
 
 			if ((flags = parseMode(mode.UTF8String, &truncate,
-			    &exclusive, &handle->append)) == -1)
+			    &failIfExists, &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
 
-			if (exclusive) {
+			if (failIfExists) {
 				BPTR lock = Lock(pathCStr, SHARED_LOCK);
 
 				if (lock != 0) {

@@ -21,7 +21,83 @@
 
 #import "OFSystemInfo.h"
 
-#include "OFSystemInfo+NetworkInterfacesConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFNetworkInterfaceIndex
+# undef OFNetworkInterfaceHardwareAddress
+# undef OFNetworkInterfaceIPv4Addresses
+# ifdef OF_HAVE_IPV6
+#  undef OFNetworkInterfaceIPv6Addresses
+# endif
+# ifdef OF_HAVE_IPX
+#  undef OFNetworkInterfaceIPXAddresses
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  undef OFNetworkInterfaceAppleTalkAddresses
+# endif
+#endif
+
+const OFNetworkInterfaceKey OFNetworkInterfaceIndex =
+    @"OFNetworkInterfaceIndex";
+const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
+    @"OFNetworkInterfaceHardwareAddress";
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+    @"OFNetworkInterfaceIPv4Addresses";
+#ifdef OF_HAVE_IPV6
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
+    @"OFNetworkInterfaceIPv6Addresses";
+#endif
+#ifdef OF_HAVE_IPX
+const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
+    @"OFNetworkInterfaceIPXAddresses";
+#endif
+#ifdef OF_HAVE_APPLETALK
+const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
+    @"OFNetworkInterfaceAppleTalkAddresses";
+#endif
+
+#ifdef OF_AMIGAOS
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIndexRef(void)
+{
+	return &OFNetworkInterfaceIndex;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceHardwareAddressRef(void)
+{
+	return &OFNetworkInterfaceHardwareAddress;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPv4AddressesRef(void)
+{
+	return &OFNetworkInterfaceIPv4Addresses;
+}
+
+# ifdef OF_HAVE_IPV6
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPv6AddressesRef(void)
+{
+	return &OFNetworkInterfaceIPv6Addresses;
+}
+# endif
+
+# ifdef OF_HAVE_IPX
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPXAddressesRef(void)
+{
+	return &OFNetworkInterfaceIPXAddresses;
+}
+# endif
+
+# ifdef OF_HAVE_APPLETALK
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceAppleTalkAddressesRef(void)
+{
+	return &OFNetworkInterfaceAppleTalkAddresses;
+}
+# endif
+#endif
 
 #if defined(OF_WINDOWS)
 # include "platform/Windows/OFSystemInfo+NetworkInterfaces.m"

@@ -667,6 +667,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFStdErr writeString: @"\n  "];
 		[OFStdErr writeLine:
 		    OF_LOCALIZED(@"download_aborted", @"Aborted!")];
+		[OFStdErr removeProgressIndicator];
 	}
 
 	[OFApplication terminateWithStatus: 1];

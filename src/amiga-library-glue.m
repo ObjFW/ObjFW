@@ -163,6 +163,150 @@ glue_OFRegisterEmbeddedFile(OFString *_Nonnull name, const uint8_t *_Nonnull byt
 	OFRegisterEmbeddedFile(name, bytes, size);
 }
 
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileSizeRef(void)
+{
+	return OFFileSizeRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileTypeRef(void)
+{
+	return OFFileTypeRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFilePOSIXPermissionsRef(void)
+{
+	return OFFilePOSIXPermissionsRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileOwnerAccountIDRef(void)
+{
+	return OFFileOwnerAccountIDRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileGroupOwnerAccountIDRef(void)
+{
+	return OFFileGroupOwnerAccountIDRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileOwnerAccountNameRef(void)
+{
+	return OFFileOwnerAccountNameRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileGroupOwnerAccountNameRef(void)
+{
+	return OFFileGroupOwnerAccountNameRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileLastAccessDateRef(void)
+{
+	return OFFileLastAccessDateRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileModificationDateRef(void)
+{
+	return OFFileModificationDateRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileStatusChangeDateRef(void)
+{
+	return OFFileStatusChangeDateRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileCreationDateRef(void)
+{
+	return OFFileCreationDateRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileSymbolicLinkDestinationRef(void)
+{
+	return OFFileSymbolicLinkDestinationRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileExtendedAttributesNamesRef(void)
+{
+	return OFFileExtendedAttributesNamesRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileAmigaProtectionRef(void)
+{
+	return OFFileAmigaProtectionRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileAmigaCommentRef(void)
+{
+	return OFFileAmigaCommentRef();
+}
+
+const OFFileAttributeKey *_Nonnull __saveds
+glue_OFFileMSDOSAttributesRef(void)
+{
+	return OFFileMSDOSAttributesRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeRegularRef(void)
+{
+	return OFFileTypeRegularRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeDirectoryRef(void)
+{
+	return OFFileTypeDirectoryRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeSymbolicLinkRef(void)
+{
+	return OFFileTypeSymbolicLinkRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeFIFORef(void)
+{
+	return OFFileTypeFIFORef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeCharacterSpecialRef(void)
+{
+	return OFFileTypeCharacterSpecialRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeBlockSpecialRef(void)
+{
+	return OFFileTypeBlockSpecialRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeSocketRef(void)
+{
+	return OFFileTypeSocketRef();
+}
+
+const OFFileAttributeType *_Nonnull __saveds
+glue_OFFileTypeUnknownRef(void)
+{
+	return OFFileTypeUnknownRef();
+}
+
 OFString *_Nullable __saveds
 glue_OFHTTPRequestMethodString(OFHTTPRequestMethod method)
 {
@@ -179,6 +323,36 @@ OFString *_Nonnull __saveds
 glue_OFHTTPStatusCodeString(short code)
 {
 	return OFHTTPStatusCodeString(code);
+}
+
+const OFImageFormat *_Nonnull __saveds
+glue_OFImageFormatBMPRef(void)
+{
+	return OFImageFormatBMPRef();
+}
+
+const OFImageFormat *_Nonnull __saveds
+glue_OFImageFormatGIFRef(void)
+{
+	return OFImageFormatGIFRef();
+}
+
+const OFImageFormat *_Nonnull __saveds
+glue_OFImageFormatJPEGRef(void)
+{
+	return OFImageFormatJPEGRef();
+}
+
+const OFImageFormat *_Nonnull __saveds
+glue_OFImageFormatPNGRef(void)
+{
+	return OFImageFormatPNGRef();
+}
+
+const OFImageFormat *_Nonnull __saveds
+glue_OFImageFormatQOIRef(void)
+{
+	return OFImageFormatQOIRef();
 }
 
 OFListItem _Nullable __saveds
@@ -371,6 +545,12 @@ bool __saveds
 glue_OFPlainThreadIsCurrent(OFPlainThread _Nonnull thread)
 {
 	return OFPlainThreadIsCurrent(thread);
+}
+
+const OFRunLoopMode *_Nonnull __saveds
+glue_OFDefaultRunLoopModeRef(void)
+{
+	return OFDefaultRunLoopModeRef();
 }
 
 void __saveds
@@ -599,6 +779,24 @@ size_t __saveds
 glue_OFUTF32StringLength(const OFChar32 *_Nonnull string)
 {
 	return OFUTF32StringLength(string);
+}
+
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceIndexRef(void)
+{
+	return OFNetworkInterfaceIndexRef();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceHardwareAddressRef(void)
+{
+	return OFNetworkInterfaceHardwareAddressRef();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceIPv4AddressesRef(void)
+{
+	return OFNetworkInterfaceIPv4AddressesRef();
 }
 
 int __saveds

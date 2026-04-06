@@ -35,7 +35,6 @@ OF_SUBCLASSING_RESTRICTED
 	unsigned int _allowsWritingFiles: 1;
 	unsigned int _allowsCreatingFiles: 1;
 	unsigned int _allowsCreatingSpecialFiles: 1;
-	unsigned int _allowsTemporaryFiles: 1;
 	unsigned int _allowsIPSockets: 1;
 	unsigned int _allowsMulticastSockets: 1;
 	unsigned int _allowsChangingFileAttributes: 1;
@@ -70,7 +69,6 @@ OF_SUBCLASSING_RESTRICTED
 @property (nonatomic) bool allowsWritingFiles;
 @property (nonatomic) bool allowsCreatingFiles;
 @property (nonatomic) bool allowsCreatingSpecialFiles;
-@property (nonatomic) bool allowsTemporaryFiles;
 @property (nonatomic) bool allowsIPSockets;
 @property (nonatomic) bool allowsMulticastSockets;
 @property (nonatomic) bool allowsChangingFileAttributes;

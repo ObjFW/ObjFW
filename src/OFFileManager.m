@@ -89,7 +89,209 @@
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
 
-#include "OFFileManagerConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFFileSize
+# undef OFFileType
+# undef OFFilePOSIXPermissions
+# undef OFFileOwnerAccountID
+# undef OFFileGroupOwnerAccountID
+# undef OFFileOwnerAccountName
+# undef OFFileGroupOwnerAccountName
+# undef OFFileLastAccessDate
+# undef OFFileModificationDate
+# undef OFFileStatusChangeDate
+# undef OFFileCreationDate
+# undef OFFileSymbolicLinkDestination
+# undef OFFileExtendedAttributesNames
+# undef OFFileAmigaProtection
+# undef OFFileAmigaComment
+# undef OFFileMSDOSAttributes
+# undef OFFileTypeRegular
+# undef OFFileTypeDirectory
+# undef OFFileTypeSymbolicLink
+# undef OFFileTypeFIFO
+# undef OFFileTypeCharacterSpecial
+# undef OFFileTypeBlockSpecial
+# undef OFFileTypeSocket
+# undef OFFileTypeUnknown
+#endif
+
+const OFFileAttributeKey OFFileSize = @"OFFileSize";
+const OFFileAttributeKey OFFileType = @"OFFileType";
+const OFFileAttributeKey OFFilePOSIXPermissions = @"OFFilePOSIXPermissions";
+const OFFileAttributeKey OFFileOwnerAccountID = @"OFFileOwnerAccountID";
+const OFFileAttributeKey OFFileGroupOwnerAccountID =
+    @"OFFileGroupOwnerAccountID";
+const OFFileAttributeKey OFFileOwnerAccountName = @"OFFileOwnerAccountName";
+const OFFileAttributeKey OFFileGroupOwnerAccountName =
+    @"OFFileGroupOwnerAccountName";
+const OFFileAttributeKey OFFileLastAccessDate = @"OFFileLastAccessDate";
+const OFFileAttributeKey OFFileModificationDate = @"OFFileModificationDate";
+const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
+const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
+const OFFileAttributeKey OFFileSymbolicLinkDestination =
+    @"OFFileSymbolicLinkDestination";
+const OFFileAttributeKey OFFileExtendedAttributesNames =
+    @"OFFileExtendedAttributesNames";
+const OFFileAttributeKey OFFileAmigaProtection = @"OFFileAmigaProtection";
+const OFFileAttributeKey OFFileAmigaComment = @"OFFileAmigaComment";
+const OFFileAttributeKey OFFileMSDOSAttributes = @"OFFileMSDOSAttributes";
+
+const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
+const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
+const OFFileAttributeType OFFileTypeSymbolicLink = @"OFFileTypeSymbolicLink";
+const OFFileAttributeType OFFileTypeFIFO = @"OFFileTypeFIFO";
+const OFFileAttributeType OFFileTypeCharacterSpecial =
+    @"OFFileTypeCharacterSpecial";
+const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
+const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
+const OFFileAttributeType OFFileTypeUnknown = @"OFFileTypeUnknown";
+
+#ifdef OF_AMIGAOS
+const OFFileAttributeKey *
+OFFileSizeRef(void)
+{
+	return &OFFileSize;
+}
+
+const OFFileAttributeKey *
+OFFileTypeRef(void)
+{
+	return &OFFileType;
+}
+
+const OFFileAttributeKey *
+OFFilePOSIXPermissionsRef(void)
+{
+	return &OFFilePOSIXPermissions;
+}
+
+const OFFileAttributeKey *
+OFFileOwnerAccountIDRef(void)
+{
+	return &OFFileOwnerAccountID;
+}
+
+const OFFileAttributeKey *
+OFFileGroupOwnerAccountIDRef(void)
+{
+	return &OFFileGroupOwnerAccountID;
+}
+
+const OFFileAttributeKey *
+OFFileOwnerAccountNameRef(void)
+{
+	return &OFFileOwnerAccountName;
+}
+
+const OFFileAttributeKey *
+OFFileGroupOwnerAccountNameRef(void)
+{
+	return &OFFileGroupOwnerAccountName;
+}
+
+const OFFileAttributeKey *
+OFFileLastAccessDateRef(void)
+{
+	return &OFFileLastAccessDate;
+}
+
+const OFFileAttributeKey *
+OFFileModificationDateRef(void)
+{
+	return &OFFileModificationDate;
+}
+
+const OFFileAttributeKey *
+OFFileStatusChangeDateRef(void)
+{
+	return &OFFileStatusChangeDate;
+}
+
+const OFFileAttributeKey *
+OFFileCreationDateRef(void)
+{
+	return &OFFileCreationDate;
+}
+
+const OFFileAttributeKey *
+OFFileSymbolicLinkDestinationRef(void)
+{
+	return &OFFileSymbolicLinkDestination;
+}
+
+const OFFileAttributeKey *
+OFFileExtendedAttributesNamesRef(void)
+{
+	return &OFFileExtendedAttributesNames;
+}
+
+const OFFileAttributeKey *
+OFFileAmigaProtectionRef(void)
+{
+	return &OFFileAmigaProtection;
+}
+
+const OFFileAttributeKey *
+OFFileAmigaCommentRef(void)
+{
+	return &OFFileAmigaComment;
+}
+
+const OFFileAttributeKey *
+OFFileMSDOSAttributesRef(void)
+{
+	return &OFFileMSDOSAttributes;
+}
+
+const OFFileAttributeType *
+OFFileTypeRegularRef(void)
+{
+	return &OFFileTypeRegular;
+}
+
+const OFFileAttributeType *
+OFFileTypeDirectoryRef(void)
+{
+	return &OFFileTypeDirectory;
+}
+
+const OFFileAttributeType *
+OFFileTypeSymbolicLinkRef(void)
+{
+	return &OFFileTypeSymbolicLink;
+}
+
+const OFFileAttributeType *
+OFFileTypeFIFORef(void)
+{
+	return &OFFileTypeFIFO;
+}
+
+const OFFileAttributeType *
+OFFileTypeCharacterSpecialRef(void)
+{
+	return &OFFileTypeCharacterSpecial;
+}
+
+const OFFileAttributeType *
+OFFileTypeBlockSpecialRef(void)
+{
+	return &OFFileTypeBlockSpecial;
+}
+
+const OFFileAttributeType *
+OFFileTypeSocketRef(void)
+{
+	return &OFFileTypeSocket;
+}
+
+const OFFileAttributeType *
+OFFileTypeUnknownRef(void)
+{
+	return &OFFileTypeUnknown;
+}
+#endif
 
 static OFFileManager *defaultManager;
 

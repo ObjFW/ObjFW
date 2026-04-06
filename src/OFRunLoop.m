@@ -47,7 +47,19 @@
 #import "OFObserveKernelEventsFailedException.h"
 #import "OFWriteFailedException.h"
 
-#include "OFRunLoopConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFDefaultRunLoopMode
+#endif
+
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
+
+#ifdef OF_AMIGAOS
+const OFRunLoopMode *
+OFDefaultRunLoopModeRef(void)
+{
+	return &OFDefaultRunLoopMode;
+}
+#endif
 
 static OFRunLoop *mainRunLoop = nil;
 
