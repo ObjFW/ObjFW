@@ -23,7 +23,7 @@
 
 #include <setjmp.h>
 
-#define OFLibraryTrampolineSize 3
+#define OFLibraryTrampolineSize 6
 
 typedef void (*sighandler_t)(int);
 

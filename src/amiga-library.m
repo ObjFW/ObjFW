@@ -300,15 +300,37 @@ void
 OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
     IMP function)
 {
-	ptrdiff_t offset;
+	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
 
-	/* lis r12, r12, hi(ObjFWBase) */
-	buffer[0] = 0x3D800000 | (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
-	/* ori r12, r12, lo(ObjFWBase) */
-	buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
-	/* b function */
-	offset = (ptrdiff_t)function - (ptrdiff_t)&buffer[2];
-	buffer[2] = 0x48000000 | (((offset >> 2) & 0xFFFFFF) << 2);
+	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
+		/* lis %r12, %r12, %hi(ObjFWBase) */
+		buffer[0] = 0x3D800000 |
+		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWBase) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		/* b function */
+		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
+		/* nop */
+		buffer[3] = 0x60000000;
+		/* nop */
+		buffer[4] = 0x60000000;
+		/* nop */
+		buffer[5] = 0x60000000;
+	} else {
+		/* lis %r12, %r12, %hi(function) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)function >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(function) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
+		/* mtctr %r12 */
+		buffer[2] = 0x7D8903A6;
+		/* lis %r12, %r12, %hi(ObjFWBase) */
+		buffer[3] = 0x3D800000 |
+		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWBase) */
+		buffer[4] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		/* bctr */
+		buffer[5] = 0x4E800420;
+	}
 }
 
 static void
