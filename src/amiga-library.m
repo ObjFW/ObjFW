@@ -33,6 +33,7 @@
 #import "runtime/private.h"
 
 #define Class IntuitionClass
+#include <exec/execbase.h>
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
@@ -163,6 +164,9 @@ libOpen(void)
 	child = (struct ObjFWBase *)((char *)child + base->library.lib_NegSize);
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
+
+	CacheClearE((char *)child - child->library.lib_NegSize,
+	    child->library.lib_NegSize, CACRF_ClearI);
 
 	dataSize = getDataSize();
 
