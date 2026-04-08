@@ -173,7 +173,7 @@ OF_DIRECT_MEMBERS
 		pool = objc_autoreleasePoolPush();
 
 		argumentsString =
-		    [OFMutableString stringWithString: programName];
+		    [OFMutableString stringWithString: program];
 		[argumentsString replaceOccurrencesOfString: @"\\\""
 						 withString: @"\\\\\""];
 		[argumentsString replaceOccurrencesOfString: @"\""
@@ -223,9 +223,8 @@ OF_DIRECT_MEMBERS
 			memcpy(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
 			@try {
-				if (!CreateProcessW(program.UTF16String,
-				    argumentsCopy, NULL, NULL, TRUE,
-				    CREATE_UNICODE_ENVIRONMENT,
+				if (!CreateProcessW(NULL, argumentsCopy, NULL,
+				    NULL, TRUE, CREATE_UNICODE_ENVIRONMENT,
 				    [self of_wideEnvironmentForDictionary:
 				    environment], NULL, &si, &pi))
 					@throw
@@ -249,8 +248,7 @@ OF_DIRECT_MEMBERS
 			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 			si.dwFlags |= STARTF_USESTDHANDLES;
 
-			if (!CreateProcessA([program cStringWithEncoding:
-			    encoding], (char *)[argumentsString
+			if (!CreateProcessA(NULL, (char *)[argumentsString
 			    cStringWithEncoding: encoding], NULL, NULL, TRUE, 0,
 			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
