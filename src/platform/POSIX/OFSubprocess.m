@@ -39,7 +39,7 @@
 #import "OFDictionary.h"
 #import "OFLocale.h"
 
-#import "OFInitializationFailedException.h"
+#import "OFCreateSubprocessFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -145,8 +145,12 @@ OF_DIRECT_MEMBERS
 		_readPipe[0] = _writePipe[1] = -1;
 
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			@throw [OFCreateSubprocessFailedException
+			    exceptionWithProgram: program
+				     programName: programName
+				       arguments: arguments
+				     environment: environment
+					   errNo: errno];
 
 		path = [program cStringWithEncoding: [OFLocale encoding]];
 		[self of_getArgv: &argv
@@ -160,14 +164,22 @@ OF_DIRECT_MEMBERS
 			posix_spawnattr_t attr;
 
 			if (posix_spawn_file_actions_init(&actions) != 0)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 
 			if (posix_spawnattr_init(&attr) != 0) {
 				posix_spawn_file_actions_destroy(&actions);
 
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 			}
 
 			@try {
@@ -179,20 +191,35 @@ OF_DIRECT_MEMBERS
 				    _writePipe[0], 0) != 0 ||
 				    posix_spawn_file_actions_adddup2(&actions,
 				    _readPipe[1], 1) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 
 # ifdef POSIX_SPAWN_CLOEXEC_DEFAULT
 				if (posix_spawnattr_setflags(&attr,
 				    POSIX_SPAWN_CLOEXEC_DEFAULT) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 # endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
 				    argv, (env != NULL ? env : environ)) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 			} @finally {
 				posix_spawn_file_actions_destroy(&actions);
 				posix_spawnattr_destroy(&attr);
@@ -212,8 +239,12 @@ OF_DIRECT_MEMBERS
 			}
 
 			if (_pid == -1)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 #endif
 		} @finally {
 			char **iter;

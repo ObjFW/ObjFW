@@ -70,7 +70,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)subprocessWithProgram: (OFString *)program;
 
@@ -81,7 +82,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -96,7 +98,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -117,7 +120,8 @@ OF_SUBCLASSING_RESTRICTED
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -134,7 +138,8 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)initWithProgram: (OFString *)program;
 
@@ -145,7 +150,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -160,7 +166,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -182,7 +189,8 @@ OF_SUBCLASSING_RESTRICTED
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program

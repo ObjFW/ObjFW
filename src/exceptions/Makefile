@@ -49,6 +49,7 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_FILES}				\
        ${USE_SRCS_MODULES}				\
        ${USE_SRCS_SOCKETS}				\
+       ${USE_SRCS_SUBPROCESSES}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
@@ -74,6 +75,7 @@ SRCS_IPX = OFBindIPXSocketFailedException.m	\
 	   OFConnectSPXSocketFailedException.m
 SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
 		    OFConnectUNIXSocketFailedException.m
+SRCS_SUBPROCESSES = OFCreateSubprocessFailedException.m
 SRCS_THREADS = OFBroadcastConditionFailedException.m	\
 	       OFConditionStillWaitingException.m	\
 	       OFJoinThreadFailedException.m		\

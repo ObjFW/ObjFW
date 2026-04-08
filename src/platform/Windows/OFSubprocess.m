@@ -30,7 +30,7 @@
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
-#import "OFInitializationFailedException.h"
+#import "OFCreateSubprocessFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -134,23 +134,39 @@ OF_DIRECT_MEMBERS
 		sa.lpSecurityDescriptor = NULL;
 
 		if (!CreatePipe(&_readPipe[0], &_readPipe[1], &sa, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			@throw [OFCreateSubprocessFailedException
+			    exceptionWithProgram: program
+				     programName: programName
+				       arguments: arguments
+				     environment: environment
+					   errNo: 0];
 
 		if (!SetHandleInformation(_readPipe[0], HANDLE_FLAG_INHERIT, 0))
 			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 
 		if (!CreatePipe(&_writePipe[0], &_writePipe[1], &sa, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			@throw [OFCreateSubprocessFailedException
+			    exceptionWithProgram: program
+				     programName: programName
+				       arguments: arguments
+				     environment: environment
+					   errNo: 0];
 
 		if (!SetHandleInformation(_writePipe[1],
 		    HANDLE_FLAG_INHERIT, 0))
 			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 
 		memset(&pi, 0, sizeof(pi));
 
@@ -212,8 +228,13 @@ OF_DIRECT_MEMBERS
 				    CREATE_UNICODE_ENVIRONMENT,
 				    [self of_wideEnvironmentForDictionary:
 				    environment], NULL, &si, &pi))
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: 0];
 			} @finally {
 				OFFreeMemory(argumentsCopy);
 			}
@@ -233,8 +254,12 @@ OF_DIRECT_MEMBERS
 			    cStringWithEncoding: encoding], NULL, NULL, TRUE, 0,
 			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 		}
 
 		objc_autoreleasePoolPop(pool);
