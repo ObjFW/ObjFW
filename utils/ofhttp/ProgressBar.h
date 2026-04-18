@@ -22,7 +22,7 @@
 @class OFDate;
 @class OFTimer;
 
-#define BPS_WINDOW_SIZE 10
+#define BPS_WINDOW_SIZE 30
 
 @interface ProgressBar: OFObject
 {
