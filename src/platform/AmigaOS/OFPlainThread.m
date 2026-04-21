@@ -188,7 +188,7 @@ OFPlainThreadJoin(OFPlainThread thread)
 		if (thread->detached || thread->joinTask != NULL)
 			return EINVAL;
 
-		if ((thread->joinSigBit = AllocSignal(-1)) == -1)
+		if ((thread->joinSigBit = AllocSignal(-1)) == 0xFF)
 			return EAGAIN;
 
 		thread->joinTask = FindTask(NULL);

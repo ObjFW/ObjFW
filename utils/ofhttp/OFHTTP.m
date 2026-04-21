@@ -109,7 +109,9 @@ _reference_to_ObjFWTLS(void)
 }
 #endif
 
+#ifndef OF_AMIGAOS
 static volatile sig_atomic_t SIGINTReceived = false;
+#endif
 
 OF_APPLICATION_DELEGATE(OFHTTP)
 

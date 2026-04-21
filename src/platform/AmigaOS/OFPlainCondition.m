@@ -104,7 +104,7 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	int error = 0;
 	ULONG mask;
 
-	if (waitingTask.sigBit == -1)
+	if (waitingTask.sigBit == 0xFF)
 		return EAGAIN;
 
 	Forbid();
@@ -201,7 +201,7 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 
 	NewList(&port.mp_MsgList);
 
-	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
+	if (waitingTask.sigBit == 0xFF || port.mp_SigBit == 0xFF) {
 		error = EAGAIN;
 		goto fail;
 	}
@@ -244,9 +244,9 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 	Permit();
 
 fail:
-	if (waitingTask.sigBit != -1)
+	if (waitingTask.sigBit != 0xFF)
 		FreeSignal(waitingTask.sigBit);
-	if (port.mp_SigBit != -1)
+	if (port.mp_SigBit != 0xFF)
 		FreeSignal(port.mp_SigBit);
 
 	return error;
