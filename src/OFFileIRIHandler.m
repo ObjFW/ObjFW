@@ -1160,7 +1160,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		};
 
 		if (!SetFilePosixDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &POSIXDate, TAG_END) != 0)
+		    [OFLocale encoding]], &POSIXDate, TAG_END))
 			@throw [OFSetItemAttributesFailedException
 				exceptionWithIRI: IRI
 				      attributes: attributes
@@ -1188,10 +1188,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 # ifdef OF_AMIGAOS4
 		if (!SetDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &date) != 0)
+		    [OFLocale encoding]], &date))
 # else
 		if (!SetFileDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &date) != 0)
+		    [OFLocale encoding]], &date))
 # endif
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithIRI: IRI

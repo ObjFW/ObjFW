@@ -65,9 +65,11 @@
 # undef Class
 #endif
 #ifdef OF_MORPHOS
+# define __NOLIBBASE__
 # include <proto/rexxsyslib.h>
 # include <rexx/errors.h>
 # include <rexx/storage.h>
+# undef __NOLIBBASE__
 #endif
 
 #if defined(OF_HAIKU)

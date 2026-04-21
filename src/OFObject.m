@@ -67,9 +67,9 @@
 # define USE_INLINE_STDARG
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
-# define __NOLIBBASE_
+# define __NOLIBBASE__
 # include <proto/intuition.h>
-# undef __NOLIBBASE_
+# undef __NOLIBBASE__
 # undef Class
 #endif
 
