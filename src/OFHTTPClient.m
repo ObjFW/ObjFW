@@ -56,6 +56,7 @@
 
 static const OFRunLoopMode HTTPClientRunLoopMode = @"OFHTTPClientRunLoopMode";
 static const unsigned int defaultRedirects = 10;
+static const size_t maxStringReadLength = 10240;
 
 OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate,
@@ -661,6 +662,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		OFRunLoopMode runLoopMode =
 		    [OFRunLoop currentRunLoop].currentMode;
 
+		[stream setMaxStringReadLength: maxStringReadLength];
 		[stream asyncWriteString: constructRequestString(_request)
 				encoding: stream.encoding
 			     runLoopMode: runLoopMode];

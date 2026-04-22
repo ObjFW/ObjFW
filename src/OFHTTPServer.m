@@ -130,6 +130,8 @@ OF_DIRECT_MEMBERS
 @end
 #endif
 
+static const size_t maxStringReadLength = 10240;
+
 static OFString *
 normalizedKey(OFString *key)
 {
@@ -971,6 +973,7 @@ normalizedKey(OFString *key)
 	stream.delegate = objc_autorelease(
 	    [[OFHTTPServerConnection alloc] initWithStream: stream
 						    server: self]);
+	[stream setMaxStringReadLength: maxStringReadLength];
 	[stream asyncReadLine];
 }
 
