@@ -343,9 +343,9 @@ _objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 
 extern void OF_NO_RETURN_FUNC _objc_error(const char *_Nonnull title,
     const char *_Nonnull format, ...) OF_VISIBILITY_INTERNAL;
-#define _OBJC_ERROR(...)						\
-	_objc_error("ObjFWRT @ " __FILE__ ":" OF_STRINGIFY(__LINE__),	\
-	    __VA_ARGS__)
+#define _OBJC_ERROR(...)					\
+	_objc_error("ObjFWRT @ " __FILE__ ":"			\
+	    OF_PREPROCESSOR_STRINGIFY(__LINE__), __VA_ARGS__)
 
 #if defined(OF_ELF)
 # if defined(OF_AMD64) || defined(OF_X86) || \
