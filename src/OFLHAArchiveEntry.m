@@ -35,6 +35,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
 static OFDate *
@@ -506,10 +507,15 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			else {
 				char buffer[256];
 
-				while (extendedAreaSize > 0)
+				while (extendedAreaSize > 0) {
+					if (stream.atEndOfStream)
+						@throw [OFTruncatedDataException
+						    exception];
+
 					extendedAreaSize -= [stream
 					    readIntoBuffer: buffer
 						    length: extendedAreaSize];
+				}
 			}
 
 			if (_headerLevel == 1)
