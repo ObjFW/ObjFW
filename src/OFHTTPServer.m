@@ -834,7 +834,7 @@ normalizedKey(OFString *key)
 
 @implementation OFHTTPServer
 @synthesize delegate = _delegate, usesTLS = _usesTLS;
-@synthesize certificateChain = _certificateChain, name = _name;
+@synthesize certificateChain = _certificateChain;
 
 + (instancetype)server
 {
@@ -912,6 +912,24 @@ normalizedKey(OFString *key)
 	return _numberOfThreads;
 }
 #endif
+
+- (void)setName: (OFString *)name
+{
+	OFString *old;
+
+	if ([name rangeOfCharacterFromSet:
+	    [OFCharacterSet newlineCharacterSet]].location != OFNotFound)
+		@throw [OFInvalidArgumentException exception];
+
+	old = _name;
+	_name = [name copy];
+	objc_release(old);
+}
+
+- (OFString *)name
+{
+	return _name;
+}
 
 - (void)start
 {
