@@ -195,6 +195,7 @@ normalizedKey(OFString *key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
@@ -217,11 +218,21 @@ normalizedKey(OFString *key)
 			[headers setObject: name forKey: @"Server"];
 	}
 
+	newlineCharacterSet = [OFCharacterSet newlineCharacterSet];
+
 	keyEnumerator = [headers keyEnumerator];
 	valueEnumerator = [headers objectEnumerator];
+
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (value = [valueEnumerator nextObject]) != nil)
+	    (value = [valueEnumerator nextObject]) != nil) {
+		if ([key rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound ||
+		    [value rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound)
+			@throw [OFInvalidArgumentException exception];
+
 		[_stream writeFormat: @"%@: %@\r\n", key, value];
+	}
 
 	[_stream writeString: @"\r\n"];
 
