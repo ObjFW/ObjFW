@@ -527,7 +527,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 			int ret;
 
 			while (rnd < 1024)
-				rnd = (uint16_t)rand();
+				rnd = OFRandom16();
 
 			OFSocketAddressSetIPPort(&address, rnd);
 
