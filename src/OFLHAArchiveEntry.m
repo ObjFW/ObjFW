@@ -452,6 +452,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 			_CRC16 = [stream readLittleEndianInt16];
 
+			if (header[0] - (21 - 2) - 1 - 2 < fileNameLength)
+				@throw [OFOutOfRangeException exception];
+
 			extendedAreaSize =
 			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
 
