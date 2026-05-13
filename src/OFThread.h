@@ -137,7 +137,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
  *
  * This is a value between -1.0 (meaning lowest priority that still schedules)
  * and +1.0 (meaning highest priority that still allows getting preempted)
- * with normal priority being 0.0 (meaning being the same as the main thread).
+ * with normal priority being 0.0.
  *
  * @throw OFThreadStillRunningException The thread is already/still running and
  *					thus the priority cannot be changed
