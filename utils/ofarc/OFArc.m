@@ -890,6 +890,24 @@ error:
 	return objc_autoreleaseReturnValue(path);
 }
 
+- (OFString *)archivePathForPath: (OFString *)path
+{
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	size_t pos;
+
+	if ((pos = [path rangeOfString: @":\\"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 2];
+	else if ((pos = [path rangeOfString: @":"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 1];
+#elif defined(OF_AMIGAOS)
+	size_t pos;
+
+	if ((pos = [path rangeOfString: @":"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 1];
+#endif
+	return path;
+}
+
 - (void)quarantineFile: (OFString *)path
 {
 #ifdef OF_MACOS

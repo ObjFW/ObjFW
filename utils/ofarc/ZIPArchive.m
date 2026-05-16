@@ -595,7 +595,8 @@ outer_loop_end:
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
-		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
+		entry = [OFMutableZIPArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 
 #if defined(OF_AMIGAOS)
 		version |= OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
