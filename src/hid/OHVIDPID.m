@@ -21,6 +21,7 @@
 
 #import "OHVIDPID.h"
 
+const OHVIDPID OHVIDPIDXboxOneWirelessController = { 0x045E, 0x02E0 };
 const OHVIDPID OHVIDPIDXbox360WirelessReceiver = { 0x045E, 0x02A1 };
 
 const OHVIDPID OHVIDPIDSonyDualShock4 = { 0x054C, 0x09CC };

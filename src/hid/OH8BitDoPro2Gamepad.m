@@ -37,7 +37,7 @@
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"L2", @"R2", @"L3", @"R3",
-	@"P1", @"P2", @"Start", @"Select", @"Home"
+	@"Start", @"Select", @"Home"
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
@@ -72,6 +72,19 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			    oh_elementWithName: buttonNames[i]
 					analog: false];
 			[buttons setObject: button forKey: buttonNames[i]];
+		}
+
+		if (!OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDXboxOneWirelessController)) {
+			button = [OHGameControllerButton
+			    oh_elementWithName: @"P1"
+					analog: false];
+			[buttons setObject: button forKey: @"P1"];
+
+			button = [OHGameControllerButton
+			    oh_elementWithName: @"P2"
+					analog: false];
+			[buttons setObject: button forKey: @"P2"];
 		}
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
@@ -252,48 +265,88 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	OFString *name;
 
-	switch (button) {
-	case BTN_A:
-		name = @"A";
-		break;
-	case BTN_B:
-		name = @"B";
-		break;
-	case BTN_X:
-		name = @"X";
-		break;
-	case BTN_Y:
-		name = @"Y";
-		break;
-	case BTN_TL:
-		name = @"L";
-		break;
-	case BTN_TR:
-		name = @"R";
-		break;
-	case BTN_THUMBL:
-		name = @"L3";
-		break;
-	case BTN_THUMBR:
-		name = @"R3";
-		break;
-	case BTN_Z:
-		name = @"P1";
-		break;
-	case BTN_C:
-		name = @"P2";
-		break;
-	case BTN_START:
-		name = @"Start";
-		break;
-	case BTN_SELECT:
-		name = @"Select";
-		break;
-	case BTN_MODE:
-		name = @"Home";
-		break;
-	default:
-		return nil;
+	if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDXboxOneWirelessController)) {
+		switch (button) {
+		case BTN_B:
+			name = @"A";
+			break;
+		case BTN_A:
+			name = @"B";
+			break;
+		case BTN_X:
+			name = @"X";
+			break;
+		case BTN_C:
+			name = @"Y";
+			break;
+		case BTN_Y:
+			name = @"L";
+			break;
+		case BTN_Z:
+			name = @"R";
+			break;
+		case BTN_TL2:
+			name = @"L3";
+			break;
+		case BTN_TR2:
+			name = @"R3";
+			break;
+		case BTN_TR:
+			name = @"Start";
+			break;
+		case BTN_TL:
+			name = @"Select";
+			break;
+		case KEY_MENU:
+			name = @"Home";
+			break;
+		default:
+			return nil;
+		}
+	} else {
+		switch (button) {
+		case BTN_A:
+			name = @"A";
+			break;
+		case BTN_B:
+			name = @"B";
+			break;
+		case BTN_X:
+			name = @"X";
+			break;
+		case BTN_Y:
+			name = @"Y";
+			break;
+		case BTN_TL:
+			name = @"L";
+			break;
+		case BTN_TR:
+			name = @"R";
+			break;
+		case BTN_THUMBL:
+			name = @"L3";
+			break;
+		case BTN_THUMBR:
+			name = @"R3";
+			break;
+		case BTN_Z:
+			name = @"P1";
+			break;
+		case BTN_C:
+			name = @"P2";
+			break;
+		case BTN_START:
+			name = @"Start";
+			break;
+		case BTN_SELECT:
+			name = @"Select";
+			break;
+		case BTN_MODE:
+			name = @"Home";
+			break;
+		default:
+			return nil;
+		}
 	}
 
 	return [_buttons objectForKey: name];
@@ -303,27 +356,47 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	switch (axis) {
 	case ABS_X:
-		return [[_directionalPads objectForKey: @"Left Thumbstick"]
-		    xAxis];
+		return [[_directionalPads objectForKey:
+		    @"Left Thumbstick"] xAxis];
 	case ABS_Y:
-		return [[_directionalPads objectForKey: @"Left Thumbstick"]
-		    yAxis];
-	case ABS_Z:
 		return [[_directionalPads objectForKey:
-		    @"Right Thumbstick"] xAxis];
-	case ABS_RZ:
-		return [[_directionalPads objectForKey:
-		    @"Right Thumbstick"] yAxis];
+		    @"Left Thumbstick"] yAxis];
 	case ABS_HAT0X:
 		return [[_directionalPads objectForKey: @"D-Pad"] xAxis];
 	case ABS_HAT0Y:
 		return [[_directionalPads objectForKey: @"D-Pad"] yAxis];
-	case ABS_BRAKE:
-		return [[_buttons objectForKey: @"L2"] oh_axis];
-	case ABS_GAS:
-		return [[_buttons objectForKey: @"R2"] oh_axis];
-	default:
-		return nil;
+	}
+
+	if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDXboxOneWirelessController)) {
+		switch (axis) {
+		case ABS_RX:
+			return [[_directionalPads objectForKey:
+			    @"Right Thumbstick"] xAxis];
+		case ABS_RY:
+			return [[_directionalPads objectForKey:
+			    @"Right Thumbstick"] yAxis];
+		case ABS_Z:
+			return [[_buttons objectForKey: @"L2"] oh_axis];
+		case ABS_RZ:
+			return [[_buttons objectForKey: @"R2"] oh_axis];
+		default:
+			return nil;
+		}
+	} else {
+		switch (axis) {
+		case ABS_Z:
+			return [[_directionalPads objectForKey:
+			    @"Right Thumbstick"] xAxis];
+		case ABS_RZ:
+			return [[_directionalPads objectForKey:
+			    @"Right Thumbstick"] yAxis];
+		case ABS_BRAKE:
+			return [[_buttons objectForKey: @"L2"] oh_axis];
+		case ABS_GAS:
+			return [[_buttons objectForKey: @"R2"] oh_axis];
+		default:
+			return nil;
+		}
 	}
 }
 #endif

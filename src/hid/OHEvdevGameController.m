@@ -280,7 +280,10 @@ scale(float value, float min, float max, bool inverted)
 		    OHVIDPID8BitDoUltimate2CWirelessUSB))
 			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
 			    oh_initWithVIDPID: _VIDPID];
-		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoPro2))
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoPro2) ||
+		    (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDXboxOneWirelessController) &&
+		    [_name isEqual: @"8BitDo Pro 2"]))
 			_profile = [[OH8BitDoPro2Gamepad alloc]
 			    oh_initWithVIDPID: _VIDPID];
 		else if (OHEqualVIDPIDs(_VIDPID,

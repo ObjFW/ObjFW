@@ -49,6 +49,7 @@ OHEqualVIDPIDs(OHVIDPID VIDPID1, OHVIDPID VIDPID2)
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern const OHVIDPID OHVIDPIDXboxOneWirelessController;
 extern const OHVIDPID OHVIDPIDXbox360WirelessReceiver;
 
 extern const OHVIDPID OHVIDPIDSonyDualShock4;
