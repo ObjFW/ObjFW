@@ -32,6 +32,8 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OH8BitDoPro2Gamepad.h"
+#import "OH8BitDoPro2Gamepad+Private.h"
 #import "OH8BitDoUltimate2CWirelessGamepad.h"
 #import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
@@ -270,14 +272,17 @@ scale(float value, float min, float max, bool inverted)
 		    OHEqualVIDPIDs(_VIDPID, OHVIDPIDMocute053X))
 			_profile = [[OHStadiaGamepad alloc]
 			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoNES30Gamepad))
+			_profile = [[OHNESGamepad alloc] oh_init];
 		else if (OHEqualVIDPIDs(_VIDPID,
 		    OHVIDPID8BitDoUltimate2CWirelessBT) ||
 		    OHEqualVIDPIDs(_VIDPID,
 		    OHVIDPID8BitDoUltimate2CWirelessUSB))
 			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
 			    oh_initWithVIDPID: _VIDPID];
-		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoNES30Gamepad))
-			_profile = [[OHNESGamepad alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoPro2))
+			_profile = [[OH8BitDoPro2Gamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
 		else if (OHEqualVIDPIDs(_VIDPID,
 		    OHVIDPIDDragonRiseGameCubeControllerAdapter))
 			_profile = [[OHGameCubeController alloc] oh_init];

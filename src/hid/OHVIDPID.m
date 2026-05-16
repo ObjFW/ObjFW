@@ -38,6 +38,7 @@ const OHVIDPID OHVIDPIDStadiaController = { 0x18D1, 0x9400 };
 const OHVIDPID OHVIDPID8BitDoNES30Gamepad = { 0x2DC8, 0x2820 };
 const OHVIDPID OHVIDPID8BitDoUltimate2CWirelessBT = { 0x2DC8, 0x301B };
 const OHVIDPID OHVIDPID8BitDoUltimate2CWirelessUSB = { 0x2DC8, 0x310A };
+const OHVIDPID OHVIDPID8BitDoPro2 = { 0x2DC8, 0x6006 };
 
 const OHVIDPID OHVIDPIDDragonRiseGameCubeControllerAdapter = { 0x0079, 0x1846 };
 const OHVIDPID OHVIDPIDWiseGroupPlayStationControllerAdapter = {

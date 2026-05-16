@@ -10,7 +10,8 @@ LIB_MAJOR = ${OBJFWHID_LIB_MAJOR}
 LIB_MINOR = ${OBJFWHID_LIB_MINOR}
 LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
-SRCS = OH8BitDoUltimate2CWirelessGamepad.m	\
+SRCS = OH8BitDoPro2Gamepad.m			\
+       OH8BitDoUltimate2CWirelessGamepad.m	\
        OHDualSenseGamepad.m			\
        OHDualShock3Gamepad.m			\
        OHDualShock4Gamepad.m			\

@@ -66,6 +66,7 @@ extern const OHVIDPID OHVIDPIDStadiaController;
 extern const OHVIDPID OHVIDPID8BitDoNES30Gamepad;
 extern const OHVIDPID OHVIDPID8BitDoUltimate2CWirelessBT;
 extern const OHVIDPID OHVIDPID8BitDoUltimate2CWirelessUSB;
+extern const OHVIDPID OHVIDPID8BitDoPro2;
 
 extern const OHVIDPID OHVIDPIDDragonRiseGameCubeControllerAdapter;
 extern const OHVIDPID OHVIDPIDWiseGroupPlayStationControllerAdapter;
