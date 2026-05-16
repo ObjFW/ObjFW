@@ -18,6 +18,7 @@
  */
 
 #import "OHGameController.h"
+#import "OHVIDPID.h"
 
 #include <windows.h>
 
@@ -28,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OHXInputGameController: OHGameController
 {
 	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable _productID;
+	OHVIDPID _VIDPID;
 	OHXboxGamepad *_extendedGamepad;
 }
 

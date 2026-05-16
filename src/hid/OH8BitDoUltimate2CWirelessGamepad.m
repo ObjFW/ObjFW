@@ -49,7 +49,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)oh_initWithProductID: (uint16_t)productID
+- (instancetype)oh_initWithVIDPID: (OHVIDPID)VIDPID
 {
 	self = [super init];
 
@@ -65,7 +65,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		OHGameControllerAxis *xAxis, *yAxis;
 		OHGameControllerDirectionalPad *directionalPad;
 
-		_productID = productID;
+		_VIDPID = VIDPID;
 
 		for (size_t i = 0; i < numButtons; i++) {
 			button = [OHGameControllerButton
@@ -97,7 +97,8 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 		[buttons setObject: button forKey: @"RT"];
 #endif
 
-		if (productID == OHProductIDUltimate2CWirelessBT) {
+		if (OHEqualVIDPIDs(VIDPID,
+		    OHVIDPID8BitDoUltimate2CWirelessBT)) {
 			button = [OHGameControllerButton
 			    oh_elementWithName: @"L4"
 					analog: false];
@@ -264,7 +265,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 {
 	OFString *name;
 
-	if (_productID == OHProductIDUltimate2CWirelessBT) {
+	if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoUltimate2CWirelessBT)) {
 		switch (button) {
 		case BTN_C:
 			return [_buttons objectForKey: @"L4"];
@@ -316,7 +317,7 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
 - (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis
 {
-	if (_productID == OHProductIDUltimate2CWirelessBT) {
+	if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoUltimate2CWirelessBT)) {
 		switch (axis) {
 		case ABS_Z:
 			return [[_directionalPads objectForKey:

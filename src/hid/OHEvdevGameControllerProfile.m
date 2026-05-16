@@ -31,10 +31,9 @@
 #import "evdev_compat.h"
 
 static OFString *
-buttonToName(uint16_t button, uint16_t vendorID, uint16_t productID)
+buttonToName(uint16_t button, OHVIDPID VIDPID)
 {
-	if (vendorID == OHVendorIDMicrosoft &&
-	    productID == OHProductIDXbox360WirelessReceiver) {
+	if (OHEqualVIDPIDs(VIDPID, OHVIDPIDXbox360WirelessReceiver)) {
 		/*
 		 * D-Pad is reported as both HAT0X/HAT0Y and Trigger Happy 1-4.
 		 * Filter out Trigger Happy.
@@ -230,8 +229,7 @@ axisToName(uint16_t axis)
 - (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
 			    evBits: (unsigned long *)evBits
 			   absBits: (unsigned long *)absBits
-			  vendorID: (uint16_t)vendorID
-			 productID: (uint16_t)productID
+			    VIDPID: (OHVIDPID)VIDPID
 {
 	self = [super init];
 
@@ -246,7 +244,7 @@ axisToName(uint16_t axis)
 				OHGameControllerButton *button;
 
 				buttonName = buttonToName(OHEvdevButtonIDs[i],
-				    vendorID, productID);
+				    VIDPID);
 				if (buttonName == nil)
 					continue;
 
@@ -283,8 +281,7 @@ axisToName(uint16_t axis)
 
 		_buttons = [buttons copy];
 		_axes = [axes copy];
-		_vendorID = vendorID;
-		_productID = productID;
+		_VIDPID = VIDPID;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -313,7 +310,7 @@ axisToName(uint16_t axis)
 {
 	OFString *name;
 
-	if ((name = buttonToName(button, _vendorID, _productID)) == nil)
+	if ((name = buttonToName(button, _VIDPID)) == nil)
 		return nil;
 
 	return [_buttons objectForKey: name];

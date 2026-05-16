@@ -115,8 +115,7 @@
 			_profile = [[OHSNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"Stadia Controller rev. A"])
 			_profile = [[OHStadiaGamepad alloc]
-			    oh_initWithVendorID: OHVendorIDGoogle
-				      productID: OHProductIDStadiaController];
+			    oh_initWithVIDPID: OHVIDPIDStadiaController];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"GameCube Controller Adapter"])
@@ -195,16 +194,6 @@
 	}];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFNumber *)vendorID
-{
-	return nil;
-}
-
-- (OFNumber *)productID
-{
-	return nil;
 }
 
 - (id <OHGameControllerProfile>)profile
