@@ -582,7 +582,8 @@ outer_loop_end:
 
 		attributes = [fileManager attributesOfItemAtPath: fileName];
 		type = attributes.fileType;
-		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
+		entry = [OFMutableTarArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 		entry.POSIXPermissions =

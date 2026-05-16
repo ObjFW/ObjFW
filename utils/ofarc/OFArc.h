@@ -52,6 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName;
 - (nullable OFString *)safeLocalPathForPath: (OFString *)path;
+- (OFString *)archivePathForPath: (OFString *)path;
 - (void)quarantineFile: (OFString *)path;
 - (void)checkForCancellation;
 #ifdef OF_AMIGAOS
