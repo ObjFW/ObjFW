@@ -22,6 +22,9 @@
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
 #endif
+#ifdef OF_HAVE_GCF
+# import "OHGCFGameController.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +32,9 @@ OF_DIRECT_MEMBERS
 @interface OH8BitDoPro2Gamepad ()
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
     <OHEvdevMapping>
+#endif
+#ifdef OF_HAVE_GCF
+    <OHGCFMapping>
 #endif
 
 - (instancetype)oh_initWithVIDPID: (OHVIDPID)VIDPID OF_METHOD_FAMILY(init);

@@ -22,6 +22,9 @@
 #import "OH8BitDoPro2Gamepad.h"
 #import "OH8BitDoPro2Gamepad+Private.h"
 #import "OFDictionary.h"
+#ifdef OF_HAVE_GCF
+# import "OFString+NSObject.h"
+#endif
 #import "OHEmulatedGameControllerTriggerButton.h"
 #import "OHGameController.h"
 #import "OHGameControllerAxis.h"
@@ -37,12 +40,70 @@
 
 static OFString *const buttonNames[] = {
 	@"A", @"B", @"X", @"Y", @"L", @"R", @"L2", @"R2", @"L3", @"R3",
-	@"Start", @"Select", @"Home"
+	@"Start", @"Select",
+#ifndef OF_HAVE_GCF
+	@"Home"
+#endif
 };
 static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 
+#ifdef OF_HAVE_GCF
+static OFDictionary<OFString *, NSString *> *buttonsMapD, *buttonsMapX;
+static OFDictionary<OFString *, NSString *> *directionalPadsMap;
+#endif
+
 @implementation OH8BitDoPro2Gamepad
 @synthesize buttons = _buttons, directionalPads = _directionalPads;
+
+#ifdef OF_HAVE_GCF
++ (void)initialize
+{
+	void *pool;
+
+	if (self != [OH8BitDoPro2Gamepad class])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+
+	buttonsMapD = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"A", @"Button A".NSObject,
+	    @"B", @"Button B".NSObject,
+	    @"X", @"Button X".NSObject,
+	    @"Y", @"Button Y".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
+	    @"R", @"Right Shoulder".NSObject,
+	    @"L2", @"Left Trigger".NSObject,
+	    @"R2", @"Right Trigger".NSObject,
+	    @"L3", @"Left Thumbstick Button".NSObject,
+	    @"R3", @"Right Thumbstick Button".NSObject,
+	    @"P1", @"Back Left Button 0".NSObject,
+	    @"P2", @"Back Right Button 0".NSObject,
+	    @"Start", @"Button Menu".NSObject,
+	    @"Select", @"Button Options".NSObject,
+	    nil];
+	buttonsMapX = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"A", @"Button B".NSObject,
+	    @"B", @"Button A".NSObject,
+	    @"X", @"Button Y".NSObject,
+	    @"Y", @"Button X".NSObject,
+	    @"L", @"Left Shoulder".NSObject,
+	    @"R", @"Right Shoulder".NSObject,
+	    @"L2", @"Left Trigger".NSObject,
+	    @"R2", @"Right Trigger".NSObject,
+	    @"L3", @"Left Thumbstick Button".NSObject,
+	    @"R3", @"Right Thumbstick Button".NSObject,
+	    @"Start", @"Button Menu".NSObject,
+	    @"Select", @"Button Options".NSObject,
+	    nil];
+	directionalPadsMap = [[OFDictionary alloc] initWithKeysAndObjects:
+	    @"Left Thumbstick", @"Left Thumbstick".NSObject,
+	    @"Right Thumbstick", @"Right Thumbstick".NSObject,
+	    @"D-Pad", @"Direction Pad".NSObject,
+	    nil];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (instancetype)init
 {
@@ -398,6 +459,26 @@ static const size_t numButtons = sizeof(buttonNames) / sizeof(*buttonNames);
 			return nil;
 		}
 	}
+}
+#endif
+
+#ifdef OF_HAVE_GCF
+- (OFDictionary<OFString *, NSString *> *)oh_buttonsMap
+{
+	if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDXboxOneWirelessController))
+		return buttonsMapX;
+	else
+		return buttonsMapD;
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_axesMap
+{
+	return [OFDictionary dictionary];
+}
+
+- (OFDictionary<OFString *, NSString *> *)oh_directionalPadsMap
+{
+	return directionalPadsMap;
 }
 #endif
 @end
