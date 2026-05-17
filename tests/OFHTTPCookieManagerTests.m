@@ -79,6 +79,11 @@
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
+	    [OFArray arrayWithObject: cookie4]);
+	[manager addCookie: cookie5 forIRI: IRI3];
+	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
+	    [OFArray arrayWithObject: cookie4]);
+	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
 	    ([OFArray arrayWithObjects: cookie4, cookie5, nil]));
 
 	OTAssertEqualObjects(manager.cookies,

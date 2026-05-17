@@ -81,7 +81,11 @@
 	if (![cookieDomain isEqual: IRIHost]) {
 		IRIHost = [@"." stringByAppendingString: IRIHost];
 
-		if (![cookieDomain hasSuffix: IRIHost]) {
+		if (![cookieDomain hasPrefix: @"."])
+			cookieDomain =
+			    [@"." stringByAppendingString: cookieDomain];
+
+		if (![IRIHost hasSuffix: cookieDomain]) {
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
