@@ -310,7 +310,6 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		_name = [name copy];
 		_value = [value copy];
 		_domain = [domain copy];
-		_path = @"/";
 		_extensions = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		objc_release(self);
@@ -410,7 +409,10 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	    stringWithFormat: @"%@=%@", _name, _value];
 	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"; Domain=%@; Path=%@", _domain, _path];
+	[ret appendFormat: @"; Domain=%@", _domain];
+
+	if (_path != nil)
+		[ret appendFormat: @"; Path=%@", _path];
 
 	if (_expires != nil)
 		[ret appendString:

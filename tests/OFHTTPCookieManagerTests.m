@@ -56,6 +56,7 @@
 					 value: @"3"
 					domain: @"nil.im"];
 	cookie3.secure = true;
+	cookie3.path = @"/foo";
 	[manager addCookie: cookie3 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
 	    [OFArray arrayWithObject: cookie3]);
@@ -64,8 +65,8 @@
 	cookie3.expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie4 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"4"
-					domain: @"nil.im"];
-	cookie4.domain = @".nil.im";
+					domain: @".nil.im"];
+	cookie4.path = @"/";
 	[manager addCookie: cookie4 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
 	    [OFArray arrayWithObject: cookie4]);
