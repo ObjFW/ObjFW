@@ -65,8 +65,25 @@
 
 	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
-	if (![cookie.path hasPrefix: @"/"])
-		cookie.path = @"/";
+	if (![cookie.path hasPrefix: @"/"]) {
+		OFString *path = IRI.path;
+		OFRange range = OFMakeRange(1, path.length - 1);
+		size_t pos;
+
+		if ([path hasSuffix: @"/"])
+			range.length--;
+
+		pos = [path rangeOfString: @"/"
+				  options: OFStringSearchBackwards
+				    range: range].location;
+		if (pos != OFNotFound)
+			range.length = pos - 1;
+
+		range.location--;
+		range.length++;
+
+		cookie.path = [path substringWithRange: range];
+	}
 
 	if (cookie.secure &&
 	    [IRI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {

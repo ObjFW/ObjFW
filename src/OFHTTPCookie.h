@@ -60,7 +60,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The path for the cookie.
  */
-@property (copy, nonatomic) OFString *path;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *path;
 
 /**
  * @brief The date when the cookie expires.
