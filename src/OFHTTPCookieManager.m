@@ -23,6 +23,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFHTTPCookie.h"
+#import "OFHTTPCookie+Private.h"
 #import "OFIRI.h"
 
 @implementation OFHTTPCookieManager
@@ -82,6 +83,8 @@
 			else
 				cookie.path = @"/";
 		}
+
+		cookie.of_hostOnly = true;
 	}
 
 	if (cookie.secure &&
@@ -155,6 +158,11 @@
 		cookieDomain = cookie.domain.lowercaseString;
 		IRIHost = IRI.host.lowercaseString;
 		if (![cookieDomain isEqual: IRIHost]) {
+			if (cookie.of_hostOnly) {
+				objc_autoreleasePoolPop(pool2);
+				continue;
+			}
+
 			IRIHost = [@"." stringByAppendingString: IRIHost];
 			cookieDomain =
 			    [@"." stringByAppendingString: cookieDomain];

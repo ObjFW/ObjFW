@@ -38,7 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_Nullable _expires;
-	bool _secure, _HTTPOnly;
+	bool _hostOnly, _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }
 

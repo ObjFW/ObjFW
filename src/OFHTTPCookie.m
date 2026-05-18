@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFHTTPCookie.h"
+#import "OFHTTPCookie+Private.h"
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -42,9 +43,10 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			OFDate *date = [OFDate dateWithTimeIntervalSinceNow:
 			    value.unsignedLongLongValue];
 			cookie.expires = date;
-		} else if ([lowercaseName isEqual: @"domain"])
+		} else if ([lowercaseName isEqual: @"domain"]) {
 			cookie.domain = value;
-		else if ([lowercaseName isEqual: @"path"])
+			cookie.of_hostOnly = false;
+		} else if ([lowercaseName isEqual: @"path"])
 			cookie.path = value;
 		else
 			[cookie.extensions addObject:
@@ -61,7 +63,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 @implementation OFHTTPCookie
 @synthesize name = _name, value = _value, path = _path, expires = _expires;
-@synthesize secure = _secure, HTTPOnly = _HTTPOnly, extensions = _extensions;
+@synthesize of_hostOnly = _hostOnly, secure = _secure, HTTPOnly = _HTTPOnly;
+@synthesize extensions = _extensions;
 
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
@@ -130,12 +133,17 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			break;
 		case stateQuotedValue:
 			if (characters[i] == '"') {
+				OFHTTPCookie *cookie;
+
 				value = [string substringWithRange:
 				    OFMakeRange(last, i - last)];
-				[ret addObject:
-				    [OFHTTPCookie cookieWithName: name
-							   value: value
-							  domain: domain]];
+
+				cookie = [OFHTTPCookie cookieWithName: name
+								value: value
+							       domain: domain];
+				cookie.of_hostOnly = true;
+
+				[ret addObject: cookie];
 
 				state = statePostQuotedValue;
 			}
