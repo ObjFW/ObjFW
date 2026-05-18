@@ -72,7 +72,7 @@
 	cookie4.path = @"/";
 	[manager addCookie: cookie4 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
-	    ([OFArray arrayWithObjects: cookie1, cookie4, nil]));
+	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
 	    [OFArray arrayWithObject: cookie4]);
 
@@ -81,12 +81,12 @@
 					domain: @"test.nil.im"];
 	[manager addCookie: cookie5 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
-	    ([OFArray arrayWithObjects: cookie1, cookie4, nil]));
+	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
 	    [OFArray arrayWithObject: cookie4]);
 	[manager addCookie: cookie5 forIRI: IRI3];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
-	    ([OFArray arrayWithObjects: cookie1, cookie4, nil]));
+	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
 	    ([OFArray arrayWithObjects: cookie4, cookie5, nil]));
 
@@ -95,15 +95,15 @@
 					domain: @"nil.im"];
 	[manager addCookie: cookie6 forIRI: IRI5];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
-	    ([OFArray arrayWithObjects: cookie1, cookie4, nil]));
+	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI5],
-	    ([OFArray arrayWithObjects: cookie1, cookie4, cookie6, nil]));
+	    ([OFArray arrayWithObjects: cookie4, cookie6, nil]));
 
 	OTAssertEqualObjects(manager.cookies,
-	    ([OFArray arrayWithObjects: cookie1, cookie3, cookie4, cookie5,
-	    cookie6, nil]));
+	    ([OFArray arrayWithObjects: cookie4, cookie3, cookie5, cookie6,
+	    nil]));
 	[manager purgeExpiredCookies];
 	OTAssertEqualObjects(manager.cookies,
-	    ([OFArray arrayWithObjects: cookie1, cookie4, cookie5, cookie6, nil]));
+	    ([OFArray arrayWithObjects: cookie4, cookie5, cookie6, nil]));
 }
 @end
