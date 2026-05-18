@@ -233,6 +233,7 @@ addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
 				    removeItemAtIRI: IRI];
 
 			[OFApplication terminateWithStatus: 1];
+			abort();
 		}
 
 		if ([attributes.fileType isEqual: OFFileTypeDirectory])
