@@ -60,9 +60,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 }
 
 @implementation OFHTTPCookie
-@synthesize name = _name, value = _value, domain = _domain, path = _path;
-@synthesize expires = _expires, secure = _secure, HTTPOnly = _HTTPOnly;
-@synthesize extensions = _extensions;
+@synthesize name = _name, value = _value, path = _path, expires = _expires;
+@synthesize secure = _secure, HTTPOnly = _HTTPOnly, extensions = _extensions;
 
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
     (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
@@ -307,10 +306,17 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if ([domain hasPrefix: @"."])
+			domain = [domain substringFromIndex: 1];
+
 		_name = [name copy];
 		_value = [value copy];
 		_domain = [domain copy];
 		_extensions = [[OFMutableArray alloc] init];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -381,6 +387,26 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFHashFinalize(&hash);
 
 	return hash;
+}
+
+- (void)setDomain: (OFString *)domain
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old;
+
+	if ([domain hasPrefix: @"."])
+		domain = [domain substringFromIndex: 1];
+
+	old = _domain;
+	_domain = [domain copy];
+	objc_release(old);
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (OFString *)domain
+{
+	return _domain;
 }
 
 - (id)copy

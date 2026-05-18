@@ -96,10 +96,7 @@
 	IRIHost = IRI.host.lowercaseString;
 	if (![cookieDomain isEqual: IRIHost]) {
 		IRIHost = [@"." stringByAppendingString: IRIHost];
-
-		if (![cookieDomain hasPrefix: @"."])
-			cookieDomain =
-			    [@"." stringByAppendingString: cookieDomain];
+		cookieDomain = [@"." stringByAppendingString: cookieDomain];
 
 		if (![IRIHost hasSuffix: cookieDomain]) {
 			objc_autoreleasePoolPop(pool);
@@ -157,21 +154,15 @@
 
 		cookieDomain = cookie.domain.lowercaseString;
 		IRIHost = IRI.host.lowercaseString;
-		if ([cookieDomain hasPrefix: @"."]) {
-			if ([IRIHost hasSuffix: cookieDomain])
-				match = true;
-			else {
-				cookieDomain =
-				    [cookieDomain substringFromIndex: 1];
+		if (![cookieDomain isEqual: IRIHost]) {
+			IRIHost = [@"." stringByAppendingString: IRIHost];
+			cookieDomain =
+			    [@"." stringByAppendingString: cookieDomain];
 
-				match = [cookieDomain isEqual: IRIHost];
+			if (![IRIHost hasSuffix: cookieDomain]) {
+				objc_autoreleasePoolPop(pool2);
+				continue;
 			}
-		} else
-			match = [cookieDomain isEqual: IRIHost];
-
-		if (!match) {
-			objc_autoreleasePoolPop(pool2);
-			continue;
 		}
 
 		cookiePath = cookie.path;
