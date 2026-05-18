@@ -38,7 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_Nullable _expires;
-	bool _secure, _HTTPOnly;
+	bool _hostOnly, _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }
 
@@ -66,6 +66,12 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The date when the cookie expires.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFDate *expires;
+
+/**
+ * @brief Whether the cookie is host-only, meaning it is only returned on an
+ *	  exact domain match.
+ */
+@property (nonatomic, getter=isHostOnly) bool hostOnly;
 
 /**
  * @brief Whether the cookie is only to be used with HTTPS.

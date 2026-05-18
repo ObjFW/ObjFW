@@ -82,6 +82,8 @@
 			else
 				cookie.path = @"/";
 		}
+
+		cookie.hostOnly = true;
 	}
 
 	if (cookie.secure &&
@@ -155,6 +157,11 @@
 		cookieDomain = cookie.domain.lowercaseString;
 		IRIHost = IRI.host.lowercaseString;
 		if (![cookieDomain isEqual: IRIHost]) {
+			if (cookie.hostOnly) {
+				objc_autoreleasePoolPop(pool2);
+				continue;
+			}
+
 			IRIHost = [@"." stringByAppendingString: IRIHost];
 			cookieDomain =
 			    [@"." stringByAppendingString: cookieDomain];
