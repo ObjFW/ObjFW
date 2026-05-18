@@ -208,16 +208,31 @@ writingNotSupported(OFString *type)
 }
 
 static void
-addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
-    OFString *archiveComment)
+addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
+    OFArray OF_GENERIC(OFString *) *files, OFString *archiveComment)
 {
 	OFMutableArray *expandedFiles =
 	    [OFMutableArray arrayWithCapacity: files.count];
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
 	for (OFString *file in files) {
-		OFFileAttributes attributes =
-		    [fileManager attributesOfItemAtPath: file];
+		OFFileAttributes attributes;
+
+		@try {
+			attributes = [fileManager attributesOfItemAtPath: file];
+		} @catch (OFGetItemAttributesFailedException *e) {
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"failed_to_read_file",
+			    @"Failed to read file %[file]: %[error]",
+			    @"file", e.IRI.string,
+			    @"error", OFStrError(e.errNo))];
+
+			if (mode == 'c' && IRI != nil)
+				[[OFFileManager defaultManager]
+				    removeItemAtIRI: IRI];
+
+			[OFApplication terminateWithStatus: 1];
+		}
 
 		if ([attributes.fileType isEqual: OFFileTypeDirectory])
 			[expandedFiles addObjectsFromArray:
@@ -232,7 +247,20 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	[archive addFiles: expandedFiles archiveComment: archiveComment];
+	@try {
+		[archive addFiles: expandedFiles
+		   archiveComment: archiveComment];
+	} @catch (OFOpenItemFailedException *e) {
+		if (outputLevel >= 0)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		    @"Failed to read file %[file]: %[error]",
+		    @"file", e.path,
+		    @"error", OFStrError(e.errNo))];
+
+		[OFApplication terminateWithStatus: 1];
+	}
 }
 
 @implementation OFArc
@@ -443,7 +471,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 					      mode: mode
 					  encoding: encoding];
 
-		addFiles(archive, files, archiveComment);
+		addFiles(IRI, mode, _outputLevel, archive, files,
+		    archiveComment);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
