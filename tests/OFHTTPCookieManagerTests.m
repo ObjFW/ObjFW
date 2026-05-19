@@ -42,6 +42,7 @@
 	cookie1 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"1"
 					domain: @"nil.im"];
+	cookie1.path = @"/foo";
 	[manager addCookie: cookie1 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie1]);
@@ -49,6 +50,7 @@
 	cookie2 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"2"
 					domain: @"webkeks.org"];
+	cookie2.path = @"/foo";
 	[manager addCookie: cookie2 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie1]);
@@ -57,19 +59,17 @@
 	cookie3 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"3"
 					domain: @"nil.im"];
-	cookie3.secure = true;
 	cookie3.path = @"/foo";
+	cookie3.secure = true;
 	[manager addCookie: cookie3 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
-	    ([OFArray arrayWithObjects: cookie1, cookie3, nil]));
-	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
-	    [OFArray arrayWithObject: cookie1]);
+	    [OFArray arrayWithObject: cookie3]);
+	OTAssertEqualObjects([manager cookiesForIRI: IRI1], [OFArray array]);
 
 	cookie3.expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie4 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"4"
 					domain: @".nil.im"];
-	cookie4.path = @"/";
 	[manager addCookie: cookie4 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
 	    [OFArray arrayWithObject: cookie4]);
@@ -79,6 +79,7 @@
 	cookie5 = [OFHTTPCookie cookieWithName: @"bar"
 					 value: @"5"
 					domain: @"test.nil.im"];
+	cookie5.path = @"/foo";
 	[manager addCookie: cookie5 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie4]);
@@ -93,6 +94,7 @@
 	cookie6 = [OFHTTPCookie cookieWithName: @"blub"
 					 value: @"6"
 					domain: @"nil.im"];
+	cookie6.path = @"/foo/bar";
 	[manager addCookie: cookie6 forIRI: IRI5];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie4]);
@@ -100,7 +102,7 @@
 	    ([OFArray arrayWithObjects: cookie4, cookie6, nil]));
 
 	OTAssertEqualObjects(manager.cookies,
-	    ([OFArray arrayWithObjects: cookie4, cookie3, cookie5, cookie6,
+	    ([OFArray arrayWithObjects: cookie3, cookie4, cookie5, cookie6,
 	    nil]));
 	[manager purgeExpiredCookies];
 	OTAssertEqualObjects(manager.cookies,
