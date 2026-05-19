@@ -65,35 +65,15 @@
 
 	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
-	if (![cookie.path hasPrefix: @"/"]) {
-		OFString *path = IRI.path;
-
-		if (![path hasPrefix: @"/"])
-			cookie.path = @"/";
-		else {
-			OFRange range = OFMakeRange(1, path.length - 1);
-			size_t pos = [path
-			    rangeOfString: @"/"
-				  options: OFStringSearchBackwards
-				    range: range].location;
-
-			if (pos != OFNotFound)
-				cookie.path = [path substringToIndex: pos];
-			else
-				cookie.path = @"/";
-		}
-	}
-
 	if (cookie.secure &&
 	    [IRI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	cookieDomain = cookie.domain.lowercaseString;
-	cookie.domain = cookieDomain;
-
+	cookieDomain = cookie.domain;
 	IRIHost = IRI.host.lowercaseString;
+
 	if (![cookieDomain isEqual: IRIHost]) {
 		IRIHost = [@"." stringByAppendingString: IRIHost];
 		cookieDomain = [@"." stringByAppendingString: cookieDomain];
