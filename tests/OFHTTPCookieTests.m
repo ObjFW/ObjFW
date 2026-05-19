@@ -72,6 +72,7 @@
 				  @"foo; "
 				  @"bar"
 			  forKey: @"Set-Cookie"];
+	cookie2.hostOnly = false;
 	OTAssertEqualObjects(
 	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
 	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));

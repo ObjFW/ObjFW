@@ -132,17 +132,13 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			break;
 		case stateQuotedValue:
 			if (characters[i] == '"') {
-				OFHTTPCookie *cookie;
-
 				value = [string substringWithRange:
 				    OFMakeRange(last, i - last)];
 
-				cookie = [OFHTTPCookie cookieWithName: name
-								value: value
-							       domain: domain];
-				cookie.hostOnly = true;
-
-				[ret addObject: cookie];
+				[ret addObject:
+				    [OFHTTPCookie cookieWithName: name
+							   value: value
+							  domain: domain]];
 
 				state = statePostQuotedValue;
 			}
@@ -315,8 +311,11 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if ([domain hasPrefix: @"."])
+		if ([domain hasPrefix: @"."]) {
 			domain = [domain substringFromIndex: 1];
+			_hostOnly = false;
+		} else
+			_hostOnly = true;
 
 		_name = [name copy];
 		_value = [value copy];
@@ -367,6 +366,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	if (cookie->_expires != _expires &&
 	    ![cookie->_expires isEqual: _expires])
 		return false;
+	if (cookie->_hostOnly != _hostOnly)
+		return false;
 	if (cookie->_secure != _secure)
 		return false;
 	if (cookie->_HTTPOnly != _HTTPOnly)
@@ -388,6 +389,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFHashAddHash(&hash, _domain.hash);
 	OFHashAddHash(&hash, _path.hash);
 	OFHashAddHash(&hash, _expires.hash);
+	OFHashAddByte(&hash, _hostOnly);
 	OFHashAddByte(&hash, _secure);
 	OFHashAddByte(&hash, _HTTPOnly);
 	OFHashAddHash(&hash, _extensions.hash);
@@ -425,6 +427,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	@try {
 		copy->_path = [_path copy];
 		copy->_expires = [_expires copy];
+		copy->_hostOnly = _hostOnly;
 		copy->_secure = _secure;
 		copy->_HTTPOnly = _HTTPOnly;
 		[copy->_extensions addObjectsFromArray: _extensions];
