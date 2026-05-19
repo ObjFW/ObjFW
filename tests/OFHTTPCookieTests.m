@@ -64,7 +64,7 @@
 	    dictionaryWithObject: @"foo=bar; "
 				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
 				  @"Path=/x,"
-				  @"qux=cookie; "
+				  @"qux=\"cookie\"; "
 				  @"Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
 				  @"Domain=webkeks.org; "
 				  @"Path=/objfw; "
