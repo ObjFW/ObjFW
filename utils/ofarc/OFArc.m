@@ -929,6 +929,9 @@ error:
 		path = [path substringFromIndex: pos + 2];
 	else if ((pos = [path rangeOfString: @":"].location) != OFNotFound)
 		path = [path substringFromIndex: pos + 1];
+
+	path = [path stringByReplacingOccurrencesOfString: @"\\"
+					       withString: @"/"];
 #elif defined(OF_AMIGAOS)
 	size_t pos;
 
