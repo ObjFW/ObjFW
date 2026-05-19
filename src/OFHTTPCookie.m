@@ -128,9 +128,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			} else {
 				state = stateValue;
 				last = i;
+				i--;
 			}
-
-			i--;
 			break;
 		case stateValue:
 			if (characters[i] == ';' || characters[i] == ',') {
