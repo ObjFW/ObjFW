@@ -21,6 +21,7 @@
 
 #import "ObjFW.h"
 #import "ObjFWTest.h"
+#import "OFHTTPCookie+Private.h"
 
 @interface OFHTTPCookieTests: OTTestCase
 @end
@@ -72,6 +73,7 @@
 				  @"foo; "
 				  @"bar"
 			  forKey: @"Set-Cookie"];
+	cookie2.of_hostOnly = false;
 	OTAssertEqualObjects(
 	    [OFHTTPCookie cookiesWithResponseHeaderFields: headers forIRI: IRI],
 	    ([OFArray arrayWithObjects: cookie1, cookie2, nil]));

@@ -83,8 +83,6 @@
 			else
 				cookie.path = @"/";
 		}
-
-		cookie.of_hostOnly = true;
 	}
 
 	if (cookie.secure &&
