@@ -603,7 +603,7 @@ outer_loop_end:
 
 #if defined(OF_AMIGAOS)
 		entry.versionSpecificAttributes =
-		    ((uint32_t)attributes.fileAmigaProtection << 16) ^ 0xF;
+		    ((uint32_t)attributes.fileAmigaProtection ^ 0xF) << 16;
 #elif defined(OF_MSDOS)
 		entry.versionSpecificAttributes =
 		    (uint32_t)attributes.fileMSDOSAttributes << 16;
