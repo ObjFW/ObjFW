@@ -4,6 +4,20 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.5.2 -> ObjFW 1.5.3, 2026-05-20
+ * Fixes OFForwardingTests on Windows with GCC.
+ * Fixes OFHTTPCookieManager which was completely broken.
+ * OFHTTPServer refuses to send responses that contain a newline in the
+   headers or the server name now.
+ * Fixes setting the Amiga Comment to nil in OFMutableTarArchiveEntry.
+ * Improves handling of truncated archives in OFLHAArchiveEntry.
+ * OFThread no longer inherits the priority on AmigaOS.
+ * Uses better source for randomness now to find a free port on platforms that
+   can't bind to port 0.
+ * ofarc now strips drives from the paths it stores inside the archive.
+ * Fixes ofarc failing to create ZIP archives with specific paths on AmigaOS.
+ * Fixes ofarc incorrectly storing Amiga Protection in ZIP archives.
+
 ObjFW 1.5.1 -> ObjFW 1.5.2, 2026-05-08
  * Makes ObjFWConfig.cmake work on MSYS2.
  * ObjFWConfig.cmake now also adds the flags for OBJCXX.
