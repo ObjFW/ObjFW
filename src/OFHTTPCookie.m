@@ -469,10 +469,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	    stringWithFormat: @"%@=%@", _name, _value];
 	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"; Domain=%@", _domain];
-
-	if (_path != nil)
-		[ret appendFormat: @"; Path=%@", _path];
+	[ret appendFormat: @"; Domain=%@; Path=%@", _domain, _path];
 
 	if (_expires != nil)
 		[ret appendString:
