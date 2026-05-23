@@ -49,7 +49,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	char magic[2];
 	uint32_t dataStart, headerSize, compressionMethod;
 	int32_t tmp32, horizPixelPerMeter, vertPixelPerMeter;
-	size_t width, height, lineLength, linePadding = 0;
+	uint32_t width, height, lineLength, linePadding = 0;
 	bool flipped = false;
 	OFSize size;
 	uint16_t bitsPerPixel;
@@ -96,7 +96,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	size.width = width;
 	size.height = height;
 
-	if (size.width != width || size.height != height)
+	if ((uint32_t)size.width != width || (uint32_t)size.height != height)
 		@throw [OFOutOfRangeException exception];
 
 	/* Number of color planes */
@@ -105,7 +105,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 
 	bitsPerPixel = [stream readLittleEndianInt16];
 
-	if (SIZE_MAX / width < bitsPerPixel / CHAR_BIT)
+	if (UINT32_MAX / width < bitsPerPixel / CHAR_BIT)
 		@throw [OFOutOfRangeException exception];
 
 	lineLength = width * (bitsPerPixel / CHAR_BIT);
