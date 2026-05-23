@@ -59,7 +59,7 @@ hashPixel(uint8_t pixel[4])
 	size.width = width;
 	size.height = height;
 
-	if (size.width != width || size.height != height)
+	if ((uint32_t)size.width != width || (uint32_t)size.height != height)
 		@throw [OFOutOfRangeException exception];
 
 	switch ([stream readInt8]) {
