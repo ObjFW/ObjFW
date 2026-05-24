@@ -349,6 +349,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		count = readUInt32(buffer + 1);
 
+		if (count > SIZE_MAX - 5)
+			@throw [OFOutOfRangeException exception];
+
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
 
@@ -395,6 +398,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
+
+		if (count > SIZE_MAX - 6)
+			@throw [OFOutOfRangeException exception];
 
 		if (length < count + 6)
 			@throw [OFTruncatedDataException exception];
@@ -499,6 +505,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
+
+		if (count > SIZE_MAX - 5)
+			@throw [OFOutOfRangeException exception];
 
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
