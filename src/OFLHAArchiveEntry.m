@@ -578,6 +578,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 						char buffer[512];
 						size_t min = padding;
 
+						if (stream.atEndOfStream)
+#define TDE OFTruncatedDataException
+							@throw [TDE exception];
+#undef TDE
+
 						if (min > 512)
 							min = 512;
 
