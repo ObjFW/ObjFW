@@ -68,13 +68,15 @@ OF_ASSUME_NONNULL_BEGIN
 				struct _OFHuffmanTree *_Nullable distTree;
 				struct _OFHuffmanTree *_Nullable treeIter;
 				int state;
-				uint16_t value, length, distance, extraBits;
+				uint16_t value;
+				uint32_t length;
+				uint16_t distance, extraBits;
 			} huffman;
 		} ctx;
 		bool inLastBlock;
 	} *_Nullable _inflateCtx;
 	bool _atEndOfStream;
-	OF_RESERVE_IVARS(OFDeflateStream, 4)
+	OF_RESERVE_IVARS(OFDeflateStream, 3)
 }
 
 /**
