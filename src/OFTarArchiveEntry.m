@@ -141,8 +141,13 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		_uncompressedSize = (unsigned long long)octalValueFromBuffer(
 		    header + 124, 12, ULLONG_MAX);
 		_compressedSize = _uncompressedSize;
-		if (_compressedSize % 512 != 0)
+		if (_compressedSize % 512 != 0) {
+			if (ULLONG_MAX - _compressedSize <
+			    512 - _compressedSize % 512)
+				@throw [OFOutOfRangeException exception];
+
 			_compressedSize += 512 - _compressedSize % 512;
+		}
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (OFTimeInterval)octalValueFromBuffer(
