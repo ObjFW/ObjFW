@@ -65,9 +65,6 @@ _OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 	uint16_t code, maxCode = 0, *nextCode = NULL;
 	uint_fast8_t maxBit = 0;
 
-	if (count == 0)
-		@throw [OFInvalidArgumentException exception];
-
 	@try {
 		for (uint16_t i = 0; i < count; i++) {
 			uint_fast8_t length = lengths[i];
@@ -92,6 +89,9 @@ _OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 				maxCode = i;
 			}
 		}
+
+		if (maxBit == 0)
+			@throw [OFInvalidArgumentException exception];
 
 		code = 0;
 		lengthCount[0] = 0;
