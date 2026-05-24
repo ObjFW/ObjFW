@@ -454,7 +454,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_CRC16 = [stream readLittleEndianInt16];
 
 			if (header[0] - (21 - 2) - 1 - 2 < fileNameLength)
-				@throw [OFOutOfRangeException exception];
+				@throw [OFInvalidFormatException exception];
 
 			extendedAreaSize =
 			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
@@ -554,30 +554,37 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			else
 				padding = (header[1] << 8) | header[0];
 
+			if (padding < 21 + 2 + 1)
+				@throw [OFInvalidFormatException exception];
+
 			/*
 			 * 21 for header, 2 for CRC16, 1 for operating system
 			 * identifier.
 			 */
 			padding -= 21 + 2 + 1;
 
-			padding -= readExtensions(self, stream, encoding, true);
+			if (padding > 0) {
+				padding -= readExtensions(self, stream,
+				    encoding, true);
 
-			/* Skip padding */
-			if ([stream isKindOfClass: [OFSeekableStream class]])
-				[(OFSeekableStream *)stream
-				    seekToOffset: padding
-					  whence: OFSeekCurrent];
-			else {
-				while (padding > 0) {
-					char buffer[512];
-					size_t min = padding;
+				/* Skip padding */
+				if ([stream isKindOfClass:
+				    [OFSeekableStream class]])
+					[(OFSeekableStream *)stream
+						seekToOffset: padding
+						      whence: OFSeekCurrent];
+				else {
+					while (padding > 0) {
+						char buffer[512];
+						size_t min = padding;
 
-					if (min > 512)
-						min = 512;
+						if (min > 512)
+							min = 512;
 
-					padding -= [stream
-					    readIntoBuffer: buffer
-						    length: min];
+						padding -= [stream
+						    readIntoBuffer: buffer
+							    length: min];
+					}
 				}
 			}
 
