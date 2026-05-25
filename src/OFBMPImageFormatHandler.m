@@ -81,17 +81,18 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	}
 
 	tmp32 = [stream readLittleEndianInt32];
-	if (tmp32 < 0)
+	if (tmp32 <= 0)
 		@throw [OFInvalidFormatException exception];
 	width = tmp32;
 
 	tmp32 = [stream readLittleEndianInt32];
 	if (tmp32 < 0)
 		height = tmp32 * -1;
-	else {
+	else if (tmp32 != 0) {
 		height = tmp32;
 		flipped = true;
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	size.width = width;
 	size.height = height;
@@ -104,6 +105,8 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 		@throw [OFInvalidFormatException exception];
 
 	bitsPerPixel = [stream readLittleEndianInt16];
+	if (bitsPerPixel == 0)
+		@throw [OFInvalidFormatException exception];
 
 	if (UINT32_MAX / width < bitsPerPixel / CHAR_BIT)
 		@throw [OFOutOfRangeException exception];
@@ -111,6 +114,9 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	lineLength = width * (bitsPerPixel / CHAR_BIT);
 	if (lineLength % 4 != 0)
 		linePadding = 4 - (lineLength % 4);
+
+	if (UINT32_MAX / lineLength < height)
+		@throw [OFOutOfRangeException exception];
 
 	compressionMethod = [stream readLittleEndianInt32];
 	if (compressionMethod != 0 &&
