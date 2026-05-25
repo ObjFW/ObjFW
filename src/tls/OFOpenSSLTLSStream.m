@@ -219,8 +219,10 @@ errToErrorCode(const SSL *SSL_)
 				OFEnsure(BIO_write(_readBIO, _buffer,
 				    (int)tmp) == (int)tmp);
 			} @catch (OFReadFailedException *e) {
-				if (e.errNo == EWOULDBLOCK || e.errNo != EAGAIN)
+				if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 					return 0;
+
+				@throw e;
 			}
 		}
 
