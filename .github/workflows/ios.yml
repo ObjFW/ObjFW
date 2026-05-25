@@ -31,7 +31,7 @@ jobs:
         cmake .. -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT="$(xcrun --sdk $sdk --show-sdk-path)" -DCMAKE_INSTALL_PREFIX="/usr/local/$sdk"
         make -j$(sysctl -n hw.logicalcpu)
         sudo make install
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
