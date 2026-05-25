@@ -84,17 +84,17 @@ resize(struct objc_hashtable *table, uint32_t count)
 	uint32_t fullness, newSize;
 	struct objc_hashtable_bucket **newData;
 
-	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
+	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 4)
 		_OBJC_ERROR("Integer overflow!");
 
-	fullness = count * 8 / table->size;
+	fullness = count * 4 / table->size;
 
-	if (fullness >= 6) {
+	if (fullness >= 3) {
 		if (table->size > UINT32_MAX / 2)
 			return;
 
 		newSize = table->size * 2;
-	} else if (fullness <= 1)
+	} else if (fullness <= 1 && table->size > 1)
 		newSize = table->size / 2;
 	else
 		return;
