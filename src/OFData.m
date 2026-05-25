@@ -592,7 +592,7 @@ OF_SINGLETON_METHODS
 
 	return [OFData dataWithItems: (const unsigned char *)self.items +
 				      (range.location * self.itemSize)
-			       count: self.count
+			       count: range.length
 			    itemSize: self.itemSize];
 }
 
