@@ -105,8 +105,33 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 		@throw [OFInvalidFormatException exception];
 
 	bitsPerPixel = [stream readLittleEndianInt16];
-	if (bitsPerPixel == 0)
+	compressionMethod = [stream readLittleEndianInt32];
+
+	switch (bitsPerPixel) {
+	case 24:
+		format = OFPixelFormatBGR888;
+		break;
+	case 16:
+	case 32:
+		if (headerSize >= 56 && compressionMethod == 3)
+			break;
+		/* Fall through */
+	case 0:
 		@throw [OFInvalidFormatException exception];
+	default:;
+		OFString *version = [OFString stringWithFormat:
+		    @"\"%u bits per pixel\"", bitsPerPixel];
+		@throw [OFUnsupportedVersionException
+		    exceptionWithVersion: version];
+	}
+
+	if (compressionMethod != 0 &&
+	    (headerSize < 56 || compressionMethod != 3)) {
+		OFString *version = [OFString stringWithFormat:
+		    @"\"compression method %u\"", compressionMethod];
+		@throw [OFUnsupportedVersionException
+		    exceptionWithVersion: version];
+	}
 
 	if (UINT32_MAX / width < bitsPerPixel / CHAR_BIT)
 		@throw [OFOutOfRangeException exception];
@@ -118,15 +143,6 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	if (UINT32_MAX / lineLength < height)
 		@throw [OFOutOfRangeException exception];
 
-	compressionMethod = [stream readLittleEndianInt32];
-	if (compressionMethod != 0 &&
-	    (headerSize < 56 || compressionMethod != 3)) {
-		OFString *version = [OFString stringWithFormat:
-		    @"\"compression method %u\"", compressionMethod];
-		@throw [OFUnsupportedVersionException
-		    exceptionWithVersion: version];
-	}
-
 	/* dataSize = */ [stream readLittleEndianInt32];
 	horizPixelPerMeter = [stream readLittleEndianInt32];
 	vertPixelPerMeter = [stream readLittleEndianInt32];
@@ -136,22 +152,6 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 		@throw [OFInvalidFormatException exception];
 
 	/* Number of important colors = */ [stream readLittleEndianInt32];
-
-	switch (bitsPerPixel) {
-	case 24:
-		format = OFPixelFormatBGR888;
-		break;
-	case 16:
-	case 32:
-		if (headerSize >= 56 && compressionMethod == 3)
-			break;
-		/* Fall through */
-	default:;
-		OFString *version = [OFString stringWithFormat:
-		    @"\"%u bits per pixel\"", bitsPerPixel];
-		@throw [OFUnsupportedVersionException
-		    exceptionWithVersion: version];
-	}
 
 	if (headerSize >= 56 && compressionMethod == 3) {
 		struct {
