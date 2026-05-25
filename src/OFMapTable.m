@@ -141,7 +141,7 @@ OF_DIRECT_MEMBERS
 #undef SET_DEFAULT
 
 		if (capacity > UINT32_MAX / sizeof(*_buckets) ||
-		    capacity > UINT32_MAX / 8)
+		    capacity > UINT32_MAX / 4)
 			@throw [OFOutOfRangeException exception];
 
 		for (_capacity = 1; _capacity < capacity;) {
@@ -151,7 +151,7 @@ OF_DIRECT_MEMBERS
 			_capacity *= 2;
 		}
 
-		if (capacity * 8 / _capacity >= 6)
+		if (capacity * 4 / _capacity >= 3)
 			if (_capacity <= UINT32_MAX / 2)
 				_capacity *= 2;
 
@@ -194,17 +194,17 @@ resizeForCount(OFMapTable *self, uint32_t count)
 	unsigned char newRotation;
 
 	if (count > UINT32_MAX / sizeof(*self->_buckets) ||
-	    count > UINT32_MAX / 8)
+	    count > UINT32_MAX / 4)
 		@throw [OFOutOfRangeException exception];
 
-	fullness = count * 8 / self->_capacity;
+	fullness = count * 4 / self->_capacity;
 
-	if (fullness >= 6) {
+	if (fullness >= 3) {
 		if (self->_capacity > UINT32_MAX / 2)
 			return;
 
 		capacity = self->_capacity * 2;
-	} else if (fullness <= 1)
+	} else if (fullness <= 1 && self->_capacity > 1)
 		capacity = self->_capacity / 2;
 	else
 		return;
