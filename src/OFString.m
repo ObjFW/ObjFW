@@ -308,6 +308,7 @@ ssize_t
 _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 {
 	const unsigned char *buffer = (const unsigned char *)buffer_;
+	OFUnichar tmp;
 
 	if (!(*buffer & 0x80)) {
 		*ret = buffer[0];
@@ -321,7 +322,12 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		if OF_UNLIKELY ((buffer[1] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+		tmp = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+
+		if (tmp < 0x80)
+			return 0;
+
+		*ret = tmp;
 		return 2;
 	}
 
@@ -333,8 +339,13 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		    (buffer[2] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
+		tmp = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
 		    (buffer[2] & 0x3F);
+
+		if (tmp < 0x800)
+			return 0;
+
+		*ret = tmp;
 		return 3;
 	}
 
@@ -346,8 +357,13 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		    (buffer[2] & 0xC0) != 0x80 || (buffer[3] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
+		tmp = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
 		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
+
+		if (tmp < 0x10000)
+			return 0;
+
+		*ret = tmp;
 		return 4;
 	}
 
