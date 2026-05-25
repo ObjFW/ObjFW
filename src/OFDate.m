@@ -259,7 +259,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	    (tm->tm_year + 1900) % 400 == 0))
 		seconds += 86400;
 	/* Months */
-	if (tm->tm_mon < 0 || tm->tm_mon > 12)
+	if (tm->tm_mon < 0 || tm->tm_mon > 11)
 		@throw [OFInvalidFormatException exception];
 	seconds += monthToDayOfYear[tm->tm_mon] * 86400;
 	/* Days */
