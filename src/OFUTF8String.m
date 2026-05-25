@@ -92,9 +92,10 @@ memcasecmp(const char *first, const char *second, size_t length)
 }
 
 int
-_OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length,
+_OFUTF8StringCheck(const char *UTF8String_, size_t UTF8Length, size_t *length,
     bool *containsNull)
 {
+	const unsigned char *UTF8String = (const unsigned char *)UTF8String_;
 	size_t tmpLength = UTF8Length;
 	int isUTF8 = 0;
 	bool tmpContainsNull = false;
@@ -113,8 +114,8 @@ _OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length,
 		if OF_UNLIKELY (!(UTF8String[i] & 0x40))
 			return -1;
 
-		/* 2 byte sequences for code points 0 - 127 are forbidden */
-		if OF_UNLIKELY ((UTF8String[i] & 0x7E) == 0x40)
+		/* Overlong encoding */
+		if OF_UNLIKELY (UTF8String[i] == 0xC0 || UTF8String[i] == 0xC1)
 			return -1;
 
 		/* We have at minimum a 2 byte character -> check next byte */
@@ -129,6 +130,11 @@ _OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length,
 			continue;
 		}
 
+		/* Overlong encoding */
+		if OF_UNLIKELY (UTF8String[i] == 0xE0 &&
+		    UTF8String[i + 1] < 0xA0)
+			return -1;
+
 		/* We have at minimum a 3 byte char -> check second next byte */
 		if OF_UNLIKELY (UTF8Length <= i + 2 ||
 		    (UTF8String[i + 2] & 0xC0) != 0x80)
@@ -141,16 +147,19 @@ _OFUTF8StringCheck(const char *UTF8String, size_t UTF8Length, size_t *length,
 			continue;
 		}
 
+		/* Overlong encoding */
+		if OF_UNLIKELY (UTF8String[i] == 0xF0 &&
+		    UTF8String[i + 1] < 0x90)
+			return -1;
+
 		/* We have a 4 byte character -> check third next byte */
 		if OF_UNLIKELY (UTF8Length <= i + 3 ||
 		    (UTF8String[i + 3] & 0xC0) != 0x80)
 			return -1;
 
-		/*
-		 * Just in case, check if there's a 5th character, which is
-		 * forbidden by UTF-8
-		 */
-		if OF_UNLIKELY (UTF8String[i] & 0x08)
+		/* > U+10FFFF */
+		if OF_UNLIKELY ((UTF8String[i] == 0xF4 &&
+		    UTF8String[i + 1] >= 0x90) || UTF8String[i] >= 0xF5)
 			return -1;
 
 		i += 3;
