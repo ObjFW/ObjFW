@@ -186,8 +186,11 @@
 			@throw [OFOutOfRangeException exception];
 
 		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
-		    j++)
+		    j++) {
+			objc_retain(objectsObjects[objectsIndex]);
+			objc_release(items[j]);
 			items[j] = objectsObjects[objectsIndex++];
+		}
 	}
 
 	objc_autoreleasePoolPop(pool);
