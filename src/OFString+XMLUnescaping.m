@@ -75,7 +75,7 @@ parseNumericEntity(const char *entity, size_t length)
 		}
 	}
 
-	if (c == 0)
+	if (c == 0 || (c >= 0xD800 && c <= 0xDFFF))
 		return nil;
 
 	if ((i = _OFUTF8StringEncode(c, buffer)) == 0)
