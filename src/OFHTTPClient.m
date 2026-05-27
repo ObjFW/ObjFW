@@ -398,7 +398,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFMutableDictionary *newHeaders =
 			    objc_autorelease([headers mutableCopy]);
 
-			if (![newIRI.host isEqual: IRI.host]) {
+			if (![newIRI.scheme isEqual: IRI.scheme] ||
+			    (newIRI.host != IRI.host &&
+			    ![newIRI.host isEqual: IRI.host]) ||
+			    (newIRI.port != IRI.port &&
+			    ![newIRI.port isEqual: IRI.port])) {
 				[newHeaders removeObjectForKey: @"Host"];
 				[newHeaders
 				    removeObjectForKey: @"Authorization"];
