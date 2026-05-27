@@ -280,6 +280,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		[_mapTable setObject: newEntry forKey: object];
 	} @catch (id e) {
 		freeMapTableEntry(newEntry);
+		@throw e;
 	}
 
 	objc_autoreleasePoolPop(pool);
