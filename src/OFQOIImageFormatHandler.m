@@ -56,6 +56,9 @@ hashPixel(uint8_t pixel[4])
 	width = [stream readBigEndianInt32];
 	height = [stream readBigEndianInt32];
 
+	if (width == 0 || height == 0)
+		@throw [OFInvalidFormatException exception];
+
 	size.width = width;
 	size.height = height;
 
@@ -91,7 +94,8 @@ hashPixel(uint8_t pixel[4])
 				   colorSpace: colorSpace];
 	pixels = image.mutablePixels;
 
-	for (size_t pixelsRead = 0; pixelsRead < width * height; pixelsRead++) {
+	for (size_t pixelsRead = 0; pixelsRead < (size_t)width * height;
+	    pixelsRead++) {
 		uint8_t byte = [stream readInt8];
 
 		/* QOI_OP_RGB */
@@ -117,7 +121,8 @@ hashPixel(uint8_t pixel[4])
 			pixel[2] += greenDiff + (byte2 & 0x0F) - 8;
 		/* QOI_OP_RUN */
 		} else if ((byte & 0xC0) == 0xC0) {
-			if (pixelsRead + (byte & 0x3F) >= width * height)
+			if (pixelsRead + (byte & 0x3F) >=
+			    (size_t)width * height)
 				@throw [OFOutOfRangeException exception];
 
 			for (uint_fast8_t i = 0; i < (byte & 0x3F); i++)
