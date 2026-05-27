@@ -1327,7 +1327,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		  redirects: (unsigned int)redirects
 {
 	[self asyncPerformRequest: request
-			redirects: defaultRedirects
+			redirects: redirects
 		      runLoopMode: OFDefaultRunLoopMode];
 }
 
