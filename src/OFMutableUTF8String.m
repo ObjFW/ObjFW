@@ -684,7 +684,8 @@
 	newLength = _s->length;
 	last = 0;
 
-	for (size_t i = range.location; i <= range.length - searchLength; i++) {
+	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
+	    i++) {
 		if (memcmp(_s->cString + i, searchString, searchLength) != 0)
 			continue;
 

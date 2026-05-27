@@ -454,7 +454,8 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	pool2 = objc_autoreleasePoolPush();
 	characters = self.characters;
 
-	for (size_t i = range.location; i <= range.length - searchLength; i++) {
+	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
+	    i++) {
 		if (memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;
