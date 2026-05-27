@@ -41,6 +41,8 @@ struct MapTableEntry {
 	CFOptionFlags types;
 };
 
+static void *cancelSocketInfo = &cancelSocketInfo;
+
 static void
 freeMapTableEntry(void *object)
 {
@@ -102,18 +104,16 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 	OFAssert(info != nil);
 
-	object = info.firstObject;
-	observer = info.secondObject;
-
-	if (object == nil) {
+	if (info == cancelSocketInfo) {
 		char buffer;
 
-		OFAssert(sock == observer->_cancelSocket);
-		OFAssert(type == kCFSocketReadCallBack);
-		OFEnsure(read(observer->_cancelFD[0], &buffer, 1) == 1);
+		OFEnsure(read(CFSocketGetNative(sock), &buffer, 1) == 1);
 
 		return;
 	}
+
+	object = info.firstObject;
+	observer = info.secondObject;
 
 	if (type & kCFSocketReadCallBack)
 		[observer->_delegate objectIsReadyForReading: object];
@@ -143,10 +143,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		void *pool = objc_autoreleasePoolPush();
 		CFSocketContext context = {
 			.version = 0,
-			.info = [OFPair pairWithFirstObject: nil
-					       secondObject: self],
-			.retain = (const void *(*)(const void *))objc_retain,
-			.release = (void (*)(const void *))objc_release
+			.info = cancelSocketInfo
 		};
 		CFOptionFlags flags;
 
