@@ -50,7 +50,7 @@ enum {
 	self = [super init];
 
 	@try {
-		if (_host.UTF8StringLength > 255)
+		if (host.UTF8StringLength > 255)
 			@throw [OFOutOfRangeException exception];
 
 		_socket = objc_retain(sock);
