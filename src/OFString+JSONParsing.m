@@ -312,8 +312,8 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				(*pointer)++;
 				break;
 			case '\n':
-				(*pointer)++;
 				(*line)++;
+				(*pointer)++;
 				break;
 			default:
 				OFFreeMemory(buffer);
@@ -602,12 +602,8 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		if OF_LIKELY ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
 		    (*pointer)[i] == ',' || (*pointer)[i] == ']' ||
-		    (*pointer)[i] == '}') {
-			if OF_UNLIKELY ((*pointer)[i] == '\n')
-				(*line)++;
-
+		    (*pointer)[i] == '}')
 			break;
-		}
 	}
 
 	string = [[OFString alloc] initWithUTF8String: *pointer length: i];
@@ -731,14 +727,18 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	size_t line = 1;
 
 	object = nextObject(&pointer, stop, &line, depthLimit, true);
+
+	if OF_UNLIKELY (object == nil)
+		@throw [OFInvalidJSONException exceptionWithString: self
+							      line: line];
+
 	skipWhitespacesAndComments(&pointer, stop, &line);
 
-	if OF_UNLIKELY (pointer < stop || object == nil)
+	if OF_UNLIKELY (pointer < stop)
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
 
 	objc_retain(object);
-
 	objc_autoreleasePoolPop(pool);
 
 	return objc_autoreleaseReturnValue(object);
