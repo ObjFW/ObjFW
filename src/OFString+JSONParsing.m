@@ -175,7 +175,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	size_t i = 0;
 	char delimiter = **pointer;
 
-	if (++(*pointer) + 1 >= stop)
+	if (++(*pointer) >= stop)
 		return nil;
 
 	buffer = OFAllocMemory(stop - *pointer, 1);
