@@ -40,7 +40,7 @@
 int _OFString_JSONParsing_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depthLimit);
+    size_t depthLimit, bool root);
 
 static void
 skipWhitespaces(const char **pointer, const char *stop, size_t *line)
@@ -57,10 +57,10 @@ skipWhitespaces(const char **pointer, const char *stop, size_t *line)
 static void
 skipComment(const char **pointer, const char *stop, size_t *line)
 {
-	if (**pointer != '/')
+	if OF_LIKELY (**pointer != '/')
 		return;
 
-	if (*pointer + 1 >= stop)
+	if OF_UNLIKELY (*pointer + 1 >= stop)
 		return;
 
 	(*pointer)++;
@@ -71,14 +71,24 @@ skipComment(const char **pointer, const char *stop, size_t *line)
 		(*pointer)++;
 
 		while (*pointer < stop) {
-			if (lastIsAsterisk && **pointer == '/') {
+			if OF_UNLIKELY (lastIsAsterisk && **pointer == '/') {
 				(*pointer)++;
 				return;
 			}
 
 			lastIsAsterisk = (**pointer == '*');
 
-			if (**pointer == '\n')
+			if OF_UNLIKELY (**pointer == '\r') {
+				(*pointer)++;
+
+				if OF_LIKELY (*pointer < stop &&
+				    **pointer == '\n') {
+					(*pointer)++;
+					(*line)++;
+				}
+
+				continue;
+			} else if OF_UNLIKELY (**pointer == '\n')
 				(*line)++;
 
 			(*pointer)++;
@@ -87,7 +97,7 @@ skipComment(const char **pointer, const char *stop, size_t *line)
 		(*pointer)++;
 
 		while (*pointer < stop) {
-			if (**pointer == '\r' || **pointer == '\n') {
+			if (**pointer == '\n') {
 				(*pointer)++;
 				(*line)++;
 				return;
@@ -117,17 +127,17 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 {
 	OFChar16 ret = 0;
 
-	if (pointer + 5 >= stop)
+	if OF_UNLIKELY (pointer + 5 >= stop)
 		return 0xFFFF;
 
-	if (pointer[0] != '\\' || pointer[1] != 'u')
+	if OF_UNLIKELY (pointer[0] != '\\' || pointer[1] != 'u')
 		return 0xFFFF;
 
 	for (uint8_t i = 0; i < 4; i++) {
 		char c = pointer[i + 2];
 		ret <<= 4;
 
-		if (c >= '0' && c <= '9')
+		if OF_LIKELY (c >= '0' && c <= '9')
 			ret |= c - '0';
 		else if (c >= 'a' && c <= 'f')
 			ret |= c + 10 - 'a';
@@ -145,17 +155,17 @@ parseHexEscape(const char *pointer, const char *stop)
 {
 	OFChar16 ret = 0;
 
-	if (pointer + 3 >= stop)
+	if OF_UNLIKELY (pointer + 3 >= stop)
 		return 0xFFFF;
 
-	if (pointer[0] != '\\' || pointer[1] != 'x')
+	if OF_UNLIKELY (pointer[0] != '\\' || pointer[1] != 'x')
 		return 0xFFFF;
 
 	for (uint8_t i = 0; i < 2; i++) {
 		char c = pointer[i + 2];
 		ret <<= 4;
 
-		if (c >= '0' && c <= '9')
+		if OF_LIKELY (c >= '0' && c <= '9')
 			ret |= c - '0';
 		else if (c >= 'a' && c <= 'f')
 			ret |= c + 10 - 'a';
@@ -175,15 +185,15 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	size_t i = 0;
 	char delimiter = **pointer;
 
-	if (++(*pointer) >= stop)
+	if OF_UNLIKELY (++(*pointer) >= stop)
 		return nil;
 
 	buffer = OFAllocMemory(stop - *pointer, 1);
 
 	while (*pointer < stop) {
 		/* Parse escape codes */
-		if (**pointer == '\\') {
-			if (++(*pointer) >= stop) {
+		if OF_UNLIKELY (**pointer == '\\') {
+			if OF_UNLIKELY (++(*pointer) >= stop) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
@@ -226,21 +236,21 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				size_t l;
 
 				c1 = parseUnicodeEscape(*pointer - 1, stop);
-				if (c1 == 0xFFFF) {
+				if OF_UNLIKELY (c1 == 0xFFFF) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				/* Low surrogate */
-				if ((c1 & 0xFC00) == 0xDC00) {
+				if OF_UNLIKELY ((c1 & 0xFC00) == 0xDC00) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				/* Normal character */
-				if ((c1 & 0xFC00) != 0xD800) {
+				if OF_UNLIKELY ((c1 & 0xFC00) != 0xD800) {
 					l = _OFUTF8StringEncode(c1, buffer + i);
-					if (l == 0) {
+					if OF_UNLIKELY (l == 0) {
 						OFFreeMemory(buffer);
 						return nil;
 					}
@@ -257,7 +267,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				 * in order to produce UTF-8 and not CESU-8.
 				 */
 				c2 = parseUnicodeEscape(*pointer + 5, stop);
-				if (c2 == 0xFFFF) {
+				if OF_UNLIKELY (c2 == 0xFFFF) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
@@ -266,7 +276,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				    (c2 & 0x3FF)) + 0x10000;
 
 				l = _OFUTF8StringEncode(c, buffer + i);
-				if (l == 0) {
+				if OF_UNLIKELY (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
@@ -277,13 +287,13 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				break;
 			case 'x':
 				c1 = parseHexEscape(*pointer - 1, stop);
-				if (c1 == 0xFFFF) {
+				if OF_UNLIKELY (c1 == 0xFFFF) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
 
 				l = _OFUTF8StringEncode(c1, buffer + i);
-				if (l == 0) {
+				if OF_UNLIKELY (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
@@ -293,13 +303,13 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 				break;
 			case '\r':
-				(*pointer)++;
-
-				if (*pointer < stop && **pointer == '\n') {
+				if OF_LIKELY (*pointer < stop &&
+				    **pointer == '\n') {
 					(*pointer)++;
 					(*line)++;
 				}
 
+				(*pointer)++;
 				break;
 			case '\n':
 				(*pointer)++;
@@ -324,8 +334,9 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 			return ret;
 		/* Newlines in strings are disallowed */
-		} else if (**pointer == '\n' || **pointer == '\r') {
-			(*line)++;
+		} else if OF_UNLIKELY (**pointer == '\n' || **pointer == '\r') {
+			if OF_LIKELY (**pointer == '\n')
+				(*line)++;
 			OFFreeMemory(buffer);
 			return nil;
 		} else {
@@ -347,7 +358,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	buffer = OFAllocMemory(stop - *pointer, 1);
 
 	while (*pointer < stop) {
-		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		if OF_LIKELY ((**pointer >= 'a' && **pointer <= 'z') ||
 		    (**pointer >= 'A' && **pointer <= 'Z') ||
 		    (**pointer >= '0' && **pointer <= '9') ||
 		    **pointer == '_' || **pointer == '$' ||
@@ -359,27 +370,28 @@ parseIdentifier(const char **pointer, const char *stop)
 			OFUnichar c;
 			size_t l;
 
-			if (++(*pointer) >= stop || **pointer != 'u') {
+			if OF_UNLIKELY (++(*pointer) >= stop ||
+			    **pointer != 'u') {
 				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			c1 = parseUnicodeEscape(*pointer - 1, stop);
-			if (c1 == 0xFFFF) {
+			if OF_UNLIKELY (c1 == 0xFFFF) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			/* Low surrogate */
-			if ((c1 & 0xFC00) == 0xDC00) {
+			if OF_UNLIKELY ((c1 & 0xFC00) == 0xDC00) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
 
 			/* Normal character */
-			if ((c1 & 0xFC00) != 0xD800) {
+			if OF_LIKELY ((c1 & 0xFC00) != 0xD800) {
 				l = _OFUTF8StringEncode(c1, buffer + i);
-				if (l == 0) {
+				if OF_UNLIKELY (l == 0) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
@@ -396,7 +408,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			 * to produce UTF-8 and not CESU-8.
 			 */
 			c2 = parseUnicodeEscape(*pointer + 5, stop);
-			if (c2 == 0xFFFF) {
+			if OF_UNLIKELY (c2 == 0xFFFF) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
@@ -404,7 +416,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			c = (((c1 & 0x3FF) << 10) | (c2 & 0x3FF)) + 0x10000;
 
 			l = _OFUTF8StringEncode(c, buffer + i);
-			if (l == 0) {
+			if OF_UNLIKELY (l == 0) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
@@ -414,7 +426,7 @@ parseIdentifier(const char **pointer, const char *stop)
 		} else {
 			OFString *ret;
 
-			if (i == 0 || (buffer[0] >= '0' && buffer[0] <= '9')) {
+			if OF_UNLIKELY (i == 0) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
@@ -444,17 +456,17 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 {
 	OFMutableArray *array = [OFMutableArray array];
 
-	if (++(*pointer) >= stop)
+	if OF_UNLIKELY (++(*pointer) >= stop)
 		return nil;
 
-	if (--depthLimit == 0)
+	if OF_UNLIKELY (--depthLimit == 0)
 		return nil;
 
 	while (**pointer != ']') {
 		id object;
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer >= stop)
+		if OF_UNLIKELY (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ']')
@@ -470,23 +482,23 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 			break;
 		}
 
-		object = nextObject(pointer, stop, line, depthLimit);
-		if (object == nil)
+		object = nextObject(pointer, stop, line, depthLimit, false);
+		if OF_UNLIKELY (object == nil)
 			return nil;
 
 		[array addObject: object];
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer >= stop)
+		if OF_UNLIKELY (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
 			skipWhitespacesAndComments(pointer, stop, line);
 
-			if (*pointer >= stop)
+			if OF_UNLIKELY (*pointer >= stop)
 				return nil;
-		} else if (**pointer != ']')
+		} else if OF_UNLIKELY (**pointer != ']')
 			return nil;
 	}
 
@@ -501,10 +513,10 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
 
-	if (++(*pointer) >= stop)
+	if OF_UNLIKELY (++(*pointer) >= stop)
 		return nil;
 
-	if (--depthLimit == 0)
+	if OF_UNLIKELY (--depthLimit == 0)
 		return nil;
 
 	while (**pointer != '}') {
@@ -512,7 +524,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		id object;
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer >= stop)
+		if OF_UNLIKELY (*pointer >= stop)
 			return nil;
 
 		if (**pointer == '}')
@@ -522,49 +534,50 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 			(*pointer)++;
 			skipWhitespacesAndComments(pointer, stop, line);
 
-			if (*pointer >= stop || **pointer != '}')
+			if OF_UNLIKELY (*pointer >= stop || **pointer != '}')
 				return nil;
 
 			break;
 		}
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer + 1 >= stop)
+		if OF_UNLIKELY (*pointer + 1 >= stop)
 			return nil;
 
-		if ((**pointer >= 'a' && **pointer <= 'z') ||
+		if OF_UNLIKELY ((**pointer >= 'a' && **pointer <= 'z') ||
 		    (**pointer >= 'A' && **pointer <= 'Z') ||
 		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
 			key = parseIdentifier(pointer, stop);
 		else
-			key = nextObject(pointer, stop, line, depthLimit);
+			key = nextObject(pointer, stop, line, depthLimit,
+			    false);
 
-		if (![key isKindOfClass: [OFString class]])
+		if OF_UNLIKELY (![key isKindOfClass: [OFString class]])
 			return nil;
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer + 1 >= stop || **pointer != ':')
+		if OF_UNLIKELY (*pointer + 1 >= stop || **pointer != ':')
 			return nil;
 
 		(*pointer)++;
 
-		object = nextObject(pointer, stop, line, depthLimit);
-		if (object == nil)
+		object = nextObject(pointer, stop, line, depthLimit, false);
+		if OF_UNLIKELY (object == nil)
 			return nil;
 
 		[dictionary setObject: object forKey: key];
 
 		skipWhitespacesAndComments(pointer, stop, line);
-		if (*pointer >= stop)
+		if OF_UNLIKELY (*pointer >= stop)
 			return nil;
 
 		if (**pointer == ',') {
 			(*pointer)++;
 			skipWhitespacesAndComments(pointer, stop, line);
 
-			if (*pointer >= stop)
+			if OF_UNLIKELY (*pointer >= stop)
 				return nil;
-		} else if (**pointer != '}')
+		} else if OF_UNLIKELY (**pointer != '}')
 			return nil;
 	}
 
@@ -583,14 +596,14 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 	OFNumber *number;
 
 	for (i = 0; *pointer + i < stop; i++) {
-		if ((*pointer)[i] == '.')
+		if OF_UNLIKELY ((*pointer)[i] == '.')
 			hasDecimal = true;
 
-		if ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
+		if OF_LIKELY ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
 		    (*pointer)[i] == ',' || (*pointer)[i] == ']' ||
 		    (*pointer)[i] == '}') {
-			if ((*pointer)[i] == '\n')
+			if OF_UNLIKELY ((*pointer)[i] == '\n')
 				(*line)++;
 
 			break;
@@ -623,46 +636,58 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 
 static id
 nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depthLimit)
+    size_t depthLimit, bool root)
 {
 	skipWhitespacesAndComments(pointer, stop, line);
 
-	if (*pointer >= stop)
+	if OF_UNLIKELY (*pointer >= stop)
 		return nil;
 
 	switch (**pointer) {
 	case '"':
 	case '\'':
+		if OF_UNLIKELY (root)
+			return nil;
+
 		return parseString(pointer, stop, line);
 	case '[':
 		return parseArray(pointer, stop, line, depthLimit);
 	case '{':
 		return parseDictionary(pointer, stop, line, depthLimit);
 	case 't':
-		if (*pointer + 3 >= stop)
+		if OF_UNLIKELY (root)
 			return nil;
 
-		if (memcmp(*pointer, "true", 4) != 0)
+		if OF_UNLIKELY (*pointer + 3 >= stop)
+			return nil;
+
+		if OF_UNLIKELY (memcmp(*pointer, "true", 4) != 0)
 			return nil;
 
 		(*pointer) += 4;
 
 		return [OFNumber numberWithBool: true];
 	case 'f':
-		if (*pointer + 4 >= stop)
+		if OF_UNLIKELY (root)
 			return nil;
 
-		if (memcmp(*pointer, "false", 5) != 0)
+		if OF_UNLIKELY (*pointer + 4 >= stop)
+			return nil;
+
+		if OF_UNLIKELY (memcmp(*pointer, "false", 5) != 0)
 			return nil;
 
 		(*pointer) += 5;
 
 		return [OFNumber numberWithBool: false];
 	case 'n':
-		if (*pointer + 3 >= stop)
+		if OF_UNLIKELY (root)
 			return nil;
 
-		if (memcmp(*pointer, "null", 4) != 0)
+		if OF_UNLIKELY (*pointer + 3 >= stop)
+			return nil;
+
+		if OF_UNLIKELY (memcmp(*pointer, "null", 4) != 0)
 			return nil;
 
 		(*pointer) += 4;
@@ -682,6 +707,9 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	case '-':
 	case '.':
 	case 'I':
+		if OF_UNLIKELY (root)
+			return nil;
+
 		return parseNumber(pointer, stop, line);
 	default:
 		return nil;
@@ -702,10 +730,10 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	id object;
 	size_t line = 1;
 
-	object = nextObject(&pointer, stop, &line, depthLimit);
+	object = nextObject(&pointer, stop, &line, depthLimit, true);
 	skipWhitespacesAndComments(&pointer, stop, &line);
 
-	if (pointer < stop || object == nil)
+	if OF_UNLIKELY (pointer < stop || object == nil)
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
 
