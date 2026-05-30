@@ -32,6 +32,7 @@
 #import "OFNull.h"
 
 #import "OFInvalidJSONException.h"
+#import "OFOutOfMemoryException.h"
 
 #ifndef INFINITY
 # define INFINITY __builtin_inf()
@@ -182,15 +183,28 @@ static inline OFString *
 parseString(const char **pointer, const char *stop, size_t *line)
 {
 	char *buffer;
+	size_t bufferSize;
 	size_t i = 0;
 	char delimiter = **pointer;
 
 	if OF_UNLIKELY (++(*pointer) >= stop)
 		return nil;
 
-	buffer = OFAllocMemory(stop - *pointer, 1);
+	bufferSize = 8;
+	buffer = OFAllocMemory(bufferSize, 1);
 
 	while (*pointer < stop) {
+		/* We write up to 4 characters. */
+		if OF_UNLIKELY (i + 3 >= bufferSize) {
+			bufferSize *= 2;
+			@try {
+				buffer = OFResizeMemory(buffer, bufferSize, 1);
+			} @catch (OFOutOfMemoryException *e) {
+				OFFreeMemory(buffer);
+				return nil;
+			}
+		}
+
 		/* Parse escape codes */
 		if OF_UNLIKELY (**pointer == '\\') {
 			if OF_UNLIKELY (++(*pointer) >= stop) {
@@ -324,10 +338,16 @@ parseString(const char **pointer, const char *stop, size_t *line)
 			OFString *ret;
 
 			@try {
-				ret = [OFString stringWithUTF8String: buffer
-							      length: i];
-			} @finally {
+				buffer = OFResizeMemory(buffer, i + 1, 1);
+				buffer[i] = 0;
+
+				ret = [OFString
+				    stringWithUTF8StringNoCopy: buffer
+							length: i
+						  freeWhenDone: true];
+			} @catch (id e) {
 				OFFreeMemory(buffer);
+				return nil;
 			}
 
 			(*pointer)++;
@@ -353,11 +373,24 @@ static inline OFString *
 parseIdentifier(const char **pointer, const char *stop)
 {
 	char *buffer;
+	size_t bufferSize;
 	size_t i = 0;
 
-	buffer = OFAllocMemory(stop - *pointer, 1);
+	bufferSize = 8;
+	buffer = OFAllocMemory(bufferSize, 1);
 
 	while (*pointer < stop) {
+		/* We write up to 4 characters. */
+		if OF_UNLIKELY (i + 3 >= bufferSize) {
+			bufferSize *= 2;
+			@try {
+				buffer = OFResizeMemory(buffer, bufferSize, 1);
+			} @catch (OFOutOfMemoryException *e) {
+				OFFreeMemory(buffer);
+				return nil;
+			}
+		}
+
 		if OF_LIKELY ((**pointer >= 'a' && **pointer <= 'z') ||
 		    (**pointer >= 'A' && **pointer <= 'Z') ||
 		    (**pointer >= '0' && **pointer <= '9') ||
@@ -432,10 +465,16 @@ parseIdentifier(const char **pointer, const char *stop)
 			}
 
 			@try {
-				ret = [OFString stringWithUTF8String: buffer
-							      length: i];
-			} @finally {
+				buffer = OFResizeMemory(buffer, i + 1, 1);
+				buffer[i] = 0;
+
+				ret = [OFString
+				    stringWithUTF8StringNoCopy: buffer
+							length: i
+						  freeWhenDone: true];
+			} @catch (id e) {
 				OFFreeMemory(buffer);
+				return nil;
 			}
 
 			return ret;
