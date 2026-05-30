@@ -120,6 +120,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 {
 	OFMutableArray *components = [OFMutableArray array];
 	uint8_t componentLength;
+	OFString *name;
 
 	do {
 		OFString *component;
@@ -154,10 +155,19 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 				return suffix;
 			else {
 				[components addObject: suffix];
-				return [components
+				name = [components
 				    componentsJoinedByString: @"."];
+
+				if (name.UTF8StringLength > 255)
+					@throw [OFInvalidServerResponseException
+					    exception];
+
+				return name;
 			}
 		}
+
+		if (componentLength > 63)
+			@throw [OFInvalidServerResponseException exception];
 
 		if (*i + componentLength > length)
 			@throw [OFTruncatedDataException exception];
@@ -169,7 +179,12 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 		[components addObject: component];
 	} while (componentLength > 0);
 
-	return [components componentsJoinedByString: @"."];
+	name = [components componentsJoinedByString: @"."];
+
+	if (name.UTF8StringLength > 255)
+		@throw [OFInvalidServerResponseException exception];
+
+	return name;
 }
 
 static OF_KINDOF(OFDNSResourceRecord *)
