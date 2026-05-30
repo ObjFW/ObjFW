@@ -182,6 +182,7 @@ parseHexEscape(const char *pointer, const char *stop)
 static inline OFString *
 parseString(const char **pointer, const char *stop, size_t *line)
 {
+	const char *iter;
 	char *buffer;
 	size_t bufferSize;
 	size_t i = 0;
@@ -189,6 +190,19 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 	if OF_UNLIKELY (++(*pointer) >= stop)
 		return nil;
+
+	for (iter = *pointer; iter < stop && *iter != delimiter &&
+	    *iter != '\\'; iter++);
+
+	if OF_LIKELY (*iter == delimiter) {
+		OFString *ret = [OFString
+		    stringWithUTF8String: *pointer
+				  length: iter - *pointer];
+
+		*pointer = iter + 1;
+
+		return ret;
+	}
 
 	bufferSize = 8;
 	buffer = OFAllocMemory(bufferSize, 1);
@@ -372,9 +386,24 @@ parseString(const char **pointer, const char *stop, size_t *line)
 static inline OFString *
 parseIdentifier(const char **pointer, const char *stop)
 {
+	const char *iter = *pointer;
 	char *buffer;
 	size_t bufferSize;
 	size_t i = 0;
+
+	for (iter = *pointer; iter < stop && ((*iter >= 'a' && *iter <= 'z') ||
+	    (*iter >= 'A' && *iter <= 'Z') || (*iter >= '0' && *iter <= '9') ||
+	    *iter == '_' || *iter == '$' || (*iter & 0x80)); iter++);
+
+	if OF_LIKELY (*iter != '\\') {
+		OFString *ret = [OFString
+		    stringWithUTF8String: *pointer
+				  length: iter - *pointer];
+
+		*pointer = iter;
+
+		return ret;
+	}
 
 	bufferSize = 8;
 	buffer = OFAllocMemory(bufferSize, 1);
