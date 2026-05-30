@@ -564,8 +564,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			padding -= 21 + 2 + 1;
 
 			if (padding > 0) {
-				padding -= readExtensions(self, stream,
+				size_t consumed = readExtensions(self, stream,
 				    encoding, true);
+
+				if (consumed > padding)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				padding -= consumed;
 
 				/* Skip padding */
 				if ([stream isKindOfClass:
