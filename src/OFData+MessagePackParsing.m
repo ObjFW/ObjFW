@@ -148,6 +148,9 @@ createDate(OFData *data)
 		memcpy(&combined, data.items, 8);
 		combined = OFFromBigEndian64(combined);
 
+		if ((combined >> 34) >= 1000000000)
+			@throw [OFInvalidFormatException exception];
+
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)(combined & 0x3FFFFFFFF) +
 		    (double)(combined >> 34) / 1000000000];
@@ -161,6 +164,9 @@ createDate(OFData *data)
 
 		nanoseconds = OFFromBigEndian32(nanoseconds);
 		seconds = OFFromBigEndian64(seconds);
+
+		if (nanoseconds >= 1000000000)
+			@throw [OFInvalidFormatException exception];
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)seconds + (double)nanoseconds / 1000000000];
