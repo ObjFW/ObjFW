@@ -550,7 +550,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 @implementation OFData (MessagePackParsing)
 - (id)objectByParsingMessagePack
 {
-	return [self objectByParsingMessagePackWithDepthLimit: 32];
+	return [self objectByParsingMessagePackWithDepthLimit: 128];
 }
 
 - (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit
