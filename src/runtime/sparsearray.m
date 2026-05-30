@@ -92,6 +92,9 @@ freeSparsearrayData(struct objc_sparsearray_data *data, uint8_t depth)
 void
 _objc_sparsearray_free(struct objc_sparsearray *sparsearray)
 {
+	if (sparsearray == NULL)
+		return;
+
 	freeSparsearrayData(sparsearray->data, sparsearray->levels);
 	free(sparsearray);
 }
