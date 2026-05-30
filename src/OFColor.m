@@ -243,6 +243,16 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 
 	[self getRed: &red green: &green blue: &blue alpha: &alpha];
 
+	/* Turn -0 into 0 */
+	if (red == 0.0f)
+		red = 0.0f;
+	if (green == 0.0f)
+		green = 0.0f;
+	if (blue == 0.0f)
+		blue = 0.0f;
+	if (alpha == 0.0f)
+		alpha = 0.0f;
+
 	OFHashInit(&hash);
 
 	tmp = OFToLittleEndianFloat(red);
