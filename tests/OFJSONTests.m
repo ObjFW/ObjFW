@@ -135,6 +135,6 @@ static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
 	OTAssertThrowsSpecific(
 	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
 	    objectByParsingJSONWithDepthLimit: 32],
-	    OFInvalidJSONException);
+	    OFOutOfRangeException);
 }
 @end
