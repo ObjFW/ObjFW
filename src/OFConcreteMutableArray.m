@@ -270,6 +270,7 @@
 		objc_release(objects[i]);
 
 	[_array removeAllItems];
+	_mutations++;
 }
 
 - (void)removeObjectsInRange: (OFRange)range
