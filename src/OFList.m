@@ -261,8 +261,6 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem next;
 
-	_mutations++;
-
 	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
 		objc_release(iter->object);
 		next = iter->next;
@@ -270,6 +268,8 @@ OFListItemObject(OFListItem listItem)
 	}
 
 	_firstListItem = _lastListItem = NULL;
+	_count = 0;
+	_mutations++;
 }
 
 - (id)copy
