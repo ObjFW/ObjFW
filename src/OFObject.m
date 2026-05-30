@@ -441,6 +441,9 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
 		    instanceSize) - instanceSize;
 
+	if (SIZE_MAX - extraAlignment < extraSize)
+		@throw [OFOutOfRangeException exception];
+
 	instance = class_createInstance(class, extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
