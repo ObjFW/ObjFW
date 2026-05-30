@@ -196,6 +196,7 @@ normalizedKey(OFString *key)
 	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
+	OFArray OF_GENERIC(OFString *) *transferEncodings;
 
 	[_stream writeFormat: @"HTTP/%@ %hd %@\r\n",
 			      self.protocolVersionString, _statusCode,
@@ -235,8 +236,9 @@ normalizedKey(OFString *key)
 	[_stream writeString: @"\r\n"];
 
 	_headersSent = true;
-	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	transferEncodings = [[[headers objectForKey: @"Transfer-Encoding"]
+	    lowercaseString] componentsSeparatedByString: @","];
+	_chunked = [transferEncodings containsObject: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -455,8 +457,10 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		bool chunked = [[_headers objectForKey: @"Transfer-Encoding"]
-		    isEqual: @"chunked"];
+		OFArray OF_GENERIC(OFString *) *transferEncodings =
+		    [[[_headers objectForKey: @"Transfer-Encoding"]
+		    lowercaseString] componentsSeparatedByString: @","];
+		bool chunked = [transferEncodings containsObject: @"chunked"];
 		OFString *contentLengthString =
 		    [_headers objectForKey: @"Content-Length"];
 		unsigned long long contentLength = 0;
