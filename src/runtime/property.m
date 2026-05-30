@@ -151,7 +151,7 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		size_t slot = spinlockSlot(src);
+		size_t slot = spinlockSlot(dest);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
