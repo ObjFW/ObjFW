@@ -177,6 +177,9 @@ class_createInstance(Class class, size_t extraBytes)
 
 	instanceSize = class_getInstanceSize(class);
 
+	if (SIZE_MAX - _OBJC_PRE_IVARS_ALIGNED - instanceSize < extraBytes)
+		return nil;
+
 #if defined(OF_WINDOWS)
 	instance = __mingw_aligned_malloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT);
