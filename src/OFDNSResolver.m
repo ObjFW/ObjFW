@@ -129,7 +129,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 
 		componentLength = buffer[(*i)++];
 
-		if (componentLength & 0xC0) {
+		if ((componentLength & 0xC0) == 0xC0) {
 			size_t j;
 			OFString *suffix;
 
