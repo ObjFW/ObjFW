@@ -30,7 +30,7 @@ Lstr_forwardingTargetForSelector_:
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
 Lsel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+	.long Lstr_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
