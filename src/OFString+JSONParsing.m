@@ -791,7 +791,7 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 @implementation OFString (JSONParsing)
 - (id)objectByParsingJSON
 {
-	return [self objectByParsingJSONWithDepthLimit: 32];
+	return [self objectByParsingJSONWithDepthLimit: 128];
 }
 
 - (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit
