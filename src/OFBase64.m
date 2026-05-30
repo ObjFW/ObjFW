@@ -103,6 +103,7 @@ _OFBase64Decode(OFMutableData *data, const char *string, size_t length)
 {
 	const uint8_t *buffer = (const uint8_t *)string;
 	size_t i;
+	bool done = false;
 
 	if ((length & 3) != 0)
 		return false;
@@ -116,6 +117,9 @@ _OFBase64Decode(OFMutableData *data, const char *string, size_t length)
 		char db[3];
 		int8_t tmp;
 
+		if (done)
+			return false;
+
 		if (buffer[i] > 0x7F || buffer[i + 1] > 0x7F ||
 		    buffer[i + 2] > 0x7F || buffer[i + 3] > 0x7F)
 			return false;
@@ -124,10 +128,14 @@ _OFBase64Decode(OFMutableData *data, const char *string, size_t length)
 		    (buffer[i + 2] == '=' && buffer[i + 3] != '='))
 			return false;
 
-		if (buffer[i + 2] == '=')
+		if (buffer[i + 2] == '=') {
 			count--;
-		if (buffer[i + 3] == '=')
+			done = true;
+		}
+		if (buffer[i + 3] == '=') {
 			count--;
+			done = true;
+		}
 
 		if ((tmp = decodeTable[buffer[i]]) == -1)
 			return false;
