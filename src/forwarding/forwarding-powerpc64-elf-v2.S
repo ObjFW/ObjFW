@@ -90,7 +90,7 @@ _OFForward:
 	cmpdi	%r3, 0
 	beq-	0f
 	ld	%r4, 32(%r1)
-	cmpw	%r3, %r4
+	cmpd	%r3, %r4
 	beq-	0f
 
 	std	%r3, 32(%r1)
@@ -205,7 +205,7 @@ _OFForward_stret:
 	cmpdi	%r3, 0
 	beq-	0f
 	ld	%r4, 40(%r1)
-	cmpw	%r3, %r4
+	cmpd	%r3, %r4
 	beq-	0f
 
 	std	%r3, 40(%r1)
