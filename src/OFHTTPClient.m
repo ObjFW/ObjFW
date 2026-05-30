@@ -25,6 +25,7 @@
 #include <string.h>
 
 #import "OFHTTPClient.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
