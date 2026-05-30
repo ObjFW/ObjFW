@@ -118,8 +118,8 @@
 	la	$t1, _objc_taggedPointerClasses
 #endif
 	addu	$t0, $t1, $t0
-	ld	$t0, ($t0)
-	ld	$t0, 32($t0)
+	lw	$t0, ($t0)
+	lw	$t0, 32($t0)
 
 	b	.Lmain_\name
 .type \name, %function
