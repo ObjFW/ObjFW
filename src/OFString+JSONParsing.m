@@ -31,8 +31,10 @@
 #import "OFNumber.h"
 #import "OFNull.h"
 
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidJSONException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 
 #ifndef INFINITY
 # define INFINITY __builtin_inf()
@@ -215,7 +217,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				buffer = OFResizeMemory(buffer, bufferSize, 1);
 			} @catch (OFOutOfMemoryException *e) {
 				OFFreeMemory(buffer);
-				return nil;
+				@throw e;
 			}
 		}
 
@@ -359,9 +361,12 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				    stringWithUTF8StringNoCopy: buffer
 							length: i
 						  freeWhenDone: true];
-			} @catch (id e) {
+			} @catch (OFInvalidEncodingException *e) {
 				OFFreeMemory(buffer);
 				return nil;
+			} @catch (id e) {
+				OFFreeMemory(buffer);
+				@throw e;
 			}
 
 			(*pointer)++;
@@ -416,7 +421,7 @@ parseIdentifier(const char **pointer, const char *stop)
 				buffer = OFResizeMemory(buffer, bufferSize, 1);
 			} @catch (OFOutOfMemoryException *e) {
 				OFFreeMemory(buffer);
-				return nil;
+				@throw e;
 			}
 		}
 
@@ -501,9 +506,12 @@ parseIdentifier(const char **pointer, const char *stop)
 				    stringWithUTF8StringNoCopy: buffer
 							length: i
 						  freeWhenDone: true];
-			} @catch (id e) {
+			} @catch (OFInvalidEncodingException *e) {
 				OFFreeMemory(buffer);
 				return nil;
+			} @catch (id e) {
+				OFFreeMemory(buffer);
+				@throw e;
 			}
 
 			return ret;
@@ -528,7 +536,7 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 		return nil;
 
 	if OF_UNLIKELY (--depthLimit == 0)
-		return nil;
+		@throw [OFOutOfRangeException exception];
 
 	while (**pointer != ']') {
 		id object;
@@ -585,7 +593,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		return nil;
 
 	if OF_UNLIKELY (--depthLimit == 0)
-		return nil;
+		@throw [OFOutOfRangeException exception];
 
 	while (**pointer != '}') {
 		OFString *key;

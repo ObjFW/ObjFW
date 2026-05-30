@@ -39,6 +39,8 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  * The returned object is either an @ref OFDictionary or an @ref OFArray.
  *
  * @throw OFInvalidJSONException The string contained invalid JSON
+ * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingJSON;
 
@@ -61,6 +63,8 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  *		     if not specified, 0 means no limit (insecure!))
  * @return An object
  * @throw OFInvalidJSONException The string contained invalid JSON
+ * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit;
 @end
