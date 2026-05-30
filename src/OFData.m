@@ -659,18 +659,18 @@ OF_SINGLETON_METHODS
 	search = data.items;
 
 	if (options & OFDataSearchBackwards) {
-		for (size_t i = range.length - searchLength;; i--) {
+		for (size_t i = OFEndOfRange(range) - searchLength;; i--) {
 			if (memcmp(items + i * itemSize, search,
 			    searchLength * itemSize) == 0)
 				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
-			if (i == 0)
+			if (i == range.location)
 				break;
 		}
 	} else {
 		for (size_t i = range.location;
-		    i <= range.length - searchLength; i++)
+		    i <= OFEndOfRange(range) - searchLength; i++)
 			if (memcmp(items + i * itemSize, search,
 			    searchLength * itemSize) == 0)
 				return OFMakeRange(i, searchLength);
