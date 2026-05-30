@@ -46,7 +46,7 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 	__asm__ __volatile__ (
 	    "test	%[count], %[count]\n\t"
-	    "jz		0f\n"
+	    "jz		1f\n"
 	    "\n\t"
 	    "movaps	(%[matrix]), %%xmm0\n\t"
 	    "movaps	16(%[matrix]), %%xmm1\n\t"
@@ -98,6 +98,8 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "add	$16, %[vectors]\n\t"
 	    "dec	%[count]\n\t"
 	    "jnz	0b\n"
+	    "\n\t"
+	    "1:"
 	    : [count] "+r" (count),
 	      [vectors] "+r" (vectors)
 	    : [matrix] "r" (self->_values),
@@ -186,7 +188,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	__asm__ __volatile__ (
 	    "test	%[count], %[count]\n\t"
-	    "jz		0f\n"
+	    "jz		1f\n"
 	    "\n\t"
 	    "0:\n\t"
 	    "movq	(%[vectors]), %%mm0\n\t"
@@ -228,7 +230,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "dec	%[count]\n\t"
 	    "jnz	0b\n"
 	    "\n\t"
-	    "0:\n\t"
+	    "1:\n\t"
 	    "femms"
 	    : [count] "+r" (count),
 	      [vectors] "+r" (vectors)
