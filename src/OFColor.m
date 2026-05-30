@@ -301,7 +301,8 @@ PREDEFINED_COLOR(aqua,    0.00f, 1.00f, 1.00f)
 	return [OFColor colorWithRed: colorVec.x
 			       green: colorVec.y
 				blue: colorVec.z
-			       alpha: colorVec.w];
+			       alpha: colorVec.w
+			  colorSpace: colorSpace];
 }
 
 - (OFString *)description
