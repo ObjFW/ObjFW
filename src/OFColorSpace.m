@@ -400,7 +400,7 @@ initAdobeRGBColorSpace(void)
 static void
 initLinearAdobeRGBColorSpace(void)
 {
-	OFOnce(&displayP3MatricesOnceControl, initDisplayP3Matrices);
+	OFOnce(&adobeRGBMatricesOnceControl, initAdobeRGBMatrices);
 
 	linearAdobeRGBColorSpace = [[OFColorSpaceSingleton alloc]
 	      initWithEOTF: identityTF
