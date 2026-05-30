@@ -120,6 +120,24 @@ OF_DIRECT_MEMBERS
 - (instancetype)initWithDelegate: (OFObject <OFHTTPClientDelegate> *)delegate;
 @end
 
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 static OFString *
 constructRequestString(OFHTTPRequest *request)
 {
@@ -130,7 +148,6 @@ constructRequestString(OFHTTPRequest *request)
 	OFString *user = URI.user, *password = URI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFArray OF_GENERIC(OFString *) *transferEncodings;
 	bool hasContentLength, chunked;
 	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
@@ -198,9 +215,7 @@ constructRequestString(OFHTTPRequest *request)
 		[headers setObject: @"keep-alive" forKey: @"Connection"];
 
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
-	transferEncodings = [[[headers objectForKey: @"Transfer-Encoding"]
-	    lowercaseString] componentsSeparatedByString: @","];
-	chunked = [transferEncodings containsObject: @"chunked"];
+	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	if ((hasContentLength || chunked) &&
 	    [headers objectForKey: @"Content-Type"] == nil)
@@ -608,7 +623,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	   exception: (id)exception
 {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFArray OF_GENERIC(OFString *) *transferEncodings;
 	bool chunked;
 
 	if (exception != nil) {
@@ -628,9 +642,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	_firstLine = true;
 
 	headers = _request.headers;
-	transferEncodings = [[[headers objectForKey: @"Transfer-Encoding"]
-	    lowercaseString] componentsSeparatedByString: @","];
-	chunked = [transferEncodings containsObject: @"chunked"];
+	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
 		OFStream *requestBody;
@@ -842,18 +854,14 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-		OFArray OF_GENERIC(OFString *) *transferEncodings;
 		OFString *contentLengthString;
 
 		_handler = objc_retain(handler);
 		_stream = objc_retain(stream);
 
 		headers = _handler->_request.headers;
-
-		transferEncodings = [[[headers objectForKey:
-		    @"Transfer-Encoding"] lowercaseString]
-		    componentsSeparatedByString: @","];
-		_chunked = [transferEncodings containsObject: @"chunked"];
+		_chunked = [parseTransferEncoding(headers)
+		    containsObject: @"chunked"];
 
 		contentLengthString = [headers objectForKey: @"Content-Length"];
 		if (contentLengthString != nil) {
@@ -977,14 +985,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)setHeaders: (OFDictionary *)headers
 {
-	OFArray OF_GENERIC(OFString *) *transferEncodings;
 	OFString *contentLength;
 
 	super.headers = headers;
 
-	transferEncodings = [[[headers objectForKey: @"Transfer-Encoding"]
-	    lowercaseString] componentsSeparatedByString: @","];
-	_chunked = [transferEncodings containsObject: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {

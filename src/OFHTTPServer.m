@@ -163,6 +163,24 @@ normalizedKey(OFString *key)
 	return ret;
 }
 
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 @implementation OFHTTPServerResponse
 - (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
 			server: (OFHTTPServer *)server
@@ -196,7 +214,6 @@ normalizedKey(OFString *key)
 	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
-	OFArray OF_GENERIC(OFString *) *transferEncodings;
 
 	[_stream writeFormat: @"HTTP/%@ %hd %@\r\n",
 			      self.protocolVersionString, _statusCode,
@@ -236,9 +253,7 @@ normalizedKey(OFString *key)
 	[_stream writeString: @"\r\n"];
 
 	_headersSent = true;
-	transferEncodings = [[[headers objectForKey: @"Transfer-Encoding"]
-	    lowercaseString] componentsSeparatedByString: @","];
-	_chunked = [transferEncodings containsObject: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -457,10 +472,8 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		OFArray OF_GENERIC(OFString *) *transferEncodings =
-		    [[[_headers objectForKey: @"Transfer-Encoding"]
-		    lowercaseString] componentsSeparatedByString: @","];
-		bool chunked = [transferEncodings containsObject: @"chunked"];
+		bool chunked = [parseTransferEncoding(_headers)
+		    containsObject: @"chunked"];
 		OFString *contentLengthString =
 		    [_headers objectForKey: @"Content-Length"];
 		unsigned long long contentLength = 0;
