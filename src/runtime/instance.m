@@ -204,7 +204,7 @@ class_createInstance(Class class, size_t extraBytes)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
 # if defined(OF_WINDOWS)
-		__mingw_alaigned_free(instance);
+		__mingw_aligned_free(instance);
 # elif defined(OF_DJGPP)
 		alignedFree(instance, offset);
 # else
