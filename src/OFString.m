@@ -495,6 +495,29 @@ isASCIIWithoutNull(const char *string, size_t length)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
+	if (UTF8StringLength == 0) {
+		if (freeWhenDone)
+			OFFreeMemory(UTF8String);
+
+		return (id)@"";
+	}
+
+#ifdef OF_OBJFW_RUNTIME
+	if (UTF8StringLength <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCIIWithoutNull(UTF8String, UTF8StringLength)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: UTF8StringLength];
+
+		if (ret != nil) {
+			if (freeWhenDone)
+				OFFreeMemory(UTF8String);
+
+			return ret;
+		}
+	}
+#endif
+
 	return (id)[[OFUTF8String alloc]
 	    initWithUTF8StringNoCopy: UTF8String
 			      length: UTF8StringLength
