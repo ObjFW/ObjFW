@@ -295,7 +295,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				 * in order to produce UTF-8 and not CESU-8.
 				 */
 				c2 = parseUnicodeEscape(*pointer + 5, stop);
-				if OF_UNLIKELY (c2 == 0xFFFF) {
+				if OF_UNLIKELY ((c2 & 0xFC00) != 0xDC00) {
 					OFFreeMemory(buffer);
 					return nil;
 				}
@@ -470,7 +470,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			 * to produce UTF-8 and not CESU-8.
 			 */
 			c2 = parseUnicodeEscape(*pointer + 5, stop);
-			if OF_UNLIKELY (c2 == 0xFFFF) {
+			if OF_UNLIKELY ((c2 & 0xFC00) != 0xDC00) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
