@@ -74,7 +74,7 @@ parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_fileName = [[OFString alloc]
 	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -802,8 +802,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    &directoryName, &directoryNameLength);
 
 	if (fileNameLength > UINT16_MAX - 3 ||
-	    directoryNameLength > UINT16_MAX - 3 ||
-	    _compressedSize > UINT64_MAX || _uncompressedSize > UINT64_MAX)
+	    directoryNameLength > UINT16_MAX - 3)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
