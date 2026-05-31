@@ -160,7 +160,7 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithItemSize: (size_t)itemSize
 {
-	return [self initWithItemSize: 1 capacity: 0];
+	return [self initWithItemSize: itemSize capacity: 0];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
