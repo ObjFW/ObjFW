@@ -328,6 +328,7 @@ OF_SINGLETON_METHODS
 	va_copy(argumentsCopy, arguments);
 	while (va_arg(argumentsCopy, id) != nil)
 		count++;
+	va_end(argumentsCopy);
 
 	@try {
 		size_t i = 0;
