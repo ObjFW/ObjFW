@@ -1222,13 +1222,53 @@ OF_SINGLETON_METHODS
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFData *data;
+	char *buffer = NULL;
+	size_t length = 0;
 
 	@try {
-		data = [OFData dataWithContentsOfIRI: IRI];
+		void *pool = objc_autoreleasePoolPush();
+		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+		const size_t readLength = 16384;
+		size_t capacity = readLength;
+
+		buffer = OFAllocMemory(capacity, 1);
+
+		while (!stream.atEndOfStream) {
+			if (SIZE_MAX - length < readLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (capacity < length + readLength) {
+				if (capacity > SIZE_MAX / 2)
+					capacity = length + readLength;
+				else
+					capacity *= 2;
+
+				buffer = OFResizeMemory(buffer, capacity, 1);
+			}
+
+			length += [stream readIntoBuffer: buffer + length
+						  length: readLength];
+		}
+
+		if (SIZE_MAX - length < 1)
+			@throw [OFOutOfRangeException exception];
+
+		@try {
+			buffer = OFResizeMemory(buffer, length + 1, 1);
+		} @catch (OFOutOfMemoryException *e) {
+			if (capacity < length + 1)
+				@throw e;
+
+			/* We don't care, we only made it smaller. */
+		}
+
+		buffer[length] = 0;
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
+		OFFreeMemory(buffer);
 		objc_release(self);
+
 		@throw e;
 	}
 
@@ -1236,11 +1276,24 @@ OF_SINGLETON_METHODS
 	if (encoding == OFStringEncodingAutodetect)
 		encoding = OFStringEncodingUTF8;
 
-	self = [self initWithCString: data.items
-			    encoding: encoding
-			      length: data.count * data.itemSize];
-
-	objc_autoreleasePoolPop(pool);
+	if (encoding == OFStringEncodingUTF8) {
+		@try {
+			self = [self initWithUTF8StringNoCopy: buffer
+						       length: length
+						 freeWhenDone: true];
+		} @catch (id e) {
+			OFFreeMemory(buffer);
+			@throw e;
+		}
+	} else {
+		@try {
+			self = [self initWithCString: buffer
+					    encoding: encoding
+					      length: length];
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	}
 
 	return self;
 }
