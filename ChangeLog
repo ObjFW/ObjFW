@@ -4,6 +4,57 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 1.5.4 -> ObjFW 1.5.5, 2026-05-31
+
+ * Fixes replacing a string within a range that does not start at 0.
+ * Fixes -[OFData rangeOfData:options:range:] if the specified range does not
+   start at 0.
+ * Fixes -[OFMutableData subdataWithRange:].
+ * Fixes a missing retain/release in OFConcreteMutableArray.
+ * Fixes -[initWithContentsOfIRI:] being extremely slow for both OFString and
+   OFData on some operating systems such as Windows.
+ * Fixes wrong count after -[OFList removeAllObjects].
+ * Fixes objc_setAssociatedObject() / objc_removeAssociatedObjects() releasing
+   the object within the spinlock, which could potentially deadlock.
+ * Fixes OFBlock calling a dispose handler that doesn't exist.
+ * Fixes -[OFConcreteMutableArray removeAllObjects] not increasing the
+   mutations.
+ * Fixes Deflate64 with sequence lengths > 65535.
+ * Robustness improvements in Deflate, LHA, Tar, ZIP, BMP, QOI and MessagePack.
+ * Fixes a missing rethrow in OFOpenSSLTLSStream that could result in hangs.
+ * Correctly handles `*` in format strings now.
+ * OFDate rejects invalid dates with tm_mon >= 12 now.
+ * OFXMLParser rejects numeric entities == 0 or > U+10FFFF now, as well as
+   surrogates.
+ * OFString rejects overlong UTF-8 encodings now.
+ * Fixes a retain cycle and a missing rethrow in OFCFRunLoopKernelEventObserver.
+ * Fixes the number of redirects accidentally being reset in OFHTTPClient.
+ * OFHTTPClient is now stricter about when to include the Authorization header
+   during redirects.
+ * Fixes -[objectByParsingJSON] reporting the wrong line on parsing errors.
+ * Fixes -[objectByParsingJSON] overallocating.
+ * Fixes -[objectByParsingJSON] not enforcing a low surrogate after a a high
+   surrogate.
+ * Changes default depth limit to 128 for both JSON and MessagePack.
+ * Base64 now rejects spurious `=` in the middle of the string.
+ * OFHTTPClient and OFHTTPServer now have more robust handling of
+   Transfer-Encoding.
+ * OFDNSResolver is more compliant with the RFC now.
+ * MessagePack now rejects nanoseconds >= 1000000000 as per specification.
+ * Fixes OFConcreteArray accepting `nil` as the first object in some cases.
+ * Fixes OFMatrix4x4 jumping to the wrong label in inline assembly, causing the
+   loop to always run at least once.
+ * Fixes wrong initialization in OFColorSpace.
+ * Fixes -[OFColor colorUsingColorSpace:] always using sRGB.
+ * Fixes some colors comparing equal despite having a different hash in OFColor.
+ * OFAllocObject() and class_createInstance() now reject a too big extra size.
+ * Fixes objc_setPropertyStruct() using the wrong spinlock.
+ * Fixes MIPS32 lookup assembly using the wrong load size.
+ * Fixes PowerPC 64 forwarding assembly comparing with the wrong register size.
+ * Fixes a typo that made ARM32 forwarding assembly for Apple not compile.
+ * Fixes a typo that made compiling for Windows without atomic operations fail.
+ * OFApplication now checks the return value of unveil().
+
 ObjFW 1.5.3 -> ObjFW 1.5.4, 2026-05-23
  * Fixes a buffer overflow caused by integer promotion rules in
    OFBMPImageFormatHandler and OFQOIImageFormatHandler.
