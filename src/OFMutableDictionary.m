@@ -195,9 +195,8 @@ OF_SINGLETON_METHODS
 	    bool *stop) {
 		id new = block(key, object);
 
-		if (new != object) {
-			[self setObject: block(key, object) forKey: key];
-		}
+		if (new != object)
+			[self setObject: new forKey: key];
 	}];
 }
 #endif
