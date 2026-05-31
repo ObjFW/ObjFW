@@ -648,9 +648,12 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 				@throw [OFInvalidArgumentException exception];
 
 			if (new != _buckets[i]->object) {
-				_objectFunctions.release(_buckets[i]->object);
+				void *old = _buckets[i]->object;
+
 				_buckets[i]->object =
 				    _objectFunctions.retain(new);
+
+				_objectFunctions.release(old);
 			}
 		}
 	}
