@@ -121,3 +121,4 @@ extern id _Nullable glue_objc_createTaggedPointer(int class_, uintptr_t value);
 extern void glue_objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nullable value, objc_associationPolicy policy);
 extern id _Nullable glue_objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key);
 extern void glue_objc_removeAssociatedObjects(id _Nonnull object);
+extern bool glue__objc_rootTryRetain(id _Nonnull object);

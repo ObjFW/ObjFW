@@ -631,6 +631,17 @@ extern id _Nullable object_dispose(id _Nullable object);
 extern id _Nonnull _objc_rootRetain(id _Nonnull object);
 
 /**
+ * @brief Tries to retains the specified object.
+ *
+ * This is only to be used to implement the `retainWeakReference` method in a
+ * root class.
+ *
+ * @param object The object to retain
+ * @return Whether the object could be retained
+ */
+extern bool _objc_rootTryRetain(id _Nonnull object);
+
+/**
  * @brief Returns the retain count for the specified object.
  *
  * This is only to be used to implement the `retainCount` method in a root

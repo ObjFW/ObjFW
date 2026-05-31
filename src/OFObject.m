@@ -78,6 +78,7 @@ extern id _objc_rootRetain(id object);
 extern uintptr_t _objc_rootRetainCount(id object);
 extern void _objc_rootRelease(id object);
 extern id _objc_rootAutorelease(id object);
+extern bool _objc_rootTryRetain(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id _OFForward(id, SEL, ...);
@@ -1265,9 +1266,7 @@ _references_to_categories_of_OFObject(void)
 
 - (bool)retainWeakReference
 {
-	[self retain];
-
-	return true;
+	return _objc_rootTryRetain(self);
 }
 
 - (void)dealloc

@@ -114,3 +114,4 @@
 (CONST_APTR)glue_objc_setAssociatedObject,
 (CONST_APTR)glue_objc_getAssociatedObject,
 (CONST_APTR)glue_objc_removeAssociatedObjects,
+(CONST_APTR)glue__objc_rootTryRetain,
