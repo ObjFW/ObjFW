@@ -105,7 +105,7 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 	size_t count;
 
 	if (array == nil)
-		return self;
+		@throw [OFInvalidArgumentException exception];
 
 	@try {
 		count = array.count;
