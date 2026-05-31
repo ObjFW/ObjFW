@@ -1510,7 +1510,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		if (tmp > GID_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		uid = (gid_t)tmp;
+		gid = (gid_t)tmp;
 	}
 
 # ifdef OF_HAVE_THREADS
