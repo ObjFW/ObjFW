@@ -802,10 +802,13 @@ _OFVASPrintF(char **string, const char *format, va_list arguments)
 
 	for (ctx.i = 0; ctx.i < ctx.formatLen; ctx.i++) {
 		if (!states[ctx.state](&ctx)) {
+			va_end(ctx.arguments);
 			free(ctx.buffer);
 			return -1;
 		}
 	}
+
+	va_end(ctx.arguments);
 
 	if (ctx.state != stateString) {
 		free(ctx.buffer);

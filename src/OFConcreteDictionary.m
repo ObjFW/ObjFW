@@ -179,18 +179,20 @@ static const OFMapTableFunctions objectFunctions = {
 		id key, object;
 		size_t i, count;
 
-		va_copy(argumentsCopy, arguments);
-
 		if (firstKey == nil)
 			@throw [OFInvalidArgumentException exception];
 
+		va_copy(argumentsCopy, arguments);
 		key = firstKey;
 
-		if ((object = va_arg(arguments, id)) == nil)
+		if ((object = va_arg(arguments, id)) == nil) {
+			va_end(argumentsCopy);
 			@throw [OFInvalidArgumentException exception];
+		}
 
 		count = 1;
 		for (; va_arg(argumentsCopy, id) != nil; count++);
+		va_end(argumentsCopy);
 
 		if (count % 2 != 0)
 			@throw [OFInvalidArgumentException exception];
