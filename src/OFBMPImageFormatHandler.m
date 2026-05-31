@@ -86,6 +86,9 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	width = tmp32;
 
 	tmp32 = [stream readLittleEndianInt32];
+	if (tmp32 == INT32_MIN)
+		@throw [OFInvalidFormatException exception];
+
 	if (tmp32 < 0)
 		height = tmp32 * -1;
 	else if (tmp32 != 0) {
