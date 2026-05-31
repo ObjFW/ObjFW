@@ -291,7 +291,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 #ifdef OF_HAVE_ATOMIC_OPS
 			if (!OFAtomicPointerCompareAndSwap(
 			    (void **)&src->forwarding, src, *dst)) {
-				src->disposeByref(*dst);
+				if (src->flags & OFBlockHasCopyDispose)
+					src->disposeByref(*dst);
+
 				free(*dst);
 
 				*dst = src->forwarding;
@@ -303,7 +305,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
-				src->disposeByref(*dst);
+				if (src->flags & OFBlockHasCopyDispose)
+					src->disposeByref(*dst);
+
 				free(*dst);
 
 				*dst = src->forwarding;
