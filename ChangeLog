@@ -33,7 +33,7 @@ ObjFW 1.5.4 -> ObjFW 1.5.5, 2026-05-31
    during redirects.
  * Fixes -[objectByParsingJSON] reporting the wrong line on parsing errors.
  * Fixes -[objectByParsingJSON] overallocating.
- * Fixes -[objectByParsingJSON] not enforcing a low surrogate after a a high
+ * Fixes -[objectByParsingJSON] not enforcing a low surrogate after a high
    surrogate.
  * Changes default depth limit to 128 for both JSON and MessagePack.
  * Base64 now rejects spurious `=` in the middle of the string.
