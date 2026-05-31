@@ -124,7 +124,7 @@ OF_SINGLETON_METHODS
 	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
-		[ret appendString: object];
+		[ret appendString: [object description]];
 		[ret appendFormat: @": %zu", [self countForObject: object]];
 
 		if (++i < count)
