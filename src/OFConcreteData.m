@@ -86,6 +86,9 @@
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
+		if (SIZE_MAX / itemSize < count)
+			@throw [OFOutOfRangeException exception];
+
 		_items = (unsigned char *)items;
 		_capacity = _count = count;
 		_itemSize = itemSize;
