@@ -259,9 +259,6 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 	uint32_t rotatedHash, i, last;
 	void *old;
 
-	if (key == NULL || object == NULL)
-		@throw [OFInvalidArgumentException exception];
-
 	rotatedHash = OFRotateLeft(hash, self->_rotation);
 	last = self->_capacity;
 
@@ -456,6 +453,9 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 - (void)setObject: (void *)object forKey: (void *)key
 {
+	if (key == NULL || object == NULL)
+		@throw [OFInvalidArgumentException exception];
+
 	setObject(self, key, object, (uint32_t)_keyFunctions.hash(key));
 }
 
