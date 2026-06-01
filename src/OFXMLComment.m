@@ -40,6 +40,9 @@
 	self = [super of_init];
 
 	@try {
+		if ([text containsString: @"--"])
+			@throw [OFInvalidArgumentException exception];
+
 		_text = [text copy];
 	} @catch (id e) {
 		objc_release(self);
