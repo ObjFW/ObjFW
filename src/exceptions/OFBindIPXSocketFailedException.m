@@ -86,7 +86,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Binding to network %" @PRIx16 " on node "
+	    @"Binding to network %" @PRIx32 " on node "
 	    @"%02X:%02X:%02X:%02X:%02X:%02X with port %" @PRIx16 @" failed for "
 	    @"packet type %" @PRIx8 " in socket of type %@: %@",
 	    _network, _node[0], _node[1], _node[2], _node[3], _node[4],
