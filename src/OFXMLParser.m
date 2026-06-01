@@ -743,12 +743,21 @@ inTagState(OFXMLParser *self)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self->_delegate respondsToSelector:
-	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
+	    @selector(parser:didStartElement:prefix:namespace:attributes:)]) {
+		OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
+
+		[self->_attributes makeImmutable];
+		attributes = objc_autorelease(self->_attributes);
+
+		self->_attributes = nil;
+		self->_attributes = [[OFMutableArray alloc] init];
+
 		[self->_delegate parser: self
 			didStartElement: self->_name
 				 prefix: self->_prefix
 			      namespace: namespace
-			     attributes: self->_attributes];
+			     attributes: attributes];
+	}
 
 	if (self->_data[self->_i] == '/') {
 		if ([self->_delegate respondsToSelector:
