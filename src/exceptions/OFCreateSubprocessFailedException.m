@@ -60,7 +60,7 @@
 
 	@try {
 		_program = objc_retain(program);
-		_programName = objc_retain(_programName);
+		_programName = objc_retain(programName);
 		_arguments = [arguments copy];
 		_environment = [environment copy];
 		_errNo = errNo;
