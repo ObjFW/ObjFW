@@ -673,7 +673,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (fragment - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*fragmentString,
-		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
+		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
 	}
@@ -684,7 +684,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (query - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*queryString,
-		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
+		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = query - UTF8String;
 	}
