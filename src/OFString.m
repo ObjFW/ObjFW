@@ -1357,7 +1357,7 @@ OF_SINGLETON_METHODS
 			if OF_UNLIKELY (!insecure && characters[i] == 0)
 				@throw [OFInvalidEncodingException exception];
 
-			if OF_UNLIKELY (characters[i] > 0x80) {
+			if OF_UNLIKELY (characters[i] >= 0x80) {
 				if (lossy)
 					cString[i] = '?';
 				else
