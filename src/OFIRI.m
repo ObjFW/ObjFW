@@ -37,6 +37,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -1320,6 +1321,10 @@ merge(OFString *base, OFString *path)
 
 	if (![_scheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
+
+	if (_percentEncodedHost.length != 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
 
 	if (![_percentEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
