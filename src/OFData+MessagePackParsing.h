@@ -45,7 +45,7 @@ extern int _OFData_MessagePackParsing_reference OF_VISIBILITY_INTERNAL;
 /**
  * @brief Parses the MessagePack representation and returns it as an object.
  *
- * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ * @param depthLimit The maximum depth the parser should accept (defaults to 128
  *		     if not specified, 0 means no limit (insecure!))
  * @return The MessagePack representation as an object
  * @throw OFInvalidFormatException The MessagePack representation contained in

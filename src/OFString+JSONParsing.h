@@ -59,7 +59,7 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  *          want your program to terminate due to a message not understood, but
  *          instead check the returned object using @ref isKindOfClass:.
  *
- * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ * @param depthLimit The maximum depth the parser should accept (defaults to 128
  *		     if not specified, 0 means no limit (insecure!))
  * @return An object
  * @throw OFInvalidJSONException The string contained invalid JSON
