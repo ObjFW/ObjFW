@@ -186,10 +186,14 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	while (*pointer < stop) {
 		/* We write up to 4 characters. */
 		if OF_UNLIKELY (i + 3 >= bufferSize) {
-			bufferSize *= 2;
 			@try {
+				if (bufferSize > SIZE_MAX / 2)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				bufferSize *= 2;
 				buffer = OFResizeMemory(buffer, bufferSize, 1);
-			} @catch (OFOutOfMemoryException *e) {
+			} @catch (id e) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
@@ -371,10 +375,14 @@ parseIdentifier(const char **pointer, const char *stop)
 	while (*pointer < stop) {
 		/* We write up to 4 characters. */
 		if OF_UNLIKELY (i + 3 >= bufferSize) {
-			bufferSize *= 2;
 			@try {
+				if (bufferSize > SIZE_MAX / 2)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				bufferSize *= 2;
 				buffer = OFResizeMemory(buffer, bufferSize, 1);
-			} @catch (OFOutOfMemoryException *e) {
+			} @catch (id e) {
 				OFFreeMemory(buffer);
 				return nil;
 			}
