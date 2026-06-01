@@ -129,6 +129,9 @@ _OFHuffmanTreeNewSingle(uint16_t value)
 void
 _OFHuffmanTreeFree(OFHuffmanTree tree)
 {
+	if (tree == NULL)
+		return;
+
 	for (uint_fast8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leaves[i] != NULL)
 			_OFHuffmanTreeFree(tree->leaves[i]);

@@ -230,9 +230,8 @@ tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 		if (_inflateCtx->state == stateHuffmanTree) {
 			OFFreeMemory(_inflateCtx->ctx.huffmanTree.lengths);
 
-			if (_inflateCtx->ctx.huffmanTree.codeLenTree != NULL)
-				_OFHuffmanTreeFree(
-				    _inflateCtx->ctx.huffmanTree.codeLenTree);
+			_OFHuffmanTreeFree(
+			    _inflateCtx->ctx.huffmanTree.codeLenTree);
 		}
 
 		if (_inflateCtx->state == stateHuffmanTree ||
@@ -634,10 +633,14 @@ start:
 
 			/* End of block */
 			if OF_UNLIKELY (value == 256) {
-				if (CTX.litLenTree != fixedLitLenTree)
+				if (CTX.litLenTree != fixedLitLenTree) {
 					_OFHuffmanTreeFree(CTX.litLenTree);
-				if (CTX.distTree != fixedDistTree)
+					CTX.litLenTree = NULL;
+				}
+				if (CTX.distTree != fixedDistTree) {
 					_OFHuffmanTreeFree(CTX.distTree);
+					CTX.distTree = NULL;
+				}
 
 				ctx->state = stateBlockHeader;
 				goto start;
