@@ -709,6 +709,8 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 		    addrIn6_2->sin6_addr.s6_addr,
 		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
 			return false;
+		if (addrIn6_1->sin6_scope_id != addrIn6_2->sin6_scope_id)
+			return false;
 
 		return true;
 	case OFSocketAddressFamilyUNIX:
@@ -806,6 +808,11 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		    i < sizeof(address->sockaddr.in6.sin6_addr.s6_addr); i++)
 			OFHashAddByte(&hash,
 			    address->sockaddr.in6.sin6_addr.s6_addr[i]);
+
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_scope_id >> 24);
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_scope_id >> 16);
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_scope_id >> 8);
+		OFHashAddByte(&hash, address->sockaddr.in6.sin6_scope_id);
 
 		break;
 	case OFSocketAddressFamilyUNIX:;
