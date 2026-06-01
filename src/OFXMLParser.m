@@ -282,8 +282,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_lastCarriageReturn = (_data[_i] == '\r');
 	}
 
-	/* In stateInTag, there can be only spaces */
-	if (length - _last > 0 && _state != stateInTag)
+	if (length - _last > 0)
 		appendToBuffer(_buffer, _data + _last, _encoding,
 		    length - _last);
 }
@@ -721,7 +720,8 @@ inTagState(OFXMLParser *self)
 			self->_last = self->_i;
 			self->_state = stateInAttributeName;
 			self->_i--;
-		}
+		} else
+			self->_last = self->_i + 1;
 
 		return;
 	}
@@ -842,6 +842,8 @@ expectAttributeEqualSignState(OFXMLParser *self)
 	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
 	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
+
+	self->_last = self->_i + 1;
 }
 
 /* Expecting name/value delimiter of an attribute */
@@ -920,12 +922,15 @@ expectTagCloseState(OFXMLParser *self)
 static void
 expectSpaceOrTagCloseState(OFXMLParser *self)
 {
+	self->_last = self->_i + 1;
+
 	if (self->_data[self->_i] == '>') {
-		self->_last = self->_i + 1;
 		self->_state = stateOutsideTag;
-	} else if (self->_data[self->_i] != ' ' &&
-	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
-	    self->_data[self->_i] != '\r')
+		return;
+	}
+
+	if (self->_data[self->_i] != ' ' && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 
