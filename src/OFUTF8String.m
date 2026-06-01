@@ -463,6 +463,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 			UTF8String += 3;
 			UTF8StringLength -= 3;
+			_s->freeOffset = 3;
 		}
 
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
@@ -784,7 +785,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (void)dealloc
 {
 	if (_s != NULL && _s->freeWhenDone)
-		OFFreeMemory(_s->cString);
+		OFFreeMemory(_s->cString - _s->freeOffset);
 
 	[super dealloc];
 }
