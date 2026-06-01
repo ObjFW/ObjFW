@@ -59,7 +59,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)
     exceptionWithNetwork: (uint32_t)network
-		    node: (const unsigned char [_Nullable IPX_NODE_LEN])node
+		    node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 		    port: (uint16_t)port
 		  socket: (id)socket
 		   errNo: (int)errNo;
@@ -79,7 +79,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)
     initWithNetwork: (uint32_t)network
-	       node: (const unsigned char [_Nullable IPX_NODE_LEN])node
+	       node: (const unsigned char [_Nonnull IPX_NODE_LEN])node
 	       port: (uint16_t)port
 	     socket: (id)socket
 	      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
