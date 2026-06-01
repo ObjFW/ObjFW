@@ -237,7 +237,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_acceptProlog = true;
 		_lineNumber = 1;
 		_encoding = OFStringEncodingUTF8;
-		_depthLimit = 32;
+		_depthLimit = 128;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

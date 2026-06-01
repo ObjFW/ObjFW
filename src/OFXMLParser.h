@@ -175,7 +175,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
  *
- * The default is 32. 0 means unlimited (insecure!).
+ * The default is 128. 0 means unlimited (insecure!).
  */
 @property (nonatomic) size_t depthLimit;
 
