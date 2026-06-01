@@ -111,13 +111,17 @@ vasprintf(char **string, const char *format, va_list arguments)
 	*string = NULL;
 
 	for (;;) {
+		va_list argumentsCopy;
+
 		free(*string);
 
 		if ((*string = malloc(bufferLength)) == NULL)
 			return -1;
 
+		va_copy(argumentsCopy, arguments);
 		length = vsnprintf(*string, bufferLength - 1, format,
-		    arguments);
+		    argumentsCopy);
+		va_end(argumentsCopy);
 
 		if (length >= 0 && (size_t)length < bufferLength - 1)
 			break;
