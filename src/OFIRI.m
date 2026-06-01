@@ -1322,9 +1322,11 @@ merge(OFString *base, OFString *path)
 	if (![_scheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
 
+# ifndef OF_WINDOWS
 	if (_percentEncodedHost.length != 0)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
+# endif
 
 	if (![_percentEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
