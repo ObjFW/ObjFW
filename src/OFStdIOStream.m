@@ -707,7 +707,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 
 	gettextinfo(&ti);
 
-	return ti.screenwidth;
+	return ti.screenheight;
 #elif defined(HAVE_IOCTL) && defined(TIOCGWINSZ) && \
     !defined(OF_AMIGAOS) && !defined(OF_WII_U)
 	struct winsize ws;
