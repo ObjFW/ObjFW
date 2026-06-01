@@ -405,7 +405,15 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 		default:
 			return false;
 		}
-	} @catch (OFWriteFailedException *e) {
+	} @catch (id e) {
+		if ([_server.delegate respondsToSelector: @selector(
+		    server:didEncounterException:request:response:)]) {
+			[_server.delegate  server: _server
+			    didEncounterException: e
+					  request: nil
+					 response: nil];
+		}
+
 		return false;
 	}
 
@@ -489,20 +497,26 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 				    contentLengthString.unsignedLongLongValue;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
 			}
 		}
 
 		if (chunked || contentLengthString != nil) {
 			objc_release(_requestBody);
 			_requestBody = nil;
-			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
-			    initWithStream: _stream
-				   chunked: chunked
-			     contentLength: contentLength];
 
-			[_timer invalidate];
-			objc_release(_timer);
-			_timer = nil;
+			@try {
+				_requestBody =
+				    [[OFHTTPServerRequestBodyStream alloc]
+				    initWithStream: _stream
+					   chunked: chunked
+				     contentLength: contentLength];
+			} @catch (OFInvalidArgumentException *e) {
+				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
+			}
 		}
 
 		_state = stateSendResponse;
@@ -580,6 +594,11 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 			      @"\r\n",
 			      statusCode, OFHTTPStatusCodeString(statusCode),
 			      date, _server.name];
+
+	[_timer invalidate];
+	objc_release(_timer);
+	_timer = nil;
+
 	return false;
 }
 
