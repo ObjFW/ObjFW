@@ -654,7 +654,10 @@ formatConversionSpecifierState(struct Context *ctx)
 					return false;
 
 				tmpLen = (int)tmpStr.UTF8StringLength;
-				tmp2 = malloc(tmpLen);
+
+				if ((tmp2 = malloc(tmpLen)) == NULL)
+					return false;
+
 				memcpy(tmp2, tmpStr.UTF8String, tmpLen);
 			} @finally {
 				free(tmp);
