@@ -167,6 +167,10 @@ appendString(struct Context *ctx, const char *append, size_t appendLen)
 	if (appendLen == 0)
 		return true;
 
+	if (SIZE_MAX - appendLen < 1 ||
+	    SIZE_MAX - ctx->bufferLen < appendLen + 1)
+		return false;
+
 	if ((newBuf = realloc(ctx->buffer,
 	    ctx->bufferLen + appendLen + 1)) == NULL)
 		return false;
