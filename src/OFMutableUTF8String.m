@@ -367,18 +367,13 @@
 	if (string == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
-	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
-	_s->cStringLength += UTF8StringLength;
-	_s->length += string.length;
-
-	_s->cString[_s->cStringLength] = 0;
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 
 	if ([string isKindOfClass: [OFUTF8String class]] ||
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
@@ -402,6 +397,13 @@
 		if (containsNull)
 			_s->containsNull = true;
 	}
+
+	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
+
+	_s->cStringLength += UTF8StringLength;
+	_s->length += string.length;
+
+	_s->cString[_s->cStringLength] = 0;
 }
 
 - (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
