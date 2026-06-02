@@ -40,7 +40,7 @@
 	self = [super of_init];
 
 	@try {
-		if ([text containsString: @"--"])
+		if ([text containsString: @"--"] || [text hasSuffix: @"-"])
 			@throw [OFInvalidArgumentException exception];
 
 		_text = [text copy];
