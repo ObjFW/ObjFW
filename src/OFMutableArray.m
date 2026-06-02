@@ -176,8 +176,7 @@ OF_SINGLETON_METHODS
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
 # pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #endif
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }

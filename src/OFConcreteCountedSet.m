@@ -24,10 +24,8 @@
 #import "OFConcreteMutableSet.h"
 #import "OFMapTable.h"
 #import "OFString.h"
-#import "OFXMLAttribute.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidFormatException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
@@ -142,7 +140,12 @@
 
 - (void)addObject: (id)object
 {
-	size_t count = (size_t)(uintptr_t)[_mapTable objectForKey: object];
+	size_t count;
+
+	if (object == self)
+		@throw [OFInvalidArgumentException exception];
+
+	count = (size_t)(uintptr_t)[_mapTable objectForKey: object];
 
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];

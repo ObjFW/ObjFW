@@ -23,6 +23,8 @@
 #import "OFConcreteSet.h"
 #import "OFMapTable.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFConcreteMutableSet
 + (void)initialize
 {
@@ -32,6 +34,9 @@
 
 - (void)addObject: (id)object
 {
+	if (object == self)
+		@throw [OFInvalidArgumentException exception];
+
 	[_mapTable setObject: (void *)1 forKey: object];
 }
 
