@@ -609,30 +609,19 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 			    (swap ? OFByteSwap16(string[i]) : string[i]);
 			size_t len;
 
-			/* Missing high surrogate */
-			if ((character & 0xFC00) == 0xDC00)
-				@throw [OFInvalidEncodingException exception];
-
-			if ((character & 0xFC00) == 0xD800) {
-				OFChar16 nextCharacter;
-
-				if (length <= i + 1)
-					@throw [OFInvalidEncodingException
-					    exception];
-
-				nextCharacter = (swap
+			if ((character & 0xFC00) == 0xD800 && length > i + 1) {
+				OFChar16 nextCharacter = (swap
 				    ? OFByteSwap16(string[i + 1])
 				    : string[i + 1]);
 
-				if ((nextCharacter & 0xFC00) != 0xDC00)
-					@throw [OFInvalidEncodingException
-					    exception];
+				if ((nextCharacter & 0xFC00) == 0xDC00) {
+					character =
+					    (((character & 0x3FF) << 10) |
+					    (nextCharacter & 0x3FF)) + 0x10000;
 
-				character = (((character & 0x3FF) << 10) |
-				    (nextCharacter & 0x3FF)) + 0x10000;
-
-				i++;
-				_s->length--;
+					i++;
+					_s->length--;
+				}
 			}
 
 			len = _OFUTF8StringEncode(character, _s->cString + j);
