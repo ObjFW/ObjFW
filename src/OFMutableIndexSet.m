@@ -104,8 +104,14 @@
 
 - (void)addIndexes: (OFIndexSet *)indexes
 {
-	const OFRange *ranges = indexes->_ranges.items;
-	size_t count = indexes->_ranges.count;
+	const OFRange *ranges;
+	size_t count;
+
+	if (indexes == self)
+		return;
+
+	ranges = indexes->_ranges.items;
+	count = indexes->_ranges.count;
 
 	for (size_t i = 0; i < count; i++)
 		[self addIndexesInRange: ranges[i]];
@@ -178,8 +184,14 @@
 
 - (void)removeIndexes: (OFIndexSet *)indexes
 {
-	const OFRange *ranges = indexes->_ranges.items;
-	size_t count = indexes->_ranges.count;
+	const OFRange *ranges;
+	size_t count;
+
+	if (indexes == self)
+		[self removeAllIndexes];
+
+	ranges = indexes->_ranges.items;
+	count = indexes->_ranges.count;
 
 	for (size_t i = 0; i < count; i++)
 		[self removeIndexesInRange: ranges[i]];
