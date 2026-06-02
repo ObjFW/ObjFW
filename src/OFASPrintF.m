@@ -830,6 +830,11 @@ _OFVASPrintF(char **string, const char *format, va_list arguments)
 
 	ctx.buffer[ctx.bufferLen] = 0;
 
+	if (ctx.bufferLen > INT_MAX) {
+		free(ctx.buffer);
+		return -1;
+	}
+
 	*string = ctx.buffer;
-	return (ctx.bufferLen <= INT_MAX ? (int)ctx.bufferLen : -1);
+	return (int)ctx.bufferLen;
 }
