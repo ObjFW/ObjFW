@@ -290,8 +290,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self insertString: string atIndex: self.length];
 }
 
-- (void)appendCharacters: (const OFUnichar *)characters
-		  length: (size_t)length
+- (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self appendString: [OFString stringWithCharacters: characters
