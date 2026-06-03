@@ -492,6 +492,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+
 		_s = &_storage;
 
 		_s->cStringLength = string.UTF8StringLength;
@@ -522,6 +524,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 			_s->containsNull = containsNull;
 		}
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -730,6 +734,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	self = [super init];
 
 	@try {
+		void *pool;
 		char *tmp;
 		int cStringLength;
 
@@ -738,14 +743,18 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
+		pool = objc_autoreleasePoolPush();
+
 		if ((cStringLength = _OFVASPrintF(&tmp, format.UTF8String,
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException exception];
 
-		_s->cStringLength = cStringLength;
-
 		@try {
 			bool containsNull;
+
+			objc_autoreleasePoolPop(pool);
+
+			_s->cStringLength = cStringLength;
 
 			switch (_OFUTF8StringCheck(tmp, cStringLength,
 			    &_s->length, &containsNull)) {
@@ -868,6 +877,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (bool)isEqual: (id)object
 {
 	OFUTF8String *string;
+	void *pool;
 
 	if (object == self)
 		return true;
@@ -886,10 +896,16 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	    _s->hasHash && string->_s->hasHash && _s->hash != string->_s->hash)
 		return false;
 
+	pool = objc_autoreleasePoolPush();
+
 	if (memcmp(_s->cString,
 	    [string insecureCStringWithEncoding: OFStringEncodingUTF8],
-	    _s->cStringLength) != 0)
+	    _s->cStringLength) != 0) {
+		objc_autoreleasePoolPop(pool);
 		return false;
+	}
+
+	objc_autoreleasePoolPop(pool);
 
 	return true;
 }
@@ -897,6 +913,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (OFComparisonResult)compare: (OFString *)string
 {
 	size_t otherCStringLength, minimumCStringLength;
+	void *pool;
 	int compare;
 
 	if (string == self)
@@ -909,15 +926,21 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	minimumCStringLength = (_s->cStringLength > otherCStringLength
 	    ? otherCStringLength : _s->cStringLength);
 
+	pool = objc_autoreleasePoolPush();
+
 	if ((compare = memcmp(_s->cString,
 	    [string insecureCStringWithEncoding: OFStringEncodingUTF8],
 	    minimumCStringLength)) == 0) {
+		objc_autoreleasePoolPop(pool);
+
 		if (_s->cStringLength > otherCStringLength)
 			return OFOrderedDescending;
 		if (_s->cStringLength < otherCStringLength)
 			return OFOrderedAscending;
 		return OFOrderedSame;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	if (compare > 0)
 		return OFOrderedDescending;
@@ -927,6 +950,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 - (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
+	void *pool;
 	const char *otherCString;
 	size_t otherCStringLength, minimumCStringLength;
 #ifdef OF_HAVE_UNICODE_TABLES
@@ -936,6 +960,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 	if (string == self)
 		return OFOrderedSame;
+
+	pool = objc_autoreleasePoolPush();
 
 	otherCString =
 	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
@@ -949,12 +975,16 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 
 		if ((compare = memcasecmp(_s->cString, otherCString,
 		    minimumCStringLength)) == 0) {
+			objc_autoreleasePoolPop(pool);
+
 			if (_s->cStringLength > otherCStringLength)
 				return OFOrderedDescending;
 			if (_s->cStringLength < otherCStringLength)
 				return OFOrderedAscending;
 			return OFOrderedSame;
 		}
+
+		objc_autoreleasePoolPop(pool);
 
 		if (compare > 0)
 			return OFOrderedDescending;
@@ -993,14 +1023,20 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 				c2 = tc;
 		}
 
-		if (c1 > c2)
+		if (c1 > c2) {
+			objc_autoreleasePoolPop(pool);
 			return OFOrderedDescending;
-		if (c1 < c2)
+		}
+		if (c1 < c2) {
+			objc_autoreleasePoolPop(pool);
 			return OFOrderedAscending;
+		}
 
 		i += l1;
 		j += l2;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	if (_s->cStringLength - i > otherCStringLength - j)
 		return OFOrderedDescending;
@@ -1081,8 +1117,8 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		 options: (OFStringSearchOptions)options
 		   range: (OFRange)range
 {
-	const char *cString =
-	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+	void *pool;
+	const char *cString;
 	size_t cStringLength = string.UTF8StringLength;
 	size_t rangeLocation, rangeLength;
 
@@ -1106,6 +1142,9 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	if (cStringLength > rangeLength)
 		return OFMakeRange(OFNotFound, 0);
 
+	pool = objc_autoreleasePoolPush();
+	cString = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+
 	if (options & OFStringSearchBackwards) {
 		for (size_t i = rangeLength - cStringLength;; i--) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
@@ -1114,12 +1153,16 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 				    _s->cString + rangeLocation, i);
 				range.length = string.length;
 
+				objc_autoreleasePoolPop(pool);
+
 				return range;
 			}
 
 			/* Did not match and we're at the last char */
-			if (i == 0)
+			if (i == 0) {
+				objc_autoreleasePoolPop(pool);
 				return OFMakeRange(OFNotFound, 0);
+			}
 		}
 	} else {
 		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
@@ -1129,18 +1172,22 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 				    _s->cString + rangeLocation, i);
 				range.length = string.length;
 
+				objc_autoreleasePoolPop(pool);
+
 				return range;
 			}
 		}
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	return OFMakeRange(OFNotFound, 0);
 }
 
 - (bool)containsString: (OFString *)string
 {
-	const char *cString =
-	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+	void *pool;
+	const char *cString;
 	size_t cStringLength = string.UTF8StringLength;
 
 	if (cStringLength == 0)
@@ -1149,9 +1196,17 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	for (size_t i = 0; i <= _s->cStringLength - cStringLength; i++)
-		if (memcmp(_s->cString + i, cString, cStringLength) == 0)
+	pool = objc_autoreleasePoolPush();
+	cString = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+
+	for (size_t i = 0; i <= _s->cStringLength - cStringLength; i++) {
+		if (memcmp(_s->cString + i, cString, cStringLength) == 0) {
+			objc_autoreleasePoolPop(pool);
 			return true;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 
 	return false;
 }
@@ -1178,25 +1233,37 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (bool)hasPrefix: (OFString *)prefix
 {
 	size_t cStringLength = prefix.UTF8StringLength;
+	void *pool;
+	bool hasPrefix;
 
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return (memcmp(_s->cString,
+	pool = objc_autoreleasePoolPush();
+	hasPrefix = (memcmp(_s->cString,
 	    [prefix insecureCStringWithEncoding: OFStringEncodingUTF8],
 	    cStringLength) == 0);
+	objc_autoreleasePoolPop(pool);
+
+	return hasPrefix;
 }
 
 - (bool)hasSuffix: (OFString *)suffix
 {
 	size_t cStringLength = suffix.UTF8StringLength;
+	void *pool;
+	bool hasSuffix;
 
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return (memcmp(_s->cString + (_s->cStringLength - cStringLength),
+	pool = objc_autoreleasePoolPush();
+	hasSuffix = (memcmp(_s->cString + (_s->cStringLength - cStringLength),
 	    [suffix insecureCStringWithEncoding: OFStringEncodingUTF8],
 	    cStringLength) == 0);
+	objc_autoreleasePoolPop(pool);
+
+	return hasSuffix;
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
