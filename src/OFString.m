@@ -1281,6 +1281,7 @@ OF_SINGLETON_METHODS
 		  lossy: (bool)lossy
 	       insecure: (bool)insecure
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
 
@@ -1325,6 +1326,8 @@ OF_SINGLETON_METHODS
 
 		cString[j] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return j;
 	case OFStringEncodingASCII:
 		if (length + 1 > maxLength)
@@ -1345,6 +1348,8 @@ OF_SINGLETON_METHODS
 		}
 
 		cString[i] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 	case OFStringEncodingISO8859_1:
@@ -1367,6 +1372,8 @@ OF_SINGLETON_METHODS
 
 		cString[i] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #ifdef HAVE_ISO_8859_2
 	case OFStringEncodingISO8859_2:
@@ -1378,6 +1385,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1392,6 +1401,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_ISO_8859_15
@@ -1404,6 +1415,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1418,6 +1431,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_WINDOWS_1251
@@ -1430,6 +1445,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1444,6 +1461,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_437
@@ -1456,6 +1475,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1470,6 +1491,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_852
@@ -1482,6 +1505,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1496,6 +1521,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_MAC_ROMAN
@@ -1508,6 +1535,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1522,6 +1551,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_KOI8_U
@@ -1534,6 +1565,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1678,6 +1711,7 @@ OF_SINGLETON_METHODS
 {
 	switch (encoding) {
 	case OFStringEncodingUTF8:;
+		void *pool = objc_autoreleasePoolPush();
 		const OFUnichar *characters;
 		size_t length, UTF8StringLength = 0;
 
@@ -1697,6 +1731,8 @@ OF_SINGLETON_METHODS
 
 			UTF8StringLength += len;
 		}
+
+		objc_autoreleasePoolPop(pool);
 
 		return UTF8StringLength;
 	case OFStringEncodingASCII:
@@ -1825,12 +1861,14 @@ OF_SINGLETON_METHODS
 
 - (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	const OFUnichar *characters, *otherCharacters;
 	size_t length, otherLength, minimumLength;
 
 	if (string == self)
 		return OFOrderedSame;
+
+	pool = objc_autoreleasePoolPush();
 
 	characters = self.characters;
 	otherCharacters = string.characters;
@@ -1885,6 +1923,7 @@ OF_SINGLETON_METHODS
 
 - (unsigned long)hash
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	unsigned long hash;
@@ -1900,6 +1939,7 @@ OF_SINGLETON_METHODS
 	}
 
 	OFHashFinalize(&hash);
+	objc_autoreleasePoolPop(pool);
 
 	return hash;
 }
@@ -1939,6 +1979,7 @@ OF_SINGLETON_METHODS
 		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\0"];
 
 		if (options & OFJSONRepresentationOptionIsIdentifier) {
+			void *pool = objc_autoreleasePoolPush();
 			const char *cString = JSON.UTF8String;
 
 			if ((!OFASCIIIsAlpha(cString[0]) &&
@@ -1947,6 +1988,8 @@ OF_SINGLETON_METHODS
 				[JSON insertString: @"\"" atIndex: 0];
 				[JSON appendString: @"\""];
 			}
+
+			objc_autoreleasePoolPop(pool);
 		} else {
 			[JSON insertString: @"\"" atIndex: 0];
 			[JSON appendString: @"\""];
@@ -1968,6 +2011,7 @@ OF_SINGLETON_METHODS
 {
 	OFMutableData *data;
 	size_t length;
+	void *pool;
 
 	length = self.UTF8StringLength;
 
@@ -2000,8 +2044,10 @@ OF_SINGLETON_METHODS
 	} else
 		@throw [OFOutOfRangeException exception];
 
+	pool = objc_autoreleasePoolPush();
 	[data addItems: [self insecureCStringWithEncoding: OFStringEncodingUTF8]
 		 count: length];
+	objc_autoreleasePoolPop(pool);
 
 	return data;
 }
@@ -2996,6 +3042,7 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 
 - (size_t)UTF16StringLength
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t length, UTF16StringLength;
 
@@ -3004,6 +3051,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	for (size_t i = 0; i < length; i++)
 		if (characters[i] > 0xFFFF)
 			UTF16StringLength++;
+
+	objc_autoreleasePoolPop(pool);
 
 	return UTF16StringLength;
 }
@@ -3062,12 +3111,17 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
 	if ([OFSystemInfo isWindowsNT]) {
+		void *pool = objc_autoreleasePoolPush();
 		wchar_t buffer[512];
 		size_t length;
 
 		if ((length = ExpandEnvironmentStringsW(self.UTF16String,
-		    buffer, sizeof(buffer))) == 0)
+		    buffer, sizeof(buffer))) == 0) {
+			objc_autoreleasePoolPop(pool);
 			return self;
+		}
+
+		objc_autoreleasePoolPop(pool);
 
 		return [OFString stringWithUTF16String: buffer
 						length: length - 1];
