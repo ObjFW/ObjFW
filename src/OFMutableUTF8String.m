@@ -481,16 +481,17 @@
 		idx = _OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
-	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	newCStringLength = _s->cStringLength + UTF8StringLength;
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1, 1);
 
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+
 	memmove(_s->cString + idx + UTF8StringLength, _s->cString + idx,
 	    _s->cStringLength - idx);
-	memcpy(_s->cString + idx, UTF8String, UTF8StringLength);
+	memmove(_s->cString + idx, UTF8String, UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	_s->cStringLength = newCStringLength;
@@ -581,9 +582,6 @@
 		end = _OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
-
-	replacementString =
-	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
 	replacementLength = replacement.UTF8StringLength;
 
 	newCStringLength =
@@ -602,9 +600,12 @@
 		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
 		    1);
 
+	replacementString =
+	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
+
 	memmove(_s->cString + start + replacementLength, _s->cString + end,
 	    _s->cStringLength - end);
-	memcpy(_s->cString + start, replacementString, replacementLength);
+	memmove(_s->cString + start, replacementString, replacementLength);
 	_s->cString[newCStringLength] = '\0';
 
 	/*
