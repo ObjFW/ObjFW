@@ -1161,7 +1161,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	size_t start = range.location;
 	size_t end = OFEndOfRange(range);
 
-	if (range.length > SIZE_MAX - range.location || end > _s->length)
+	if (end > _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
