@@ -97,8 +97,8 @@ static void
 callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
     const void *data, void *info_)
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFPair *info = info_;
+	void *pool;
 	id object;
 	OFCFRunLoopKernelEventObserver *observer;
 
@@ -111,6 +111,8 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 		return;
 	}
+
+	pool = objc_autoreleasePoolPush();
 
 	object = info.firstObject;
 	observer = info.secondObject;
