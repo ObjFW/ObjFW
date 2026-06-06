@@ -115,9 +115,13 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	object = info.firstObject;
 	observer = info.secondObject;
 
-	if (type & kCFSocketReadCallBack)
+	if ((type & kCFSocketReadCallBack) &&
+	    [observer->_delegate respondsToSelector:
+	    @selector(objectIsReadyForReading:)])
 		[observer->_delegate objectIsReadyForReading: object];
-	if (type & kCFSocketWriteCallBack)
+	if ((type & kCFSocketWriteCallBack) &&
+	    [observer->_delegate respondsToSelector:
+	    @selector(objectIsReadyForWriting:)])
 		[observer->_delegate objectIsReadyForWriting: object];
 
 	objc_autoreleasePoolPop(pool);
@@ -335,9 +339,10 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	 * so instead always manually fire all UDP sockets that are being
 	 * observed as ready for writing.
 	 */
-	for (id object in objc_autorelease([_writeObjects copy]))
-		if ([object isKindOfClass: [OFDatagramSocket class]])
-			[_delegate objectIsReadyForWriting: object];
+	if ([_delegate respondsToSelector: @selector(objectIsReadyForWriting:)])
+		for (id object in objc_autorelease([_writeObjects copy]))
+			if ([object isKindOfClass: [OFDatagramSocket class]])
+				[_delegate objectIsReadyForWriting: object];
 
 	if (timeInterval == -1)
 		/* There is no value for infinite, so make it really long. */
