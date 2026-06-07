@@ -444,7 +444,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	size_t searchLength = string.length;
 	size_t replacementLength = replacement.length;
 
-	if (string == nil || replacement == nil)
+	if (string.length == 0 || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (OFEndOfRange(range) > self.length)

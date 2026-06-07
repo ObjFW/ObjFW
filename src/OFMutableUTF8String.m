@@ -680,7 +680,7 @@
 	size_t last, newCStringLength, newLength;
 	char *newCString;
 
-	if (string == nil || replacement == nil)
+	if (string.length == 0 || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (OFEndOfRange(range) > self.length)
