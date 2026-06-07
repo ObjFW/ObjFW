@@ -444,9 +444,15 @@ readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct LSDA *LSDA)
 	LSDA->landingpadsStart = LSDA->regionStart;
 	LSDA->typesTable = NULL;
 
-	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit)
+	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit) {
+		const uint8_t *start = ptr;
+
 		LSDA->landingpadsStart =
 		    (uintptr_t)readValue(landingpadsStartEnc, &ptr);
+		LSDA->landingpadsStart = (uintptr_t)resolveValue(
+		    LSDA->landingpadsStart, landingpadsStartEnc, start,
+		    getBase(ctx, landingpadsStartEnc));
+	}
 
 	if ((LSDA->typesTableEnc = *ptr++) != DW_EH_PE_omit) {
 		uintptr_t tmp = (uintptr_t)readULEB128(&ptr);
