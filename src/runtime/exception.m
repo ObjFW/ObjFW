@@ -294,7 +294,7 @@ readULEB128(const uint8_t **ptr)
 	uint8_t shift = 0;
 
 	do {
-		value |= (**ptr & 0x7F) << shift;
+		value |= ((uint64_t)**ptr & 0x7F) << shift;
 		(*ptr)++;
 		shift += 7;
 	} while (*(*ptr - 1) & 0x80);
