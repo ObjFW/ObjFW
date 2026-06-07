@@ -78,15 +78,16 @@ int _OFString_PathAdditions_reference;
 - (OFArray *)pathComponents
 {
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
-	void *pool = objc_autoreleasePoolPush();
-	const char *cString = self.UTF8String;
+	void *pool;
+	const char *cString;
 	size_t i, last = 0, cStringLength = self.UTF8StringLength;
 	bool isUNC = false;
 
-	if (cStringLength == 0) {
-		objc_autoreleasePoolPop(pool);
+	if (cStringLength == 0)
 		return ret;
-	}
+
+	pool = objc_autoreleasePoolPush();
+	cString = self.UTF8String;
 
 #ifdef OF_WINDOWS
 	if ([self hasPrefix: @"\\\\"]) {
@@ -249,7 +250,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByStandardizingPath
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
 	OFString *ret;
@@ -258,6 +259,7 @@ int _OFString_PathAdditions_reference;
 	if (self.length == 0)
 		return @"";
 
+	pool = objc_autoreleasePoolPush();
 	components = self.pathComponents;
 
 	if (components.count == 1) {
