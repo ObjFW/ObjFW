@@ -25,6 +25,10 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+
 struct objc_sparsearray *
 _objc_sparsearray_new(uint8_t levels)
 {
@@ -65,11 +69,20 @@ _objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 		uintptr_t j =
 		    (idx >> ((sparsearray->levels - i - 1) * 8)) & 0xFF;
 
-		if (iter->next[j] == NULL)
-			if ((iter->next[j] = calloc(1,
+		if (iter->next[j] == NULL) {
+			struct objc_sparsearray_data *new;
+
+			if ((new = calloc(1,
 			    sizeof(struct objc_sparsearray_data))) == NULL)
 				_OBJC_ERROR("Failed to allocate memory for "
 				    "sparse array!");
+
+#ifdef OF_HAVE_ATOMIC_OPS
+			OFReleaseMemoryBarrier();
+#endif
+
+			iter->next[j] = new;
+		}
 
 		iter = iter->next[j];
 	}
