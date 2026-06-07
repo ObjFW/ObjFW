@@ -49,15 +49,17 @@ OFOnce(OFOnceControl *control, void (*function)(void))
 		return;
 
 	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
-		OFAcquireMemoryBarrier();
-
 		function();
-		OFAtomicIntIncrease(control);
 
 		OFReleaseMemoryBarrier();
-	} else
+
+		OFAtomicIntIncrease(control);
+	} else {
 		while (*control == 1)
 			OFYieldThread();
+
+		OFAcquireMemoryBarrier();
+	}
 #elif defined(OF_AMIGAOS)
 	bool run = false;
 
