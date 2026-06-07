@@ -225,7 +225,11 @@ _Block_release(const void *block_)
 		return;
 
 #ifdef OF_HAVE_ATOMIC_OPS
+	OFReleaseMemoryBarrier();
+
 	if ((OFAtomicIntDecrease(&block->flags) & OFBlockRefCountMask) == 0) {
+		OFAcquireMemoryBarrier();
+
 		if (block->flags & OFBlockHasCopyDispose)
 			block->descriptor->disposeHelper(block);
 
@@ -285,13 +289,13 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			    ((*dst)->flags & ~OFBlockRefCountMask) | 1;
 			(*dst)->forwarding = *dst;
 
-			if (src->flags & OFBlockHasCopyDispose)
-				src->keepByref(*dst, src);
+			if ((*dst)->flags & OFBlockHasCopyDispose)
+				(*dst)->keepByref(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
 			if (!OFAtomicPointerCompareAndSwap(
 			    (void **)&src->forwarding, src, *dst)) {
-				if (src->flags & OFBlockHasCopyDispose)
+				if ((*dst)->flags & OFBlockHasCopyDispose)
 					src->disposeByref(*dst);
 
 				free(*dst);
@@ -305,8 +309,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
-				if (src->flags & OFBlockHasCopyDispose)
-					src->disposeByref(*dst);
+				if ((*dst)->flags & OFBlockHasCopyDispose)
+					(*dst)->disposeByref(*dst);
 
 				free(*dst);
 
@@ -353,8 +357,12 @@ _Block_object_dispose(const void *object_, const int flags_)
 		object = object->forwarding;
 
 #ifdef OF_HAVE_ATOMIC_OPS
+		OFReleaseMemoryBarrier();
+
 		if ((OFAtomicIntDecrease(&object->flags) &
 		    OFBlockRefCountMask) == 0) {
+			OFAcquireMemoryBarrier();
+
 			if (object->flags & OFBlockHasCopyDispose)
 				object->disposeByref(object);
 
@@ -371,8 +379,8 @@ _Block_object_dispose(const void *object_, const int flags_)
 				object->disposeByref(object);
 
 			free(object);
-		}
-		OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+		} else
+			OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}
