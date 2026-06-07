@@ -139,8 +139,9 @@
 
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970:
-			    (_buffer[3] << 24) | (_buffer[2] << 16) |
-			    (_buffer[1] << 8) | _buffer[0]];
+			    ((uint32_t)_buffer[3] << 24) |
+			    ((uint32_t)_buffer[2] << 16) |
+			    ((uint32_t)_buffer[1] << 8) | _buffer[0]];
 
 			_bytesRead = 0;
 			_state++;
@@ -172,7 +173,7 @@
 			if (_bytesRead < 2)
 				return 0;
 
-			_extraLength = (_buffer[1] << 8) | _buffer[0];
+			_extraLength = ((uint16_t)_buffer[1] << 8) | _buffer[0];
 			_bytesRead = 0;
 			_state++;
 			break;
@@ -275,7 +276,8 @@
 				return 0;
 
 			CRC32 = ((uint32_t)_buffer[3] << 24) |
-			    (_buffer[2] << 16) | (_buffer[1] << 8) | _buffer[0];
+			    ((uint32_t)_buffer[2] << 16) |
+			    ((uint32_t)_buffer[1] << 8) | _buffer[0];
 			if (~_CRC32 != CRC32) {
 				OFString *actual = [OFString stringWithFormat:
 				    @"%08" PRIX32, ~_CRC32];
@@ -299,8 +301,9 @@
 			if (_bytesRead < 4)
 				return 0;
 
-			uncompressedSize = (_buffer[3] << 24) |
-			    (_buffer[2] << 16) | (_buffer[1] << 8) | _buffer[0];
+			uncompressedSize = ((uint32_t)_buffer[3] << 24) |
+			    ((uint32_t)_buffer[2] << 16) |
+			    ((uint32_t)_buffer[1] << 8) | _buffer[0];
 			if (_uncompressedSize != uncompressedSize) {
 				OFString *actual = [OFString stringWithFormat:
 				    @"%" PRIu32, _uncompressedSize];
