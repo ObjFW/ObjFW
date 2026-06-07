@@ -23,21 +23,6 @@
 #import "OFData.h"
 
 @implementation OFMutableIndexSet
-- (instancetype)init
-{
-	self = [super init];
-
-	@try {
-		_ranges = [[OFMutableData alloc]
-		    initWithItemSize: sizeof(OFRange)];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
 - (id)copy
 {
 	return [[OFIndexSet alloc] initWithIndexSet: self];

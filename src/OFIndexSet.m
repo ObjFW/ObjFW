@@ -76,7 +76,17 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 
 - (instancetype)init
 {
-	return [super init];
+	self = [super init];
+
+	@try {
+		_ranges = [[OFMutableData alloc]
+		    initWithItemSize: sizeof(OFRange)];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)initWithIndexSet: (OFIndexSet *)indexSet
