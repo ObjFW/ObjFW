@@ -256,11 +256,9 @@ static OF_INLINE int
 OFSpinlockUnlock(OFSpinlock *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	bool ret = OFAtomicIntCompareAndSwap(spinlock, 1, 0);
-
 	OFReleaseMemoryBarrier();
 
-	return (ret ? 0 : EINVAL);
+	return (OFAtomicIntCompareAndSwap(spinlock, 1, 0) ? 0 : EINVAL);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return pthread_spin_unlock(spinlock);
 #else
