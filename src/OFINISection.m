@@ -199,6 +199,9 @@ unescapeMutableString(OFMutableString *string)
 		    objc_autorelease([[OFINISectionComment alloc] init]);
 		comment->_comment = [line copy];
 		[_lines addObject: comment];
+
+		objc_autoreleasePoolPop(pool);
+
 		return;
 	}
 

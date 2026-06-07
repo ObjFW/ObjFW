@@ -109,11 +109,13 @@ isWhitespaceLine(OFString *line)
 
 - (OFINISection *)sectionForName: (OFString *)name
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFINISection *section;
+	void *pool;
 
 	if ((section = [_sectionsMap objectForKey: name]) != nil)
 		return section;
+
+	pool = objc_autoreleasePoolPush();
 
 	if ([name rangeOfCharacterFromSet:
 	    [OFCharacterSet whitespaceCharacterSet]].location != OFNotFound)
