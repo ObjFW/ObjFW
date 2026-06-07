@@ -88,18 +88,29 @@
 	void *pool = objc_autoreleasePoolPush();
 
 	if (_timeZone == 0x7F) {
+		unsigned short localYear = date.localYear;
+
+		if (localYear < 1980 || localYear > 2107)
+			@throw [OFInvalidArgumentException exception];
+
 		_lastModifiedFileDate =
-		    (((date.localYear - 1980) & 0xFF) << 9) |
+		    (((localYear - 1980) & 0x7F) << 9) |
 		    ((date.localMonthOfYear & 0x0F) << 5) |
 		    (date.localDayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
 		    ((date.localMinute & 0x3F) << 5) |
 		    ((date.second >> 1) & 0x0F);
 	} else {
+		unsigned short year;
+
 		date = [date dateByAddingTimeInterval:
 		    -(OFTimeInterval)_timeZone * 900];
+		year = date.year;
 
-		_lastModifiedFileDate = (((date.year - 1980) & 0xFF) << 9) |
+		if (year < 1980 || year > 2107)
+			@throw [OFInvalidArgumentException exception];
+
+		_lastModifiedFileDate = (((year - 1980) & 0x7F) << 9) |
 		    ((date.monthOfYear & 0x0F) << 5) | (date.dayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.hour & 0x1F) << 11) |
 		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
