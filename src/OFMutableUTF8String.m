@@ -814,6 +814,9 @@
 	size_t d;
 	char *p;
 
+	if (_s->cStringLength == 0)
+		return;
+
 	_s->hasHash = false;
 
 	d = 0;
@@ -840,6 +843,9 @@
 {
 	size_t d, i;
 	char *p;
+
+	if (_s->cStringLength == 0)
+		return;
 
 	_s->hasHash = false;
 
