@@ -44,9 +44,10 @@ OFOnce(OFOnceControl *control, void (*function)(void))
 #elif defined(OF_HAVE_PTHREADS)
 	pthread_once(control, function);
 #elif defined(OF_HAVE_ATOMIC_OPS)
-	/* Avoid atomic operations in case it's already done. */
-	if (*control == 2)
+	if (*control == 2) {
+		OFAcquireMemoryBarrier();
 		return;
+	}
 
 	if (OFAtomicIntCompareAndSwap(control, 0, 1)) {
 		function();
