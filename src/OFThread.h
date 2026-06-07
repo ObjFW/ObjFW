@@ -69,7 +69,7 @@ typedef id _Nullable (^OFThreadBlock)(void);
 @private
 	OFPlainThread _thread;
 	OFPlainThreadAttributes _attr;
-	enum OFThreadState {
+	enum _OFThreadState {
 		OFThreadStateNotRunning,
 		OFThreadStateRunning,
 		OFThreadStateWaitingForJoin
