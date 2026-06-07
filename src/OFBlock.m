@@ -293,10 +293,14 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				(*dst)->keepByref(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
+			OFReleaseMemoryBarrier();
+
 			if (!OFAtomicPointerCompareAndSwap(
 			    (void **)&src->forwarding, src, *dst)) {
+				OFAcquireMemoryBarrier();
+
 				if ((*dst)->flags & OFBlockHasCopyDispose)
-					src->disposeByref(*dst);
+					(*dst)->disposeByref(*dst);
 
 				free(*dst);
 
@@ -353,6 +357,10 @@ _Block_object_dispose(const void *object_, const int flags_)
 		break;
 	case OFBlockFieldIsByref:;
 		struct Byref *object = (struct Byref *)object_;
+
+#ifdef OF_HAVE_ATOMIC_OPS
+		OFAcquireMemoryBarrier();
+#endif
 
 		object = object->forwarding;
 
