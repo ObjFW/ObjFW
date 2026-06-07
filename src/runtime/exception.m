@@ -445,13 +445,18 @@ readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct LSDA *LSDA)
 	LSDA->typesTable = NULL;
 
 	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit) {
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
 		const uint8_t *start = ptr;
+#endif
 
 		LSDA->landingpadsStart =
 		    (uintptr_t)readValue(landingpadsStartEnc, &ptr);
-		LSDA->landingpadsStart = (uintptr_t)resolveValue(
-		    LSDA->landingpadsStart, landingpadsStartEnc, start,
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+		LSDA->landingpadsStart =
+		    (uintptr_t)resolveValue(LSDA->landingpadsStart,
+		    landingpadsStartEnc, start,
 		    getBase(ctx, landingpadsStartEnc));
+#endif
 	}
 
 	if ((LSDA->typesTableEnc = *ptr++) != DW_EH_PE_omit) {
