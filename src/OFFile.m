@@ -554,12 +554,12 @@ ioErrToErrNo()
 	}
 
 # if defined(OF_MORPHOS)
-	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == 1)
+	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == -1)
 # elif defined(OF_AMIGAOS4)
 	if ((ret = ChangeFilePosition(_handle->handle, offset,
-	    translatedWhence)) == 1)
+	    translatedWhence)) == -1)
 # else
-	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == 1)
+	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == -1)
 # endif
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
