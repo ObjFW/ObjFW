@@ -543,6 +543,7 @@ static uint8_t
 findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
     bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
+	uint8_t found = 0;
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
 
@@ -595,15 +596,15 @@ findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
 
 			if (classMatches(class, e->object)) {
 				*filterPtr = filter;
-				return HANDLER_FOUND;
+				return (found | HANDLER_FOUND);
 			}
 		} else if (filter == 0)
-			return CLEANUP_FOUND;
+			found |= CLEANUP_FOUND;
 		else if (filter < 0)
 			_OBJC_ERROR("Invalid filter!");
 	} while (displacement != 0);
 
-	return 0;
+	return found;
 }
 
 #ifdef __SEH__
