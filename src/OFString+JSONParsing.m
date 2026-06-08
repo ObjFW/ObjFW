@@ -675,6 +675,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 {
 	bool isNegative = (*pointer < stop && (*pointer)[0] == '-');
 	bool isDecimal = false;
+	unsigned char base = 10;
 	size_t i;
 	OFString *string;
 	OFNumber *number;
@@ -683,6 +684,9 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		if OF_UNLIKELY ((*pointer)[i] == '.' || (*pointer)[i] == 'e' ||
 		    (*pointer)[i] == 'E')
 			isDecimal = true;
+
+		if OF_UNLIKELY ((*pointer)[i] == 'x')
+			base = 16;
 
 		if OF_LIKELY ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
@@ -704,10 +708,10 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 			number = [OFNumber numberWithDouble: -INFINITY];
 		else if (isNegative)
 			number = [OFNumber numberWithLongLong:
-			    [string longLongValueWithBase: 0]];
+			    [string longLongValueWithBase: base]];
 		else
 			number = [OFNumber numberWithUnsignedLongLong:
-			    [string unsignedLongLongValueWithBase: 0]];
+			    [string unsignedLongLongValueWithBase: base]];
 	} @finally {
 		objc_release(string);
 	}
