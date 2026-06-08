@@ -674,14 +674,15 @@ static inline OFNumber *
 parseNumber(const char **pointer, const char *stop, size_t *line)
 {
 	bool isNegative = (*pointer < stop && (*pointer)[0] == '-');
-	bool hasDecimal = false;
+	bool isDecimal = false;
 	size_t i;
 	OFString *string;
 	OFNumber *number;
 
 	for (i = 0; *pointer + i < stop; i++) {
-		if OF_UNLIKELY ((*pointer)[i] == '.')
-			hasDecimal = true;
+		if OF_UNLIKELY ((*pointer)[i] == '.' || (*pointer)[i] == 'e' ||
+		    (*pointer)[i] == 'E')
+			isDecimal = true;
 
 		if OF_LIKELY ((*pointer)[i] == ' ' || (*pointer)[i] == '\t' ||
 		    (*pointer)[i] == '\r' || (*pointer)[i] == '\n' ||
@@ -694,7 +695,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 	*pointer += i;
 
 	@try {
-		if (hasDecimal)
+		if (isDecimal)
 			number = [OFNumber numberWithDouble:
 			    string.doubleValue];
 		else if ([string isEqual: @"Infinity"])
