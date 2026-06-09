@@ -1306,7 +1306,8 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				AC_LANG_PROGRAM([
 					/*
 					 * It seems __thread is buggy with
-					 * GCC 4.1 */
+					 * GCC 4.1
+					 */
 					#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
 					# error buggy
 					#endif
