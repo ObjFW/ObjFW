@@ -70,6 +70,7 @@ _objc_hashtable_new(uint32_t (*hash)(const void *),
 
 	table->count = 0;
 	table->size = size;
+	table->tombstones = 0;
 	table->data = calloc(size, sizeof(struct objc_hashtable_bucket *));
 
 	if (table->data == NULL)
