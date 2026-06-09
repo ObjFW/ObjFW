@@ -334,6 +334,9 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 
 		bucket->hash = hash;
 
+		if (self->_buckets[i] == &tombstone)
+			self->_tombstones--;
+
 		self->_buckets[i] = bucket;
 		self->_count++;
 
