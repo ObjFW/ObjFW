@@ -95,7 +95,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 			return;
 
 		newSize = table->size * 2;
-	} else if (fullness <= 1 && table->size > 1)
+	} else if (fullness < 1 && table->size > 1)
 		newSize = table->size / 2;
 	else
 		return;
