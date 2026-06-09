@@ -285,7 +285,8 @@ objc_removeAssociatedObjects(id object)
 			struct Association *association;
 
 			if (objectHashtable->data[i] == NULL ||
-			    objectHashtable->data[i] == &_objc_deletedBucket)
+			    objectHashtable->data[i] ==
+			    &_objc_hashtable_tombstone)
 				continue;
 
 			association = (struct Association *)

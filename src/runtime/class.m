@@ -663,7 +663,7 @@ objc_getClassList(Class *buffer, unsigned int count)
 		}
 
 		if (classes->data[i] == NULL ||
-		    classes->data[i] == &_objc_deletedBucket)
+		    classes->data[i] == &_objc_hashtable_tombstone)
 			continue;
 
 		if (strcmp(classes->data[i]->key, "Protocol") == 0)
@@ -1038,7 +1038,7 @@ _objc_unregisterAllClasses(void)
 
 	for (uint32_t i = 0; i < classes->size; i++) {
 		if (classes->data[i] != NULL &&
-		    classes->data[i] != &_objc_deletedBucket) {
+		    classes->data[i] != &_objc_hashtable_tombstone) {
 			void *class = (Class)classes->data[i]->object;
 
 			if (class == Nil || (uintptr_t)class & 1)

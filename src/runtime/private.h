@@ -196,7 +196,7 @@ struct objc_hashtable_bucket {
 struct objc_hashtable {
 	objc_hashtable_hash_func hash;
 	objc_hashtable_equal_func equal;
-	uint32_t count, size;
+	uint32_t count, size, tombstones;
 	struct objc_hashtable_bucket *_Nonnull *_Nullable data;
 };
 
@@ -275,7 +275,8 @@ extern bool _objc_string_equal(const void *_Nonnull, const void *_Nonnull)
 extern struct objc_hashtable *_Nonnull _objc_hashtable_new(
     objc_hashtable_hash_func, objc_hashtable_equal_func, uint32_t)
     OF_VISIBILITY_INTERNAL;
-extern struct objc_hashtable_bucket _objc_deletedBucket OF_VISIBILITY_INTERNAL;
+extern struct objc_hashtable_bucket _objc_hashtable_tombstone
+    OF_VISIBILITY_INTERNAL;
 extern void _objc_hashtable_set(struct objc_hashtable *_Nonnull,
     const void *_Nonnull, const void *_Nonnull) OF_VISIBILITY_INTERNAL;
 extern void *_Nullable _objc_hashtable_get(struct objc_hashtable *_Nonnull,
