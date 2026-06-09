@@ -205,7 +205,7 @@ resizeForCount(OFMapTable *self, uint32_t count)
 			return;
 
 		capacity = self->_capacity * 2;
-	} else if (fullness <= 1 && self->_capacity > 1)
+	} else if (fullness < 1 && self->_capacity > 1)
 		capacity = self->_capacity / 2;
 	else
 		return;
