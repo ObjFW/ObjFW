@@ -206,6 +206,9 @@ _objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	bucket->hash = hash;
 	bucket->object = object;
 
+	if (table->data[i] == &_objc_hashtable_tombstone)
+		table->tombstones--;
+
 	table->data[i] = bucket;
 	table->count++;
 }
