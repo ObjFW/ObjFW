@@ -55,7 +55,7 @@
 		return [path stringByAppendingFormat: @"/Contents/MacOS/%@",
 						      name.lastPathComponent];
 # elif defined(OF_IOS)
-		return [name stringByAppendingFormat: @"/%@",
+		return [path stringByAppendingFormat: @"/%@",
 						      name.lastPathComponent];
 # endif
 #endif
