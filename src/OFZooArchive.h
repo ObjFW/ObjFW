@@ -24,6 +24,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFMutableSet OF_GENERIC(ObjectType);
+@class OFNumber;
+
 /**
  * @class OFZooArchive OFZooArchive.h ObjFW/ObjFW.h
  *
@@ -45,6 +48,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _lastReturnedStream;
 @protected
 	OFStreamOffset _lastHeaderOffset;
+	OFMutableSet OF_GENERIC(OFNumber *) *_seenHeaderOffsets;
 	size_t _lastHeaderLength;
 }
 
