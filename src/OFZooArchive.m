@@ -32,7 +32,9 @@
 #import "OFIRIHandler.h"
 #import "OFKernelEventObserver.h"
 #import "OFLHADecompressingStream.h"
+#import "OFNumber.h"
 #import "OFSeekableStream.h"
+#import "OFSet.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -138,6 +140,7 @@ OF_DIRECT_MEMBERS
 
 		_stream = objc_retain(stream);
 		_encoding = OFStringEncodingUTF8;
+		_seenHeaderOffsets = [[OFMutableSet alloc] init];
 
 		if (_mode == modeRead)
 			[self of_readArchiveHeader];
@@ -178,6 +181,7 @@ OF_DIRECT_MEMBERS
 
 	objc_release(_archiveComment);
 	objc_release(_currentEntry);
+	objc_release(_seenHeaderOffsets);
 
 	[super dealloc];
 }
@@ -185,17 +189,19 @@ OF_DIRECT_MEMBERS
 - (void)of_readArchiveHeader
 {
 	char headerText[20];
-	uint32_t firstFileOffset, commentOffset;
+	uint32_t firstHeaderOffset, commentOffset;
 	uint16_t commentLength;
+	void *pool;
 
 	[_stream readIntoBuffer: headerText exactLength: 20];
 
 	if ([_stream readLittleEndianInt32] != 0xFDC4A7DC)
 		@throw [OFInvalidFormatException exception];
 
-	firstFileOffset = [_stream readLittleEndianInt32];
+	firstHeaderOffset = [_stream readLittleEndianInt32];
 
-	if ([_stream readLittleEndianInt32] != ~(uint32_t)(firstFileOffset - 1))
+	if ([_stream readLittleEndianInt32] !=
+	    ~(uint32_t)(firstHeaderOffset - 1))
 		@throw [OFInvalidFormatException exception];
 
 	if ((_minVersionNeeded = [_stream readBigEndianInt16]) > 0x201)
@@ -218,7 +224,11 @@ OF_DIRECT_MEMBERS
 					  encoding: _encoding] copy];
 	}
 
-	[_stream seekToOffset: firstFileOffset whence: OFSeekSet];
+	[_stream seekToOffset: firstHeaderOffset whence: OFSeekSet];
+	pool = objc_autoreleasePoolPush();
+	[_seenHeaderOffsets addObject:
+	    [OFNumber numberWithLongLong: firstHeaderOffset]];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString *)archiveComment
@@ -246,9 +256,20 @@ OF_DIRECT_MEMBERS
 	if (_mode != modeRead)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_currentEntry != nil)
+	if (_currentEntry != nil) {
+		void *pool = objc_autoreleasePoolPush();
+		OFNumber *headerOffset = [OFNumber numberWithLongLong:
+		    _currentEntry->_nextHeaderOffset];
+
+		if ([_seenHeaderOffsets containsObject: headerOffset])
+			@throw [OFInvalidFormatException exception];
+
 		[_stream seekToOffset: _currentEntry->_nextHeaderOffset
 			       whence: OFSeekSet];
+		[_seenHeaderOffsets addObject: headerOffset];
+
+		objc_autoreleasePoolPop(pool);
+	}
 
 	objc_release(_currentEntry);
 	_currentEntry = nil;
