@@ -24,7 +24,7 @@
 
 #import "OFHuffmanTree.h"
 
-#import "OFInvalidFormatException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 
 static OFHuffmanTree
@@ -90,6 +90,9 @@ _OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 			}
 		}
 
+		if (maxBit == 0)
+			@throw [OFInvalidArgumentException exception];
+
 		code = 0;
 		lengthCount[0] = 0;
 		for (size_t i = 1; i <= maxBit; i++) {
@@ -126,6 +129,9 @@ _OFHuffmanTreeNewSingle(uint16_t value)
 void
 _OFHuffmanTreeFree(OFHuffmanTree tree)
 {
+	if (tree == NULL)
+		return;
+
 	for (uint_fast8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leaves[i] != NULL)
 			_OFHuffmanTreeFree(tree->leaves[i]);

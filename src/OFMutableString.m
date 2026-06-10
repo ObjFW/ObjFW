@@ -237,7 +237,7 @@ OF_SINGLETON_METHODS
 
 		if (isStart) {
 			table = startTable;
-			tableSize = middleTableSize;
+			tableSize = startTableSize;
 		} else {
 			table = middleTable;
 			tableSize = middleTableSize;
@@ -290,8 +290,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self insertString: string atIndex: self.length];
 }
 
-- (void)appendCharacters: (const OFUnichar *)characters
-		  length: (size_t)length
+- (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self appendString: [OFString stringWithCharacters: characters
@@ -346,15 +345,20 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 - (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
+	void *pool;
 	char *UTF8String;
 	int UTF8StringLength;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
+	pool = objc_autoreleasePoolPush();
+
 	if ((UTF8StringLength = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		[self appendUTF8String: UTF8String length: UTF8StringLength];
@@ -440,7 +444,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	size_t searchLength = string.length;
 	size_t replacementLength = replacement.length;
 
-	if (string == nil || replacement == nil)
+	if (string.length == 0 || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (OFEndOfRange(range) > self.length)
@@ -454,7 +458,8 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	pool2 = objc_autoreleasePoolPush();
 	characters = self.characters;
 
-	for (size_t i = range.location; i <= range.length - searchLength; i++) {
+	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
+	    i++) {
 		if (memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(OFUnichar)) != 0)
 			continue;

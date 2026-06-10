@@ -171,36 +171,45 @@
 
 - (void)setAmigaProtection: (OFNumber *)amigaProtection
 {
-	void *pool = objc_autoreleasePoolPush();
-	uint32_t tmp = OFToBigEndian32(
-	    (uint32_t)amigaProtection.unsignedLongValue);
-	OFData *data = [OFData dataWithItems: &tmp count: sizeof(tmp)];
+	if (amigaProtection != nil) {
+		void *pool = objc_autoreleasePoolPush();
+		uint32_t tmp = OFToBigEndian32(
+		    (uint32_t)amigaProtection.unsignedLongValue);
+		OFData *data = [OFData dataWithItems: &tmp count: sizeof(tmp)];
 
-	if (_extendedHeader == nil)
-		_extendedHeader = [[OFMutableDictionary alloc] init];
+		if (_extendedHeader == nil)
+			_extendedHeader = [[OFMutableDictionary alloc] init];
 
-	[_extendedHeader setObject: data
-			    forKey: @"SCHILY.xattr.user.amiga.mode"];
+		[_extendedHeader setObject: data
+				    forKey: @"SCHILY.xattr.user.amiga.mode"];
 
-	objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool);
+	} else
+		[_extendedHeader removeObjectForKey:
+		    @"SCHILY.xattr.user.amiga.mode"];
 }
 
 - (void)setAmigaComment: (OFString *)amigaComment
 {
-	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [amigaComment
-	    cStringWithEncoding: OFStringEncodingISO8859_1];
-	size_t length = [amigaComment
-	    cStringLengthWithEncoding: OFStringEncodingISO8859_1];
-	OFData *data = [OFData dataWithItems: cString count: length + 1];
+	if (amigaComment != nil) {
+		void *pool = objc_autoreleasePoolPush();
+		const char *cString = [amigaComment
+		    cStringWithEncoding: OFStringEncodingISO8859_1];
+		size_t length = [amigaComment
+		    cStringLengthWithEncoding: OFStringEncodingISO8859_1];
+		OFData *data = [OFData dataWithItems: cString
+					       count: length + 1];
 
-	if (_extendedHeader == nil)
-		_extendedHeader = [[OFMutableDictionary alloc] init];
+		if (_extendedHeader == nil)
+			_extendedHeader = [[OFMutableDictionary alloc] init];
 
-	[_extendedHeader setObject: data
-			    forKey: @"SCHILY.xattr.user.amiga.comment"];
+		[_extendedHeader setObject: data
+				    forKey: @"SCHILY.xattr.user.amiga.comment"];
 
-	objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool);
+	} else
+		[_extendedHeader removeObjectForKey:
+		    @"SCHILY.xattr.user.amiga.comment"];
 }
 
 - (void)makeImmutable

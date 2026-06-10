@@ -31,8 +31,7 @@ OF_DIRECT_MEMBERS
     <OHEvdevMapping>
 #endif
 
-- (instancetype)oh_initWithProductID: (uint16_t)productID
-    OF_METHOD_FAMILY(init);
+- (instancetype)oh_initWithVIDPID: (OHVIDPID)VIDPID OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

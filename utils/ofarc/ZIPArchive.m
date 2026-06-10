@@ -566,36 +566,25 @@ outer_loop_end:
 
 	_archive.archiveComment = archiveComment;
 
-	for (OFString *localFileName in files) {
+	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
-		OFArray OF_GENERIC (OFString *) *components;
-		OFString *fileName;
 		OFFileAttributes attributes;
-		bool isDirectory = false;
+		OFFileAttributeType type;
 		OFMutableZIPArchiveEntry *entry;
 		uint16_t version = 45;
-		unsigned long long size;
 		OFStream *output;
 
 		[app checkForCancellation];
-
-		components = localFileName.pathComponents;
-		fileName = [components componentsJoinedByString: @"/"];
-
-		attributes = [fileManager
-		    attributesOfItemAtPath: localFileName];
-
-		if ([attributes.fileType isEqual: OFFileTypeDirectory]) {
-			isDirectory = true;
-			fileName = [fileName stringByAppendingString: @"/"];
-		}
 
 		if (app->_outputLevel >= 0)
 			[OFStdErr writeString: OF_LOCALIZED(@"adding_file",
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
-		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
+		attributes = [fileManager attributesOfItemAtPath: fileName];
+		type = attributes.fileType;
+		entry = [OFMutableZIPArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 
 #if defined(OF_AMIGAOS)
 		version |= OFZIPArchiveEntryAttributeCompatibilityAmiga << 8;
@@ -608,17 +597,13 @@ outer_loop_end:
 		entry.minVersionNeeded = version;
 		entry.versionMadeBy = version;
 
-		size = (isDirectory ? 0 : attributes.fileSize);
-		entry.compressedSize = size;
-		entry.uncompressedSize = size;
-
 		entry.compressionMethod =
 		    OFZIPArchiveEntryCompressionMethodNone;
 		entry.modificationDate = attributes.fileModificationDate;
 
 #if defined(OF_AMIGAOS)
 		entry.versionSpecificAttributes =
-		    ((uint32_t)attributes.fileAmigaProtection << 16) ^ 0xF;
+		    ((uint32_t)attributes.fileAmigaProtection ^ 0xF) << 16;
 #elif defined(OF_MSDOS)
 		entry.versionSpecificAttributes =
 		    (uint32_t)attributes.fileMSDOSAttributes << 16;
@@ -637,12 +622,16 @@ outer_loop_end:
 		}
 #endif
 
-		[entry makeImmutable];
+		if ([type isEqual: OFFileTypeDirectory])
+			if (![entry.fileName hasSuffix: @"/"])
+				entry.fileName = [entry.fileName
+				    stringByAppendingString: @"/"];
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if (!isDirectory) {
+		if ([type isEqual: OFFileTypeRegular]) {
 			unsigned long long written = 0;
+			unsigned long long size = attributes.fileSize;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

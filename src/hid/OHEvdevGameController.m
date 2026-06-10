@@ -32,6 +32,8 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OH8BitDoPro2Gamepad.h"
+#import "OH8BitDoPro2Gamepad+Private.h"
 #import "OH8BitDoUltimate2CWirelessGamepad.h"
 #import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
@@ -124,7 +126,7 @@ scale(float value, float min, float max, bool inverted)
 }
 
 @implementation OHEvdevGameController
-@synthesize name = _name, profile = _profile;
+@synthesize VIDPID = _VIDPID, name = _name, profile = _profile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
@@ -192,8 +194,7 @@ scale(float value, float min, float max, bool inverted)
 		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
 			@throw [OFInvalidArgumentException exception];
 
-		_vendorID = inputID.vendor;
-		_productID = inputID.product;
+		_VIDPID = (OHVIDPID){ inputID.vendor, inputID.product };
 
 		_evBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    EV_MAX) / OF_ULONG_BIT, sizeof(unsigned long));
@@ -220,12 +221,11 @@ scale(float value, float min, float max, bool inverted)
 			 * These are not reported as gamepads, but are still
 			 * supported.
 			 */
-			if (_vendorID == OHVendorIDDragonRise &&
-			    _productID == OHProductIDGameCubeControllerAdapter)
+			if (OHEqualVIDPIDs(_VIDPID,
+			    OHVIDPIDDragonRiseGameCubeControllerAdapter))
 				;
-			else if (_vendorID == OHVendorIDWiseGroup &&
-			    _productID ==
-			    OHProductIDPlayStationControllerAdapter)
+			else if (OHEqualVIDPIDs(_VIDPID,
+			    OHVIDPIDWiseGroupPlayStationControllerAdapter))
 				;
 			else
 				@throw [OFInvalidArgumentException exception];
@@ -249,58 +249,55 @@ scale(float value, float min, float max, bool inverted)
 				    exception];
 		}
 
-		if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualSense)
+		if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDSonyDualSense))
 			_profile = [[OHDualSenseGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualShock4)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDSonyDualShock4))
 			_profile = [[OHDualShock4Gamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDPlayStation3Controller)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDSonyPlayStation3Controller))
 			_profile = [[OHDualShock3Gamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDN64Controller)
-			_profile = [[OHExtendedN64Controller alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDSNESController)
-			_profile = [[OHExtendedSNESGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDLeftJoyCon)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDLeftNintendoJoyCon))
 			_profile = [[OHLeftJoyCon alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDRightJoyCon)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDRightNintendoJoyCon))
 			_profile = [[OHRightJoyCon alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDProController)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDNintendoSwitchProController))
 			_profile = [[OHSwitchProController alloc] oh_init];
-		else if ((_vendorID == OHVendorIDGoogle &&
-		    _productID == OHProductIDStadiaController) ||
-		    /* MOCUTE-053X-M35-HID */
-		    (_vendorID == 0 && _productID == 0x046E))
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDNintendo64Controller))
+			_profile = [[OHExtendedN64Controller alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDSuperNintendoController))
+			_profile = [[OHExtendedSNESGamepad alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDStadiaController) ||
+		    OHEqualVIDPIDs(_VIDPID, OHVIDPIDMocute053X))
 			_profile = [[OHStadiaGamepad alloc]
-			    oh_initWithVendorID: _vendorID
-				      productID: _productID];
-		else if (_vendorID == OHVendorID8BitDo &&
-		    (_productID == OHProductIDUltimate2CWirelessBT ||
-		    _productID == OHProductIDUltimate2CWirelessUSB))
-			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
-			    oh_initWithProductID: _productID];
-		else if (_vendorID == OHVendorID8BitDo &&
-		    _productID == OHProductIDNES30Gamepad)
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoNES30Gamepad))
 			_profile = [[OHNESGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDDragonRise &&
-		    _productID == OHProductIDGameCubeControllerAdapter)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPID8BitDoUltimate2CWirelessBT) ||
+		    OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPID8BitDoUltimate2CWirelessUSB))
+			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoPro2) ||
+		    (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDXboxOneWirelessController) &&
+		    [_name isEqual: @"8BitDo Pro 2"]))
+			_profile = [[OH8BitDoPro2Gamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDDragonRiseGameCubeControllerAdapter))
 			_profile = [[OHGameCubeController alloc] oh_init];
-		else if (_vendorID == OHVendorIDWiseGroup &&
-		    _productID == OHProductIDPlayStationControllerAdapter)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDWiseGroupPlayStationControllerAdapter))
 			_profile = [[OHDualShockGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits
 					evBits: _evBits
 				       absBits: _absBits
-				      vendorID: _vendorID
-				     productID: _productID];
+					VIDPID: _VIDPID];
 
 		[self oh_pollState];
 
@@ -328,16 +325,6 @@ scale(float value, float min, float max, bool inverted)
 	objc_release(_profile);
 
 	[super dealloc];
-}
-
-- (OFNumber *)vendorID
-{
-	return [OFNumber numberWithUnsignedShort: _vendorID];
-}
-
-- (OFNumber *)productID
-{
-	return [OFNumber numberWithUnsignedShort: _productID];
 }
 
 - (void)oh_pollState

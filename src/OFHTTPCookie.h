@@ -38,7 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_Nullable _expires;
-	bool _secure, _HTTPOnly;
+	bool _hostOnly, _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }
 
@@ -66,6 +66,12 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The date when the cookie expires.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFDate *expires;
+
+/**
+ * @brief Whether the cookie is host-only, meaning it is only returned on an
+ *	  exact domain match.
+ */
+@property (nonatomic, getter=isHostOnly) bool hostOnly;
 
 /**
  * @brief Whether the cookie is only to be used with HTTPS.
@@ -118,6 +124,20 @@ OF_SUBCLASSING_RESTRICTED
 			 value: (OFString *)value
 			domain: (OFString *)domain;
 
+/**
+ * @brief Create a new cookie with the specified name and value.
+ *
+ * @param name The name of the cookie
+ * @param value The value of the cookie
+ * @param domain The domain for the cookie
+ * @param path The path for the cookie
+ * @return A new, autoreleased OFHTTPCookie
+ */
++ (instancetype)cookieWithName: (OFString *)name
+			 value: (OFString *)value
+			domain: (OFString *)domain
+			  path: (OFString *)path;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -131,7 +151,22 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithName: (OFString *)name
 		       value: (OFString *)value
-		      domain: (OFString *)domain OF_DESIGNATED_INITIALIZER;
+		      domain: (OFString *)domain;
+
+/**
+ * @brief Initializes an already allocated new cookie with the specified name
+ *	  and value.
+ *
+ * @param name The name of the cookie
+ * @param value The value of the cookie
+ * @param domain The domain for the cookie
+ * @param path The path for the cookie
+ * @return An initialized OFHTTPCookie
+ */
+- (instancetype)initWithName: (OFString *)name
+		       value: (OFString *)value
+		      domain: (OFString *)domain
+			path: (OFString *)path OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

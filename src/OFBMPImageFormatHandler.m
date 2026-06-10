@@ -49,7 +49,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	char magic[2];
 	uint32_t dataStart, headerSize, compressionMethod;
 	int32_t tmp32, horizPixelPerMeter, vertPixelPerMeter;
-	size_t width, height, lineLength, linePadding = 0;
+	uint32_t width, height, lineLength, linePadding = 0;
 	bool flipped = false;
 	OFSize size;
 	uint16_t bitsPerPixel;
@@ -81,22 +81,26 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	}
 
 	tmp32 = [stream readLittleEndianInt32];
-	if (tmp32 < 0)
+	if (tmp32 <= 0)
 		@throw [OFInvalidFormatException exception];
 	width = tmp32;
 
 	tmp32 = [stream readLittleEndianInt32];
+	if (tmp32 == INT32_MIN)
+		@throw [OFInvalidFormatException exception];
+
 	if (tmp32 < 0)
 		height = tmp32 * -1;
-	else {
+	else if (tmp32 != 0) {
 		height = tmp32;
 		flipped = true;
-	}
+	} else
+		@throw [OFInvalidFormatException exception];
 
 	size.width = width;
 	size.height = height;
 
-	if (size.width != width || size.height != height)
+	if ((uint32_t)size.width != width || (uint32_t)size.height != height)
 		@throw [OFOutOfRangeException exception];
 
 	/* Number of color planes */
@@ -104,32 +108,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 		@throw [OFInvalidFormatException exception];
 
 	bitsPerPixel = [stream readLittleEndianInt16];
-
-	if (SIZE_MAX / width < bitsPerPixel / CHAR_BIT)
-		@throw [OFOutOfRangeException exception];
-
-	lineLength = width * (bitsPerPixel / CHAR_BIT);
-	if (lineLength % 4 != 0)
-		linePadding = 4 - (lineLength % 4);
-
 	compressionMethod = [stream readLittleEndianInt32];
-	if (compressionMethod != 0 &&
-	    (headerSize < 56 || compressionMethod != 3)) {
-		OFString *version = [OFString stringWithFormat:
-		    @"\"compression method %u\"", compressionMethod];
-		@throw [OFUnsupportedVersionException
-		    exceptionWithVersion: version];
-	}
-
-	/* dataSize = */ [stream readLittleEndianInt32];
-	horizPixelPerMeter = [stream readLittleEndianInt32];
-	vertPixelPerMeter = [stream readLittleEndianInt32];
-
-	/* Number of colors in palette */
-	if ([stream readLittleEndianInt32] != 0)
-		@throw [OFInvalidFormatException exception];
-
-	/* Number of important colors = */ [stream readLittleEndianInt32];
 
 	switch (bitsPerPixel) {
 	case 24:
@@ -140,12 +119,42 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 		if (headerSize >= 56 && compressionMethod == 3)
 			break;
 		/* Fall through */
+	case 0:
+		@throw [OFInvalidFormatException exception];
 	default:;
 		OFString *version = [OFString stringWithFormat:
 		    @"\"%u bits per pixel\"", bitsPerPixel];
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
 	}
+
+	if (compressionMethod != 0 &&
+	    (headerSize < 56 || compressionMethod != 3)) {
+		OFString *version = [OFString stringWithFormat:
+		    @"\"compression method %u\"", compressionMethod];
+		@throw [OFUnsupportedVersionException
+		    exceptionWithVersion: version];
+	}
+
+	if (UINT32_MAX / width < bitsPerPixel / CHAR_BIT)
+		@throw [OFOutOfRangeException exception];
+
+	lineLength = width * (bitsPerPixel / CHAR_BIT);
+	if (lineLength % 4 != 0)
+		linePadding = 4 - (lineLength % 4);
+
+	if (UINT32_MAX / lineLength < height)
+		@throw [OFOutOfRangeException exception];
+
+	/* dataSize = */ [stream readLittleEndianInt32];
+	horizPixelPerMeter = [stream readLittleEndianInt32];
+	vertPixelPerMeter = [stream readLittleEndianInt32];
+
+	/* Number of colors in palette */
+	if ([stream readLittleEndianInt32] != 0)
+		@throw [OFInvalidFormatException exception];
+
+	/* Number of important colors = */ [stream readLittleEndianInt32];
 
 	if (headerSize >= 56 && compressionMethod == 3) {
 		struct {

@@ -237,7 +237,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_acceptProlog = true;
 		_lineNumber = 1;
 		_encoding = OFStringEncodingUTF8;
-		_depthLimit = 32;
+		_depthLimit = 128;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -282,8 +282,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_lastCarriageReturn = (_data[_i] == '\r');
 	}
 
-	/* In stateInTag, there can be only spaces */
-	if (length - _last > 0 && _state != stateInTag)
+	if (length - _last > 0)
 		appendToBuffer(_buffer, _data + _last, _encoding,
 		    length - _last);
 }
@@ -721,7 +720,8 @@ inTagState(OFXMLParser *self)
 			self->_last = self->_i;
 			self->_state = stateInAttributeName;
 			self->_i--;
-		}
+		} else
+			self->_last = self->_i + 1;
 
 		return;
 	}
@@ -743,12 +743,21 @@ inTagState(OFXMLParser *self)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self->_delegate respondsToSelector:
-	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
+	    @selector(parser:didStartElement:prefix:namespace:attributes:)]) {
+		OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
+
+		[self->_attributes makeImmutable];
+		attributes = objc_autorelease(self->_attributes);
+
+		self->_attributes = nil;
+		self->_attributes = [[OFMutableArray alloc] init];
+
 		[self->_delegate parser: self
 			didStartElement: self->_name
 				 prefix: self->_prefix
 			      namespace: namespace
-			     attributes: self->_attributes];
+			     attributes: attributes];
+	}
 
 	if (self->_data[self->_i] == '/') {
 		if ([self->_delegate respondsToSelector:
@@ -842,6 +851,8 @@ expectAttributeEqualSignState(OFXMLParser *self)
 	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
 	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
+
+	self->_last = self->_i + 1;
 }
 
 /* Expecting name/value delimiter of an attribute */
@@ -920,12 +931,15 @@ expectTagCloseState(OFXMLParser *self)
 static void
 expectSpaceOrTagCloseState(OFXMLParser *self)
 {
+	self->_last = self->_i + 1;
+
 	if (self->_data[self->_i] == '>') {
-		self->_last = self->_i + 1;
 		self->_state = stateOutsideTag;
-	} else if (self->_data[self->_i] != ' ' &&
-	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
-	    self->_data[self->_i] != '\r')
+		return;
+	}
+
+	if (self->_data[self->_i] != ' ' && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 

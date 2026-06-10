@@ -59,6 +59,9 @@ parseNumericEntity(const char *entity, size_t length)
 				c = (c << 4) | (entity[i] - 'a' + 10);
 			else
 				return nil;
+
+			if (c > 0x10FFFF)
+				return nil;
 		}
 	} else {
 		for (i = 0; i < length; i++) {
@@ -66,8 +69,14 @@ parseNumericEntity(const char *entity, size_t length)
 				c = (c * 10) + (entity[i] - '0');
 			else
 				return nil;
+
+			if (c > 0x10FFFF)
+				return nil;
 		}
 	}
+
+	if (c == 0 || (c >= 0xD800 && c <= 0xDFFF))
+		return nil;
 
 	if ((i = _OFUTF8StringEncode(c, buffer)) == 0)
 		return nil;

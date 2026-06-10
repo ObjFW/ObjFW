@@ -44,6 +44,10 @@
 	self = [super of_init];
 
 	@try {
+		if ([target containsString: @"?>"] ||
+		    [text containsString: @"?>"])
+			@throw [OFInvalidArgumentException exception];
+
 		_target = [target copy];
 		_text = [text copy];
 	} @catch (id e) {

@@ -127,12 +127,9 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 
 	OFFreeMemory(_slidingWindow);
 
-	if (_codeLenTree != NULL)
-		_OFHuffmanTreeFree(_codeLenTree);
-	if (_litLenTree != NULL)
-		_OFHuffmanTreeFree(_litLenTree);
-	if (_distTree != NULL)
-		_OFHuffmanTreeFree(_distTree);
+	_OFHuffmanTreeFree(_codeLenTree);
+	_OFHuffmanTreeFree(_litLenTree);
+	_OFHuffmanTreeFree(_distTree);
 
 	OFFreeMemory(_codesLengths);
 

@@ -100,8 +100,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)oh_initWithVendorID: (uint16_t)vendorID
-			  productID: (uint16_t)productID
+- (instancetype)oh_initWithVIDPID: (OHVIDPID)VIDPID
 {
 	self = [super init];
 
@@ -124,8 +123,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 			[buttons setObject: button forKey: buttonNames[i]];
 		}
 
-		if (vendorID == OHVendorIDGoogle &&
-		    productID == OHProductIDStadiaController) {
+		if (OHEqualVIDPIDs(VIDPID, OHVIDPIDStadiaController)) {
 			for (size_t i = 0; i < numExtraButtons; i++) {
 				button = [OHGameControllerButton
 				    oh_elementWithName: extraButtonNames[i]

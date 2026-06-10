@@ -148,6 +148,9 @@ createDate(OFData *data)
 		memcpy(&combined, data.items, 8);
 		combined = OFFromBigEndian64(combined);
 
+		if ((combined >> 34) >= 1000000000)
+			@throw [OFInvalidFormatException exception];
+
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)(combined & 0x3FFFFFFFF) +
 		    (double)(combined >> 34) / 1000000000];
@@ -161,6 +164,9 @@ createDate(OFData *data)
 
 		nanoseconds = OFFromBigEndian32(nanoseconds);
 		seconds = OFFromBigEndian64(seconds);
+
+		if (nanoseconds >= 1000000000)
+			@throw [OFInvalidFormatException exception];
 
 		return [OFDate dateWithTimeIntervalSince1970:
 		    (double)seconds + (double)nanoseconds / 1000000000];
@@ -349,6 +355,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		count = readUInt32(buffer + 1);
 
+		if (count > SIZE_MAX - 5)
+			@throw [OFOutOfRangeException exception];
+
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
 
@@ -395,6 +404,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
+
+		if (count > SIZE_MAX - 6)
+			@throw [OFOutOfRangeException exception];
 
 		if (length < count + 6)
 			@throw [OFTruncatedDataException exception];
@@ -500,6 +512,9 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 		count = readUInt32(buffer + 1);
 
+		if (count > SIZE_MAX - 5)
+			@throw [OFOutOfRangeException exception];
+
 		if (length < count + 5)
 			@throw [OFTruncatedDataException exception];
 
@@ -541,7 +556,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 @implementation OFData (MessagePackParsing)
 - (id)objectByParsingMessagePack
 {
-	return [self objectByParsingMessagePackWithDepthLimit: 32];
+	return [self objectByParsingMessagePackWithDepthLimit: 128];
 }
 
 - (id)objectByParsingMessagePackWithDepthLimit: (size_t)depthLimit

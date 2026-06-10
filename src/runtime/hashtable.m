@@ -28,7 +28,7 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-struct objc_hashtable_bucket _objc_deletedBucket;
+struct objc_hashtable_bucket _objc_hashtable_tombstone;
 
 uint32_t
 _objc_string_hash(const void *str_)
@@ -70,6 +70,7 @@ _objc_hashtable_new(uint32_t (*hash)(const void *),
 
 	table->count = 0;
 	table->size = size;
+	table->tombstones = 0;
 	table->data = calloc(size, sizeof(struct objc_hashtable_bucket *));
 
 	if (table->data == NULL)
@@ -84,17 +85,18 @@ resize(struct objc_hashtable *table, uint32_t count)
 	uint32_t fullness, newSize;
 	struct objc_hashtable_bucket **newData;
 
-	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
+	if (count > UINT32_MAX / sizeof(*table->data) ||
+	    count > UINT32_MAX / 4 || count > UINT32_MAX - table->tombstones)
 		_OBJC_ERROR("Integer overflow!");
 
-	fullness = count * 8 / table->size;
+	fullness = (count + table->tombstones) * 4 / table->size;
 
-	if (fullness >= 6) {
+	if (fullness >= 3) {
 		if (table->size > UINT32_MAX / 2)
 			return;
 
 		newSize = table->size * 2;
-	} else if (fullness <= 1)
+	} else if (fullness < 1 && table->size > 1)
 		newSize = table->size / 2;
 	else
 		return;
@@ -107,7 +109,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 
 	for (uint32_t i = 0; i < table->size; i++) {
 		if (table->data[i] != NULL &&
-		    table->data[i] != &_objc_deletedBucket) {
+		    table->data[i] != &_objc_hashtable_tombstone) {
 			uint32_t j, last;
 
 			last = newSize;
@@ -132,6 +134,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 	free(table->data);
 	table->data = newData;
 	table->size = newSize;
+	table->tombstones = 0;
 }
 
 static inline bool
@@ -142,7 +145,7 @@ indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 	hash = table->hash(key) & (table->size - 1);
 
 	for (i = hash; i < table->size && table->data[i] != NULL; i++) {
-		if (table->data[i] == &_objc_deletedBucket)
+		if (table->data[i] == &_objc_hashtable_tombstone)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
@@ -155,7 +158,7 @@ indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 		return false;
 
 	for (i = 0; i < hash && table->data[i] != NULL; i++) {
-		if (table->data[i] == &_objc_deletedBucket)
+		if (table->data[i] == &_objc_hashtable_tombstone)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
@@ -185,13 +188,13 @@ _objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	last = table->size;
 
 	for (i = hash & (table->size - 1); i < last && table->data[i] != NULL &&
-	    table->data[i] != &_objc_deletedBucket; i++);
+	    table->data[i] != &_objc_hashtable_tombstone; i++);
 
 	if (i >= last) {
 		last = hash & (table->size - 1);
 
 		for (i = 0; i < last && table->data[i] != NULL &&
-		    table->data[i] != &_objc_deletedBucket; i++);
+		    table->data[i] != &_objc_hashtable_tombstone; i++);
 	}
 
 	if (i >= last)
@@ -203,6 +206,9 @@ _objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	bucket->key = key;
 	bucket->hash = hash;
 	bucket->object = object;
+
+	if (table->data[i] == &_objc_hashtable_tombstone)
+		table->tombstones--;
 
 	table->data[i] = bucket;
 	table->count++;
@@ -228,9 +234,10 @@ _objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 		return;
 
 	free(table->data[idx]);
-	table->data[idx] = &_objc_deletedBucket;
+	table->data[idx] = &_objc_hashtable_tombstone;
 
 	table->count--;
+	table->tombstones++;
 	resize(table, table->count);
 }
 
@@ -239,7 +246,7 @@ _objc_hashtable_free(struct objc_hashtable *table)
 {
 	for (uint32_t i = 0; i < table->size; i++)
 		if (table->data[i] != NULL &&
-		    table->data[i] != &_objc_deletedBucket)
+		    table->data[i] != &_objc_hashtable_tombstone)
 			free(table->data[i]);
 
 	free(table->data);

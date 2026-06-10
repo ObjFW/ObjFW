@@ -37,6 +37,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -672,7 +673,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (fragment - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*fragmentString,
-		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
+		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
 	}
@@ -683,7 +684,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (query - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*queryString,
-		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
+		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = query - UTF8String;
 	}
@@ -1320,6 +1321,12 @@ merge(OFString *base, OFString *path)
 
 	if (![_scheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
+
+# ifndef OF_WINDOWS
+	if (_percentEncodedHost.length != 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+# endif
 
 	if (![_percentEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];

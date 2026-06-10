@@ -134,7 +134,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			 */
 			ADD_TAG(NP_Priority, (attr->priority > 0
 			    ? attr->priority * 127 : attr->priority * 128))
-		}
+		} else
+			ADD_TAG(NP_Priority, 0);
 
 		if (attr != NULL && attr->stackSize != 0)
 			ADD_TAG(NP_StackSize, attr->stackSize)
@@ -188,7 +189,7 @@ OFPlainThreadJoin(OFPlainThread thread)
 		if (thread->detached || thread->joinTask != NULL)
 			return EINVAL;
 
-		if ((thread->joinSigBit = AllocSignal(-1)) == -1)
+		if ((thread->joinSigBit = AllocSignal(-1)) == 0xFF)
 			return EAGAIN;
 
 		thread->joinTask = FindTask(NULL);

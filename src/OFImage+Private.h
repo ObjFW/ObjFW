@@ -280,28 +280,32 @@ static OF_INLINE void
 _OFWriteRGBA8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	pixels[x + y * width] = red << 24 | green << 16 | blue << 8 | alpha;
+	pixels[x + y * width] = (uint32_t)red << 24 | (uint32_t)green << 16 |
+	    (uint32_t)blue << 8 | alpha;
 }
 
 static OF_INLINE void
 _OFWriteARGB8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	pixels[x + y * width] = alpha << 24 | red << 16 | green << 8 | blue;
+	pixels[x + y * width] = (uint32_t)alpha << 24 | (uint32_t)red << 16 |
+	    (uint32_t)green << 8 | blue;
 }
 
 static OF_INLINE void
 _OFWriteABGR8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	pixels[x + y * width] = alpha << 24 | blue << 16 | green << 8 | red;
+	pixels[x + y * width] = (uint32_t)alpha << 24 | (uint32_t)blue << 16 |
+	    (uint32_t)green << 8 | red;
 }
 
 static OF_INLINE void
 _OFWriteBGRA8888Pixel(uint32_t *pixels, size_t x, size_t y, size_t width,
     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
-	pixels[x + y * width] = blue << 24 | green << 16 | red << 8 | alpha;
+	pixels[x + y * width] = (uint32_t)blue << 24 | (uint32_t)green << 16 |
+	    (uint32_t)red << 8 | alpha;
 }
 
 static OF_INLINE bool
@@ -363,7 +367,8 @@ _OFWriteRGB565Pixel(uint16_t *pixels, size_t x, size_t y, size_t width,
 	greenInt = roundf(green * 63.0f);
 	blueInt = roundf(blue * 31.0f);
 
-	pixels[x + y * width] = redInt << 11 | greenInt << 5 | blueInt;
+	pixels[x + y * width] = (uint16_t)redInt << 11 |
+	    (uint16_t)greenInt << 5 | blueInt;
 }
 
 static OF_INLINE void

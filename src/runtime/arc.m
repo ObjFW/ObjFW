@@ -380,7 +380,7 @@ _objc_zeroWeakReferences(id value)
 	struct WeakRef *ref;
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
-	OFReleaseMemoryBarrier();
+	OFAcquireMemoryBarrier();
 
 	if (value != nil && !object_isTaggedPointer(value) &&
 	    (_object_getClass_fast(value)->info &

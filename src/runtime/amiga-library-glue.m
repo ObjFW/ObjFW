@@ -604,3 +604,9 @@ glue_objc_removeAssociatedObjects(id _Nonnull object)
 {
 	objc_removeAssociatedObjects(object);
 }
+
+bool __saveds
+glue__objc_rootTryRetain(id _Nonnull object)
+{
+	return _objc_rootTryRetain(object);
+}

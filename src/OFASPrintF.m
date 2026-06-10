@@ -87,7 +87,7 @@ struct Context {
 		lengthModifierT,
 		lengthModifierCapitalL
 	} lengthModifier;
-	bool useLocale;
+	bool useLocale, afterWidth, dynamicWidth, dynamicPrecision;
 };
 
 #if defined(HAVE_NEWLOCALE) && \
@@ -111,13 +111,17 @@ vasprintf(char **string, const char *format, va_list arguments)
 	*string = NULL;
 
 	for (;;) {
+		va_list argumentsCopy;
+
 		free(*string);
 
 		if ((*string = malloc(bufferLength)) == NULL)
 			return -1;
 
+		va_copy(argumentsCopy, arguments);
 		length = vsnprintf(*string, bufferLength - 1, format,
-		    arguments);
+		    argumentsCopy);
+		va_end(argumentsCopy);
 
 		if (length >= 0 && (size_t)length < bufferLength - 1)
 			break;
@@ -162,6 +166,10 @@ appendString(struct Context *ctx, const char *append, size_t appendLen)
 
 	if (appendLen == 0)
 		return true;
+
+	if (SIZE_MAX - appendLen < 1 ||
+	    SIZE_MAX - ctx->bufferLen < appendLen + 1)
+		return false;
 
 	if ((newBuf = realloc(ctx->buffer,
 	    ctx->bufferLen + appendLen + 1)) == NULL)
@@ -242,6 +250,16 @@ formatFieldWidthState(struct Context *ctx)
 	    ctx->format[ctx->i] == '*' || ctx->format[ctx->i] == '.') {
 		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 			return false;
+
+		if (ctx->format[ctx->i] == '.')
+			ctx->afterWidth = true;
+
+		if (ctx->format[ctx->i] == '*')  {
+			if (ctx->afterWidth)
+				ctx->dynamicPrecision = true;
+			else
+				ctx->dynamicWidth = true;
+		}
 	} else {
 		ctx->state = stateFormatLengthModifier;
 		ctx->i--;
@@ -383,8 +401,8 @@ formatLengthModifierState(struct Context *ctx)
 static bool
 formatConversionSpecifierState(struct Context *ctx)
 {
+	int width = 0, precision = 0, tmpLen = 0;
 	char *tmp = NULL;
-	int tmpLen = 0;
 #if !defined(HAVE_NEWLOCALE) || \
     (!defined(HAVE_ASPRINTF_L) && !defined(HAVE_USELOCALE))
 	OFString *point;
@@ -393,6 +411,40 @@ formatConversionSpecifierState(struct Context *ctx)
 	if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 		return false;
 
+	if (ctx->dynamicWidth)
+		width = va_arg(ctx->arguments, int);
+	if (ctx->dynamicPrecision)
+		precision = va_arg(ctx->arguments, int);
+
+#define ASPRINTF_TO_TMP(param)						   \
+	{								   \
+		if (ctx->dynamicWidth && ctx->dynamicPrecision)		   \
+			tmpLen = asprintf(&tmp, ctx->subformat,		   \
+			    width, precision, param);			   \
+		else if (ctx->dynamicWidth)				   \
+			tmpLen = asprintf(&tmp, ctx->subformat,		   \
+			    width, param);				   \
+		else if (ctx->dynamicPrecision)				   \
+			tmpLen = asprintf(&tmp, ctx->subformat,		   \
+			    precision, param);				   \
+		else							   \
+			tmpLen = asprintf(&tmp, ctx->subformat, param);	   \
+	}
+#define ASPRINTF_L_TO_TMP(param)					   \
+	{								   \
+		if (ctx->dynamicWidth && ctx->dynamicPrecision)		   \
+			tmpLen = asprintf_l(&tmp, cLocale, ctx->subformat, \
+			    width, precision, param);			   \
+		else if (ctx->dynamicWidth)				   \
+			tmpLen = asprintf_l(&tmp, cLocale, ctx->subformat, \
+			    width, param);				   \
+		else if (ctx->dynamicPrecision)				   \
+			tmpLen = asprintf_l(&tmp, cLocale, ctx->subformat, \
+			    precision, param);				   \
+		else							   \
+			tmpLen = asprintf_l(&tmp, cLocale, ctx->subformat, \
+			    param);					   \
+	}
 	switch (ctx->format[ctx->i]) {
 	case '@':
 		if (ctx->lengthModifier != lengthModifierNone)
@@ -401,18 +453,15 @@ formatConversionSpecifierState(struct Context *ctx)
 		ctx->subformat[ctx->subformatLen - 1] = 's';
 
 		@try {
-			id object;
+			void *pool = objc_autoreleasePoolPush();
+			id object = va_arg(ctx->arguments, id);
 
-			if ((object = va_arg(ctx->arguments, id)) != nil) {
-				void *pool = objc_autoreleasePoolPush();
+			if (object == nil)
+				object = @"(nil)";
 
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    [object description].UTF8String);
+			ASPRINTF_TO_TMP([object description].UTF8String)
 
-				objc_autoreleasePoolPop(pool);
-			} else
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    "(nil)");
+			objc_autoreleasePoolPop(pool);
 		} @catch (id e) {
 			free(ctx->buffer);
 			@throw e;
@@ -434,7 +483,8 @@ formatConversionSpecifierState(struct Context *ctx)
 				return false;
 
 			buffer[len] = 0;
-			tmpLen = asprintf(&tmp, ctx->subformat, buffer);
+
+			ASPRINTF_TO_TMP(buffer);
 		}
 
 		break;
@@ -470,7 +520,7 @@ formatConversionSpecifierState(struct Context *ctx)
 			}
 			buffer[j] = 0;
 
-			tmpLen = asprintf(&tmp, ctx->subformat, buffer);
+			ASPRINTF_TO_TMP(buffer)
 
 			free(buffer);
 		}
@@ -482,28 +532,22 @@ formatConversionSpecifierState(struct Context *ctx)
 		case lengthModifierNone:
 		case lengthModifierHH:
 		case lengthModifierH:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, int));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, int))
 			break;
 		case lengthModifierL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, long));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, long))
 			break;
 		case lengthModifierLL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, long long));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, long long))
 			break;
 		case lengthModifierJ:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, intmax_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, intmax_t))
 			break;
 		case lengthModifierZ:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, ssize_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, ssize_t))
 			break;
 		case lengthModifierT:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, ptrdiff_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, ptrdiff_t))
 			break;
 		default:
 			return false;
@@ -518,28 +562,23 @@ formatConversionSpecifierState(struct Context *ctx)
 		case lengthModifierNone:
 		case lengthModifierHH:
 		case lengthModifierH:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, unsigned int));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, unsigned int))
 			break;
 		case lengthModifierL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, unsigned long));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, unsigned long))
 			break;
 		case lengthModifierLL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, unsigned long long));
+			ASPRINTF_TO_TMP(
+			    va_arg(ctx->arguments, unsigned long long))
 			break;
 		case lengthModifierJ:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, uintmax_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, uintmax_t))
 			break;
 		case lengthModifierZ:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, size_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, size_t))
 			break;
 		case lengthModifierT:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, ptrdiff_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, ptrdiff_t))
 			break;
 		default:
 			return false;
@@ -559,37 +598,33 @@ formatConversionSpecifierState(struct Context *ctx)
 		case lengthModifierL:
 #if defined(HAVE_NEWLOCALE) && defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
-				tmpLen = asprintf_l(&tmp, cLocale,
-				    ctx->subformat,
-				    va_arg(ctx->arguments, double));
+				ASPRINTF_L_TO_TMP(
+				    va_arg(ctx->arguments, double))
 			else
 #elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 			if (!ctx->useLocale) {
 				locale_t previousLocale = uselocale(cLocale);
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    va_arg(ctx->arguments, double));
+				ASPRINTF_TO_TMP(va_arg(ctx->arguments, double))
 				uselocale(previousLocale);
 			} else
 #endif
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    va_arg(ctx->arguments, double));
+				ASPRINTF_TO_TMP(va_arg(ctx->arguments, double))
 			break;
 		case lengthModifierCapitalL:
 #if defined(HAVE_NEWLOCALE) && defined(HAVE_ASPRINTF_L)
 			if (!ctx->useLocale)
-				tmpLen = asprintf_l(&tmp, cLocale,
-				    ctx->subformat,
-				    va_arg(ctx->arguments, long double));
+				ASPRINTF_L_TO_TMP(
+				    va_arg(ctx->arguments, long double))
 			else
 #elif defined(HAVE_NEWLOCALE) && defined(HAVE_USELOCALE)
 			if (!ctx->useLocale) {
 				locale_t previousLocale = uselocale(cLocale);
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    va_arg(ctx->arguments, long double));
+				ASPRINTF_TO_TMP(
+				    va_arg(ctx->arguments, long double))
 				uselocale(previousLocale);
 			} else
 #endif
-				tmpLen = asprintf(&tmp, ctx->subformat,
+				ASPRINTF_TO_TMP(
 				    va_arg(ctx->arguments, long double));
 			break;
 		default:
@@ -623,7 +658,10 @@ formatConversionSpecifierState(struct Context *ctx)
 					return false;
 
 				tmpLen = (int)tmpStr.UTF8StringLength;
-				tmp2 = malloc(tmpLen);
+
+				if ((tmp2 = malloc(tmpLen)) == NULL)
+					return false;
+
 				memcpy(tmp2, tmpStr.UTF8String, tmpLen);
 			} @finally {
 				free(tmp);
@@ -638,17 +676,14 @@ formatConversionSpecifierState(struct Context *ctx)
 	case 'c':
 		switch (ctx->lengthModifier) {
 		case lengthModifierNone:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, int));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, int))
 			break;
 		case lengthModifierL:
 #ifdef HAVE_WCHAR_H
 # if WINT_MAX >= INT_MAX
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, wint_t));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, wint_t))
 # else
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, int));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, int))
 # endif
 			break;
 #endif
@@ -660,13 +695,11 @@ formatConversionSpecifierState(struct Context *ctx)
 	case 's':
 		switch (ctx->lengthModifier) {
 		case lengthModifierNone:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, const char *));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, const char *))
 			break;
 #ifdef HAVE_WCHAR_T
 		case lengthModifierL:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, const wchar_t *));
+			ASPRINTF_TO_TMP(va_arg(ctx->arguments, const wchar_t *))
 			break;
 #endif
 		default:
@@ -678,9 +711,7 @@ formatConversionSpecifierState(struct Context *ctx)
 		if (ctx->lengthModifier != lengthModifierNone)
 			return false;
 
-		tmpLen = asprintf(&tmp, ctx->subformat,
-		    va_arg(ctx->arguments, void *));
-
+		ASPRINTF_TO_TMP(va_arg(ctx->arguments, void *))
 		break;
 	case 'n':
 		switch (ctx->lengthModifier) {
@@ -731,6 +762,8 @@ formatConversionSpecifierState(struct Context *ctx)
 	default:
 		return false;
 	}
+#undef ASPRINTF_TO_TMP
+#undef ASPRINTF_L_TO_TMP
 
 	if (tmpLen == -1)
 		return false;
@@ -748,6 +781,9 @@ formatConversionSpecifierState(struct Context *ctx)
 	ctx->subformatLen = 0;
 	ctx->lengthModifier = lengthModifierNone;
 	ctx->useLocale = false;
+	ctx->afterWidth = false;
+	ctx->dynamicWidth = false;
+	ctx->dynamicPrecision = false;
 
 	ctx->last = ctx->i + 1;
 	ctx->state = stateString;
@@ -766,28 +802,24 @@ static bool (*states[])(struct Context *) = {
 int
 _OFVASPrintF(char **string, const char *format, va_list arguments)
 {
-	struct Context ctx;
-
-	ctx.format = format;
-	ctx.formatLen = strlen(format);
-	memset(ctx.subformat, 0, maxSubformatLen + 1);
-	ctx.subformatLen = 0;
+	struct Context ctx = {
+		.format = format,
+		.formatLen = strlen(format)
+	};
 	va_copy(ctx.arguments, arguments);
-	ctx.bufferLen = 0;
-	ctx.last = 0;
-	ctx.state = stateString;
-	ctx.lengthModifier = lengthModifierNone;
-	ctx.useLocale = false;
 
 	if ((ctx.buffer = malloc(1)) == NULL)
 		return -1;
 
 	for (ctx.i = 0; ctx.i < ctx.formatLen; ctx.i++) {
 		if (!states[ctx.state](&ctx)) {
+			va_end(ctx.arguments);
 			free(ctx.buffer);
 			return -1;
 		}
 	}
+
+	va_end(ctx.arguments);
 
 	if (ctx.state != stateString) {
 		free(ctx.buffer);
@@ -802,6 +834,11 @@ _OFVASPrintF(char **string, const char *format, va_list arguments)
 
 	ctx.buffer[ctx.bufferLen] = 0;
 
+	if (ctx.bufferLen > INT_MAX) {
+		free(ctx.buffer);
+		return -1;
+	}
+
 	*string = ctx.buffer;
-	return (ctx.bufferLen <= INT_MAX ? (int)ctx.bufferLen : -1);
+	return (int)ctx.bufferLen;
 }

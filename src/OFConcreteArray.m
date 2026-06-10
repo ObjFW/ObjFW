@@ -73,6 +73,9 @@
 	@try {
 		id object;
 
+		if (firstObject == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		[_array addItem: &firstObject];
 		objc_retain(firstObject);
 

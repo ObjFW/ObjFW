@@ -683,8 +683,11 @@ SIGNAL_HANDLER(SIGUSR2)
 		if (path == nil || permissions == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		unveil([path cStringWithEncoding: encoding],
-		    [permissions cStringWithEncoding: encoding]);
+		if (unveil([path cStringWithEncoding: encoding],
+		    [permissions cStringWithEncoding: encoding]) != 0)
+			@throw [OFActivateSandboxFailedException
+				exceptionWithSandbox: sandbox
+					       errNo: errno];
 	}
 
 	sandbox->_unveiledPathsIndex = unveiledPathsCount;

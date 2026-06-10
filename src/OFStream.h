@@ -289,7 +289,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 @private
 	uintptr_t _encoding;
 	uintptr_t _allowsLossyEncoding;
-	OF_RESERVE_IVARS(OFStream, 2)
+	uintptr_t _maxStringReadLength;
+	OF_RESERVE_IVARS(OFStream, 1)
 }
 
 /**
@@ -324,6 +325,24 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * replaced over an exception and seeing nothing.
  */
 @property (nonatomic) bool allowsLossyEncoding;
+
+/**
+ * @brief The maximum length of a string when using string-based read methods,
+ *	  e.g. @ref readLine.
+ *
+ * The default is 0.
+ *
+ * If the maximum length of a string is exceeded, an @ref OFOutOfRangeException
+ * is thrown and the stream is in an unrecoverable state.
+ *
+ * This property does not affect methods that explicitly take the length as a
+ * parameter.
+ *
+ * @note This should be set to a value other than 0 to prevent an attacker from
+ *	 exhausting memory by never sending what would cause the method to
+ *	 return.
+ */
+@property (nonatomic) size_t maxStringReadLength;
 
 /**
  * @brief Whether the stream can block.

@@ -536,7 +536,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		/* Extra variable needed to work around a bug in GCC 15. */
 		size_t count = _count;
 
-		if (count * _itemSize > pageSize)
+		if (count * _itemSize >= pageSize)
 			unmapPages(_items,
 			    OFRoundUpToPowerOf2(pageSize, count * _itemSize) /
 			    pageSize);

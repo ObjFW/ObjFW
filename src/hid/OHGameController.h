@@ -31,6 +31,7 @@
 
 #import "OHGamepad.h"
 #import "OHExtendedGamepad.h"
+#import "OHVIDPID.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -59,14 +60,22 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic, copy) OFString *name;
 
 /**
+ * @brief The vendor ID / product ID pair of the controller. Both are 0 if
+ *	  unavailable.
+ */
+@property (readonly, nonatomic) OHVIDPID VIDPID;
+
+/**
  * @brief The vendor ID of the controller or `nil` if unavailable.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *vendorID;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *vendorID
+    OF_DEPRECATED(ObjFW, 1, 6, "Use -[VIDPID] instead");
 
 /**
  * @brief The product ID of the controller or `nil` if unavailable.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFNumber *productID
+    OF_DEPRECATED(ObjFW, 1, 6, "Use -[VIDPID] instead");
 
 /**
  * @brief The profile for the game controller.
@@ -105,35 +114,5 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)updateState;
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern const uint16_t OHVendorIDSony;
-extern const uint16_t OHVendorIDNintendo;
-extern const uint16_t OHVendorIDMicrosoft;
-extern const uint16_t OHVendorIDGoogle;
-extern const uint16_t OHVendorID8BitDo;
-extern const uint16_t OHVendorIDDragonRise;
-extern const uint16_t OHVendorIDWiseGroup;
-
-extern const uint16_t OHProductIDDualShock4;
-extern const uint16_t OHProductIDDualSense;
-extern const uint16_t OHProductIDPlayStation3Controller;
-extern const uint16_t OHProductIDLeftJoyCon;
-extern const uint16_t OHProductIDRightJoyCon;
-extern const uint16_t OHProductIDProController;
-extern const uint16_t OHProductIDN64Controller;
-extern const uint16_t OHProductIDSNESController;
-extern const uint16_t OHProductIDXbox360WirelessReceiver;
-extern const uint16_t OHProductIDStadiaController;
-extern const uint16_t OHProductIDNES30Gamepad;
-extern const uint16_t OHProductIDUltimate2CWirelessBT;
-extern const uint16_t OHProductIDUltimate2CWirelessUSB;
-extern const uint16_t OHProductIDGameCubeControllerAdapter;
-extern const uint16_t OHProductIDPlayStationControllerAdapter;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

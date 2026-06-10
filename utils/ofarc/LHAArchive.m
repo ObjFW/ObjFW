@@ -563,7 +563,8 @@ outer_loop_end:
 
 		attributes = [fileManager attributesOfItemAtPath: fileName];
 		type = attributes.fileType;
-		entry = [OFMutableLHAArchiveEntry entryWithFileName: fileName];
+		entry = [OFMutableLHAArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 		entry.POSIXPermissions =

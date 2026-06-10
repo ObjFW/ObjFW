@@ -166,7 +166,8 @@ OFImageFormatQOIRef(void)
 		width = size.width;
 		height = size.height;
 
-		if (width != size.width || height != size.height)
+		if (width != size.width || height != size.height ||
+		    width == 0 || height == 0)
 			@throw [OFInvalidArgumentException exception];
 
 		if (SIZE_MAX / width < height)

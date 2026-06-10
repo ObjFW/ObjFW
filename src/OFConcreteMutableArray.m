@@ -56,7 +56,7 @@
 
 - (void)addObject: (id)object
 {
-	if (object == nil)
+	if (object == nil || object == self)
 		@throw [OFInvalidArgumentException exception];
 
 	[_array addItem: &object];
@@ -67,7 +67,7 @@
 
 - (void)insertObject: (id)object atIndex: (size_t)idx
 {
-	if (object == nil)
+	if (object == nil || object == self)
 		@throw [OFInvalidArgumentException exception];
 
 	[_array insertItem: &object atIndex: idx];
@@ -81,11 +81,26 @@
 {
 	id const *objects = array.objects;
 	size_t count = array.count;
+	bool containsSelf = false;
 
-	[_array insertItems: objects atIndex: idx count: count];
-
-	for (size_t i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++) {
 		objc_retain(objects[i]);
+
+		if (objects[i] == self)
+			containsSelf = true;
+	}
+
+	@try {
+		if (containsSelf)
+			@throw [OFInvalidArgumentException exception];
+
+		[_array insertItems: objects atIndex: idx count: count];
+	} @catch (id e) {
+		for (size_t i = 0; i < count; i++)
+			objc_release(objects[i]);
+
+		@throw e;
+	}
 
 	_mutations++;
 }
@@ -94,14 +109,29 @@
 {
 	id const *objects = array.objects;
 	size_t count = array.count;
+	bool containsSelf = false;
 
 	if (indexes.count != count)
 		@throw [OFOutOfRangeException exception];
 
-	[_array insertItems: objects atIndexes: indexes];
-
-	for (size_t i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++) {
 		objc_retain(objects[i]);
+
+		if (objects[i] == self)
+			containsSelf = true;
+	}
+
+	@try {
+		if (containsSelf)
+			@throw [OFInvalidArgumentException exception];
+
+		[_array insertItems: objects atIndexes: indexes];
+	} @catch (id e) {
+		for (size_t i = 0; i < count; i++)
+			objc_release(objects[i]);
+
+		@throw e;
+	}
 
 	_mutations++;
 }
@@ -111,7 +141,7 @@
 	id *objects;
 	size_t count;
 
-	if (oldObject == nil || newObject == nil)
+	if (oldObject == nil || newObject == nil || newObject == self)
 		@throw [OFInvalidArgumentException exception];
 
 	objects = _array.mutableItems;
@@ -131,7 +161,7 @@
 	id *objects;
 	id oldObject;
 
-	if (object == nil)
+	if (object == nil || object == self)
 		@throw [OFInvalidArgumentException exception];
 
 	objects = _array.mutableItems;
@@ -149,7 +179,7 @@
 	id *objects;
 	size_t count;
 
-	if (oldObject == nil || newObject == nil)
+	if (oldObject == nil || newObject == nil || newObject == self)
 		@throw [OFInvalidArgumentException exception];
 
 	objects = _array.mutableItems;
@@ -181,13 +211,20 @@
 	if (objectsCount != indexes.count)
 		@throw [OFOutOfRangeException exception];
 
+	for (size_t i = 0; i < objectsCount; i++)
+		if (objectsObjects[i] == self)
+			@throw [OFInvalidArgumentException exception];
+
 	for (size_t i = 0; i < rangesCount; i++) {
 		if (OFEndOfRange(ranges[i]) > count)
 			@throw [OFOutOfRangeException exception];
 
 		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
-		    j++)
+		    j++) {
+			objc_retain(objectsObjects[objectsIndex]);
+			objc_release(items[j]);
 			items[j] = objectsObjects[objectsIndex++];
+		}
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -267,6 +304,7 @@
 		objc_release(objects[i]);
 
 	[_array removeAllItems];
+	_mutations++;
 }
 
 - (void)removeObjectsInRange: (OFRange)range
@@ -437,7 +475,7 @@
 
 		new = block(objects[i], i);
 
-		if (new == nil)
+		if (new == nil || new == self)
 			@throw [OFInvalidArgumentException exception];
 
 		if (new != objects[i]) {

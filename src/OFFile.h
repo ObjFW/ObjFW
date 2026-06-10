@@ -25,7 +25,7 @@
 typedef int OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = -1;
 #else
-typedef struct _OFFileHandle *OFFileHandle;
+typedef struct _OFFileHandle *_Nullable OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
@@ -82,22 +82,19 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFFile.
  *
  * @param path The path to the file to open as a string
- * @param mode The mode in which the file should be opened.@n
+ * @param mode The mode in which the file should be opened.
+ *	       @n
  *	       Possible modes are:
  *	       Mode           | Description
  *	       ---------------|-------------------------------------
- *	       `r`            | read-only
- *	       `rb`           | read-only, binary
- *	       `r+`           | read-write
- *	       `rb+` or `r+b` | read-write, binary
- *	       `w`            | write-only, create, truncate
- *	       `wb`           | write-only, create, truncate, binary
- *	       `w`            | read-write, create, truncate
- *	       `wb+` or `w+b` | read-write, create, truncate, binary
- *	       `a`            | write-only, create, append
- *	       `ab`           | write-only, create, append, binary
- *	       `a+`           | read-write, create, append
- *	       `ab+` or `a+b` | read-write, create, append, binary
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail if already exists
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail if already exists
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
  * @return An initialized OFFile
  * @throw OFOpenItemFailedException Opening the file failed
  */

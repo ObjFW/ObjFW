@@ -349,6 +349,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if ([OFSystemInfo isWindowsNT]) {
 		wchar_t *buffer = _wgetcwd(NULL, 0);
 
+		if (buffer == NULL)
+			@throw [OFGetCurrentDirectoryFailedException
+			    exceptionWithErrNo: errno];
+
 		@try {
 			ret = [OFString stringWithUTF16String: buffer];
 		} @finally {
@@ -356,6 +360,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		}
 	} else {
 		char *buffer = _getcwd(NULL, 0);
+
+		if (buffer == NULL)
+			@throw [OFGetCurrentDirectoryFailedException
+			    exceptionWithErrNo: errno];
 
 		@try {
 			ret = [OFString stringWithCString: buffer

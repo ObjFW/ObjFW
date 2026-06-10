@@ -29,24 +29,28 @@
 - (void)testCookieManager
 {
 	OFHTTPCookieManager *manager = [OFHTTPCookieManager manager];
-	OFIRI *IRI1, *IRI2, *IRI3, *IRI4;
+	OFIRI *IRI1, *IRI2, *IRI3, *IRI4, *IRI5;
 	OFHTTPCookie *cookie1, *cookie2, *cookie3, *cookie4, *cookie5;
+	OFHTTPCookie *cookie6;
 
 	IRI1 = [OFIRI IRIWithString: @"http://nil.im/foo"];
 	IRI2 = [OFIRI IRIWithString: @"https://nil.im/foo/bar"];
 	IRI3 = [OFIRI IRIWithString: @"https://test.nil.im/foo/bar"];
 	IRI4 = [OFIRI IRIWithString: @"http://webkeks.org/foo/bar"];
+	IRI5 = [OFIRI IRIWithString: @"https://nil.im/foo/bar/"];
 
 	cookie1 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"1"
-					domain: @"nil.im"];
+					domain: @"nil.im"
+					  path: @"/foo"];
 	[manager addCookie: cookie1 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie1]);
 
 	cookie2 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"2"
-					domain: @"webkeks.org"];
+					domain: @"webkeks.org"
+					  path: @"/foo"];
 	[manager addCookie: cookie2 forIRI: IRI1];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie1]);
@@ -54,7 +58,8 @@
 
 	cookie3 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"3"
-					domain: @"nil.im"];
+					domain: @"nil.im"
+					  path: @"/foo"];
 	cookie3.secure = true;
 	[manager addCookie: cookie3 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
@@ -64,8 +69,8 @@
 	cookie3.expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie4 = [OFHTTPCookie cookieWithName: @"test"
 					 value: @"4"
-					domain: @"nil.im"];
-	cookie4.domain = @".nil.im";
+					domain: @".nil.im"
+					  path: @"/"];
 	[manager addCookie: cookie4 forIRI: IRI2];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI2],
 	    [OFArray arrayWithObject: cookie4]);
@@ -74,17 +79,34 @@
 
 	cookie5 = [OFHTTPCookie cookieWithName: @"bar"
 					 value: @"5"
-					domain: @"test.nil.im"];
+					domain: @"test.nil.im"
+					  path: @"/foo"];
 	[manager addCookie: cookie5 forIRI: IRI1];
+	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
+	    [OFArray arrayWithObject: cookie4]);
+	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
+	    [OFArray arrayWithObject: cookie4]);
+	[manager addCookie: cookie5 forIRI: IRI3];
 	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
 	    [OFArray arrayWithObject: cookie4]);
 	OTAssertEqualObjects([manager cookiesForIRI: IRI3],
 	    ([OFArray arrayWithObjects: cookie4, cookie5, nil]));
 
+	cookie6 = [OFHTTPCookie cookieWithName: @"blub"
+					 value: @"6"
+					domain: @"nil.im"
+					  path: @"/foo/bar"];
+	[manager addCookie: cookie6 forIRI: IRI5];
+	OTAssertEqualObjects([manager cookiesForIRI: IRI1],
+	    [OFArray arrayWithObject: cookie4]);
+	OTAssertEqualObjects([manager cookiesForIRI: IRI5],
+	    ([OFArray arrayWithObjects: cookie4, cookie6, nil]));
+
 	OTAssertEqualObjects(manager.cookies,
-	    ([OFArray arrayWithObjects: cookie3, cookie4, cookie5, nil]));
+	    ([OFArray arrayWithObjects: cookie3, cookie4, cookie5, cookie6,
+	    nil]));
 	[manager purgeExpiredCookies];
 	OTAssertEqualObjects(manager.cookies,
-	    ([OFArray arrayWithObjects: cookie4, cookie5, nil]));
+	    ([OFArray arrayWithObjects: cookie4, cookie5, cookie6, nil]));
 }
 @end

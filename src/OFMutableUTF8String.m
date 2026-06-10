@@ -361,24 +361,21 @@
 
 - (void)appendString: (OFString *)string
 {
+	void *pool;
 	const char *UTF8String;
 	size_t UTF8StringLength;
 
 	if (string == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
-	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
-	_s->cStringLength += UTF8StringLength;
-	_s->length += string.length;
-
-	_s->cString[_s->cStringLength] = 0;
+	pool = objc_autoreleasePoolPush();
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 
 	if ([string isKindOfClass: [OFUTF8String class]] ||
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
@@ -402,6 +399,15 @@
 		if (containsNull)
 			_s->containsNull = true;
 	}
+
+	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
+
+	_s->cStringLength += UTF8StringLength;
+	_s->length += string.length;
+
+	_s->cString[_s->cStringLength] = 0;
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
@@ -450,15 +456,20 @@
 
 - (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
+	void *pool;
 	char *UTF8String;
 	int UTF8StringLength;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
+	pool = objc_autoreleasePoolPush();
+
 	if ((UTF8StringLength = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		[self appendUTF8String: UTF8String length: UTF8StringLength];
@@ -469,6 +480,7 @@
 
 - (void)insertString: (OFString *)string atIndex: (size_t)idx
 {
+	void *pool;
 	const char *UTF8String;
 	size_t UTF8StringLength, newCStringLength;
 
@@ -479,16 +491,18 @@
 		idx = _OFUTF8StringIndexToPosition(_s->cString, idx,
 		    _s->cStringLength);
 
-	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 	UTF8StringLength = string.UTF8StringLength;
 
 	newCStringLength = _s->cStringLength + UTF8StringLength;
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1, 1);
 
+	pool = objc_autoreleasePoolPush();
+	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+
 	memmove(_s->cString + idx + UTF8StringLength, _s->cString + idx,
 	    _s->cStringLength - idx);
-	memcpy(_s->cString + idx, UTF8String, UTF8StringLength);
+	memmove(_s->cString + idx, UTF8String, UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	_s->cStringLength = newCStringLength;
@@ -516,6 +530,8 @@
 		if (containsNull)
 			_s->containsNull = true;
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)deleteCharactersInRange: (OFRange)range
@@ -559,6 +575,7 @@
 - (void)replaceCharactersInRange: (OFRange)range
 		      withString: (OFString *)replacement
 {
+	void *pool;
 	size_t start = range.location;
 	size_t end = OFEndOfRange(range);
 	size_t newCStringLength, newLength;
@@ -579,9 +596,6 @@
 		end = _OFUTF8StringIndexToPosition(_s->cString, end,
 		    _s->cStringLength);
 	}
-
-	replacementString =
-	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
 	replacementLength = replacement.UTF8StringLength;
 
 	newCStringLength =
@@ -600,9 +614,13 @@
 		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
 		    1);
 
+	pool = objc_autoreleasePoolPush();
+	replacementString =
+	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
+
 	memmove(_s->cString + start + replacementLength, _s->cString + end,
 	    _s->cStringLength - end);
-	memcpy(_s->cString + start, replacementString, replacementLength);
+	memmove(_s->cString + start, replacementString, replacementLength);
 	_s->cString[newCStringLength] = '\0';
 
 	/*
@@ -646,6 +664,8 @@
 			if (_s->cString[i] == '\0')
 				_s->containsNull = true;
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
@@ -653,16 +673,14 @@
 			   options: (int)options
 			     range: (OFRange)range
 {
-	const char *searchString =
-	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
-	const char *replacementString =
-	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
+	void *pool;
+	const char *searchString, *replacementString;
 	size_t searchLength = string.UTF8StringLength;
 	size_t replacementLength = replacement.UTF8StringLength;
 	size_t last, newCStringLength, newLength;
 	char *newCString;
 
-	if (string == nil || replacement == nil)
+	if (string.length == 0 || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (OFEndOfRange(range) > self.length)
@@ -684,7 +702,15 @@
 	newLength = _s->length;
 	last = 0;
 
-	for (size_t i = range.location; i <= range.length - searchLength; i++) {
+	pool = objc_autoreleasePoolPush();
+
+	searchString =
+	    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+	replacementString =
+	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
+
+	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
+	    i++) {
 		if (memcmp(_s->cString + i, searchString, searchLength) != 0)
 			continue;
 
@@ -756,6 +782,8 @@
 			if (_s->cString[i] == '\0')
 				_s->containsNull = true;
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)deleteLeadingWhitespaces
@@ -786,6 +814,9 @@
 	size_t d;
 	char *p;
 
+	if (_s->cStringLength == 0)
+		return;
+
 	_s->hasHash = false;
 
 	d = 0;
@@ -812,6 +843,9 @@
 {
 	size_t d, i;
 	char *p;
+
+	if (_s->cStringLength == 0)
+		return;
 
 	_s->hasHash = false;
 

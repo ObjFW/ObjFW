@@ -90,8 +90,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -c  --create            Create archive\n"
 		    @"    -C  --directory=        Extract into the specified "
 		    @"directory\n"
-		    @"    -E  --encoding=         The encoding used by the "
-		    @"archive\n"
+		    @"    -E  --encoding=         The encoding (character set) "
+		    @"used by the archive\n"
 		    @"                            (only Tar, LHA and Zoo files)"
 		    @"\n"
 		    @"    -f  --force             Force / overwrite files\n"
@@ -209,16 +209,32 @@ writingNotSupported(OFString *type)
 }
 
 static void
-addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
-    OFString *archiveComment)
+addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
+    OFArray OF_GENERIC(OFString *) *files, OFString *archiveComment)
 {
 	OFMutableArray *expandedFiles =
 	    [OFMutableArray arrayWithCapacity: files.count];
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
 	for (OFString *file in files) {
-		OFFileAttributes attributes =
-		    [fileManager attributesOfItemAtPath: file];
+		OFFileAttributes attributes;
+
+		@try {
+			attributes = [fileManager attributesOfItemAtPath: file];
+		} @catch (OFGetItemAttributesFailedException *e) {
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"failed_to_read_file",
+			    @"Failed to read file %[file]: %[error]",
+			    @"file", e.IRI.string,
+			    @"error", OFStrError(e.errNo))];
+
+			if (mode == 'c' && IRI != nil)
+				[[OFFileManager defaultManager]
+				    removeItemAtIRI: IRI];
+
+			[OFApplication terminateWithStatus: 1];
+			abort();
+		}
 
 		if ([attributes.fileType isEqual: OFFileTypeDirectory])
 			[expandedFiles addObjectsFromArray:
@@ -233,7 +249,20 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	[archive addFiles: expandedFiles archiveComment: archiveComment];
+	@try {
+		[archive addFiles: expandedFiles
+		   archiveComment: archiveComment];
+	} @catch (OFOpenItemFailedException *e) {
+		if (outputLevel >= 0)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		    @"Failed to read file %[file]: %[error]",
+		    @"file", e.path,
+		    @"error", OFStrError(e.errNo))];
+
+		[OFApplication terminateWithStatus: 1];
+	}
 }
 
 @implementation OFArc
@@ -444,7 +473,8 @@ addFiles(id <Archive> archive, OFArray OF_GENERIC(OFString *) *files,
 					      mode: mode
 					  encoding: encoding];
 
-		addFiles(archive, files, archiveComment);
+		addFiles(IRI, mode, _outputLevel, archive, files,
+		    archiveComment);
 		break;
 	case 'l':
 		if (remainingArguments.count != 1)
@@ -924,6 +954,27 @@ error:
 	objc_autoreleasePoolPop(pool);
 
 	return objc_autoreleaseReturnValue(path);
+}
+
+- (OFString *)archivePathForPath: (OFString *)path
+{
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	size_t pos;
+
+	if ((pos = [path rangeOfString: @":\\"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 2];
+	else if ((pos = [path rangeOfString: @":"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 1];
+
+	path = [path stringByReplacingOccurrencesOfString: @"\\"
+					       withString: @"/"];
+#elif defined(OF_AMIGAOS)
+	size_t pos;
+
+	if ((pos = [path rangeOfString: @":"].location) != OFNotFound)
+		path = [path substringFromIndex: pos + 1];
+#endif
+	return path;
 }
 
 - (void)quarantineFile: (OFString *)path

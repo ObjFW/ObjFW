@@ -157,8 +157,8 @@ extern OFString *_Nullable OFHTTPRequestMethodString(
  *
  * @param string The string for which the request method should be returned
  * @return The request method for the specified string
- * @throw OFInvalidFormatException The specified string is not a valid HTTP
- *				   request method
+ * @throw OFInvalidArgumentException The specified string is not a valid HTTP
+ *				     request method
  */
 extern OFHTTPRequestMethod OFHTTPRequestMethodParseString(OFString *string);
 

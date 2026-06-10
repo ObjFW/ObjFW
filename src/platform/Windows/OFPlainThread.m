@@ -79,7 +79,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
 	    (LPTHREAD_START_ROUTINE)functionWrapper, context, 0, &threadID);
 
-	if (thread == NULL) {
+	if (*thread == NULL) {
 		int error;
 
 		switch (GetLastError()) {
@@ -98,7 +98,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	}
 
 	if (attr != NULL && attr->priority != 0)
-		OFEnsure(!SetThreadPriority(*thread, priority));
+		OFEnsure(SetThreadPriority(*thread, priority));
 
 	return 0;
 }

@@ -26,6 +26,9 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFSet.h"
+#import "OFString+NSObject.h"
+#import "OH8BitDoPro2Gamepad.h"
+#import "OH8BitDoPro2Gamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHDualSenseGamepad.h"
@@ -115,11 +118,25 @@
 			_profile = [[OHSNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"Stadia Controller rev. A"])
 			_profile = [[OHStadiaGamepad alloc]
-			    oh_initWithVendorID: OHVendorIDGoogle
-				      productID: OHProductIDStadiaController];
+			    oh_initWithVIDPID: OHVIDPIDStadiaController];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
-		else if ([_name isEqual: @"GameCube Controller Adapter"])
+		else if ([_name isEqual: @"8BitDo Pro 2"]) {
+			OHVIDPID VIDPID = OHVIDPID8BitDoPro2;
+
+			/*
+			 * Buttons are swapped in XInput mode. We can detect
+			 * this by P1 and P2 not being reported.
+			 */
+			if (_controller.input.unmappedInput[
+			    @"Back Left Button 0".NSObject] == nil ||
+			    _controller.input.unmappedInput[
+			    @"Back Right Button 0".NSObject] == nil)
+				VIDPID = OHVIDPIDXboxOneWirelessController;
+
+			_profile = [[OH8BitDoPro2Gamepad alloc]
+			    oh_initWithVIDPID: VIDPID];
+		} else if ([_name isEqual: @"GameCube Controller Adapter"])
 			_profile = [[OHGameCubeController alloc] oh_init];
 		else
 			_profile = [[OHGCFExtendedGamepad alloc]
@@ -195,16 +212,6 @@
 	}];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFNumber *)vendorID
-{
-	return nil;
-}
-
-- (OFNumber *)productID
-{
-	return nil;
 }
 
 - (id <OHGameControllerProfile>)profile

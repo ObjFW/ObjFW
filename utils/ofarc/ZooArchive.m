@@ -522,7 +522,8 @@ outer_loop_end:
 			continue;
 		}
 
-		entry = [OFMutableZooArchiveEntry entryWithFileName: fileName];
+		entry = [OFMutableZooArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 		entry.timeZone = [OFNumber numberWithFloat: 0];
 		entry.modificationDate = attributes.fileModificationDate;
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS

@@ -65,23 +65,20 @@
 
 	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
-	if (![cookie.path hasPrefix: @"/"])
-		cookie.path = @"/";
-
 	if (cookie.secure &&
 	    [IRI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	cookieDomain = cookie.domain.lowercaseString;
-	cookie.domain = cookieDomain;
-
+	cookieDomain = cookie.domain;
 	IRIHost = IRI.host.lowercaseString;
+
 	if (![cookieDomain isEqual: IRIHost]) {
 		IRIHost = [@"." stringByAppendingString: IRIHost];
+		cookieDomain = [@"." stringByAppendingString: cookieDomain];
 
-		if (![cookieDomain hasSuffix: IRIHost]) {
+		if (![IRIHost hasSuffix: cookieDomain]) {
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
@@ -137,21 +134,20 @@
 
 		cookieDomain = cookie.domain.lowercaseString;
 		IRIHost = IRI.host.lowercaseString;
-		if ([cookieDomain hasPrefix: @"."]) {
-			if ([IRIHost hasSuffix: cookieDomain])
-				match = true;
-			else {
-				cookieDomain =
-				    [cookieDomain substringFromIndex: 1];
-
-				match = [cookieDomain isEqual: IRIHost];
+		if (![cookieDomain isEqual: IRIHost]) {
+			if (cookie.hostOnly) {
+				objc_autoreleasePoolPop(pool2);
+				continue;
 			}
-		} else
-			match = [cookieDomain isEqual: IRIHost];
 
-		if (!match) {
-			objc_autoreleasePoolPop(pool2);
-			continue;
+			IRIHost = [@"." stringByAppendingString: IRIHost];
+			cookieDomain =
+			    [@"." stringByAppendingString: cookieDomain];
+
+			if (![IRIHost hasSuffix: cookieDomain]) {
+				objc_autoreleasePoolPop(pool2);
+				continue;
+			}
 		}
 
 		cookiePath = cookie.path;

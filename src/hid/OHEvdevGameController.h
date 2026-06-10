@@ -19,6 +19,7 @@
 
 #import "OHGameController.h"
 #import "OHGameControllerProfile.h"
+#import "OHVIDPID.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 	int _fd;
 	bool _discardUntilReport;
 	unsigned long *_evBits, *_keyBits, *_absBits;
-	uint16_t _vendorID, _productID;
+	OHVIDPID _VIDPID;
 	OFString *_name;
 	id <OHGameControllerProfile, OHEvdevMapping> _profile;
 }

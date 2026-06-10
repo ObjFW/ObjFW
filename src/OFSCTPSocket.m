@@ -525,7 +525,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 - (void)asyncSendData: (OFData *)data info: (OFSCTPMessageInfo)info
 {
-	[self asyncSendData: data info: nil runLoopMode: OFDefaultRunLoopMode];
+	[self asyncSendData: data info: info runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncSendData: (OFData *)data

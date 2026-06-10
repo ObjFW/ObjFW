@@ -38,6 +38,7 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 	endif()
 
 	add_library(ObjFW::${package} IMPORTED INTERFACE)
+	add_library(ObjFW::${package}-static IMPORTED INTERFACE)
 
 	execute_process(
 		COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --cppflags --objcflags
@@ -63,11 +64,19 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 			COMMAND_ERROR_IS_FATAL ANY
 		)
 	endif()
+	execute_process(
+		COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --static-libs --ldflags
+		${package_flags}
+		OUTPUT_VARIABLE static_link_options
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		COMMAND_ERROR_IS_FATAL ANY
+	)
 
 	string(REPLACE " " ";" compile_options "${compile_options}")
 	string(REPLACE " " ";" link_options "${link_options}")
 	string(REPLACE "-framework;" "-framework "
 		link_options "${link_options}")
+	string(REPLACE " " ";" static_link_options "${static_link_options}")
 
 	foreach(flag ${compile_options})
 		if(flag MATCHES "^-I")
@@ -75,13 +84,23 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 			objfw_cygpath_to_win32(dir dir)
 			target_include_directories(ObjFW::${package}
 				INTERFACE ${dir})
+			target_include_directories(ObjFW::${package}-static
+				INTERFACE ${dir})
 		elseif(flag MATCHES "^-D")
 			target_compile_definitions(ObjFW::${package}
+				INTERFACE ${flag})
+			target_compile_definitions(ObjFW::${package}-static
 				INTERFACE ${flag})
 		else()
 			target_compile_options(ObjFW::${package} INTERFACE
 				$<$<BOOL:$<OBJC_COMPILER_VERSION>>:${flag}>)
 			target_compile_options(ObjFW::${package} INTERFACE
+				$<$<BOOL:$<OBJCXX_COMPILER_VERSION>>:${flag}>)
+			target_compile_options(ObjFW::${package}-static
+				INTERFACE
+				$<$<BOOL:$<OBJC_COMPILER_VERSION>>:${flag}>)
+			target_compile_options(ObjFW::${package}-static
+				INTERFACE
 				$<$<BOOL:$<OBJCXX_COMPILER_VERSION>>:${flag}>)
 		endif()
 	endforeach()
@@ -99,8 +118,33 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 		elseif(flag MATCHES "^-framework ")
 			target_link_libraries(ObjFW::${package}
 				INTERFACE ${flag})
+		elseif(flag MATCHES "^-")
+			target_link_options(ObjFW::${package}
+				INTERFACE ${flag})
 		else()
-			target_link_options(ObjFW::${package} INTERFACE ${flag})
+			target_link_libraries(ObjFW::${package}
+				INTERFACE ${flag})
+		endif()
+	endforeach()
+	foreach(flag ${static_link_options})
+		if(flag MATCHES "^-l")
+			string(REGEX REPLACE "^-l" "" lib ${flag})
+			target_link_libraries(ObjFW::${package}-static
+				INTERFACE ${lib})
+		elseif(flag MATCHES "^-L")
+			string(REGEX REPLACE "^-L" "" dir ${flag})
+			objfw_cygpath_to_win32(dir dir)
+			target_link_directories(ObjFW::${package}-static
+				INTERFACE ${dir})
+		elseif(flag MATCHES "^-framework ")
+			target_link_libraries(ObjFW::${package}-static
+				INTERFACE ${flag})
+		elseif(flag MATCHES "^-")
+			target_link_options(ObjFW::${package}-static
+				INTERFACE ${flag})
+		else()
+			target_link_libraries(ObjFW::${package}-static
+				INTERFACE ${flag})
 		endif()
 	endforeach()
 endforeach()

@@ -294,7 +294,7 @@ readULEB128(const uint8_t **ptr)
 	uint8_t shift = 0;
 
 	do {
-		value |= (**ptr & 0x7F) << shift;
+		value |= ((uint64_t)**ptr & 0x7F) << shift;
 		(*ptr)++;
 		shift += 7;
 	} while (*(*ptr - 1) & 0x80);
@@ -444,9 +444,20 @@ readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct LSDA *LSDA)
 	LSDA->landingpadsStart = LSDA->regionStart;
 	LSDA->typesTable = NULL;
 
-	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit)
+	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit) {
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+		const uint8_t *start = ptr;
+#endif
+
 		LSDA->landingpadsStart =
 		    (uintptr_t)readValue(landingpadsStartEnc, &ptr);
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+		LSDA->landingpadsStart =
+		    (uintptr_t)resolveValue(LSDA->landingpadsStart,
+		    landingpadsStartEnc, start,
+		    getBase(ctx, landingpadsStartEnc));
+#endif
+	}
 
 	if ((LSDA->typesTableEnc = *ptr++) != DW_EH_PE_omit) {
 		uintptr_t tmp = (uintptr_t)readULEB128(&ptr);
@@ -543,6 +554,7 @@ static uint8_t
 findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
     bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
+	uint8_t found = 0;
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
 
@@ -595,15 +607,15 @@ findActionRecord(const uint8_t *actionRecords, struct LSDA *LSDA, int actions,
 
 			if (classMatches(class, e->object)) {
 				*filterPtr = filter;
-				return HANDLER_FOUND;
+				return (found | HANDLER_FOUND);
 			}
 		} else if (filter == 0)
-			return CLEANUP_FOUND;
+			found |= CLEANUP_FOUND;
 		else if (filter < 0)
 			_OBJC_ERROR("Invalid filter!");
 	} while (displacement != 0);
 
-	return 0;
+	return found;
 }
 
 #ifdef __SEH__

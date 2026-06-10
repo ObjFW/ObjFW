@@ -68,9 +68,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFSubprocess with the specified program and invokes the
  *	  program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
- * @return A new, autoreleased OFSubprocess.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)subprocessWithProgram: (OFString *)program;
 
@@ -78,10 +79,11 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFSubprocess with the specified program and arguments
  *	  and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -91,12 +93,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFSubprocess with the specified program, program name
  *	  and arguments and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param programName The program name for the program to invoke (argv[0]).
- *		      Usually, this is equal to program.
+ *		      Usually, this is equal to program. On some operating
+ *		      systems, this is ignored.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -107,17 +111,19 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new OFSubprocess with the specified program, program name,
  *	  arguments and environment and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param programName The program name for the program to invoke (argv[0]).
- *		      Usually, this is equal to program.
+ *		      Usually, this is equal to program. On some operating
+ *		      systems, this is ignored.
  * @param arguments The arguments to pass to the program, or `nil`
  * @param environment The environment to pass to the program, or `nil`. If it
  *		      is not `nil`, the passed dictionary will be used to
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return A new, autoreleased OFSubprocess.
+ * @return A new, autoreleased OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 + (instancetype)
     subprocessWithProgram: (OFString *)program
@@ -132,9 +138,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFSubprocess with the specified
  *	  program and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
- * @return An initialized OFSubprocess.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)initWithProgram: (OFString *)program;
 
@@ -142,10 +149,11 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFSubprocess with the specified
  *	  program and arguments and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -155,12 +163,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OFSubprocess with the specified
  *	  program, program name and arguments and invokes the program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param programName The program name for the program to invoke (argv[0]).
- *		      Usually, this is equal to program.
+ *		      Usually, this is equal to program. On some operating
+ *		      systems, this is ignored.
  * @param arguments The arguments to pass to the program, or `nil`
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program
@@ -172,17 +182,19 @@ OF_SUBCLASSING_RESTRICTED
  *	  program, program name, arguments and environment and invokes the
  *	  program.
  *
- * @param program The program to execute. If it does not start with a slash, the
- *		  search path specified in PATH is used.
+ * @param program The program to execute. If is not a path to an executable, the
+ *		  search path specified in PATH is searched to find it.
  * @param programName The program name for the program to invoke (argv[0]).
- *		      Usually, this is equal to program.
+ *		      Usually, this is equal to program. On some operating
+ *		      systems, this is ignored.
  * @param arguments The arguments to pass to the program, or `nil`
  * @param environment The environment to pass to the program, or `nil`. If it
  *		      is not `nil`, the passed dictionary will be used to
  *		      override the environment. If you want to add to the
  *		      existing environment, you need to get the existing
  *		      environment first, copy it, modify it and then pass it.
- * @return An initialized OFSubprocess.
+ * @return An initialized OFSubprocess
+ * @throw OFCreateSubprocessFailedException Creating the subprocess failed
  */
 - (instancetype)
     initWithProgram: (OFString *)program

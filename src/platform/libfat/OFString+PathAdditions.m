@@ -99,7 +99,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)lastPathComponent
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	const char *cString;
 	size_t cStringLength;
 	ssize_t i;
@@ -108,6 +108,7 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @":/"])
 		return self;
 
+	pool = objc_autoreleasePoolPush();
 	cString = self.UTF8String;
 	cStringLength = self.UTF8StringLength;
 
@@ -172,7 +173,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByDeletingLastPathComponent
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	const char *cString;
 	size_t cStringLength;
 	OFString *ret;
@@ -180,6 +181,7 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @":/"])
 		return self;
 
+	pool = objc_autoreleasePoolPush();
 	cString = self.UTF8String;
 	cStringLength = self.UTF8StringLength;
 
@@ -246,7 +248,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByStandardizingPath
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
 	OFString *ret;
@@ -255,6 +257,7 @@ int _OFString_PathAdditions_reference;
 	if (self.length == 0)
 		return @"";
 
+	pool = objc_autoreleasePoolPush();
 	components = self.pathComponents;
 
 	if (components.count == 1) {

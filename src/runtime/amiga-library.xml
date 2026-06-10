@@ -358,4 +358,7 @@
   <function name='objc_removeAssociatedObjects'>
     <argument name='object' type='id _Nonnull'/>
   </function>
+  <function name='_objc_rootTryRetain' return-type='bool'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
 </amiga-library>

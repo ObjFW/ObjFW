@@ -136,11 +136,13 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFData *old;
 
-	if (extraField.itemSize != 1)
-		@throw [OFInvalidArgumentException exception];
+	if (extraField != nil) {
+		if (extraField.itemSize != 1)
+			@throw [OFInvalidArgumentException exception];
 
-	if (extraField.count > UINT16_MAX)
-		@throw [OFOutOfRangeException exception];
+		if (extraField.count > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+	}
 
 	old = _extraField;
 	_extraField = [extraField copy];
@@ -164,8 +166,12 @@
 - (void)setModificationDate: (OFDate *)date
 {
 	void *pool = objc_autoreleasePoolPush();
+	unsigned short localYear = date.localYear;
 
-	_lastModifiedFileDate = (((date.localYear - 1980) & 0xFF) << 9) |
+	if (localYear < 1980 || localYear > 2107)
+		@throw [OFInvalidArgumentException exception];
+
+	_lastModifiedFileDate = (((localYear - 1980) & 0x7F) << 9) |
 	    ((date.localMonthOfYear & 0x0F) << 5) |
 	    (date.localDayOfMonth & 0x1F);
 	_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |

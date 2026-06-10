@@ -25,6 +25,7 @@
 #include <string.h>
 
 #import "OFHTTPClient.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -56,6 +57,7 @@
 
 static const OFRunLoopMode HTTPClientRunLoopMode = @"OFHTTPClientRunLoopMode";
 static const unsigned int defaultRedirects = 10;
+static const size_t maxStringReadLength = 10240;
 
 OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate,
@@ -118,6 +120,24 @@ OF_DIRECT_MEMBERS
 
 - (instancetype)initWithDelegate: (OFObject <OFHTTPClientDelegate> *)delegate;
 @end
+
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
+
+	return ret;
+}
 
 static OFString *
 constructRequestString(OFHTTPRequest *request)
@@ -196,8 +216,7 @@ constructRequestString(OFHTTPRequest *request)
 		[headers setObject: @"keep-alive" forKey: @"Connection"];
 
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
-	chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	if ((hasContentLength || chunked) &&
 	    [headers objectForKey: @"Content-Type"] == nil)
@@ -398,7 +417,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFMutableDictionary *newHeaders =
 			    objc_autorelease([headers mutableCopy]);
 
-			if (![newIRI.host isEqual: IRI.host]) {
+			if (![newIRI.scheme isEqual: IRI.scheme] ||
+			    (newIRI.host != IRI.host &&
+			    ![newIRI.host isEqual: IRI.host]) ||
+			    (newIRI.port != IRI.port &&
+			    ![newIRI.port isEqual: IRI.port])) {
 				[newHeaders removeObjectForKey: @"Host"];
 				[newHeaders
 				    removeObjectForKey: @"Authorization"];
@@ -620,8 +643,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	_firstLine = true;
 
 	headers = _request.headers;
-	chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
 		OFStream *requestBody;
@@ -661,6 +683,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		OFRunLoopMode runLoopMode =
 		    [OFRunLoop currentRunLoop].currentMode;
 
+		[stream setMaxStringReadLength: maxStringReadLength];
 		[stream asyncWriteString: constructRequestString(_request)
 				encoding: stream.encoding
 			     runLoopMode: runLoopMode];
@@ -833,15 +856,14 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-		OFString *transferEncoding, *contentLengthString;
+		OFString *contentLengthString;
 
 		_handler = objc_retain(handler);
 		_stream = objc_retain(stream);
 
 		headers = _handler->_request.headers;
-
-		transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
-		_chunked = [transferEncoding isEqual: @"chunked"];
+		_chunked = [parseTransferEncoding(headers)
+		    containsObject: @"chunked"];
 
 		contentLengthString = [headers objectForKey: @"Content-Length"];
 		if (contentLengthString != nil) {
@@ -969,8 +991,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	super.headers = headers;
 
-	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
@@ -1325,7 +1346,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		  redirects: (unsigned int)redirects
 {
 	[self asyncPerformRequest: request
-			redirects: defaultRedirects
+			redirects: redirects
 		      runLoopMode: OFDefaultRunLoopMode];
 }
 

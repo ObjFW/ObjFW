@@ -280,8 +280,6 @@ typedef id _Nullable (^OFArrayFoldBlock)(id _Nullable left, id right);
  *
  * @ref setValue:forKey: is called for each object in the array.
  *
- * @note A @ref OFNull value is translated to nil!
- *
  * @param value The value for the specified key
  * @param key The key of the value to set
  */

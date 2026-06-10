@@ -10,11 +10,12 @@ LIB_MAJOR = ${OBJFWHID_LIB_MAJOR}
 LIB_MINOR = ${OBJFWHID_LIB_MINOR}
 LIB_PATCH = ${OBJFWHID_LIB_PATCH}
 
-SRCS = OH8BitDoUltimate2CWirelessGamepad.m	\
+SRCS = OH8BitDoPro2Gamepad.m			\
+       OH8BitDoUltimate2CWirelessGamepad.m	\
        OHDualSenseGamepad.m			\
-       OHDualShockGamepad.m			\
        OHDualShock3Gamepad.m			\
        OHDualShock4Gamepad.m			\
+       OHDualShockGamepad.m			\
        OHExtendedN64Controller.m		\
        OHExtendedSNESGamepad.m			\
        OHGameController.m			\
@@ -31,6 +32,7 @@ SRCS = OH8BitDoUltimate2CWirelessGamepad.m	\
        OHSNESGamepad.m				\
        OHStadiaGamepad.m			\
        OHSwitchProController.m			\
+       OHVIDPID.m				\
        OHXboxGamepad.m
 
 INCLUDES := ${SRCS:.m=.h}		\

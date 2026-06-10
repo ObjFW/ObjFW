@@ -1160,7 +1160,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		};
 
 		if (!SetFilePosixDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &POSIXDate, TAG_END) != 0)
+		    [OFLocale encoding]], &POSIXDate, TAG_END))
 			@throw [OFSetItemAttributesFailedException
 				exceptionWithIRI: IRI
 				      attributes: attributes
@@ -1188,10 +1188,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 # ifdef OF_AMIGAOS4
 		if (!SetDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &date) != 0)
+		    [OFLocale encoding]], &date))
 # else
 		if (!SetFileDate([path cStringWithEncoding:
-		    [OFLocale encoding]], &date) != 0)
+		    [OFLocale encoding]], &date))
 # endif
 			@throw [OFSetItemAttributesFailedException
 			    exceptionWithIRI: IRI
@@ -1510,7 +1510,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		if (tmp > GID_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		uid = (gid_t)tmp;
+		gid = (gid_t)tmp;
 	}
 
 # ifdef OF_HAVE_THREADS

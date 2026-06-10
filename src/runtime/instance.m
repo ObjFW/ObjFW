@@ -177,6 +177,9 @@ class_createInstance(Class class, size_t extraBytes)
 
 	instanceSize = class_getInstanceSize(class);
 
+	if (SIZE_MAX - _OBJC_PRE_IVARS_ALIGNED - instanceSize < extraBytes)
+		return nil;
+
 #if defined(OF_WINDOWS)
 	instance = __mingw_aligned_malloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT);
@@ -204,7 +207,7 @@ class_createInstance(Class class, size_t extraBytes)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
 # if defined(OF_WINDOWS)
-		__mingw_alaigned_free(instance);
+		__mingw_aligned_free(instance);
 # elif defined(OF_DJGPP)
 		alignedFree(instance, offset);
 # else
@@ -286,6 +289,52 @@ _objc_rootRetain(id object)
 #endif
 
 	return object;
+}
+
+/*
+ * Only called by -[retainWeakReference], which is only called by
+ * objc_loadWeakRetained(), which holds a lock for weak references. This same
+ * lock is also held during _objc_zeroWeakReferences(), so our object cannot
+ * just disappear here, as deallocation cannot finish before the weak
+ * references lock is released. This means can be zero, because deallocation
+ * has started, but the object itself cannot disappear until we return.
+ */
+bool
+_objc_rootTryRetain(id object)
+{
+	bool ret = true;
+
+#if defined(OF_HAVE_ATOMIC_OPS)
+	OFAcquireMemoryBarrier();
+
+	if (OFAtomicIntIncrease(&_OBJC_PRE_IVARS(object)->retainCount) <= 1) {
+		OFAtomicIntDecrease(&_OBJC_PRE_IVARS(object)->retainCount);
+		ret = false;
+	}
+#elif defined(OF_AMIGAOS)
+	Forbid();
+
+	if (++_OBJC_PRE_IVARS(object)->retainCount <= 1) {
+		_OBJC_PRE_IVARS(object)->retainCount--;
+		ret = false;
+	}
+
+	Permit();
+#else
+	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to lock spinlock!");
+
+	if (++_OBJC_PRE_IVARS(object)->retainCount <= 1) {
+		_OBJC_PRE_IVARS(object)->retainCount--;
+		ret = false;
+	}
+
+	if (OFSpinlockUnlock(
+	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to unlock spinlock!");
+#endif
+
+	return ret;
 }
 
 unsigned int

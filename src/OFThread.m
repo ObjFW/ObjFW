@@ -526,9 +526,14 @@ callMain(id object)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
+		OFReleaseMemoryBarrier();
+
 		if (!OFAtomicPointerCompareAndSwap(
-		    (void **)&_runLoop, nil, tmp))
+		    (void **)&_runLoop, nil, tmp)) {
+			OFAcquireMemoryBarrier();
+
 			objc_release(tmp);
+		}
 	}
 # else
 	@synchronized (self) {

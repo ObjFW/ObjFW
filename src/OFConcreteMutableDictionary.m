@@ -26,6 +26,7 @@
 #import "OFMapTable.h"
 
 #import "OFEnumerationMutationException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 @implementation OFConcreteMutableDictionary
@@ -37,6 +38,9 @@
 
 - (void)setObject: (id)object forKey: (id)key
 {
+	if (object == self || key == self)
+		@throw [OFInvalidArgumentException exception];
+
 	[_mapTable setObject: object forKey: key];
 }
 
@@ -56,7 +60,12 @@
 	@try {
 		[_mapTable replaceObjectsUsingBlock:
 		    ^ void *(void *key, void *object) {
-			return block(key, object);
+			id new = block(key, object);
+
+			if (new == self)
+				@throw [OFInvalidArgumentException exception];
+
+			return new;
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException

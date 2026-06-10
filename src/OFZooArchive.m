@@ -213,8 +213,9 @@ OF_DIRECT_MEMBERS
 
 	if (commentOffset > 0) {
 		[_stream seekToOffset: commentOffset whence: OFSeekSet];
-		_archiveComment = [_stream readStringWithLength: commentLength
-						       encoding: _encoding];
+		_archiveComment =
+		    [[_stream readStringWithLength: commentLength
+					  encoding: _encoding] copy];
 	}
 
 	[_stream seekToOffset: firstFileOffset whence: OFSeekSet];

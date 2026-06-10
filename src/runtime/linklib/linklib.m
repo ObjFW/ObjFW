@@ -1076,3 +1076,14 @@ objc_removeAssociatedObjects(id _Nonnull object)
 
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 592))(object);
 }
+
+bool __attribute__((__weak__))
+_objc_rootTryRetain(id _Nonnull object)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((bool (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 598))(object);
+}

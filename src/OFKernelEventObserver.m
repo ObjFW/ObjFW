@@ -146,7 +146,7 @@
 			int ret;
 
 			while (rnd < 1024)
-				rnd = (uint16_t)rand();
+				rnd = OFRandom16();
 
 			_cancelAddr.sin_port = OFToBigEndian16(rnd);
 			ret = bind(_cancelFD[0],

@@ -181,7 +181,8 @@ encodingForContentType(OFString *contentType)
 				value =
 				    value.stringByDeletingTrailingWhitespaces;
 
-				if ([name isEqual: @"charset"])
+				if ([name caseInsensitiveCompare: @"charset"] ==
+				    OFOrderedSame)
 					charset = value;
 
 				state = stateBeforeParamName;

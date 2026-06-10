@@ -75,7 +75,7 @@
 			    exceptionWithClass: self.class];
 
 		_socket = OFInvalidSocketHandle;
-#ifdef OF_HAVE_AMIGAOS
+#ifdef OF_AMIGAOS
 		_socketID = -1;
 #endif
 		_canBlock = true;

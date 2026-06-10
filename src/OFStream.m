@@ -692,6 +692,11 @@ retry:
 			if (SIZE_MAX - _readBufferLength < bufferLength)
 				@throw [OFOutOfRangeException exception];
 
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
@@ -1012,6 +1017,11 @@ retry:
 			if (SIZE_MAX - _readBufferLength < bufferLength)
 				@throw [OFOutOfRangeException exception];
 
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
@@ -1186,6 +1196,14 @@ retry:
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
@@ -1690,6 +1708,16 @@ retry:
 - (void)setAllowsLossyEncoding: (bool)allowsLossyEncoding
 {
 	_allowsLossyEncoding = allowsLossyEncoding;
+}
+
+- (size_t)maxStringReadLength
+{
+	return _maxStringReadLength;
+}
+
+- (void)setMaxStringReadLength: (size_t)maxStringReadLength
+{
+	_maxStringReadLength = maxStringReadLength;
 }
 
 - (bool)canBlock

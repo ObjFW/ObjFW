@@ -136,7 +136,7 @@ test(id self, SEL _cmd)
  * stret forwarding handler instead of the regular one.
  */
 # if !(defined(OF_WINDOWS) && defined(OF_AMD64) && \
-    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
+    !defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
     !(defined(OF_APPLE_RUNTIME) && defined(OF_AMD64))
 - (void)testForwardingTargetForSelectorFPRet
 {

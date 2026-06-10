@@ -67,9 +67,9 @@
 # define USE_INLINE_STDARG
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
-# define __NOLIBBASE_
+# define __NOLIBBASE__
 # include <proto/intuition.h>
-# undef __NOLIBBASE_
+# undef __NOLIBBASE__
 # undef Class
 #endif
 
@@ -82,6 +82,7 @@ extern id _objc_rootRetain(id object);
 extern uintptr_t _objc_rootRetainCount(id object);
 extern void _objc_rootRelease(id object);
 extern id _objc_rootAutorelease(id object);
+extern bool _objc_rootTryRetain(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id _OFForward(id, SEL, ...);
@@ -469,6 +470,9 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	if OF_UNLIKELY (extraAlignment > 1)
 		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
 		    instanceSize) - instanceSize;
+
+	if (SIZE_MAX - extraAlignment < extraSize)
+		@throw [OFOutOfRangeException exception];
 
 	instance = class_createInstance(class, extraAlignment + extraSize);
 
@@ -1323,9 +1327,7 @@ _references_to_categories_of_OFObject(void)
 
 - (bool)retainWeakReference
 {
-	[self retain];
-
-	return true;
+	return _objc_rootTryRetain(self);
 }
 
 - (void)dealloc

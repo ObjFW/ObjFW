@@ -130,6 +130,8 @@ OF_DIRECT_MEMBERS
 @end
 #endif
 
+static const size_t maxStringReadLength = 10240;
+
 static OFString *
 normalizedKey(OFString *key)
 {
@@ -159,6 +161,24 @@ normalizedKey(OFString *key)
 		OFFreeMemory(cString);
 		@throw e;
 	}
+
+	return ret;
+}
+
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
 
 	return ret;
 }
@@ -193,6 +213,7 @@ normalizedKey(OFString *key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
@@ -215,17 +236,26 @@ normalizedKey(OFString *key)
 			[headers setObject: name forKey: @"Server"];
 	}
 
+	newlineCharacterSet = [OFCharacterSet newlineCharacterSet];
+
 	keyEnumerator = [headers keyEnumerator];
 	valueEnumerator = [headers objectEnumerator];
+
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (value = [valueEnumerator nextObject]) != nil)
+	    (value = [valueEnumerator nextObject]) != nil) {
+		if ([key rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound ||
+		    [value rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound)
+			@throw [OFInvalidArgumentException exception];
+
 		[_stream writeFormat: @"%@: %@\r\n", key, value];
+	}
 
 	[_stream writeString: @"\r\n"];
 
 	_headersSent = true;
-	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -375,7 +405,15 @@ normalizedKey(OFString *key)
 		default:
 			return false;
 		}
-	} @catch (OFWriteFailedException *e) {
+	} @catch (id e) {
+		if ([_server.delegate respondsToSelector: @selector(
+		    server:didEncounterException:request:response:)]) {
+			[_server.delegate  server: _server
+			    didEncounterException: e
+					  request: nil
+					 response: nil];
+		}
+
 		return false;
 	}
 
@@ -444,8 +482,8 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		bool chunked = [[_headers objectForKey: @"Transfer-Encoding"]
-		    isEqual: @"chunked"];
+		bool chunked = [parseTransferEncoding(_headers)
+		    containsObject: @"chunked"];
 		OFString *contentLengthString =
 		    [_headers objectForKey: @"Content-Length"];
 		unsigned long long contentLength = 0;
@@ -459,20 +497,26 @@ normalizedKey(OFString *key)
 				    contentLengthString.unsignedLongLongValue;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
 			}
 		}
 
 		if (chunked || contentLengthString != nil) {
 			objc_release(_requestBody);
 			_requestBody = nil;
-			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
-			    initWithStream: _stream
-				   chunked: chunked
-			     contentLength: contentLength];
 
-			[_timer invalidate];
-			objc_release(_timer);
-			_timer = nil;
+			@try {
+				_requestBody =
+				    [[OFHTTPServerRequestBodyStream alloc]
+				    initWithStream: _stream
+					   chunked: chunked
+				     contentLength: contentLength];
+			} @catch (OFInvalidArgumentException *e) {
+				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
+			}
 		}
 
 		_state = stateSendResponse;
@@ -550,6 +594,11 @@ normalizedKey(OFString *key)
 			      @"\r\n",
 			      statusCode, OFHTTPStatusCodeString(statusCode),
 			      date, _server.name];
+
+	[_timer invalidate];
+	objc_release(_timer);
+	_timer = nil;
+
 	return false;
 }
 
@@ -821,7 +870,7 @@ normalizedKey(OFString *key)
 
 @implementation OFHTTPServer
 @synthesize delegate = _delegate, usesTLS = _usesTLS;
-@synthesize certificateChain = _certificateChain, name = _name;
+@synthesize certificateChain = _certificateChain;
 
 + (instancetype)server
 {
@@ -900,6 +949,24 @@ normalizedKey(OFString *key)
 }
 #endif
 
+- (void)setName: (OFString *)name
+{
+	OFString *old;
+
+	if ([name rangeOfCharacterFromSet:
+	    [OFCharacterSet newlineCharacterSet]].location != OFNotFound)
+		@throw [OFInvalidArgumentException exception];
+
+	old = _name;
+	_name = [name copy];
+	objc_release(old);
+}
+
+- (OFString *)name
+{
+	return _name;
+}
+
 - (void)start
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -971,6 +1038,7 @@ normalizedKey(OFString *key)
 	stream.delegate = objc_autorelease(
 	    [[OFHTTPServerConnection alloc] initWithStream: stream
 						    server: self]);
+	[stream setMaxStringReadLength: maxStringReadLength];
 	[stream asyncReadLine];
 }
 

@@ -308,6 +308,7 @@ ssize_t
 _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 {
 	const unsigned char *buffer = (const unsigned char *)buffer_;
+	OFUnichar tmp;
 
 	if (!(*buffer & 0x80)) {
 		*ret = buffer[0];
@@ -321,7 +322,12 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		if OF_UNLIKELY ((buffer[1] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+		tmp = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
+
+		if (tmp < 0x80)
+			return 0;
+
+		*ret = tmp;
 		return 2;
 	}
 
@@ -333,8 +339,13 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		    (buffer[2] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
+		tmp = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
 		    (buffer[2] & 0x3F);
+
+		if (tmp < 0x800)
+			return 0;
+
+		*ret = tmp;
 		return 3;
 	}
 
@@ -346,8 +357,13 @@ _OFUTF8StringDecode(const char *buffer_, size_t length, OFUnichar *ret)
 		    (buffer[2] & 0xC0) != 0x80 || (buffer[3] & 0xC0) != 0x80)
 			return 0;
 
-		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
+		tmp = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
 		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
+
+		if (tmp < 0x10000)
+			return 0;
+
+		*ret = tmp;
 		return 4;
 	}
 
@@ -479,6 +495,29 @@ isASCIIWithoutNull(const char *string, size_t length)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
+	if (UTF8StringLength == 0) {
+		if (freeWhenDone)
+			OFFreeMemory(UTF8String);
+
+		return (id)@"";
+	}
+
+#ifdef OF_OBJFW_RUNTIME
+	if (UTF8StringLength <= MAX_TAGGED_POINTER_LENGTH &&
+	    isASCIIWithoutNull(UTF8String, UTF8StringLength)) {
+		id ret = [OFTaggedPointerString
+		    stringWithASCIIString: UTF8String
+				   length: UTF8StringLength];
+
+		if (ret != nil) {
+			if (freeWhenDone)
+				OFFreeMemory(UTF8String);
+
+			return ret;
+		}
+	}
+#endif
+
 	return (id)[[OFUTF8String alloc]
 	    initWithUTF8StringNoCopy: UTF8String
 			      length: UTF8StringLength
@@ -1183,13 +1222,53 @@ OF_SINGLETON_METHODS
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 			     encoding: (OFStringEncoding)encoding
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFData *data;
+	char *buffer = NULL;
+	size_t length = 0;
 
 	@try {
-		data = [OFData dataWithContentsOfIRI: IRI];
+		void *pool = objc_autoreleasePoolPush();
+		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
+		const size_t readLength = 16384;
+		size_t capacity = readLength;
+
+		buffer = OFAllocMemory(capacity, 1);
+
+		while (!stream.atEndOfStream) {
+			if (SIZE_MAX - length < readLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (capacity < length + readLength) {
+				if (capacity > SIZE_MAX / 2)
+					capacity = length + readLength;
+				else
+					capacity *= 2;
+
+				buffer = OFResizeMemory(buffer, capacity, 1);
+			}
+
+			length += [stream readIntoBuffer: buffer + length
+						  length: readLength];
+		}
+
+		if (SIZE_MAX - length < 1)
+			@throw [OFOutOfRangeException exception];
+
+		@try {
+			buffer = OFResizeMemory(buffer, length + 1, 1);
+		} @catch (OFOutOfMemoryException *e) {
+			if (capacity < length + 1)
+				@throw e;
+
+			/* We don't care, we only made it smaller. */
+		}
+
+		buffer[length] = 0;
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
+		OFFreeMemory(buffer);
 		objc_release(self);
+
 		@throw e;
 	}
 
@@ -1197,11 +1276,24 @@ OF_SINGLETON_METHODS
 	if (encoding == OFStringEncodingAutodetect)
 		encoding = OFStringEncodingUTF8;
 
-	self = [self initWithCString: data.items
-			    encoding: encoding
-			      length: data.count * data.itemSize];
-
-	objc_autoreleasePoolPop(pool);
+	if (encoding == OFStringEncodingUTF8) {
+		@try {
+			self = [self initWithUTF8StringNoCopy: buffer
+						       length: length
+						 freeWhenDone: true];
+		} @catch (id e) {
+			OFFreeMemory(buffer);
+			@throw e;
+		}
+	} else {
+		@try {
+			self = [self initWithCString: buffer
+					    encoding: encoding
+					      length: length];
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	}
 
 	return self;
 }
@@ -1212,6 +1304,7 @@ OF_SINGLETON_METHODS
 		  lossy: (bool)lossy
 	       insecure: (bool)insecure
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t i, length = self.length;
 
@@ -1256,6 +1349,8 @@ OF_SINGLETON_METHODS
 
 		cString[j] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return j;
 	case OFStringEncodingASCII:
 		if (length + 1 > maxLength)
@@ -1265,7 +1360,7 @@ OF_SINGLETON_METHODS
 			if OF_UNLIKELY (!insecure && characters[i] == 0)
 				@throw [OFInvalidEncodingException exception];
 
-			if OF_UNLIKELY (characters[i] > 0x80) {
+			if OF_UNLIKELY (characters[i] >= 0x80) {
 				if (lossy)
 					cString[i] = '?';
 				else
@@ -1276,6 +1371,8 @@ OF_SINGLETON_METHODS
 		}
 
 		cString[i] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 	case OFStringEncodingISO8859_1:
@@ -1298,6 +1395,8 @@ OF_SINGLETON_METHODS
 
 		cString[i] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #ifdef HAVE_ISO_8859_2
 	case OFStringEncodingISO8859_2:
@@ -1309,6 +1408,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1323,6 +1424,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_ISO_8859_15
@@ -1335,6 +1438,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1349,6 +1454,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_WINDOWS_1251
@@ -1361,6 +1468,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1375,6 +1484,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_437
@@ -1387,6 +1498,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1401,6 +1514,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_CODEPAGE_852
@@ -1413,6 +1528,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1427,6 +1544,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_MAC_ROMAN
@@ -1439,6 +1558,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1453,6 +1574,8 @@ OF_SINGLETON_METHODS
 
 		cString[length] = '\0';
 
+		objc_autoreleasePoolPop(pool);
+
 		return length;
 #endif
 #ifdef HAVE_KOI8_U
@@ -1465,6 +1588,8 @@ OF_SINGLETON_METHODS
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
+
+		objc_autoreleasePoolPop(pool);
 
 		return length;
 #endif
@@ -1609,6 +1734,7 @@ OF_SINGLETON_METHODS
 {
 	switch (encoding) {
 	case OFStringEncodingUTF8:;
+		void *pool = objc_autoreleasePoolPush();
 		const OFUnichar *characters;
 		size_t length, UTF8StringLength = 0;
 
@@ -1628,6 +1754,8 @@ OF_SINGLETON_METHODS
 
 			UTF8StringLength += len;
 		}
+
+		objc_autoreleasePoolPop(pool);
 
 		return UTF8StringLength;
 	case OFStringEncodingASCII:
@@ -1756,12 +1884,14 @@ OF_SINGLETON_METHODS
 
 - (OFComparisonResult)caseInsensitiveCompare: (OFString *)string
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	const OFUnichar *characters, *otherCharacters;
 	size_t length, otherLength, minimumLength;
 
 	if (string == self)
 		return OFOrderedSame;
+
+	pool = objc_autoreleasePoolPush();
 
 	characters = self.characters;
 	otherCharacters = string.characters;
@@ -1816,6 +1946,7 @@ OF_SINGLETON_METHODS
 
 - (unsigned long)hash
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t length = self.length;
 	unsigned long hash;
@@ -1831,6 +1962,7 @@ OF_SINGLETON_METHODS
 	}
 
 	OFHashFinalize(&hash);
+	objc_autoreleasePoolPop(pool);
 
 	return hash;
 }
@@ -1870,6 +2002,7 @@ OF_SINGLETON_METHODS
 		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\0"];
 
 		if (options & OFJSONRepresentationOptionIsIdentifier) {
+			void *pool = objc_autoreleasePoolPush();
 			const char *cString = JSON.UTF8String;
 
 			if ((!OFASCIIIsAlpha(cString[0]) &&
@@ -1878,6 +2011,8 @@ OF_SINGLETON_METHODS
 				[JSON insertString: @"\"" atIndex: 0];
 				[JSON appendString: @"\""];
 			}
+
+			objc_autoreleasePoolPop(pool);
 		} else {
 			[JSON insertString: @"\"" atIndex: 0];
 			[JSON appendString: @"\""];
@@ -1899,6 +2034,7 @@ OF_SINGLETON_METHODS
 {
 	OFMutableData *data;
 	size_t length;
+	void *pool;
 
 	length = self.UTF8StringLength;
 
@@ -1931,8 +2067,10 @@ OF_SINGLETON_METHODS
 	} else
 		@throw [OFOutOfRangeException exception];
 
+	pool = objc_autoreleasePoolPush();
 	[data addItems: [self insecureCStringWithEncoding: OFStringEncodingUTF8]
 		 count: length];
+	objc_autoreleasePoolPop(pool);
 
 	return data;
 }
@@ -2927,6 +3065,7 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 
 - (size_t)UTF16StringLength
 {
+	void *pool = objc_autoreleasePoolPush();
 	const OFUnichar *characters = self.characters;
 	size_t length, UTF16StringLength;
 
@@ -2935,6 +3074,8 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	for (size_t i = 0; i < length; i++)
 		if (characters[i] > 0xFFFF)
 			UTF16StringLength++;
+
+	objc_autoreleasePoolPop(pool);
 
 	return UTF16StringLength;
 }
@@ -2993,12 +3134,17 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 - (OFString *)stringByExpandingWindowsEnvironmentStrings
 {
 	if ([OFSystemInfo isWindowsNT]) {
+		void *pool = objc_autoreleasePoolPush();
 		wchar_t buffer[512];
 		size_t length;
 
 		if ((length = ExpandEnvironmentStringsW(self.UTF16String,
-		    buffer, sizeof(buffer))) == 0)
+		    buffer, sizeof(buffer))) == 0) {
+			objc_autoreleasePoolPop(pool);
 			return self;
+		}
+
+		objc_autoreleasePoolPop(pool);
 
 		return [OFString stringWithUTF16String: buffer
 						length: length - 1];

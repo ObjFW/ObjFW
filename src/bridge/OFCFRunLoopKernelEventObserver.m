@@ -41,6 +41,8 @@ struct MapTableEntry {
 	CFOptionFlags types;
 };
 
+static void *cancelSocketInfo = &cancelSocketInfo;
+
 static void
 freeMapTableEntry(void *object)
 {
@@ -95,29 +97,33 @@ static void
 callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
     const void *data, void *info_)
 {
-	void *pool = objc_autoreleasePoolPush();
 	OFPair *info = info_;
+	void *pool;
 	id object;
 	OFCFRunLoopKernelEventObserver *observer;
 
 	OFAssert(info != nil);
 
-	object = info.firstObject;
-	observer = info.secondObject;
-
-	if (object == nil) {
+	if (info == cancelSocketInfo) {
 		char buffer;
 
-		OFAssert(sock == observer->_cancelSocket);
-		OFAssert(type == kCFSocketReadCallBack);
-		OFEnsure(read(observer->_cancelFD[0], &buffer, 1) == 1);
+		OFEnsure(read(CFSocketGetNative(sock), &buffer, 1) == 1);
 
 		return;
 	}
 
-	if (type & kCFSocketReadCallBack)
+	pool = objc_autoreleasePoolPush();
+
+	object = info.firstObject;
+	observer = info.secondObject;
+
+	if ((type & kCFSocketReadCallBack) &&
+	    [observer->_delegate respondsToSelector:
+	    @selector(objectIsReadyForReading:)])
 		[observer->_delegate objectIsReadyForReading: object];
-	if (type & kCFSocketWriteCallBack)
+	if ((type & kCFSocketWriteCallBack) &&
+	    [observer->_delegate respondsToSelector:
+	    @selector(objectIsReadyForWriting:)])
 		[observer->_delegate objectIsReadyForWriting: object];
 
 	objc_autoreleasePoolPop(pool);
@@ -143,10 +149,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		void *pool = objc_autoreleasePoolPush();
 		CFSocketContext context = {
 			.version = 0,
-			.info = [OFPair pairWithFirstObject: nil
-					       secondObject: self],
-			.retain = (const void *(*)(const void *))objc_retain,
-			.release = (void (*)(const void *))objc_release
+			.info = cancelSocketInfo
 		};
 		CFOptionFlags flags;
 
@@ -280,6 +283,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		[_mapTable setObject: newEntry forKey: object];
 	} @catch (id e) {
 		freeMapTableEntry(newEntry);
+		@throw e;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -337,9 +341,10 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	 * so instead always manually fire all UDP sockets that are being
 	 * observed as ready for writing.
 	 */
-	for (id object in objc_autorelease([_writeObjects copy]))
-		if ([object isKindOfClass: [OFDatagramSocket class]])
-			[_delegate objectIsReadyForWriting: object];
+	if ([_delegate respondsToSelector: @selector(objectIsReadyForWriting:)])
+		for (id object in objc_autorelease([_writeObjects copy]))
+			if ([object isKindOfClass: [OFDatagramSocket class]])
+				[_delegate objectIsReadyForWriting: object];
 
 	if (timeInterval == -1)
 		/* There is no value for infinite, so make it really long. */

@@ -35,6 +35,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
 static OFDate *
@@ -73,7 +74,7 @@ parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_fileName = [[OFString alloc]
 	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -452,6 +453,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 			_CRC16 = [stream readLittleEndianInt16];
 
+			if (header[0] - (21 - 2) - 1 - 2 < fileNameLength)
+				@throw [OFInvalidFormatException exception];
+
 			extendedAreaSize =
 			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
 
@@ -503,10 +507,15 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			else {
 				char buffer[256];
 
-				while (extendedAreaSize > 0)
+				while (extendedAreaSize > 0) {
+					if (stream.atEndOfStream)
+						@throw [OFTruncatedDataException
+						    exception];
+
 					extendedAreaSize -= [stream
 					    readIntoBuffer: buffer
 						    length: extendedAreaSize];
+				}
 			}
 
 			if (_headerLevel == 1)
@@ -545,30 +554,48 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			else
 				padding = (header[1] << 8) | header[0];
 
+			if (padding < 21 + 2 + 1)
+				@throw [OFInvalidFormatException exception];
+
 			/*
 			 * 21 for header, 2 for CRC16, 1 for operating system
 			 * identifier.
 			 */
 			padding -= 21 + 2 + 1;
 
-			padding -= readExtensions(self, stream, encoding, true);
+			if (padding > 0) {
+				size_t consumed = readExtensions(self, stream,
+				    encoding, true);
 
-			/* Skip padding */
-			if ([stream isKindOfClass: [OFSeekableStream class]])
-				[(OFSeekableStream *)stream
-				    seekToOffset: padding
-					  whence: OFSeekCurrent];
-			else {
-				while (padding > 0) {
-					char buffer[512];
-					size_t min = padding;
+				if (consumed > padding)
+					@throw [OFInvalidFormatException
+					    exception];
 
-					if (min > 512)
-						min = 512;
+				padding -= consumed;
 
-					padding -= [stream
-					    readIntoBuffer: buffer
-						    length: min];
+				/* Skip padding */
+				if ([stream isKindOfClass:
+				    [OFSeekableStream class]])
+					[(OFSeekableStream *)stream
+						seekToOffset: padding
+						      whence: OFSeekCurrent];
+				else {
+					while (padding > 0) {
+						char buffer[512];
+						size_t min = padding;
+
+						if (stream.atEndOfStream)
+#define TDE OFTruncatedDataException
+							@throw [TDE exception];
+#undef TDE
+
+						if (min > 512)
+							min = 512;
+
+						padding -= [stream
+						    readIntoBuffer: buffer
+							    length: min];
+					}
 				}
 			}
 
@@ -775,8 +802,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    &directoryName, &directoryNameLength);
 
 	if (fileNameLength > UINT16_MAX - 3 ||
-	    directoryNameLength > UINT16_MAX - 3 ||
-	    _compressedSize > UINT64_MAX || _uncompressedSize > UINT64_MAX)
+	    directoryNameLength > UINT16_MAX - 3)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
