@@ -749,8 +749,15 @@ OF_SINGLETON_METHODS
 {
 	if (self.objCType[0] == 'B' && self.objCType[1] == '\0')
 		return (self.boolValue ? @"true" : @"false");
-	if (isFloat(self))
-		return [OFString stringWithFormat: @"%g", self.doubleValue];
+	if (isFloat(self)) {
+		double value = self.doubleValue;
+
+		if (isnan(value))
+			return @"NaN";
+		else
+			return [OFString stringWithFormat: @"%g",
+							   self.doubleValue];
+	}
 	if (isSigned(self))
 		return [OFString stringWithFormat: @"%lld", self.longLongValue];
 	if (isUnsigned(self))
