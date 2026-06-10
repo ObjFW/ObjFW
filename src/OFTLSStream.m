@@ -142,6 +142,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (void)dealloc
 {
 	objc_release(_underlyingStream);
+	objc_release(_certificateChain);
 
 	[super dealloc];
 }
