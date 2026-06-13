@@ -380,16 +380,12 @@ case "$OBJC" in
 	;;
 esac
 
-AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
-	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
-], [
-	AX_CHECK_COMPILER_FLAGS(-std=gnu1x, [
-		OBJCFLAGS="$OBJCFLAGS -std=gnu1x"
-	], [
-		AX_CHECK_COMPILER_FLAGS(-std=gnu99,
-			[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+for std in gnu23 gnu2x gnu17 gnu11 gnu1x gnu99; do
+	AX_CHECK_COMPILER_FLAGS(-std=$std, [
+		OBJCFLAGS="$OBJCFLAGS -std=$std"
+		break
 	])
-])
+done
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
