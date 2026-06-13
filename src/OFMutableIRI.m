@@ -484,57 +484,7 @@
 
 - (void)standardizePath
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableArray OF_GENERIC(OFString *) *array;
-	bool done = false, startsWithEmpty, endsWithEmpty;
-	OFString *path;
-
-	array = objc_autorelease([[_percentEncodedPath
-	    componentsSeparatedByString: @"/"] mutableCopy]);
-
-	endsWithEmpty = ([array.lastObject length] == 0);
-	startsWithEmpty = ([array.firstObject length] == 0);
-
-	while (!done) {
-		size_t length = array.count;
-
-		done = true;
-
-		for (size_t i = 0; i < length; i++) {
-			OFString *current = [array objectAtIndex: i];
-
-			if ([current isEqual: @"."] || current.length == 0) {
-				[array removeObjectAtIndex: i];
-
-				done = false;
-				break;
-			}
-
-			if ([current isEqual: @".."]) {
-				if (i >= 1)
-					[array removeObjectsInRange:
-					    OFMakeRange(i - 1, 2)];
-				else
-					[array removeObjectAtIndex: i];
-
-				done = false;
-				break;
-			}
-		}
-	}
-
-	if (startsWithEmpty)
-		[array insertObject: @"" atIndex: 0];
-	if (endsWithEmpty)
-		[array addObject: @""];
-
-	path = [array componentsJoinedByString: @"/"];
-	if (startsWithEmpty && path.length == 0)
-		path = @"/";
-
-	self.percentEncodedPath = path;
-
-	objc_autoreleasePoolPop(pool);
+	_OFIRIStandardizePath(self);
 }
 
 - (void)makeImmutable
