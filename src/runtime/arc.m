@@ -261,9 +261,12 @@ objc_storeWeak(id *object, id value)
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 		if (!object_isTaggedPointer(value) &&
 		    (_object_getClass_fast(value)->info &
-		    _OBJC_CLASS_INFO_RUNTIME_RR))
+		    _OBJC_CLASS_INFO_RUNTIME_RR)) {
 			OFAtomicIntOr(&_OBJC_PRE_IVARS(value)->info,
 			    _OBJC_OBJECT_INFO_WEAK_REFERENCES);
+
+			OFReleaseMemoryBarrier();
+		}
 #endif
 
 		ref = _objc_hashtable_get(hashtable, value);
