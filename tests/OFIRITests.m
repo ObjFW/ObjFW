@@ -617,6 +617,6 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://foo/bar/../../qux"]
 	    IRIByStandardizingPath],
-	    [OFIRI IRIWithString: @"http://foo/../qux"]);
+	    [OFIRI IRIWithString: @"http://foo/qux"]);
 }
 @end

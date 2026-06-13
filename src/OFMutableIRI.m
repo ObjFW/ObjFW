@@ -502,8 +502,6 @@
 
 		for (size_t i = 0; i < length; i++) {
 			OFString *current = [array objectAtIndex: i];
-			OFString *parent =
-			    (i > 0 ? [array objectAtIndex: i - 1] : nil);
 
 			if ([current isEqual: @"."] || current.length == 0) {
 				[array removeObjectAtIndex: i];
@@ -512,10 +510,12 @@
 				break;
 			}
 
-			if ([current isEqual: @".."] && parent != nil &&
-			    ![parent isEqual: @".."]) {
-				[array removeObjectsInRange:
-				    OFMakeRange(i - 1, 2)];
+			if ([current isEqual: @".."]) {
+				if (i >= 1)
+					[array removeObjectsInRange:
+					    OFMakeRange(i - 1, 2)];
+				else
+					[array removeObjectAtIndex: i];
 
 				done = false;
 				break;
