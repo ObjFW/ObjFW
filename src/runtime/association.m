@@ -152,9 +152,13 @@ objc_setAssociatedObject(id object, const void *key, id value,
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 	if (!object_isTaggedPointer(object) &&
-	    (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR))
+	    (_object_getClass_fast(object)->info &
+	    _OBJC_CLASS_INFO_RUNTIME_RR)) {
 		OFAtomicIntOr(&_OBJC_PRE_IVARS(object)->info,
 		    _OBJC_OBJECT_INFO_ASSOCIATIONS);
+
+		OFReleaseMemoryBarrier();
+	}
 #endif
 
 	slot = slotForObject(object);
