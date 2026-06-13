@@ -257,7 +257,7 @@ objc_removeAssociatedObjects(id object)
 	size_t slot;
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
-	OFReleaseMemoryBarrier();
+	OFAcquireMemoryBarrier();
 
 	if (object != nil && !object_isTaggedPointer(object) &&
 	    (_object_getClass_fast(object)->info &
