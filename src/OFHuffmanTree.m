@@ -42,6 +42,9 @@ newTree(void)
 static void
 treeInsert(OFHuffmanTree tree, uint16_t code, uint8_t length, uint16_t value)
 {
+	if (length >= 16)
+		@throw [OFInvalidArgumentException exception];
+
 	while (length > 0) {
 		uint8_t bit;
 
