@@ -62,13 +62,13 @@
 # define restrict
 #endif
 
-#if __STDC_VERSION__ >= 201112L && __STDC_VERSION__ < 202311L && \
+#if __STDC_VERSION__ >= 201112L && __STDC_VERSION__ < 202000L && \
     !defined(static_assert)
 /* C11 compiler, but old libc */
 # define static_assert _Static_assert
 #endif
 
-#if defined(OF_HAVE__THREAD_LOCAL) && __STDC_VERSION__ < 202311L
+#if defined(OF_HAVE__THREAD_LOCAL) && __STDC_VERSION__ < 202000L
 # define OF_HAVE_COMPILER_TLS
 # ifdef OF_HAVE_THREADS_H
 #  include <threads.h>
@@ -80,7 +80,7 @@
 # else
 #  define thread_local _Thread_local
 # endif
-#elif defined(OF_HAVE___THREAD) && __STDC_VERSION__ < 202311L
+#elif defined(OF_HAVE___THREAD) && __STDC_VERSION__ < 202000L
 # define OF_HAVE_COMPILER_TLS
 # define thread_local __thread
 #endif
@@ -181,7 +181,7 @@
 # define YES __objc_yes
 # undef NO
 # define NO __objc_no
-# if !defined(__cplusplus) && __STDC_VERSION__ < 202311L
+# if !defined(__cplusplus) && __STDC_VERSION__ < 202000L
 #  undef true
 #  define true ((bool)1)
 #  undef false
