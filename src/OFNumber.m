@@ -712,6 +712,9 @@ OF_SINGLETON_METHODS
 	if (isnan(d))
 		return 0;
 
+	if (d == -0.0)
+		d = 0.0;
+
 	OFHashInit(&hash);
 
 	d = OFToLittleEndianDouble(self.doubleValue);
