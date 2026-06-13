@@ -707,28 +707,17 @@ OF_SINGLETON_METHODS
 - (unsigned long)hash
 {
 	unsigned long hash;
+	double d = self.doubleValue;
+
+	if (isnan(d))
+		return 0;
 
 	OFHashInit(&hash);
 
-	if (isFloat(self)) {
-		double d;
+	d = OFToLittleEndianDouble(self.doubleValue);
 
-		if (isnan(self.doubleValue))
-			return 0;
-
-		d = OFToLittleEndianDouble(self.doubleValue);
-
-		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OFHashAddByte(&hash, ((char *)&d)[i]);
-	} else if (isSigned(self) || isUnsigned(self)) {
-		unsigned long long value = self.unsignedLongLongValue;
-
-		while (value != 0) {
-			OFHashAddByte(&hash, value & 0xFF);
-			value >>= 8;
-		}
-	} else
-		@throw [OFInvalidFormatException exception];
+	for (uint_fast8_t i = 0; i < sizeof(double); i++)
+		OFHashAddByte(&hash, ((char *)&d)[i]);
 
 	OFHashFinalize(&hash);
 
