@@ -351,7 +351,11 @@ errToErrorCode(const SSL *SSL_)
 		if (_verifiesCertificates) {
 			SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
 
+#if OPENSSL_VERSION_MAJOR >= 4
+			if (SSL_set1_dnsname(_SSL, _host.UTF8String) != 1)
+#else
 			if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+#endif
 				@throw [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
 						   host: host
