@@ -593,7 +593,7 @@
 	}
 #endif
 
-	if  (!_repeats)
+	if (!_repeats)
 		[self invalidate];
 
 #ifdef OF_HAVE_THREADS
