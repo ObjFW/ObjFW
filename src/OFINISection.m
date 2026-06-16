@@ -298,6 +298,26 @@ unescapeMutableString(OFMutableString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (OFArray OF_GENERIC(OFString *) *)allKeys
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: _lines.count];
+
+	for (id line in _lines) {
+		OFINISectionPair *pair;
+
+		if (![line isKindOfClass: [OFINISectionPair class]])
+			continue;
+
+		pair = line;
+
+		[ret addObject: pair->_key];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 - (OFString *)stringValueForKey: (OFString *)key
 {
 	return [self stringValueForKey: key defaultValue: nil];
