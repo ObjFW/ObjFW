@@ -23,6 +23,7 @@
 #import "OFINISection+Private.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFData.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -174,11 +175,40 @@ parseQuoted(const char **cString, const char **start, size_t *length)
 static void
 unescapeMutableString(OFMutableString *string)
 {
-	[string replaceOccurrencesOfString: @"\\f" withString: @"\f"];
-	[string replaceOccurrencesOfString: @"\\r" withString: @"\r"];
-	[string replaceOccurrencesOfString: @"\\n" withString: @"\n"];
-	[string replaceOccurrencesOfString: @"\\\"" withString: @"\""];
-	[string replaceOccurrencesOfString: @"\\\\" withString: @"\\"];
+	OFMutableData *data = [OFMutableData data];
+	const char *UTF8String = string.UTF8String;
+	size_t UTF8StringLength = string.UTF8StringLength;
+	bool inEscape = false;
+
+	for (size_t i = 0; i < UTF8StringLength; i++) {
+		if (inEscape) {
+			switch (UTF8String[i]) {
+			case 'f':
+				[data addItem: "\f"];
+				break;
+			case 'r':
+				[data addItem: "\r"];
+				break;
+			case 'n':
+				[data addItem: "\n"];
+				break;
+			default:
+				[data addItem: &UTF8String[i]];
+				break;
+			}
+
+			inEscape = false;
+		} else {
+			if (UTF8String[i] == '\\')
+				inEscape = true;
+			else
+				[data addItem: &UTF8String[i]];
+		}
+	}
+	[data addItem: ""];
+
+	[string deleteCharactersInRange: OFMakeRange(0, string.length)];
+	[string appendUTF8String: data.items];
 }
 
 - (void)of_parseLine: (OFString *)line
