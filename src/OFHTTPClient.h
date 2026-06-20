@@ -176,7 +176,7 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief The delegate of the HTTP request.
+ * @brief The delegate of the HTTP client.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     OFObject <OFHTTPClientDelegate> *delegate;
