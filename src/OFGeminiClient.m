@@ -325,9 +325,16 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		break;
 	case 3:
 		if (_redirects > 0) {
-			OFIRI *toIRI = [OFIRI IRIWithString: metadata
-					      relativeToIRI: _IRI];
+			OFIRI *toIRI;
 			bool follow;
+
+			@try {
+				toIRI = [OFIRI IRIWithString: metadata
+					       relativeToIRI: _IRI];
+			} @catch (OFInvalidFormatException *e) {
+				[self raiseException: e];
+				return false;
+			}
 
 			if ([_client->_delegate respondsToSelector:
 			    @selector(client:shouldFollowRedirectToIRI:fromIRI:
