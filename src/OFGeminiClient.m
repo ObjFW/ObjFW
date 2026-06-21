@@ -139,6 +139,9 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		uint16_t port = 1965;
 		OFNumber *IRIPort;
 
+		objc_release(_client->_streamToCancel);
+		_client->_streamToCancel = nil;
+
 		sock = [OFTCPSocket socket];
 		sock.allowsMPTCP = true;
 
@@ -150,6 +153,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		[sock asyncConnectToHost: _IRI.host
 				    port: port
 			     runLoopMode: runLoopMode];
+		_client->_streamToCancel = objc_retain(sock);
 	} @catch (id e) {
 		[self raiseException: e];
 	}
@@ -163,6 +167,9 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 	OFTLSStream *TLSStream;
 	OFString *TLSHost;
+
+	objc_release(_client->_streamToCancel);
+	_client->_streamToCancel = nil;
 
 	if (exception != nil) {
 		[self raiseException: exception];
@@ -195,6 +202,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	[TLSStream
 	    asyncPerformClientHandshakeWithHost: TLSHost
 				    runLoopMode: runLoop.currentMode];
+	_client->_streamToCancel = objc_retain(TLSStream);
 }
 
 -		       (void)stream: (OFTLSStream *)stream
@@ -537,6 +545,13 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	return objc_autoreleaseReturnValue([[self alloc] init]);
 }
 
+- (void)dealloc
+{
+	objc_release(_streamToCancel);
+
+	[super dealloc];
+}
+
 - (OFGeminiResponse *)performRequestForIRI: (OFIRI *)IRI
 {
 	return [self performRequestForIRI: IRI redirects: defaultRedirects];
@@ -619,5 +634,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 - (void)cancelAsyncRequests
 {
 	[_streamToCancel cancelAsyncRequests];
+	objc_release(_streamToCancel);
+	_streamToCancel = nil;
 }
 @end
