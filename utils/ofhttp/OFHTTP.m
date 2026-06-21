@@ -27,6 +27,8 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
+#import "OFGeminiClient.h"
+#import "OFGeminiResponse.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
@@ -45,6 +47,7 @@
 #endif
 
 #import "OFConnectSocketFailedException.h"
+#import "OFGeminiRequestFailedException.h"
 #import "OFGetItemAttributesFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -73,7 +76,7 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 #define BUFFER_SIZE (16 * KIBIBYTE)
 
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
-    OFStreamDelegate>
+    OFGeminiClientDelegate, OFStreamDelegate>
 {
 	OFArray OF_GENERIC(OFString *) *_IRIs;
 	size_t _IRIIndex;
@@ -86,6 +89,7 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
+	OFGeminiClient *_geminiClient;
 	char _buffer[BUFFER_SIZE];
 	OFStream *_output;
 	unsigned long long _received, _length, _resumedFrom;
@@ -98,6 +102,8 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 - (void)SIGINTCheck;
 #endif
 - (void)abort;
+- (bool)handleExceptionAfterRequest: (id *)exception
+				IRI: (OFIRI *)IRI OF_DIRECT;
 - (void)downloadNextIRI;
 @end
 
@@ -153,7 +159,7 @@ help(OFStream *stream, bool full, int status)
 		    @"    --insecure       "
 		    @"  Ignore TLS errors and allow insecure redirects\n    "
 		    @"    --ignore-status  "
-		    @"  Ignore HTTP status code\n    "
+		    @"  Ignore status code\n    "
 		    @"    --version        "
 		    @"  Show version information")];
 	}
@@ -342,6 +348,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
+		_geminiClient = [[OFGeminiClient alloc] init];
+		_geminiClient.delegate = self;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -682,9 +690,24 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	TCPSocket.canBlock = false;
 }
 
+-	(void)client: (OFGeminiClient *)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+		 IRI: (OFIRI *)IRI
+{
+	TCPSocket.canBlock = false;
+}
+
 -	(void)client: (OFHTTPClient *)client
   didCreateTLSStream: (OFTLSStream *)stream
 	     request: (OFHTTPRequest *)request
+{
+	/* Use setter instead of property access to work around GCC bug. */
+	[stream setVerifiesCertificates: !_insecure];
+}
+
+-	(void)client: (OFGeminiClient *)client
+  didCreateTLSStream: (OFTLSStream *)stream
+		 IRI: (OFIRI *)IRI
 {
 	/* Use setter instead of property access to work around GCC bug. */
 	[stream setVerifiesCertificates: !_insecure];
@@ -747,6 +770,40 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    request.method != OFHTTPRequestMethodGet &&
 	    request.method != OFHTTPRequestMethodHead)
 		return false;
+
+	return true;
+}
+
+-	       (bool)client: (OFGeminiClient *)client
+  shouldFollowRedirectToIRI: (OFIRI *)toIRI
+		    fromIRI: (OFIRI *)fromIRI
+		 statusCode: (unsigned char)statusCode
+{
+	OFString *toScheme = toIRI.scheme;
+
+	if (![toScheme isEqual: @"gemini"] && ![toScheme isEqual: @"https"])
+		return false;
+
+	if (!_quiet) {
+		if (_useUnicode)
+			[OFStdErr writeFormat: @" ➜ "];
+		else
+			[OFStdErr writeFormat: @" -> "];
+
+		OFStdErr.foregroundColor = [OFColor teal];
+		[OFStdErr writeFormat: @"%hhd\n", statusCode];
+		OFStdErr.foregroundColor = nil;
+
+		if (_useUnicode)
+			[OFStdErr writeFormat: @"☇ "];
+		else
+			[OFStdErr writeFormat: @"< "];
+
+		OFStdErr.underlined = true;
+		[OFStdErr writeString:
+		    toIRI.string.stringByReplacingControlCharacters];
+		OFStdErr.underlined = false;
+	}
 
 	return true;
 }
@@ -948,134 +1005,166 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 }
 
+- (bool)handleExceptionAfterRequest: (id *)exception IRI: (OFIRI *)IRI
+{
+	if ([*exception isKindOfClass: [OFResolveHostFailedException class]]) {
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"download_resolve_host_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  Failed to resolve host: %[exception]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"exception", *exception)];
+	} else if ([*exception isKindOfClass:
+	    [OFConnectSocketFailedException class]]) {
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"download_failed_connection_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  Connection failed: %[exception]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"exception", *exception)];
+	} else if ([*exception isKindOfClass:
+	    [OFInvalidServerResponseException class]]) {
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"download_failed_invalid_server_response",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  Invalid server response!",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string)];
+	} else if ([*exception isKindOfClass:
+	    [OFUnsupportedProtocolException class]]) {
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
+		    @"%[prog]: No TLS support in ObjFW!\n"
+		    @"  In order to download via HTTPS or Gemini, you "
+		    @"need to either build ObjFW with\n"
+		    @"  TLS support or preload a library adding TLS "
+		    @"support to ObjFW!",
+		    @"prog", [OFApplication programName])];
+	} else if ([*exception isKindOfClass:
+	    [OFTLSHandshakeFailedException class]]) {
+		OFString *error = OFTLSStreamErrorCodeDescription(
+		    ((OFTLSHandshakeFailedException *)*exception)
+		    .errorCode);
+
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"download_failed_tls_handshake_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  TLS handshake failed: %[error]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"error", error)];
+	} else if ([*exception isKindOfClass:
+	    [OFReadOrWriteFailedException class]]) {
+		OFString *error = OF_LOCALIZED(
+		    @"download_failed_read_or_write_failed_any",
+		    @"Read or write failed");
+
+		if (!_quiet)
+			[OFStdErr writeString: @"\n"];
+
+		if ([*exception isKindOfClass:
+		    [OFReadFailedException class]])
+			error = OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed_"
+			    @"read",
+			    @"Read failed");
+		else if ([*exception isKindOfClass:
+		    [OFWriteFailedException class]])
+			error = OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed_"
+			    @"write",
+			    @"Write failed");
+
+		[OFStdErr writeLine: OF_LOCALIZED(
+		    @"download_failed_read_or_write_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  %[error]: %[exception]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"error", error,
+		    @"exception", *exception)];
+	} else if ([*exception isKindOfClass:
+	    [OFHTTPRequestFailedException class]]) {
+		OFHTTPResponse *response =
+		    ((OFHTTPRequestFailedException *)*exception).response;
+		short statusCode;
+		OFString *codeString;
+
+		if (_ignoreStatus) {
+			*exception = nil;
+			return true;
+		}
+
+		statusCode = response.statusCode;
+		codeString = [OFString stringWithFormat: @"%hd %@",
+		    statusCode, OFHTTPStatusCodeString(statusCode)];
+		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  Status code: %[code]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"code", codeString)];
+	} else if ([*exception isKindOfClass:
+	    [OFGeminiRequestFailedException class]]) {
+		OFGeminiResponse *response =
+		    ((OFGeminiRequestFailedException *)*exception).response;
+		unsigned short statusCode;
+		OFString *codeString;
+
+		if (_ignoreStatus) {
+			*exception = nil;
+			return true;
+		}
+
+		statusCode = response.statusCode;
+		codeString = [OFString stringWithFormat: @"%hd %@",
+		    statusCode, response.metadata];
+		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
+		    @"%[prog]: Failed to download <%[iri]>!\n"
+		    @"  Status code: %[code]",
+		    @"prog", [OFApplication programName],
+		    @"iri", IRI.string,
+		    @"code", codeString)];
+	} else
+		return false;
+
+	return true;
+}
+
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		if ([exception isKindOfClass:
-		    [OFResolveHostFailedException class]]) {
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_resolve_host_failed",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  Failed to resolve host: %[exception]",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string,
-			    @"exception", exception)];
-		} else if ([exception isKindOfClass:
-		    [OFConnectSocketFailedException class]]) {
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_connection_failed",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  Connection failed: %[exception]",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string,
-			    @"exception", exception)];
-		} else if ([exception isKindOfClass:
-		    [OFInvalidServerResponseException class]]) {
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_invalid_server_response",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  Invalid server response!",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string)];
-		} else if ([exception isKindOfClass:
-		    [OFUnsupportedProtocolException class]]) {
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
-			    @"%[prog]: No TLS support in ObjFW!\n"
-			    @"  In order to download via HTTPS, you need to "
-			    @"either build ObjFW with TLS\n"
-			    @"  support or preload a library adding TLS "
-			    @"support to ObjFW!",
-			    @"prog", [OFApplication programName])];
-		} else if ([exception isKindOfClass:
-		    [OFTLSHandshakeFailedException class]]) {
-			OFString *error = OFTLSStreamErrorCodeDescription(
-			    ((OFTLSHandshakeFailedException *)exception)
-			    .errorCode);
-
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_tls_handshake_failed",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  TLS handshake failed: %[error]",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string,
-			    @"error", error)];
-		} else if ([exception isKindOfClass:
-		    [OFReadOrWriteFailedException class]]) {
-			OFString *error = OF_LOCALIZED(
-			    @"download_failed_read_or_write_failed_any",
-			    @"Read or write failed");
-
-			if (!_quiet)
-				[OFStdErr writeString: @"\n"];
-
-			if ([exception isKindOfClass:
-			    [OFReadFailedException class]])
-				error = OF_LOCALIZED(
-				    @"download_failed_read_or_write_failed_"
-				    @"read",
-				    @"Read failed");
-			else if ([exception isKindOfClass:
-			    [OFWriteFailedException class]])
-				error = OF_LOCALIZED(
-				    @"download_failed_read_or_write_failed_"
-				    @"write",
-				    @"Write failed");
-
-			[OFStdErr writeLine: OF_LOCALIZED(
-			    @"download_failed_read_or_write_failed",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  %[error]: %[exception]",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string,
-			    @"error", error,
-			    @"exception", exception)];
-		} else if ([exception isKindOfClass:
-		    [OFHTTPRequestFailedException class]]) {
-			short statusCode;
-			OFString *codeString;
-
-			if (_ignoreStatus) {
-				exception = nil;
-				goto after_exception_handling;
-			}
-
-			statusCode = response.statusCode;
-			codeString = [OFString stringWithFormat: @"%hd %@",
-			    statusCode, OFHTTPStatusCodeString(statusCode)];
-			[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
-			    @"%[prog]: Failed to download <%[iri]>!\n"
-			    @"  HTTP status code: %[code]",
-			    @"prog", [OFApplication programName],
-			    @"iri", request.IRI.string,
-			    @"code", codeString)];
-		} else
+		if (![self handleExceptionAfterRequest: &exception
+						   IRI: request.IRI])
 			@throw exception;
 
-		_errorCode = 1;
-		[self performSelector: @selector(downloadNextIRI)
-			   afterDelay: 0];
-		return;
+		if (exception != nil) {
+			_errorCode = 1;
+			[self performSelector: @selector(downloadNextIRI)
+				   afterDelay: 0];
+			return;
+		}
 	}
 
-after_exception_handling:
 	if (_method == OFHTTPRequestMethodHead)
 		goto next;
 
@@ -1183,11 +1272,175 @@ next:
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
 }
 
+-	     (void)client: (OFGeminiClient *)client
+  didPerformRequestForIRI: (OFIRI *)IRI
+		 response: (OFGeminiResponse *)response
+		exception: (id)exception
+{
+	if (!_quiet && response != nil) {
+		OFString *metadata =
+		    response.metadata.stringByReplacingControlCharacters;
+
+		if (_useUnicode)
+			[OFStdErr writeFormat: @" ➜ "];
+		else
+			[OFStdErr writeFormat: @" -> "];
+
+		switch (response.statusCode / 10) {
+		case 2:
+			OFStdErr.foregroundColor = [OFColor green];
+			[OFStdErr writeFormat: @"%hhd\n", response.statusCode];
+			break;
+		case 3:
+			OFStdErr.foregroundColor = [OFColor teal];
+			[OFStdErr writeFormat: @"%hhd\n", response.statusCode];
+			break;
+		default:
+			OFStdErr.foregroundColor = [OFColor maroon];
+			[OFStdErr writeFormat: @"%hhd %@\n",
+					       response.statusCode, metadata];
+			break;
+		}
+		OFStdErr.foregroundColor = nil;
+
+		[OFStdErr writeString: @"  "];
+
+		if (_currentFileName != nil) {
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_name", @"Name: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine: _currentFileName
+			    .stringByReplacingControlCharacters];
+		}
+
+		if (response.statusCode / 10 == 2) {
+			if (metadata.length == 0)
+				metadata =
+				    OF_LOCALIZED(@"type_unknown", @"unknown");
+
+			[OFStdErr writeString: @"  "];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_type", @"Type: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine: metadata];
+			[OFStdErr writeString: @"  "];
+			OFStdErr.bold = true;
+			[OFStdErr writeString:
+			    OF_LOCALIZED(@"info_size", @"Size: ")];
+			OFStdErr.bold = false;
+			[OFStdErr writeLine:
+			    OF_LOCALIZED(@"size_unknown", @"unknown")];
+		}
+	}
+
+	if (exception != nil) {
+		if (![self handleExceptionAfterRequest: &exception IRI: IRI])
+			@throw exception;
+
+		if (exception != nil) {
+			_errorCode = 1;
+			[self performSelector: @selector(downloadNextIRI)
+				   afterDelay: 0];
+			return;
+		}
+	}
+
+	if ([_outputPath isEqual: @"-"])
+		_output = OFStdOut;
+	else {
+		if (!_continue && !_force && [[OFFileManager defaultManager]
+		    fileExistsAtPath: _currentFileName]) {
+			[OFStdErr writeLine:
+			    OF_LOCALIZED(@"output_already_exists",
+			    @"%[prog]: File %[filename] already exists!",
+			    @"prog", [OFApplication programName],
+			    @"filename", _currentFileName)];
+
+			_errorCode = 1;
+			goto next;
+		}
+
+		@try {
+			_output = [[OFFile alloc] initWithPath: _currentFileName
+							  mode: @"w"];
+		} @catch (OFOpenItemFailedException *e) {
+			[OFStdErr writeLine:
+			    OF_LOCALIZED(@"failed_to_open_output",
+			    @"%[prog]: Failed to open file %[filename]: "
+			    @"%[exception]",
+			    @"prog", [OFApplication programName],
+			    @"filename", _currentFileName,
+			    @"exception", e)];
+
+			_errorCode = 1;
+			goto next;
+		}
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
+		@try {
+			OFString *IRIString = IRI.string;
+			OFData *downloadedFromData = [OFData
+			    dataWithItems: IRIString.UTF8String
+				    count: IRIString.UTF8StringLength + 1];
+			[[OFFileManager defaultManager]
+			    setExtendedAttributeData: downloadedFromData
+					     forName: @"user.ofhttp."
+						      @"downloaded_from"
+					ofItemAtPath: _currentFileName];
+		} @catch (OFSetItemAttributesFailedException *) {
+			/* Ignore */
+		}
+#endif
+
+#ifdef OF_MACOS
+		@try {
+			OFString *quarantine = [OFString stringWithFormat:
+			    @"0000;%08" @PRIx64 @";ofhttp;",
+			    (uint64_t)[[OFDate date] timeIntervalSince1970]];
+			OFData *quarantineData = [OFData
+			    dataWithItems: quarantine.UTF8String
+				    count: quarantine.UTF8StringLength];
+			[[OFFileManager defaultManager]
+			    setExtendedAttributeData: quarantineData
+					     forName: @"com.apple.quarantine"
+					ofItemAtPath: _currentFileName];
+		} @catch (OFSetItemAttributesFailedException *e) {
+			/* Ignore */
+		}
+#endif
+	}
+
+	if (!_quiet) {
+		_progressBar = [[ProgressBar alloc]
+		    initWithLength: _length
+		       resumedFrom: _resumedFrom
+			useUnicode: _useUnicode];
+		[_progressBar setReceived: _received];
+		[_progressBar draw];
+	}
+
+	objc_release(_currentFileName);
+	_currentFileName = nil;
+
+	response.delegate = self;
+	[response asyncReadIntoBuffer: _buffer length: BUFFER_SIZE];
+	return;
+
+next:
+	objc_release(_currentFileName);
+	_currentFileName = nil;
+
+	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
+}
+
 - (void)downloadNextIRI
 {
 	OFString *IRIString = nil;
 	OFIRI *IRI;
-	OFMutableDictionary *clientHeaders;
+	bool isHTTP, isGemini;
+	OFMutableDictionary *clientHeaders = nil;
 	OFHTTPRequest *request;
 
 	_received = _length = _resumedFrom = 0;
@@ -1212,7 +1465,11 @@ next:
 		goto next;
 	}
 
-	if (![IRI.scheme isEqual: @"http"] && ![IRI.scheme isEqual: @"https"]) {
+	isHTTP = ([IRI.scheme isEqual: @"http"] ||
+	    [IRI.scheme isEqual: @"https"]);
+	isGemini = [IRI.scheme isEqual: @"gemini"];
+
+	if (!isHTTP && !isGemini) {
 		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_scheme",
 		    @"%[prog]: Invalid scheme: <%[iri]>!",
 		    @"prog", [OFApplication programName],
@@ -1222,35 +1479,37 @@ next:
 		goto next;
 	}
 
-	clientHeaders = objc_autorelease([_clientHeaders mutableCopy]);
+	if (isHTTP) {
+		clientHeaders = objc_autorelease([_clientHeaders mutableCopy]);
 
-	if (_detectFileName && !_detectedFileName) {
-		if (!_quiet) {
-			if (_useUnicode)
-				[OFStdErr writeString: @"⠒ "];
-			else
-				[OFStdErr writeString: @"? "];
+		if (_detectFileName && !_detectedFileName) {
+			if (!_quiet) {
+				if (_useUnicode)
+					[OFStdErr writeString: @"⠒ "];
+				else
+					[OFStdErr writeString: @"? "];
 
-			OFStdErr.underlined = true;
-			[OFStdErr writeString:
-			    IRI.string.stringByReplacingControlCharacters];
-			OFStdErr.underlined = false;
+				OFStdErr.underlined = true;
+				[OFStdErr writeString: IRI.string
+				    .stringByReplacingControlCharacters];
+				OFStdErr.underlined = false;
+			}
+
+			request = [OFHTTPRequest requestWithIRI: IRI];
+			request.headers = clientHeaders;
+			request.method = OFHTTPRequestMethodHead;
+
+			_detectFileNameRequest = true;
+			[_HTTPClient asyncPerformRequest: request];
+			return;
 		}
 
-		request = [OFHTTPRequest requestWithIRI: IRI];
-		request.headers = clientHeaders;
-		request.method = OFHTTPRequestMethodHead;
-
-		_detectFileNameRequest = true;
-		[_HTTPClient asyncPerformRequest: request];
-		return;
+		if (!_detectedFileName) {
+			objc_release(_currentFileName);
+			_currentFileName = nil;
+		} else
+			_detectedFileName = false;
 	}
-
-	if (!_detectedFileName) {
-		objc_release(_currentFileName);
-		_currentFileName = nil;
-	} else
-		_detectedFileName = false;
 
 	if (_currentFileName == nil)
 		_currentFileName = [_outputPath copy];
@@ -1266,7 +1525,7 @@ next:
 	if (_currentFileName == nil)
 		_currentFileName = @"unnamed";
 
-	if (_continue) {
+	if (isHTTP && _continue) {
 		@try {
 			unsigned long long size =
 			    [[OFFileManager defaultManager]
@@ -1297,13 +1556,19 @@ next:
 		OFStdErr.underlined = false;
 	}
 
-	request = [OFHTTPRequest requestWithIRI: IRI];
-	request.headers = clientHeaders;
-	request.method = _method;
+	if (isHTTP) {
+		request = [OFHTTPRequest requestWithIRI: IRI];
+		request.headers = clientHeaders;
+		request.method = _method;
 
-	_detectFileNameRequest = false;
-	[_HTTPClient asyncPerformRequest: request];
-	return;
+		_detectFileNameRequest = false;
+		[_HTTPClient asyncPerformRequest: request];
+		return;
+	} else if (isGemini) {
+		[_geminiClient asyncPerformRequestForIRI: IRI];
+		return;
+	} else
+		OFEnsure(0);
 
 next:
 	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
