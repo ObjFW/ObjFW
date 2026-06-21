@@ -311,8 +311,11 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		return false;
 	}
 
-	if (statusCode < 10 || statusCode > 69)
-		@throw [OFInvalidServerResponseException exception];
+	if (statusCode < 10 || statusCode > 69) {
+		[self raiseException:
+		    [OFInvalidServerResponseException exception]];
+		return false;
+	}
 
 	response = objc_autorelease([[OFGeminiClientResponse alloc]
 	    initWithStream: stream]);
