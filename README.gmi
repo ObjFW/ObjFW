@@ -84,7 +84,7 @@ Please don't hesitate to join any or all of those!
 
 ## Donating
 
-=> documentation/donating.gmi  List of all possible ways to do donate
+=> documentation/donating.gmi  List of all possible ways to donate
 
 # Thanks
 
