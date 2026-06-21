@@ -180,7 +180,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	return _underlyingStream.atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (int)fileDescriptorForReading
