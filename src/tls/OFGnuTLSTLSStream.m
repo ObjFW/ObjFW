@@ -156,7 +156,12 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = gnutls_record_recv(_session, buffer, length)) < 0) {
+	if ((ret = gnutls_record_recv(_session, buffer, length)) <= 0) {
+		if (ret == 0) {
+			_atEndOfStream = true;
+			return 0;
+		}
+
 		/*
 		 * The underlying stream might have had data ready, but not
 		 * enough for GnuTLS to return decrypted data. This means the

@@ -207,8 +207,15 @@ errToErrorCode(const SSL *SSL_)
 	if (ret == 1)
 		return bytesRead;
 
-	if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ) {
+	switch (SSL_get_error(_SSL, ret)) {
+	case SSL_ERROR_WANT_READ:
 		if (BIO_ctrl_pending(_readBIO) < 1) {
+			if (_underlyingStream.atEndOfStream)
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: bufferSize
+						  errNo: ECONNRESET];
+
 			@try {
 				size_t tmp = [_underlyingStream
 				    readIntoBuffer: _buffer
@@ -241,8 +248,17 @@ errToErrorCode(const SSL *SSL_)
 		if (ret == 1)
 			return bytesRead;
 
-		if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ)
+		switch (SSL_get_error(_SSL, ret)) {
+		case SSL_ERROR_ZERO_RETURN:
+			_atEndOfStream = true;
+		case SSL_ERROR_WANT_READ:
 			return 0;
+		}
+
+		break;
+	case SSL_ERROR_ZERO_RETURN:
+		_atEndOfStream = true;
+		return 0;
 	}
 
 	/* FIXME: Translate error to errNo */
