@@ -515,8 +515,8 @@ _OFIRIStandardizePath(OFIRI *IRI)
 	bool done = false, startsWithEmpty, endsWithEmpty;
 	OFString *path, *oldPath;
 
-	array = objc_autorelease(
-	    [[IRI.path componentsSeparatedByString: @"/"] mutableCopy]);
+	array = objc_autorelease([[IRI->_percentEncodedPath
+	    componentsSeparatedByString: @"/"] mutableCopy]);
 
 	endsWithEmpty = ([array.lastObject length] == 0);
 	startsWithEmpty = ([array.firstObject length] == 0);
@@ -559,9 +559,7 @@ _OFIRIStandardizePath(OFIRI *IRI)
 		path = @"/";
 
 	oldPath = IRI->_percentEncodedPath;
-	IRI->_percentEncodedPath = [[path
-	    stringByAddingPercentEncodingWithAllowedCharacters:
-	    [OFCharacterSet IRIPathAllowedCharacterSet]] copy];
+	IRI->_percentEncodedPath = [path copy];
 	objc_release(oldPath);
 
 	objc_autoreleasePoolPop(pool);
@@ -933,7 +931,8 @@ merge(OFString *base, OFString *path)
 					_percentEncodedPath = [path copy];
 				else {
 					_percentEncodedPath = [merge(
-					    IRI.path, path) copy];
+					    IRI->_percentEncodedPath, path)
+					    copy];
 					_OFIRIStandardizePath(self);
 				}
 

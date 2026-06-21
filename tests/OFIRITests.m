@@ -136,12 +136,6 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    @"http://foo/foo");
 
 	OTAssertEqualObjects(
-	    [[OFIRI IRIWithString: @"%2E%2E%2Ffoo"
-		    relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar/"]]
-	    string],
-	    @"http://foo/foo");
-
-	OTAssertEqualObjects(
 	    [[OFIRI IRIWithString: @"foo"
 		    relativeToIRI: [OFIRI IRIWithString: @"http://foo"]]
 	    string],
@@ -626,7 +620,7 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	OTAssertEqualObjects(
 	    [[OFIRI IRIWithString: @"http://foo/bar/%2E%2E/../qux/"]
 	    IRIByStandardizingPath],
-	    [OFIRI IRIWithString: @"http://foo/qux/"]);
+	    [OFIRI IRIWithString: @"http://foo/bar/qux/"]);
 
 	OTAssertEqualObjects(
 	    [[OFIRI IRIWithString: @"http://foo/bar/./././qux/./"]
