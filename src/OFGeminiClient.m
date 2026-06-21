@@ -35,6 +35,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFGeminiRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFInvalidServerResponseException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -300,7 +301,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 
 	@try {
 		statusCode = statusCodeString.unsignedCharValue;
-	} @catch (OFInvalidArgumentException *e) {
+	} @catch (OFInvalidFormatException *e) {
 		[self raiseException:
 		    [OFInvalidServerResponseException exception]];
 		return false;
