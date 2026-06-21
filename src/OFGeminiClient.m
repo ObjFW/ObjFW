@@ -61,7 +61,7 @@ static OFCharacterSet *whitespaceCS, *nonWhitespaceCS;
 			   IRI: (OFIRI *)IRI
 		     redirects: (unsigned int)redirects OF_DIRECT;
 - (void)raiseException: (id)exception OF_DIRECT;
-- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode OF_DIRECT;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 - (void)handleStream: (OFStream *)stream;
 @end
 
@@ -310,12 +310,51 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	response.statusCode = statusCode;
 	response.metadata = metadata;
 
-	if (statusCode / 10 != 2)
+	switch (statusCode / 10) {
+	case 2:
+		exception = nil;
+		break;
+	case 3:
+		if (_redirects > 0) {
+			OFIRI *toIRI = [OFIRI IRIWithString: metadata
+					      relativeToIRI: _IRI];
+			bool follow;
+
+			if ([_client->_delegate respondsToSelector:
+			    @selector(client:shouldFollowRedirectToIRI:fromIRI:
+			    statusCode:)])
+				follow = [_client->_delegate
+						       client: _client
+				    shouldFollowRedirectToIRI: toIRI
+						      fromIRI: _IRI
+						   statusCode: statusCode];
+			else
+				follow = defaultShouldFollow(_IRI, toIRI);
+
+			if (follow) {
+				SEL selector = @selector(startWithRunLoopMode:);
+
+				_redirects--;
+
+				objc_release(_IRI);
+				_IRI = objc_retain(toIRI);
+
+				timer = [OFTimer
+				    timerWithTimeInterval: 0
+						   target: self
+						 selector: selector
+						   object: runLoop.currentMode
+						  repeats: false];
+				[runLoop addTimer: timer
+					  forMode: runLoop.currentMode];
+				return false;
+			}
+		}
+	default:
 		exception = [OFGeminiRequestFailedException
 		    exceptionWithIRI: _IRI
 			    response: response];
-	else
-		exception = nil;
+	}
 
 	timer = [OFTimer
 	    timerWithTimeInterval: 0
