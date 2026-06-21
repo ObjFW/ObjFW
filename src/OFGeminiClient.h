@@ -84,20 +84,6 @@ OF_ASSUME_NONNULL_BEGIN
 		 IRI: (OFIRI *)IRI;
 
 /**
- * @brief A callback which is called when an @ref OFGeminiClient received the
- *	  status code.
- *
- * @param client The OFGeminiClient which received the status code
- * @param statusCode The status code received
- * @param metadata The metadata received
- * @param IRI The IRI for which the status code and metadata have been received
- */
--	   (void)client: (OFGeminiClient *)client
-   didReceiveStatusCode: (unsigned char)statusCode
-	       metadata: (OFString *)metadata
-		    IRI: (OFIRI *)IRI;
-
-/**
  * @brief A callback which is called when an @ref OFGeminiClient wants to follow
  *	  a redirect.
  *

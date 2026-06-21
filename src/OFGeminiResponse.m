@@ -36,7 +36,7 @@
 {
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
-	    @"\tStatus code = %d\n"
+	    @"\tStatus code = %hhd\n"
 	    @"\tMetadata = %@\n"
 	    @">",
 	    self.class, _statusCode, _metadata];

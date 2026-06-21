@@ -495,19 +495,6 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 				   IRI: IRI];
 }
 
--	   (void)client: (OFGeminiClient *)client
-   didReceiveStatusCode: (unsigned char)statusCode
-	       metadata: (OFString *)metadata
-		    IRI: (OFIRI *)IRI
-{
-	if ([_delegate respondsToSelector:
-	    @selector(client:didReceiveStatusCode:metadata:IRI:)])
-		[_delegate	  client: client
-		    didReceiveStatusCode: statusCode
-				metadata: metadata
-				     IRI: IRI];
-}
-
 -	       (bool)client: (OFGeminiClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)toIRI
 		    fromIRI: (OFIRI *)fromIRI
