@@ -36,7 +36,7 @@ With ARC, -fobjc-arc-exceptions is required, which makes the compiler handle rel
 	self = [super init];
 
 	_myIVar = somethingThatCanFail();
-	
+
 	return self;
 }
 ```
