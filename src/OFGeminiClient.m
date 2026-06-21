@@ -38,6 +38,7 @@
 #import "OFInvalidServerResponseException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnsupportedProtocolException.h"
 
 static const OFRunLoopMode geminiClientRunLoopMode =
@@ -295,7 +296,14 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		[self raiseException:
 		    [OFInvalidServerResponseException exception]];
 		return false;
+	} @catch (OFOutOfRangeException *e) {
+		[self raiseException:
+		    [OFInvalidServerResponseException exception]];
+		return false;
 	}
+
+	if (statusCode < 10 || statusCode > 69)
+		@throw [OFInvalidServerResponseException exception];
 
 	response = objc_autorelease([[OFGeminiClientResponse alloc]
 	    initWithStream: stream]);
