@@ -6,7 +6,7 @@ In order to build ObjFW from source, you first need to acquire the source code f
 git clone https://git.nil.im/ObjFW/ObjFW
 ```
 
-=> https://git.nil.im/ObjFW/ObjFW/releases Releases
+=> https://git.nil.im/ObjFW/ObjFW/releases  Releases
 
 In most cases, you can use the generic instructions, but there are some more specific instructions for some operating systems further below.
 
@@ -76,13 +76,13 @@ Windows is only officially supported when following these instructions, as there
 
 The first thing to install is MSYS2 to provide a basic UNIX-like environment for Windows. Unfortunately, the binaries are not signed, so make sure you download it via HTTPS. However, packages you download and install via MSYS2 are cryptographically signed.
 
-=> https://www.msys2.org MSYS2
+=> https://www.msys2.org  MSYS2
 
 ### Setting up MSYS2
 
 MSYS2 currently supports 5 different environments. All of them except for the one called just "MSYS" are supported, but which packages you need to install depends on the environment(s) you want to use. If you only want to target Windows 10 and newer, the CLANG64 environment is the recommended one.
 
-=> https://www.msys2.org/docs/environments/ MSYS2 environments
+=> https://www.msys2.org/docs/environments/  MSYS2 environments
 
 For CLANG64, use:
 
@@ -128,7 +128,7 @@ git clone https://git.nil.im/ObjFW/ObjFW
 
 You can also download a release tarball if you want.
 
-=> https://git.nil.im/ObjFW/ObjFW/releases Releases
+=> https://git.nil.im/ObjFW/ObjFW/releases  Releases
 
 Now cd to the newly checked out repository and build and install it:
 
@@ -142,7 +142,7 @@ If everything was successful, you can now build projects using ObjFW for Windows
 
 Download and install devkitPro.
 
-=> https://devkitpro.org/wiki/Getting_Started devkitPro
+=> https://devkitpro.org/wiki/Getting_Started  devkitPro
 
 ### Nintendo DS
 
@@ -188,7 +188,7 @@ Follow the generic instructions, but instead of ./configure run:
 
 Install amiga-gcc.
 
-=> https://git.nil.im/amiga-gcc/amiga-gcc amiga-gcc
+=> https://git.nil.im/amiga-gcc/amiga-gcc  amiga-gcc
 
 Then follow the generic instructions, but instead of ./configure run:
 

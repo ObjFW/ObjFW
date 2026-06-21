@@ -6,7 +6,7 @@ If you want to donate to ObjFW, you can do so via any of the below means. Any am
 
 You can sponsor Midar on GitHub.
 
-=> https://github.com/sponsors/Midar Midar on GitHub
+=> https://github.com/sponsors/Midar  Midar on GitHub
 
 ## Cryptocurrencies
 

@@ -28,9 +28,9 @@ ObjFW packages are available for various operating systems and can be installed 
 
 If your operating system is not listed, you can build ObjFW from source.
 
-=> compiling.gmi Build ObjFW from source
+=> compiling.gmi  Build ObjFW from source
 
 ## Packaging status
 
-=> https://repology.org/badge/vertical-allrepos/objfw.svg Packaging status table
-=> https://repology.org/project/objfw/versions Packaging status
+=> https://repology.org/badge/vertical-allrepos/objfw.svg  Packaging status table
+=> https://repology.org/project/objfw/versions             Packaging status
