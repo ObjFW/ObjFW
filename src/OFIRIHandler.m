@@ -30,6 +30,7 @@
 # import "OFFileIRIHandler.h"
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+# import "OFGeminiIRIHandler.h"
 # import "OFHTTPIRIHandler.h"
 #endif
 
@@ -53,6 +54,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	[self registerClass: [OFFileIRIHandler class] forScheme: @"file"];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+	[self registerClass: [OFGeminiIRIHandler class] forScheme: @"gemini"];
 	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"https"];
 #endif

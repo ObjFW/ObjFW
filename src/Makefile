@@ -255,6 +255,7 @@ SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
+		OFGeminiIRIHandler.m			\
 		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
