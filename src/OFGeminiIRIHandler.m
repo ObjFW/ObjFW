@@ -19,10 +19,15 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFGeminiIRIHandler.h"
 #import "OFGeminiClient.h"
 #import "OFGeminiResponse.h"
 #import "OFIRI.h"
+#import "OFTimer.h"
+
+#import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFGeminiIRIHandlerAsyncOpener: OFObject <OFGeminiClientDelegate>
@@ -102,9 +107,18 @@ OF_DIRECT_MEMBERS
 @implementation OFGeminiIRIHandler
 - (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFGeminiClient *client = [OFGeminiClient client];
-	OFGeminiResponse *response = [client performRequestForIRI: IRI];
+	void *pool;
+	OFGeminiClient *client;
+	OFGeminiResponse *response;
+
+	if (![mode isEqual: @"r"])
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: EROFS];
+
+	pool = objc_autoreleasePoolPush();
+	client = [OFGeminiClient client];
+	response = [client performRequestForIRI: IRI];
 
 	objc_retain(response);
 
@@ -119,8 +133,31 @@ OF_DIRECT_MEMBERS
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFGeminiIRIHandlerAsyncOpener *opener = objc_autorelease(
-	    [[OFGeminiIRIHandlerAsyncOpener alloc]
+	OFGeminiIRIHandlerAsyncOpener *opener;
+
+	if (![mode isEqual: @"r"]) {
+		id exception = [OFOpenItemFailedException
+		    exceptionWithIRI: IRI
+				mode: mode
+			       errNo: EROFS];
+		OFTimer *timer = [OFTimer
+		    timerWithTimeInterval: 0
+				   target: delegate
+				 selector: @selector(IRIHandler:
+					       didOpenItemAtIRI:stream:
+					       exception:)
+				   object: self
+				   object: IRI
+				   object: nil
+				   object: exception
+				  repeats: false];
+		[[OFRunLoop currentRunLoop] addTimer: timer
+					     forMode: runLoopMode];
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	opener = objc_autorelease([[OFGeminiIRIHandlerAsyncOpener alloc]
 	    initWithIRIHandler: self
 			   IRI: IRI
 		      delegate: delegate]);

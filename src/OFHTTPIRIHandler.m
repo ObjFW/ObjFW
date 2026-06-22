@@ -19,11 +19,16 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFHTTPIRIHandler.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFIRI.h"
+#import "OFTimer.h"
+
+#import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
@@ -105,9 +110,18 @@ OF_DIRECT_MEMBERS
 - (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClient *client = [OFHTTPClient client];
-	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: IRI];
-	OFHTTPResponse *response = [client performRequest: request];
+	OFHTTPClient *client;
+	OFHTTPRequest *request;
+	OFHTTPResponse *response;
+
+	if (![mode isEqual: @"r"])
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: EROFS];
+
+	client = [OFHTTPClient client];
+	request = [OFHTTPRequest requestWithIRI: IRI];
+	response = [client performRequest: request];
 
 	objc_retain(response);
 
@@ -122,10 +136,34 @@ OF_DIRECT_MEMBERS
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPIRIHandlerAsyncOpener *opener = objc_autorelease(
-	    [[OFHTTPIRIHandlerAsyncOpener alloc] initWithIRIHandler: self
-								IRI: IRI
-							   delegate: delegate]);
+	OFHTTPIRIHandlerAsyncOpener *opener;
+
+	if (![mode isEqual: @"r"]) {
+		id exception = [OFOpenItemFailedException
+		    exceptionWithIRI: IRI
+				mode: mode
+			       errNo: EROFS];
+		OFTimer *timer = [OFTimer
+		    timerWithTimeInterval: 0
+				   target: delegate
+				 selector: @selector(IRIHandler:
+					       didOpenItemAtIRI:stream:
+					       exception:)
+				   object: self
+				   object: IRI
+				   object: nil
+				   object: exception
+				  repeats: false];
+		[[OFRunLoop currentRunLoop] addTimer: timer
+					     forMode: runLoopMode];
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	opener = objc_autorelease([[OFHTTPIRIHandlerAsyncOpener alloc]
+	    initWithIRIHandler: self
+			   IRI: IRI
+		      delegate: delegate]);
 
 	[opener startWithRunLoopMode: runLoopMode];
 
