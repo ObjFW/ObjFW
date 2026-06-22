@@ -24,6 +24,7 @@
 #import "OFGeminiResponse.h"
 #import "OFIRI.h"
 
+OF_DIRECT_MEMBERS
 @interface OFGeminiIRIHandlerAsyncOpener: OFObject <OFGeminiClientDelegate>
 {
 	OFIRIHandler *_IRIHandler;
@@ -35,7 +36,7 @@
 - (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
 			       IRI: (OFIRI *)IRI
 			  delegate: (id <OFIRIHandlerDelegate>)delegate;
-- (void)start;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 @implementation OFGeminiIRIHandlerAsyncOpener
@@ -70,11 +71,13 @@
 	[super dealloc];
 }
 
-- (void)start
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[_client asyncPerformRequestForIRI: _IRI];
+	[_client asyncPerformRequestForIRI: _IRI
+				 redirects: 10
+			       runLoopMode: runLoopMode];
 	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
@@ -113,6 +116,7 @@
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFGeminiIRIHandlerAsyncOpener *opener = objc_autorelease(
@@ -121,7 +125,7 @@
 			   IRI: IRI
 		      delegate: delegate]);
 
-	[opener start];
+	[opener startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }

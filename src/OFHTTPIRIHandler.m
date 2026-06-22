@@ -25,6 +25,7 @@
 #import "OFHTTPResponse.h"
 #import "OFIRI.h"
 
+OF_DIRECT_MEMBERS
 @interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
 {
 	OFIRIHandler *_IRIHandler;
@@ -36,7 +37,7 @@
 - (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
 			       IRI: (OFIRI *)IRI
 			  delegate: (id <OFIRIHandlerDelegate>)delegate;
-- (void)start;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 @implementation OFHTTPIRIHandlerAsyncOpener
@@ -71,12 +72,14 @@
 	[super dealloc];
 }
 
-- (void)start
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
 
-	[_client asyncPerformRequest: request];
+	[_client asyncPerformRequest: request
+			   redirects: 10
+			 runLoopMode: runLoopMode];
 	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
@@ -116,6 +119,7 @@
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPIRIHandlerAsyncOpener *opener = objc_autorelease(
@@ -123,7 +127,7 @@
 								IRI: IRI
 							   delegate: delegate]);
 
-	[opener start];
+	[opener startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
