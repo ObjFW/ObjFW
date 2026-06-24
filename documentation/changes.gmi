@@ -570,7 +570,7 @@ Changes from ObjFW 1.0.1:
 2023-09-10
 
 Changes from ObjFW 1.0:
-* Fixes Hanging connections with OFTLSStream  when using OpenSSL
+* Fixes hanging connections with OFTLSStream when using OpenSSL
 * The same fix as for OpenSSL has been applied to GnuTLS and Secure Transport out of caution, even though there have been no hangs in practice
 * The build system has been updated to fix building .frameworks among other minor changes
 * Some headers have been changed to fix compatibility with ObjC++
@@ -837,7 +837,10 @@ Changes from ObjFW 0.3:
 * The objc_sync test was still using the old threads API and was updated to use the new one now
 * PLATFORMS has been updated to be more specific
 
-ObjFW 0.2.1 -> 0.3, 2010-05-09
+## ObjFW 0.3
+2010-05-09
+
+Changes from ObjFW 0.2.1:
 * Many new methods were added to different classes ✨
 * A huge amount of methods was added to OFStream, allowing easy binary stream handling and even mixing string-based and binary operations ✨
 * An optional write buffer was added to OFStream ✨
