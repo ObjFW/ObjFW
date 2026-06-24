@@ -4,6 +4,31 @@ New features are marked with a ✨ at the end.
 
 This file only contains the most significant changes.
 
+## ObjFW 1.5.6
+2026-06-24
+
+Changes from ObjFW 1.5.5:
+* Unpaired UTF-16 surrogates are not converted to WTF-8
+* Collections now refuse to be inserted into themselves
+* Fixes OFMutableData dropping the itemSize in one convenience initializer
+* Fixes OFFileIRIHandler setting the UID to the GID.
+* Fixes handling of BOM in -[OFUTF8String initWithUTF8StringNoCopy:length:freeWhenDone:]
+* OFMutableIndexSet now correclty inserts / removes from self
+* OFMutableUTF8String now correctly appends and replaces self
+* Fixes handling of TLS close notifications
+* Fixes relocking the mutex in OFCondition on Windows
+* Fixes searching for a handler after a cleanup in the runtime
+* Fixes parsing JSON containing an exponent without a decimal point
+* Call va_end() after va_copy() everywhere
+* Default depth limit of all parsers increased from 32 to 128
+* -[OFIRI fileSystemRepresentation] now rejects IRIs with a non-empty host, except on Windows where it is used for UNC
+* Fixes setting a nil extraField in OFMutableZIPArchiveEntry
+* Fixes setting a nil Amiga comment in OFMutableTarARchiveEntry
+* Fixes unescaping of quoted keys / values in OFINISection
+* Fixes octal numbers incorrectly being accepted for JSON5
+* Adds various missing memory barriers and fixes wrong memory barriers.
+* Various robustness improvements in OFASPrintF, OFBMPImageFormatHandler, OFConcreteData, OFConcreteNumber, OFConcreteSet, OFCountedSet, OFDNSResolver, OFDatagramSocket, OFFile, OFFileManager, OFGZIPStream, OFHTTPRequest, OFHTTPResponse, OFHTTPServer, OFHuffmanTreeFree, OFINIFile, OFINISection, OFIRI, OFImage, OFIndexSet, OFMapTable, OFMutableDictionary, OFMutableString, OFMutableUTF8String, OFNumber, OFPlainThread, OFSCTPSocket, OFSandbox, OFSocket, OFStrFTime, OFStrFTime, OFString, OFString+JSONParsing, OFTLSStream, OFUTF8String, OFWindowsRegistryKey, OFXMLComment, OFXMLParser, OFXMLProcessingInstruction, OFZooArchive, ObjFWBridge and exception support in the runtime
+
 ## ObjFW 1.5.5
 2026-05-31
 
