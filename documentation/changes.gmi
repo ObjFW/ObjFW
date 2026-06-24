@@ -583,7 +583,7 @@ Changes from ObjFW 0.90:
 * OFTarArchiveEntry: Fix prefix handling for ustar
 * OFZIPArchive: Fix uncompressed + data descriptor
 * OFArray: Fix MessagePack encoding
- of_asprintf: Don't require set up OFLocalization
+* of_asprintf: Don't require set up OFLocalization
 * OFGZIPStream: Add missing documentation
 * Fix a linker warning on OpenBSD/SPARC64
 * Remove the OFFile "b" modes from MorphOS (they were already removed for all other OSes)
@@ -592,7 +592,7 @@ Changes from ObjFW 0.90:
 2017-08-01
 
 Changes from ObjFW 0.8.1:
-* New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager, OFLocalization ✨
+* New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry, OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager, OFLocalization ✨
 * New platforms: Nintendo 3DS, MorphOS ✨
 * New lookup assembly for platforms: SPARC64/ELF, ARM64/ELF ✨
 * New forwarding for: ARM64/ELF ✨
