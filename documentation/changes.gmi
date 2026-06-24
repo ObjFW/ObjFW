@@ -21,7 +21,7 @@ Changes from ObjFW 1.5.4:
 * Robustness improvements in Deflate, LHA, Tar, ZIP, BMP, QOI and MessagePack
 * Fixes a missing rethrow in OFOpenSSLTLSStream that could result in hangs
 * Correctly handles "*" in format strings now
-* OFDate rejects invalid dates with tm_mon >= 12 now
+* OFDate rejects invalid dates with tm_mon ≥ 12 now
 * OFXMLParser rejects numeric entities == 0 or > U+10FFFF now, as well as surrogates
 * OFString rejects overlong UTF-8 encodings now
 * Fixes a retain cycle and a missing rethrow in OFCFRunLoopKernelEventObserver
@@ -34,7 +34,7 @@ Changes from ObjFW 1.5.4:
 * Base64 now rejects spurious = in the middle of the string
 * OFHTTPClient and OFHTTPServer now have more robust handling of Transfer-Encoding
 * OFDNSResolver is more compliant with the RFC now
-* MessagePack now rejects nanoseconds >= 1000000000 as per specification
+* MessagePack now rejects nanoseconds ≥ 1000000000 as per specification
 * Fixes OFConcreteArray accepting nil as the first object in some cases
 * Fixes OFMatrix4x4 jumping to the wrong label in inline assembly, causing the loop to always run at least once
 * Fixes wrong initialization in OFColorSpace
@@ -205,7 +205,7 @@ Changes from ObjFW 1.3.2:
 * Adds support for hiding / showing the cursor to OFStdIOStream ✨
 * Adds support for compressed localizations to OFLocale ✨
 * Adds new util ofgctester to test game controllers using ObjFWHID ✨
-* Starts using OF_DIRECT with the ObjFW runtime when using Clang >= 21 ✨
+* Starts using OF_DIRECT with the ObjFW runtime when using Clang ≥ 21 ✨
 * OFTLSSocket now supports client certificates officially instead of being an unsupported byproduct of support for server certificates (the only change is that this fixes Mbed TLS using the certificate chain to verify the server when it should only be used for the client certificate) ✨
 * Many fixes for AmigaOS and MorphOS
 * Everything is built with RELRO, _FORTIFY_SOURCE=3 and -fstack-protector by default now
@@ -692,10 +692,10 @@ Changes from ObjFW 0.7:
 2012-10-27
 
 Again, the differences are more than in any release before, thus listing them all would be too much. The major changes from ObjFW 0.6 are:
-* ObjFW now comes with its own runtime, which greatly increases performance compared to the GNU runtime and is even faster than the Apple runtime (using Clang >= 3.2 is recommended, but not necessary) ✨
+* ObjFW now comes with its own runtime, which greatly increases performance compared to the GNU runtime and is even faster than the Apple runtime (using Clang ≥ 3.2 is recommended, but not necessary) ✨
 * Support for the GNU runtime has been dropped
 * New, much faster autorelease pool implementation (now inside the runtime) ✨
-* Support for Automatic Reference Counting (requires Clang >= 3.2) ✨
+* Support for Automatic Reference Counting (requires Clang ≥ 3.2) ✨
 * Forwarding has been implemented ✨
 * Asynchronous stream handling ✨
 * New classes: OFThreadPool, OFRecursiveMutex, OFSortedList, OFTimer, OFRunLoop ✨
