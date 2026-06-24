@@ -762,7 +762,7 @@ Changes from ObjFW 0.5.3:
 2011-07-01
 
 Changes from ObjFW 0.5.2:
- * Lots of bug fixes, see Git log for details
+* Lots of bug fixes, see Git log for details
 
 ## ObjFW 0.5.2
 2011-04-25
@@ -784,7 +784,6 @@ Changes from ObjFW 0.5:
 * Call objc_thread_{add,remove} when using the GNU runtime to make sure the runtime knows about our thread
 * Detach a thread before restarting if it was never joined
 * Release the old return value when restarting a thread
-
 
 ## ObjFW 0.5
 2011-04-09
