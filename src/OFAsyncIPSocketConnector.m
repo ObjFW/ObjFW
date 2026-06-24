@@ -150,6 +150,7 @@
 	OFSocketAddress address = *(const OFSocketAddress *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
 	int errNo;
+	OFTimer *timer;
 
 	OFSocketAddressSetIPPort(&address, _port);
 
@@ -160,7 +161,14 @@
 				    port: _port
 				  socket: _socket
 				   errNo: errNo];
-			[self didConnect];
+
+			timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: self
+					 selector: @selector(didConnect)
+					  repeats: false];
+			[[OFRunLoop currentRunLoop] addTimer: timer
+						     forMode: runLoopMode];
 			return;
 		}
 
@@ -205,7 +213,15 @@
 						   port: _port
 						 socket: _socket
 						  errNo: errNo];
-				[self didConnect];
+
+				timer = [OFTimer
+				    timerWithTimeInterval: 0
+						   target: self
+						 selector: @selector(didConnect)
+						  repeats: false];
+				[[OFRunLoop currentRunLoop]
+				    addTimer: timer
+				     forMode: runLoopMode];
 				return;
 			}
 
@@ -220,7 +236,11 @@
 	[_socket setCanBlock: false];
 #endif
 
-	[self didConnect];
+	timer = [OFTimer timerWithTimeInterval: 0
+					target: self
+				      selector: @selector(didConnect)
+				       repeats: 0];
+	[[OFRunLoop currentRunLoop] addTimer: timer forMode: runLoopMode];
 }
 
 - (void)resolver: (OFDNSResolver *)resolver
