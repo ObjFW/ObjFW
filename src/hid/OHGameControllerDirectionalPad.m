@@ -46,10 +46,11 @@ const OFNotificationName
 			analog: (bool)analog
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] oh_initWithName: name
-				    xAxis: xAxis
-				    yAxis: yAxis
-				   analog: analog]);
+	    [(OHGameControllerDirectionalPad *)[self alloc]
+	    oh_initWithName: name
+		      xAxis: xAxis
+		      yAxis: yAxis
+		     analog: analog]);
 }
 
 + (instancetype)oh_padWithName: (OFString *)name
@@ -60,12 +61,13 @@ const OFNotificationName
 			analog: (bool)analog
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] oh_initWithName: name
-				       up: up
-				     down: down
-				     left: left
-				    right: right
-				   analog: analog]);
+	    [(OHGameControllerDirectionalPad *)[self alloc]
+	    oh_initWithName: name
+			 up: up
+		       down: down
+		       left: left
+		      right: right
+		     analog: analog]);
 }
 
 - (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
