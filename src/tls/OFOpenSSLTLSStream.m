@@ -565,6 +565,8 @@ inform_delegate:
 	}
 
 inform_delegate:
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -577,8 +579,6 @@ inform_delegate:
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -658,6 +658,8 @@ inform_delegate:
 	}
 
 inform_delegate:
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -670,8 +672,6 @@ inform_delegate:
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return nil;
 }

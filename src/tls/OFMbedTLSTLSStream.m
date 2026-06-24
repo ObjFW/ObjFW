@@ -428,6 +428,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -440,8 +442,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -475,6 +475,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -487,8 +489,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return nil;
 }

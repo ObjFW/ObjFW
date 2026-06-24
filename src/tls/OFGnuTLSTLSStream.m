@@ -391,6 +391,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		}
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -403,8 +405,6 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -451,6 +451,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		}
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -463,8 +465,6 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return nil;
 }
