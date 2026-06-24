@@ -375,6 +375,8 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 			    response: response];
 	}
 
+	_client->_inProgress = false;
+
 	timer = [OFTimer
 	    timerWithTimeInterval: 0
 			   target: _client->_delegate
