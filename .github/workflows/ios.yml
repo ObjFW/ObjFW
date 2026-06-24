@@ -16,7 +16,7 @@ jobs:
       run: brew install autoconf automake
     - name: Build Mbed TLS
       run: |
-        mbedtls="mbedtls-3.6.3"
+        mbedtls="mbedtls-4.1.0"
         wget https://github.com/Mbed-TLS/mbedtls/releases/download/$mbedtls/$mbedtls.tar.bz2
         tar xfj $mbedtls.tar.bz2
         cd $mbedtls
