@@ -209,13 +209,15 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {
-			void *pool = objc_autoreleasePoolPush();
+			void *pool;
 
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
 				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 				continue;
 			}
+
+			pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
