@@ -73,6 +73,19 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 {
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
+		id old;
+
+		switch (copy) {
+		case 0:
+			value = objc_retain(value);
+			break;
+		case 2:
+			value = [value mutableCopy];
+			break;
+		default:
+			value = [value copy];
+		}
+
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(ptr);
 
@@ -80,26 +93,16 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			_OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 #endif
-			id old = *ptr;
-
-			switch (copy) {
-			case 0:
-				*ptr = objc_retain(value);
-				break;
-			case 2:
-				*ptr = [value mutableCopy];
-				break;
-			default:
-				*ptr = [value copy];
-			}
-
-			objc_release(old);
+			old = *ptr;
+			*ptr = value;
 #ifdef OF_HAVE_THREADS
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 				_OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #endif
+
+		objc_release(old);
 
 		return;
 	}
