@@ -162,7 +162,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned char)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = *@encode(unsigned long);
+	_typeEncoding = *@encode(unsigned char);
 
 	return self;
 }

@@ -17,24 +17,35 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFIRI.h"
+#import "OFStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFIRI ()
-- (instancetype)of_init OF_METHOD_FAMILY(init);
-@end
+@class OFString;
 
-#ifdef __cplusplus
-extern "C" {
+/**
+ * @class OFGeminiResponse OFGeminiResponse.h ObjFW/ObjFW.h
+ *
+ * @brief A class representing a Gemini request response as a stream.
+ */
+#ifndef OF_GEMINI_CLIENT_M
+OF_SUBCLASSING_RESTRICTED
 #endif
-extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_INTERNAL;
-extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
-    OF_VISIBILITY_INTERNAL;
-extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
+@interface OFGeminiResponse: OFStream
+{
+	unsigned char _statusCode;
+	OFString *_metadata;
 }
-#endif
+
+/**
+ * @brief The status code of the response to the Gemini request.
+ */
+@property (nonatomic) unsigned char statusCode;
+
+/**
+ * @brief The metadata of the response to the Gemini request.
+ */
+@property (copy, nonatomic) OFString *metadata;
+@end
 
 OF_ASSUME_NONNULL_END

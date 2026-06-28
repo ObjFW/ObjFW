@@ -70,7 +70,9 @@ initPathAllowedCharacters(void)
 		 * it always append to an archive? What happens if the file
 		 * already exists?
 		 */
-		@throw [OFInvalidArgumentException exception];
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: EROFS];
 
 	/*
 	 * GZIP only compresses one file and thus has no path inside an

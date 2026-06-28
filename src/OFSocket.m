@@ -886,6 +886,15 @@ IPv6String(const OFSocketAddress *address)
 	uint_fast8_t zerosCount = 0, maxZerosCount = 0;
 	bool first = true;
 
+	if (memcmp(addrIn6->sin6_addr.s6_addr,
+	    "\0\0\0\0\0\0\0\0\0\0\xFF\xFF", 12) == 0)
+		return [OFString stringWithFormat:
+		    @"::ffff:%u.%u.%u.%u",
+		    addrIn6->sin6_addr.s6_addr[12],
+		    addrIn6->sin6_addr.s6_addr[13],
+		    addrIn6->sin6_addr.s6_addr[14],
+		    addrIn6->sin6_addr.s6_addr[15]];
+
 	for (uint_fast8_t i = 0; i < 16; i += 2) {
 		if (addrIn6->sin6_addr.s6_addr[i] == 0 &&
 		    addrIn6->sin6_addr.s6_addr[i + 1] == 0) {

@@ -19,6 +19,7 @@
 
 #import "OFFileManager.h"
 #import "OFObject.h"
+#import "OFRunLoop.h"
 #import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -141,6 +142,36 @@ OF_ASSUME_NONNULL_BEGIN
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate;
 
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @param runLoopMode The run loop mode in which to open the item
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**
@@ -205,6 +236,36 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate;
+
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @param runLoopMode The run loop mode in which to open the item
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Returns the attributes for the item at the specified IRI.

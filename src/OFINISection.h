@@ -42,6 +42,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (copy, nonatomic) OFString *name;
 
+/**
+ * @brief All keys in the dictionary.
+ *
+ * @note The same key can be contained multiple times - this means it is an
+ *	 array.
+ */
+@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString *) *allKeys;
+
 - (instancetype)init OF_UNAVAILABLE;
 
 /**

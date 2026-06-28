@@ -64,7 +64,7 @@
 
 	OTAssertEqualObjects([[_file sectionForName: @"foobar"]
 	    stringValueForKey: @"quxquxqux"],
-	    @"hello\"wörld");
+	    @"hel\\nlo\"wörld");
 }
 
 - (void)testLongLongValueForKeyDefaultValue
@@ -140,7 +140,7 @@
 	    @"[foobar]\r\n"
 	    @"#foobarcomment\r\n"
 	    @"qux=\" asd\"\r\n"
-	    @"quxquxqux=\"hello\\\"wörld\"\r\n"
+	    @"quxquxqux=\"hel\\\\nlo\\\"wörld\"\r\n"
 	    @"qux2=\"a\\n\"\r\n"
 	    @"\"asd=asd\"=foobar\r\n"
 	    @"qux3=\"a\\fb\"\r\n"

@@ -21,22 +21,21 @@
 
 #include <errno.h>
 
-#import "OFHTTPIRIHandler.h"
-#import "OFHTTPClient.h"
-#import "OFHTTPRequest.h"
-#import "OFHTTPResponse.h"
+#import "OFGeminiIRIHandler.h"
+#import "OFGeminiClient.h"
+#import "OFGeminiResponse.h"
 #import "OFIRI.h"
 #import "OFTimer.h"
 
 #import "OFOpenItemFailedException.h"
 
 OF_DIRECT_MEMBERS
-@interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
+@interface OFGeminiIRIHandlerAsyncOpener: OFObject <OFGeminiClientDelegate>
 {
 	OFIRIHandler *_IRIHandler;
 	OFIRI *_IRI;
 	id <OFIRIHandlerDelegate> _delegate;
-	OFHTTPClient *_client;
+	OFGeminiClient *_client;
 }
 
 - (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
@@ -45,7 +44,7 @@ OF_DIRECT_MEMBERS
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
-@implementation OFHTTPIRIHandlerAsyncOpener
+@implementation OFGeminiIRIHandlerAsyncOpener
 - (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
 			       IRI: (OFIRI *)IRI
 			  delegate: (id <OFIRIHandlerDelegate>)delegate
@@ -57,7 +56,7 @@ OF_DIRECT_MEMBERS
 		_IRI = [IRI copy];
 		_delegate = objc_retain(delegate);
 
-		_client = [[OFHTTPClient alloc] init];
+		_client = [[OFGeminiClient alloc] init];
 		_client.delegate = self;
 	} @catch (id e) {
 		objc_release(self);
@@ -80,20 +79,19 @@ OF_DIRECT_MEMBERS
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
 
-	[_client asyncPerformRequest: request
-			   redirects: 10
-			 runLoopMode: runLoopMode];
+	[_client asyncPerformRequestForIRI: _IRI
+				 redirects: 10
+			       runLoopMode: runLoopMode];
 	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
 }
 
--      (void)client: (OFHTTPClient *)client
-  didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response
-	  exception: (id)exception
+-	     (void)client: (OFGeminiClient *)client
+  didPerformRequestForIRI: (OFIRI *)IRI
+		 response: (OFGeminiResponse *)response
+		exception: (id)exception
 {
 	@try {
 		[_delegate IRIHandler: _IRIHandler
@@ -106,22 +104,21 @@ OF_DIRECT_MEMBERS
 }
 @end
 
-@implementation OFHTTPIRIHandler
+@implementation OFGeminiIRIHandler
 - (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClient *client;
-	OFHTTPRequest *request;
-	OFHTTPResponse *response;
+	void *pool;
+	OFGeminiClient *client;
+	OFGeminiResponse *response;
 
 	if (![mode isEqual: @"r"])
 		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
 							      mode: mode
 							     errNo: EROFS];
 
-	client = [OFHTTPClient client];
-	request = [OFHTTPRequest requestWithIRI: IRI];
-	response = [client performRequest: request];
+	pool = objc_autoreleasePoolPush();
+	client = [OFGeminiClient client];
+	response = [client performRequestForIRI: IRI];
 
 	objc_retain(response);
 
@@ -136,7 +133,7 @@ OF_DIRECT_MEMBERS
 	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPIRIHandlerAsyncOpener *opener;
+	OFGeminiIRIHandlerAsyncOpener *opener;
 
 	if (![mode isEqual: @"r"]) {
 		id exception = [OFOpenItemFailedException
@@ -160,7 +157,7 @@ OF_DIRECT_MEMBERS
 		return;
 	}
 
-	opener = objc_autorelease([[OFHTTPIRIHandlerAsyncOpener alloc]
+	opener = objc_autorelease([[OFGeminiIRIHandlerAsyncOpener alloc]
 	    initWithIRIHandler: self
 			   IRI: IRI
 		      delegate: delegate]);

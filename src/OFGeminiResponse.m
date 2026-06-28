@@ -17,24 +17,28 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFIRI.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFGeminiResponse.h"
+#import "OFString.h"
 
-OF_DIRECT_MEMBERS
-@interface OFIRI ()
-- (instancetype)of_init OF_METHOD_FAMILY(init);
-@end
+@implementation OFGeminiResponse
+@synthesize statusCode = _statusCode, metadata = _metadata;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_INTERNAL;
-extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
-    OF_VISIBILITY_INTERNAL;
-extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
+- (void)dealloc
+{
+	objc_release(_metadata);
+
+	[super dealloc];
 }
-#endif
 
-OF_ASSUME_NONNULL_END
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tStatus code = %hhd\n"
+	    @"\tMetadata = %@\n"
+	    @">",
+	    self.class, _statusCode, _metadata];
+}
+@end

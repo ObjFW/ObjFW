@@ -266,7 +266,7 @@ initOperatingSystemVersion(void)
 				return;
 
 			if (!VerQueryValueA(buffer, "\\", &data, &dataLen) ||
-			    dataLen < sizeof(info))
+			    dataLen < sizeof(*info))
 				return;
 
 			info = (VS_FIXEDFILEINFO *)data;

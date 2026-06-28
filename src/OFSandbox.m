@@ -347,35 +347,45 @@
 {
 	OFSandbox *copy = [[OFSandbox alloc] init];
 
-	copy->_allowsStdIO = _allowsStdIO;
-	copy->_allowsReadingFiles = _allowsReadingFiles;
-	copy->_allowsWritingFiles = _allowsWritingFiles;
-	copy->_allowsCreatingFiles = _allowsCreatingFiles;
-	copy->_allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
-	copy->_allowsIPSockets = _allowsIPSockets;
-	copy->_allowsMulticastSockets = _allowsMulticastSockets;
-	copy->_allowsChangingFileAttributes = _allowsChangingFileAttributes;
-	copy->_allowsFileOwnerChanges = _allowsFileOwnerChanges;
-	copy->_allowsFileLocks = _allowsFileLocks;
-	copy->_allowsUNIXSockets = _allowsUNIXSockets;
-	copy->_allowsDNS = _allowsDNS;
-	copy->_allowsUserDatabaseReading = _allowsUserDatabaseReading;
-	copy->_allowsFileDescriptorSending = _allowsFileDescriptorSending;
-	copy->_allowsFileDescriptorReceiving = _allowsFileDescriptorReceiving;
-	copy->_allowsTape = _allowsTape;
-	copy->_allowsTTY = _allowsTTY;
-	copy->_allowsProcessOperations = _allowsProcessOperations;
-	copy->_allowsExec = _allowsExec;
-	copy->_allowsProtExec = _allowsProtExec;
-	copy->_allowsSetTime = _allowsSetTime;
-	copy->_allowsPS = _allowsPS;
-	copy->_allowsVMInfo = _allowsVMInfo;
-	copy->_allowsChangingProcessRights = _allowsChangingProcessRights;
-	copy->_allowsPF = _allowsPF;
-	copy->_allowsAudio = _allowsAudio;
-	copy->_allowsBPF = _allowsBPF;
-	copy->_allowsUnveil = _allowsUnveil;
-	copy->_returnsErrors = _returnsErrors;
+	@try {
+		copy->_allowsStdIO = _allowsStdIO;
+		copy->_allowsReadingFiles = _allowsReadingFiles;
+		copy->_allowsWritingFiles = _allowsWritingFiles;
+		copy->_allowsCreatingFiles = _allowsCreatingFiles;
+		copy->_allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
+		copy->_allowsIPSockets = _allowsIPSockets;
+		copy->_allowsMulticastSockets = _allowsMulticastSockets;
+		copy->_allowsChangingFileAttributes =
+		    _allowsChangingFileAttributes;
+		copy->_allowsFileOwnerChanges = _allowsFileOwnerChanges;
+		copy->_allowsFileLocks = _allowsFileLocks;
+		copy->_allowsUNIXSockets = _allowsUNIXSockets;
+		copy->_allowsDNS = _allowsDNS;
+		copy->_allowsUserDatabaseReading = _allowsUserDatabaseReading;
+		copy->_allowsFileDescriptorSending =
+		    _allowsFileDescriptorSending;
+		copy->_allowsFileDescriptorReceiving =
+		    _allowsFileDescriptorReceiving;
+		copy->_allowsTape = _allowsTape;
+		copy->_allowsTTY = _allowsTTY;
+		copy->_allowsProcessOperations = _allowsProcessOperations;
+		copy->_allowsExec = _allowsExec;
+		copy->_allowsProtExec = _allowsProtExec;
+		copy->_allowsSetTime = _allowsSetTime;
+		copy->_allowsPS = _allowsPS;
+		copy->_allowsVMInfo = _allowsVMInfo;
+		copy->_allowsChangingProcessRights =
+		    _allowsChangingProcessRights;
+		copy->_allowsPF = _allowsPF;
+		copy->_allowsAudio = _allowsAudio;
+		copy->_allowsBPF = _allowsBPF;
+		copy->_allowsUnveil = _allowsUnveil;
+		copy->_returnsErrors = _returnsErrors;
+		copy->_unveiledPaths = [_unveiledPaths mutableCopy];
+	} @catch (id e) {
+		objc_release(copy);
+		@throw e;
+	}
 
 	return copy;
 }

@@ -103,7 +103,8 @@ typedef enum {
 	    *_underlyingStream;
 	bool _verifiesCertificates;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
-	OF_RESERVE_IVARS(OFTLSStream, 3)
+	uintptr_t _atEndOfStream;	/* Change type on ABI bump */
+	OF_RESERVE_IVARS(OFTLSStream, 2)
 }
 
 /**

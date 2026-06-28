@@ -148,6 +148,8 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
+	       OFGeminiClient.m			\
+	       OFGeminiResponse.m		\
 	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
@@ -261,6 +263,7 @@ SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
+		OFGeminiIRIHandler.m			\
 		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\

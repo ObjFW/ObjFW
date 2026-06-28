@@ -146,11 +146,12 @@ OF_DIRECT_MEMBERS
 	if ([OFSystemInfo isWindowsNT])
 		status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
 		    NULL, options, accessRights, securityAttributes, &subKey,
-		    NULL);
+		    disposition);
 	else
 		status = RegCreateKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], 0, NULL,
-		    options, accessRights, securityAttributes, &subKey, NULL);
+		    options, accessRights, securityAttributes, &subKey,
+		    disposition);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException

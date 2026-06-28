@@ -55,7 +55,7 @@
 		return [path stringByAppendingFormat: @"/Contents/MacOS/%@",
 						      name.lastPathComponent];
 # elif defined(OF_IOS)
-		return [name stringByAppendingFormat: @"/%@",
+		return [path stringByAppendingFormat: @"/%@",
 						      name.lastPathComponent];
 # endif
 #endif
@@ -80,6 +80,8 @@
 			else
 				_handle = LoadLibraryA([path
 				    cStringWithEncoding: [OFLocale encoding]]);
+
+			_freeWhenDone = true;
 		} else
 			_handle = GetModuleHandle(NULL);
 #endif
@@ -119,12 +121,14 @@
 
 - (void)dealloc
 {
-	if (_handle != NULL)
+	if (_handle != NULL) {
 #ifndef OF_WINDOWS
 		dlclose(_handle);
 #else
-		FreeLibrary(_handle);
+		if (_freeWhenDone)
+			FreeLibrary(_handle);
 #endif
+	}
 
 	[super dealloc];
 }

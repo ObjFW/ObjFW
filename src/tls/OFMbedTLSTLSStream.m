@@ -203,7 +203,12 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) < 0) {
+	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) <= 0) {
+		if (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY) {
+			_atEndOfStream = true;
+			return 0;
+		}
+
 		/*
 		 * The underlying stream might have had data ready, but not
 		 * enough for Mbed TLS to return decrypted data. This means the
@@ -423,6 +428,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -435,8 +442,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -470,6 +475,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -482,8 +489,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return nil;
 }

@@ -155,6 +155,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (void)dealloc
 {
 	objc_release(_underlyingStream);
+	objc_release(_certificateChain);
 
 	[super dealloc];
 }
@@ -192,7 +193,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	return _underlyingStream.atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (int)fileDescriptorForReading

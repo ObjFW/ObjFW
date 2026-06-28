@@ -1,14 +1,17 @@
-AC_INIT(ObjFW, 1.6-dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.6-dev, js@nil.im, objfw, https://objfw.nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 objfw_version_major=1
 objfw_version_minor=6
+objfw_version_revision=0
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
 	[The major version of ObjFW])
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
 	[The minor version of ObjFW])
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_REVISION, $objfw_version_revision,
+	[The version revision of ObjFW])
 dnl This may only be set to 1.6 once 1.6 is released
 AC_SUBST(BUNDLE_VERSION, 1.5.0)
 AC_SUBST(BUNDLE_SHORT_VERSION, 1.5)
@@ -381,16 +384,12 @@ case "$OBJC" in
 	;;
 esac
 
-AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
-	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
-], [
-	AX_CHECK_COMPILER_FLAGS(-std=gnu1x, [
-		OBJCFLAGS="$OBJCFLAGS -std=gnu1x"
-	], [
-		AX_CHECK_COMPILER_FLAGS(-std=gnu99,
-			[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+for std in gnu23 gnu2x gnu17 gnu11 gnu1x gnu99; do
+	AX_CHECK_COMPILER_FLAGS(-std=$std, [
+		OBJCFLAGS="$OBJCFLAGS -std=$std"
+		break
 	])
-])
+done
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
@@ -564,6 +563,7 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
 	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -1984,7 +1984,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_APPLETALK, 1,
-			    [Whether we have AppleTalk])
+				[Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 		])
 	])
@@ -2331,7 +2331,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(
-	    whether we need -Wno-unused-property-ivar due to Clang bugs)
+		whether we need -Wno-unused-property-ivar due to Clang bugs)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
 			#ifdef __has_attribute

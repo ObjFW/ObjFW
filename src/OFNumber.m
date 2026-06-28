@@ -707,28 +707,20 @@ OF_SINGLETON_METHODS
 - (unsigned long)hash
 {
 	unsigned long hash;
+	double d = self.doubleValue;
+
+	if (isnan(d))
+		return 0;
+
+	if (d == -0.0)
+		d = 0.0;
 
 	OFHashInit(&hash);
 
-	if (isFloat(self)) {
-		double d;
+	d = OFToLittleEndianDouble(self.doubleValue);
 
-		if (isnan(self.doubleValue))
-			return 0;
-
-		d = OFToLittleEndianDouble(self.doubleValue);
-
-		for (uint_fast8_t i = 0; i < sizeof(double); i++)
-			OFHashAddByte(&hash, ((char *)&d)[i]);
-	} else if (isSigned(self) || isUnsigned(self)) {
-		unsigned long long value = self.unsignedLongLongValue;
-
-		while (value != 0) {
-			OFHashAddByte(&hash, value & 0xFF);
-			value >>= 8;
-		}
-	} else
-		@throw [OFInvalidFormatException exception];
+	for (uint_fast8_t i = 0; i < sizeof(double); i++)
+		OFHashAddByte(&hash, ((char *)&d)[i]);
 
 	OFHashFinalize(&hash);
 
@@ -749,8 +741,15 @@ OF_SINGLETON_METHODS
 {
 	if (self.objCType[0] == 'B' && self.objCType[1] == '\0')
 		return (self.boolValue ? @"true" : @"false");
-	if (isFloat(self))
-		return [OFString stringWithFormat: @"%g", self.doubleValue];
+	if (isFloat(self)) {
+		double value = self.doubleValue;
+
+		if (isnan(value))
+			return @"NaN";
+		else
+			return [OFString stringWithFormat: @"%g",
+							   self.doubleValue];
+	}
 	if (isSigned(self))
 		return [OFString stringWithFormat: @"%lld", self.longLongValue];
 	if (isUnsigned(self))

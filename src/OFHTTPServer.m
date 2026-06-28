@@ -882,7 +882,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 	self = [super init];
 
 	_name = @"OFHTTPServer (ObjFW's HTTP server class "
-	    @"<https://objfw.nil.im/>)";
+	    @"<https://objfw.nil.im>)";
 #ifdef OF_HAVE_THREADS
 	_numberOfThreads = 1;
 #endif

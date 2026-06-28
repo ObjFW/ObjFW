@@ -32,12 +32,6 @@ OFAtomicIntAdd(volatile int *_Nonnull p, int i)
 	return (*p += i);
 }
 
-static OF_INLINE int32_t
-OFAtomicInt32Add(volatile int32_t *_Nonnull p, int32_t i)
-{
-	return (*p += i);
-}
-
 static OF_INLINE void *_Nullable
 OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
@@ -46,12 +40,6 @@ OFAtomicPointerAdd(void *volatile _Nullable *_Nonnull p, intptr_t i)
 
 static OF_INLINE int
 OFAtomicIntSubtract(volatile int *_Nonnull p, int i)
-{
-	return (*p -= i);
-}
-
-static OF_INLINE int32_t
-OFAtomicInt32Subtract(volatile int32_t *_Nonnull p, int32_t i)
 {
 	return (*p -= i);
 }
@@ -68,20 +56,8 @@ OFAtomicIntIncrease(volatile int *_Nonnull p)
 	return ++*p;
 }
 
-static OF_INLINE int32_t
-OFAtomicInt32Increase(volatile int32_t *_Nonnull p)
-{
-	return ++*p;
-}
-
 static OF_INLINE int
 OFAtomicIntDecrease(volatile int *_Nonnull p)
-{
-	return --*p;
-}
-
-static OF_INLINE int32_t
-OFAtomicInt32Decrease(volatile int32_t *_Nonnull p)
 {
 	return --*p;
 }
@@ -92,49 +68,14 @@ OFAtomicIntOr(volatile unsigned int *_Nonnull p, unsigned int i)
 	return (*p |= i);
 }
 
-static OF_INLINE uint32_t
-OFAtomicInt32Or(volatile uint32_t *_Nonnull p, uint32_t i)
-{
-	return (*p |= i);
-}
-
 static OF_INLINE unsigned int
 OFAtomicIntAnd(volatile unsigned int *_Nonnull p, unsigned int i)
 {
 	return (*p &= i);
 }
 
-static OF_INLINE uint32_t
-OFAtomicInt32And(volatile uint32_t *_Nonnull p, uint32_t i)
-{
-	return (*p &= i);
-}
-
-static OF_INLINE unsigned int
-OFAtomicIntXor(volatile unsigned int *_Nonnull p, unsigned int i)
-{
-	return (*p ^= i);
-}
-
-static OF_INLINE uint32_t
-OFAtomicInt32Xor(volatile uint32_t *_Nonnull p, uint32_t i)
-{
-	return (*p ^= i);
-}
-
 static OF_INLINE bool
 OFAtomicIntCompareAndSwap(volatile int *_Nonnull p, int o, int n)
-{
-	if (*p == o) {
-		*p = n;
-		return true;
-	}
-
-	return false;
-}
-
-static OF_INLINE bool
-OFAtomicInt32CompareAndSwap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 {
 	if (*p == o) {
 		*p = n;

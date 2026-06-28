@@ -152,9 +152,13 @@ objc_setAssociatedObject(id object, const void *key, id value,
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 	if (!object_isTaggedPointer(object) &&
-	    (_object_getClass_fast(object)->info & _OBJC_CLASS_INFO_RUNTIME_RR))
+	    (_object_getClass_fast(object)->info &
+	    _OBJC_CLASS_INFO_RUNTIME_RR)) {
 		OFAtomicIntOr(&_OBJC_PRE_IVARS(object)->info,
 		    _OBJC_OBJECT_INFO_ASSOCIATIONS);
+
+		OFReleaseMemoryBarrier();
+	}
 #endif
 
 	slot = slotForObject(object);
@@ -253,11 +257,12 @@ objc_getAssociatedObject(id object, const void *key)
 void
 objc_removeAssociatedObjects(id object)
 {
-	id old = nil;
+	id *old = NULL;
+	size_t numOld = 0;
 	size_t slot;
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
-	OFReleaseMemoryBarrier();
+	OFAcquireMemoryBarrier();
 
 	if (object != nil && !object_isTaggedPointer(object) &&
 	    (_object_getClass_fast(object)->info &
@@ -304,7 +309,13 @@ objc_removeAssociatedObjects(id object)
 			case OBJC_ASSOCIATION_RETAIN_NONATOMIC:
 			case OBJC_ASSOCIATION_COPY:
 			case OBJC_ASSOCIATION_COPY_NONATOMIC:
-				old = association->object;
+				old = realloc(old, (numOld + 1) * sizeof(id));
+				if (old == NULL)
+					_OBJC_ERROR("Not enough memory to "
+					    "allocate list of objects to "
+					    "releasae!");
+
+				old[numOld++] = association->object;
 				break;
 			default:
 				break;
@@ -322,5 +333,8 @@ objc_removeAssociatedObjects(id object)
 	}
 #endif
 
-	objc_release(old);
+	for (size_t i = 0; i < numOld; i++)
+		objc_release(old[i]);
+
+	free(old);
 }

@@ -29,7 +29,7 @@
         "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",
         "        --insecure         TLS-Fehler ignorieren und unsichere\n",
         "                           Weiterleitungen erlauben\n",
-        "        --ignore-status    HTTP Status-Code ignorieren\n",
+        "        --ignore-status    Status-Code ignorieren\n",
         "        --version          Versionsinformationen anzeigen"
     ],
     invalid_input_header: "%[prog]: Header müssen im Format Name:Wert sein!",
@@ -66,11 +66,11 @@
     ],
     no_tls_support: [
         "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
-        "  Um via HTTPS runterzuladen müssen Sie entweder ObjFW mit TLS-",
-        "Unterstützung\n",
-        "  kompilieren oder eine Bibliothek mittels „preload” laden, welche ",
-        "TLS-Support\n",
-        "  zu ObjFW hinzufügt!"
+        "  Um via HTTPS oder Gemini runterzuladen müssen Sie entweder ObjFW ",
+	"mit\n",
+	"  TLS-Unterstützung kompilieren oder eine Bibliothek mittels ",
+	"„preload” laden,\n",
+	"  welche TLS-Support zu ObjFW hinzufügt!"
     ],
     download_failed_tls_handshake_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
@@ -85,7 +85,7 @@
     ],
     download_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
-        "  HTTP Status-Code: %[code]"
+        "  Status-Code: %[code]"
     ],
     download_error: "Fehler!",
     download_failed_exception: [

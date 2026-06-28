@@ -17,24 +17,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFIRI.h"
+#import "OFIRIHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFIRI ()
-- (instancetype)of_init OF_METHOD_FAMILY(init);
+@interface OFGeminiIRIHandler: OFIRIHandler
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_INTERNAL;
-extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
-    OF_VISIBILITY_INTERNAL;
-extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END
