@@ -74,7 +74,6 @@ powerpc-*-amigaos*)
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
 *-morphos*)
-	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O0 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
@@ -89,7 +88,7 @@ powerpc-*-amigaos*)
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-		t="-mresident32 -ffreestanding -noixemul -O1"
+		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		t="$t -laboxstubs -labox -lmath -ldebug -lc"
