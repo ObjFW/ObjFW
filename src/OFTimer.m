@@ -584,6 +584,7 @@
 		case 3:
 			((void (*)(id, SEL, id, id, id))method)(_target,
 			    _selector, _object1, _object2, _object3);
+			break;
 		case 4:
 			((void (*)(id, SEL, id, id, id, id))method)(_target,
 			    _selector, _object1, _object2, _object3, _object4);
