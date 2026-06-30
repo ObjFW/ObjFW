@@ -46,8 +46,8 @@ OBJS_EXTRA = lookup-asm/lookup-asm.a
 LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
 AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o	\
-		       lookup-asm/lookup-asm.amigalib.a	\
-		       amiga-library-end.amigalib.o
+		       lookup-asm/lookup-asm.amigalib.a
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../../buildsys.mk
 

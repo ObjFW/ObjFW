@@ -2,13 +2,6 @@ include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions encodings forwarding ${LINKLIB}
 SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
-CLEAN = amiga-end.amigalib.dep		\
-	amiga-end.amigalib.o		\
-	amiga-glue.amigalib.dep		\
-	amiga-glue.amigalib.o		\
-	amiga-library-functable.inc	\
-	amiga-library.amigalib.dep	\
-	amiga-library.amigalib.o
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -288,8 +281,8 @@ AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
 AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o	\
 		       exceptions/exceptions.amigalib.a	\
 		       encodings/encodings.amigalib.a	\
-		       forwarding/forwarding.amigalib.a	\
-		       amiga-library-end.amigalib.o
+		       forwarding/forwarding.amigalib.a
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../buildsys.mk
 
