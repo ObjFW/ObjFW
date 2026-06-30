@@ -26,7 +26,6 @@ LIBS := -L../../src			\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\
-	-L../../src/bridge		\
 	${OFHTTP_LIBS}			\
 	-lobjfw				\
 	${RUNTIME_LIBS}			\
