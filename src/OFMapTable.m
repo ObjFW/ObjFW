@@ -542,6 +542,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 	_count = 0;
 	_mutations++;
 	_capacity = minCapacity;
+	_tombstones = 0;
 	_buckets = OFResizeMemory(_buckets, _capacity, sizeof(*_buckets));
 
 	/*
