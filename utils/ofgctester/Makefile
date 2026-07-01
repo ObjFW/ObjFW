@@ -20,6 +20,7 @@ LIBS := -L../../src			\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/hid			\
+	-L../../src/bridge		\
 	-lobjfwhid			\
 	${HID_LIBS}			\
 	-lobjfw				\
