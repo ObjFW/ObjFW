@@ -146,7 +146,7 @@ glue_objc_enumerationMutation(id _Nonnull object)
 }
 
 int __saveds
-glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
+glue___gnu_objc_personality_v0(int version, int actions, uint64_t exClass, void *_Nonnull ex, void *_Nonnull ctx)
 {
 	return __gnu_objc_personality_v0(version, actions, exClass, ex, ctx);
 }

@@ -19,7 +19,10 @@
 
 #include "config.h"
 
+#define OBJC_NO_PERSONALITY_DECLARATION
+
 #import "ObjFWRT.h"
+#import "exception.h"
 #import "private.h"
 
 #define USE_INLINE_STDARG
@@ -49,7 +52,7 @@ extern void __deregister_frame(void *);
 
 void *__objc_class_name_Protocol;
 
-#ifndef OBJC_AMIGA_LIB
+#ifndef OBJC_COMPILING_AMIGA_LIBRARY
 struct Library *ObjFWRTBase;
 
 static void
@@ -135,3 +138,34 @@ DESTRUCTOR_P(ObjFWRT, 125)
 	dtor();
 }
 #endif
+
+_Unwind_Reason_Code __attribute__((__weak__))
+__gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
+    struct objc_exception *ex, void *ctx)
+{
+	/*
+	 * We can't read ObjFWRTBase here, as this function can get called from
+	 * libgcc directly without r13 set properly, which is a problem when
+	 * the linklib is baserel itself. Hence, we store ObjFWRTBase in the
+	 * exception itself.
+	 */
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# define ObjFWRTBase ex->ObjFWRTBase
+#endif
+
+	if (exClass != GNUCOBJC_EXCEPTION_CLASS)
+		return _URC_CONTINUE_UNWIND;
+
+	__asm__ __volatile__ (
+	    "mr         %%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((int (*)(int, int, uint64_t, void *, void *))
+	    *(void **)(((uintptr_t)ObjFWRTBase) - 142))(version, actions,
+	    exClass, ex, ctx);
+
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# undef ObjFWRTBase
+#endif
+}

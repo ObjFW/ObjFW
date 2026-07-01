@@ -241,17 +241,6 @@ objc_enumerationMutation(id _Nonnull object)
 	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 136))(object);
 }
 
-int __attribute__((__weak__))
-__gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
-{
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r" (ObjFWRTBase) : "r12"
-	);
-
-	return __extension__ ((int (*)(int, int, uint64_t _Nonnull, void *_Nonnull, void *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 142))(version, actions, exClass, ex, ctx);
-}
-
 id _Nullable __attribute__((__weak__))
 objc_retain(id _Nullable object)
 {
