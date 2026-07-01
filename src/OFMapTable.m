@@ -513,6 +513,7 @@ setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
 			_buckets[i] = &tombstone;
 
 			_count--;
+			_tombstones++;
 			_mutations++;
 			resizeForCount(self, _count);
 
