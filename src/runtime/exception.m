@@ -21,8 +21,6 @@
 
 #define OBJC_NO_PERSONALITY_DECLARATION
 
-#include "exception.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,6 +69,8 @@
 #endif
 
 #define numEmergencyExceptions 4
+
+#include "exception.h"
 
 enum {
 	_UA_SEARCH_PHASE  = 0x01,
