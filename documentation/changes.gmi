@@ -4,6 +4,16 @@ New features are marked with a ✨ at the end.
 
 This file only contains the most significant changes.
 
+## ObjFW 1.5.7
+2026-07-03
+
+Changes from ObjFW 1.5.6:
+* Fixes tombstone counting in OFMapTable that could lead to incorrect out of range exceptions
+* Fixes timers with 3 objects firing twice
+* Copies for atomic properties are now performed outside the spinlock to avoid a possible deadlock
+* Fixes a memory leak in objc_removeAssociatedObjects
+* Avoids an unnecessary autorelease pool in OFEpollKernelEventObserver
+
 ## ObjFW 1.5.6
 2026-06-24
 
