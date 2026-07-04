@@ -226,6 +226,9 @@ OF_SINGLETON_METHODS
 		OFArray *objects_ = [dictionary.objectEnumerator allObjects];
 		OFArray *keys_ = [dictionary.keyEnumerator allObjects];
 
+		if (dictionary == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = dictionary.count;
 
 		if (count != keys_.count || count != objects_.count)
@@ -251,12 +254,9 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	@try {
-		if (key == nil || object == nil)
-			@throw [OFInvalidArgumentException exception];
-	} @catch (id e) {
+	if (key == nil || object == nil) {
 		objc_release(self);
-		@throw e;
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	return [self initWithObjects: &object forKeys: &key count: 1];
@@ -269,6 +269,9 @@ OF_SINGLETON_METHODS
 	size_t count;
 
 	@try {
+		if (objects_ == nil || keys_ == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = objects_.count;
 
 		if (count != keys_.count)
@@ -320,19 +323,16 @@ OF_SINGLETON_METHODS
 {
 	size_t count = 1;
 	id *objects = NULL, *keys = NULL;
-	va_list argumentsCopy;
-
-	if (firstKey == nil)
-		return [self init];
-
-	va_copy(argumentsCopy, arguments);
-	while (va_arg(argumentsCopy, id) != nil)
-		count++;
-	va_end(argumentsCopy);
 
 	@try {
 		size_t i = 0;
+		va_list argumentsCopy;
 		id key, object;
+
+		va_copy(argumentsCopy, arguments);
+		while (va_arg(argumentsCopy, id) != nil)
+			count++;
+		va_end(argumentsCopy);
 
 		if (count % 2 != 0)
 			@throw [OFInvalidArgumentException exception];

@@ -88,9 +88,6 @@ static const OFMapTableFunctions objectFunctions = {
 {
 	size_t count;
 
-	if (dictionary == nil)
-		return [self init];
-
 	if ([dictionary isKindOfClass: [OFConcreteDictionary class]] ||
 	    [dictionary isKindOfClass: [OFConcreteMutableDictionary class]]) {
 		self = [super init];
@@ -109,6 +106,9 @@ static const OFMapTableFunctions objectFunctions = {
 	}
 
 	@try {
+		if (dictionary == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = dictionary.count;
 	} @catch (id e) {
 		objc_release(self);
