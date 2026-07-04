@@ -80,6 +80,9 @@
 		objc_retain(firstObject);
 
 		while ((object = va_arg(arguments, id)) != nil) {
+			if (object == nil)
+				@throw [OFInvalidArgumentException exception];
+
 			[_array addItem: &object];
 			objc_retain(object);
 		}
@@ -98,8 +101,10 @@
 
 	self = [super init];
 
-	if (array == nil)
-		return self;
+	if (array == nil) {
+		objc_release(self);
+		@throw [OFInvalidArgumentException exception];
+	}
 
 	@try {
 		objects = array.objects;

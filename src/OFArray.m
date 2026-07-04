@@ -211,9 +211,6 @@ OF_SINGLETON_METHODS
 	va_list argumentsCopy;
 	id *objects;
 
-	if (firstObject == nil)
-		return [self init];
-
 	va_copy(argumentsCopy, arguments);
 	while (va_arg(argumentsCopy, id) != nil)
 		count++;
@@ -229,10 +226,8 @@ OF_SINGLETON_METHODS
 	@try {
 		objects[0] = firstObject;
 
-		for (size_t i = 1; i < count; i++) {
+		for (size_t i = 1; i < count; i++)
 			objects[i] = va_arg(arguments, id);
-			OFEnsure(objects[i] != nil);
-		}
 
 		self = [self initWithObjects: objects count: count];
 	} @finally {
@@ -246,6 +241,11 @@ OF_SINGLETON_METHODS
 {
 	id *objects;
 	size_t count;
+
+	if (array == nil) {
+		objc_release(self);
+		@throw [OFInvalidArgumentException exception];
+	}
 
 	@try {
 		count = array.count;
