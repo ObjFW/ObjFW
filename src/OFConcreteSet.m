@@ -77,10 +77,10 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 {
 	size_t count;
 
-	if (set == nil)
-		return [self init];
-
 	@try {
+		if (set == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = set.count;
 	} @catch (id e) {
 		objc_release(self);
@@ -104,10 +104,10 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 {
 	size_t count;
 
-	if (array == nil)
-		@throw [OFInvalidArgumentException exception];
-
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = array.count;
 	} @catch (id e) {
 		objc_release(self);

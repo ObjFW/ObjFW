@@ -43,6 +43,9 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
+		if (set == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		if ([set isKindOfClass: [OFCountedSet class]]) {
 			OFCountedSet *countedSet = (OFCountedSet *)set;
 
@@ -73,6 +76,9 @@
 	@try {
 		id const *objects = array.objects;
 		size_t count = array.count;
+
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
 
 		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];

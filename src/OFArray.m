@@ -242,12 +242,10 @@ OF_SINGLETON_METHODS
 	id *objects;
 	size_t count;
 
-	if (array == nil) {
-		objc_release(self);
-		@throw [OFInvalidArgumentException exception];
-	}
-
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = array.count;
 		objects = OFAllocMemory(count, sizeof(id));
 
@@ -273,8 +271,7 @@ OF_SINGLETON_METHODS
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
 # pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #endif
-- (instancetype)initWithObjects: (id const *)objects
-			  count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }

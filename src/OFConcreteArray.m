@@ -101,12 +101,10 @@
 
 	self = [super init];
 
-	if (array == nil) {
-		objc_release(self);
-		@throw [OFInvalidArgumentException exception];
-	}
-
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		objects = array.objects;
 		count = array.count;
 
