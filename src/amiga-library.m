@@ -582,6 +582,12 @@ setlocale(int category, const char *locale)
 	return linklibCtx.setlocale(category, locale);
 }
 
+struct lconv *
+localeconv(void)
+{
+	return linklibCtx.localeconv();
+}
+
 int
 setjmp(jmp_buf env)
 {

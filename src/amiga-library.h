@@ -68,6 +68,7 @@ struct OFLinklibContext {
 	    const char *_Nonnull, const struct tm *_Nonnull);
 	sighandler_t _Nullable (*_Nonnull signal)(int, sighandler_t _Nullable);
 	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
+	struct lconv *_Nonnull (*_Nonnull localeconv)(void);
 	int (*_Nonnull setjmp)(jmp_buf);
 	void __dead2 (*_Nonnull longjmp)(jmp_buf, int);
 };

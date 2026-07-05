@@ -347,6 +347,7 @@ ctor(void)
 		.strftime = strftime,
 		.signal = signal,
 		.setlocale = setlocale,
+		.localeconv = localeconv,
 		.setjmp = setjmp,
 		.longjmp = longjmp,
 	};
