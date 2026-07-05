@@ -41,6 +41,9 @@ typedef HANDLE OFPlainThread;
 # include <exec/semaphores.h>
 typedef struct {
 	struct Task *task;
+# if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+	struct Library *ObjFWBase;
+# endif
 	void (*function)(id);
 	id object;
 	struct SignalSemaphore semaphore;

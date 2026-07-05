@@ -54,7 +54,7 @@ const char *VER = "$VER: " OBJFW_AMIGA_LIB " "
     OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
     " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer";
 
-static struct ObjFWBase {
+struct ObjFWBase {
 	struct Library library;
 	void *segList;
 	struct ObjFWBase *parent;

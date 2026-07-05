@@ -35,6 +35,9 @@
 #ifndef OF_MORPHOS
 extern void OFTLSKeyThreadExited(void);
 #endif
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+extern struct Library *ObjFWBase;
+#endif
 static OFTLSKey threadKey;
 
 OF_CONSTRUCTOR()
@@ -43,6 +46,9 @@ OF_CONSTRUCTOR()
 }
 
 static void
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+__saveds
+#endif
 functionWrapper(void)
 {
 	bool detached = false;
@@ -72,6 +78,24 @@ functionWrapper(void)
 		free(thread);
 }
 
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+static void
+r12FunctionWrapper(void)
+{
+# define SysBase (*(struct ExecBase **)4)
+	OFPlainThread thread =
+	    (OFPlainThread)((struct Process *)FindTask(NULL))->pr_ExitData;
+# undef SysBase
+
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (thread->ObjFWBase) : "r12"
+	);
+
+	functionWrapper();
+}
+#endif
+
 int
 OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr)
 {
@@ -91,6 +115,9 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		return ENOMEM;
 
 	@try {
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+		(*thread)->ObjFWBase = ObjFWBase;
+#endif
 		(*thread)->function = function;
 		(*thread)->object = object;
 		InitSemaphore(&(*thread)->semaphore);
@@ -106,7 +133,11 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			};			\
 			[tags addItem: &t];	\
 		}
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+		ADD_TAG(NP_Entry, (ULONG)r12FunctionWrapper)
+#else
 		ADD_TAG(NP_Entry, (ULONG)functionWrapper)
+#endif
 		ADD_TAG(NP_ExitData, (ULONG)*thread)
 #ifdef OF_AMIGAOS4
 		ADD_TAG(NP_Child, TRUE)
