@@ -133,3 +133,12 @@ In devel/objfw:
 * Run "makepkg"
 * Run "makepkg --printsrcinfo >.SRCINFO"
 * "git add PKGBUILD .SRCINFO", then commit and push
+
+### MorphOS
+(Note: MorphOS CVS is not public. These steps can hence only be performed by MorphOS team members with CVS access.)
+
+In "morphoswb/libs/objfw":
+* Delete the old tarball and "cvs rm" it
+* Copy the new tarball and "cvs add" it
+* Edit Makefile and change the version
+* If the next MorphOS version is an uneven version and the ObjFW release is a bug fix release, check out the branch (e.g. using "cvs up -r morphos_3_21_branch") and repeat the above steps
