@@ -28,11 +28,15 @@
 
 .section .text
 _OFForward:
+	.cfi_startproc
 	stwu	%r1, -112(%r1)
+	.cfi_def_cfa_offset 112
 	mflr	%r0
 	stw	%r0, 116(%r1)
+	.cfi_offset lr, 4
 #if defined(OF_PIC)
 	stw	%r30, 104(%r1)
+	.cfi_offset 30, -8
 
 	bl	0f
 0:
@@ -41,6 +45,7 @@ _OFForward:
 	addi	%r30, %r30, .Lbiased_got2-0b@l
 #elif defined(OF_BASEREL)
 	stw	%r13, 104(%r1)
+	.cfi_offset 13, -8
 
 	bl	__restore_r13
 #endif
@@ -153,8 +158,10 @@ _OFForward:
 
 #if defined(OF_PIC)
 	lwz	%r30, 104(%r1)
+	.cfi_restore 30
 #elif defined(OF_BASEREL)
 	lwz	%r13, 104(%r1)
+	.cfi_restore 13
 #endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
@@ -169,10 +176,12 @@ _OFForward:
 	lwz	%r0, .Lgot_OFMethodNotFound-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
+	.cfi_restore r30
 #elif defined(OF_BASEREL)
 	bl	OFMethodNotFound
 
 	lwz	%r13, 104(%r1)
+	.cfi_restore r13
 #endif
 
 	lwz	%r0, 116(%r1)
@@ -186,15 +195,20 @@ _OFForward:
 #else
 	b	OFMethodNotFound
 #endif
+	.cfi_endproc
 .type _OFForward, @function
 .size _OFForward, .-_OFForward
 
 _OFForward_stret:
+	.cfi_startproc
 	stwu	%r1, -112(%r1)
+	.cfi_def_cfa_offset 112
 	mflr	%r0
 	stw	%r0, 116(%r1)
+	.cfi_offset lr, 4
 #if defined(OF_PIC)
 	stw	%r30, 104(%r1)
+	.cfi_offset 30, -8
 
 	bl	0f
 0:
@@ -203,6 +217,7 @@ _OFForward_stret:
 	addi	%r30, %r30, .Lbiased_got2-0b@l
 #elif defined(OF_BASEREL)
 	stw	%r13, 104(%r1)
+	.cfi_offset 13, -8
 
 	bl	__restore_r13
 #endif
@@ -333,10 +348,12 @@ _OFForward_stret:
 	lwz	%r0, .Lgot_OFMethodNotFound_stret-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
+	.cfi_restore 30
 #elif defined(OF_BASEREL)
 	bl	OFMethodNotFound_stret
 
 	lwz	%r13, 104(%r1)
+	.cfi_restore 13
 #endif
 
 	lwz	%r0, 116(%r1)
@@ -350,6 +367,7 @@ _OFForward_stret:
 #else
 	b	OFMethodNotFound_stret
 #endif
+	.cfi_endproc
 .type _OFForward_stret, @function
 .size _OFForward_stret, .-_OFForward_stret
 
