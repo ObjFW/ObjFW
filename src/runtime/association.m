@@ -313,7 +313,7 @@ objc_removeAssociatedObjects(id object)
 				if (old == NULL)
 					_OBJC_ERROR("Not enough memory to "
 					    "allocate list of objects to "
-					    "releasae!");
+					    "release!");
 
 				old[numOld++] = association->object;
 				break;
