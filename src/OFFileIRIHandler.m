@@ -180,8 +180,7 @@ typedef struct stat Stat;
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 
-static void
-releasePasswdMutex(void)
+OF_DESTRUCTOR()
 {
 	objc_release(passwdMutex);
 }
@@ -189,8 +188,7 @@ releasePasswdMutex(void)
 #if defined(OF_HAVE_THREADS) && !defined(__GLIBC__) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
 
-static void
-releaseReaddirMutex(void)
+OF_DESTRUCTOR()
 {
 	objc_release(readdirMutex);
 }
@@ -966,11 +964,9 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 	passwdMutex = [[OFMutex alloc] init];
-	atexit(releasePasswdMutex);
 #endif
 #if defined(OF_HAVE_THREADS) && !defined(__GLIBC__) && !defined(OF_WINDOWS)
 	readdirMutex = [[OFMutex alloc] init];
-	atexit(releaseReaddirMutex);
 #endif
 
 #ifdef OF_WINDOWS

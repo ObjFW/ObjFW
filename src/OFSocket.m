@@ -76,8 +76,7 @@
 #if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 static OFMutex *mutex;
 
-static void
-releaseMutex(void)
+OF_DESTRUCTOR()
 {
 	objc_release(mutex);
 }
@@ -144,7 +143,6 @@ init(void)
 
 # if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 	mutex = [[OFMutex alloc] init];
-	atexit(releaseMutex);
 # endif
 
 	initSuccessful = true;

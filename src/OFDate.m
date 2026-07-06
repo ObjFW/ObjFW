@@ -125,8 +125,7 @@ now(void)
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
 
-static void
-releaseMutex(void)
+OF_DESTRUCTOR()
 {
 	objc_release(mutex);
 }
@@ -338,7 +337,6 @@ OF_SINGLETON_METHODS
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 	mutex = [[OFMutex alloc] init];
-	atexit(releaseMutex);
 #endif
 
 #ifdef OF_WINDOWS
