@@ -28,17 +28,26 @@
 
 .section .text
 _OFForward:
+	.cfi_startproc
 	stwu	%r1, -112(%r1)
+	.cfi_def_cfa_offset 112
 	mflr	%r0
 	stw	%r0, 116(%r1)
-#ifdef OF_PIC
+	.cfi_offset lr, 4
+#if defined(OF_PIC)
 	stw	%r30, 104(%r1)
+	.cfi_offset 30, -8
 
 	bl	0f
 0:
 	mflr	%r30
 	addis	%r30, %r30, .Lbiased_got2-0b@ha
 	addi	%r30, %r30, .Lbiased_got2-0b@l
+#elif defined(OF_BASEREL)
+	stw	%r13, 104(%r1)
+	.cfi_offset 13, -8
+
+	bl	__restore_r13
 #endif
 
 	/* Save all arguments */
@@ -69,8 +78,13 @@ _OFForward:
 #else
 	bl	object_getClass
 
+# ifdef OF_BASEREL
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
+# else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
+# endif
 	bl	class_respondsToSelector
 #endif
 
@@ -82,15 +96,23 @@ _OFForward:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
 #else
+# ifdef OF_BASEREL
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
+# else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
+# endif
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
 
 	lwz	%r3, 8(%r1)
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+#elif defined(OF_BASEREL)
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
 #else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
@@ -134,8 +156,12 @@ _OFForward:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r30, 104(%r1)
+	.cfi_restore 30
+#elif defined(OF_BASEREL)
+	lwz	%r13, 104(%r1)
+	.cfi_restore 13
 #endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
@@ -146,36 +172,54 @@ _OFForward:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r0, .Lgot_OFMethodNotFound-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
+	.cfi_restore r30
+#elif defined(OF_BASEREL)
+	bl	OFMethodNotFound
+
+	lwz	%r13, 104(%r1)
+	.cfi_restore r13
 #endif
 
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	bctr
+#elif defined(OF_BASEREL)
+	blr
 #else
 	b	OFMethodNotFound
 #endif
+	.cfi_endproc
 .type _OFForward, @function
 .size _OFForward, .-_OFForward
 
 _OFForward_stret:
+	.cfi_startproc
 	stwu	%r1, -112(%r1)
+	.cfi_def_cfa_offset 112
 	mflr	%r0
 	stw	%r0, 116(%r1)
-#ifdef OF_PIC
+	.cfi_offset lr, 4
+#if defined(OF_PIC)
 	stw	%r30, 104(%r1)
+	.cfi_offset 30, -8
 
 	bl	0f
 0:
 	mflr	%r30
 	addis	%r30, %r30, .Lbiased_got2-0b@ha
 	addi	%r30, %r30, .Lbiased_got2-0b@l
+#elif defined(OF_BASEREL)
+	stw	%r13, 104(%r1)
+	.cfi_offset 13, -8
+
+	bl	__restore_r13
 #endif
 
 	/* Save all arguments */
@@ -207,8 +251,13 @@ _OFForward_stret:
 #else
 	bl	object_getClass
 
+# ifdef OF_BASEREL
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
+# else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
+# endif
 	bl	class_respondsToSelector
 #endif
 
@@ -220,15 +269,23 @@ _OFForward_stret:
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
 	bl	objc_msg_lookup+0x8000@plt
 #else
+# ifdef OF_BASEREL
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
+# else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
+# endif
 	bl	objc_msg_lookup
 #endif
 	mtctr	%r3
 
 	lwz	%r3, 12(%r1)
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r4, .Lgot_sel_forwardingTargetForSelector_-.Lbiased_got2(%r30)
+#elif defined(OF_BASEREL)
+	addis	%r4, %r13, .Lsel_forwardingTargetForSelector_@drel@ha
+	la	%r4, .Lsel_forwardingTargetForSelector_@drel@l(%r4)
 #else
 	lis	%r4, .Lsel_forwardingTargetForSelector_@ha
 	la	%r4, .Lsel_forwardingTargetForSelector_@l(%r4)
@@ -272,8 +329,10 @@ _OFForward_stret:
 	lfd	%f7, 88(%r1)
 	lfd	%f8, 96(%r1)
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r30, 104(%r1)
+#elif defined(OF_BASEREL)
+	lwz	%r13, 104(%r1)
 #endif
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
@@ -285,21 +344,30 @@ _OFForward_stret:
 	lwz	%r4, 12(%r1)
 	lwz	%r5, 16(%r1)
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	lwz	%r0, .Lgot_OFMethodNotFound_stret-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
+	.cfi_restore 30
+#elif defined(OF_BASEREL)
+	bl	OFMethodNotFound_stret
+
+	lwz	%r13, 104(%r1)
+	.cfi_restore 13
 #endif
 
 	lwz	%r0, 116(%r1)
 	mtlr	%r0
 	addi	%r1, %r1, 112
 
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	bctr
+#elif defined(OF_BASEREL)
+	blr
 #else
 	b	OFMethodNotFound_stret
 #endif
+	.cfi_endproc
 .type _OFForward_stret, @function
 .size _OFForward_stret, .-_OFForward_stret
 
@@ -307,7 +375,7 @@ _OFForward_stret:
 	stwu	%r1, -16(%r1)
 	mflr	%r0
 	stw	%r0, 20(%r1)
-#ifdef OF_PIC
+#if defined(OF_PIC)
 	stw	%r30, 8(%r1)
 
 	bl	0f
@@ -320,6 +388,10 @@ _OFForward_stret:
 	bl	__objc_exec_class+0x8000@plt
 
 	lwz	%r30, 8(%r1)
+#elif defined(OF_BASEREL)
+	addis	%r3, %r13, .Lmodule@drel@ha
+	la	%r3, .Lmodule@drel@l(%r3)
+	bl	__objc_exec_class
 #else
 	lis	%r3, .Lmodule@ha
 	la	%r3, .Lmodule@l(%r3)

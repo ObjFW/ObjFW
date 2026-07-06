@@ -169,6 +169,7 @@ typedef OFMutableDictionary OF_GENERIC(OFFileAttributeKey, id)
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The size of the file as an @ref OFNumber.
  *
@@ -338,6 +339,58 @@ extern const OFFileAttributeType OFFileTypeSocket;
  * unknown.
  */
 extern const OFFileAttributeType OFFileTypeUnknown;
+#else
+extern const OFFileAttributeKey *_Nonnull OFFileSizeRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileTypeRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFilePOSIXPermissionsRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileGroupOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileGroupOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileLastAccessDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileModificationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileStatusChangeDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileCreationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull
+    OFFileSymbolicLinkDestinationRef(void);
+extern const OFFileAttributeKey *_Nonnull
+    OFFileExtendedAttributesNamesRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileAmigaProtectionRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileAmigaCommentRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileMSDOSAttributesRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeRegularRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeDirectoryRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeSymbolicLinkRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeFIFORef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeCharacterSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeBlockSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeSocketRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeUnknownRef(void);
+# define OFFileSize (*OFFileSizeRef())
+# define OFFileType (*OFFileTypeRef())
+# define OFFilePOSIXPermissions (*OFFilePOSIXPermissionsRef())
+# define OFFileOwnerAccountID (*OFFileOwnerAccountIDRef())
+# define OFFileGroupOwnerAccountID (*OFFileGroupOwnerAccountIDRef())
+# define OFFileOwnerAccountName (*OFFileOwnerAccountNameRef())
+# define OFFileGroupOwnerAccountName (*OFFileGroupOwnerAccountNameRef())
+# define OFFileLastAccessDate (*OFFileLastAccessDateRef())
+# define OFFileModificationDate (*OFFileModificationDateRef())
+# define OFFileStatusChangeDate (*OFFileStatusChangeDateRef())
+# define OFFileCreationDate (*OFFileCreationDateRef())
+# define OFFileSymbolicLinkDestination (*OFFileSymbolicLinkDestinationRef())
+# define OFFileExtendedAttributesNames (*OFFileExtendedAttributesNamesRef())
+# define OFFileAmigaProtection (*OFFileAmigaProtectionRef())
+# define OFFileAmigaComment (*OFFileAmigaCommentRef())
+# define OFFileMSDOSAttributes (*OFFileMSDOSAttributesRef())
+# define OFFileTypeRegular (*OFFileTypeRegularRef())
+# define OFFileTypeDirectory (*OFFileTypeDirectoryRef())
+# define OFFileTypeSymbolicLink (*OFFileTypeSymbolicLinkRef())
+# define OFFileTypeFIFO (*OFFileTypeFIFORef())
+# define OFFileTypeCharacterSpecial (*OFFileTypeCharacterSpecialRef())
+# define OFFileTypeBlockSpecial (*OFFileTypeBlockSpecialRef())
+# define OFFileTypeSocket (*OFFileTypeSocketRef())
+# define OFFileTypeUnknown (*OFFileTypeUnknownRef())
+#endif
 #ifdef __cplusplus
 }
 #endif

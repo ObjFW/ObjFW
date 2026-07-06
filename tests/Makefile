@@ -190,6 +190,12 @@ run:
 	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
 		cp ../src/runtime/${OBJFWRT_AMIGA_LIB} ${OBJFWRT_AMIGA_LIB}; \
 	fi
+	if test -f ../src/${OBJFW_AMIGA_LIB}; then \
+		cp ../src/${OBJFW_AMIGA_LIB} ${OBJFW_AMIGA_LIB}; \
+	fi
+	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
+		cp ../src/runtime/${OBJFWRT_AMIGA_LIB} ${OBJFWRT_AMIGA_LIB}; \
+	fi
 	if test -f ../src/hid/libobjfwhid.so; then \
 		${LN_S} ../src/hid/libobjfwhid.so \
 		    libobjfwhid.so.${OBJFWHID_LIB_MAJOR}; \
@@ -306,7 +312,8 @@ OBJCFLAGS_RuntimeARCTests.m = -fobjc-arc -fobjc-arc-exceptions
 # cannot find ObjFW symbols. So the only solution is to list everything twice,
 # but hide it behind a variable because listing it twice causes a warning on
 # macOS.
-LIBS := -L../src/test		\
+LIBS := -L../src/linklib	\
+	-L../src/test		\
 	-lobjfwtest		\
 	${TESTS_LIBS}		\
 	${LIBS}			\

@@ -41,6 +41,9 @@ typedef HANDLE OFPlainThread;
 # include <exec/semaphores.h>
 typedef struct {
 	struct Task *task;
+# if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+	struct Library *ObjFWBase;
+# endif
 	void (*function)(id);
 	id object;
 	struct SignalSemaphore semaphore;
@@ -50,10 +53,24 @@ typedef struct {
 } *OFPlainThread;
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wnullability-completeness"
+#endif
+
 typedef struct {
 	float priority;
 	size_t stackSize;
 } OFPlainThreadAttributes;
+
+/**
+ * @brief A function for an OFPlainThread.
+ *
+ * @param object An optional object that is passed to the thread
+ */
+typedef void (*OFPlainThreadFunction)(id _Nullable object);
 
 #if defined(OF_HAVE_PTHREADS) || defined(DOXYGEN)
 /**
@@ -119,15 +136,16 @@ extern int OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr);
  * @param attr Thread attributes
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
-extern int OFPlainThreadNew(OFPlainThread *thread, const char *name,
-    void (*function)(id), id object, const OFPlainThreadAttributes *attr);
+extern int OFPlainThreadNew(OFPlainThread *_Nonnull thread,
+    const char *_Nullable name, OFPlainThreadFunction function,
+    id _Nullable object, const OFPlainThreadAttributes *_Nullable attr);
 
 /**
  * @brief Sets the name of the current thread.
  *
  * @param name The name for the current thread
  */
-extern void OFSetThreadName(const char *name);
+extern void OFSetThreadName(const char *_Nullable name);
 
 /**
  * @brief Joins the specified thread.
@@ -147,3 +165,9 @@ extern int OFPlainThreadDetach(OFPlainThread thread);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
+
+OF_ASSUME_NONNULL_END

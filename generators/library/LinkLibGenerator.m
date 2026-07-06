@@ -105,6 +105,12 @@
 		    [function elementsForName: @"argument"];
 		size_t argumentIndex;
 
+		if ([[function attributeForName: @"skip-linklib"].stringValue
+		    isEqual: @"true"]) {
+			funcIndex++;
+			continue;
+		}
+
 		if (returnType == nil)
 			returnType = @"void";
 

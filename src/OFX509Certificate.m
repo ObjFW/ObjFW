@@ -23,7 +23,19 @@
 
 #import "OFNotImplementedException.h"
 
+#ifdef OF_AMIGAOS
+# undef OFX509CertificateImplementation
+#endif
+
 Class OFX509CertificateImplementation = Nil;
+
+#ifdef OF_AMIGAOS
+Class *
+OFX509CertificateImplementationRef(void)
+{
+	return &OFX509CertificateImplementation;
+}
+#endif
 
 @implementation OFX509Certificate
 + (instancetype)alloc

@@ -79,6 +79,7 @@ typedef OFConstantString *OFImageFormat;
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The BMP image format.
  */
@@ -103,6 +104,18 @@ extern const OFImageFormat OFImageFormatPNG;
  * @brief The Quite Okay Image Format.
  */
 extern const OFImageFormat OFImageFormatQOI;
+#else
+extern const OFImageFormat *_Nonnull OFImageFormatBMPRef(void);
+extern const OFImageFormat *_Nonnull OFImageFormatGIFRef(void);
+extern const OFImageFormat *_Nonnull OFImageFormatJPEGRef(void);
+extern const OFImageFormat *_Nonnull OFImageFormatPNGRef(void);
+extern const OFImageFormat *_Nonnull OFImageFormatQOIRef(void);
+# define OFImageFormatBMP (*OFImageFormatBMPRef())
+# define OFImageFormatGIF (*OFImageFormatGIFRef())
+# define OFImageFormatJPEG (*OFImageFormatJPEGRef())
+# define OFImageFormatPNG (*OFImageFormatPNGRef())
+# define OFImageFormatQOI (*OFImageFormatQOIRef())
+#endif
 #ifdef __cplusplus
 }
 #endif

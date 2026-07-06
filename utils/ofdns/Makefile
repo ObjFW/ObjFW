@@ -19,7 +19,7 @@ CPPFLAGS += -I../../src							\
 	    -DLOCALIZATION_DIR=\"${datadir}/ofdns/localization\"	\
 	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 OBJCFLAGS += ${PIE_CFLAGS}
-LIBS := -L../../src -lobjfw						\
+LIBS := -L../../src -L../../src/linklib ${OBJFW_LIB}			\
 	-L../../src/runtime -L../../src/runtime/linklib	${RUNTIME_LIBS}	\
 	${LIBS}
 LD = ${OBJC}

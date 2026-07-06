@@ -17,27 +17,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFException.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
-/**
- * @class OFOutOfRangeException OFOutOfRangeException.h ObjFW/ObjFW.h
- *
- * @brief An exception indicating the given value is out of range.
- */
-@interface OFOutOfRangeException: OFException
-{
-	OF_RESERVE_IVARS(OFOutOfRangeException, 4)
-}
-@end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
-#ifdef __cplusplus
-}
-#endif
-
-OF_ASSUME_NONNULL_END
+.section .eh_frame, "aw"
+	.long 0
+.section .ctors, "aw"
+	.long 0

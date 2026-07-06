@@ -41,6 +41,7 @@ typedef OFDictionary OF_GENERIC(OFNetworkInterfaceKey, id) *OFNetworkInterface;
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The index of a network interface.
  *
@@ -62,31 +63,65 @@ extern const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress;
  */
 extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
 
-#ifdef OF_HAVE_IPV6
+# ifdef OF_HAVE_IPV6
 /**
  * @brief The IPv6 addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
 extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
-#endif
+# endif
 
-#ifdef OF_HAVE_IPX
+# ifdef OF_HAVE_IPX
 /**
  * @brief The IPX addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
 extern const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
-#endif
+# endif
 
-#ifdef OF_HAVE_APPLETALK
+# ifdef OF_HAVE_APPLETALK
 /**
  * @brief The AppleTalk addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
 extern const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
+# endif
+#else
+extern const OFNetworkInterfaceKey *_Nonnull OFNetworkInterfaceIndexRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceHardwareAddressRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPv4AddressesRef(void);
+# ifdef OF_HAVE_IPV6
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPv6AddressesRef(void);
+# endif
+# ifdef OF_HAVE_IPX
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPXAddressesRef(void);
+# endif
+# ifdef OF_HAVE_APPLETALK
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceAppleTalkAddressesRef(void);
+# endif
+# define OFNetworkInterfaceIndex (*OFNetworkInterfaceIndexRef())
+# define OFNetworkInterfaceHardwareAddress \
+	(*OFNetworkInterfaceHardwareAddressRef())
+# define OFNetworkInterfaceIPv4Addresses (*OFNetworkInterfaceIPv4AddressesRef())
+# ifdef OF_HAVE_IPV6
+#  define OFNetworkInterfaceIPv6Addresses \
+	(*OFNetworkInterfaceIPv6AddressesRef())
+# endif
+# ifdef OF_HAVE_IPX
+#  define OFNetworkInterfaceIPXAddresses (*OFNetworkInterfaceIPXAddressesRef())
+# endif
+# ifdef OF_HAVE_APPLETALK
+#  define OFNetworkInterfaceAppleTalkAddresses \
+	(*OFNetworkInterfaceAppleTalkAddressesRef())
+# endif
 #endif
 #ifdef __cplusplus
 }

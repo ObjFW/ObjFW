@@ -19,10 +19,18 @@
 
 #include "config.h"
 
-#import "ObjFWRT.h"
-#import "private.h"
+#import "OFDNSResourceRecord.h"
+#import "OFHTTPRequest.h"
+#import "OFSocket.h"
+#import "OFStdIOStream.h"
+#import "OFString.h"
 
+#import "macros.h"
+
+#import "amiga-library.h"
 #import "amiga-library-glue.h"
+
+#import "runtime/private.h"
 
 #define Class IntuitionClass
 #include <exec/execbase.h>
@@ -41,22 +49,23 @@ __start(void)
 	return -1;
 }
 
-const char *VER = "$VER: " OBJFWRT_AMIGA_LIB " "
-    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
+const char *VER = "$VER: " OBJFW_AMIGA_LIB " "
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
+    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
     " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer";
 
-struct ObjFWRTBase {
+struct ObjFWBase {
 	struct Library library;
 	void *segList;
-	struct ObjFWRTBase *parent;
+	struct ObjFWBase *parent;
 	char *dataSeg;
 	bool initialized;
-};
+} *ObjFWBase;
 
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
-static struct objc_linklib_context linklibCtx;
+struct OFLinklibContext linklibCtx;
+struct Library *ObjFWRTBase;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
@@ -115,7 +124,7 @@ getDataDataRelocs(void)
 }
 
 static struct Library *
-libInit(struct ObjFWRTBase *base, void *segList, struct ExecBase *sysBase)
+libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
 {
 	__asm__ __volatile__ (
 	    "lis	%%r9, SysBase@ha\n\t"
@@ -133,7 +142,7 @@ libInit(struct ObjFWRTBase *base, void *segList, struct ExecBase *sysBase)
 struct Library *__saveds
 libOpen(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6, *child;
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6, *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
@@ -152,8 +161,7 @@ libOpen(void)
 	CopyMem((char *)base - base->library.lib_NegSize, child,
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
-	child = (struct ObjFWRTBase *)
-	    ((char *)child + base->library.lib_NegSize);
+	child = (struct ObjFWBase *)((char *)child + base->library.lib_NegSize);
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
 
@@ -183,7 +191,7 @@ libOpen(void)
 }
 
 static void *
-expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
+expunge(struct ObjFWBase *base, struct ExecBase *sysBase)
 {
 #define SysBase sysBase
 	void *segList;
@@ -211,7 +219,7 @@ expunge(struct ObjFWRTBase *base, struct ExecBase *sysBase)
 static void *__saveds
 libExpunge(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
 
 	return expunge(base, SysBase);
 }
@@ -225,10 +233,10 @@ libClose(void)
 	 */
 	struct ExecBase *sysBase = SysBase;
 #define SysBase sysBase
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
+	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
 
 	if (base->parent != NULL) {
-		struct ObjFWRTBase *parent = base->parent;
+		struct ObjFWBase *parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
@@ -252,10 +260,10 @@ libNull(void)
 }
 
 bool
-objc_init(unsigned int version, struct objc_linklib_context *ctx)
+OFInit(unsigned int version, struct OFLinklibContext *ctx)
 {
-	register struct ObjFWRTBase *r12 __asm__("r12");
-	struct ObjFWRTBase *base = r12;
+	register struct ObjFWBase *r12 __asm__("r12");
+	struct ObjFWBase *base = r12;
 	void *frame;
 	uintptr_t *iter, *iter0;
 
@@ -277,6 +285,9 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 
 	linklibCtx.__register_frame(frame);
 
+	ObjFWBase = base;
+	ObjFWRTBase = ctx->ObjFWRTBase;
+
 	for (iter = iter0; *iter != 0; iter++);
 
 	while (iter > iter0) {
@@ -287,6 +298,97 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 	base->initialized = true;
 
 	return true;
+}
+
+void
+OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
+    IMP function)
+{
+	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
+
+	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
+		/* lis %r12, %r12, %hi(ObjFWBase) */
+		buffer[0] = 0x3D800000 |
+		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWBase) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		/* b function */
+		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
+		/* nop */
+		buffer[3] = 0x60000000;
+		/* nop */
+		buffer[4] = 0x60000000;
+		/* nop */
+		buffer[5] = 0x60000000;
+	} else {
+		/* lis %r12, %r12, %hi(function) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)function >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(function) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
+		/* mtctr %r12 */
+		buffer[2] = 0x7D8903A6;
+		/* lis %r12, %r12, %hi(ObjFWBase) */
+		buffer[3] = 0x3D800000 |
+		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWBase) */
+		buffer[4] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		/* bctr */
+		buffer[5] = 0x4E800420;
+	}
+}
+
+static void
+createTrampolinesForMethodList(struct objc_method_list *methodList)
+{
+	for (; methodList != NULL; methodList = methodList->next) {
+		uint32_t *trampolines = malloc(methodList->count *
+		    OFLibraryTrampolineSize * sizeof(uint32_t));
+
+		if (trampolines == NULL)
+			abort();
+
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			OFCreateLibraryTrampoline(
+			    &trampolines[i * OFLibraryTrampolineSize],
+			    methodList->methods[i].implementation);
+
+			methodList->methods[i].implementation =
+			    (IMP)(uintptr_t)
+			    &trampolines[i * OFLibraryTrampolineSize];
+		}
+
+		CacheFlushDataInstArea(trampolines, methodList->count *
+		    OFLibraryTrampolineSize * sizeof(uint32_t));
+	}
+}
+
+void
+__objc_exec_class(struct objc_module *module)
+{
+	struct objc_symtab *symtab = module->symtab;
+
+	for (size_t i = 0; i < symtab->classDefsCount; i++) {
+		struct objc_class *class = symtab->defs[i];
+
+		createTrampolinesForMethodList(class->methodList);
+		createTrampolinesForMethodList(class->isa->methodList);
+	}
+
+	for (size_t i = symtab->classDefsCount;
+	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
+		struct objc_category *category = symtab->defs[i];
+
+		createTrampolinesForMethodList(category->instanceMethods);
+		createTrampolinesForMethodList(category->classMethods);
+	}
+
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(struct objc_module *))*(void **)(
+	    ((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
 void *
@@ -311,26 +413,6 @@ void
 free(void *ptr)
 {
 	linklibCtx.free(ptr);
-}
-
-int
-vfprintf(FILE *fp, const char *fmt, va_list args)
-{
-	return linklibCtx.vfprintf(fp, fmt, args);
-}
-
-int
-fflush(FILE *fp)
-{
-	return linklibCtx.fflush(fp);
-}
-
-void
-abort(void)
-{
-	linklibCtx.abort();
-
-	OF_UNREACHABLE
 }
 
 int
@@ -399,6 +481,125 @@ _Unwind_Resume(void *ex)
 	linklibCtx._Unwind_Resume(ex);
 }
 
+int
+_Unwind_Backtrace(int (*callback)(void *, void *), void *data)
+{
+	return linklibCtx._Unwind_Backtrace(callback, data);
+}
+
+int
+atexit(void (*function)(void))
+{
+	return linklibCtx.atexit(function);
+}
+
+void
+exit(int status)
+{
+	linklibCtx.exit(status);
+
+	OF_UNREACHABLE
+}
+
+void
+abort(void)
+{
+	linklibCtx.abort();
+
+	OF_UNREACHABLE
+}
+
+int *
+OFErrNoRef(void)
+{
+	return linklibCtx.errNoRef();
+}
+
+int
+vasprintf(char **restrict strp, const char *restrict fmt, va_list args)
+{
+	return linklibCtx.vasprintf(strp, fmt, args);
+}
+
+int
+asprintf(char **restrict strp, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vasprintf(strp, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+float
+strtof(const char *str, char **endptr)
+{
+	return linklibCtx.strtof(str, endptr);
+}
+
+double
+strtod(const char *str, char **endptr)
+{
+	return linklibCtx.strtod(str, endptr);
+}
+
+struct tm *
+gmtime_r(const time_t *time, struct tm *tm)
+{
+	return linklibCtx.gmtime_r(time, tm);
+}
+
+struct tm *
+localtime_r(const time_t *time, struct tm *tm)
+{
+	return linklibCtx.localtime_r(time, tm);
+}
+
+time_t
+mktime(struct tm *tm)
+{
+	return linklibCtx.mktime(tm);
+}
+
+size_t
+strftime(char *str, size_t len, const char *fmt, const struct tm *tm)
+{
+	return linklibCtx.strftime(str, len, fmt, tm);
+}
+
+sighandler_t
+signal(int sig, sighandler_t func)
+{
+	return linklibCtx.signal(sig, func);
+}
+
+char *
+setlocale(int category, const char *locale)
+{
+	return linklibCtx.setlocale(category, locale);
+}
+
+struct lconv *
+localeconv(void)
+{
+	return linklibCtx.localeconv();
+}
+
+int
+setjmp(jmp_buf env)
+{
+	return linklibCtx.setjmp(env);
+}
+
+void
+longjmp(jmp_buf env, int val)
+{
+	linklibCtx.longjmp(env, val);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {
@@ -420,10 +621,10 @@ static struct {
 	ULONG dataSize;
 	CONST_APTR *functionTable;
 	ULONG *dataTable;
-	struct Library *(*initFunc)(struct ObjFWRTBase *base, void *segList,
+	struct Library *(*initFunc)(struct ObjFWBase *base, void *segList,
 	    struct ExecBase *execBase);
 } initTable = {
-	sizeof(struct ObjFWRTBase),
+	sizeof(struct ObjFWBase),
 	functionTable,
 	NULL,
 	libInit
@@ -434,16 +635,16 @@ struct Resident resident = {
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
 	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
-	.rt_Version = OBJFWRT_LIB_MINOR,
+	.rt_Version = OBJFW_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
-	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
-	.rt_IdString = (char *)OBJFWRT_AMIGA_LIB " "
-	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
-	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
+	.rt_Name = (char *)OBJFW_AMIGA_LIB,
+	.rt_IdString = (char *)OBJFW_AMIGA_LIB " "
+	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
+	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
 	    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer",
 	.rt_Init = &initTable,
-	.rt_Revision = OBJFWRT_LIB_PATCH,
+	.rt_Revision = OBJFW_LIB_PATCH,
 	.rt_Tags = NULL,
 };
 

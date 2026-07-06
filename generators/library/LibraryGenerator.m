@@ -82,6 +82,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+	[self generateInDirectory: @"../../src"];
 	[self generateInDirectory: @"../../src/runtime"];
 
 	[OFApplication terminate];

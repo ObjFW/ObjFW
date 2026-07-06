@@ -48,10 +48,15 @@ typedef OFConstantString *OFRunLoopMode;
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The default mode for an OFRunLoop.
  */
 extern const OFRunLoopMode OFDefaultRunLoopMode;
+#else
+extern const OFRunLoopMode *_Nonnull OFDefaultRunLoopModeRef(void);
+# define OFDefaultRunLoopMode (*OFDefaultRunLoopModeRef())
+#endif
 #ifdef __cplusplus
 }
 #endif

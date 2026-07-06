@@ -74,7 +74,6 @@ powerpc-*-amigaos*)
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
 *-morphos*)
-	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
@@ -87,11 +86,12 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
-		t="-mresident32 -ffreestanding -noixemul"
+		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-		t="$t -laboxstubs -labox -lmath -ldebug -lc"
+		t="$t -laboxstubs -labox -lgcc -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 	])
 
@@ -500,7 +500,6 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
 	AC_SUBST(OBJFWHID_SHARED_LIB, '${LIB_PREFIX}objfwhid${LIB_SUFFIX}')
 
@@ -515,10 +514,22 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	], [
 		AC_SUBST(TESTPLUGIN_PLUGIN, 'TestPlugin${PLUGIN_SUFFIX}')
 	])
+
+	AC_SUBST(OBJFW_LIB, "-lobjfw")
 ], [
-	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
-	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
-	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
+		tmp="../src/linklib/libobjfw.library.a"
+		AC_SUBST(LIBOBJFW_DEP, "$tmp")
+		AC_SUBST(LIBOBJFW_DEP_LVL2, "../$tmp")
+	], [
+		AC_SUBST(OBJFW_LIB, "-lobjfw")
+		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
+		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+
+		AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library is built])
+	])
+
 	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
 	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 ])
@@ -529,7 +540,7 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="\${OBJFW_LIB} \${RUNTIME_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
 	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
@@ -539,16 +550,18 @@ AS_IF([test x"$build_framework" = x"yes"], [
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
-])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
+
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-
+])
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
+	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
 	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
@@ -680,6 +693,10 @@ case "$objc_runtime" in
 	AC_CONFIG_FILES(src/runtime/Info.plist)
 
 	AS_IF([test x"$enable_shared" != x"no"], [
+		AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
+	])
+
+	AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFWRT_SHARED_LIB,
 			'${LIB_PREFIX}objfwrt${LIB_SUFFIX}')
 	])
@@ -697,6 +714,7 @@ case "$objc_runtime" in
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
 		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
 	], [
@@ -1107,7 +1125,10 @@ AC_SUBST(ENCODINGS_SRCS)
 AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
 ])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(ENCODINGS_AMIGALIB_A, "encodings.amigalib.a")
+])
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
 ])
 
