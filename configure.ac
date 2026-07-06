@@ -91,7 +91,7 @@ powerpc-*-amigaos*)
 		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
 		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-		t="$t -laboxstubs -labox -lmath -ldebug -lc"
+		t="$t -laboxstubs -labox -lgcc -ldebug -lc"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 	])
 
