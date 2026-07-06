@@ -70,7 +70,7 @@ _objc_error(const char *title, const char *format, ...)
 	va_start(args, format);
 	status = vsnprintf(message, messageLen, format, args);
 	if (status <= 0 || status >= messageLen)
-		message[0] = '\0';
+		memcpy(message, "Unknown ObjC runtime error", 27);
 	va_end(args);
 # undef BUF_LEN
 #endif

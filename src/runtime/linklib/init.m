@@ -103,6 +103,7 @@ ctor(void)
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
+		.vsnprintf = vsnprintf,
 	};
 
 	if (initialized)
@@ -113,7 +114,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!objc_init(1, &ctx))
+	if (!objc_init(2, &ctx))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;

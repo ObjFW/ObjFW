@@ -259,13 +259,23 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 	void *frame;
 	uintptr_t *iter, *iter0;
 
-	if (version > 1)
+	if (version > 2)
 		return false;
 
 	if (base->initialized)
 		return true;
 
-	CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
+	switch (version) {
+	case 1:
+		CopyMem(ctx, &linklibCtx, 80);
+		linklibCtx.vsnprintf = NULL;
+		break;
+	case 2:
+		CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
+		break;
+	default:
+		return false;
+	}
 
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
@@ -397,6 +407,15 @@ void
 _Unwind_Resume(void *ex)
 {
 	linklibCtx._Unwind_Resume(ex);
+}
+
+int
+vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
+{
+	if (linklibCtx.vsnprintf == NULL)
+		return -1;
+
+	return linklibCtx.vsnprintf(str, len, fmt, va);
 }
 
 #pragma GCC diagnostic push
