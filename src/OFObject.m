@@ -70,6 +70,9 @@
 # define __NOLIBBASE__
 # include <proto/intuition.h>
 # undef __NOLIBBASE__
+# ifdef OF_MORPHOS
+#  include <proto/random.h>
+# endif
 # undef Class
 #endif
 
@@ -182,8 +185,8 @@ OFFreeMemory(void *pointer)
 	free(pointer);
 }
 
-#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
-    defined(OF_WINDOWS)
+#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM) && \
+    !defined(OF_MORPHOS)) || defined(OF_WINDOWS)
 static OFOnceControl randomOnceControl = OFOnceControlInitValue;
 
 static void
@@ -213,7 +216,9 @@ initRandom(void)
 uint16_t
 OFRandom16(void)
 {
-#if defined(HAVE_ARC4RANDOM)
+#if defined(OF_MORPHOS)
+	return (uint16_t)Random();
+#elif defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint16_t buffer;
@@ -243,7 +248,9 @@ OFRandom16(void)
 uint32_t
 OFRandom32(void)
 {
-#if defined(HAVE_ARC4RANDOM)
+#if defined(OF_MORPHOS)
+	return (uint32_t)Random();
+#elif defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint32_t buffer;
@@ -269,7 +276,13 @@ OFRandom32(void)
 uint64_t
 OFRandom64(void)
 {
-#if defined(HAVE_ARC4RANDOM_BUF)
+#if defined(OF_MORPHOS)
+	uint64_t buffer;
+
+	RandomBytes(&buffer, sizeof(buffer));
+
+	return buffer;
+#elif defined(HAVE_ARC4RANDOM_BUF)
 	uint64_t buffer;
 
 	arc4random_buf(&buffer, sizeof(buffer));

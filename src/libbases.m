@@ -48,6 +48,9 @@ struct TimeRequest OFTimeRequest;
 #else
 struct timerequest OFTimeRequest;
 #endif
+#ifdef OF_MORPHOS
+struct Library *RandomBase;
+#endif
 
 OF_CONSTRUCTOR()
 {
@@ -80,10 +83,20 @@ OF_CONSTRUCTOR()
 	    &OFTimeRequest.tr_node, 0) != 0)
 		@throw [OFInitializationFailedException exception];
 #endif
+
+#ifdef OF_MORPHOS
+	if ((RandomBase = OpenLibrary("random.library", 2)) == NULL)
+		@throw [OFInitializationFailedException exception];
+#endif
 }
 
 OF_DESTRUCTOR()
 {
+#ifdef OF_MORPHOS
+	if (RandomBase != NULL)
+		CloseLibrary(RandomBase);
+#endif
+
 #ifdef OF_AMIGAOS4
 	if (OFTimeRequest.Request.io_Device != NULL)
 		CloseDevice(&OFTimeRequest.Request);
