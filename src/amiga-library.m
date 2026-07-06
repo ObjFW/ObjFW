@@ -516,6 +516,25 @@ OFErrNoRef(void)
 }
 
 int
+vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
+{
+	return linklibCtx.vsnprintf(str, len, fmt, va);
+}
+
+int
+snprintf(char *restrict str, size_t len, const char *restrict fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, len, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
 vasprintf(char **restrict strp, const char *restrict fmt, va_list args)
 {
 	return linklibCtx.vasprintf(strp, fmt, args);

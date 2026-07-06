@@ -338,6 +338,7 @@ ctor(void)
 		.exit = exit,
 		.abort = abort,
 		.errNoRef = errNoRef,
+		.vsnprintf = vsnprintf,
 		.vasprintf = vasprintf,
 		.strtof = strtof,
 		.strtod = strtod,

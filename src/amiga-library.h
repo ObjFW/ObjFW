@@ -53,6 +53,8 @@ struct OFLinklibContext {
 	void (*_Nonnull exit)(int);
 	void (*_Nonnull abort)(void);
 	int *_Nonnull (*_Nonnull errNoRef)(void);
+	int (*_Nonnull vsnprintf)(char *restrict, size_t, const char *restrict,
+	    va_list);
 	int (*_Nonnull vasprintf)(char *_Nonnull *_Nullable restrict,
 	    const char *_Nonnull restrict, va_list);
 	float (*_Nonnull strtof)(const char *_Nonnull,
