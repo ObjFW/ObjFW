@@ -56,6 +56,10 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+# import "amiga-library.h"
+#endif
+
 #if defined(OF_MACOS)
 # include <crt_externs.h>
 #elif defined(OF_WINDOWS)
@@ -100,6 +104,9 @@ const OFNotificationName OFApplicationWillTerminateNotification =
 static OFApplication *app = nil;
 
 static void
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+#endif
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
@@ -252,7 +259,16 @@ SIGNAL_HANDLER(SIGUSR2)
 	@try {
 		_environment = [[OFMutableDictionary alloc] init];
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+		static uint32_t trampoline[OFLibraryTrampolineSize];
+
+		OFCreateLibraryTrampoline(trampoline, (IMP)atexitHandler);
+		CacheFlushDataInstArea(trampoline, sizeof(trampoline));
+
+		atexit((void (*)(void))(uintptr_t)trampoline);
+#else
 		atexit(atexitHandler);
+#endif
 
 #if defined(OF_WINDOWS)
 		if ([OFSystemInfo isWindowsNT]) {
