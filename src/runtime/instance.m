@@ -296,8 +296,9 @@ _objc_rootRetain(id object)
  * objc_loadWeakRetained(), which holds a lock for weak references. This same
  * lock is also held during _objc_zeroWeakReferences(), so our object cannot
  * just disappear here, as deallocation cannot finish before the weak
- * references lock is released. This means can be zero, because deallocation
- * has started, but the object itself cannot disappear until we return.
+ * references lock is released. This means the retain count can be zero,
+ * because deallocation has started, but the object itself cannot disappear
+ * until we return.
  */
 bool
 _objc_rootTryRetain(id object)
