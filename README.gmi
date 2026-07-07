@@ -86,7 +86,7 @@ Please don't hesitate to join any or all of those!
 
 => documentation/donating.gmi  List of all possible ways to donate
 
-# Thanks
+## Thanks
 
 => https://github.com/neuschaefer  Jonathan Neuschäfer for reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in 2017!
 => https://github.com/mahiuchun    Hill Ma for donating an M1 Mac Mini to the project in 2022!
