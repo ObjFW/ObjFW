@@ -223,8 +223,8 @@ static const char *range80ToFF =
 - (void)testStringWithUTF8StringLength
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithUTF8String: "\xEF\xBB\xBF" "foobar"
-			  length: 6], @"foo");
+	    stringWithUTF8String: "foobar"
+			  length: 3], @"foo");
 }
 
 - (void)testStringWithUTF16String

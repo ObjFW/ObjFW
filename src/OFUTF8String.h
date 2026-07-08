@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t        length;
 		unsigned long hash;
 		unsigned      isUTF8: 1, containsNull: 1, hasHash: 1;
-		unsigned      freeWhenDone: 1, freeOffset: 2;
+		unsigned      freeWhenDone: 1;
 	} *restrict _s;
 	struct _OFUTF8StringIvars _storage;
 }

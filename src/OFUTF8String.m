@@ -225,12 +225,6 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	@try {
 		bool containsNull;
 
-		if (UTF8StringLength >= 3 &&
-		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
-			UTF8String += 3;
-			UTF8StringLength -= 3;
-		}
-
 		_s = &_storage;
 
 		_s->cString = storage;
@@ -266,13 +260,6 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	@try {
 		const OFChar16 *table;
 		size_t tableOffset, j;
-
-		if (encoding == OFStringEncodingUTF8 &&
-		    cStringLength >= 3 &&
-		    memcmp(cString, "\xEF\xBB\xBF", 3) == 0) {
-			cString += 3;
-			cStringLength -= 3;
-		}
 
 		_s = &_storage;
 
@@ -458,13 +445,6 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 		bool containsNull;
 
 		_s = &_storage;
-
-		if (UTF8StringLength >= 3 &&
-		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
-			UTF8String += 3;
-			UTF8StringLength -= 3;
-			_s->freeOffset = 3;
-		}
 
 		switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength,
 		    &_s->length, &containsNull)) {
@@ -783,7 +763,7 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 - (void)dealloc
 {
 	if (_s != NULL && _s->freeWhenDone)
-		OFFreeMemory(_s->cString - _s->freeOffset);
+		OFFreeMemory(_s->cString);
 
 	[super dealloc];
 }

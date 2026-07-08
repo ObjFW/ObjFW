@@ -270,12 +270,6 @@
 	size_t length;
 	bool containsNull;
 
-	if (UTF8StringLength >= 3 &&
-	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
-		UTF8String += 3;
-		UTF8StringLength -= 3;
-	}
-
 	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
 	    &containsNull)) {
 	case 1:
@@ -303,12 +297,6 @@
 {
 	size_t length;
 	bool containsNull;
-
-	if (UTF8StringLength >= 3 &&
-	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
-		UTF8String += 3;
-		UTF8StringLength -= 3;
-	}
 
 	switch (_OFUTF8StringCheck(UTF8String, UTF8StringLength, &length,
 	    &containsNull)) {

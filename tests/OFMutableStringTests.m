@@ -70,7 +70,7 @@ static OFString *const whitespace[] = {
 
 - (void)testAppendUTF8StringLength
 {
-	[_mutableString appendUTF8String: "\xEF\xBB\xBF" "öÖ" length: 7];
+	[_mutableString appendUTF8String: "öÖ" length: 4];
 
 	OTAssertEqualObjects(_mutableString, @"täṠ€🤔öÖ");
 }
