@@ -1211,7 +1211,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	[_delegate     client: client
 	    didPerformRequest: request
 		     response: response
-		    exception: nil];
+		    exception: exception];
 
 	_done = true;
 	_response = objc_retain(response);
