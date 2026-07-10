@@ -670,6 +670,12 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 	OFString *path1, *path2;
 	bool ret;
 
+	if (address1 == address2)
+		return true;
+
+	if (address1 == NULL || address2 == NULL)
+		return false;
+
 	if (address1->family != address2->family)
 		return false;
 
