@@ -392,7 +392,7 @@ static void *cancelTimerKey = &cancelTimerKey;
 		   afterDelay: 0];
 }
 
-- (bool)stream: (OFStream <OFReadyForWritingObserving> *)stream
+- (bool)stream: (OFStream *)stream
    didReadLine: (OFString *)line
      exception: (id)exception
 {
@@ -427,10 +427,10 @@ static void *cancelTimerKey = &cancelTimerKey;
 	request.remoteAddress =
 	    ((OFStreamSocket *)underlyingStream).remoteAddress;
 
-	response = objc_autorelease(
-	    [[OFGeminiServerResponse alloc] of_initWithStream: stream
-						       server: self
-						      request: request]);
+	response = objc_autorelease([[OFGeminiServerResponse alloc]
+	    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
+		       server: self
+		      request: request]);
 
 	[_delegate performSelector: @selector(server:didReceiveRequest:
 					response:)
