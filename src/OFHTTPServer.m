@@ -73,9 +73,11 @@ OF_DIRECT_MEMBERS
 	bool _chunked, _headersSent;
 }
 
-- (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
-			server: (OFHTTPServer *)server
-		       request: (OFHTTPRequest *)request;
+- (instancetype)
+    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
+	       server: (OFHTTPServer *)server
+	      request: (OFHTTPRequest *)request;
+- (void)of_sendHeaders;
 @end
 
 OF_DIRECT_MEMBERS
@@ -184,9 +186,10 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 }
 
 @implementation OFHTTPServerResponse
-- (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
-			server: (OFHTTPServer *)server
-		       request: (OFHTTPRequest *)request
+- (instancetype)
+    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
+	       server: (OFHTTPServer *)server
+	      request: (OFHTTPRequest *)request
 {
 	self = [super init];
 
@@ -393,8 +396,16 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
    didReadLine: (OFString *)line
      exception: (id)exception
 {
-	if (line == nil || exception != nil)
+	if (line == nil || exception != nil) {
+		if ([_server.delegate respondsToSelector:
+		    @selector(server:didEncounterException:request:response:)])
+			[_server.delegate  server: _server
+			    didEncounterException: exception
+					  request: nil
+					 response: nil];
+
 		return false;
+	}
 
 	@try {
 		switch (_state) {
@@ -406,13 +417,12 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 			return false;
 		}
 	} @catch (id e) {
-		if ([_server.delegate respondsToSelector: @selector(
-		    server:didEncounterException:request:response:)]) {
+		if ([_server.delegate respondsToSelector:
+		    @selector(server:didEncounterException:request:response:)])
 			[_server.delegate  server: _server
 			    didEncounterException: e
 					  request: nil
 					 response: nil];
-		}
 
 		return false;
 	}
@@ -665,9 +675,9 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 		request.remoteAddress = ((OFTCPSocket *)_stream).remoteAddress;
 
 	response = objc_autorelease(
-	    [[OFHTTPServerResponse alloc] initWithStream: _stream
-						  server: _server
-						 request: request]);
+	    [[OFHTTPServerResponse alloc] of_initWithStream: _stream
+						     server: _server
+						    request: request]);
 
 	[_server.delegate performSelector: @selector(server:didReceiveRequest:
 					       requestBody:response:)
@@ -1056,7 +1066,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 			    didEncounterException: exception
 					  request: nil
 					 response: nil];
-			return false;
+			return true;
 		}
 
 		if ([_delegate respondsToSelector: deprecatedSelector]) {
@@ -1072,7 +1082,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 			    exception);
 		}
 
-		return false;
+		return true;
 	}
 
 #ifdef OF_HAVE_THREADS
@@ -1116,6 +1126,12 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 		return;
 	}
 
+	/*
+	 * Since the TLS stream and the underlying socket share the underlying
+	 * file descriptor, we need to make sure the file descriptor gets
+	 * removed for the underlying socket first before being added for the
+	 * TLS stream.
+	 */
 	[self performSelector: @selector(of_handleStream:)
 		   withObject: stream
 		   afterDelay: 0];

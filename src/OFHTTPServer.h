@@ -67,9 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * `request` and `response` will both be `nil`, as the connection never even
  * progressed far enough to create those.
  *
- * Another possibility is that the server failed to accept a socket. In this
- * case, the server will no longer accept incoming connections and you need to
- * call @ref OFHTTPServer#start again.
+ * Another possibility is that the server failed to accept a socket.
  *
  * @param server The HTTP server which encountered an exception
  * @param exception The exception which occurred

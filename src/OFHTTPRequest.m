@@ -23,7 +23,6 @@
 
 #import "OFHTTPRequest.h"
 #import "OFArray.h"
-#import "OFData.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFString.h"

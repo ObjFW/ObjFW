@@ -23,10 +23,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFData;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
-@class OFString;
 
 /** @file */
 
