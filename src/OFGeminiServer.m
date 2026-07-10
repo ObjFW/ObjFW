@@ -272,7 +272,7 @@ static void *cancelTimerKey = &cancelTimerKey;
 		OFMutableArray *threads =
 		    [OFMutableArray arrayWithCapacity: _numberOfThreads - 1];
 
-		for (size_t i = 0; i < _numberOfThreads; i++) {
+		for (size_t i = 1; i < _numberOfThreads; i++) {
 			OFGeminiServerThread *thread =
 			    [OFGeminiServerThread thread];
 			thread.supportsSockets = true;
