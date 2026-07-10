@@ -150,7 +150,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The host on which the HTTP server will listen.
  *
  * @throw OFAlreadyOpenException The host could not be set because @ref start
- *				  had already been called
+ *				 had already been called
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
@@ -187,7 +187,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The number of threads the OFHTTPServer should use.
  *
  * If this is larger than 1 (the default), one thread will be used to accept
- * incoming connections and all others will be used to handle connections.
+ * incoming connections and all others will be used to handle connections
+ * (including TLS handshake).
  *
  * For maximum CPU utilization, set this to `[OFSystemInfo numberOfCPUs] + 1`.
  *
