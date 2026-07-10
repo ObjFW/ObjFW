@@ -28,13 +28,13 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class representing a Gemini request response as a stream.
  */
-#ifndef OF_GEMINI_CLIENT_M
+#if !defined(OF_GEMINI_CLIENT_M) && !defined(OF_GEMINI_SERVER_M)
 OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFGeminiResponse: OFStream
 {
 	unsigned char _statusCode;
-	OFString *_metadata;
+	OFString *_Nullable _metadata;
 }
 
 /**
@@ -45,7 +45,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The metadata of the response to the Gemini request.
  */
-@property (copy, nonatomic) OFString *metadata;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *metadata;
 @end
 
 OF_ASSUME_NONNULL_END

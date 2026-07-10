@@ -118,7 +118,9 @@
 #  import "OFDDPSocket.h"
 # endif
 # import "OFGeminiClient.h"
+# import "OFGeminiRequest.h"
 # import "OFGeminiResponse.h"
+# import "OFGeminiServer.h"
 # import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"

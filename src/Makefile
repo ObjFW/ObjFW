@@ -142,7 +142,9 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
 	       OFGeminiClient.m			\
+	       OFGeminiRequest.m		\
 	       OFGeminiResponse.m		\
+	       OFGeminiServer.m			\
 	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
