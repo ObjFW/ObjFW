@@ -28,6 +28,7 @@
 #import "OFFile.h"
 #import "OFFileManager.h"
 #import "OFGeminiClient.h"
+#import "OFGeminiRequest.h"
 #import "OFGeminiResponse.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
@@ -104,6 +105,16 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 - (void)abort;
 - (bool)handleExceptionAfterRequest: (id *)exception
 				IRI: (OFIRI *)IRI OF_DIRECT;
+-	(void)client: (id)client
+  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
+	     request: (id)request;
+-	(void)client: (id)client
+  didCreateTLSStream: (OFTLSStream *)stream
+	     request: (id)request;
+-      (void)client: (id)client
+  didPerformRequest: (id)request
+	   response: (id)response
+	  exception: (id)exception;
 - (void)downloadNextIRI;
 @end
 
@@ -682,31 +693,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	[OFApplication terminateWithStatus: 1];
 }
 
--	(void)client: (OFHTTPClient *)client
+-	(void)client: (id)client
   didCreateTCPSocket: (OFTCPSocket *)TCPSocket
-	     request: (OFHTTPRequest *)request
+	     request: (id)request
 {
 	TCPSocket.canBlock = false;
 }
 
--	(void)client: (OFGeminiClient *)client
-  didCreateTCPSocket: (OFTCPSocket *)TCPSocket
-		 IRI: (OFIRI *)IRI
-{
-	TCPSocket.canBlock = false;
-}
-
--	(void)client: (OFHTTPClient *)client
+-	(void)client: (id)client
   didCreateTLSStream: (OFTLSStream *)stream
-	     request: (OFHTTPRequest *)request
-{
-	/* Use setter instead of property access to work around GCC bug. */
-	[stream setVerifiesCertificates: !_insecure];
-}
-
--	(void)client: (OFGeminiClient *)client
-  didCreateTLSStream: (OFTLSStream *)stream
-		 IRI: (OFIRI *)IRI
+	     request: (id)request
 {
 	/* Use setter instead of property access to work around GCC bug. */
 	[stream setVerifiesCertificates: !_insecure];
@@ -775,7 +771,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -	       (bool)client: (OFGeminiClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)toIRI
-		    fromIRI: (OFIRI *)fromIRI
+		    request: (OFGeminiRequest *)request
 		 statusCode: (unsigned char)statusCode
 {
 	OFString *toScheme = toIRI.scheme;
@@ -1146,158 +1142,38 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	return true;
 }
 
--      (void)client: (OFHTTPClient *)client
-  didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response
+-      (void)client: (id)client
+  didPerformRequest: (id)request
+	   response: (id)response
 	  exception: (id)exception
 {
-	if (exception != nil) {
-		if (![self handleExceptionAfterRequest: &exception
-						   IRI: request.IRI])
-			@throw exception;
-
-		if (exception != nil) {
-			_errorCode = 1;
-			[self performSelector: @selector(downloadNextIRI)
-				   afterDelay: 0];
-			return;
-		}
-	}
-
-	if (_method == OFHTTPRequestMethodHead)
-		goto next;
-
-	if (_detectFileNameRequest) {
-		_currentFileName = [fileNameFromContentDisposition(
-		    [response.headers objectForKey: @"Content-Disposition"])
-		    copy];
-		_detectedFileName = true;
-
-		/* Handle this IRI on the next -[downloadNextIRI] call */
-		_IRIIndex--;
-
-		[self performSelector: @selector(downloadNextIRI)
-			   afterDelay: 0];
-		return;
-	}
-
-	if ([_outputPath isEqual: @"-"])
-		_output = OFStdOut;
-	else {
-		if (!_continue && !_force && [[OFFileManager defaultManager]
-		    fileExistsAtPath: _currentFileName]) {
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"output_already_exists",
-			    @"%[prog]: File %[filename] already exists!",
-			    @"prog", [OFApplication programName],
-			    @"filename", _currentFileName)];
-
-			_errorCode = 1;
-			goto next;
-		}
-
-		@try {
-			OFString *mode =
-			    (response.statusCode == 206 ? @"a" : @"w");
-			_output = [[OFFile alloc] initWithPath: _currentFileName
-							  mode: mode];
-		} @catch (OFOpenItemFailedException *e) {
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"failed_to_open_output",
-			    @"%[prog]: Failed to open file %[filename]: "
-			    @"%[exception]",
-			    @"prog", [OFApplication programName],
-			    @"filename", _currentFileName,
-			    @"exception", e)];
-
-			_errorCode = 1;
-			goto next;
-		}
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
-		@try {
-			OFString *IRIString = request.IRI.string;
-			OFData *downloadedFromData = [OFData
-			    dataWithItems: IRIString.UTF8String
-				    count: IRIString.UTF8StringLength + 1];
-			[[OFFileManager defaultManager]
-			    setExtendedAttributeData: downloadedFromData
-					     forName: @"user.ofhttp."
-						      @"downloaded_from"
-					ofItemAtPath: _currentFileName];
-		} @catch (OFSetItemAttributesFailedException *) {
-			/* Ignore */
-		}
-#endif
-
-#ifdef OF_MACOS
-		@try {
-			OFString *quarantine = [OFString stringWithFormat:
-			    @"0000;%08" @PRIx64 @";ofhttp;",
-			    (uint64_t)[[OFDate date] timeIntervalSince1970]];
-			OFData *quarantineData = [OFData
-			    dataWithItems: quarantine.UTF8String
-				    count: quarantine.UTF8StringLength];
-			[[OFFileManager defaultManager]
-			    setExtendedAttributeData: quarantineData
-					     forName: @"com.apple.quarantine"
-					ofItemAtPath: _currentFileName];
-		} @catch (OFSetItemAttributesFailedException *e) {
-			/* Ignore */
-		}
-#endif
-	}
-
-	if (!_quiet) {
-		_progressBar = [[ProgressBar alloc]
-		    initWithLength: _length
-		       resumedFrom: _resumedFrom
-			useUnicode: _useUnicode];
-		[_progressBar setReceived: _received];
-		[_progressBar draw];
-	}
-
-	objc_release(_currentFileName);
-	_currentFileName = nil;
-
-	response.delegate = self;
-	[response asyncReadIntoBuffer: _buffer length: BUFFER_SIZE];
-	return;
-
-next:
-	objc_release(_currentFileName);
-	_currentFileName = nil;
-
-	[self performSelector: @selector(downloadNextIRI) afterDelay: 0];
-}
-
--	     (void)client: (OFGeminiClient *)client
-  didPerformRequestForIRI: (OFIRI *)IRI
-		 response: (OFGeminiResponse *)response
-		exception: (id)exception
-{
-	if (!_quiet && response != nil) {
+	if ([client isKindOfClass: [OFGeminiClient class]] && !_quiet &&
+	    response != nil) {
+		OFGeminiResponse *gemResponse = response;
 		OFString *metadata =
-		    response.metadata.stringByReplacingControlCharacters;
+		    gemResponse.metadata.stringByReplacingControlCharacters;
 
 		if (_useUnicode)
 			[OFStdErr writeFormat: @" ➜ "];
 		else
 			[OFStdErr writeFormat: @" -> "];
 
-		switch (response.statusCode / 10) {
+		switch (gemResponse.statusCode / 10) {
 		case 2:
 			OFStdErr.foregroundColor = [OFColor green];
-			[OFStdErr writeFormat: @"%hhd\n", response.statusCode];
+			[OFStdErr writeFormat: @"%hhd\n",
+					       gemResponse.statusCode];
 			break;
 		case 3:
 			OFStdErr.foregroundColor = [OFColor teal];
-			[OFStdErr writeFormat: @"%hhd\n", response.statusCode];
+			[OFStdErr writeFormat: @"%hhd\n",
+					       gemResponse.statusCode];
 			break;
 		default:
 			OFStdErr.foregroundColor = [OFColor maroon];
 			[OFStdErr writeFormat: @"%hhd %@\n",
-					       response.statusCode, metadata];
+					       gemResponse.statusCode,
+					       metadata];
 			break;
 		}
 		OFStdErr.foregroundColor = nil;
@@ -1313,7 +1189,7 @@ next:
 			    .stringByReplacingControlCharacters];
 		}
 
-		if (response.statusCode / 10 == 2) {
+		if (gemResponse.statusCode / 10 == 2) {
 			if (metadata.length == 0)
 				metadata =
 				    OF_LOCALIZED(@"type_unknown", @"unknown");
@@ -1335,11 +1211,33 @@ next:
 	}
 
 	if (exception != nil) {
-		if (![self handleExceptionAfterRequest: &exception IRI: IRI])
+		if (![self handleExceptionAfterRequest: &exception
+						   IRI: [request IRI]])
 			@throw exception;
 
 		if (exception != nil) {
 			_errorCode = 1;
+			[self performSelector: @selector(downloadNextIRI)
+				   afterDelay: 0];
+			return;
+		}
+	}
+
+	if ([client isKindOfClass: [OFHTTPClient class]]) {
+		if (_method == OFHTTPRequestMethodHead)
+			goto next;
+
+		if (_detectFileNameRequest) {
+			_currentFileName = [fileNameFromContentDisposition(
+			    [[response headers] objectForKey:
+			    @"Content-Disposition"]) copy];
+			_detectedFileName = true;
+
+			/*
+			 * Handle this IRI on the next -[downloadNextIRI] call
+			 */
+			_IRIIndex--;
+
 			[self performSelector: @selector(downloadNextIRI)
 				   afterDelay: 0];
 			return;
@@ -1362,8 +1260,17 @@ next:
 		}
 
 		@try {
+			OFString *mode = @"w";
+
+			if ([client isKindOfClass: [OFHTTPClient class]]) {
+				OFHTTPResponse *HTTPResponse = response;
+
+				if (HTTPResponse.statusCode == 206)
+					mode = @"a";
+			}
+
 			_output = [[OFFile alloc] initWithPath: _currentFileName
-							  mode: @"w"];
+							  mode: mode];
 		} @catch (OFOpenItemFailedException *e) {
 			[OFStdErr writeLine:
 			    OF_LOCALIZED(@"failed_to_open_output",
@@ -1379,7 +1286,7 @@ next:
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES
 		@try {
-			OFString *IRIString = IRI.string;
+			OFString *IRIString = [request IRI].string;
 			OFData *downloadedFromData = [OFData
 			    dataWithItems: IRIString.UTF8String
 				    count: IRIString.UTF8StringLength + 1];
@@ -1423,7 +1330,7 @@ next:
 	objc_release(_currentFileName);
 	_currentFileName = nil;
 
-	response.delegate = self;
+	[response setDelegate: self];
 	[response asyncReadIntoBuffer: _buffer length: BUFFER_SIZE];
 	return;
 
@@ -1440,7 +1347,6 @@ next:
 	OFIRI *IRI;
 	bool isHTTP, isGemini;
 	OFMutableDictionary *clientHeaders = nil;
-	OFHTTPRequest *request;
 
 	_received = _length = _resumedFrom = 0;
 
@@ -1482,6 +1388,8 @@ next:
 		clientHeaders = objc_autorelease([_clientHeaders mutableCopy]);
 
 		if (_detectFileName && !_detectedFileName) {
+			OFHTTPRequest *request;
+
 			if (!_quiet) {
 				if (_useUnicode)
 					[OFStdErr writeString: @"⠒ "];
@@ -1556,6 +1464,8 @@ next:
 	}
 
 	if (isHTTP) {
+		OFHTTPRequest *request;
+
 		request = [OFHTTPRequest requestWithIRI: IRI];
 		request.headers = clientHeaders;
 		request.method = _method;
@@ -1564,7 +1474,10 @@ next:
 		[_HTTPClient asyncPerformRequest: request];
 		return;
 	} else if (isGemini) {
-		[_geminiClient asyncPerformRequestForIRI: IRI];
+		OFGeminiRequest *request =
+		    [OFGeminiRequest requestWithIRI: IRI];
+
+		[_geminiClient asyncPerformRequest: request];
 		return;
 	} else
 		OFEnsure(0);

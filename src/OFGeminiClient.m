@@ -24,6 +24,7 @@
 #import "OFGeminiClient.h"
 #import "OFCharacterSet.h"
 #import "OFDate.h"
+#import "OFGeminiRequest.h"
 #import "OFGeminiResponse.h"
 #import "OFIRI.h"
 #import "OFNumber.h"
@@ -52,14 +53,14 @@ static OFCharacterSet *whitespaceCS, *nonWhitespaceCS;
 {
 @public
 	OFGeminiClient *_client;
-	OFIRI *_IRI;
+	OFGeminiRequest *_request;
 	unsigned int _redirects;
 	unsigned char _statusCode;
 	OFString *_metadata;
 }
 
 - (instancetype)initWithClient: (OFGeminiClient *)client
-			   IRI: (OFIRI *)IRI
+		       request: (OFGeminiRequest *)request
 		     redirects: (unsigned int)redirects OF_DIRECT;
 - (void)raiseException: (id)exception OF_DIRECT;
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
@@ -96,19 +97,14 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 
 @implementation OFGeminiClientRequestHandler
 - (instancetype)initWithClient: (OFGeminiClient *)client
-			   IRI: (OFIRI *)IRI
+		       request: (OFGeminiRequest *)request
 		     redirects: (unsigned int)redirects
 {
 	self = [super init];
 
-	@try {
-		_client = objc_retain(client);
-		_IRI = [IRI copy];
-		_redirects = redirects;
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
+	_client = objc_retain(client);
+	_request = objc_retain(request);
+	_redirects = redirects;
 
 	return self;
 }
@@ -116,7 +112,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 - (void)dealloc
 {
 	objc_release(_client);
-	objc_release(_IRI);
+	objc_release(_request);
 	objc_release(_metadata);
 
 	[super dealloc];
@@ -127,15 +123,16 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	[_client cancelAsyncRequests];
 	_client->_inProgress = false;
 
-	[_client->_delegate  client: _client
-	    didPerformRequestForIRI: _IRI
-			   response: nil
-			  exception: exception];
+	[_client->_delegate client: _client
+		 didPerformRequest: _request
+			  response: nil
+			 exception: exception];
 }
 
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
+		OFIRI *IRI = _request.IRI;
 		OFTCPSocket *sock;
 		uint16_t port = 1965;
 		OFNumber *IRIPort;
@@ -146,12 +143,12 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		sock = [OFTCPSocket socket];
 		sock.allowsMPTCP = true;
 
-		IRIPort = _IRI.port;
+		IRIPort = IRI.port;
 		if (IRIPort != nil)
 			port = IRIPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: _IRI.host
+		[sock asyncConnectToHost: IRI.host
 				    port: port
 			     runLoopMode: runLoopMode];
 		_client->_streamToCancel = objc_retain(sock);
@@ -178,28 +175,29 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	}
 
 	if ([_client->_delegate respondsToSelector:
-	    @selector(client:didCreateTCPSocket:IRI:)])
+	    @selector(client:didCreateTCPSocket:request:)])
 		[_client->_delegate client: _client
 			didCreateTCPSocket: sock
-				       IRI: _IRI];
+				   request: _request];
 
 	@try {
 		TLSStream = [OFTLSStream streamWithStream: sock];
 	} @catch (OFNotImplementedException *e) {
-		[self raiseException:
-		    [OFUnsupportedProtocolException exceptionWithIRI: _IRI]];
+		[self raiseException: [OFUnsupportedProtocolException
+		    exceptionWithIRI: _request.IRI]];
 		return;
 	}
 
 	if ([_client->_delegate respondsToSelector:
-	    @selector(client:didCreateTLSStream:IRI:)])
+	    @selector(client:didCreateTLSStream:request:)])
 		[_client->_delegate client: _client
 			didCreateTLSStream: TLSStream
-				       IRI: _IRI];
+				   request: _request];
 
 	TLSStream.delegate = self;
 
-	TLSHost = _IRI.IRIByAddingPercentEncodingForUnicodeCharacters.host;
+	TLSHost =
+	    _request.IRI.IRIByAddingPercentEncodingForUnicodeCharacters.host;
 	[TLSStream
 	    asyncPerformClientHandshakeWithHost: TLSHost
 				    runLoopMode: runLoop.currentMode];
@@ -231,7 +229,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 {
 	@try {
 		OFString *request =
-		    [OFString stringWithFormat: @"%@\r\n", _IRI.string];
+		    [OFString stringWithFormat: @"%@\r\n", _request.IRI.string];
 		OFRunLoopMode runLoopMode =
 		    [OFRunLoop currentRunLoop].currentMode;
 
@@ -328,35 +326,37 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		break;
 	case 3:
 		if (_redirects > 0) {
-			OFIRI *toIRI;
+			OFIRI *IRI;
 			bool follow;
 
 			@try {
-				toIRI = [OFIRI IRIWithString: metadata
-					       relativeToIRI: _IRI];
+				IRI = [OFIRI IRIWithString: metadata
+					     relativeToIRI: _request.IRI];
 			} @catch (OFInvalidFormatException *e) {
 				[self raiseException: e];
 				return false;
 			}
 
 			if ([_client->_delegate respondsToSelector:
-			    @selector(client:shouldFollowRedirectToIRI:fromIRI:
+			    @selector(client:shouldFollowRedirectToIRI:request:
 			    statusCode:)])
 				follow = [_client->_delegate
 						       client: _client
-				    shouldFollowRedirectToIRI: toIRI
-						      fromIRI: _IRI
+				    shouldFollowRedirectToIRI: IRI
+						      request: _request
 						   statusCode: statusCode];
 			else
-				follow = defaultShouldFollow(_IRI, toIRI);
+				follow = defaultShouldFollow(_request.IRI, IRI);
 
 			if (follow) {
 				SEL selector = @selector(startWithRunLoopMode:);
 
 				_redirects--;
 
-				objc_release(_IRI);
-				_IRI = objc_retain(toIRI);
+				objc_release(_request);
+				_request = nil;
+				_request = [[OFGeminiRequest alloc]
+				    initWithIRI: IRI];
 
 				timer = [OFTimer
 				    timerWithTimeInterval: 0
@@ -371,8 +371,8 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		}
 	default:
 		exception = [OFGeminiRequestFailedException
-		    exceptionWithIRI: _IRI
-			    response: response];
+		    exceptionWithRequest: _request
+				response: response];
 	}
 
 	_client->_inProgress = false;
@@ -380,10 +380,10 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	timer = [OFTimer
 	    timerWithTimeInterval: 0
 			   target: _client->_delegate
-			 selector: @selector(client:didPerformRequestForIRI:
-						 response:exception:)
+			 selector: @selector(client:didPerformRequest:response:
+				       exception:)
 			   object: _client
-			   object: _IRI
+			   object: _request
 			   object: response
 			   object: exception
 			  repeats: false];
@@ -470,15 +470,15 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	[super dealloc];
 }
 
--	     (void)client: (OFGeminiClient *)client
-  didPerformRequestForIRI: (OFIRI *)IRI
-		 response: (OFGeminiResponse *)response
-		exception: (id)exception
+-      (void)client: (OFGeminiClient *)client
+  didPerformRequest: (OFGeminiRequest *)request
+	   response: (OFGeminiResponse *)response
+	  exception: (id)exception
 {
-	[_delegate	     client: client
-	    didPerformRequestForIRI: IRI
-			   response: response
-			  exception: exception];
+	[_delegate     client: client
+	    didPerformRequest: request
+		     response: response
+		    exception: exception];
 
 	_done = true;
 	_response = objc_retain(response);
@@ -487,41 +487,41 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 
 -	(void)client: (OFGeminiClient *)client
   didCreateTCPSocket: (OFTCPSocket *)TCPSocket
-		 IRI: (OFIRI *)IRI
+	     request: (OFGeminiRequest *)request
 
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:didCreateTCPSocket:IRI:)])
+	    @selector(client:didCreateTCPSocket:request:)])
 		[_delegate	client: client
 		    didCreateTCPSocket: TCPSocket
-				   IRI: IRI];
+			       request: request];
 }
 
 -	(void)client: (OFGeminiClient *)client
   didCreateTLSStream: (OFTLSStream *)TLSStream
-		 IRI: (OFIRI *)IRI
+	     request: (OFGeminiRequest *)request
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:didCreateTLSStream:IRI:)])
+	    @selector(client:didCreateTLSStream:request:)])
 		[_delegate	client: client
 		    didCreateTLSStream: TLSStream
-				   IRI: IRI];
+			       request: request];
 }
 
 -	       (bool)client: (OFGeminiClient *)client
-  shouldFollowRedirectToIRI: (OFIRI *)toIRI
-		    fromIRI: (OFIRI *)fromIRI
+  shouldFollowRedirectToIRI: (OFIRI *)IRI
+		    request: (OFGeminiRequest *)request
 		 statusCode: (unsigned char)statusCode
 
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:shouldFollowRedirectToIRI:fromIRI:statusCode:)])
+	    @selector(client:shouldFollowRedirectToIRI:request:statusCode:)])
 		return [_delegate      client: client
-		    shouldFollowRedirectToIRI: toIRI
-				      fromIRI: fromIRI
+		    shouldFollowRedirectToIRI: IRI
+				      request: request
 				   statusCode: statusCode];
 	else
-		return defaultShouldFollow(fromIRI, toIRI);
+		return defaultShouldFollow(request.IRI, IRI);
 }
 @end
 
@@ -552,13 +552,13 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	[super dealloc];
 }
 
-- (OFGeminiResponse *)performRequestForIRI: (OFIRI *)IRI
+- (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request
 {
-	return [self performRequestForIRI: IRI redirects: defaultRedirects];
+	return [self performRequest: request redirects: defaultRedirects];
 }
 
-- (OFGeminiResponse *)performRequestForIRI: (OFIRI *)IRI
-				 redirects: (unsigned int)redirects
+- (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request
+			   redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFGeminiClientPerformDelegate *performDelegate = objc_autorelease(
@@ -568,9 +568,9 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	OFGeminiResponse *response;
 
 	_delegate = performDelegate;
-	[self asyncPerformRequestForIRI: IRI
-			      redirects: redirects
-			    runLoopMode: geminiClientRunLoopMode];
+	[self asyncPerformRequest: request
+			redirects: redirects
+		      runLoopMode: geminiClientRunLoopMode];
 
 	while (!performDelegate->_done)
 		[runLoop runMode: geminiClientRunLoopMode beforeDate: nil];
@@ -590,26 +590,27 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	return objc_autoreleaseReturnValue(response);
 }
 
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI
+- (void)asyncPerformRequest: (OFGeminiRequest *)request
 {
-	[self asyncPerformRequestForIRI: IRI
-			      redirects: defaultRedirects
-			    runLoopMode: OFDefaultRunLoopMode];
+	[self asyncPerformRequest: request
+			redirects: defaultRedirects
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI
-			redirects: (unsigned int)redirects
+- (void)asyncPerformRequest: (OFGeminiRequest *)request
+		  redirects: (unsigned int)redirects
 {
-	[self asyncPerformRequestForIRI: IRI
-			      redirects: redirects
-			    runLoopMode: OFDefaultRunLoopMode];
+	[self asyncPerformRequest: request
+			redirects: redirects
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI
-			redirects: (unsigned int)redirects
-		      runLoopMode: (OFRunLoopMode)runLoopMode
+- (void)asyncPerformRequest: (OFGeminiRequest *)request
+		  redirects: (unsigned int)redirects
+		runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFIRI *IRI = request.IRI;
 
 	if (![IRI.scheme isEqual: @"gemini"])
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
@@ -624,7 +625,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 
 	[[[[OFGeminiClientRequestHandler alloc]
 	    initWithClient: self
-		       IRI: IRI
+		   request: request
 		 redirects: redirects] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 

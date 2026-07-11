@@ -23,6 +23,7 @@
 
 #import "OFGeminiIRIHandler.h"
 #import "OFGeminiClient.h"
+#import "OFGeminiRequest.h"
 #import "OFGeminiResponse.h"
 #import "OFIRI.h"
 #import "OFTimer.h"
@@ -79,19 +80,20 @@ OF_DIRECT_MEMBERS
 - (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFGeminiRequest *request = [OFGeminiRequest requestWithIRI: _IRI];
 
-	[_client asyncPerformRequestForIRI: _IRI
-				 redirects: 10
-			       runLoopMode: runLoopMode];
+	[_client asyncPerformRequest: request
+			   redirects: 10
+			 runLoopMode: runLoopMode];
 	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
 }
 
--	     (void)client: (OFGeminiClient *)client
-  didPerformRequestForIRI: (OFIRI *)IRI
-		 response: (OFGeminiResponse *)response
-		exception: (id)exception
+-      (void)client: (OFGeminiClient *)client
+  didPerformRequest: (OFGeminiRequest *)request
+	   response: (OFGeminiResponse *)response
+	  exception: (id)exception
 {
 	@try {
 		[_delegate IRIHandler: _IRIHandler
@@ -109,6 +111,7 @@ OF_DIRECT_MEMBERS
 {
 	void *pool;
 	OFGeminiClient *client;
+	OFGeminiRequest *request;
 	OFGeminiResponse *response;
 
 	if (![mode isEqual: @"r"])
@@ -118,7 +121,8 @@ OF_DIRECT_MEMBERS
 
 	pool = objc_autoreleasePoolPush();
 	client = [OFGeminiClient client];
-	response = [client performRequestForIRI: IRI];
+	request = [OFGeminiRequest requestWithIRI: IRI];
+	response = [client performRequest: request];
 
 	objc_retain(response);
 

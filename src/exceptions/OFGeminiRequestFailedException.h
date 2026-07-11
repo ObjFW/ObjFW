@@ -25,8 +25,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFIRI;
 @class OFGeminiResponse;
+@class OFGeminiRequest;
 
 /**
  * @class OFGeminiRequestFailedException OFGeminiRequestFailedException.h
@@ -36,15 +36,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFGeminiRequestFailedException: OFException
 {
-	OFIRI *_IRI;
+	OFGeminiRequest *_request;
 	OFGeminiResponse *_response;
 	OF_RESERVE_IVARS(OFGeminiRequestFailedException, 4)
 }
 
 /**
- * @brief The IRI for which the Gemini request failed.
+ * @brief The Gemini request which failed.
  */
-@property (readonly, nonatomic) OFIRI *IRI;
+@property (readonly, nonatomic) OFGeminiRequest *request;
 
 /**
  * @brief The response for the failed Gemini request.
@@ -54,24 +54,24 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Creates a new, autoreleased Gemini request failed exception.
  *
- * @param IRI The IRI for which the Gemini request failed
+ * @param request The Gemini request which failed
  * @param response The response for the failed Gemini request
  * @return A new, autoreleased Gemini request failed exception
  */
-+ (instancetype)exceptionWithIRI: (OFIRI *)IRI
-			response: (OFGeminiResponse *)response;
++ (instancetype)exceptionWithRequest: (OFGeminiRequest *)request
+			    response: (OFGeminiResponse *)response;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated Gemini request failed exception.
  *
- * @param IRI The IRI for which the Gemini request failed
+ * @param request The Gemini request which failed
  * @param response The response for the failed Gemini request
  * @return A new Gemini request failed exception
  */
-- (instancetype)initWithIRI: (OFIRI *)IRI
-		   response: (OFGeminiResponse *)response
+- (instancetype)initWithRequest: (OFGeminiRequest *)request
+		       response: (OFGeminiResponse *)response
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

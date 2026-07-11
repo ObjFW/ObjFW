@@ -719,8 +719,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@try {
 			stream = [OFTLSStream streamWithStream: sock];
 		} @catch (OFNotImplementedException *e) {
-			[self raiseException:
-			    [OFUnsupportedProtocolException
+			[self raiseException: [OFUnsupportedProtocolException
 			    exceptionWithIRI: _request.IRI]];
 			return;
 		}

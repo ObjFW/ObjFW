@@ -27,7 +27,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFGeminiClient;
+@class OFGeminiRequest;
 @class OFGeminiResponse;
+@class OFIRI;
 @class OFStream;
 @class OFTCPSocket;
 @class OFTLSStream;
@@ -43,14 +45,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	  request.
  *
  * @param client The OFGeminiClient which performed the request
- * @param IRI The requested IRI
+ * @param request The request the OFGeminiClient performed
  * @param response The response to the request performed, or nil on error
  * @param exception An exception if the request failed, or nil on success
  */
--	     (void)client: (OFGeminiClient *)client
-  didPerformRequestForIRI: (OFIRI *)IRI
-		 response: (nullable OFGeminiResponse *)response
-		exception: (nullable id)exception;
+-      (void)client: (OFGeminiClient *)client
+  didPerformRequest: (OFGeminiRequest *)request
+	   response: (nullable OFGeminiResponse *)response
+	  exception: (nullable id)exception;
 
 @optional
 /**
@@ -62,11 +64,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param client The OFGeminiClient that created a TCP socket
  * @param TCPSocket The socket created by the OFGeminiClient
- * @param IRI The IRI for which the TCP socket was created
+ * @param request The request for which the TCP socket was created
  */
 -	(void)client: (OFGeminiClient *)client
   didCreateTCPSocket: (OFTCPSocket *)TCPSocket
-		 IRI: (OFIRI *)IRI;
+	     request: (OFGeminiRequest *)request;
 
 /**
  * @brief A callback which is called when an @ref OFGeminiClient creates a TLS
@@ -77,11 +79,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param client The OFGeminiClient that created a TLS stream
  * @param TLSStream The TLS stream created by the OFGeminiClient
- * @param IRI The IRI for which the TLS stream was created
+ * @param request The request for which the TLS stream was created
  */
 -	(void)client: (OFGeminiClient *)client
   didCreateTLSStream: (OFTLSStream *)TLSStream
-		 IRI: (OFIRI *)IRI;
+	     request: (OFGeminiRequest *)request;
 
 /**
  * @brief A callback which is called when an @ref OFGeminiClient wants to follow
@@ -92,14 +94,14 @@ OF_ASSUME_NONNULL_BEGIN
  * callback will not be called.
  *
  * @param client The OFGeminiClient which wants to follow a redirect
- * @param toIRI The IRI to which it will follow a redirect
- * @param fromIRI The IRI for which the OFGeminiClient wants to redirect
+ * @param IRI The IRI to which it will follow a redirect
+ * @param request The request for which the OFGeminiClient wants to redirect
  * @param statusCode The status code for the redirection
  * @return A boolean whether the OFGeminiClient should follow the redirect
  */
 -	       (bool)client: (OFGeminiClient *)client
-  shouldFollowRedirectToIRI: (OFIRI *)toIRI
-		    fromIRI: (OFIRI *)fromIRI
+  shouldFollowRedirectToIRI: (OFIRI *)IRI
+		    request: (OFGeminiRequest *)request
 		 statusCode: (unsigned char)statusCode;
 @end
 
@@ -133,72 +135,72 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)client;
 
 /**
- * @brief Synchronously performs a request for the specified IRI.
+ * @brief Synchronously performs the specified Gemini request.
  *
- * @note You must not change the delegate while a Synchronous request is
+ * @note You must not change the delegate while a synchronous request is
  *	 running! If you want to change the delegate during the request,
  *	 perform an asynchronous request instead!
  *
- * @param IRI The IRI to request
- * @return The OFGeminiResponse for the requested IRI
+ * @param request The request to perform
+ * @return The OFGeminiResponse for the request
  * @throw OFGeminiRequestFailedException The Gemini request failed
  * @throw OFInvalidServerResponseException The server sent an invalid responsse
  * @throw OFAlreadyOpenException The client is already performing a request
  */
-- (OFGeminiResponse *)performRequestForIRI: (OFIRI *)IRI;
+- (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request;
 
 /**
- * @brief Synchronously performs a request for the specified IRI.
+ * @brief Synchronously performs the specified Gemini request.
  *
- * @note You must not change the delegate while a Synchronous request is
+ * @note You must not change the delegate while a synchronous request is
  *	 running! If you want to change the delegate during the request,
  *	 perform an asynchronous request instead!
  *
- * @param IRI The IRI to request
+ * @param request The request to perform
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    request fails
- * @return The OFGeminiResponse for the requested IRI
+ * @return The OFGeminiResponse for the request
  * @throw OFGeminiRequestFailedException The Gemini request failed
  * @throw OFInvalidServerResponseException The server sent an invalid responsse
  * @throw OFAlreadyOpenException The client is already performing a request
  */
-- (OFGeminiResponse *)performRequestForIRI: (OFIRI *)IRI
-				 redirects: (unsigned int)redirects;
+- (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request
+			   redirects: (unsigned int)redirects;
 
 /**
- * @brief Asynchronously performs a request for the specified IRI.
+ * @brief Asynchronously performs the specified Gemini request.
  *
- * @param IRI The IRI to request
+ * @param request The request to perform
  * @throw OFAlreadyOpenException The client is already performing a request
  */
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI;
+- (void)asyncPerformRequest: (OFGeminiRequest *)request;
 
 /**
- * @brief Asynchronously performs a request for the specified IRI.
+ * @brief Asynchronously performs the specified Gemini request.
  *
- * @param IRI The IRI to request
+ * @param request The request to perform
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    request fails
  * @throw OFAlreadyOpenException The client is already performing a request
  */
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI
-			redirects: (unsigned int)redirects;
+- (void)asyncPerformRequest: (OFGeminiRequest *)request
+		  redirects: (unsigned int)redirects;
 
 /**
- * @brief Asynchronously performs a request for the specified IRI.
+ * @brief Asynchronously performs the specified Gemini request.
  *
- * @param IRI The IRI to request
+ * @param request The request to perform
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    request fails
  * @param runLoopMode The run loop mode in which to perform the request
  * @throw OFAlreadyOpenException The client is already performing a request
  */
-- (void)asyncPerformRequestForIRI: (OFIRI *)IRI
-			redirects: (unsigned int)redirects
-		      runLoopMode: (OFRunLoopMode)runLoopMode;
+- (void)asyncPerformRequest: (OFGeminiRequest *)request
+		  redirects: (unsigned int)redirects
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Cancels all pending asynchronous requests.

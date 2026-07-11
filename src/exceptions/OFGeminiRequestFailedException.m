@@ -20,19 +20,20 @@
 #include "config.h"
 
 #import "OFGeminiRequestFailedException.h"
+#import "OFGeminiRequest.h"
 #import "OFGeminiResponse.h"
 #import "OFIRI.h"
 #import "OFString.h"
 
 @implementation OFGeminiRequestFailedException
-@synthesize IRI = _IRI, response = _response;
+@synthesize request = _request, response = _response;
 
-+ (instancetype)exceptionWithIRI: (OFIRI *)IRI
-			response: (OFGeminiResponse *)response
++ (instancetype)exceptionWithRequest: (OFGeminiRequest *)request
+			    response: (OFGeminiResponse *)response
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithIRI: IRI
-			     response: response]);
+	    [[self alloc] initWithRequest: request
+				 response: response]);
 }
 
 + (instancetype)exception
@@ -40,17 +41,13 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (instancetype)initWithIRI: (OFIRI *)IRI response: (OFGeminiResponse *)response
+- (instancetype)initWithRequest: (OFGeminiRequest *)request
+		       response: (OFGeminiResponse *)response
 {
 	self = [super init];
 
-	@try {
-		_IRI = [IRI copy];
-		_response = objc_retain(response);
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
+	_request = objc_retain(request);
+	_response = objc_retain(response);
 
 	return self;
 }
@@ -62,7 +59,7 @@
 
 - (void)dealloc
 {
-	objc_release(_IRI);
+	objc_release(_request);
 	objc_release(_response);
 
 	[super dealloc];
@@ -72,6 +69,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"A Gemini request with IRI %@ failed with code %d: %@!",
-	    _IRI, _response.statusCode, _response.metadata];
+	    _request.IRI, _response.statusCode, _response.metadata];
 }
 @end
