@@ -113,7 +113,7 @@ OF_DIRECT_MEMBERS
 		@throw [OFTruncatedDataException exception];
 
 	if (length > _toRead)
-		length = _toRead;
+		length = (size_t)_toRead;
 
 	ret = [_stream readIntoBuffer: buffer length: length];
 
