@@ -445,7 +445,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	objc_retain(_stream);
+	objc_release(_stream);
 	_stream = nil;
 
 	[super close];
