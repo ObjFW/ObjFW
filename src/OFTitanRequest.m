@@ -117,6 +117,65 @@ setParameter(OFString *path, OFString *name, OFString *value)
 	pathAllowedCharacters = [[OFTitanPathAllowedCharacterSet alloc] init];
 }
 
+- (OFString *)uploadPath
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path, *ret;
+	size_t pos;
+
+	if (![_IRI.scheme isEqual: @"titan"])
+		@throw [OFInvalidArgumentException exception];
+
+	path = _IRI.percentEncodedPath;
+
+	pos = [path rangeOfString: @";"].location;
+	if (pos != OFNotFound)
+		ret = [path substringToIndex: pos];
+	else
+		ret = path;
+
+	ret = objc_retain(ret.stringByRemovingPercentEncoding);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
+}
+
+- (void)setUploadPath: (OFString *)uploadPath
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path, *params;
+	size_t pos;
+	OFMutableIRI *IRI;
+
+	if (![_IRI.scheme isEqual: @"titan"])
+		@throw [OFInvalidArgumentException exception];
+
+	path = _IRI.percentEncodedPath;
+
+	pos = [path rangeOfString: @";"].location;
+	if (pos != OFNotFound)
+		params = [path substringFromIndex: pos + 1];
+	else
+		params = nil;
+
+	uploadPath = [uploadPath
+	    stringByAddingPercentEncodingWithAllowedCharacters:
+	    pathAllowedCharacters];
+
+	IRI = objc_autorelease([_IRI mutableCopy]);
+	if (params != nil)
+		IRI.percentEncodedPath = [OFString stringWithFormat: @"%@;%@",
+		    uploadPath, params];
+	else
+		IRI.percentEncodedPath = uploadPath;
+
+	[IRI makeImmutable];
+	self.IRI = IRI;
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (unsigned long long)uploadSize
 {
 	void *pool = objc_autoreleasePoolPush();

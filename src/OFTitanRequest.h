@@ -29,6 +29,14 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFTitanRequest: OFGeminiRequest
 /**
+ * @brief The upload path of the Titan request.
+ *
+ * @throw OFInvalidArgumentException The IRI of the request is not a valid
+ *				     Titan IRI
+ */
+@property (copy, nonatomic) OFString *uploadPath;
+
+/**
  * @brief The upload size of the Titan request.
  *
  * @throw OFInvalidArgumentException The IRI of the request is not a valid
@@ -42,14 +50,16 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The upload MIME type of the Titan request.
  *
- * @throw OFInvalidArgumentException The IRI of the request is not a Titan IRI
+ * @throw OFInvalidArgumentException The IRI of the request is not a valid
+ *				     Titan IRI
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *uploadMIMEType;
 
 /**
  * @brief The upload token of the Titan request.
  *
- * @throw OFInvalidArgumentException The IRI of the request is not a Titan IRI
+ * @throw OFInvalidArgumentException The IRI of the request is not a valid
+ *				     Titan IRI
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *uploadToken;
 @end

@@ -47,6 +47,27 @@
 	[super dealloc];
 }
 
+- (void)testUploadPath
+{
+	OTAssertEqualObjects(_request.uploadPath, @"/bar");
+
+	_request.IRI = [OFIRI IRIWithString:
+	    @"titan://foo/foo%3bbar;size=1234;token=TOKEN%3B;mime=MIME%3b"];
+	OTAssertEqualObjects(_request.uploadPath, @"/foo;bar");
+}
+
+- (void)testSetUploadPath
+{
+	_request.uploadPath = @"/foo;bar";
+	OTAssertEqualObjects(_request.IRI.string,
+	    @"titan://foo/foo%3Bbar;size=1234;token=TOKEN%3B;mime=MIME%3b");
+
+	_request.IRI = [OFIRI IRIWithString: @"titan://foo/bar"];
+	_request.uploadPath = @"/foo;bar";
+	OTAssertEqualObjects(_request.IRI.string,
+	    @"titan://foo/foo%3Bbar");
+}
+
 - (void)testUploadSize
 {
 	OTAssertEqual(_request.uploadSize, 1234);
@@ -126,6 +147,11 @@
 	OFMutableIRI *IRI = objc_autorelease(_request.IRI.mutableCopy);
 	IRI.scheme = @"gemini";
 	_request.IRI = IRI;
+
+	OTAssertThrowsSpecific([_request uploadPath],
+	    OFInvalidArgumentException);
+	OTAssertThrowsSpecific([_request setUploadPath: @""],
+	    OFInvalidArgumentException);
 
 	OTAssertThrowsSpecific([_request uploadSize],
 	    OFInvalidArgumentException);
