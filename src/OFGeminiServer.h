@@ -46,12 +46,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @param server The Gemini server which received the request
  * @param request The request the Gemini server received
  * @param requestBody A stream to read the body of the request from. Always
- *		      `nil` for Gemini requests and never `nil` for Titan
- *		      requests.
+ *		      `nil` for @ref OFGeminiRequest and never `nil` for
+ *		      @ref OFTitanRequest.
  * @param response The response the server will send to the client
  */
 -      (void)server: (OFGeminiServer *)server
-  didReceiveRequest: (OFGeminiRequest *)request
+  didReceiveRequest: (OF_KINDOF(OFGeminiRequest *))request
 	requestBody: (nullable OFStream *)requestBody
 	   response: (OFGeminiResponse *)response;
 
@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -	   (void)server: (OFGeminiServer *)server
   didEncounterException: (id)exception
-		request: (nullable OFGeminiRequest *)request
+		request: (nullable OF_KINDOF(OFGeminiRequest *))request
 	       response: (nullable OFGeminiResponse *)response;
 @end
 

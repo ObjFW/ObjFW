@@ -127,6 +127,7 @@
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"
 # import "OFHTTPServer.h"
+# import "OFTitanRequest.h"
 #endif
 
 #ifdef OF_HAVE_SUBPROCESSES

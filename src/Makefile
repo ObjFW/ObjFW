@@ -166,6 +166,7 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFTXTDNSResourceRecord.m		\
+	       OFTitanRequest.m			\
 	       OFUDPSocket.m			\
 	       OFURIDNSResourceRecord.m		\
 	       OFX509Certificate.m		\

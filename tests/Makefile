@@ -105,6 +105,7 @@ SRCS_SOCKETS = OFDNSResolverTests.m		\
 	       OFKernelEventObserverTests.m	\
 	       OFSocketTests.m			\
 	       OFTCPSocketTests.m		\
+	       OFTitanRequestTests.m		\
 	       OFUDPSocketTests.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\

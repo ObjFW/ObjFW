@@ -249,6 +249,7 @@ void *__objc_class_name_OFTCPSocket;
 void *__objc_class_name_OFTLSHandshakeFailedException;
 void *__objc_class_name_OFTLSStream;
 void *__objc_class_name_OFTXTDNSResourceRecord;
+void *__objc_class_name_OFTitanRequest;
 void *__objc_class_name_OFUDPSocket;
 void *__objc_class_name_OFURIDNSResourceRecord;
 #endif

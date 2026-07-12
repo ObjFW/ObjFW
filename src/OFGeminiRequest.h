@@ -29,12 +29,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing Gemini requests.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFGeminiRequest: OFObject <OFCopying>
 {
 	OFIRI *_IRI;
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
+	OF_RESERVE_IVARS(OFGeminiRequest, 4)
 }
 
 /**
