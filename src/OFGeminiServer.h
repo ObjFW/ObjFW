@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFGeminiRequest;
 @class OFGeminiResponse;
 @class OFGeminiServer;
+@class OFStream;
 @class OFTCPSocket;
 @class OFX509Certificate;
 
@@ -44,10 +45,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param server The Gemini server which received the request
  * @param request The request the Gemini server received
+ * @param requestBody A stream to read the body of the request from. Always
+ *		      `nil` for Gemini requests and never `nil` for Titan
+ *		      requests.
  * @param response The response the server will send to the client
  */
 -      (void)server: (OFGeminiServer *)server
   didReceiveRequest: (OFGeminiRequest *)request
+	requestBody: (nullable OFStream *)requestBody
 	   response: (OFGeminiResponse *)response;
 
 @optional

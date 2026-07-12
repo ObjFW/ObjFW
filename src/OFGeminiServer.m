@@ -433,9 +433,10 @@ static void *cancelTimerKey = &cancelTimerKey;
 		      request: request]);
 
 	[_delegate performSelector: @selector(server:didReceiveRequest:
-					response:)
+					requestBody:response:)
 			withObject: self
 			withObject: request
+			withObject: nil
 			withObject: response
 			afterDelay: 0];
 
