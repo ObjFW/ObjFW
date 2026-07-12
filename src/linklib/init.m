@@ -220,6 +220,7 @@ void *__objc_class_name_OFDNSResourceRecord;
 void *__objc_class_name_OFDNSResponse;
 void *__objc_class_name_OFDatagramSocket;
 void *__objc_class_name_OFGeminiClient;
+void *__objc_class_name_OFGeminiRequest;
 void *__objc_class_name_OFGeminiRequestFailedException;
 void *__objc_class_name_OFGeminiResponse;
 void *__objc_class_name_OFGeminiServer;
