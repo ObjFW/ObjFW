@@ -32,11 +32,14 @@
 #import "OFTLSStream.h"
 #import "OFThread.h"
 #import "OFTimer.h"
+#import "OFTitanRequest.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
 @interface OFGeminiServer () <OFTCPSocketDelegate, OFTLSStreamDelegate>
@@ -56,6 +59,92 @@ OF_DIRECT_MEMBERS
 	       server: (OFGeminiServer *)server
 	      request: (OFGeminiRequest *)request;
 - (void)of_sendHeaders;
+@end
+
+OF_DIRECT_MEMBERS
+@interface OFGeminiServerRequestBodyStream: OFStream
+    <OFReadyForReadingObserving>
+{
+	OFStream <OFReadyForReadingObserving> *_stream;
+	unsigned long long _toRead;
+	bool _atEndOfStream;
+}
+
+- (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving> *)stream
+			  size: (unsigned long long)size;
+@end
+
+@implementation OFGeminiServerRequestBodyStream
+- (instancetype)initWithStream: (OFStream <OFReadyForReadingObserving> *)stream
+			  size: (unsigned long long)size
+{
+	self = [super init];
+
+	_stream = objc_retain(stream);
+	_toRead = size;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	if (_stream != nil)
+		[self close];
+
+	[super dealloc];
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	return _atEndOfStream;
+}
+
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
+{
+	size_t ret;
+
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_atEndOfStream)
+		return 0;
+
+	if (_stream.atEndOfStream)
+		@throw [OFTruncatedDataException exception];
+
+	if (length > _toRead)
+		length = _toRead;
+
+	ret = [_stream readIntoBuffer: buffer length: length];
+
+	_toRead -= ret;
+
+	if (_toRead == 0)
+		_atEndOfStream = true;
+
+	return ret;
+}
+
+- (bool)lowlevelHasDataInReadBuffer
+{
+	return _stream.hasDataInReadBuffer;
+}
+
+- (int)fileDescriptorForReading
+{
+	return _stream.fileDescriptorForReading;
+}
+
+- (void)close
+{
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	objc_release(_stream);
+	_stream = nil;
+
+	[super close];
+}
 @end
 
 #ifdef OF_HAVE_THREADS
@@ -398,9 +487,11 @@ static void *cancelTimerKey = &cancelTimerKey;
 {
 	OFTimer *cancelTimer = objc_getAssociatedObject(stream, cancelTimerKey);
 	OFIRI *IRI;
-	OFGeminiRequest *request;
+	OF_KINDOF(OFGeminiRequest *) request;
+	OFStream *requestBody = nil;
 	OFGeminiResponse *response;
 	OFStream *underlyingStream;
+	unsigned long long uploadSize;
 
 	[cancelTimer invalidate];
 
@@ -422,10 +513,33 @@ static void *cancelTimerKey = &cancelTimerKey;
 		return false;
 	}
 
-	request = [OFGeminiRequest requestWithIRI: IRI];
+	if ([IRI.scheme isEqual: @"titan"]) {
+		request = [OFTitanRequest requestWithIRI: IRI];
+
+		@try {
+			uploadSize = [request uploadSize];
+		} @catch (OFInvalidArgumentException *e) {
+			[stream asyncWriteString: @"59 Invalid IRI\r\n"];
+			return false;
+		} @catch (OFInvalidFormatException *e) {
+			[stream asyncWriteString: @"59 Invalid IRI\r\n"];
+			return false;
+		} @catch (OFOutOfRangeException *e) {
+			[stream asyncWriteString: @"59 Invalid IRI\r\n"];
+			return false;
+		}
+
+		requestBody = objc_autorelease([[OFGeminiServerRequestBodyStream
+		    alloc] initWithStream: (OFStream
+					       <OFReadyForReadingObserving> *)
+					       stream
+				     size: uploadSize]);
+	} else
+		request = [OFGeminiRequest requestWithIRI: IRI];
+
 	underlyingStream = ((OFTLSStream *)stream).underlyingStream;
-	request.remoteAddress =
-	    ((OFStreamSocket *)underlyingStream).remoteAddress;
+	[request setRemoteAddress:
+	    ((OFStreamSocket *)underlyingStream).remoteAddress];
 
 	response = objc_autorelease([[OFGeminiServerResponse alloc]
 	    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
@@ -436,7 +550,7 @@ static void *cancelTimerKey = &cancelTimerKey;
 					requestBody:response:)
 			withObject: self
 			withObject: request
-			withObject: nil
+			withObject: requestBody
 			withObject: response
 			afterDelay: 0];
 
