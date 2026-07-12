@@ -166,7 +166,7 @@ setParameter(OFString *path, OFString *name, OFString *value)
 
 	objc_autoreleasePoolPop(pool);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)setUploadMIMEType: (OFString *)uploadMIMEType
@@ -198,7 +198,7 @@ setParameter(OFString *path, OFString *name, OFString *value)
 
 	objc_autoreleasePoolPop(pool);
 
-	return ret;
+	return objc_autoreleaseReturnValue(ret);
 }
 
 - (void)setUploadToken: (OFString *)uploadToken
