@@ -960,6 +960,15 @@ static const char *range80ToFF =
 #endif
 }
 
+- (void)testConstantTimeIsEqualToString
+{
+	OTAssertTrue([@"a" constantTimeIsEqualToString: @"a"]);
+	OTAssertFalse([@"a" constantTimeIsEqualToString: @"b"]);
+	OTAssertTrue([@"aa" constantTimeIsEqualToString: @"aa"]);
+	OTAssertFalse([@"aa" constantTimeIsEqualToString: @"aaa"]);
+	OTAssertFalse([@"aaa" constantTimeIsEqualToString: @"aa"]);
+}
+
 - (void)testStringByMD5Hashing
 {
 	OTAssertEqualObjects(_string.stringByMD5Hashing,

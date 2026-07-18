@@ -3165,6 +3165,27 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 }
 #endif
 
+- (bool)constantTimeIsEqualToString: (OFString *)string
+{
+	void *pool = objc_autoreleasePoolPush();
+	const OFUnichar *characters = self.characters;
+	const OFUnichar *otherCharacters = string.characters;
+	size_t length = self.length;
+	size_t otherLength = string.length;
+	size_t minLength = (length < otherLength ? length : otherLength);
+	OFUnichar diff = 0;
+
+	for (size_t i = 0; i < minLength; i++)
+		diff |= characters[i] ^ otherCharacters[i];
+
+	objc_autoreleasePoolPop(pool);
+
+	if (diff != 0 || length != otherLength)
+		return false;
+
+	return true;
+}
+
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {

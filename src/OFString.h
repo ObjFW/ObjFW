@@ -1532,6 +1532,15 @@ typedef void (^OFStringLineEnumerationBlock)(OFString *line, bool *stop);
  */
 - (OFData *)dataWithEncoding: (OFStringEncoding)encoding;
 
+/**
+ * @brief Checks if the specified string is equal to the string in constant
+ *	  time.
+ *
+ * @param string The string to check for equality in constant time
+ * @return Whether the two strings are equal
+ */
+- (bool)constantTimeIsEqualToString: (OFString *)string;
+
 #ifdef OF_HAVE_FILES
 /**
  * @brief Writes the string into the specified file using UTF-8 encoding.

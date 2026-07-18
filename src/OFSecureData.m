@@ -615,7 +615,9 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 - (bool)isEqual: (id)object
 {
 	OFData *otherData;
-	const unsigned char *otherDataItems;
+	const unsigned char *otherItems;
+	size_t otherCount, otherItemSize;
+	size_t minSize;
 	unsigned char diff;
 
 	if (object == self)
@@ -625,17 +627,21 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		return false;
 
 	otherData = object;
-	otherDataItems = otherData.items;
-
-	if (otherData.count != _count || otherData.itemSize != _itemSize)
-		return false;
+	otherItems = otherData.items;
+	otherCount = otherData.count;
+	otherItemSize = otherData.itemSize;
+	minSize = (_count * _itemSize < otherCount * otherItemSize
+	    ? _count * _itemSize : otherCount * otherItemSize);
 
 	diff = 0;
 
-	for (size_t i = 0; i < _count * _itemSize; i++)
-		diff |= otherDataItems[i] ^ _items[i];
+	for (size_t i = 0; i < minSize; i++)
+		diff |= _items[i] ^ otherItems[i];
 
-	return (diff == 0);
+	if (diff != 0 || _itemSize != otherItemSize || _count != otherCount)
+		return false;
+
+	return true;
 }
 
 - (OFString *)description
