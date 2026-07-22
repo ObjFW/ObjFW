@@ -156,8 +156,10 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		ADD_TAG(NP_CloseError, FALSE)
 
 		if (attr != NULL && attr->priority != 0) {
-			if (attr->priority < -1 || attr->priority > 1)
+			if (attr->priority < -1 || attr->priority > 1) {
+				free(*thread);
 				return EINVAL;
+			}
 
 			/*
 			 * -1 should be -128 (lowest possible priority) while
