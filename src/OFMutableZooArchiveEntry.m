@@ -99,7 +99,7 @@
 		    (date.localDayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
 		    ((date.localMinute & 0x3F) << 5) |
-		    ((date.second >> 1) & 0x0F);
+		    ((date.second >> 1) & 0x1F);
 	} else {
 		unsigned short year;
 
@@ -113,7 +113,7 @@
 		_lastModifiedFileDate = (((year - 1980) & 0x7F) << 9) |
 		    ((date.monthOfYear & 0x0F) << 5) | (date.dayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.hour & 0x1F) << 11) |
-		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x1F);
 	}
 
 	objc_autoreleasePoolPop(pool);
