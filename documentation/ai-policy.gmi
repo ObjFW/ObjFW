@@ -4,7 +4,7 @@ AI/LLMs cannot be used to generate any code, documentation, assets or similar â€
 
 Utilizing AI/LLMs to help find bugs in the code or to help with debugging is acceptable. However, if the AI/LLM proposes a patch, this cannot be used â€“ the AI/LLM should be instructed to only explain bugs or fixes, but never produce any code.
 
-Using an AI/LLM agent to create tickets not acceptable. However, using an AI/LLM for translation between languages in tickets is acceptable.
+Using an AI/LLM agent to create tickets is not acceptable. However, using an AI/LLM for translation between languages in tickets is acceptable.
 
 ## Rationale
 
