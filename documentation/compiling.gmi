@@ -58,7 +58,7 @@ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
 
 ### Using the macOS or iOS .framework in Xcode
 
-To use the macOS or iOS framework in Xcode, you need to add the .frameworks to your project and add the following flags to "Other C Flags":
+To use the macOS or iOS framework in Xcode, you need to add the .frameworks to your project and add the following flags to “Other C Flags”:
 
 ```
 -fconstant-string-class=OFConstantString
@@ -80,7 +80,7 @@ The first thing to install is MSYS2 to provide a basic UNIX-like environment for
 
 ### Setting up MSYS2
 
-MSYS2 currently supports 5 different environments. All of them except for the one called just "MSYS" are supported, but which packages you need to install depends on the environment(s) you want to use. If you only want to target Windows 10 and newer, the CLANG64 environment is the recommended one.
+MSYS2 currently supports 5 different environments. All of them except for the one called just “MSYS” are supported, but which packages you need to install depends on the environment(s) you want to use. If you only want to target Windows 10 and newer, the CLANG64 environment is the recommended one.
 
 => https://www.msys2.org/docs/environments/  MSYS2 environments
 

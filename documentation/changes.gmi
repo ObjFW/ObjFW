@@ -55,7 +55,7 @@ Changes from ObjFW 1.5.4:
 * Fixes Deflate64 with sequence lengths > 65535
 * Robustness improvements in Deflate, LHA, Tar, ZIP, BMP, QOI and MessagePack
 * Fixes a missing rethrow in OFOpenSSLTLSStream that could result in hangs
-* Correctly handles "*" in format strings now
+* Correctly handles “*” in format strings now
 * OFDate rejects invalid dates with tm_mon ≥ 12 now
 * OFXMLParser rejects numeric entities == 0 or > U+10FFFF now, as well as surrogates
 * OFString rejects overlong UTF-8 encodings now
@@ -110,7 +110,7 @@ Changes from ObjFW 1.5.2:
 Changes from ObjFW 1.5.1:
 * Makes ObjFWConfig.cmake work on MSYS2
 * ObjFWConfig.cmake now also adds the flags for OBJCXX
-* OFFile no longer uses O_EXLOCK for "x" modes
+* OFFile no longer uses O_EXLOCK for “x” modes
 * Fixes the OF_AMD64 define on Windows
 * ofhttp now removes the terminal's progress indicator on abort
 
@@ -133,7 +133,7 @@ Changes from ObjFW 1.4.4:
 * Adds support for CMake projects using ObjFW ✨
 * Adds support for Unicode 17 ✨
 * Adds methods to OFString and OFMutableString to remove control characters ✨
-* OFLocale now escapes all control characters in variables unless the variable name starts with an "@" ✨
+* OFLocale now escapes all control characters in variables unless the variable name starts with an “@” ✨
 * OFStdOut and OFStdErr now allow writing with a lossy encoding if they have an underlying terminal ✨
 * OFStdOut and OFStdErr now support setting the terminal's progress indicator ✨
 * Revives support for AmigaOS 4 that had bitrotten over the years
@@ -150,7 +150,7 @@ Changes from ObjFW 1.4.4:
 * Adds a new type OFFloat16 for 16-bit floating point that is always available, even when the platform does not support float16 ✨
 * OFHTTPClient now has improved logic when to use keep-alive connections
 * OFHTTPClient now supports custom run loop modes ✨
-* OFHTTPClient now explicitly removes "Authorization" headers on redirects to other hosts
+* OFHTTPClient now explicitly removes “Authorization” headers on redirects to other hosts
 * OFHTTPClient no longer allows newline characters in headers
 * OFINIFile now rejects section names with newlines and merges repeated sections
 * OFInflateStream has been renamed to OFDeflateStream in anticipation for compression support
@@ -456,7 +456,7 @@ Changes from ObjFW 1.0.12:
 * OFLHAArchive no longer defaults to ISO 8859-1
 * New class OFZooArchive for extracting and creating Zoo files ✨
 * The schemes for archive IRI handlers have been renamed
-* The schemes for archive IRI handlers now look for the rightmost "!", which allows for chaining with less quoting
+* The schemes for archive IRI handlers now look for the rightmost “!”, which allows for chaining with less quoting
 * Fixes -[OFMutableArray replaceObjectIdenticalTo:withObject:] being inconsistent with -[OFMutableArray replaceObject:withObject:]
 * Fixes getting non-existent xattrs in OFFileManager
 * Objects on Windows, MS-DOS and 32 bit Solaris now get properly aligned so that SIMD can be used on ivars
@@ -621,7 +621,7 @@ Changes from ObjFW 0.90:
 * of_asprintf: Don't require set up OFLocalization
 * OFGZIPStream: Add missing documentation
 * Fix a linker warning on OpenBSD/SPARC64
-* Remove the OFFile "b" modes from MorphOS (they were already removed for all other OSes)
+* Remove the OFFile “b” modes from MorphOS (they were already removed for all other OSes)
 
 ## ObjFW 0.90
 2017-08-01
@@ -652,7 +652,7 @@ Changes from ObjFW 0.8.1:
 * scrypt ✨
 * Xcode project to build for iOS ✨
 * String decomposition to NFD ✨
-* OFFile modes simplified ("b" removed)
+* OFFile modes simplified (“b” removed)
 
 ## ObjFW 0.8.1
 2015-10-04

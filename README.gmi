@@ -30,7 +30,7 @@ To create your first, empty application, you can use objfw-new:
 objfw-new --app MyFirstApp
 ```
 
-This creates a file MyFirstApp.m. The -[applicationDidFinishLaunching:] method is called as soon as ObjFW finished all initialization. Use this as the entry point to your own code. For example, you could add the following line there to create a "Hello World":
+This creates a file MyFirstApp.m. The -[applicationDidFinishLaunching:] method is called as soon as ObjFW finished all initialization. Use this as the entry point to your own code. For example, you could add the following line there to create a “Hello World”:
 
 ```
 [OFStdOut writeLine: @"Hello World!"];
