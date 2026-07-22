@@ -244,12 +244,13 @@ OFPlainThreadDetach(OFPlainThread thread)
 {
 	ObtainSemaphore(&thread->semaphore);
 
-	if (thread->done)
+	if (thread->done) {
+		ReleaseSemaphore(&thread->semaphore);
 		free(thread);
-	else
+	} else {
 		thread->detached = true;
-
-	ReleaseSemaphore(&thread->semaphore);
+		ReleaseSemaphore(&thread->semaphore);
+	}
 
 	return 0;
 }
