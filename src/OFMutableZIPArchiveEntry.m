@@ -175,7 +175,7 @@
 	    ((date.localMonthOfYear & 0x0F) << 5) |
 	    (date.localDayOfMonth & 0x1F);
 	_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
-	    ((date.localMinute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+	    ((date.localMinute & 0x3F) << 5) | ((date.second >> 1) & 0x1F);
 
 	objc_autoreleasePoolPop(pool);
 }
