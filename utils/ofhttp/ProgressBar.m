@@ -201,9 +201,9 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"%[num] d ",
 		    @"num", num)];
 	} else
-		[OFStdErr writeFormat: @"%2u:%02u:%02u ",
-		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
-		    (uint8_t)_ETA % 60];
+		[OFStdErr writeFormat: @"%2.0f:%02.0f:%02.0f ",
+		    trunc(_ETA / 3600), trunc(fmod(_ETA / 60, 60)),
+		    trunc(fmod(_ETA, 60))];
 
 	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
