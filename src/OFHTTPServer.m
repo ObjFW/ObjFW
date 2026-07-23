@@ -107,7 +107,7 @@ OF_DIRECT_MEMBERS
 			server: (OFHTTPServer *)server;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
-- (bool)sendErrorAndClose: (short)statusCode;
+- (bool)sendErrorAndClose: (unsigned short)statusCode;
 - (void)createResponse;
 @end
 
@@ -220,7 +220,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_stream writeFormat: @"HTTP/%@ %hd %@\r\n",
+	[_stream writeFormat: @"HTTP/%@ %hu %@\r\n",
 			      self.protocolVersionString, _statusCode,
 			      OFHTTPStatusCodeString(_statusCode)];
 
@@ -594,11 +594,11 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 	return true;
 }
 
-- (bool)sendErrorAndClose: (short)statusCode
+- (bool)sendErrorAndClose: (unsigned short)statusCode
 {
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-	[_stream writeFormat: @"HTTP/1.1 %hd %@\r\n"
+	[_stream writeFormat: @"HTTP/1.1 %hu %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",

@@ -69,7 +69,7 @@ OF_DIRECT_MEMBERS
 	unsigned int _redirects;
 	bool _firstLine;
 	OFString *_version;
-	short _status;
+	unsigned short _statusCode;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
 }
 
@@ -271,7 +271,7 @@ normalizeKey(char *str_)
 }
 
 static bool
-defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
+defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 {
 	bool follow;
 
@@ -347,7 +347,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	response = objc_autorelease(
 	    [[OFHTTPClientResponse alloc] initWithStream: stream]);
 	response.protocolVersionString = _version;
-	response.statusCode = _status;
+	response.statusCode = _statusCode;
 	response.headers = _serverHeaders;
 
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
@@ -375,8 +375,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		_client->_lastResponse = objc_retain(response);
 	}
 
-	if (_redirects > 0 && (_status == 301 || _status == 302 ||
-	    _status == 303 || _status == 307) &&
+	if (_redirects > 0 && (_statusCode == 301 || _statusCode == 302 ||
+	    _statusCode == 303 || _statusCode == 307) &&
 	    (location = [_serverHeaders objectForKey: @"Location"]) != nil) {
 		bool follow = true;
 		OFIRI *newIRI;
@@ -403,11 +403,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		    request:response:)])
 			follow = [_client->_delegate client: _client
 				  shouldFollowRedirectToIRI: newIRI
-						 statusCode: _status
+						 statusCode: _statusCode
 						    request: _request
 						   response: response];
 		else if (follow)
-			follow = defaultShouldFollow(_request.method, _status);
+			follow = defaultShouldFollow(_request.method,
+			    _statusCode);
 
 		if (follow) {
 			OFDictionary OF_GENERIC(OFString *, OFString *)
@@ -432,7 +433,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			 * request before redirection. This also means stripping
 			 * the entity of the request.
 			 */
-			if (_status == 303) {
+			if (_statusCode == 303) {
 				for (OFString *key in headers)
 					if ([key hasPrefix: @"Content-"] ||
 					    [key hasPrefix: @"Transfer-"])
@@ -456,7 +457,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	_client->_inProgress = false;
 
-	if (_status / 100 != 2)
+	if (_statusCode / 100 != 2)
 		exception = [OFHTTPRequestFailedException
 		    exceptionWithRequest: _request
 				response: response];
@@ -487,8 +488,6 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)handleFirstLine: (OFString *)line
 {
-	int status;
-
 	/*
 	 * It's possible that the write succeeds on a connection that is
 	 * keep-alive, but the connection has already been closed by the remote
@@ -509,12 +508,15 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	status = [line substringWithRange: OFMakeRange(9, 3)].intValue;
-
-	if (status < 0 || status > 599)
+	@try {
+		_statusCode = [line substringWithRange: OFMakeRange(9, 3)]
+		    .unsignedShortValue;
+	} @catch (OFOutOfRangeException *e) {
 		@throw [OFInvalidServerResponseException exception];
+	}
 
-	_status = (short)status;
+	if (_statusCode > 599)
+		@throw [OFInvalidServerResponseException exception];
 
 	return true;
 }
@@ -538,7 +540,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		    didReceiveHeaders:statusCode:request:)])
 			[_client->_delegate client: _client
 				 didReceiveHeaders: _serverHeaders
-					statusCode: _status
+					statusCode: _statusCode
 					   request: _request];
 
 		stream.delegate = nil;
@@ -1252,7 +1254,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (short)statusCode
+	 statusCode: (unsigned short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if ([_delegate respondsToSelector:
@@ -1265,7 +1267,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 -	       (bool)client: (OFHTTPClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)IRI
-		 statusCode: (short)statusCode
+		 statusCode: (unsigned short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response
 {

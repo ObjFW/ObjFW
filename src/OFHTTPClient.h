@@ -122,7 +122,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (short)statusCode
+	 statusCode: (unsigned short)statusCode
 	    request: (OFHTTPRequest *)request;
 
 /**
@@ -151,7 +151,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -	       (bool)client: (OFHTTPClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)IRI
-		 statusCode: (short)statusCode
+		 statusCode: (unsigned short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response;
 @end

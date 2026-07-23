@@ -722,7 +722,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -	       (bool)client: (OFHTTPClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)IRI
-		 statusCode: (short)statusCode
+		 statusCode: (unsigned short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response
 {
@@ -864,7 +864,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (short)statusCode
+	 statusCode: (unsigned short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if (statusCode != 206)
@@ -893,7 +893,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			OFStdErr.foregroundColor = [OFColor maroon];
 			break;
 		}
-		[OFStdErr writeFormat: @"%hd\n", statusCode];
+		[OFStdErr writeFormat: @"%hu\n", statusCode];
 		OFStdErr.foregroundColor = nil;
 
 		if (type == nil)
@@ -1098,7 +1098,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    [OFHTTPRequestFailedException class]]) {
 		OFHTTPResponse *response =
 		    ((OFHTTPRequestFailedException *)*exception).response;
-		short statusCode;
+		unsigned short statusCode;
 		OFString *codeString;
 
 		if (_ignoreStatus) {
@@ -1107,7 +1107,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		}
 
 		statusCode = response.statusCode;
-		codeString = [OFString stringWithFormat: @"%hd %@",
+		codeString = [OFString stringWithFormat: @"%hu %@",
 		    statusCode, OFHTTPStatusCodeString(statusCode)];
 		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[iri]>!\n"
@@ -1128,7 +1128,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		}
 
 		statusCode = response.statusCode;
-		codeString = [OFString stringWithFormat: @"%hd %@",
+		codeString = [OFString stringWithFormat: @"%hu %@",
 		    statusCode, response.metadata];
 		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[iri]>!\n"

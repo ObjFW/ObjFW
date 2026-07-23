@@ -348,7 +348,7 @@ encodingForContentType(OFString *contentType)
 
 	ret = [[OFString alloc] initWithFormat:
 	    @"<%@:\n"
-	    @"\tStatus code = %hd\n"
+	    @"\tStatus code = %hu\n"
 	    @"\tHeaders = %@\n"
 	    @">",
 	    self.class, _statusCode, indentedHeaders];
