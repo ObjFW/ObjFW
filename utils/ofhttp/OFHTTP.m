@@ -786,7 +786,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[OFStdErr writeFormat: @" -> "];
 
 		OFStdErr.foregroundColor = [OFColor teal];
-		[OFStdErr writeFormat: @"%hhd\n", statusCode];
+		[OFStdErr writeFormat: @"%hhu\n", statusCode];
 		OFStdErr.foregroundColor = nil;
 
 		if (_useUnicode)
@@ -1161,17 +1161,17 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		switch (gemResponse.statusCode / 10) {
 		case 2:
 			OFStdErr.foregroundColor = [OFColor green];
-			[OFStdErr writeFormat: @"%hhd\n",
+			[OFStdErr writeFormat: @"%hhu\n",
 					       gemResponse.statusCode];
 			break;
 		case 3:
 			OFStdErr.foregroundColor = [OFColor teal];
-			[OFStdErr writeFormat: @"%hhd\n",
+			[OFStdErr writeFormat: @"%hhu\n",
 					       gemResponse.statusCode];
 			break;
 		default:
 			OFStdErr.foregroundColor = [OFColor maroon];
-			[OFStdErr writeFormat: @"%hhd %@\n",
+			[OFStdErr writeFormat: @"%hhu %@\n",
 					       gemResponse.statusCode,
 					       metadata];
 			break;

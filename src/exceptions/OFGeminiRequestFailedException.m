@@ -68,7 +68,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"A Gemini request with IRI %@ failed with code %d: %@!",
+	    @"A Gemini request with IRI %@ failed with code %hhu: %@!",
 	    _request.IRI, _response.statusCode, _response.metadata];
 }
 @end

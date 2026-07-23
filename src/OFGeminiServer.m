@@ -189,9 +189,9 @@ static void *cancelTimerKey = &cancelTimerKey;
 	/* TODO: Use non-blocking writes */
 
 	if (_metadata != nil)
-		[_stream writeFormat: @"%u %@\r\n", _statusCode, _metadata];
+		[_stream writeFormat: @"%hhu %@\r\n", _statusCode, _metadata];
 	else
-		[_stream writeFormat: @"%u\r\n", _statusCode];
+		[_stream writeFormat: @"%hhu\r\n", _statusCode];
 
 	_headerSent = true;
 }
