@@ -256,7 +256,7 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
-		    @"%jd", _resumedFrom + _received];
+		    @"%llu", _resumedFrom + _received];
 		[OFStdErr writeString: OF_LOCALIZED(@"progress_bytes",
 		    @"["
 		    @"    ["

@@ -407,7 +407,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    attributesOfItemAtPath: path].fileSize;
 
 			contentLength =
-			    [OFString stringWithFormat: @"%ju", fileSize];
+			    [OFString stringWithFormat: @"%llu", fileSize];
 			[_clientHeaders setObject: contentLength
 					   forKey: @"Content-Length"];
 		} @catch (OFGetItemAttributesFailedException *e) {
@@ -925,7 +925,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				    @"num", lengthString);
 			} else {
 				lengthString = [OFString stringWithFormat:
-				    @"%jd", _resumedFrom + _length];
+				    @"%llu", _resumedFrom + _length];
 				lengthString = OF_LOCALIZED(@"size_bytes",
 				    @"["
 				    @"    ["
@@ -1444,7 +1444,7 @@ next:
 
 			_resumedFrom = (unsigned long long)size;
 
-			range = [OFString stringWithFormat: @"bytes=%ju-",
+			range = [OFString stringWithFormat: @"bytes=%llu-",
 							    _resumedFrom];
 			[clientHeaders setObject: range forKey: @"Range"];
 		} @catch (OFGetItemAttributesFailedException *e) {
