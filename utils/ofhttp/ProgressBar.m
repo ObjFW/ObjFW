@@ -192,7 +192,7 @@ static const OFTimeInterval updateInterval = 0.1;
 		_ETA = timeInterval;
 	}
 
-	if (isinf(_ETA))
+	if (isinf(_ETA) || isnan(_ETA))
 		[OFStdErr writeString: @"--:--:-- "];
 	else if (_ETA >= 99 * 3600) {
 		OFString *num = [OFString stringWithFormat:
