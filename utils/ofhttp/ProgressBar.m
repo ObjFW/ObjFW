@@ -37,7 +37,7 @@ static const OFTimeInterval updateInterval = 0.1;
 
 #ifdef OF_MINT
 /* freemint-gcc does not have trunc() */
-# define trunc(x) ((int64_t)(x))
+# define trunc(x) ((double)(int64_t)(x))
 #endif
 
 #ifndef HAVE_TRUNCF
