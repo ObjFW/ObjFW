@@ -646,8 +646,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
  * @throw OFCopyItemFailedException Copying failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  */
 - (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -665,8 +663,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination IRI
  * @throw OFCopyItemFailedException Copying failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
  *					 the IRI's scheme
  */
@@ -686,13 +682,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  * @throw OFMoveItemFailedException Moving failed
- * @throw OFCopyItemFailedException Copying (to move between different devices)
- *				    failed
- * @throw OFRemoveItemFailedException Removing the source after copying to the
- *				      destination (to move between different
- *				      devices) failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  */
 - (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -710,13 +699,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  * @throw OFMoveItemFailedException Moving failed
- * @throw OFCopyItemFailedException Copying (to move between different devices)
- *				    failed
- * @throw OFRemoveItemFailedException Removing the source after copying to the
- *				      destination (to move between different
- *				      devices) failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
  *					 the IRI's scheme
  */
