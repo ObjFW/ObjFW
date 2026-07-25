@@ -87,6 +87,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFReplaceItemFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 
 #ifdef OF_WINDOWS
@@ -2258,6 +2259,45 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	objc_autoreleasePoolPop(pool);
 
 	return true;
+}
+
+- (bool)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source
+{
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+	/* Windows and AmigaOS can't atomically replace a file. */
+	return false;
+#else
+	void *pool;
+	OFStringEncoding encoding = [OFLocale encoding];
+	int status;
+
+	if (![source.scheme isEqual: _scheme] ||
+	    ![destination.scheme isEqual: _scheme])
+		return false;
+
+	if (![self fileExistsAtIRI: destination])
+		@throw [OFReplaceItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: ENOENT];
+
+	pool = objc_autoreleasePoolPush();
+
+	status = rename([source.fileSystemRepresentation
+	    cStringWithEncoding: encoding],
+	    [destination.fileSystemRepresentation
+	    cStringWithEncoding: encoding]);
+
+	if (status != 0)
+		@throw [OFReplaceItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: errno];
+
+	objc_autoreleasePoolPop(pool);
+
+	return true;
+#endif
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_EXTENDED_ATTRIBUTES

@@ -436,6 +436,28 @@ OF_ASSUME_NONNULL_BEGIN
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
 
 /**
+ * @brief Tries to atomically replace an item. If a replace would only be
+ *	  possible by deleting the destination and renaming the source, it
+ *	  returns false.
+ *
+ * The destination IRI must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If the destination is on a different logical device or uses a different
+ * scheme, an efficient move is not possible and false is returned.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the destination with
+ * @return True if an atomic replace was performed, false if an atomic replace
+ *	   was not possible. Note that errors while performing a replace are
+ *	   reported via exceptions and not by returning false!
+ * @throw OFReplaceItemFailedException Replacing failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ */
+- (bool)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source;
+
+/**
  * @brief Returns the extended attribute data for the specified name of the
  *	  item at the specified IRI.
  *

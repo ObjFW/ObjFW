@@ -228,6 +228,11 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return false;
 }
 
+- (bool)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source
+{
+	return false;
+}
+
 - (OFData *)extendedAttributeDataForName: (OFString *)name
 			     ofItemAtIRI: (OFIRI *)IRI
 {
