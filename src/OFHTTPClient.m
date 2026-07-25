@@ -532,9 +532,37 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 
 	if (line.length == 0) {
 		OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+		OFString *contentLengthString;
 		OFTimer *timer;
 
 		[_serverHeaders makeImmutable];
+
+		/*
+		 * Validate the headers before we pass them to the delegate. We
+		 * perform the same validation later on when creating the
+		 * response, but we already want to detect and report the
+		 * invalid server response earlier.
+		 */
+		contentLengthString =
+		    [_serverHeaders objectForKey: @"Content-Length"];
+		if (contentLengthString != nil) {
+			bool chunked = [parseTransferEncoding(_serverHeaders)
+			    containsObject: @"chunked"];
+
+			if (chunked || contentLengthString.length == 0)
+				@throw [OFInvalidServerResponseException
+				    exception];
+
+			@try {
+				[contentLengthString unsignedLongLongValue];
+			} @catch (OFInvalidFormatException *e) {
+				@throw [OFInvalidServerResponseException
+				    exception];
+			} @catch (OFOutOfRangeException *e) {
+				@throw [OFInvalidServerResponseException
+				    exception];
+			}
+		}
 
 		if ([_client->_delegate respondsToSelector: @selector(client:
 		    didReceiveHeaders:statusCode:request:)])
