@@ -1103,12 +1103,6 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			@throw e;
 	}
 
-	if (![self fileExistsAtIRI: destination])
-		@throw [OFReplaceItemFailedException
-		    exceptionWithSourceIRI: source
-			    destinationIRI: destination
-				     errNo: ENOENT];
-
 	@try {
 		[self removeItemAtIRI: destination];
 	} @catch (OFRemoveItemFailedException *e) {
