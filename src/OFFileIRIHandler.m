@@ -2206,35 +2206,38 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination
 {
 	void *pool;
+	OFStringEncoding encoding;
 
 	if (![source.scheme isEqual: _scheme] ||
 	    ![destination.scheme isEqual: _scheme])
 		return false;
 
-#ifndef HAVE_RENAMEAT2
+	pool = objc_autoreleasePoolPush();
+	encoding = [OFLocale encoding];
+
+#ifdef HAVE_RENAMEAT2
+	if (renameat2(AT_FDCWD, [source.fileSystemRepresentation
+	    cStringWithEncoding: encoding], AT_FDCWD,
+	    [destination.fileSystemRepresentation
+	    cStringWithEncoding: encoding], RENAME_NOREPLACE) == 0) {
+		objc_autoreleasePoolPop(pool);
+		return true;
+	}
+
+	if (errno != EINVAL)
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: errno];
+#endif
+
 	if ([self fileExistsAtIRI: destination])
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
 				     errNo: EEXIST];
-#endif
 
-	pool = objc_autoreleasePoolPush();
-
-#if defined(HAVE_RENAMEAT2)
-	OFStringEncoding encoding = [OFLocale encoding];
-
-	if (renameat2(AT_FDCWD, [source.fileSystemRepresentation
-	    cStringWithEncoding: encoding], AT_FDCWD,
-	    [destination.fileSystemRepresentation
-	    cStringWithEncoding: encoding], RENAME_NOREPLACE) != 0)
-		@throw [OFMoveItemFailedException
-		    exceptionWithSourceIRI: source
-			    destinationIRI: destination
-				     errNo: errno];
-#elif defined(OF_AMIGAOS)
-	OFStringEncoding encoding = [OFLocale encoding];
-
+#ifdef OF_AMIGAOS
 	if (!Rename([source.fileSystemRepresentation
 	    cStringWithEncoding: encoding],
 	    [destination.fileSystemRepresentation
@@ -2252,7 +2255,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    destination.fileSystemRepresentation.UTF16String);
 	else {
 # endif
-		OFStringEncoding encoding = [OFLocale encoding];
 
 		status = rename([source.fileSystemRepresentation
 		    cStringWithEncoding: encoding],
