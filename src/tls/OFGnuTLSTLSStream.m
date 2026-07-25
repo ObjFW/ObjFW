@@ -119,7 +119,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 
 - (void)dealloc
 {
-	[self close];
+	if (_session != NULL)
+		[self close];
 
 	objc_release(_host);
 
