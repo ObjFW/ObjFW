@@ -191,6 +191,19 @@ OFHashSeedRef()
 	return __extension__ ((unsigned long *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 94))();
 }
 
+void __attribute__((__weak__))
+_OFThrowOutOfRangeException()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWBase) : "r12"
+	);
+
+	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWBase) - 100))();
+
+	OF_UNREACHABLE
+}
+
 int __attribute__((__weak__))
 OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
 {
@@ -199,7 +212,7 @@ OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, 
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(int *_Nonnull, char *_Nullable *_Nonnull *_Nonnull, id <OFApplicationDelegate>))*(void **)(((uintptr_t)ObjFWBase) - 100))(argc, argv, delegate);
+	return __extension__ ((int (*)(int *_Nonnull, char *_Nullable *_Nonnull *_Nonnull, id <OFApplicationDelegate>))*(void **)(((uintptr_t)ObjFWBase) - 106))(argc, argv, delegate);
 }
 
 void *_Nullable __attribute__((__weak__))
@@ -210,7 +223,7 @@ _Block_copy(const void *_Nullable block)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((void *_Nullable (*)(const void *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 106))(block);
+	return __extension__ ((void *_Nullable (*)(const void *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 112))(block);
 }
 
 void __attribute__((__weak__))
@@ -221,7 +234,7 @@ _Block_release(const void *_Nullable block)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const void *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 112))(block);
+	__extension__ ((void (*)(const void *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 118))(block);
 }
 
 void __attribute__((__weak__))
@@ -232,7 +245,7 @@ _Block_object_assign(void *_Nonnull dst, const void *_Nullable src, int flags)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(void *_Nonnull, const void *_Nullable, int))*(void **)(((uintptr_t)ObjFWBase) - 118))(dst, src, flags);
+	__extension__ ((void (*)(void *_Nonnull, const void *_Nullable, int))*(void **)(((uintptr_t)ObjFWBase) - 124))(dst, src, flags);
 }
 
 void __attribute__((__weak__))
@@ -243,7 +256,7 @@ _Block_object_dispose(const void *object, int flags)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const void *, int))*(void **)(((uintptr_t)ObjFWBase) - 124))(object, flags);
+	__extension__ ((void (*)(const void *, int))*(void **)(((uintptr_t)ObjFWBase) - 130))(object, flags);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -254,7 +267,7 @@ OFDNSClassName(OFDNSClass DNSClass)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFDNSClass))*(void **)(((uintptr_t)ObjFWBase) - 130))(DNSClass);
+	return __extension__ ((OFString *_Nonnull (*)(OFDNSClass))*(void **)(((uintptr_t)ObjFWBase) - 136))(DNSClass);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -265,7 +278,7 @@ OFDNSRecordTypeName(OFDNSRecordType recordType)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFDNSRecordType))*(void **)(((uintptr_t)ObjFWBase) - 136))(recordType);
+	return __extension__ ((OFString *_Nonnull (*)(OFDNSRecordType))*(void **)(((uintptr_t)ObjFWBase) - 142))(recordType);
 }
 
 OFDNSClass __attribute__((__weak__))
@@ -276,7 +289,7 @@ OFDNSClassParseName(OFString *_Nonnull string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFDNSClass (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 142))(string);
+	return __extension__ ((OFDNSClass (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 148))(string);
 }
 
 OFDNSRecordType __attribute__((__weak__))
@@ -287,7 +300,7 @@ OFDNSRecordTypeParseName(OFString *_Nonnull string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFDNSRecordType (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 148))(string);
+	return __extension__ ((OFDNSRecordType (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 154))(string);
 }
 
 void __attribute__((__weak__))
@@ -298,7 +311,7 @@ OFRegisterEmbeddedFile(OFString *_Nonnull name, const uint8_t *_Nonnull bytes, s
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFString *_Nonnull, const uint8_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 154))(name, bytes, size);
+	__extension__ ((void (*)(OFString *_Nonnull, const uint8_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 160))(name, bytes, size);
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -309,7 +322,7 @@ OFFileSizeRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 160))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 166))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -320,7 +333,7 @@ OFFileTypeRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 166))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 172))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -331,7 +344,7 @@ OFFilePOSIXPermissionsRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 172))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 178))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -342,7 +355,7 @@ OFFileOwnerAccountIDRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 178))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 184))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -353,7 +366,7 @@ OFFileGroupOwnerAccountIDRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 184))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 190))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -364,7 +377,7 @@ OFFileOwnerAccountNameRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 190))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 196))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -375,7 +388,7 @@ OFFileGroupOwnerAccountNameRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 196))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 202))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -386,7 +399,7 @@ OFFileLastAccessDateRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 202))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 208))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -397,7 +410,7 @@ OFFileModificationDateRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 208))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 214))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -408,7 +421,7 @@ OFFileStatusChangeDateRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 214))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 220))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -419,7 +432,7 @@ OFFileCreationDateRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 220))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 226))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -430,7 +443,7 @@ OFFileSymbolicLinkDestinationRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 226))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 232))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -441,7 +454,7 @@ OFFileExtendedAttributesNamesRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 232))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 238))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -452,7 +465,7 @@ OFFileAmigaProtectionRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 238))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 244))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -463,7 +476,7 @@ OFFileAmigaCommentRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 244))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 250))();
 }
 
 const OFFileAttributeKey *_Nonnull __attribute__((__weak__))
@@ -474,7 +487,7 @@ OFFileMSDOSAttributesRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 250))();
+	return __extension__ ((const OFFileAttributeKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 256))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -485,7 +498,7 @@ OFFileTypeRegularRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 256))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 262))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -496,7 +509,7 @@ OFFileTypeDirectoryRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 262))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 268))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -507,7 +520,7 @@ OFFileTypeSymbolicLinkRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 268))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 274))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -518,7 +531,7 @@ OFFileTypeFIFORef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 274))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 280))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -529,7 +542,7 @@ OFFileTypeCharacterSpecialRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 280))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 286))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -540,7 +553,7 @@ OFFileTypeBlockSpecialRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 286))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 292))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -551,7 +564,7 @@ OFFileTypeSocketRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 292))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 298))();
 }
 
 const OFFileAttributeType *_Nonnull __attribute__((__weak__))
@@ -562,7 +575,7 @@ OFFileTypeUnknownRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 298))();
+	return __extension__ ((const OFFileAttributeType *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 304))();
 }
 
 OFString *_Nullable __attribute__((__weak__))
@@ -573,7 +586,7 @@ OFHTTPRequestMethodString(OFHTTPRequestMethod method)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nullable (*)(OFHTTPRequestMethod))*(void **)(((uintptr_t)ObjFWBase) - 304))(method);
+	return __extension__ ((OFString *_Nullable (*)(OFHTTPRequestMethod))*(void **)(((uintptr_t)ObjFWBase) - 310))(method);
 }
 
 OFHTTPRequestMethod __attribute__((__weak__))
@@ -584,7 +597,7 @@ OFHTTPRequestMethodParseString(OFString *string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFHTTPRequestMethod (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 310))(string);
+	return __extension__ ((OFHTTPRequestMethod (*)(OFString *))*(void **)(((uintptr_t)ObjFWBase) - 316))(string);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -595,7 +608,7 @@ OFHTTPStatusCodeString(short code)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(short))*(void **)(((uintptr_t)ObjFWBase) - 316))(code);
+	return __extension__ ((OFString *_Nonnull (*)(short))*(void **)(((uintptr_t)ObjFWBase) - 322))(code);
 }
 
 const OFImageFormat *_Nonnull __attribute__((__weak__))
@@ -606,7 +619,7 @@ OFImageFormatBMPRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 322))();
+	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 328))();
 }
 
 const OFImageFormat *_Nonnull __attribute__((__weak__))
@@ -617,7 +630,7 @@ OFImageFormatGIFRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 328))();
+	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 334))();
 }
 
 const OFImageFormat *_Nonnull __attribute__((__weak__))
@@ -628,7 +641,7 @@ OFImageFormatJPEGRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 334))();
+	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 340))();
 }
 
 const OFImageFormat *_Nonnull __attribute__((__weak__))
@@ -639,7 +652,7 @@ OFImageFormatPNGRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 340))();
+	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 346))();
 }
 
 const OFImageFormat *_Nonnull __attribute__((__weak__))
@@ -650,7 +663,7 @@ OFImageFormatQOIRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 346))();
+	return __extension__ ((const OFImageFormat *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 352))();
 }
 
 OFListItem _Nullable __attribute__((__weak__))
@@ -661,7 +674,7 @@ OFListItemNext(OFListItem _Nonnull listItem)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 352))(listItem);
+	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 358))(listItem);
 }
 
 OFListItem _Nullable __attribute__((__weak__))
@@ -672,7 +685,7 @@ OFListItemPrevious(OFListItem _Nonnull listItem)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 358))(listItem);
+	return __extension__ ((OFListItem _Nullable (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 364))(listItem);
 }
 
 id _Nonnull __attribute__((__weak__))
@@ -683,7 +696,7 @@ OFListItemObject(OFListItem _Nonnull listItem)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((id _Nonnull (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 364))(listItem);
+	return __extension__ ((id _Nonnull (*)(OFListItem _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 370))(listItem);
 }
 
 size_t __attribute__((__weak__))
@@ -694,7 +707,7 @@ OFSizeOfTypeEncoding(const char *type)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 370))(type);
+	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 376))(type);
 }
 
 size_t __attribute__((__weak__))
@@ -705,7 +718,7 @@ OFAlignmentOfTypeEncoding(const char *type)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 376))(type);
+	return __extension__ ((size_t (*)(const char *))*(void **)(((uintptr_t)ObjFWBase) - 382))(type);
 }
 
 void __attribute__((__weak__))
@@ -716,7 +729,7 @@ OFOnce(OFOnceControl *_Nonnull control, OFOnceFunction _Nonnull func)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFOnceControl *_Nonnull, OFOnceFunction _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 382))(control, func);
+	__extension__ ((void (*)(OFOnceControl *_Nonnull, OFOnceFunction _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 388))(control, func);
 }
 
 void __attribute__((__weak__))
@@ -727,7 +740,7 @@ OFPBKDF2(OFPBKDF2Parameters parameters)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFPBKDF2Parameters))*(void **)(((uintptr_t)ObjFWBase) - 388))(parameters);
+	__extension__ ((void (*)(OFPBKDF2Parameters))*(void **)(((uintptr_t)ObjFWBase) - 394))(parameters);
 }
 
 int __attribute__((__weak__))
@@ -738,7 +751,7 @@ OFPlainConditionNew(OFPlainCondition *_Nonnull condition)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 394))(condition);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 400))(condition);
 }
 
 int __attribute__((__weak__))
@@ -749,7 +762,7 @@ OFPlainConditionSignal(OFPlainCondition *_Nonnull condition)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 400))(condition);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 406))(condition);
 }
 
 int __attribute__((__weak__))
@@ -760,7 +773,7 @@ OFPlainConditionBroadcast(OFPlainCondition *_Nonnull condition)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 406))(condition);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 412))(condition);
 }
 
 int __attribute__((__weak__))
@@ -771,7 +784,7 @@ OFPlainConditionWait(OFPlainCondition *_Nonnull condition, OFPlainMutex *_Nonnul
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 412))(condition, mutex);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 418))(condition, mutex);
 }
 
 int __attribute__((__weak__))
@@ -782,7 +795,7 @@ OFPlainConditionTimedWait(OFPlainCondition *_Nonnull condition, OFPlainMutex *_N
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, OFTimeInterval))*(void **)(((uintptr_t)ObjFWBase) - 418))(condition, mutex, timeout);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, OFTimeInterval))*(void **)(((uintptr_t)ObjFWBase) - 424))(condition, mutex, timeout);
 }
 
 int __attribute__((__weak__))
@@ -793,7 +806,7 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *_Nonnull condition, OFPlainMu
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, ULONG *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 424))(condition, mutex, signalMask);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, ULONG *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 430))(condition, mutex, signalMask);
 }
 
 int __attribute__((__weak__))
@@ -804,7 +817,7 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *_Nonnull condition, OFPl
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, OFTimeInterval, ULONG *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 430))(condition, mutex, timeout, signalMask);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull, OFPlainMutex *_Nonnull, OFTimeInterval, ULONG *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 436))(condition, mutex, timeout, signalMask);
 }
 
 int __attribute__((__weak__))
@@ -815,7 +828,7 @@ OFPlainConditionFree(OFPlainCondition *_Nonnull condition)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 436))(condition);
+	return __extension__ ((int (*)(OFPlainCondition *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 442))(condition);
 }
 
 int __attribute__((__weak__))
@@ -826,7 +839,7 @@ OFPlainMutexNew(OFPlainMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 442))(mutex);
+	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 448))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -837,7 +850,7 @@ OFPlainMutexLock(OFPlainMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 448))(mutex);
+	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 454))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -848,7 +861,7 @@ OFPlainMutexTryLock(OFPlainMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 454))(mutex);
+	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 460))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -859,7 +872,7 @@ OFPlainMutexUnlock(OFPlainMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 460))(mutex);
+	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 466))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -870,7 +883,7 @@ OFPlainMutexFree(OFPlainMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 466))(mutex);
+	return __extension__ ((int (*)(OFPlainMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 472))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -881,7 +894,7 @@ OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 472))(mutex);
+	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 478))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -892,7 +905,7 @@ OFPlainRecursiveMutexLock(OFPlainRecursiveMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 478))(mutex);
+	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 484))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -903,7 +916,7 @@ OFPlainRecursiveMutexTryLock(OFPlainRecursiveMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 484))(mutex);
+	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 490))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -914,7 +927,7 @@ OFPlainRecursiveMutexUnlock(OFPlainRecursiveMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 490))(mutex);
+	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 496))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -925,7 +938,7 @@ OFPlainRecursiveMutexFree(OFPlainRecursiveMutex *_Nonnull mutex)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 496))(mutex);
+	return __extension__ ((int (*)(OFPlainRecursiveMutex *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 502))(mutex);
 }
 
 int __attribute__((__weak__))
@@ -936,7 +949,7 @@ OFPlainThreadAttributesInit(OFPlainThreadAttributes *_Nonnull attr)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThreadAttributes *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 502))(attr);
+	return __extension__ ((int (*)(OFPlainThreadAttributes *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 508))(attr);
 }
 
 int __attribute__((__weak__))
@@ -947,7 +960,7 @@ OFPlainThreadNew(OFPlainThread _Nonnull *_Nonnull thread, const char *_Nullable 
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Nonnull *_Nonnull, const char *_Nullable, OFPlainThreadFunction _Nonnull, id _Nullable, const OFPlainThreadAttributes *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 508))(thread, name, function, object, attr);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull *_Nonnull, const char *_Nullable, OFPlainThreadFunction _Nonnull, id _Nullable, const OFPlainThreadAttributes *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 514))(thread, name, function, object, attr);
 }
 
 void __attribute__((__weak__))
@@ -958,7 +971,7 @@ OFSetThreadName(const char *_Nullable name)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const char *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 514))(name);
+	__extension__ ((void (*)(const char *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 520))(name);
 }
 
 int __attribute__((__weak__))
@@ -969,7 +982,7 @@ OFPlainThreadJoin(OFPlainThread _Nonnull thread)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 520))(thread);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 526))(thread);
 }
 
 int __attribute__((__weak__))
@@ -980,7 +993,7 @@ OFPlainThreadDetach(OFPlainThread _Nonnull thread)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 526))(thread);
+	return __extension__ ((int (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 532))(thread);
 }
 
 OFPlainThread _Nonnull __attribute__((__weak__))
@@ -991,7 +1004,7 @@ OFCurrentPlainThread()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFPlainThread _Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 532))();
+	return __extension__ ((OFPlainThread _Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 538))();
 }
 
 bool __attribute__((__weak__))
@@ -1002,7 +1015,7 @@ OFPlainThreadIsCurrent(OFPlainThread _Nonnull thread)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 538))(thread);
+	return __extension__ ((bool (*)(OFPlainThread _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 544))(thread);
 }
 
 const OFRunLoopMode *_Nonnull __attribute__((__weak__))
@@ -1013,7 +1026,7 @@ OFDefaultRunLoopModeRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFRunLoopMode *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 544))();
+	return __extension__ ((const OFRunLoopMode *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 550))();
 }
 
 void __attribute__((__weak__))
@@ -1024,7 +1037,7 @@ OFScrypt(OFScryptParameters parameters)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFScryptParameters))*(void **)(((uintptr_t)ObjFWBase) - 550))(parameters);
+	__extension__ ((void (*)(OFScryptParameters))*(void **)(((uintptr_t)ObjFWBase) - 556))(parameters);
 }
 
 void __attribute__((__weak__))
@@ -1035,7 +1048,7 @@ _OFSalsa20_8Core(uint32_t *_Nonnull buffer)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 556))(buffer);
+	__extension__ ((void (*)(uint32_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 562))(buffer);
 }
 
 void __attribute__((__weak__))
@@ -1046,7 +1059,7 @@ _OFScryptBlockMix(uint32_t *_Nonnull output, const uint32_t *_Nonnull input, siz
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *_Nonnull, const uint32_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 562))(output, input, blockSize);
+	__extension__ ((void (*)(uint32_t *_Nonnull, const uint32_t *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWBase) - 568))(output, input, blockSize);
 }
 
 void __attribute__((__weak__))
@@ -1057,7 +1070,7 @@ _OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor, uint32_t *
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(uint32_t *, size_t, size_t, uint32_t *))*(void **)(((uintptr_t)ObjFWBase) - 568))(buffer, blockSize, costFactor, tmp);
+	__extension__ ((void (*)(uint32_t *, size_t, size_t, uint32_t *))*(void **)(((uintptr_t)ObjFWBase) - 574))(buffer, blockSize, costFactor, tmp);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1068,7 +1081,7 @@ OFSocketAddressParseIP(OFString *_Nonnull IP, uint16_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 574))(IP, port);
+	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 580))(IP, port);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1079,7 +1092,7 @@ OFSocketAddressParseIPv4(OFString *_Nonnull IP, uint16_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 580))(IP, port);
+	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 586))(IP, port);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1090,7 +1103,7 @@ OFSocketAddressParseIPv6(OFString *_Nonnull IP, uint16_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 586))(IP, port);
+	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 592))(IP, port);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1101,7 +1114,7 @@ OFSocketAddressMakeUNIX(OFString *_Nonnull path)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 592))(path);
+	return __extension__ ((OFSocketAddress (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 598))(path);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1112,7 +1125,7 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char *_Nonnull node, uin
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(uint32_t, const unsigned char *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 598))(network, node, port);
+	return __extension__ ((OFSocketAddress (*)(uint32_t, const unsigned char *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 604))(network, node, port);
 }
 
 OFSocketAddress __attribute__((__weak__))
@@ -1123,7 +1136,7 @@ OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFSocketAddress (*)(uint16_t, uint8_t, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 604))(network, node, port);
+	return __extension__ ((OFSocketAddress (*)(uint16_t, uint8_t, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 610))(network, node, port);
 }
 
 bool __attribute__((__weak__))
@@ -1134,7 +1147,7 @@ OFSocketAddressEqual(const OFSocketAddress *_Nonnull address1, const OFSocketAdd
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(const OFSocketAddress *_Nonnull, const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 610))(address1, address2);
+	return __extension__ ((bool (*)(const OFSocketAddress *_Nonnull, const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 616))(address1, address2);
 }
 
 unsigned long __attribute__((__weak__))
@@ -1145,7 +1158,7 @@ OFSocketAddressHash(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((unsigned long (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 616))(address);
+	return __extension__ ((unsigned long (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 622))(address);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1156,7 +1169,7 @@ OFSocketAddressString(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 622))(address);
+	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 628))(address);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1167,7 +1180,7 @@ OFSocketAddressDescription(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 628))(address);
+	return __extension__ ((OFString *_Nonnull (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 634))(address);
 }
 
 void __attribute__((__weak__))
@@ -1178,7 +1191,7 @@ OFSocketAddressSetIPPort(OFSocketAddress *_Nonnull address, uint16_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 634))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 640))(address, port);
 }
 
 uint16_t __attribute__((__weak__))
@@ -1189,7 +1202,7 @@ OFSocketAddressIPPort(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 640))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 646))(address);
 }
 
 OFString * __attribute__((__weak__))
@@ -1200,7 +1213,7 @@ OFSocketAddressUNIXPath(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *(*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 646))(address);
+	return __extension__ ((OFString *(*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 652))(address);
 }
 
 void __attribute__((__weak__))
@@ -1211,7 +1224,7 @@ OFSocketAddressSetIPXNetwork(OFSocketAddress *_Nonnull address, uint32_t network
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint32_t))*(void **)(((uintptr_t)ObjFWBase) - 652))(address, network);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint32_t))*(void **)(((uintptr_t)ObjFWBase) - 658))(address, network);
 }
 
 uint32_t __attribute__((__weak__))
@@ -1222,7 +1235,7 @@ OFSocketAddressIPXNetwork(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint32_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 658))(address);
+	return __extension__ ((uint32_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 664))(address);
 }
 
 void __attribute__((__weak__))
@@ -1233,7 +1246,7 @@ OFSocketAddressSetIPXNode(OFSocketAddress *_Nonnull address, const unsigned char
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, const unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 664))(address, node);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, const unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 670))(address, node);
 }
 
 void __attribute__((__weak__))
@@ -1244,7 +1257,7 @@ OFSocketAddressGetIPXNode(const OFSocketAddress *_Nonnull address, unsigned char
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(const OFSocketAddress *_Nonnull, unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 670))(address, node);
+	__extension__ ((void (*)(const OFSocketAddress *_Nonnull, unsigned char *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 676))(address, node);
 }
 
 void __attribute__((__weak__))
@@ -1255,7 +1268,7 @@ OFSocketAddressSetIPXPort(OFSocketAddress *_Nonnull address, uint16_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 676))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 682))(address, port);
 }
 
 uint16_t __attribute__((__weak__))
@@ -1266,7 +1279,7 @@ OFSocketAddressIPXPort(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 682))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 688))(address);
 }
 
 void __attribute__((__weak__))
@@ -1277,7 +1290,7 @@ OFSocketAddressSetAppleTalkNetwork(OFSocketAddress *_Nonnull address, uint16_t n
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 688))(address, network);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 694))(address, network);
 }
 
 uint16_t __attribute__((__weak__))
@@ -1288,7 +1301,7 @@ OFSocketAddressAppleTalkNetwork(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 694))(address);
+	return __extension__ ((uint16_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 700))(address);
 }
 
 void __attribute__((__weak__))
@@ -1299,7 +1312,7 @@ OFSocketAddressSetAppleTalkNode(OFSocketAddress *_Nonnull address, uint8_t node)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 700))(address, node);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 706))(address, node);
 }
 
 uint8_t __attribute__((__weak__))
@@ -1310,7 +1323,7 @@ OFSocketAddressAppleTalkNode(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint8_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 706))(address);
+	return __extension__ ((uint8_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 712))(address);
 }
 
 void __attribute__((__weak__))
@@ -1321,7 +1334,7 @@ OFSocketAddressSetAppleTalkPort(OFSocketAddress *_Nonnull address, uint8_t port)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 712))(address, port);
+	__extension__ ((void (*)(OFSocketAddress *_Nonnull, uint8_t))*(void **)(((uintptr_t)ObjFWBase) - 718))(address, port);
 }
 
 uint8_t __attribute__((__weak__))
@@ -1332,7 +1345,7 @@ OFSocketAddressAppleTalkPort(const OFSocketAddress *_Nonnull address)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((uint8_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 718))(address);
+	return __extension__ ((uint8_t (*)(const OFSocketAddress *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 724))(address);
 }
 
 OFStdIOStream *_Nonnull *_Nullable __attribute__((__weak__))
@@ -1343,7 +1356,7 @@ OFStdInRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 724))();
+	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 730))();
 }
 
 OFStdIOStream *_Nonnull *_Nullable __attribute__((__weak__))
@@ -1354,7 +1367,7 @@ OFStdOutRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 730))();
+	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 736))();
 }
 
 OFStdIOStream *_Nonnull *_Nullable __attribute__((__weak__))
@@ -1365,7 +1378,7 @@ OFStdErrRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 736))();
+	return __extension__ ((OFStdIOStream *_Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 742))();
 }
 
 void __attribute__((__weak__))
@@ -1376,7 +1389,7 @@ OFLogV(OFConstantString *_Nonnull format, va_list arguments)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	__extension__ ((void (*)(OFConstantString *_Nonnull, va_list))*(void **)(((uintptr_t)ObjFWBase) - 742))(format, arguments);
+	__extension__ ((void (*)(OFConstantString *_Nonnull, va_list))*(void **)(((uintptr_t)ObjFWBase) - 748))(format, arguments);
 }
 
 const char *_Nullable __attribute__((__weak__))
@@ -1387,7 +1400,7 @@ _OFStrPTime(const char *buffer, const char *format, struct tm *tm, int16_t *_Nul
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 748))(buffer, format, tm, tz);
+	return __extension__ ((const char *_Nullable (*)(const char *, const char *, struct tm *, int16_t *_Nullable))*(void **)(((uintptr_t)ObjFWBase) - 754))(buffer, format, tm, tz);
 }
 
 OFStringEncoding __attribute__((__weak__))
@@ -1398,7 +1411,7 @@ OFStringEncodingParseName(OFString *_Nonnull string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFStringEncoding (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 754))(string);
+	return __extension__ ((OFStringEncoding (*)(OFString *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 760))(string);
 }
 
 OFString *_Nullable __attribute__((__weak__))
@@ -1409,7 +1422,7 @@ OFStringEncodingName(OFStringEncoding encoding)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 760))(encoding);
+	return __extension__ ((OFString *_Nullable (*)(OFStringEncoding))*(void **)(((uintptr_t)ObjFWBase) - 766))(encoding);
 }
 
 size_t __attribute__((__weak__))
@@ -1420,7 +1433,7 @@ OFUTF16StringLength(const OFChar16 *_Nonnull string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar16 *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 766))(string);
+	return __extension__ ((size_t (*)(const OFChar16 *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 772))(string);
 }
 
 size_t __attribute__((__weak__))
@@ -1431,7 +1444,7 @@ OFUTF32StringLength(const OFChar32 *_Nonnull string)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(const OFChar32 *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 772))(string);
+	return __extension__ ((size_t (*)(const OFChar32 *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 778))(string);
 }
 
 const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
@@ -1442,7 +1455,7 @@ OFNetworkInterfaceIndexRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 778))();
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 784))();
 }
 
 const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
@@ -1453,7 +1466,7 @@ OFNetworkInterfaceHardwareAddressRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 784))();
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 790))();
 }
 
 const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
@@ -1464,7 +1477,40 @@ OFNetworkInterfaceIPv4AddressesRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 790))();
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 796))();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
+OFNetworkInterfaceIPv6AddressesRef()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 802))();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
+OFNetworkInterfaceIPXAddressesRef()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 808))();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __attribute__((__weak__))
+OFNetworkInterfaceAppleTalkAddressesRef()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWBase) : "r12"
+	);
+
+	return __extension__ ((const OFNetworkInterfaceKey *_Nonnull (*)())*(void **)(((uintptr_t)ObjFWBase) - 814))();
 }
 
 int __attribute__((__weak__))
@@ -1475,7 +1521,7 @@ OFTLSKeyNew(OFTLSKey _Nonnull *_Nonnull key)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFTLSKey _Nonnull *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 796))(key);
+	return __extension__ ((int (*)(OFTLSKey _Nonnull *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 820))(key);
 }
 
 int __attribute__((__weak__))
@@ -1486,7 +1532,7 @@ OFTLSKeyFree(OFTLSKey _Nonnull key)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((int (*)(OFTLSKey _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 802))(key);
+	return __extension__ ((int (*)(OFTLSKey _Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 826))(key);
 }
 
 Class _Nonnull *_Nullable __attribute__((__weak__))
@@ -1497,7 +1543,7 @@ OFTLSStreamImplementationRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 808))();
+	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 832))();
 }
 
 OFString * __attribute__((__weak__))
@@ -1508,7 +1554,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *(*)(OFTLSStreamErrorCode))*(void **)(((uintptr_t)ObjFWBase) - 814))(errorCode);
+	return __extension__ ((OFString *(*)(OFTLSStreamErrorCode))*(void **)(((uintptr_t)ObjFWBase) - 838))(errorCode);
 }
 
 Class _Nonnull *_Nullable __attribute__((__weak__))
@@ -1519,7 +1565,7 @@ OFX509CertificateImplementationRef()
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 820))();
+	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 844))();
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1530,7 +1576,7 @@ OFZIPArchiveEntryVersionToString(uint16_t version)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 826))(version);
+	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 850))(version);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1541,7 +1587,7 @@ OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compre
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 832))(compressionMethod);
+	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 856))(compressionMethod);
 }
 
 size_t __attribute__((__weak__))
@@ -1552,7 +1598,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryEx
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(OFData *_Nonnull, OFZIPArchiveEntryExtraFieldTag, uint16_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 838))(extraField, tag, size);
+	return __extension__ ((size_t (*)(OFData *_Nonnull, OFZIPArchiveEntryExtraFieldTag, uint16_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 862))(extraField, tag, size);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1563,18 +1609,5 @@ OFStrError(int errNo)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 844))(errNo);
-}
-
-void __attribute__((__weak__))
-_OFThrowOutOfRangeException()
-{
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r" (ObjFWBase) : "r12"
-	);
-
-	__extension__ ((void (*)())*(void **)(((uintptr_t)ObjFWBase) - 850))();
-
-	OF_UNREACHABLE
+	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 868))(errNo);
 }

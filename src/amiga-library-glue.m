@@ -103,6 +103,12 @@ glue_OFHashSeedRef(void)
 	return OFHashSeedRef();
 }
 
+void __saveds
+glue__OFThrowOutOfRangeException(void)
+{
+	_OFThrowOutOfRangeException();
+}
+
 int __saveds
 glue_OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
 {
@@ -799,6 +805,24 @@ glue_OFNetworkInterfaceIPv4AddressesRef(void)
 	return OFNetworkInterfaceIPv4AddressesRef();
 }
 
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceIPv6AddressesRef(void)
+{
+	return OFNetworkInterfaceIPv6AddressesRef();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceIPXAddressesRef(void)
+{
+	return OFNetworkInterfaceIPXAddressesRef();
+}
+
+const OFNetworkInterfaceKey *_Nonnull __saveds
+glue_OFNetworkInterfaceAppleTalkAddressesRef(void)
+{
+	return OFNetworkInterfaceAppleTalkAddressesRef();
+}
+
 int __saveds
 glue_OFTLSKeyNew(OFTLSKey _Nonnull *_Nonnull key)
 {
@@ -851,10 +875,4 @@ OFString *_Nonnull __saveds
 glue_OFStrError(int errNo)
 {
 	return OFStrError(errNo);
-}
-
-void __saveds
-glue__OFThrowOutOfRangeException(void)
-{
-	_OFThrowOutOfRangeException();
 }

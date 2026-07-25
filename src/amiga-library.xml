@@ -40,6 +40,8 @@
   <function name='OFRandom64' return-type='uint64_t'/>
   <!-- Only for tests. -->
   <function name='OFHashSeedRef' return-type='unsigned long *_Nonnull'/>
+  <!-- Used by macros in OFObject.h. -->
+  <function name='_OFThrowOutOfRangeException' noreturn='1'/>
   <include>OFApplication.h</include>
   <function name='OFApplicationMain' return-type='int'>
     <argument name='argc' type='int *_Nonnull'/>
@@ -420,12 +422,12 @@
             return-type='const OFNetworkInterfaceKey *_Nonnull'/>
   <function name='OFNetworkInterfaceIPv4AddressesRef'
             return-type='const OFNetworkInterfaceKey *_Nonnull'/>
-  <!--function name='OFNetworkInterfaceIPv6AddressesRef'
-               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
-  <!--function name='OFNetworkInterfaceIPXAddressesRef'
-               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
-  <!--function name='OFNetworkInterfaceAppleTalkAddressesRef'
-               return-type='const OFNetworkInterfaceKey *_Nonnull'/-->
+  <function name='OFNetworkInterfaceIPv6AddressesRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
+  <function name='OFNetworkInterfaceIPXAddressesRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
+  <function name='OFNetworkInterfaceAppleTalkAddressesRef'
+            return-type='const OFNetworkInterfaceKey *_Nonnull'/>
   <include>OFTLSKey.h</include>
   <function name='OFTLSKeyNew' return-type='int'>
     <argument name='key' type='OFTLSKey _Nonnull *_Nonnull'/>
@@ -461,6 +463,4 @@
   <function name='OFStrError' return-type='OFString *_Nonnull'>
     <argument name='errNo' type='int'/>
   </function>
-  <!-- Used by macros in OFObject.h. -->
-  <function name='_OFThrowOutOfRangeException' noreturn='1'/>
 </amiga-library>
