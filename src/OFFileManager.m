@@ -838,8 +838,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	} @catch (OFCopyItemFailedException *e) {
 		@try {
 			[self removeItemAtIRI: destination];
-		} @catch (OFRemoveItemFailedException *e) {
-			if (e.errNo != ENOENT)
+		} @catch (OFRemoveItemFailedException *innerException) {
+			if (innerException.errNo != ENOENT)
 				@throw [OFMoveItemFailedException
 				    exceptionWithSourceIRI: source
 					    destinationIRI: destination
