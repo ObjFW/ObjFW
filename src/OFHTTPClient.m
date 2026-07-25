@@ -872,18 +872,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 				@throw [OFInvalidArgumentException
 				    exception];
 
-			@try {
-				_toWrite =
-				    contentLengthString.unsignedLongLongValue;
-			} @catch (OFInvalidFormatException *e) {
-				@throw [OFInvalidServerResponseException
-				    exception];
-			} @catch (OFOutOfRangeException *e) {
-				@throw [OFInvalidServerResponseException
-				    exception];
-			}
+			_toWrite = contentLengthString.unsignedLongLongValue;
 		} else if (!_chunked)
-			@throw [OFInvalidServerResponseException exception];
+			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
