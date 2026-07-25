@@ -2211,15 +2211,28 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	    ![destination.scheme isEqual: _scheme])
 		return false;
 
+#ifndef HAVE_RENAMEAT2
 	if ([self fileExistsAtIRI: destination])
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
 				     errNo: EEXIST];
+#endif
 
 	pool = objc_autoreleasePoolPush();
 
-#ifdef OF_AMIGAOS
+#if defined(HAVE_RENAMEAT2)
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	if (renameat2(AT_FDCWD, [source.fileSystemRepresentation
+	    cStringWithEncoding: encoding], AT_FDCWD,
+	    [destination.fileSystemRepresentation
+	    cStringWithEncoding: encoding], RENAME_NOREPLACE) != 0)
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: errno];
+#elif defined(OF_AMIGAOS)
 	OFStringEncoding encoding = [OFLocale encoding];
 
 	if (!Rename([source.fileSystemRepresentation
