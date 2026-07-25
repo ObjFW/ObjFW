@@ -1039,7 +1039,15 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	@try {
 		[self copyItemAtIRI: source toIRI: destination];
 	} @catch (OFCopyItemFailedException *e) {
-		[self removeItemAtIRI: destination];
+		@try {
+			[self removeItemAtIRI: destination];
+		} @catch (OFRemoveItemFailedException *e) {
+			if (e.errNo != ENOENT)
+				@throw [OFMoveItemFailedException
+				    exceptionWithSourceIRI: source
+					    destinationIRI: destination
+						     errNo: e.errNo];
+		}
 
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceIRI: source
