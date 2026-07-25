@@ -54,6 +54,7 @@
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFGetCurrentDirectoryFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
@@ -61,7 +62,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFGetItemAttributesFailedException.h"
+#import "OFReplaceItemFailedException.h"
 #import "OFUndefinedKeyException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -1050,6 +1051,69 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		[self removeItemAtIRI: source];
 	} @catch (OFRemoveItemFailedException *e) {
 		@throw [OFMoveItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: e.errNo];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+#ifdef OF_HAVE_FILES
+- (void)replaceItemAtPath: (OFString *)destination
+	   withItemAtPath: (OFString *)source
+{
+	void *pool = objc_autoreleasePoolPush();
+	[self replaceItemAtIRI: [OFIRI fileIRIWithPath: destination
+					   isDirectory: false]
+		 withItemAtIRI: [OFIRI fileIRIWithPath: source
+					   isDirectory: false]];
+	objc_autoreleasePoolPop(pool);
+}
+#endif
+
+- (void)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source
+{
+	void *pool;
+	OFIRIHandler *IRIHandler;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	if ((IRIHandler = [OFIRIHandler handlerForIRI: source]) == nil)
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithIRI: source];
+
+	@try {
+		if ([IRIHandler replaceItemAtIRI: destination
+				   withItemAtIRI: source])
+			return;
+	} @catch (OFReplaceItemFailedException *e) {
+		if (e.errNo != EXDEV)
+			@throw e;
+	}
+
+	if (![self fileExistsAtIRI: destination])
+		@throw [OFReplaceItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: ENOENT];
+
+	@try {
+		[self removeItemAtIRI: destination];
+	} @catch (OFRemoveItemFailedException *e) {
+		@throw [OFReplaceItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: e.errNo];
+	}
+
+	@try {
+		[self moveItemAtIRI: source toIRI: destination];
+	} @catch (OFMoveItemFailedException *e) {
+		@throw [OFReplaceItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
 				     errNo: e.errNo];

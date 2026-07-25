@@ -210,6 +210,7 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFReplaceItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"

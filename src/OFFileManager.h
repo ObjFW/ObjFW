@@ -706,6 +706,49 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_HAVE_FILES
 /**
+ * @brief Atomically replaces an item.
+ *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
+ *
+ * Directories cannot be atomically replaced.
+ *
+ * If the destination is on a different logical device or atomically replacing
+ * an item is unsupported, the destination will be removed using
+ * @ref removeItemAtPath: and the source moved to the destination using
+ * @ref moveItemAtIRI:toIRI:.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the item with
+ * @throw OFReplaceItemFailedException Replacing failed
+ */
+- (void)replaceItemAtPath: (OFString *)destination
+	   withItemAtPath: (OFString *)source;
+#endif
+
+/**
+ * @brief Atomically replaces an item.
+ *
+ * The destination IRI must have a full path, which means it must include the
+ * name of the item.
+ *
+ * Directories cannot be atomically replaced.
+ *
+ * If the destination is on a different logical device, uses a different scheme
+ * or atomically replacing an item is unsupported, the destination will be
+ * removed using @ref removeItemAtPath: and the source moved to the destination
+ * using @ref moveItemAtIRI:toIRI:.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the item with
+ * @throw OFReplaceItemFailedException Replacing failed
+ * @throw OFUnsupportedProtocolException No handler is registered for either of
+ *					 the IRI's scheme
+ */
+- (void)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source;
+
+#ifdef OF_HAVE_FILES
+/**
  * @brief Removes the item at the specified path.
  *
  * If the item at the specified path is a directory, it is removed recursively.
