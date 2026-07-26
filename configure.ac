@@ -88,6 +88,7 @@ powerpc-*-amigaos*)
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		AC_SUBST(OBJFWHID_AMIGA_LIB, objfwhid.library)
 		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
 		AC_SUBST(AMIGA_LIB_CFLAGS, "$AMIGA_LIB_CFLAGS $t")
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
@@ -520,19 +521,22 @@ AS_IF([test x"$enable_shared" != x"no"], [
 ], [
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
-		tmp="../src/linklib/libobjfw.library.a"
-		AC_SUBST(LIBOBJFW_DEP, "$tmp")
-		AC_SUBST(LIBOBJFW_DEP_LVL2, "../$tmp")
+		AC_SUBST(LIBOBJFW_DEP, "../src/linklib/libobjfw.library.a")
+		AC_SUBST(LIBOBJFW_DEP_LVL2,
+			"../../src/linklib/libobjfw.library.a")
+		AC_SUBST(LIBOBJFWHID_DEP,
+			"../src/hid/linklib/libobjfwhid.library.a")
+		AC_SUBST(LIBOBJFWHID_DEP_LVL2,
+			"../../src/hid/libobjfwhid.library.a")
 	], [
 		AC_SUBST(OBJFW_LIB, "-lobjfw")
 		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+		AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
+		AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 
 		AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library is built])
 	])
-
-	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
-	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
 ])
 
 AS_IF([test x"$build_framework" = x"yes"], [
@@ -542,8 +546,13 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
 	TESTS_LIBS="\${OBJFW_LIB} \${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		TESTS_LIBS="-lobjfwhid.library \${HID_LIBS} $TESTS_LIBS"
+	], [
+		TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
+	])
+	TESTS_LIBS="-L../src/hid -L../src/hid/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
 	TESTS_LIBS="-L../src $TESTS_LIBS"
 ])
@@ -553,11 +562,10 @@ AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
 
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
+
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
-	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
@@ -2148,8 +2156,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AC_SUBST(OBJFWTLS_SHARED_LIB,
 				'${LIB_PREFIX}objfwtls${LIB_SUFFIX}')
 		])
-		AS_IF([test x"$enable_static" = x"yes" \
-		    -o x"$enable_shared" = x"no"], [
+		AS_IF([test x"$enable_static" = x"yes"], [
 			AC_SUBST(OBJFWTLS_STATIC_LIB, "libobjfwtls.a")
 		])
 		AS_IF([test x"$build_framework" = x"yes"], [

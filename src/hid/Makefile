@@ -1,11 +1,13 @@
 include ../../extra.mk
 
+SUBDIRS = ${LINKLIB}
 DISTCLEAN = Info.plist	\
 	    ObjFWHID.oc
 
 SHARED_LIB = ${OBJFWHID_SHARED_LIB}
 STATIC_LIB = ${OBJFWHID_STATIC_LIB}
 FRAMEWORK = ${OBJFWHID_FRAMEWORK}
+AMIGA_LIB = ${OBJFWHID_AMIGA_LIB}
 LIB_MAJOR = ${OBJFWHID_LIB_MAJOR}
 LIB_MINOR = ${OBJFWHID_LIB_MINOR}
 LIB_PATCH = ${OBJFWHID_LIB_PATCH}
@@ -73,6 +75,10 @@ SRCS_XINPUT = OHXInputGameController.m
 
 includesubdir = ObjFWHID
 
+AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
+AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
+
 include ../../buildsys.mk
 
 install-extra:
@@ -96,14 +102,19 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I.					\
-	    -I..				\
-	    -I../..				\
-	    -I../exceptions			\
-	    -I../runtime			\
-	    -I../bridge				\
-	    -DOBJFWHID_LOCAL_INCLUDES		\
-	    -DOBJFWBRIDGE_LOCAL_INCLUDES
+CPPFLAGS += -I.							\
+	    -I..						\
+	    -I../..						\
+	    -I../exceptions					\
+	    -I../runtime					\
+	    -I../bridge						\
+	    -DOBJFWHID_LOCAL_INCLUDES				\
+	    -DOBJFWBRIDGE_LOCAL_INCLUDES			\
+	    -DOBJFWHID_AMIGA_LIB=\"${OBJFWHID_AMIGA_LIB}\"	\
+	    -DOBJFWHID_LIB_MAJOR=${OBJFWHID_LIB_MAJOR}		\
+	    -DOBJFWHID_LIB_MINOR=${OBJFWHID_LIB_MINOR}		\
+	    -DOBJFWHID_LIB_PATCH=${OBJFWHID_LIB_PATCH}		\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\
@@ -112,6 +123,12 @@ FRAMEWORK_LIBS := -F..				\
 		  -framework ObjFW		\
 		  ${RUNTIME_FRAMEWORK_LIBS}	\
 		  ${LIBS}
+AMIGA_LIB_LIBS := -L../runtime/linklib		\
+		  -L../linklib 			\
+		  -lobjfw.library.amigalib	\
+		  -lobjfwrt.library.amigalib	\
+		  ${LIBS}			\
+		  ${AMIGA_LIB_LIBS}
 LIBS := -L..		\
 	-L../runtime	\
 	-L../bridge	\

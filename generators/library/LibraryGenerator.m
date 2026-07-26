@@ -85,6 +85,7 @@ OF_APPLICATION_DELEGATE(LibraryGenerator)
 	[self generateInDirectory: @"../../src"];
 	[self generateInDirectory: @"../../src/runtime"];
 	[self generateInDirectory: @"../../src/tls"];
+	[self generateInDirectory: @"../../src/hid"];
 
 	[OFApplication terminate];
 }

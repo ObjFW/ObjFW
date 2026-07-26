@@ -1,0 +1,8 @@
+<amiga-library version='1.0' base='ObjFWHIDBase'>
+  <include>amiga-library.h</include>
+  <!-- The following function is only for the linklib. -->
+  <function name='OHInit' return-type='bool'>
+    <argument name='version' type='unsigned int'/>
+    <argument name='ctx' type='struct OHLinklibContext *_Nonnull'/>
+  </function>
+</amiga-library>
