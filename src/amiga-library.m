@@ -65,7 +65,7 @@ struct ObjFWBase {
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
 struct OFLinklibContext linklibCtx;
-struct Library *ObjFWRTBase;
+extern struct Library *ObjFWRTBase;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (

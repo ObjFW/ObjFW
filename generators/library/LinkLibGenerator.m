@@ -85,7 +85,7 @@
 				    include.stringValue];
 
 	[_impl writeFormat: @"\n"
-			    @"extern struct Library *%@;\n"
+			    @"struct Library *%@;\n"
 			    @"\n",
 			    libBase];
 

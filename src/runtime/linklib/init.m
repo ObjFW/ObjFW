@@ -36,6 +36,7 @@
 
 #include <constructor.h>
 
+extern struct Library *ObjFWRTBase;
 extern int _Unwind_RaiseException(void *);
 extern void _Unwind_DeleteException(void *);
 extern void *_Unwind_GetLanguageSpecificData(void *);
@@ -53,8 +54,6 @@ extern void __deregister_frame(void *);
 void *__objc_class_name_Protocol;
 
 #ifndef OBJC_COMPILING_AMIGA_LIBRARY
-struct Library *ObjFWRTBase;
-
 static void
 error(const char *string, ULONG arg)
 {

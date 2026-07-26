@@ -51,7 +51,7 @@
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
 
-extern struct Library *ObjFWBase;
+struct Library *ObjFWBase;
 
 #if OF_GCC_VERSION >= 1100
 # pragma GCC diagnostic ignored "-Warray-parameter"

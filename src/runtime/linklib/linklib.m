@@ -24,7 +24,7 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-extern struct Library *ObjFWRTBase;
+struct Library *ObjFWRTBase;
 
 #if OF_GCC_VERSION >= 1100
 # pragma GCC diagnostic ignored "-Warray-parameter"

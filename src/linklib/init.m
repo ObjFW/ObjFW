@@ -40,7 +40,7 @@
 
 #include <constructor.h>
 
-extern struct Library *ObjFWRTBase;
+extern struct Library *ObjFWRTBase, *ObjFWBase;
 extern int _Unwind_RaiseException(void *);
 extern void _Unwind_DeleteException(void *);
 extern void *_Unwind_GetLanguageSpecificData(void *);
@@ -282,8 +282,6 @@ void *__objc_class_name_OFSelectKernelEventObserver;
 void *__objc_class_name_OFUTF8String;
 
 #ifndef OF_AMIGA_LIB
-struct Library *ObjFWBase;
-
 static void
 error(const char *string, ULONG arg)
 {
