@@ -828,6 +828,20 @@ extern void objc_copyWeak(id _Nullable *_Nonnull dest,
     id _Nullable *_Nonnull src);
 extern void objc_moveWeak(id _Nullable *_Nonnull dest,
     id _Nullable *_Nonnull src);
+
+#ifdef __MORPHOS__
+/*
+ * These are used to create trampolines that set r12 for a .library on MorphOS.
+ */
+struct Library;
+struct objc_module;
+
+extern size_t objc_libraryTrampolineSize(void);
+extern void objc_createLibraryTrampoline(uint32_t *_Nonnull buffer,
+    IMP _Nonnull function, struct Library *_Nonnull base);
+extern void objc_createLibraryTrampolinesForModule(
+    struct objc_module *_Nonnull module, struct Library *_Nonnull base);
+#endif
 #ifdef __cplusplus
 }
 #endif

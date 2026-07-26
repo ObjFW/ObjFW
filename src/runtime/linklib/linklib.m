@@ -1076,3 +1076,36 @@ _objc_rootTryRetain(id _Nonnull object)
 
 	return __extension__ ((bool (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 598))(object);
 }
+
+size_t __attribute__((__weak__))
+objc_libraryTrampolineSize()
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((size_t (*)())*(void **)(((uintptr_t)ObjFWRTBase) - 604))();
+}
+
+void __attribute__((__weak__))
+objc_createLibraryTrampoline(uint32_t *_Nonnull buffer, IMP _Nonnull function, struct Library *_Nonnull base)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(uint32_t *_Nonnull, IMP _Nonnull, struct Library *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 610))(buffer, function, base);
+}
+
+void __attribute__((__weak__))
+objc_createLibraryTrampolinesForModule(struct objc_module *_Nonnull module, struct Library *_Nonnull base)
+{
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	__extension__ ((void (*)(struct objc_module *_Nonnull, struct Library *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 616))(module, base);
+}

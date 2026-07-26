@@ -52,12 +52,14 @@
 #import "OFThread.h"
 
 #import "OFActivateSandboxFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_COMPILING_AMIGA_LIBRARY
 # import "amiga-library.h"
+extern struct Library *ObjFWBase;
 #endif
 
 #if defined(OF_MACOS)
@@ -260,10 +262,18 @@ SIGNAL_HANDLER(SIGUSR2)
 		_environment = [[OFMutableDictionary alloc] init];
 
 #ifdef OF_COMPILING_AMIGA_LIBRARY
-		static uint32_t trampoline[OFLibraryTrampolineSize];
+		size_t trampolineSize = objc_libraryTrampolineSize();
+		uint32_t *trampoline = malloc(
+		    trampolineSize * sizeof(uint32_t));
 
-		OFCreateLibraryTrampoline(trampoline, (IMP)atexitHandler);
-		CacheFlushDataInstArea(trampoline, sizeof(trampoline));
+		if (trampoline == NULL)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
+		objc_createLibraryTrampoline(trampoline, (IMP)atexitHandler,
+		    ObjFWBase);
+		CacheFlushDataInstArea(trampoline,
+		    trampolineSize * sizeof(uint32_t));
 
 		atexit((void (*)(void))(uintptr_t)trampoline);
 #else

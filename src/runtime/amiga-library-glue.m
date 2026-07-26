@@ -611,3 +611,21 @@ glue__objc_rootTryRetain(id _Nonnull object)
 {
 	return _objc_rootTryRetain(object);
 }
+
+size_t __saveds
+glue_objc_libraryTrampolineSize(void)
+{
+	return objc_libraryTrampolineSize();
+}
+
+void __saveds
+glue_objc_createLibraryTrampoline(uint32_t *_Nonnull buffer, IMP _Nonnull function, struct Library *_Nonnull base)
+{
+	objc_createLibraryTrampoline(buffer, function, base);
+}
+
+void __saveds
+glue_objc_createLibraryTrampolinesForModule(struct objc_module *_Nonnull module, struct Library *_Nonnull base)
+{
+	objc_createLibraryTrampolinesForModule(module, base);
+}
