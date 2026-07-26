@@ -103,6 +103,7 @@
 	[_impl writeString:
 	    @"\n"
 	    @"__asm__ (\n"
+	    @"    \".globl __restore_r13\\n\"\n"
 	    @"    \".section .text\\n\"\n"
 	    @"    \".align 2\\n\"\n"
 	    @"    \"__restore_r13:\\n\"\n"

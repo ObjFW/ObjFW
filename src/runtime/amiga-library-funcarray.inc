@@ -115,3 +115,6 @@
 (CONST_APTR)glue_objc_getAssociatedObject,
 (CONST_APTR)glue_objc_removeAssociatedObjects,
 (CONST_APTR)glue__objc_rootTryRetain,
+(CONST_APTR)glue_objc_libraryTrampolineSize,
+(CONST_APTR)glue_objc_createLibraryTrampoline,
+(CONST_APTR)glue_objc_createLibraryTrampolinesForModule,

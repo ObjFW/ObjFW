@@ -418,6 +418,97 @@ vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
 	return linklibCtx.vsnprintf(str, len, fmt, va);
 }
 
+size_t inline
+objc_libraryTrampolineSize(void)
+{
+	return 6;
+}
+
+void
+objc_createLibraryTrampoline(uint32_t *buffer, IMP function,
+    struct Library *base)
+{
+	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
+
+	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
+		/* lis %r12, %r12, %hi(base) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)base >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(base) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)base & 0xFFFF);
+		/* b function */
+		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
+		/* nop */
+		buffer[3] = 0x60000000;
+		/* nop */
+		buffer[4] = 0x60000000;
+		/* nop */
+		buffer[5] = 0x60000000;
+	} else {
+		/* lis %r12, %r12, %hi(function) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)function >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(function) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
+		/* mtctr %r12 */
+		buffer[2] = 0x7D8903A6;
+		/* lis %r12, %r12, %hi(base) */
+		buffer[3] = 0x3D800000 | (((uintptr_t)base >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(base) */
+		buffer[4] = 0x618C0000 | ((uintptr_t)base & 0xFFFF);
+		/* bctr */
+		buffer[5] = 0x4E800420;
+	}
+}
+
+static void
+createTrampolinesForMethodList(struct objc_method_list *methodList,
+    struct Library *base)
+{
+	for (; methodList != NULL; methodList = methodList->next) {
+		uint32_t *trampolines = malloc(methodList->count *
+		    objc_libraryTrampolineSize() * sizeof(uint32_t));
+
+		if (trampolines == NULL)
+			_OBJC_ERROR("Not enough memory to allocate "
+			    "trampolines!");
+
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			objc_createLibraryTrampoline(
+			    &trampolines[i * objc_libraryTrampolineSize()],
+			    methodList->methods[i].implementation,
+			    base);
+
+			methodList->methods[i].implementation =
+			    (IMP)(uintptr_t)
+			    &trampolines[i * objc_libraryTrampolineSize()];
+		}
+
+		CacheFlushDataInstArea(trampolines, methodList->count *
+		    objc_libraryTrampolineSize() * sizeof(uint32_t));
+	}
+}
+
+void
+objc_createLibraryTrampolinesForModule(struct objc_module *module,
+    struct Library *base)
+{
+	struct objc_symtab *symtab = module->symtab;
+
+	for (size_t i = 0; i < symtab->classDefsCount; i++) {
+		struct objc_class *class = symtab->defs[i];
+
+		createTrampolinesForMethodList(class->methodList, base);
+		createTrampolinesForMethodList(class->isa->methodList, base);
+	}
+
+	for (size_t i = symtab->classDefsCount;
+	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
+		struct objc_category *category = symtab->defs[i];
+
+		createTrampolinesForMethodList(category->instanceMethods, base);
+		createTrampolinesForMethodList(category->classMethods, base);
+	}
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR functionTable[] = {

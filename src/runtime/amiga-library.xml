@@ -362,4 +362,14 @@
   <function name='_objc_rootTryRetain' return-type='bool'>
     <argument name='object' type='id _Nonnull'/>
   </function>
+  <function name='objc_libraryTrampolineSize' return-type='size_t'/>
+  <function name='objc_createLibraryTrampoline'>
+    <argument name='buffer' type='uint32_t *_Nonnull'/>
+    <argument name='function' type='IMP _Nonnull'/>
+    <argument name='base' type='struct Library *_Nonnull'/>
+  </function>
+  <function name='objc_createLibraryTrampolinesForModule'>
+    <argument name='module' type='struct objc_module *_Nonnull'/>
+    <argument name='base' type='struct Library *_Nonnull'/>
+  </function>
 </amiga-library>

@@ -122,3 +122,6 @@ extern void glue_objc_setAssociatedObject(id _Nonnull object, const void *_Nonnu
 extern id _Nullable glue_objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key);
 extern void glue_objc_removeAssociatedObjects(id _Nonnull object);
 extern bool glue__objc_rootTryRetain(id _Nonnull object);
+extern size_t glue_objc_libraryTrampolineSize(void);
+extern void glue_objc_createLibraryTrampoline(uint32_t *_Nonnull buffer, IMP _Nonnull function, struct Library *_Nonnull base);
+extern void glue_objc_createLibraryTrampolinesForModule(struct objc_module *_Nonnull module, struct Library *_Nonnull base);

@@ -301,86 +301,10 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 }
 
 void
-OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
-    IMP function)
-{
-	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
-
-	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
-		/* lis %r12, %r12, %hi(ObjFWBase) */
-		buffer[0] = 0x3D800000 |
-		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
-		/* ori %r12, %r12, %lo(ObjFWBase) */
-		buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
-		/* b function */
-		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
-		/* nop */
-		buffer[3] = 0x60000000;
-		/* nop */
-		buffer[4] = 0x60000000;
-		/* nop */
-		buffer[5] = 0x60000000;
-	} else {
-		/* lis %r12, %r12, %hi(function) */
-		buffer[0] = 0x3D800000 | (((uintptr_t)function >> 16) & 0xFFFF);
-		/* ori %r12, %r12, %lo(function) */
-		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
-		/* mtctr %r12 */
-		buffer[2] = 0x7D8903A6;
-		/* lis %r12, %r12, %hi(ObjFWBase) */
-		buffer[3] = 0x3D800000 |
-		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
-		/* ori %r12, %r12, %lo(ObjFWBase) */
-		buffer[4] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
-		/* bctr */
-		buffer[5] = 0x4E800420;
-	}
-}
-
-static void
-createTrampolinesForMethodList(struct objc_method_list *methodList)
-{
-	for (; methodList != NULL; methodList = methodList->next) {
-		uint32_t *trampolines = malloc(methodList->count *
-		    OFLibraryTrampolineSize * sizeof(uint32_t));
-
-		if (trampolines == NULL)
-			abort();
-
-		for (unsigned int i = 0; i < methodList->count; i++) {
-			OFCreateLibraryTrampoline(
-			    &trampolines[i * OFLibraryTrampolineSize],
-			    methodList->methods[i].implementation);
-
-			methodList->methods[i].implementation =
-			    (IMP)(uintptr_t)
-			    &trampolines[i * OFLibraryTrampolineSize];
-		}
-
-		CacheFlushDataInstArea(trampolines, methodList->count *
-		    OFLibraryTrampolineSize * sizeof(uint32_t));
-	}
-}
-
-void
 __objc_exec_class(struct objc_module *module)
 {
-	struct objc_symtab *symtab = module->symtab;
-
-	for (size_t i = 0; i < symtab->classDefsCount; i++) {
-		struct objc_class *class = symtab->defs[i];
-
-		createTrampolinesForMethodList(class->methodList);
-		createTrampolinesForMethodList(class->isa->methodList);
-	}
-
-	for (size_t i = symtab->classDefsCount;
-	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
-		struct objc_category *category = symtab->defs[i];
-
-		createTrampolinesForMethodList(category->instanceMethods);
-		createTrampolinesForMethodList(category->classMethods);
-	}
+	objc_createLibraryTrampolinesForModule(module,
+	    (struct Library *)ObjFWBase);
 
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"

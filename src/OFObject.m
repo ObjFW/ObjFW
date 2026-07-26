@@ -78,6 +78,7 @@
 
 #ifdef OF_COMPILING_AMIGA_LIBRARY
 # import "amiga-library.h"
+extern struct Library *ObjFWBase;
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -97,17 +98,6 @@ extern struct Stret _OFForward_stret(id, SEL, ...);
 
 #ifdef OF_WINDOWS
 static BOOLEAN NTAPI (*RtlGenRandomFuncPtr)(PVOID, ULONG);
-#endif
-
-#ifdef OF_COMPILING_AMIGA_LIBRARY
-__asm__ (
-    ".globl __restore_r13\n"
-    ".section .text\n"
-    ".align 2\n"
-    "__restore_r13:\n"
-    "	lwz	%r13, 44(%r12)\n"
-    "	blr\n"
-);
 #endif
 
 static struct {
@@ -518,24 +508,30 @@ _references_to_categories_of_OFObject(void)
 + (void)load
 {
 #ifdef OF_COMPILING_AMIGA_LIBRARY
-	static uint32_t trampolines[OFLibraryTrampolineSize * 4];
+	size_t trampolineSize = objc_libraryTrampolineSize();
+	uint32_t *trampolines = malloc(4 * trampolineSize * sizeof(uint32_t));
 
-	OFCreateLibraryTrampoline(&trampolines[0 * OFLibraryTrampolineSize],
-	    (IMP)uncaughtExceptionHandler);
-	OFCreateLibraryTrampoline(&trampolines[1 * OFLibraryTrampolineSize],
-	    (IMP)_OFForward);
-	OFCreateLibraryTrampoline(&trampolines[2 * OFLibraryTrampolineSize],
-	    (IMP)_OFForward_stret);
-	OFCreateLibraryTrampoline(&trampolines[3 * OFLibraryTrampolineSize],
-	    (IMP)enumerationMutationHandler);
-	CacheFlushDataInstArea(trampolines, sizeof(trampolines));
+	if (trampolines == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	objc_createLibraryTrampoline(&trampolines[0 * trampolineSize],
+	    (IMP)uncaughtExceptionHandler, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[1 * trampolineSize],
+	    (IMP)_OFForward, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[2 * trampolineSize],
+	    (IMP)_OFForward_stret, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[3 * trampolineSize],
+	    (IMP)enumerationMutationHandler, ObjFWBase);
+	CacheFlushDataInstArea(trampolines,
+	    4 * trampolineSize * sizeof(uint32_t));
 #endif
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 # ifdef OF_COMPILING_AMIGA_LIBRARY
 	objc_setUncaughtExceptionHandler(
 	    (objc_uncaught_exception_handler)(uintptr_t)
-	    &trampolines[0 * OFLibraryTrampolineSize]);
+	    &trampolines[0 * trampolineSize]);
 # else
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
 # endif
@@ -557,8 +553,8 @@ _references_to_categories_of_OFObject(void)
 #else
 # ifdef OF_COMPILING_AMIGA_LIBRARY
 	objc_setForwardHandler(
-	    (IMP)(uintptr_t)&trampolines[1 * OFLibraryTrampolineSize],
-	    (IMP)(uintptr_t)&trampolines[2 * OFLibraryTrampolineSize]);
+	    (IMP)(uintptr_t)&trampolines[1 * trampolineSize],
+	    (IMP)(uintptr_t)&trampolines[2 * trampolineSize]);
 # else
 	objc_setForwardHandler((IMP)&_OFForward, (IMP)&_OFForward_stret);
 # endif
@@ -567,7 +563,7 @@ _references_to_categories_of_OFObject(void)
 #ifdef OF_COMPILING_AMIGA_LIBRARY
 	objc_setEnumerationMutationHandler(
 	    (objc_enumeration_mutation_handler)(uintptr_t)
-	    &trampolines[3 * OFLibraryTrampolineSize]);
+	    &trampolines[3 * trampolineSize]);
 #else
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 #endif
