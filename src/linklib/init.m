@@ -304,18 +304,13 @@ error(const char *string, ULONG arg)
 	exit(EXIT_FAILURE);
 }
 
-static int *
-errNoRef(void)
-{
-	return &errno;
-}
-
 static void __attribute__((__used__))
 ctor(void)
 {
 	static bool initialized = false;
 	struct OFLinklibContext ctx = {
 		.ObjFWRTBase = ObjFWRTBase,
+		.__errno_location = __errno_location,
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
@@ -338,7 +333,6 @@ ctor(void)
 		.atexit = atexit,
 		.exit = exit,
 		.abort = abort,
-		.errNoRef = errNoRef,
 		.vsnprintf = vsnprintf,
 		.vasprintf = vasprintf,
 		.strtof = strtof,

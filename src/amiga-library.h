@@ -27,6 +27,7 @@ typedef void (*sighandler_t)(int);
 
 struct OFLinklibContext {
 	struct Library *ObjFWRTBase;
+	int *_Nonnull (*_Nonnull __errno_location)(void);
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
@@ -50,7 +51,6 @@ struct OFLinklibContext {
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
 	void (*_Nonnull exit)(int);
 	void (*_Nonnull abort)(void);
-	int *_Nonnull (*_Nonnull errNoRef)(void);
 	int (*_Nonnull vsnprintf)(char *restrict, size_t, const char *restrict,
 	    va_list);
 	int (*_Nonnull vasprintf)(char *_Nonnull *_Nullable restrict,

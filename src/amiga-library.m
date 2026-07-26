@@ -315,6 +315,12 @@ __objc_exec_class(struct objc_module *module)
 	    ((uintptr_t)ObjFWRTBase) - 34))(module);
 }
 
+int *
+__errno_location(void)
+{
+	return linklibCtx.__errno_location();
+}
+
 void *
 malloc(size_t size)
 {
@@ -431,12 +437,6 @@ abort(void)
 	linklibCtx.abort();
 
 	OF_UNREACHABLE
-}
-
-int *
-OFErrNoRef(void)
-{
-	return linklibCtx.errNoRef();
 }
 
 int
