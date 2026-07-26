@@ -58,6 +58,7 @@ AC_DEFUN([BUILDSYS_INIT], [
 
 		AC_SUBST(AMIGA_LIB_CFLAGS)
 		AC_SUBST(AMIGA_LIB_LDFLAGS)
+		AC_SUBST(AMIGA_LIB_LIBS)
 
 		AS_IF([test x"$enable_silent_rules" != x"no"], [
 			AC_SUBST(SILENT, '.SILENT:')
