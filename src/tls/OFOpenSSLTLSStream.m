@@ -50,6 +50,21 @@ OF_DESTRUCTOR()
 }
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+/*
+ * We need a local __restore_r13 in every ObjFWTLS file that has a __saveds
+ * function (note that ObjC methods are __saveds) because libssl_sharedext
+ * contains a global __restore_r13 that we must not use.
+ */
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+#endif
+
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const SSL *SSL_)
 {

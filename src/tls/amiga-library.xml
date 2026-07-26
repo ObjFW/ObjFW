@@ -1,4 +1,4 @@
-<amiga-library version='1.0' base='ObjFWTLSBase'>
+<amiga-library version='1.0' base='ObjFWTLSBase' restore-r13='local'>
   <include>amiga-library.h</include>
   <!-- The following function is only for the linklib. -->
   <function name='OFTLSInit' return-type='bool'>

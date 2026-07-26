@@ -73,6 +73,7 @@
 - (void)generate
 {
 	size_t includes = 0;
+	OFString *restoreR13;
 
 	[_header writeString: COPYRIGHT];
 	[_impl writeString: COPYRIGHT];
@@ -102,8 +103,13 @@
 
 	[_impl writeString:
 	    @"\n"
-	    @"__asm__ (\n"
-	    @"    \".globl __restore_r13\\n\"\n"
+	    @"__asm__ (\n"];
+
+	restoreR13 = [_library attributeForName: @"restore-r13"].stringValue;
+	if (restoreR13 == nil || ![restoreR13 isEqual: @"local"])
+		[_impl writeString: @"    \".globl __restore_r13\\n\"\n"];
+
+	[_impl writeString:
 	    @"    \".section .text\\n\"\n"
 	    @"    \".align 2\\n\"\n"
 	    @"    \"__restore_r13:\\n\"\n"

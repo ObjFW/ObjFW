@@ -72,6 +72,7 @@ CPPFLAGS += -I.							\
 	    -DOBJFWTLS_LIB_PATCH=${OBJFWTLS_LIB_PATCH}		\
 	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"			\
 	    ${TLS_CPPFLAGS}
+AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\

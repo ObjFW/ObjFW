@@ -24,7 +24,6 @@
 #import "amiga-library-glue.h"
 
 __asm__ (
-    ".globl __restore_r13\n"
     ".section .text\n"
     ".align 2\n"
     "__restore_r13:\n"
