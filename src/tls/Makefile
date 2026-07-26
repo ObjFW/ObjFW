@@ -1,11 +1,13 @@
 include ../../extra.mk
 
+SUBDIRS = ${LINKLIB}
 DISTCLEAN = Info.plist	\
 	    ObjFWTLS.oc
 
 SHARED_LIB = ${OBJFWTLS_SHARED_LIB}
 STATIC_LIB = ${OBJFWTLS_STATIC_LIB}
 FRAMEWORK = ${OBJFWTLS_FRAMEWORK}
+AMIGA_LIB = ${OBJFWTLS_AMIGA_LIB}
 LIB_MAJOR = ${OBJFWTLS_LIB_MAJOR}
 LIB_MINOR = ${OBJFWTLS_LIB_MINOR}
 LIB_PATCH = ${OBJFWTLS_LIB_PATCH}
@@ -24,6 +26,10 @@ SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
 SRCS_WINDOWS = versioninfo.rc
 
 includesubdir = ObjFWTLS
+
+AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
+AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../../buildsys.mk
 
@@ -53,13 +59,18 @@ uninstall-extra:
 OBJCFLAGS_OFOpenSSLTLSStream.m += -Wno-shadow
 OBJCFLAGS_OFOpenSSLX509Certificate.m += -Wno-shadow
 
-CPPFLAGS += -I.					\
-	    -I..				\
-	    -I../..				\
-	    -I../exceptions			\
-	    -I../runtime			\
-	    -I../bridge				\
-	    -DOBJFWBRIDGE_LOCAL_INCLUDES	\
+CPPFLAGS += -I.							\
+	    -I..						\
+	    -I../..						\
+	    -I../exceptions					\
+	    -I../runtime					\
+	    -I../bridge						\
+	    -DOBJFWBRIDGE_LOCAL_INCLUDES			\
+	    -DOBJFWTLS_AMIGA_LIB=\"${OBJFWTLS_AMIGA_LIB}\"	\
+	    -DOBJFWTLS_LIB_MAJOR=${OBJFWTLS_LIB_MAJOR}		\
+	    -DOBJFWTLS_LIB_MINOR=${OBJFWTLS_LIB_MINOR}		\
+	    -DOBJFWTLS_LIB_PATCH=${OBJFWTLS_LIB_PATCH}		\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"			\
 	    ${TLS_CPPFLAGS}
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
@@ -69,6 +80,14 @@ FRAMEWORK_LIBS := -F..				\
 		  -framework ObjFW		\
 		  ${RUNTIME_FRAMEWORK_LIBS}	\
 		  ${LIBS}
+AMIGA_LIB_LIBS := -L../runtime/linklib		\
+		  -L../linklib 			\
+		  -lssl_sharedext		\
+		  -lcrypto_sharedext		\
+		  -lobjfw.library.amigalib	\
+		  -lobjfwrt.library.amigalib	\
+		  ${LIBS}			\
+		  ${AMIGA_LIB_LIBS}
 LIBS := -L..		\
 	-L../runtime	\
 	-L../bridge	\

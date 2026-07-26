@@ -26,6 +26,7 @@ LIBS := -L../../src			\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\
+	-L../../src/tls/linklib		\
 	${OFHASH_LIBS}			\
 	${OBJFW_LIB}			\
 	${RUNTIME_LIBS}			\

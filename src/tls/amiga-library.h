@@ -23,12 +23,11 @@
 
 #include <setjmp.h>
 
-#define OFLibraryTrampolineSize 6
+#define OFTLSLibraryTrampolineSize 6
 
-typedef void (*sighandler_t)(int);
-
-struct OFLinklibContext {
+struct OFTLSLinklibContext {
 	struct Library *ObjFWRTBase;
+	struct Library *ObjFWBase;
 	int *_Nonnull (*_Nonnull __errno_location)(void);
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
@@ -51,31 +50,24 @@ struct OFLinklibContext {
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
 	int (*_Nonnull atexit)(void (*_Nonnull)(void));
-	void (*_Nonnull exit)(int);
 	void (*_Nonnull abort)(void);
-	int (*_Nonnull vsnprintf)(char *restrict, size_t, const char *restrict,
-	    va_list);
-	int (*_Nonnull vasprintf)(char *_Nonnull *_Nullable restrict,
-	    const char *_Nonnull restrict, va_list);
-	float (*_Nonnull strtof)(const char *_Nonnull,
-	    char *_Nullable *_Nullable);
-	double (*_Nonnull strtod)(const char *_Nonnull,
-	    char *_Nullable *_Nullable);
-	struct tm *(*_Nonnull gmtime_r)(const time_t *_Nonnull,
-	    struct tm *_Nonnull);
-	struct tm *(*_Nonnull localtime_r)(const time_t *_Nonnull,
-	    struct tm *_Nonnull);
-	time_t (*_Nonnull mktime)(struct tm *_Nonnull);
-	size_t (*_Nonnull strftime)(char *_Nonnull, size_t,
-	    const char *_Nonnull, const struct tm *_Nonnull);
-	sighandler_t _Nullable (*_Nonnull signal)(int, sighandler_t _Nullable);
-	char *_Nullable (*_Nonnull setlocale)(int, const char *_Nullable);
-	struct lconv *_Nonnull (*_Nonnull localeconv)(void);
-	int (*_Nonnull setjmp)(jmp_buf);
-	void __dead2 (*_Nonnull longjmp)(jmp_buf, int);
+	FILE *(*_Nonnull fopen)(const char *restrict _Nonnull,
+	    const char *restrict _Nonnull);
+	size_t (*_Nonnull fread)(void *restrict _Nonnull, size_t, size_t,
+	    FILE *restrict _Nonnull);
+	size_t (*_Nonnull fwrite)(const void *restrict _Nonnull, size_t, size_t,
+	    FILE *restrict _Nonnull);
+	char *(*_Nonnull fgets)(char *restrict _Nonnull, int,
+	    FILE *restrict _Nonnull);
+	int (*_Nonnull fflush)(FILE *_Nonnull);
+	int (*_Nonnull fseek)(FILE *_Nonnull, long, int);
+	long (*_Nonnull ftell)(FILE *_Nonnull);
+	int (*_Nonnull fclose)(FILE *_Nonnull);
+	ssize_t (*_Nonnull read)(int, void *_Nonnull, size_t);
+	ssize_t (*_Nonnull write)(int, const void *_Nonnull, size_t);
+	off_t (*_Nonnull lseek)(int, off_t, int);
+	int (*_Nonnull close)(int);
 };
 
-extern bool OFInit(unsigned int version, struct OFLinklibContext *_Nonnull ctx);
-extern unsigned long *OFHashSeedRef(void);
-extern void OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
-    IMP function) OF_VISIBILITY_INTERNAL;
+extern bool OFTLSInit(unsigned int version,
+    struct OFTLSLinklibContext *_Nonnull ctx);

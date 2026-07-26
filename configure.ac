@@ -89,10 +89,11 @@ powerpc-*-amigaos*)
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
 		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		AC_SUBST(AMIGA_LIB_CFLAGS, "$AMIGA_LIB_CFLAGS $t")
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-		t="$t -laboxstubs -labox -lgcc -ldebug -lc"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+		AC_SUBST(AMIGA_LIB_LDFLAGS, "$AMIGA_LIB_LDFLAGS $t")
+		t="-laboxstubs -labox -lgcc -ldebug -lc"
+		AC_SUBST(AMIGA_LIB_LIBS, "$AMIGA_LIB_LIBS $t")
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
@@ -2127,9 +2128,21 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have an implementation for TLS])
 		AC_CONFIG_FILES([src/tls/ObjFWTLS.oc src/tls/Info.plist])
 
-		OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
-		OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
-		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			case "$host_os" in
+			morphos*)
+				AC_SUBST(OBJFWTLS_AMIGA_LIB, objfwtls.library)
+				;;
+			esac
+
+			OFARC_LIBS="-lobjfwtls.library $OFARC_LIBS"
+			OFHASH_LIBS="-lobjfwtls.library $OFHASH_LIBS"
+			OFHTTP_LIBS="-lobjfwtls.library $OFHTTP_LIBS"
+		], [
+			OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
+			OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
+			OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+		])
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWTLS_SHARED_LIB,

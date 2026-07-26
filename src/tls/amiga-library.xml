@@ -1,0 +1,8 @@
+<amiga-library version='1.0' base='ObjFWTLSBase'>
+  <include>amiga-library.h</include>
+  <!-- The following function is only for the linklib. -->
+  <function name='OFTLSInit' return-type='bool'>
+    <argument name='version' type='unsigned int'/>
+    <argument name='ctx' type='struct OFTLSLinklibContext *_Nonnull'/>
+  </function>
+</amiga-library>

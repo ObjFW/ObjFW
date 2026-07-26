@@ -19,12 +19,6 @@
 
 #include "config.h"
 
-#import "OFDNSResourceRecord.h"
-#import "OFHTTPRequest.h"
-#import "OFSocket.h"
-#import "OFStdIOStream.h"
-#import "OFString.h"
-
 #import "macros.h"
 
 #import "amiga-library.h"
@@ -49,23 +43,23 @@ __start(void)
 	return -1;
 }
 
-const char *VER = "$VER: " OBJFW_AMIGA_LIB " "
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
-    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
+const char *VER = "$VER: " OBJFWTLS_AMIGA_LIB " "
+    OF_PREPROCESSOR_STRINGIFY(OBJFWTLS_LIB_MINOR) "."
+    OF_PREPROCESSOR_STRINGIFY(OBJFWTLS_LIB_PATCH)
     " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer";
 
-struct ObjFWBase {
+struct ObjFWTLSBase {
 	struct Library library;
 	void *segList;
-	struct ObjFWBase *parent;
+	struct ObjFWTLSBase *parent;
 	char *dataSeg;
 	bool initialized;
-} *ObjFWBase;
+} *ObjFWTLSBase;
 
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
-struct OFLinklibContext linklibCtx;
-extern struct Library *ObjFWRTBase;
+struct OFTLSLinklibContext linklibCtx;
+extern struct Library *ObjFWRTBase, *ObjFWBase, *OpenSSL4Base;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
@@ -124,7 +118,7 @@ getDataDataRelocs(void)
 }
 
 static struct Library *
-libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
+libInit(struct ObjFWTLSBase *base, void *segList, struct ExecBase *sysBase)
 {
 	__asm__ __volatile__ (
 	    "lis	%%r9, SysBase@ha\n\t"
@@ -142,7 +136,7 @@ libInit(struct ObjFWBase *base, void *segList, struct ExecBase *sysBase)
 struct Library *__saveds
 libOpen(void)
 {
-	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6, *child;
+	struct ObjFWTLSBase *base = (struct ObjFWTLSBase *)REG_A6, *child;
 	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
@@ -161,7 +155,8 @@ libOpen(void)
 	CopyMem((char *)base - base->library.lib_NegSize, child,
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
-	child = (struct ObjFWBase *)((char *)child + base->library.lib_NegSize);
+	child = (struct ObjFWTLSBase *)
+	    ((char *)child + base->library.lib_NegSize);
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
 
@@ -191,7 +186,7 @@ libOpen(void)
 }
 
 static void *
-expunge(struct ObjFWBase *base, struct ExecBase *sysBase)
+expunge(struct ObjFWTLSBase *base, struct ExecBase *sysBase)
 {
 #define SysBase sysBase
 	void *segList;
@@ -219,7 +214,7 @@ expunge(struct ObjFWBase *base, struct ExecBase *sysBase)
 static void *__saveds
 libExpunge(void)
 {
-	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
+	struct ObjFWTLSBase *base = (struct ObjFWTLSBase *)REG_A6;
 
 	return expunge(base, SysBase);
 }
@@ -233,10 +228,10 @@ libClose(void)
 	 */
 	struct ExecBase *sysBase = SysBase;
 #define SysBase sysBase
-	struct ObjFWBase *base = (struct ObjFWBase *)REG_A6;
+	struct ObjFWTLSBase *base = (struct ObjFWTLSBase *)REG_A6;
 
 	if (base->parent != NULL) {
-		struct ObjFWBase *parent = base->parent;
+		struct ObjFWTLSBase *parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
@@ -260,10 +255,10 @@ libNull(void)
 }
 
 bool
-OFInit(unsigned int version, struct OFLinklibContext *ctx)
+OFTLSInit(unsigned int version, struct OFTLSLinklibContext *ctx)
 {
-	register struct ObjFWBase *r12 __asm__("r12");
-	struct ObjFWBase *base = r12;
+	register struct ObjFWTLSBase *r12 __asm__("r12");
+	struct ObjFWTLSBase *base = r12;
 	void *frame;
 	uintptr_t *iter, *iter0;
 
@@ -285,8 +280,9 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 
 	linklibCtx.__register_frame(frame);
 
-	ObjFWBase = base;
 	ObjFWRTBase = ctx->ObjFWRTBase;
+	ObjFWBase = ctx->ObjFWBase;
+	ObjFWTLSBase = base;
 
 	for (iter = iter0; *iter != 0; iter++);
 
@@ -301,17 +297,17 @@ OFInit(unsigned int version, struct OFLinklibContext *ctx)
 }
 
 void
-OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
+OFCreateLibraryTrampoline(uint32_t buffer[OFTLSLibraryTrampolineSize],
     IMP function)
 {
 	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
 
 	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
-		/* lis %r12, %r12, %hi(ObjFWBase) */
+		/* lis %r12, %r12, %hi(ObjFWTLSBase) */
 		buffer[0] = 0x3D800000 |
-		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
-		/* ori %r12, %r12, %lo(ObjFWBase) */
-		buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		    (((uintptr_t)ObjFWTLSBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWTLSBase) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)ObjFWTLSBase & 0xFFFF);
 		/* b function */
 		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
 		/* nop */
@@ -327,11 +323,11 @@ OFCreateLibraryTrampoline(uint32_t buffer[OFLibraryTrampolineSize],
 		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
 		/* mtctr %r12 */
 		buffer[2] = 0x7D8903A6;
-		/* lis %r12, %r12, %hi(ObjFWBase) */
+		/* lis %r12, %r12, %hi(ObjFWTLSBase) */
 		buffer[3] = 0x3D800000 |
-		    (((uintptr_t)ObjFWBase >> 16) & 0xFFFF);
-		/* ori %r12, %r12, %lo(ObjFWBase) */
-		buffer[4] = 0x618C0000 | ((uintptr_t)ObjFWBase & 0xFFFF);
+		    (((uintptr_t)ObjFWTLSBase >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(ObjFWTLSBase) */
+		buffer[4] = 0x618C0000 | ((uintptr_t)ObjFWTLSBase & 0xFFFF);
 		/* bctr */
 		buffer[5] = 0x4E800420;
 	}
@@ -342,23 +338,23 @@ createTrampolinesForMethodList(struct objc_method_list *methodList)
 {
 	for (; methodList != NULL; methodList = methodList->next) {
 		uint32_t *trampolines = malloc(methodList->count *
-		    OFLibraryTrampolineSize * sizeof(uint32_t));
+		    OFTLSLibraryTrampolineSize * sizeof(uint32_t));
 
 		if (trampolines == NULL)
-			abort();
+			for (;;);
 
 		for (unsigned int i = 0; i < methodList->count; i++) {
 			OFCreateLibraryTrampoline(
-			    &trampolines[i * OFLibraryTrampolineSize],
+			    &trampolines[i * OFTLSLibraryTrampolineSize],
 			    methodList->methods[i].implementation);
 
 			methodList->methods[i].implementation =
 			    (IMP)(uintptr_t)
-			    &trampolines[i * OFLibraryTrampolineSize];
+			    &trampolines[i * OFTLSLibraryTrampolineSize];
 		}
 
 		CacheFlushDataInstArea(trampolines, methodList->count *
-		    OFLibraryTrampolineSize * sizeof(uint32_t));
+		    OFTLSLibraryTrampolineSize * sizeof(uint32_t));
 	}
 }
 
@@ -500,14 +496,6 @@ atexit(void (*function)(void))
 }
 
 void
-exit(int status)
-{
-	linklibCtx.exit(status);
-
-	OF_UNREACHABLE
-}
-
-void
 abort(void)
 {
 	linklibCtx.abort();
@@ -515,108 +503,82 @@ abort(void)
 	OF_UNREACHABLE
 }
 
-int
-vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
+FILE *
+fopen(const char *restrict path, const char *restrict mode)
 {
-	return linklibCtx.vsnprintf(str, len, fmt, va);
-}
-
-int
-snprintf(char *restrict str, size_t len, const char *restrict fmt, ...)
-{
-	va_list args;
-	int ret;
-
-	va_start(args, fmt);
-	ret = vsnprintf(str, len, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-int
-vasprintf(char **restrict strp, const char *restrict fmt, va_list args)
-{
-	return linklibCtx.vasprintf(strp, fmt, args);
-}
-
-int
-asprintf(char **restrict strp, const char *restrict fmt, ...)
-{
-	va_list args;
-	int ret;
-
-	va_start(args, fmt);
-	ret = vasprintf(strp, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-
-float
-strtof(const char *str, char **endptr)
-{
-	return linklibCtx.strtof(str, endptr);
-}
-
-double
-strtod(const char *str, char **endptr)
-{
-	return linklibCtx.strtod(str, endptr);
-}
-
-struct tm *
-gmtime_r(const time_t *time, struct tm *tm)
-{
-	return linklibCtx.gmtime_r(time, tm);
-}
-
-struct tm *
-localtime_r(const time_t *time, struct tm *tm)
-{
-	return linklibCtx.localtime_r(time, tm);
-}
-
-time_t
-mktime(struct tm *tm)
-{
-	return linklibCtx.mktime(tm);
+	return linklibCtx.fopen(path, mode);
 }
 
 size_t
-strftime(char *str, size_t len, const char *fmt, const struct tm *tm)
+fread(void *restrict ptr, size_t size, size_t count, FILE *restrict fp)
 {
-	return linklibCtx.strftime(str, len, fmt, tm);
+	return linklibCtx.fread(ptr, size, count, fp);
 }
 
-sighandler_t
-signal(int sig, sighandler_t func)
+size_t
+fwrite(const void *restrict ptr, size_t size, size_t count, FILE *restrict fp)
 {
-	return linklibCtx.signal(sig, func);
+	return linklibCtx.fwrite(ptr, size, count, fp);
 }
 
 char *
-setlocale(int category, const char *locale)
+fgets(char *restrict str, int size, FILE *restrict fp)
 {
-	return linklibCtx.setlocale(category, locale);
-}
-
-struct lconv *
-localeconv(void)
-{
-	return linklibCtx.localeconv();
+	return linklibCtx.fgets(str, size, fp);
 }
 
 int
-setjmp(jmp_buf env)
+fflush(FILE *fp)
 {
-	return linklibCtx.setjmp(env);
+	return linklibCtx.fflush(fp);
 }
 
-void
-longjmp(jmp_buf env, int val)
+int
+fseek(FILE *fp, long offset, int whence)
 {
-	linklibCtx.longjmp(env, val);
+	return linklibCtx.fseek(fp, offset, whence);
+}
+
+long
+ftell(FILE *fp)
+{
+	return linklibCtx.ftell(fp);
+}
+
+int
+fclose(FILE *fp)
+{
+	return linklibCtx.fclose(fp);
+}
+
+ssize_t
+read(int fd, void *buf, size_t size)
+{
+	return linklibCtx.read(fd, buf, size);
+}
+
+ssize_t
+write(int fd, const void *buf, size_t size)
+{
+	return linklibCtx.write(fd, buf, size);
+}
+
+off_t
+lseek(int fd, off_t offset, int whence)
+{
+	return linklibCtx.lseek(fd, offset, whence);
+}
+
+int
+close(int fd)
+{
+	return linklibCtx.close(fd);
+}
+
+struct Library *
+_fetch_OpenSSL4Base(void)
+{
+	return OpenSSL4Base;
 }
 
 #pragma GCC diagnostic push
@@ -640,10 +602,10 @@ static struct {
 	ULONG dataSize;
 	CONST_APTR *functionTable;
 	ULONG *dataTable;
-	struct Library *(*initFunc)(struct ObjFWBase *base, void *segList,
+	struct Library *(*initFunc)(struct ObjFWTLSBase *base, void *segList,
 	    struct ExecBase *execBase);
 } initTable = {
-	sizeof(struct ObjFWBase),
+	sizeof(struct ObjFWTLSBase),
 	functionTable,
 	NULL,
 	libInit
@@ -654,16 +616,16 @@ struct Resident resident = {
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
 	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
-	.rt_Version = OBJFW_LIB_MINOR,
+	.rt_Version = OBJFWTLS_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
-	.rt_Name = (char *)OBJFW_AMIGA_LIB,
-	.rt_IdString = (char *)OBJFW_AMIGA_LIB " "
-	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
-	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
+	.rt_Name = (char *)OBJFWTLS_AMIGA_LIB,
+	.rt_IdString = (char *)OBJFWTLS_AMIGA_LIB " "
+	    OF_PREPROCESSOR_STRINGIFY(OBJFWTLS_LIB_MINOR) "."
+	    OF_PREPROCESSOR_STRINGIFY(OBJFWTLS_LIB_PATCH)
 	    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer",
 	.rt_Init = &initTable,
-	.rt_Revision = OBJFW_LIB_PATCH,
+	.rt_Revision = OBJFWTLS_LIB_PATCH,
 	.rt_Tags = NULL,
 };
 
