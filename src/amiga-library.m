@@ -545,7 +545,8 @@ longjmp(jmp_buf env, int val)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-static CONST_APTR functionTable[] = {
+static const CONST_APTR functionTable[]
+    __attribute__((__section__(".rodata"))) = {
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
 	(CONST_APTR)libOpen,
@@ -560,23 +561,23 @@ static CONST_APTR functionTable[] = {
 };
 #pragma GCC diagnostic pop
 
-static struct {
+static const struct {
 	ULONG dataSize;
-	CONST_APTR *functionTable;
+	const CONST_APTR *functionTable;
 	ULONG *dataTable;
 	struct Library *(*initFunc)(struct ObjFWBase *base, void *segList,
 	    struct ExecBase *execBase);
-} initTable = {
+} initTable __attribute__((__section__(".rodata"))) = {
 	sizeof(struct ObjFWBase),
 	functionTable,
 	NULL,
 	libInit
 };
 
-struct Resident resident = {
+const struct Resident resident __attribute__((__section__(".rodata"))) = {
 	.rt_MatchWord = RTC_MATCHWORD,
-	.rt_MatchTag = &resident,
-	.rt_EndSkip = &resident + 1,
+	.rt_MatchTag = (struct Resident *)&resident,
+	.rt_EndSkip = (struct Resident *)&resident + 1,
 	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
 	.rt_Version = OBJFW_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
@@ -586,7 +587,7 @@ struct Resident resident = {
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_MINOR) "."
 	    OF_PREPROCESSOR_STRINGIFY(OBJFW_LIB_PATCH)
 	    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer",
-	.rt_Init = &initTable,
+	.rt_Init = (APTR)&initTable,
 	.rt_Revision = OBJFW_LIB_PATCH,
 	.rt_Tags = NULL,
 };
