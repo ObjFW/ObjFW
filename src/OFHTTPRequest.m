@@ -129,6 +129,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 {
 	objc_release(_IRI);
 	objc_release(_headers);
+	objc_release(_certificateChain);
 
 	[super dealloc];
 }

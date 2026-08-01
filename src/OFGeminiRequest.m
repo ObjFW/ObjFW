@@ -57,6 +57,7 @@
 - (void)dealloc
 {
 	objc_release(_IRI);
+	objc_release(_certificateChain);
 
 	[super dealloc];
 }
