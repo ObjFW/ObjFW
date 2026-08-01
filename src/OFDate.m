@@ -371,6 +371,18 @@ OF_SINGLETON_METHODS
 	    [[self alloc] initWithTimeIntervalSinceNow: seconds]);
 }
 
++ (instancetype)dateWithStructTm: (const struct tm *)structTm
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStructTm: structTm]);
+}
+
++ (instancetype)dateWithLocalStructTm: (const struct tm *)structTm
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLocalStructTm: structTm]);
+}
+
 + (instancetype)dateWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
@@ -427,6 +439,36 @@ OF_SINGLETON_METHODS
 	return [self initWithTimeIntervalSince1970: now() + seconds];
 }
 
+- (instancetype)initWithStructTm: (const struct tm *)structTm
+{
+	return [self initWithTimeIntervalSince1970: tmAndTzToTime(structTm, 0)];
+}
+
+- (instancetype)initWithLocalStructTm: (const struct tm *)structTm
+{
+	struct tm tm = *structTm;
+
+#ifdef OF_WINDOWS
+	if (_mktime64FuncPtr != NULL) {
+		__time64_t t;
+
+		if ((t = _mktime64FuncPtr(&tm)) == -1)
+			@throw [OFOutOfRangeException exception];
+
+		return [self initWithTimeIntervalSince1970: t];
+	} else {
+#endif
+		time_t t;
+
+		if ((t = mktime(&tm)) == (time_t)-1)
+			@throw [OFOutOfRangeException exception];
+
+		return [self initWithTimeIntervalSince1970: t];
+#ifdef OF_WINDOWS
+	}
+#endif
+}
+
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
@@ -465,12 +507,20 @@ OF_SINGLETON_METHODS
 	if (tz == SHRT_MAX) {
 #ifdef OF_WINDOWS
 		if (_mktime64FuncPtr != NULL) {
-			if ((seconds = _mktime64FuncPtr(&tm)) == -1)
+			__time64_t t;
+
+			if ((t = _mktime64FuncPtr(&tm)) == -1)
 				@throw [OFInvalidFormatException exception];
+
+			seconds = t;
 		} else {
 #endif
-			if ((seconds = mktime(&tm)) == -1)
+			time_t t;
+
+			if ((t = mktime(&tm)) == (time_t)-1)
 				@throw [OFInvalidFormatException exception];
+
+			seconds = t;
 #ifdef OF_WINDOWS
 		}
 #endif
