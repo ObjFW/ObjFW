@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFTLSStream;
+@class OFX509Certificate;
 
 /**
  * @brief An enum representing an error of an OFTLSStream.
@@ -132,6 +133,14 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The certificate of the peer.
+ *
+ * @warning The returned certificate chain is not verified!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *peerCertificateChain;
 
 - (instancetype)init OF_UNAVAILABLE;
 

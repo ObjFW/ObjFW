@@ -181,6 +181,11 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	return _certificateChain;
 }
 
+- (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR

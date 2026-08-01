@@ -31,6 +31,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
@@ -689,5 +690,62 @@ inform_delegate:
 	}
 
 	return nil;
+}
+
+- (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
+{
+	OFMutableArray *chain = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	STACK_OF(X509) *certs;
+
+	/*
+	 * For some reason, OpenSSL does not include the peer certificate
+	 * itself when we're a server.
+	 */
+	if (_server) {
+		X509 *cert = SSL_get_peer_certificate(_SSL);
+
+		if (cert == NULL) {
+			objc_autoreleasePoolPop(pool);
+			return nil;
+		}
+
+		@try {
+			[chain addObject: objc_autorelease(
+			    [[OFOpenSSLX509Certificate alloc]
+			    of_initWithCertificate: cert
+					privateKey: NULL])];
+		} @catch (id e) {
+			X509_free(cert);
+			@throw e;
+		}
+	}
+
+	certs = SSL_get_peer_cert_chain(_SSL);
+	if (certs == NULL && !_server) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	for (int i = 0; i < sk_X509_num(certs); i++) {
+		X509 *cert = sk_X509_value(certs, i);
+
+		if (X509_up_ref(cert) != 1)
+			@throw [OFOutOfRangeException exception];
+
+		@try {
+			[chain addObject: objc_autorelease(
+			    [[OFOpenSSLX509Certificate alloc]
+			    of_initWithCertificate: cert
+					privateKey: NULL])];
+		} @catch (id e) {
+			X509_free(cert);
+			@throw e;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return chain;
 }
 @end
