@@ -12,10 +12,8 @@
 *.sl
 *.so
 *.so.*
-*/.deps
 *~
 .deps
-.git
 /aclocal.m4
 /autom4te.cache
 /buildsys.mk
