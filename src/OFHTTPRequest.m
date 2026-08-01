@@ -96,6 +96,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 @implementation OFHTTPRequest
 @synthesize IRI = _IRI, method = _method, headers = _headers;
+@synthesize certificateChain = _certificateChain;
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
@@ -155,8 +156,9 @@ OFHTTPRequestMethodParseName(OFString *string)
 	@try {
 		copy->_method = _method;
 		copy->_protocolVersion = _protocolVersion;
-		copy.headers = _headers;
+		copy->_headers = [_headers copy];
 		copy.remoteAddress = self.remoteAddress;
+		copy->_certificateChain = [_certificateChain copy];
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -186,6 +188,10 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	if (request.remoteAddress != self.remoteAddress &&
 	    !OFSocketAddressEqual(request.remoteAddress, self.remoteAddress))
+		return false;
+
+	if (request.certificateChain != self.certificateChain &&
+	    ![request.certificateChain isEqual: self.certificateChain])
 		return false;
 
 	return true;

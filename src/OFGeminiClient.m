@@ -188,6 +188,8 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		return;
 	}
 
+	TLSStream.certificateChain = _request.certificateChain;
+
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateTLSStream:request:)])
 		[_client->_delegate client: _client
@@ -350,13 +352,15 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 
 			if (follow) {
 				SEL selector = @selector(startWithRunLoopMode:);
+				OFGeminiRequest *newRequest =
+				    objc_autorelease([_request copy]);
 
 				_redirects--;
 
+				newRequest.IRI = IRI;
+
 				objc_release(_request);
-				_request = nil;
-				_request = [[OFGeminiRequest alloc]
-				    initWithIRI: IRI];
+				_request = objc_retain(newRequest);
 
 				timer = [OFTimer
 				    timerWithTimeInterval: 0

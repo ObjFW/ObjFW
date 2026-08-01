@@ -22,12 +22,13 @@
 #include <string.h>
 
 #import "OFGeminiRequest.h"
+#import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFString.h"
 
 @implementation OFGeminiRequest
-@synthesize IRI = _IRI;
+@synthesize IRI = _IRI, certificateChain = _certificateChain;
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
@@ -82,6 +83,7 @@
 
 	@try {
 		copy.remoteAddress = self.remoteAddress;
+		copy->_certificateChain = [_certificateChain copy];
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -107,6 +109,10 @@
 
 	if (request.remoteAddress != self.remoteAddress &&
 	    !OFSocketAddressEqual(request.remoteAddress, self.remoteAddress))
+		return false;
+
+	if (request.certificateChain != self.certificateChain &&
+	    ![request.certificateChain isEqual: self.certificateChain])
 		return false;
 
 	return true;

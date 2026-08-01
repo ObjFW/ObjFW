@@ -22,7 +22,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFArray OF_GENERIC(ObjectType);
 @class OFIRI;
+@class OFX509Certificate;
 
 /**
  * @class OFGeminiRequest OFGeminiRequest.h ObjFW/ObjFW.h
@@ -34,6 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFIRI *_IRI;
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
 	OF_RESERVE_IVARS(OFGeminiRequest, 4)
 }
 
@@ -48,6 +51,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @note The setter creates a copy of the remote address.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
+
+/**
+ * @brief The certificate chain used for the request.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
 
 /**
  * @brief Creates a new OFGeminiRequest with the specified IRI.
