@@ -89,7 +89,7 @@ powerpc-*-amigaos*)
 		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
 		AC_SUBST(OBJFWHID_AMIGA_LIB, objfwhid.library)
-		t="-mresident32 -ffreestanding -noixemul -fno-shrink-wrap"
+		t="-mresident32 -ffreestanding -noixemul"
 		AC_SUBST(AMIGA_LIB_CFLAGS, "$AMIGA_LIB_CFLAGS $t")
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
 		AC_SUBST(AMIGA_LIB_LDFLAGS, "$AMIGA_LIB_LDFLAGS $t")
