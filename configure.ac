@@ -521,6 +521,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 ], [
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
+		AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid.library")
 		AC_SUBST(LIBOBJFW_DEP, "../src/linklib/libobjfw.library.a")
 		AC_SUBST(LIBOBJFW_DEP_LVL2,
 			"../../src/linklib/libobjfw.library.a")
@@ -530,6 +531,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 			"../../src/hid/libobjfwhid.library.a")
 	], [
 		AC_SUBST(OBJFW_LIB, "-lobjfw")
+		AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid")
 		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
 		AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
@@ -2143,10 +2145,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				;;
 			esac
 
+			AC_SUBST(OBJFW_TLS_LIB, "-lobjfwtls.library")
 			OFARC_LIBS="-lobjfwtls.library $OFARC_LIBS"
 			OFHASH_LIBS="-lobjfwtls.library $OFHASH_LIBS"
 			OFHTTP_LIBS="-lobjfwtls.library $OFHTTP_LIBS"
 		], [
+			AC_SUBST(OBJFW_TLS_LIB, "-lobjfwtls")
 			OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
 			OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
 			OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
