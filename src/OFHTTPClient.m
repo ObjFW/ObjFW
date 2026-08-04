@@ -401,17 +401,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		newIRI = [OFIRI IRIWithString: location relativeToIRI: IRI];
 		newIRIScheme = newIRI.scheme;
 
-		if ([newIRIScheme caseInsensitiveCompare: @"http"] !=
-		    OFOrderedSame &&
-		    [newIRIScheme caseInsensitiveCompare: @"https"] !=
-		    OFOrderedSame)
+		if (![newIRIScheme isEqual: @"http"] &&
+		    ![newIRIScheme isEqual: @"https"])
 			follow = false;
 
 		if (!_client->_allowsInsecureRedirects &&
-		    [IRI.scheme caseInsensitiveCompare: @"https"] ==
-		    OFOrderedSame &&
-		    [newIRIScheme caseInsensitiveCompare: @"http"] ==
-		    OFOrderedSame)
+		    [IRI.scheme isEqual: @"https"] &&
+		    [newIRIScheme isEqual: @"http"])
 			follow = false;
 
 		if (follow && [_client->_delegate respondsToSelector:
@@ -787,8 +783,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 			didCreateTCPSocket: sock
 				   request: _request];
 
-	if ([_request.IRI.scheme caseInsensitiveCompare: @"https"] ==
-	    OFOrderedSame) {
+	if ([_request.IRI.scheme isEqual: @"https"]) {
 		OFTLSStream *stream;
 		OFString *TLSHost;
 
@@ -905,8 +900,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		sock = [OFTCPSocket socket];
 		sock.allowsMPTCP = true;
 
-		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
-		    OFOrderedSame)
+		if ([URI.scheme isEqual: @"https"])
 			port = 443;
 		else
 			port = 80;
@@ -1422,8 +1416,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 	OFIRI *IRI = request.IRI;
 	OFString *scheme = IRI.scheme;
 
-	if ([scheme caseInsensitiveCompare: @"http"] != OFOrderedSame &&
-	    [scheme caseInsensitiveCompare: @"https"] != OFOrderedSame)
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	if (_inProgress)

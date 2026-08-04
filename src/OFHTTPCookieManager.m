@@ -65,8 +65,7 @@
 
 	IRI = IRI.IRIByAddingPercentEncodingForUnicodeCharacters;
 
-	if (cookie.secure &&
-	    [IRI.scheme caseInsensitiveCompare: @"https"] != OFOrderedSame) {
+	if (cookie.secure && ![IRI.scheme isEqual: @"https"]) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
@@ -126,8 +125,7 @@
 		if (expires != nil && expires.timeIntervalSinceNow <= 0)
 			continue;
 
-		if (cookie.secure && [IRI.scheme caseInsensitiveCompare:
-		    @"https"] != OFOrderedSame)
+		if (cookie.secure && ![IRI.scheme isEqual: @"https"])
 			continue;
 
 		pool2 = objc_autoreleasePoolPush();
