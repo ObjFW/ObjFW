@@ -458,9 +458,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		extendedHeader = [OFMutableDictionary dictionary];
 
 	if (!stringToBuffer(buffer, _fileName, 100, encoding, true)) {
-		OFData *data = [OFData
-		    dataWithItems: _fileName.UTF8String
-			    count: _fileName.UTF8StringLength];
+		OFData *data =
+		    [_fileName dataWithEncoding: OFStringEncodingUTF8];
 		[extendedHeader setObject: data forKey: @"path"];
 	}
 	stringToBuffer(buffer + 100,
@@ -478,8 +477,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	if (_uncompressedSize > 077777777777) {
 		OFString *string = [OFString
 		    stringWithFormat: @"%zu", _uncompressedSize];
-		OFData *data = [OFData dataWithItems: string.UTF8String
-					       count: string.UTF8StringLength];
+		OFData *data = [string dataWithEncoding: OFStringEncodingUTF8];
 		[extendedHeader setObject: data forKey: @"size"];
 
 		stringToBuffer(buffer + 124, @"77777777777 ", 12,
@@ -505,9 +503,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	buffer[156] = _fileType;
 	if (!stringToBuffer(buffer + 157, _targetFileName, 100, encoding,
 	    true)) {
-		OFData *data = [OFData
-		    dataWithItems: _targetFileName.UTF8String
-			    count: _targetFileName.UTF8StringLength];
+		OFData *data =
+		    [_targetFileName dataWithEncoding: OFStringEncodingUTF8];
 		[extendedHeader setObject: data forKey: @"linkpath"];
 	}
 

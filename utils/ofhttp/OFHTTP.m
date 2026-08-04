@@ -1305,9 +1305,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			OFString *quarantine = [OFString stringWithFormat:
 			    @"0000;%08" @PRIx64 @";ofhttp;",
 			    (uint64_t)[[OFDate date] timeIntervalSince1970]];
-			OFData *quarantineData = [OFData
-			    dataWithItems: quarantine.UTF8String
-				    count: quarantine.UTF8StringLength];
+			OFData *quarantineData = [quarantine
+			    dataWithEncoding: OFStringEncodingUTF8];
 			[[OFFileManager defaultManager]
 			    setExtendedAttributeData: quarantineData
 					     forName: @"com.apple.quarantine"
