@@ -583,6 +583,8 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 				_port = portTmp;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
 			}
 		} else {
 			objc_release(_host);
