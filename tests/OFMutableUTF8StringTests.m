@@ -27,7 +27,7 @@
 @end
 
 @implementation OFMutableUTF8StringTests
-- (Class)arrayClass
+- (Class)stringClass
 {
 	return [OFMutableUTF8String class];
 }

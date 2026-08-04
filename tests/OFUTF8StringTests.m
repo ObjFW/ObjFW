@@ -27,7 +27,7 @@
 @end
 
 @implementation OFUTF8StringTests
-- (Class)arrayClass
+- (Class)stringClass
 {
 	return [OFUTF8String class];
 }
