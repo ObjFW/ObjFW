@@ -91,10 +91,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A callback which is called when an @ref OFHTTPClient wants to send
  *	  the body for a request.
  *
- * @ref OFHTTPClient uses the same logic as RFC 2616 to determine whether a
- * body should be sent, meaning either a `Content-Length` header is present in
- * the request or the request has a `Transfer-Encoding` header that is
- * `chunked`.
+ * This is only used if the request's @ref OFHTTPRequest#body is `nil`.
+ *
+ * If the body is not `nil,` @ref OFHTTPClient will send the request's
+ * @ref OFHTTPRequest#body and automatically add a `Content-Length` header for
+ * it (`Content-` and `Transfer-` headers from the request's
+ * @ref OFHTTPRequest#headers are ignored).
+ *
+ * If the body is `nil`, @ref OFHTTPClient uses the same logic as RFC 2616 to
+ * determine whether a body should be sent, meaning either a `Content-Length`
+ * header is present in the request or the request has a `Transfer-Encoding`
+ * header that is `chunked`.
  *
  * The client waits for the request body stream to be completed (either by the
  * specified `Content-Length` bytes being written or for `chunked`

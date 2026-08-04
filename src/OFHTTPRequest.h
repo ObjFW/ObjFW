@@ -76,6 +76,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFHTTPRequestMethod _method;
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
+	OFData *_Nullable _body;
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
@@ -114,6 +115,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+
+/**
+ * @brief The body for the HTTP request.
+ *
+ * @ref OFHTTPClient will send the body if it is not `nil` and automatically
+ * include a `Content-Length` header. If it is nil, @ref OFHTTPClient will
+ * provide a stream to the @ref OFHTTPClientDelegate to write the body into if
+ * @ref headers either contains `Content-Length` or if `Transfer-Encoding` is
+ * `chunked`.
+ *
+ * @ref OFHTTPServer will never use this property and will always provide a
+ * stream to read from instead.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFData *body;
 
 /**
  * @brief The remote address from which the request originates.

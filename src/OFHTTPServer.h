@@ -44,7 +44,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	  client.
  *
  * @param server The HTTP server which received the request
- * @param request The request the HTTP server received
+ * @param request The request the HTTP server received. The request will always
+ *		  have its @ref OFHTTPRequest#body set to `nil` and instead the
+ *		  body is provided as a stream in `requestBody`.
  * @param requestBody A stream to read the body of the request from, if any
  * @param response The response the server will send to the client
  */

@@ -23,6 +23,7 @@
 
 #import "OFHTTPRequest.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
 #import "OFString.h"
@@ -95,7 +96,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 }
 
 @implementation OFHTTPRequest
-@synthesize IRI = _IRI, method = _method, headers = _headers;
+@synthesize IRI = _IRI, method = _method, headers = _headers, body = _body;
 @synthesize certificateChain = _certificateChain;
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
@@ -129,6 +130,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 {
 	objc_release(_IRI);
 	objc_release(_headers);
+	objc_release(_body);
 	objc_release(_certificateChain);
 
 	[super dealloc];
@@ -158,6 +160,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		copy->_method = _method;
 		copy->_protocolVersion = _protocolVersion;
 		copy->_headers = [_headers copy];
+		copy->_body = [_body copy];
 		copy.remoteAddress = self.remoteAddress;
 		copy->_certificateChain = [_certificateChain copy];
 	} @catch (id e) {
@@ -187,6 +190,9 @@ OFHTTPRequestMethodParseName(OFString *string)
 	    ![request->_headers isEqual: _headers])
 		return false;
 
+	if (request->_body != _body && ![request->_body isEqual: _body])
+		return false;
+
 	if (request.remoteAddress != self.remoteAddress &&
 	    !OFSocketAddressEqual(request.remoteAddress, self.remoteAddress))
 		return false;
@@ -209,6 +215,8 @@ OFHTTPRequestMethodParseName(OFString *string)
 	OFHashAddByte(&hash, _protocolVersion.minor);
 	OFHashAddHash(&hash, _IRI.hash);
 	OFHashAddHash(&hash, _headers.hash);
+	if (_body != nil)
+		OFHashAddHash(&hash, _body.hash);
 	if (_hasRemoteAddress)
 		OFHashAddHash(&hash, OFSocketAddressHash(&_remoteAddress));
 
@@ -276,9 +284,10 @@ OFHTTPRequestMethodParseName(OFString *string)
 	    @"<%@:\n\tIRI = %@\n"
 	    @"\tMethod = %@\n"
 	    @"\tHeaders = %@\n"
+	    @"\tBody = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    self.class, _IRI, method, indentedHeaders, remoteAddress];
+	    self.class, _IRI, method, indentedHeaders, _body, remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

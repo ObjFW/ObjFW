@@ -85,13 +85,15 @@ OF_DIRECT_MEMBERS
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFStream *_stream;
-	bool _chunked;
 	unsigned long long _toWrite;
+	bool _chunked;
 	bool _atEndOfStream;
 }
 
 - (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
-			 stream: (OFStream *)stream;
+			 stream: (OFStream *)stream
+			toWrite: (unsigned long long)toWrite
+			chunked: (bool)chunked;
 @end
 
 OF_DIRECT_MEMBERS
@@ -149,6 +151,7 @@ constructRequestString(OFHTTPRequest *request)
 	OFString *user = URI.user, *password = URI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFData *requestBody;
 	bool hasContentLength, chunked;
 	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
@@ -214,6 +217,19 @@ constructRequestString(OFHTTPRequest *request)
 	    request.protocolVersion.minor == 0 &&
 	    [headers objectForKey: @"Connection"] == nil)
 		[headers setObject: @"keep-alive" forKey: @"Connection"];
+
+	requestBody = request.body;
+	if (requestBody != nil) {
+		OFString *contentLength = [OFString stringWithFormat: @"%llu",
+		    requestBody.count * requestBody.itemSize];
+
+		for (key in headers)
+			if ([key hasPrefix: @"Content-"] ||
+			    [key hasPrefix: @"Transfer-"])
+				[headers removeObjectForKey: key];
+
+		[headers setObject: contentLength forKey: @"Content-Length"];
+	}
 
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
 	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
@@ -654,6 +670,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 	   exception: (id)exception
 {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFData *body;
+	OFString *contentLength;
 	bool chunked;
 
 	if (exception != nil) {
@@ -673,17 +691,45 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 	_firstLine = true;
 
 	headers = _request.headers;
-	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
+	body = _request.body;
+	contentLength = [headers objectForKey: @"Content-Length"];
+	chunked = (body == nil ? false :
+	    [parseTransferEncoding(headers) containsObject: @"chunked"]);
 
-	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
+	if (body != nil || contentLength != nil || chunked) {
+		unsigned long long toWrite = 0;
 		OFStream *requestBody;
+
+		if (body != nil)
+			toWrite = body.count * body.itemSize;
+		else if (contentLength != nil) {
+			if (chunked || contentLength.length == 0)
+				@throw [OFInvalidArgumentException exception];
+
+			toWrite = contentLength.unsignedLongLongValue;
+		} else if (!chunked)
+			@throw [OFInvalidArgumentException exception];
 
 		stream.delegate = nil;
 		requestBody = objc_autorelease([[OFHTTPClientRequestBodyStream
 		    alloc] initWithHandler: self
-				    stream: stream]);
+				    stream: stream
+				   toWrite: toWrite
+				   chunked: chunked]);
 
-		if ([_client->_delegate respondsToSelector:
+		if (_request.body != nil) {
+			OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+			OFRunLoopMode runLoopMode = runLoop.currentMode;
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: requestBody
+					 selector: @selector(asyncWriteData:
+						       runLoopMode:)
+					   object: _request.body
+					   object: runLoopMode
+					  repeats: false];
+			[runLoop addTimer: timer forMode: runLoopMode];
+		} else if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:)])
 			[_client->_delegate client: _client
 				  wantsRequestBody: requestBody
@@ -882,29 +928,16 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 @implementation OFHTTPClientRequestBodyStream
 - (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
 			 stream: (OFStream *)stream
+			toWrite: (unsigned long long)toWrite
+			chunked: (bool)chunked
 {
 	self = [super init];
 
 	@try {
-		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-		OFString *contentLengthString;
-
 		_handler = objc_retain(handler);
 		_stream = objc_retain(stream);
-
-		headers = _handler->_request.headers;
-		_chunked = [parseTransferEncoding(headers)
-		    containsObject: @"chunked"];
-
-		contentLengthString = [headers objectForKey: @"Content-Length"];
-		if (contentLengthString != nil) {
-			if (_chunked || contentLengthString.length == 0)
-				@throw [OFInvalidArgumentException
-				    exception];
-
-			_toWrite = contentLengthString.unsignedLongLongValue;
-		} else if (!_chunked)
-			@throw [OFInvalidArgumentException exception];
+		_toWrite = toWrite;
+		_chunked = chunked;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
