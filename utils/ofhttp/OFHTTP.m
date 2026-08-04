@@ -1433,15 +1433,11 @@ next:
 
 	if (isHTTP && _continue) {
 		@try {
-			unsigned long long size =
-			    [[OFFileManager defaultManager]
-			    attributesOfItemAtPath: _currentFileName].fileSize;
 			OFString *range;
 
-			if (size > ULLONG_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_resumedFrom = (unsigned long long)size;
+			_resumedFrom =
+			    [[OFFileManager defaultManager]
+			    attributesOfItemAtPath: _currentFileName].fileSize;
 
 			range = [OFString stringWithFormat: @"bytes=%llu-",
 							    _resumedFrom];
