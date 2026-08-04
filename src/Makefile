@@ -96,6 +96,7 @@ SRCS = OFApplication.m			\
        OFStdIOStream.m			\
        OFStream.m			\
        OFString.m			\
+       OFStringData.m			\
        OFString+CryptographicHashing.m	\
        OFString+JSONParsing.m		\
        OFString+PercentEncoding.m	\

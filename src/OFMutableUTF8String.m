@@ -68,6 +68,11 @@
 	return self;
 }
 
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding
+{
+	return [super dataWithEncoding: encoding];
+}
+
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)of_convertWithWordStartTable: (const OFUnichar *const [])startTable
 		     wordMiddleTable: (const OFUnichar *const [])middleTable

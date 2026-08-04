@@ -35,6 +35,7 @@
 #import "OFMutableUTF8String.h"
 #import "OFString.h"
 #import "OFString+Private.h"
+#import "OFStringData.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -1377,6 +1378,15 @@ _OFUTF8StringIndexToPosition(const char *string, size_t idx, size_t length)
 	}
 
 	return ret;
+}
+
+- (OFData *)dataWithEncoding: (OFStringEncoding)encoding
+{
+	if (encoding == OFStringEncodingUTF8)
+		return objc_autoreleaseReturnValue(
+		    [[OFStringData alloc] initWithString: self]);
+
+	return [super dataWithEncoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

@@ -960,6 +960,15 @@ static const char *range80ToFF =
 #endif
 }
 
+- (void)testDataWithEncoding
+{
+	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
+	OFData *data = [OFData dataWithItems: "fööbär🀺" count: 13];
+
+	OTAssertEqualObjects([string dataWithEncoding: OFStringEncodingUTF8],
+	    data);
+}
+
 - (void)testConstantTimeIsEqualToString
 {
 	OTAssertTrue([@"a" constantTimeIsEqualToString: @"a"]);
