@@ -227,6 +227,26 @@ libClose(void)
 #define SysBase sysBase
 	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
 
+	if (base->initialized) {
+		void *frame;
+		uintptr_t *iter;
+
+		__asm__ (
+		    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
+		    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
+		    "lis	%1, __DTOR_LIST__@ha\n\t"
+		    "la		%1, __DTOR_LIST__@l(%1)\n\t"
+		    : "=r" (frame), "=r" (iter)
+		);
+
+		for (; *iter != 0; iter++) {
+			void (*dtor)(void) = (void (*)(void))*iter;
+			dtor();
+		}
+
+		linklibCtx.__deregister_frame(frame);
+	}
+
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent = base->parent;
 
@@ -567,5 +587,9 @@ __asm__ (
     ".globl __CTOR_LIST__\n"
     ".type __CTOR_LIST__, @object\n"
     "__CTOR_LIST__:\n"
+    ".section .dtors, \"aw\"\n"
+    ".globl __DTOR_LIST__\n"
+    ".type __DTOR_LIST__, @object\n"
+    "__DTOR_LIST__:\n"
     ".section .text"
 );
