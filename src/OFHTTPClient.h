@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * If the body is not `nil,` @ref OFHTTPClient will send the request's
  * @ref OFHTTPRequest#body and automatically add a `Content-Length` header for
- * it (`Content-` and `Transfer-` headers from the request's
+ * it (any `Content-Length` and `Transfer-Encoding` headers from the request's
  * @ref OFHTTPRequest#headers are ignored).
  *
  * If the body is `nil`, @ref OFHTTPClient uses the same logic as RFC 2616 to

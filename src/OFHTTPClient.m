@@ -223,12 +223,8 @@ constructRequestString(OFHTTPRequest *request)
 		OFString *contentLength = [OFString stringWithFormat: @"%llu",
 		    requestBody.count * requestBody.itemSize];
 
-		for (key in headers)
-			if ([key hasPrefix: @"Content-"] ||
-			    [key hasPrefix: @"Transfer-"])
-				[headers removeObjectForKey: key];
-
 		[headers setObject: contentLength forKey: @"Content-Length"];
+		[headers removeObjectForKey: @"Transfer-Encoding"];
 	}
 
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
