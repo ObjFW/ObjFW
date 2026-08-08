@@ -295,7 +295,7 @@ setModificationDate(OFString *path, OFLHAArchiveEntry *entry)
 
 				if (entry.operatingSystemIdentifier != '\0') {
 					OFString *OSID =
-					    [OFString stringWithFormat: @"%c",
+					    [OFString stringWithFormat: @"%C",
 					    entry.operatingSystemIdentifier];
 
 					[OFStdOut writeString: @"\t"];
