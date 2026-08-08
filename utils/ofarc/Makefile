@@ -32,7 +32,7 @@ LIBS := -L../../src			\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\
 	-L../../src/tls/linklib		\
-	${OFHTTP_LIBS}			\
+	${OFARC_LIBS}			\
 	${OBJFW_LIB}			\
 	${RUNTIME_LIBS}			\
 	${LIBS}
