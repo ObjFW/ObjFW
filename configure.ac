@@ -1461,7 +1461,9 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
 	AC_SUBST(OBJFW_NEW, "objfw-new")
 	AC_SUBST(OFARC, "ofarc")
+	AC_SUBST(OFARC_LIBS)
 	AC_SUBST(OFHASH, "ofhash")
+	AC_SUBST(OFHASH_LIBS)
 
 	case "$host_os" in
 	msdosdjgpp*)
