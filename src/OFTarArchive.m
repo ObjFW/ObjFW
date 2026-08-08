@@ -225,7 +225,8 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	objc_release(_globalExtendedHeader);
 	objc_release(_currentEntry);
@@ -381,7 +382,7 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 - (void)close
 {
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	@try {
 		[_lastReturnedStream close];
