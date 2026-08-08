@@ -289,7 +289,7 @@ addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFUnichar option, mode = '\0';
-	OFStringEncoding encoding = OFStringEncodingAutodetect;
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFOptionsParser *optionsParser;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	OFIRI *IRI;
@@ -430,17 +430,18 @@ addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
 		}
 	}
 
-	@try {
-		if (encodingString != nil)
+	if (encodingString != nil) {
+		@try {
 			encoding = OFStringEncodingParseName(encodingString);
-	} @catch (OFInvalidArgumentException *e) {
-		[OFStdErr writeLine: OF_LOCALIZED(
-		    @"invalid_encoding",
-		    @"%[prog]: Invalid encoding: %[encoding]",
-		    @"prog", [OFApplication programName],
-		    @"encoding", encodingString)];
+		} @catch (OFInvalidArgumentException *e) {
+			[OFStdErr writeLine: OF_LOCALIZED(
+			    @"invalid_encoding",
+			    @"%[prog]: Invalid encoding: %[encoding]",
+			    @"prog", [OFApplication programName],
+			    @"encoding", encodingString)];
 
-		[OFApplication terminateWithStatus: 1];
+			[OFApplication terminateWithStatus: 1];
+		}
 	}
 
 	remainingArguments = optionsParser.remainingArguments;
