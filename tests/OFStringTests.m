@@ -770,6 +770,11 @@ static const char *range80ToFF =
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t-\r\n"]
+	    longLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"abc"] longLongValue],
 	    OFInvalidFormatException);
 
@@ -838,6 +843,11 @@ static const char *range80ToFF =
 
 	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"\t\t\r\n"]
+	    unsignedLongLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t+\r\n"]
 	    unsignedLongLongValueWithBase: 8],
 	    OFInvalidFormatException);
 

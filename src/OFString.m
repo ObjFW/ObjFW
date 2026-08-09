@@ -2587,6 +2587,7 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 	const char *UTF8String = self.UTF8String;
 	bool negative = false;
 	unsigned long long value = 0;
+	size_t digits = 0;
 
 	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
@@ -2626,9 +2627,6 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 		}
 	}
 
-	if (*UTF8String == '\0')
-		@throw [OFInvalidFormatException exception];
-
 	if (base == 0)
 		base = 10;
 
@@ -2657,7 +2655,11 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 			@throw [OFOutOfRangeException exception];
 
 		value = (value * base) + c;
+		digits++;
 	}
+
+	if (digits == 0)
+		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -2733,6 +2735,7 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	void *pool = objc_autoreleasePoolPush();
 	const char *UTF8String = self.UTF8String;
 	unsigned long long value = 0;
+	size_t digits = 0;
 
 	while (OFASCIIIsSpace(*UTF8String))
 		UTF8String++;
@@ -2772,9 +2775,6 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 		}
 	}
 
-	if (*UTF8String == '\0')
-		@throw [OFInvalidFormatException exception];
-
 	if (base == 0)
 		base = 10;
 
@@ -2802,7 +2802,11 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 			@throw [OFOutOfRangeException exception];
 
 		value = (value * base) + c;
+		digits++;
 	}
+
+	if (digits == 0)
+		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
 
