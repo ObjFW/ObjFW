@@ -557,7 +557,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 			bool chunked = [parseTransferEncoding(_serverHeaders)
 			    containsObject: @"chunked"];
 
-			if (chunked || contentLengthString.length == 0)
+			if (chunked)
 				@throw [OFInvalidServerResponseException
 				    exception];
 
@@ -695,7 +695,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		if (body != nil)
 			toWrite = body.count * body.itemSize;
 		else if (contentLength != nil) {
-			if (chunked || contentLength.length == 0)
+			if (chunked)
 				@throw [OFInvalidArgumentException exception];
 
 			toWrite = contentLength.unsignedLongLongValue;
@@ -1049,7 +1049,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
-		if (_chunked || contentLength.length == 0)
+		if (_chunked)
 			@throw [OFInvalidServerResponseException exception];
 
 		_hasContentLength = true;

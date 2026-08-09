@@ -736,9 +736,6 @@ static const char *range80ToFF =
 	    @"-0x10\t"] longLongValueWithBase: 0], -0x10);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] longLongValue], 0);
-
-	OTAssertEqual([[self.stringClass stringWithString:
 	    @"123f"] longLongValueWithBase: 16], 0x123f);
 
 	OTAssertEqual([[self.stringClass stringWithString:
@@ -751,13 +748,10 @@ static const char *range80ToFF =
 	    @"1234567"] longLongValueWithBase: 8], 01234567);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\r\n0123"] longLongValueWithBase: 0], 0123);
+	    @"\r\n0o123"] longLongValueWithBase: 0], 0123);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"765\t"] longLongValueWithBase: 8], 0765);
-
-	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] longLongValueWithBase: 8], 0);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    ([OFString stringWithFormat: @"%lld", LLONG_MIN])] longLongValue],
@@ -766,6 +760,15 @@ static const char *range80ToFF =
 
 - (void)testLongLongValueThrowsOnInvalidFormat
 {
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"] longLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"]
+	    longLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
 	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"abc"] longLongValue],
 	    OFInvalidFormatException);
@@ -806,9 +809,6 @@ static const char *range80ToFF =
 	    @"\r\n+123  "] unsignedLongLongValue], 123);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] unsignedLongLongValue], 0);
-
-	OTAssertEqual([[self.stringClass stringWithString:
 	    @"123f"] unsignedLongLongValueWithBase: 16], 0x123f);
 
 	OTAssertEqual([[self.stringClass stringWithString:
@@ -821,13 +821,47 @@ static const char *range80ToFF =
 	    @"1234567"] unsignedLongLongValueWithBase: 8], 01234567);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\r\n0123"] unsignedLongLongValueWithBase: 0], 0123);
+	    @"\r\n0o123"] unsignedLongLongValueWithBase: 0], 0123);
+
+	OTAssertEqual([[self.stringClass stringWithString:
+	    @"\r\n0o123"] unsignedLongLongValueWithBase: 8], 0123);
 
 	OTAssertEqual([[self.stringClass stringWithString: @"765\t"]
 	    unsignedLongLongValueWithBase: 8], 0765);
+}
 
-	OTAssertEqual([[self.stringClass stringWithString: @"\t\t\r\n"]
-	    unsignedLongLongValueWithBase: 8], 0);
+- (void)testUnsignedLongLongValueThrowsOnInvalidFormat
+{
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @"\t\t\r\n"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"]
+	    unsignedLongLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"abc"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0a"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0 1"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0xABCDEFG"]
+	    unsignedLongLongValueWithBase: 0],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0x"]
+	    unsignedLongLongValueWithBase: 0],
+	    OFInvalidFormatException);
 }
 
 - (void)testUnsignedLongLongValueThrowsOnOutOfRange

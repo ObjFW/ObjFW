@@ -499,7 +499,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 		unsigned long long contentLength = 0;
 
 		if (contentLengthString != nil) {
-			if (chunked || contentLengthString.length == 0)
+			if (chunked)
 				return [self sendErrorAndClose: 400];
 
 			@try {

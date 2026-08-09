@@ -2603,17 +2603,31 @@ longLongValueWithBase(OFString *self, unsigned char base, long long min,
 			if (base == 0)
 				base = 16;
 
-			if (base != 16 || UTF8String[2] == '\0')
+			if (base != 16)
 				@throw [OFInvalidFormatException exception];
 
 			UTF8String += 2;
-		} else {
+		} else if (UTF8String[1] == 'o') {
 			if (base == 0)
 				base = 8;
 
-			UTF8String++;
+			if (base != 8)
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
+		} else if (UTF8String[1] == 'b') {
+			if (base == 0)
+				base = 2;
+
+			if (base != 2)
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
 		}
 	}
+
+	if (*UTF8String == '\0')
+		@throw [OFInvalidFormatException exception];
 
 	if (base == 0)
 		base = 10;
@@ -2735,17 +2749,31 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 			if (base == 0)
 				base = 16;
 
-			if (base != 16 || UTF8String[2] == '\0')
+			if (base != 16)
 				@throw [OFInvalidFormatException exception];
 
 			UTF8String += 2;
-		} else {
+		} else if (UTF8String[1] == 'o') {
 			if (base == 0)
 				base = 8;
 
-			UTF8String++;
+			if (base != 8)
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
+		} else if (UTF8String[1] == 'b') {
+			if (base == 0)
+				base = 2;
+
+			if (base != 2)
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String += 2;
 		}
 	}
+
+	if (*UTF8String == '\0')
+		@throw [OFInvalidFormatException exception];
 
 	if (base == 0)
 		base = 10;
