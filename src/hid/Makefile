@@ -51,6 +51,7 @@ SRCS += OHEmulatedGameControllerAxis.m		\
 	${USE_SRCS_NINTENDO_3DS}		\
 	${USE_SRCS_NINTENDO_DS}			\
 	${USE_SRCS_NINTENDO_SWITCH}		\
+	${USE_SRCS_SENSORS_LIBRARY}		\
 	${USE_SRCS_WII}				\
 	${USE_SRCS_WINDOWS}			\
 	${USE_SRCS_XINPUT}
@@ -66,6 +67,7 @@ SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
 		   OHNintendoDSGameController.m
 SRCS_NINTENDO_SWITCH = OHNintendoSwitchExtendedGamepad.m	\
 		       OHNintendoSwitchGameController.m
+SRCS_SENSORS_LIBRARY = OHSensorsLibraryGameController.m
 SRCS_WII = OHWiiClassicController.m	\
 	   OHWiiGameController.m	\
 	   OHWiimote.m			\

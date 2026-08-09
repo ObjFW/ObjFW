@@ -22,8 +22,7 @@ LIBS := -L../../src			\
 	-L../../src/runtime/linklib	\
 	-L../../src/hid			\
 	-L../../src/bridge		\
-	-lobjfwhid			\
-	${HID_LIBS}			\
+	${OFGCTESTER_LIBS}		\
 	${OBJFW_LIB}			\
 	${RUNTIME_LIBS}			\
 	${LIBS}

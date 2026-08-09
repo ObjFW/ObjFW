@@ -2618,11 +2618,15 @@ linux*)
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
 		AC_SUBST(OFGCTESTER, ofgctester)
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+		AC_SUBST(OFGCTESTER_LIBS)
 	])
 	;;
 mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
 	AC_SUBST(OFGCTESTER, ofgctester)
+	OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+	AC_SUBST(OFGCTESTER_LIBS)
 	;;
 darwin*)
 	AC_MSG_CHECKING(for new enough GameController.framework)
@@ -2647,10 +2651,22 @@ darwin*)
 		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
 		tmp="$tmp -framework ObjFWBridge"
 		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+		AC_SUBST(OFGCTESTER_LIBS)
 	], [
 		AC_MSG_RESULT(no)
 	])
 	;;
+morphos*)
+	AC_SUBST(USE_SRCS_SENSORS_LIBRARY, '${SRCS_SENSORS_LIBRARY}')
+	AC_SUBST(OFGCTESTER, ofgctester)
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		OFGCTESTER_LIBS="-lobjfwhid.library $OFGCTESTER_LIBS"
+	], [
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+	])
+	;;
+	AC_SUBST(OFGCTESTER_LIBS)
 esac
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
