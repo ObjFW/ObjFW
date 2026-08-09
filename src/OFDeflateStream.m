@@ -35,6 +35,7 @@
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFTruncatedDataException.h"
 
 enum State {
 	stateBlockHeader,
@@ -116,6 +117,10 @@ tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 			if OF_LIKELY (ctx->bufferIndex < ctx->bufferLength)
 				ctx->byte = ctx->buffer[ctx->bufferIndex++];
 			else {
+				if (stream->_stream.atEndOfStream)
+					@throw [OFTruncatedDataException
+					    exception];
+
 				size_t length = [stream->_stream
 				    readIntoBuffer: ctx->buffer
 					    length: OFInflateStreamBufferSize];
