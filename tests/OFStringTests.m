@@ -906,6 +906,8 @@ static const char *range80ToFF =
 - (void)testFloatValueThrowsOnInvalidFormat
 {
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @" \n\t"] floatValue], OFInvalidFormatException);
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0.0a"] floatValue], OFInvalidFormatException);
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0 0"] floatValue], OFInvalidFormatException);
@@ -949,6 +951,8 @@ static const char *range80ToFF =
 
 - (void)testDoubleValueThrowsOnInvalidFormat
 {
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @" \n\t"] doubleValue], OFInvalidFormatException);
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0.0a"] doubleValue], OFInvalidFormatException);
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:

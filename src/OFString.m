@@ -2923,6 +2923,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 	value = strtof(UTF8String, &endPtr);
 #endif
 
+	if (endPtr - UTF8String == 0)
+		@throw [OFInvalidFormatException exception];
+
 	if (value == HUGE_VALF && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
 
@@ -2990,6 +2993,9 @@ unsignedLongLongValueWithBase(OFString *self, unsigned char base,
 #else
 	value = strtod(UTF8String, &endPtr);
 #endif
+
+	if (endPtr - UTF8String == 0)
+		@throw [OFInvalidFormatException exception];
 
 	if (value == HUGE_VAL && errno == ERANGE)
 		@throw [OFOutOfRangeException exception];
