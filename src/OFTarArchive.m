@@ -39,6 +39,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
+#import "OFSeekFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
@@ -488,7 +490,15 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self of_skip];
+	@try {
+		[self of_skip];
+	} @catch (OFSeekFailedException *e) {
+		if (!_stream.atEndOfStream)
+			@throw e;
+	} @catch (OFReadFailedException *e) {
+		if (!_stream.atEndOfStream)
+			@throw e;
+	}
 
 	objc_release(_stream);
 	_stream = nil;
