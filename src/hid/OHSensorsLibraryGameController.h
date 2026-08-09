@@ -19,13 +19,21 @@
 
 #import "OHGameController.h"
 
+#include <exec/types.h>
+
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OHSensorsLibraryGameController: OHGameController
 {
+	APTR _sensor;
+	struct OHSensorsList *_sensorsList;
+	OFString *_name;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;
+- (instancetype)oh_initWithSensor: (APTR)sensor
+		      sensorsList: (struct OHSensorsList *)sensorsList
+    OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

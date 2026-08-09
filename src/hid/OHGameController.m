@@ -45,6 +45,9 @@
 #ifdef OF_HAVE_GCF
 # import "OHGCFGameController.h"
 #endif
+#ifdef OF_MORPHOS
+# import "OHSensorsLibraryGameController.h"
+#endif
 
 @implementation OHGameController
 @dynamic name, profile;
@@ -68,6 +71,8 @@
 		return [OHGCFGameController controllers];
 	else
 		return [OFArray array];
+#elif defined(OF_MORPHOS)
+	return [OHSensorsLibraryGameController controllers];
 #else
 	return [OFArray array];
 #endif

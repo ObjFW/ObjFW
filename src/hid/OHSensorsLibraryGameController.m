@@ -26,24 +26,32 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OFLocale.h"
 
 #import "OFInitializationFailedException.h"
 
+#define USE_INLINE_STDARG
 #include <proto/exec.h>
+#include <ppcinline/sensors.h>
+#include <libraries/sensors.h>
+#include <libraries/sensors_hid.h>
 
-static struct Library *SensorsBase;
-static struct Library *PsdBase;
+struct Library *SensorsBase;
+
+struct OHSensorsList {
+	APTR sensors;
+	int retainCount;
+};
 
 OF_DESTRUCTOR()
 {
-	if (PsdBase != NULL)
-		CloseLibrary(PsdBase);
-
 	if (SensorsBase != NULL)
 		CloseLibrary(SensorsBase);
 }
 
 @implementation OHSensorsLibraryGameController
+@synthesize name = _name;
+
 + (void)initialize
 {
 	if (self != [OHSensorsLibraryGameController class])
@@ -52,15 +60,41 @@ OF_DESTRUCTOR()
 	if ((SensorsBase = OpenLibrary("sensors.library", 53)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-
-	if ((PsdBase = OpenLibrary("poseidon.library", 1)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
 }
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
 	OFMutableArray *controllers = [OFMutableArray array];
+	struct OHSensorsList sensors = {
+		.sensors = ObtainSensorsListTags(SENSORS_Class, SensorClass_HID,
+		    SENSORS_Type, SensorType_HID_Gamepad, TAG_END),
+		.retainCount = 1
+	};
+
+	if (sensors.sensors == NULL) {
+		[controllers makeImmutable];
+		return controllers;
+	}
+
+	@try {
+		APTR sensor = NULL;
+
+		while ((sensor = NextSensor(sensor, sensors.sensors, NULL)) !=
+		    NULL)
+			[controllers addObject: objc_autorelease(
+			    [[OHSensorsLibraryGameController alloc]
+			    oh_initWithSensor: (APTR)sensor
+				  sensorsList: &sensors])];
+	} @finally {
+		bool release;
+
+		Forbid();
+		release = (--sensors.retainCount == 0);
+		Permit();
+
+		if (release)
+			ReleaseSensorsList(sensors.sensors, NULL);
+	}
 
 	[controllers makeImmutable];
 
@@ -70,5 +104,50 @@ OF_DESTRUCTOR()
 - (instancetype)oh_init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)oh_initWithSensor: (APTR)sensor
+		      sensorsList: (struct OHSensorsList *)sensorsList
+{
+	self = [super oh_init];
+
+	Forbid();
+	_sensor = sensor;
+	_sensorsList = sensorsList;
+	_sensorsList->retainCount++;
+	Permit();
+
+	@try {
+		STRPTR name;
+
+		if (GetSensorAttrTags(_sensor, SENSORS_HID_Name, (IPTR)&name,
+		    TAG_END) < 1)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
+		_name = [[OFString alloc] initWithCString: name
+						 encoding: [OFLocale encoding]];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	bool release;
+
+	objc_release(_name);
+
+	Forbid();
+	release = (--_sensorsList->retainCount == 0);
+	Permit();
+
+	if (release)
+		ReleaseSensorsList(_sensorsList->sensors, NULL);
+
+	[super dealloc];
 }
 @end
