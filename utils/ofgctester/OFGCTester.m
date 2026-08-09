@@ -78,6 +78,10 @@ const char *VER = "$VER: ofgctester "
 	OFDate *_lastControllersUpdate;
 	OHJoyConPair *_joyConPair;
 }
+
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal;
+#endif
 @end
 
 OF_APPLICATION_DELEGATE(OFGCTester)
@@ -329,6 +333,11 @@ printProfile(id <OHGameControllerProfile> profile)
 		objc_autoreleasePoolPop(pool);
 	}
 #else
+# ifdef OF_AMIGAOS
+	[[OFRunLoop mainRunLoop] addExecSignal: SIGBREAKB_CTRL_C
+					target: self
+				      selector: @selector(handleBreakCtrlC:)];
+# endif
 	[OFTimer scheduledTimerWithTimeInterval: 1.0f / 60.0f
 					 target: self
 				       selector: @selector(updateOutput)
@@ -336,8 +345,15 @@ printProfile(id <OHGameControllerProfile> profile)
 #endif
 }
 
+#ifdef OF_AMIGAOS
+- (void)handleBreakCtrlC: (ULONG)signal
+{
+	SIGINTReceived = true;
+}
+#else
 - (void)applicationDidReceiveSIGINT
 {
 	SIGINTReceived = true;
 }
+#endif
 @end
