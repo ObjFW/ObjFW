@@ -2665,8 +2665,8 @@ morphos*)
 	], [
 		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
 	])
-	;;
 	AC_SUBST(OFGCTESTER_LIBS)
+	;;
 esac
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
