@@ -74,6 +74,7 @@ powerpc-*-amigaos*)
 	AC_SUBST(LIBBASES_M, libbases.m)
 	;;
 *-morphos*)
+	AS_IF([test x"$OBJCFLAGS" = x""], [OBJCFLAGS="-O2 -g"])
 	OBJCFLAGS="$OBJCFLAGS -noixemul"
 	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 	LDFLAGS="$LDFLAGS -noixemul"
