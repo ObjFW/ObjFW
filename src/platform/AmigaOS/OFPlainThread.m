@@ -47,7 +47,7 @@ OF_CONSTRUCTOR()
 
 static void
 #if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
-__saveds
+__saveds __attribute__((__noinline__))
 #endif
 functionWrapper(void)
 {
