@@ -608,7 +608,7 @@ addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
 
 		break;
 	default:
-		help(OFStdErr, true, 1);
+		help(OFStdErr, false, 1);
 		break;
 	}
 
