@@ -32,7 +32,7 @@
 @dynamic fileName, fileType, fileComment, extraField, versionMadeBy;
 @dynamic minVersionNeeded, modificationDate, compressionMethod, compressedSize;
 @dynamic uncompressedSize, CRC32, versionSpecificAttributes;
-@dynamic generalPurposeBitFlag;
+@dynamic generalPurposeBitFlag, usesZIP64;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
@@ -58,6 +58,7 @@
 			@throw [OFOutOfRangeException exception];
 
 		_fileName = [fileName copy];
+		_usesZIP64 = true;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -209,6 +210,11 @@
 - (void)setGeneralPurposeBitFlag: (uint16_t)generalPurposeBitFlag
 {
 	_generalPurposeBitFlag = generalPurposeBitFlag;
+}
+
+- (void)setUsesZIP64: (bool)usesZIP64
+{
+	_usesZIP64 = usesZIP64;
 }
 
 - (void)makeImmutable

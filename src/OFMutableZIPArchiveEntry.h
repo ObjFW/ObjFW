@@ -92,6 +92,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint16_t generalPurposeBitFlag;
 
 /**
+ * @brief Whether the entry uses ZIP64.
+ *
+ * When creating a new entry, this defaults to `true`. Only set this to `false`
+ * if you know for sure ZIP64 will not be needed.
+ */
+@property (readwrite, nonatomic) bool usesZIP64;
+
+/**
  * @brief Creates a new OFMutableZIPArchiveEntry with the specified file name.
  *
  * @param fileName The file name for the OFZIPArchiveEntry

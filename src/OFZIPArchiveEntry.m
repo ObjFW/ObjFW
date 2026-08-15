@@ -268,6 +268,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 				@throw [OFInvalidFormatException exception];
 
 			[extraField removeItemsInRange: range];
+			_usesZIP64 = true;
 		}
 
 		if (extraField.count > 0) {
@@ -313,6 +314,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		copy->_CRC32 = _CRC32;
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
+		copy->_usesZIP64 = _usesZIP64;
 		copy->_extraField = [_extraField copy];
 		copy->_fileComment = [_fileComment copy];
 		copy->_startDiskNumber = _startDiskNumber;
@@ -414,6 +416,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	return _generalPurposeBitFlag;
 }
 
+- (bool)usesZIP64
+{
+	return _usesZIP64;
+}
+
 - (uint16_t)of_lastModifiedFileTime
 {
 	return _lastModifiedFileTime;
@@ -491,28 +498,62 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	[stream writeLittleEndianInt16: _lastModifiedFileTime];
 	[stream writeLittleEndianInt16: _lastModifiedFileDate];
 	[stream writeLittleEndianInt32: _CRC32];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
+
+	if (_usesZIP64) {
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+	} else {
+		if (_uncompressedSize > UINT32_MAX ||
+		    _compressionMethod > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt32: (uint32_t)_uncompressedSize];
+		[stream writeLittleEndianInt32: (uint32_t)_compressedSize];
+	}
+
 	[stream writeLittleEndianInt16: (uint16_t)_fileName.UTF8StringLength];
-	[stream writeLittleEndianInt16: (uint16_t)_extraField.count + 32];
+	[stream writeLittleEndianInt16:
+	    (uint16_t)_extraField.count + (_usesZIP64 ? 32 : 0)];
 	[stream writeLittleEndianInt16:
 	    (uint16_t)_fileComment.UTF8StringLength];
-	[stream writeLittleEndianInt16: 0xFFFF];
+
+	if (_usesZIP64)
+		[stream writeLittleEndianInt16: 0xFFFF];
+	else {
+		if (_startDiskNumber > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt16: (uint16_t)_startDiskNumber];
+	}
+
 	[stream writeLittleEndianInt16: _internalAttributes];
 	[stream writeLittleEndianInt32: _versionSpecificAttributes];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
+
+	if (_usesZIP64)
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+	else {
+		if (_localFileHeaderOffset > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt32:
+		    (uint32_t)_localFileHeaderOffset];
+	}
+
 	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
 
 	[stream writeString: _fileName encoding: OFStringEncodingUTF8];
 	size += (uint64_t)_fileName.UTF8StringLength;
 
-	[stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
-	[stream writeLittleEndianInt16: 28];
-	[stream writeLittleEndianInt64: _uncompressedSize];
-	[stream writeLittleEndianInt64: _compressedSize];
-	[stream writeLittleEndianInt64: _localFileHeaderOffset];
-	[stream writeLittleEndianInt32: _startDiskNumber];
-	size += (2 * 2) + (3 * 8) + 4;
+	if (_usesZIP64) {
+		[stream writeLittleEndianInt16:
+		    OFZIPArchiveEntryExtraFieldTagZIP64];
+		[stream writeLittleEndianInt16: 28];
+		[stream writeLittleEndianInt64: _uncompressedSize];
+		[stream writeLittleEndianInt64: _compressedSize];
+		[stream writeLittleEndianInt64: _localFileHeaderOffset];
+		[stream writeLittleEndianInt32: _startDiskNumber];
+		size += (2 * 2) + (3 * 8) + 4;
+	}
 
 	if (_extraField != nil)
 		[stream writeData: _extraField];

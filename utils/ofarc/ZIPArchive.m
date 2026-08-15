@@ -627,6 +627,9 @@ outer_loop_end:
 				entry.fileName = [entry.fileName
 				    stringByAppendingString: @"/"];
 
+		if ([type isEqual: OFFileTypeRegular])
+			entry.usesZIP64 = (attributes.fileSize > UINT32_MAX);
+
 		output = [_archive streamForWritingEntry: entry];
 
 		if ([type isEqual: OFFileTypeRegular]) {

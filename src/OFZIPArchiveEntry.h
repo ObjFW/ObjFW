@@ -128,7 +128,8 @@ typedef enum {
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
 	int64_t _localFileHeaderOffset;
-	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
+	uintptr_t _usesZIP64;
+	OF_RESERVE_IVARS(OFZIPArchiveEntry, 3)
 }
 
 /**
@@ -189,6 +190,14 @@ typedef enum {
  * See the ZIP specification for details.
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
+
+/**
+ * @brief Whether the entry uses ZIP64.
+ *
+ * When creating a new entry, this defaults to `true`. Only set this to `false`
+ * if you know for sure ZIP64 will not be needed.
+ */
+@property (readonly, nonatomic) bool usesZIP64;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
