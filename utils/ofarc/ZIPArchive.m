@@ -628,7 +628,8 @@ outer_loop_end:
 				    stringByAppendingString: @"/"];
 
 		if ([type isEqual: OFFileTypeRegular])
-			entry.usesZIP64 = (attributes.fileSize > UINT32_MAX);
+			[entry setUsesZIP64:
+			    (attributes.fileSize > UINT32_MAX)];
 
 		output = [_archive streamForWritingEntry: entry];
 
