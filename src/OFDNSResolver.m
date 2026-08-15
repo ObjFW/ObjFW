@@ -691,11 +691,15 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (OFDictionary *)staticHosts
 {
+	[_settings reload];
+
 	return _settings->_staticHosts;
 }
 
 - (void)setStaticHosts: (OFDictionary *)staticHosts
 {
+	[_settings reload];
+
 	OFDictionary *old = _settings->_staticHosts;
 	_settings->_staticHosts = [staticHosts copy];
 	objc_release(old);
@@ -703,11 +707,15 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (OFArray *)nameServers
 {
+	[_settings reload];
+
 	return _settings->_nameServers;
 }
 
 - (void)setNameServers: (OFArray *)nameServers
 {
+	[_settings reload];
+
 	OFArray *old = _settings->_nameServers;
 	_settings->_nameServers = [nameServers copy];
 	objc_release(old);
@@ -715,16 +723,22 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (OFString *)localDomain
 {
+	[_settings reload];
+
 	return _settings->_localDomain;
 }
 
 - (OFArray *)searchDomains
 {
+	[_settings reload];
+
 	return _settings->_searchDomains;
 }
 
 - (void)setSearchDomains: (OFArray *)searchDomains
 {
+	[_settings reload];
+
 	OFArray *old = _settings->_searchDomains;
 	_settings->_searchDomains = [searchDomains copy];
 	objc_release(old);
@@ -732,53 +746,73 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 
 - (OFTimeInterval)timeout
 {
+	[_settings reload];
+
 	return _settings->_timeout;
 }
 
 - (void)setTimeout: (OFTimeInterval)timeout
 {
+	[_settings reload];
+
 	_settings->_timeout = timeout;
 }
 
 - (unsigned int)maxAttempts
 {
+	[_settings reload];
+
 	return _settings->_maxAttempts;
 }
 
 - (void)setMaxAttempts: (unsigned int)maxAttempts
 {
+	[_settings reload];
+
 	_settings->_maxAttempts = maxAttempts;
 }
 
 - (unsigned int)minNumberOfDotsInAbsoluteName
 {
+	[_settings reload];
+
 	return _settings->_minNumberOfDotsInAbsoluteName;
 }
 
 - (void)setMinNumberOfDotsInAbsoluteName:
     (unsigned int)minNumberOfDotsInAbsoluteName
 {
+	[_settings reload];
+
 	_settings->_minNumberOfDotsInAbsoluteName =
 	    minNumberOfDotsInAbsoluteName;
 }
 
 - (bool)forcesTCP
 {
+	[_settings reload];
+
 	return _settings->_forcesTCP;
 }
 
 - (void)setForcesTCP: (bool)forcesTCP
 {
+	[_settings reload];
+
 	_settings->_forcesTCP = forcesTCP;
 }
 
 - (OFTimeInterval)configReloadInterval
 {
+	[_settings reload];
+
 	return _settings->_configReloadInterval;
 }
 
 - (void)setConfigReloadInterval: (OFTimeInterval)configReloadInterval
 {
+	[_settings reload];
+
 	_settings->_configReloadInterval = configReloadInterval;
 }
 
@@ -929,6 +963,7 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 	OFDNSResolverContext *context;
 	OFPair OF_GENERIC(OFDate *, OFDNSResponse *) *cacheEntry;
 
+	[_settings reload];
 	[self of_cleanUpCache];
 
 	if ((cacheEntry = [_cache objectForKey: query]) != nil) {
@@ -1373,6 +1408,8 @@ done:
 			 runLoopMode: (OFRunLoopMode)runLoopMode
 			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
+	[_settings reload];
+
 	void *pool = objc_autoreleasePoolPush();
 	OFHostAddressResolver *resolver = objc_autorelease(
 	    [[OFHostAddressResolver alloc] initWithHost: host
@@ -1381,15 +1418,15 @@ done:
 					       settings: _settings
 					    runLoopMode: runLoopMode
 					       delegate: delegate]);
-
 	[resolver asyncResolve];
-
 	objc_autoreleasePoolPop(pool);
 }
 
 - (OFData *)resolveAddressesForHost: (OFString *)host
 		      addressFamily: (OFSocketAddressFamily)addressFamily
 {
+	[_settings reload];
+
 	void *pool = objc_autoreleasePoolPush();
 	OFHostAddressResolver *resolver = objc_autorelease(
 	    [[OFHostAddressResolver alloc] initWithHost: host
@@ -1399,7 +1436,6 @@ done:
 					    runLoopMode: nil
 					       delegate: nil]);
 	OFData *addresses = objc_retain([resolver resolve]);
-
 	objc_autoreleasePoolPop(pool);
 
 	return objc_autoreleaseReturnValue(addresses);

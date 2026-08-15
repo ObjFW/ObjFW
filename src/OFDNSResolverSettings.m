@@ -659,7 +659,7 @@ parseNetStackArray(OFString *string)
 	 */
 
 	if (_lastConfigReload != nil && _configReloadInterval > 0 &&
-	    _lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
+	    -_lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
 		return;
 
 	pool = objc_autoreleasePoolPush();
@@ -751,6 +751,10 @@ parseNetStackArray(OFString *string)
 		else
 			_searchDomains = [[OFArray alloc] init];
 	}
+
+	objc_release(_lastConfigReload);
+	_lastConfigReload = nil;
+	_lastConfigReload = [[OFDate alloc] init];
 
 	objc_autoreleasePoolPop(pool);
 }
