@@ -19,7 +19,7 @@
 
 #import "OFException+OFSwift.h"
 
-@implementation OFException (NSError)
+@implementation OFException (OFSwift)
 #ifdef OF_HAVE_BLOCKS
 + (void)try: (void (^)(void))try
       catch: (void (^)(OF_KINDOF(OFException *e)))catch
