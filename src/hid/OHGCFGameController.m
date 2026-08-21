@@ -143,6 +143,9 @@
 			    oh_initWithLiveInput:
 			    _controller.input.unmappedInput];
 
+		if (_name == nil)
+			_name = @"GameController.framework device";
+
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
