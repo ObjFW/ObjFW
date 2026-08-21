@@ -69,7 +69,7 @@ run: all
 
 CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
 LIBS := -L../../src		\
-	-L../../src/hid		\
+	-L../../src/tls		\
 	-L../../src/runtime	\
 	${OBJFW_TLS_LIB}	\
 	-lobjfw			\
