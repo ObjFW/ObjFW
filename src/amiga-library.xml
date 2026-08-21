@@ -46,7 +46,7 @@
   <function name='OFApplicationMain' return-type='int'>
     <argument name='argc' type='int *_Nonnull'/>
     <argument name='argv' type='char *_Nullable *_Nonnull *_Nonnull'/>
-    <argument name='delegate' type='id <OFApplicationDelegate>'/>
+    <argument name='delegate' type='id &lt;OFApplicationDelegate&gt;'/>
   </function>
   <include>OFBlock.h</include>
   <function name='_Block_copy' return-type='void *_Nullable'>
