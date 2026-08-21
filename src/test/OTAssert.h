@@ -26,7 +26,7 @@
 /** @file */
 
 /**
- * @brief Asserts that the specified condition condition holds.
+ * @brief Asserts that the specified condition holds.
  *
  * @param condition The condition to check
  * @param ... An optional format string to print if the assertion failed,
@@ -140,7 +140,7 @@
 /**
  * @brief Asserts that the specified object is `nil`.
  *
- * @param object The object to should be `nil`
+ * @param object The object that should be `nil`
  * @param ... An optional format string to print if the assertion failed,
  *	      followed by optional arguments
  */
@@ -149,7 +149,7 @@
 /**
  * @brief Asserts that the specified object is not `nil`.
  *
- * @param object The object to should not be `nil`
+ * @param object The object that should not be `nil`
  * @param ... An optional format string to print if the assertion failed,
  *	      followed by optional arguments
  */
