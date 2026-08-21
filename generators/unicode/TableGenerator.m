@@ -170,8 +170,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		}
 
 		if (![[components objectAtIndex: 1] isEqual: @"S"] &&
-		    ![[components objectAtIndex: 1] isEqual: @"C"])
+		    ![[components objectAtIndex: 1] isEqual: @"C"]) {
+			objc_autoreleasePoolPop(pool2);
 			continue;
+		}
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongValueWithBase: 16];
