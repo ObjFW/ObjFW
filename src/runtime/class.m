@@ -532,6 +532,10 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 		_OBJC_ERROR("Not enough memory to allocate class pair for "
 		    "class %s!", name);
 
+	if ((name = _objc_strdup(name)) == NULL)
+		_OBJC_ERROR("Not enough memory to copy class name for new "
+		    "class pair!");
+
 	class->isa = metaclass;
 	class->superclass = superclass;
 	class->name = name;
