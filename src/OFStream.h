@@ -269,8 +269,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  *
  * @note If you want to subclass this, override
  *	 @ref lowlevelReadIntoBuffer:length:, @ref lowlevelWriteBuffer:length:
- *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are are
- *	 the methods that do the actual work. OFStream uses those for all other
+ *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are the
+ *	 methods that do the actual work. OFStream uses those for all other
  *	 methods and does all the caching and other stuff for you. If you
  *	 override these methods without the `lowlevel` prefix, you *will* break
  *	 caching and get broken results!
@@ -494,8 +494,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 
 # ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously reads *at most* ref `length` bytes from the stream
- *	  into a buffer.
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
+ *	  buffer.
  *
  * @deprecated Use @ref asyncReadIntoBuffer:length:handler: instead.
  *
@@ -527,8 +527,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	"Use -[asyncReadIntoBuffer:length:handler:] instead");
 
 /**
- * @brief Asynchronously reads *at most* ref `length` bytes from the stream
- *	  into a buffer.
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
+ *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -708,7 +708,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
     OF_DEPRECATED(ObjFW, 1, 2,
-	"Use -[asyncReadIntoBuffer:exactLength:runLoopMode:handler: instead]");
+	"Use -[asyncReadIntoBuffer:exactLength:runLoopMode:handler:] instead");
 
 /**
  * @brief Asynchronously reads exactly the specified `length` bytes from the
@@ -1348,7 +1348,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 				 encoding: (OFStringEncoding)encoding;
 
 /**
- * @brief Tries to reads until the specified string or `\0` is found or the end
+ * @brief Tries to read until the specified string or `\0` is found or the end
  *	  of stream (see @ref readUntilDelimiter:) and returns `nil` if not
  *	  enough data has been received yet.
  *
