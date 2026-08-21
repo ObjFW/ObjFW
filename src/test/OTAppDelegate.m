@@ -169,8 +169,12 @@ isSubclassOfClass(Class class, Class superclass)
 	Method *methods = class_copyMethodList(class, NULL);
 	OFMutableSet *tests;
 
-	if (methods == NULL)
+	if (methods == NULL) {
+		if (class_getSuperclass(class) != Nil)
+			return [self testsInClass: class_getSuperclass(class)];
+
 		return nil;
+	}
 
 	@try {
 		tests = [OFMutableSet set];
