@@ -97,7 +97,7 @@
 {
 	OHVIDPID VIDPID = self.VIDPID;
 
-	if (VIDPID.vendorID != 0 && VIDPID.productID != 0)
+	if (VIDPID.vendorID != 0)
 		return [OFNumber numberWithUnsignedShort: VIDPID.vendorID];
 
 	return nil;
@@ -107,7 +107,7 @@
 {
 	OHVIDPID VIDPID = self.VIDPID;
 
-	if (VIDPID.vendorID != 0 && VIDPID.productID != 0)
+	if (VIDPID.productID != 0)
 		return [OFNumber numberWithUnsignedShort: VIDPID.productID];
 
 	return nil;
