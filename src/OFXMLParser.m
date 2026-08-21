@@ -881,6 +881,9 @@ inAttributeValueState(OFXMLParser *self)
 	size_t length;
 	OFXMLAttribute *attribute;
 
+	if (self->_data[self->_i] == '<')
+		@throw [OFMalformedXMLException exceptionWithParser: self];
+
 	if (self->_data[self->_i] != self->_delimiter)
 		return;
 
