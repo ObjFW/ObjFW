@@ -736,7 +736,7 @@ static const char *range80ToFF =
 	    @"-0x10\t"] longLongValueWithBase: 0], -0x10);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"123f"] longLongValueWithBase: 16], 0x123f);
+	    @"123f"] longLongValueWithBase: 16], 0x123F);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"-1234"] longLongValueWithBase: 0], -1234);
@@ -814,7 +814,7 @@ static const char *range80ToFF =
 	    @"\r\n+123  "] unsignedLongLongValue], 123);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"123f"] unsignedLongLongValueWithBase: 16], 0x123f);
+	    @"123f"] unsignedLongLongValueWithBase: 16], 0x123F);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"1234"] unsignedLongLongValueWithBase: 0], 1234);
