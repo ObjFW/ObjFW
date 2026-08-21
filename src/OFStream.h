@@ -941,24 +941,26 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * @brief Reads a string until a `\0` appears in the stream or the end of the
  *	  stream is reached.
  *
+ * @return The string read or `nil` if the end of the stream has been reached
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)readString;
+- (nullable OFString *)readString;
 
 /**
  * @brief Reads a string with the specified encoding until a `\0` appears in
  *	  the stream or the end of the stream is reached.
  *
+ * @return The string read or `nil` if the end of the stream has been reached
  * @param encoding The encoding of the string to read from the stream
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
+- (nullable OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads a string with the specified length from the stream.
@@ -1270,24 +1272,26 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * @brief Tries to read a string until a `\0` appears in the stream or the end
  *	  of the stream is reached.
  *
+ * @return The string read or `nil` if the string is not complete yet
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)tryReadString;
+- (nullable OFString *)tryReadString;
 
 /**
  * @brief Tries to read a string with the specified encoding until a `\0`
  *	  appears in the stream or the end of the stream is reached.
  *
+ * @return The string read or `nil` if the string is not complete yet
  * @param encoding The encoding of the string to read from the stream
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
+- (nullable OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to read a line from the stream (see @ref readLine) and returns
