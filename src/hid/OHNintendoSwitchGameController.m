@@ -156,10 +156,10 @@ static const size_t maxControllers = 8;
 	    -(float)stick.y / (stick.y < 0 ? -INT16_MIN : INT16_MAX)];
 
 	directionalPad = [directionalPads objectForKey: @"D-Pad"];
-	[directionalPad.up setValue: !!(keys & keys & HidNpadButton_Up)];
-	[directionalPad.down setValue: !!(keys & keys & HidNpadButton_Down)];
-	[directionalPad.left setValue: !!(keys & keys & HidNpadButton_Left)];
-	[directionalPad.right setValue: !!(keys & keys & HidNpadButton_Right)];
+	[directionalPad.up setValue: !!(keys & HidNpadButton_Up)];
+	[directionalPad.down setValue: !!(keys & HidNpadButton_Down)];
+	[directionalPad.left setValue: !!(keys & HidNpadButton_Left)];
+	[directionalPad.right setValue: !!(keys & HidNpadButton_Right)];
 
 	objc_autoreleasePoolPop(pool);
 }
