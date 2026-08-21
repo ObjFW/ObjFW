@@ -165,7 +165,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		components = [line componentsSeparatedByString: @"; "];
 		if (components.count != 4) {
-			OFLog(@"Invalid line: %s\n", line);
+			OFLog(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
 
