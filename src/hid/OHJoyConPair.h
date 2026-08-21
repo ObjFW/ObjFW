@@ -46,7 +46,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param leftJoyCon The left Joy-Con for the pair
  * @param rightJoyCon The right Joy-Con for the pair
- * @return An new Joy-Con pair
+ * @return A new Joy-Con pair
  */
 + (instancetype)gamepadWithLeftJoyCon: (OHLeftJoyCon *)leftJoyCon
 			  rightJoyCon: (OHRightJoyCon *)rightJoyCon;
