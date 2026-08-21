@@ -519,6 +519,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	])
 
 	AC_SUBST(OBJFW_LIB, "-lobjfw")
+	AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid")
 ], [
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
