@@ -158,6 +158,7 @@
 - (void)dealloc
 {
 	objc_release(_controller);
+	objc_release(_name);
 	objc_release(_profile);
 
 	[super dealloc];
