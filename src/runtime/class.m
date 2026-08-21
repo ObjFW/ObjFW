@@ -555,7 +555,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	metaclass->isa = (rootclass != Nil ? rootclass->isa : class);
 	metaclass->superclass = (superclass != Nil ? superclass->isa : Nil);
 	metaclass->name = name;
-	metaclass->info = _OBJC_CLASS_INFO_CLASS;
+	metaclass->info = _OBJC_CLASS_INFO_METACLASS;
 	metaclass->instanceSize = (superclass != Nil ?
 	    superclass->isa->instanceSize : 0) + (long)extraBytes;
 
