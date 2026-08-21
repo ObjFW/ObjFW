@@ -410,7 +410,7 @@ isSubclassOfClass(Class class, Class superclass)
 		OFArray *summary;
 
 		OFStdOut.foregroundColor = [OFColor teal];
-		[OFStdOut writeFormat: @"Running ", class];
+		[OFStdOut writeString: @"Running "];
 		OFStdOut.bold = true;
 		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
