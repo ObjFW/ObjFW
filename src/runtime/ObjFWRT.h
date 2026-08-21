@@ -339,9 +339,9 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
 /**
  * @brief Returns the class's method implementation for the specified selector.
  *
- * @warning If the method does not use use the struct return ABI, you need to
- *	    use @ref class_getMethodImplementation instead! Depending on the
- *	    ABI, small structs might not use the struct return ABI.
+ * @warning If the method does not use the struct return ABI, you need to use
+ *	    @ref class_getMethodImplementation instead! Depending on the ABI,
+ *	    small structs might not use the struct return ABI.
  *
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
@@ -631,7 +631,7 @@ extern id _Nullable object_dispose(id _Nullable object);
 extern id _Nonnull _objc_rootRetain(id _Nonnull object);
 
 /**
- * @brief Tries to retains the specified object.
+ * @brief Tries to retain the specified object.
  *
  * This is only to be used to implement the `retainWeakReference` method in a
  * root class.
