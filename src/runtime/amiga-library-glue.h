@@ -33,7 +33,7 @@ extern Class _Nullable glue_objc_getClass(const char *_Nonnull name);
 extern Class _Nonnull glue_objc_getRequiredClass(const char *_Nonnull name);
 extern Class _Nullable glue_objc_lookup_class(const char *_Nonnull name);
 extern Class _Nonnull glue_objc_get_class(const char *_Nonnull name);
-extern void glue_objc_exception_throw(id _Nonnull object);
+extern void glue_objc_exception_throw(id _Nullable object);
 extern int glue_objc_sync_enter(id _Nullable object);
 extern int glue_objc_sync_exit(id _Nullable object);
 extern id _Nullable glue_objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool atomic);

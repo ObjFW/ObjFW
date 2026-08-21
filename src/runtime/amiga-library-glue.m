@@ -99,7 +99,7 @@ glue_objc_get_class(const char *_Nonnull name)
 }
 
 void __saveds
-glue_objc_exception_throw(id _Nonnull object)
+glue_objc_exception_throw(id _Nullable object)
 {
 	objc_exception_throw(object);
 }

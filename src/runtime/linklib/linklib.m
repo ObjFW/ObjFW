@@ -152,14 +152,14 @@ objc_get_class(const char *_Nonnull name)
 }
 
 void __attribute__((__weak__))
-objc_exception_throw(id _Nonnull object)
+objc_exception_throw(id _Nullable object)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	__extension__ ((void (*)(id _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(object);
+	__extension__ ((void (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 94))(object);
 
 	OF_UNREACHABLE
 }

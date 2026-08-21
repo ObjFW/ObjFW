@@ -42,7 +42,7 @@
     <argument name='name' type='const char *_Nonnull'/>
   </function>
   <function name='objc_exception_throw' noreturn='1'>
-    <argument name='object' type='id _Nonnull'/>
+    <argument name='object' type='id _Nullable'/>
   </function>
   <function name='objc_sync_enter' return-type='int'>
     <argument name='object' type='id _Nullable'/>
