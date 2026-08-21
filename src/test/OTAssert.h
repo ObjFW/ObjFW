@@ -163,7 +163,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertThrows(expression, ...)				\
-	{							\
+	do {							\
 		bool OTThrown = false;				\
 		@try {						\
 			expression;				\
@@ -171,7 +171,7 @@
 			OTThrown = true;			\
 		}						\
 		OTAssert(OTThrown, ## __VA_ARGS__);		\
-	}
+	} while (false)
 
 /**
  * @brief Asserts that the specified expression throws a specific exception.
@@ -183,7 +183,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertThrowsSpecific(expression, exception, ...)	\
-	{							\
+	do {							\
 		bool OTThrown = false;				\
 		@try {						\
 			expression;				\
@@ -191,7 +191,7 @@
 			OTThrown = true;			\
 		}						\
 		OTAssert(OTThrown, ## __VA_ARGS__);		\
-	}
+	} while (false)
 
 /**
  * @brief Skips the current test, making it neither fail nor succeed.

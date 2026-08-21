@@ -802,7 +802,7 @@ static const char *range80ToFF =
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"-12345678901234567890123456789012345678901234567890"
 	    @"12345678901234567890123456789012345678901234567890"]
-	    longLongValueWithBase: 16], OFOutOfRangeException)
+	    longLongValueWithBase: 16], OFOutOfRangeException);
 }
 
 - (void)testUnsignedLongLongValue
