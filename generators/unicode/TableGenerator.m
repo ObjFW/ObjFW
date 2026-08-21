@@ -103,33 +103,37 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeString: @"Parsing UnicodeData.txt…"];
 
 	while ((line = [response readLine]) != nil) {
-		void *pool2;
-		OFArray OF_GENERIC(OFString *) *components;
-		OFUnichar codePoint;
-
 		if (line.length == 0)
 			continue;
 
-		pool2 = objc_autoreleasePoolPush();
+		void *pool2 = objc_autoreleasePoolPush();
 
-		components = [line componentsSeparatedByString: @";"];
+		OFArray OF_GENERIC(OFString *) *components =
+		    [line componentsSeparatedByString: @";"];
 		if (components.count != 15) {
 			OFLog(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		codePoint = (OFUnichar)[[components objectAtIndex: 0]
+		OFUnichar codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongValueWithBase: 16];
-
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_uppercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 12] unsignedLongValueWithBase: 16];
-		_lowercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 13] unsignedLongValueWithBase: 16];
-		_titlecaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 14] unsignedLongValueWithBase: 16];
+		OFString *component = [components objectAtIndex: 12];
+		if (component.length > 0)
+			_uppercaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
+
+		component = [components objectAtIndex: 13];
+		if (component.length > 0)
+			_lowercaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
+
+		component = [components objectAtIndex: 14];
+		if (component.length > 0)
+			_titlecaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}
