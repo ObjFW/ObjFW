@@ -68,5 +68,11 @@ run: all
 	exit $$EXIT
 
 CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
-LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L../../src		\
+	-L../../src/hid		\
+	-L../../src/runtime	\
+	${OBJFW_TLS_LIB}	\
+	-lobjfw			\
+	${RUNTIME_LIBS}		\
+	${LIBS}
 LD = ${OBJC}

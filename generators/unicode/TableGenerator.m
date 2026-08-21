@@ -37,9 +37,9 @@
 #import "copyright.h"
 
 static OFString *const unicodeDataIRI =
-    @"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
+    @"https://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
 static OFString *const caseFoldingIRI =
-    @"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
+    @"https://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
 
 OF_APPLICATION_DELEGATE(TableGenerator)
 
