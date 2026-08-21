@@ -407,7 +407,7 @@ scale(float value, float min, float max, bool inverted)
 		}
 
 		if (_discardUntilReport) {
-			if (event.type == EV_SYN && event.value == SYN_REPORT) {
+			if (event.type == EV_SYN && event.code == SYN_REPORT) {
 				_discardUntilReport = false;
 				[self oh_pollState];
 			}
@@ -417,7 +417,7 @@ scale(float value, float min, float max, bool inverted)
 
 		switch (event.type) {
 		case EV_SYN:
-			if (event.value == SYN_DROPPED) {
+			if (event.code == SYN_DROPPED) {
 				_discardUntilReport = true;
 				continue;
 			}
