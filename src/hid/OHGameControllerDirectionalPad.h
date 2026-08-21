@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @class OHGameControllerDirectionalPad OHGameControllerDirectionalPad.h
- *	  ObjFWHID/ObjFWID.h
+ *	  ObjFWHID/ObjFWHID.h
  *
  * @brief A directional pad or thumb stick of a game controller.
  */
