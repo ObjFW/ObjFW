@@ -35,6 +35,7 @@ __attribute__((__availability__(iOS, introduced=17.0)))
     OFDictionary<OFString *, NSString *> *oh_directionalPadsMap;
 @end
 
+OF_SUBCLASSING_RESTRICTED
 __attribute__((__availability__(macOS, introduced=14.0)))
 __attribute__((__availability__(iOS, introduced=17.0)))
 @interface OHGCFGameController: OHGameController

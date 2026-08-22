@@ -21,6 +21,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHWiiGameController: OHGameController
 {
 	int32_t _index;

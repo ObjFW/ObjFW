@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis;
 @end
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHEvdevGameController: OHGameController
 {
 	OFString *_path;

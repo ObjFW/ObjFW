@@ -23,6 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHSensorsLibraryGameController: OHGameController
 {
 	APTR _sensor;

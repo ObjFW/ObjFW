@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHNintendoSwitchExtendedGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHNintendoSwitchGameController: OHGameController
 {
 	PadState _pad;

@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHNintendo3DSExtendedGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHNintendo3DSGameController: OHGameController
 {
 	OHNintendo3DSExtendedGamepad *_extendedGamepad;

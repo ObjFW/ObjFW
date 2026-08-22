@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHNintendoDSGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHNintendoDSGameController: OHGameController
 {
 	OHNintendoDSGamepad *_gamepad;

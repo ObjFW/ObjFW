@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHXboxGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHXInputGameController: OHGameController
 {
 	DWORD _index;
