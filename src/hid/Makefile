@@ -67,7 +67,8 @@ SRCS_NINTENDO_DS = OHNintendoDSGamepad.m	\
 		   OHNintendoDSGameController.m
 SRCS_NINTENDO_SWITCH = OHNintendoSwitchExtendedGamepad.m	\
 		       OHNintendoSwitchGameController.m
-SRCS_SENSORS_LIBRARY = OHSensorsLibraryGameController.m
+SRCS_SENSORS_LIBRARY = OHSensorsLibraryGameController.m		\
+		       OHSensorsLibraryGameControllerProfile.m
 SRCS_WII = OHWiiClassicController.m	\
 	   OHWiiGameController.m	\
 	   OHWiimote.m			\

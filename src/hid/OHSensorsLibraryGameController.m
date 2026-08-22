@@ -27,6 +27,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHSensorsLibraryGameControllerProfile.h"
 
 #define USE_INLINE_STDARG
 #include <proto/exec.h>
@@ -77,7 +78,7 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 }
 
 @implementation OHSensorsLibraryGameController
-@synthesize name = _name;
+@synthesize name = _name, profile = _profile;
 
 + (void)initialize
 {
@@ -174,6 +175,8 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 		_name = [[OFString alloc] initWithCString: name
 						 encoding: [OFLocale encoding]];
+		_profile = [[OHSensorsLibraryGameControllerProfile alloc]
+		    oh_initWithParent: _sensor];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -186,7 +189,12 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 {
 	OHReleaseSensorsList(_sensorsList);
 	objc_release(_name);
+	objc_release(_profile);
 
 	[super dealloc];
+}
+
+- (void)updateState
+{
 }
 @end

@@ -17,25 +17,22 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
-
-#include <exec/types.h>
+#import "OHSensorsLibraryGameController.h"
+#import "OHGameControllerProfile.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
-@interface OHSensorsLibraryGameController: OHGameController
+@interface OHSensorsLibraryGameControllerProfile: OFObject
+    <OHGameControllerProfile>
 {
-	APTR _sensor;
-	struct OHSensorsList *_sensorsList;
-	OFString *_name;
-	id <OHGameControllerProfile> _profile;
+	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
+	    *_buttons;
+	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
+	    *_directionalPads;
 }
 
-- (instancetype)oh_init OF_UNAVAILABLE;
-- (instancetype)oh_initWithSensor: (APTR)sensor
-		      sensorsList: (struct OHSensorsList *)sensorsList
-    OF_METHOD_FAMILY(init);
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)oh_initWithParent: (APTR)parent OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

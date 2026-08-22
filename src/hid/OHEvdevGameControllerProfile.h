@@ -33,7 +33,6 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)init OF_UNAVAILABLE;
-
 - (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
 			    evBits: (unsigned long *)evBits
 			   absBits: (unsigned long *)absBits
