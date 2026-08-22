@@ -70,8 +70,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param server The Gemini server which encountered an exception
  * @param exception The exception which occurred
- * @param request The requested for the response for which the exception
- *		  occurred, if any
+ * @param request The request for the response for which the exception occurred,
+ *		  if any
  * @param response The response for which the exception occurred, if any
  */
 -	   (void)server: (OFGeminiServer *)server

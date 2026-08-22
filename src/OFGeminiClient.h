@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
- * @brief A callback which is called when an @ref OFGeminiResponse creates a TCP
+ * @brief A callback which is called when an @ref OFGeminiClient creates a TCP
  *	  socket.
  *
  * This can be used to tell the socket about a SOCKS5 proxy it should use for
@@ -144,7 +144,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param request The request to perform
  * @return The OFGeminiResponse for the request
  * @throw OFGeminiRequestFailedException The Gemini request failed
- * @throw OFInvalidServerResponseException The server sent an invalid responsse
+ * @throw OFInvalidServerResponseException The server sent an invalid response
  * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request;
@@ -162,7 +162,7 @@ OF_SUBCLASSING_RESTRICTED
  *		    request fails
  * @return The OFGeminiResponse for the request
  * @throw OFGeminiRequestFailedException The Gemini request failed
- * @throw OFInvalidServerResponseException The server sent an invalid responsse
+ * @throw OFInvalidServerResponseException The server sent an invalid response
  * @throw OFAlreadyOpenException The client is already performing a request
  */
 - (OFGeminiResponse *)performRequest: (OFGeminiRequest *)request
