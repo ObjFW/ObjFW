@@ -536,8 +536,7 @@
 
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: OFDefaultRunLoopMode];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 
 - (int)fileDescriptorForReading

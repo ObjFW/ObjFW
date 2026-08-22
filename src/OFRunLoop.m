@@ -1632,41 +1632,59 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # undef NEW_WRITE
 # undef QUEUE_ITEM
 
-+ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode
++ (void)of_cancelAsyncRequestsForObject: (id)object
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoopState *state = stateForMode(runLoop, mode, false, false);
-	OFList *queue;
 
-	if (state == nil)
-		return;
+#ifdef OF_HAVE_THREADS
+	[runLoop->_statesMutex lock];
+	@try {
+#endif
+		OFEnumerator OF_GENERIC(OFRunLoopState *) *enumerator =
+		    [runLoop->_states objectEnumerator];
+		for (OFRunLoopState *state in enumerator) {
+			OFList *queue;
 
-	if ((queue = [state->_writeQueues objectForKey: object]) != nil) {
-		OFAssert(queue.count > 0);
+			if ((queue = [state->_writeQueues
+			    objectForKey: object]) != nil) {
+				OFAssert(queue.count > 0);
 
-		/*
-		 * Clear the queue now, in case this has been called from a
-		 * handler, as otherwise, we'd do the cleanups below twice.
-		 */
-		[queue removeAllObjects];
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
 
-		[state->_kernelEventObserver removeObjectForWriting: object];
-		[state->_writeQueues removeObjectForKey: object];
+				[state->_kernelEventObserver
+				    removeObjectForWriting: object];
+				[state->_writeQueues
+				    removeObjectForKey: object];
+			}
+
+			if ((queue = [state->_readQueues
+			    objectForKey: object]) != nil) {
+				OFAssert(queue.count > 0);
+
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
+
+				[state->_kernelEventObserver
+				    removeObjectForReading: object];
+				[state->_readQueues
+				    removeObjectForKey: object];
+			}
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[runLoop->_statesMutex unlock];
 	}
-
-	if ((queue = [state->_readQueues objectForKey: object]) != nil) {
-		OFAssert(queue.count > 0);
-
-		/*
-		 * Clear the queue now, in case this has been called from a
-		 * handler, as otherwise, we'd do the cleanups below twice.
-		 */
-		[queue removeAllObjects];
-
-		[state->_kernelEventObserver removeObjectForReading: object];
-		[state->_readQueues removeObjectForKey: object];
-	}
+#endif
 
 	objc_autoreleasePoolPop(pool);
 }

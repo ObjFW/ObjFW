@@ -543,7 +543,8 @@ typedef bool (^OFSequencedPacketSocketAcceptedHandler)(
 #endif
 
 /**
- * @brief Cancels all pending asynchronous requests on the socket.
+ * @brief Cancels all pending asynchronous requests on the socket in all run
+ *	  loop modes.
  */
 - (void)cancelAsyncRequests;
 

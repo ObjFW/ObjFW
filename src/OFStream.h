@@ -1872,7 +1872,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @brief Cancels all pending asynchronous requests on the stream.
+ * @brief Cancels all pending asynchronous requests on the stream in all run
+ *	  loop modes.
  */
 - (void)cancelAsyncRequests;
 #endif

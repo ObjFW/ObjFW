@@ -203,7 +203,7 @@ OF_SUBCLASSING_RESTRICTED
 		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
- * @brief Cancels all pending asynchronous requests.
+ * @brief Cancels all pending asynchronous requests in all run loop modes.
  */
 - (void)cancelAsyncRequests;
 @end

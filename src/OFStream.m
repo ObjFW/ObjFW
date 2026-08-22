@@ -1805,8 +1805,7 @@ retry:
 #ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: OFDefaultRunLoopMode];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 #endif
 

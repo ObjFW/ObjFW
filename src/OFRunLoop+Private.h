@@ -157,7 +157,7 @@ OF_DIRECT_MEMBERS
 # endif
   delegate: (nullable id <OFSCTPSocketDelegate>)delegate;
 # endif
-+ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode;
++ (void)of_cancelAsyncRequestsForObject: (id)object;
 #endif
 - (void)of_removeTimer: (OFTimer *)timer forMode: (OFRunLoopMode)mode;
 @end
