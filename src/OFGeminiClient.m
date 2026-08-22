@@ -641,5 +641,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	[_streamToCancel cancelAsyncRequests];
 	objc_release(_streamToCancel);
 	_streamToCancel = nil;
+
+	_inProgress = false;
 }
 @end
