@@ -77,7 +77,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	if ((entry.versionMadeBy >> 8) ==
 	    OFZIPArchiveEntryAttributeCompatibilityMSDOS) {
 		OFNumber *MSDOSAttributes = [OFNumber numberWithUnsignedLong:
-		    (entry.versionSpecificAttributes >> 16)];
+		    (entry.versionSpecificAttributes & 0x3F)];
 		[attributes setObject: MSDOSAttributes
 			       forKey: OFFileMSDOSAttributes];
 	}
@@ -302,7 +302,7 @@ setModificationDate(OFString *path, OFZIPArchiveEntry *entry)
 					    @"prot", protectionString)];
 				} else if ((versionMadeBy >> 8) == VerMSDOS) {
 					uint32_t attributes = entry
-					    .versionSpecificAttributes >> 16;
+					    .versionSpecificAttributes;
 					OFString *attributesString = [OFString
 					    stringWithFormat:
 					    @"%04x", attributes];
@@ -606,7 +606,7 @@ outer_loop_end:
 		    ((uint32_t)attributes.fileAmigaProtection ^ 0xF) << 16;
 #elif defined(OF_MSDOS)
 		entry.versionSpecificAttributes =
-		    (uint32_t)attributes.fileMSDOSAttributes << 16;
+		    (uint32_t)attributes.fileMSDOSAttributes;
 #else
 		OFNumber *POSIXPermissions =
 		    [attributes objectForKey: OFFilePOSIXPermissions];
