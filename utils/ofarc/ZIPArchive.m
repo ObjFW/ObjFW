@@ -622,10 +622,25 @@ outer_loop_end:
 		}
 #endif
 
-		if ([type isEqual: OFFileTypeDirectory])
+		if ([type isEqual: OFFileTypeDirectory]) {
 			if (![entry.fileName hasSuffix: @"/"])
 				entry.fileName = [entry.fileName
 				    stringByAppendingString: @"/"];
+
+			/*
+			 * Some implementations do not check the version the
+			 * entry was made by and simply assume the lowest byte
+			 * is MS-DOS attributes. For example, Microsoft Plus!
+			 * 98 would treat directories as files if the directory
+			 * MS-DOS attribute is not set. Luckily, all other
+			 * platforms shift their attributes left by 16 bits and
+			 * ignore the other 16 bits, so we can just always set
+			 * the MS-DOS directory attribute.
+			 */
+			[entry setVersionSpecificAttributes:
+			    entry.versionSpecificAttributes |
+			    OFFileMSDOSAttributeDirectory];
+		}
 
 		if ([type isEqual: OFFileTypeRegular])
 			[entry setUsesZIP64:
