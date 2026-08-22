@@ -21,20 +21,22 @@
 
 #import "OHSensorsLibraryGameController.h"
 #import "OFArray.h"
+#import "OFLocale.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OFLocale.h"
-
-#import "OFInitializationFailedException.h"
 
 #define USE_INLINE_STDARG
 #include <proto/exec.h>
-#include <ppcinline/sensors.h>
+#include <libraries/poseidon.h>
 #include <libraries/sensors.h>
 #include <libraries/sensors_hid.h>
+#include <ppcinline/poseidon.h>
+#include <ppcinline/sensors.h>
+
+#import "OFInitializationFailedException.h"
 
 struct Library *SensorsBase;
 
@@ -85,6 +87,38 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 	if ((SensorsBase = OpenLibrary("sensors.library", 53)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
+
+	struct Library *PsdBase = OpenLibrary("poseidon.library", 1);
+	if (PsdBase == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	Forbid();
+
+	struct List *classList;
+	struct TagItem tags[] = {
+		{ PA_ClassList, (IPTR)&classList },
+		{ TAG_END }
+	};
+	psdGetAttrsA(PGA_STACK, NULL, tags);
+
+	bool loadXBox360Class = true;
+	for (struct Node *node = classList->lh_Head; node->ln_Succ != NULL;
+	    node = node->ln_Succ) {
+		if (strcmp(node->ln_Name, "xbox360.class") == 0) {
+			loadXBox360Class = false;
+			break;
+		}
+	}
+
+	Permit();
+
+	if (loadXBox360Class) {
+		psdAddClass((STRPTR)"MOSSYS:Classes/USB/xbox360.class", 0);
+		psdClassScan();
+	}
+
+	CloseLibrary(PsdBase);
 }
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
