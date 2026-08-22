@@ -21,6 +21,7 @@
 
 #import "OHSensorsLibraryGameController.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFLocale.h"
 #import "OHGameController.h"
 #import "OHGameController+Private.h"
@@ -175,8 +176,18 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 		_name = [[OFString alloc] initWithCString: name
 						 encoding: [OFLocale encoding]];
+
+		_childSensorsList = ObtainSensorsListTags(
+		    SENSORS_Parent, (IPTR)_sensor,
+		    SENSORS_Class, SensorClass_HID, TAG_END);
+		if (_childSensorsList == NULL)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		_profile = [[OHSensorsLibraryGameControllerProfile alloc]
-		    oh_initWithParent: _sensor];
+		    oh_initWithSensorsList: _childSensorsList];
+
+		[self updateState];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -189,6 +200,10 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 {
 	OHReleaseSensorsList(_sensorsList);
 	objc_release(_name);
+
+	if (_childSensorsList != NULL)
+		ReleaseSensorsList(_childSensorsList, NULL);
+
 	objc_release(_profile);
 
 	[super dealloc];
@@ -196,5 +211,42 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 - (void)updateState
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFStringEncoding encoding = [OFLocale encoding];
+
+	APTR sensor = NULL;
+	while ((sensor = NextSensor(sensor, _childSensorsList, NULL)) != NULL) {
+		ULONG type = 0;
+		STRPTR nameC = NULL;
+		DOUBLE value = 0.0, x = 0.0, y = 0.0;
+		GetSensorAttrTags(sensor, SENSORS_Type, (IPTR)&type,
+		    SENSORS_HIDInput_Name, (IPTR)&nameC,
+		    SENSORS_HIDInput_Value, (IPTR)&value,
+		    SENSORS_HIDInput_EW_Value, (IPTR)&x,
+		    SENSORS_HIDInput_NS_Value, (IPTR)&y,
+		    TAG_END);
+
+		if (nameC == NULL)
+			continue;
+
+		OFString *name = [OFString stringWithCString: nameC
+						    encoding: encoding];
+
+		switch (type) {
+		case SensorType_HIDInput_Trigger:
+		case SensorType_HIDInput_Analog:
+			[[_profile.buttons objectForKey: name] setValue: value];
+			break;
+		case SensorType_HIDInput_Stick:
+		case SensorType_HIDInput_AnalogStick:;
+			OHGameControllerDirectionalPad *pad =
+			    [_profile.directionalPads objectForKey: name];
+			pad.xAxis.value = x;
+			pad.yAxis.value = y;
+			break;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

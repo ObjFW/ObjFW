@@ -79,7 +79,7 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)oh_initWithParent: (APTR)parent
+- (instancetype)oh_initWithSensorsList: (APTR)list
 {
 	self = [super init];
 
@@ -88,58 +88,43 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		OFMutableDictionary *buttons = [OFMutableDictionary dictionary];
 		OFMutableDictionary *directionalPads =
 		    [OFMutableDictionary dictionary];
+		OFStringEncoding encoding = [OFLocale encoding];
 
-		APTR list = ObtainSensorsListTags(SENSORS_Parent, (IPTR)parent,
-		    SENSORS_Class, SensorClass_HID, TAG_END);
-		if (list == NULL)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+		APTR sensor = NULL;
+		while ((sensor = NextSensor(sensor, list, NULL)) != NULL) {
+			void *pool2 = objc_autoreleasePoolPush();
 
-		@try {
-			OFStringEncoding encoding = [OFLocale encoding];
+			ULONG type = 0;
+			STRPTR nameC = NULL;
+			GetSensorAttrTags(sensor, SENSORS_Type, (IPTR)&type,
+			    SENSORS_HIDInput_Name, (IPTR)&nameC, TAG_END);
 
-			APTR sensor = NULL;
-			while ((sensor = NextSensor(sensor, list, NULL)) !=
-			    NULL) {
-				void *pool2 = objc_autoreleasePoolPush();
-
-				ULONG type = 0;
-				STRPTR nameC = NULL;
-				GetSensorAttrTags(sensor,
-				    SENSORS_Type, (IPTR)&type,
-				    SENSORS_HIDInput_Name, (IPTR)&nameC,
-				    TAG_END);
-
-				if (nameC == NULL) {
-					objc_autoreleasePoolPop(pool);
-					continue;
-				}
-
-				OFString *name = [OFString
-				    stringWithCString: nameC
-					     encoding: encoding];
-
-				switch (type) {
-				case SensorType_HIDInput_Trigger:;
-					addButton(buttons, name, false, sensor);
-					break;
-				case SensorType_HIDInput_Analog:;
-					addButton(buttons, name, false, sensor);
-					break;
-				case SensorType_HIDInput_Stick:
-					addDirectionalPad(directionalPads, name,
-					    false, sensor);
-					break;
-				case SensorType_HIDInput_AnalogStick:
-					addDirectionalPad(directionalPads, name,
-					    true, sensor);
-					break;
-				}
-
-				objc_autoreleasePoolPop(pool2);
+			if (nameC == NULL) {
+				objc_autoreleasePoolPop(pool);
+				continue;
 			}
-		} @finally {
-			ReleaseSensorsList(list, NULL);
+
+			OFString *name = [OFString stringWithCString: nameC
+							    encoding: encoding];
+
+			switch (type) {
+			case SensorType_HIDInput_Trigger:
+				addButton(buttons, name, false, sensor);
+				break;
+			case SensorType_HIDInput_Analog:
+				addButton(buttons, name, false, sensor);
+				break;
+			case SensorType_HIDInput_Stick:
+				addDirectionalPad(directionalPads, name, false,
+				    sensor);
+				break;
+			case SensorType_HIDInput_AnalogStick:
+				addDirectionalPad(directionalPads, name, true,
+				    sensor);
+				break;
+			}
+
+			objc_autoreleasePoolPop(pool2);
 		}
 		[buttons makeImmutable];
 		[directionalPads makeImmutable];

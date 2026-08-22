@@ -27,9 +27,10 @@ OF_SUBCLASSING_RESTRICTED
 @interface OHSensorsLibraryGameController: OHGameController
 {
 	APTR _sensor;
-	struct OHSensorsList *_sensorsList;
-	OFString *_name;
-	id <OHGameControllerProfile> _profile;
+	struct OHSensorsList *_Nonnull _sensorsList;
+	OFString *_Nonnull _name;
+	APTR _childSensorsList;
+	id <OHGameControllerProfile> _Nonnull _profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

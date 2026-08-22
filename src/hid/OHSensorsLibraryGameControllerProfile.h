@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)init OF_UNAVAILABLE;
-- (instancetype)oh_initWithParent: (APTR)parent OF_METHOD_FAMILY(init);
+- (instancetype)oh_initWithSensorsList: (APTR)list OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END
