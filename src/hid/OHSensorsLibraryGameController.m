@@ -49,6 +49,31 @@ OF_DESTRUCTOR()
 		CloseLibrary(SensorsBase);
 }
 
+static struct OHSensorsList *
+OHRetainSensorsList(struct OHSensorsList *list)
+{
+	Forbid();
+	list->retainCount++;
+	Permit();
+
+	return list;
+}
+
+static void
+OHReleaseSensorsList(struct OHSensorsList *list)
+{
+	Forbid();
+	bool release = (--list->retainCount == 0);
+	Permit();
+
+	if (release) {
+		if (list->sensors != NULL)
+			ReleaseSensorsList(list->sensors, NULL);
+
+		OFFreeMemory(list);
+	}
+}
+
 @implementation OHSensorsLibraryGameController
 @synthesize name = _name;
 
@@ -65,35 +90,27 @@ OF_DESTRUCTOR()
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
 	OFMutableArray *controllers = [OFMutableArray array];
-	struct OHSensorsList sensors = {
-		.sensors = ObtainSensorsListTags(SENSORS_Class, SensorClass_HID,
-		    SENSORS_Type, SensorType_HID_Gamepad, TAG_END),
-		.retainCount = 1
-	};
 
-	if (sensors.sensors == NULL) {
-		[controllers makeImmutable];
-		return controllers;
-	}
+	struct OHSensorsList *list = OFAllocMemory(1, sizeof(*list));
+	list->sensors = ObtainSensorsListTags(SENSORS_Class, SensorClass_HID,
+	    SENSORS_Type, SensorType_HID_Gamepad, TAG_END);
+	list->retainCount = 1;
 
 	@try {
-		APTR sensor = NULL;
+		if (list->sensors == NULL) {
+			[controllers makeImmutable];
+			return controllers;
+		}
 
-		while ((sensor = NextSensor(sensor, sensors.sensors, NULL)) !=
+		APTR sensor = NULL;
+		while ((sensor = NextSensor(sensor, list->sensors, NULL)) !=
 		    NULL)
 			[controllers addObject: objc_autorelease(
 			    [[OHSensorsLibraryGameController alloc]
 			    oh_initWithSensor: (APTR)sensor
-				  sensorsList: &sensors])];
+				  sensorsList: list])];
 	} @finally {
-		bool release;
-
-		Forbid();
-		release = (--sensors.retainCount == 0);
-		Permit();
-
-		if (release)
-			ReleaseSensorsList(sensors.sensors, NULL);
+		OHReleaseSensorsList(list);
 	}
 
 	[controllers makeImmutable];
@@ -111,15 +128,11 @@ OF_DESTRUCTOR()
 {
 	self = [super oh_init];
 
-	Forbid();
-	_sensor = sensor;
-	_sensorsList = sensorsList;
-	_sensorsList->retainCount++;
-	Permit();
-
 	@try {
-		STRPTR name;
+		_sensor = sensor;
+		_sensorsList = OHRetainSensorsList(sensorsList);
 
+		STRPTR name;
 		if (GetSensorAttrTags(_sensor, SENSORS_HID_Name, (IPTR)&name,
 		    TAG_END) < 1)
 			@throw [OFInitializationFailedException
@@ -137,16 +150,8 @@ OF_DESTRUCTOR()
 
 - (void)dealloc
 {
-	bool release;
-
+	OHReleaseSensorsList(_sensorsList);
 	objc_release(_name);
-
-	Forbid();
-	release = (--_sensorsList->retainCount == 0);
-	Permit();
-
-	if (release)
-		ReleaseSensorsList(_sensorsList->sensors, NULL);
 
 	[super dealloc];
 }
