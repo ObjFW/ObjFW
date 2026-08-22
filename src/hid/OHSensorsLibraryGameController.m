@@ -28,7 +28,7 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
-#import "OHSensorsLibraryGameControllerProfile.h"
+#import "OHSensorsLibraryExtendedGamepad.h"
 
 #define USE_INLINE_STDARG
 #include <proto/exec.h>
@@ -184,7 +184,7 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		_profile = [[OHSensorsLibraryGameControllerProfile alloc]
+		_profile = [[OHSensorsLibraryExtendedGamepad alloc]
 		    oh_initWithSensorsList: _childSensorsList];
 
 		[self updateState];
@@ -231,6 +231,7 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 		OFString *name = [OFString stringWithCString: nameC
 						    encoding: encoding];
+		name = [_profile oh_mappedNameForName: name];
 
 		switch (type) {
 		case SensorType_HIDInput_Trigger:

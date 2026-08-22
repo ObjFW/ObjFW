@@ -23,6 +23,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@protocol OHSensorsLibraryMapping <OFObject>
+- (OFString *)oh_mappedNameForName: (OFString *)name;
+@end
+
 OF_SUBCLASSING_RESTRICTED
 @interface OHSensorsLibraryGameController: OHGameController
 {
@@ -30,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
 	struct OHSensorsList *_Nonnull _sensorsList;
 	OFString *_Nonnull _name;
 	APTR _childSensorsList;
-	id <OHGameControllerProfile> _Nonnull _profile;
+	id <OHGameControllerProfile, OHSensorsLibraryMapping> _Nonnull _profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

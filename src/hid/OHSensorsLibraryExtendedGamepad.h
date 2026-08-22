@@ -17,23 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHSensorsLibraryGameController.h"
-#import "OHGameControllerProfile.h"
+#import "OHSensorsLibraryGameControllerProfile.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OHSensorsLibraryGameControllerProfile: OFObject
-    <OHGameControllerProfile, OHSensorsLibraryMapping>
-{
-	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
-	    *_buttons;
-	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
-	    *_directionalPads;
-	OFDictionary OF_GENERIC(OFString *, OFString *) *_mapping;
-}
-
-- (instancetype)init OF_UNAVAILABLE;
-- (instancetype)oh_initWithSensorsList: (APTR)list OF_METHOD_FAMILY(init);
+@interface OHSensorsLibraryExtendedGamepad:
+    OHSensorsLibraryGameControllerProfile <OHExtendedGamepad>
 @end
 
 OF_ASSUME_NONNULL_END

@@ -41,21 +41,48 @@
 
 extern struct Library *SensorsBase;
 
-static void
+static OFString *
 addButton(OFMutableDictionary *buttons, OFString *name, bool analog,
     APTR sensor)
 {
+	if ([name hasSuffix: @" Button"])
+		name = [name substringToIndex: name.length - 7];
+
+	if ([name isEqual: @"Shoulder Button Left"])
+		name = @"LB";
+	else if ([name isEqual: @"Shoulder Button Right"])
+		name = @"RB";
+	else if ([name isEqual: @"Left Analog Trigger"])
+		name = @"LT";
+	else if ([name isEqual: @"Right Analog Trigger"])
+		name = @"RT";
+	else if ([name isEqual: @"Left Analog Joystick Push"])
+		name = @"LSB";
+	else if ([name isEqual: @"Right Analog Joystick Push"])
+		name = @"RSB";
+	else if ([name isEqual: @"Xbox"])
+		name = @"Guide";
+
 	OHGameControllerButton *button = [OHGameControllerButton
 	    oh_elementWithName: name
 			analog: analog];
 
 	[buttons setObject: button forKey: name];
+
+	return name;
 }
 
-static void
+static OFString *
 addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
     bool analog, APTR sensor)
 {
+	if ([name isEqual: @"Left Analog Joystick"])
+		name = @"Left Thumbstick";
+	else if ([name isEqual: @"Right Analog Joystick"])
+		name = @"Right Thumbstick";
+	else if ([name isEqual: @"Left Digital Joystick"])
+		name = @"D-Pad";
+
 	OHGameControllerAxis *xAxis = [OHGameControllerAxis
 	    oh_elementWithName: [name stringByAppendingString: @" X"]
 			analog: analog];
@@ -69,6 +96,8 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 						    analog: analog];
 
 	[directionalPads setObject: directionalPad forKey: name];
+
+	return name;
 }
 
 @implementation OHSensorsLibraryGameControllerProfile
@@ -88,12 +117,11 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		OFMutableDictionary *buttons = [OFMutableDictionary dictionary];
 		OFMutableDictionary *directionalPads =
 		    [OFMutableDictionary dictionary];
+		OFMutableDictionary *mapping = [OFMutableDictionary dictionary];
 		OFStringEncoding encoding = [OFLocale encoding];
 
 		APTR sensor = NULL;
 		while ((sensor = NextSensor(sensor, list, NULL)) != NULL) {
-			void *pool2 = objc_autoreleasePoolPush();
-
 			ULONG type = 0;
 			STRPTR nameC = NULL;
 			GetSensorAttrTags(sensor, SENSORS_Type, (IPTR)&type,
@@ -107,30 +135,37 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 			OFString *name = [OFString stringWithCString: nameC
 							    encoding: encoding];
 
+			OFString *mappedName;
 			switch (type) {
 			case SensorType_HIDInput_Trigger:
-				addButton(buttons, name, false, sensor);
+				mappedName = addButton(buttons, name, false,
+				    sensor);
 				break;
 			case SensorType_HIDInput_Analog:
-				addButton(buttons, name, false, sensor);
+				mappedName = addButton(buttons, name, false,
+				    sensor);
 				break;
 			case SensorType_HIDInput_Stick:
-				addDirectionalPad(directionalPads, name, false,
-				    sensor);
+				mappedName = addDirectionalPad(directionalPads,
+				    name, false, sensor);
 				break;
 			case SensorType_HIDInput_AnalogStick:
-				addDirectionalPad(directionalPads, name, true,
-				    sensor);
+				mappedName = addDirectionalPad(directionalPads,
+				    name, true, sensor);
 				break;
+			default:
+				continue;
 			}
 
-			objc_autoreleasePoolPop(pool2);
+			[mapping setObject: mappedName forKey: name];
 		}
 		[buttons makeImmutable];
 		[directionalPads makeImmutable];
+		[mapping makeImmutable];
 
 		_buttons = [buttons copy];
 		_directionalPads = [directionalPads copy];
+		_mapping = [mapping copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -145,6 +180,7 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 {
 	objc_release(_buttons);
 	objc_release(_directionalPads);
+	objc_release(_mapping);
 
 	[super dealloc];
 }
@@ -152,5 +188,10 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 - (OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *)axes
 {
 	return [OFDictionary dictionary];
+}
+
+- (OFString *)oh_mappedNameForName: (OFString *)name
+{
+	return [_mapping objectForKey: name];
 }
 @end
