@@ -250,4 +250,20 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 	objc_autoreleasePoolPop(pool);
 }
+
+- (id <OHGamepad>)gamepad
+{
+	if ([_profile conformsToProtocol: @protocol(OHGamepad)])
+		return (id <OHGamepad>)_profile;
+
+	return nil;
+}
+
+- (id <OHExtendedGamepad>)extendedGamepad
+{
+	if ([_profile conformsToProtocol: @protocol(OHExtendedGamepad)])
+		return (id <OHExtendedGamepad>)_profile;
+
+	return nil;
+}
 @end
