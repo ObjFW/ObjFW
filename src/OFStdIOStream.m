@@ -450,7 +450,11 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 
 	_handle = handle;
 	_closable = closable;
+# ifdef OF_MORPHOS
+	_colors = 256;
+# else
 	_colors = 16;
+# endif
 	_cursorVisible = true;
 
 	return self;
