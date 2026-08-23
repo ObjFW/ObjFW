@@ -24,6 +24,7 @@
 #import "OFDictionary.h"
 #import "OFLocale.h"
 #import "OHGameController.h"
+#import "OFRunLoop.h"
 #import "OHGameController+Private.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
@@ -40,7 +41,7 @@
 
 #import "OFInitializationFailedException.h"
 
-struct Library *SensorsBase;
+struct Library *SensorsBase, *UtilityBase;
 
 struct OHSensorsList {
 	APTR sensors;
@@ -51,6 +52,9 @@ OF_DESTRUCTOR()
 {
 	if (SensorsBase != NULL)
 		CloseLibrary(SensorsBase);
+
+	if (UtilityBase != NULL)
+		CloseLibrary(UtilityBase);
 }
 
 static struct OHSensorsList *
@@ -87,6 +91,10 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 		return;
 
 	if ((SensorsBase = OpenLibrary("sensors.library", 53)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((UtilityBase = OpenLibrary("utility.library", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 
@@ -186,8 +194,10 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 		_profile = [[OHSensorsLibraryExtendedGamepad alloc]
 		    oh_initWithSensorsList: _childSensorsList];
-
-		[self updateState];
+		[[OFRunLoop mainRunLoop]
+		    addExecSignal: _profile.oh_port->mp_SigBit
+			   target: _profile
+			 selector: @selector(oh_didReceiveSignal:)];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -198,57 +208,26 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 - (void)dealloc
 {
-	OHReleaseSensorsList(_sensorsList);
-	objc_release(_name);
+	if (_profile != nil)
+		[[OFRunLoop mainRunLoop]
+		    removeExecSignal: _profile.oh_port->mp_SigBit
+			      target: _profile
+			    selector: @selector(oh_didReceiveSignal:)];
+
+	objc_release(_profile);
 
 	if (_childSensorsList != NULL)
 		ReleaseSensorsList(_childSensorsList, NULL);
 
-	objc_release(_profile);
+	objc_release(_name);
+	OHReleaseSensorsList(_sensorsList);
 
 	[super dealloc];
 }
 
 - (void)updateState
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFStringEncoding encoding = [OFLocale encoding];
-
-	APTR sensor = NULL;
-	while ((sensor = NextSensor(sensor, _childSensorsList, NULL)) != NULL) {
-		ULONG type = 0;
-		STRPTR nameC = NULL;
-		DOUBLE value = 0.0, x = 0.0, y = 0.0;
-		GetSensorAttrTags(sensor, SENSORS_Type, (IPTR)&type,
-		    SENSORS_HIDInput_Name, (IPTR)&nameC,
-		    SENSORS_HIDInput_Value, (IPTR)&value,
-		    SENSORS_HIDInput_EW_Value, (IPTR)&x,
-		    SENSORS_HIDInput_NS_Value, (IPTR)&y,
-		    TAG_END);
-
-		if (nameC == NULL)
-			continue;
-
-		OFString *name = [OFString stringWithCString: nameC
-						    encoding: encoding];
-		name = [_profile oh_mappedNameForName: name];
-
-		switch (type) {
-		case SensorType_HIDInput_Trigger:
-		case SensorType_HIDInput_Analog:
-			[[_profile.buttons objectForKey: name] setValue: value];
-			break;
-		case SensorType_HIDInput_Stick:
-		case SensorType_HIDInput_AnalogStick:;
-			OHGameControllerDirectionalPad *pad =
-			    [_profile.directionalPads objectForKey: name];
-			pad.xAxis.value = x;
-			pad.yAxis.value = y;
-			break;
-		}
-	}
-
-	objc_autoreleasePoolPop(pool);
+	/* Updated via Exec Signal handlers */
 }
 
 - (OFObject <OHGamepad> *)gamepad

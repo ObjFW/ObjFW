@@ -20,13 +20,32 @@
 #include "config.h"
 
 #import "OHGameControllerButton.h"
+#import "OHGameControllerButton+Private.h"
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"
+
+#ifdef OF_MORPHOS
+# include <ppcinline/sensors.h>
+
+extern struct Library *SensorsBase;
+#endif
 
 const OFNotificationName OHGameControllerButtonValueDidChangeNotification =
     @"OHGameControllerButtonValueDidChangeNotification";
 
 @implementation OHGameControllerButton
+#ifdef OF_MORPHOS
+@synthesize oh_notifier = _notifier;
+
+- (void)dealloc
+{
+	if (_notifier != NULL)
+		EndSensorNotify(_notifier, NULL);
+
+	[super dealloc];
+}
+#endif
+
 - (float)value
 {
 	return _value;

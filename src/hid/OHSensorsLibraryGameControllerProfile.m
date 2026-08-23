@@ -26,6 +26,7 @@
 #import "OFLocale.h"
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
+#import "OHGameControllerButton+Private.h"
 #import "OHGameControllerDirectionalPad.h"
 #import "OHGameControllerDirectionalPad+Private.h"
 #import "OHGameControllerElement.h"
@@ -34,16 +35,17 @@
 #define USE_INLINE_STDARG
 #include <proto/exec.h>
 #include <ppcinline/sensors.h>
+#include <ppcinline/utility.h>
 #include <libraries/sensors.h>
 #include <libraries/sensors_hid.h>
 
 #import "OFInitializationFailedException.h"
 
-extern struct Library *SensorsBase;
+extern struct Library *SensorsBase, *UtilityBase;
 
-static OFString *
+static void
 addButton(OFMutableDictionary *buttons, OFString *name, bool analog,
-    APTR sensor)
+    APTR sensor, struct MsgPort *port)
 {
 	if ([name hasSuffix: @" Button"])
 		name = [name substringToIndex: name.length - 7];
@@ -69,12 +71,16 @@ addButton(OFMutableDictionary *buttons, OFString *name, bool analog,
 
 	[buttons setObject: button forKey: name];
 
-	return name;
+	button.oh_notifier = StartSensorNotifyTags(sensor,
+	    SENSORS_Notification_UserData, (IPTR)button,
+	    SENSORS_Notification_Destination, (IPTR)port,
+	    SENSORS_Notification_SendInitialValue, TRUE,
+	    SENSORS_HIDInput_Value, 1, TAG_END);
 }
 
-static OFString *
+static void
 addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
-    bool analog, APTR sensor)
+    bool analog, APTR sensor, struct MsgPort *port)
 {
 	if ([name isEqual: @"Left Analog Joystick"])
 		name = @"Left Thumbstick";
@@ -97,7 +103,12 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 
 	[directionalPads setObject: directionalPad forKey: name];
 
-	return name;
+	directionalPad.oh_notifier = StartSensorNotifyTags(sensor,
+	    SENSORS_Notification_UserData, (IPTR)directionalPad,
+	    SENSORS_Notification_Destination, (IPTR)port,
+	    SENSORS_Notification_SendInitialValue, TRUE,
+	    SENSORS_HIDInput_EW_Value, 1,
+	    SENSORS_HIDInput_NS_Value, 1, TAG_END);
 }
 
 @implementation OHSensorsLibraryGameControllerProfile
@@ -120,6 +131,10 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		OFMutableDictionary *mapping = [OFMutableDictionary dictionary];
 		OFStringEncoding encoding = [OFLocale encoding];
 
+		if ((_port = CreateMsgPort()) == NULL)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
 		APTR sensor = NULL;
 		while ((sensor = NextSensor(sensor, list, NULL)) != NULL) {
 			ULONG type = 0;
@@ -135,29 +150,22 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 			OFString *name = [OFString stringWithCString: nameC
 							    encoding: encoding];
 
-			OFString *mappedName;
 			switch (type) {
 			case SensorType_HIDInput_Trigger:
-				mappedName = addButton(buttons, name, false,
-				    sensor);
+				addButton(buttons, name, false, sensor, _port);
 				break;
 			case SensorType_HIDInput_Analog:
-				mappedName = addButton(buttons, name, false,
-				    sensor);
+				addButton(buttons, name, false, sensor, _port);
 				break;
 			case SensorType_HIDInput_Stick:
-				mappedName = addDirectionalPad(directionalPads,
-				    name, false, sensor);
+				addDirectionalPad(directionalPads, name, false,
+				    sensor, _port);
 				break;
 			case SensorType_HIDInput_AnalogStick:
-				mappedName = addDirectionalPad(directionalPads,
-				    name, true, sensor);
+				addDirectionalPad(directionalPads, name, true,
+				    sensor, _port);
 				break;
-			default:
-				continue;
 			}
-
-			[mapping setObject: mappedName forKey: name];
 		}
 		[buttons makeImmutable];
 		[directionalPads makeImmutable];
@@ -178,6 +186,9 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 
 - (void)dealloc
 {
+	if (_port != NULL)
+		DeleteMsgPort(_port);
+
 	objc_release(_buttons);
 	objc_release(_directionalPads);
 	objc_release(_mapping);
@@ -190,8 +201,33 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 	return [OFDictionary dictionary];
 }
 
-- (OFString *)oh_mappedNameForName: (OFString *)name
+- (struct MsgPort *)oh_port
 {
-	return [_mapping objectForKey: name];
+	return _port;
+}
+
+- (void)oh_didReceiveSignal: (ULONG)signal
+{
+	struct SensorsNotificationMessage *msg;
+	while ((msg = (struct SensorsNotificationMessage *)GetMsg(_port)) !=
+	    NULL) {
+		id object = (id)msg->UserData;
+		if (object == nil)
+			continue;
+
+		struct TagItem *tags = msg->Notifications, *iter;
+		while ((iter = NextTagItem(&tags)) != NULL) {
+			if (iter->ti_Tag == SENSORS_HIDInput_Value)
+				[object setValue: *(DOUBLE *)iter->ti_Data];
+			else if (iter->ti_Tag == SENSORS_HIDInput_EW_Value)
+				[[object xAxis]
+				    setValue: *(DOUBLE *)iter->ti_Data];
+			else if (iter->ti_Tag == SENSORS_HIDInput_NS_Value)
+				[[object yAxis]
+				    setValue: *(DOUBLE *)iter->ti_Data];
+		}
+
+		ReplyMsg(&msg->Msg);
+	}
 }
 @end

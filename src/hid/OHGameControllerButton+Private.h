@@ -17,31 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OHGameController.h"
-
-#include <exec/types.h>
+#import "OHGameControllerButton.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@protocol OHSensorsLibraryGameControllerProfile <OFObject>
-@property (readonly, nonatomic) struct MsgPort *oh_port;
-@end
-
-OF_SUBCLASSING_RESTRICTED
-@interface OHSensorsLibraryGameController: OHGameController
-{
-	APTR _sensor;
-	struct OHSensorsList *_Nonnull _sensorsList;
-	OFString *_Nonnull _name;
-	APTR _childSensorsList;
-	OFObject <OHGameControllerProfile,
-	    OHSensorsLibraryGameControllerProfile> *_Nonnull _profile;
-}
-
-- (instancetype)oh_init OF_UNAVAILABLE;
-- (instancetype)oh_initWithSensor: (APTR)sensor
-		      sensorsList: (struct OHSensorsList *)sensorsList
-    OF_METHOD_FAMILY(init);
+OF_DIRECT_MEMBERS
+@interface OHGameControllerButton ()
+#ifdef OF_MORPHOS
+@property (nonatomic, setter=oh_setNotifier:) APTR oh_notifier;
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

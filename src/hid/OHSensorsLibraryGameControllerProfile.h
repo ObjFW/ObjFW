@@ -23,8 +23,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OHSensorsLibraryGameControllerProfile: OFObject
-    <OHGameControllerProfile, OHSensorsLibraryMapping>
+    <OHGameControllerProfile, OHSensorsLibraryGameControllerProfile>
 {
+	struct MsgPort *_port;
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
@@ -34,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init OF_UNAVAILABLE;
 - (instancetype)oh_initWithSensorsList: (APTR)list OF_METHOD_FAMILY(init);
+- (void)oh_didReceiveSignal: (ULONG)signal;
 @end
 
 OF_ASSUME_NONNULL_END
