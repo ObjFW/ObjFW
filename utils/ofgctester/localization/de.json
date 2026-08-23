@@ -1,0 +1,15 @@
+/*
+ * German localization for ofgctester.
+ *
+ * Copyright (c) 2026 Jonathan Schleifer <js@nil.im>
+ *
+ * Permission to use, copy, modify, and/or distribute this localization for
+ * any purpose with or without fee is hereby granted.
+ */
+
+/* vim: se ft=javascript sw=4 et: */
+
+{
+    how_to_quit: "Zum Beenden Strg+C drücken!",
+    profile: "Profil: %[profile]",
+}

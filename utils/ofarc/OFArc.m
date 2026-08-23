@@ -314,7 +314,7 @@ addFiles(OFIRI *IRI, OFUnichar mode, int8_t outputLevel, id <Archive> archive,
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofarc/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/OFArc/localization"]];
 #endif
 
 #ifdef OF_AMIGAOS

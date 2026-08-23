@@ -24,6 +24,8 @@
 #import "OFColor.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
+#import "OFIRI.h"
+#import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFStdIOStream.h"
 #import "OFThread.h"
@@ -270,14 +272,20 @@ printProfile(id <OHGameControllerProfile> profile)
 	}
 
 	[OFStdOut setCursorPosition: OFMakePoint(0.0f, 0.0f)];
+	OFStdOut.foregroundColor = [OFColor purple];
+	[OFStdOut writeLine: OF_LOCALIZED(@"how_to_quit",
+	    @"Press Ctrl+C to quit!")];
 
 	for (OHGameController *controller in _controllers) {
-		id <OHGameControllerProfile> profile = controller.profile;
+		OFObject <OHGameControllerProfile> *profile =
+		    controller.profile;
 
 		OFStdOut.foregroundColor = [OFColor green];
 		[OFStdOut writeLine: controller.description];
 		OFStdOut.foregroundColor = [OFColor teal];
-		[OFStdOut writeFormat: @"Profile: %@\n", profile];
+		[OFStdOut writeLine: OF_LOCALIZED(@"profile",
+		    @"Profile: %[profile]",
+		    @"profile", [profile description])];
 
 		@try {
 			[controller updateState];
@@ -317,6 +325,16 @@ printProfile(id <OHGameControllerProfile> profile)
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
+#ifdef OF_HAVE_FILES
+# ifndef OF_AMIGAOS
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
+# else
+	[OFLocale addLocalizationDirectoryIRI:
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/OFGCTester/localization"]];
+# endif
+#endif
+
 	OFStdOut.cursorVisible = false;
 
 #if defined(OF_WII) || defined(OF_NINTENDO_DS) || defined(OF_NINTENDO_3DS)

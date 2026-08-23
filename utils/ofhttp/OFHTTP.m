@@ -512,7 +512,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhttp/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/OFHTTP/localization"]];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

@@ -155,7 +155,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptographicHash> hash)
 	    [OFIRI fileIRIWithPath: @LOCALIZATION_DIR]];
 #else
 	[OFLocale addLocalizationDirectoryIRI:
-	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/ofhash/localization"]];
+	    [OFIRI fileIRIWithPath: @"PROGDIR:/Data/OFHash/localization"]];
 #endif
 
 #ifdef OF_AMIGAOS
