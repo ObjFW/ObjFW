@@ -652,8 +652,8 @@ typedef enum {
  * Unlike memcpy, one or both pointers are allowed to be `NULL` if the size is
  * 0.
  *
- * @param source The memory to copy
  * @param destination Where to copy the memory to
+ * @param source The memory to copy
  * @param size The size of the memory to copy
  */
 static OF_INLINE void
@@ -675,8 +675,8 @@ OFCopyMemory(void *restrict _Nullable destination,
  * Unlike memmove, one or both pointers are allowed to be `NULL` if the size is
  * 0.
  *
- * @param source The memory to copy
  * @param destination Where to copy the memory to
+ * @param source The memory to copy
  * @param size The size of the memory to copy
  */
 static OF_INLINE void
