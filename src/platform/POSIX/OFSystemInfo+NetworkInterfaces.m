@@ -120,7 +120,6 @@ queryNetworkInterfaceAddresses(OFMutableDictionary *ret,
 	}
 
 	@try {
-
 		struct lifconf lifc = {
 			.lifc_buf = (void *)lifrs,
 			.lifc_len = 128 * sizeof(struct lifreq)
@@ -577,30 +576,37 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 	if (sock < 0)
 		return false;
 
-	for (OFString *name in ret) {
-		size_t nameLength = [name cStringLengthWithEncoding: encoding];
+	@try {
+		for (OFString *name in ret) {
+			size_t nameLength =
+			    [name cStringLengthWithEncoding: encoding];
 
-		if (nameLength > IFNAMSIZ)
-			continue;
+			if (nameLength > IFNAMSIZ)
+				continue;
 
-		struct lifreq lifr;
-		OFFillMemory(&lifr, 0, sizeof(lifr));
-		OFCopyMemory(&lifr.lifr_name,
-		    [name cStringWithEncoding: encoding], nameLength);
+			struct lifreq lifr;
+			OFFillMemory(&lifr, 0, sizeof(lifr));
+			OFCopyMemory(&lifr.lifr_name,
+			    [name cStringWithEncoding: encoding], nameLength);
 
-		if (ioctlsocket(sock, SIOCGLIFHWADDR, (void *)&lifr) < 0)
-			continue;
+			if (ioctlsocket(sock, SIOCGLIFHWADDR,
+			    (void *)&lifr) < 0)
+				continue;
 
-		if (lifr.lifr_addr.ss_family != AF_LINK)
-			continue;
+			if (lifr.lifr_addr.ss_family != AF_LINK)
+				continue;
 
-		struct sockaddr_dl *sdl =
-		    (struct sockaddr_dl *)(void *)&lifr.lifr_addr;
-		OFData *hardwareAddress = [OFData dataWithItems: LLADDR(sdl)
-							  count: sdl->sdl_alen];
-		[[ret objectForKey: name]
-		    setObject: hardwareAddress
-		       forKey: OFNetworkInterfaceHardwareAddress];
+			struct sockaddr_dl *sdl =
+			    (struct sockaddr_dl *)(void *)&lifr.lifr_addr;
+			OFData *hardwareAddress = [OFData
+			    dataWithItems: LLADDR(sdl)
+				    count: sdl->sdl_alen];
+			[[ret objectForKey: name]
+			    setObject: hardwareAddress
+			       forKey: OFNetworkInterfaceHardwareAddress];
+		}
+	} @finally {
+		closesocket(sock);
 	}
 
 	return true;
@@ -612,29 +618,34 @@ queryNetworkInterfaceHardwareAddress(OFMutableDictionary *ret)
 	if (sock < 0)
 		return false;
 
-	for (OFString *name in ret) {
-		size_t nameLength = [name cStringLengthWithEncoding: encoding];
+	@try {
+		for (OFString *name in ret) {
+			size_t nameLength =
+			    [name cStringLengthWithEncoding: encoding];
 
-		if (nameLength > IFNAMSIZ)
-			continue;
+			if (nameLength > IFNAMSIZ)
+				continue;
 
-		struct ifreq ifr;
-		OFFillMemory(&ifr, 0, sizeof(ifr));
-		OFCopyMemory(&ifr.ifr_name,
-		    [name cStringWithEncoding: encoding], nameLength);
+			struct ifreq ifr;
+			OFFillMemory(&ifr, 0, sizeof(ifr));
+			OFCopyMemory(&ifr.ifr_name,
+			    [name cStringWithEncoding: encoding], nameLength);
 
-		if (ioctlsocket(sock, SIOCGIFHWADDR, (void *)&ifr) < 0)
-			continue;
+			if (ioctlsocket(sock, SIOCGIFHWADDR, (void *)&ifr) < 0)
+				continue;
 
-		if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER)
-			continue;
+			if (ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER)
+				continue;
 
-		OFData *hardwareAddress = [OFData
-		    dataWithItems: ifr.ifr_hwaddr.sa_data
-			    count: 6];
-		[[ret objectForKey: name]
-		    setObject: hardwareAddress
-		       forKey: OFNetworkInterfaceHardwareAddress];
+			OFData *hardwareAddress = [OFData
+			    dataWithItems: ifr.ifr_hwaddr.sa_data
+				    count: 6];
+			[[ret objectForKey: name]
+			    setObject: hardwareAddress
+			       forKey: OFNetworkInterfaceHardwareAddress];
+		}
+	} @finally {
+		closesocket(sock);
 	}
 
 	return true;
