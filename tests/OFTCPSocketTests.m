@@ -50,6 +50,6 @@
 	[client writeString: @"Hello!"];
 
 	[accepted readIntoBuffer: buffer exactLength: 6];
-	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello!", 6), OFOrderedSame);
 }
 @end

@@ -136,7 +136,7 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
-		memcpy(dest, src, size);
+		OFCopyMemory(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to unlock spinlock!");
@@ -145,7 +145,7 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		return;
 	}
 
-	memcpy(dest, src, size);
+	OFCopyMemory(dest, src, size);
 }
 
 void
@@ -159,7 +159,7 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
-		memcpy(dest, src, size);
+		OFCopyMemory(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to unlock spinlock!");
@@ -168,7 +168,7 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		return;
 	}
 
-	memcpy(dest, src, size);
+	OFCopyMemory(dest, src, size);
 }
 
 objc_property_t *

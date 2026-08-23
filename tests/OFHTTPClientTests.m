@@ -109,7 +109,8 @@
 	data = [_response readDataUntilEndOfStream];
 	OTAssertEqual(data.count, 7);
 	OTAssertEqual(data.itemSize, 1);
-	OTAssertEqual(memcmp(data.items, "foo\nbar", 7), 0);
+	OTAssertEqual(OFCompareMemory(data.items, "foo\nbar", 7),
+	    OFOrderedSame);
 
 	OTAssertNil([server join]);
 }
@@ -190,7 +191,7 @@
 		return @"Missing empty line";
 
 	[client readIntoBuffer: buffer exactLength: 5];
-	if (memcmp(buffer, "Hello", 5) != 0)
+	if (OFCompareMemory(buffer, "Hello", 5) != OFOrderedSame)
 		return @"Missing body";
 
 	[client writeString: @"HTTP/1.0 200 OK\r\n"

@@ -127,7 +127,7 @@
 	host = OFSocketAddressString(address);
 	port = OFSocketAddressIPPort(address);
 
-	memset(address, 0, sizeof(*address));
+	OFFillMemory(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
 	if (_OFGetSockName(_socket, (struct sockaddr *)&address->sockaddr,

@@ -218,7 +218,7 @@ class_createInstance(Class class, size_t extraBytes)
 #endif
 
 	instance = (id)(void *)((char *)instance + _OBJC_PRE_IVARS_ALIGNED);
-	memset(instance, 0, instanceSize + extraBytes);
+	OFFillMemory(instance, 0, instanceSize + extraBytes);
 
 	if (!objc_constructInstance(class, instance)) {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)

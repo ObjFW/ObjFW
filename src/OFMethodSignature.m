@@ -619,7 +619,7 @@ OFAlignmentOfTypeEncoding(const char *type)
 			@throw [OFInvalidFormatException exception];
 
 		_types = OFAllocMemory(length + 1, 1);
-		memcpy(_types, types, length);
+		OFCopyMemory(_types, types, length);
 
 		_typesPointers = [[OFMutableData alloc]
 		    initWithItemSize: sizeof(char *)];

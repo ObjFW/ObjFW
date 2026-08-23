@@ -298,7 +298,7 @@ start:
 			ctx->state = stateUncompressedBlockHeader;
 			ctx->bitIndex = 8;
 			ctx->ctx.uncompressedHeader.position = 0;
-			memset(ctx->ctx.uncompressedHeader.length, 0, 4);
+			OFFillMemory(ctx->ctx.uncompressedHeader.length, 0, 4);
 			break;
 		case 1: /* Fixed Huffman */
 			ctx->state = stateHuffmanBlock;

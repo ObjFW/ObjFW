@@ -357,19 +357,19 @@ OFSocketAddressParseIPv4(OFString *IPv4, uint16_t port)
 	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *whitespaceCharacterSet =
 	    [OFCharacterSet whitespaceCharacterSet];
-	OFSocketAddress ret;
-	struct sockaddr_in *addrIn = &ret.sockaddr.in;
 	OFArray OF_GENERIC(OFString *) *components;
 	uint32_t addr;
 
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyIPv4;
+	OFSocketAddress ret = {
+		.family = OFSocketAddressFamilyIPv4,
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-	ret.length = 8;
+		.length = 8,
 #else
-	ret.length = (socklen_t)sizeof(ret.sockaddr.in);
+		.length = (socklen_t)sizeof(ret.sockaddr.in),
 #endif
+	};
 
+	struct sockaddr_in *addrIn = &ret.sockaddr.in;
 	addrIn->sin_family = AF_INET;
 	addrIn->sin_port = OFToBigEndian16(port);
 #ifdef OF_WII
@@ -463,14 +463,14 @@ OFSocketAddress
 OFSocketAddressParseIPv6(OFString *IPv6, uint16_t port)
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFSocketAddress ret;
-	struct sockaddr_in6 *addrIn6 = &ret.sockaddr.in6;
 	size_t doubleColon, percent;
 
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyIPv6;
-	ret.length = (socklen_t)sizeof(ret.sockaddr.in6);
+	OFSocketAddress ret = {
+		.family = OFSocketAddressFamilyIPv6,
+		.length = (socklen_t)sizeof(ret.sockaddr.in6)
+	};
 
+	struct sockaddr_in6 *addrIn6 = &ret.sockaddr.in6;
 #ifdef AF_INET6
 	addrIn6->sin6_family = AF_INET6;
 #else
@@ -578,25 +578,29 @@ OFSocketAddressMakeUNIX(OFString *path)
 	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
 	size_t length = [path cStringLengthWithEncoding: encoding];
-	OFSocketAddress ret;
+
+	OFSocketAddress ret = {
+		.family = OFSocketAddressFamilyUNIX,
+		.length = (socklen_t)
+		    (offsetof(struct sockaddr_un, sun_path) + length),
+		.sockaddr = {
+			.un = {
+#ifdef HAVE_STRUCT_SOCKADDR_UN_SUN_LEN
+				.sun_len = (uint8_t)length,
+#endif
+#ifdef AF_UNIX
+				.sun_family = AF_UNIX
+#else
+				.sun_family = AF_UNSPEC
+#endif
+			}
+		}
+	};
 
 	if (length > sizeof(ret.sockaddr.un.sun_path))
 		@throw [OFOutOfRangeException exception];
 
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyUNIX;
-	ret.length = (socklen_t)
-	    (offsetof(struct sockaddr_un, sun_path) + length);
-
-#ifdef HAVE_STRUCT_SOCKADDR_UN_SUN_LEN
-	ret.sockaddr.un.sun_len = (uint8_t)length;
-#endif
-#ifdef AF_UNIX
-	ret.sockaddr.un.sun_family = AF_UNIX;
-#else
-	ret.sockaddr.un.sun_family = AF_UNSPEC;
-#endif
-	memcpy(ret.sockaddr.un.sun_path,
+	OFCopyMemory(ret.sockaddr.un.sun_path,
 	    [path cStringWithEncoding: encoding], length);
 
 #ifdef OF_LINUX
@@ -613,22 +617,24 @@ OFSocketAddress
 OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
     uint16_t port)
 {
-	OFSocketAddress ret;
-
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyIPX;
-	ret.length = (socklen_t)sizeof(ret.sockaddr.ipx);
-
+	OFSocketAddress ret = {
+		.family = OFSocketAddressFamilyIPX,
+		.length = (socklen_t)sizeof(ret.sockaddr.ipx),
+		.sockaddr = {
+			.ipx = {
 #ifdef AF_IPX
-	ret.sockaddr.ipx.sipx_family = AF_IPX;
+				.sipx_family = AF_IPX,
 #else
-	ret.sockaddr.ipx.sipx_family = AF_UNSPEC;
+				.sipx_family = AF_UNSPEC,
 #endif
+				.sipx_port = OFToBigEndian16(port)
+			}
+		}
+	};
 	network = OFToBigEndian32(network);
-	memcpy(&ret.sockaddr.ipx.sipx_network, &network,
+	OFCopyMemory(&ret.sockaddr.ipx.sipx_network, &network,
 	    sizeof(ret.sockaddr.ipx.sipx_network));
-	memcpy(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
-	ret.sockaddr.ipx.sipx_port = OFToBigEndian16(port);
+	OFCopyMemory(ret.sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 
 	return ret;
 }
@@ -636,24 +642,26 @@ OFSocketAddressMakeIPX(uint32_t network, const unsigned char node[IPX_NODE_LEN],
 OFSocketAddress
 OFSocketAddressMakeAppleTalk(uint16_t network, uint8_t node, uint8_t port)
 {
-	OFSocketAddress ret;
-
-	memset(&ret, '\0', sizeof(ret));
-	ret.family = OFSocketAddressFamilyAppleTalk;
-	ret.length = (socklen_t)sizeof(ret.sockaddr.at);
-
+	OFSocketAddress ret = {
+		.family = OFSocketAddressFamilyAppleTalk,
+		.length = (socklen_t)sizeof(ret.sockaddr.at),
+		.sockaddr = {
+			.at = {
 #ifdef AF_APPLETALK
-	ret.sockaddr.at.sat_family = AF_APPLETALK;
+				.sat_family = AF_APPLETALK,
 #else
-	ret.sockaddr.at.sat_family = AF_UNSPEC;
+				.sat_family = AF_UNSPEC,
 #endif
 #ifdef OF_WINDOWS
-	ret.sockaddr.at.sat_net = network;
+				.sat_net = network,
 #else
-	ret.sockaddr.at.sat_net = OFToBigEndian16(network);
+				.sat_net = OFToBigEndian16(network),
 #endif
-	ret.sockaddr.at.sat_node = node;
-	ret.sockaddr.at.sat_port = port;
+				.sat_node = node,
+				.sat_port = port
+			}
+		}
+	};
 
 	return ret;
 }
@@ -709,9 +717,9 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 
 		if (addrIn6_1->sin6_port != addrIn6_2->sin6_port)
 			return false;
-		if (memcmp(addrIn6_1->sin6_addr.s6_addr,
+		if (OFCompareMemory(addrIn6_1->sin6_addr.s6_addr,
 		    addrIn6_2->sin6_addr.s6_addr,
-		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
+		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != OFOrderedSame)
 			return false;
 		if (addrIn6_1->sin6_scope_id != addrIn6_2->sin6_scope_id)
 			return false;
@@ -744,11 +752,11 @@ OFSocketAddressEqual(const OFSocketAddress *address1,
 
 		if (addrIPX1->sipx_port != addrIPX2->sipx_port)
 			return false;
-		if (memcmp(&addrIPX1->sipx_network, &addrIPX2->sipx_network,
-		    4) != 0)
+		if (OFCompareMemory(&addrIPX1->sipx_network,
+		    &addrIPX2->sipx_network, 4) != OFOrderedSame)
 			return false;
-		if (memcmp(addrIPX1->sipx_node, addrIPX2->sipx_node,
-		    IPX_NODE_LEN) != 0)
+		if (OFCompareMemory(addrIPX1->sipx_node, addrIPX2->sipx_node,
+		    IPX_NODE_LEN) != OFOrderedSame)
 			return false;
 
 		return true;
@@ -838,7 +846,7 @@ OFSocketAddressHash(const OFSocketAddress *address)
 		OFHashAddByte(&hash, address->sockaddr.ipx.sipx_port >> 8);
 		OFHashAddByte(&hash, address->sockaddr.ipx.sipx_port);
 
-		memcpy(network, &address->sockaddr.ipx.sipx_network,
+		OFCopyMemory(network, &address->sockaddr.ipx.sipx_network,
 		    sizeof(network));
 
 		for (size_t i = 0; i < sizeof(network); i++)
@@ -890,8 +898,8 @@ IPv6String(const OFSocketAddress *address)
 	uint_fast8_t zerosCount = 0, maxZerosCount = 0;
 	bool first = true;
 
-	if (memcmp(addrIn6->sin6_addr.s6_addr,
-	    "\0\0\0\0\0\0\0\0\0\0\xFF\xFF", 12) == 0)
+	if (OFCompareMemory(addrIn6->sin6_addr.s6_addr,
+	    "\0\0\0\0\0\0\0\0\0\0\xFF\xFF", 12) == OFOrderedSame)
 		return [OFString stringWithFormat:
 		    @"::ffff:%u.%u.%u.%u",
 		    addrIn6->sin6_addr.s6_addr[12],
@@ -975,7 +983,8 @@ IPXString(const OFSocketAddress *address)
 	uint32_t network;
 	uint64_t node;
 
-	memcpy(&network, &addrIPX->sipx_network, sizeof(addrIPX->sipx_network));
+	OFCopyMemory(&network, &addrIPX->sipx_network,
+	    sizeof(addrIPX->sipx_network));
 	node = ((uint64_t)addrIPX->sipx_node[0] << 40) |
 	    ((uint64_t)addrIPX->sipx_node[1] << 32) |
 	    ((uint64_t)addrIPX->sipx_node[2] << 24) |
@@ -1099,7 +1108,7 @@ OFSocketAddressSetIPXNetwork(OFSocketAddress *address, uint32_t network)
 		@throw [OFInvalidArgumentException exception];
 
 	network = OFToBigEndian32(network);
-	memcpy(&address->sockaddr.ipx.sipx_network, &network,
+	OFCopyMemory(&address->sockaddr.ipx.sipx_network, &network,
 	    sizeof(address->sockaddr.ipx.sipx_network));
 }
 
@@ -1111,7 +1120,8 @@ OFSocketAddressIPXNetwork(const OFSocketAddress *address)
 	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
-	memcpy(&network, &address->sockaddr.ipx.sipx_network, sizeof(network));
+	OFCopyMemory(&network, &address->sockaddr.ipx.sipx_network,
+	    sizeof(network));
 
 	return OFFromBigEndian32(network);
 }
@@ -1123,7 +1133,7 @@ OFSocketAddressSetIPXNode(OFSocketAddress *address,
 	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
-	memcpy(address->sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
+	OFCopyMemory(address->sockaddr.ipx.sipx_node, node, IPX_NODE_LEN);
 }
 
 void
@@ -1133,7 +1143,7 @@ OFSocketAddressGetIPXNode(const OFSocketAddress *address,
 	if (address->family != OFSocketAddressFamilyIPX)
 		@throw [OFInvalidArgumentException exception];
 
-	memcpy(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
+	OFCopyMemory(node, address->sockaddr.ipx.sipx_node, IPX_NODE_LEN);
 }
 
 void

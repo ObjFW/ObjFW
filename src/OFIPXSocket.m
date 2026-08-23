@@ -94,7 +94,7 @@
 				   errNo: errNo];
 	}
 
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 
@@ -137,7 +137,7 @@
 {
 	OFSocketAddress fixedReceiver;
 
-	memcpy(&fixedReceiver, receiver, sizeof(fixedReceiver));
+	OFCopyMemory(&fixedReceiver, receiver, sizeof(fixedReceiver));
 
 	/* If it's not IPX, no fix-up needed - it will fail anyway. */
 	if (fixedReceiver.family == OFSocketAddressFamilyIPX)

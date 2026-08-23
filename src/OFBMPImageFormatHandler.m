@@ -61,7 +61,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	/* File header */
 
 	[stream readIntoBuffer: magic exactLength: 2];
-	if (memcmp(magic, "BM", 2) != 0)
+	if (OFCompareMemory(magic, "BM", 2) != OFOrderedSame)
 		@throw [OFInvalidFormatException exception];
 
 	/* size = */ [stream readLittleEndianInt32];
@@ -198,7 +198,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 
 		[stream readIntoBuffer: &colorSpace exactLength: 4];
 
-		if (memcmp(colorSpace, "BGRs", 4) != 0)
+		if (OFCompareMemory(colorSpace, "BGRs", 4) != OFOrderedSame)
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: @"\"color space\""];
 	}

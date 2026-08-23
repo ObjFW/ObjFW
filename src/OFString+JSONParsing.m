@@ -746,7 +746,8 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 		if OF_UNLIKELY (*pointer + 3 >= stop)
 			return nil;
 
-		if OF_UNLIKELY (memcmp(*pointer, "true", 4) != 0)
+		if OF_UNLIKELY (OFCompareMemory(*pointer, "true", 4) !=
+		    OFOrderedSame)
 			return nil;
 
 		(*pointer) += 4;
@@ -759,7 +760,8 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 		if OF_UNLIKELY (*pointer + 4 >= stop)
 			return nil;
 
-		if OF_UNLIKELY (memcmp(*pointer, "false", 5) != 0)
+		if OF_UNLIKELY (OFCompareMemory(*pointer, "false", 5) !=
+		    OFOrderedSame)
 			return nil;
 
 		(*pointer) += 5;
@@ -772,7 +774,8 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 		if OF_UNLIKELY (*pointer + 3 >= stop)
 			return nil;
 
-		if OF_UNLIKELY (memcmp(*pointer, "null", 4) != 0)
+		if OF_UNLIKELY (OFCompareMemory(*pointer, "null", 4) !=
+		    OFOrderedSame)
 			return nil;
 
 		(*pointer) += 4;

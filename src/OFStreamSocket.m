@@ -440,7 +440,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	_listening = false;
-	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
+	OFFillMemory(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;

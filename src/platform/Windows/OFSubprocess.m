@@ -168,7 +168,7 @@ OF_DIRECT_MEMBERS
 					     environment: environment
 						   errNo: 0];
 
-		memset(&pi, 0, sizeof(pi));
+		OFFillMemory(&pi, 0, sizeof(pi));
 
 		pool = objc_autoreleasePoolPush();
 
@@ -206,21 +206,18 @@ OF_DIRECT_MEMBERS
 		}
 
 		if ([OFSystemInfo isWindowsNT]) {
-			size_t length;
-			OFChar16 *argumentsCopy;
-			STARTUPINFOW si;
+			STARTUPINFOW si = {
+				.cb = sizeof(si),
+				.hStdInput = _writePipe[0],
+				.hStdOutput = _readPipe[1],
+				.hStdError = GetStdHandle(STD_ERROR_HANDLE),
+				.dwFlags = STARTF_USESTDHANDLES
+			};
 
-			memset(&si, 0, sizeof(si));
-			si.cb = sizeof(si);
-			si.hStdInput = _writePipe[0];
-			si.hStdOutput = _readPipe[1];
-			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-			si.dwFlags |= STARTF_USESTDHANDLES;
-
-			length = argumentsString.UTF16StringLength;
-			argumentsCopy = OFAllocMemory(length + 1,
+			size_t length = argumentsString.UTF16StringLength;
+			OFChar16 *argumentsCopy = OFAllocMemory(length + 1,
 			    sizeof(OFChar16));
-			memcpy(argumentsCopy, argumentsString.UTF16String,
+			OFCopyMemory(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
 			@try {
 				if (!CreateProcessW(NULL, argumentsCopy, NULL,
@@ -239,14 +236,13 @@ OF_DIRECT_MEMBERS
 			}
 		} else {
 			OFStringEncoding encoding = [OFLocale encoding];
-			STARTUPINFO si;
-
-			memset(&si, 0, sizeof(si));
-			si.cb = sizeof(si);
-			si.hStdInput = _writePipe[0];
-			si.hStdOutput = _readPipe[1];
-			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-			si.dwFlags |= STARTF_USESTDHANDLES;
+			STARTUPINFO si = {
+				.cb = sizeof(si),
+				.hStdInput = _writePipe[0],
+				.hStdOutput = _readPipe[1],
+				.hStdError = GetStdHandle(STD_ERROR_HANDLE),
+				.dwFlags = STARTF_USESTDHANDLES
+			};
 
 			if (!CreateProcessA(NULL, (char *)[argumentsString
 			    cStringWithEncoding: encoding], NULL, NULL, TRUE, 0,

@@ -148,7 +148,7 @@ _OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 			if (bufferLen - j < (size_t)appendLen)
 				return 0;
 
-			memcpy(buffer + j, append, appendLen);
+			OFCopyMemory(buffer + j, append, appendLen);
 			j += appendLen;
 
 			state = stateSearchConversionSpecifier;

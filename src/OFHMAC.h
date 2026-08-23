@@ -93,8 +93,8 @@ OF_SUBCLASSING_RESTRICTED
  * @note This resets the HMAC!
  *
  * @warning This invalidates any pointer previously returned by @ref digest. If
- *	    you are still interested in the previous digest, you need to memcpy
- *	    it yourself before calling @ref setKey:length:!
+ *	    you are still interested in the previous digest, you need to
+ *	    @ref OFCopyMemory it yourself before calling @ref setKey:length:!
  *
  * @param key The key for the HMAC
  * @param length The length of the key for the HMAC
@@ -125,8 +125,8 @@ OF_SUBCLASSING_RESTRICTED
  *	 @ref setKey:length:.
  *
  * @warning This invalidates any pointer previously returned by @ref digest. If
- *	    you are still interested in the previous digest, you need to memcpy
- *	    it yourself before calling @ref reset!
+ *	    you are still interested in the previous digest, you need to
+ *	    @ref OFCopyMemory it yourself before calling @ref reset!
  */
 - (void)reset;
 

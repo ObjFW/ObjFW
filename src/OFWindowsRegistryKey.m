@@ -368,7 +368,7 @@ OF_DIRECT_MEMBERS
 	if (data.count != sizeof(ret) || data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&ret, data.items, sizeof(ret));
+	OFCopyMemory(&ret, data.items, sizeof(ret));
 
 	objc_autoreleasePoolPop(pool);
 
@@ -401,7 +401,7 @@ OF_DIRECT_MEMBERS
 	if (data.count != sizeof(ret) || data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&ret, data.items, sizeof(ret));
+	OFCopyMemory(&ret, data.items, sizeof(ret));
 
 	objc_autoreleasePoolPop(pool);
 

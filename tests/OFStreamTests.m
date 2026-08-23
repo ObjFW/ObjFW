@@ -41,7 +41,7 @@
 	@try {
 		OFString *string;
 
-		memset(cString, 'X', pageSize - 3);
+		OFFillMemory(cString, 'X', pageSize - 3);
 		cString[pageSize - 3] = '\0';
 
 		OTAssertEqualObjects([stream readLine], @"foo");
@@ -77,7 +77,7 @@
 		if (size < 1)
 			return 0;
 
-		memcpy(buffer, "f", 1);
+		OFCopyMemory(buffer, "f", 1);
 
 		_state++;
 		return 1;
@@ -85,8 +85,8 @@
 		if (size < pageSize)
 			return 0;
 
-		memcpy(buffer, "oo\n", 3);
-		memset((char *)buffer + 3, 'X', pageSize - 3);
+		OFCopyMemory(buffer, "oo\n", 3);
+		OFFillMemory((char *)buffer + 3, 'X', pageSize - 3);
 
 		_state++;
 		return pageSize;
@@ -94,7 +94,7 @@
 		if (size < 1)
 			return 0;
 
-		memcpy(buffer, "", 1);
+		OFCopyMemory(buffer, "", 1);
 
 		_state++;
 		return 1;
@@ -104,7 +104,7 @@
 		if (size < 1)
 			return 0;
 
-		memcpy(buffer, "a", 1);
+		OFCopyMemory(buffer, "a", 1);
 
 		_state++;
 		return 1;
@@ -112,7 +112,7 @@
 		if (size < 1)
 			return 0;
 
-		memcpy(buffer, "", 1);
+		OFCopyMemory(buffer, "", 1);
 
 		_state++;
 		return 1;
@@ -120,7 +120,7 @@
 		if (size < 1)
 			return 0;
 
-		memcpy(buffer, "b", 1);
+		OFCopyMemory(buffer, "b", 1);
 
 		_state++;
 		return 1;

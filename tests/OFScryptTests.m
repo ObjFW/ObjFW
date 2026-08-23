@@ -153,7 +153,8 @@ static const unsigned char testVector4[64] = {
 
 	memcpy(salsa20Buffer, salsa20Input, 64);
 	_OFSalsa20_8Core(salsa20Buffer);
-	OTAssertEqual(memcmp(salsa20Buffer, salsa20Output, 64), 0);
+	OTAssertEqual(OFCompareMemory(salsa20Buffer, salsa20Output, 64),
+	    OFOrderedSame);
 }
 
 - (void)testBlockMix
@@ -161,7 +162,8 @@ static const unsigned char testVector4[64] = {
 	uint32_t blockMixBuffer[32];
 
 	_OFScryptBlockMix(blockMixBuffer, blockMixInput.u32, 1);
-	OTAssertEqual(memcmp(blockMixBuffer, blockMixOutput, 128), 0);
+	OTAssertEqual(OFCompareMemory(blockMixBuffer, blockMixOutput, 128),
+	    OFOrderedSame);
 }
 
 - (void)testROMix
@@ -170,7 +172,8 @@ static const unsigned char testVector4[64] = {
 
 	memcpy(ROMixBuffer, ROMixInput, 128);
 	_OFScryptROMix(ROMixBuffer, 1, 16, ROMixTmp);
-	OTAssertEqual(memcmp(ROMixBuffer, ROMixOutput, 128), 0);
+	OTAssertEqual(OFCompareMemory(ROMixBuffer, ROMixOutput, 128),
+	    OFOrderedSame);
 }
 
 - (void)testRFC7941TestVector1
@@ -190,7 +193,7 @@ static const unsigned char testVector4[64] = {
 		.allowsSwappableMemory = true
 	});
 
-	OTAssertEqual(memcmp(output, testVector1, 64), 0);
+	OTAssertEqual(OFCompareMemory(output, testVector1, 64), OFOrderedSame);
 }
 
 /* Nintendo DS does not have enough RAM for the second test vector. */
@@ -212,7 +215,7 @@ static const unsigned char testVector4[64] = {
 		.allowsSwappableMemory = true
 	});
 
-	OTAssertEqual(memcmp(output, testVector2, 64), 0);
+	OTAssertEqual(OFCompareMemory(output, testVector2, 64), OFOrderedSame);
 }
 #endif
 
@@ -238,7 +241,7 @@ static const unsigned char testVector4[64] = {
 		.allowsSwappableMemory = true
 	});
 
-	OTAssertEqual(memcmp(output, testVector3, 64), 0);
+	OTAssertEqual(OFCompareMemory(output, testVector3, 64), OFOrderedSame);
 }
 #endif
 
@@ -261,7 +264,7 @@ static const unsigned char testVector4[64] = {
 		.allowsSwappableMemory = true
 	});
 
-	OTAssertEqual(memcmp(output, testVector4, 64), 0);
+	OTAssertEqual(OFCompareMemory(output, testVector4, 64), OFOrderedSame);
 }
 #endif
 @end

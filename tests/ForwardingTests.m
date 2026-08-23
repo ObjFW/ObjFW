@@ -158,8 +158,9 @@ test(id self, SEL _cmd)
 
 	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
-	OTAssertEqual(memcmp([testObject forwardingTargetStRetTest].buffer,
-	    "abcdefghijklmnopqrstuvwxyz", 27), 0);
+	OTAssertEqual(OFCompareMemory(
+	    [testObject forwardingTargetStRetTest].buffer,
+	    "abcdefghijklmnopqrstuvwxyz", 27), OFOrderedSame);
 }
 # endif
 
@@ -318,7 +319,7 @@ test(id self, SEL _cmd)
 
 	OTAssertEqual(self, target);
 
-	memcpy(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
+	OFCopyMemory(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
 
 	return ret;
 }

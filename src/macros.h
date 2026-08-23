@@ -635,6 +635,105 @@ _OFByteSwap64NonConst(uint64_t i)
 #endif
 
 /**
+ * @brief A result of a comparison.
+ */
+typedef enum {
+	/** The left object is smaller than the right */
+	OFOrderedAscending = -1,
+	/** Both objects are equal */
+	OFOrderedSame = 0,
+	/** The left object is bigger than the right */
+	OFOrderedDescending = 1
+} OFComparisonResult;
+
+/**
+ * @brief Copies the specified memory to the specified destination.
+ *
+ * Unlike memcpy, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param source The memory to copy
+ * @param destination Where to copy the memory to
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFCopyMemory(void *restrict _Nullable destination,
+    const void *restrict _Nullable source, size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memcpy(destination, source, size);
+}
+
+/**
+ * @brief Moves the specified memory to the specified destination.
+ *
+ * The difference between copying and moving is that for moving, it is allowed
+ * that both pointers overlap.
+ *
+ * Unlike memmove, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param source The memory to copy
+ * @param destination Where to copy the memory to
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFMoveMemory(void *_Nullable destination, const void *_Nullable source,
+    size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memmove(destination, source, size);
+}
+
+/**
+ * @brief Fills the specified specified memory with the specified byte.
+ *
+ * Unlike memset, the pointer is allowed to be `NULL` if the size is 0.
+ *
+ * @param destination The memory to fill
+ * @param byte The byte to fill the memory with
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFFillMemory(void *_Nullable destination, uint8_t byte, size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memset(destination, byte, size);
+}
+
+/**
+ * @brief Compares the specified memory to the other specified memory.
+ *
+ * Unlike memcmp, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param left The memory on the "left side" for the comparison
+ * @param right The memory on the "right side" for the comparison
+ * @param size The size of the memory to compare
+ * @return An @ref OFComparisonResult
+ */
+static OF_INLINE OFComparisonResult
+OFCompareMemory(const void *_Nullable left, const void *_Nullable right,
+    size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return OFOrderedSame;
+
+	int ret = memcmp(left, right, size);
+	if (ret < 0)
+		return OFOrderedAscending;
+	if (ret > 0)
+		return OFOrderedDescending;
+	return OFOrderedSame;
+}
+
+/**
  * @brief Bit-converts the specified float to a uint32_t.
  *
  * @param f The float to bit-convert
@@ -644,7 +743,7 @@ static OF_INLINE uint32_t OF_CONST_FUNC
 OFBitConvertFloatToUInt32(float f)
 {
 	uint32_t ret;
-	memcpy(&ret, &f, 4);
+	OFCopyMemory(&ret, &f, 4);
 	return ret;
 }
 
@@ -658,7 +757,7 @@ static OF_INLINE float OF_CONST_FUNC
 OFBitConvertUInt32ToFloat(uint32_t uInt32)
 {
 	float ret;
-	memcpy(&ret, &uInt32, 4);
+	OFCopyMemory(&ret, &uInt32, 4);
 	return ret;
 }
 
@@ -672,7 +771,7 @@ static OF_INLINE uint64_t OF_CONST_FUNC
 OFBitConvertDoubleToUInt64(double d)
 {
 	uint64_t ret;
-	memcpy(&ret, &d, 8);
+	OFCopyMemory(&ret, &d, 8);
 	return ret;
 }
 
@@ -686,7 +785,7 @@ static OF_INLINE double OF_CONST_FUNC
 OFBitConvertUInt64ToDouble(uint64_t uInt64)
 {
 	double ret;
-	memcpy(&ret, &uInt64, 8);
+	OFCopyMemory(&ret, &uInt64, 8);
 	return ret;
 }
 

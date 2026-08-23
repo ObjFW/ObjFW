@@ -175,7 +175,7 @@ appendString(struct Context *ctx, const char *append, size_t appendLen)
 	    ctx->bufferLen + appendLen + 1)) == NULL)
 		return false;
 
-	memcpy(newBuf + ctx->bufferLen, append, appendLen);
+	OFCopyMemory(newBuf + ctx->bufferLen, append, appendLen);
 
 	ctx->buffer = newBuf;
 	ctx->bufferLen += appendLen;
@@ -190,7 +190,8 @@ appendSubformat(struct Context *ctx, const char *subformat,
 	if (ctx->subformatLen + subformatLen > maxSubformatLen)
 		return false;
 
-	memcpy(ctx->subformat + ctx->subformatLen, subformat, subformatLen);
+	OFCopyMemory(ctx->subformat + ctx->subformatLen,
+	    subformat, subformatLen);
 	ctx->subformatLen += subformatLen;
 	ctx->subformat[ctx->subformatLen] = 0;
 
@@ -662,7 +663,7 @@ formatConversionSpecifierState(struct Context *ctx)
 				if ((tmp2 = malloc(tmpLen)) == NULL)
 					return false;
 
-				memcpy(tmp2, tmpStr.UTF8String, tmpLen);
+				OFCopyMemory(tmp2, tmpStr.UTF8String, tmpLen);
 			} @finally {
 				free(tmp);
 				objc_autoreleasePoolPop(pool);
@@ -777,7 +778,7 @@ formatConversionSpecifierState(struct Context *ctx)
 		free(tmp);
 	}
 
-	memset(ctx->subformat, 0, maxSubformatLen);
+	OFFillMemory(ctx->subformat, 0, maxSubformatLen);
 	ctx->subformatLen = 0;
 	ctx->lengthModifier = lengthModifierNone;
 	ctx->useLocale = false;

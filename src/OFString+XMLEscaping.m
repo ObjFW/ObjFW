@@ -86,7 +86,7 @@ int _OFString_XMLEscaping_reference;
 			}
 			retLength += appendLen - 1;
 
-			memcpy(retCString + j, append, appendLen);
+			OFCopyMemory(retCString + j, append, appendLen);
 			j += appendLen;
 		} else
 			retCString[j++] = string[i];

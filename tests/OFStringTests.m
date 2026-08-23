@@ -963,25 +963,26 @@ static const char *range80ToFF =
 
 - (void)testCharacters
 {
-	OTAssertEqual(memcmp([[self.stringClass stringWithString: @"fööbär🀺"]
-	    characters], unicharString + 1, sizeof(unicharString) - 8), 0);
+	OTAssertEqual(OFCompareMemory(
+	    [[self.stringClass stringWithString: @"fööbär🀺"] characters],
+	    unicharString + 1, sizeof(unicharString) - 8), OFOrderedSame);
 }
 
 - (void)testUTF16String
 {
 	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
 
-	OTAssertEqual(memcmp(string.UTF16String, char16String + 1,
-	    OFUTF16StringLength(char16String) * 2), 0);
+	OTAssertEqual(OFCompareMemory(string.UTF16String, char16String + 1,
+	    OFUTF16StringLength(char16String) * 2), OFOrderedSame);
 
 #ifdef OF_BIG_ENDIAN
-	OTAssertEqual(memcmp([string UTF16StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF16StringWithByteOrder:
 	    OFByteOrderLittleEndian], swappedChar16String + 1,
-	    OFUTF16StringLength(swappedChar16String) * 2), 0);
+	    OFUTF16StringLength(swappedChar16String) * 2), OFOrderedSame);
 #else
-	OTAssertEqual(memcmp([string UTF16StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF16StringWithByteOrder:
 	    OFByteOrderBigEndian], swappedChar16String + 1,
-	    OFUTF16StringLength(swappedChar16String) * 2), 0);
+	    OFUTF16StringLength(swappedChar16String) * 2), OFOrderedSame);
 #endif
 }
 
@@ -994,17 +995,17 @@ static const char *range80ToFF =
 {
 	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
 
-	OTAssertEqual(memcmp(string.UTF32String, unicharString + 1,
-	    OFUTF32StringLength(unicharString) * 4), 0);
+	OTAssertEqual(OFCompareMemory(string.UTF32String, unicharString + 1,
+	    OFUTF32StringLength(unicharString) * 4), OFOrderedSame);
 
 #ifdef OF_BIG_ENDIAN
-	OTAssertEqual(memcmp([string UTF32StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF32StringWithByteOrder:
 	    OFByteOrderLittleEndian], swappedUnicharString + 1,
-	    OFUTF32StringLength(swappedUnicharString) * 4), 0);
+	    OFUTF32StringLength(swappedUnicharString) * 4), OFOrderedSame);
 #else
-	OTAssertEqual(memcmp([string UTF32StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF32StringWithByteOrder:
 	    OFByteOrderBigEndian], swappedUnicharString + 1,
-	    OFUTF32StringLength(swappedUnicharString) * 4), 0);
+	    OFUTF32StringLength(swappedUnicharString) * 4), OFOrderedSame);
 #endif
 }
 

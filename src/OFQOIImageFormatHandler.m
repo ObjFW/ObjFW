@@ -50,7 +50,7 @@ hashPixel(uint8_t pixel[4])
 	char endMarker[8];
 
 	[stream readIntoBuffer: magic exactLength: 4];
-	if (memcmp(magic, "qoif", 4) != 0)
+	if (OFCompareMemory(magic, "qoif", 4) != OFOrderedSame)
 		@throw [OFInvalidFormatException exception];
 
 	width = [stream readBigEndianInt32];
@@ -106,7 +106,7 @@ hashPixel(uint8_t pixel[4])
 			[stream readIntoBuffer: pixel exactLength: 4];
 		/* QOI_OP_INDEX */
 		else if ((byte & 0xC0) == 0)
-			memcpy(pixel, dict + (byte & 0x3F) * 4, 4);
+			OFCopyMemory(pixel, dict + (byte & 0x3F) * 4, 4);
 		/* QOI_OP_DIFF */
 		else if ((byte & 0xC0) == 0x40) {
 			pixel[0] += ((byte & 0x30) >> 4) - 2;
@@ -126,15 +126,17 @@ hashPixel(uint8_t pixel[4])
 				@throw [OFOutOfRangeException exception];
 
 			for (uint_fast8_t i = 0; i < (byte & 0x3F); i++)
-				memcpy(pixels + pixelsRead++ * 4, pixel, 4);
+				OFCopyMemory(pixels + pixelsRead++ * 4, pixel,
+				    4);
 		}
 
-		memcpy(pixels + pixelsRead * 4, pixel, 4);
-		memcpy(dict + hashPixel(pixel) * 4, pixel, 4);
+		OFCopyMemory(pixels + pixelsRead * 4, pixel, 4);
+		OFCopyMemory(dict + hashPixel(pixel) * 4, pixel, 4);
 	}
 
 	[stream readIntoBuffer: endMarker exactLength: 8];
-	if (memcmp(endMarker, "\0\0\0\0\0\0\0\x01", 8) != 0)
+	if (OFCompareMemory(endMarker, "\0\0\0\0\0\0\0\x01", 8) !=
+	    OFOrderedSame)
 		@throw [OFInvalidFormatException exception];
 
 	return image;
@@ -250,7 +252,8 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 				    exceptionWithSelector: _cmd
 						   object: self];
 
-			if (memcmp(pixel, previousPixel, 4) == 0) {
+			if (OFCompareMemory(pixel, previousPixel, 4) ==
+			    OFOrderedSame) {
 				runLength++;
 				continue;
 			}
@@ -259,7 +262,8 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 			runLength = 0;
 
 			hash = hashPixel(pixel);
-			if (memcmp(dict + hash * 4, pixel, 4) == 0)
+			if (OFCompareMemory(dict + hash * 4, pixel, 4) ==
+			    OFOrderedSame)
 				[stream writeInt8: hash];
 			else if (calcDiff(pixel, previousPixel, &diff))
 				[stream writeInt8: diff];
@@ -273,8 +277,8 @@ calcLuma(uint8_t pixel[4], uint8_t previousPixel[4], uint8_t luma[2])
 				[stream writeBuffer: pixel length: 4];
 			}
 
-			memcpy(dict + hash * 4, pixel, 4);
-			memcpy(previousPixel, pixel, 4);
+			OFCopyMemory(dict + hash * 4, pixel, 4);
+			OFCopyMemory(previousPixel, pixel, 4);
 		}
 	}
 	writeRunLength(stream, runLength);

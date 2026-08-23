@@ -185,7 +185,8 @@ OF_SINGLETON_METHODS
 	@try {
 		[self getValue: value size: size];
 		[object getValue: otherValue size: size];
-		ret = (memcmp(value, otherValue, size) == 0);
+		ret = (OFCompareMemory(value, otherValue, size) ==
+		    OFOrderedSame);
 	} @finally {
 		OFFreeMemory(value);
 		OFFreeMemory(otherValue);

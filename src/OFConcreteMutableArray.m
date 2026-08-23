@@ -317,7 +317,8 @@
 		@throw [OFOutOfRangeException exception];
 
 	copy = OFAllocMemory(range.length, sizeof(*copy));
-	memcpy(copy, objects + range.location, range.length * sizeof(*copy));
+	OFCopyMemory(copy, objects + range.location,
+	    range.length * sizeof(*copy));
 
 	@try {
 		[_array removeItemsInRange: range];
@@ -346,7 +347,8 @@
 			if (OFEndOfRange(ranges[i]) > count)
 				@throw [OFOutOfRangeException exception];
 
-			memcpy(copy + copyIndex, objects + ranges[i].location,
+			OFCopyMemory(copy + copyIndex,
+			    objects + ranges[i].location,
 			    ranges[i].length * sizeof(*copy));
 			copyIndex += ranges[i].length;
 		}

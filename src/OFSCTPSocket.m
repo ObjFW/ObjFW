@@ -294,7 +294,7 @@ static const OFRunLoopMode connectRunLoopMode =
 								  errNo: errNo];
 	}
 
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
 	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
@@ -395,7 +395,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 		if (cmsg->cmsg_type == SCTP_SNDRCV) {
 			struct sctp_sndrcvinfo sndrcv;
-			memcpy(&sndrcv, CMSG_DATA(cmsg), sizeof(sndrcv));
+			OFCopyMemory(&sndrcv, CMSG_DATA(cmsg), sizeof(sndrcv));
 			OFNumber *streamID = [OFNumber numberWithUnsignedShort:
 			    sndrcv.sinfo_stream];
 			OFNumber *PPID = [OFNumber numberWithUnsignedLong:
@@ -504,7 +504,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	cmsg->cmsg_level = IPPROTO_SCTP;
 	cmsg->cmsg_type = SCTP_SNDRCV;
 	cmsg->cmsg_len = CMSG_LEN(sizeof(sndrcv));
-	memcpy(CMSG_DATA(cmsg), &sndrcv, sizeof(sndrcv));
+	OFCopyMemory(CMSG_DATA(cmsg), &sndrcv, sizeof(sndrcv));
 
 	if ((bytesWritten = sendmsg(_socket, &msg, 0)) < 0)
 		@throw [OFWriteFailedException

@@ -42,7 +42,7 @@
 	[sock sendBuffer: "Hello" length: 6 receiver: &addr1];
 
 	[sock receiveIntoBuffer: buffer length: 6 sender: &addr2];
-	OTAssertEqual(memcmp(buffer, "Hello", 6), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello", 6), OFOrderedSame);
 	OTAssertEqualObjects(OFSocketAddressString(&addr2), @"127.0.0.1");
 	OTAssertEqual(OFSocketAddressIPPort(&addr2),
 	    OFSocketAddressIPPort(&addr1));

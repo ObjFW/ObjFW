@@ -236,7 +236,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 		if (min > length)
 			min = length;
 
-		memcpy(_ivars->buffer.bytes + _ivars->bufferLength,
+		OFCopyMemory(_ivars->buffer.bytes + _ivars->bufferLength,
 		    buffer, min);
 		_ivars->bufferLength += min;
 

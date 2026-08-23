@@ -305,9 +305,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_titlecaseTable[j] != 0) {
-				isEmpty = !memcmp(_uppercaseTable + i,
+				isEmpty = (OFCompareMemory(_uppercaseTable + i,
 				    _titlecaseTable + i,
-				    256 * sizeof(OFUnichar));
+				    256 * sizeof(OFUnichar)) == OFOrderedSame);
 				_titlecaseTableSize = i >> 8;
 				_titlecaseTableUsed[_titlecaseTableSize] =
 				    (isEmpty ? 2 : 1);
@@ -346,9 +346,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_caseFoldingTable[j] != 0) {
-				isEmpty = !memcmp(_lowercaseTable + i,
+				isEmpty = (OFCompareMemory(_lowercaseTable + i,
 				    _caseFoldingTable + i,
-				    256 * sizeof(OFUnichar));
+				    256 * sizeof(OFUnichar)) == OFOrderedSame);
 				_caseFoldingTableSize = i >> 8;
 				_caseFoldingTableUsed[_caseFoldingTableSize] =
 				    (isEmpty ? 2 : 1);

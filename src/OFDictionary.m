@@ -555,11 +555,11 @@ OF_SINGLETON_METHODS
 	OFEnumerator *enumerator;
 	int i;
 
-	memcpy(&enumerator, state->extra, sizeof(enumerator));
+	OFCopyMemory(&enumerator, state->extra, sizeof(enumerator));
 
 	if (enumerator == nil) {
 		enumerator = [self keyEnumerator];
-		memcpy(state->extra, &enumerator, sizeof(enumerator));
+		OFCopyMemory(state->extra, &enumerator, sizeof(enumerator));
 	}
 
 	state->itemsPtr = objects;

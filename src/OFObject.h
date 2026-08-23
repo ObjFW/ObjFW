@@ -59,18 +59,6 @@ OF_ASSUME_NONNULL_BEGIN
 static const size_t OFNotFound = SIZE_MAX;
 
 /**
- * @brief A result of a comparison.
- */
-typedef enum {
-	/** The left object is smaller than the right */
-	OFOrderedAscending = -1,
-	/** Both objects are equal */
-	OFOrderedSame = 0,
-	/** The left object is bigger than the right */
-	OFOrderedDescending = 1
-} OFComparisonResult;
-
-/**
  * @brief A function to compare two objects.
  *
  * @param left The left object

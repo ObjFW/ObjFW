@@ -87,7 +87,7 @@
 	[accepted receiveIntoBuffer: buffer
 			     length: 6
 			       info: &receiveInfo];
-	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello!", 6), OFOrderedSame);
 	OTAssertEqualObjects(receiveInfo, sendInfo);
 }
 @end

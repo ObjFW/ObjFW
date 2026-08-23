@@ -60,7 +60,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
 			@throw [OFOutOfRangeException exception];
 	}
 
-	memcpy(buffer, [string cStringWithEncoding: encoding], cStringLength);
+	OFCopyMemory(buffer, [string cStringWithEncoding: encoding],
+	    cStringLength);
 
 	for (size_t i = cStringLength; i < length; i++)
 		buffer[i] = '\0';
@@ -161,7 +162,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 		if (_fileType == '\0')
 			_fileType = OFArchiveEntryFileTypeRegular;
 
-		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
+		if (OFCompareMemory(header + 257, "ustar\0" "00", 8) ==
+		    OFOrderedSame) {
 			OFString *prefix;
 
 			_ownerAccountName =
@@ -388,7 +390,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	if (amigaProtection.count != 4)
 		return nil;
 
-	memcpy(&tmp, amigaProtection.items, sizeof(tmp));
+	OFCopyMemory(&tmp, amigaProtection.items, sizeof(tmp));
 
 	return [OFNumber numberWithUnsignedLong: OFFromBigEndian32(tmp)];
 }
@@ -495,7 +497,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	 * During checksumming, the checksum field is expected to be set to 8
 	 * spaces.
 	 */
-	memset(buffer + 148, ' ', 8);
+	OFFillMemory(buffer + 148, ' ', 8);
 
 	if (_fileType > 0xFF)
 		@throw [OFInvalidArgumentException exception];
@@ -509,7 +511,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	}
 
 	/* ustar */
-	memcpy(buffer + 257, "ustar\0" "00", 8);
+	OFCopyMemory(buffer + 257, "ustar\0" "00", 8);
 	stringToBuffer(buffer + 265, _ownerAccountName, 32, encoding, false);
 	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding,
 	    false);
@@ -519,7 +521,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	stringToBuffer(buffer + 337,
 	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
 	    OFStringEncodingASCII, false);
-	memset(buffer + 345, '\0', 155 + 12);
+	OFFillMemory(buffer + 345, '\0', 155 + 12);
 
 	/* Fill in the checksum */
 	for (size_t i = 0; i < 500; i++)

@@ -67,26 +67,29 @@ OFPBKDF2(OFPBKDF2Parameters param)
 		[param.HMAC setKey: param.password
 			    length: param.passwordLength];
 
-		memcpy(extendedSaltItems, param.salt, param.saltLength);
+		OFCopyMemory(extendedSaltItems, param.salt, param.saltLength);
 
 		while (param.keyLength > 0) {
 			size_t length;
 
-			memcpy(extendedSaltItems + param.saltLength, &i, 4);
+			OFCopyMemory(extendedSaltItems + param.saltLength, &i,
+			    4);
 
 			[param.HMAC reset];
 			[param.HMAC updateWithBuffer: extendedSaltItems
 					      length: param.saltLength + 4];
 			[param.HMAC calculate];
-			memcpy(bufferItems, param.HMAC.digest, digestSize);
-			memcpy(digestItems, param.HMAC.digest, digestSize);
+			OFCopyMemory(bufferItems, param.HMAC.digest,
+			    digestSize);
+			OFCopyMemory(digestItems, param.HMAC.digest,
+			    digestSize);
 
 			for (size_t j = 1; j < param.iterations; j++) {
 				[param.HMAC reset];
 				[param.HMAC updateWithBuffer: digestItems
 						      length: digestSize];
 				[param.HMAC calculate];
-				memcpy(digestItems, param.HMAC.digest,
+				OFCopyMemory(digestItems, param.HMAC.digest,
 				    digestSize);
 
 				for (size_t k = 0; k < digestSize; k++)
@@ -97,7 +100,7 @@ OFPBKDF2(OFPBKDF2Parameters param)
 			if (length > param.keyLength)
 				length = param.keyLength;
 
-			memcpy(param.key, bufferItems, length);
+			OFCopyMemory(param.key, bufferItems, length);
 			param.key += length;
 			param.keyLength -= length;
 

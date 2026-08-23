@@ -34,7 +34,7 @@
 		_size = OFSizeOfTypeEncoding(objCType);
 		_objCType = _OFStrDup(objCType);
 		_bytes = OFAllocMemory(1, _size);
-		memcpy(_bytes, bytes, _size);
+		OFCopyMemory(_bytes, bytes, _size);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -61,6 +61,6 @@
 	if (size != _size)
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, _bytes, _size);
+	OFCopyMemory(value, _bytes, _size);
 }
 @end

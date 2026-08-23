@@ -416,9 +416,8 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 			@throw [OFOutOfRangeException exception];
 
 		if (allowsSwappableMemory) {
-			_items = OFAllocMemory(count, itemSize);
+			_items = OFAllocZeroedMemory(count, itemSize);
 			_freeWhenDone = true;
-			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		} else if (count * itemSize >= pageSize)
 			_items = mapPages(OFRoundUpToPowerOf2(pageSize,
@@ -595,7 +594,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
-	memcpy(copy.mutableItems, _items, _count * _itemSize);
+	OFCopyMemory(copy.mutableItems, _items, _count * _itemSize);
 
 	return copy;
 }
@@ -607,7 +606,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
-	memcpy(copy.mutableItems, _items, _count * _itemSize);
+	OFCopyMemory(copy.mutableItems, _items, _count * _itemSize);
 
 	return copy;
 }

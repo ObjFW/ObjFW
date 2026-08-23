@@ -86,7 +86,7 @@
 		_capacity = _count + 1;
 	}
 
-	memcpy(_items + _count * _itemSize, item, _itemSize);
+	OFCopyMemory(_items + _count * _itemSize, item, _itemSize);
 
 	_count++;
 }
@@ -101,7 +101,7 @@
 		_capacity = _count + count;
 	}
 
-	memcpy(_items + _count * _itemSize, items, count * _itemSize);
+	OFCopyMemory(_items + _count * _itemSize, items, count * _itemSize);
 	_count += count;
 }
 
@@ -117,9 +117,9 @@
 		_capacity = _count + count;
 	}
 
-	memmove(_items + (idx + count) * _itemSize, _items + idx * _itemSize,
-	    (_count - idx) * _itemSize);
-	memcpy(_items + idx * _itemSize, items, count * _itemSize);
+	OFMoveMemory(_items + (idx + count) * _itemSize,
+	    _items + idx * _itemSize, (_count - idx) * _itemSize);
+	OFCopyMemory(_items + idx * _itemSize, items, count * _itemSize);
 
 	_count += count;
 }
@@ -147,10 +147,10 @@
 		if (range.location > _count)
 			@throw [OFOutOfRangeException exception];
 
-		memmove(_items + OFEndOfRange(range) * _itemSize,
+		OFMoveMemory(_items + OFEndOfRange(range) * _itemSize,
 		    _items + range.location * _itemSize,
 		    (_count - range.location) * _itemSize);
-		memcpy(_items + range.location * _itemSize, items,
+		OFCopyMemory(_items + range.location * _itemSize, items,
 		    range.length * _itemSize);
 
 		items = (char *)items + range.length * _itemSize;
@@ -168,7 +168,7 @@
 		_capacity = _count + count;
 	}
 
-	memset(_items + _count * _itemSize, '\0', count * _itemSize);
+	OFFillMemory(_items + _count * _itemSize, '\0', count * _itemSize);
 	_count += count;
 }
 
@@ -177,7 +177,7 @@
 	if (OFEndOfRange(range) > _count)
 		@throw [OFOutOfRangeException exception];
 
-	memmove(_items + range.location * _itemSize,
+	OFMoveMemory(_items + range.location * _itemSize,
 	    _items + OFEndOfRange(range) * _itemSize,
 	    (_count - range.location - range.length) * _itemSize);
 
@@ -207,7 +207,7 @@
 		if (OFEndOfRange(range) > _count)
 			@throw [OFOutOfRangeException exception];
 
-		memmove(_items + range.location * _itemSize,
+		OFMoveMemory(_items + range.location * _itemSize,
 		    _items + OFEndOfRange(range) * _itemSize,
 		    (_count - range.location - range.length) * _itemSize);
 

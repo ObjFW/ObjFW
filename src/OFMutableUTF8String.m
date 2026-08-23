@@ -233,14 +233,15 @@
 	_s->hasHash = false;
 
 	if (lenNew == (size_t)lenOld)
-		memcpy(_s->cString + idx, buffer, lenNew);
+		OFCopyMemory(_s->cString + idx, buffer, lenNew);
 	else if (lenNew > (size_t)lenOld) {
 		_s->cString = OFResizeMemory(_s->cString,
 		    _s->cStringLength - lenOld + lenNew + 1, 1);
 
-		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
+		OFMoveMemory(_s->cString + idx + lenNew,
+		    _s->cString + idx + lenOld,
 		    _s->cStringLength - idx - lenOld);
-		memcpy(_s->cString + idx, buffer, lenNew);
+		OFCopyMemory(_s->cString + idx, buffer, lenNew);
 
 		_s->cStringLength -= lenOld;
 		_s->cStringLength += lenNew;
@@ -249,9 +250,10 @@
 		if (character >= 0x80)
 			_s->isUTF8 = true;
 	} else if (lenNew < (size_t)lenOld) {
-		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
+		OFMoveMemory(_s->cString + idx + lenNew,
+		    _s->cString + idx + lenOld,
 		    _s->cStringLength - idx - lenOld);
-		memcpy(_s->cString + idx, buffer, lenNew);
+		OFCopyMemory(_s->cString + idx, buffer, lenNew);
 
 		_s->cStringLength -= lenOld;
 		_s->cStringLength += lenNew;
@@ -287,7 +289,7 @@
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
-	memcpy(_s->cString + _s->cStringLength, UTF8String,
+	OFCopyMemory(_s->cString + _s->cStringLength, UTF8String,
 	    UTF8StringLength + 1);
 
 	_s->cStringLength += UTF8StringLength;
@@ -315,7 +317,8 @@
 	_s->hasHash = false;
 	_s->cString = OFResizeMemory(_s->cString,
 	    _s->cStringLength + UTF8StringLength + 1, 1);
-	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
+	OFCopyMemory(_s->cString + _s->cStringLength,
+	    UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
 	_s->length += length;
@@ -393,7 +396,8 @@
 			_s->containsNull = true;
 	}
 
-	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
+	OFCopyMemory(_s->cString + _s->cStringLength,
+	    UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
 	_s->length += string.length;
@@ -432,7 +436,7 @@
 		_s->hasHash = false;
 		_s->cString = OFResizeMemory(_s->cString,
 		    _s->cStringLength + j + 1, 1);
-		memcpy(_s->cString + _s->cStringLength, tmp, j + 1);
+		OFCopyMemory(_s->cString + _s->cStringLength, tmp, j + 1);
 
 		_s->cStringLength += j;
 		_s->length += length;
@@ -493,9 +497,9 @@
 	pool = objc_autoreleasePoolPush();
 	UTF8String = [string insecureCStringWithEncoding: OFStringEncodingUTF8];
 
-	memmove(_s->cString + idx + UTF8StringLength, _s->cString + idx,
+	OFMoveMemory(_s->cString + idx + UTF8StringLength, _s->cString + idx,
 	    _s->cStringLength - idx);
-	memmove(_s->cString + idx, UTF8String, UTF8StringLength);
+	OFMoveMemory(_s->cString + idx, UTF8String, UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	_s->cStringLength = newCStringLength;
@@ -542,7 +546,7 @@
 		    _s->cStringLength);
 	}
 
-	memmove(_s->cString + start, _s->cString + end,
+	OFMoveMemory(_s->cString + start, _s->cString + end,
 	    _s->cStringLength - end);
 	_s->hasHash = false;
 	_s->length -= range.length;
@@ -597,11 +601,11 @@
 
 	/*
 	 * If the new string is bigger, we need to resize it first so we can
-	 * memmove() the rest of the string to the end.
+	 * OFMoveMemory() the rest of the string to the end.
 	 *
 	 * We must not resize the string if the new string is smaller, because
-	 * then we can't memmove() the rest of the string forward as the rest is
-	 * lost due to the resize!
+	 * then we can't OFMoveMemory() the rest of the string forward as the
+	 * rest is lost due to the resize!
 	 */
 	if (newCStringLength > _s->cStringLength)
 		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
@@ -611,14 +615,14 @@
 	replacementString =
 	    [replacement insecureCStringWithEncoding: OFStringEncodingUTF8];
 
-	memmove(_s->cString + start + replacementLength, _s->cString + end,
+	OFMoveMemory(_s->cString + start + replacementLength, _s->cString + end,
 	    _s->cStringLength - end);
-	memmove(_s->cString + start, replacementString, replacementLength);
+	OFMoveMemory(_s->cString + start, replacementString, replacementLength);
 	_s->cString[newCStringLength] = '\0';
 
 	/*
 	 * If the new string is smaller, we can safely resize it now as we're
-	 * done with memmove().
+	 * done with OFMoveMemory().
 	 */
 	if (newCStringLength < _s->cStringLength)
 		_s->cString = OFResizeMemory(_s->cString, newCStringLength + 1,
@@ -704,7 +708,8 @@
 
 	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
 	    i++) {
-		if (memcmp(_s->cString + i, searchString, searchLength) != 0)
+		if (OFCompareMemory(_s->cString + i, searchString,
+		    searchLength) != OFOrderedSame)
 			continue;
 
 		@try {
@@ -715,9 +720,9 @@
 			OFFreeMemory(newCString);
 			@throw e;
 		}
-		memcpy(newCString + newCStringLength, _s->cString + last,
+		OFCopyMemory(newCString + newCStringLength, _s->cString + last,
 		    i - last);
-		memcpy(newCString + newCStringLength + i - last,
+		OFCopyMemory(newCString + newCStringLength + i - last,
 		    replacementString, replacementLength);
 
 		newCStringLength += i - last + replacementLength;
@@ -734,7 +739,7 @@
 		OFFreeMemory(newCString);
 		@throw e;
 	}
-	memcpy(newCString + newCStringLength, _s->cString + last,
+	OFCopyMemory(newCString + newCStringLength, _s->cString + last,
 	    _s->cStringLength - last);
 	newCStringLength += _s->cStringLength - last;
 	newCString[newCStringLength] = 0;
@@ -791,7 +796,7 @@
 	_s->cStringLength -= i;
 	_s->length -= i;
 
-	memmove(_s->cString, _s->cString + i, _s->cStringLength);
+	OFMoveMemory(_s->cString, _s->cString + i, _s->cStringLength);
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
@@ -861,7 +866,7 @@
 	_s->cStringLength -= i;
 	_s->length -= i;
 
-	memmove(_s->cString, _s->cString + i, _s->cStringLength);
+	OFMoveMemory(_s->cString, _s->cString + i, _s->cStringLength);
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {

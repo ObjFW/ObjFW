@@ -79,7 +79,7 @@ OF_SINGLETON_METHODS
 	    0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_OFConstantStringClassReference, class,
+	OFCopyMemory(&_OFConstantStringClassReference, class,
 	    sizeof(_OFConstantStringClassReference));
 	free(class);
 	objc_registerClassPair((Class)&_OFConstantStringClassReference);

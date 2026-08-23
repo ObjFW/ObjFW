@@ -537,7 +537,8 @@ OF_SINGLETON_METHODS
 
 	if (data.count != count || data.itemSize != itemSize)
 		return false;
-	if (memcmp(data.items, self.items, count * itemSize) != 0)
+	if (OFCompareMemory(data.items, self.items, count * itemSize) !=
+	    OFOrderedSame)
 		return false;
 
 	return true;
@@ -545,21 +546,20 @@ OF_SINGLETON_METHODS
 
 - (OFComparisonResult)compare: (OFData *)data
 {
-	int comparison;
-	size_t count, dataCount, minCount;
-
 	if (![data isKindOfClass: [OFData class]])
 		@throw [OFInvalidArgumentException exception];
 
 	if (data.itemSize != self.itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	count = self.count;
-	dataCount = data.count;
-	minCount = (count > dataCount ? dataCount : count);
+	size_t count = self.count;
+	size_t dataCount = data.count;
+	size_t minCount = (count > dataCount ? dataCount : count);
 
-	if ((comparison = memcmp(self.items, data.items,
-	    minCount * self.itemSize)) == 0) {
+	OFComparisonResult result = OFCompareMemory(self.items, data.items,
+	    minCount * self.itemSize);
+
+	if (result == OFOrderedSame) {
 		if (count > dataCount)
 			return OFOrderedDescending;
 		if (count < dataCount)
@@ -568,10 +568,7 @@ OF_SINGLETON_METHODS
 		return OFOrderedSame;
 	}
 
-	if (comparison > 0)
-		return OFOrderedDescending;
-	else
-		return OFOrderedAscending;
+	return result;
 }
 
 - (unsigned long)hash
@@ -670,8 +667,8 @@ OF_SINGLETON_METHODS
 
 	if (options & OFDataSearchBackwards) {
 		for (size_t i = OFEndOfRange(range) - searchLength;; i--) {
-			if (memcmp(items + i * itemSize, search,
-			    searchLength * itemSize) == 0)
+			if (OFCompareMemory(items + i * itemSize, search,
+			    searchLength * itemSize) == OFOrderedSame)
 				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
@@ -681,8 +678,8 @@ OF_SINGLETON_METHODS
 	} else {
 		for (size_t i = range.location;
 		    i <= OFEndOfRange(range) - searchLength; i++)
-			if (memcmp(items + i * itemSize, search,
-			    searchLength * itemSize) == 0)
+			if (OFCompareMemory(items + i * itemSize, search,
+			    searchLength * itemSize) == OFOrderedSame)
 				return OFMakeRange(i, searchLength);
 	}
 

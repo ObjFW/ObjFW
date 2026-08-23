@@ -62,7 +62,7 @@
 
 	@try {
 		_network = network;
-		memcpy(_node, node, IPX_NODE_LEN);
+		OFCopyMemory(_node, node, IPX_NODE_LEN);
 		_port = port;
 	} @catch (id e) {
 		objc_release(self);
@@ -74,7 +74,7 @@
 
 - (void)getNode: (unsigned char [IPX_NODE_LEN])node
 {
-	memcpy(node, _node, sizeof(_node));
+	OFCopyMemory(node, _node, sizeof(_node));
 }
 
 - (OFString *)description

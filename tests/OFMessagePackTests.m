@@ -179,7 +179,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	*data = [OFMutableData dataWithCapacity: length + dataPrefixLength];
 	[*data addItems: dataPrefix count: dataPrefixLength];
 	[*data increaseCountBy: length];
-	memset([*data mutableItemAtIndex: dataPrefixLength], 'x', length);
+	OFFillMemory([*data mutableItemAtIndex: dataPrefixLength], 'x', length);
 
 	*string = [OFString
 	    stringWithUTF8String: [*data itemAtIndex: dataPrefixLength]
@@ -233,14 +233,14 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData data];
 	[data addItems: "\xC5\x01\x00" count: 3];
 	[data increaseCountBy: 256];
-	memset([data mutableItemAtIndex: 3], 'x', 256);
+	OFFillMemory([data mutableItemAtIndex: 3], 'x', 256);
 	OTAssertEqualObjects([[data subdataWithRange: OFMakeRange(3, 256)]
 	    messagePackRepresentation], data);
 
 	data = [OFMutableData data];
 	[data addItems: "\xC6\x00\x01\x00\x00" count: 5];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 5], 'x', 65536);
+	OFFillMemory([data mutableItemAtIndex: 5], 'x', 65536);
 	OTAssertEqualObjects([[data subdataWithRange: OFMakeRange(5, 65536)]
 	    messagePackRepresentation], data);
 }
@@ -256,14 +256,14 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData data];
 	[data addItems: "\xC5\x01\x00" count: 3];
 	[data increaseCountBy: 256];
-	memset([data mutableItemAtIndex: 3], 'x', 256);
+	OFFillMemory([data mutableItemAtIndex: 3], 'x', 256);
 	OTAssertEqualObjects(data.objectByParsingMessagePack,
 	    [data subdataWithRange: OFMakeRange(3, 256)]);
 
 	data = [OFMutableData data];
 	[data addItems: "\xC6\x00\x01\x00\x00" count: 5];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 5], 'x', 65536);
+	OFFillMemory([data mutableItemAtIndex: 5], 'x', 65536);
 	OTAssertEqualObjects(data.objectByParsingMessagePack,
 	    [data subdataWithRange: OFMakeRange(5, 65536)]);
 }
@@ -284,7 +284,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 19];
 	[data addItems: "\xDC\x00\x10" count: 3];
 	[data increaseCountBy: 16];
-	memset([data mutableItemAtIndex: 3], '\x01', 16);
+	OFFillMemory([data mutableItemAtIndex: 3], '\x01', 16);
 	for (size_t i = 0; i < 16; i++)
 		[array addObject: number];
 	OTAssertEqualObjects(array.messagePackRepresentation, data);
@@ -292,7 +292,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 65541];
 	[data addItems: "\xDD\x00\x01\x00\x00" count: 5];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 5], '\x01', 65536);
+	OFFillMemory([data mutableItemAtIndex: 5], '\x01', 65536);
 	for (size_t i = 16; i < 65536; i++)
 		[array addObject: number];
 	OTAssertEqualObjects(array.messagePackRepresentation, data);
@@ -314,7 +314,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 19];
 	[data addItems: "\xDC\x00\x10" count: 3];
 	[data increaseCountBy: 16];
-	memset([data mutableItemAtIndex: 3], '\x01', 16);
+	OFFillMemory([data mutableItemAtIndex: 3], '\x01', 16);
 	for (size_t i = 0; i < 16; i++)
 		[array addObject: number];
 	OTAssertEqualObjects(data.objectByParsingMessagePack, array);
@@ -322,7 +322,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 65541];
 	[data addItems: "\xDD\x00\x01\x00\x00" count: 5];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 5], '\x01', 65536);
+	OFFillMemory([data mutableItemAtIndex: 5], '\x01', 65536);
 	for (size_t i = 16; i < 65536; i++)
 		[array addObject: number];
 	OTAssertEqualObjects(data.objectByParsingMessagePack, array);
@@ -446,7 +446,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 260];
 	[data addItems: "\xC8\x01\x00\x01" count: 4];
 	[data increaseCountBy: 256];
-	memset([data mutableItemAtIndex: 4], 'x', 256);
+	OFFillMemory([data mutableItemAtIndex: 4], 'x', 256);
 	extension = [OFMessagePackExtension
 	    extensionWithType: 1
 			 data: [data subdataWithRange: OFMakeRange(4, 256)]];
@@ -455,7 +455,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 65542];
 	[data addItems: "\xC9\x00\x01\x00\x00\x01" count: 6];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 6], 'x', 65536);
+	OFFillMemory([data mutableItemAtIndex: 6], 'x', 65536);
 	extension = [OFMessagePackExtension
 	    extensionWithType: 1
 			 data: [data subdataWithRange: OFMakeRange(6, 65536)]];
@@ -520,7 +520,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 260];
 	[data addItems: "\xC8\x01\x00\x01" count: 4];
 	[data increaseCountBy: 256];
-	memset([data mutableItemAtIndex: 4], 'x', 256);
+	OFFillMemory([data mutableItemAtIndex: 4], 'x', 256);
 	extension = [OFMessagePackExtension
 	    extensionWithType: 1
 			 data: [data subdataWithRange: OFMakeRange(4, 256)]];
@@ -529,7 +529,7 @@ generateStringAndData(OFString **string, OFMutableData **data, size_t length,
 	data = [OFMutableData dataWithCapacity: 65542];
 	[data addItems: "\xC9\x00\x01\x00\x00\x01" count: 6];
 	[data increaseCountBy: 65536];
-	memset([data mutableItemAtIndex: 6], 'x', 65536);
+	OFFillMemory([data mutableItemAtIndex: 6], 'x', 65536);
 	extension = [OFMessagePackExtension
 	    extensionWithType: 1
 			 data: [data subdataWithRange: OFMakeRange(6, 65536)]];

@@ -130,7 +130,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 3)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&POSIXPermissions, (char *)extension.items + 1, 2);
+	OFCopyMemory(&POSIXPermissions, (char *)extension.items + 1, 2);
 	POSIXPermissions = OFFromLittleEndian16(POSIXPermissions);
 
 	objc_release(entry->_POSIXPermissions);
@@ -149,10 +149,10 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&groupOwnerAccountID, (char *)extension.items + 1, 2);
+	OFCopyMemory(&groupOwnerAccountID, (char *)extension.items + 1, 2);
 	groupOwnerAccountID = OFFromLittleEndian16(groupOwnerAccountID);
 
-	memcpy(&ownerAccountID, (char *)extension.items + 3, 2);
+	OFCopyMemory(&ownerAccountID, (char *)extension.items + 3, 2);
 	ownerAccountID = OFFromLittleEndian16(ownerAccountID);
 
 	objc_release(entry->_groupOwnerAccountID);
@@ -202,7 +202,7 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&modificationDate, (char *)extension.items + 1, 4);
+	OFCopyMemory(&modificationDate, (char *)extension.items + 1, 4);
 	modificationDate = OFFromLittleEndian32(modificationDate);
 
 	objc_release(entry->_modificationDate);
@@ -221,10 +221,10 @@ parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 17)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&tmp, (char *)extension.items + 1, 8);
+	OFCopyMemory(&tmp, (char *)extension.items + 1, 8);
 	entry->_compressedSize = OFFromLittleEndian64(tmp);
 
-	memcpy(&tmp, (char *)extension.items + 9, 8);
+	OFCopyMemory(&tmp, (char *)extension.items + 9, 8);
 	entry->_uncompressedSize = OFFromLittleEndian64(tmp);
 }
 
@@ -240,7 +240,7 @@ parseMSDOSAttributesExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	objc_release(entry->_MSDOSAttributes);
 	entry->_MSDOSAttributes = nil;
 
-	memcpy(&tmp, (char *)extension.items + 1, 2);
+	OFCopyMemory(&tmp, (char *)extension.items + 1, 2);
 	entry->_MSDOSAttributes = [OFNumber numberWithUnsignedShort:
 	    OFFromLittleEndian16(tmp)];
 }
@@ -418,13 +418,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	@try {
 		uint32_t tmp, date;
 
-		memcpy(&tmp, header + 7, 4);
+		OFCopyMemory(&tmp, header + 7, 4);
 		_compressedSize = OFFromLittleEndian32(tmp);
 
-		memcpy(&tmp, header + 11, 4);
+		OFCopyMemory(&tmp, header + 11, 4);
 		_uncompressedSize = OFFromLittleEndian32(tmp);
 
-		memcpy(&date, header + 15, 4);
+		OFCopyMemory(&date, header + 15, 4);
 		date = OFFromLittleEndian32(date);
 
 		_headerLevel = header[20];
@@ -1009,11 +1009,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	/* Now fill in the size and CRC16 for the entire header */
 	tmp16 = OFToLittleEndian16(headerSize);
-	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
+	OFCopyMemory([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
 	tmp16 = _OFCRC16(0, data.items, data.count);
 	tmp16 = OFToLittleEndian16(tmp16);
-	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
+	OFCopyMemory([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 
 	[stream writeData: data];
 

@@ -108,21 +108,17 @@ networkInterfacesFromGetAdaptersAddresses(void)
 			for (__typeof__(iter->FirstUnicastAddress) addrIter =
 			    iter->FirstUnicastAddress; addrIter != NULL;
 			    addrIter = addrIter->Next) {
-				OFSocketAddress address;
-				int length;
-				OFNetworkInterfaceKey key;
-				OFMutableData *addresses;
-
-				length = (int)sizeof(address.sockaddr);
+				OFSocketAddress address = { 0 };
+				int length = (int)sizeof(address.sockaddr);
 				if (length > addrIter->Address.iSockaddrLength)
 					length =
 					    addrIter->Address.iSockaddrLength;
 
-				memset(&address, 0, sizeof(OFSocketAddress));
-				memcpy(&address.sockaddr,
+				OFCopyMemory(&address.sockaddr,
 				    addrIter->Address.lpSockaddr,
 				    (size_t)length);
 
+				OFNetworkInterfaceKey key;
 				switch (address.sockaddr.in.sin_family) {
 				case AF_INET:
 					address.family =
@@ -138,7 +134,8 @@ networkInterfacesFromGetAdaptersAddresses(void)
 					continue;
 				}
 
-				addresses = [interface objectForKey: key];
+				OFMutableData *addresses =
+				    [interface objectForKey: key];
 				if (addresses == nil) {
 					addresses = [OFMutableData
 					    dataWithItemSize:

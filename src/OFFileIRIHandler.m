@@ -402,15 +402,15 @@ statWrapper(OFString *path, Stat *buffer)
 	buffer->protection = ed->Protection;
 
 	if (ed->CommentSize > 80) {
-		memcpy(buffer->comment, ed->Comment, 79);
+		OFCopyMemory(buffer->comment, ed->Comment, 79);
 		buffer->comment[79] = '\0';
 	} else
-		memcpy(buffer->comment, ed->Comment, ed->CommentSize);
+		OFCopyMemory(buffer->comment, ed->Comment, ed->CommentSize);
 # else
 	buffer->st_uid = fib.fib_OwnerUID;
 	buffer->st_gid = fib.fib_OwnerGID;
 	buffer->protection = fib.fib_Protection;
-	memcpy(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
+	OFCopyMemory(buffer->comment, fib.fib_Comment, sizeof(buffer->comment));
 # endif
 
 	if (!(buffer->protection & FIBF_READ))

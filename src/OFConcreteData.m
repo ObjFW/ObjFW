@@ -66,7 +66,7 @@
 		_itemSize = itemSize;
 		_freeWhenDone = true;
 
-		memcpy(_items, items, count * itemSize);
+		OFCopyMemory(_items, items, count * itemSize);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

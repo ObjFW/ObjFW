@@ -330,10 +330,10 @@ OF_DIRECT_MEMBERS
 
 			envp[i] = OFAllocMemory(keyLen + objectLen + 2, 1);
 
-			memcpy(envp[i],
+			OFCopyMemory(envp[i],
 			    [key cStringWithEncoding: encoding], keyLen);
 			envp[i][keyLen] = '=';
-			memcpy(envp[i] + keyLen + 1,
+			OFCopyMemory(envp[i] + keyLen + 1,
 			    [object cStringWithEncoding: encoding], objectLen);
 			envp[i][keyLen + objectLen + 1] = '\0';
 		}

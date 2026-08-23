@@ -54,7 +54,7 @@
 
 				_bitSet = OFResizeMemory(_bitSet, newSize,
 				    sizeof(unsigned long));
-				memset(_bitSet + _size, '\0',
+				OFFillMemory(_bitSet + _size, '\0',
 				    (newSize - _size) * sizeof(unsigned long));
 
 				_size = newSize;

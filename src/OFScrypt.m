@@ -91,7 +91,7 @@ _OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 	    2 * param.blockSize - 1 > SIZE_MAX / 16)		\
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(tmp, input + (2 * blockSize - 1) * 16, 64);
+	OFCopyMemory(tmp, input + (2 * blockSize - 1) * 16, 64);
 
 	for (size_t i = 0; i < 2 * blockSize; i++) {
 		for (size_t j = 0; j < 16; j++)
@@ -103,7 +103,8 @@ _OFScryptBlockMix(uint32_t *output, const uint32_t *input, size_t blockSize)
 		 * Even indices are stored in the first half and odd ones in
 		 * the second.
 		 */
-		memcpy(output + ((i / 2) + (i & 1) * blockSize) * 16, tmp, 64);
+		OFCopyMemory(output + ((i / 2) + (i & 1) * blockSize) * 16,
+		    tmp, 64);
 	}
 
 	OFZeroMemory(tmp, sizeof(tmp));
@@ -120,10 +121,10 @@ _OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 
 	uint32_t *tmp2 = tmp + 32 * blockSize;
 
-	memcpy(tmp, buffer, 128 * blockSize);
+	OFCopyMemory(tmp, buffer, 128 * blockSize);
 
 	for (size_t i = 0; i < costFactor; i++) {
-		memcpy(tmp2 + i * 32 * blockSize, tmp, 128 * blockSize);
+		OFCopyMemory(tmp2 + i * 32 * blockSize, tmp, 128 * blockSize);
 		_OFScryptBlockMix(tmp, tmp2 + i * 32 * blockSize, blockSize);
 	}
 
@@ -137,7 +138,7 @@ _OFScryptROMix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 		_OFScryptBlockMix(buffer, tmp, blockSize);
 
 		if (i < costFactor - 1)
-			memcpy(tmp, buffer, 128 * blockSize);
+			OFCopyMemory(tmp, buffer, 128 * blockSize);
 	}
 }
 

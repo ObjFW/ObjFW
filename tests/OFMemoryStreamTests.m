@@ -42,11 +42,11 @@ static const char string[] = "abcdefghijkl";
 	 */
 
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 5], 5);
-	OTAssertEqual(memcmp(buffer, "abcde", 5), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "abcde", 5), OFOrderedSame);
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 3], 3);
-	OTAssertEqual(memcmp(buffer, "fgh", 3), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "fgh", 3), OFOrderedSame);
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 5);
-	OTAssertEqual(memcmp(buffer, "ijkl", 5), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "ijkl", 5), OFOrderedSame);
 	OTAssertTrue([stream lowlevelIsAtEndOfStream]);
 
 	OTAssertEqual([stream lowlevelSeekToOffset: 0 whence: OFSeekCurrent],
@@ -56,11 +56,11 @@ static const char string[] = "abcdefghijkl";
 	OTAssertEqual([stream lowlevelSeekToOffset: 4 whence: OFSeekSet], 4);
 	OTAssertFalse([stream lowlevelIsAtEndOfStream]);
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 9);
-	OTAssertEqual(memcmp(buffer, "efghijkl", 9), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "efghijkl", 9), OFOrderedSame);
 
 	OTAssertEqual([stream lowlevelSeekToOffset: -2 whence: OFSeekEnd], 11);
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 2);
-	OTAssertEqual(memcmp(buffer, "l", 2), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "l", 2), OFOrderedSame);
 	OTAssertEqual([stream lowlevelReadIntoBuffer: buffer length: 10], 0);
 
 	OTAssertThrowsSpecific([stream lowlevelWriteBuffer: "" length: 1],
@@ -80,7 +80,8 @@ static const char string[] = "abcdefghijkl";
 	OTAssertEqual([stream lowlevelWriteBuffer: "abcde" length: 5], 5);
 	OTAssertEqual([stream lowlevelWriteBuffer: "fgh" length: 3], 3);
 	OTAssertEqual([stream lowlevelWriteBuffer: "ijkl" length: 5], 5);
-	OTAssertEqual(memcmp(data.items, string, data.count), 0);
+	OTAssertEqual(OFCompareMemory(data.items, string, data.count),
+	    OFOrderedSame);
 	OTAssertEqual([stream lowlevelSeekToOffset: -3 whence: OFSeekEnd], 10);
 
 	OTAssertThrowsSpecific([stream lowlevelWriteBuffer: "xyz" length: 4],

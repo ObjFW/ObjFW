@@ -137,7 +137,7 @@ createDate(OFData *data)
 	case 4: {
 		uint32_t timestamp;
 
-		memcpy(&timestamp, data.items, 4);
+		OFCopyMemory(&timestamp, data.items, 4);
 		timestamp = OFFromBigEndian32(timestamp);
 
 		return [OFDate dateWithTimeIntervalSince1970: timestamp];
@@ -145,7 +145,7 @@ createDate(OFData *data)
 	case 8: {
 		uint64_t combined;
 
-		memcpy(&combined, data.items, 8);
+		OFCopyMemory(&combined, data.items, 8);
 		combined = OFFromBigEndian64(combined);
 
 		if ((combined >> 34) >= 1000000000)
@@ -159,8 +159,8 @@ createDate(OFData *data)
 		uint32_t nanoseconds;
 		int64_t seconds;
 
-		memcpy(&nanoseconds, data.items, 4);
-		memcpy(&seconds, (char *)data.items + 4, 8);
+		OFCopyMemory(&nanoseconds, data.items, 4);
+		OFCopyMemory(&seconds, (char *)data.items + 4, 8);
 
 		nanoseconds = OFFromBigEndian32(nanoseconds);
 		seconds = OFFromBigEndian64(seconds);
@@ -298,7 +298,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 5)
 			@throw [OFTruncatedDataException exception];
 
-		memcpy(&f, buffer + 1, 4);
+		OFCopyMemory(&f, buffer + 1, 4);
 
 		*object = [OFNumber numberWithFloat: OFFromBigEndianFloat(f)];
 		return 5;
@@ -308,7 +308,7 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 		if (length < 9)
 			@throw [OFTruncatedDataException exception];
 
-		memcpy(&d, buffer + 1, 8);
+		OFCopyMemory(&d, buffer + 1, 8);
 
 		*object = [OFNumber numberWithDouble: OFFromBigEndianDouble(d)];
 		return 9;

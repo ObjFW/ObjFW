@@ -352,7 +352,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem listItem;
 
-	memcpy(&listItem, state->extra, sizeof(listItem));
+	OFCopyMemory(&listItem, state->extra, sizeof(listItem));
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &_mutations;
@@ -370,7 +370,7 @@ OFListItemObject(OFListItem listItem)
 		listItem = listItem->next;
 	}
 
-	memcpy(state->extra, &listItem, sizeof(listItem));
+	OFCopyMemory(state->extra, &listItem, sizeof(listItem));
 
 	return count;
 }

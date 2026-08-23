@@ -72,11 +72,11 @@ isFloat(OFNumber *number)
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
-#define CASE(type, method)				\
-	if (strcmp(objCType, @encode(type)) == 0) {	\
-		type value;				\
-		memcpy(&value, bytes, sizeof(type));	\
-		return [self method value];		\
+#define CASE(type, method)					\
+	if (strcmp(objCType, @encode(type)) == 0) {		\
+		type value;					\
+		OFCopyMemory(&value, bytes, sizeof(type));	\
+		return [self method value];			\
 	}
 
 	CASE(bool, initWithBool:)

@@ -122,11 +122,12 @@
 	/* Test reassembly (this would not work with OFSPXSocket) */
 	OTAssertEqual([sockClient readIntoBuffer: buffer length: 2], 2);
 	OTAssertEqual([sockClient readIntoBuffer: buffer + 2 length: 3], 3);
-	OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello", 5), OFOrderedSame);
 
 	addrAccepted = sockAccepted.remoteAddress;
 	OFSocketAddressGetIPXNode(addrAccepted, node2);
-	OTAssertEqual(memcmp(node, node2, IPX_NODE_LEN), 0);
+	OTAssertEqual(OFCompareMemory(node, node2, IPX_NODE_LEN),
+	    OFOrderedSame);
 }
 
 - (void)testAsyncSPXStreamSocket
@@ -174,7 +175,7 @@
 	delegate->_expectedNetwork = network =
 	    OFSocketAddressIPXNetwork(&_addrServer);
 	OFSocketAddressGetIPXNode(&_addrServer, node);
-	memcpy(delegate->_expectedNode, node, IPX_NODE_LEN);
+	OFCopyMemory(delegate->_expectedNode, node, IPX_NODE_LEN);
 	delegate->_expectedPort = port = OFSocketAddressIPXPort(&_addrServer);
 
 	@try {
@@ -231,8 +232,8 @@
 
 	_connected = (sock == _expectedClientSocket &&
 	    network == _expectedNetwork &&
-	    memcmp(node, _expectedNode, IPX_NODE_LEN) == 0 &&
-	    port == _expectedPort && exception == nil);
+	    OFCompareMemory(node, _expectedNode, IPX_NODE_LEN) ==
+	    OFOrderedSame && port == _expectedPort && exception == nil);
 
 	if (_accepted && _connected)
 		[[OFRunLoop mainRunLoop] stop];

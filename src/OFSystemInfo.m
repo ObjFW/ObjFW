@@ -358,7 +358,7 @@ x86CPUID(uint32_t eax, uint32_t ecx)
 	      "c" (ecx)
 	);
 # else
-	memset(&regs, 0, sizeof(regs));
+	OFFillMemory(&regs, 0, sizeof(regs));
 # endif
 
 	return regs;

@@ -328,11 +328,11 @@ OF_DIRECT_MEMBERS
 		[_stream readIntoBuffer: buffer exactLength: _lastHeaderLength];
 
 		tmp32 = OFToLittleEndian32((uint32_t)offset);
-		memcpy(buffer + 6, &tmp32, 4);
+		OFCopyMemory(buffer + 6, &tmp32, 4);
 
 		tmp16 = OFToLittleEndian16(
 		    _OFCRC16(0, buffer, _lastHeaderLength));
-		memcpy(buffer + 54, &tmp16, 2);
+		OFCopyMemory(buffer + 54, &tmp16, 2);
 
 		[_stream seekToOffset: _lastHeaderOffset whence: OFSeekSet];
 		[_stream writeBuffer: buffer length: _lastHeaderLength];

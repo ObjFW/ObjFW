@@ -91,19 +91,26 @@ _OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 				if (bufferLen < j + 3)
 					return NULL;
 
-				if (memcmp(buffer + j, "Sun", 3) == 0)
+				if (OFCompareMemory(buffer + j,
+				    "Sun", 3) == OFOrderedSame)
 					tm->tm_wday = 0;
-				else if (memcmp(buffer + j, "Mon", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Mon", 3) == OFOrderedSame)
 					tm->tm_wday = 1;
-				else if (memcmp(buffer + j, "Tue", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Tue", 3) == OFOrderedSame)
 					tm->tm_wday = 2;
-				else if (memcmp(buffer + j, "Wed", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Wed", 3) == OFOrderedSame)
 					tm->tm_wday = 3;
-				else if (memcmp(buffer + j, "Thu", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Thu", 3) == OFOrderedSame)
 					tm->tm_wday = 4;
-				else if (memcmp(buffer + j, "Fri", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Fri", 3) == OFOrderedSame)
 					tm->tm_wday = 5;
-				else if (memcmp(buffer + j, "Sat", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Sat", 3) == OFOrderedSame)
 					tm->tm_wday = 6;
 				else
 					return NULL;
@@ -114,29 +121,41 @@ _OFStrPTime(const char *buffer, const char *format, struct tm *tm, short *tz)
 				if (bufferLen < j + 3)
 					return NULL;
 
-				if (memcmp(buffer + j, "Jan", 3) == 0)
+				if (OFCompareMemory(buffer + j,
+				    "Jan", 3) == OFOrderedSame)
 					tm->tm_mon = 0;
-				else if (memcmp(buffer + j, "Feb", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Feb", 3) == OFOrderedSame)
 					tm->tm_mon = 1;
-				else if (memcmp(buffer + j, "Mar", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Mar", 3) == OFOrderedSame)
 					tm->tm_mon = 2;
-				else if (memcmp(buffer + j, "Apr", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Apr", 3) == OFOrderedSame)
 					tm->tm_mon = 3;
-				else if (memcmp(buffer + j, "May", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "May", 3) == OFOrderedSame)
 					tm->tm_mon = 4;
-				else if (memcmp(buffer + j, "Jun", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Jun", 3) == OFOrderedSame)
 					tm->tm_mon = 5;
-				else if (memcmp(buffer + j, "Jul", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Jul", 3) == OFOrderedSame)
 					tm->tm_mon = 6;
-				else if (memcmp(buffer + j, "Aug", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Aug", 3) == OFOrderedSame)
 					tm->tm_mon = 7;
-				else if (memcmp(buffer + j, "Sep", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Sep", 3) == OFOrderedSame)
 					tm->tm_mon = 8;
-				else if (memcmp(buffer + j, "Oct", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Oct", 3) == OFOrderedSame)
 					tm->tm_mon = 9;
-				else if (memcmp(buffer + j, "Nov", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Nov", 3) == OFOrderedSame)
 					tm->tm_mon = 10;
-				else if (memcmp(buffer + j, "Dec", 3) == 0)
+				else if (OFCompareMemory(buffer + j,
+				    "Dec", 3) == OFOrderedSame)
 					tm->tm_mon = 11;
 				else
 					return NULL;

@@ -130,7 +130,7 @@ struct ATInterfaceConfig {
 				   errNo: errNo];
 	}
 
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 	address.family = OFSocketAddressFamilyAppleTalk;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 

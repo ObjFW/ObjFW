@@ -54,9 +54,9 @@
 	self = [super init];
 
 	r = OFRandom64();
-	memcpy(_bytes, &r, 8);
+	OFCopyMemory(_bytes, &r, 8);
 	r = OFRandom64();
-	memcpy(_bytes + 8, &r, 8);
+	OFCopyMemory(_bytes + 8, &r, 8);
 
 	_bytes[6] &= ~((1 << 7) | (1 << 5) | (1 << 4));
 	_bytes[6] |= (1 << 6);
@@ -70,7 +70,7 @@
 {
 	self = [super init];
 
-	memcpy(_bytes, bytes, sizeof(_bytes));
+	OFCopyMemory(_bytes, bytes, sizeof(_bytes));
 
 	return self;
 }
@@ -159,7 +159,8 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 	UUID = object;
 
-	return (memcmp(_bytes, UUID->_bytes, sizeof(_bytes)) == 0);
+	return (OFCompareMemory(_bytes, UUID->_bytes, sizeof(_bytes)) ==
+	    OFOrderedSame);
 }
 
 - (unsigned long)hash
@@ -183,23 +184,15 @@ decode(OFArray OF_GENERIC(OFString *) *components, size_t componentIndex,
 
 - (OFComparisonResult)compare: (OFUUID *)UUID
 {
-	int comparison;
-
 	if (![UUID isKindOfClass: [OFUUID class]])
 		@throw [OFInvalidArgumentException exception];
 
-	if ((comparison = memcmp(_bytes, UUID->_bytes, sizeof(_bytes))) == 0)
-		return OFOrderedSame;
-
-	if (comparison > 0)
-		return OFOrderedDescending;
-	else
-		return OFOrderedAscending;
+	return OFCompareMemory(_bytes, UUID->_bytes, sizeof(_bytes));
 }
 
 - (void)getUUIDBytes: (unsigned char [16])bytes
 {
-	memcpy(bytes, _bytes, sizeof(_bytes));
+	OFCopyMemory(bytes, _bytes, sizeof(_bytes));
 }
 
 - (OFString *)UUIDString

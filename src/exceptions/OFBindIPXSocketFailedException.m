@@ -67,7 +67,7 @@
 
 	@try {
 		_network = network;
-		memcpy(_node, node, sizeof(_node));
+		OFCopyMemory(_node, node, sizeof(_node));
 		_port = port;
 		_packetType = packetType;
 	} @catch (id e) {
@@ -80,7 +80,7 @@
 
 - (void)getNode: (unsigned char [IPX_NODE_LEN])node
 {
-	memcpy(node, _node, sizeof(_node));
+	OFCopyMemory(node, _node, sizeof(_node));
 }
 
 - (OFString *)description

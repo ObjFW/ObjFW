@@ -115,27 +115,28 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 			const char *entity = string + last;
 			size_t entityLength = i - last;
 
-			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
+			if (entityLength == 2 &&
+			    OFCompareMemory(entity, "lt", 2) == OFOrderedSame)
 				[ret appendCString: "<"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 2 &&
-			    memcmp(entity, "gt", 2) == 0)
+			    OFCompareMemory(entity, "gt", 2) == OFOrderedSame)
 				[ret appendCString: ">"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    memcmp(entity, "quot", 4) == 0)
+			    OFCompareMemory(entity, "quot", 4) == OFOrderedSame)
 				[ret appendCString: "\""
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    memcmp(entity, "apos", 4) == 0)
+			    OFCompareMemory(entity, "apos", 4) == OFOrderedSame)
 				[ret appendCString: "'"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 3 &&
-			    memcmp(entity, "amp", 3) == 0)
+			    OFCompareMemory(entity, "amp", 3) == OFOrderedSame)
 				[ret appendCString: "&"
 					  encoding: OFStringEncodingASCII
 					    length: 1];

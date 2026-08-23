@@ -460,8 +460,8 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
 	    i++) {
-		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(OFUnichar)) != 0)
+		if (OFCompareMemory(characters + i, searchCharacters,
+		    searchLength * sizeof(OFUnichar)) != OFOrderedSame)
 			continue;
 
 		[self replaceCharactersInRange: OFMakeRange(i, searchLength)

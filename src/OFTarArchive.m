@@ -395,7 +395,7 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 
 	if (_mode == modeWrite || _mode == modeAppend) {
 		char buffer[1024];
-		memset(buffer, '\0', 1024);
+		OFFillMemory(buffer, '\0', 1024);
 		[_stream writeBuffer: buffer length: 1024];
 	}
 

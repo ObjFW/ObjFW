@@ -124,8 +124,8 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 
 	name = OFAllocMemory(keyLength + 3, 1);
 	@try {
-		memcpy(name, "is", 2);
-		memcpy(name + 2, key.UTF8String, keyLength);
+		OFCopyMemory(name, "is", 2);
+		OFCopyMemory(name + 2, key.UTF8String, keyLength);
 		name[keyLength + 2] = '\0';
 
 		name[2] = OFASCIIToUpper(name[2]);
@@ -178,9 +178,9 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 
 	name = OFAllocMemory(keyLength + 5, 1);
 	@try {
-		memcpy(name, "set", 3);
-		memcpy(name + 3, key.UTF8String, keyLength);
-		memcpy(name + keyLength + 3, ":", 2);
+		OFCopyMemory(name, "set", 3);
+		OFCopyMemory(name + 3, key.UTF8String, keyLength);
+		OFCopyMemory(name + keyLength + 3, ":", 2);
 
 		name[3] = OFASCIIToUpper(name[3]);
 

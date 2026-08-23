@@ -63,7 +63,8 @@
 
 		OTAssertEqual([sockClient receiveIntoBuffer: buffer
 						     length: 5], 5);
-		OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+		OTAssertEqual(OFCompareMemory(buffer, "Hello", 5),
+		    OFOrderedSame);
 
 		OTAssertEqual(OFSocketAddressUNIXPath(
 		    sockAccepted.remoteAddress).length, 0);

@@ -50,14 +50,14 @@
 
 - (void)testIdentityMatrix
 {
-	OTAssertEqual(memcmp([[OFMatrix4x4 identityMatrix] values],
+	OTAssertEqual(OFCompareMemory([[OFMatrix4x4 identityMatrix] values],
 	    (const float [4][4]){
 		{ 1, 0, 0, 0 },
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	    }, 16 * sizeof(float)),
-	    0);
+	    OFOrderedSame);
 }
 
 - (void)testDescription

@@ -77,7 +77,7 @@
 
 	OFSocketAddressGetIPXNode(&address1, node);
 	if (OFSocketAddressIPXNetwork(&address1) == 0 &&
-	    memcmp(node, zeroNode, 6) == 0)
+	    OFCompareMemory(node, zeroNode, 6) == OFOrderedSame)
 		OTSkip(@"Could not determine own IPX address");
 
 	[sock sendBuffer: "Hello" length: 5 receiver: &address1];
@@ -85,10 +85,11 @@
 	OTAssertEqual([sock receiveIntoBuffer: buffer
 				       length: 5
 				       sender: &address2], 5);
-	OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello", 5), OFOrderedSame);
 	OFSocketAddressGetIPXNode(&address1, node1);
 	OFSocketAddressGetIPXNode(&address2, node2);
-	OTAssertEqual(memcmp(node1, node2, IPX_NODE_LEN), 0);
+	OTAssertEqual(OFCompareMemory(node1, node2, IPX_NODE_LEN),
+	    OFOrderedSame);
 	OTAssertEqual(OFSocketAddressIPXPort(&address1),
 	    OFSocketAddressIPXPort(&address2));
 }

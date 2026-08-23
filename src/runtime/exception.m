@@ -328,7 +328,7 @@ readValue(uint8_t enc, const uint8_t **ptr)
 #define READ(type)					\
 	{						\
 		type tmp;				\
-		memcpy(&tmp, *ptr, sizeof(type));	\
+		OFCopyMemory(&tmp, *ptr, sizeof(type));	\
 		value = tmp;				\
 		*ptr += sizeForEncoding(enc);		\
 		break;					\

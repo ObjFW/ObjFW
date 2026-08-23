@@ -85,7 +85,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		_socket = objc_retain(sock);
 		_network = network;
-		memcpy(_node, node, IPX_NODE_LEN);
+		OFCopyMemory(_node, node, IPX_NODE_LEN);
 		_port = port;
 #ifdef OF_HAVE_BLOCKS
 		_handler = [handler copy];
@@ -406,7 +406,7 @@ inform_delegate:
 				   errNo: errNo];
 	}
 
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 	address.family = OFSocketAddressFamilyIPX;
 	address.length = (socklen_t)sizeof(address.sockaddr);
 

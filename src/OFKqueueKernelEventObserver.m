@@ -85,17 +85,16 @@
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForReading;
-	event.filter = EVFILT_READ;
-	event.flags = EV_ADD;
-	/*
-	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
-	 * switched this to `void *` in NetBSD 10.
-	 */
-	event.udata = (__typeof__(event.udata))object;
+	struct kevent event = {
+		.ident = object.fileDescriptorForReading,
+		.filter = EVFILT_READ,
+		.flags = EV_ADD,
+		/*
+		 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for
+		 * udata, but switched this to `void *` in NetBSD 10.
+		 */
+		.udata = (__typeof__(event.udata))object
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -108,17 +107,16 @@
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForWriting;
-	event.filter = EVFILT_WRITE;
-	event.flags = EV_ADD;
-	/*
-	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
-	 * switched this to `void *` in NetBSD 10.
-	 */
-	event.udata = (__typeof__(event.udata))object;
+	struct kevent event = {
+		.ident = object.fileDescriptorForWriting,
+		.filter = EVFILT_WRITE,
+		.flags = EV_ADD,
+		/*
+		 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for
+		 * udata, but switched this to `void *` in NetBSD 10.
+		 */
+		.udata = (__typeof__(event.udata))object
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -131,12 +129,11 @@
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForReading;
-	event.filter = EVFILT_READ;
-	event.flags = EV_DELETE;
+	struct kevent event = {
+		.ident = object.fileDescriptorForReading,
+		.filter = EVFILT_READ,
+		.flags = EV_DELETE
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -149,12 +146,11 @@
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForWriting;
-	event.filter = EVFILT_WRITE;
-	event.flags = EV_DELETE;
+	struct kevent event = {
+		.ident = object.fileDescriptorForWriting,
+		.filter = EVFILT_WRITE,
+		.flags = EV_DELETE
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)

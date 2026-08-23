@@ -70,13 +70,15 @@ struct TestStruct {
 {
 	struct TestStruct testStruct, testStruct2;
 
-	memset(&testStruct, 0xFF, sizeof(testStruct));
+	OFFillMemory(&testStruct, 0xFF, sizeof(testStruct));
 	testStruct.c = 0x55;
 	testStruct.i = 0xAAAAAAAA;
 
 	[_invocation setReturnValue: &testStruct];
 	[_invocation getReturnValue: &testStruct2];
-	OTAssertEqual(memcmp(&testStruct, &testStruct2, sizeof(testStruct)), 0);
+	OTAssertEqual(
+	    OFCompareMemory(&testStruct, &testStruct2, sizeof(testStruct)),
+	    OFOrderedSame);
 }
 
 - (void)testSetAndGetArgumentAtIndex
@@ -88,11 +90,11 @@ struct TestStruct {
 	const unsigned int i = 0x55555555;
 	unsigned int i2;
 
-	memset(&testStruct, 0xFF, sizeof(testStruct));
+	OFFillMemory(&testStruct, 0xFF, sizeof(testStruct));
 	testStruct.c = 0x55;
 	testStruct.i = 0xAAAAAAAA;
 
-	memset(&testStruct2, 0, sizeof(testStruct2));
+	OFFillMemory(&testStruct2, 0, sizeof(testStruct2));
 
 	[_invocation setArgument: &c atIndex: 2];
 	[_invocation setArgument: &i atIndex: 3];
@@ -109,6 +111,8 @@ struct TestStruct {
 	OTAssertEqual(testStructPtr, testStructPtr2);
 
 	[_invocation getArgument: &testStruct2 atIndex: 5];
-	OTAssertEqual(memcmp(&testStruct, &testStruct2, sizeof(testStruct)), 0);
+	OTAssertEqual(
+	    OFCompareMemory(&testStruct, &testStruct2, sizeof(testStruct)),
+	    OFOrderedSame);
 }
 @end

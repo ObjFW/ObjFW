@@ -39,8 +39,8 @@
 {
 	[super setUp];
 
-	memset(&_items[0], 0xFF, 4096);
-	memset(&_items[1], 0x42, 4096);
+	OFFillMemory(&_items[0], 0xFF, 4096);
+	OFFillMemory(&_items[1], 0x42, 4096);
 
 	_data = [[self.dataClass alloc] initWithItems: _items
 						count: 2
@@ -66,13 +66,15 @@
 
 - (void)testItems
 {
-	OTAssertEqual(memcmp(_data.items, _items, 2 * _data.itemSize), 0);
+	OTAssertEqual(OFCompareMemory(_data.items, _items, 2 * _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testItemAtIndex
 {
 	OTAssertEqual(
-	    memcmp([_data itemAtIndex: 1], &_items[1], _data.itemSize), 0);
+	    OFCompareMemory([_data itemAtIndex: 1], &_items[1], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testItemAtIndexThrowsOnOutOfRangeIndex
@@ -83,12 +85,16 @@
 
 - (void)testFirstItem
 {
-	OTAssertEqual(memcmp(_data.firstItem, &_items[0], _data.itemSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(_data.firstItem, &_items[0], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testLastItem
 {
-	OTAssertEqual(memcmp(_data.lastItem, &_items[1], _data.itemSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(_data.lastItem, &_items[1], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testIsEqual

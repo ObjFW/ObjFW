@@ -173,7 +173,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFOutOfRangeException exception];
 
 			UTF16Len = (DWORD)stringLen;
-			memcpy(UTF16, string.UTF16String, stringLen);
+			OFCopyMemory(UTF16, string.UTF16String, stringLen);
 		}
 
 		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
@@ -187,7 +187,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
-				memcpy(buffer, UTF8, UTF8Len);
+				OFCopyMemory(buffer, UTF8, UTF8Len);
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
@@ -244,7 +244,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
-				memcpy(buffer + j, UTF8, UTF8Len);
+				OFCopyMemory(buffer + j, UTF8, UTF8Len);
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
@@ -290,8 +290,8 @@ codepageToEncoding(UINT codepage)
 		if (toCopy > length)
 			toCopy = length;
 
-		memcpy(_incompleteUTF8Surrogate + _incompleteUTF8SurrogateLen,
-		    buffer, toCopy);
+		OFCopyMemory(_incompleteUTF8Surrogate +
+		    _incompleteUTF8SurrogateLen, buffer, toCopy);
 		_incompleteUTF8SurrogateLen += toCopy;
 
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
@@ -375,8 +375,8 @@ codepageToEncoding(UINT codepage)
 			if (UTF8Len < 0 && UTF8Len >= -4) {
 				OFEnsure(length - i < 4);
 
-				memcpy(_incompleteUTF8Surrogate, buffer + i,
-				    length - i);
+				OFCopyMemory(_incompleteUTF8Surrogate,
+				    buffer + i, length - i);
 				_incompleteUTF8SurrogateLen = length - i;
 
 				break;

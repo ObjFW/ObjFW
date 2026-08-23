@@ -186,7 +186,8 @@ OFImageFormatQOIRef(void)
 		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
 		_freeWhenDone = true;
 
-		memcpy(_pixels, pixels, count * (bitsPerPixel / CHAR_BIT));
+		OFCopyMemory(_pixels, pixels,
+		    count * (bitsPerPixel / CHAR_BIT));
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -354,7 +355,8 @@ OFImageFormatQOIRef(void)
 	if (otherFormat == _pixelFormat) {
 		size_t length = width * height * (self.bitsPerPixel / CHAR_BIT);
 
-		return (memcmp(_pixels, otherPixels, length) == 0);
+		return (OFCompareMemory(_pixels, otherPixels, length) ==
+		    OFOrderedSame);
 	}
 
 	for (size_t y = 0; y < height; y++) {

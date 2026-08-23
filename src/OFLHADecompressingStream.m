@@ -111,7 +111,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 
 		_slidingWindowMask = (1u << dictionaryBits) - 1;
 		_slidingWindow = OFAllocMemory(_slidingWindowMask + 1, 1);
-		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
+		OFFillMemory(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

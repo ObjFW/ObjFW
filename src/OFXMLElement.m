@@ -398,7 +398,7 @@
 	cString = OFAllocMemory(length, 1);
 
 	@try {
-		memset(cString + i, ' ', level * indentation);
+		OFFillMemory(cString + i, ' ', level * indentation);
 		i += level * indentation;
 
 		/* Start of tag */
@@ -408,13 +408,14 @@
 			length += prefix.UTF8StringLength + 1;
 			cString = OFResizeMemory(cString, length, 1);
 
-			memcpy(cString + i, prefix.UTF8String,
+			OFCopyMemory(cString + i, prefix.UTF8String,
 			    prefix.UTF8StringLength);
 			i += prefix.UTF8StringLength;
 			cString[i++] = ':';
 		}
 
-		memcpy(cString + i, _name.UTF8String, _name.UTF8StringLength);
+		OFCopyMemory(cString + i,
+		    _name.UTF8String, _name.UTF8StringLength);
 		i += _name.UTF8StringLength;
 
 		/* xmlns if necessary */
@@ -423,9 +424,9 @@
 			length += _namespace.UTF8StringLength + 9;
 			cString = OFResizeMemory(cString, length, 1);
 
-			memcpy(cString + i, " xmlns='", 8);
+			OFCopyMemory(cString + i, " xmlns='", 8);
 			i += 8;
-			memcpy(cString + i, _namespace.UTF8String,
+			OFCopyMemory(cString + i, _namespace.UTF8String,
 			    _namespace.UTF8StringLength);
 			i += _namespace.UTF8StringLength;
 			cString[i++] = '\'';
@@ -460,17 +461,18 @@
 
 			cString[i++] = ' ';
 			if (attributePrefix != nil) {
-				memcpy(cString + i, attributePrefix.UTF8String,
+				OFCopyMemory(cString + i,
+				    attributePrefix.UTF8String,
 				    attributePrefix.UTF8StringLength);
 				i += attributePrefix.UTF8StringLength;
 				cString[i++] = ':';
 			}
-			memcpy(cString + i, attributeNameCString,
+			OFCopyMemory(cString + i, attributeNameCString,
 			    attributeNameLength);
 			i += attributeNameLength;
 			cString[i++] = '=';
 			cString[i++] = delimiter;
-			memcpy(cString + i, tmp.UTF8String,
+			OFCopyMemory(cString + i, tmp.UTF8String,
 			    tmp.UTF8StringLength);
 			i += tmp.UTF8StringLength;
 			cString[i++] = delimiter;
@@ -532,11 +534,12 @@
 
 			cString[i++] = '>';
 
-			memcpy(cString + i, tmp.items, tmp.count);
+			OFCopyMemory(cString + i, tmp.items, tmp.count);
 			i += tmp.count;
 
 			if (indent) {
-				memset(cString + i, ' ', level * indentation);
+				OFFillMemory(cString + i, ' ',
+				    level * indentation);
 				i += level * indentation;
 			}
 
@@ -546,12 +549,12 @@
 				length += prefix.UTF8StringLength + 1;
 				cString = OFResizeMemory(cString, length, 1);
 
-				memcpy(cString + i, prefix.UTF8String,
+				OFCopyMemory(cString + i, prefix.UTF8String,
 				    prefix.UTF8StringLength);
 				i += prefix.UTF8StringLength;
 				cString[i++] = ':';
 			}
-			memcpy(cString + i, _name.UTF8String,
+			OFCopyMemory(cString + i, _name.UTF8String,
 			    _name.UTF8StringLength);
 			i += _name.UTF8StringLength;
 		} else

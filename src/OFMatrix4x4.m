@@ -179,7 +179,7 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	    : "ecx", "mm0", "mm1", "memory"
 	);
 
-	memcpy(self->_values, result, 16 * sizeof(float));
+	OFCopyMemory(self->_values, result, 16 * sizeof(float));
 }
 
 static void
@@ -289,7 +289,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	self = [super init];
 
-	memcpy(_values, values, 16 * sizeof(float));
+	OFCopyMemory(_values, values, 16 * sizeof(float));
 
 	return self;
 }
@@ -310,7 +310,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	if (![matrix isKindOfClass: [OFMatrix4x4 class]])
 		return false;
 
-	return (memcmp(_values, matrix->_values, 16 * sizeof(float)) == 0);
+	return (OFCompareMemory(_values, matrix->_values, 16 * sizeof(float)) ==
+	    OFOrderedSame);
 }
 
 - (unsigned long)hash
@@ -341,7 +342,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 			    matrix->_values[i][2] * _values[2][j] +
 			    matrix->_values[i][3] * _values[3][j];
 
-	memcpy(_values, result, 16 * sizeof(float));
+	OFCopyMemory(_values, result, 16 * sizeof(float));
 }
 
 - (void)translateWithVector: (OFVector3D)vector

@@ -192,13 +192,17 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (dataLength != 4)
 			@throw [OFInvalidServerResponseException exception];
 
-		OFSocketAddress address;
-		memset(&address, 0, sizeof(address));
-		address.family = OFSocketAddressFamilyIPv4;
-		address.length = (socklen_t)sizeof(address.sockaddr.in);
-
-		address.sockaddr.in.sin_family = AF_INET;
-		memcpy(&address.sockaddr.in.sin_addr.s_addr, buffer + i, 4);
+		OFSocketAddress address = {
+			.family = OFSocketAddressFamilyIPv4,
+			.length = (socklen_t)sizeof(address.sockaddr.in),
+			.sockaddr = {
+				.in = {
+					.sin_family = AF_INET
+				}
+			}
+		};
+		OFCopyMemory(&address.sockaddr.in.sin_addr.s_addr,
+		    buffer + i, 4);
 
 		return objc_autoreleaseReturnValue(
 		    [[OFADNSResourceRecord alloc] initWithName: name
@@ -373,17 +377,21 @@ parseResourceRecord(OFString *name, OFDNSClass DNSClass,
 		if (dataLength != 16)
 			@throw [OFInvalidServerResponseException exception];
 
-		OFSocketAddress address;
-		memset(&address, 0, sizeof(address));
-		address.family = OFSocketAddressFamilyIPv6;
-		address.length = (socklen_t)sizeof(address.sockaddr.in6);
-
+		OFSocketAddress address = {
+			.family = OFSocketAddressFamilyIPv6,
+			.length = (socklen_t)sizeof(address.sockaddr.in6),
+			.sockaddr = {
+				.in6 = {
 #ifdef AF_INET6
-		address.sockaddr.in6.sin6_family = AF_INET6;
+					.sin6_family = AF_INET6
 #else
-		address.sockaddr.in6.sin6_family = AF_UNSPEC;
+					.sin6_family = AF_UNSPEC
 #endif
-		memcpy(address.sockaddr.in6.sin6_addr.s6_addr, buffer + i, 16);
+				}
+			}
+		};
+		OFCopyMemory(address.sockaddr.in6.sin6_addr.s6_addr,
+		    buffer + i, 16);
 
 		return objc_autoreleaseReturnValue(
 		    [[OFAAAADNSResourceRecord alloc] initWithName: name

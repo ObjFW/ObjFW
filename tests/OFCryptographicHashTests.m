@@ -99,8 +99,12 @@ const unsigned char testFileSHA512[64] =
 	[hash calculate];
 	[copy calculate];
 
-	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
-	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(hash.digest, expectedDigest, hash.digestSize),
+	    OFOrderedSame);
+	OTAssertEqual(
+	    OFCompareMemory(hash.digest, expectedDigest, hash.digestSize),
+	    OFOrderedSame);
 
 	OTAssertThrowsSpecific([hash updateWithBuffer: "" length: 1],
 	    OFHashAlreadyCalculatedException);

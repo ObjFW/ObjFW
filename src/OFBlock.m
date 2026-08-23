@@ -190,7 +190,7 @@ _Block_copy(const void *block_)
 			    [OFAllocFailedException class]);
 			@throw (OFAllocFailedException *)&allocFailedException;
 		}
-		memcpy(copy, block, block->descriptor->size);
+		OFCopyMemory(copy, block, block->descriptor->size);
 
 		object_setClass((id)copy, (Class)&_NSConcreteMallocBlock);
 		copy->flags++;
@@ -284,7 +284,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				    &allocFailedException;
 			}
 
-			memcpy(*dst, src, src->size);
+			OFCopyMemory(*dst, src, src->size);
 			(*dst)->flags =
 			    ((*dst)->flags & ~OFBlockRefCountMask) | 1;
 			(*dst)->forwarding = *dst;
@@ -442,21 +442,24 @@ _Block_object_dispose(const void *object_, const int flags_)
 	if ((tmp = objc_allocateClassPair(self, "OFStackBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteStackBlock, tmp, sizeof(_NSConcreteStackBlock));
+	OFCopyMemory(&_NSConcreteStackBlock, tmp,
+	    sizeof(_NSConcreteStackBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteStackBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFGlobalBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteGlobalBlock, tmp, sizeof(_NSConcreteGlobalBlock));
+	OFCopyMemory(&_NSConcreteGlobalBlock, tmp,
+	    sizeof(_NSConcreteGlobalBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteGlobalBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFMallocBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
+	OFCopyMemory(&_NSConcreteMallocBlock, tmp,
+	    sizeof(_NSConcreteMallocBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
 # endif

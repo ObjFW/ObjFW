@@ -598,7 +598,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		@throw [OFInvalidServerResponseException exception];
 
 	keyC = OFAllocMemory(tmp - lineC + 1, 1);
-	memcpy(keyC, lineC, tmp - lineC);
+	OFCopyMemory(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);
 

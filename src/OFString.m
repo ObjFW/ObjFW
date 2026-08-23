@@ -397,7 +397,7 @@ _OFStrDup(const char *string)
 {
 	size_t length = strlen(string);
 	char *copy = (char *)OFAllocMemory(1, length + 1);
-	memcpy(copy, string, length + 1);
+	OFCopyMemory(copy, string, length + 1);
 
 	return copy;
 }
@@ -1336,7 +1336,7 @@ OF_SINGLETON_METHODS
 			case 2:
 			case 3:
 			case 4:
-				memcpy(cString + j, buffer, len);
+				OFCopyMemory(cString + j, buffer, len);
 				j += len;
 
 				break;
@@ -1819,8 +1819,8 @@ OF_SINGLETON_METHODS
 	characters = self.characters;
 	otherCharacters = string.characters;
 
-	if (memcmp(characters, otherCharacters,
-	    length * sizeof(OFUnichar)) != 0) {
+	if (OFCompareMemory(characters, otherCharacters,
+	    length * sizeof(OFUnichar)) != OFOrderedSame) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -2118,8 +2118,9 @@ OF_SINGLETON_METHODS
 
 		if (options & OFStringSearchBackwards) {
 			for (size_t i = range.length - searchLength;; i--) {
-				if (memcmp(characters + i, searchCharacters,
-				    searchLength * sizeof(OFUnichar)) == 0) {
+				if (OFCompareMemory(characters + i,
+				    searchCharacters, searchLength *
+				    sizeof(OFUnichar)) == OFOrderedSame) {
 					objc_autoreleasePoolPop(pool);
 					return OFMakeRange(range.location + i,
 					    searchLength);
@@ -2132,8 +2133,9 @@ OF_SINGLETON_METHODS
 		} else {
 			for (size_t i = 0;
 			    i <= range.length - searchLength; i++) {
-				if (memcmp(characters + i, searchCharacters,
-				    searchLength * sizeof(OFUnichar)) == 0) {
+				if (OFCompareMemory(characters + i,
+				    searchCharacters, searchLength *
+				    sizeof(OFUnichar)) == OFOrderedSame) {
 					objc_autoreleasePoolPop(pool);
 					return OFMakeRange(range.location + i,
 					    searchLength);
@@ -2254,8 +2256,8 @@ OF_SINGLETON_METHODS
 	searchCharacters = string.characters;
 
 	for (size_t i = 0; i <= length - searchLength; i++) {
-		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(OFUnichar)) == 0) {
+		if (OFCompareMemory(characters + i, searchCharacters,
+		    searchLength * sizeof(OFUnichar)) == OFOrderedSame) {
 			objc_autoreleasePoolPop(pool);
 			return true;
 		}
@@ -2426,8 +2428,8 @@ OF_SINGLETON_METHODS
 
 		[self getCharacters: tmp inRange: OFMakeRange(0, prefixLength)];
 
-		hasPrefix = (memcmp(tmp, prefix.characters,
-		    prefixLength * sizeof(OFUnichar)) == 0);
+		hasPrefix = (OFCompareMemory(tmp, prefix.characters,
+		    prefixLength * sizeof(OFUnichar)) == OFOrderedSame);
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
@@ -2458,8 +2460,8 @@ OF_SINGLETON_METHODS
 					 suffixLength)];
 
 		suffixCharacters = suffix.characters;
-		hasSuffix = (memcmp(tmp, suffixCharacters,
-		    suffixLength * sizeof(OFUnichar)) == 0);
+		hasSuffix = (OFCompareMemory(tmp, suffixCharacters,
+		    suffixLength * sizeof(OFUnichar)) == OFOrderedSame);
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
@@ -2509,8 +2511,8 @@ OF_SINGLETON_METHODS
 
 	last = 0;
 	for (size_t i = 0; i <= length - delimiterLength; i++) {
-		if (memcmp(characters + i, delimiterCharacters,
-		    delimiterLength * sizeof(OFUnichar)) != 0)
+		if (OFCompareMemory(characters + i, delimiterCharacters,
+		    delimiterLength * sizeof(OFUnichar)) != OFOrderedSame)
 			continue;
 
 		component = [self substringWithRange:

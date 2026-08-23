@@ -473,10 +473,10 @@
 
 	tmp32 = OFToLittleEndian32(
 	    (uint32_t)offset + (uint32_t)data.count + (uint32_t)commentLength);
-	memcpy([data mutableItemAtIndex: dataOffsetIndex], &tmp32, 4);
+	OFCopyMemory([data mutableItemAtIndex: dataOffsetIndex], &tmp32, 4);
 
 	tmp32 = OFToLittleEndian32((uint32_t)offset + (uint32_t)data.count);
-	memcpy([data mutableItemAtIndex: commentOffsetIndex], &tmp32, 4);
+	OFCopyMemory([data mutableItemAtIndex: commentOffsetIndex], &tmp32, 4);
 
 	[stream writeData: data];
 	length = data.count;
