@@ -93,7 +93,7 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 	    oh_elementWithName: [name stringByAppendingString: @" X"]
 			analog: analog];
 	OHGameControllerAxis *yAxis = [OHGameControllerAxis
-	    oh_elementWithName: [name stringByAppendingString: @" X"]
+	    oh_elementWithName: [name stringByAppendingString: @" Y"]
 			analog: analog];
 	OHGameControllerDirectionalPad *directionalPad =
 	    [OHGameControllerDirectionalPad oh_padWithName: name
