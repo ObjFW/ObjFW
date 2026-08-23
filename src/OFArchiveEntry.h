@@ -118,13 +118,13 @@ typedef enum {
 /**
  * @brief The file owner's account name.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *ownerAccountName;
 
 /**
  * @brief The file owner's group account name.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *groupOwnerAccountName;
 
 /**

@@ -81,13 +81,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The file owner's account name.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *ownerAccountName;
 
 /**
  * @brief The file owner's group account name.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *groupOwnerAccountName;
 
 /**
