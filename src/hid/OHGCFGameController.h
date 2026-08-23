@@ -42,7 +42,7 @@ __attribute__((__availability__(iOS, introduced=17.0)))
 {
 	GCController *_controller;
 	OFString *_name;
-	id <OHGameControllerProfile, OHGCFMapping> _profile;
+	OFObject <OHGameControllerProfile, OHGCFMapping> *_profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

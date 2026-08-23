@@ -118,12 +118,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	return nil;
 }

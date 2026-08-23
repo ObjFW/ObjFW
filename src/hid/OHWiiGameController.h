@@ -26,7 +26,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	int32_t _index;
 	uint32_t _type;
-	id <OHGameControllerProfile> _profile;
+	OFObject <OHGameControllerProfile> *_profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

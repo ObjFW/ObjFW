@@ -89,7 +89,7 @@ const char *VER = "$VER: ofgctester "
 OF_APPLICATION_DELEGATE(OFGCTester)
 
 static void
-printProfile(id <OHGameControllerProfile> profile)
+printProfile(OFObject <OHGameControllerProfile> *profile)
 {
 	OFArray OF_GENERIC(OFString *) *buttons =
 	    profile.buttons.allKeys.sortedArray;

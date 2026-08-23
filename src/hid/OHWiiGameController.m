@@ -250,18 +250,18 @@ scale(float value, float min, float max, float center)
 		return @"Wiimote";
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHGamepad>)_profile;
+		return (OFObject <OHGamepad> *)_profile;
 
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHExtendedGamepad>)_profile;
+		return (OFObject <OHExtendedGamepad> *)_profile;
 
 	return nil;
 }

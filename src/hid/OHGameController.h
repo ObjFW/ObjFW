@@ -80,20 +80,21 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The profile for the game controller.
  */
-@property (readonly, nonatomic) id <OHGameControllerProfile> profile;
+@property (readonly, nonatomic) OFObject <OHGameControllerProfile> *profile;
 
 /**
  * @brief The gamepad profile for the game controller, or `nil` if not
  *	  supported.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OHGamepad> gamepad;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFObject <OHGamepad> *gamepad;
 
 /**
  * @brief The extended gamepad profile for the game controller, or `nil` if not
  *	  supported.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    id <OHExtendedGamepad> extendedGamepad;
+    OFObject <OHExtendedGamepad> *extendedGamepad;
 
 /**
  * @brief Returns the available controllers.

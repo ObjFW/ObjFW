@@ -34,7 +34,8 @@ OF_SUBCLASSING_RESTRICTED
 	struct OHSensorsList *_Nonnull _sensorsList;
 	OFString *_Nonnull _name;
 	APTR _childSensorsList;
-	id <OHGameControllerProfile, OHSensorsLibraryMapping> _Nonnull _profile;
+	OFObject <OHGameControllerProfile, OHSensorsLibraryMapping>
+	    *_Nonnull _profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

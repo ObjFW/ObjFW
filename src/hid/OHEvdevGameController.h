@@ -37,7 +37,7 @@ OF_SUBCLASSING_RESTRICTED
 	unsigned long *_evBits, *_keyBits, *_absBits;
 	OHVIDPID _VIDPID;
 	OFString *_name;
-	id <OHGameControllerProfile, OHEvdevMapping> _profile;
+	OFObject <OHGameControllerProfile, OHEvdevMapping> *_profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;
