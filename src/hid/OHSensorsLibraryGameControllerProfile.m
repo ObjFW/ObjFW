@@ -128,7 +128,6 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		OFMutableDictionary *buttons = [OFMutableDictionary dictionary];
 		OFMutableDictionary *directionalPads =
 		    [OFMutableDictionary dictionary];
-		OFMutableDictionary *mapping = [OFMutableDictionary dictionary];
 		OFStringEncoding encoding = [OFLocale encoding];
 
 		if ((_port = CreateMsgPort()) == NULL)
@@ -167,11 +166,9 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		}
 		[buttons makeImmutable];
 		[directionalPads makeImmutable];
-		[mapping makeImmutable];
 
 		_buttons = [buttons copy];
 		_directionalPads = [directionalPads copy];
-		_mapping = [mapping copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -184,12 +181,21 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 
 - (void)dealloc
 {
+	void *pool = objc_autoreleasePoolPush();
+
+	for (OHGameControllerButton *button in [_buttons objectEnumerator])
+		EndSensorNotify(button.oh_notifier, NULL);
+	for (OHGameControllerDirectionalPad *directionalPad in
+	    [_directionalPads objectEnumerator])
+		EndSensorNotify(directionalPad.oh_notifier, NULL);
+
+	objc_autoreleasePoolPop(pool);
+
 	if (_port != NULL)
 		DeleteMsgPort(_port);
 
 	objc_release(_buttons);
 	objc_release(_directionalPads);
-	objc_release(_mapping);
 
 	[super dealloc];
 }

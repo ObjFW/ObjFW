@@ -36,14 +36,6 @@ const OFNotificationName OHGameControllerButtonValueDidChangeNotification =
 @implementation OHGameControllerButton
 #ifdef OF_MORPHOS
 @synthesize oh_notifier = _notifier;
-
-- (void)dealloc
-{
-	if (_notifier != NULL)
-		EndSensorNotify(_notifier, NULL);
-
-	[super dealloc];
-}
 #endif
 
 - (float)value

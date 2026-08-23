@@ -30,7 +30,6 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
-	OFDictionary OF_GENERIC(OFString *, OFString *) *_mapping;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

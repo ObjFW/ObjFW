@@ -194,11 +194,6 @@ const OFNotificationName
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#ifdef OF_MORPHOS
-	if (_notifier != NULL)
-		EndSensorNotify(_notifier, NULL);
-#endif
-
 	OFNotificationCenter *center = [OFNotificationCenter defaultCenter];
 	OFNotificationName name;
 	switch (_type) {
