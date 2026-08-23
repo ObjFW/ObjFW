@@ -1870,6 +1870,15 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				    removeItemAtIndex: i];
 
 				found = true;
+				i--;
+				count--;
+
+				/*
+				 * We only need to re-acquire signals, as the
+				 * others are not accessed in the branch that
+				 * is always taken after setting `found`.
+				 */
+				signals = state->_execSignals.items;
 			} else
 				newMask |= (1ul << signals[i]);
 		}
