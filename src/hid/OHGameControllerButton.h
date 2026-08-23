@@ -45,10 +45,8 @@ OF_ASSUME_NONNULL_BEGIN
 	float _value;
 #ifdef OF_MORPHOS
 	APTR _notifier;
-	OF_RESERVE_IVARS(OHGameControllerButton, 3)
-#else
-	OF_RESERVE_IVARS(OHGameControllerButton, 4)
 #endif
+	OF_RESERVE_IVARS(OHGameControllerButton, 4)
 }
 
 /**
