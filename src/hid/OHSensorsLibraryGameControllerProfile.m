@@ -153,7 +153,7 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 				addButton(buttons, name, false, sensor, _port);
 				break;
 			case SensorType_HIDInput_Analog:
-				addButton(buttons, name, false, sensor, _port);
+				addButton(buttons, name, true, sensor, _port);
 				break;
 			case SensorType_HIDInput_Stick:
 				addDirectionalPad(directionalPads, name, false,
