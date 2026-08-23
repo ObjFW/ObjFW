@@ -142,10 +142,8 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 			GetSensorAttrTags(sensor, SENSORS_Type, (IPTR)&type,
 			    SENSORS_HIDInput_Name, (IPTR)&nameC, TAG_END);
 
-			if (nameC == NULL) {
-				objc_autoreleasePoolPop(pool);
+			if (nameC == NULL)
 				continue;
-			}
 
 			OFString *name = [OFString stringWithCString: nameC
 							    encoding: encoding];
