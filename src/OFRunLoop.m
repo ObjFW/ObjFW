@@ -1812,9 +1812,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # ifdef OF_HAVE_SOCKETS
 		state->_kernelEventObserver.execSignalMask |= (1ul << signal);
 # endif
-# ifdef OF_HAVE_THREADS
 		state->_execSignalMask |= (1ul << signal);
-# endif
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		[state->_execSignalsMutex unlock];
@@ -1877,9 +1875,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # ifdef OF_HAVE_SOCKETS
 		state->_kernelEventObserver.execSignalMask = newMask;
 # endif
-# ifdef OF_HAVE_THREADS
 		state->_execSignalMask = newMask;
-# endif
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		[state->_execSignalsMutex unlock];
