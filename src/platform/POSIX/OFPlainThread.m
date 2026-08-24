@@ -52,20 +52,26 @@ OF_CONSTRUCTOR()
 	if (pthread_attr_init(&attr) == 0) {
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 		int policy;
-#endif
-		struct sched_param param;
-
-#ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 		if (pthread_attr_getschedpolicy(&attr, &policy) == 0) {
-			minPrio = sched_get_priority_min(policy);
-			maxPrio = sched_get_priority_max(policy);
+			bool error = false;
 
-			if (minPrio == -1 || maxPrio == -1)
+			errno = 0;
+			minPrio = sched_get_priority_min(policy);
+			if (minPrio == -1 && errno != 0)
+				error = true;
+
+			errno = 0;
+			maxPrio = sched_get_priority_max(policy);
+			if (maxPrio == -1 && errno != 0)
+				error = true;
+
+			if (error)
 				minPrio = maxPrio = 0;
 		}
 #endif
 
-		if (pthread_attr_getschedparam(&attr, &param) != 0)
+		struct sched_param param;
+		if (pthread_attr_getschedparam(&attr, &param) == 0)
 			normalPrio = param.sched_priority;
 		else
 			minPrio = maxPrio = 0;
