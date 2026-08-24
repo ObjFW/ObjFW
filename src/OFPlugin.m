@@ -37,7 +37,7 @@
 - (instancetype)initWithPath: (OFString *)path
 {
 	@try {
-		self = [super init];
+		self = [super initWithPath: path];
 	} @catch (OFLoadModuleFailedException *e) {
 		@throw [OFLoadPluginFailedException exceptionWithPath: e.path
 								error: e.error];
