@@ -85,7 +85,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old = _percentEncodedHost;
 
-	if (_OFIRIIsIPv6Host(host))
+	if (host != nil && _OFIRIIsIPv6Host(host))
 		_percentEncodedHost = [[OFString alloc]
 		    initWithFormat: @"[%@]", host];
 	else
