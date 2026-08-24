@@ -836,8 +836,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithIRI: source];
 
-	if ([IRIHandler copyItemAtIRI: source toIRI: destination])
+	if ([IRIHandler copyItemAtIRI: source toIRI: destination]) {
+		objc_autoreleasePoolPop(pool);
 		return;
+	}
 
 	if ([self fileExistsAtIRI: destination])
 		@throw [OFCopyItemFailedException
@@ -1023,8 +1025,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		    exceptionWithIRI: source];
 
 	@try {
-		if ([IRIHandler moveItemAtIRI: source toIRI: destination])
+		if ([IRIHandler moveItemAtIRI: source toIRI: destination]) {
+			objc_autoreleasePoolPop(pool);
 			return;
+		}
 	} @catch (OFMoveItemFailedException *e) {
 		if (e.errNo != EXDEV)
 			@throw e;
@@ -1096,8 +1100,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	@try {
 		if ([IRIHandler replaceItemAtIRI: destination
-				   withItemAtIRI: source])
+				   withItemAtIRI: source]) {
+			objc_autoreleasePoolPop(pool);
 			return;
+		}
 	} @catch (OFReplaceItemFailedException *e) {
 		if (e.errNo != EXDEV)
 			@throw e;
