@@ -300,7 +300,7 @@ retry_2:
 {
 	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
 	    size_t length_, id exception) {
-		return block(length, exception);
+		return block(length_, exception);
 	};
 
 	[self asyncReadIntoBuffer: buffer
