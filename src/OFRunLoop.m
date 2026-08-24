@@ -760,9 +760,9 @@ static OFRunLoop *mainRunLoop = nil;
 			allowsLossyEncoding = [object allowsLossyEncoding];
 
 		if (allowsLossyEncoding)
-			cString = [_string cStringWithEncoding: _encoding];
-		else
 			cString = [_string lossyCStringWithEncoding: _encoding];
+		else
+			cString = [_string cStringWithEncoding: _encoding];
 
 		length = cStringLength - _writtenLength;
 		[object writeBuffer: cString + _writtenLength length: length];
