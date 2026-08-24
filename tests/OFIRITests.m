@@ -488,7 +488,7 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 - (void)testSetPercentEncodedUserFailsWithInvalidCharacters
 {
-	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"/",
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedUser = @"/",
 	    OFInvalidFormatException);
 }
 
