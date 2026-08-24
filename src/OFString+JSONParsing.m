@@ -32,6 +32,7 @@
 #import "OFNull.h"
 
 #import "OFInvalidEncodingException.h"
+#import "OFInvalidFormatException.h"
 #import "OFInvalidJSONException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -712,6 +713,8 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 		else
 			number = [OFNumber numberWithUnsignedLongLong:
 			    [string unsignedLongLongValueWithBase: base]];
+	} @catch (OFInvalidFormatException *e) {
+		return nil;
 	} @finally {
 		objc_release(string);
 	}
