@@ -479,8 +479,9 @@
 			@throw [OFInvalidArgumentException exception];
 
 		if (new != objects[i]) {
-			objc_release(objects[i]);
+			id old = objects[i];
 			objects[i] = objc_retain(new);
+			objc_release(old);
 		}
 	}
 }
