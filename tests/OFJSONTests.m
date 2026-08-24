@@ -62,7 +62,7 @@ static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
 
 - (void)testJSONRepresentation
 {
-	OTAssert(_dictionary.JSONRepresentation,
+	OTAssertEqualObjects(_dictionary.JSONRepresentation,
 	    @"{\"f\\u0000oo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"fo\\u0000o\","
 	    @"false]}");
 }
