@@ -564,7 +564,6 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 
 				if (_OFIRIIsIPv6Host(IPv6))
 					host = IPv6;
-
 			}
 
 			objc_release(_host);
