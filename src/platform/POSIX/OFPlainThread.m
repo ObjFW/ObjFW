@@ -124,9 +124,9 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
     id object, const OFPlainThreadAttributes *attr)
 {
 	int error = 0;
-	pthread_attr_t POSIXAttr;
-	bool POSIXAttrAvailable = true;
 
+	bool POSIXAttrAvailable = true;
+	pthread_attr_t POSIXAttr;
 	if ((error = pthread_attr_init(&POSIXAttr)) != 0) {
 		if (error == ENOSYS)
 			POSIXAttrAvailable = false;
@@ -135,13 +135,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	}
 
 	@try {
-		struct ThreadContext *ctx;
 
 		if (attr != NULL && POSIXAttrAvailable) {
-#ifndef OF_HPUX
-			struct sched_param param;
-#endif
-
 			if (attr->priority < -1 || attr->priority > 1)
 				return EINVAL;
 
@@ -152,6 +147,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 				return error;
 # endif
 
+			struct sched_param param;
 			if ((error = pthread_attr_getschedparam(&POSIXAttr,
 			    &param)) != 0)
 				return error;
@@ -176,7 +172,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			}
 		}
 
-		if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		struct ThreadContext *ctx = malloc(sizeof(*ctx));
+		if (ctx == NULL)
 			return ENOMEM;
 
 		ctx->function = function;
@@ -186,6 +183,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		error = pthread_create(thread,
 		    (POSIXAttrAvailable ? &POSIXAttr : NULL), functionWrapper,
 		    ctx);
+		if (error != 0)
+			free(ctx);
 	} @finally {
 		if (POSIXAttrAvailable)
 			pthread_attr_destroy(&POSIXAttr);
