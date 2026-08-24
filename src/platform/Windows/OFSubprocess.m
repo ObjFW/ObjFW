@@ -353,7 +353,7 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	DWORD bytesWritten;
+	DWORD bytesWritten = 0;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
