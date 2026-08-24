@@ -330,6 +330,8 @@ parsePAXExtendedHeader(OFStream *stream, OFMutableDictionary *header)
 		if (empty)
 			@throw [OFInvalidFormatException exception];
 
+		objc_release(_currentEntry);
+		_currentEntry = nil;
 		_currentEntry = [[OFTarArchiveEntry alloc]
 		    of_initWithHeader: (unsigned char *)buffer
 		       extendedHeader: extendedHeader
