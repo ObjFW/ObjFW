@@ -150,8 +150,10 @@ isWhitespaceLine(OFString *line)
 		file = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
-		if (e.errNo == ENOENT)
+		if (e.errNo == ENOENT) {
+			objc_autoreleasePoolPop(pool);
 			return;
+		}
 
 		@throw e;
 	}
