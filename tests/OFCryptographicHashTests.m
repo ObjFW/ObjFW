@@ -103,7 +103,7 @@ const unsigned char testFileSHA512[64] =
 	    OFCompareMemory(hash.digest, expectedDigest, hash.digestSize),
 	    OFOrderedSame);
 	OTAssertEqual(
-	    OFCompareMemory(hash.digest, expectedDigest, hash.digestSize),
+	    OFCompareMemory(copy.digest, expectedDigest, hash.digestSize),
 	    OFOrderedSame);
 
 	OTAssertThrowsSpecific([hash updateWithBuffer: "" length: 1],
