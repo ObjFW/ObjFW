@@ -129,7 +129,7 @@
 	void (*transformVectors)(id, SEL, OFVector4D *, size_t) = NULL;
 
 	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
-	    sourceRect.size.width < 0 || sourceRect.size.height < 0)
+	    sourceRect.size.width <= 0 || sourceRect.size.height <= 0)
 		@throw [OFInvalidArgumentException exception];
 
 	if (sourceRect.origin.x + sourceRect.size.width > imageSize.width ||
