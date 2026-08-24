@@ -335,15 +335,10 @@ start:
 		    (uint16_t)~(CTX.length[2] | (CTX.length[3] << 8)))
 			@throw [OFInvalidFormatException exception];
 
+		tmp = CTX.length[0] | (CTX.length[1] << 8);
+		memset(&CTX, 0, sizeof(CTX));
+		ctx->ctx.uncompressed.length = tmp;
 		ctx->state = stateUncompressedBlock;
-
-		/*
-		 * Do not reorder! _context.uncompressed.position and
-		 * _context.uncompressedHeader.length overlap!
-		 */
-		ctx->ctx.uncompressed.length =
-		    CTX.length[0] | (CTX.length[1] << 8);
-		ctx->ctx.uncompressed.position = 0;
 
 		goto start;
 #undef CTX
@@ -375,8 +370,10 @@ start:
 		bytesWritten += tmp;
 
 		CTX.position += tmp;
-		if OF_UNLIKELY (CTX.position == CTX.length)
+		if OF_UNLIKELY (CTX.position == CTX.length) {
+			memset(&CTX, 0, sizeof(CTX));
 			ctx->state = stateBlockHeader;
+		}
 
 		goto start;
 #undef CTX
@@ -522,9 +519,12 @@ start:
 		 * _context.huffman and _context.huffmanTree, thus no need to
 		 * set them.
 		 */
-		ctx->state = stateHuffmanBlock;
-		ctx->ctx.huffman.state = huffmanStateAwaitCode;
 		ctx->ctx.huffman.treeIter = CTX.litLenTree;
+		ctx->ctx.huffman.state = huffmanStateAwaitCode;
+		ctx->ctx.huffman.value = 0;
+		ctx->ctx.huffman.length = 0;
+		ctx->ctx.huffman.distance = ctx->ctx.huffman.extraBits = 0;
+		ctx->state = stateHuffmanBlock;
 
 		goto start;
 #undef CTX
@@ -633,15 +633,12 @@ start:
 
 			/* End of block */
 			if OF_UNLIKELY (value == 256) {
-				if (CTX.litLenTree != fixedLitLenTree) {
+				if (CTX.litLenTree != fixedLitLenTree)
 					_OFHuffmanTreeFree(CTX.litLenTree);
-					CTX.litLenTree = NULL;
-				}
-				if (CTX.distTree != fixedDistTree) {
+				if (CTX.distTree != fixedDistTree)
 					_OFHuffmanTreeFree(CTX.distTree);
-					CTX.distTree = NULL;
-				}
 
+				memset(&CTX, 0, sizeof(CTX));
 				ctx->state = stateBlockHeader;
 				goto start;
 			}
