@@ -100,7 +100,7 @@ const unsigned char testFileSHA512[64] =
 	[copy calculate];
 
 	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
-	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
+	OTAssertEqual(memcmp(copy.digest, expectedDigest, hash.digestSize), 0);
 
 	OTAssertThrowsSpecific([hash updateWithBuffer: "" length: 1],
 	    OFHashAlreadyCalculatedException);
