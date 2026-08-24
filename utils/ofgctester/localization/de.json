@@ -11,5 +11,6 @@
 
 {
     how_to_quit: "Zum Beenden Strg+C drücken!",
+    no_controllers: "Keine Controller gefunden.",
     profile: "Profil: %[profile]",
 }

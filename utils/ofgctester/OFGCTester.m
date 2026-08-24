@@ -276,6 +276,12 @@ printProfile(OFObject <OHGameControllerProfile> *profile)
 	[OFStdOut writeLine: OF_LOCALIZED(@"how_to_quit",
 	    @"Press Ctrl+C to quit!")];
 
+	if (_controllers.count == 0) {
+		OFStdOut.foregroundColor = [OFColor gray];
+		[OFStdOut writeLine: OF_LOCALIZED(@"no_controllers",
+		    @"No controllers found.")];
+	}
+
 	for (OHGameController *controller in _controllers) {
 		OFObject <OHGameControllerProfile> *profile =
 		    controller.profile;
