@@ -195,7 +195,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		return nil;
 
 	for (iter = *pointer; iter < stop && *iter != delimiter &&
-	    *iter != '\\'; iter++);
+	    *iter != '\\' && *iter >= 0x20; iter++);
 
 	if OF_LIKELY (*iter == delimiter) {
 		OFString *ret = [OFString
