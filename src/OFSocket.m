@@ -1089,6 +1089,9 @@ OFSocketAddressUNIXPath(const OFSocketAddress *address)
 	if (address->family != OFSocketAddressFamilyUNIX)
 		@throw [OFInvalidArgumentException exception];
 
+	if (address->length < offsetof(struct sockaddr_un, sun_path))
+		@throw [OFInvalidArgumentException exception];
+
 	length =
 	    address->length - (socklen_t)offsetof(struct sockaddr_un, sun_path);
 
