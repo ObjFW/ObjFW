@@ -48,14 +48,11 @@
 	self = [super init];
 
 	@try {
-		OFSize size;
-		size_t height;
-
 		_destinationImage = objc_retain(image);
 
-		size = _destinationImage.size;
+		OFSize size = _destinationImage.size;
 		_width = size.width;
-		height = size.height;
+		size_t height = size.height;
 
 		if (_width != size.width || height != size.height)
 			@throw [OFInvalidArgumentException exception];
@@ -85,19 +82,17 @@
 
 - (void)clearRect: (OFRect)rect
 {
-	size_t x, y, width, height;
-	float red, green, blue, alpha;
-
 	rect = OFIntersectionRect(_rect, rect);
-	x = rect.origin.x;
-	y = rect.origin.y;
-	width = rect.size.width;
-	height = rect.size.height;
+	size_t x = rect.origin.x;
+	size_t y = rect.origin.y;
+	size_t width = rect.size.width;
+	size_t height = rect.size.height;
 
 	if (x != rect.origin.x || y != rect.origin.y ||
 	    width != rect.size.width || height != rect.size.height)
 		@throw [OFInvalidArgumentException exception];
 
+	float red, green, blue, alpha;
 	[_backgroundColor getRed: &red green: &green blue: &blue alpha: &alpha];
 
 	for (size_t i = y; i < y + height; i++)
@@ -114,36 +109,26 @@
   destinationRect: (OFRect)destinationRect
 {
 	void *pool = objc_autoreleasePoolPush();
-	const void *imagePixels = image.pixels;
-	OFPixelFormat imagePixelFormat = image.pixelFormat;
-	OFSize imageSize = image.size;
-	size_t imageWidth = imageSize.width;
-	size_t srcClampX, srcClampY;
-	OFColorSpace *srcColorSpace;
-	OFColorSpaceTransferFunction srcEOTF = NULL, srcOETF = NULL;
-	float xScale, yScale;
-	size_t destX, destY, destWidth, destHeight;
-	OFColorSpace *destColorSpace;
-	OFColorSpaceTransferFunction destEOTF = NULL, destOETF = NULL;
-	OFMatrix4x4 *transformCSMatrix = nil;
-	void (*transformVectors)(id, SEL, OFVector4D *, size_t) = NULL;
 
 	if (sourceRect.origin.x < 0 || sourceRect.origin.y < 0 ||
 	    sourceRect.size.width <= 0 || sourceRect.size.height <= 0)
 		@throw [OFInvalidArgumentException exception];
 
+	OFSize imageSize = image.size;
+	size_t imageWidth = imageSize.width;
 	if (sourceRect.origin.x + sourceRect.size.width > imageSize.width ||
 	    sourceRect.origin.y + sourceRect.size.height > imageSize.height)
 		@throw [OFOutOfRangeException exception];
 
-	srcClampX = sourceRect.origin.x + sourceRect.size.width;
-	srcClampY = sourceRect.origin.y + sourceRect.size.height;
+	size_t srcClampX = sourceRect.origin.x + sourceRect.size.width;
+	size_t srcClampY = sourceRect.origin.y + sourceRect.size.height;
 
 	if (srcClampX != sourceRect.origin.x + sourceRect.size.width ||
 	    srcClampY != sourceRect.origin.y + sourceRect.size.height)
 		@throw [OFInvalidArgumentException exception];
 
-	srcColorSpace = image.colorSpace;
+	OFColorSpace *srcColorSpace = image.colorSpace;
+	OFColorSpaceTransferFunction srcEOTF = NULL, srcOETF = NULL;
 	if (!srcColorSpace.linear) {
 		srcEOTF = srcColorSpace.EOTF;
 		srcOETF = srcColorSpace.OETF;
@@ -152,14 +137,14 @@
 	/*
 	 * Scale needs to be calculated before clamping destination to canvas.
 	 */
-	xScale = sourceRect.size.width / destinationRect.size.width;
-	yScale = sourceRect.size.height / destinationRect.size.height;
+	float xScale = sourceRect.size.width / destinationRect.size.width;
+	float yScale = sourceRect.size.height / destinationRect.size.height;
 
 	destinationRect = OFIntersectionRect(_rect, destinationRect);
-	destX = destinationRect.origin.x;
-	destY = destinationRect.origin.y;
-	destWidth = destinationRect.size.width;
-	destHeight = destinationRect.size.height;
+	size_t destX = destinationRect.origin.x;
+	size_t destY = destinationRect.origin.y;
+	size_t destWidth = destinationRect.size.width;
+	size_t destHeight = destinationRect.size.height;
 
 	if (destX != destinationRect.origin.x ||
 	    destY != destinationRect.origin.y ||
@@ -167,12 +152,15 @@
 	    destHeight != destinationRect.size.height)
 		@throw [OFInvalidArgumentException exception];
 
-	destColorSpace = _destinationImage.colorSpace;
+	OFColorSpace *destColorSpace = _destinationImage.colorSpace;
+	OFColorSpaceTransferFunction destEOTF = NULL, destOETF = NULL;
 	if (!destColorSpace.linear) {
 		destEOTF = destColorSpace.EOTF;
 		destOETF = destColorSpace.OETF;
 	}
 
+	OFMatrix4x4 *transformCSMatrix = nil;
+	void (*transformVectors)(id, SEL, OFVector4D *, size_t) = NULL;
 	if (![srcColorSpace isEqual: destColorSpace]) {
 		transformCSMatrix = objc_autorelease(
 		    [srcColorSpace.RGBToXYZMatrix copy]);
@@ -182,6 +170,9 @@
 		    [transformCSMatrix methodForSelector:
 		    @selector(transformVectors:count:)];
 	}
+
+	const void *imagePixels = image.pixels;
+	OFPixelFormat imagePixelFormat = image.pixelFormat;
 
 	for (size_t i = destY; i < destY + destHeight; i++) {
 		for (size_t j = destX; j < destX + destWidth; j++) {
