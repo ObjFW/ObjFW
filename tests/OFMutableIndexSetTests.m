@@ -223,7 +223,7 @@
 	OTAssert(OFEqualRanges(ranges[2], OFMakeRange(7, 3)));
 }
 
-- (void)removeAllIndexes
+- (void)testRemoveAllIndexes
 {
 	OFMutableIndexSet *indexSet =
 	    [OFMutableIndexSet indexSetWithIndexesInRange: OFMakeRange(2, 4)];
