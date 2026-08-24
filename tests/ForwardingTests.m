@@ -88,7 +88,7 @@ test(id self, SEL _cmd)
 	OTAssertEqual(forwardingsCount, 1);
 }
 
-- (void)forwardingMessageAndAddingInstanceMethod
+- (void)testForwardingMessageAndAddingInstanceMethod
 {
 	ForwardingTestObject *testObject =
 	    objc_autorelease([[ForwardingTestObject alloc] init]);
