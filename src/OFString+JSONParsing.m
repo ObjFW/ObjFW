@@ -377,8 +377,8 @@ parseString(const char **pointer, const char *stop, size_t *line)
 			(*pointer)++;
 
 			return ret;
-		/* Newlines in strings are disallowed */
-		} else if OF_UNLIKELY (**pointer == '\n' || **pointer == '\r') {
+		/* Control characters in strings are disallowed */
+		} else if OF_UNLIKELY (**pointer < 0x20) {
 			if OF_LIKELY (**pointer == '\n')
 				(*line)++;
 			OFFreeMemory(buffer);
