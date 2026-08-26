@@ -363,7 +363,7 @@ codepageToEncoding(UINT codepage)
 
 	tmp = OFAllocMemory(length * 2, sizeof(OFChar16));
 	@try {
-		DWORD bytesWritten;
+		DWORD bytesWritten = 0;
 
 		while (i < length) {
 			OFUnichar c;
