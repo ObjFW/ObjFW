@@ -507,8 +507,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		    _compressedSize > UINT32_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		[stream writeLittleEndianInt32: (uint32_t)_uncompressedSize];
 		[stream writeLittleEndianInt32: (uint32_t)_compressedSize];
+		[stream writeLittleEndianInt32: (uint32_t)_uncompressedSize];
 	}
 
 	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
