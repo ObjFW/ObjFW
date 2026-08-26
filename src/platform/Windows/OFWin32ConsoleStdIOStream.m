@@ -176,7 +176,8 @@ codepageToEncoding(UINT codepage)
 			OFCopyMemory(UTF16, string.UTF16String, stringLen);
 		}
 
-		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
+		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0 &&
+		    (UTF16[0] & 0xFC00) == 0xDC00) {
 			OFUnichar c =
 			    (((_incompleteUTF16Surrogate & 0x3FF) << 10) |
 			    (UTF16[0] & 0x3FF)) + 0x10000;
@@ -196,22 +197,17 @@ codepageToEncoding(UINT codepage)
 				[rest addItems: UTF8 count: UTF8Len];
 			}
 
-			_incompleteUTF16Surrogate = 0;
 			i++;
 		}
+
+		_incompleteUTF16Surrogate = 0;
 
 		for (; i < UTF16Len; i++) {
 			OFUnichar c = UTF16[i];
 			char UTF8[4];
 			size_t UTF8Len;
 
-			/* Missing high surrogate */
-			if ((c & 0xFC00) == 0xDC00)
-				@throw [OFInvalidEncodingException exception];
-
 			if ((c & 0xFC00) == 0xD800) {
-				OFChar16 next;
-
 				if (UTF16Len <= i + 1) {
 					_incompleteUTF16Surrogate = c;
 
@@ -228,14 +224,8 @@ codepageToEncoding(UINT codepage)
 					return j;
 				}
 
-				next = UTF16[i + 1];
-
-				if ((next & 0xFC00) != 0xDC00)
-					@throw [OFInvalidEncodingException
-					    exception];
-
-				c = (((c & 0x3FF) << 10) | (next & 0x3FF)) +
-				    0x10000;
+				c = (((c & 0x3FF) << 10) |
+				    (UTF16[i + 1] & 0x3FF)) + 0x10000;
 
 				i++;
 			}
