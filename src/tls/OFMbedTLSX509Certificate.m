@@ -143,6 +143,8 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		    [[self alloc] of_initWithCertificate: iter
 						   chain: chain])];
 
+	[ret makeImmutable];
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
