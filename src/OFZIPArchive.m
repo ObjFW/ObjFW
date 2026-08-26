@@ -588,7 +588,8 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	entry.compressedSize = 0;
 	entry.uncompressedSize = 0;
 	entry.CRC32 = 0;
-	entry.generalPurposeBitFlag |= (seekable ? 0 : (1u << 3)) | (1u << 11);
+	if (!seekable)
+		entry.generalPurposeBitFlag |= (1u << 3);
 	entry.of_startDiskNumber = _diskNumber;
 	entry.of_localFileHeaderOffset = _offset;
 
