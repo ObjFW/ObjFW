@@ -511,11 +511,21 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		[stream writeLittleEndianInt32: (uint32_t)_compressedSize];
 	}
 
-	[stream writeLittleEndianInt16: (uint16_t)_fileName.UTF8StringLength];
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
+	size_t fileNameLength = [_fileName cStringLengthWithEncoding: encoding];
+	size_t fileCommentLength =
+	    [_fileComment cStringLengthWithEncoding: encoding];
+	size_t extraFieldSize = _extraField.count * _extraField.itemSize;
+
+	if (fileNameLength > UINT16_MAX || fileCommentLength > UINT16_MAX ||
+	    extraFieldSize > UINT16_MAX - (_usesZIP64 ? 32 : 0))
+		@throw [OFOutOfRangeException exception];
+
+	[stream writeLittleEndianInt16: (uint16_t)fileNameLength];
 	[stream writeLittleEndianInt16:
-	    (uint16_t)_extraField.count + (_usesZIP64 ? 32 : 0)];
-	[stream writeLittleEndianInt16:
-	    (uint16_t)_fileComment.UTF8StringLength];
+	    (uint16_t)extraFieldSize + (_usesZIP64 ? 32 : 0)];
+	[stream writeLittleEndianInt16: (uint16_t)fileCommentLength];
 
 	if (_usesZIP64)
 		[stream writeLittleEndianInt16: 0xFFFF];
@@ -541,8 +551,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
 
-	[stream writeString: _fileName encoding: OFStringEncodingUTF8];
-	size += (uint64_t)_fileName.UTF8StringLength;
+	[stream writeString: _fileName encoding: encoding];
+	size += fileNameLength;
 
 	if (_usesZIP64) {
 		[stream writeLittleEndianInt16:
@@ -557,12 +567,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 
 	if (_extraField != nil)
 		[stream writeData: _extraField];
-	size += (uint64_t)_extraField.count;
+	size += extraFieldSize;
 
 	if (_fileComment != nil)
-		[stream writeString: _fileComment
-			   encoding: OFStringEncodingUTF8];
-	size += (uint64_t)_fileComment.UTF8StringLength;
+		[stream writeString: _fileComment encoding: encoding];
+	size += fileCommentLength;
 
 	objc_autoreleasePoolPop(pool);
 
