@@ -138,17 +138,12 @@
 - (void)setExtraField: (OFData *)extraField
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *old;
 
-	if (extraField != nil) {
-		if (extraField.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
+	if (extraField.itemSize * extraField.count >
+	    UINT16_MAX - (_usesZIP64 ? 32 : 0))
+		@throw [OFOutOfRangeException exception];
 
-		if (extraField.count > UINT16_MAX)
-			@throw [OFOutOfRangeException exception];
-	}
-
-	old = _extraField;
+	OFData *old = _extraField;
 	_extraField = [extraField copy];
 	objc_release(old);
 
