@@ -233,7 +233,7 @@
 		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
 		copy->_timeZone = _timeZone;
 	} @catch (id e) {
-		objc_release(self);
+		objc_release(copy);
 		@throw e;
 	}
 
