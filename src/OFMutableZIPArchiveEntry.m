@@ -58,6 +58,7 @@
 			@throw [OFOutOfRangeException exception];
 
 		_fileName = [fileName copy];
+		_generalPurposeBitFlag = (1u << 11);
 		_usesZIP64 = true;
 
 		objc_autoreleasePoolPop(pool);
@@ -79,12 +80,13 @@
 - (void)setFileName: (OFString *)fileName
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *old;
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
-	if (fileName.UTF8StringLength > UINT16_MAX)
+	if ([fileName cStringLengthWithEncoding: encoding] > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	old = _fileName;
+	OFString *old = _fileName;
 	_fileName = [fileName copy];
 	objc_release(old);
 
@@ -120,12 +122,13 @@
 - (void)setFileComment: (OFString *)fileComment
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *old;
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
-	if (fileComment.UTF8StringLength > UINT16_MAX)
+	if ([fileComment cStringLengthWithEncoding: encoding] > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	old = _fileComment;
+	OFString *old = _fileComment;
 	_fileComment = [fileComment copy];
 	objc_release(old);
 
