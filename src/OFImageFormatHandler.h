@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param stream The stream to create the image from
  * @return A new image
- * @throw OFInvalidFormatExcepetion The stream's format was invalid
+ * @throw OFInvalidFormatException The stream's format was invalid
  * @throw OFTruncatedDataException The stream ended before all required data
  *				   was read
  * @throw OFOutOfRangeException The image read from the stream is too big for

@@ -226,7 +226,7 @@ extern const OFImageFormat *_Nonnull OFImageFormatQOIRef(void);
  * @param pixels The pixels for the new image
  * @param pixelFormat The pixel format of the pixels for the new image
  * @param size The size for the new image in pixels
- * @param freeWhenDone Whether to free the pointer when it is no onger needed
+ * @param freeWhenDone Whether to free the pointer when it is no longer needed
  *		       by the OFImage
  * @return A new image
  * @throw OFInvalidArgumentException The specified size is not integral
