@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFMXDNSResourceRecord.h"
+#import "OFNSDNSResourceRecord.h"
 
 @implementation OFNSDNSResourceRecord
 @synthesize authoritativeHost = _authoritativeHost;
