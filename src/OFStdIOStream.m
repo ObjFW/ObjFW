@@ -831,7 +831,8 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 			[self writeFormat: @"\033[38;5;%um",
 					   colorTo256Color(redInt, greenInt,
 					       blueInt)];
-	}
+	} else
+		/* Refuse to set color */
 #endif
 
 	objc_release(_foregroundColor);
@@ -863,7 +864,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 #else
 	if ((code = colorToANSI(color)) != -1)
 		[self writeFormat: @"\033[%um", code + 10];
-	else {
+	else if (self.colors >= 256) {
 		float red, green, blue, alpha;
 		uint8_t redInt, greenInt, blueInt;
 
@@ -883,7 +884,9 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 			[self writeFormat: @"\033[48;5;%um",
 					   colorTo256Color(redInt, greenInt,
 					       blueInt)];
-	}
+	} else
+		/* Refuse to set color */
+		return;
 #endif
 
 	objc_release(_backgroundColor);
