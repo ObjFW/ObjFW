@@ -25,6 +25,8 @@ int _NSString_OFObject_reference;
 @implementation NSString (OFObject)
 - (OFString *)OFObject
 {
-	return [OFString stringWithUTF8String: self.UTF8String];
+	size_t length = [self lengthOfBytesUsingEncoding: NSUTF8StringEncoding];
+
+	return [OFString stringWithUTF8String: self.UTF8String length: length];
 }
 @end
