@@ -122,7 +122,7 @@
 
 		if (isStart) {
 			table = startTable;
-			tableSize = middleTableSize;
+			tableSize = startTableSize;
 		} else {
 			table = middleTable;
 			tableSize = middleTableSize;
