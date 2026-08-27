@@ -478,7 +478,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    false);
 	if (_uncompressedSize > 077777777777) {
 		OFString *string = [OFString
-		    stringWithFormat: @"%zu", _uncompressedSize];
+		    stringWithFormat: @"%llu", _uncompressedSize];
 		OFData *data = [string dataWithEncoding: OFStringEncodingUTF8];
 		[extendedHeader setObject: data forKey: @"size"];
 
