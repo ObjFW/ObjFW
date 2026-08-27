@@ -139,6 +139,9 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
+	if (extraField != nil && extraField.itemSize != 1)
+		@throw [OFInvalidArgumentException exception];
+
 	if (extraField.itemSize * extraField.count >
 	    UINT16_MAX - (_usesZIP64 ? 32 : 0))
 		@throw [OFOutOfRangeException exception];
