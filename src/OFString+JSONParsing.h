@@ -36,7 +36,12 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  * @note This also allows parsing JSON5, an extension of JSON. See
  *	 http://json5.org/ for more details.
  *
- * The returned object is either an @ref OFDictionary or an @ref OFArray.
+ * @warning Although not specified by the original JSON specification, this can
+ *	    also return primitives like strings and numbers as per RFC 8259.
+ *	    Therefore, you should not make any assumptions about the object
+ *	    returned by this method if you don't want your program to terminate
+ *	    due to a message not understood, but instead check the returned
+ *	    object using @ref isKindOfClass:.
  *
  * @throw OFInvalidJSONException The string contained invalid JSON
  * @throw OFOutOfMemoryException Not enough memory to parse the string

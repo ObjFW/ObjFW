@@ -44,7 +44,7 @@
 int _OFString_JSONParsing_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depthLimit, bool root);
+    size_t depthLimit);
 
 static void
 skipWhitespaces(const char **pointer, const char *stop, size_t *line)
@@ -567,7 +567,7 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 			break;
 		}
 
-		object = nextObject(pointer, stop, line, depthLimit, false);
+		object = nextObject(pointer, stop, line, depthLimit);
 		if OF_UNLIKELY (object == nil)
 			return nil;
 
@@ -634,8 +634,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
 			key = parseIdentifier(pointer, stop);
 		else
-			key = nextObject(pointer, stop, line, depthLimit,
-			    false);
+			key = nextObject(pointer, stop, line, depthLimit);
 
 		if OF_UNLIKELY (![key isKindOfClass: [OFString class]])
 			return nil;
@@ -646,7 +645,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 
 		(*pointer)++;
 
-		object = nextObject(pointer, stop, line, depthLimit, false);
+		object = nextObject(pointer, stop, line, depthLimit);
 		if OF_UNLIKELY (object == nil)
 			return nil;
 
@@ -724,7 +723,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 
 static id
 nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depthLimit, bool root)
+    size_t depthLimit)
 {
 	skipWhitespacesAndComments(pointer, stop, line);
 
@@ -734,18 +733,12 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	switch (**pointer) {
 	case '"':
 	case '\'':
-		if OF_UNLIKELY (root)
-			return nil;
-
 		return parseString(pointer, stop, line);
 	case '[':
 		return parseArray(pointer, stop, line, depthLimit);
 	case '{':
 		return parseDictionary(pointer, stop, line, depthLimit);
 	case 't':
-		if OF_UNLIKELY (root)
-			return nil;
-
 		if OF_UNLIKELY (*pointer + 3 >= stop)
 			return nil;
 
@@ -757,9 +750,6 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 
 		return [OFNumber numberWithBool: true];
 	case 'f':
-		if OF_UNLIKELY (root)
-			return nil;
-
 		if OF_UNLIKELY (*pointer + 4 >= stop)
 			return nil;
 
@@ -771,9 +761,6 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 
 		return [OFNumber numberWithBool: false];
 	case 'n':
-		if OF_UNLIKELY (root)
-			return nil;
-
 		if OF_UNLIKELY (*pointer + 3 >= stop)
 			return nil;
 
@@ -798,9 +785,6 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	case '-':
 	case '.':
 	case 'I':
-		if OF_UNLIKELY (root)
-			return nil;
-
 		return parseNumber(pointer, stop, line);
 	default:
 		return nil;
@@ -821,8 +805,7 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	id object;
 	size_t line = 1;
 
-	object = nextObject(&pointer, stop, &line, depthLimit, true);
-
+	object = nextObject(&pointer, stop, &line, depthLimit);
 	if OF_UNLIKELY (object == nil)
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
