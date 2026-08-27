@@ -195,7 +195,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 		return nil;
 
 	for (iter = *pointer; iter < stop && *iter != delimiter &&
-	    *iter != '\\' && *iter >= 0x20; iter++);
+	    *iter != '\\' && (unsigned char)*iter >= 0x20; iter++);
 
 	if OF_LIKELY (*iter == delimiter) {
 		OFString *ret = [OFString
@@ -378,7 +378,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 
 			return ret;
 		/* Control characters in strings are disallowed */
-		} else if OF_UNLIKELY (**pointer < 0x20) {
+		} else if OF_UNLIKELY ((unsigned char)**pointer < 0x20) {
 			if OF_LIKELY (**pointer == '\n')
 				(*line)++;
 			OFFreeMemory(buffer);
