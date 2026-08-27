@@ -45,6 +45,8 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  *
  * @throw OFInvalidJSONException The string contained invalid JSON
  * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException A value in the JSON was out of the
+ *				representable range
  * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingJSON;
