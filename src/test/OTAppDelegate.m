@@ -601,6 +601,6 @@ isSubclassOfClass(Class class, Class superclass)
 	consoleExit(NULL);
 #endif
 
-	[OFApplication terminateWithStatus: (int)numFailed];
+	[OFApplication terminateWithStatus: (numFailed > 0)];
 }
 @end
