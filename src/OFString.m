@@ -1987,47 +1987,129 @@ OF_SINGLETON_METHODS
     of_JSONRepresentationWithOptions: (OFJSONRepresentationOptions)options
 			       depth: (size_t)depth
 {
-	OFMutableString *JSON = objc_autorelease([self mutableCopy]);
+	void *pool = objc_autoreleasePoolPush();
+	const char *cString =
+	    [self insecureCStringWithEncoding: OFStringEncodingUTF8];
+	size_t length = self.UTF8StringLength;
 
-	/* FIXME: This is slow! Write it in pure C! */
-	[JSON replaceOccurrencesOfString: @"\\" withString: @"\\\\"];
-	[JSON replaceOccurrencesOfString: @"\"" withString: @"\\\""];
-	[JSON replaceOccurrencesOfString: @"\b" withString: @"\\b"];
-	[JSON replaceOccurrencesOfString: @"\f" withString: @"\\f"];
-	[JSON replaceOccurrencesOfString: @"\r" withString: @"\\r"];
-	[JSON replaceOccurrencesOfString: @"\t" withString: @"\\t"];
+	bool quoteString;
+	if ((options & OFJSONRepresentationOptionJSON5) &&
+	    (options & OFJSONRepresentationOptionIsIdentifier)) {
+		quoteString = false;
 
-	if (options & OFJSONRepresentationOptionJSON5) {
-		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\\n"];
-		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\0"];
+		if (!OFASCIIIsAlpha(cString[0]) && cString[0] != '_' &&
+		    cString[0] != '$')
+			quoteString = true;
+		else {
+			for (size_t i = 0; i < length; i++) {
+				unsigned char c = (unsigned char)cString[i];
 
-		if (options & OFJSONRepresentationOptionIsIdentifier) {
-			void *pool = objc_autoreleasePoolPush();
-			const char *cString = JSON.UTF8String;
-
-			if ((!OFASCIIIsAlpha(cString[0]) &&
-			    cString[0] != '_' && cString[0] != '$') ||
-			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
-				[JSON insertString: @"\"" atIndex: 0];
-				[JSON appendString: @"\""];
+				if ((c < 'a' || c > 'z') &&
+				    (c < 'A' || c > 'Z') &&
+				    (c < '0' || c > '9') &&
+				    c != '_' && c != '$' && !(c & 0x80)) {
+					quoteString = true;
+					break;
+				}
 			}
-
-			objc_autoreleasePoolPop(pool);
-		} else {
-			[JSON insertString: @"\"" atIndex: 0];
-			[JSON appendString: @"\""];
 		}
-	} else {
-		[JSON replaceOccurrencesOfString: @"\n" withString: @"\\n"];
-		[JSON replaceOccurrencesOfString: @"\0" withString: @"\\u0000"];
+	} else
+		quoteString = true;
 
-		[JSON insertString: @"\"" atIndex: 0];
-		[JSON appendString: @"\""];
+	size_t bufferLen = length;
+	if (quoteString) {
+		if (SIZE_MAX - length < 2)
+			@throw [OFOutOfRangeException exception];
+
+		bufferLen += 2;
 	}
 
-	[JSON makeImmutable];
+	char *buffer = OFAllocMemory(1, bufferLen);
+	size_t j = 0;
+	if (quoteString) {
+		buffer[0] = '"';
+		j++;
+	}
 
-	return JSON;
+	@try {
+		for (size_t i = 0; i < length; i++) {
+			OFString *append = nil;
+
+			switch (cString[i]) {
+			case '\\':
+				append = @"\\\\";
+				break;
+			case '"':
+				append = @"\\\"";
+				break;
+			case '\b':
+				append = @"\\b";
+				break;
+			case '\f':
+				append = @"\\f";
+				break;
+			case '\n':
+				if (options & OFJSONRepresentationOptionJSON5)
+					append = @"\\\n";
+				else
+					append = @"\\n";
+				break;
+			case '\r':
+				append = @"\\r";
+				break;
+			case '\t':
+				append = @"\\t";
+				break;
+			case '\0':
+				if (options & OFJSONRepresentationOptionJSON5)
+					append = @"\\0";
+				else
+					append = @"\\u0000";
+				break;
+			default:
+				if ((unsigned char)cString[i] < 0x20)
+					append = [[OFString alloc]
+					    initWithFormat: @"\\u%04X",
+					    (unsigned char)cString[i]];
+				else
+					append = nil;
+			}
+
+			if (append.length > 0) {
+				size_t appendLen = append.UTF8StringLength;
+
+				@try {
+					if (SIZE_MAX - bufferLen <
+					    appendLen - 1)
+						@throw [OFOutOfRangeException
+						    exception];
+
+					buffer = OFResizeMemory(buffer, 1,
+					    bufferLen + appendLen - 1);
+					bufferLen += appendLen - 1;
+
+					OFCopyMemory(buffer + j,
+					    append.UTF8String, appendLen);
+					j += appendLen;
+				} @finally {
+					objc_release(append);
+				}
+			} else
+				buffer[j++] = cString[i];
+		}
+
+		if (quoteString)
+			buffer[j++] = '"';
+
+		OFAssert(j == bufferLen);
+
+		objc_autoreleasePoolPop(pool);
+
+		return [OFString stringWithUTF8String: buffer
+					       length: bufferLen];
+	} @finally {
+		OFFreeMemory(buffer);
+	}
 }
 
 - (OFData *)messagePackRepresentation
