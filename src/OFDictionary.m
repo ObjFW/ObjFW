@@ -238,13 +238,9 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	@try {
-		self = [self initWithObjects: objects
-				     forKeys: keys
-				       count: count];
-	} @finally {
-		objc_autoreleasePoolPop(pool);
-	}
+	self = [self initWithObjects: objects forKeys: keys count: count];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }

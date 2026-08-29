@@ -216,72 +216,71 @@ initOperatingSystemVersion(void)
 #if defined(OF_IOS) || defined(OF_MACOS)
 # ifdef OF_HAVE_FILES
 	void *pool = objc_autoreleasePoolPush();
+	OFDictionary *propertyList = [[OFString
+	    stringWithContentsOfFile: @"/System/Library/CoreServices/"
+	                              @"SystemVersion.plist"]
+	    objectByParsingPropertyList];
 
-	@try {
-		OFDictionary *propertyList = [[OFString
-		    stringWithContentsOfFile: @"/System/Library/CoreServices/"
-		                              @"SystemVersion.plist"]
-		    objectByParsingPropertyList];
+	operatingSystemVersion =
+	    [[propertyList objectForKey: @"ProductVersion"] copy];
 
-		operatingSystemVersion = [[propertyList
-		    objectForKey: @"ProductVersion"] copy];
-	} @finally {
-		objc_autoreleasePoolPop(pool);
-	}
+	objc_autoreleasePoolPop(pool);
 # endif
 #elif defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
 	void *pool = objc_autoreleasePoolPush();
+	OFStringEncoding encoding = [OFLocale encoding];
+	char systemDir[PATH_MAX];
+
+	UINT systemDirLen = GetSystemDirectoryA(systemDir, PATH_MAX);
+	if (systemDirLen == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	OFString *systemDirString = [OFString stringWithCString: systemDir
+						       encoding: encoding
+							 length: systemDirLen];
+	const char *path = [[systemDirString stringByAppendingPathComponent:
+	    @"kernel32.dll"] cStringWithEncoding: encoding];
+
+	DWORD bufferLen;
+	if ((bufferLen = GetFileVersionInfoSizeA(path, NULL)) == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	void *buffer;
+	if ((buffer = malloc(bufferLen)) == 0) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
 
 	@try {
-		OFStringEncoding encoding = [OFLocale encoding];
-		char systemDir[PATH_MAX];
-		UINT systemDirLen;
-		OFString *systemDirString;
-		const char *path;
-		void *buffer;
-		DWORD bufferLen;
-
-		systemDirLen = GetSystemDirectoryA(systemDir, PATH_MAX);
-		if (systemDirLen == 0)
+		if (!GetFileVersionInfoA(path, 0, bufferLen, buffer)) {
+			objc_autoreleasePoolPop(pool);
 			return;
-
-		systemDirString = [OFString stringWithCString: systemDir
-						     encoding: encoding
-						       length: systemDirLen];
-		path = [[systemDirString stringByAppendingPathComponent:
-		    @"kernel32.dll"] cStringWithEncoding: encoding];
-
-		if ((bufferLen = GetFileVersionInfoSizeA(path, NULL)) == 0)
-			return;
-		if ((buffer = malloc(bufferLen)) == 0)
-			return;
-
-		@try {
-			void *data;
-			UINT dataLen;
-			VS_FIXEDFILEINFO *info;
-
-			if (!GetFileVersionInfoA(path, 0, bufferLen, buffer))
-				return;
-
-			if (!VerQueryValueA(buffer, "\\", &data, &dataLen) ||
-			    dataLen < sizeof(*info))
-				return;
-
-			info = (VS_FIXEDFILEINFO *)data;
-
-			operatingSystemVersion = [[OFString alloc]
-			    initWithFormat: @"%u.%u.%u",
-					    HIWORD(info->dwProductVersionMS),
-					    LOWORD(info->dwProductVersionMS),
-					    HIWORD(info->dwProductVersionLS)];
-		} @finally {
-			free(buffer);
 		}
+
+		void *data;
+		UINT dataLen;
+		if (!VerQueryValueA(buffer, "\\", &data, &dataLen) ||
+		    dataLen < sizeof(VS_FIXEDFILEINFO)) {
+			objc_autoreleasePoolPop(pool);
+			return;
+		}
+
+		VS_FIXEDFILEINFO *info = (VS_FIXEDFILEINFO *)data;
+		operatingSystemVersion = [[OFString alloc]
+		    initWithFormat: @"%u.%u.%u",
+				    HIWORD(info->dwProductVersionMS),
+				    LOWORD(info->dwProductVersionMS),
+				    HIWORD(info->dwProductVersionLS)];
 	} @finally {
-		objc_autoreleasePoolPop(pool);
+		free(buffer);
 	}
+
+	objc_autoreleasePoolPop(pool);
 # endif
 #elif defined(OF_ANDROID)
 	/* TODO */
