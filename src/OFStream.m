@@ -471,6 +471,9 @@ retry_2:
 	OFData *ret;
 	char *buffer;
 
+	if OF_UNLIKELY (itemSize == 0)
+		@throw [OFInvalidArgumentException exception];
+
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
