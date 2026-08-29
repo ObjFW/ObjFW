@@ -72,6 +72,14 @@ int _OFString_XMLEscaping_reference;
 			append = "&#xD;";
 			appendLen = 5;
 			break;
+		case '\xEF':
+			/* Reject U+FFFE */
+			if (i + 2 < length && string[i + 1] == '\xBF' &&
+			    string[i + 2] == '\xBE') {
+				OFFreeMemory(retCString);
+				@throw [OFInvalidEncodingException exception];
+			}
+			/* Fall through */
 		default:
 			if ((unsigned char)string[i] < 0x20 &&
 			    string[i] != '\t' && string[i] != '\n') {
