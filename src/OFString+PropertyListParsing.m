@@ -182,16 +182,13 @@ parseElement(OFXMLElement *element)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *rootElement = [OFXMLElement elementWithXMLString: self];
-	OFXMLAttribute *versionAttribute;
-	OFArray OF_GENERIC(OFXMLElement *) *elements;
-	id ret;
 
 	if (![rootElement.name isEqual: @"plist"] ||
 	    rootElement.namespace != nil)
 		@throw [OFInvalidFormatException exception];
 
-	versionAttribute = [rootElement attributeForName: @"version"];
-
+	OFXMLAttribute *versionAttribute =
+	    [rootElement attributeForName: @"version"];
 	if (versionAttribute == nil)
 		@throw [OFInvalidFormatException exception];
 
@@ -199,12 +196,17 @@ parseElement(OFXMLElement *element)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: [versionAttribute stringValue]];
 
-	elements = rootElement.elements;
+	id ret = nil;
+	for (OFXMLNode *child in rootElement.children) {
+		if ([child isKindOfClass: [OFXMLElement class]]) {
+			if (ret != nil)
+				@throw [OFInvalidFormatException exception];
 
-	if (elements.count != 1)
+			ret = parseElement((OFXMLElement *)child);
+		}
+	}
+	if (ret == nil)
 		@throw [OFInvalidFormatException exception];
-
-	ret = parseElement(elements.firstObject);
 
 	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
