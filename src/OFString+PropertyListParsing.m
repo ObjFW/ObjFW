@@ -203,7 +203,9 @@ parseElement(OFXMLElement *element)
 				@throw [OFInvalidFormatException exception];
 
 			ret = parseElement((OFXMLElement *)child);
-		}
+		} else if (child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
 	}
 	if (ret == nil)
 		@throw [OFInvalidFormatException exception];
