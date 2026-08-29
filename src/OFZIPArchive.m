@@ -1157,7 +1157,7 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_entry makeImmutable];
 
 	if (!seekable)
-		_bytesWritten += (2 * 4 + 2 * 8);
+		_bytesWritten += 2 * 4 + 2 * (_entry.usesZIP64 ? 8 : 4);
 
 	[_archive->_entries addObject: _entry];
 	[_archive->_pathToEntryMap setObject: _entry forKey: _entry.fileName];
