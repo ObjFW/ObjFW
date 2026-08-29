@@ -32,6 +32,9 @@ extern int _OFString_XMLEscaping_reference OF_VISIBILITY_INTERNAL;
 @interface OFString (XMLEscaping)
 /**
  * @brief The string in a form escaped for use in an XML document.
+ *
+ * @throw OFInvalidEncodingException The string contains characters that cannot
+ *				     be represented in XML
  */
 @property (readonly, nonatomic) OFString *stringByXMLEscaping;
 @end

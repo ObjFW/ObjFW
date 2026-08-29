@@ -24,7 +24,8 @@
 
 #import "OFString.h"
 
-#import "OFOutOfMemoryException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFOutOfRangeException.h"
 
 int _OFString_XMLEscaping_reference;
 
@@ -72,12 +73,22 @@ int _OFString_XMLEscaping_reference;
 			appendLen = 5;
 			break;
 		default:
+			if ((unsigned char)string[i] < 0x20 &&
+			    string[i] != '\t' && string[i] != '\n') {
+				OFFreeMemory(retCString);
+				@throw [OFInvalidEncodingException exception];
+			}
+
 			append = NULL;
 			appendLen = 0;
 		}
 
 		if (append != NULL) {
 			@try {
+				if (SIZE_MAX - retLength < appendLen)
+					@throw [OFOutOfRangeException
+					    exception];
+
 				retCString = OFResizeMemory(retCString, 1,
 				    retLength + appendLen);
 			} @catch (id e) {
