@@ -655,21 +655,26 @@ formatConversionSpecifierState(struct Context *ctx)
 				[tmpStr replaceOccurrencesOfString: point
 							withString: @"."];
 
-				if (tmpStr.UTF8StringLength > INT_MAX)
+				if (tmpStr.UTF8StringLength > INT_MAX) {
+					objc_autoreleasePoolPop(pool);
 					return false;
+				}
 
 				tmpLen = (int)tmpStr.UTF8StringLength;
 
-				if ((tmp2 = malloc(tmpLen)) == NULL)
+				if ((tmp2 = malloc(tmpLen)) == NULL) {
+					objc_autoreleasePoolPop(pool);
 					return false;
+				}
 
 				OFCopyMemory(tmp2, tmpStr.UTF8String, tmpLen);
 			} @finally {
 				free(tmp);
-				objc_autoreleasePoolPop(pool);
 			}
 
 			tmp = tmp2;
+
+			objc_autoreleasePoolPop(pool);
 		}
 #endif
 

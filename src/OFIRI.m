@@ -815,29 +815,33 @@ static bool
 isAbsolute(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
+	const char *UTF8String = string.UTF8String;
+	size_t length = string.UTF8StringLength;
 
-	@try {
-		const char *UTF8String = string.UTF8String;
-		size_t length = string.UTF8StringLength;
-
-		if (length < 1)
-			return false;
-
-		if (!OFASCIIIsAlpha(UTF8String[0]))
-			return false;
-
-		for (size_t i = 1; i < length; i++) {
-			if (UTF8String[i] == ':')
-				return true;
-
-			if (!OFASCIIIsAlnum(UTF8String[i]) &&
-			    UTF8String[i] != '+' && UTF8String[i] != '-' &&
-			    UTF8String[i] != '.')
-				return false;
-		}
-	} @finally {
+	if (length < 1) {
 		objc_autoreleasePoolPop(pool);
+		return false;
 	}
+
+	if (!OFASCIIIsAlpha(UTF8String[0])) {
+		objc_autoreleasePoolPop(pool);
+		return false;
+	}
+
+	for (size_t i = 1; i < length; i++) {
+		if (UTF8String[i] == ':') {
+			objc_autoreleasePoolPop(pool);
+			return true;
+		}
+
+		if (!OFASCIIIsAlnum(UTF8String[i]) && UTF8String[i] != '+' &&
+		    UTF8String[i] != '-' && UTF8String[i] != '.') {
+			objc_autoreleasePoolPop(pool);
+			return false;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 
 	return false;
 }
