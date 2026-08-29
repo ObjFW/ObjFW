@@ -2057,7 +2057,10 @@ OF_SINGLETON_METHODS
 				append = @"\\t";
 				break;
 			case '\0':
-				if (options & OFJSONRepresentationOptionJSON5)
+				if ((options &
+				    OFJSONRepresentationOptionJSON5) &&
+				    (i + 1 >= length ||
+				    !OFASCIIIsDigit(cString[i + 1])))
 					append = @"\\0";
 				else
 					append = @"\\u0000";
