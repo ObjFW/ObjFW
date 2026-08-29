@@ -401,8 +401,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	size_t bufferSize;
 	size_t i = 0;
 
-	for (iter = *pointer; iter < stop && ((*iter >= 'a' && *iter <= 'z') ||
-	    (*iter >= 'A' && *iter <= 'Z') || (*iter >= '0' && *iter <= '9') ||
+	for (iter = *pointer; iter < stop && (OFASCIIIsAlnum(*iter) ||
 	    *iter == '_' || *iter == '$' || (*iter & 0x80)); iter++);
 
 	if OF_LIKELY (*iter != '\\') {
@@ -434,9 +433,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			}
 		}
 
-		if OF_LIKELY ((**pointer >= 'a' && **pointer <= 'z') ||
-		    (**pointer >= 'A' && **pointer <= 'Z') ||
-		    (**pointer >= '0' && **pointer <= '9') ||
+		if OF_LIKELY (OFASCIIIsAlnum(**pointer) ||
 		    **pointer == '_' || **pointer == '$' ||
 		    (**pointer & 0x80)) {
 			buffer[i++] = **pointer;
@@ -629,8 +626,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		if OF_UNLIKELY (*pointer + 1 >= stop)
 			return nil;
 
-		if OF_UNLIKELY ((**pointer >= 'a' && **pointer <= 'z') ||
-		    (**pointer >= 'A' && **pointer <= 'Z') ||
+		if OF_UNLIKELY (OFASCIIIsAlpha(**pointer) ||
 		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
 			key = parseIdentifier(pointer, stop);
 		else

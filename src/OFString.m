@@ -2002,9 +2002,7 @@ OF_SINGLETON_METHODS
 			quoteString = true;
 		else {
 			for (size_t i = 0; i < length; i++) {
-				if ((cString[i] < 'a' || cString[i] > 'z') &&
-				    (cString[i] < 'A' || cString[i] > 'Z') &&
-				    (cString[i] < '0' || cString[i] > '9') &&
+				if (!OFASCIIIsAlnum(cString[i]) &&
 				    cString[i] != '_' && cString[i] != '$') {
 					quoteString = true;
 					break;
