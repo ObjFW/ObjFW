@@ -139,7 +139,7 @@ OF_DIRECT_MEMBERS
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		const char *path;
-		char **argv, **env = NULL;
+		char **argv = NULL, **env = NULL;
 
 		_pid = -1;
 		_readPipe[0] = _readPipe[1] = -1;
