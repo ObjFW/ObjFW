@@ -281,7 +281,7 @@ _objc_rootRetain(id object)
 	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
 		_OBJC_ERROR("Failed to lock spinlock!");
 
-	_OBJC_PRE_IVARS->retainCount++;
+	_OBJC_PRE_IVARS(object)->retainCount++;
 
 	if (OFSpinlockUnlock(
 	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
