@@ -138,7 +138,6 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *path;
 		char **argv = NULL, **env = NULL;
 
 		_pid = -1;
@@ -154,7 +153,7 @@ OF_DIRECT_MEMBERS
 					     environment: environment
 						   errNo: errno];
 
-			path = [program
+			const char *path = [program
 			    cStringWithEncoding: [OFLocale encoding]];
 			[self of_getArgv: &argv
 			  forProgramName: programName
@@ -249,8 +248,6 @@ OF_DIRECT_MEMBERS
 						   errNo: errno];
 #endif
 		} @finally {
-			char **iter;
-
 			if (_readPipe[1] != -1)
 				close(_readPipe[1]);
 			if (_writePipe[0] != -1)
@@ -258,7 +255,7 @@ OF_DIRECT_MEMBERS
 			OFFreeMemory(argv);
 
 			if (env != NULL)
-				for (iter = env; *iter != NULL; iter++)
+				for (char **iter = env; *iter != NULL; iter++)
 					OFFreeMemory(*iter);
 
 			OFFreeMemory(env);
@@ -285,16 +282,15 @@ OF_DIRECT_MEMBERS
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments
 {
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFString *const *objects = arguments.objects;
-	size_t i, count = arguments.count;
-	OFStringEncoding encoding;
+	size_t count = arguments.count;
 
 	*argv = OFAllocMemory(count + 2, sizeof(char *));
 
-	encoding = [OFLocale encoding];
-
 	(*argv)[0] = (char *)[programName cStringWithEncoding: encoding];
 
+	size_t i;
 	for (i = 0; i < count; i++)
 		(*argv)[i + 1] =
 		    (char *)[objects[i] cStringWithEncoding: encoding];
@@ -304,33 +300,25 @@ OF_DIRECT_MEMBERS
 
 - (char **)of_environmentForDictionary: (OFDictionary *)environment
 {
-	char **envp;
-	size_t count;
-	OFStringEncoding encoding;
-
 	if (environment == nil)
 		return NULL;
 
-	encoding = [OFLocale encoding];
-
-	count = environment.count;
-	envp = OFAllocZeroedMemory(count + 1, sizeof(char *));
+	OFStringEncoding encoding = [OFLocale encoding];
+	size_t count = environment.count;
+	char **envp = OFAllocZeroedMemory(count + 1, sizeof(char *));
 
 	@try {
 		OFEnumerator *keyEnumerator = [environment keyEnumerator];
 		OFEnumerator *objectEnumerator = [environment objectEnumerator];
 
 		for (size_t i = 0; i < count; i++) {
-			OFString *key;
-			OFString *object;
-			size_t keyLen, objectLen;
+			OFString *key = [keyEnumerator nextObject];
+			OFString *object = [objectEnumerator nextObject];
 
-			key = [keyEnumerator nextObject];
-			object = [objectEnumerator nextObject];
-
-			keyLen = [key cStringLengthWithEncoding: encoding];
-			objectLen = [object
-			    cStringLengthWithEncoding: encoding];
+			size_t keyLen =
+			    [key cStringLengthWithEncoding: encoding];
+			size_t objectLen =
+			    [object cStringLengthWithEncoding: encoding];
 
 			envp[i] = OFAllocMemory(keyLen + objectLen + 2, 1);
 
@@ -361,14 +349,12 @@ OF_DIRECT_MEMBERS
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
-	ssize_t ret;
-
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	ssize_t ret;
 	if ((ret = read(_readPipe[0], buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
@@ -382,14 +368,13 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	ssize_t bytesWritten;
-
 	if (_writePipe[1] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
+	ssize_t bytesWritten;
 	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
