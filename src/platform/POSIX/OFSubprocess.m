@@ -142,22 +142,24 @@ OF_DIRECT_MEMBERS
 		char **argv, **env = NULL;
 
 		_pid = -1;
-		_readPipe[0] = _writePipe[1] = -1;
-
-		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
-			@throw [OFCreateSubprocessFailedException
-			    exceptionWithProgram: program
-				     programName: programName
-				       arguments: arguments
-				     environment: environment
-					   errNo: errno];
-
-		path = [program cStringWithEncoding: [OFLocale encoding]];
-		[self of_getArgv: &argv
-		  forProgramName: programName
-		    andArguments: arguments];
+		_readPipe[0] = _readPipe[1] = -1;
+		_writePipe[0] = _writePipe[1] = -1;
 
 		@try {
+			if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
+
+			path = [program
+			    cStringWithEncoding: [OFLocale encoding]];
+			[self of_getArgv: &argv
+			  forProgramName: programName
+			    andArguments: arguments];
+
 			env = [self of_environmentForDictionary: environment];
 #if defined(HAVE_POSIX_SPAWNP) && defined(HAVE_SPAWN_H)
 			posix_spawn_file_actions_t actions;
@@ -249,8 +251,10 @@ OF_DIRECT_MEMBERS
 		} @finally {
 			char **iter;
 
-			close(_readPipe[1]);
-			close(_writePipe[0]);
+			if (_readPipe[1] != -1)
+				close(_readPipe[1]);
+			if (_writePipe[0] != -1)
+				close(_writePipe[0]);
 			OFFreeMemory(argv);
 
 			if (env != NULL)
