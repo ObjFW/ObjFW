@@ -2007,7 +2007,7 @@ OF_SINGLETON_METHODS
 				if ((c < 'a' || c > 'z') &&
 				    (c < 'A' || c > 'Z') &&
 				    (c < '0' || c > '9') &&
-				    c != '_' && c != '$' && !(c & 0x80)) {
+				    c != '_' && c != '$') {
 					quoteString = true;
 					break;
 				}
