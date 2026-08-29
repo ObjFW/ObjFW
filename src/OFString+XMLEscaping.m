@@ -73,9 +73,9 @@ int _OFString_XMLEscaping_reference;
 			appendLen = 5;
 			break;
 		case '\xEF':
-			/* Reject U+FFFE */
+			/* Reject U+FFFE and U+FFFF */
 			if (i + 2 < length && string[i + 1] == '\xBF' &&
-			    string[i + 2] == '\xBE') {
+			    ((unsigned char)string[i + 2] & 0xFE) == 0xBE) {
 				OFFreeMemory(retCString);
 				@throw [OFInvalidEncodingException exception];
 			}
