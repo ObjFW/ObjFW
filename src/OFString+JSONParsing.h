@@ -45,7 +45,7 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  *
  * @throw OFInvalidJSONException The string contained invalid JSON
  * @throw OFOutOfMemoryException Not enough memory to parse the string
- * @throw OFOutOfRangeException A value in the JSON was out of the
+ * @throw OFOutOfRangeException A value in the JSON was outside of the
  *				representable range
  * @throw OFOutOfRangeException The depth limit has been exceeded
  */
@@ -62,6 +62,8 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  * @return An object
  * @throw OFInvalidJSONException The string contained invalid JSON
  * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException A value in the JSON was outside of the
+ *				representable range
  * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit;
