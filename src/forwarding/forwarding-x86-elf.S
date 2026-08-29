@@ -155,7 +155,7 @@ _OFForward_stret:
 	jmp	*%eax
 
 0:
-	movl	OFMethodNotFound_stret@GOT(%ebx), %eax
+	movl	_OFMethodNotFound_stret@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx

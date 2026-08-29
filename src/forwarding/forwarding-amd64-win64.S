@@ -179,7 +179,7 @@ _OFForward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	OFMethodNotFound_stret
+	jmp	_OFMethodNotFound_stret
 .def _OFForward_stret
 .scl 2
 .type 32

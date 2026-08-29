@@ -93,7 +93,7 @@ extern id _OFForward(id, SEL, ...);
 extern struct Stret _OFForward_stret(id, SEL, ...);
 #else
 # define _OFForward OFMethodNotFound
-# define _OFForward_stret OFMethodNotFound_stret
+# define _OFForward_stret _OFMethodNotFound_stret
 #endif
 
 #ifdef OF_WINDOWS
@@ -455,8 +455,8 @@ OFMethodNotFound(id object, SEL selector)
 	OF_UNREACHABLE
 }
 
-void OF_NO_RETURN_FUNC
-OFMethodNotFound_stret(void *stret, id object, SEL selector)
+void OF_NO_RETURN_FUNC OF_VISIBILITY_INTERNAL
+_OFMethodNotFound_stret(void *stret, id object, SEL selector)
 {
 	OFMethodNotFound(object, selector);
 }

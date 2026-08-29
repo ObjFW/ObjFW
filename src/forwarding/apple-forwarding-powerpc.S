@@ -242,4 +242,4 @@ __OFForward_stret:
 	lwz	r0, 8(r1)
 	mtlr	r0
 
-	b	_OFMethodNotFound_stret
+	b	__OFMethodNotFound_stret

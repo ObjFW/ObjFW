@@ -210,7 +210,7 @@ _OFForward_stret:
 	 restore
 
 0:
-	call	OFMethodNotFound_stret
+	call	_OFMethodNotFound_stret
 	 restore
 .type _OFForward_stret, %function
 .size _OFForward_stret, .-_OFForward_stret

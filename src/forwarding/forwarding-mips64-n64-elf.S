@@ -209,7 +209,7 @@ _OFForward_stret:
 	jr	$t9
 
 0:
-	ld	$t9, %call16(OFMethodNotFound_stret)($gp)
+	ld	$t9, %call16(_OFMethodNotFound_stret)($gp)
 
 	ld	$a2, 32($sp)
 	ld	$a1, 24($sp)

@@ -149,7 +149,7 @@ __OFForward_stret:
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_OFMethodNotFound_stret
+	jmp	__OFMethodNotFound_stret
 .def __OFForward_stret
 .scl 2
 .type 32

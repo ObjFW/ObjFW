@@ -203,7 +203,7 @@ __OFForward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	_OFMethodNotFound_stret
+	jmp	__OFMethodNotFound_stret
 
 Linit:
 	_CET_ENDBR

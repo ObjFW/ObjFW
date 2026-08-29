@@ -144,7 +144,7 @@ __OFForward_stret:
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_OFMethodNotFound_stret
+	jmp	__OFMethodNotFound_stret
 
 LgetEIP:
 	movl	(%esp), %ebx

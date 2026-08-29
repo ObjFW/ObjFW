@@ -122,7 +122,7 @@ L1:
 0:
 	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
-	b	_OFMethodNotFound_stret
+	b	__OFMethodNotFound_stret
 
 .data_region
 Lsel_forwardingTargetForSelector_$indirect_L1:

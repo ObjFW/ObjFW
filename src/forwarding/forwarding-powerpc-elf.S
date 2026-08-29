@@ -345,12 +345,12 @@ _OFForward_stret:
 	lwz	%r5, 16(%r1)
 
 #if defined(OF_PIC)
-	lwz	%r0, .Lgot_OFMethodNotFound_stret-.Lbiased_got2(%r30)
+	lwz	%r0, .Lgot__OFMethodNotFound_stret-.Lbiased_got2(%r30)
 	mtctr	%r0
 	lwz	%r30, 104(%r1)
 	.cfi_restore 30
 #elif defined(OF_BASEREL)
-	bl	OFMethodNotFound_stret
+	bl	_OFMethodNotFound_stret
 
 	lwz	%r13, 104(%r1)
 	.cfi_restore 13
@@ -365,7 +365,7 @@ _OFForward_stret:
 #elif defined(OF_BASEREL)
 	blr
 #else
-	b	OFMethodNotFound_stret
+	b	_OFMethodNotFound_stret
 #endif
 	.cfi_endproc
 .type _OFForward_stret, @function
@@ -431,8 +431,8 @@ _OFForward_stret:
 	.long .Lsel_forwardingTargetForSelector_
 .Lgot_OFMethodNotFound:
 	.long OFMethodNotFound
-.Lgot_OFMethodNotFound_stret:
-	.long OFMethodNotFound_stret
+.Lgot__OFMethodNotFound_stret:
+	.long _OFMethodNotFound_stret
 #endif
 
 #if defined(OF_LINUX) || defined(OF_HAIKU) || defined(OF_HURD)

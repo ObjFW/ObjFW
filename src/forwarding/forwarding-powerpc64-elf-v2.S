@@ -247,7 +247,7 @@ _OFForward_stret:
 	ld	%r4, 40(%r1)
 	ld	%r5, 48(%r1)
 
-	bl	OFMethodNotFound_stret
+	bl	_OFMethodNotFound_stret
 	nop
 
 	addi	%r1, %r1, 160
