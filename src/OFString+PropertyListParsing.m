@@ -41,8 +41,13 @@ parseArrayElement(OFXMLElement *element)
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (OFXMLElement *child in element.elements)
-		[ret addObject: parseElement(child)];
+	for (OFXMLElement *child in element.children) {
+		if ([child isKindOfClass: [OFXMLElement class]])
+			  [ret addObject: parseElement((OFXMLElement *)child)];
+		else if (child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
+	}
 
 	[ret makeImmutable];
 
@@ -56,14 +61,20 @@ parseDictElement(OFXMLElement *element)
 {
 	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFXMLElement *) *children = element.elements;
-	OFEnumerator OF_GENERIC(OFXMLElement *) *enumerator;
-	OFXMLElement *key, *object;
 
-	if (children.count % 2 != 0)
+	for (OFXMLNode *child in element.children)
+		if (![child isKindOfClass: [OFXMLElement class]] &&
+		    child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
+
+	OFArray OF_GENERIC(OFXMLElement *) *elements = element.elements;
+	if (elements.count % 2 != 0)
 		@throw [OFInvalidFormatException exception];
 
-	enumerator = [children objectEnumerator];
+	OFEnumerator OF_GENERIC(OFXMLElement *) *enumerator =
+	    [elements objectEnumerator];
+	OFXMLElement *key, *object;
 	while ((key = [enumerator nextObject]) &&
 	    (object = [enumerator nextObject])) {
 		if (key.namespace != nil || key.attributes.count != 0 ||
