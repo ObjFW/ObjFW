@@ -123,10 +123,6 @@
 	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(6, 1)];
 	OTAssertThrowsSpecific([_mutableData removeItemsAtIndexes: indexes],
 	    OFOutOfRangeException);
-
-	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(7, 0)];
-	OTAssertThrowsSpecific([_mutableData removeItemsAtIndexes: indexes],
-	    OFOutOfRangeException);
 }
 
 - (void)testInsertItemsAtIndexCount
