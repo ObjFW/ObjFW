@@ -187,7 +187,7 @@
   </function>
   <function name='class_conformsToProtocol' return-type='bool'>
     <argument name='class_' type='Class _Nullable'/>
-    <argument name='p' type='Protocol *_Nonnull'/>
+    <argument name='p' type='Protocol *_Nullable'/>
   </function>
   <function name='class_getMethodImplementation' return-type='IMP _Nullable'>
     <argument name='class_' type='Class _Nullable'/>
@@ -205,13 +205,13 @@
     <argument name='selector' type='SEL _Nonnull'/>
   </function>
   <function name='class_addMethod' return-type='bool'>
-    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
     <argument name='implementation' type='IMP _Nonnull'/>
     <argument name='typeEncoding' type='const char *_Nullable'/>
   </function>
   <function name='class_replaceMethod' return-type='IMP _Nullable'>
-    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
     <argument name='implementation' type='IMP _Nonnull'/>
     <argument name='typeEncoding' type='const char *_Nullable'/>
@@ -230,12 +230,12 @@
     <argument name='protocol' type='Protocol *_Nonnull'/>
   </function>
   <function name='protocol_isEqual' return-type='bool'>
-    <argument name='protocol1' type='Protocol *_Nonnull'/>
-    <argument name='protocol2' type='Protocol *_Nonnull'/>
+    <argument name='protocol1' type='Protocol *_Nullable'/>
+    <argument name='protocol2' type='Protocol *_Nullable'/>
   </function>
   <function name='protocol_conformsToProtocol' return-type='bool'>
-    <argument name='protocol1' type='Protocol *_Nonnull'/>
-    <argument name='protocol2' type='Protocol *_Nonnull'/>
+    <argument name='protocol1' type='Protocol *_Nullable'/>
+    <argument name='protocol2' type='Protocol *_Nullable'/>
   </function>
   <function name='objc_setUncaughtExceptionHandler'
             return-type='_Nullable objc_uncaught_exception_handler'>

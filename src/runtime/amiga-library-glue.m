@@ -321,7 +321,7 @@ glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 }
 
 bool __saveds
-glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
+glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nullable p)
 {
 	return class_conformsToProtocol(class_, p);
 }
@@ -347,13 +347,13 @@ glue__class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 #endif
 
 bool __saveds
-glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_addMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	return class_addMethod(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable __saveds
-glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_replaceMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	return class_replaceMethod(class_, selector, implementation, typeEncoding);
 }
@@ -383,13 +383,13 @@ glue_protocol_getName(Protocol *_Nonnull protocol)
 }
 
 bool __saveds
-glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_isEqual(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	return protocol_isEqual(protocol1, protocol2);
 }
 
 bool __saveds
-glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_conformsToProtocol(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	return protocol_conformsToProtocol(protocol1, protocol2);
 }

@@ -550,14 +550,14 @@ class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 }
 
 bool __attribute__((__weak__))
-class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
+class_conformsToProtocol(Class _Nullable class_, Protocol *_Nullable p)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_, p);
+	return __extension__ ((bool (*)(Class _Nullable, Protocol *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 316))(class_, p);
 }
 
 IMP _Nullable __attribute__((__weak__))
@@ -594,25 +594,25 @@ _class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 }
 
 bool __attribute__((__weak__))
-class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+class_addMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector, implementation, typeEncoding);
+	return __extension__ ((bool (*)(Class _Nullable, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 340))(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable __attribute__((__weak__))
-class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+class_replaceMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((IMP _Nullable (*)(Class _Nonnull, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector, implementation, typeEncoding);
+	return __extension__ ((IMP _Nullable (*)(Class _Nullable, SEL _Nonnull, IMP _Nonnull, const char *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 346))(class_, selector, implementation, typeEncoding);
 }
 
 Class _Nullable __attribute__((__weak__))
@@ -660,25 +660,25 @@ protocol_getName(Protocol *_Nonnull protocol)
 }
 
 bool __attribute__((__weak__))
-protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+protocol_isEqual(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(protocol1, protocol2);
+	return __extension__ ((bool (*)(Protocol *_Nullable, Protocol *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 376))(protocol1, protocol2);
 }
 
 bool __attribute__((__weak__))
-protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+protocol_conformsToProtocol(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	__asm__ __volatile__ (
 	    "mr		%%r12, %0"
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((bool (*)(Protocol *_Nonnull, Protocol *_Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol1, protocol2);
+	return __extension__ ((bool (*)(Protocol *_Nullable, Protocol *_Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 382))(protocol1, protocol2);
 }
 
 _Nullable objc_uncaught_exception_handler __attribute__((__weak__))

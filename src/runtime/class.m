@@ -886,10 +886,12 @@ bool
 class_addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	bool ret;
+	if (class == Nil)
+		return false;
 
 	_objc_globalMutex_lock();
 
+	bool ret;
 	if (getMethod(class, selector) == NULL) {
 		addMethod(class, selector, implementation, typeEncoding);
 		ret = true;
@@ -905,11 +907,13 @@ IMP
 class_replaceMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	struct objc_method *method;
-	IMP oldImplementation;
+	if (class == Nil)
+		return NULL;
 
 	_objc_globalMutex_lock();
 
+	struct objc_method *method;
+	IMP oldImplementation;
 	if ((method = getMethod(class, selector)) != NULL) {
 		oldImplementation = method->implementation;
 		method->implementation = implementation;

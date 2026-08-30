@@ -319,7 +319,7 @@ extern bool class_respondsToSelector(Class _Nullable class_,
  * @return Whether the specified class conforms to the specified protocol
  */
 extern bool class_conformsToProtocol(Class _Nullable class_,
-    Protocol *_Nonnull protocol);
+    Protocol *_Nullable protocol);
 
 /**
  * @brief Returns the class's method implementation for the specified selector.
@@ -370,7 +370,7 @@ extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
  * @param typeEncoding The type encoding of the method to add
  * @return Whether the specified method was added
  */
-extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
+extern bool class_addMethod(Class _Nullable class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 
 /**
@@ -383,7 +383,7 @@ extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
  *		       the method does not exist yet.
  * @return The old implementation of the method
  */
-extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
+extern IMP _Nullable class_replaceMethod(Class _Nullable class_,
     SEL _Nonnull selector, IMP _Nonnull implementation,
     const char *_Nullable typeEncoding);
 
@@ -430,8 +430,8 @@ extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
  * @param protocol2 The second protocol
  * @return Whether the two protocols are equal
  */
-extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
-    Protocol *_Nonnull protocol2);
+extern bool protocol_isEqual(Protocol *_Nullable protocol1,
+    Protocol *_Nullable protocol2);
 
 /**
  * @brief Returns whether the first protocol conforms to the second protocol.
@@ -440,8 +440,8 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
  * @param protocol2 The second protocol
  * @return Whether the first protocol conforms to the second protocol
  */
-extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
-    Protocol *_Nonnull protocol2);
+extern bool protocol_conformsToProtocol(Protocol *_Nullable protocol1,
+    Protocol *_Nullable protocol2);
 
 /**
  * @brief Copies the method list of the specified class.
