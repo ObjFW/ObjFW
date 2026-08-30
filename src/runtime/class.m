@@ -524,9 +524,14 @@ _objc_registerAllClasses(struct objc_symtab *symtab)
 Class
 objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 {
-	struct objc_class *class, *metaclass;
-	Class iter, rootclass = Nil;
+	_objc_globalMutex_lock();
 
+	if (_objc_hashtable_get(classes, name) != NULL) {
+		_objc_globalMutex_unlock();
+		return Nil;
+	}
+
+	struct objc_class *class, *metaclass;
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)
 		_OBJC_ERROR("Not enough memory to allocate class pair for "
@@ -549,7 +554,8 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 
 	class->instanceSize += (long)extraBytes;
 
-	for (iter = superclass; iter != Nil; iter = iter->superclass)
+	Class rootclass = Nil;
+	for (Class iter = superclass; iter != Nil; iter = iter->superclass)
 		rootclass = iter;
 
 	metaclass->isa = (rootclass != Nil ? rootclass->isa : class);
@@ -558,6 +564,8 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 	metaclass->info = _OBJC_CLASS_INFO_METACLASS;
 	metaclass->instanceSize = (superclass != Nil ?
 	    superclass->isa->instanceSize : 0) + (long)extraBytes;
+
+	_objc_globalMutex_unlock();
 
 	return class;
 }

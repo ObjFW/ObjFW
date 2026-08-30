@@ -154,7 +154,7 @@
     <argument name='selector1' type='SEL _Nonnull'/>
     <argument name='selector2' type='SEL _Nonnull'/>
   </function>
-  <function name='objc_allocateClassPair' return-type='Class _Nonnull'>
+  <function name='objc_allocateClassPair' return-type='Class _Nullable'>
     <argument name='superclass' type='Class _Nullable'/>
     <argument name='name' type='const char *_Nonnull'/>
     <argument name='extraBytes' type='size_t'/>

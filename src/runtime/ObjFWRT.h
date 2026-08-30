@@ -230,9 +230,10 @@ extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
  * @param superclass The superclass for the new class
  * @param name The name for the new class
  * @param extraBytes Extra bytes to add to the instance size
- * @return A new, unregistered class pair
+ * @return A new, unregistered class pair or `Nil` if a class with that name
+ *	   already exists
  */
-extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
+extern Class _Nullable objc_allocateClassPair(Class _Nullable superclass,
     const char *_Nonnull name, size_t extraBytes);
 
 /**

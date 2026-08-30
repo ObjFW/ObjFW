@@ -450,7 +450,7 @@ sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 	return __extension__ ((bool (*)(SEL _Nonnull, SEL _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 256))(selector1, selector2);
 }
 
-Class _Nonnull __attribute__((__weak__))
+Class _Nullable __attribute__((__weak__))
 objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
 {
 	__asm__ __volatile__ (
@@ -458,7 +458,7 @@ objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, si
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((Class _Nonnull (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(superclass, name, extraBytes);
+	return __extension__ ((Class _Nullable (*)(Class _Nullable, const char *_Nonnull, size_t))*(void **)(((uintptr_t)ObjFWRTBase) - 262))(superclass, name, extraBytes);
 }
 
 void __attribute__((__weak__))

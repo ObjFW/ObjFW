@@ -266,7 +266,7 @@ glue_sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 	return sel_isEqual(selector1, selector2);
 }
 
-Class _Nonnull __saveds
+Class _Nullable __saveds
 glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
 {
 	return objc_allocateClassPair(superclass, name, extraBytes);

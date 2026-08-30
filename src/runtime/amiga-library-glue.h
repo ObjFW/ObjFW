@@ -61,7 +61,7 @@ extern void glue_objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnu
 extern SEL _Nonnull glue_sel_registerName(const char *_Nonnull name);
 extern const char *_Nonnull glue_sel_getName(SEL _Nonnull selector);
 extern bool glue_sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
-extern Class _Nonnull glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes);
+extern Class _Nullable glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes);
 extern void glue_objc_registerClassPair(Class _Nonnull class_);
 extern unsigned int glue_objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count);
 extern Class _Nonnull *_Nonnull glue_objc_copyClassList(unsigned int *_Nullable length);
