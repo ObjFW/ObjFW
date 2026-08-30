@@ -259,6 +259,7 @@ OF_DIRECT_MEMBERS
 - (OFString *)stringForValueNamed: (OFString *)name type: (DWORD *)typeOut
 {
 	void *pool = objc_autoreleasePoolPush();
+	DWORD type;
 	OFData *data = [self dataForValueNamed: name type: &type];
 
 	if (data == nil) {
@@ -266,7 +267,6 @@ OF_DIRECT_MEMBERS
 		return nil;
 	}
 
-	DWORD type;
 	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_LINK)
 		@throw [OFInvalidEncodingException exception];
 
