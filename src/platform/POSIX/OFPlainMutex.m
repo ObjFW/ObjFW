@@ -72,8 +72,10 @@ OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 		return error;
 	}
 
-	if ((error = pthread_mutexattr_destroy(&attr)) != 0)
+	if ((error = pthread_mutexattr_destroy(&attr)) != 0) {
+		pthread_mutex_destroy(rmutex);
 		return error;
+	}
 
 	return 0;
 }
