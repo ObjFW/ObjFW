@@ -111,7 +111,7 @@ OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 		return error;
 
 	if ((error = OFTLSKeyNew(&rmutex->count)) != 0) {
-		OFPlainMutexFree(rmutex->mutex);
+		OFPlainMutexFree(&rmutex->mutex);
 		return error;
 	}
 
