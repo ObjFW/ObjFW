@@ -167,6 +167,8 @@ struct ATInterfaceConfig {
 	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
 	    (socklen_t)sizeof(one)) != 0 || ioctlsocket(_socket, _IOWR('a', 2,
 	    struct ATInterfaceConfig), &config) != 0) {
+		int errNo = _OFSocketErrNo();
+
 		closesocket(_socket);
 		_socket = OFInvalidSocketHandle;
 
@@ -176,7 +178,7 @@ struct ATInterfaceConfig {
 				    port: port
 			    protocolType: protocolType
 				  socket: self
-				   errNo: _OFSocketErrNo()];
+				   errNo: errNo];
 	}
 
 	OFSocketAddressSetAppleTalkNetwork(&address, config.address.s_net);
