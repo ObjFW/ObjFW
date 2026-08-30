@@ -1367,17 +1367,21 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 	OFHTTPResponse *response;
 
 	_delegate = performDelegate;
-	[self asyncPerformRequest: request
-			redirects: redirects
-		      runLoopMode: HTTPClientRunLoopMode];
+	@try {
+		[self asyncPerformRequest: request
+				redirects: redirects
+			      runLoopMode: HTTPClientRunLoopMode];
 
-	while (!performDelegate->_done)
-		[runLoop runMode: HTTPClientRunLoopMode beforeDate: nil];
+		while (!performDelegate->_done)
+			[runLoop runMode: HTTPClientRunLoopMode
+			      beforeDate: nil];
 
-	/* Cleanup */
-	[runLoop runMode: HTTPClientRunLoopMode beforeDate: [OFDate date]];
-
-	_delegate = performDelegate->_delegate;
+		/* Cleanup */
+		[runLoop runMode: HTTPClientRunLoopMode
+		      beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = performDelegate->_delegate;
+	}
 
 	if (performDelegate->_exception != nil)
 		@throw performDelegate->_exception;

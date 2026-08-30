@@ -572,17 +572,21 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	OFGeminiResponse *response;
 
 	_delegate = performDelegate;
-	[self asyncPerformRequest: request
-			redirects: redirects
-		      runLoopMode: geminiClientRunLoopMode];
+	@try {
+		[self asyncPerformRequest: request
+				redirects: redirects
+			      runLoopMode: geminiClientRunLoopMode];
 
-	while (!performDelegate->_done)
-		[runLoop runMode: geminiClientRunLoopMode beforeDate: nil];
+		while (!performDelegate->_done)
+			[runLoop runMode: geminiClientRunLoopMode
+			      beforeDate: nil];
 
-	/* Cleanup */
-	[runLoop runMode: geminiClientRunLoopMode beforeDate: [OFDate date]];
-
-	_delegate = performDelegate->_delegate;
+		/* Cleanup */
+		[runLoop runMode: geminiClientRunLoopMode
+		      beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = performDelegate->_delegate;
+	}
 
 	if (performDelegate->_exception != nil)
 		@throw performDelegate->_exception;
