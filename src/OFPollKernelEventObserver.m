@@ -154,19 +154,18 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	void *pool;
-	struct pollfd *FDs;
-	OFArray *objects;
-	size_t nFDs;
-
 	if ([self processReadBuffers])
 		return;
 
-	pool = objc_autoreleasePoolPush();
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
 
-	FDs = [objc_autorelease([_FDs mutableCopy]) mutableItems];
-	objects = objc_autorelease([_objects copy]);
-	nFDs = _FDs.count;
+	void *pool = objc_autoreleasePoolPush();
+
+	struct pollfd *FDs =
+	    [objc_autorelease([_FDs mutableCopy]) mutableItems];
+	OFArray *objects = objc_autorelease([_objects copy]);
+	size_t nFDs = _FDs.count;
 
 	OFAssert(objects.count == nFDs);
 
@@ -176,7 +175,8 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 #endif
 
 	while (poll(FDs, (nfds_t)nFDs,
-	    (timeInterval != -1 ? (int)(timeInterval * 1000.0) : -1)) < 0) {
+	    (timeInterval != 64060588800.0 ? (int)(timeInterval * 1000.0) :
+	    -1)) < 0) {
 		int errNo = _OFSocketErrNo();
 
 		if (errNo != EINTR)
@@ -187,11 +187,8 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 	for (size_t i = 0; i < nFDs; i++) {
 		if (FDs[i].revents & POLLIN) {
-			void *pool2;
-
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
-
 #ifdef OF_HAVE_PIPE
 				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 #else
@@ -203,7 +200,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 				continue;
 			}
 
-			pool2 = objc_autoreleasePoolPush();
+			void *pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])

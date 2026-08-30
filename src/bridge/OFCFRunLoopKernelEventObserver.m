@@ -98,24 +98,19 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
     const void *data, void *info_)
 {
 	OFPair *info = info_;
-	void *pool;
-	id object;
-	OFCFRunLoopKernelEventObserver *observer;
-
 	OFAssert(info != nil);
 
 	if (info == cancelSocketInfo) {
 		char buffer;
-
 		OFEnsure(read(CFSocketGetNative(sock), &buffer, 1) == 1);
 
 		return;
 	}
 
-	pool = objc_autoreleasePoolPush();
+	void *pool = objc_autoreleasePoolPush();
 
-	object = info.firstObject;
-	observer = info.secondObject;
+	id object = info.firstObject;
+	OFCFRunLoopKernelEventObserver *observer = info.secondObject;
 
 	if ((type & kCFSocketReadCallBack) &&
 	    [observer->_delegate respondsToSelector:
@@ -147,11 +142,6 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		CFSocketContext context = {
-			.version = 0,
-			.info = cancelSocketInfo
-		};
-		CFOptionFlags flags;
 
 		_runLoop = (CFRunLoopRef)CFRetain(CFRunLoopGetCurrent());
 
@@ -171,13 +161,17 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		    initWithKeyFunctions: objectFunctions
 			 objectFunctions: mapTableEntryFunctions];
 
+		CFSocketContext context = {
+			.version = 0,
+			.info = cancelSocketInfo
+		};
 		_cancelSocket = CFSocketCreateWithNative(kCFAllocatorDefault,
 		    _cancelFD[0], kCFSocketReadCallBack, callback, &context);
 		if (_cancelSocket == NULL)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		flags = CFSocketGetSocketFlags(_cancelSocket);
+		CFOptionFlags flags = CFSocketGetSocketFlags(_cancelSocket);
 		flags &= ~kCFSocketCloseOnInvalidate;
 		CFSocketSetSocketFlags(_cancelSocket, flags);
 
@@ -233,31 +227,29 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	 */
 
 	void *pool = objc_autoreleasePoolPush();
-	CFSocketContext context = {
-		.version = 0,
-	};
-	CFOptionFlags types = 0;
-	struct MapTableEntry *oldEntry, *newEntry;
 
+	struct MapTableEntry *oldEntry;
+	CFOptionFlags types = 0;
 	if ((oldEntry = [_mapTable objectForKey: object]) != NULL)
 		types = oldEntry->types;
 
 	types = (types | addTypes) & ~removeTypes;
-
 	if (types == 0) {
 		[_mapTable removeObjectForKey: object];
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	newEntry = OFAllocZeroedMemory(1, sizeof(*newEntry));
+	struct MapTableEntry *newEntry =
+	    OFAllocZeroedMemory(1, sizeof(*newEntry));
 	@try {
-		CFOptionFlags flags;
-
-		context.info = [OFPair pairWithFirstObject: object
-					      secondObject: self];
-		context.retain = (const void *(*)(const void *))objc_retain;
-		context.release = (void (*)(const void *))objc_release;
+		CFSocketContext context = {
+			.version = 0,
+			.info = [OFPair pairWithFirstObject: object
+					       secondObject: self],
+			.retain = (const void *(*)(const void *))objc_retain,
+			.release = (void (*)(const void *))objc_release
+		};
 
 		if ((newEntry->socket = CFSocketCreateWithNative(
 		    kCFAllocatorDefault, fd, types, callback,
@@ -266,7 +258,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 			    exceptionWithObserver: self
 					    errNo: 0];
 
-		flags = CFSocketGetSocketFlags(newEntry->socket);
+		CFOptionFlags flags = CFSocketGetSocketFlags(newEntry->socket);
 		flags &= ~kCFSocketCloseOnInvalidate;
 		CFSocketSetSocketFlags(newEntry->socket, flags);
 
@@ -336,6 +328,9 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	if ([self processReadBuffers])
 		return;
 
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
+
 	/*
 	 * It seems CFRunLoop never fires for an UDP socket ready for writing,
 	 * so instead always manually fire all UDP sockets that are being
@@ -345,10 +340,6 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 		for (id object in objc_autorelease([_writeObjects copy]))
 			if ([object isKindOfClass: [OFDatagramSocket class]])
 				[_delegate objectIsReadyForWriting: object];
-
-	if (timeInterval == -1)
-		/* There is no value for infinite, so make it really long. */
-		timeInterval = DBL_MAX;
 
 	CFRunLoopRunInMode(_runLoopMode, timeInterval, true);
 }
