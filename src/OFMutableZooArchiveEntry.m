@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #import "OFMutableZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
 #import "OFDate.h"
@@ -198,8 +200,14 @@
 {
 	if (timeZone == nil)
 		_timeZone = 0x7F;
-	else
+	else {
+		float value = timeZone.floatValue;
+
+		if (!isfinite(value) || value < -12.0f || value > 14.f)
+			@throw [OFInvalidArgumentException exception];
+
 		_timeZone = -timeZone.floatValue * 4;
+	}
 }
 
 - (void)makeImmutable
