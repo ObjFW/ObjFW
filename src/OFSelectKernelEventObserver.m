@@ -27,6 +27,7 @@
 #endif
 
 #include <errno.h>
+#include <math.h>
 #include <string.h>
 
 #include <sys/time.h>
@@ -207,11 +208,12 @@
 	 * satisfy the required range, we just cast to int.
 	 */
 #ifndef OF_WINDOWS
-	timeout.tv_sec = (time_t)timeInterval;
+	timeout.tv_sec = (time_t)floor(timeInterval);
 #else
-	timeout.tv_sec = (long)timeInterval;
+	timeout.tv_sec = (long)floor(timeInterval);
 #endif
-	timeout.tv_usec = (int)((timeInterval - timeout.tv_sec) * 1000000);
+	timeout.tv_usec = (int)
+	    ((timeInterval - floor(timeInterval)) * 1000000.0);
 
 #ifdef OF_AMIGAOS
 	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)

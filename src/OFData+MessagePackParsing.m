@@ -152,8 +152,7 @@ createDate(OFData *data)
 			@throw [OFInvalidFormatException exception];
 
 		return [OFDate dateWithTimeIntervalSince1970:
-		    (double)(combined & 0x3FFFFFFFF) +
-		    (double)(combined >> 34) / 1000000000];
+		    (combined & 0x3FFFFFFFF) + (combined >> 34) / 1000000000.0];
 	}
 	case 12: {
 		uint32_t nanoseconds;
@@ -169,7 +168,7 @@ createDate(OFData *data)
 			@throw [OFInvalidFormatException exception];
 
 		return [OFDate dateWithTimeIntervalSince1970:
-		    (double)seconds + (double)nanoseconds / 1000000000];
+		    seconds + nanoseconds / 1000000000.0];
 	}
 	default:
 		@throw [OFInvalidFormatException exception];

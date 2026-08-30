@@ -576,7 +576,7 @@ setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 
 #ifdef HAVE_STRUCT_STAT_ST_ATIM
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_atim.tv_sec +
-	    (OFTimeInterval)s->st_atim.tv_nsec / 1000000000];
+	    s->st_atim.tv_nsec / 1000000000.0];
 #else
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_atime];
 #endif
@@ -584,7 +584,7 @@ setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 
 #ifdef HAVE_STRUCT_STAT_ST_MTIM
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtim.tv_sec +
-	    (OFTimeInterval)s->st_mtim.tv_nsec / 1000000000];
+	    s->st_mtim.tv_nsec / 1000000000.0];
 #else
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_mtime];
 #endif
@@ -592,7 +592,7 @@ setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 
 #ifdef HAVE_STRUCT_STAT_ST_CTIM
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctim.tv_sec +
-	    (OFTimeInterval)s->st_ctim.tv_nsec / 1000000000];
+	    s->st_ctim.tv_nsec / 1000000000.0];
 #else
 	date = [OFDate dateWithTimeIntervalSince1970: s->st_ctime];
 #endif
@@ -601,7 +601,7 @@ setDateAttributes(OFMutableFileAttributes attributes, Stat *s)
 #if defined(HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC)
 	date = [OFDate dateWithTimeIntervalSince1970:
 	    s->st_birthtimespec.tv_sec +
-	    (OFTimeInterval)s->st_birthtimespec.tv_nsec / 1000000000];
+	    s->st_birthtimespec.tv_nsec / 1000000000.0];
 	[attributes setObject: date forKey: OFFileCreationDate];
 #elif defined(HAVE_STRUCT_STAT_ST_BIRTHTIME)
 	[attributes
@@ -1212,14 +1212,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    modificationDate.timeIntervalSince1970;
 		struct timespec times[2] = {
 			{
-				.tv_sec = (time_t)lastAccessTime,
+				.tv_sec = (time_t)floor(lastAccessTime),
 				.tv_nsec = (int)((lastAccessTime -
-				    (time_t)lastAccessTime) * 1000000000)
+				    floor(lastAccessTime)) * 1000000000.0)
 			},
 			{
-				.tv_sec = (time_t)modificationTime,
+				.tv_sec = (time_t)floor(modificationTime),
 				.tv_nsec = (long)((modificationTime -
-				    (time_t)modificationTime) * 1000000000)
+				    floor(modificationTime)) * 1000000000.0)
 			},
 		};
 
@@ -1242,14 +1242,14 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    modificationDate.timeIntervalSince1970;
 		struct timeval times[2] = {
 			{
-				.tv_sec = (time_t)lastAccessTime,
+				.tv_sec = (time_t)floor(lastAccessTime),
 				.tv_usec = (int)((lastAccessTime -
-					(time_t)lastAccessTime) * 1000000)
+				    floor(lastAccessTime)) * 1000000.0)
 			},
 			{
-				.tv_sec = (time_t)modificationTime,
+				.tv_sec = (time_t)floor(modificationTime),
 				.tv_usec = (int)((modificationTime -
-					(time_t)modificationTime) * 1000000)
+				    floor(modificationTime)) * 1000000.0)
 			},
 		};
 

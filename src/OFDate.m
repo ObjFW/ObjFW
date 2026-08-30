@@ -48,11 +48,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#if defined(OF_AMIGAOS_M68K) || defined(OF_MINT)
-/* amiga-gcc and freemint-gcc do not have trunc() */
-# define trunc(x) ((int64_t)(x))
-#endif
-
 #ifdef OF_MORPHOS
 # include <devices/timer.h>
 # include <ppcinline/timer.h>
@@ -105,19 +100,19 @@ now(void)
 
 	GetUTCSysTime(&tv);
 
-	return 252460800.0 + tv.tv_secs + (OFTimeInterval)tv.tv_micro / 1000000;
+	return 252460800.0 + tv.tv_secs + tv.tv_micro / 1000000.0;
 #elif defined(HAVE_CLOCK_GETTIME)
 	struct timespec ts;
 
 	OFEnsure(clock_gettime(CLOCK_REALTIME, &ts) == 0);
 
-	return ts.tv_sec + (OFTimeInterval)ts.tv_nsec / 1000000000;
+	return ts.tv_sec + ts.tv_nsec / 1000000000.0;
 #else
 	struct timeval tv;
 
 	OFEnsure(gettimeofday(&tv, NULL) == 0);
 
-	return tv.tv_sec + (OFTimeInterval)tv.tv_usec / 1000000;
+	return tv.tv_sec + tv.tv_usec / 1000000.0;
 #endif
 }
 
@@ -139,10 +134,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (gmtime_r(&seconds, &tm) == NULL)				\
@@ -151,10 +146,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	return tm.field;
 # define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (localtime_r(&seconds, &tm) == NULL)				\
@@ -165,10 +160,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 # ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -183,10 +178,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	}
 #  define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -202,10 +197,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 # else
 #  define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = gmtime(&seconds)) == NULL)				\
@@ -214,10 +209,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = localtime(&seconds)) == NULL)				\
@@ -546,9 +541,9 @@ OF_SINGLETON_METHODS
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	int64_t seconds = (int64_t)timeInterval;
+	int64_t seconds = (int64_t)floor(timeInterval);
 	uint32_t nanoseconds =
-	    (uint32_t)((timeInterval - trunc(timeInterval)) * 1000000000);
+	    (uint32_t)((timeInterval - floor(timeInterval)) * 1000000000.0);
 	OFData *ret;
 
 	if (seconds >= 0 && seconds < 0x400000000) {
@@ -600,7 +595,8 @@ OF_SINGLETON_METHODS
 {
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 
-	return (unsigned long)((timeInterval - trunc(timeInterval)) * 1000000);
+	return (unsigned long)
+	    ((timeInterval - floor(timeInterval)) * 1000000.0);
 }
 
 - (unsigned char)second
@@ -682,12 +678,12 @@ OF_SINGLETON_METHODS
 {
 	OFString *ret;
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	time_t seconds = (time_t)timeInterval;
+	time_t seconds = (time_t)floor(timeInterval);
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds != trunc(timeInterval))
+	if (seconds != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_GMTIME_R
@@ -731,12 +727,12 @@ OF_SINGLETON_METHODS
 {
 	OFString *ret;
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	time_t seconds = (time_t)timeInterval;
+	time_t seconds = (time_t)floor(timeInterval);
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds != trunc(timeInterval))
+	if (seconds != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_LOCALTIME_R
