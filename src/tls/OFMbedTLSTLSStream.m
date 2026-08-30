@@ -141,6 +141,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (psa_crypto_init() != PSA_SUCCESS)
 #else
 	mbedtls_entropy_init(&entropy);
+	mbedtls_ctr_drbg_init(&CTRDRBG);
+
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
 #endif
