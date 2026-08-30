@@ -536,14 +536,15 @@
 
 - (void)of_reschedule
 {
-	long long missedIntervals;
+	long long missedIntervals = 0;
 	OFTimeInterval newFireDate;
 	OFRunLoop *runLoop;
 
 	if (!_repeats || !_valid)
 		return;
 
-	missedIntervals = -_fireDate.timeIntervalSinceNow / _interval;
+	if (_interval != 0.0)
+		missedIntervals = -_fireDate.timeIntervalSinceNow / _interval;
 
 	/* In case the clock was changed backwards */
 	if (missedIntervals < 0)
