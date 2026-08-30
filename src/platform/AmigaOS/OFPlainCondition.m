@@ -110,6 +110,7 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	Forbid();
 
 	if ((error = OFPlainMutexUnlock(mutex)) != 0) {
+		Permit();
 		FreeSignal(waitingTask.sigBit);
 		return error;
 	}
