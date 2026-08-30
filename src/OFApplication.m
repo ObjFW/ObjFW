@@ -309,6 +309,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if (pos == OFNotFound) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %@", tmp);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
@@ -350,6 +351,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if (pos == OFNotFound) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %@", tmp);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
@@ -443,6 +445,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if ((sep = strchr(*env, '=')) == NULL) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %s", *env);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
