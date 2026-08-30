@@ -84,6 +84,8 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		    exceptionWithClass: self];
 #elif MBEDTLS_VERSION_MAJOR == 3
 	mbedtls_entropy_init(&entropy);
+	mbedtls_ctr_drbg_init(&CTRDRBG);
+
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
 		@throw [OFInitializationFailedException
