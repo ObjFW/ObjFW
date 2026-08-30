@@ -229,7 +229,7 @@ errToErrorCode(const SSL *SSL_)
 			if (_underlyingStream.atEndOfStream)
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
-					requestedLength: bufferSize
+					requestedLength: length
 						  errNo: ECONNRESET];
 
 			@try {
@@ -245,7 +245,10 @@ errToErrorCode(const SSL *SSL_)
 				if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 					return 0;
 
-				@throw e;
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: length
+						  errNo: e.errNo];
 			}
 		}
 
@@ -431,8 +434,7 @@ errToErrorCode(const SSL *SSL_)
 		OFEnsure(tmp >= 0);
 
 		@try {
-			[_underlyingStream writeBuffer: _buffer
-						length: tmp];
+			[_underlyingStream writeBuffer: _buffer length: tmp];
 			[_underlyingStream flushWriteBuffer];
 		} @catch (OFWriteFailedException *e) {
 			exception = e;
