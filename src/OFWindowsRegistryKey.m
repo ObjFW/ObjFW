@@ -259,19 +259,21 @@ OF_DIRECT_MEMBERS
 - (OFString *)stringForValueNamed: (OFString *)name type: (DWORD *)typeOut
 {
 	void *pool = objc_autoreleasePoolPush();
-	DWORD type;
 	OFData *data = [self dataForValueNamed: name type: &type];
-	OFString *ret;
 
-	if (data == nil)
+	if (data == nil) {
+		objc_autoreleasePoolPop(pool);
 		return nil;
+	}
 
+	DWORD type;
 	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_LINK)
 		@throw [OFInvalidEncodingException exception];
 
 	if (data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
+	OFString *ret;
 	if ([OFSystemInfo isWindowsNT]) {
 		const OFChar16 *UTF16String = data.items;
 		size_t length = data.count;
