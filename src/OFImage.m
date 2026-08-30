@@ -160,11 +160,8 @@ OFImageFormatQOIRef(void)
 	self = [super init];
 
 	@try {
-		unsigned int bitsPerPixel;
-		size_t width, height, count;
-
-		width = size.width;
-		height = size.height;
+		size_t width = size.width;
+		size_t height = size.height;
 
 		if (width != size.width || height != size.height ||
 		    width == 0 || height == 0)
@@ -177,12 +174,11 @@ OFImageFormatQOIRef(void)
 		_pixelFormat = pixelFormat;
 		_colorSpace = objc_retain(colorSpace);
 
-		bitsPerPixel = self.bitsPerPixel;
+		unsigned int bitsPerPixel = self.bitsPerPixel;
 		if (bitsPerPixel % CHAR_BIT != 0)
 			@throw [OFInvalidArgumentException exception];
 
-		count = width * height;
-
+		size_t count = width * height;
 		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
 		_freeWhenDone = true;
 
@@ -217,11 +213,14 @@ OFImageFormatQOIRef(void)
 	self = [super init];
 
 	@try {
-		if (size.width != (size_t)size.width ||
-		    size.height != (size_t)size.height)
+		size_t width = size.width;
+		size_t height = size.height;
+
+		if (width != size.width || height != size.height ||
+		    width == 0 || height == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		if (SIZE_MAX / (size_t)size.width < (size_t)size.height)
+		if (SIZE_MAX / width < height)
 			@throw [OFOutOfRangeException exception];
 
 		_pixels = (void *)pixels;
