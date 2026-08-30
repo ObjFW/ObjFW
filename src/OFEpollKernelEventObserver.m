@@ -196,7 +196,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 		return;
 
 	while ((events = epoll_wait(_epfd, eventList, eventListSize,
-	    (timeInterval != -1 ? timeInterval * 1000 : -1))) < 0)
+	    (timeInterval != -1 ? (int)(timeInterval * 1000.0) : -1))) < 0)
 		if (errno != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self

@@ -176,7 +176,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 #endif
 
 	while (poll(FDs, (nfds_t)nFDs,
-	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 0) {
+	    (timeInterval != -1 ? (int)(timeInterval * 1000.0) : -1)) < 0) {
 		int errNo = _OFSocketErrNo();
 
 		if (errNo != EINTR)

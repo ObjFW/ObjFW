@@ -170,8 +170,9 @@
 	if ([self processReadBuffers])
 		return;
 
-	timeout.tv_sec = (time_t)timeInterval;
-	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
+	timeout.tv_sec = (time_t)floor(timeInterval);
+	timeout.tv_nsec = (long)
+	    ((timeInterval - floor(timeInterval)) * 1000000000.0);
 
 	while ((events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
 	    (timeInterval != -1 ? &timeout : NULL))) < 0)
