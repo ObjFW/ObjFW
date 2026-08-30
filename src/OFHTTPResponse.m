@@ -216,7 +216,7 @@ encodingForContentType(OFString *contentType)
 						length: length - last];
 		value = value.stringByDeletingTrailingWhitespaces;
 
-		if ([name isEqual: @"charset"])
+		if ([name caseInsensitiveCompare: @"charset"] == OFOrderedSame)
 			charset = value;
 	}
 
