@@ -52,6 +52,9 @@ protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
 	if (protocol_isEqual(protocol1, protocol2))
 		return true;
 
+	if (protocol1 == NULL || protocol2 == NULL)
+		return false;
+
 	for (struct objc_protocol_list *protocolList = protocol1->protocolList;
 	    protocolList != NULL; protocolList = protocolList->next)
 		for (long i = 0; i < protocolList->count; i++)
