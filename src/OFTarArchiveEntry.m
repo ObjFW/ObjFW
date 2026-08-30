@@ -516,10 +516,10 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	stringToBuffer(buffer + 297, _groupOwnerAccountName, 32, encoding,
 	    false);
 	stringToBuffer(buffer + 329,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
+	    [OFString stringWithFormat: @"%06lo", _deviceMajor], 8,
 	    OFStringEncodingASCII, false);
 	stringToBuffer(buffer + 337,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
+	    [OFString stringWithFormat: @"%06lo ", _deviceMinor], 8,
 	    OFStringEncodingASCII, false);
 	OFFillMemory(buffer + 345, '\0', 155 + 12);
 
