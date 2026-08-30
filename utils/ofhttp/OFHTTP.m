@@ -1119,17 +1119,16 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    [OFGeminiRequestFailedException class]]) {
 		OFGeminiResponse *response =
 		    ((OFGeminiRequestFailedException *)*exception).response;
-		unsigned short statusCode;
-		OFString *codeString;
 
 		if (_ignoreStatus) {
 			*exception = nil;
 			return true;
 		}
 
-		statusCode = response.statusCode;
-		codeString = [OFString stringWithFormat: @"%hu %@",
-		    statusCode, response.metadata];
+		unsigned short statusCode = response.statusCode;
+		OFString *codeString = [OFString stringWithFormat: @"%hu %@",
+		    statusCode,
+		    response.metadata.stringByReplacingControlCharacters];
 		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[iri]>!\n"
 		    @"  Status code: %[code]",
