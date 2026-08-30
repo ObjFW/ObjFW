@@ -66,7 +66,7 @@ extern void glue_objc_registerClassPair(Class _Nonnull class_);
 extern unsigned int glue_objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count);
 extern Class _Nonnull *_Nonnull glue_objc_copyClassList(unsigned int *_Nullable length);
 extern bool glue_class_isMetaClass(Class _Nullable class_);
-extern const char *_Nullable glue_class_getName(Class _Nullable class_);
+extern const char *_Nonnull glue_class_getName(Class _Nullable class_);
 extern Class _Nullable glue_class_getSuperclass(Class _Nullable class_);
 extern unsigned long glue_class_getInstanceSize(Class _Nullable class_);
 extern bool glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector);
@@ -80,7 +80,7 @@ extern bool glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, I
 extern IMP _Nullable glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 extern Class _Nullable glue_object_getClass(id _Nullable object);
 extern Class _Nullable glue_object_setClass(id _Nullable object, Class _Nonnull class_);
-extern const char *_Nullable glue_object_getClassName(id _Nullable object);
+extern const char *_Nonnull glue_object_getClassName(id _Nullable object);
 extern const char *_Nonnull glue_protocol_getName(Protocol *_Nonnull protocol);
 extern bool glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
 extern bool glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);

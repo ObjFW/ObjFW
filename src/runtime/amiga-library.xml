@@ -172,7 +172,7 @@
   <function name='class_isMetaClass' return-type='bool'>
     <argument name='class_' type='Class _Nullable'/>
   </function>
-  <function name='class_getName' return-type='const char *_Nullable'>
+  <function name='class_getName' return-type='const char *_Nonnull'>
     <argument name='class_' type='Class _Nullable'/>
   </function>
   <function name='class_getSuperclass' return-type='Class _Nullable'>
@@ -223,7 +223,7 @@
     <argument name='object' type='id _Nullable'/>
     <argument name='class_' type='Class _Nonnull'/>
   </function>
-  <function name='object_getClassName' return-type='const char *_Nullable'>
+  <function name='object_getClassName' return-type='const char *_Nonnull'>
     <argument name='object' type='id _Nullable'/>
   </function>
   <function name='protocol_getName' return-type='const char *_Nonnull'>

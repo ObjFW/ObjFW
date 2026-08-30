@@ -505,7 +505,7 @@ class_isMetaClass(Class _Nullable class_)
 	return __extension__ ((bool (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 286))(class_);
 }
 
-const char *_Nullable __attribute__((__weak__))
+const char *_Nonnull __attribute__((__weak__))
 class_getName(Class _Nullable class_)
 {
 	__asm__ __volatile__ (
@@ -513,7 +513,7 @@ class_getName(Class _Nullable class_)
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(class_);
+	return __extension__ ((const char *_Nonnull (*)(Class _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 292))(class_);
 }
 
 Class _Nullable __attribute__((__weak__))
@@ -637,7 +637,7 @@ object_setClass(id _Nullable object, Class _Nonnull class_)
 	return __extension__ ((Class _Nullable (*)(id _Nullable, Class _Nonnull))*(void **)(((uintptr_t)ObjFWRTBase) - 358))(object, class_);
 }
 
-const char *_Nullable __attribute__((__weak__))
+const char *_Nonnull __attribute__((__weak__))
 object_getClassName(id _Nullable object)
 {
 	__asm__ __volatile__ (
@@ -645,7 +645,7 @@ object_getClassName(id _Nullable object)
 	    :: "r" (ObjFWRTBase) : "r12"
 	);
 
-	return __extension__ ((const char *_Nullable (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object);
+	return __extension__ ((const char *_Nonnull (*)(id _Nullable))*(void **)(((uintptr_t)ObjFWRTBase) - 364))(object);
 }
 
 const char *_Nonnull __attribute__((__weak__))

@@ -281,7 +281,7 @@ extern bool class_isMetaClass(Class _Nullable class_);
  * @param class_ The class whose name should be returned
  * @return The name of the specified class
  */
-extern const char *_Nullable class_getName(Class _Nullable class_);
+extern const char *_Nonnull class_getName(Class _Nullable class_);
 
 /**
  * @brief Returns the superclass of the specified class.
@@ -413,7 +413,7 @@ extern Class _Nullable object_setClass(id _Nullable object,
  * @param object The object whose class name should be returned
  * @return The object's class name
  */
-extern const char *_Nullable object_getClassName(id _Nullable object);
+extern const char *_Nonnull object_getClassName(id _Nullable object);
 
 /**
  * @brief Returns the name of the specified protocol.

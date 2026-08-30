@@ -296,7 +296,7 @@ glue_class_isMetaClass(Class _Nullable class_)
 	return class_isMetaClass(class_);
 }
 
-const char *_Nullable __saveds
+const char *_Nonnull __saveds
 glue_class_getName(Class _Nullable class_)
 {
 	return class_getName(class_);
@@ -370,7 +370,7 @@ glue_object_setClass(id _Nullable object, Class _Nonnull class_)
 	return object_setClass(object, class_);
 }
 
-const char *_Nullable __saveds
+const char *_Nonnull __saveds
 glue_object_getClassName(id _Nullable object)
 {
 	return object_getClassName(object);
