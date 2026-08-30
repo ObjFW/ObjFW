@@ -195,7 +195,8 @@ encodingForContentType(OFString *contentType)
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				if ([name isEqual: @"charset"])
+				if ([name caseInsensitiveCompare: @"charset"] ==
+				    OFOrderedSame)
 					charset = value;
 
 				state = stateAfterParamValue;
