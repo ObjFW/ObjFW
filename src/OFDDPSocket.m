@@ -166,7 +166,10 @@ struct ATInterfaceConfig {
 #ifdef OF_MACOS
 	if (setsockopt(_socket, ATPROTO_NONE, DDP_STRIPHDR, &one,
 	    (socklen_t)sizeof(one)) != 0 || ioctlsocket(_socket, _IOWR('a', 2,
-	    struct ATInterfaceConfig), &config) != 0)
+	    struct ATInterfaceConfig), &config) != 0) {
+		closesocket(_socket);
+		_socket = OFInvalidSocketHandle;
+
 		@throw [OFBindDDPSocketFailedException
 		    exceptionWithNetwork: network
 				    node: node
@@ -174,6 +177,7 @@ struct ATInterfaceConfig {
 			    protocolType: protocolType
 				  socket: self
 				   errNo: _OFSocketErrNo()];
+	}
 
 	OFSocketAddressSetAppleTalkNetwork(&address, config.address.s_net);
 	OFSocketAddressSetAppleTalkNode(&address, config.address.s_node);
