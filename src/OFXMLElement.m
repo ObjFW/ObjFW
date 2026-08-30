@@ -183,8 +183,8 @@
 			namespace: element->_namespace];
 
 	@try {
-		_attributes = [element->_attributes mutableCopy];
 		_namespaces = [element->_namespaces mutableCopy];
+		_attributes = [element->_attributes mutableCopy];
 		_children = [element->_children mutableCopy];
 	} @catch (id e) {
 		objc_release(self);
@@ -233,11 +233,8 @@
 			namespace: element->_namespace];
 
 	@try {
-		objc_release(_attributes);
-		_attributes = objc_retain(element->_attributes);
-		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
-		objc_release(_children);
+		_attributes = objc_retain(element->_attributes);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
@@ -285,11 +282,8 @@
 			namespace: element->_namespace];
 
 	@try {
-		objc_release(_attributes);
-		_attributes = objc_retain(element->_attributes);
-		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
-		objc_release(_children);
+		_attributes = objc_retain(element->_attributes);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
@@ -305,8 +299,8 @@
 {
 	objc_release(_name);
 	objc_release(_namespace);
-	objc_release(_attributes);
 	objc_release(_namespaces);
+	objc_release(_attributes);
 	objc_release(_children);
 
 	[super dealloc];
@@ -314,6 +308,9 @@
 
 - (OFArray *)attributes
 {
+	if (_attributes == nil)
+		return [OFArray array];
+
 	return objc_autoreleaseReturnValue([_attributes copy]);
 }
 
@@ -326,6 +323,9 @@
 
 - (OFArray *)children
 {
+	if (_children == nil)
+		return [OFArray array];
+
 	return objc_autoreleaseReturnValue([_children copy]);
 }
 
@@ -738,6 +738,9 @@
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
+	if (_children == nil)
+		_children = [[OFMutableArray alloc] init];
+
 	[_children insertObjectsFromArray: children atIndex: idx];
 }
 
@@ -876,11 +879,11 @@
 	if (element->_namespace != _namespace &&
 	    ![element->_namespace isEqual: _namespace])
 		return false;
-	if (element->_attributes != _attributes &&
-	    ![element->_attributes isEqual: _attributes])
-		return false;
 	if (element->_namespaces != _namespaces &&
 	    ![element->_namespaces isEqual: _namespaces])
+		return false;
+	if (element->_attributes != _attributes &&
+	    ![element->_attributes isEqual: _attributes])
 		return false;
 	if (element->_children != _children &&
 	    ![element->_children isEqual: _children])
@@ -897,8 +900,8 @@
 
 	OFHashAddHash(&hash, _name.hash);
 	OFHashAddHash(&hash, _namespace.hash);
-	OFHashAddHash(&hash, _attributes.hash);
 	OFHashAddHash(&hash, _namespaces.hash);
+	OFHashAddHash(&hash, _attributes.hash);
 	OFHashAddHash(&hash, _children.hash);
 
 	OFHashFinalize(&hash);

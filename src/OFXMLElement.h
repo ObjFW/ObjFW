@@ -37,9 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLElement: OFXMLNode
 {
 	OFString *_name, *_Nullable _namespace;
-	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
 	    _namespaces;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableArray OF_GENERIC(OFXMLNode *) *_Nullable _children;
 	OF_RESERVE_IVARS(OFXMLElement, 4)
 }
@@ -62,13 +62,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An array with the attributes of the element.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+@property OF_NULL_RESETTABLE_PROPERTY (readonly, nonatomic)
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /**
  * @brief An array of @ref OFXMLNode with all children of the element.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy)
+@property OF_NULL_RESETTABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFXMLNode *) *children;
 
 /**
