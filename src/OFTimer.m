@@ -335,7 +335,7 @@
 	self = [super init];
 
 	@try {
-		if (_interval < 0.0)
+		if (interval < 0.0)
 			@throw [OFInvalidArgumentException exception];
 
 		_fireDate = objc_retain(fireDate);
@@ -469,7 +469,7 @@
 	self = [super init];
 
 	@try {
-		if (_interval < 0.0)
+		if (interval < 0.0)
 			@throw [OFInvalidArgumentException exception];
 
 		_fireDate = objc_retain(fireDate);
