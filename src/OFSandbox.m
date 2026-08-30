@@ -464,6 +464,8 @@
 		return false;
 	if (sandbox->_returnsErrors != _returnsErrors)
 		return false;
+	if (sandbox->_unveiledPaths != _unveiledPaths)
+		return false;
 
 	return true;
 }
@@ -503,6 +505,7 @@
 	OFHashAddByte(&hash, _allowsBPF);
 	OFHashAddByte(&hash, _allowsUnveil);
 	OFHashAddByte(&hash, _returnsErrors);
+	OFHashAddHash(&hash, _unveiledPaths.hash);
 
 	OFHashFinalize(&hash);
 
