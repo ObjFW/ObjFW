@@ -166,17 +166,19 @@ static const OFRunLoopMode connectRunLoopMode =
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
-	[self asyncConnectToHost: host
-			    port: port
-		     runLoopMode: connectRunLoopMode];
+	@try {
+		[self asyncConnectToHost: host
+				    port: port
+			     runLoopMode: connectRunLoopMode];
 
-	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode beforeDate: nil];
+		while (!connectDelegate->_done)
+			[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
-	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
-
-	_delegate = delegate;
+		/* Cleanup */
+		[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = delegate;
+	}
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
