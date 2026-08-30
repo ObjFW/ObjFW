@@ -369,7 +369,7 @@ next_line:
 		[[interface objectForKey: OFNetworkInterfaceIPv6Addresses]
 		    makeImmutable];
 
-	return false;
+	return true;
 # elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPv6Addresses, OFSocketAddressFamilyIPv6,
@@ -461,7 +461,7 @@ queryNetworkInterfaceIPXAddresses(OFMutableDictionary *ret)
 		[[interface objectForKey: OFNetworkInterfaceIPXAddresses]
 		    makeImmutable];
 
-	return false;
+	return true;
 # elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceIPXAddresses, OFSocketAddressFamilyIPX,
@@ -554,7 +554,7 @@ queryNetworkInterfaceAppleTalkAddresses(OFMutableDictionary *ret)
 		[[interface objectForKey: OFNetworkInterfaceAppleTalkAddresses]
 		    makeImmutable];
 
-	return false;
+	return true;
 # elif defined(HAVE_NET_IF_H)
 	return queryNetworkInterfaceAddresses(ret,
 	    OFNetworkInterfaceAppleTalkAddresses,
