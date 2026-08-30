@@ -470,11 +470,11 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	    false);
 	stringToBuffer(buffer + 108,
 	    [OFString stringWithFormat: @"%06o ",
-	    _ownerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    _ownerAccountID.unsignedIntValue], 8, OFStringEncodingASCII,
 	    false);
 	stringToBuffer(buffer + 116,
 	    [OFString stringWithFormat: @"%06o ",
-	    _groupOwnerAccountID.unsignedShortValue], 8, OFStringEncodingASCII,
+	    _groupOwnerAccountID.unsignedIntValue], 8, OFStringEncodingASCII,
 	    false);
 	if (_uncompressedSize > 077777777777) {
 		OFString *string = [OFString
