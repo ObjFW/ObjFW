@@ -335,6 +335,9 @@
 	self = [super init];
 
 	@try {
+		if (_interval < 0.0)
+			@throw [OFInvalidArgumentException exception];
+
 		_fireDate = objc_retain(fireDate);
 		_interval = interval;
 		_target = objc_retain(target);
@@ -466,6 +469,9 @@
 	self = [super init];
 
 	@try {
+		if (_interval < 0.0)
+			@throw [OFInvalidArgumentException exception];
+
 		_fireDate = objc_retain(fireDate);
 		_interval = interval;
 		_repeats = repeats;
