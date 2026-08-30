@@ -167,42 +167,42 @@
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	struct timespec timeout;
-	struct kevent eventList[eventListSize];
-	int events;
-
 	if ([self processReadBuffers])
 		return;
 
-	timeout.tv_sec = (time_t)floor(timeInterval);
-	timeout.tv_nsec = (long)
-	    ((timeInterval - floor(timeInterval)) * 1000000000.0);
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
 
+	struct timespec timeout = {
+		.tv_sec = (time_t)floor(timeInterval),
+		.tv_nsec = (long)
+		    ((timeInterval - floor(timeInterval)) * 1000000000.0)
+	};
+
+	int events;
+	struct kevent eventList[eventListSize];
 	while ((events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
-	    (timeInterval != -1 ? &timeout : NULL))) < 0)
+	    (timeInterval != 64060588800.0 ? &timeout : NULL))) < 0)
 		if (errno != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
-		void *pool;
-
 		if (eventList[i].flags & EV_ERROR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: (int)eventList[i].data];
 
 		if (eventList[i].ident == (uintptr_t)_cancelFD[0]) {
-			char buffer;
-
 			OFAssert(eventList[i].filter == EVFILT_READ);
+			char buffer;
 			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
 		}
 
-		pool = objc_autoreleasePoolPush();
+		void *pool = objc_autoreleasePoolPush();
 
 		switch (eventList[i].filter) {
 		case EVFILT_READ:

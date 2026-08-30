@@ -245,7 +245,7 @@
 
 - (void)observe
 {
-	[self observeForTimeInterval: -1];
+	[self observeForTimeInterval: 64060588800.0];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval

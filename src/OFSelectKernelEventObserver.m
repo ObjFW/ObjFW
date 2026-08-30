@@ -180,19 +180,14 @@
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	fd_set readFDs;
-	fd_set writeFDs;
-	struct timeval timeout;
-	int events;
-#ifdef OF_AMIGAOS
-	BYTE cancelSignal;
-	ULONG execSignalMask;
-#endif
-	void *pool;
-
 	if ([self processReadBuffers])
 		return;
 
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
+
+	fd_set readFDs;
+	fd_set writeFDs;
 #ifdef FD_COPY
 	FD_COPY(&_readFDs, &readFDs);
 	FD_COPY(&_writeFDs, &writeFDs);
@@ -207,29 +202,33 @@
 	 * however, this is not available on Win32. As an int should always
 	 * satisfy the required range, we just cast to int.
 	 */
+	struct timeval timeout = {
 #ifndef OF_WINDOWS
-	timeout.tv_sec = (time_t)floor(timeInterval);
+		.tv_sec = (time_t)floor(timeInterval),
 #else
-	timeout.tv_sec = (long)floor(timeInterval);
+		.tv_sec = (long)floor(timeInterval),
 #endif
-	timeout.tv_usec = (int)
-	    ((timeInterval - floor(timeInterval)) * 1000000.0);
+		.tv_usec = (int)
+		    ((timeInterval - floor(timeInterval)) * 1000000.0)
+	};
 
 #ifdef OF_AMIGAOS
+	BYTE cancelSignal;
 	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
 		@throw [OFObserveKernelEventsFailedException
 		    exceptionWithObserver: self
 				    errNo: EAGAIN];
 
-	execSignalMask = _execSignalMask | (1ul << cancelSignal);
+	ULONG execSignalMask = _execSignalMask | (1ul << cancelSignal);
 
 	Forbid();
 
 	_waitingTask = FindTask(NULL);
 	_cancelSignal = cancelSignal;
 
-	events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (void *)(timeInterval != -1 ? &timeout : NULL), &execSignalMask);
+	int events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (void *)(timeInterval != 64060588800.0 ? &timeout : NULL),
+	    &execSignalMask);
 
 	execSignalMask &= ~(1ul << cancelSignal);
 
@@ -249,8 +248,9 @@
 	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
 		[_delegate execSignalWasReceived: execSignalMask];
 #else
+	int events;
 	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (timeInterval != -1 ? &timeout : NULL))) < 0) {
+	    (timeInterval != 64060588800.0 ? &timeout : NULL))) < 0) {
 		int errNo = _OFSocketErrNo();
 
 		if (errNo != EINTR)
@@ -261,7 +261,6 @@
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
-
 # ifdef OF_HAVE_PIPE
 		OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 # else
@@ -271,7 +270,7 @@
 	}
 #endif
 
-	pool = objc_autoreleasePoolPush();
+	void *pool = objc_autoreleasePoolPush();
 
 	for (id <OFReadyForReadingObserving> object in
 	    objc_autorelease([_readObjects copy])) {

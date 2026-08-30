@@ -193,31 +193,32 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	OFNull *nullObject = [OFNull null];
-	struct epoll_event eventList[eventListSize];
-	int events;
-
 	if ([self processReadBuffers])
 		return;
 
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
+
+	int events;
+	struct epoll_event eventList[eventListSize];
 	while ((events = epoll_wait(_epfd, eventList, eventListSize,
-	    (timeInterval != -1 ? (int)(timeInterval * 1000.0) : -1))) < 0)
+	    (timeInterval != 64060588800.0 ? (int)(timeInterval * 1000.0) :
+	    -1))) < 0)
 		if (errno != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
+	OFNull *nullObject = [OFNull null];
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {
-			void *pool;
-
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
 				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 				continue;
 			}
 
-			pool = objc_autoreleasePoolPush();
+			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
