@@ -119,7 +119,10 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 
 		_ranges = [[OFMutableData alloc]
 		    initWithItemSize: sizeof(OFRange)];
-		[_ranges addItem: &range];
+
+		if (range.length > 0)
+			[_ranges addItem: &range];
+
 		_count = range.length;
 	} @catch (id e) {
 		objc_release(self);
@@ -213,6 +216,9 @@ positionForIndex(const OFRange *ranges, size_t count, size_t location)
 		return OFNotFound;
 
 	position = positionForIndex(ranges, count, idx + 1);
+
+	if (SIZE_MAX - idx < 1)
+		return OFNotFound;
 
 	if (OFLocationInRange(idx + 1, ranges[position]))
 		return idx + 1;
