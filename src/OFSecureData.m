@@ -412,6 +412,9 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		size_t pageSize = [OFSystemInfo pageSize];
 #endif
 
+		if (itemSize == 0)
+			@throw [OFInvalidArgumentException exception];
+
 		if (count > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
 
