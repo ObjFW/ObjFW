@@ -474,12 +474,12 @@ processLoadQueue(void)
 
 			loadQueue[i] = loadQueue[loadQueueCount];
 
-			loadQueue = realloc(loadQueue,
-			    sizeof(Class) * loadQueueCount);
-
-			if (loadQueue == NULL)
+			if ((loadQueue = realloc(loadQueue,
+			    sizeof(Class) * loadQueueCount)) == NULL)
 				_OBJC_ERROR("Not enough memory for load "
 				    "queue!");
+
+			i--;
 		}
 	}
 }
