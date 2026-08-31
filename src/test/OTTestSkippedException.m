@@ -67,6 +67,6 @@
 		return [OFString stringWithFormat: @"Test skipped: %@",
 						   _message];
 	else
-		return nil;
+		return @"Test skipped: OTSkip() called";
 }
 @end
