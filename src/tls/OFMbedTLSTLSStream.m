@@ -87,6 +87,9 @@ readFunc(void *ctx, unsigned char *buffer, size_t length)
 		length = [stream.underlyingStream readIntoBuffer: buffer
 							  length: length];
 	} @catch (OFReadFailedException *e) {
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return MBEDTLS_ERR_SSL_WANT_READ;
+
 		return -1;
 	}
 
