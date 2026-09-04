@@ -25,6 +25,7 @@
 #import "OFFileManager.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
+#import "OFNumber.h"
 #import "OFStdIOStream.h"
 
 #import "GZIPArchive.h"
@@ -39,12 +40,11 @@ setPermissions(OFString *destination, OFIRI *source)
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	OFFileAttributes attributes = [fileManager
-	    attributesOfItemAtIRI: source];
-	OFFileAttributeKey key = OFFilePOSIXPermissions;
+	unsigned long permissions = [fileManager
+	    attributesOfItemAtIRI: source].filePOSIXPermissions & 0777;
 	OFFileAttributes destinationAttributes = [OFDictionary
-	    dictionaryWithObject: [attributes objectForKey: key]
-			  forKey: key];
+	    dictionaryWithObject: [OFNumber numberWithUnsignedLong: permissions]
+			  forKey: OFFilePOSIXPermissions];
 
 	[fileManager setAttributes: destinationAttributes
 		      ofItemAtPath: destination];
