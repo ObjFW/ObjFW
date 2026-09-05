@@ -393,6 +393,11 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	return nil;
 }
 
+/*
+ * TODO: This currently accepts all Unicode character, while only specific
+ *	 classes should be allowed. However, ObjFW has no Unicode character
+ *	 classification yet.
+ */
 static inline OFString *
 parseIdentifier(const char **pointer, const char *stop)
 {
