@@ -306,7 +306,12 @@ sizeOfArray(const char **type, size_t *length)
 		if (SIZE_MAX / 10 < count)
 			@throw [OFOutOfRangeException exception];
 
-		count = count * 10 + **type - '0';
+		count *= 10;
+
+		if (SIZE_MAX - count < (size_t)(**type - '0'))
+			@throw [OFOutOfRangeException exception];
+
+		count += **type - '0';
 
 		(*type)++;
 		(*length)--;
@@ -648,7 +653,14 @@ OFAlignmentOfTypeEncoding(const char *type)
 						@throw [OFOutOfRangeException
 						    exception];
 
-					offset = offset * 10 + _types[i] - '0';
+					offset *= 10;
+
+					if (SIZE_MAX - offset <
+					    (size_t)(_types[i] - '0'))
+						@throw [OFOutOfRangeException
+						    exception];
+
+					offset += _types[i] - '0';
 				}
 
 				[_offsets addItem: &offset];
