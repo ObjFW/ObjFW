@@ -1329,7 +1329,9 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		}							  \
 	}								  \
 									  \
-	type *queueItem = objc_autorelease([[type alloc] init]);
+	type *queueItem = objc_autorelease([[type alloc] init]);	  \
+									  \
+	@try {
 # define NEW_WRITE(type, object, mode)					  \
 	void *pool = objc_autoreleasePoolPush();			  \
 	OFRunLoop *runLoop = [self currentRunLoop];			  \
@@ -1351,9 +1353,33 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		}							  \
 	}								  \
 									  \
-	type *queueItem = objc_autorelease([[type alloc] init]);
-#define QUEUE_ITEM							  \
-	[queue appendObject: queueItem];				  \
+	type *queueItem = objc_autorelease([[type alloc] init]);	  \
+									  \
+	@try {
+#define QUEUE_READ(object)						  \
+		[queue appendObject: queueItem];			  \
+	} @catch (id e) {						  \
+		if (queue.count == 0) {					  \
+			[state->_kernelEventObserver			  \
+			    removeObjectForReading: object];		  \
+			[state->_readQueues removeObjectForKey: object];  \
+		}							  \
+									  \
+		@throw e;						  \
+	}								  \
+									  \
+	objc_autoreleasePoolPop(pool);
+#define QUEUE_WRITE(object)						  \
+		[queue appendObject: queueItem];			  \
+	} @catch (id e) {						  \
+		if (queue.count == 0) {					  \
+			[state->_kernelEventObserver			  \
+			    removeObjectForWriting: object];		  \
+			[state->_writeQueues removeObjectForKey: object]; \
+		}							  \
+									  \
+		@throw e;						  \
+	}								  \
 									  \
 	objc_autoreleasePoolPop(pool);
 
@@ -1376,7 +1402,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1398,7 +1424,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_exactLength = exactLength;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
@@ -1418,7 +1444,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1438,7 +1464,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -1458,7 +1484,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_data = [data copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(stream)
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -1480,7 +1506,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_string = [string copy];
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_WRITE(stream)
 }
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -1492,7 +1518,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = objc_retain(delegate);
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 # endif
 
@@ -1508,7 +1534,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_handler = [handler copy];
 # endif
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)sock
@@ -1529,7 +1555,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
@@ -1550,7 +1576,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_data = [data copy];
 	queueItem->_receiver = *receiver;
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 
 + (void)of_addAsyncReceiveForSequencedPacketSocket: (OFSequencedPacketSocket *)
@@ -1572,7 +1598,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForSequencedPacketSocket: (OFSequencedPacketSocket *)sock
@@ -1591,7 +1617,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_data = [data copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 
 # ifdef OF_HAVE_SCTP
@@ -1614,7 +1640,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)sock
@@ -1635,12 +1661,13 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_data = [data copy];
 	queueItem->_info = [info copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 # endif
 # undef NEW_READ
 # undef NEW_WRITE
-# undef QUEUE_ITEM
+# undef QUEUE_READ
+# undef QUEUE_WRITE
 
 + (void)of_cancelAsyncRequestsForObject: (id)object
 {
