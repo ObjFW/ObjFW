@@ -555,10 +555,13 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 			break;
 
 		if (**pointer == ',') {
+			if OF_UNLIKELY (array.count == 0)
+				return nil;
+
 			(*pointer)++;
 			skipWhitespacesAndComments(pointer, stop, line);
 
-			if (*pointer >= stop || **pointer != ']')
+			if OF_UNLIKELY (*pointer >= stop || **pointer != ']')
 				return nil;
 
 			break;
@@ -613,6 +616,9 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 			break;
 
 		if (**pointer == ',') {
+			if OF_UNLIKELY (dictionary.count == 0)
+				return nil;
+
 			(*pointer)++;
 			skipWhitespacesAndComments(pointer, stop, line);
 
