@@ -3,8 +3,8 @@ include ../../extra.mk
 PROG = ofhttp${PROG_SUFFIX}
 SRCS = OFHTTP.m		\
        ProgressBar.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofhttp.1
 
 include ../../buildsys.mk

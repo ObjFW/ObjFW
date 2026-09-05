@@ -7,8 +7,8 @@ SRCS = GZIPArchive.m	\
        TarArchive.m	\
        ZIPArchive.m	\
        ZooArchive.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofarc.1
 
 include ../../buildsys.mk

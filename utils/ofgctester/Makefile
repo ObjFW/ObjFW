@@ -2,8 +2,8 @@ include ../../extra.mk
 
 PROG = ofgctester${PROG_SUFFIX}
 SRCS = OFGCTester.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofgctester.1
 
 include ../../buildsys.mk

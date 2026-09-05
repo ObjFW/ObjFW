@@ -546,20 +546,68 @@ evaluateArray(OFArray *array, OFDictionary *variables)
 
 OF_SINGLETON_METHODS
 
+static OFIRI *
+findJSONFile(OFIRI *baseIRI, OFString *JSONName)
+{
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+	OFIRI *IRI;
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"json5"];
+	if ([fileManager fileExistsAtIRI: IRI])
+		return IRI;
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"jsonc"];
+	if ([fileManager fileExistsAtIRI: IRI])
+		return IRI;
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"json"];
+	if ([fileManager fileExistsAtIRI: IRI])
+		return IRI;
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"json5.gz"];
+	if ([fileManager fileExistsAtIRI: IRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = IRI.string;
+		return tmp;
+	}
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"jsonc.gz"];
+	if ([fileManager fileExistsAtIRI: IRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = IRI.string;
+		return tmp;
+	}
+
+	IRI = [[baseIRI IRIByAppendingPathComponent: JSONName]
+	    IRIByAppendingPathExtension: @"json.gz"];
+	if ([fileManager fileExistsAtIRI: IRI]) {
+		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
+		tmp.path = IRI.string;
+		return tmp;
+	}
+
+	return nil;
+}
+
 - (void)addLocalizationDirectoryIRI: (OFIRI *)IRI
 {
-	void *pool;
-	OFFileManager *fileManager;
-	OFIRI *mapIRI, *localizationIRI, *compressedLocalizationIRI;
-	OFString *languageCode, *countryCode, *localizationFile;
-	OFDictionary *map;
-
 	if (_languageCode == nil)
 		return;
 
-	pool = objc_autoreleasePoolPush();
+	void *pool = objc_autoreleasePoolPush();
 
-	mapIRI = [IRI IRIByAppendingPathComponent: @"localizations.json"];
+	OFIRI *mapIRI = findJSONFile(IRI, @"localizations");
+	if (mapIRI == nil) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	OFDictionary *map;
 	@try {
 		map = [[OFString stringWithContentsOfIRI: mapIRI]
 		     objectByParsingJSON];
@@ -568,13 +616,18 @@ OF_SINGLETON_METHODS
 		return;
 	}
 
-	languageCode = _languageCode.lowercaseString;
-	countryCode = _countryCode.lowercaseString;
+	if (![map isKindOfClass: [OFDictionary class]]) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	OFString *languageCode = _languageCode.lowercaseString;
+	OFString *countryCode = _countryCode.lowercaseString;
 
 	if (countryCode == nil)
 		countryCode = @"";
 
-	localizationFile = [[map objectForKey: languageCode]
+	OFString *localizationFile = [[map objectForKey: languageCode]
 	    objectForKey: countryCode];
 	if (localizationFile == nil)
 		localizationFile = [[map objectForKey: languageCode]
@@ -585,18 +638,10 @@ OF_SINGLETON_METHODS
 		return;
 	}
 
-	fileManager = [OFFileManager defaultManager];
-
-	localizationIRI = [IRI IRIByAppendingPathComponent:
-	    [localizationFile stringByAppendingString: @".json"]];
-	compressedLocalizationIRI = [IRI IRIByAppendingPathComponent:
-	    [localizationFile stringByAppendingString: @".json.gz"]];
-
-	if (![fileManager fileExistsAtIRI: localizationIRI] &&
-	    [fileManager fileExistsAtIRI: compressedLocalizationIRI]) {
-		OFMutableIRI *tmp = [OFMutableIRI IRIWithScheme: @"gzip"];
-		tmp.path = compressedLocalizationIRI.string;
-		localizationIRI = tmp;
+	OFIRI *localizationIRI = findJSONFile(IRI, localizationFile);
+	if (localizationIRI == nil) {
+		objc_autoreleasePoolPop(pool);
+		return;
 	}
 
 	[_localizedStrings addObject: [[OFString stringWithContentsOfIRI:

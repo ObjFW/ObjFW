@@ -2,8 +2,8 @@ include ../../extra.mk
 
 PROG = ofhash${PROG_SUFFIX}
 SRCS = OFHash.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofhash.1
 
 include ../../buildsys.mk
