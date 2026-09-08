@@ -435,6 +435,7 @@ OF_DIRECT_MEMBERS
 		_pid = -1;
 	}
 
-	return WEXITSTATUS(_status);
+	int status = _status;
+	return WEXITSTATUS(status);
 }
 @end
