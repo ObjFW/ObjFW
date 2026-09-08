@@ -55,7 +55,7 @@ typedef struct {
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifdef __clang__
+#if defined(__clang__) && __has_feature(nullability)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wnullability-completeness"
 #endif
@@ -166,7 +166,7 @@ extern int OFPlainThreadDetach(OFPlainThread thread);
 }
 #endif
 
-#ifdef __clang__
+#if defined(__clang__) && __has_feature(nullability)
 # pragma clang diagnostic pop
 #endif
 
