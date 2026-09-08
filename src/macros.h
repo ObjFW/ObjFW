@@ -120,7 +120,8 @@
 # define OF_MALLOC_FUNC
 #endif
 
-#if __STDC_VERSION__ >= 201112L
+#if __STDC_VERSION__ >= 201112L && (!defined(__clang__) || \
+    __clang_major__ > 3 || (__clang__major__ == 3 && __clang_minor__ >= 3))
 # define OF_ALIGN(size) _Alignas(size)
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
