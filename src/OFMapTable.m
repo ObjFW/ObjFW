@@ -256,7 +256,7 @@ resizeForCount(OFMapTable *self, uint32_t count)
 }
 
 static void
-setObject(OFMapTable *restrict self, void *key, void *object, uint32_t hash)
+setObject(OFMapTable *self, void *key, void *object, uint32_t hash)
 {
 	uint32_t rotatedHash, i, last;
 	void *old;
