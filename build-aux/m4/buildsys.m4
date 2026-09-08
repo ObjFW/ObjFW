@@ -137,38 +137,38 @@ AC_DEFUN([_BUILDSYS_STACK_PROTECTOR_REAL], [
 	old_OBJCXXFLAGS="$OBJCXXFLAGS"
 	old_LDFLAGS="$LDFLAGS"
 
-	CFLAGS="$CFLAGS -fstack-protector-strong"
-	CXXFLAGS="$CXXFLAGS -fstack-protector-strong"
-	OBJCFLAGS="$OBJCFLAGS -fstack-protector-strong"
-	OBJCXXFLAGS="$OBJCXXFLAGS -fstack-protector-strong"
-	LDFLAGS="$LDFLAGS -fstack-protector-strong"
+	CFLAGS="$CFLAGS -Werror -fstack-protector-strong"
+	CXXFLAGS="$CXXFLAGS -Werror -fstack-protector-strong"
+	OBJCFLAGS="$OBJCFLAGS -Werror -fstack-protector-strong"
+	OBJCXXFLAGS="$OBJCXXFLAGS -Werror -fstack-protector-strong"
+	LDFLAGS="$LDFLAGS -Werror -fstack-protector-strong"
 
 	AC_LINK_IFELSE([
 		AC_LANG_PROGRAM([
 			#include <stdio.h>
 		], [
-			char buf[16];
+			char buf[[16]] = { 0 };
 
-			puts("Stack Protector test");
+			printf("Stack Protector test %d", buf[[0]]);
 		])
 	], [
 		AC_MSG_RESULT(strong)
 		AC_SUBST(STACK_PROTECTOR_CFLAGS, -fstack-protector-strong)
 		AC_SUBST(STACK_PROTECTOR_LDFLAGS, -fstack-protector-strong)
 	], [
-		CFLAGS="$old_CFLAGS -fstack-protector"
-		CXXFLAGS="$old_CXXFLAGS -fstack-protector"
-		OBJCFLAGS="$old_OBJCFLAGS -fstack-protector"
-		OBJCXXFLAGS="$old_OBJCXXFLAGS -fstack-protector"
-		LDFLAGS="$old_LDFLAGS -fstack-protector"
+		CFLAGS="$old_CFLAGS -Werror -fstack-protector"
+		CXXFLAGS="$old_CXXFLAGS -Werror -fstack-protector"
+		OBJCFLAGS="$old_OBJCFLAGS -Werror -fstack-protector"
+		OBJCXXFLAGS="$old_OBJCXXFLAGS -Werror -fstack-protector"
+		LDFLAGS="$old_LDFLAGS -Werror -fstack-protector"
 
 		AC_LINK_IFELSE([
 			AC_LANG_PROGRAM([
 				#include <stdio.h>
 			], [
-				char buf[16];
+				char buf[[16]];
 
-				puts("Stack Protector test");
+				printf("Stack Protector test %d", buf[[0]]);
 			])
 		], [
 			AC_MSG_RESULT(yes)
