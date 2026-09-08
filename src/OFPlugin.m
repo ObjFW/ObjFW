@@ -23,6 +23,11 @@
 
 #import "OFLoadPluginFailedException.h"
 
+#ifdef __clang__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 @implementation OFPlugin
 + (instancetype)pluginWithPath: (OFString *)path
 {
@@ -46,3 +51,7 @@
 	return self;
 }
 @end
+
+#ifdef __clang__
+# pragma GCC diagnostic pop
+#endif
