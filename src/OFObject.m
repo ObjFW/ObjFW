@@ -132,7 +132,7 @@ OFAllocMemory(size_t count, size_t size)
 	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
 #endif
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 
 	return pointer;
 }
@@ -153,13 +153,13 @@ OFAllocZeroedMemory(size_t count, size_t size)
 	if OF_UNLIKELY (posix_memalign(
 	    &pointer, OF_BIGGEST_ALIGNMENT, count * size) != 0)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 
 	OFFillMemory(pointer, 0, count * size);
 #else
 	if OF_UNLIKELY ((pointer = calloc(count, size)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 #endif
 
 	return pointer;
@@ -178,7 +178,7 @@ OFResizeMemory(void *pointer, size_t count, size_t size)
 
 	if OF_UNLIKELY ((pointer = realloc(pointer, count * size)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 
 	return pointer;
 }
