@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -154,16 +155,23 @@ OFAllocZeroedMemory(size_t count, size_t size)
 void *
 OFAllocAlignedMemory(size_t count, size_t size, size_t alignment)
 {
-	void *pointer;
-
 	if OF_UNLIKELY (count == 0 || size == 0)
 		return NULL;
 
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
 
+	void *pointer;
 #ifdef HAVE_POSIX_MEMALIGN
-	if OF_UNLIKELY (posix_memalign(&pointer, alignment, count * size) != 0)
+	if (alignment < sizeof(void *))
+		alignment = sizeof(void *);
+
+	int ret = posix_memalign(&pointer, alignment, count * size);
+
+	if OF_UNLIKELY (ret == EINVAL)
+		@throw [OFInvalidArgumentException exception];
+
+	if OF_UNLIKELY (ret != 0)
 #else
 	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
 #endif
