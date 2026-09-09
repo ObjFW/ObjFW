@@ -17,11 +17,14 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#ifdef __clang__
 /*
- * Unfortunately, that's the only way to make all compilers happy with the GNU
- * extensions for variadic macros that are being used here.
+ * This is not great, but the only way to make it work across all Clang
+ * versions - with the obvious downside that it ignores warnings about *all*
+ * GNU extensions in any file using this header.
  */
-#pragma GCC system_header
+# pragma clang diagnostic ignored "-Wgnu"
+#endif
 
 /** @file */
 
