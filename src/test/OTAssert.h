@@ -17,6 +17,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+/* Unfortunately this is the only way to make all GCC versions happy. */
+#pragma GCC system_header
+
 #ifdef __clang__
 /*
  * This is not great, but the only way to make it work across all Clang
