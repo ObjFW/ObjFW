@@ -31,6 +31,7 @@ struct OFLinklibContext {
 	void *_Nullable (*_Nonnull malloc)(size_t);
 	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
 	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
+	int (*_Nonnull posix_memalign)(void **, size_t, size_t);
 	void (*_Nonnull free)(void *_Nullable);
 	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
 	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);

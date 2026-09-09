@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "ObjFWRT.h"
 #import "private.h"
 
@@ -288,6 +290,7 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 	switch (version) {
 	case 1:
 		CopyMem(ctx, &linklibCtx, 80);
+		linklibCtx.posix_memalign = NULL;
 		linklibCtx.vsnprintf = NULL;
 		break;
 	case 2:
@@ -430,12 +433,30 @@ _Unwind_Resume(void *ex)
 }
 
 int
+posix_memalign(void **ptr, size_t align, size_t size)
+{
+	if (linklibCtx.posix_memalign != NULL)
+		return linklibCtx.posix_memalign(ptr, align, size);
+
+	/*
+	 * Best we can do is call into malloc() and return unaligned. After
+	 * all, whatever is using the old linklib that doesn't pass
+	 * posix_memalign was fine with it unaligned before.
+	 *
+	 * We can't use errno here either, as __errno_location isn't passed by
+	 * the linklib.
+	 */
+	*ptr = malloc(size);
+	return (*ptr != NULL ? 0 : ENOMEM);
+}
+
+int
 vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
 {
-	if (linklibCtx.vsnprintf == NULL)
-		return -1;
+	if (linklibCtx.vsnprintf != NULL)
+		return linklibCtx.vsnprintf(str, len, fmt, va);
 
-	return linklibCtx.vsnprintf(str, len, fmt, va);
+	return -1;
 }
 
 size_t inline

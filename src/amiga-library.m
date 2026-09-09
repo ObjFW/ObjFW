@@ -359,6 +359,12 @@ realloc(void *ptr, size_t size)
 	return linklibCtx.realloc(ptr, size);
 }
 
+int
+posix_memalign(void **ptr, size_t align, size_t size)
+{
+	return linklibCtx.posix_memalign(ptr, align, size);
+}
+
 void
 free(void *ptr)
 {

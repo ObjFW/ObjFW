@@ -243,6 +243,7 @@ struct objc_linklib_context {
 	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 	void (*_Nonnull __register_frame)(void *_Nonnull);
 	void (*_Nonnull __deregister_frame)(void *_Nonnull);
+	int (*_Nonnull posix_memalign)(void **, size_t, size_t);
 	int (*_Nonnull vsnprintf)(char *restrict, size_t, const char *restrict,
 	    va_list);
 };

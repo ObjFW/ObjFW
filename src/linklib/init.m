@@ -314,6 +314,7 @@ ctor(void)
 		.malloc = malloc,
 		.calloc = calloc,
 		.realloc = realloc,
+		.posix_memalign = posix_memalign,
 		.free = free,
 		._Unwind_RaiseException = _Unwind_RaiseException,
 		._Unwind_DeleteException = _Unwind_DeleteException,
