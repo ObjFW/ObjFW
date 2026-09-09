@@ -85,8 +85,10 @@
 		if (bitsPerPixel % CHAR_BIT != 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_pixels = OFAllocZeroedMemory(width * height,
-		    bitsPerPixel / CHAR_BIT);
+		_pixels = OFAllocAlignedMemory(width * height,
+		    bitsPerPixel / CHAR_BIT, OF_BIGGEST_ALIGNMENT);
+		OFFillMemory(_pixels, 0,
+		    width * height * (bitsPerPixel / CHAR_BIT));
 		_freeWhenDone = true;
 	} @catch (id e) {
 		objc_release(self);

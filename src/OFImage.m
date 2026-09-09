@@ -179,7 +179,9 @@ OFImageFormatQOIRef(void)
 			@throw [OFInvalidArgumentException exception];
 
 		size_t count = width * height;
-		_pixels = OFAllocZeroedMemory(count, bitsPerPixel / CHAR_BIT);
+		_pixels = OFAllocAlignedMemory(count, bitsPerPixel / CHAR_BIT,
+		    OF_BIGGEST_ALIGNMENT);
+		OFFillMemory(_pixels, 0, count * (bitsPerPixel / CHAR_BIT));
 		_freeWhenDone = true;
 
 		OFCopyMemory(_pixels, pixels,

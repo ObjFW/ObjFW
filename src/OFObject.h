@@ -1694,6 +1694,28 @@ extern void *_Nullable OFAllocZeroedMemory(size_t count, size_t size)
     OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
 
 /**
+ * @brief Allocates memory for the specified number of items of the specified
+ *	  size and alignment.
+ *
+ * To free the allocated memory, use @ref OFFreeMemory. Do not resize memory
+ * returned from an aligned allocation.
+ *
+ * On systems that do not supported aligned allocations, this is equivalent to
+ * @ref OFAllocMemory.
+ *
+ * @param size The size of each item to allocate
+ * @param count The number of items to allocate
+ * @param alignment The alignment of the items to allocate
+ * @return A pointer to the allocated memory. May return NULL if the specified
+ *	   size or count is 0.
+ * @throw OFOutOfMemoryException The allocation failed due to not enough memory
+ * @throw OFOutOfRangeException The requested `count * size` exceeds the
+ *				address space
+ */
+extern void *_Nullable OFAllocAlignedMemory(size_t count, size_t size,
+    size_t alignment) OF_MALLOC_FUNC OF_WARN_UNUSED_RESULT;
+
+/**
  * @brief Resizes memory to the specified number of items of the specified size.
  *
  * To free the allocated memory, use @ref OFFreeMemory.
