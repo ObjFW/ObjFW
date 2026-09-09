@@ -201,8 +201,13 @@
 #if __has_feature(objc_arc)
 # define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
 # define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
-# define OF_RETURNS_INNER_POINTER \
+# if !defined(__clang__) || __clang_major__ > 3 || \
+    (__clang__major__ == 3 && __clang_minor__ >= 4)
+#  define OF_RETURNS_INNER_POINTER \
     __attribute__((__objc_returns_inner_pointer__))
+# else
+#  define OF_RETURNS_INNER_POINTER
+# endif
 # define OF_CONSUMED __attribute__((__ns_consumed__))
 # define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
 #else
