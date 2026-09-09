@@ -121,7 +121,7 @@
 #endif
 
 #if __STDC_VERSION__ >= 201112L && (!defined(__clang__) || \
-    __clang_major__ > 3 || (__clang__major__ == 3 && __clang_minor__ >= 3))
+    __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 3))
 # define OF_ALIGN(size) _Alignas(size)
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
@@ -202,7 +202,7 @@
 # define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
 # define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
 # if !defined(__clang__) || __clang_major__ > 3 || \
-    (__clang__major__ == 3 && __clang_minor__ >= 4)
+    (__clang_major__ == 3 && __clang_minor__ >= 4)
 #  define OF_RETURNS_INNER_POINTER \
     __attribute__((__objc_returns_inner_pointer__))
 # else
