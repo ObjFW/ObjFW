@@ -186,7 +186,7 @@ class_createInstance(Class class, size_t extraBytes)
 #elif defined(OF_DJGPP)
 	instance = alignedAlloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT, &offset);
-#elif defined(OF_SOLARIS)
+#elif defined(HAVE_POSIX_MEMALIGN)
 	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
 	    _OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes) != 0)
 		instance = NULL;

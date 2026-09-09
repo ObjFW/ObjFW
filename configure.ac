@@ -1171,7 +1171,7 @@ morphos*)
 esac
 
 AC_CHECK_HEADERS(sys/mman.h)
-AC_CHECK_FUNCS(mmap mlock)
+AC_CHECK_FUNCS(posix_memalign mmap mlock)
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))

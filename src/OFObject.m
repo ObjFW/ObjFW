@@ -125,7 +125,12 @@ OFAllocMemory(size_t count, size_t size)
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
 
+#ifdef HAVE_POSIX_MEMALIGN
+	if OF_UNLIKELY (posix_memalign(
+	    &pointer, OF_BIGGEST_ALIGNMENT, count * size) != 0)
+#else
 	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
+#endif
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
 
@@ -144,9 +149,18 @@ OFAllocZeroedMemory(size_t count, size_t size)
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
 
+#ifdef HAVE_POSIX_MEMALIGN
+	if OF_UNLIKELY (posix_memalign(
+	    &pointer, OF_BIGGEST_ALIGNMENT, count * size) != 0)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	OFFillMemory(pointer, 0, count * size);
+#else
 	if OF_UNLIKELY ((pointer = calloc(count, size)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
+#endif
 
 	return pointer;
 }
