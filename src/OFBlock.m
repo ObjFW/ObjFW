@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #import "OFBlock.h"
 #ifdef OF_HAVE_ATOMIC_OPS
@@ -164,6 +165,10 @@ struct class _NSConcreteMallocBlock_metaclass;
 # endif
 #endif
 
+static struct {
+	Class isa;
+} allocFailedException;
+
 #ifndef OF_HAVE_ATOMIC_OPS
 # define numSpinlocks 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (numSpinlocks - 1)
@@ -177,7 +182,13 @@ _Block_copy(const void *block_)
 	struct Block *block = (struct Block *)block_;
 
 	if ([(id)block isMemberOfClass: (Class)&_NSConcreteStackBlock]) {
-		struct Block *copy = OFAllocMemory(1, block->descriptor->size);
+		struct Block *copy;
+
+		if ((copy = malloc(block->descriptor->size)) == NULL) {
+			object_setClass((id)&allocFailedException,
+			    [OFAllocFailedException class]);
+			@throw (OFAllocFailedException *)&allocFailedException;
+		}
 		OFCopyMemory(copy, block, block->descriptor->size);
 
 		object_setClass((id)copy, (Class)&_NSConcreteMallocBlock);
@@ -265,9 +276,14 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 		src = src->forwarding;
 
 		if ((src->flags & OFBlockRefCountMask) == 0) {
-			*dst = OFAllocMemory(1, src->size);
-			OFCopyMemory(*dst, src, src->size);
+			if ((*dst = malloc(src->size)) == NULL) {
+				object_setClass((id)&allocFailedException,
+				    [OFAllocFailedException class]);
+				@throw (OFAllocFailedException *)
+				    &allocFailedException;
+			}
 
+			OFCopyMemory(*dst, src, src->size);
 			(*dst)->flags =
 			    ((*dst)->flags & ~OFBlockRefCountMask) | 1;
 			(*dst)->forwarding = *dst;
