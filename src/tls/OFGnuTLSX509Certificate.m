@@ -22,6 +22,8 @@
 #import "OFGnuTLSX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#import "OFGnuTLSX509Name.h"
 #import "OFString.h"
 
 #include <gnutls/pkcs12.h>
@@ -230,5 +232,47 @@ privateKeyFromFile(OFIRI *IRI)
 		gnutls_x509_privkey_deinit(_privateKey);
 
 	[super dealloc];
+}
+
+- (OFX509Name *)issuerName
+{
+	gnutls_datum_t DN;
+
+	if (gnutls_x509_crt_get_issuer_dn3(_certificate, &DN, 0) != 0)
+		@throw [OFInvalidFormatException exception];
+
+	@try {
+		return objc_autoreleaseReturnValue(
+		    [[OFGnuTLSX509Name alloc] of_initWithDN: &DN]);
+	} @finally {
+		gnutls_free(DN.data);
+	}
+}
+
+- (OFDate *)notBeforeDate
+{
+	return [OFDate dateWithTimeIntervalSince1970:
+	    gnutls_x509_crt_get_activation_time(_certificate)];
+}
+
+- (OFDate *)notAfterDate
+{
+	return [OFDate dateWithTimeIntervalSince1970:
+	    gnutls_x509_crt_get_expiration_time(_certificate)];
+}
+
+- (OFX509Name *)subjectName
+{
+	gnutls_datum_t DN;
+
+	if (gnutls_x509_crt_get_dn3(_certificate, &DN, 0) != 0)
+		@throw [OFInvalidFormatException exception];
+
+	@try {
+		return objc_autoreleaseReturnValue(
+		    [[OFGnuTLSX509Name alloc] of_initWithDN: &DN]);
+	} @finally {
+		gnutls_free(DN.data);
+	}
 }
 @end

@@ -18,7 +18,8 @@ SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_OPENSSL}		\
        ${USE_SRCS_WINDOWS}
 SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
-	      OFGnuTLSX509Certificate.m
+	      OFGnuTLSX509Certificate.m			\
+	      OFGnuTLSX509Name.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
 	       OFMbedTLSX509Certificate.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\

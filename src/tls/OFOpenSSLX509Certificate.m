@@ -23,7 +23,6 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
-#import "OFDictionary.h"
 #import "OFOpenSSLX509Name.h"
 #import "OFString.h"
 
@@ -271,7 +270,7 @@ ASN1TimeToDate(const ASN1_TIME *time)
 	[super dealloc];
 }
 
-- (OFDictionary OF_GENERIC(OFString *, OFString *) *)issuerName
+- (OFX509Name *)issuerName
 {
 	const X509_NAME *name = X509_get_issuer_name(_certificate);
 
@@ -290,7 +289,7 @@ ASN1TimeToDate(const ASN1_TIME *time)
 	return ASN1TimeToDate(X509_get0_notAfter(_certificate));
 }
 
-- (OFDictionary OF_GENERIC(OFString *, OFString *) *)subjectName
+- (OFX509Name *)subjectName
 {
 	const X509_NAME *name = X509_get_subject_name(_certificate);
 
