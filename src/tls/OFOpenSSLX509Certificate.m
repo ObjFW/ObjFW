@@ -24,6 +24,7 @@
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
+#import "OFOpenSSLX509Name.h"
 #import "OFString.h"
 
 #include <openssl/pkcs12.h>
@@ -81,47 +82,6 @@ privateKeyFromFile(OFIRI *IRI)
 	return key;
 }
 
-static OFString *
-ASN1StringToString(const ASN1_STRING *string)
-{
-	unsigned char *buffer;
-	int length = ASN1_STRING_to_UTF8(&buffer, string);
-
-	if (length < 0)
-		@throw [OFInvalidFormatException exception];
-
-	@try {
-		return [OFString stringWithUTF8String: (const char *)buffer
-					       length: (size_t)length];
-	} @finally {
-		OPENSSL_free(buffer);
-	}
-}
-
-static OFString *
-ASN1ObjectToString(const ASN1_OBJECT *object)
-{
-	int length = OBJ_obj2txt(NULL, 0, object, 0);
-	if (length < 0)
-		@throw [OFInvalidFormatException exception];
-
-	if (SIZE_MAX - (size_t)length < 1)
-		@throw [OFOutOfRangeException exception];
-
-	char *buffer = OFAllocMemory(1, length + 1);
-	@try {
-		if (OBJ_obj2txt(buffer, length + 1, object, 0) != length)
-			@throw [OFInvalidFormatException exception];
-
-		return [OFString stringWithUTF8StringNoCopy: buffer
-						     length: length
-					       freeWhenDone: true];
-	} @catch (id e) {
-		OFFreeMemory(buffer);
-		@throw e;
-	}
-}
-
 static OFDate *
 ASN1TimeToDate(const ASN1_TIME *time)
 {
@@ -131,37 +91,6 @@ ASN1TimeToDate(const ASN1_TIME *time)
 		return nil;
 
 	return [OFDate dateWithStructTm: &tm];
-}
-
-static OFDictionary OF_GENERIC(OFString *, OFString *) *
-X509NameToDictionary(const X509_NAME *name)
-{
-	int count = X509_NAME_entry_count(name);
-	if (count < 0)
-		return [OFDictionary dictionary];
-
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *ret =
-	    [OFMutableDictionary dictionaryWithCapacity: count];
-
-	void *pool = objc_autoreleasePoolPush();
-
-	for (int i = 0; i < count; i++) {
-		const X509_NAME_ENTRY *entry = X509_NAME_get_entry(name, i);
-		const ASN1_OBJECT *object = X509_NAME_ENTRY_get_object(entry);
-		const ASN1_STRING *data = X509_NAME_ENTRY_get_data(entry);
-
-		if (object == NULL || data == NULL)
-			@throw [OFInvalidFormatException exception];
-
-		[ret setObject: ASN1StringToString(data)
-			forKey: ASN1ObjectToString(object)];
-	}
-
-	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
 }
 
 @implementation OFOpenSSLX509Certificate
@@ -342,6 +271,15 @@ X509NameToDictionary(const X509_NAME *name)
 	[super dealloc];
 }
 
+- (OFDictionary OF_GENERIC(OFString *, OFString *) *)issuerName
+{
+	const X509_NAME *name = X509_get_issuer_name(_certificate);
+
+	return objc_autoreleaseReturnValue(
+	    [[OFOpenSSLX509Name alloc] of_initWithName: name
+					   certificate: _certificate]);
+}
+
 - (OFDate *)notBeforeDate
 {
 	return ASN1TimeToDate(X509_get0_notBefore(_certificate));
@@ -354,11 +292,10 @@ X509NameToDictionary(const X509_NAME *name)
 
 - (OFDictionary OF_GENERIC(OFString *, OFString *) *)subjectName
 {
-	return X509NameToDictionary(X509_get_subject_name(_certificate));
-}
+	const X509_NAME *name = X509_get_subject_name(_certificate);
 
-- (OFDictionary OF_GENERIC(OFString *, OFString *) *)issuerName
-{
-	return X509NameToDictionary(X509_get_issuer_name(_certificate));
+	return objc_autoreleaseReturnValue(
+	    [[OFOpenSSLX509Name alloc] of_initWithName: name
+					   certificate: _certificate]);
 }
 @end

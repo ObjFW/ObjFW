@@ -18,6 +18,7 @@
  */
 
 #import "OFObject.h"
+#import "OFX509Name.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -70,19 +71,13 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief The subject name of the certificate.
- *
- * This is a dictionary mapping each X509 Name attribute to its value.
  */
-@property (readonly, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
-    *subjectName;
+@property (readonly, nonatomic) OFX509Name *subjectName;
 
 /**
  * @brief The issuer name of the certificate.
- *
- * This is a dictionary mapping each X509 Name attribute to its value.
  */
-@property (readonly, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
-    *issuerName;
+@property (readonly, nonatomic) OFX509Name *issuerName;
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.

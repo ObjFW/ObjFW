@@ -22,7 +22,8 @@ SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
 	       OFMbedTLSX509Certificate.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
-	       OFOpenSSLX509Certificate.m
+	       OFOpenSSLX509Certificate.m		\
+	       OFOpenSSLX509Name.m
 SRCS_WINDOWS = versioninfo.rc
 
 includesubdir = ObjFWTLS

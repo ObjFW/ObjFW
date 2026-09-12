@@ -40,7 +40,7 @@ OFX509CertificateImplementationRef(void)
 #endif
 
 @implementation OFX509Certificate
-@dynamic notBeforeDate, notAfterDate, subjectName, issuerName;
+@dynamic issuerName, notBeforeDate, notAfterDate, subjectName;
 
 + (instancetype)alloc
 {
@@ -92,22 +92,15 @@ OFX509CertificateImplementationRef(void)
 - (OFString *)description
 {
 	@try {
-		OFString *issuerName = [self.issuerName.description
-		    stringByReplacingOccurrencesOfString: @"\n"
-					      withString: @"\n\t"];
-		OFString *subjectName = [self.subjectName.description
-		    stringByReplacingOccurrencesOfString: @"\n"
-					      withString: @"\n\t"];
-
 		return [OFString stringWithFormat:
 		    @"<%@:\n"
+		    @"\tIssuer name = %@\n"
 		    @"\tNot before = %@\n"
 		    @"\tNot after = %@\n"
 		    @"\tSubject name = %@\n"
-		    @"\tIssuer name = %@\n"
 		    @">",
-		    self.class, self.notBeforeDate, self.notAfterDate,
-		    subjectName, issuerName];
+		    self.class, self.issuerName, self.notBeforeDate,
+		    self.notAfterDate, self.subjectName];
 	} @catch (OFNotImplementedException *e) {
 		return [OFString stringWithFormat: @"<%@>", self.className];
 	}
