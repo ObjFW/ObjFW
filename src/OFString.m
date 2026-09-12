@@ -2027,6 +2027,7 @@ OF_SINGLETON_METHODS
 		j++;
 	}
 
+	OFString *ret;
 	@try {
 		for (size_t i = 0; i < length; i++) {
 			OFString *append = nil;
@@ -2104,11 +2105,12 @@ OF_SINGLETON_METHODS
 
 		objc_autoreleasePoolPop(pool);
 
-		return [OFString stringWithUTF8String: buffer
-					       length: bufferLen];
+		ret = [OFString stringWithUTF8String: buffer length: bufferLen];
 	} @finally {
 		OFFreeMemory(buffer);
 	}
+
+	return ret;
 }
 
 - (OFData *)messagePackRepresentation

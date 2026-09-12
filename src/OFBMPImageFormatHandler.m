@@ -53,7 +53,7 @@ byteSwapLine(void *line, size_t length, size_t byteSwapSize)
 	bool flipped = false;
 	OFSize size;
 	uint16_t bitsPerPixel;
-	OFPixelFormat format;
+	OFPixelFormat format = OFPixelFormatUnknown;
 	OFMutableImage *image;
 	uint8_t *pixels;
 	size_t byteSwapSize = 0;

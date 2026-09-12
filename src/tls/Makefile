@@ -59,6 +59,7 @@ uninstall-extra:
 # complain.
 OBJCFLAGS_OFOpenSSLTLSStream.m += -Wno-shadow
 OBJCFLAGS_OFOpenSSLX509Certificate.m += -Wno-shadow
+OBJCFLAGS_OFOpenSSLX509Name.m += -Wno-shadow
 
 CPPFLAGS += -I.							\
 	    -I..						\

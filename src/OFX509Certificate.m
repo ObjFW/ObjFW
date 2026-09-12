@@ -91,8 +91,9 @@ OFX509CertificateImplementationRef(void)
 
 - (OFString *)description
 {
+	OFString *ret;
 	@try {
-		return [OFString stringWithFormat:
+		ret = [OFString stringWithFormat:
 		    @"<%@:\n"
 		    @"\tIssuer name = %@\n"
 		    @"\tNot before = %@\n"
@@ -102,7 +103,9 @@ OFX509CertificateImplementationRef(void)
 		    self.class, self.issuerName, self.notBeforeDate,
 		    self.notAfterDate, self.subjectName];
 	} @catch (OFNotImplementedException *e) {
-		return [OFString stringWithFormat: @"<%@>", self.className];
+		ret = [OFString stringWithFormat: @"<%@>", self.className];
 	}
+
+	return ret;
 }
 @end

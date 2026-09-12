@@ -76,6 +76,7 @@
 	if (bio == NULL)
 		@throw [OFOutOfMemoryException exception];
 
+	OFString *ret;
 	@try {
 		if (X509_NAME_print_ex(bio, _name, 0, XN_FLAG_RFC2253) < 0)
 			@throw [OFInvalidFormatException exception];
@@ -83,10 +84,12 @@
 		BUF_MEM *mem;
 		BIO_get_mem_ptr(bio, &mem);
 
-		return [OFString stringWithUTF8String: mem->data
-					       length: mem->length];
+		ret = [OFString stringWithUTF8String: mem->data
+					      length: mem->length];
 	} @finally {
 		BIO_free(bio);
 	}
+
+	return ret;
 }
 @end
