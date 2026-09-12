@@ -20,6 +20,8 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
+#import "OFDictionary.h"
+#import "OFString.h"
 
 #import "OFNotImplementedException.h"
 
@@ -38,6 +40,8 @@ OFX509CertificateImplementationRef(void)
 #endif
 
 @implementation OFX509Certificate
+@dynamic notBeforeDate, notAfterDate, subjectName, issuerName;
+
 + (instancetype)alloc
 {
 	if (self == [OFX509Certificate class]) {
@@ -83,5 +87,29 @@ OFX509CertificateImplementationRef(void)
 					     passphrase: passphrase];
 
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFString *)description
+{
+	@try {
+		OFString *issuerName = [self.issuerName.description
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"];
+		OFString *subjectName = [self.subjectName.description
+		    stringByReplacingOccurrencesOfString: @"\n"
+					      withString: @"\n\t"];
+
+		return [OFString stringWithFormat:
+		    @"<%@:\n"
+		    @"\tNot before = %@\n"
+		    @"\tNot after = %@\n"
+		    @"\tSubject name = %@\n"
+		    @"\tIssuer name = %@\n"
+		    @">",
+		    self.class, self.notBeforeDate, self.notAfterDate,
+		    subjectName, issuerName];
+	} @catch (OFNotImplementedException *e) {
+		return [OFString stringWithFormat: @"<%@>", self.className];
+	}
 }
 @end

@@ -22,6 +22,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFDate;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
 /**
@@ -55,6 +57,32 @@ OF_ASSUME_NONNULL_BEGIN
  *	   supported
  */
 + (bool)supportsPKCS12Files;
+
+/**
+ * @brief The date starting which the certificate becomes valid.
+ */
+@property (readonly, nonatomic) OFDate *notBeforeDate;
+
+/**
+ * @brief The date after which the certificate is no longer valid.
+ */
+@property (readonly, nonatomic) OFDate *notAfterDate;
+
+/**
+ * @brief The subject name of the certificate.
+ *
+ * This is a dictionary mapping each X509 Name attribute to its value.
+ */
+@property (readonly, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
+    *subjectName;
+
+/**
+ * @brief The issuer name of the certificate.
+ *
+ * This is a dictionary mapping each X509 Name attribute to its value.
+ */
+@property (readonly, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
+    *issuerName;
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.

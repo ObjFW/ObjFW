@@ -22,6 +22,8 @@
 #import "OFOpenSSLX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFString.h"
 
 #include <openssl/pkcs12.h>
@@ -77,6 +79,80 @@ privateKeyFromFile(OFIRI *IRI)
 	objc_autoreleasePoolPop(pool);
 
 	return key;
+}
+
+static OF_INLINE OFString *
+ASN1StringToString(ASN1_STRING *string)
+{
+	return [OFString
+	    stringWithUTF8String: (const char *)ASN1_STRING_get0_data(string)
+			  length: ASN1_STRING_length(string)];
+}
+
+static OF_INLINE OFString *
+ASN1ObjectToString(ASN1_OBJECT *object)
+{
+	int length = OBJ_obj2txt(NULL, 0, object, 0);
+	if (length < 0)
+		@throw [OFInvalidFormatException exception];
+
+	if (SIZE_MAX - (size_t)length < 1)
+		@throw [OFOutOfRangeException exception];
+
+	char *buffer = OFAllocMemory(1, length + 1);
+	@try {
+		if (OBJ_obj2txt(buffer, length + 1, object, 0) != length)
+			@throw [OFInvalidFormatException exception];
+
+		return [OFString stringWithUTF8StringNoCopy: buffer
+						     length: length
+					       freeWhenDone: true];
+	} @catch (id e) {
+		OFFreeMemory(buffer);
+		@throw e;
+	}
+}
+
+static OFDate *
+ASN1TimeToDate(const ASN1_TIME *time)
+{
+	struct tm tm;
+
+	if (ASN1_TIME_to_tm(time, &tm) != 1)
+		return nil;
+
+	return [OFDate dateWithStructTm: &tm];
+}
+
+static OFDictionary OF_GENERIC(OFString *, OFString *) *
+X509NameToDictionary(X509_NAME *name)
+{
+	int count = X509_NAME_entry_count(name);
+	if (count < 0)
+		return [OFDictionary dictionary];
+
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *ret =
+	    [OFMutableDictionary dictionaryWithCapacity: count];
+
+	void *pool = objc_autoreleasePoolPush();
+
+	for (int i = 0; i < count; i++) {
+		X509_NAME_ENTRY *entry = X509_NAME_get_entry(name, i);
+		ASN1_OBJECT *object = X509_NAME_ENTRY_get_object(entry);
+		ASN1_STRING *data = X509_NAME_ENTRY_get_data(entry);
+
+		if (object == NULL || data == NULL)
+			@throw [OFInvalidFormatException exception];
+
+		[ret setObject: ASN1StringToString(data)
+			forKey: ASN1ObjectToString(object)];
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 @implementation OFOpenSSLX509Certificate
@@ -255,5 +331,25 @@ privateKeyFromFile(OFIRI *IRI)
 		EVP_PKEY_free(_privateKey);
 
 	[super dealloc];
+}
+
+- (OFDate *)notBeforeDate
+{
+	return ASN1TimeToDate(X509_get0_notBefore(_certificate));
+}
+
+- (OFDate *)notAfterDate
+{
+	return ASN1TimeToDate(X509_get0_notAfter(_certificate));
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OFString *) *)subjectName
+{
+	return X509NameToDictionary(X509_get_subject_name(_certificate));
+}
+
+- (OFDictionary OF_GENERIC(OFString *, OFString *) *)issuerName
+{
+	return X509NameToDictionary(X509_get_issuer_name(_certificate));
 }
 @end
