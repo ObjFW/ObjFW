@@ -793,8 +793,8 @@ case "$objc_runtime" in
 		AC_MSG_ERROR([libobjc not found!])
 	])
 
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -lobjc"
+	old_LIBS="$LIBS"
+	LIBS="$LIBS -lobjc"
 
 	AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 		dnl If we're using the Apple runtime and it doesn't have
@@ -803,8 +803,8 @@ case "$objc_runtime" in
 		dnl ObjFWRT implementation as that would result in two parallel
 		dnl autorelease pool chains.
 		AC_SUBST(AUTORELEASE_FOUNDATION_M, "autorelease-foundation.m")
-		LIBS="-framework Foundation"
-		FRAMEWORK_LIBS="-framework Foundation"
+		old_LIBS="-framework Foundation $old_LIBS"
+		FRAMEWORK_LIBS="-framework Foundation $FRAMEWORK_LIBS"
 	])
 	AC_CHECK_FUNC(objc_constructInstance, [], [
 		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
@@ -820,7 +820,7 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME_ARC_M, "runtime/arc.m")
 	])
 
-	OBJCFLAGS="$old_OBJCFLAGS"
+	LIBS="$old_LIBS"
 	;;
 esac
 
