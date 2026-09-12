@@ -186,6 +186,7 @@ void *__objc_class_name_OFUnsupportedVersionException;
 void *__objc_class_name_OFValue;
 void *__objc_class_name_OFWriteFailedException;
 void *__objc_class_name_OFX509Certificate;
+void *__objc_class_name_OFX509Name;
 void *__objc_class_name_OFXMLAttribute;
 void *__objc_class_name_OFXMLCDATA;
 void *__objc_class_name_OFXMLCharacters;
