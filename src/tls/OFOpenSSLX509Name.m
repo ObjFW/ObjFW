@@ -66,7 +66,8 @@
 
 - (unsigned long)hash
 {
-	return X509_NAME_hash(_name);
+	/* Cast needed to make LibreSSL happy */
+	return X509_NAME_hash((X509_NAME *)_name);
 }
 
 - (OFString *)description
