@@ -81,15 +81,24 @@ privateKeyFromFile(OFIRI *IRI)
 	return key;
 }
 
-static OF_INLINE OFString *
+static OFString *
 ASN1StringToString(ASN1_STRING *string)
 {
-	return [OFString
-	    stringWithUTF8String: (const char *)ASN1_STRING_get0_data(string)
-			  length: ASN1_STRING_length(string)];
+	unsigned char *buffer;
+	int length = ASN1_STRING_to_UTF8(&buffer, string);
+
+	if (length < 0)
+		@throw [OFInvalidFormatException exception];
+
+	@try {
+		return [OFString stringWithUTF8String: (const char *)buffer
+					       length: (size_t)length];
+	} @finally {
+		OPENSSL_free(buffer);
+	}
 }
 
-static OF_INLINE OFString *
+static OFString *
 ASN1ObjectToString(ASN1_OBJECT *object)
 {
 	int length = OBJ_obj2txt(NULL, 0, object, 0);
