@@ -82,7 +82,7 @@ privateKeyFromFile(OFIRI *IRI)
 }
 
 static OFString *
-ASN1StringToString(ASN1_STRING *string)
+ASN1StringToString(const ASN1_STRING *string)
 {
 	unsigned char *buffer;
 	int length = ASN1_STRING_to_UTF8(&buffer, string);
@@ -99,7 +99,7 @@ ASN1StringToString(ASN1_STRING *string)
 }
 
 static OFString *
-ASN1ObjectToString(ASN1_OBJECT *object)
+ASN1ObjectToString(const ASN1_OBJECT *object)
 {
 	int length = OBJ_obj2txt(NULL, 0, object, 0);
 	if (length < 0)
@@ -134,7 +134,7 @@ ASN1TimeToDate(const ASN1_TIME *time)
 }
 
 static OFDictionary OF_GENERIC(OFString *, OFString *) *
-X509NameToDictionary(X509_NAME *name)
+X509NameToDictionary(const X509_NAME *name)
 {
 	int count = X509_NAME_entry_count(name);
 	if (count < 0)
@@ -146,9 +146,9 @@ X509NameToDictionary(X509_NAME *name)
 	void *pool = objc_autoreleasePoolPush();
 
 	for (int i = 0; i < count; i++) {
-		X509_NAME_ENTRY *entry = X509_NAME_get_entry(name, i);
-		ASN1_OBJECT *object = X509_NAME_ENTRY_get_object(entry);
-		ASN1_STRING *data = X509_NAME_ENTRY_get_data(entry);
+		const X509_NAME_ENTRY *entry = X509_NAME_get_entry(name, i);
+		const ASN1_OBJECT *object = X509_NAME_ENTRY_get_object(entry);
+		const ASN1_STRING *data = X509_NAME_ENTRY_get_data(entry);
 
 		if (object == NULL || data == NULL)
 			@throw [OFInvalidFormatException exception];
