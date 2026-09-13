@@ -20,11 +20,12 @@
 #include "config.h"
 
 #import "OFASN1IA5String.h"
-#import "OFASN1Value.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFASN1IA5String
 @synthesize stringValue = _string;
@@ -40,6 +41,14 @@
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		/*
+		 * Result discarded as we use it only to see if the string is
+		 * ASCII encoded.
+		 */
+		[string cStringWithEncoding: OFStringEncodingASCII];
+		objc_autoreleasePoolPop(pool);
+
 		_string = [string copy];
 	} @catch (id e) {
 		objc_release(self);
@@ -105,6 +114,30 @@
 - (bool)isConstructed
 {
 	return false;
+}
+
+- (OFData *)DERRepresentation
+{
+	size_t cStringLength =
+	    [_string cStringLengthWithEncoding: OFStringEncodingASCII];
+	if (SIZE_MAX - cStringLength < 2)
+		@throw [OFOutOfRangeException exception];
+
+	OFMutableData *data =
+	    [OFMutableData dataWithCapacity: cStringLength + 2];
+	unsigned char tag = OFASN1TagNumberIA5String;
+	[data addItem: &tag];
+
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFASN1DEREncodeLength(cStringLength, length)];
+	[data addItems: [_string insecureCStringWithEncoding:
+			    OFStringEncodingASCII]
+		 count: cStringLength];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)description

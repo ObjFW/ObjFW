@@ -26,6 +26,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFASN1PrintableString
 @synthesize stringValue = _string;
@@ -42,8 +43,10 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *cString = string.UTF8String;
-		size_t length = string.UTF8StringLength;
+		const char *cString =
+		    [string cStringWithEncoding: OFStringEncodingASCII];
+		size_t length =
+		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
 
 		for (size_t i = 0; i < length; i++) {
 			if (OFASCIIIsAlnum(cString[i]))
@@ -136,6 +139,30 @@
 - (bool)isConstructed
 {
 	return false;
+}
+
+- (OFData *)DERRepresentation
+{
+	size_t cStringLength =
+	    [_string cStringLengthWithEncoding: OFStringEncodingASCII];
+	if (SIZE_MAX - cStringLength < 2)
+		@throw [OFOutOfRangeException exception];
+
+	OFMutableData *data =
+	    [OFMutableData dataWithCapacity: cStringLength + 2];
+	unsigned char tag = OFASN1TagNumberPrintableString;
+	[data addItem: &tag];
+
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFASN1DEREncodeLength(cStringLength, length)];
+	[data addItems: [_string insecureCStringWithEncoding:
+			    OFStringEncodingASCII]
+		 count: cStringLength];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)description

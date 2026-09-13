@@ -26,6 +26,25 @@
 @end
 
 @implementation OFASN1DERRepresentationTests
+- (void)testBoolean
+{
+	OTAssertEqualObjects(
+	    [[OFASN1Boolean booleanWithBool: false] DERRepresentation],
+	    [OFData dataWithItems: "\x01\x01\x00" count: 3]);
+
+	OTAssertEqualObjects(
+	    [[OFASN1Boolean booleanWithBool: true] DERRepresentation],
+	    [OFData dataWithItems: "\x01\x01\xFF" count: 3]);
+}
+
+- (void)testInteger
+{
+	OTAssertEqualObjects(
+	    [[OFASN1Integer integerWithInt64: INT64_MIN] DERRepresentation],
+	    [OFData dataWithItems: "\x02\x08\x80\x00\x00\x00\x00\x00\x00\x00"
+			    count: 10]);
+}
+
 - (void)testBitString
 {
 	OFData *data;
@@ -48,15 +67,23 @@
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]);
 }
 
-- (void)testBoolean
+- (void)testOctetString
 {
-	OTAssertEqualObjects(
-	    [[OFASN1Boolean booleanWithBool: false] DERRepresentation],
-	    [OFData dataWithItems: "\x01\x01\x00" count: 3]);
+	OFData *data;
 
+	data = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
 	OTAssertEqualObjects(
-	    [[OFASN1Boolean booleanWithBool: true] DERRepresentation],
-	    [OFData dataWithItems: "\x01\x01\xFF" count: 3]);
+	    [[OFASN1OctetString octetStringWithData: data] DERRepresentation],
+	    [OFData dataWithItems: "\x04\x03\xFF\x00\xF8" count: 5]);
+
+	data = [OFData dataWithItems: "abcdefäöü" count: 12];
+	OTAssertEqualObjects(
+	    [[OFASN1OctetString octetStringWithData: data] DERRepresentation],
+	    [OFData dataWithItems: "\x04\x0C" "abcdefäöü" count: 14]);
+
+	OTAssertEqualObjects([[OFASN1OctetString
+	    octetStringWithData: [OFData data]] DERRepresentation],
+	    [OFData dataWithItems: "\x04\x00" count: 2]);
 }
 
 - (void)testNull
@@ -65,10 +92,39 @@
 	    [OFData dataWithItems: "\x05\x00" count: 2]);
 }
 
+- (void)testEnumerated
+{
+	OTAssertEqualObjects([[OFASN1Enumerated
+	    enumeratedWithInt64: INT64_MIN] DERRepresentation],
+	    [OFData dataWithItems: "\x0A\x08\x80\x00\x00\x00\x00\x00\x00\x00"
+			    count: 10]);
+}
+
 - (void)testUTF8String
 {
 	OTAssertEqualObjects([[OFASN1UTF8String
 	    stringWithString: @"abcdefäöü"] DERRepresentation],
 	    [OFData dataWithItems: "\x0C\x0C" "abcdefäöü" count: 14]);
+}
+
+- (void)testNumericString
+{
+	OTAssertEqualObjects([[OFASN1NumericString
+	    stringWithString: @"012 34"] DERRepresentation],
+	    [OFData dataWithItems: "\x12\x06" "012 34" count: 8]);
+}
+
+- (void)testPrintableString
+{
+	OTAssertEqualObjects([[OFASN1PrintableString
+	    stringWithString: @"abcdef"] DERRepresentation],
+	    [OFData dataWithItems: "\x13\x06" "abcdef" count: 8]);
+}
+
+- (void)testIA5String
+{
+	OTAssertEqualObjects([[OFASN1IA5String
+	    stringWithString: @"abcdef"] DERRepresentation],
+	    [OFData dataWithItems: "\x16\x06" "abcdef" count: 8]);
 }
 @end
