@@ -36,7 +36,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The BitString value.
  */
-@property (readonly, nonatomic) OFData *data;
+@property (readonly, nonatomic) OFData *dataValue;
 
 /**
  * @brief The length of the BitString in bits.

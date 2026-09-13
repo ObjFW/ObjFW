@@ -28,7 +28,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1OctetString
-@synthesize data = _data;
+@synthesize dataValue = _data;
 
 + (instancetype)octetStringWithData: (OFData *)data
 {

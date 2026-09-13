@@ -132,12 +132,12 @@
 
 	bitString = [[OFData dataWithItems: "\x03\x01\x00"
 				     count: 3] objectByParsingDER];
-	OTAssertEqualObjects(bitString.data, [OFData data]);
+	OTAssertEqualObjects(bitString.dataValue, [OFData data]);
 	OTAssertEqual(bitString.bitLength, 0);
 
 	bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
 				     count: 15] objectByParsingDER];
-	OTAssertEqualObjects(bitString.data,
+	OTAssertEqualObjects(bitString.dataValue,
 	    [OFData dataWithItems: "Hello World\x80" count: 12]);
 	OTAssertEqual(bitString.bitLength, 95);
 
@@ -147,7 +147,7 @@
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxx"
 				     count: 131] objectByParsingDER];
-	OTAssertEqualObjects(bitString.data,
+	OTAssertEqualObjects(bitString.dataValue,
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -189,7 +189,7 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x04\x0CHello World!"
-		    count: 14] objectByParsingDER] data],
+		    count: 14] objectByParsingDER] dataValue],
 	    [OFData dataWithItems: "Hello World!" count: 12]);
 
 	OTAssertEqualObjects(
@@ -197,7 +197,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			      count: 131] objectByParsingDER] data],
+			      count: 131] objectByParsingDER] dataValue],
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

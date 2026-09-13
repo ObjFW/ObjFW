@@ -35,7 +35,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The OctetString value.
  */
-@property (readonly, nonatomic) OFData *data;
+@property (readonly, nonatomic) OFData *dataValue;
 
 /**
  * @brief Creates an OctetString with the specified value.

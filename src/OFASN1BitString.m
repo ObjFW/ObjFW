@@ -29,7 +29,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1BitString
-@synthesize data = _data, bitLength = _bitLength;
+@synthesize dataValue = _data, bitLength = _bitLength;
 
 + (instancetype)bitStringWithData: (OFData *)data bitLength: (size_t)bitLength
 {
