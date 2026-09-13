@@ -55,6 +55,7 @@ _OFASN1DEREncodeLength(size_t length, unsigned char buffer[9])
 		buffer[3] = length >> 8;
 		buffer[4] = length;
 		return 5;
+#if SIZE_MAX >= UINT64_MAX
 	} else if (length <= 1099511627775u) {
 		buffer[0] = 0x85;
 		buffer[1] = length >> 32;
@@ -93,6 +94,7 @@ _OFASN1DEREncodeLength(size_t length, unsigned char buffer[9])
 		buffer[7] = length >> 8;
 		buffer[8] = length;
 		return 9;
+#endif
 	} else
 		@throw [OFOutOfRangeException exception];
 }
