@@ -30,6 +30,11 @@
 @synthesize tagClass = _tagClass, tagNumber = _tagNumber;
 @synthesize constructed = _constructed;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
 			  tagNumber: (OFASN1TagNumber)tagNumber
 			constructed: (bool)constructed
