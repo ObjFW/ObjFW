@@ -72,7 +72,7 @@
 
 - (OFData *)DERRepresentation
 {
-	const unsigned char bytes[] = { OFASN1TagNumberNull, 0 };
+	static const unsigned char bytes[] = { OFASN1TagNumberNull, 0 };
 	return [OFData dataWithItems: bytes count: sizeof(bytes)];
 }
 

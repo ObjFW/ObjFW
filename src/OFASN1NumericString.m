@@ -22,6 +22,7 @@
 #import "OFASN1NumericString.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
+#import "OFOnce.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
