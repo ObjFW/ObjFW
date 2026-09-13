@@ -357,16 +357,18 @@
 - (void)testUTF8String
 {
 	OTAssertEqualObjects(
-	    [[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			     count: 16] objectByParsingASN1DER],
+	    [[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
+			      count: 16]
+	    objectByParsingASN1DER] UTF8StringValue],
 	    @"Hällo Wörld!");
 
 	OTAssertEqualObjects(
-	    [[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-				    "xxxxxxxxxxxxxx"
-			     count: 131] objectByParsingASN1DER],
+	    [[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     "xxxxxxxxxxxxxxxxx"
+			     count: 131]
+	    objectByParsingASN1DER] UTF8StringValue],
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }
@@ -423,7 +425,8 @@
 	OTAssertTrue([array isKindOfClass: [OFArray class]]);
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] longLongValue], 123);
-	OTAssertEqualObjects([array objectAtIndex: 1], @"Test");
+	OTAssertEqualObjects([array objectAtIndex: 1],
+	    [OFASN1UTF8String stringWithString: @"Test"]);
 }
 
 - (void)testTruncatedSequenceFails
@@ -454,7 +457,7 @@
 
 	OTAssertEqualObjects(set,
 	    ([OFSet setWithObjects: [OFNumber numberWithLongLong: 123],
-	    @"Test", nil]));
+	    [OFASN1UTF8String stringWithString: @"Test"], nil]));
 }
 
 - (void)testInvalidSetFails

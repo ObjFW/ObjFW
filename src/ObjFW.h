@@ -177,6 +177,7 @@
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
+#import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 
 #import "OFAllocFailedException.h"
