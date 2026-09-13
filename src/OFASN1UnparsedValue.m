@@ -65,6 +65,26 @@
 	[super dealloc];
 }
 
+- (OFData *)DERRepresentation
+{
+	size_t count = _DEREncodedContents.count;
+	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
+
+	unsigned char tag = (_tagClass << 6) | (_tagNumber & 0x1F);
+	if (_constructed)
+		tag |= 0x20;
+	[data addItem: &tag];
+
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFASN1DEREncodeLength(count, length)];
+	[data addItems: _DEREncodedContents.items count: count];
+
+	[data makeImmutable];
+
+	return data;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
