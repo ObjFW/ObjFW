@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,15 +29,17 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFMutableZIPArchiveEntry
-@dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
-@dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
-@dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
+@dynamic fileName, fileType, fileComment, extraField, versionMadeBy;
+@dynamic minVersionNeeded, modificationDate, compressionMethod, compressedSize;
+@dynamic uncompressedSize, CRC32, versionSpecificAttributes;
+@dynamic generalPurposeBitFlag, usesZIP64;
 /*
  * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
  * buggy and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -56,6 +58,8 @@
 			@throw [OFOutOfRangeException exception];
 
 		_fileName = [fileName copy];
+		_generalPurposeBitFlag = (1u << 11);
+		_usesZIP64 = true;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -76,27 +80,55 @@
 - (void)setFileName: (OFString *)fileName
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *old;
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
-	if (fileName.UTF8StringLength > UINT16_MAX)
+	if ([fileName cStringLengthWithEncoding: encoding] > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	old = _fileName;
+	OFString *old = _fileName;
 	_fileName = [fileName copy];
 	objc_release(old);
 
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	switch (fileType) {
+	case OFArchiveEntryFileTypeDirectory:
+		if (![_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			self.fileName =
+			    [self.fileName stringByAppendingString: @"/"];
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	case OFArchiveEntryFileTypeRegular:
+		if ([_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *fileName = self.fileName;
+			fileName =
+			    [fileName substringToIndex: fileName.length - 1];
+			self.fileName = fileName;
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}
+
 - (void)setFileComment: (OFString *)fileComment
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *old;
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
 
-	if (fileComment.UTF8StringLength > UINT16_MAX)
+	if ([fileComment cStringLengthWithEncoding: encoding] > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	old = _fileComment;
+	OFString *old = _fileComment;
 	_fileComment = [fileComment copy];
 	objc_release(old);
 
@@ -106,15 +138,15 @@
 - (void)setExtraField: (OFData *)extraField
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *old;
 
-	if (extraField.itemSize != 1)
+	if (extraField != nil && extraField.itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	if (extraField.count > UINT16_MAX)
+	if (extraField.itemSize * extraField.count >
+	    UINT16_MAX - (_usesZIP64 ? 32 : 0))
 		@throw [OFOutOfRangeException exception];
 
-	old = _extraField;
+	OFData *old = _extraField;
 	_extraField = [extraField copy];
 	objc_release(old);
 
@@ -136,12 +168,16 @@
 - (void)setModificationDate: (OFDate *)date
 {
 	void *pool = objc_autoreleasePoolPush();
+	unsigned short localYear = date.localYear;
 
-	_lastModifiedFileDate = (((date.localYear - 1980) & 0xFF) << 9) |
+	if (localYear < 1980 || localYear > 2107)
+		@throw [OFInvalidArgumentException exception];
+
+	_lastModifiedFileDate = (((localYear - 1980) & 0x7F) << 9) |
 	    ((date.localMonthOfYear & 0x0F) << 5) |
 	    (date.localDayOfMonth & 0x1F);
 	_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
-	    ((date.localMinute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+	    ((date.localMinute & 0x3F) << 5) | ((date.second >> 1) & 0x1F);
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -175,6 +211,11 @@
 - (void)setGeneralPurposeBitFlag: (uint16_t)generalPurposeBitFlag
 {
 	_generalPurposeBitFlag = generalPurposeBitFlag;
+}
+
+- (void)setUsesZIP64: (bool)usesZIP64
+{
+	_usesZIP64 = usesZIP64;
 }
 
 - (void)makeImmutable

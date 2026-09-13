@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +19,15 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "ObjFWRT.h"
 #import "private.h"
 
 #import "amiga-library-glue.h"
 
 #define Class IntuitionClass
+#include <exec/execbase.h>
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
@@ -40,12 +43,10 @@ __start(void)
 	return -1;
 }
 
-#ifdef OF_AMIGAOS
 const char *VER = "$VER: " OBJFWRT_AMIGA_LIB " "
     OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
     OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
-    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer";
-#endif
+    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer";
 
 struct ObjFWRTBase {
 	struct Library library;
@@ -158,6 +159,9 @@ libOpen(void)
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
 
+	CacheClearE((char *)child - child->library.lib_NegSize,
+	    child->library.lib_NegSize, CACRF_ClearI);
+
 	dataSize = getDataSize();
 
 	if ((child->dataSeg = AllocMem(dataSize, MEMF_ANY)) == NULL) {
@@ -225,10 +229,28 @@ libClose(void)
 #define SysBase sysBase
 	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
 
-	if (base->parent != NULL) {
-		struct ObjFWRTBase *parent;
+	if (base->initialized) {
+		void *frame;
+		uintptr_t *iter;
 
-		parent = base->parent;
+		__asm__ (
+		    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
+		    "la		%0, __EH_FRAME_BEGIN__@l(%0)\n\t"
+		    "lis	%1, __DTOR_LIST__@ha\n\t"
+		    "la		%1, __DTOR_LIST__@l(%1)\n\t"
+		    : "=r" (frame), "=r" (iter)
+		);
+
+		for (; *iter != 0; iter++) {
+			void (*dtor)(void) = (void (*)(void))*iter;
+			dtor();
+		}
+
+		linklibCtx.__deregister_frame(frame);
+	}
+
+	if (base->parent != NULL) {
+		struct ObjFWRTBase *parent = base->parent;
 
 		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
@@ -259,13 +281,24 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 	void *frame;
 	uintptr_t *iter, *iter0;
 
-	if (version > 1)
+	if (version > 2)
 		return false;
 
 	if (base->initialized)
 		return true;
 
-	CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
+	switch (version) {
+	case 1:
+		CopyMem(ctx, &linklibCtx, 80);
+		linklibCtx.posix_memalign = NULL;
+		linklibCtx.vsnprintf = NULL;
+		break;
+	case 2:
+		CopyMem(ctx, &linklibCtx, sizeof(linklibCtx));
+		break;
+	default:
+		return false;
+	}
 
 	__asm__ (
 	    "lis	%0, __EH_FRAME_BEGIN__@ha\n\t"
@@ -399,19 +432,128 @@ _Unwind_Resume(void *ex)
 	linklibCtx._Unwind_Resume(ex);
 }
 
-void __register_frame(void *frame)
+int
+posix_memalign(void **ptr, size_t align, size_t size)
 {
-	linklibCtx.__register_frame(frame);
+	if (linklibCtx.posix_memalign != NULL)
+		return linklibCtx.posix_memalign(ptr, align, size);
+
+	/*
+	 * Best we can do is call into malloc() and return unaligned. After
+	 * all, whatever is using the old linklib that doesn't pass
+	 * posix_memalign was fine with it unaligned before.
+	 *
+	 * We can't use errno here either, as __errno_location isn't passed by
+	 * the linklib.
+	 */
+	*ptr = malloc(size);
+	return (*ptr != NULL ? 0 : ENOMEM);
 }
 
-void __deregister_frame(void *frame)
+int
+vsnprintf(char *restrict str, size_t len, const char *restrict fmt, va_list va)
 {
-	linklibCtx.__deregister_frame(frame);
+	if (linklibCtx.vsnprintf != NULL)
+		return linklibCtx.vsnprintf(str, len, fmt, va);
+
+	return -1;
+}
+
+size_t inline
+objc_libraryTrampolineSize(void)
+{
+	return 6;
+}
+
+void
+objc_createLibraryTrampoline(uint32_t *buffer, IMP function,
+    struct Library *base)
+{
+	intptr_t offset = ((ptrdiff_t)function - (ptrdiff_t)&buffer[2]) >> 2;
+
+	if (offset >= -0x800000 && offset <= 0x7FFFFF) {
+		/* lis %r12, %r12, %hi(base) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)base >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(base) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)base & 0xFFFF);
+		/* b function */
+		buffer[2] = 0x48000000 | ((offset & 0xFFFFFF) << 2);
+		/* nop */
+		buffer[3] = 0x60000000;
+		/* nop */
+		buffer[4] = 0x60000000;
+		/* nop */
+		buffer[5] = 0x60000000;
+	} else {
+		/* lis %r12, %r12, %hi(function) */
+		buffer[0] = 0x3D800000 | (((uintptr_t)function >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(function) */
+		buffer[1] = 0x618C0000 | ((uintptr_t)function & 0xFFFF);
+		/* mtctr %r12 */
+		buffer[2] = 0x7D8903A6;
+		/* lis %r12, %r12, %hi(base) */
+		buffer[3] = 0x3D800000 | (((uintptr_t)base >> 16) & 0xFFFF);
+		/* ori %r12, %r12, %lo(base) */
+		buffer[4] = 0x618C0000 | ((uintptr_t)base & 0xFFFF);
+		/* bctr */
+		buffer[5] = 0x4E800420;
+	}
+}
+
+static void
+createTrampolinesForMethodList(struct objc_method_list *methodList,
+    struct Library *base)
+{
+	for (; methodList != NULL; methodList = methodList->next) {
+		uint32_t *trampolines = malloc(methodList->count *
+		    objc_libraryTrampolineSize() * sizeof(uint32_t));
+
+		if (trampolines == NULL)
+			_OBJC_ERROR("Not enough memory to allocate "
+			    "trampolines!");
+
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			objc_createLibraryTrampoline(
+			    &trampolines[i * objc_libraryTrampolineSize()],
+			    methodList->methods[i].implementation,
+			    base);
+
+			methodList->methods[i].implementation =
+			    (IMP)(uintptr_t)
+			    &trampolines[i * objc_libraryTrampolineSize()];
+		}
+
+		CacheFlushDataInstArea(trampolines, methodList->count *
+		    objc_libraryTrampolineSize() * sizeof(uint32_t));
+	}
+}
+
+void
+objc_createLibraryTrampolinesForModule(struct objc_module *module,
+    struct Library *base)
+{
+	struct objc_symtab *symtab = module->symtab;
+
+	for (size_t i = 0; i < symtab->classDefsCount; i++) {
+		struct objc_class *class = symtab->defs[i];
+
+		createTrampolinesForMethodList(class->methodList, base);
+		createTrampolinesForMethodList(class->isa->methodList, base);
+	}
+
+	for (size_t i = symtab->classDefsCount;
+	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
+		struct objc_category *category = symtab->defs[i];
+
+		createTrampolinesForMethodList(category->instanceMethods, base);
+		createTrampolinesForMethodList(category->classMethods, base);
+	}
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-static CONST_APTR functionTable[] = {
+static const CONST_APTR functionTable[]
+    __attribute__((__section__(".rodata"))) = {
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
 	(CONST_APTR)libOpen,
@@ -426,23 +568,23 @@ static CONST_APTR functionTable[] = {
 };
 #pragma GCC diagnostic pop
 
-static struct {
+static const struct {
 	ULONG dataSize;
-	CONST_APTR *functionTable;
+	const CONST_APTR *functionTable;
 	ULONG *dataTable;
 	struct Library *(*initFunc)(struct ObjFWRTBase *base, void *segList,
 	    struct ExecBase *execBase);
-} initTable = {
+} initTable __attribute__((__section__(".rodata"))) = {
 	sizeof(struct ObjFWRTBase),
 	functionTable,
 	NULL,
 	libInit
 };
 
-struct Resident resident = {
+const struct Resident resident __attribute__((__section__(".rodata"))) = {
 	.rt_MatchWord = RTC_MATCHWORD,
-	.rt_MatchTag = &resident,
-	.rt_EndSkip = &resident + 1,
+	.rt_MatchTag = (struct Resident *)&resident,
+	.rt_EndSkip = (struct Resident *)&resident + 1,
 	.rt_Flags = RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
 	.rt_Version = OBJFWRT_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
@@ -451,8 +593,8 @@ struct Resident resident = {
 	.rt_IdString = (char *)OBJFWRT_AMIGA_LIB " "
 	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_MINOR) "."
 	    OF_PREPROCESSOR_STRINGIFY(OBJFWRT_LIB_PATCH)
-	    " (" BUILD_DATE ") \xA9 2008-2025 Jonathan Schleifer",
-	.rt_Init = &initTable,
+	    " (" BUILD_DATE ") \xA9 2008-2026 Jonathan Schleifer",
+	.rt_Init = (APTR)&initTable,
 	.rt_Revision = OBJFWRT_LIB_PATCH,
 	.rt_Tags = NULL,
 };
@@ -466,5 +608,9 @@ __asm__ (
     ".globl __CTOR_LIST__\n"
     ".type __CTOR_LIST__, @object\n"
     "__CTOR_LIST__:\n"
+    ".section .dtors, \"aw\"\n"
+    ".globl __DTOR_LIST__\n"
+    ".type __DTOR_LIST__, @object\n"
+    "__DTOR_LIST__:\n"
     ".section .text"
 );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,12 +37,16 @@
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
 
-#include <mbedtls/ctr_drbg.h>
-#include <mbedtls/entropy.h>
+#if MBEDTLS_VERSION_MAJOR < 4
+# include <mbedtls/ctr_drbg.h>
+# include <mbedtls/entropy.h>
+#endif
 
 int _ObjFWTLS_reference;
+#if MBEDTLS_VERSION_MAJOR < 4
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
+#endif
 
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const mbedtls_ssl_context *SSL)
@@ -83,6 +87,9 @@ readFunc(void *ctx, unsigned char *buffer, size_t length)
 		length = [stream.underlyingStream readIntoBuffer: buffer
 							  length: length];
 	} @catch (OFReadFailedException *e) {
+		if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
+			return MBEDTLS_ERR_SSL_WANT_READ;
+
 		return -1;
 	}
 
@@ -133,9 +140,15 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (self != [OFMbedTLSTLSStream class])
 		return;
 
+#if MBEDTLS_VERSION_MAJOR >= 4
+	if (psa_crypto_init() != PSA_SUCCESS)
+#else
 	mbedtls_entropy_init(&entropy);
+	mbedtls_ctr_drbg_init(&CTRDRBG);
+
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
+#endif
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -195,10 +208,15 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (!_handshakeDone)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) < 0) {
+	if ((ret = mbedtls_ssl_read(&_SSL, buffer, length)) <= 0) {
+		if (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY) {
+			_atEndOfStream = true;
+			return 0;
+		}
+
 		/*
 		 * The underlying stream might have had data ready, but not
-		 * enough for MbedTLS to return decrypted data. This means the
+		 * enough for Mbed TLS to return decrypted data. This means the
 		 * caller might have observed the TLS stream for reading, got a
 		 * ready signal and read - and expects the read to succeed, not
 		 * to fail with EWOULDBLOCK/EAGAIN, as it was signaled ready.
@@ -268,7 +286,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				   host: host
 			      errorCode: initFailedErrorCode];
 
+#if MBEDTLS_VERSION_MAJOR < 4
 	mbedtls_ssl_conf_rng(&_config, mbedtls_ctr_drbg_random, &CTRDRBG);
+#endif
 
 	/* TODO: Add other ways to add a CA chain */
 	CAFilePath = [[OFApplication environment]
@@ -290,7 +310,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	if (_certificateChain.count > 0) {
 		/*
-		 * MbedTLS does not allow storing the certificates
+		 * Mbed TLS does not allow storing the certificates
 		 * independently, so the chain has to be kept. This means we
 		 * can just get the first certificate and get the entire chain
 		 * from it.
@@ -298,9 +318,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		OFMbedTLSX509CertificateChain *chain =
 		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
 		    .of_chain;
-
-		mbedtls_ssl_conf_ca_chain(&_config,
-		    chain.certificate->next, NULL);
 
 		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
 		    chain.privateKey) != 0)
@@ -416,6 +433,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -428,8 +447,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -463,6 +480,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 						     &_SSL, status)];
 	}
 
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -475,8 +494,6 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return nil;
 }

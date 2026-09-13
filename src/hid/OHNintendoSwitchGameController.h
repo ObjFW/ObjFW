@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHNintendoSwitchExtendedGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHNintendoSwitchGameController: OHGameController
 {
 	PadState _pad;

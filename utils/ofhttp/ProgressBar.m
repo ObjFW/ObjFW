@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,6 +21,7 @@
 
 #include <math.h>
 
+#import "OFColor.h"
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
@@ -36,7 +37,7 @@ static const OFTimeInterval updateInterval = 0.1;
 
 #ifdef OF_MINT
 /* freemint-gcc does not have trunc() */
-# define trunc(x) ((int64_t)(x))
+# define trunc(x) ((double)(int64_t)(x))
 #endif
 
 #ifndef HAVE_TRUNCF
@@ -102,7 +103,7 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)_drawProgress
 {
-	float bars, percent;
+	float bars, progress, percent;
 	int columns, barWidth;
 
 	if ((columns = OFStdErr.columns) >= 0) {
@@ -113,10 +114,12 @@ static const OFTimeInterval updateInterval = 0.1;
 	} else
 		barWidth = 43;
 
-	bars = (float)(_resumedFrom + _received) /
-	    (float)(_resumedFrom + _length) * barWidth;
-	percent = (float)(_resumedFrom + _received) /
-	    (float)(_resumedFrom + _length) * 100;
+	progress = (float)(_resumedFrom + _received) /
+	    (float)(_resumedFrom + _length);
+	bars = progress * barWidth;
+	percent = progress * 100.0f;
+
+	[OFStdErr setProgressIndicator: progress];
 
 	if (_useUnicode) {
 		[OFStdErr writeString: @"\r  ▕"];
@@ -147,7 +150,7 @@ static const OFTimeInterval updateInterval = 0.1;
 				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdErr writeFormat: @"▏ %,6.2f%% ", percent];
+		[OFStdErr writeString: @"▏ "];
 	} else {
 		[OFStdErr writeString: @"\r  ["];
 
@@ -169,17 +172,27 @@ static const OFTimeInterval updateInterval = 0.1;
 				[OFStdErr writeString: @" "];
 		}
 
-		[OFStdErr writeFormat: @"] %,6.2f%% ", percent];
+		[OFStdErr writeString: @"] "];
 	}
 
-	if (percent == 100) {
+	OFStdErr.foregroundColor = [OFColor
+	    colorWithRed: (percent < 50.0f
+			      ? 1.0f : 1.0f - ((percent - 50.0f) / 50.0f))
+		   green: (percent < 50.0f ? percent / 50.0f : 1.0f)
+		    blue: 0.0f
+		   alpha: 1.0f];
+	[OFStdErr writeFormat: @"%,6.2f%%", percent];
+	OFStdErr.foregroundColor = nil;
+	[OFStdErr writeString: @" "];
+
+	if (progress >= 1.0f) {
 		double timeInterval = -_startDate.timeIntervalSinceNow;
 
 		_BPS = (float)_received / (float)timeInterval;
 		_ETA = timeInterval;
 	}
 
-	if (isinf(_ETA))
+	if (isinf(_ETA) || isnan(_ETA))
 		[OFStdErr writeString: @"--:--:-- "];
 	else if (_ETA >= 99 * 3600) {
 		OFString *num = [OFString stringWithFormat:
@@ -188,9 +201,9 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"%[num] d ",
 		    @"num", num)];
 	} else
-		[OFStdErr writeFormat: @"%2u:%02u:%02u ",
-		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
-		    (uint8_t)_ETA % 60];
+		[OFStdErr writeFormat: @"%2.0f:%02.0f:%02.0f ",
+		    trunc(_ETA / 3600), trunc(fmod(_ETA / 60, 60)),
+		    trunc(fmod(_ETA, 60))];
 
 	if (_BPS >= oneGibibyte) {
 		OFString *num = [OFString stringWithFormat:
@@ -243,7 +256,7 @@ static const OFTimeInterval updateInterval = 0.1;
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
-		    @"%jd", _resumedFrom + _received];
+		    @"%llu", _resumedFrom + _received];
 		[OFStdErr writeString: OF_LOCALIZED(@"progress_bytes",
 		    @"["
 		    @"    ["
@@ -321,6 +334,8 @@ static const OFTimeInterval updateInterval = 0.1;
 
 - (void)stop
 {
+	[OFStdErr removeProgressIndicator];
+
 	[_drawTimer invalidate];
 	[_BPSTimer invalidate];
 

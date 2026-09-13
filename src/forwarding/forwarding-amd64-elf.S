@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -205,7 +205,7 @@ _OFForward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	OFMethodNotFound_stret@PLT
+	jmp	_OFMethodNotFound_stret@PLT
 .type _OFForward_stret, %function
 .size _OFForward_stret, .-_OFForward_stret
 

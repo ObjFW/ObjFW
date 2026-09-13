@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -82,7 +82,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 	IPv6Address.sockaddr.in6.sin6_family = AF_INET6;
 	IPv6Address.sockaddr.in6.sin6_port = IPv4Address->sockaddr.in.sin_port;
-	memcpy(&IPv6Address.sockaddr.in6.sin6_addr.s6_addr[12],
+	OFCopyMemory(&IPv6Address.sockaddr.in6.sin6_addr.s6_addr[12],
 	    &IPv4Address->sockaddr.in.sin_addr.s_addr, 4);
 	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[10] = 0xFF;
 	IPv6Address.sockaddr.in6.sin6_addr.s6_addr[11] = 0xFF;
@@ -253,8 +253,36 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
 		    NULL, NULL) != 0) {
-			*errNo = _OFSocketErrNo();
-			return false;
+			int oldErrNo = _OFSocketErrNo(), newSock, flags;
+
+			if (oldErrNo != EPERM) {
+				*errNo = oldErrNo;
+				return false;
+			}
+
+			if ((newSock = socket(
+			    ((struct sockaddr *)&address->sockaddr)->sa_family,
+			    SOCK_STREAM | SOCK_CLOEXEC, 0)) ==
+			    OFInvalidSocketHandle) {
+				*errNo = oldErrNo;
+				return false;
+			}
+
+# if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+			if ((flags = fcntl(newSock, F_GETFD, 0)) != -1)
+				fcntl(newSock, F_SETFD, flags | FD_CLOEXEC);
+# endif
+
+			if (connect(newSock,
+			    (struct sockaddr *)&address->sockaddr,
+			    address->length) != 0) {
+				*errNo = _OFSocketErrNo();
+				closesocket(newSock);
+				return false;
+			}
+
+			closesocket(_socket);
+			_socket = newSock;
 		}
 	} else
 #endif
@@ -286,17 +314,19 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
-	[self asyncConnectToHost: host
-			    port: port
-		     runLoopMode: connectRunLoopMode];
+	@try {
+		[self asyncConnectToHost: host
+				    port: port
+			     runLoopMode: connectRunLoopMode];
 
-	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode beforeDate: nil];
+		while (!connectDelegate->_done)
+			[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
-	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
-
-	_delegate = delegate;
+		/* Cleanup */
+		[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = delegate;
+	}
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -499,7 +529,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 			int ret;
 
 			while (rnd < 1024)
-				rnd = (uint16_t)rand();
+				rnd = OFRandom16();
 
 			OFSocketAddressSetIPPort(&address, rnd);
 
@@ -525,7 +555,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 #endif
 
 #if !defined(OF_HPUX) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
 	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,

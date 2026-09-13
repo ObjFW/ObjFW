@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -95,15 +95,15 @@
 			if OF_UNLIKELY (length > blockSize)
 				length = blockSize;
 
-			memcpy(outerKeyPadItems, hash.digest, length);
-			memcpy(innerKeyPadItems, hash.digest, length);
+			OFCopyMemory(outerKeyPadItems, hash.digest, length);
+			OFCopyMemory(innerKeyPadItems, hash.digest, length);
 		} else {
-			memcpy(outerKeyPadItems, key, length);
-			memcpy(innerKeyPadItems, key, length);
+			OFCopyMemory(outerKeyPadItems, key, length);
+			OFCopyMemory(innerKeyPadItems, key, length);
 		}
 
-		memset(outerKeyPadItems + length, 0, blockSize - length);
-		memset(innerKeyPadItems + length, 0, blockSize - length);
+		OFFillMemory(outerKeyPadItems + length, 0, blockSize - length);
+		OFFillMemory(innerKeyPadItems + length, 0, blockSize - length);
 
 		for (size_t i = 0; i < blockSize; i++) {
 			outerKeyPadItems[i] ^= 0x5C;

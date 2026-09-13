@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -169,13 +169,9 @@
 #if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 - (void)setCanBlock: (bool)canBlock
 {
-# ifdef OF_WINDOWS
-	u_long v = !canBlock;
-# else
-	char v = !canBlock;
-# endif
+	unsigned long v = !canBlock;
 
-	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
+	if (ioctlsocket(_socket, FIONBIO, (void *)&v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
 				  errNo: _OFSocketErrNo()];
@@ -321,6 +317,8 @@
 		break;
 	}
 
+	client.canBlock = self.canBlock;
+
 	return client;
 }
 
@@ -442,7 +440,7 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	_listening = false;
-	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
+	OFFillMemory(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;

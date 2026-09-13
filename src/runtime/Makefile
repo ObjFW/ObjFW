@@ -1,7 +1,6 @@
 include ../../extra.mk
 
-SUBDIRS = lookup-asm
-SUBDIRS_AFTER = ${LINKLIB}
+SUBDIRS = lookup-asm ${LINKLIB}
 DISTCLEAN = Info.plist
 
 SHARED_LIB = ${OBJFWRT_SHARED_LIB}
@@ -47,8 +46,8 @@ OBJS_EXTRA = lookup-asm/lookup-asm.a
 LIB_OBJS_EXTRA = lookup-asm/lookup-asm.lib.a
 AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
 AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o	\
-		       lookup-asm/lookup-asm.amigalib.a	\
-		       amiga-library-end.amigalib.o
+		       lookup-asm/lookup-asm.amigalib.a
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../../buildsys.mk
 
@@ -62,8 +61,8 @@ CPPFLAGS += -I. -I.. -I../..					\
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
-RCFLAGS = --use-temp-file						      \
-	  -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}			      \
-	  -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}			      \
-	  -DOBJFWRT_LIB_VERSION=\"${OBJFWRT_LIB_MAJOR}.${OBJFWRT_LIB_MINOR}\" \
+RCFLAGS = --use-temp-file						  \
+	  -DOBJFWRT_LIB_MAJOR=${OBJFWRT_LIB_MAJOR}			  \
+	  -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}			  \
+	  -DOBJFWRT_LIB_VER=\"${OBJFWRT_LIB_MAJOR}.${OBJFWRT_LIB_MINOR}\" \
 	  -DOBJFWRT_SHARED_LIB=\"${OBJFWRT_SHARED_LIB}\"

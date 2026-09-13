@@ -42,7 +42,7 @@
     <argument name='name' type='const char *_Nonnull'/>
   </function>
   <function name='objc_exception_throw' noreturn='1'>
-    <argument name='object' type='id _Nonnull'/>
+    <argument name='object' type='id _Nullable'/>
   </function>
   <function name='objc_sync_enter' return-type='int'>
     <argument name='object' type='id _Nullable'/>
@@ -81,10 +81,11 @@
   <function name='objc_enumerationMutation'>
     <argument name='object' type='id _Nonnull'/>
   </function>
-  <function name='__gnu_objc_personality_v0' return-type='int'>
+  <function name='__gnu_objc_personality_v0' return-type='int'
+            skip-linklib='true'>
     <argument name='version' type='int'/>
     <argument name='actions' type='int'/>
-    <argument name='exClass' type='uint64_t _Nonnull'/>
+    <argument name='exClass' type='uint64_t'/>
     <argument name='ex' type='void *_Nonnull'/>
     <argument name='ctx' type='void *_Nonnull'/>
   </function>
@@ -153,7 +154,7 @@
     <argument name='selector1' type='SEL _Nonnull'/>
     <argument name='selector2' type='SEL _Nonnull'/>
   </function>
-  <function name='objc_allocateClassPair' return-type='Class _Nonnull'>
+  <function name='objc_allocateClassPair' return-type='Class _Nullable'>
     <argument name='superclass' type='Class _Nullable'/>
     <argument name='name' type='const char *_Nonnull'/>
     <argument name='extraBytes' type='size_t'/>
@@ -171,7 +172,7 @@
   <function name='class_isMetaClass' return-type='bool'>
     <argument name='class_' type='Class _Nullable'/>
   </function>
-  <function name='class_getName' return-type='const char *_Nullable'>
+  <function name='class_getName' return-type='const char *_Nonnull'>
     <argument name='class_' type='Class _Nullable'/>
   </function>
   <function name='class_getSuperclass' return-type='Class _Nullable'>
@@ -186,7 +187,7 @@
   </function>
   <function name='class_conformsToProtocol' return-type='bool'>
     <argument name='class_' type='Class _Nullable'/>
-    <argument name='p' type='Protocol *_Nonnull'/>
+    <argument name='p' type='Protocol *_Nullable'/>
   </function>
   <function name='class_getMethodImplementation' return-type='IMP _Nullable'>
     <argument name='class_' type='Class _Nullable'/>
@@ -204,13 +205,13 @@
     <argument name='selector' type='SEL _Nonnull'/>
   </function>
   <function name='class_addMethod' return-type='bool'>
-    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
     <argument name='implementation' type='IMP _Nonnull'/>
     <argument name='typeEncoding' type='const char *_Nullable'/>
   </function>
   <function name='class_replaceMethod' return-type='IMP _Nullable'>
-    <argument name='class_' type='Class _Nonnull'/>
+    <argument name='class_' type='Class _Nullable'/>
     <argument name='selector' type='SEL _Nonnull'/>
     <argument name='implementation' type='IMP _Nonnull'/>
     <argument name='typeEncoding' type='const char *_Nullable'/>
@@ -222,19 +223,19 @@
     <argument name='object' type='id _Nullable'/>
     <argument name='class_' type='Class _Nonnull'/>
   </function>
-  <function name='object_getClassName' return-type='const char *_Nullable'>
+  <function name='object_getClassName' return-type='const char *_Nonnull'>
     <argument name='object' type='id _Nullable'/>
   </function>
   <function name='protocol_getName' return-type='const char *_Nonnull'>
     <argument name='protocol' type='Protocol *_Nonnull'/>
   </function>
   <function name='protocol_isEqual' return-type='bool'>
-    <argument name='protocol1' type='Protocol *_Nonnull'/>
-    <argument name='protocol2' type='Protocol *_Nonnull'/>
+    <argument name='protocol1' type='Protocol *_Nullable'/>
+    <argument name='protocol2' type='Protocol *_Nullable'/>
   </function>
   <function name='protocol_conformsToProtocol' return-type='bool'>
-    <argument name='protocol1' type='Protocol *_Nonnull'/>
-    <argument name='protocol2' type='Protocol *_Nonnull'/>
+    <argument name='protocol1' type='Protocol *_Nullable'/>
+    <argument name='protocol2' type='Protocol *_Nullable'/>
   </function>
   <function name='objc_setUncaughtExceptionHandler'
             return-type='_Nullable objc_uncaught_exception_handler'>
@@ -245,7 +246,8 @@
     <argument name='stretForward' type='IMP _Nullable'/>
   </function>
   <function name='objc_setEnumerationMutationHandler'>
-    <argument name='hadler' type='objc_enumeration_mutation_handler _Nullable'/>
+    <argument name='handler'
+              type='objc_enumeration_mutation_handler _Nullable'/>
   </function>
   <!-- MorphOS started using it before the API was stable. -->
   <function name='_objc_zeroWeakReferences' condition='defined(OF_MORPHOS)'>
@@ -356,5 +358,18 @@
   </function>
   <function name='objc_removeAssociatedObjects'>
     <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='_objc_rootTryRetain' return-type='bool'>
+    <argument name='object' type='id _Nonnull'/>
+  </function>
+  <function name='objc_libraryTrampolineSize' return-type='size_t'/>
+  <function name='objc_createLibraryTrampoline'>
+    <argument name='buffer' type='uint32_t *_Nonnull'/>
+    <argument name='function' type='IMP _Nonnull'/>
+    <argument name='base' type='struct Library *_Nonnull'/>
+  </function>
+  <function name='objc_createLibraryTrampolinesForModule'>
+    <argument name='module' type='struct objc_module *_Nonnull'/>
+    <argument name='base' type='struct Library *_Nonnull'/>
   </function>
 </amiga-library>

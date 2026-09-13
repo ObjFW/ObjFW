@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
  */
 
 #import "OHGameController.h"
+#import "OHVIDPID.h"
 
 #include <windows.h>
 
@@ -25,10 +26,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHXboxGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHXInputGameController: OHGameController
 {
 	DWORD _index;
-	OFNumber *_Nullable _vendorID, *_Nullable _productID;
+	OHVIDPID _VIDPID;
 	OHXboxGamepad *_extendedGamepad;
 }
 

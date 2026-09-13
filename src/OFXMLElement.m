@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -100,6 +100,12 @@
 			   stringValue: stringValue]);
 }
 
++ (instancetype)elementWithElement: (OFXMLElement *)element
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithElement: element]);
+}
+
 + (instancetype)elementWithXMLString: (OFString *)string
 {
 	return objc_autoreleaseReturnValue(
@@ -171,6 +177,23 @@
 	return self;
 }
 
+- (instancetype)initWithElement: (OFXMLElement *)element
+{
+	self = [self initWithName: element->_name
+			namespace: element->_namespace];
+
+	@try {
+		_namespaces = [element->_namespaces mutableCopy];
+		_attributes = [element->_attributes mutableCopy];
+		_children = [element->_children mutableCopy];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
 - (instancetype)initWithXMLString: (OFString *)string
 {
 	void *pool;
@@ -210,11 +233,8 @@
 			namespace: element->_namespace];
 
 	@try {
-		objc_release(_attributes);
-		_attributes = objc_retain(element->_attributes);
-		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
-		objc_release(_children);
+		_attributes = objc_retain(element->_attributes);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
@@ -262,11 +282,8 @@
 			namespace: element->_namespace];
 
 	@try {
-		objc_release(_attributes);
-		_attributes = objc_retain(element->_attributes);
-		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
-		objc_release(_children);
+		_attributes = objc_retain(element->_attributes);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
@@ -282,8 +299,8 @@
 {
 	objc_release(_name);
 	objc_release(_namespace);
-	objc_release(_attributes);
 	objc_release(_namespaces);
+	objc_release(_attributes);
 	objc_release(_children);
 
 	[super dealloc];
@@ -291,6 +308,9 @@
 
 - (OFArray *)attributes
 {
+	if (_attributes == nil)
+		return [OFArray array];
+
 	return objc_autoreleaseReturnValue([_attributes copy]);
 }
 
@@ -303,6 +323,9 @@
 
 - (OFArray *)children
 {
+	if (_children == nil)
+		return [OFArray array];
+
 	return objc_autoreleaseReturnValue([_children copy]);
 }
 
@@ -375,7 +398,7 @@
 	cString = OFAllocMemory(length, 1);
 
 	@try {
-		memset(cString + i, ' ', level * indentation);
+		OFFillMemory(cString + i, ' ', level * indentation);
 		i += level * indentation;
 
 		/* Start of tag */
@@ -385,13 +408,14 @@
 			length += prefix.UTF8StringLength + 1;
 			cString = OFResizeMemory(cString, length, 1);
 
-			memcpy(cString + i, prefix.UTF8String,
+			OFCopyMemory(cString + i, prefix.UTF8String,
 			    prefix.UTF8StringLength);
 			i += prefix.UTF8StringLength;
 			cString[i++] = ':';
 		}
 
-		memcpy(cString + i, _name.UTF8String, _name.UTF8StringLength);
+		OFCopyMemory(cString + i,
+		    _name.UTF8String, _name.UTF8StringLength);
 		i += _name.UTF8StringLength;
 
 		/* xmlns if necessary */
@@ -400,9 +424,9 @@
 			length += _namespace.UTF8StringLength + 9;
 			cString = OFResizeMemory(cString, length, 1);
 
-			memcpy(cString + i, " xmlns='", 8);
+			OFCopyMemory(cString + i, " xmlns='", 8);
 			i += 8;
-			memcpy(cString + i, _namespace.UTF8String,
+			OFCopyMemory(cString + i, _namespace.UTF8String,
 			    _namespace.UTF8StringLength);
 			i += _namespace.UTF8StringLength;
 			cString[i++] = '\'';
@@ -437,17 +461,18 @@
 
 			cString[i++] = ' ';
 			if (attributePrefix != nil) {
-				memcpy(cString + i, attributePrefix.UTF8String,
+				OFCopyMemory(cString + i,
+				    attributePrefix.UTF8String,
 				    attributePrefix.UTF8StringLength);
 				i += attributePrefix.UTF8StringLength;
 				cString[i++] = ':';
 			}
-			memcpy(cString + i, attributeNameCString,
+			OFCopyMemory(cString + i, attributeNameCString,
 			    attributeNameLength);
 			i += attributeNameLength;
 			cString[i++] = '=';
 			cString[i++] = delimiter;
-			memcpy(cString + i, tmp.UTF8String,
+			OFCopyMemory(cString + i, tmp.UTF8String,
 			    tmp.UTF8StringLength);
 			i += tmp.UTF8StringLength;
 			cString[i++] = delimiter;
@@ -509,11 +534,12 @@
 
 			cString[i++] = '>';
 
-			memcpy(cString + i, tmp.items, tmp.count);
+			OFCopyMemory(cString + i, tmp.items, tmp.count);
 			i += tmp.count;
 
 			if (indent) {
-				memset(cString + i, ' ', level * indentation);
+				OFFillMemory(cString + i, ' ',
+				    level * indentation);
 				i += level * indentation;
 			}
 
@@ -523,12 +549,12 @@
 				length += prefix.UTF8StringLength + 1;
 				cString = OFResizeMemory(cString, length, 1);
 
-				memcpy(cString + i, prefix.UTF8String,
+				OFCopyMemory(cString + i, prefix.UTF8String,
 				    prefix.UTF8StringLength);
 				i += prefix.UTF8StringLength;
 				cString[i++] = ':';
 			}
-			memcpy(cString + i, _name.UTF8String,
+			OFCopyMemory(cString + i, _name.UTF8String,
 			    _name.UTF8StringLength);
 			i += _name.UTF8StringLength;
 		} else
@@ -712,6 +738,9 @@
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
+	if (_children == nil)
+		_children = [[OFMutableArray alloc] init];
+
 	[_children insertObjectsFromArray: children atIndex: idx];
 }
 
@@ -850,11 +879,11 @@
 	if (element->_namespace != _namespace &&
 	    ![element->_namespace isEqual: _namespace])
 		return false;
-	if (element->_attributes != _attributes &&
-	    ![element->_attributes isEqual: _attributes])
-		return false;
 	if (element->_namespaces != _namespaces &&
 	    ![element->_namespaces isEqual: _namespaces])
+		return false;
+	if (element->_attributes != _attributes &&
+	    ![element->_attributes isEqual: _attributes])
 		return false;
 	if (element->_children != _children &&
 	    ![element->_children isEqual: _children])
@@ -871,8 +900,8 @@
 
 	OFHashAddHash(&hash, _name.hash);
 	OFHashAddHash(&hash, _namespace.hash);
-	OFHashAddHash(&hash, _attributes.hash);
 	OFHashAddHash(&hash, _namespaces.hash);
+	OFHashAddHash(&hash, _attributes.hash);
 	OFHashAddHash(&hash, _children.hash);
 
 	OFHashFinalize(&hash);
@@ -882,18 +911,6 @@
 
 - (id)copy
 {
-	OFXMLElement *copy = [[OFXMLElement alloc] of_init];
-	@try {
-		copy->_name = [_name copy];
-		copy->_namespace = [_namespace copy];
-		copy->_attributes = [_attributes mutableCopy];
-		copy->_namespaces = [_namespaces mutableCopy];
-		copy->_children = [_children mutableCopy];
-	} @catch (id e) {
-		objc_release(copy);
-		@throw e;
-	}
-
-	return copy;
+	return [[OFXMLElement alloc] initWithElement: self];
 }
 @end

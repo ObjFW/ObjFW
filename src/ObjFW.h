@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,6 +44,8 @@
 
 #import "OFNull.h"
 
+#import "OFIndexSet.h"
+
 #import "OFMethodSignature.h"
 #import "OFInvocation.h"
 
@@ -53,6 +55,10 @@
 #import "OFIRIHandler.h"
 #import "OFUUID.h"
 #import "OFColor.h"
+#import "OFColorSpace.h"
+#import "OFImage.h"
+#import "OFImageFormatHandler.h"
+#import "OFCanvas.h"
 
 #import "OFNotification.h"
 #import "OFNotificationCenter.h"
@@ -61,6 +67,8 @@
 #import "OFSeekableStream.h"
 #import "OFMemoryStream.h"
 #import "OFStdIOStream.h"
+#import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 #import "OFGZIPStream.h"
@@ -109,12 +117,17 @@
 # ifdef OF_HAVE_APPLETALK
 #  import "OFDDPSocket.h"
 # endif
+# import "OFGeminiClient.h"
+# import "OFGeminiRequest.h"
+# import "OFGeminiResponse.h"
+# import "OFGeminiServer.h"
 # import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"
 # import "OFHTTPServer.h"
+# import "OFTitanRequest.h"
 #endif
 
 #ifdef OF_HAVE_SUBPROCESSES
@@ -206,6 +219,7 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFReplaceItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"
@@ -226,6 +240,7 @@
 # import "OFConnectIPSocketFailedException.h"
 # import "OFConnectSocketFailedException.h"
 # import "OFDNSQueryFailedException.h"
+# import "OFGeminiRequestFailedException.h"
 # import "OFHTTPRequestFailedException.h"
 # import "OFListenOnSocketFailedException.h"
 # import "OFObserveKernelEventsFailedException.h"

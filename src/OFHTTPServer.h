@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,7 +44,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	  client.
  *
  * @param server The HTTP server which received the request
- * @param request The request the HTTP server received
+ * @param request The request the HTTP server received. The request will always
+ *		  have its @ref OFHTTPRequest#body set to `nil` and instead the
+ *		  body is provided as a stream in `requestBody`.
  * @param requestBody A stream to read the body of the request from, if any
  * @param response The response the server will send to the client
  */
@@ -67,9 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
  * `request` and `response` will both be `nil`, as the connection never even
  * progressed far enough to create those.
  *
- * Another possibility is that the server failed to accept a socket. In this
- * case, the server will no longer accept incoming connections and you need to
- * call @ref start again.
+ * Another possibility is that the server failed to accept a socket.
  *
  * @param server The HTTP server which encountered an exception
  * @param exception The exception which occurred
@@ -150,7 +150,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The host on which the HTTP server will listen.
  *
  * @throw OFAlreadyOpenException The host could not be set because @ref start
- *				  had already been called
+ *				 had already been called
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
@@ -187,7 +187,8 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The number of threads the OFHTTPServer should use.
  *
  * If this is larger than 1 (the default), one thread will be used to accept
- * incoming connections and all others will be used to handle connections.
+ * incoming connections and all others will be used to handle connections
+ * (including TLS handshake).
  *
  * For maximum CPU utilization, set this to `[OFSystemInfo numberOfCPUs] + 1`.
  *

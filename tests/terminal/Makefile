@@ -14,7 +14,7 @@ run:
 	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
 	rm -f objfwrt${OBJFWRT_LIB_MAJOR}.dll
 	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
-	rm -f ${OBJFWRT_AMIGA_LIB}
+	rm -f "${OBJFWRT_AMIGA_LIB}"
 	if test -f ../../src/libobjfw.so; then \
 		${LN_S} ../../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../../src/libobjfw.so \
@@ -66,7 +66,7 @@ run:
 	exit $$EXIT
 
 CPPFLAGS += -I../../src -I../../src/exceptions -I../../src/runtime -I../..
-LIBS := -L../../src -lobjfw						\
+LIBS := -L../../src -L../../src/linklib ${OBJFW_LIB}			\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS} \
 	${LIBS}
 LD = ${OBJC}

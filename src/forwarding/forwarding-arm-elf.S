@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -148,7 +148,7 @@ _OFForward_stret:
 #ifdef HAVE_VFP2
 	vldmia	sp!, {d0-d7}
 #endif
-	b	OFMethodNotFound_stret(PLT)
+	b	_OFMethodNotFound_stret(PLT)
 .type _OFForward_stret, %function
 .size _OFForward_stret, .-_OFForward_stret
 

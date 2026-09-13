@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 	int32_t _minRawValue, _maxRawValue;
 	uintptr_t _inverted;	/* Change to a smaller type on ABI bump */
 #endif
-	OF_RESERVE_IVARS(OHGameControllerButton, 3)
+	OF_RESERVE_IVARS(OHGameControllerAxis, 3)
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -223,8 +223,8 @@ static const char *range80ToFF =
 - (void)testStringWithUTF8StringLength
 {
 	OTAssertEqualObjects([self.stringClass
-	    stringWithUTF8String: "\xEF\xBB\xBF" "foobar"
-			  length: 6], @"foo");
+	    stringWithUTF8String: "foobar"
+			  length: 3], @"foo");
 }
 
 - (void)testStringWithUTF16String
@@ -736,10 +736,7 @@ static const char *range80ToFF =
 	    @"-0x10\t"] longLongValueWithBase: 0], -0x10);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] longLongValue], 0);
-
-	OTAssertEqual([[self.stringClass stringWithString:
-	    @"123f"] longLongValueWithBase: 16], 0x123f);
+	    @"123f"] longLongValueWithBase: 16], 0x123F);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"-1234"] longLongValueWithBase: 0], -1234);
@@ -751,13 +748,10 @@ static const char *range80ToFF =
 	    @"1234567"] longLongValueWithBase: 8], 01234567);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\r\n0123"] longLongValueWithBase: 0], 0123);
+	    @"\r\n0o123"] longLongValueWithBase: 0], 0123);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"765\t"] longLongValueWithBase: 8], 0765);
-
-	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] longLongValueWithBase: 8], 0);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    ([OFString stringWithFormat: @"%lld", LLONG_MIN])] longLongValue],
@@ -766,6 +760,20 @@ static const char *range80ToFF =
 
 - (void)testLongLongValueThrowsOnInvalidFormat
 {
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"] longLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"]
+	    longLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t-\r\n"]
+	    longLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
 	OTAssertThrowsSpecific(
 	    [[self.stringClass stringWithString: @"abc"] longLongValue],
 	    OFInvalidFormatException);
@@ -794,7 +802,7 @@ static const char *range80ToFF =
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"-12345678901234567890123456789012345678901234567890"
 	    @"12345678901234567890123456789012345678901234567890"]
-	    longLongValueWithBase: 16], OFOutOfRangeException)
+	    longLongValueWithBase: 16], OFOutOfRangeException);
 }
 
 - (void)testUnsignedLongLongValue
@@ -806,10 +814,7 @@ static const char *range80ToFF =
 	    @"\r\n+123  "] unsignedLongLongValue], 123);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\t\t\r\n"] unsignedLongLongValue], 0);
-
-	OTAssertEqual([[self.stringClass stringWithString:
-	    @"123f"] unsignedLongLongValueWithBase: 16], 0x123f);
+	    @"123f"] unsignedLongLongValueWithBase: 16], 0x123F);
 
 	OTAssertEqual([[self.stringClass stringWithString:
 	    @"1234"] unsignedLongLongValueWithBase: 0], 1234);
@@ -821,13 +826,52 @@ static const char *range80ToFF =
 	    @"1234567"] unsignedLongLongValueWithBase: 8], 01234567);
 
 	OTAssertEqual([[self.stringClass stringWithString:
-	    @"\r\n0123"] unsignedLongLongValueWithBase: 0], 0123);
+	    @"\r\n0o123"] unsignedLongLongValueWithBase: 0], 0123);
+
+	OTAssertEqual([[self.stringClass stringWithString:
+	    @"\r\n0o123"] unsignedLongLongValueWithBase: 8], 0123);
 
 	OTAssertEqual([[self.stringClass stringWithString: @"765\t"]
 	    unsignedLongLongValueWithBase: 8], 0765);
+}
 
-	OTAssertEqual([[self.stringClass stringWithString: @"\t\t\r\n"]
-	    unsignedLongLongValueWithBase: 8], 0);
+- (void)testUnsignedLongLongValueThrowsOnInvalidFormat
+{
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @"\t\t\r\n"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t\r\n"]
+	    unsignedLongLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"\t\t+\r\n"]
+	    unsignedLongLongValueWithBase: 8],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"abc"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0a"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0 1"] unsignedLongLongValue],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0xABCDEFG"]
+	    unsignedLongLongValueWithBase: 0],
+	    OFInvalidFormatException);
+
+	OTAssertThrowsSpecific(
+	    [[self.stringClass stringWithString: @"0x"]
+	    unsignedLongLongValueWithBase: 0],
+	    OFInvalidFormatException);
 }
 
 - (void)testUnsignedLongLongValueThrowsOnOutOfRange
@@ -862,6 +906,8 @@ static const char *range80ToFF =
 - (void)testFloatValueThrowsOnInvalidFormat
 {
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @" \n\t"] floatValue], OFInvalidFormatException);
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0.0a"] floatValue], OFInvalidFormatException);
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0 0"] floatValue], OFInvalidFormatException);
@@ -873,7 +919,7 @@ static const char *range80ToFF =
 {
 #if (defined(OF_SOLARIS) && defined(OF_X86)) || defined(OF_AMIGAOS_M68K)
 	/*
-	 * Solaris' strtod() has weird rounding on x86, but not on AMD64.
+	 * Solaris's strtod() has weird rounding on x86, but not on AMD64.
 	 * AmigaOS 3 with libnix has weird rounding as well.
 	 */
 	OTAssertEqual([[self.stringClass stringWithString:
@@ -906,6 +952,8 @@ static const char *range80ToFF =
 - (void)testDoubleValueThrowsOnInvalidFormat
 {
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
+	    @" \n\t"] doubleValue], OFInvalidFormatException);
+	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0.0a"] doubleValue], OFInvalidFormatException);
 	OTAssertThrowsSpecific([[self.stringClass stringWithString:
 	    @"0 0"] doubleValue], OFInvalidFormatException);
@@ -915,25 +963,26 @@ static const char *range80ToFF =
 
 - (void)testCharacters
 {
-	OTAssertEqual(memcmp([[self.stringClass stringWithString: @"fööbär🀺"]
-	    characters], unicharString + 1, sizeof(unicharString) - 8), 0);
+	OTAssertEqual(OFCompareMemory(
+	    [[self.stringClass stringWithString: @"fööbär🀺"] characters],
+	    unicharString + 1, sizeof(unicharString) - 8), OFOrderedSame);
 }
 
 - (void)testUTF16String
 {
 	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
 
-	OTAssertEqual(memcmp(string.UTF16String, char16String + 1,
-	    OFUTF16StringLength(char16String) * 2), 0);
+	OTAssertEqual(OFCompareMemory(string.UTF16String, char16String + 1,
+	    OFUTF16StringLength(char16String) * 2), OFOrderedSame);
 
 #ifdef OF_BIG_ENDIAN
-	OTAssertEqual(memcmp([string UTF16StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF16StringWithByteOrder:
 	    OFByteOrderLittleEndian], swappedChar16String + 1,
-	    OFUTF16StringLength(swappedChar16String) * 2), 0);
+	    OFUTF16StringLength(swappedChar16String) * 2), OFOrderedSame);
 #else
-	OTAssertEqual(memcmp([string UTF16StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF16StringWithByteOrder:
 	    OFByteOrderBigEndian], swappedChar16String + 1,
-	    OFUTF16StringLength(swappedChar16String) * 2), 0);
+	    OFUTF16StringLength(swappedChar16String) * 2), OFOrderedSame);
 #endif
 }
 
@@ -946,18 +995,36 @@ static const char *range80ToFF =
 {
 	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
 
-	OTAssertEqual(memcmp(string.UTF32String, unicharString + 1,
-	    OFUTF32StringLength(unicharString) * 4), 0);
+	OTAssertEqual(OFCompareMemory(string.UTF32String, unicharString + 1,
+	    OFUTF32StringLength(unicharString) * 4), OFOrderedSame);
 
 #ifdef OF_BIG_ENDIAN
-	OTAssertEqual(memcmp([string UTF32StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF32StringWithByteOrder:
 	    OFByteOrderLittleEndian], swappedUnicharString + 1,
-	    OFUTF32StringLength(swappedUnicharString) * 4), 0);
+	    OFUTF32StringLength(swappedUnicharString) * 4), OFOrderedSame);
 #else
-	OTAssertEqual(memcmp([string UTF32StringWithByteOrder:
+	OTAssertEqual(OFCompareMemory([string UTF32StringWithByteOrder:
 	    OFByteOrderBigEndian], swappedUnicharString + 1,
-	    OFUTF32StringLength(swappedUnicharString) * 4), 0);
+	    OFUTF32StringLength(swappedUnicharString) * 4), OFOrderedSame);
 #endif
+}
+
+- (void)testDataWithEncoding
+{
+	OFString *string = [self.stringClass stringWithString: @"fööbär🀺"];
+	OFData *data = [OFData dataWithItems: "fööbär🀺" count: 13];
+
+	OTAssertEqualObjects([string dataWithEncoding: OFStringEncodingUTF8],
+	    data);
+}
+
+- (void)testConstantTimeIsEqualToString
+{
+	OTAssertTrue([@"a" constantTimeIsEqualToString: @"a"]);
+	OTAssertFalse([@"a" constantTimeIsEqualToString: @"b"]);
+	OTAssertTrue([@"aa" constantTimeIsEqualToString: @"aa"]);
+	OTAssertFalse([@"aa" constantTimeIsEqualToString: @"aaa"]);
+	OTAssertFalse([@"aaa" constantTimeIsEqualToString: @"aa"]);
 }
 
 - (void)testStringByMD5Hashing

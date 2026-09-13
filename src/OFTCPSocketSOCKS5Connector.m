@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,6 +27,9 @@
 #import "OFString.h"
 
 #import "OFConnectIPSocketFailedException.h"
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 
 enum {
 	stateSendAuthentication = 1,
@@ -49,6 +52,9 @@ enum {
 	self = [super init];
 
 	@try {
+		if (host.UTF8StringLength > 255)
+			@throw [OFOutOfRangeException exception];
+
 		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
@@ -130,7 +136,6 @@ enum {
 {
 	OFRunLoopMode runLoopMode;
 	unsigned char *SOCKSVersion;
-	uint8_t hostLength;
 	unsigned char port[2];
 	unsigned char *response, *addressLength;
 
@@ -159,11 +164,35 @@ enum {
 		objc_release(_request);
 		_request = [[OFMutableData alloc] init];
 
-		[_request addItems: "\x05\x01\x00\x03" count: 4];
+		[_request addItems: "\x05\x01\x00" count: 3];
 
-		hostLength = (uint8_t)_host.UTF8StringLength;
-		[_request addItem: &hostLength];
-		[_request addItems: _host.UTF8String count: hostLength];
+		@try {
+			OFSocketAddress address =
+			    OFSocketAddressParseIP(_host, 0);
+
+			switch (address.family) {
+			case OFSocketAddressFamilyIPv4:
+				[_request addItem: "\x01"];
+				[_request
+				    addItems: &address.sockaddr.in.sin_addr
+				       count: 4];
+				break;
+			case OFSocketAddressFamilyIPv6:
+				[_request addItem: "\x04"];
+				[_request
+				    addItems: &address.sockaddr.in6.sin6_addr
+				       count: 16];
+				break;
+			default:
+				@throw [OFInvalidArgumentException exception];
+			}
+		} @catch (OFInvalidFormatException *e) {
+			[_request addItem: "\x03"];
+
+			uint8_t hostLength = (uint8_t)_host.UTF8StringLength;
+			[_request addItem: &hostLength];
+			[_request addItems: _host.UTF8String count: hostLength];
+		}
 
 		port[0] = _port >> 8;
 		port[1] = _port & 0xFF;

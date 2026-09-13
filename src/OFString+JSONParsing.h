@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,16 +36,18 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  * @note This also allows parsing JSON5, an extension of JSON. See
  *	 http://json5.org/ for more details.
  *
- * @warning Although not specified by the JSON specification, this can also
- *          return primitives like strings and numbers. The rationale behind
- *          this is that most JSON parsers allow JSON data just consisting of a
- *          single primitive, leading to real world JSON files sometimes only
- *          consisting of a single primitive. Therefore, you should not make any
- *          assumptions about the object returned by this method if you don't
- *          want your program to terminate due to a message not understood, but
- *          instead check the returned object using @ref isKindOfClass:.
+ * @warning Although not specified by the original JSON specification, this can
+ *	    also return primitives like strings and numbers as per RFC 8259.
+ *	    Therefore, you should not make any assumptions about the object
+ *	    returned by this method if you don't want your program to terminate
+ *	    due to a message not understood, but instead check the returned
+ *	    object using @ref isKindOfClass:.
  *
  * @throw OFInvalidJSONException The string contained invalid JSON
+ * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException A value in the JSON was outside of the
+ *				representable range
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 @property (readonly, nonatomic) id objectByParsingJSON;
 
@@ -55,19 +57,14 @@ extern int _OFString_JSONParsing_reference OF_VISIBILITY_INTERNAL;
  * @note This also allows parsing JSON5, an extension of JSON. See
  *	 http://json5.org/ for more details.
  *
- * @warning Although not specified by the JSON specification, this can also
- *          return primitives like strings and numbers. The rationale behind
- *          this is that most JSON parsers allow JSON data just consisting of a
- *          single primitive, leading to real world JSON files sometimes only
- *          consisting of a single primitive. Therefore, you should not make any
- *          assumptions about the object returned by this method if you don't
- *          want your program to terminate due to a message not understood, but
- *          instead check the returned object using @ref isKindOfClass:.
- *
- * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ * @param depthLimit The maximum depth the parser should accept (defaults to 128
  *		     if not specified, 0 means no limit (insecure!))
  * @return An object
  * @throw OFInvalidJSONException The string contained invalid JSON
+ * @throw OFOutOfMemoryException Not enough memory to parse the string
+ * @throw OFOutOfRangeException A value in the JSON was outside of the
+ *				representable range
+ * @throw OFOutOfRangeException The depth limit has been exceeded
  */
 - (id)objectByParsingJSONWithDepthLimit: (size_t)depthLimit;
 @end

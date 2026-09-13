@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -237,7 +237,7 @@ OF_SINGLETON_METHODS
 
 		if (isStart) {
 			table = startTable;
-			tableSize = middleTableSize;
+			tableSize = startTableSize;
 		} else {
 			table = middleTable;
 			tableSize = middleTableSize;
@@ -290,8 +290,7 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	[self insertString: string atIndex: self.length];
 }
 
-- (void)appendCharacters: (const OFUnichar *)characters
-		  length: (size_t)length
+- (void)appendCharacters: (const OFUnichar *)characters length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
 	[self appendString: [OFString stringWithCharacters: characters
@@ -346,15 +345,20 @@ convert(OFMutableString *self, char (*startFunction)(char),
 
 - (void)appendFormat: (OFConstantString *)format arguments: (va_list)arguments
 {
+	void *pool;
 	char *UTF8String;
 	int UTF8StringLength;
 
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
+	pool = objc_autoreleasePoolPush();
+
 	if ((UTF8StringLength = _OFVASPrintF(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		[self appendUTF8String: UTF8String length: UTF8StringLength];
@@ -440,11 +444,10 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	size_t searchLength = string.length;
 	size_t replacementLength = replacement.length;
 
-	if (string == nil || replacement == nil)
+	if (string.length == 0 || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.length)
+	if (OFEndOfRange(range) > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (searchLength > range.length) {
@@ -455,9 +458,10 @@ convert(OFMutableString *self, char (*startFunction)(char),
 	pool2 = objc_autoreleasePoolPush();
 	characters = self.characters;
 
-	for (size_t i = range.location; i <= range.length - searchLength; i++) {
-		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(OFUnichar)) != 0)
+	for (size_t i = range.location; i <= OFEndOfRange(range) - searchLength;
+	    i++) {
+		if (OFCompareMemory(characters + i, searchCharacters,
+		    searchLength * sizeof(OFUnichar)) != OFOrderedSame)
 			continue;
 
 		[self replaceCharactersInRange: OFMakeRange(i, searchLength)
@@ -526,6 +530,57 @@ convert(OFMutableString *self, char (*startFunction)(char),
 {
 	[self deleteLeadingWhitespaces];
 	[self deleteTrailingWhitespaces];
+}
+
+- (void)replaceControlCharacters
+{
+	void *pool;
+	const OFUnichar *characters;
+	size_t length = self.length;
+
+	if (length == 0)
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	characters = self.characters;
+
+	for (size_t i = 0; i < length; i++) {
+		if (characters[i] <= 0x1F) {
+			OFString *replacement = [OFString
+			    stringWithFormat: @"%C", characters[i] + 0x2400];
+
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: replacement];
+
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+		} else if (characters[i] == 0x7F) {
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: @"␡"];
+
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+		} else if (characters[i] >= 0x80 && characters[i] <= 0x9F) {
+			OFString *replacement = [OFString
+			    stringWithFormat: @"␛%C", characters[i] - 0x40];
+
+			[self replaceCharactersInRange: OFMakeRange(i, 1)
+					    withString: replacement];
+
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			characters = self.characters;
+			length++;
+			i++;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (id)copy

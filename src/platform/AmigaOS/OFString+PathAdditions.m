@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -201,7 +201,7 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByStandardizingPath
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
 	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
 	OFString *ret;
@@ -210,6 +210,7 @@ int _OFString_PathAdditions_reference;
 	if (self.length == 0)
 		return @"";
 
+	pool = objc_autoreleasePoolPush();
 	components = self.pathComponents;
 
 	if (components.count == 1) {

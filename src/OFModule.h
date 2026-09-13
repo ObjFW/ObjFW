@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -40,7 +40,12 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFModule: OFObject
 {
 	OFModuleHandle _handle;
+#ifdef OF_WINDOWS
+	bool _freeWhenDone;
+	OF_RESERVE_IVARS(OFModule, 3)
+#else
 	OF_RESERVE_IVARS(OFModule, 4)
+#endif
 }
 
 /**

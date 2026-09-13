@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -166,17 +166,19 @@ static const OFRunLoopMode connectRunLoopMode =
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	_delegate = connectDelegate;
-	[self asyncConnectToHost: host
-			    port: port
-		     runLoopMode: connectRunLoopMode];
+	@try {
+		[self asyncConnectToHost: host
+				    port: port
+			     runLoopMode: connectRunLoopMode];
 
-	while (!connectDelegate->_done)
-		[runLoop runMode: connectRunLoopMode beforeDate: nil];
+		while (!connectDelegate->_done)
+			[runLoop runMode: connectRunLoopMode beforeDate: nil];
 
-	/* Cleanup */
-	[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
-
-	_delegate = delegate;
+		/* Cleanup */
+		[runLoop runMode: connectRunLoopMode beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = delegate;
+	}
 
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
@@ -294,7 +296,7 @@ static const OFRunLoopMode connectRunLoopMode =
 								  errNo: errNo];
 	}
 
-	memset(&address, 0, sizeof(address));
+	OFFillMemory(&address, 0, sizeof(address));
 
 	address.length = (socklen_t)sizeof(address.sockaddr);
 	if (_OFGetSockName(_socket, (struct sockaddr *)&address.sockaddr,
@@ -395,7 +397,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 		if (cmsg->cmsg_type == SCTP_SNDRCV) {
 			struct sctp_sndrcvinfo sndrcv;
-			memcpy(&sndrcv, CMSG_DATA(cmsg), sizeof(sndrcv));
+			OFCopyMemory(&sndrcv, CMSG_DATA(cmsg), sizeof(sndrcv));
 			OFNumber *streamID = [OFNumber numberWithUnsignedShort:
 			    sndrcv.sinfo_stream];
 			OFNumber *PPID = [OFNumber numberWithUnsignedLong:
@@ -504,7 +506,7 @@ static const OFRunLoopMode connectRunLoopMode =
 	cmsg->cmsg_level = IPPROTO_SCTP;
 	cmsg->cmsg_type = SCTP_SNDRCV;
 	cmsg->cmsg_len = CMSG_LEN(sizeof(sndrcv));
-	memcpy(CMSG_DATA(cmsg), &sndrcv, sizeof(sndrcv));
+	OFCopyMemory(CMSG_DATA(cmsg), &sndrcv, sizeof(sndrcv));
 
 	if ((bytesWritten = sendmsg(_socket, &msg, 0)) < 0)
 		@throw [OFWriteFailedException
@@ -525,7 +527,7 @@ static const OFRunLoopMode connectRunLoopMode =
 
 - (void)asyncSendData: (OFData *)data info: (OFSCTPMessageInfo)info
 {
-	[self asyncSendData: data info: nil runLoopMode: OFDefaultRunLoopMode];
+	[self asyncSendData: data info: info runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncSendData: (OFData *)data

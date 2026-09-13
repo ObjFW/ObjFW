@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,7 @@
 #import "amiga-library-glue.h"
 
 __asm__ (
+    ".globl __restore_r13\n"
     ".section .text\n"
     ".align 2\n"
     "__restore_r13:\n"
@@ -98,7 +99,7 @@ glue_objc_get_class(const char *_Nonnull name)
 }
 
 void __saveds
-glue_objc_exception_throw(id _Nonnull object)
+glue_objc_exception_throw(id _Nullable object)
 {
 	objc_exception_throw(object);
 }
@@ -146,7 +147,7 @@ glue_objc_enumerationMutation(id _Nonnull object)
 }
 
 int __saveds
-glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx)
+glue___gnu_objc_personality_v0(int version, int actions, uint64_t exClass, void *_Nonnull ex, void *_Nonnull ctx)
 {
 	return __gnu_objc_personality_v0(version, actions, exClass, ex, ctx);
 }
@@ -265,7 +266,7 @@ glue_sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2)
 	return sel_isEqual(selector1, selector2);
 }
 
-Class _Nonnull __saveds
+Class _Nullable __saveds
 glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes)
 {
 	return objc_allocateClassPair(superclass, name, extraBytes);
@@ -295,7 +296,7 @@ glue_class_isMetaClass(Class _Nullable class_)
 	return class_isMetaClass(class_);
 }
 
-const char *_Nullable __saveds
+const char *_Nonnull __saveds
 glue_class_getName(Class _Nullable class_)
 {
 	return class_getName(class_);
@@ -320,7 +321,7 @@ glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector)
 }
 
 bool __saveds
-glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)
+glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nullable p)
 {
 	return class_conformsToProtocol(class_, p);
 }
@@ -346,13 +347,13 @@ glue__class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)
 #endif
 
 bool __saveds
-glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_addMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	return class_addMethod(class_, selector, implementation, typeEncoding);
 }
 
 IMP _Nullable __saveds
-glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
+glue_class_replaceMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)
 {
 	return class_replaceMethod(class_, selector, implementation, typeEncoding);
 }
@@ -369,7 +370,7 @@ glue_object_setClass(id _Nullable object, Class _Nonnull class_)
 	return object_setClass(object, class_);
 }
 
-const char *_Nullable __saveds
+const char *_Nonnull __saveds
 glue_object_getClassName(id _Nullable object)
 {
 	return object_getClassName(object);
@@ -382,13 +383,13 @@ glue_protocol_getName(Protocol *_Nonnull protocol)
 }
 
 bool __saveds
-glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_isEqual(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	return protocol_isEqual(protocol1, protocol2);
 }
 
 bool __saveds
-glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)
+glue_protocol_conformsToProtocol(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2)
 {
 	return protocol_conformsToProtocol(protocol1, protocol2);
 }
@@ -406,9 +407,9 @@ glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward)
 }
 
 void __saveds
-glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler)
+glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable handler)
 {
-	objc_setEnumerationMutationHandler(hadler);
+	objc_setEnumerationMutationHandler(handler);
 }
 
 #if defined(OF_MORPHOS)
@@ -603,4 +604,28 @@ void __saveds
 glue_objc_removeAssociatedObjects(id _Nonnull object)
 {
 	objc_removeAssociatedObjects(object);
+}
+
+bool __saveds
+glue__objc_rootTryRetain(id _Nonnull object)
+{
+	return _objc_rootTryRetain(object);
+}
+
+size_t __saveds
+glue_objc_libraryTrampolineSize(void)
+{
+	return objc_libraryTrampolineSize();
+}
+
+void __saveds
+glue_objc_createLibraryTrampoline(uint32_t *_Nonnull buffer, IMP _Nonnull function, struct Library *_Nonnull base)
+{
+	objc_createLibraryTrampoline(buffer, function, base);
+}
+
+void __saveds
+glue_objc_createLibraryTrampolinesForModule(struct objc_module *_Nonnull module, struct Library *_Nonnull base)
+{
+	objc_createLibraryTrampolinesForModule(module, base);
 }

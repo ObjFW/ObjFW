@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -70,7 +70,8 @@
 		[sockAccepted writeBuffer: "Hello" length: 5];
 
 		OTAssertEqual([sockClient readIntoBuffer: buffer length: 5], 5);
-		OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+		OTAssertEqual(OFCompareMemory(buffer, "Hello", 5),
+		    OFOrderedSame);
 
 		OTAssertEqual(OFSocketAddressUNIXPath(
 		    sockAccepted.remoteAddress).length, 0);
@@ -113,7 +114,7 @@
 	 * We can have sockets, including UNIX sockets, while file support is
 	 * disabled.
 	 *
-	 * We also use this code path for iOS, as the temporaryDirectory:RI is
+	 * We also use this code path for iOS, as the temporaryDirectoryIRI is
 	 * too long on the iOS simulator.
 	 */
 	OFString *path = [OFString

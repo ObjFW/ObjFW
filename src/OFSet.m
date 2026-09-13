@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,6 +27,8 @@
 #import "OFCountedSet.h"
 #import "OFNull.h"
 #import "OFString.h"
+
+#import "OFInvalidArgumentException.h"
 
 static struct {
 	Class isa;
@@ -164,6 +166,9 @@ OF_SINGLETON_METHODS
 		void *pool = objc_autoreleasePoolPush();
 		size_t i = 0;
 
+		if (set == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = set.count;
 		objects = OFAllocMemory(count, sizeof(id));
 
@@ -196,6 +201,9 @@ OF_SINGLETON_METHODS
 	const id *objects;
 
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = array.count;
 		objects = array.objects;
 	} @catch (id e) {
@@ -242,12 +250,10 @@ OF_SINGLETON_METHODS
 	va_list argumentsCopy;
 	id *objects;
 
-	if (firstObject == nil)
-		return [self init];
-
 	va_copy(argumentsCopy, arguments);
 	while (va_arg(argumentsCopy, id) != nil)
 		count++;
+	va_end(argumentsCopy);
 
 	@try {
 		objects = OFAllocMemory(count, sizeof(id));
@@ -259,10 +265,8 @@ OF_SINGLETON_METHODS
 	@try {
 		objects[0] = firstObject;
 
-		for (size_t i = 1; i < count; i++) {
+		for (size_t i = 1; i < count; i++)
 			objects[i] = va_arg(arguments, id);
-			OFEnsure(objects[i] != nil);
-		}
 
 		self = [self initWithObjects: objects count: count];
 	} @finally {
@@ -322,11 +326,11 @@ OF_SINGLETON_METHODS
 	OFEnumerator *enumerator;
 	int i;
 
-	memcpy(&enumerator, state->extra, sizeof(enumerator));
+	OFCopyMemory(&enumerator, state->extra, sizeof(enumerator));
 
 	if (enumerator == nil) {
 		enumerator = [self objectEnumerator];
-		memcpy(state->extra, &enumerator, sizeof(enumerator));
+		OFCopyMemory(state->extra, &enumerator, sizeof(enumerator));
 	}
 
 	state->itemsPtr = objects;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,6 +20,8 @@
 #import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+@class OFIndexSet;
 
 /**
  * @class OFMutableData OFMutableData.h ObjFW/ObjFW.h
@@ -136,6 +138,15 @@ OF_ASSUME_NONNULL_BEGIN
 	      count: (size_t)count;
 
 /**
+ * @brief Adds items from a C array to the OFMutableData at the specified
+ *	  indexes.
+ *
+ * @param items A C array containing the items to add
+ * @param indexes The indexes where the items should be added
+ */
+- (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes;
+
+/**
  * @brief Increases the count by the specified number. The new items are all
  *	  filled with null bytes.
  *
@@ -156,6 +167,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @param range The range of items to remove
  */
 - (void)removeItemsInRange: (OFRange)range;
+
+/**
+ * @brief Removes the items at the specified indexes.
+ *
+ * @param indexes The indexes of the items to remove
+ */
+- (void)removeItemsAtIndexes: (OFIndexSet *)indexes;
 
 /**
  * @brief Removes the last item.

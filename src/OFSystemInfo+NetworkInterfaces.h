@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,52 +41,69 @@ typedef OFDictionary OF_GENERIC(OFNetworkInterfaceKey, id) *OFNetworkInterface;
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The index of a network interface.
  *
  * This maps to an @ref OFNumber.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIndex;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIndex;
 
 /**
  * @brief The hardware address of a network interface.
  *
  * This maps to an @ref OFData.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress;
 
 /**
  * @brief The IPv4 addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses;
 
-#ifdef OF_HAVE_IPV6
 /**
  * @brief The IPv6 addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
-#endif
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses;
 
-#ifdef OF_HAVE_IPX
 /**
  * @brief The IPX addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
-#endif
+extern const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses;
 
-#ifdef OF_HAVE_APPLETALK
 /**
  * @brief The AppleTalk addresses of a network interface.
  *
  * This maps to an @ref OFData of @ref OFSocketAddress.
  */
-extern OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
+extern const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses;
+#else
+extern const OFNetworkInterfaceKey *_Nonnull OFNetworkInterfaceIndexRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceHardwareAddressRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPv4AddressesRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPv6AddressesRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceIPXAddressesRef(void);
+extern const OFNetworkInterfaceKey *_Nonnull
+    OFNetworkInterfaceAppleTalkAddressesRef(void);
+# define OFNetworkInterfaceIndex (*OFNetworkInterfaceIndexRef())
+# define OFNetworkInterfaceHardwareAddress \
+	(*OFNetworkInterfaceHardwareAddressRef())
+# define OFNetworkInterfaceIPv4Addresses (*OFNetworkInterfaceIPv4AddressesRef())
+# define OFNetworkInterfaceIPv6Addresses \
+	(*OFNetworkInterfaceIPv6AddressesRef())
+# define OFNetworkInterfaceIPXAddresses (*OFNetworkInterfaceIPXAddressesRef())
+# define OFNetworkInterfaceAppleTalkAddresses \
+	(*OFNetworkInterfaceAppleTalkAddressesRef())
 #endif
 #ifdef __cplusplus
 }

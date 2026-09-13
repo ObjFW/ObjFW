@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
-#import "OFInitializationFailedException.h"
+#import "OFCreateSubprocessFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -134,30 +134,46 @@ OF_DIRECT_MEMBERS
 		sa.lpSecurityDescriptor = NULL;
 
 		if (!CreatePipe(&_readPipe[0], &_readPipe[1], &sa, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			@throw [OFCreateSubprocessFailedException
+			    exceptionWithProgram: program
+				     programName: programName
+				       arguments: arguments
+				     environment: environment
+					   errNo: 0];
 
 		if (!SetHandleInformation(_readPipe[0], HANDLE_FLAG_INHERIT, 0))
 			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 
 		if (!CreatePipe(&_writePipe[0], &_writePipe[1], &sa, 0))
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
+			@throw [OFCreateSubprocessFailedException
+			    exceptionWithProgram: program
+				     programName: programName
+				       arguments: arguments
+				     environment: environment
+					   errNo: 0];
 
 		if (!SetHandleInformation(_writePipe[1],
 		    HANDLE_FLAG_INHERIT, 0))
 			if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 
-		memset(&pi, 0, sizeof(pi));
+		OFFillMemory(&pi, 0, sizeof(pi));
 
 		pool = objc_autoreleasePoolPush();
 
 		argumentsString =
-		    [OFMutableString stringWithString: programName];
+		    [OFMutableString stringWithString: program];
 		[argumentsString replaceOccurrencesOfString: @"\\\""
 						 withString: @"\\\\\""];
 		[argumentsString replaceOccurrencesOfString: @"\""
@@ -190,51 +206,54 @@ OF_DIRECT_MEMBERS
 		}
 
 		if ([OFSystemInfo isWindowsNT]) {
-			size_t length;
-			OFChar16 *argumentsCopy;
-			STARTUPINFOW si;
+			STARTUPINFOW si = {
+				.cb = sizeof(si),
+				.hStdInput = _writePipe[0],
+				.hStdOutput = _readPipe[1],
+				.hStdError = GetStdHandle(STD_ERROR_HANDLE),
+				.dwFlags = STARTF_USESTDHANDLES
+			};
 
-			memset(&si, 0, sizeof(si));
-			si.cb = sizeof(si);
-			si.hStdInput = _writePipe[0];
-			si.hStdOutput = _readPipe[1];
-			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-			si.dwFlags |= STARTF_USESTDHANDLES;
-
-			length = argumentsString.UTF16StringLength;
-			argumentsCopy = OFAllocMemory(length + 1,
+			size_t length = argumentsString.UTF16StringLength;
+			OFChar16 *argumentsCopy = OFAllocMemory(length + 1,
 			    sizeof(OFChar16));
-			memcpy(argumentsCopy, argumentsString.UTF16String,
+			OFCopyMemory(argumentsCopy, argumentsString.UTF16String,
 			    (length + 1) * 2);
 			@try {
-				if (!CreateProcessW(program.UTF16String,
-				    argumentsCopy, NULL, NULL, TRUE,
-				    CREATE_UNICODE_ENVIRONMENT,
+				if (!CreateProcessW(NULL, argumentsCopy, NULL,
+				    NULL, TRUE, CREATE_UNICODE_ENVIRONMENT,
 				    [self of_wideEnvironmentForDictionary:
 				    environment], NULL, &si, &pi))
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: 0];
 			} @finally {
 				OFFreeMemory(argumentsCopy);
 			}
 		} else {
 			OFStringEncoding encoding = [OFLocale encoding];
-			STARTUPINFO si;
+			STARTUPINFO si = {
+				.cb = sizeof(si),
+				.hStdInput = _writePipe[0],
+				.hStdOutput = _readPipe[1],
+				.hStdError = GetStdHandle(STD_ERROR_HANDLE),
+				.dwFlags = STARTF_USESTDHANDLES
+			};
 
-			memset(&si, 0, sizeof(si));
-			si.cb = sizeof(si);
-			si.hStdInput = _writePipe[0];
-			si.hStdOutput = _readPipe[1];
-			si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-			si.dwFlags |= STARTF_USESTDHANDLES;
-
-			if (!CreateProcessA([program cStringWithEncoding:
-			    encoding], (char *)[argumentsString
+			if (!CreateProcessA(NULL, (char *)[argumentsString
 			    cStringWithEncoding: encoding], NULL, NULL, TRUE, 0,
 			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: 0];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -353,7 +372,7 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	DWORD bytesWritten;
+	DWORD bytesWritten = 0;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];

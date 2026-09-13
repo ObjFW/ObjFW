@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,6 +31,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
@@ -39,6 +40,31 @@
 
 int _ObjFWTLS_reference;
 static SSL_CTX *clientContext, *serverContext;
+
+#ifdef OF_MORPHOS
+struct Library *OpenSSL4Base;
+
+OF_DESTRUCTOR()
+{
+	if (OpenSSL4Base != NULL)
+		CloseLibrary(OpenSSL4Base);
+}
+#endif
+
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+/*
+ * We need a local __restore_r13 in every ObjFWTLS file that has a __saveds
+ * function (note that ObjC methods are __saveds) because libssl_sharedext
+ * contains a global __restore_r13 that we must not use.
+ */
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+#endif
 
 static OFTLSStreamErrorCode
 verifyResultToErrorCode(const SSL *SSL_)
@@ -89,6 +115,12 @@ errToErrorCode(const SSL *SSL_)
 {
 	if (self != [OFOpenSSLTLSStream class])
 		return;
+
+#ifdef OF_MORPHOS
+	if ((OpenSSL4Base = OpenLibrary("openssl4.library", 0)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
 
 	SSL_load_error_strings();
 	SSL_library_init();
@@ -191,8 +223,15 @@ errToErrorCode(const SSL *SSL_)
 	if (ret == 1)
 		return bytesRead;
 
-	if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ) {
+	switch (SSL_get_error(_SSL, ret)) {
+	case SSL_ERROR_WANT_READ:
 		if (BIO_ctrl_pending(_readBIO) < 1) {
+			if (_underlyingStream.atEndOfStream)
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: length
+						  errNo: ECONNRESET];
+
 			@try {
 				size_t tmp = [_underlyingStream
 				    readIntoBuffer: _buffer
@@ -203,8 +242,13 @@ errToErrorCode(const SSL *SSL_)
 				OFEnsure(BIO_write(_readBIO, _buffer,
 				    (int)tmp) == (int)tmp);
 			} @catch (OFReadFailedException *e) {
-				if (e.errNo == EWOULDBLOCK || e.errNo != EAGAIN)
+				if (e.errNo == EWOULDBLOCK || e.errNo == EAGAIN)
 					return 0;
+
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: length
+						  errNo: e.errNo];
 			}
 		}
 
@@ -223,8 +267,17 @@ errToErrorCode(const SSL *SSL_)
 		if (ret == 1)
 			return bytesRead;
 
-		if (SSL_get_error(_SSL, ret) == SSL_ERROR_WANT_READ)
+		switch (SSL_get_error(_SSL, ret)) {
+		case SSL_ERROR_ZERO_RETURN:
+			_atEndOfStream = true;
+		case SSL_ERROR_WANT_READ:
 			return 0;
+		}
+
+		break;
+	case SSL_ERROR_ZERO_RETURN:
+		_atEndOfStream = true;
+		return 0;
 	}
 
 	/* FIXME: Translate error to errNo */
@@ -333,7 +386,11 @@ errToErrorCode(const SSL *SSL_)
 		if (_verifiesCertificates) {
 			SSL_set_verify(_SSL, SSL_VERIFY_PEER, NULL);
 
+#if OPENSSL_VERSION_MAJOR >= 4
+			if (SSL_set1_dnsname(_SSL, _host.UTF8String) != 1)
+#else
 			if (SSL_set1_host(_SSL, _host.UTF8String) != 1)
+#endif
 				@throw [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
 						   host: host
@@ -377,8 +434,7 @@ errToErrorCode(const SSL *SSL_)
 		OFEnsure(tmp >= 0);
 
 		@try {
-			[_underlyingStream writeBuffer: _buffer
-						length: tmp];
+			[_underlyingStream writeBuffer: _buffer length: tmp];
 			[_underlyingStream flushWriteBuffer];
 		} @catch (OFWriteFailedException *e) {
 			exception = e;
@@ -527,6 +583,8 @@ inform_delegate:
 	}
 
 inform_delegate:
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -539,8 +597,6 @@ inform_delegate:
 			    didPerformClientHandshakeWithHost: _host
 						    exception: exception];
 	}
-
-	objc_release(_delegate);
 
 	return false;
 }
@@ -620,6 +676,8 @@ inform_delegate:
 	}
 
 inform_delegate:
+	objc_autorelease(_delegate);
+
 	if (_server) {
 		if ([_delegate respondsToSelector: @selector(
 		    streamDidPerformServerHandshake:exception:)])
@@ -633,8 +691,63 @@ inform_delegate:
 						    exception: exception];
 	}
 
-	objc_release(_delegate);
-
 	return nil;
+}
+
+- (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
+{
+	OFMutableArray *chain = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	STACK_OF(X509) *certs;
+
+	/*
+	 * For some reason, OpenSSL does not include the peer certificate
+	 * itself when we're a server.
+	 */
+	if (_server) {
+		X509 *cert = SSL_get_peer_certificate(_SSL);
+
+		if (cert == NULL) {
+			objc_autoreleasePoolPop(pool);
+			return nil;
+		}
+
+		@try {
+			[chain addObject: objc_autorelease(
+			    [[OFOpenSSLX509Certificate alloc]
+			    of_initWithCertificate: cert
+					privateKey: NULL])];
+		} @catch (id e) {
+			X509_free(cert);
+			@throw e;
+		}
+	}
+
+	certs = SSL_get_peer_cert_chain(_SSL);
+	if (certs == NULL && !_server) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	for (int i = 0; i < sk_X509_num(certs); i++) {
+		X509 *cert = sk_X509_value(certs, i);
+
+		if (X509_up_ref(cert) != 1)
+			@throw [OFOutOfRangeException exception];
+
+		@try {
+			[chain addObject: objc_autorelease(
+			    [[OFOpenSSLX509Certificate alloc]
+			    of_initWithCertificate: cert
+					privateKey: NULL])];
+		} @catch (id e) {
+			X509_free(cert);
+			@throw e;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return chain;
 }
 @end

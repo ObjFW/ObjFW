@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -195,9 +195,8 @@ OF_SINGLETON_METHODS
 	    bool *stop) {
 		id new = block(key, object);
 
-		if (new != object) {
-			[self setObject: block(key, object) forKey: key];
-		}
+		if (new != object)
+			[self setObject: new forKey: key];
 	}];
 }
 #endif

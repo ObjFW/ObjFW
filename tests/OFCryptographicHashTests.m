@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -99,8 +99,12 @@ const unsigned char testFileSHA512[64] =
 	[hash calculate];
 	[copy calculate];
 
-	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
-	OTAssertEqual(memcmp(hash.digest, expectedDigest, hash.digestSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(hash.digest, expectedDigest, hash.digestSize),
+	    OFOrderedSame);
+	OTAssertEqual(
+	    OFCompareMemory(copy.digest, expectedDigest, hash.digestSize),
+	    OFOrderedSame);
 
 	OTAssertThrowsSpecific([hash updateWithBuffer: "" length: 1],
 	    OFHashAlreadyCalculatedException);

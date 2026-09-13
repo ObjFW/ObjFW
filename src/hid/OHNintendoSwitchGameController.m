@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -156,10 +156,10 @@ static const size_t maxControllers = 8;
 	    -(float)stick.y / (stick.y < 0 ? -INT16_MIN : INT16_MAX)];
 
 	directionalPad = [directionalPads objectForKey: @"D-Pad"];
-	[directionalPad.up setValue: !!(keys & keys & HidNpadButton_Up)];
-	[directionalPad.down setValue: !!(keys & keys & HidNpadButton_Down)];
-	[directionalPad.left setValue: !!(keys & keys & HidNpadButton_Left)];
-	[directionalPad.right setValue: !!(keys & keys & HidNpadButton_Right)];
+	[directionalPad.up setValue: !!(keys & HidNpadButton_Up)];
+	[directionalPad.down setValue: !!(keys & HidNpadButton_Down)];
+	[directionalPad.left setValue: !!(keys & HidNpadButton_Left)];
+	[directionalPad.right setValue: !!(keys & HidNpadButton_Right)];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -169,12 +169,12 @@ static const size_t maxControllers = 8;
 	return @"Nintendo Switch";
 }
 
-- (id <OHGameControllerProfile>)profile
+- (OFObject <OHGameControllerProfile> *)profile
 {
 	return _extendedGamepad;
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	return _extendedGamepad;
 }

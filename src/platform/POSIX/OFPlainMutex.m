@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,14 +62,20 @@ OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 		return error;
 
 	if ((error = pthread_mutexattr_settype(&attr,
-	    PTHREAD_MUTEX_RECURSIVE)) != 0)
+	    PTHREAD_MUTEX_RECURSIVE)) != 0) {
+		pthread_mutexattr_destroy(&attr);
 		return error;
+	}
 
-	if ((error = pthread_mutex_init(rmutex, &attr)) != 0)
+	if ((error = pthread_mutex_init(rmutex, &attr)) != 0) {
+		pthread_mutexattr_destroy(&attr);
 		return error;
+	}
 
-	if ((error = pthread_mutexattr_destroy(&attr)) != 0)
+	if ((error = pthread_mutexattr_destroy(&attr)) != 0) {
+		pthread_mutex_destroy(rmutex);
 		return error;
+	}
 
 	return 0;
 }
@@ -106,8 +112,10 @@ OFPlainRecursiveMutexNew(OFPlainRecursiveMutex *rmutex)
 	if ((error = OFPlainMutexNew(&rmutex->mutex)) != 0)
 		return error;
 
-	if ((error = OFTLSKeyNew(&rmutex->count)) != 0)
+	if ((error = OFTLSKeyNew(&rmutex->count)) != 0) {
+		OFPlainMutexFree(&rmutex->mutex);
 		return error;
+	}
 
 	return 0;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -47,7 +47,19 @@
 #import "OFObserveKernelEventsFailedException.h"
 #import "OFWriteFailedException.h"
 
-#include "OFRunLoopConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFDefaultRunLoopMode
+#endif
+
+const OFRunLoopMode OFDefaultRunLoopMode = @"OFDefaultRunLoopMode";
+
+#ifdef OF_AMIGAOS
+const OFRunLoopMode *
+OFDefaultRunLoopModeRef(void)
+{
+	return &OFDefaultRunLoopMode;
+}
+#endif
 
 static OFRunLoop *mainRunLoop = nil;
 
@@ -741,7 +753,17 @@ static OFRunLoop *mainRunLoop = nil;
 	OFString *newString, *oldString;
 
 	@try {
-		const char *cString = [_string cStringWithEncoding: _encoding];
+		const char *cString;
+		bool allowsLossyEncoding = false;
+
+		if ([object respondsToSelector: @selector(allowsLossyEncoding)])
+			allowsLossyEncoding = [object allowsLossyEncoding];
+
+		if (allowsLossyEncoding)
+			cString = [_string lossyCStringWithEncoding: _encoding];
+		else
+			cString = [_string cStringWithEncoding: _encoding];
+
 		length = cStringLength - _writtenLength;
 		[object writeBuffer: cString + _writtenLength length: length];
 	} @catch (OFWriteFailedException *e) {
@@ -1286,43 +1308,79 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 }
 
 #ifdef OF_HAVE_SOCKETS
-# define NEW_READ(type, object, mode)					 \
-	void *pool = objc_autoreleasePoolPush();			 \
-	OFRunLoop *runLoop = [self currentRunLoop];			 \
-	OFRunLoopState *state = stateForMode(runLoop, mode, true, true); \
-	OFList *queue = [state->_readQueues objectForKey: object];	 \
-	type *queueItem;						 \
-									 \
-	if (queue == nil) {						 \
-		queue = [OFList list];					 \
-		[state->_readQueues setObject: queue forKey: object];	 \
-	}								 \
-									 \
-	if (queue.count == 0)						 \
-		[state->_kernelEventObserver				 \
-		    addObjectForReading: object];			 \
-									 \
-	queueItem = objc_autorelease([[type alloc] init]);
-# define NEW_WRITE(type, object, mode)					 \
-	void *pool = objc_autoreleasePoolPush();			 \
-	OFRunLoop *runLoop = [self currentRunLoop];			 \
-	OFRunLoopState *state = stateForMode(runLoop, mode, true, true); \
-	OFList *queue = [state->_writeQueues objectForKey: object];	 \
-	type *queueItem;						 \
-									 \
-	if (queue == nil) {						 \
-		queue = [OFList list];					 \
-		[state->_writeQueues setObject: queue forKey: object];	 \
-	}								 \
-									 \
-	if (queue.count == 0)						 \
-		[state->_kernelEventObserver				 \
-		    addObjectForWriting: object];			 \
-									 \
-	queueItem = objc_autorelease([[type alloc] init]);
-#define QUEUE_ITEM							 \
-	[queue appendObject: queueItem];				 \
-									 \
+# define NEW_READ(type, object, mode)					  \
+	void *pool = objc_autoreleasePoolPush();			  \
+	OFRunLoop *runLoop = [self currentRunLoop];			  \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
+	OFList *queue = [state->_readQueues objectForKey: object];	  \
+									  \
+	if (queue == nil) {						  \
+		queue = [OFList list];					  \
+		[state->_readQueues setObject: queue forKey: object];	  \
+	}								  \
+									  \
+	if (queue.count == 0) {						  \
+		@try {							  \
+			[state->_kernelEventObserver			  \
+			    addObjectForReading: object];		  \
+		} @catch (id e) {					  \
+			[state->_readQueues removeObjectForKey: object];  \
+			@throw e;					  \
+		}							  \
+	}								  \
+									  \
+	type *queueItem = objc_autorelease([[type alloc] init]);	  \
+									  \
+	@try {
+# define NEW_WRITE(type, object, mode)					  \
+	void *pool = objc_autoreleasePoolPush();			  \
+	OFRunLoop *runLoop = [self currentRunLoop];			  \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
+	OFList *queue = [state->_writeQueues objectForKey: object];	  \
+									  \
+	if (queue == nil) {						  \
+		queue = [OFList list];					  \
+		[state->_writeQueues setObject: queue forKey: object];	  \
+	}								  \
+									  \
+	if (queue.count == 0) {						  \
+		@try {							  \
+			[state->_kernelEventObserver			  \
+			    addObjectForWriting: object];		  \
+		} @catch (id e) {					  \
+			[state->_writeQueues removeObjectForKey: object]; \
+			@throw e;					  \
+		}							  \
+	}								  \
+									  \
+	type *queueItem = objc_autorelease([[type alloc] init]);	  \
+									  \
+	@try {
+#define QUEUE_READ(object)						  \
+		[queue appendObject: queueItem];			  \
+	} @catch (id e) {						  \
+		if (queue.count == 0) {					  \
+			[state->_kernelEventObserver			  \
+			    removeObjectForReading: object];		  \
+			[state->_readQueues removeObjectForKey: object];  \
+		}							  \
+									  \
+		@throw e;						  \
+	}								  \
+									  \
+	objc_autoreleasePoolPop(pool);
+#define QUEUE_WRITE(object)						  \
+		[queue appendObject: queueItem];			  \
+	} @catch (id e) {						  \
+		if (queue.count == 0) {					  \
+			[state->_kernelEventObserver			  \
+			    removeObjectForWriting: object];		  \
+			[state->_writeQueues removeObjectForKey: object]; \
+		}							  \
+									  \
+		@throw e;						  \
+	}								  \
+									  \
 	objc_autoreleasePoolPop(pool);
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1344,7 +1402,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1366,7 +1424,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_exactLength = exactLength;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadStringForStream: (OFStream <OFReadyForReadingObserving
@@ -1386,7 +1444,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -1406,7 +1464,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_READ(stream)
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -1426,7 +1484,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_data = [data copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(stream)
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -1448,7 +1506,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_string = [string copy];
 	queueItem->_encoding = encoding;
 
-	QUEUE_ITEM
+	QUEUE_WRITE(stream)
 }
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
@@ -1460,7 +1518,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 
 	queueItem->_delegate = objc_retain(delegate);
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 # endif
 
@@ -1476,7 +1534,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_handler = [handler copy];
 # endif
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncReceiveForDatagramSocket: (OFDatagramSocket *)sock
@@ -1497,7 +1555,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForDatagramSocket: (OFDatagramSocket *)sock
@@ -1518,7 +1576,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_data = [data copy];
 	queueItem->_receiver = *receiver;
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 
 + (void)of_addAsyncReceiveForSequencedPacketSocket: (OFSequencedPacketSocket *)
@@ -1540,7 +1598,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForSequencedPacketSocket: (OFSequencedPacketSocket *)sock
@@ -1559,7 +1617,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 	queueItem->_data = [data copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 
 # ifdef OF_HAVE_SCTP
@@ -1582,7 +1640,7 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_buffer = buffer;
 	queueItem->_length = length;
 
-	QUEUE_ITEM
+	QUEUE_READ(sock)
 }
 
 + (void)of_addAsyncSendForSCTPSocket: (OFSCTPSocket *)sock
@@ -1603,48 +1661,67 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	queueItem->_data = [data copy];
 	queueItem->_info = [info copy];
 
-	QUEUE_ITEM
+	QUEUE_WRITE(sock)
 }
 # endif
 # undef NEW_READ
 # undef NEW_WRITE
-# undef QUEUE_ITEM
+# undef QUEUE_READ
+# undef QUEUE_WRITE
 
-+ (void)of_cancelAsyncRequestsForObject: (id)object mode: (OFRunLoopMode)mode
++ (void)of_cancelAsyncRequestsForObject: (id)object
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoopState *state = stateForMode(runLoop, mode, false, false);
-	OFList *queue;
 
-	if (state == nil)
-		return;
+#ifdef OF_HAVE_THREADS
+	[runLoop->_statesMutex lock];
+	@try {
+#endif
+		OFEnumerator OF_GENERIC(OFRunLoopState *) *enumerator =
+		    [runLoop->_states objectEnumerator];
+		for (OFRunLoopState *state in enumerator) {
+			OFList *queue;
 
-	if ((queue = [state->_writeQueues objectForKey: object]) != nil) {
-		OFAssert(queue.count > 0);
+			if ((queue = [state->_writeQueues
+			    objectForKey: object]) != nil) {
+				OFAssert(queue.count > 0);
 
-		/*
-		 * Clear the queue now, in case this has been called from a
-		 * handler, as otherwise, we'd do the cleanups below twice.
-		 */
-		[queue removeAllObjects];
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
 
-		[state->_kernelEventObserver removeObjectForWriting: object];
-		[state->_writeQueues removeObjectForKey: object];
+				[state->_kernelEventObserver
+				    removeObjectForWriting: object];
+				[state->_writeQueues
+				    removeObjectForKey: object];
+			}
+
+			if ((queue = [state->_readQueues
+			    objectForKey: object]) != nil) {
+				OFAssert(queue.count > 0);
+
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
+
+				[state->_kernelEventObserver
+				    removeObjectForReading: object];
+				[state->_readQueues
+				    removeObjectForKey: object];
+			}
+		}
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[runLoop->_statesMutex unlock];
 	}
-
-	if ((queue = [state->_readQueues objectForKey: object]) != nil) {
-		OFAssert(queue.count > 0);
-
-		/*
-		 * Clear the queue now, in case this has been called from a
-		 * handler, as otherwise, we'd do the cleanups below twice.
-		 */
-		[queue removeAllObjects];
-
-		[state->_kernelEventObserver removeObjectForReading: object];
-		[state->_readQueues removeObjectForKey: object];
-	}
+#endif
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1830,6 +1907,15 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				    removeItemAtIndex: i];
 
 				found = true;
+				i--;
+				count--;
+
+				/*
+				 * We only need to re-acquire signals, as the
+				 * others are not accessed in the branch that
+				 * is always taken after setting `found`.
+				 */
+				signals = state->_execSignals.items;
 			} else
 				newMask |= (1ul << signals[i]);
 		}

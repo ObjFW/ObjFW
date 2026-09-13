@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +23,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_DIRECT_MEMBERS
 @interface OHGameControllerDirectionalPad ()
+#ifdef OF_MORPHOS
+@property (nonatomic, setter=oh_setNotifier:) APTR oh_notifier;
+#endif
+
 + (instancetype)oh_padWithName: (OFString *)name
 			 xAxis: (OHGameControllerAxis *)xAxis
 			 yAxis: (OHGameControllerAxis *)yAxis

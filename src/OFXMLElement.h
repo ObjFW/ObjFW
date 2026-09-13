@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,9 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLElement: OFXMLNode
 {
 	OFString *_name, *_Nullable _namespace;
-	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
 	    _namespaces;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
 	OFMutableArray OF_GENERIC(OFXMLNode *) *_Nullable _children;
 	OF_RESERVE_IVARS(OFXMLElement, 4)
 }
@@ -62,13 +62,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An array with the attributes of the element.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+@property OF_NULL_RESETTABLE_PROPERTY (readonly, nonatomic)
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /**
  * @brief An array of @ref OFXMLNode with all children of the element.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy)
+@property OF_NULL_RESETTABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFXMLNode *) *children;
 
 /**
@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @brief Creates a new XML element with the specified name, namespace and
- * 	  string value.
+ *	  string value.
  *
  * @param name The name for the element
  * @param nameSpace The namespace for the element
@@ -119,6 +119,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)elementWithName: (OFString *)name
 		      namespace: (nullable OFString *)nameSpace
 		    stringValue: (nullable OFString *)stringValue;
+
+/**
+ * @brief Creates a new XML element with the specified element.
+ *
+ * @param element The element for the element
+ * @return A new autoreleased OFXMLElement with the specified element
+ */
++ (instancetype)elementWithElement: (OFXMLElement *)element;
 
 /**
  * @brief Parses the string and returns an OFXMLElement for it.
@@ -193,6 +201,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithName: (OFString *)name
 		   namespace: (nullable OFString *)nameSpace
 		 stringValue: (nullable OFString *)stringValue;
+
+/**
+ * @brief Initializes an already allocated OFXMLElement with the specified
+ *	  element.
+ *
+ * @param element The element for the element
+ * @return An initialized OFXMLElement with the specified element
+ */
+- (instancetype)initWithElement: (OFXMLElement *)element;
 
 /**
  * @brief Parses the string and initializes an already allocated OFXMLElement

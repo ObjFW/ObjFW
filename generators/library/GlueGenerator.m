@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,6 +73,7 @@
 - (void)generate
 {
 	size_t includes = 0;
+	OFString *restoreR13;
 
 	[_header writeString: COPYRIGHT];
 	[_impl writeString: COPYRIGHT];
@@ -100,9 +101,15 @@
 	if (includes > 0)
 		[_header writeString: @"\n"];
 
-	[_impl writeString: 
+	[_impl writeString:
 	    @"\n"
-	    @"__asm__ (\n"
+	    @"__asm__ (\n"];
+
+	restoreR13 = [_library attributeForName: @"restore-r13"].stringValue;
+	if (restoreR13 == nil || ![restoreR13 isEqual: @"local"])
+		[_impl writeString: @"    \".globl __restore_r13\\n\"\n"];
+
+	[_impl writeString:
 	    @"    \".section .text\\n\"\n"
 	    @"    \".align 2\\n\"\n"
 	    @"    \"__restore_r13:\\n\"\n"

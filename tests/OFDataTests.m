@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,18 +23,24 @@
 
 #import "OFDataTests.h"
 
+@interface CustomData: OFData
+{
+	OFData *_data;
+}
+@end
+
 @implementation OFDataTests
 - (Class)dataClass
 {
-	return [OFData class];
+	return [CustomData class];
 }
 
 - (void)setUp
 {
 	[super setUp];
 
-	memset(&_items[0], 0xFF, 4096);
-	memset(&_items[1], 0x42, 4096);
+	OFFillMemory(&_items[0], 0xFF, 4096);
+	OFFillMemory(&_items[1], 0x42, 4096);
 
 	_data = [[self.dataClass alloc] initWithItems: _items
 						count: 2
@@ -60,13 +66,15 @@
 
 - (void)testItems
 {
-	OTAssertEqual(memcmp(_data.items, _items, 2 * _data.itemSize), 0);
+	OTAssertEqual(OFCompareMemory(_data.items, _items, 2 * _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testItemAtIndex
 {
 	OTAssertEqual(
-	    memcmp([_data itemAtIndex: 1], &_items[1], _data.itemSize), 0);
+	    OFCompareMemory([_data itemAtIndex: 1], &_items[1], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testItemAtIndexThrowsOnOutOfRangeIndex
@@ -77,12 +85,16 @@
 
 - (void)testFirstItem
 {
-	OTAssertEqual(memcmp(_data.firstItem, &_items[0], _data.itemSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(_data.firstItem, &_items[0], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testLastItem
 {
-	OTAssertEqual(memcmp(_data.lastItem, &_items[1], _data.itemSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(_data.lastItem, &_items[1], _data.itemSize),
+	    OFOrderedSame);
 }
 
 - (void)testIsEqual
@@ -291,5 +303,81 @@
 	OTAssertEqualObjects(
 	    [self.dataClass dataWithBase64EncodedString: @"YWJjZGU="],
 	    [OFData dataWithItems: "abcde" count: 5]);
+}
+@end
+
+@implementation CustomData
+- (instancetype)initWithItemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+		     itemSize: (size_t)itemSize
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItems: items
+						count: count
+					     itemSize: itemSize];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+			   itemSize: (size_t)itemSize
+		       freeWhenDone: (bool)freeWhenDone
+{
+	self = [super init];
+
+	@try {
+		_data = [[OFData alloc] initWithItemsNoCopy: items
+						      count: count
+						   itemSize: itemSize
+					       freeWhenDone: freeWhenDone];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_data);
+
+	[super dealloc];
+}
+
+- (size_t)count
+{
+	return _data.count;
+}
+
+- (size_t)itemSize
+{
+	return _data.itemSize;
+}
+
+- (const void *)items
+{
+	return _data.items;
 }
 @end

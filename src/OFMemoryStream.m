@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -70,7 +70,7 @@
 	if (SIZE_MAX - _position < length || _position + length > _size)
 		length = _size - _position;
 
-	memcpy(buffer, _address + _position, length);
+	OFCopyMemory(buffer, _address + _position, length);
 	_position += length;
 
 	return length;
@@ -89,7 +89,7 @@
 	if (SIZE_MAX - _position < length || _position + length > _size)
 		bytesWritten = _size - _position;
 
-	memcpy(_address + _position, buffer, bytesWritten);
+	OFCopyMemory(_address + _position, buffer, bytesWritten);
 	_position += bytesWritten;
 
 	if (bytesWritten != length)

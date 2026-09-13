@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -181,7 +181,8 @@ encodingForContentType(OFString *contentType)
 				value =
 				    value.stringByDeletingTrailingWhitespaces;
 
-				if ([name isEqual: @"charset"])
+				if ([name caseInsensitiveCompare: @"charset"] ==
+				    OFOrderedSame)
 					charset = value;
 
 				state = stateBeforeParamName;
@@ -194,7 +195,8 @@ encodingForContentType(OFString *contentType)
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
 
-				if ([name isEqual: @"charset"])
+				if ([name caseInsensitiveCompare: @"charset"] ==
+				    OFOrderedSame)
 					charset = value;
 
 				state = stateAfterParamValue;
@@ -214,7 +216,7 @@ encodingForContentType(OFString *contentType)
 						length: length - last];
 		value = value.stringByDeletingTrailingWhitespaces;
 
-		if ([name isEqual: @"charset"])
+		if ([name caseInsensitiveCompare: @"charset"] == OFOrderedSame)
 			charset = value;
 	}
 
@@ -347,7 +349,7 @@ encodingForContentType(OFString *contentType)
 
 	ret = [[OFString alloc] initWithFormat:
 	    @"<%@:\n"
-	    @"\tStatus code = %hd\n"
+	    @"\tStatus code = %hu\n"
 	    @"\tHeaders = %@\n"
 	    @">",
 	    self.class, _statusCode, indentedHeaders];

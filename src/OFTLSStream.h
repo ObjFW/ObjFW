@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFTLSStream;
+@class OFX509Certificate;
 
 /**
  * @brief An enum representing an error of an OFTLSStream.
@@ -103,7 +104,8 @@ typedef enum {
 	    *_underlyingStream;
 	bool _verifiesCertificates;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
-	OF_RESERVE_IVARS(OFTLSStream, 3)
+	uintptr_t _atEndOfStream;	/* Change type on ABI bump */
+	OF_RESERVE_IVARS(OFTLSStream, 2)
 }
 
 /**
@@ -131,6 +133,14 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The certificate of the peer.
+ *
+ * @warning The returned certificate chain is not verified!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *peerCertificateChain;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -234,7 +244,12 @@ extern "C" {
  * useful to either force a specific implementation or to use one that ObjFW
  * does not know about.
  */
+#ifndef OF_AMIGAOS
 extern Class OFTLSStreamImplementation;
+#else
+extern Class _Nonnull *_Nullable OFTLSStreamImplementationRef(void);
+# define OFTLSStreamImplementation (*OFTLSStreamImplementationRef())
+#endif
 
 /**
  * @brief Returns a string description for the TLS stream error code.

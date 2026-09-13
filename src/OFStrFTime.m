@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,13 +73,13 @@ _OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 				appendFormat = "%%";
 				break;
 			case 'a':
-				if (tm->tm_wday > 6)
+				if (tm->tm_wday < 0 || tm->tm_wday > 6)
 					return 0;
 
 				appendFormat = weekDays[tm->tm_wday];
 				break;
 			case 'b':
-				if (tm->tm_mon > 11)
+				if (tm->tm_mon < 0 || tm->tm_mon > 11)
 					return 0;
 
 				appendFormat = monthNames[tm->tm_mon];
@@ -120,11 +120,7 @@ _OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 				break;
 			case 'y':
 				appendFormat = "%02u";
-				value = tm->tm_year;
-
-				while (value > 100)
-					value -= 100;
-
+				value = tm->tm_year % 100;
 				break;
 			case 'z':
 				if (tz == 0)
@@ -152,7 +148,7 @@ _OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 			if (bufferLen - j < (size_t)appendLen)
 				return 0;
 
-			memcpy(buffer + j, append, appendLen);
+			OFCopyMemory(buffer + j, append, appendLen);
 			j += appendLen;
 
 			state = stateSearchConversionSpecifier;

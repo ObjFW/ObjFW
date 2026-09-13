@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -103,7 +103,9 @@ static const uint8_t SHA512Digest[] =
 
 	[HMAC calculate];
 
-	OTAssertEqual(memcmp(HMAC.digest, expectedDigest, HMAC.digestSize), 0);
+	OTAssertEqual(
+	    OFCompareMemory(HMAC.digest, expectedDigest, HMAC.digestSize),
+	    OFOrderedSame);
 }
 
 - (void)testHMACWithMD5

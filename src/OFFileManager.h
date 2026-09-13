@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,11 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 #ifdef OF_HAVE_FILES
-# if (defined(OF_HAVE_CHMOD) && !defined(OF_AMIGAOS) && \
-    !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
+# if (defined(OF_HAVE_CHMOD) && !defined(OF_NINTENDO_DS)) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 # endif
-# if (defined(OF_HAVE_CHOWN) && !defined(OF_AMIGAOS)) || defined(DOXYGEN)
+# if defined(OF_HAVE_CHOWN) || defined(DOXYGEN)
 #  define OF_FILE_MANAGER_SUPPORTS_OWNER
 # endif
 # if (defined(OF_HAVE_LINK) && !defined(OF_AMIGAOS) && \
@@ -51,7 +50,64 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFConstantString;
 @class OFDate;
 @class OFIRI;
+@class OFNumber;
 @class OFString;
+
+/**
+ * @brief Amiga file protection. This is a bit mask and the values are ORed.
+ */
+typedef enum {
+	/** @brief The file cannot be deleted. */
+	OFFileAmigaDeleteProtected  = 0x0001,
+	/** @brief The file cannot be executed. */
+	OFFileAmigaExecuteProtected = 0x0002,
+	/** @brief The file cannot be written to. */
+	OFFileAmigaWriteProtected   = 0x0004,
+	/** @brief The file cannot be read. */
+	OFFileAmigaReadProtected    = 0x0008,
+	/** @brief The file has not been changed since it was archived. */
+	OFFileAmigaArchived         = 0x0010,
+	/** @brief The file is a reentrant program and can be made resident. */
+	OFFileAmigaPure             = 0x0020,
+	/** @brief The file is a script. */
+	OFFileAmigaScript           = 0x0040,
+	/** @brief The file is made resident on first execution. */
+	OFFileAmigaHold             = 0x0080,
+	/** @brief The file can be deleted by the group. */
+	OFFileAmigaGroupDeletable   = 0x0100,
+	/** @brief The file can be executed by the group. */
+	OFFileAmigaGroupExecutable  = 0x0200,
+	/** @brief The file can be written to by the group. */
+	OFFileAmigaGroupWritable    = 0x0400,
+	/** @brief The file can be read by group. */
+	OFFileAmigaGroupReadable    = 0x0800,
+	/** @brief The file can be deleted by others. */
+	OFFileAmigaOtherDeletable   = 0x1000,
+	/** @brief The file can be executed by others. */
+	OFFileAmigaOtherExecutable  = 0x2000,
+	/** @brief The file can be written to by others. */
+	OFFileAmigaOtherWritable    = 0x4000,
+	/** @brief The file can be read by others. */
+	OFFileAmigaOtherReadable    = 0x8000
+} OFFileAmigaProtectionMask;
+
+/**
+ * @brief MS-DOS attributes. This is a bit mask and the values are ORed.
+ */
+typedef enum {
+	/** @brief The file is read-only. */
+	OFFileMSDOSAttributeReadOnly    = 0x01,
+	/** @brief The file is hidden. */
+	OFFileMSDOSAttributeHidden      = 0x02,
+	/** @brief The file is a system file. */
+	OFFileMSDOSAttributeSystem      = 0x04,
+	/** @brief The file is a volume label. */
+	OFFileMSDOSAttributeVolumeLabel = 0x08,
+	/** @brief The file is a directory. */
+	OFFileMSDOSAttributeDirectory   = 0x10,
+	/** @brief The file should be archived. */
+	OFFileMSDOSAttributeArchive     = 0x20,
+} OFFileMSDOSAttributesMask;
 
 /**
  * @brief A key for a file attribute in the file attributes dictionary.
@@ -71,6 +127,9 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref OFFileCreationDate
  *  * @ref OFFileSymbolicLinkDestination
  *  * @ref OFFileExtendedAttributesNames
+ *  * @ref OFFileAmigaProtection
+ *  * @ref OFFileAmigaComment
+ *  * @ref OFFileMSDOSAttributes
  *
  * Other IRI schemes might not have all keys and might have keys not listed.
  */
@@ -110,6 +169,7 @@ typedef OFMutableDictionary OF_GENERIC(OFFileAttributeKey, id)
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifndef OF_AMIGAOS
 /**
  * @brief The size of the file as an @ref OFNumber.
  *
@@ -218,6 +278,25 @@ extern const OFFileAttributeKey OFFileSymbolicLinkDestination;
 extern const OFFileAttributeKey OFFileExtendedAttributesNames;
 
 /**
+ * @brief The Amiga file protection as an @ref OFNumber.
+ *
+ * See @ref OFFileAmigaProtectionMask for possible values.
+ */
+extern const OFFileAttributeKey OFFileAmigaProtection;
+
+/**
+ * @brief The Amiga comment as an @ref OFString.
+ */
+extern const OFFileAttributeKey OFFileAmigaComment;
+
+/**
+ * @brief The MS-DOS attributes as an @ref OFNumber.
+ *
+ * See @ref OFFileMSDOSAttributesMask for possible values.
+ */
+extern const OFFileAttributeKey OFFileMSDOSAttributes;
+
+/**
  * @brief A regular file.
  */
 extern const OFFileAttributeType OFFileTypeRegular;
@@ -260,6 +339,58 @@ extern const OFFileAttributeType OFFileTypeSocket;
  * unknown.
  */
 extern const OFFileAttributeType OFFileTypeUnknown;
+#else
+extern const OFFileAttributeKey *_Nonnull OFFileSizeRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileTypeRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFilePOSIXPermissionsRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileGroupOwnerAccountIDRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileGroupOwnerAccountNameRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileLastAccessDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileModificationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileStatusChangeDateRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileCreationDateRef(void);
+extern const OFFileAttributeKey *_Nonnull
+    OFFileSymbolicLinkDestinationRef(void);
+extern const OFFileAttributeKey *_Nonnull
+    OFFileExtendedAttributesNamesRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileAmigaProtectionRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileAmigaCommentRef(void);
+extern const OFFileAttributeKey *_Nonnull OFFileMSDOSAttributesRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeRegularRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeDirectoryRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeSymbolicLinkRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeFIFORef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeCharacterSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeBlockSpecialRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeSocketRef(void);
+extern const OFFileAttributeType *_Nonnull OFFileTypeUnknownRef(void);
+# define OFFileSize (*OFFileSizeRef())
+# define OFFileType (*OFFileTypeRef())
+# define OFFilePOSIXPermissions (*OFFilePOSIXPermissionsRef())
+# define OFFileOwnerAccountID (*OFFileOwnerAccountIDRef())
+# define OFFileGroupOwnerAccountID (*OFFileGroupOwnerAccountIDRef())
+# define OFFileOwnerAccountName (*OFFileOwnerAccountNameRef())
+# define OFFileGroupOwnerAccountName (*OFFileGroupOwnerAccountNameRef())
+# define OFFileLastAccessDate (*OFFileLastAccessDateRef())
+# define OFFileModificationDate (*OFFileModificationDateRef())
+# define OFFileStatusChangeDate (*OFFileStatusChangeDateRef())
+# define OFFileCreationDate (*OFFileCreationDateRef())
+# define OFFileSymbolicLinkDestination (*OFFileSymbolicLinkDestinationRef())
+# define OFFileExtendedAttributesNames (*OFFileExtendedAttributesNamesRef())
+# define OFFileAmigaProtection (*OFFileAmigaProtectionRef())
+# define OFFileAmigaComment (*OFFileAmigaCommentRef())
+# define OFFileMSDOSAttributes (*OFFileMSDOSAttributesRef())
+# define OFFileTypeRegular (*OFFileTypeRegularRef())
+# define OFFileTypeDirectory (*OFFileTypeDirectoryRef())
+# define OFFileTypeSymbolicLink (*OFFileTypeSymbolicLinkRef())
+# define OFFileTypeFIFO (*OFFileTypeFIFORef())
+# define OFFileTypeCharacterSpecial (*OFFileTypeCharacterSpecialRef())
+# define OFFileTypeBlockSpecial (*OFFileTypeBlockSpecialRef())
+# define OFFileTypeSocket (*OFFileTypeSocketRef())
+# define OFFileTypeUnknown (*OFFileTypeUnknownRef())
+#endif
 #ifdef __cplusplus
 }
 #endif
@@ -515,8 +646,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
  * @throw OFCopyItemFailedException Copying failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  */
 - (void)copyItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -534,8 +663,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The file, directory or symbolic link to copy
  * @param destination The destination IRI
  * @throw OFCopyItemFailedException Copying failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
  *					 the IRI's scheme
  */
@@ -555,13 +682,6 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  * @throw OFMoveItemFailedException Moving failed
- * @throw OFCopyItemFailedException Copying (to move between different devices)
- *				    failed
- * @throw OFRemoveItemFailedException Removing the source after copying to the
- *				      destination (to move between different
- *				      devices) failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  */
 - (void)moveItemAtPath: (OFString *)source toPath: (OFString *)destination;
 #endif
@@ -579,17 +699,53 @@ OF_SUBCLASSING_RESTRICTED
  * @param source The item to rename
  * @param destination The new name for the item
  * @throw OFMoveItemFailedException Moving failed
- * @throw OFCopyItemFailedException Copying (to move between different devices)
- *				    failed
- * @throw OFRemoveItemFailedException Removing the source after copying to the
- *				      destination (to move between different
- *				      devices) failed
- * @throw OFCreateDirectoryFailedException Creating a destination directory
- *					   failed
  * @throw OFUnsupportedProtocolException No handler is registered for either of
  *					 the IRI's scheme
  */
 - (void)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
+
+#ifdef OF_HAVE_FILES
+/**
+ * @brief Atomically replaces an item.
+ *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
+ *
+ * Directories cannot be atomically replaced.
+ *
+ * If the destination is on a different logical device or atomically replacing
+ * an item is unsupported, the destination will be removed using
+ * @ref removeItemAtPath: and the source moved to the destination using
+ * @ref moveItemAtIRI:toIRI:.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the item with
+ * @throw OFReplaceItemFailedException Replacing failed
+ */
+- (void)replaceItemAtPath: (OFString *)destination
+	   withItemAtPath: (OFString *)source;
+#endif
+
+/**
+ * @brief Atomically replaces an item.
+ *
+ * The destination IRI must have a full path, which means it must include the
+ * name of the item.
+ *
+ * Directories cannot be atomically replaced.
+ *
+ * If the destination is on a different logical device, uses a different scheme
+ * or atomically replacing an item is unsupported, the destination will be
+ * removed using @ref removeItemAtPath: and the source moved to the destination
+ * using @ref moveItemAtIRI:toIRI:.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the item with
+ * @throw OFReplaceItemFailedException Replacing failed
+ * @throw OFUnsupportedProtocolException No handler is registered for either of
+ *					 the IRI's scheme
+ */
+- (void)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source;
 
 #ifdef OF_HAVE_FILES
 /**
@@ -1002,6 +1158,27 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFString *) *fileExtendedAttributesNames;
+
+/**
+ * @brief The @ref OFFileAmigaProtection key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) OFFileAmigaProtectionMask fileAmigaProtection;
+
+/**
+ * @brief The @ref OFFileAmigaComment key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) OFString *fileAmigaComment;
+
+/**
+ * @brief The @ref OFFileMSDOSAttributes key from the dictionary.
+ *
+ * @throw OFUndefinedKeyException The key is missing
+ */
+@property (readonly, nonatomic) OFFileMSDOSAttributesMask fileMSDOSAttributes;
 @end
 
 OF_ASSUME_NONNULL_END

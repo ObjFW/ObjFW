@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,6 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName;
 - (nullable OFString *)safeLocalPathForPath: (OFString *)path;
+- (OFString *)archivePathForPath: (OFString *)path;
 - (void)quarantineFile: (OFString *)path;
 - (void)checkForCancellation;
 #ifdef OF_AMIGAOS

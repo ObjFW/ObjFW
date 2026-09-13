@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -173,10 +173,11 @@ codepageToEncoding(UINT codepage)
 				@throw [OFOutOfRangeException exception];
 
 			UTF16Len = (DWORD)stringLen;
-			memcpy(UTF16, string.UTF16String, stringLen);
+			OFCopyMemory(UTF16, string.UTF16String, stringLen);
 		}
 
-		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
+		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0 &&
+		    (UTF16[0] & 0xFC00) == 0xDC00) {
 			OFUnichar c =
 			    (((_incompleteUTF16Surrogate & 0x3FF) << 10) |
 			    (UTF16[0] & 0x3FF)) + 0x10000;
@@ -187,7 +188,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if (UTF8Len <= length) {
-				memcpy(buffer, UTF8, UTF8Len);
+				OFCopyMemory(buffer, UTF8, UTF8Len);
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
@@ -196,22 +197,17 @@ codepageToEncoding(UINT codepage)
 				[rest addItems: UTF8 count: UTF8Len];
 			}
 
-			_incompleteUTF16Surrogate = 0;
 			i++;
 		}
+
+		_incompleteUTF16Surrogate = 0;
 
 		for (; i < UTF16Len; i++) {
 			OFUnichar c = UTF16[i];
 			char UTF8[4];
 			size_t UTF8Len;
 
-			/* Missing high surrogate */
-			if ((c & 0xFC00) == 0xDC00)
-				@throw [OFInvalidEncodingException exception];
-
 			if ((c & 0xFC00) == 0xD800) {
-				OFChar16 next;
-
 				if (UTF16Len <= i + 1) {
 					_incompleteUTF16Surrogate = c;
 
@@ -228,14 +224,8 @@ codepageToEncoding(UINT codepage)
 					return j;
 				}
 
-				next = UTF16[i + 1];
-
-				if ((next & 0xFC00) != 0xDC00)
-					@throw [OFInvalidEncodingException
-					    exception];
-
-				c = (((c & 0x3FF) << 10) | (next & 0x3FF)) +
-				    0x10000;
+				c = (((c & 0x3FF) << 10) |
+				    (UTF16[i + 1] & 0x3FF)) + 0x10000;
 
 				i++;
 			}
@@ -244,7 +234,7 @@ codepageToEncoding(UINT codepage)
 				@throw [OFInvalidEncodingException exception];
 
 			if (j + UTF8Len <= length) {
-				memcpy(buffer + j, UTF8, UTF8Len);
+				OFCopyMemory(buffer + j, UTF8, UTF8Len);
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
@@ -290,8 +280,8 @@ codepageToEncoding(UINT codepage)
 		if (toCopy > length)
 			toCopy = length;
 
-		memcpy(_incompleteUTF8Surrogate + _incompleteUTF8SurrogateLen,
-		    buffer, toCopy);
+		OFCopyMemory(_incompleteUTF8Surrogate +
+		    _incompleteUTF8SurrogateLen, buffer, toCopy);
 		_incompleteUTF8SurrogateLen += toCopy;
 
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
@@ -363,7 +353,7 @@ codepageToEncoding(UINT codepage)
 
 	tmp = OFAllocMemory(length * 2, sizeof(OFChar16));
 	@try {
-		DWORD bytesWritten;
+		DWORD bytesWritten = 0;
 
 		while (i < length) {
 			OFUnichar c;
@@ -375,8 +365,8 @@ codepageToEncoding(UINT codepage)
 			if (UTF8Len < 0 && UTF8Len >= -4) {
 				OFEnsure(length - i < 4);
 
-				memcpy(_incompleteUTF8Surrogate, buffer + i,
-				    length - i);
+				OFCopyMemory(_incompleteUTF8Surrogate,
+				    buffer + i, length - i);
 				_incompleteUTF8SurrogateLen = length - i;
 
 				break;

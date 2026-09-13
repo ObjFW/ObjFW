@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -291,7 +291,7 @@ _OFForward_stret:
 
 	addiu	$sp, $sp, 96
 
-	j_pic	OFMethodNotFound_stret
+	j_pic	_OFMethodNotFound_stret
 .type _OFForward_stret, %function
 .size _OFForward_stret, .-_OFForward_stret
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -202,10 +202,15 @@ callDelegateInMode(OFRunLoopMode runLoopMode,
 {
 	_numExpectedResponses--;
 
+	/*
+	 * We intentionally allow one more search domain than we have, as
+	 * -[sendQueries] tries the empty search domain when we are out of
+	 * search domains.
+	 */
 	if ([exception isKindOfClass: [OFDNSQueryFailedException class]] &&
 	    [exception errorCode] == OFDNSResolverErrorCodeServerNameError &&
 	    !_isFQDN && _numExpectedResponses == 0 && _addresses.count == 0 &&
-	    _searchDomainIndex + 1 < _settings->_searchDomains.count) {
+	    _searchDomainIndex + 1 <= _settings->_searchDomains.count) {
 		_searchDomainIndex++;
 		[self sendQueries];
 		return;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,8 +41,13 @@ parseArrayElement(OFXMLElement *element)
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (OFXMLElement *child in element.elements)
-		[ret addObject: parseElement(child)];
+	for (OFXMLElement *child in element.children) {
+		if ([child isKindOfClass: [OFXMLElement class]])
+			  [ret addObject: parseElement((OFXMLElement *)child)];
+		else if (child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
+	}
 
 	[ret makeImmutable];
 
@@ -56,14 +61,20 @@ parseDictElement(OFXMLElement *element)
 {
 	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFXMLElement *) *children = element.elements;
-	OFEnumerator OF_GENERIC(OFXMLElement *) *enumerator;
-	OFXMLElement *key, *object;
 
-	if (children.count % 2 != 0)
+	for (OFXMLNode *child in element.children)
+		if (![child isKindOfClass: [OFXMLElement class]] &&
+		    child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
+
+	OFArray OF_GENERIC(OFXMLElement *) *elements = element.elements;
+	if (elements.count % 2 != 0)
 		@throw [OFInvalidFormatException exception];
 
-	enumerator = [children objectEnumerator];
+	OFEnumerator OF_GENERIC(OFXMLElement *) *enumerator =
+	    [elements objectEnumerator];
+	OFXMLElement *key, *object;
 	while ((key = [enumerator nextObject]) &&
 	    (object = [enumerator nextObject])) {
 		if (key.namespace != nil || key.attributes.count != 0 ||
@@ -182,16 +193,13 @@ parseElement(OFXMLElement *element)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *rootElement = [OFXMLElement elementWithXMLString: self];
-	OFXMLAttribute *versionAttribute;
-	OFArray OF_GENERIC(OFXMLElement *) *elements;
-	id ret;
 
 	if (![rootElement.name isEqual: @"plist"] ||
 	    rootElement.namespace != nil)
 		@throw [OFInvalidFormatException exception];
 
-	versionAttribute = [rootElement attributeForName: @"version"];
-
+	OFXMLAttribute *versionAttribute =
+	    [rootElement attributeForName: @"version"];
 	if (versionAttribute == nil)
 		@throw [OFInvalidFormatException exception];
 
@@ -199,12 +207,19 @@ parseElement(OFXMLElement *element)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: [versionAttribute stringValue]];
 
-	elements = rootElement.elements;
+	id ret = nil;
+	for (OFXMLNode *child in rootElement.children) {
+		if ([child isKindOfClass: [OFXMLElement class]]) {
+			if (ret != nil)
+				@throw [OFInvalidFormatException exception];
 
-	if (elements.count != 1)
+			ret = parseElement((OFXMLElement *)child);
+		} else if (child.XMLString.stringByDeletingEnclosingWhitespaces
+		    .length > 0)
+			@throw [OFInvalidFormatException exception];
+	}
+	if (ret == nil)
 		@throw [OFInvalidFormatException exception];
-
-	ret = parseElement(elements.firstObject);
 
 	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -169,8 +169,12 @@ isSubclassOfClass(Class class, Class superclass)
 	Method *methods = class_copyMethodList(class, NULL);
 	OFMutableSet *tests;
 
-	if (methods == NULL)
+	if (methods == NULL) {
+		if (class_getSuperclass(class) != Nil)
+			return [self testsInClass: class_getSuperclass(class)];
+
 		return nil;
+	}
 
 	@try {
 		tests = [OFMutableSet set];
@@ -406,7 +410,7 @@ isSubclassOfClass(Class class, Class superclass)
 		OFArray *summary;
 
 		OFStdOut.foregroundColor = [OFColor teal];
-		[OFStdOut writeFormat: @"Running ", class];
+		[OFStdOut writeString: @"Running "];
 		OFStdOut.bold = true;
 		OFStdOut.foregroundColor = [OFColor aqua];
 		[OFStdOut writeFormat: @"%@\n", class];
@@ -535,6 +539,10 @@ isSubclassOfClass(Class class, Class superclass)
 		}
 	}
 
+#ifdef OF_AMIGAOS4
+	/* Work around a bug in AmigaOS 4 terminal. */
+	OFStdOut.foregroundColor = [OFColor purple];
+#endif
 	OFStdOut.bold = true;
 	OFStdOut.foregroundColor = [OFColor fuchsia];
 	[OFStdOut writeFormat: @"%zu", numSucceeded];
@@ -593,6 +601,6 @@ isSubclassOfClass(Class class, Class superclass)
 	consoleExit(NULL);
 #endif
 
-	[OFApplication terminateWithStatus: (int)numFailed];
+	[OFApplication terminateWithStatus: (numFailed > 0)];
 }
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,6 +73,19 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 {
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
+		id old;
+
+		switch (copy) {
+		case 0:
+			value = objc_retain(value);
+			break;
+		case 2:
+			value = [value mutableCopy];
+			break;
+		default:
+			value = [value copy];
+		}
+
 #ifdef OF_HAVE_THREADS
 		size_t slot = spinlockSlot(ptr);
 
@@ -80,26 +93,16 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 			_OBJC_ERROR("Failed to lock spinlock!");
 		@try {
 #endif
-			id old = *ptr;
-
-			switch (copy) {
-			case 0:
-				*ptr = objc_retain(value);
-				break;
-			case 2:
-				*ptr = [value mutableCopy];
-				break;
-			default:
-				*ptr = [value copy];
-			}
-
-			objc_release(old);
+			old = *ptr;
+			*ptr = value;
 #ifdef OF_HAVE_THREADS
 		} @finally {
 			if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 				_OBJC_ERROR("Failed to unlock spinlock!");
 		}
 #endif
+
+		objc_release(old);
 
 		return;
 	}
@@ -133,7 +136,7 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
-		memcpy(dest, src, size);
+		OFCopyMemory(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to unlock spinlock!");
@@ -142,7 +145,7 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		return;
 	}
 
-	memcpy(dest, src, size);
+	OFCopyMemory(dest, src, size);
 }
 
 void
@@ -151,12 +154,12 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
-		size_t slot = spinlockSlot(src);
+		size_t slot = spinlockSlot(dest);
 
 		if (OFSpinlockLock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
 #endif
-		memcpy(dest, src, size);
+		OFCopyMemory(dest, src, size);
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockUnlock(&spinlocks[slot]) != 0)
 			_OBJC_ERROR("Failed to unlock spinlock!");
@@ -165,7 +168,7 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 		return;
 	}
 
-	memcpy(dest, src, size);
+	OFCopyMemory(dest, src, size);
 }
 
 objc_property_t *

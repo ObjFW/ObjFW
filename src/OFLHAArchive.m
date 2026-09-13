@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,6 +43,8 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+#import "OFSeekFailedException.h"
+#import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
 enum {
@@ -180,7 +182,7 @@ OF_DIRECT_MEMBERS
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	char header[21];
+	uint8_t header[21];
 	size_t headerLen;
 
 	if (_mode != modeRead)
@@ -497,7 +499,15 @@ OF_DIRECT_MEMBERS
 	if (_stream == nil || _decompressedStream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[self of_skip];
+	@try {
+		[self of_skip];
+	} @catch (OFSeekFailedException *e) {
+		if (!_stream.atEndOfStream)
+			@throw e;
+	} @catch (OFReadFailedException *e) {
+		if (!_stream.atEndOfStream)
+			@throw e;
+	}
 
 	objc_release(_stream);
 	_stream = nil;

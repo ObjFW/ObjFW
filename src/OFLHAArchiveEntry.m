@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,6 +35,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
 static OFDate *
@@ -42,7 +43,7 @@ parseMSDOSDate(uint32_t MSDOSDate)
 {
 	uint16_t year = ((MSDOSDate & 0xFE000000) >> 25) + 1980;
 	uint8_t month = (MSDOSDate & 0x1E00000) >> 21;
-	uint8_t day = (MSDOSDate & 0x1F);
+	uint8_t day = (MSDOSDate & 0x1F0000) >> 16;
 	uint8_t hour = (MSDOSDate & 0xF800) >> 11;
 	uint8_t minute = (MSDOSDate & 0x7E0) >> 5;
 	uint8_t second = (MSDOSDate & 0x1F) << 1;
@@ -57,6 +58,12 @@ parseMSDOSDate(uint32_t MSDOSDate)
 }
 
 @implementation OFLHAArchiveEntry
+/*
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
+ */
+@dynamic targetFileName, deviceMajor, deviceMinor;
+
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     OFStringEncoding encoding)
@@ -67,7 +74,7 @@ parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_fileName = [[OFString alloc]
 	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -123,7 +130,7 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 3)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&POSIXPermissions, (char *)extension.items + 1, 2);
+	OFCopyMemory(&POSIXPermissions, (char *)extension.items + 1, 2);
 	POSIXPermissions = OFFromLittleEndian16(POSIXPermissions);
 
 	objc_release(entry->_POSIXPermissions);
@@ -142,10 +149,10 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&groupOwnerAccountID, (char *)extension.items + 1, 2);
+	OFCopyMemory(&groupOwnerAccountID, (char *)extension.items + 1, 2);
 	groupOwnerAccountID = OFFromLittleEndian16(groupOwnerAccountID);
 
-	memcpy(&ownerAccountID, (char *)extension.items + 3, 2);
+	OFCopyMemory(&ownerAccountID, (char *)extension.items + 3, 2);
 	ownerAccountID = OFFromLittleEndian16(ownerAccountID);
 
 	objc_release(entry->_groupOwnerAccountID);
@@ -195,7 +202,7 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&modificationDate, (char *)extension.items + 1, 4);
+	OFCopyMemory(&modificationDate, (char *)extension.items + 1, 4);
 	modificationDate = OFFromLittleEndian32(modificationDate);
 
 	objc_release(entry->_modificationDate);
@@ -214,11 +221,41 @@ parseFileSizeExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	if (extension.count != 17)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&tmp, (char *)extension.items + 1, 8);
+	OFCopyMemory(&tmp, (char *)extension.items + 1, 8);
 	entry->_compressedSize = OFFromLittleEndian64(tmp);
 
-	memcpy(&tmp, (char *)extension.items + 9, 8);
+	OFCopyMemory(&tmp, (char *)extension.items + 9, 8);
 	entry->_uncompressedSize = OFFromLittleEndian64(tmp);
+}
+
+static void
+parseMSDOSAttributesExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	uint16_t tmp;
+
+	if (extension.count != 3)
+		@throw [OFInvalidFormatException exception];
+
+	objc_release(entry->_MSDOSAttributes);
+	entry->_MSDOSAttributes = nil;
+
+	OFCopyMemory(&tmp, (char *)extension.items + 1, 2);
+	entry->_MSDOSAttributes = [OFNumber numberWithUnsignedShort:
+	    OFFromLittleEndian16(tmp)];
+}
+
+static void
+parseAmigaCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    OFStringEncoding encoding)
+{
+	objc_release(entry->_amigaComment);
+	entry->_amigaComment = nil;
+
+	entry->_amigaComment = [[OFString alloc]
+	    initWithCString: (char *)extension.items + 1
+		   encoding: encoding
+		     length: [extension count] - 1];
 }
 
 static bool
@@ -239,6 +276,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	case 0x3F:
 		function = parseCommentExtension;
 		break;
+	case 0x40:
+		function = parseMSDOSAttributesExtension;
+		break;
 	case 0x42:
 		function = parseFileSizeExtension;
 		break;
@@ -256,6 +296,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		break;
 	case 0x54:
 		function = parseModificationDateExtension;
+		break;
+	case 0x71:
+		function = parseAmigaCommentExtension;
 		break;
 	}
 
@@ -366,7 +409,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return self;
 }
 
-- (instancetype)of_initWithHeader: (char [21])header
+- (instancetype)of_initWithHeader: (uint8_t [21])header
 			   stream: (OFStream *)stream
 			 encoding: (OFStringEncoding)encoding
 {
@@ -375,13 +418,13 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	@try {
 		uint32_t tmp, date;
 
-		memcpy(&tmp, header + 7, 4);
+		OFCopyMemory(&tmp, header + 7, 4);
 		_compressedSize = OFFromLittleEndian32(tmp);
 
-		memcpy(&tmp, header + 11, 4);
+		OFCopyMemory(&tmp, header + 11, 4);
 		_uncompressedSize = OFFromLittleEndian32(tmp);
 
-		memcpy(&date, header + 15, 4);
+		OFCopyMemory(&date, header + 15, 4);
 		date = OFFromLittleEndian32(date);
 
 		_headerLevel = header[20];
@@ -392,8 +435,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		case 1:;
 			void *pool = objc_autoreleasePoolPush();
 			uint8_t extendedAreaSize;
+			char fileNameBuffer[255];
 			uint8_t fileNameLength;
-			OFString *fileName;
+			char *amigaCommentPtr;
 
 			if (header[0] < (21 - 2) + 1 + 2)
 				@throw [OFInvalidFormatException exception];
@@ -401,14 +445,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_modificationDate = objc_retain(parseMSDOSDate(date));
 
 			fileNameLength = [stream readInt8];
-			fileName = [stream readStringWithLength: fileNameLength
-						       encoding: encoding];
-			fileName = [fileName
-			    stringByReplacingOccurrencesOfString: @"\\"
-						      withString: @"/"];
-			_fileName = [fileName copy];
+			[stream readIntoBuffer: fileNameBuffer
+				   exactLength: fileNameLength];
+
+			_MSDOSAttributes = [[OFNumber alloc]
+			    initWithUnsignedChar: header[19]];
 
 			_CRC16 = [stream readLittleEndianInt16];
+
+			if (header[0] - (21 - 2) - 1 - 2 < fileNameLength)
+				@throw [OFInvalidFormatException exception];
 
 			extendedAreaSize =
 			    header[0] - (21 - 2) - 1 - fileNameLength - 2;
@@ -428,6 +474,31 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 				extendedAreaSize -= 1 + 2;
 			}
 
+			amigaCommentPtr = memchr(fileNameBuffer, '\0',
+			    fileNameLength);
+			if (amigaCommentPtr != NULL) {
+				size_t newFileNameLength =
+				    (amigaCommentPtr - fileNameBuffer);
+
+				_amigaComment = [[OFString alloc]
+				    initWithCString: amigaCommentPtr + 1
+					   encoding: encoding
+					     length: fileNameLength -
+						     newFileNameLength - 1];
+
+				fileNameLength = newFileNameLength;
+			}
+
+			for (size_t i = 0; i < fileNameLength; i++)
+				if (fileNameBuffer[i] == '\xFF' ||
+				    fileNameBuffer[i] == '\\')
+					fileNameBuffer[i] = '/';
+
+			_fileName = [[OFString alloc]
+			    initWithCString: fileNameBuffer
+				   encoding: encoding
+				     length: fileNameLength];
+
 			/* Skip extended area */
 			if ([stream isKindOfClass: [OFSeekableStream class]])
 				[(OFSeekableStream *)stream
@@ -436,10 +507,15 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			else {
 				char buffer[256];
 
-				while (extendedAreaSize > 0)
+				while (extendedAreaSize > 0) {
+					if (stream.atEndOfStream)
+						@throw [OFTruncatedDataException
+						    exception];
+
 					extendedAreaSize -= [stream
 					    readIntoBuffer: buffer
 						    length: extendedAreaSize];
+				}
 			}
 
 			if (_headerLevel == 1)
@@ -457,11 +533,29 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
 
+			if (_operatingSystemIdentifier == 'A') {
+				/*
+				 * Amiga LHA uses seconds since 1970-01-01 in
+				 * local time rather than UTC.
+				 */
+				OFString *tmpStr = [_modificationDate
+				    dateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+				OFDate *tmpDate = [OFDate
+				    dateWithLocalDateString: tmpStr
+						     format: @"%Y-%m-%d "
+							     @"%H:%M:%S"];
+				objc_release(_modificationDate);
+				_modificationDate = objc_retain(tmpDate);
+			}
+
 			if (_headerLevel == 3)
 				/* Size of entire header */
 				padding = [stream readLittleEndianInt32];
 			else
 				padding = (header[1] << 8) | header[0];
+
+			if (padding < 21 + 2 + 1)
+				@throw [OFInvalidFormatException exception];
 
 			/*
 			 * 21 for header, 2 for CRC16, 1 for operating system
@@ -469,24 +563,39 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			 */
 			padding -= 21 + 2 + 1;
 
-			padding -= readExtensions(self, stream, encoding, true);
+			if (padding > 0) {
+				size_t consumed = readExtensions(self, stream,
+				    encoding, true);
 
-			/* Skip padding */
-			if ([stream isKindOfClass: [OFSeekableStream class]])
-				[(OFSeekableStream *)stream
-				    seekToOffset: padding
-					  whence: OFSeekCurrent];
-			else {
-				while (padding > 0) {
-					char buffer[512];
-					size_t min = padding;
+				if (consumed > padding)
+					@throw [OFInvalidFormatException
+					    exception];
 
-					if (min > 512)
-						min = 512;
+				padding -= consumed;
 
-					padding -= [stream
-					    readIntoBuffer: buffer
-						    length: min];
+				/* Skip padding */
+				if ([stream isKindOfClass:
+				    [OFSeekableStream class]])
+					[(OFSeekableStream *)stream
+						seekToOffset: padding
+						      whence: OFSeekCurrent];
+				else {
+					while (padding > 0) {
+						char buffer[512];
+						size_t min = padding;
+
+						if (stream.atEndOfStream)
+#define TDE OFTruncatedDataException
+							@throw [TDE exception];
+#undef TDE
+
+						if (min > 512)
+							min = 512;
+
+						padding -= [stream
+						    readIntoBuffer: buffer
+							    length: min];
+					}
 				}
 			}
 
@@ -503,7 +612,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			@throw [OFInvalidFormatException exception];
 
 		_compressionMethod = [[OFString alloc]
-		    initWithCString: header + 2
+		    initWithCString: (const char *)header + 2
 			   encoding: OFStringEncodingASCII
 			     length: 5];
 
@@ -528,6 +637,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	objc_release(_groupOwnerAccountID);
 	objc_release(_ownerAccountName);
 	objc_release(_groupOwnerAccountName);
+	objc_release(_MSDOSAttributes);
+	objc_release(_amigaComment);
 	objc_release(_extensions);
 
 	[super dealloc];
@@ -565,6 +676,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		copy->_ownerAccountName = [_ownerAccountName copy];
 		copy->_groupOwnerAccountName = [_groupOwnerAccountName copy];
 		copy->_extensions = [_extensions copy];
+		copy->_MSDOSAttributes = objc_retain(_MSDOSAttributes);
+		copy->_amigaComment = [_amigaComment copy];
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -579,6 +692,14 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 		return _fileName;
 
 	return [_directoryName stringByAppendingString: _fileName];
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	if ([_fileName hasSuffix: @"/"])
+		return OFArchiveEntryFileTypeDirectory;
+
+	return OFArchiveEntryFileTypeRegular;
 }
 
 - (OFString *)compressionMethod
@@ -646,6 +767,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	return _groupOwnerAccountName;
 }
 
+- (OFNumber *)MSDOSAttributes
+{
+	return _MSDOSAttributes;
+}
+
+- (OFString *)amigaComment
+{
+	return _amigaComment;
+}
+
 - (OFArray OF_GENERIC(OFData *) *)extensions
 {
 	return _extensions;
@@ -671,8 +802,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    &directoryName, &directoryNameLength);
 
 	if (fileNameLength > UINT16_MAX - 3 ||
-	    directoryNameLength > UINT16_MAX - 3 ||
-	    _compressedSize > UINT64_MAX || _uncompressedSize > UINT64_MAX)
+	    directoryNameLength > UINT16_MAX - 3)
 		@throw [OFOutOfRangeException exception];
 
 	/* Length. Filled in after we're done. */
@@ -688,8 +818,21 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	tmp32 = OFToLittleEndian32((uint32_t)_uncompressedSize);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
-	tmp32 = OFToLittleEndian32(
-	    (uint32_t)_modificationDate.timeIntervalSince1970);
+	if (_operatingSystemIdentifier == 'A') {
+		/*
+		 * Amiga LHA uses seconds since 1970-01-01 in local time rather
+		 * than UTC.
+		 */
+		OFString *tmpStr = [_modificationDate
+		    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+		OFDate *tmpDate = [OFDate
+		    dateWithDateString: tmpStr
+				format: @"%Y-%m-%d %H:%M:%S"];
+		tmp32 = OFToLittleEndian32(
+		    (uint32_t)tmpDate.timeIntervalSince1970);
+	} else
+		tmp32 = OFToLittleEndian32(
+		    (uint32_t)_modificationDate.timeIntervalSince1970);
 	[data addItems: &tmp32 count: sizeof(tmp32)];
 
 	/* Reserved */
@@ -703,7 +846,10 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[data addItems: &tmp16 count: sizeof(tmp16)];
 
 	/* Operating system identifier */
-	[data addItem: "U"];
+	if (_operatingSystemIdentifier != 0)
+		[data addItem: &_operatingSystemIdentifier];
+	else
+		[data addItem: "U"];
 
 	/* Common header. Contains CRC16, which is written at the end. */
 	tmp16 = OFToLittleEndian16(5);
@@ -750,6 +896,16 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	[data addItems: &tmp64 count: sizeof(tmp64)];
 	tmp64 = OFToLittleEndian64(_uncompressedSize);
 	[data addItems: &tmp64 count: sizeof(tmp64)];
+
+	if (_MSDOSAttributes != nil) {
+		tmp16 = OFToLittleEndian16(5);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+		[data addItem: "\x40"];
+
+		tmp16 =
+		    OFToLittleEndian16(_MSDOSAttributes.unsignedShortValue);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+	}
 
 	if (_POSIXPermissions != nil) {
 		tmp16 = OFToLittleEndian16(5);
@@ -807,6 +963,20 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 			 count: length];
 	}
 
+	if (_amigaComment != nil) {
+		size_t length =
+		    [_amigaComment cStringLengthWithEncoding: encoding];
+
+		if (length > UINT16_MAX - 3)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OFToLittleEndian16((uint16_t)length + 3);
+		[data addItems: &tmp16 count: sizeof(tmp16)];
+		[data addItem: "\x71"];
+		[data addItems: [_amigaComment cStringWithEncoding: encoding]
+			 count: length];
+	}
+
 	for (OFData *extension in _extensions) {
 		size_t extensionLength = extension.count;
 
@@ -839,11 +1009,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 
 	/* Now fill in the size and CRC16 for the entire header */
 	tmp16 = OFToLittleEndian16(headerSize);
-	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
+	OFCopyMemory([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
 	tmp16 = _OFCRC16(0, data.items, data.count);
 	tmp16 = OFToLittleEndian16(tmp16);
-	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
+	OFCopyMemory([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 
 	[stream writeData: data];
 
@@ -878,14 +1048,17 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry, OFStringEncoding encoding,
 	    @"\tOwner account ID = %@\n"
 	    @"\tGroup owner account ID = %@\n"
 	    @"\tOwner account name = %@\n"
-	    @"\tGroup owner accounut name = %@\n"
+	    @"\tGroup owner account name = %@\n"
+	    @"\tMS-DOS attributes = %@\n"
+	    @"\tAmiga comment = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
 	    self.class, self.fileName, _compressionMethod, _compressedSize,
 	    _uncompressedSize, _modificationDate, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, POSIXPermissions,
 	    _ownerAccountID, _groupOwnerAccountID, _ownerAccountName,
-	    _groupOwnerAccountName, extensions];
+	    _groupOwnerAccountName, _MSDOSAttributes, _amigaComment,
+	    extensions];
 
 	objc_retain(ret);
 

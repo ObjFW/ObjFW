@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -48,16 +48,11 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#if defined(OF_AMIGAOS_M68K) || defined(OF_MINT)
-/* amiga-gcc and freemint-gcc do not have trunc() */
-# define trunc(x) ((int64_t)(x))
-#endif
-
 #ifdef OF_MORPHOS
 # include <devices/timer.h>
 # include <ppcinline/timer.h>
-
-extern struct Device *TimerBase;
+# define TimerBase (OFTimeRequest.tr_node.io_Device)
+extern struct timerequest OFTimeRequest;
 #endif
 
 @interface OFPlaceholderDate: OFDate
@@ -105,19 +100,19 @@ now(void)
 
 	GetUTCSysTime(&tv);
 
-	return 252460800.0 + tv.tv_secs + (OFTimeInterval)tv.tv_micro / 1000000;
+	return 252460800.0 + tv.tv_secs + tv.tv_micro / 1000000.0;
 #elif defined(HAVE_CLOCK_GETTIME)
 	struct timespec ts;
 
 	OFEnsure(clock_gettime(CLOCK_REALTIME, &ts) == 0);
 
-	return ts.tv_sec + (OFTimeInterval)ts.tv_nsec / 1000000000;
+	return ts.tv_sec + ts.tv_nsec / 1000000000.0;
 #else
 	struct timeval tv;
 
 	OFEnsure(gettimeofday(&tv, NULL) == 0);
 
-	return tv.tv_sec + (OFTimeInterval)tv.tv_usec / 1000000;
+	return tv.tv_sec + tv.tv_usec / 1000000.0;
 #endif
 }
 
@@ -125,8 +120,7 @@ now(void)
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
 
-static void
-releaseMutex(void)
+OF_DESTRUCTOR()
 {
 	objc_release(mutex);
 }
@@ -139,10 +133,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 #ifdef HAVE_GMTIME_R
 # define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (gmtime_r(&seconds, &tm) == NULL)				\
@@ -151,10 +145,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	return tm.field;
 # define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (localtime_r(&seconds, &tm) == NULL)				\
@@ -165,10 +159,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 # ifdef OF_HAVE_THREADS
 #  define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -183,10 +177,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	}
 #  define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -202,10 +196,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 # else
 #  define GMTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = gmtime(&seconds)) == NULL)				\
@@ -214,10 +208,10 @@ static __time64_t (*_mktime64FuncPtr)(struct tm *);
 	return tm->field;
 #  define LOCALTIME_RET(field)						\
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;	\
-	time_t seconds = (time_t)timeInterval;				\
+	time_t seconds = (time_t)floor(timeInterval);			\
 	struct tm *tm;							\
 									\
-	if (seconds != trunc(timeInterval))				\
+	if (seconds != floor(timeInterval))				\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = localtime(&seconds)) == NULL)				\
@@ -259,7 +253,7 @@ tmAndTzToTime(const struct tm *tm, short tz)
 	    (tm->tm_year + 1900) % 400 == 0))
 		seconds += 86400;
 	/* Months */
-	if (tm->tm_mon < 0 || tm->tm_mon > 12)
+	if (tm->tm_mon < 0 || tm->tm_mon > 11)
 		@throw [OFInvalidFormatException exception];
 	seconds += monthToDayOfYear[tm->tm_mon] * 86400;
 	/* Days */
@@ -338,7 +332,6 @@ OF_SINGLETON_METHODS
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 	mutex = [[OFMutex alloc] init];
-	atexit(releaseMutex);
 #endif
 
 #ifdef OF_WINDOWS
@@ -371,6 +364,18 @@ OF_SINGLETON_METHODS
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithTimeIntervalSinceNow: seconds]);
+}
+
++ (instancetype)dateWithStructTm: (const struct tm *)structTm
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithStructTm: structTm]);
+}
+
++ (instancetype)dateWithLocalStructTm: (const struct tm *)structTm
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLocalStructTm: structTm]);
 }
 
 + (instancetype)dateWithDateString: (OFString *)string
@@ -429,6 +434,36 @@ OF_SINGLETON_METHODS
 	return [self initWithTimeIntervalSince1970: now() + seconds];
 }
 
+- (instancetype)initWithStructTm: (const struct tm *)structTm
+{
+	return [self initWithTimeIntervalSince1970: tmAndTzToTime(structTm, 0)];
+}
+
+- (instancetype)initWithLocalStructTm: (const struct tm *)structTm
+{
+	struct tm tm = *structTm;
+
+#ifdef OF_WINDOWS
+	if (_mktime64FuncPtr != NULL) {
+		__time64_t t;
+
+		if ((t = _mktime64FuncPtr(&tm)) == -1)
+			@throw [OFOutOfRangeException exception];
+
+		return [self initWithTimeIntervalSince1970: t];
+	} else {
+#endif
+		time_t t;
+
+		if ((t = mktime(&tm)) == (time_t)-1)
+			@throw [OFOutOfRangeException exception];
+
+		return [self initWithTimeIntervalSince1970: t];
+#ifdef OF_WINDOWS
+	}
+#endif
+}
+
 - (instancetype)initWithDateString: (OFString *)string
 			    format: (OFString *)format
 {
@@ -467,12 +502,20 @@ OF_SINGLETON_METHODS
 	if (tz == SHRT_MAX) {
 #ifdef OF_WINDOWS
 		if (_mktime64FuncPtr != NULL) {
-			if ((seconds = _mktime64FuncPtr(&tm)) == -1)
+			__time64_t t;
+
+			if ((t = _mktime64FuncPtr(&tm)) == -1)
 				@throw [OFInvalidFormatException exception];
+
+			seconds = t;
 		} else {
 #endif
-			if ((seconds = mktime(&tm)) == -1)
+			time_t t;
+
+			if ((t = mktime(&tm)) == (time_t)-1)
 				@throw [OFInvalidFormatException exception];
+
+			seconds = t;
 #ifdef OF_WINDOWS
 		}
 #endif
@@ -546,9 +589,9 @@ OF_SINGLETON_METHODS
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	int64_t seconds = (int64_t)timeInterval;
+	int64_t seconds = (int64_t)floor(timeInterval);
 	uint32_t nanoseconds =
-	    (uint32_t)((timeInterval - trunc(timeInterval)) * 1000000000);
+	    (uint32_t)((timeInterval - floor(timeInterval)) * 1000000000.0);
 	OFData *ret;
 
 	if (seconds >= 0 && seconds < 0x400000000) {
@@ -600,7 +643,8 @@ OF_SINGLETON_METHODS
 {
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
 
-	return (unsigned long)((timeInterval - trunc(timeInterval)) * 1000000);
+	return (unsigned long)
+	    ((timeInterval - floor(timeInterval)) * 1000000.0);
 }
 
 - (unsigned char)second
@@ -682,12 +726,12 @@ OF_SINGLETON_METHODS
 {
 	OFString *ret;
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	time_t seconds = (time_t)timeInterval;
+	time_t seconds = (time_t)floor(timeInterval);
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds != trunc(timeInterval))
+	if (seconds != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_GMTIME_R
@@ -731,12 +775,12 @@ OF_SINGLETON_METHODS
 {
 	OFString *ret;
 	OFTimeInterval timeInterval = self.timeIntervalSince1970;
-	time_t seconds = (time_t)timeInterval;
+	time_t seconds = (time_t)floor(timeInterval);
 	struct tm tm;
 	size_t pageSize;
 	char *buffer;
 
-	if (seconds != trunc(timeInterval))
+	if (seconds != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_LOCALTIME_R
@@ -810,15 +854,7 @@ OF_SINGLETON_METHODS
 
 - (OFTimeInterval)timeIntervalSinceNow
 {
-	struct timeval t;
-	OFTimeInterval seconds;
-
-	OFEnsure(gettimeofday(&t, NULL) == 0);
-
-	seconds = t.tv_sec;
-	seconds += (OFTimeInterval)t.tv_usec / 1000000;
-
-	return self.timeIntervalSince1970 - seconds;
+	return self.timeIntervalSince1970 - now();
 }
 
 - (OFDate *)dateByAddingTimeInterval: (OFTimeInterval)seconds

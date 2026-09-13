@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,6 +25,8 @@ int _NSString_OFObject_reference;
 @implementation NSString (OFObject)
 - (OFString *)OFObject
 {
-	return [OFString stringWithUTF8String: self.UTF8String];
+	size_t length = [self lengthOfBytesUsingEncoding: NSUTF8StringEncoding];
+
+	return [OFString stringWithUTF8String: self.UTF8String length: length];
 }
 @end

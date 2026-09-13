@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 
 #import "OFFileManager.h"
 #import "OFObject.h"
+#import "OFRunLoop.h"
 #import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -31,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 /**
- * @protocol OFIRIHandlerDelegate OFIRIHandlerDelegate.h ObjFW/ObjFW.h
+ * @protocol OFIRIHandlerDelegate OFIRIHandler.h ObjFW/ObjFW.h
  *
  * @brief A delegate for OFIRIHandler operations.
  */
@@ -46,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)IRIHandler: (OFIRIHandler *)IRIHandler
   didOpenItemAtIRI: (OFIRI *)IRI
-	    stream: (nullable OFStream *)stream
+	    stream: (nullable OF_KINDOF(OFStream *))stream
 	 exception: (nullable id)exception;
 @end
 
@@ -69,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Registers the specified class as the handler for the specified scheme.
  *
- * If the same class is specified for two schemes, one instance of it is
+ * If the same class is specified for multiple schemes, one instance of it is
  * created per scheme.
  *
  * @param class_ The class to register as the handler for the specified scheme
@@ -82,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the handler for the specified IRI.
  *
- * @return The handler for the specified IRI.
+ * @return The handler for the specified IRI
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
 + (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI;
@@ -111,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFOpenItemFailedException Opening the item failed
  * @throw OFUnsupportedProtocolException The specified IRI is not supported
  */
-+ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
++ (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.
@@ -140,6 +141,36 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate;
+
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @param runLoopMode The run loop mode in which to open the item
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -176,7 +207,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @throw OFUnsupportedProtocolException The specified IRI is not supported by
  *					 the handler
  */
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode;
 
 /**
  * @brief Asynchronously opens the item at the specified IRI.
@@ -205,6 +236,36 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate;
+
+/**
+ * @brief Asynchronously opens the item at the specified IRI.
+ *
+ * @param IRI The IRI of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ * @param delegate The delegate to use for callbacks
+ * @param runLoopMode The run loop mode in which to open the item
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported by
+ *					 the handler
+ */
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Returns the attributes for the item at the specified IRI.
@@ -373,6 +434,28 @@ OF_ASSUME_NONNULL_BEGIN
  *					 scheme
  */
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination;
+
+/**
+ * @brief Tries to atomically replace an item. If a replace would only be
+ *	  possible by deleting the destination and renaming the source, it
+ *	  returns false.
+ *
+ * The destination IRI must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If the destination is on a different logical device or uses a different
+ * scheme, an efficient move is not possible and false is returned.
+ *
+ * @param destination The item to replace
+ * @param source The item to replace the destination with
+ * @return True if an atomic replace was performed, false if an atomic replace
+ *	   was not possible. Note that errors while performing a replace are
+ *	   reported via exceptions and not by returning false!
+ * @throw OFReplaceItemFailedException Replacing failed
+ * @throw OFUnsupportedProtocolException The handler cannot handle the IRI's
+ *					 scheme
+ */
+- (bool)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source;
 
 /**
  * @brief Returns the extended attribute data for the specified name of the

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -232,8 +232,6 @@ typedef bool (^OFSetFilterBlock)(id object);
  * @brief Set the value for the specified key
  *
  * @ref setValue:forKey: is called for each object.
- *
- * @note A @ref OFNull value is translated to nil!
  *
  * @param value The value for the specified key
  * @param key The key of the value to set

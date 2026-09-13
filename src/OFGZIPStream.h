@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,7 +20,7 @@
 #import "OFStream.h"
 #import "OFDate.h"
 
-@class OFInflateStream;
+@class OFDeflateStream;
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -55,7 +55,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFGZIPStream: OFStream
 {
 	OFStream *_stream;
-	OFInflateStream *_Nullable _inflateStream;
+	OFDeflateStream *_Nullable _deflateStream;
 	enum {
 		OFGZIPStreamStateID1,
 		OFGZIPStreamStateID2,

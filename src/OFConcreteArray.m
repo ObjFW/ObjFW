@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,6 +25,8 @@
 #import "OFConcreteMutableArray.h"
 #import "OFConcreteSubarray.h"
 #import "OFData.h"
+#import "OFIndexSet.h"
+#import "OFIndexSet+Private.h"
 #import "OFString.h"
 
 #import "OFEnumerationMutationException.h"
@@ -71,10 +73,16 @@
 	@try {
 		id object;
 
+		if (firstObject == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		[_array addItem: &firstObject];
 		objc_retain(firstObject);
 
 		while ((object = va_arg(arguments, id)) != nil) {
+			if (object == nil)
+				@throw [OFInvalidArgumentException exception];
+
 			[_array addItem: &object];
 			objc_retain(object);
 		}
@@ -93,10 +101,10 @@
 
 	self = [super init];
 
-	if (array == nil)
-		return self;
-
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		objects = array.objects;
 		count = array.count;
 
@@ -183,8 +191,7 @@
 	id const *objects = _array.items;
 	size_t count = _array.count;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > count)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	for (size_t i = 0; i < range.length; i++)
@@ -229,8 +236,7 @@
 
 - (OFArray *)objectsInRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _array.count)
+	if (OFEndOfRange(range) > _array.count)
 		@throw [OFOutOfRangeException exception];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
@@ -241,6 +247,31 @@
 	return objc_autoreleaseReturnValue(
 	    [[OFConcreteSubarray alloc] initWithArray: self
 						range: range]);
+}
+
+- (OFArray *)objectsAtIndexes: (OFIndexSet *)indexes
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: indexes.count];
+	void *pool = objc_autoreleasePoolPush();
+	const OFRange *ranges = indexes.of_ranges.items;
+	size_t rangesCount = indexes.of_ranges.count;
+	id const *items = _array.items;
+	size_t count = _array.count;
+
+	for (size_t i = 0; i < rangesCount; i++) {
+		if (OFEndOfRange(ranges[i]) > count)
+			@throw [OFOutOfRangeException exception];
+
+		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
+		    j++)
+			[ret addObject: items[j]];
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (bool)isEqual: (id)object

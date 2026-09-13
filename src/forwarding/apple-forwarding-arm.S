@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@ Lstr_forwardingTargetForSelector_:
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
 Lsel_forwardingTargetForSelector_:
-	.long str_forwardingTargetForSelector_
+	.long Lstr_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -122,7 +122,7 @@ L1:
 0:
 	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
-	b	_OFMethodNotFound_stret
+	b	__OFMethodNotFound_stret
 
 .data_region
 Lsel_forwardingTargetForSelector_$indirect_L1:

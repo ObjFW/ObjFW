@@ -28,7 +28,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libsctp-dev libssl-dev gnutls-dev libmbedtls-dev
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure

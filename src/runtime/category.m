@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -103,12 +103,12 @@ _objc_processCategoriesLoadQueue(void)
 
 			loadQueue[i] = loadQueue[loadQueueCount];
 
-			loadQueue = realloc(loadQueue,
-			    sizeof(struct objc_category *) * loadQueueCount);
-
-			if (loadQueue == NULL)
+			if ((loadQueue = realloc(loadQueue, sizeof(
+			    struct objc_category *) * loadQueueCount)) == NULL)
 				_OBJC_ERROR("Not enough memory for load "
 				    "queue!");
+
+			i--;
 		}
 	}
 }

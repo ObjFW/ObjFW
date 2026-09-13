@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -51,6 +51,11 @@ static int colorTag;
 
 	if (alpha != NULL)
 		*alpha = 1;
+}
+
+- (OFColorSpace *)colorSpace
+{
+	return [OFColorSpace sRGBColorSpace];
 }
 
 OF_SINGLETON_METHODS

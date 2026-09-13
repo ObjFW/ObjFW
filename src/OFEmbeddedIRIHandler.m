@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -119,7 +119,7 @@ processQueueLocked(void)
 }
 #endif
 
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OFString *path;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -66,7 +66,7 @@
 		_itemSize = itemSize;
 		_freeWhenDone = true;
 
-		memcpy(_items, items, count * itemSize);
+		OFCopyMemory(_items, items, count * itemSize);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -85,6 +85,9 @@
 	@try {
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
+
+		if (SIZE_MAX / itemSize < count)
+			@throw [OFOutOfRangeException exception];
 
 		_items = (unsigned char *)items;
 		_capacity = _count = count;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -87,7 +87,7 @@
 	[accepted receiveIntoBuffer: buffer
 			     length: 6
 			       info: &receiveInfo];
-	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello!", 6), OFOrderedSame);
 	OTAssertEqualObjects(receiveInfo, sendInfo);
 }
 @end

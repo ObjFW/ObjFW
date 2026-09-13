@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,10 +68,18 @@
 # define USE_INLINE_STDARG
 # include <proto/exec.h>
 # include <clib/debug_protos.h>
-# define __NOLIBBASE_
+# define __NOLIBBASE__
 # include <proto/intuition.h>
-# undef __NOLIBBASE_
+# undef __NOLIBBASE__
+# ifdef OF_MORPHOS
+#  include <proto/random.h>
+# endif
 # undef Class
+#endif
+
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+# import "amiga-library.h"
+extern struct Library *ObjFWBase;
 #endif
 
 #ifdef OF_APPLE_RUNTIME
@@ -78,13 +87,14 @@ extern id _objc_rootRetain(id object);
 extern uintptr_t _objc_rootRetainCount(id object);
 extern void _objc_rootRelease(id object);
 extern id _objc_rootAutorelease(id object);
+extern bool _objc_rootTryRetain(id object);
 #endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id _OFForward(id, SEL, ...);
 extern struct Stret _OFForward_stret(id, SEL, ...);
 #else
 # define _OFForward OFMethodNotFound
-# define _OFForward_stret OFMethodNotFound_stret
+# define _OFForward_stret _OFMethodNotFound_stret
 #endif
 
 #ifdef OF_WINDOWS
@@ -96,6 +106,14 @@ static struct {
 } allocFailedException;
 
 unsigned long OFHashSeed;
+
+#ifdef OF_AMIGAOS
+unsigned long *
+OFHashSeedRef(void)
+{
+	return &OFHashSeed;
+}
+#endif
 
 void *
 OFAllocMemory(size_t count, size_t size)
@@ -110,7 +128,7 @@ OFAllocMemory(size_t count, size_t size)
 
 	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 
 	return pointer;
 }
@@ -129,7 +147,36 @@ OFAllocZeroedMemory(size_t count, size_t size)
 
 	if OF_UNLIKELY ((pointer = calloc(count, size)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
+
+	return pointer;
+}
+
+void *
+OFAllocAlignedMemory(size_t count, size_t size, size_t alignment)
+{
+	if OF_UNLIKELY (count == 0 || size == 0)
+		return NULL;
+
+	if OF_UNLIKELY (count > SIZE_MAX / size)
+		@throw [OFOutOfRangeException exception];
+
+	void *pointer;
+#ifdef HAVE_POSIX_MEMALIGN
+	if (alignment < sizeof(void *))
+		alignment = sizeof(void *);
+
+	int ret = posix_memalign(&pointer, alignment, count * size);
+
+	if OF_UNLIKELY (ret == EINVAL)
+		@throw [OFInvalidArgumentException exception];
+
+	if OF_UNLIKELY (ret != 0)
+#else
+	if OF_UNLIKELY ((pointer = malloc(count * size)) == NULL)
+#endif
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: count * size];
 
 	return pointer;
 }
@@ -147,7 +194,7 @@ OFResizeMemory(void *pointer, size_t count, size_t size)
 
 	if OF_UNLIKELY ((pointer = realloc(pointer, count * size)) == NULL)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: size];
+		    exceptionWithRequestedSize: count * size];
 
 	return pointer;
 }
@@ -158,8 +205,8 @@ OFFreeMemory(void *pointer)
 	free(pointer);
 }
 
-#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM)) || \
-    defined(OF_WINDOWS)
+#if (!defined(HAVE_ARC4RANDOM) && !defined(HAVE_GETRANDOM) && \
+    !defined(OF_MORPHOS)) || defined(OF_WINDOWS)
 static OFOnceControl randomOnceControl = OFOnceControlInitValue;
 
 static void
@@ -189,7 +236,9 @@ initRandom(void)
 uint16_t
 OFRandom16(void)
 {
-#if defined(HAVE_ARC4RANDOM)
+#if defined(OF_MORPHOS)
+	return (uint16_t)Random();
+#elif defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint16_t buffer;
@@ -219,7 +268,9 @@ OFRandom16(void)
 uint32_t
 OFRandom32(void)
 {
-#if defined(HAVE_ARC4RANDOM)
+#if defined(OF_MORPHOS)
+	return (uint32_t)Random();
+#elif defined(HAVE_ARC4RANDOM)
 	return arc4random();
 #elif defined(HAVE_GETRANDOM)
 	uint32_t buffer;
@@ -245,7 +296,13 @@ OFRandom32(void)
 uint64_t
 OFRandom64(void)
 {
-#if defined(HAVE_ARC4RANDOM_BUF)
+#if defined(OF_MORPHOS)
+	uint64_t buffer;
+
+	RandomBytes(&buffer, sizeof(buffer));
+
+	return buffer;
+#elif defined(HAVE_ARC4RANDOM_BUF)
 	uint64_t buffer;
 
 	arc4random_buf(&buffer, sizeof(buffer));
@@ -291,6 +348,9 @@ typeEncodingForSelector(Class class, SEL selector)
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+# endif
 uncaughtExceptionHandler(id exception)
 {
 # ifdef OF_AMIGAOS
@@ -403,6 +463,9 @@ uncaughtExceptionHandler(id exception)
 #endif
 
 static void
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+#endif
 enumerationMutationHandler(id object)
 {
 	@throw [OFEnumerationMutationException exceptionWithObject: object];
@@ -422,8 +485,8 @@ OFMethodNotFound(id object, SEL selector)
 	OF_UNREACHABLE
 }
 
-void OF_NO_RETURN_FUNC
-OFMethodNotFound_stret(void *stret, id object, SEL selector)
+void OF_NO_RETURN_FUNC OF_VISIBILITY_INTERNAL
+_OFMethodNotFound_stret(void *stret, id object, SEL selector)
 {
 	OFMethodNotFound(object, selector);
 }
@@ -440,6 +503,9 @@ OFAllocObject(Class class, size_t extraSize, size_t extraAlignment,
 	if OF_UNLIKELY (extraAlignment > 1)
 		extraAlignment = OFRoundUpToPowerOf2(extraAlignment,
 		    instanceSize) - instanceSize;
+
+	if (SIZE_MAX - extraAlignment < extraSize)
+		@throw [OFOutOfRangeException exception];
 
 	instance = class_createInstance(class, extraAlignment + extraSize);
 
@@ -471,8 +537,34 @@ _references_to_categories_of_OFObject(void)
 @implementation OFObject
 + (void)load
 {
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+	size_t trampolineSize = objc_libraryTrampolineSize();
+	uint32_t *trampolines = malloc(4 * trampolineSize * sizeof(uint32_t));
+
+	if (trampolines == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	objc_createLibraryTrampoline(&trampolines[0 * trampolineSize],
+	    (IMP)uncaughtExceptionHandler, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[1 * trampolineSize],
+	    (IMP)_OFForward, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[2 * trampolineSize],
+	    (IMP)_OFForward_stret, ObjFWBase);
+	objc_createLibraryTrampoline(&trampolines[3 * trampolineSize],
+	    (IMP)enumerationMutationHandler, ObjFWBase);
+	CacheFlushDataInstArea(trampolines,
+	    4 * trampolineSize * sizeof(uint32_t));
+#endif
+
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setUncaughtExceptionHandler(
+	    (objc_uncaught_exception_handler)(uintptr_t)
+	    &trampolines[0 * trampolineSize]);
+# else
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
+# endif
 #endif
 
 #if defined(OF_APPLE_RUNTIME)
@@ -489,10 +581,22 @@ _references_to_categories_of_OFObject(void)
 		objc_setForwardHandler((void *)&_OFForward,
 		    (void *)&_OFForward_stret);
 #else
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setForwardHandler(
+	    (IMP)(uintptr_t)&trampolines[1 * trampolineSize],
+	    (IMP)(uintptr_t)&trampolines[2 * trampolineSize]);
+# else
 	objc_setForwardHandler((IMP)&_OFForward, (IMP)&_OFForward_stret);
+# endif
 #endif
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+	objc_setEnumerationMutationHandler(
+	    (objc_enumeration_mutation_handler)(uintptr_t)
+	    &trampolines[3 * trampolineSize]);
+#else
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
+#endif
 
 	do {
 		OFHashSeed = OFRandom32();
@@ -514,7 +618,15 @@ _references_to_categories_of_OFObject(void)
 
 + (instancetype)alloc
 {
-	return class_createInstance(self, 0);
+	OFObject *instance = class_createInstance(self, 0);
+
+	if OF_UNLIKELY (instance == nil) {
+		object_setClass((id)&allocFailedException,
+		    [OFAllocFailedException class]);
+		@throw (id)&allocFailedException;
+	}
+
+	return instance;
 }
 
 + (Class)class
@@ -1254,9 +1366,7 @@ _references_to_categories_of_OFObject(void)
 
 - (bool)retainWeakReference
 {
-	[self retain];
-
-	return true;
+	return _objc_rootTryRetain(self);
 }
 
 - (void)dealloc

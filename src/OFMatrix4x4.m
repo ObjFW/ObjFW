@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,10 +26,10 @@
 #import "OFOnce.h"
 
 static const float identityValues[4][4] = {
-	{ 1, 0, 0, 0 },
-	{ 0, 1, 0, 0 },
-	{ 0, 0, 1, 0 },
-	{ 0, 0, 0, 1 }
+	{ 1.0f, 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f, 0.0f },
+	{ 0.0f, 0.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f }
 };
 
 @implementation OFMatrix4x4
@@ -46,7 +46,7 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 
 	__asm__ __volatile__ (
 	    "test	%[count], %[count]\n\t"
-	    "jz		0f\n"
+	    "jz		1f\n"
 	    "\n\t"
 	    "movaps	(%[matrix]), %%xmm0\n\t"
 	    "movaps	16(%[matrix]), %%xmm1\n\t"
@@ -98,6 +98,8 @@ transformVectors_SSE(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "add	$16, %[vectors]\n\t"
 	    "dec	%[count]\n\t"
 	    "jnz	0b\n"
+	    "\n\t"
+	    "1:"
 	    : [count] "+r" (count),
 	      [vectors] "+r" (vectors)
 	    : [matrix] "r" (self->_values),
@@ -177,7 +179,7 @@ multiplyWithMatrix_3DNow(OFMatrix4x4 *self, SEL _cmd, OFMatrix4x4 *matrix)
 	    : "ecx", "mm0", "mm1", "memory"
 	);
 
-	memcpy(self->_values, result, 16 * sizeof(float));
+	OFCopyMemory(self->_values, result, 16 * sizeof(float));
 }
 
 static void
@@ -186,7 +188,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	__asm__ __volatile__ (
 	    "test	%[count], %[count]\n\t"
-	    "jz		0f\n"
+	    "jz		1f\n"
 	    "\n\t"
 	    "0:\n\t"
 	    "movq	(%[vectors]), %%mm0\n\t"
@@ -228,7 +230,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	    "dec	%[count]\n\t"
 	    "jnz	0b\n"
 	    "\n\t"
-	    "0:\n\t"
+	    "1:\n\t"
 	    "femms"
 	    : [count] "+r" (count),
 	      [vectors] "+r" (vectors)
@@ -287,7 +289,7 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	self = [super init];
 
-	memcpy(_values, values, 16 * sizeof(float));
+	OFCopyMemory(_values, values, 16 * sizeof(float));
 
 	return self;
 }
@@ -308,7 +310,8 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 	if (![matrix isKindOfClass: [OFMatrix4x4 class]])
 		return false;
 
-	return (memcmp(_values, matrix->_values, 16 * sizeof(float)) == 0);
+	return (OFCompareMemory(_values, matrix->_values, 16 * sizeof(float)) ==
+	    OFOrderedSame);
 }
 
 - (unsigned long)hash
@@ -339,17 +342,17 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 			    matrix->_values[i][2] * _values[2][j] +
 			    matrix->_values[i][3] * _values[3][j];
 
-	memcpy(_values, result, 16 * sizeof(float));
+	OFCopyMemory(_values, result, 16 * sizeof(float));
 }
 
 - (void)translateWithVector: (OFVector3D)vector
 {
 	OFMatrix4x4 *translation = [[OFMatrix4x4 alloc] initWithValues:
 	    (const float [4][4]){
-		{ 1, 0, 0, vector.x },
-		{ 0, 1, 0, vector.y },
-		{ 0, 0, 1, vector.z },
-		{ 0, 0, 0, 1 }
+		{ 1.0f, 0.0f, 0.0f, vector.x },
+		{ 0.0f, 1.0f, 0.0f, vector.y },
+		{ 0.0f, 0.0f, 1.0f, vector.z },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	    }];
 	[self multiplyWithMatrix: translation];
 	objc_release(translation);
@@ -359,10 +362,10 @@ transformVectors_3DNow(OFMatrix4x4 *self, SEL _cmd, OFVector4D *vectors,
 {
 	OFMatrix4x4 *scale = [[OFMatrix4x4 alloc] initWithValues:
 	    (const float [4][4]){
-		{ vector.x, 0, 0, 0 },
-		{ 0, vector.y, 0, 0 },
-		{ 0, 0, vector.z, 0 },
-		{ 0, 0, 0, 1 }
+		{ vector.x, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, vector.y, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, vector.z, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	    }];
 	[self multiplyWithMatrix: scale];
 	objc_release(scale);

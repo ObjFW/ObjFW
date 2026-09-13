@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,12 +62,13 @@
 # define restrict
 #endif
 
-#if __STDC_VERSION__ >= 201112L && !defined(static_assert)
+#if __STDC_VERSION__ >= 201112L && __STDC_VERSION__ < 202000L && \
+    !defined(static_assert)
 /* C11 compiler, but old libc */
 # define static_assert _Static_assert
 #endif
 
-#if defined(OF_HAVE__THREAD_LOCAL)
+#if defined(OF_HAVE__THREAD_LOCAL) && __STDC_VERSION__ < 202000L
 # define OF_HAVE_COMPILER_TLS
 # ifdef OF_HAVE_THREADS_H
 #  include <threads.h>
@@ -79,7 +80,7 @@
 # else
 #  define thread_local _Thread_local
 # endif
-#elif defined(OF_HAVE___THREAD)
+#elif defined(OF_HAVE___THREAD) && __STDC_VERSION__ < 202000L
 # define OF_HAVE_COMPILER_TLS
 # define thread_local __thread
 #endif
@@ -119,7 +120,8 @@
 # define OF_MALLOC_FUNC
 #endif
 
-#if __STDC_VERSION__ >= 201112L
+#if __STDC_VERSION__ >= 201112L && (!defined(__clang__) || \
+    __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 3))
 # define OF_ALIGN(size) _Alignas(size)
 # define OF_ALIGNOF(type) _Alignof(type)
 # define OF_ALIGNAS(type) _Alignas(type)
@@ -167,9 +169,6 @@
 # define OF_GCC_VERSION 0
 #endif
 
-#define OF_STRINGIFY(s) OF_STRINGIFY2(s)
-#define OF_STRINGIFY2(s) #s
-
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -183,7 +182,7 @@
 # define YES __objc_yes
 # undef NO
 # define NO __objc_no
-# ifndef __cplusplus
+# if !defined(__cplusplus) && __STDC_VERSION__ < 202000L
 #  undef true
 #  define true ((bool)1)
 #  undef false
@@ -202,8 +201,13 @@
 #if __has_feature(objc_arc)
 # define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
 # define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
-# define OF_RETURNS_INNER_POINTER \
+# if !defined(__clang__) || __clang_major__ > 3 || \
+    (__clang_major__ == 3 && __clang_minor__ >= 4)
+#  define OF_RETURNS_INNER_POINTER \
     __attribute__((__objc_returns_inner_pointer__))
+# else
+#  define OF_RETURNS_INNER_POINTER
+# endif
 # define OF_CONSUMED __attribute__((__ns_consumed__))
 # define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
 #else
@@ -403,7 +407,7 @@
 	do {								\
 		if OF_UNLIKELY (!(cond))				\
 			objc_error("ObjFWRT @ " __FILE__ ":"		\
-			    OF_STRINGIFY(__LINE__),			\
+			    OF_PREPROCESSOR_STRINGIFY(__LINE__)		\
 			    "Failed to ensure condition:\n" #cond);	\
 	} while(0)
 #else
@@ -495,33 +499,22 @@ extern void OFLog(OFConstantString *_Nonnull, ...);
 	static void __attribute__((__destructor__(prio)))	\
 	OF_PREPROCESSOR_CONCAT(destructor, __LINE__)(void)
 
-static OF_INLINE uint16_t OF_CONST_FUNC
-_OFByteSwap16Const(uint16_t i)
-{
-	return (i & UINT16_C(0xFF00)) >> 8 | (i & UINT16_C(0x00FF)) << 8;
-}
-
-static OF_INLINE uint32_t OF_CONST_FUNC
-_OFByteSwap32Const(uint32_t i)
-{
-	return (i & UINT32_C(0xFF000000)) >> 24 |
-	    (i & UINT32_C(0x00FF0000)) >> 8 |
-	    (i & UINT32_C(0x0000FF00)) << 8 |
-	    (i & UINT32_C(0x000000FF)) << 24;
-}
-
-static OF_INLINE uint64_t OF_CONST_FUNC
-_OFByteSwap64Const(uint64_t i)
-{
-	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
-	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
-	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
-	    (i & UINT64_C(0x000000FF00000000)) >> 8 |
-	    (i & UINT64_C(0x00000000FF000000)) << 8 |
-	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
-	    (i & UINT64_C(0x000000000000FF00)) << 40 |
-	    (i & UINT64_C(0x00000000000000FF)) << 56;
-}
+#define _OFByteSwap16Const(i)						\
+	(((i) & UINT16_C(0xFF00)) >> 8 | ((i) & UINT16_C(0x00FF)) << 8)
+#define _OFByteSwap32Const(i)				\
+	(((i) & UINT32_C(0xFF000000)) >> 24 |		\
+	    ((i) & UINT32_C(0x00FF0000)) >>  8 |	\
+	    ((i) & UINT32_C(0x0000FF00)) <<  8 |	\
+	    ((i) & UINT32_C(0x000000FF)) << 24)
+#define _OFByteSwap64Const(i)					\
+	(((i) & UINT64_C(0xFF00000000000000)) >> 56 |		\
+	    ((i) & UINT64_C(0x00FF000000000000)) >> 40 |	\
+	    ((i) & UINT64_C(0x0000FF0000000000)) >> 24 |	\
+	    ((i) & UINT64_C(0x000000FF00000000)) >>  8 |	\
+	    ((i) & UINT64_C(0x00000000FF000000)) <<  8 |	\
+	    ((i) & UINT64_C(0x0000000000FF0000)) << 24 |	\
+	    ((i) & UINT64_C(0x000000000000FF00)) << 40 |	\
+	    ((i) & UINT64_C(0x00000000000000FF)) << 56)
 
 static OF_INLINE uint16_t OF_CONST_FUNC
 _OFByteSwap16NonConst(uint16_t i)
@@ -648,6 +641,105 @@ _OFByteSwap64NonConst(uint64_t i)
 #endif
 
 /**
+ * @brief A result of a comparison.
+ */
+typedef enum {
+	/** The left object is smaller than the right */
+	OFOrderedAscending = -1,
+	/** Both objects are equal */
+	OFOrderedSame = 0,
+	/** The left object is bigger than the right */
+	OFOrderedDescending = 1
+} OFComparisonResult;
+
+/**
+ * @brief Copies the specified memory to the specified destination.
+ *
+ * Unlike memcpy, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param destination Where to copy the memory to
+ * @param source The memory to copy
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFCopyMemory(void *restrict _Nullable destination,
+    const void *restrict _Nullable source, size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memcpy(destination, source, size);
+}
+
+/**
+ * @brief Moves the specified memory to the specified destination.
+ *
+ * The difference between copying and moving is that for moving, it is allowed
+ * that both pointers overlap.
+ *
+ * Unlike memmove, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param destination Where to copy the memory to
+ * @param source The memory to copy
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFMoveMemory(void *_Nullable destination, const void *_Nullable source,
+    size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memmove(destination, source, size);
+}
+
+/**
+ * @brief Fills the specified specified memory with the specified byte.
+ *
+ * Unlike memset, the pointer is allowed to be `NULL` if the size is 0.
+ *
+ * @param destination The memory to fill
+ * @param byte The byte to fill the memory with
+ * @param size The size of the memory to copy
+ */
+static OF_INLINE void
+OFFillMemory(void *_Nullable destination, uint8_t byte, size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return;
+
+	memset(destination, byte, size);
+}
+
+/**
+ * @brief Compares the specified memory to the other specified memory.
+ *
+ * Unlike memcmp, one or both pointers are allowed to be `NULL` if the size is
+ * 0.
+ *
+ * @param left The memory on the "left side" for the comparison
+ * @param right The memory on the "right side" for the comparison
+ * @param size The size of the memory to compare
+ * @return An @ref OFComparisonResult
+ */
+static OF_INLINE OFComparisonResult
+OFCompareMemory(const void *_Nullable left, const void *_Nullable right,
+    size_t size)
+{
+	if OF_UNLIKELY (size == 0)
+		return OFOrderedSame;
+
+	int ret = memcmp(left, right, size);
+	if (ret < 0)
+		return OFOrderedAscending;
+	if (ret > 0)
+		return OFOrderedDescending;
+	return OFOrderedSame;
+}
+
+/**
  * @brief Bit-converts the specified float to a uint32_t.
  *
  * @param f The float to bit-convert
@@ -657,7 +749,7 @@ static OF_INLINE uint32_t OF_CONST_FUNC
 OFBitConvertFloatToUInt32(float f)
 {
 	uint32_t ret;
-	memcpy(&ret, &f, 4);
+	OFCopyMemory(&ret, &f, 4);
 	return ret;
 }
 
@@ -671,7 +763,7 @@ static OF_INLINE float OF_CONST_FUNC
 OFBitConvertUInt32ToFloat(uint32_t uInt32)
 {
 	float ret;
-	memcpy(&ret, &uInt32, 4);
+	OFCopyMemory(&ret, &uInt32, 4);
 	return ret;
 }
 
@@ -685,7 +777,7 @@ static OF_INLINE uint64_t OF_CONST_FUNC
 OFBitConvertDoubleToUInt64(double d)
 {
 	uint64_t ret;
-	memcpy(&ret, &d, 8);
+	OFCopyMemory(&ret, &d, 8);
 	return ret;
 }
 
@@ -699,7 +791,7 @@ static OF_INLINE double OF_CONST_FUNC
 OFBitConvertUInt64ToDouble(uint64_t uInt64)
 {
 	double ret;
-	memcpy(&ret, &uInt64, 8);
+	OFCopyMemory(&ret, &uInt64, 8);
 	return ret;
 }
 
@@ -964,6 +1056,78 @@ OFByteSwapDouble(double d)
     (((value) + (pow2) - 1) & ~((pow2) - 1))
 
 #define OF_ULONG_BIT (sizeof(unsigned long) * CHAR_BIT)
+
+#if defined(OF_HAVE__FLOAT16) || defined(DOXYGEN)
+/**
+ * @brief A type for 16 bit floating point numbers.
+ */
+__extension__ typedef _Float16 OFFloat16;
+
+static OF_INLINE OFFloat16
+OFFloat16FromFloat(float value)
+{
+	return value;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(OFFloat16 value)
+{
+	return value;
+}
+#else
+typedef uint16_t OFFloat16;
+
+static OF_INLINE OFFloat16
+OFFloat16FromFloat(float value)
+{
+	uint32_t uint32 = OFBitConvertFloatToUInt32(value);
+	uint16_t uint16;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint32 = OFByteSwap32(uint32);
+# endif
+
+	uint16 = (uint32 >> 16) & 0x8000;
+
+	if (uint32 & 0x7F800000)
+		uint16 |= (((uint32 & 0x7F800000) - 0x38000000) >> 13) & 0x7C00;
+
+	uint16 |= (uint32 >> 13) & 0x3FF;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint16 = OFByteSwap16(uint16);
+# endif
+
+	return uint16;
+}
+
+static OF_INLINE float
+OFFloat16ToFloat(OFFloat16 value)
+{
+	uint32_t uint32;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	value = OFByteSwap16(value);
+# endif
+
+	uint32 = (value & 0x8000) << 16;
+
+	if (value & 0x7C00)
+		uint32 |= (((value & 0x7C00) + 0x1C000) & 0x3FC00) << 13;
+
+	uint32 |= (value & 0x3FF) << 13;
+
+# if (defined(OF_BIG_ENDIAN) && !defined(OF_FLOAT_BIG_ENDIAN)) || \
+    (!defined(OF_BIG_ENDIAN) && defined(OF_FLOAT_BIG_ENDIAN))
+	uint32 = OFByteSwap32(uint32);
+# endif
+
+	return OFBitConvertUInt32ToFloat(uint32);
+}
+#endif
 
 static OF_INLINE bool
 OFBitSetIsSet(unsigned long *_Nonnull storage, size_t idx)

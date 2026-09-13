@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,6 +32,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The file name of the entry.
  */
 @property (readwrite, copy, nonatomic) OFString *fileName;
+
+/**
+ * @brief The file type of the entry.
+ */
+@property (readwrite, nonatomic) OFArchiveEntryFileType fileType;
 
 /**
  * @brief The compressed size of the entry's file.
@@ -76,14 +81,30 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The file owner's account name.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *ownerAccountName;
 
 /**
  * @brief The file owner's group account name.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *groupOwnerAccountName;
+
+/**
+ * @brief The file name of the target (for a hard link or symbolic link).
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFString *targetFileName;
+
+/**
+ * @brief The device major (if the file is a device).
+ */
+@property (readwrite, nonatomic) unsigned long deviceMajor;
+
+/**
+ * @brief The device major (if the file is a device).
+ */
+@property (readwrite, nonatomic) unsigned long deviceMinor;
 @end
 
 OF_ASSUME_NONNULL_END

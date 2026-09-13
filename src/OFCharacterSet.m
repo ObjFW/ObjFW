@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,16 +31,36 @@
 @interface OFWhitespaceCharacterSet: OFCharacterSet
 @end
 
+@interface OFNewlineCharacterSet: OFCharacterSet
+@end
+
+@interface OFControlCharacterSet: OFCharacterSet
+@end
+
 static struct {
 	Class isa;
 } placeholder;
 
-static OFCharacterSet *whitespaceCharacterSet = nil;
+static OFCharacterSet *whitespaceCharacterSet;
+static OFCharacterSet *newlineCharacterSet;
+static OFCharacterSet *controlCharacterSet;
 
 static void
 initWhitespaceCharacterSet(void)
 {
 	whitespaceCharacterSet = [[OFWhitespaceCharacterSet alloc] init];
+}
+
+static void
+initNewlineCharacterSet(void)
+{
+	newlineCharacterSet = [[OFNewlineCharacterSet alloc] init];
+}
+
+static void
+initControlCharacterSet(void)
+{
+	controlCharacterSet = [[OFControlCharacterSet alloc] init];
 }
 
 @implementation OFPlaceholderCharacterSet
@@ -96,6 +116,22 @@ OF_SINGLETON_METHODS
 	OFOnce(&onceControl, initWhitespaceCharacterSet);
 
 	return whitespaceCharacterSet;
+}
+
++ (OFCharacterSet *)newlineCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initNewlineCharacterSet);
+
+	return newlineCharacterSet;
+}
+
++ (OFCharacterSet *)controlCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initControlCharacterSet);
+
+	return controlCharacterSet;
 }
 
 - (instancetype)init
@@ -162,6 +198,34 @@ OF_SINGLETON_METHODS
 	default:
 		return false;
 	}
+}
+
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFNewlineCharacterSet
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if ((character >= 0x0A && character <= 0x0D) || character == 0x85 ||
+	    character == 0x2028 || character == 0x2029)
+		return true;
+
+	return false;
+}
+
+OF_SINGLETON_METHODS
+@end
+
+@implementation OFControlCharacterSet
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if (character <= 0x1F)
+		return true;
+
+	if (character >= 0x7F && character <= 0x9F)
+		return true;
+
+	return false;
 }
 
 OF_SINGLETON_METHODS

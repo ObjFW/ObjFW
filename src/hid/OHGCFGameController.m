@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -26,6 +26,9 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFSet.h"
+#import "OFString+NSObject.h"
+#import "OH8BitDoPro2Gamepad.h"
+#import "OH8BitDoPro2Gamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHDualSenseGamepad.h"
@@ -38,6 +41,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerDirectionalPad.h"
+#import "OHGameCubeController.h"
+#import "OHGameCubeController+Private.h"
 #import "OHJoyConPair.h"
 #import "OHJoyConPair+Private.h"
 #import "OHLeftJoyCon.h"
@@ -112,13 +117,34 @@
 		else if ([_name isEqual: @"SNES Controller"])
 			_profile = [[OHSNESGamepad alloc] oh_init];
 		else if ([_name isEqual: @"Stadia Controller rev. A"])
-			_profile = [[OHStadiaGamepad alloc] oh_init];
+			_profile = [[OHStadiaGamepad alloc]
+			    oh_initWithVIDPID: OHVIDPIDStadiaController];
 		else if ([_name isEqual: @"8Bitdo NES30 GamePad"])
 			_profile = [[OHNESGamepad alloc] oh_init];
+		else if ([_name isEqual: @"8BitDo Pro 2"]) {
+			OHVIDPID VIDPID = OHVIDPID8BitDoPro2;
+
+			/*
+			 * Buttons are swapped in XInput mode. We can detect
+			 * this by P1 and P2 not being reported.
+			 */
+			if (_controller.input.unmappedInput[
+			    @"Back Left Button 0".NSObject] == nil ||
+			    _controller.input.unmappedInput[
+			    @"Back Right Button 0".NSObject] == nil)
+				VIDPID = OHVIDPIDXboxOneWirelessController;
+
+			_profile = [[OH8BitDoPro2Gamepad alloc]
+			    oh_initWithVIDPID: VIDPID];
+		} else if ([_name isEqual: @"GameCube Controller Adapter"])
+			_profile = [[OHGameCubeController alloc] oh_init];
 		else
 			_profile = [[OHGCFExtendedGamepad alloc]
 			    oh_initWithLiveInput:
 			    _controller.input.unmappedInput];
+
+		if (_name == nil)
+			_name = @"GameController.framework device";
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -132,6 +158,7 @@
 - (void)dealloc
 {
 	objc_release(_controller);
+	objc_release(_name);
 	objc_release(_profile);
 
 	[super dealloc];
@@ -191,33 +218,23 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFNumber *)vendorID
-{
-	return nil;
-}
-
-- (OFNumber *)productID
-{
-	return nil;
-}
-
-- (id <OHGameControllerProfile>)profile
+- (OFObject <OHGameControllerProfile> *)profile
 {
 	return _profile;
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	if ([_profile conformsToProtocol: @protocol(OHGamepad)])
-		return (id <OHGamepad>)_profile;
+		return (OFObject <OHGamepad> *)_profile;
 
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	if ([_profile conformsToProtocol: @protocol(OHExtendedGamepad)])
-		return (id <OHExtendedGamepad>)_profile;
+		return (OFObject <OHExtendedGamepad> *)_profile;
 
 	return nil;
 }

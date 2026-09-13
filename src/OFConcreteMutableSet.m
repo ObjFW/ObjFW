@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +23,8 @@
 #import "OFConcreteSet.h"
 #import "OFMapTable.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFConcreteMutableSet
 + (void)initialize
 {
@@ -32,6 +34,9 @@
 
 - (void)addObject: (id)object
 {
+	if (object == self)
+		@throw [OFInvalidArgumentException exception];
+
 	[_mapTable setObject: (void *)1 forKey: object];
 }
 

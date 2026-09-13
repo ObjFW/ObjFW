@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,6 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFCharacterSet *whitespaceCharacterSet;
+@property (class, readonly, nonatomic) OFCharacterSet *newlineCharacterSet;
+@property (class, readonly, nonatomic) OFCharacterSet *controlCharacterSet;
 #endif
 
 /**
@@ -67,6 +69,18 @@ OF_ASSUME_NONNULL_BEGIN
  *	  `Zs` plus CHARACTER TABULATION (U+0009).
  */
 + (OFCharacterSet *)whitespaceCharacterSet;
+
+/**
+ * @brief A character set containing U+000A to U+000D, U+0085, U+2028 and
+ *	  U+2029.
+ */
++ (OFCharacterSet *)newlineCharacterSet;
+
+/**
+ * @brief A character set containing all Unicode characters in the category
+ *	  `Cc`.
+ */
++ (OFCharacterSet *)controlCharacterSet;
 
 /**
  * @brief Initializes an already allocated character set with the characters of

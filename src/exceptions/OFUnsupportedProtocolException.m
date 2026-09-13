@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,7 +35,12 @@
 {
 	self = [super init];
 
-	_IRI = objc_retain(IRI);
+	@try {
+		_IRI = [IRI copy];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
 
 	return self;
 }

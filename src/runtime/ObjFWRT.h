@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -230,9 +230,10 @@ extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
  * @param superclass The superclass for the new class
  * @param name The name for the new class
  * @param extraBytes Extra bytes to add to the instance size
- * @return A new, unregistered class pair
+ * @return A new, unregistered class pair or `Nil` if a class with that name
+ *	   already exists
  */
-extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
+extern Class _Nullable objc_allocateClassPair(Class _Nullable superclass,
     const char *_Nonnull name, size_t extraBytes);
 
 /**
@@ -281,7 +282,7 @@ extern bool class_isMetaClass(Class _Nullable class_);
  * @param class_ The class whose name should be returned
  * @return The name of the specified class
  */
-extern const char *_Nullable class_getName(Class _Nullable class_);
+extern const char *_Nonnull class_getName(Class _Nullable class_);
 
 /**
  * @brief Returns the superclass of the specified class.
@@ -319,7 +320,7 @@ extern bool class_respondsToSelector(Class _Nullable class_,
  * @return Whether the specified class conforms to the specified protocol
  */
 extern bool class_conformsToProtocol(Class _Nullable class_,
-    Protocol *_Nonnull protocol);
+    Protocol *_Nullable protocol);
 
 /**
  * @brief Returns the class's method implementation for the specified selector.
@@ -339,9 +340,9 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
 /**
  * @brief Returns the class's method implementation for the specified selector.
  *
- * @warning If the method does not use use the struct return ABI, you need to
- *	    use @ref class_getMethodImplementation instead! Depending on the
- *	    ABI, small structs might not use the struct return ABI.
+ * @warning If the method does not use the struct return ABI, you need to use
+ *	    @ref class_getMethodImplementation instead! Depending on the ABI,
+ *	    small structs might not use the struct return ABI.
  *
  * @param class_ The class whose method implementation should be returned
  * @param selector The selector for the method whose implementation should be
@@ -370,7 +371,7 @@ extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
  * @param typeEncoding The type encoding of the method to add
  * @return Whether the specified method was added
  */
-extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
+extern bool class_addMethod(Class _Nullable class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 
 /**
@@ -383,7 +384,7 @@ extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
  *		       the method does not exist yet.
  * @return The old implementation of the method
  */
-extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
+extern IMP _Nullable class_replaceMethod(Class _Nullable class_,
     SEL _Nonnull selector, IMP _Nonnull implementation,
     const char *_Nullable typeEncoding);
 
@@ -413,7 +414,7 @@ extern Class _Nullable object_setClass(id _Nullable object,
  * @param object The object whose class name should be returned
  * @return The object's class name
  */
-extern const char *_Nullable object_getClassName(id _Nullable object);
+extern const char *_Nonnull object_getClassName(id _Nullable object);
 
 /**
  * @brief Returns the name of the specified protocol.
@@ -430,8 +431,8 @@ extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
  * @param protocol2 The second protocol
  * @return Whether the two protocols are equal
  */
-extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
-    Protocol *_Nonnull protocol2);
+extern bool protocol_isEqual(Protocol *_Nullable protocol1,
+    Protocol *_Nullable protocol2);
 
 /**
  * @brief Returns whether the first protocol conforms to the second protocol.
@@ -440,8 +441,8 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
  * @param protocol2 The second protocol
  * @return Whether the first protocol conforms to the second protocol
  */
-extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
-    Protocol *_Nonnull protocol2);
+extern bool protocol_conformsToProtocol(Protocol *_Nullable protocol1,
+    Protocol *_Nullable protocol2);
 
 /**
  * @brief Copies the method list of the specified class.
@@ -631,6 +632,17 @@ extern id _Nullable object_dispose(id _Nullable object);
 extern id _Nonnull _objc_rootRetain(id _Nonnull object);
 
 /**
+ * @brief Tries to retain the specified object.
+ *
+ * This is only to be used to implement the `retainWeakReference` method in a
+ * root class.
+ *
+ * @param object The object to retain
+ * @return Whether the object could be retained
+ */
+extern bool _objc_rootTryRetain(id _Nonnull object);
+
+/**
  * @brief Returns the retain count for the specified object.
  *
  * This is only to be used to implement the `retainCount` method in a root
@@ -691,7 +703,7 @@ extern void objc_setTaggedPointerSecret(uintptr_t secret);
  * @brief Registers a class for tagged pointers.
  *
  * @param class_ The class to register for tagged pointers
- * @return The tagged pointer ID for the registered class
+ * @return The tag ID for the class, or -1 if no tag ID is available anymore
  */
 extern int objc_registerTaggedPointerClass(Class _Nonnull class_);
 
@@ -716,7 +728,8 @@ extern uintptr_t object_getTaggedPointerValue(id _Nonnull object);
  *
  * @param class_ The tag ID for the tagged pointer class to use
  * @param value The value the tagged pointer should have
- * @return A tagged pointer, or `nil` if it could not be created
+ * @return A tagged pointer, or `nil` if it could not be created (either
+ *	   because the tag ID is invalid or the value is out of range)
  */
 extern id _Nullable objc_createTaggedPointer(int class_, uintptr_t value);
 
@@ -816,6 +829,20 @@ extern void objc_copyWeak(id _Nullable *_Nonnull dest,
     id _Nullable *_Nonnull src);
 extern void objc_moveWeak(id _Nullable *_Nonnull dest,
     id _Nullable *_Nonnull src);
+
+#ifdef __MORPHOS__
+/*
+ * These are used to create trampolines that set r12 for a .library on MorphOS.
+ */
+struct Library;
+struct objc_module;
+
+extern size_t objc_libraryTrampolineSize(void);
+extern void objc_createLibraryTrampoline(uint32_t *_Nonnull buffer,
+    IMP _Nonnull function, struct Library *_Nonnull base);
+extern void objc_createLibraryTrampolinesForModule(
+    struct objc_module *_Nonnull module, struct Library *_Nonnull base);
+#endif
 #ifdef __cplusplus
 }
 #endif

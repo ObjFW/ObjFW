@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -53,7 +53,8 @@
 		OTAssertEqual([sock receiveIntoBuffer: buffer
 					       length: 5
 					       sender: &address2], 5);
-		OTAssertEqual(memcmp(buffer, "Hello", 5), 0);
+		OTAssertEqual(OFCompareMemory(buffer, "Hello", 5),
+		    OFOrderedSame);
 		OTAssertTrue(OFSocketAddressEqual(&address1, &address2));
 		OTAssertEqual(OFSocketAddressHash(&address1),
 		    OFSocketAddressHash(&address2));

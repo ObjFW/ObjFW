@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -96,7 +96,7 @@
 			int ret;
 
 			while (rnd < 1024)
-				rnd = (uint16_t)rand();
+				rnd = OFRandom16();
 
 			OFSocketAddressSetIPPort(address, rnd);
 
@@ -127,7 +127,7 @@
 	host = OFSocketAddressString(address);
 	port = OFSocketAddressIPPort(address);
 
-	memset(address, 0, sizeof(*address));
+	OFFillMemory(address, 0, sizeof(*address));
 
 	address->length = (socklen_t)sizeof(address->sockaddr);
 	if (_OFGetSockName(_socket, (struct sockaddr *)&address->sockaddr,

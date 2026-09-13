@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,10 +32,16 @@
 #import "OFLocale.h"
 #import "OFNumber.h"
 
+#import "OH8BitDoPro2Gamepad.h"
+#import "OH8BitDoPro2Gamepad+Private.h"
 #import "OH8BitDoUltimate2CWirelessGamepad.h"
 #import "OH8BitDoUltimate2CWirelessGamepad+Private.h"
 #import "OHDualSenseGamepad.h"
 #import "OHDualSenseGamepad+Private.h"
+#import "OHDualShockGamepad.h"
+#import "OHDualShockGamepad+Private.h"
+#import "OHDualShock3Gamepad.h"
+#import "OHDualShock3Gamepad+Private.h"
 #import "OHDualShock4Gamepad.h"
 #import "OHDualShock4Gamepad+Private.h"
 #import "OHEvdevExtendedGamepad.h"
@@ -47,6 +53,8 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 #import "OHGameControllerProfile.h"
+#import "OHGameCubeController.h"
+#import "OHGameCubeController+Private.h"
 #import "OHLeftJoyCon.h"
 #import "OHLeftJoyCon+Private.h"
 #import "OHN64Controller.h"
@@ -74,6 +82,8 @@
 #import "evdev_compat.h"
 
 const uint16_t OHEvdevButtonIDs[] = {
+	BTN_TRIGGER, BTN_THUMB, BTN_THUMB2, BTN_TOP, BTN_TOP2, BTN_PINKIE,
+	BTN_BASE, BTN_BASE2, BTN_BASE3, BTN_BASE4, BTN_BASE5, BTN_BASE6,
 	BTN_A, BTN_B, BTN_C, BTN_X, BTN_Y, BTN_Z, BTN_TL, BTN_TR, BTN_TL2,
 	BTN_TR2, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR,
 	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
@@ -116,7 +126,7 @@ scale(float value, float min, float max, bool inverted)
 }
 
 @implementation OHEvdevGameController
-@synthesize name = _name, profile = _profile;
+@synthesize VIDPID = _VIDPID, name = _name, profile = _profile;
 
 + (OFArray OF_GENERIC(OHGameController *) *)controllers
 {
@@ -181,6 +191,11 @@ scale(float value, float min, float max, bool inverted)
 					 mode: @"r"
 					errNo: errno];
 
+		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		_VIDPID = (OHVIDPID){ inputID.vendor, inputID.product };
+
 		_evBits = OFAllocZeroedMemory(OFRoundUpToPowerOf2(OF_ULONG_BIT,
 		    EV_MAX) / OF_ULONG_BIT, sizeof(unsigned long));
 
@@ -201,14 +216,20 @@ scale(float value, float min, float max, bool inverted)
 			@throw [OFInitializationFailedException exception];
 
 		if (!OFBitSetIsSet(_keyBits, BTN_GAMEPAD) &&
-		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP))
-			@throw [OFInvalidArgumentException exception];
-
-		if (ioctl(_fd, EVIOCGID, &inputID) == -1)
-			@throw [OFInvalidArgumentException exception];
-
-		_vendorID = inputID.vendor;
-		_productID = inputID.product;
+		    !OFBitSetIsSet(_keyBits, BTN_DPAD_UP)) {
+			/*
+			 * These are not reported as gamepads, but are still
+			 * supported.
+			 */
+			if (OHEqualVIDPIDs(_VIDPID,
+			    OHVIDPIDDragonRiseGameCubeControllerAdapter))
+				;
+			else if (OHEqualVIDPIDs(_VIDPID,
+			    OHVIDPIDWiseGroupPlayStationControllerAdapter))
+				;
+			else
+				@throw [OFInvalidArgumentException exception];
+		}
 
 		if (ioctl(_fd, EVIOCGNAME(sizeof(name)), name) == -1)
 			@throw [OFInitializationFailedException exception];
@@ -228,45 +249,55 @@ scale(float value, float min, float max, bool inverted)
 				    exception];
 		}
 
-		if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualSense)
+		if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDSonyDualSense))
 			_profile = [[OHDualSenseGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDSony &&
-		    _productID == OHProductIDDualShock4)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDSonyDualShock4))
 			_profile = [[OHDualShock4Gamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDN64Controller)
-			_profile = [[OHExtendedN64Controller alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDSNESController)
-			_profile = [[OHExtendedSNESGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDLeftJoyCon)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDSonyPlayStation3Controller))
+			_profile = [[OHDualShock3Gamepad alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDLeftNintendoJoyCon))
 			_profile = [[OHLeftJoyCon alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDRightJoyCon)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDRightNintendoJoyCon))
 			_profile = [[OHRightJoyCon alloc] oh_init];
-		else if (_vendorID == OHVendorIDNintendo &&
-		    _productID == OHProductIDProController)
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDNintendoSwitchProController))
 			_profile = [[OHSwitchProController alloc] oh_init];
-		else if (_vendorID == OHVendorIDGoogle &&
-		    _productID == OHProductIDStadiaController)
-			_profile = [[OHStadiaGamepad alloc] oh_init];
-		else if (_vendorID == OHVendorID8BitDo &&
-		    (_productID == OHProductIDUltimate2CWirelessBT ||
-		    _productID == OHProductIDUltimate2CWirelessUSB))
-			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
-			    oh_initWithProductID: _productID];
-		else if (_vendorID == OHVendorID8BitDo &&
-		    _productID == OHProductIDNES30Gamepad)
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDNintendo64Controller))
+			_profile = [[OHExtendedN64Controller alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDSuperNintendoController))
+			_profile = [[OHExtendedSNESGamepad alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPIDStadiaController) ||
+		    OHEqualVIDPIDs(_VIDPID, OHVIDPIDMocute053X))
+			_profile = [[OHStadiaGamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoNES30Gamepad))
 			_profile = [[OHNESGamepad alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPID8BitDoUltimate2CWirelessBT) ||
+		    OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPID8BitDoUltimate2CWirelessUSB))
+			_profile = [[OH8BitDoUltimate2CWirelessGamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID, OHVIDPID8BitDoPro2) ||
+		    (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDXboxOneWirelessController) &&
+		    [_name isEqual: @"8BitDo Pro 2"]))
+			_profile = [[OH8BitDoPro2Gamepad alloc]
+			    oh_initWithVIDPID: _VIDPID];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDDragonRiseGameCubeControllerAdapter))
+			_profile = [[OHGameCubeController alloc] oh_init];
+		else if (OHEqualVIDPIDs(_VIDPID,
+		    OHVIDPIDWiseGroupPlayStationControllerAdapter))
+			_profile = [[OHDualShockGamepad alloc] oh_init];
 		else
 			_profile = [[OHEvdevExtendedGamepad alloc]
 			    oh_initWithKeyBits: _keyBits
 					evBits: _evBits
 				       absBits: _absBits
-				      vendorID: _vendorID
-				     productID: _productID];
+					VIDPID: _VIDPID];
 
 		[self oh_pollState];
 
@@ -296,16 +327,6 @@ scale(float value, float min, float max, bool inverted)
 	[super dealloc];
 }
 
-- (OFNumber *)vendorID
-{
-	return [OFNumber numberWithUnsignedShort: _vendorID];
-}
-
-- (OFNumber *)productID
-{
-	return [OFNumber numberWithUnsignedShort: _productID];
-}
-
 - (void)oh_pollState
 {
 	unsigned long keyState[OFRoundUpToPowerOf2(OF_ULONG_BIT, KEY_MAX) /
@@ -329,9 +350,9 @@ scale(float value, float min, float max, bool inverted)
 			continue;
 
 		if (OFBitSetIsSet(keyState, OHEvdevButtonIDs[i]))
-			button.value = 1.f;
+			button.value = 1.0f;
 		else
-			button.value = 0.f;
+			button.value = 0.0f;
 	}
 
 	if (OFBitSetIsSet(_evBits, EV_ABS)) {
@@ -386,7 +407,7 @@ scale(float value, float min, float max, bool inverted)
 		}
 
 		if (_discardUntilReport) {
-			if (event.type == EV_SYN && event.value == SYN_REPORT) {
+			if (event.type == EV_SYN && event.code == SYN_REPORT) {
 				_discardUntilReport = false;
 				[self oh_pollState];
 			}
@@ -396,7 +417,7 @@ scale(float value, float min, float max, bool inverted)
 
 		switch (event.type) {
 		case EV_SYN:
-			if (event.value == SYN_DROPPED) {
+			if (event.code == SYN_DROPPED) {
 				_discardUntilReport = true;
 				continue;
 			}
@@ -407,9 +428,9 @@ scale(float value, float min, float max, bool inverted)
 				continue;
 
 			if (event.value)
-				button.value = 1.f;
+				button.value = 1.0f;
 			else
-				button.value = 0.f;
+				button.value = 0.0f;
 
 			break;
 		case EV_ABS:
@@ -425,18 +446,18 @@ scale(float value, float min, float max, bool inverted)
 	}
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	if ([_profile conformsToProtocol: @protocol(OHGamepad)])
-		return (id <OHGamepad>)_profile;
+		return (OFObject <OHGamepad> *)_profile;
 
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	if ([_profile conformsToProtocol: @protocol(OHExtendedGamepad)])
-		return (id <OHExtendedGamepad>)_profile;
+		return (OFObject <OHExtendedGamepad> *)_profile;
 
 	return nil;
 }

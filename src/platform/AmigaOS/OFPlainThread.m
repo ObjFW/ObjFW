@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,6 +35,9 @@
 #ifndef OF_MORPHOS
 extern void OFTLSKeyThreadExited(void);
 #endif
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+extern struct Library *ObjFWBase;
+#endif
 static OFTLSKey threadKey;
 
 OF_CONSTRUCTOR()
@@ -43,6 +46,9 @@ OF_CONSTRUCTOR()
 }
 
 static void
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+__saveds __attribute__((__noinline__))
+#endif
 functionWrapper(void)
 {
 	bool detached = false;
@@ -72,6 +78,24 @@ functionWrapper(void)
 		free(thread);
 }
 
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+static void
+r12FunctionWrapper(void)
+{
+# define SysBase (*(struct ExecBase **)4)
+	OFPlainThread thread =
+	    (OFPlainThread)((struct Process *)FindTask(NULL))->pr_ExitData;
+# undef SysBase
+
+	__asm__ __volatile__ (
+	    "mr		%%r12, %0"
+	    :: "r" (thread->ObjFWBase) : "r12"
+	);
+
+	functionWrapper();
+}
+#endif
+
 int
 OFPlainThreadAttributesInit(OFPlainThreadAttributes *attr)
 {
@@ -91,6 +115,9 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		return ENOMEM;
 
 	@try {
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+		(*thread)->ObjFWBase = ObjFWBase;
+#endif
 		(*thread)->function = function;
 		(*thread)->object = object;
 		InitSemaphore(&(*thread)->semaphore);
@@ -106,7 +133,11 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			};			\
 			[tags addItem: &t];	\
 		}
+#if defined(OF_MORPHOS) && defined(OF_COMPILING_AMIGA_LIBRARY)
+		ADD_TAG(NP_Entry, (ULONG)r12FunctionWrapper)
+#else
 		ADD_TAG(NP_Entry, (ULONG)functionWrapper)
+#endif
 		ADD_TAG(NP_ExitData, (ULONG)*thread)
 #ifdef OF_AMIGAOS4
 		ADD_TAG(NP_Child, TRUE)
@@ -125,8 +156,10 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		ADD_TAG(NP_CloseError, FALSE)
 
 		if (attr != NULL && attr->priority != 0) {
-			if (attr->priority < 1 || attr->priority > 1)
+			if (attr->priority < -1 || attr->priority > 1) {
+				free(*thread);
 				return EINVAL;
+			}
 
 			/*
 			 * -1 should be -128 (lowest possible priority) while
@@ -134,7 +167,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			 */
 			ADD_TAG(NP_Priority, (attr->priority > 0
 			    ? attr->priority * 127 : attr->priority * 128))
-		}
+		} else
+			ADD_TAG(NP_Priority, 0);
 
 		if (attr != NULL && attr->stackSize != 0)
 			ADD_TAG(NP_StackSize, attr->stackSize)
@@ -142,7 +176,7 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			ADD_TAG(NP_StackSize,
 			    ((struct Process *)FindTask(NULL))->pr_StackSize)
 
-		ADD_TAG(TAG_DONE, 0)
+		ADD_TAG(TAG_END, 0)
 #undef ADD_TAG
 
 		(*thread)->task = (struct Task *)CreateNewProc(tags.items);
@@ -188,7 +222,7 @@ OFPlainThreadJoin(OFPlainThread thread)
 		if (thread->detached || thread->joinTask != NULL)
 			return EINVAL;
 
-		if ((thread->joinSigBit = AllocSignal(-1)) == -1)
+		if ((thread->joinSigBit = AllocSignal(-1)) == 0xFF)
 			return EAGAIN;
 
 		thread->joinTask = FindTask(NULL);
@@ -210,12 +244,13 @@ OFPlainThreadDetach(OFPlainThread thread)
 {
 	ObtainSemaphore(&thread->semaphore);
 
-	if (thread->done)
+	if (thread->done) {
+		ReleaseSemaphore(&thread->semaphore);
 		free(thread);
-	else
+	} else {
 		thread->detached = true;
-
-	ReleaseSemaphore(&thread->semaphore);
+		ReleaseSemaphore(&thread->semaphore);
+	}
 
 	return 0;
 }

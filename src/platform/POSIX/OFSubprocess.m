@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,7 +39,7 @@
 #import "OFDictionary.h"
 #import "OFLocale.h"
 
-#import "OFInitializationFailedException.h"
+#import "OFCreateSubprocessFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -138,36 +138,49 @@ OF_DIRECT_MEMBERS
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *path;
-		char **argv, **env = NULL;
+		char **argv = NULL, **env = NULL;
 
 		_pid = -1;
-		_readPipe[0] = _writePipe[1] = -1;
-
-		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
-
-		path = [program cStringWithEncoding: [OFLocale encoding]];
-		[self of_getArgv: &argv
-		  forProgramName: programName
-		    andArguments: arguments];
+		_readPipe[0] = _readPipe[1] = -1;
+		_writePipe[0] = _writePipe[1] = -1;
 
 		@try {
+			if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
+
+			const char *path = [program
+			    cStringWithEncoding: [OFLocale encoding]];
+			[self of_getArgv: &argv
+			  forProgramName: programName
+			    andArguments: arguments];
+
 			env = [self of_environmentForDictionary: environment];
 #if defined(HAVE_POSIX_SPAWNP) && defined(HAVE_SPAWN_H)
 			posix_spawn_file_actions_t actions;
 			posix_spawnattr_t attr;
 
 			if (posix_spawn_file_actions_init(&actions) != 0)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 
 			if (posix_spawnattr_init(&attr) != 0) {
 				posix_spawn_file_actions_destroy(&actions);
 
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 			}
 
 			@try {
@@ -179,20 +192,35 @@ OF_DIRECT_MEMBERS
 				    _writePipe[0], 0) != 0 ||
 				    posix_spawn_file_actions_adddup2(&actions,
 				    _readPipe[1], 1) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 
 # ifdef POSIX_SPAWN_CLOEXEC_DEFAULT
 				if (posix_spawnattr_setflags(&attr,
 				    POSIX_SPAWN_CLOEXEC_DEFAULT) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 # endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
 				    argv, (env != NULL ? env : environ)) != 0)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
+					@throw
+					    [OFCreateSubprocessFailedException
+					    exceptionWithProgram: program
+						     programName: programName
+						       arguments: arguments
+						     environment: environment
+							   errNo: errno];
 			} @finally {
 				posix_spawn_file_actions_destroy(&actions);
 				posix_spawnattr_destroy(&attr);
@@ -212,18 +240,22 @@ OF_DIRECT_MEMBERS
 			}
 
 			if (_pid == -1)
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				@throw [OFCreateSubprocessFailedException
+				    exceptionWithProgram: program
+					     programName: programName
+					       arguments: arguments
+					     environment: environment
+						   errNo: errno];
 #endif
 		} @finally {
-			char **iter;
-
-			close(_readPipe[1]);
-			close(_writePipe[0]);
+			if (_readPipe[1] != -1)
+				close(_readPipe[1]);
+			if (_writePipe[0] != -1)
+				close(_writePipe[0]);
 			OFFreeMemory(argv);
 
 			if (env != NULL)
-				for (iter = env; *iter != NULL; iter++)
+				for (char **iter = env; *iter != NULL; iter++)
 					OFFreeMemory(*iter);
 
 			OFFreeMemory(env);
@@ -250,16 +282,15 @@ OF_DIRECT_MEMBERS
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments
 {
+	OFStringEncoding encoding = [OFLocale encoding];
 	OFString *const *objects = arguments.objects;
-	size_t i, count = arguments.count;
-	OFStringEncoding encoding;
+	size_t count = arguments.count;
 
 	*argv = OFAllocMemory(count + 2, sizeof(char *));
 
-	encoding = [OFLocale encoding];
-
 	(*argv)[0] = (char *)[programName cStringWithEncoding: encoding];
 
+	size_t i;
 	for (i = 0; i < count; i++)
 		(*argv)[i + 1] =
 		    (char *)[objects[i] cStringWithEncoding: encoding];
@@ -269,40 +300,32 @@ OF_DIRECT_MEMBERS
 
 - (char **)of_environmentForDictionary: (OFDictionary *)environment
 {
-	char **envp;
-	size_t count;
-	OFStringEncoding encoding;
-
 	if (environment == nil)
 		return NULL;
 
-	encoding = [OFLocale encoding];
-
-	count = environment.count;
-	envp = OFAllocZeroedMemory(count + 1, sizeof(char *));
+	OFStringEncoding encoding = [OFLocale encoding];
+	size_t count = environment.count;
+	char **envp = OFAllocZeroedMemory(count + 1, sizeof(char *));
 
 	@try {
 		OFEnumerator *keyEnumerator = [environment keyEnumerator];
 		OFEnumerator *objectEnumerator = [environment objectEnumerator];
 
 		for (size_t i = 0; i < count; i++) {
-			OFString *key;
-			OFString *object;
-			size_t keyLen, objectLen;
+			OFString *key = [keyEnumerator nextObject];
+			OFString *object = [objectEnumerator nextObject];
 
-			key = [keyEnumerator nextObject];
-			object = [objectEnumerator nextObject];
-
-			keyLen = [key cStringLengthWithEncoding: encoding];
-			objectLen = [object
-			    cStringLengthWithEncoding: encoding];
+			size_t keyLen =
+			    [key cStringLengthWithEncoding: encoding];
+			size_t objectLen =
+			    [object cStringLengthWithEncoding: encoding];
 
 			envp[i] = OFAllocMemory(keyLen + objectLen + 2, 1);
 
-			memcpy(envp[i],
+			OFCopyMemory(envp[i],
 			    [key cStringWithEncoding: encoding], keyLen);
 			envp[i][keyLen] = '=';
-			memcpy(envp[i] + keyLen + 1,
+			OFCopyMemory(envp[i] + keyLen + 1,
 			    [object cStringWithEncoding: encoding], objectLen);
 			envp[i][keyLen + objectLen + 1] = '\0';
 		}
@@ -326,14 +349,12 @@ OF_DIRECT_MEMBERS
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
-	ssize_t ret;
-
 	if (_readPipe[0] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+	ssize_t ret;
 	if ((ret = read(_readPipe[0], buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
@@ -347,14 +368,13 @@ OF_DIRECT_MEMBERS
 
 - (size_t)lowlevelWriteBuffer: (const void *)buffer length: (size_t)length
 {
-	ssize_t bytesWritten;
-
 	if (_writePipe[1] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
+	ssize_t bytesWritten;
 	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
@@ -415,6 +435,7 @@ OF_DIRECT_MEMBERS
 		_pid = -1;
 	}
 
-	return WEXITSTATUS(_status);
+	int status = _status;
+	return WEXITSTATUS(status);
 }
 @end

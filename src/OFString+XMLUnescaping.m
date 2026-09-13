@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -59,6 +59,9 @@ parseNumericEntity(const char *entity, size_t length)
 				c = (c << 4) | (entity[i] - 'a' + 10);
 			else
 				return nil;
+
+			if (c > 0x10FFFF)
+				return nil;
 		}
 	} else {
 		for (i = 0; i < length; i++) {
@@ -66,8 +69,15 @@ parseNumericEntity(const char *entity, size_t length)
 				c = (c * 10) + (entity[i] - '0');
 			else
 				return nil;
+
+			if (c > 0x10FFFF)
+				return nil;
 		}
 	}
+
+	if (c == 0 || (c < 0x20 && c != '\t' && c != '\n' && c != '\r') ||
+	    (c >= 0xD800 && c <= 0xDFFF))
+		return nil;
 
 	if ((i = _OFUTF8StringEncode(c, buffer)) == 0)
 		return nil;
@@ -105,27 +115,28 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 			const char *entity = string + last;
 			size_t entityLength = i - last;
 
-			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
+			if (entityLength == 2 &&
+			    OFCompareMemory(entity, "lt", 2) == OFOrderedSame)
 				[ret appendCString: "<"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 2 &&
-			    memcmp(entity, "gt", 2) == 0)
+			    OFCompareMemory(entity, "gt", 2) == OFOrderedSame)
 				[ret appendCString: ">"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    memcmp(entity, "quot", 4) == 0)
+			    OFCompareMemory(entity, "quot", 4) == OFOrderedSame)
 				[ret appendCString: "\""
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    memcmp(entity, "apos", 4) == 0)
+			    OFCompareMemory(entity, "apos", 4) == OFOrderedSame)
 				[ret appendCString: "'"
 					  encoding: OFStringEncodingASCII
 					    length: 1];
 			else if (entityLength == 3 &&
-			    memcmp(entity, "amp", 3) == 0)
+			    OFCompareMemory(entity, "amp", 3) == OFOrderedSame)
 				[ret appendCString: "&"
 					  encoding: OFStringEncodingASCII
 					    length: 1];

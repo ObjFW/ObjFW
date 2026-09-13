@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,20 +52,26 @@ OF_CONSTRUCTOR()
 	if (pthread_attr_init(&attr) == 0) {
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 		int policy;
-#endif
-		struct sched_param param;
-
-#ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 		if (pthread_attr_getschedpolicy(&attr, &policy) == 0) {
-			minPrio = sched_get_priority_min(policy);
-			maxPrio = sched_get_priority_max(policy);
+			bool error = false;
 
-			if (minPrio == -1 || maxPrio == -1)
+			errno = 0;
+			minPrio = sched_get_priority_min(policy);
+			if (minPrio == -1 && errno != 0)
+				error = true;
+
+			errno = 0;
+			maxPrio = sched_get_priority_max(policy);
+			if (maxPrio == -1 && errno != 0)
+				error = true;
+
+			if (error)
 				minPrio = maxPrio = 0;
 		}
 #endif
 
-		if (pthread_attr_getschedparam(&attr, &param) != 0)
+		struct sched_param param;
+		if (pthread_attr_getschedparam(&attr, &param) == 0)
 			normalPrio = param.sched_priority;
 		else
 			minPrio = maxPrio = 0;
@@ -118,9 +124,9 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
     id object, const OFPlainThreadAttributes *attr)
 {
 	int error = 0;
-	pthread_attr_t POSIXAttr;
-	bool POSIXAttrAvailable = true;
 
+	bool POSIXAttrAvailable = true;
+	pthread_attr_t POSIXAttr;
 	if ((error = pthread_attr_init(&POSIXAttr)) != 0) {
 		if (error == ENOSYS)
 			POSIXAttrAvailable = false;
@@ -129,13 +135,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	}
 
 	@try {
-		struct ThreadContext *ctx;
 
 		if (attr != NULL && POSIXAttrAvailable) {
-#ifndef OF_HPUX
-			struct sched_param param;
-#endif
-
 			if (attr->priority < -1 || attr->priority > 1)
 				return EINVAL;
 
@@ -146,11 +147,12 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 				return error;
 # endif
 
+			struct sched_param param;
 			if ((error = pthread_attr_getschedparam(&POSIXAttr,
 			    &param)) != 0)
 				return error;
 
-			if (attr->priority < 0) {
+			if (attr->priority < 0.0f) {
 				param.sched_priority = minPrio +
 				    (1.0f + attr->priority) *
 				    (normalPrio - minPrio);
@@ -170,7 +172,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 			}
 		}
 
-		if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		struct ThreadContext *ctx = malloc(sizeof(*ctx));
+		if (ctx == NULL)
 			return ENOMEM;
 
 		ctx->function = function;
@@ -180,6 +183,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		error = pthread_create(thread,
 		    (POSIXAttrAvailable ? &POSIXAttr : NULL), functionWrapper,
 		    ctx);
+		if (error != 0)
+			free(ctx);
 	} @finally {
 		if (POSIXAttrAvailable)
 			pthread_attr_destroy(&POSIXAttr);

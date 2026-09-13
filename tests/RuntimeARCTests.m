@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,12 +37,15 @@
 - (void)testWeakReferences
 {
 	id object = [[OFObject alloc] init];
-	__weak id weak = object;
+	__weak id weak1 = object;
+	__weak id weak2 = object;
 
-	OTAssertEqual(weak, object);
+	OTAssertEqual(weak1, object);
+	OTAssertEqual(weak2, object);
 
 	object = nil;
-	OTAssertNil(weak);
+	OTAssertNil(weak1);
+	OTAssertNil(weak2);
 }
 @end
 

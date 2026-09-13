@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,6 +50,6 @@
 	[client writeString: @"Hello!"];
 
 	[accepted readIntoBuffer: buffer exactLength: 6];
-	OTAssertEqual(memcmp(buffer, "Hello!", 6), 0);
+	OTAssertEqual(OFCompareMemory(buffer, "Hello!", 6), OFOrderedSame);
 }
 @end

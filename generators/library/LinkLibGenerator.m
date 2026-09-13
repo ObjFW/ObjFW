@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,7 +52,7 @@
 		_library = objc_retain(library);
 		_impl = objc_retain(impl);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -85,7 +85,7 @@
 				    include.stringValue];
 
 	[_impl writeFormat: @"\n"
-			    @"extern struct Library *%@;\n"
+			    @"struct Library *%@;\n"
 			    @"\n",
 			    libBase];
 
@@ -104,6 +104,12 @@
 		OFArray OF_GENERIC(OFXMLElement *) *arguments =
 		    [function elementsForName: @"argument"];
 		size_t argumentIndex;
+
+		if ([[function attributeForName: @"skip-linklib"].stringValue
+		    isEqual: @"true"]) {
+			funcIndex++;
+			continue;
+		}
 
 		if (returnType == nil)
 			returnType = @"void";

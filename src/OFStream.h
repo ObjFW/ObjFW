@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -269,8 +269,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  *
  * @note If you want to subclass this, override
  *	 @ref lowlevelReadIntoBuffer:length:, @ref lowlevelWriteBuffer:length:
- *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are are
- *	 the methods that do the actual work. OFStream uses those for all other
+ *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are the
+ *	 methods that do the actual work. OFStream uses those for all other
  *	 methods and does all the caching and other stuff for you. If you
  *	 override these methods without the `lowlevel` prefix, you *will* break
  *	 caching and get broken results!
@@ -286,9 +286,11 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _buffersWrites, _waitingForDelimiter;
-@protected
+@private
 	uintptr_t _encoding;
-	OF_RESERVE_IVARS(OFStream, 3)
+	uintptr_t _allowsLossyEncoding;
+	uintptr_t _maxStringReadLength;
+	OF_RESERVE_IVARS(OFStream, 1)
 }
 
 /**
@@ -313,6 +315,34 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * Defaults to UTF-8.
  */
 @property (nonatomic) OFStringEncoding encoding;
+
+/**
+ * @brief Whether the stream allows the specified encoding to be lossy.
+ *
+ * This means that if a character cannot be represented in the stream's
+ * encoding, a `?` will be written instead. This is mostly useful for writing
+ * to standard output, as a user would prefer unrepresentable characters
+ * replaced over an exception and seeing nothing.
+ */
+@property (nonatomic) bool allowsLossyEncoding;
+
+/**
+ * @brief The maximum length of a string when using string-based read methods,
+ *	  e.g. @ref readLine.
+ *
+ * The default is 0.
+ *
+ * If the maximum length of a string is exceeded, an @ref OFOutOfRangeException
+ * is thrown and the stream is in an unrecoverable state.
+ *
+ * This property does not affect methods that explicitly take the length as a
+ * parameter.
+ *
+ * @note This should be set to a value other than 0 to prevent an attacker from
+ *	 exhausting memory by never sending what would cause the method to
+ *	 return.
+ */
+@property (nonatomic) size_t maxStringReadLength;
 
 /**
  * @brief Whether the stream can block.
@@ -464,8 +494,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 
 # ifdef OF_HAVE_BLOCKS
 /**
- * @brief Asynchronously reads *at most* ref `length` bytes from the stream
- *	  into a buffer.
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
+ *	  buffer.
  *
  * @deprecated Use @ref asyncReadIntoBuffer:length:handler: instead.
  *
@@ -497,8 +527,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 	"Use -[asyncReadIntoBuffer:length:handler:] instead");
 
 /**
- * @brief Asynchronously reads *at most* ref `length` bytes from the stream
- *	  into a buffer.
+ * @brief Asynchronously reads *at most* `length` bytes from the stream into a
+ *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
@@ -678,7 +708,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 		runLoopMode: (OFRunLoopMode)runLoopMode
 		      block: (OFStreamAsyncReadBlock)block
     OF_DEPRECATED(ObjFW, 1, 2,
-	"Use -[asyncReadIntoBuffer:exactLength:runLoopMode:handler: instead]");
+	"Use -[asyncReadIntoBuffer:exactLength:runLoopMode:handler:] instead");
 
 /**
  * @brief Asynchronously reads exactly the specified `length` bytes from the
@@ -911,24 +941,26 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * @brief Reads a string until a `\0` appears in the stream or the end of the
  *	  stream is reached.
  *
+ * @return The string read or `nil` if the end of the stream has been reached
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)readString;
+- (nullable OFString *)readString;
 
 /**
  * @brief Reads a string with the specified encoding until a `\0` appears in
  *	  the stream or the end of the stream is reached.
  *
+ * @return The string read or `nil` if the end of the stream has been reached
  * @param encoding The encoding of the string to read from the stream
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
+- (nullable OFString *)readStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Reads a string with the specified length from the stream.
@@ -1240,24 +1272,26 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
  * @brief Tries to read a string until a `\0` appears in the stream or the end
  *	  of the stream is reached.
  *
+ * @return The string read or `nil` if the string is not complete yet
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)tryReadString;
+- (nullable OFString *)tryReadString;
 
 /**
  * @brief Tries to read a string with the specified encoding until a `\0`
  *	  appears in the stream or the end of the stream is reached.
  *
+ * @return The string read or `nil` if the string is not complete yet
  * @param encoding The encoding of the string to read from the stream
  * @throw OFReadFailedException Reading failed
  * @throw OFInvalidEncodingException The string read from the stream has
  *				     invalid encoding
  * @throw OFNotOpenException The stream is not open
  */
-- (OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
+- (nullable OFString *)tryReadStringWithEncoding: (OFStringEncoding)encoding;
 
 /**
  * @brief Tries to read a line from the stream (see @ref readLine) and returns
@@ -1318,7 +1352,7 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 				 encoding: (OFStringEncoding)encoding;
 
 /**
- * @brief Tries to reads until the specified string or `\0` is found or the end
+ * @brief Tries to read until the specified string or `\0` is found or the end
  *	  of stream (see @ref readUntilDelimiter:) and returns `nil` if not
  *	  enough data has been received yet.
  *
@@ -1838,7 +1872,8 @@ typedef OFString *_Nullable (^OFStreamStringWrittenHandler)(OFStream *stream,
 
 #ifdef OF_HAVE_SOCKETS
 /**
- * @brief Cancels all pending asynchronous requests on the stream.
+ * @brief Cancels all pending asynchronous requests on the stream in all run
+ *	  loop modes.
  */
 - (void)cancelAsyncRequests;
 #endif

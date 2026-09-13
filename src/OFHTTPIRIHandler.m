@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,12 +19,18 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFHTTPIRIHandler.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #import "OFIRI.h"
+#import "OFTimer.h"
 
+#import "OFOpenItemFailedException.h"
+
+OF_DIRECT_MEMBERS
 @interface OFHTTPIRIHandlerAsyncOpener: OFObject <OFHTTPClientDelegate>
 {
 	OFIRIHandler *_IRIHandler;
@@ -36,7 +42,7 @@
 - (instancetype)initWithIRIHandler: (OFIRIHandler *)IRIHandler
 			       IRI: (OFIRI *)IRI
 			  delegate: (id <OFIRIHandlerDelegate>)delegate;
-- (void)start;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 @implementation OFHTTPIRIHandlerAsyncOpener
@@ -71,12 +77,14 @@
 	[super dealloc];
 }
 
-- (void)start
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
 
-	[_client asyncPerformRequest: request];
+	[_client asyncPerformRequest: request
+			   redirects: 10
+			 runLoopMode: runLoopMode];
 	objc_retain(self);
 
 	objc_autoreleasePoolPop(pool);
@@ -99,12 +107,21 @@
 @end
 
 @implementation OFHTTPIRIHandler
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClient *client = [OFHTTPClient client];
-	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: IRI];
-	OFHTTPResponse *response = [client performRequest: request];
+	OFHTTPClient *client;
+	OFHTTPRequest *request;
+	OFHTTPResponse *response;
+
+	if (![mode isEqual: @"r"])
+		@throw [OFOpenItemFailedException exceptionWithIRI: IRI
+							      mode: mode
+							     errNo: EROFS];
+
+	client = [OFHTTPClient client];
+	request = [OFHTTPRequest requestWithIRI: IRI];
+	response = [client performRequest: request];
 
 	objc_retain(response);
 
@@ -116,14 +133,39 @@
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPIRIHandlerAsyncOpener *opener = objc_autorelease(
-	    [[OFHTTPIRIHandlerAsyncOpener alloc] initWithIRIHandler: self
-								IRI: IRI
-							   delegate: delegate]);
+	OFHTTPIRIHandlerAsyncOpener *opener;
 
-	[opener start];
+	if (![mode isEqual: @"r"]) {
+		id exception = [OFOpenItemFailedException
+		    exceptionWithIRI: IRI
+				mode: mode
+			       errNo: EROFS];
+		OFTimer *timer = [OFTimer
+		    timerWithTimeInterval: 0
+				   target: delegate
+				 selector: @selector(IRIHandler:
+					       didOpenItemAtIRI:stream:
+					       exception:)
+				   object: self
+				   object: IRI
+				   object: nil
+				   object: exception
+				  repeats: false];
+		[[OFRunLoop currentRunLoop] addTimer: timer
+					     forMode: runLoopMode];
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	opener = objc_autorelease([[OFHTTPIRIHandlerAsyncOpener alloc]
+	    initWithIRIHandler: self
+			   IRI: IRI
+		      delegate: delegate]);
+
+	[opener startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
  */
 
 #import "OHExtendedGamepad.h"
+#import "OHVIDPID.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +35,7 @@ OF_SUBCLASSING_RESTRICTED
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerDirectionalPad *)
 	    *_directionalPads;
-	uint16_t _productID;
+	OHVIDPID _VIDPID;
 }
 
 - (instancetype)init OF_UNAVAILABLE;

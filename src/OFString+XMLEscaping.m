@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,8 @@
 
 #import "OFString.h"
 
-#import "OFOutOfMemoryException.h"
+#import "OFInvalidEncodingException.h"
+#import "OFOutOfRangeException.h"
 
 int _OFString_XMLEscaping_reference;
 
@@ -71,13 +72,31 @@ int _OFString_XMLEscaping_reference;
 			append = "&#xD;";
 			appendLen = 5;
 			break;
+		case '\xEF':
+			/* Reject U+FFFE and U+FFFF */
+			if (i + 2 < length && string[i + 1] == '\xBF' &&
+			    ((unsigned char)string[i + 2] & 0xFE) == 0xBE) {
+				OFFreeMemory(retCString);
+				@throw [OFInvalidEncodingException exception];
+			}
+			/* Fall through */
 		default:
+			if ((unsigned char)string[i] < 0x20 &&
+			    string[i] != '\t' && string[i] != '\n') {
+				OFFreeMemory(retCString);
+				@throw [OFInvalidEncodingException exception];
+			}
+
 			append = NULL;
 			appendLen = 0;
 		}
 
 		if (append != NULL) {
 			@try {
+				if (SIZE_MAX - retLength < appendLen)
+					@throw [OFOutOfRangeException
+					    exception];
+
 				retCString = OFResizeMemory(retCString, 1,
 				    retLength + appendLen);
 			} @catch (id e) {
@@ -86,7 +105,7 @@ int _OFString_XMLEscaping_reference;
 			}
 			retLength += appendLen - 1;
 
-			memcpy(retCString + j, append, appendLen);
+			OFCopyMemory(retCString + j, append, appendLen);
 			j += appendLen;
 		} else
 			retCString[j++] = string[i];

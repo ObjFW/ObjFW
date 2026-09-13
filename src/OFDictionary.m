@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -226,6 +226,9 @@ OF_SINGLETON_METHODS
 		OFArray *objects_ = [dictionary.objectEnumerator allObjects];
 		OFArray *keys_ = [dictionary.keyEnumerator allObjects];
 
+		if (dictionary == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = dictionary.count;
 
 		if (count != keys_.count || count != objects_.count)
@@ -238,25 +241,18 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	@try {
-		self = [self initWithObjects: objects
-				     forKeys: keys
-				       count: count];
-	} @finally {
-		objc_autoreleasePoolPop(pool);
-	}
+	self = [self initWithObjects: objects forKeys: keys count: count];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
 - (instancetype)initWithObject: (id)object forKey: (id)key
 {
-	@try {
-		if (key == nil || object == nil)
-			@throw [OFInvalidArgumentException exception];
-	} @catch (id e) {
+	if (key == nil || object == nil) {
 		objc_release(self);
-		@throw e;
+		@throw [OFInvalidArgumentException exception];
 	}
 
 	return [self initWithObjects: &object forKeys: &key count: 1];
@@ -269,6 +265,9 @@ OF_SINGLETON_METHODS
 	size_t count;
 
 	@try {
+		if (objects_ == nil || keys_ == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = objects_.count;
 
 		if (count != keys_.count)
@@ -320,18 +319,16 @@ OF_SINGLETON_METHODS
 {
 	size_t count = 1;
 	id *objects = NULL, *keys = NULL;
-	va_list argumentsCopy;
-
-	if (firstKey == nil)
-		return [self init];
-
-	va_copy(argumentsCopy, arguments);
-	while (va_arg(argumentsCopy, id) != nil)
-		count++;
 
 	@try {
 		size_t i = 0;
+		va_list argumentsCopy;
 		id key, object;
+
+		va_copy(argumentsCopy, arguments);
+		while (va_arg(argumentsCopy, id) != nil)
+			count++;
+		va_end(argumentsCopy);
 
 		if (count % 2 != 0)
 			@throw [OFInvalidArgumentException exception];
@@ -554,11 +551,11 @@ OF_SINGLETON_METHODS
 	OFEnumerator *enumerator;
 	int i;
 
-	memcpy(&enumerator, state->extra, sizeof(enumerator));
+	OFCopyMemory(&enumerator, state->extra, sizeof(enumerator));
 
 	if (enumerator == nil) {
 		enumerator = [self keyEnumerator];
-		memcpy(state->extra, &enumerator, sizeof(enumerator));
+		OFCopyMemory(state->extra, &enumerator, sizeof(enumerator));
 	}
 
 	state->itemsPtr = objects;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 /** @file */
 
+/**
+ * @brief ZIP compression method.
+ */
 typedef enum {
+	/** @brief No compression */
 	OFZIPArchiveEntryCompressionMethodNone		=  0,
 	OFZIPArchiveEntryCompressionMethodShrink	=  1,
 	OFZIPArchiveEntryCompressionMethodReduceFactor1 =  2,
@@ -32,7 +36,9 @@ typedef enum {
 	OFZIPArchiveEntryCompressionMethodReduceFactor3 =  4,
 	OFZIPArchiveEntryCompressionMethodReduceFactor4 =  5,
 	OFZIPArchiveEntryCompressionMethodImplode	=  6,
+	/** @brief Deflate */
 	OFZIPArchiveEntryCompressionMethodDeflate	=  8,
+	/** @brief Deflate64 */
 	OFZIPArchiveEntryCompressionMethodDeflate64	=  9,
 	OFZIPArchiveEntryCompressionMethodBZIP2		= 12,
 	OFZIPArchiveEntryCompressionMethodLZMA		= 14,
@@ -122,7 +128,8 @@ typedef enum {
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
 	int64_t _localFileHeaderOffset;
-	OF_RESERVE_IVARS(OFZIPArchiveEntry, 4)
+	uintptr_t _usesZIP64;
+	OF_RESERVE_IVARS(OFZIPArchiveEntry, 3)
 }
 
 /**
@@ -155,14 +162,11 @@ typedef enum {
 /**
  * @brief The compression method of the entry.
  *
- * Supported values are:
- * Value                                       | Description
- * --------------------------------------------|---------------
- * OFZIPArchiveEntryCompressionMethodNone      | No compression
- * OFZIPArchiveEntryCompressionMethodDeflate   | Deflate
- * OFZIPArchiveEntryCompressionMethodDeflate64 | Deflate64
+ * See @ref OFZIPArchiveEntryCompressionMethod.
  *
- * Other values may be returned, but the file cannot be extracted then.
+ * Only @ref OFZIPArchiveEntryCompressionMethodNone,
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate and
+ * @ref OFZIPArchiveEntryCompressionMethodDeflate64 can be extracted.
  */
 @property (readonly, nonatomic)
     OFZIPArchiveEntryCompressionMethod compressionMethod;
@@ -186,6 +190,14 @@ typedef enum {
  * See the ZIP specification for details.
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
+
+/**
+ * @brief Whether the entry uses ZIP64.
+ *
+ * When creating a new entry, this defaults to `true`. Only set this to `false`
+ * if you know for sure ZIP64 will not be needed.
+ */
+@property (readonly, nonatomic) bool usesZIP64;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end

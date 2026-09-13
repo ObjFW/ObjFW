@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,9 +52,15 @@
 #import "OFThread.h"
 
 #import "OFActivateSandboxFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+# import "amiga-library.h"
+extern struct Library *ObjFWBase;
+#endif
 
 #if defined(OF_MACOS)
 # include <crt_externs.h>
@@ -100,6 +106,9 @@ const OFNotificationName OFApplicationWillTerminateNotification =
 static OFApplication *app = nil;
 
 static void
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+__saveds
+#endif
 atexitHandler(void)
 {
 	id <OFApplicationDelegate> delegate = app.delegate;
@@ -156,7 +165,7 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 @implementation OFApplication
 @synthesize programName = _programName, arguments = _arguments;
-@synthesize environment = _environment;
+@synthesize environment = _environment, processID = _processID;
 #ifdef OF_HAVE_SANDBOX
 @synthesize activeSandbox = _activeSandbox;
 @synthesize activeSandboxForChildProcesses = _activeSandboxForChildProcesses;
@@ -203,6 +212,11 @@ SIGNAL_HANDLER(SIGUSR2)
 	return app.environment;
 }
 
++ (long)processID
+{
+	return app.processID;
+}
+
 + (void)terminate
 {
 	[self terminateWithStatus: EXIT_SUCCESS];
@@ -247,7 +261,24 @@ SIGNAL_HANDLER(SIGUSR2)
 	@try {
 		_environment = [[OFMutableDictionary alloc] init];
 
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+		size_t trampolineSize = objc_libraryTrampolineSize();
+		uint32_t *trampoline = malloc(
+		    trampolineSize * sizeof(uint32_t));
+
+		if (trampoline == NULL)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+
+		objc_createLibraryTrampoline(trampoline, (IMP)atexitHandler,
+		    ObjFWBase);
+		CacheFlushDataInstArea(trampoline,
+		    trampolineSize * sizeof(uint32_t));
+
+		atexit((void (*)(void))(uintptr_t)trampoline);
+#else
 		atexit(atexitHandler);
+#endif
 
 #if defined(OF_WINDOWS)
 		if ([OFSystemInfo isWindowsNT]) {
@@ -278,6 +309,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if (pos == OFNotFound) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %@", tmp);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
@@ -319,6 +351,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if (pos == OFNotFound) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %@", tmp);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
@@ -412,6 +445,7 @@ SIGNAL_HANDLER(SIGUSR2)
 				if ((sep = strchr(*env, '=')) == NULL) {
 					OFLog(@"Warning: Invalid environment "
 					    "variable: %s", *env);
+					objc_autoreleasePoolPop(pool);
 					continue;
 				}
 
@@ -473,6 +507,13 @@ SIGNAL_HANDLER(SIGUSR2)
 #endif
 
 		[_environment makeImmutable];
+
+#ifdef OF_MORPHOS
+		NewGetTaskAttrs(NULL, &_processID, sizeof(_processID),
+		    TASKINFOTYPE_PID, TAG_END);
+#else
+		_processID = (long)getpid();
+#endif
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -671,8 +712,11 @@ SIGNAL_HANDLER(SIGUSR2)
 		if (path == nil || permissions == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		unveil([path cStringWithEncoding: encoding],
-		    [permissions cStringWithEncoding: encoding]);
+		if (unveil([path cStringWithEncoding: encoding],
+		    [permissions cStringWithEncoding: encoding]) != 0)
+			@throw [OFActivateSandboxFailedException
+				exceptionWithSandbox: sandbox
+					       errNo: errno];
 	}
 
 	sandbox->_unveiledPathsIndex = unveiledPathsCount;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -173,9 +173,9 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The depth limit for the XML parser.
  *
- * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
+ * If the depth limit is exceeded, an @ref OFOutOfRangeException is thrown.
  *
- * The default is 32. 0 means unlimited (insecure!).
+ * The default is 128. 0 means unlimited (insecure!).
  */
 @property (nonatomic) size_t depthLimit;
 

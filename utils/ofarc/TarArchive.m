@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,18 +43,29 @@ static OFArc *app;
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
+	OFMutableFileAttributes attributes = [OFMutableDictionary dictionary];
+
 	[app quarantineFile: path];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFNumber *POSIXPermissions = [OFNumber numberWithUnsignedLongLong:
 	    entry.POSIXPermissions.longLongValue & 0777];
-	OFFileAttributes attributes = [OFDictionary
-	    dictionaryWithObject: POSIXPermissions
-			  forKey: OFFilePOSIXPermissions];
+	[attributes setObject: POSIXPermissions forKey: OFFilePOSIXPermissions];
+#endif
+
+#ifdef OF_AMIGAOS
+	OFNumber *amigaProtection = entry.amigaProtection;
+	OFString *amigaComment = entry.amigaComment;
+
+	if (amigaProtection != nil)
+		[attributes setObject: amigaProtection
+			       forKey: OFFileAmigaProtection];
+	if (amigaComment != nil)
+		[attributes setObject: amigaComment forKey: OFFileAmigaComment];
+#endif
 
 	[[OFFileManager defaultManager] setAttributes: attributes
 					 ofItemAtPath: path];
-#endif
 }
 
 static void
@@ -134,7 +145,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		[app checkForCancellation];
 
-		[OFStdOut writeLine: entry.fileName];
+		[OFStdOut writeLine:
+		    entry.fileName.stringByReplacingControlCharacters];
 
 		if (app->_outputLevel >= 1) {
 			OFString *date = [entry.modificationDate
@@ -192,18 +204,37 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"list_modification_date",
 			    @"Modification date: %[date]",
 			    @"date", date)];
+
+			if (entry.amigaProtection != nil) {
+				OFString *protectionString = [OFString
+				    stringWithFormat: @"%04lx",
+				    entry.amigaProtection.unsignedLongValue];
+
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_protection",
+				    @"Amiga protection bits: %[prot]",
+				    @"prot", protectionString)];
+			}
+			if (entry.amigaComment != nil) {
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_amiga_comment",
+				    @"Amiga comment: %[comment]",
+				    @"comment", entry.amigaComment)];
+			}
 		}
 
 		if (app->_outputLevel >= 2) {
 			[OFStdOut writeString: @"\t"];
 
-			switch (entry.type) {
-			case OFTarArchiveEntryTypeFile:
+			switch (entry.fileType) {
+			case OFArchiveEntryFileTypeRegular:
 				[OFStdOut writeLine: OF_LOCALIZED(
-				    @"list_type_normal",
-				    @"Type: Normal file")];
+				    @"list_type_regular",
+				    @"Type: Regular file")];
 				break;
-			case OFTarArchiveEntryTypeLink:
+			case OFArchiveEntryFileTypeLink:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_hardlink",
 				    @"Type: Hard link")];
@@ -213,7 +244,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OFTarArchiveEntryTypeSymlink:
+			case OFArchiveEntryFileTypeSymbolicLink:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_symlink",
 				    @"Type: Symbolic link")];
@@ -223,7 +254,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"Target file name: %[target]",
 				    @"target", entry.targetFileName)];
 				break;
-			case OFTarArchiveEntryTypeCharacterDevice: {
+			case OFArchiveEntryFileTypeCharacterDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -244,7 +275,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OFTarArchiveEntryTypeBlockDevice: {
+			case OFArchiveEntryFileTypeBlockDevice: {
 				OFString *majorString = [OFString
 				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
@@ -265,17 +296,17 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"minor", minorString)];
 				break;
 			}
-			case OFTarArchiveEntryTypeDirectory:
+			case OFArchiveEntryFileTypeDirectory:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_directory",
 				    @"Type: Directory")];
 				break;
-			case OFTarArchiveEntryTypeFIFO:
+			case OFArchiveEntryFileTypeFIFO:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_fifo",
 				    @"Type: FIFO")];
 				break;
-			case OFTarArchiveEntryTypeContiguousFile:
+			case OFArchiveEntryFileTypeContiguousFile:
 				[OFStdOut writeLine: OF_LOCALIZED(
 				    @"list_type_contiguous_file",
 				    @"Type: Contiguous file")];
@@ -285,6 +316,18 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 				    @"list_type_unknown",
 				    @"Type: Unknown")];
 				break;
+			}
+
+			if (entry.extendedHeader != nil) {
+				OFString *header =
+				    [entry.extendedHeader.description
+				    stringByReplacingOccurrencesOfString: @"\n"
+				    withString: @"\n\t"];
+				[OFStdOut writeString: @"\t"];
+				[OFStdOut writeLine: OF_LOCALIZED(
+				    @"list_extended_header",
+				    @"Extended header: %[@header]",
+				    @"@header", header)];
 			}
 		}
 
@@ -296,7 +339,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = (files.count == 0);
-	OFMutableArray *delayedModificationDates = [OFMutableArray array];
+	OFMutableArray *delayed = [OFMutableArray array];
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFTarArchiveEntry *entry;
@@ -304,7 +347,7 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = entry.fileName;
-		OFTarArchiveEntryType type = entry.type;
+		OFArchiveEntryFileType fileType = entry.fileType;
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
@@ -316,8 +359,8 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 		if (!all && ![files containsObject: fileName])
 			continue;
 
-		if (type != OFTarArchiveEntryTypeFile &&
-		    type != OFTarArchiveEntryTypeDirectory) {
+		if (fileType != OFArchiveEntryFileTypeRegular &&
+		    fileType != OFArchiveEntryFileTypeDirectory) {
 			if (app->_outputLevel >= 0)
 				[OFStdErr writeLine: OF_LOCALIZED(
 				    @"skipping_file",
@@ -344,18 +387,19 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
-		if (type == OFTarArchiveEntryTypeDirectory ||
-		    (type == OFTarArchiveEntryTypeFile &&
+		if (fileType == OFArchiveEntryFileTypeDirectory ||
+		    (fileType == OFArchiveEntryFileTypeRegular &&
 		    [fileName hasSuffix: @"/"])) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
-			setPermissions(outFileName, entry);
 			/*
 			 * As creating a new file in a directory changes its
 			 * modification date, we can only set it once all files
-			 * have been created.
+			 * have been created. Also, restricting permissions
+			 * (e.g. removing write permissions) before all files
+			 * in a directory have been written would also fail.
 			 */
-			[delayedModificationDates addObject:
+			[delayed addObject:
 			    [OFPair pairWithFirstObject: outFileName
 					   secondObject: entry]];
 
@@ -380,7 +424,14 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName mode: @"w"];
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifndef OF_AMIGAOS
 		setPermissions(outFileName, entry);
+#endif
 
 		while (!stream.atEndOfStream) {
 			ssize_t length;
@@ -418,6 +469,14 @@ setModificationDate(OFString *path, OFTarArchiveEntry *entry)
 
 		[output close];
 		setModificationDate(outFileName, entry);
+		/*
+		 * Permissions on AmigaOS apply even to already opened files,
+		 * so need to be set after the file is written and the
+		 * modification date is set.
+		 */
+#ifdef OF_AMIGAOS
+		setPermissions(outFileName, entry);
+#endif
 
 		if (app->_outputLevel >= 0) {
 			[OFStdErr writeString: @"\r"];
@@ -431,8 +490,10 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	for (OFPair *pair in delayedModificationDates)
+	for (OFPair *pair in delayed) {
 		setModificationDate(pair.firstObject, pair.secondObject);
+		setPermissions(pair.firstObject, pair.secondObject);
+	}
 
 	if (missing.count > 0) {
 		for (OFString *file in missing)
@@ -521,7 +582,8 @@ outer_loop_end:
 
 		attributes = [fileManager attributesOfItemAtPath: fileName];
 		type = attributes.fileType;
-		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
+		entry = [OFMutableTarArchiveEntry entryWithFileName:
+		    [app archivePathForPath: fileName]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 		entry.POSIXPermissions =
@@ -535,18 +597,26 @@ outer_loop_end:
 		    [attributes objectForKey: OFFileOwnerAccountID];
 		entry.groupOwnerAccountID =
 		    [attributes objectForKey: OFFileGroupOwnerAccountID];
-		entry.ownerAccountName = attributes.fileOwnerAccountName;
+		entry.ownerAccountName =
+		    [attributes objectForKey: OFFileOwnerAccountName];
 		entry.groupOwnerAccountName =
-		    attributes.fileGroupOwnerAccountName;
+		    [attributes objectForKey: OFFileGroupOwnerAccountName];
+#endif
+
+#if defined(OF_AMIGAOS)
+		entry.amigaProtection =
+		    [attributes objectForKey: OFFileAmigaProtection];
+		entry.amigaComment =
+		    [attributes objectForKey: OFFileAmigaComment];
 #endif
 
 		if ([type isEqual: OFFileTypeRegular])
-			entry.type = OFTarArchiveEntryTypeFile;
+			entry.fileType = OFArchiveEntryFileTypeRegular;
 		else if ([type isEqual: OFFileTypeDirectory]) {
-			entry.type = OFTarArchiveEntryTypeDirectory;
+			entry.fileType = OFArchiveEntryFileTypeDirectory;
 			entry.uncompressedSize = 0;
 		} else if ([type isEqual: OFFileTypeSymbolicLink]) {
-			entry.type = OFTarArchiveEntryTypeSymlink;
+			entry.fileType = OFArchiveEntryFileTypeSymbolicLink;
 			entry.targetFileName =
 			    attributes.fileSymbolicLinkDestination;
 			entry.uncompressedSize = 0;
@@ -556,7 +626,7 @@ outer_loop_end:
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if (entry.type == OFTarArchiveEntryTypeFile) {
+		if (entry.fileType == OFArchiveEntryFileTypeRegular) {
 			unsigned long long written = 0;
 			unsigned long long size = entry.uncompressedSize;
 			int8_t percent = -1, newPercent;

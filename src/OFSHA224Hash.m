@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,13 +36,13 @@ static const size_t digestSize = 28;
 
 - (void)of_resetState
 {
-	_iVars->state[0] = 0xC1059ED8;
-	_iVars->state[1] = 0x367CD507;
-	_iVars->state[2] = 0x3070DD17;
-	_iVars->state[3] = 0xF70E5939;
-	_iVars->state[4] = 0xFFC00B31;
-	_iVars->state[5] = 0x68581511;
-	_iVars->state[6] = 0x64F98FA7;
-	_iVars->state[7] = 0xBEFA4FA4;
+	_ivars->state[0] = 0xC1059ED8;
+	_ivars->state[1] = 0x367CD507;
+	_ivars->state[2] = 0x3070DD17;
+	_ivars->state[3] = 0xF70E5939;
+	_ivars->state[4] = 0xFFC00B31;
+	_ivars->state[5] = 0x68581511;
+	_ivars->state[6] = 0x64F98FA7;
+	_ivars->state[7] = 0xBEFA4FA4;
 }
 @end

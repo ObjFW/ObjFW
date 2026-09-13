@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -101,16 +101,6 @@
 - (bool)allowsCreatingSpecialFiles
 {
 	return _allowsCreatingSpecialFiles;
-}
-
-- (void)setAllowsTemporaryFiles: (bool)allowsTemporaryFiles
-{
-	_allowsTemporaryFiles = allowsTemporaryFiles;
-}
-
-- (bool)allowsTemporaryFiles
-{
-	return _allowsTemporaryFiles;
 }
 
 - (void)setAllowsIPSockets: (bool)allowsIPSockets
@@ -357,36 +347,45 @@
 {
 	OFSandbox *copy = [[OFSandbox alloc] init];
 
-	copy->_allowsStdIO = _allowsStdIO;
-	copy->_allowsReadingFiles = _allowsReadingFiles;
-	copy->_allowsWritingFiles = _allowsWritingFiles;
-	copy->_allowsCreatingFiles = _allowsCreatingFiles;
-	copy->_allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
-	copy->_allowsTemporaryFiles = _allowsTemporaryFiles;
-	copy->_allowsIPSockets = _allowsIPSockets;
-	copy->_allowsMulticastSockets = _allowsMulticastSockets;
-	copy->_allowsChangingFileAttributes = _allowsChangingFileAttributes;
-	copy->_allowsFileOwnerChanges = _allowsFileOwnerChanges;
-	copy->_allowsFileLocks = _allowsFileLocks;
-	copy->_allowsUNIXSockets = _allowsUNIXSockets;
-	copy->_allowsDNS = _allowsDNS;
-	copy->_allowsUserDatabaseReading = _allowsUserDatabaseReading;
-	copy->_allowsFileDescriptorSending = _allowsFileDescriptorSending;
-	copy->_allowsFileDescriptorReceiving = _allowsFileDescriptorReceiving;
-	copy->_allowsTape = _allowsTape;
-	copy->_allowsTTY = _allowsTTY;
-	copy->_allowsProcessOperations = _allowsProcessOperations;
-	copy->_allowsExec = _allowsExec;
-	copy->_allowsProtExec = _allowsProtExec;
-	copy->_allowsSetTime = _allowsSetTime;
-	copy->_allowsPS = _allowsPS;
-	copy->_allowsVMInfo = _allowsVMInfo;
-	copy->_allowsChangingProcessRights = _allowsChangingProcessRights;
-	copy->_allowsPF = _allowsPF;
-	copy->_allowsAudio = _allowsAudio;
-	copy->_allowsBPF = _allowsBPF;
-	copy->_allowsUnveil = _allowsUnveil;
-	copy->_returnsErrors = _returnsErrors;
+	@try {
+		copy->_allowsStdIO = _allowsStdIO;
+		copy->_allowsReadingFiles = _allowsReadingFiles;
+		copy->_allowsWritingFiles = _allowsWritingFiles;
+		copy->_allowsCreatingFiles = _allowsCreatingFiles;
+		copy->_allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
+		copy->_allowsIPSockets = _allowsIPSockets;
+		copy->_allowsMulticastSockets = _allowsMulticastSockets;
+		copy->_allowsChangingFileAttributes =
+		    _allowsChangingFileAttributes;
+		copy->_allowsFileOwnerChanges = _allowsFileOwnerChanges;
+		copy->_allowsFileLocks = _allowsFileLocks;
+		copy->_allowsUNIXSockets = _allowsUNIXSockets;
+		copy->_allowsDNS = _allowsDNS;
+		copy->_allowsUserDatabaseReading = _allowsUserDatabaseReading;
+		copy->_allowsFileDescriptorSending =
+		    _allowsFileDescriptorSending;
+		copy->_allowsFileDescriptorReceiving =
+		    _allowsFileDescriptorReceiving;
+		copy->_allowsTape = _allowsTape;
+		copy->_allowsTTY = _allowsTTY;
+		copy->_allowsProcessOperations = _allowsProcessOperations;
+		copy->_allowsExec = _allowsExec;
+		copy->_allowsProtExec = _allowsProtExec;
+		copy->_allowsSetTime = _allowsSetTime;
+		copy->_allowsPS = _allowsPS;
+		copy->_allowsVMInfo = _allowsVMInfo;
+		copy->_allowsChangingProcessRights =
+		    _allowsChangingProcessRights;
+		copy->_allowsPF = _allowsPF;
+		copy->_allowsAudio = _allowsAudio;
+		copy->_allowsBPF = _allowsBPF;
+		copy->_allowsUnveil = _allowsUnveil;
+		copy->_returnsErrors = _returnsErrors;
+		copy->_unveiledPaths = [_unveiledPaths mutableCopy];
+	} @catch (id e) {
+		objc_release(copy);
+		@throw e;
+	}
 
 	return copy;
 }
@@ -412,8 +411,6 @@
 	if (sandbox->_allowsCreatingFiles != _allowsCreatingFiles)
 		return false;
 	if (sandbox->_allowsCreatingSpecialFiles != _allowsCreatingSpecialFiles)
-		return false;
-	if (sandbox->_allowsTemporaryFiles != _allowsTemporaryFiles)
 		return false;
 	if (sandbox->_allowsIPSockets != _allowsIPSockets)
 		return false;
@@ -467,6 +464,8 @@
 		return false;
 	if (sandbox->_returnsErrors != _returnsErrors)
 		return false;
+	if (sandbox->_unveiledPaths != _unveiledPaths)
+		return false;
 
 	return true;
 }
@@ -482,7 +481,6 @@
 	OFHashAddByte(&hash, _allowsWritingFiles);
 	OFHashAddByte(&hash, _allowsCreatingFiles);
 	OFHashAddByte(&hash, _allowsCreatingSpecialFiles);
-	OFHashAddByte(&hash, _allowsTemporaryFiles);
 	OFHashAddByte(&hash, _allowsIPSockets);
 	OFHashAddByte(&hash, _allowsMulticastSockets);
 	OFHashAddByte(&hash, _allowsChangingFileAttributes);
@@ -507,6 +505,7 @@
 	OFHashAddByte(&hash, _allowsBPF);
 	OFHashAddByte(&hash, _allowsUnveil);
 	OFHashAddByte(&hash, _returnsErrors);
+	OFHashAddHash(&hash, _unveiledPaths.hash);
 
 	OFHashFinalize(&hash);
 
@@ -530,8 +529,6 @@
 		[pledges addObject: @"cpath"];
 	if (_allowsCreatingSpecialFiles)
 		[pledges addObject: @"dpath"];
-	if (_allowsTemporaryFiles)
-		[pledges addObject: @"tmppath"];
 	if (_allowsIPSockets)
 		[pledges addObject: @"inet"];
 	if (_allowsMulticastSockets)

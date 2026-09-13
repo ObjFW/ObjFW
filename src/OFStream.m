@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -157,11 +157,11 @@ retry_1:
 			}
 
 			if (bytesRead > length) {
-				memcpy(buffer, tmp, length);
+				OFCopyMemory(buffer, tmp, length);
 
 				readBuffer = OFAllocMemory(bytesRead - length,
 				    1);
-				memcpy(readBuffer, tmp + length,
+				OFCopyMemory(readBuffer, tmp + length,
 				    bytesRead - length);
 
 				_readBuffer = _readBufferMemory = readBuffer;
@@ -169,7 +169,7 @@ retry_1:
 
 				return length;
 			} else {
-				memcpy(buffer, tmp, bytesRead);
+				OFCopyMemory(buffer, tmp, bytesRead);
 				return bytesRead;
 			}
 		}
@@ -188,7 +188,7 @@ retry_2:
 
 	if (length >= _readBufferLength) {
 		size_t ret = _readBufferLength;
-		memcpy(buffer, _readBuffer, _readBufferLength);
+		OFCopyMemory(buffer, _readBuffer, _readBufferLength);
 
 		OFFreeMemory(_readBufferMemory);
 		_readBuffer = _readBufferMemory = NULL;
@@ -196,7 +196,7 @@ retry_2:
 
 		return ret;
 	} else {
-		memcpy(buffer, _readBuffer, length);
+		OFCopyMemory(buffer, _readBuffer, length);
 
 		_readBuffer += length;
 		_readBufferLength -= length;
@@ -274,7 +274,7 @@ retry_2:
 {
 	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
 	    size_t length_, id exception) {
-		return block(length, exception);
+		return block(length_, exception);
 	};
 
 	[self asyncReadIntoBuffer: buffer
@@ -300,7 +300,7 @@ retry_2:
 {
 	OFStreamReadHandler handler = ^ (OFStream *stream, void *buffer_,
 	    size_t length_, id exception) {
-		return block(length, exception);
+		return block(length_, exception);
 	};
 
 	[self asyncReadIntoBuffer: buffer
@@ -471,6 +471,9 @@ retry_2:
 	OFData *ret;
 	char *buffer;
 
+	if OF_UNLIKELY (itemSize == 0)
+		@throw [OFInvalidArgumentException exception];
+
 	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
 		@throw [OFOutOfRangeException exception];
 
@@ -535,9 +538,13 @@ retry_2:
 			  encoding: (OFStringEncoding)encoding
 {
 	OFString *ret;
-	char *buffer = OFAllocMemory(length + 1, 1);
-	buffer[length] = 0;
+	char *buffer;
 
+	if (SIZE_MAX - length < 1)
+		@throw [OFOutOfRangeException exception];
+
+	buffer = OFAllocMemory(length + 1, 1);
+	buffer[length] = 0;
 	@try {
 		[self readIntoBuffer: buffer exactLength: length];
 		ret = [OFString stringWithCString: buffer encoding: encoding];
@@ -626,9 +633,9 @@ retry:
 				char *retCString = OFAllocMemory(retLength, 1);
 
 				if (_readBuffer != NULL)
-					memcpy(retCString, _readBuffer,
+					OFCopyMemory(retCString, _readBuffer,
 					    _readBufferLength);
-				memcpy(retCString + _readBufferLength,
+				OFCopyMemory(retCString + _readBufferLength,
 				    buffer, i);
 
 				if (retLength > 0 &&
@@ -650,9 +657,10 @@ retry:
 						    _readBufferLength +
 						    bufferLength, 1);
 
-						memcpy(readBuffer, _readBuffer,
+						OFCopyMemory(readBuffer,
+						    _readBuffer,
 						    _readBufferLength);
-						memcpy(readBuffer +
+						OFCopyMemory(readBuffer +
 						    _readBufferLength,
 						    buffer, bufferLength);
 
@@ -671,7 +679,7 @@ retry:
 				readBuffer = OFAllocMemory(bufferLength - i - 1,
 				    1);
 				if (readBuffer != NULL)
-					memcpy(readBuffer, buffer + i + 1,
+					OFCopyMemory(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
 				OFFreeMemory(_readBufferMemory);
@@ -685,11 +693,20 @@ retry:
 
 		/* There was no newline or \0 */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
-			memcpy(readBuffer, _readBuffer, _readBufferLength);
-			memcpy(readBuffer + _readBufferLength,
+			OFCopyMemory(readBuffer, _readBuffer,
+			    _readBufferLength);
+			OFCopyMemory(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
 			OFFreeMemory(_readBufferMemory);
@@ -947,9 +964,9 @@ retry:
 				retLength = _readBufferLength + i;
 				retCString = OFAllocMemory(retLength, 1);
 
-				memcpy(retCString, _readBuffer,
+				OFCopyMemory(retCString, _readBuffer,
 				    _readBufferLength);
-				memcpy(retCString + _readBufferLength,
+				OFCopyMemory(retCString + _readBufferLength,
 				    buffer, i);
 
 				@try {
@@ -967,9 +984,10 @@ retry:
 						    _readBufferLength +
 						    bufferLength, 1);
 
-						memcpy(readBuffer, _readBuffer,
+						OFCopyMemory(readBuffer,
+						    _readBuffer,
 						    _readBufferLength);
-						memcpy(readBuffer +
+						OFCopyMemory(readBuffer +
 						    _readBufferLength,
 						    buffer, bufferLength);
 
@@ -988,7 +1006,7 @@ retry:
 				readBuffer = OFAllocMemory(bufferLength - i - 1,
 				    1);
 				if (readBuffer != NULL)
-					memcpy(readBuffer, buffer + i + 1,
+					OFCopyMemory(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
 				OFFreeMemory(_readBufferMemory);
@@ -1002,11 +1020,20 @@ retry:
 
 		/* No \0 was found */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
-			memcpy(readBuffer, _readBuffer, _readBufferLength);
-			memcpy(readBuffer + _readBufferLength,
+			OFCopyMemory(readBuffer, _readBuffer,
+			    _readBufferLength);
+			OFCopyMemory(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
 			OFFreeMemory(_readBufferMemory);
@@ -1117,13 +1144,14 @@ retry:
 
 				if (_readBuffer != NULL &&
 				    _readBufferLength <= retLength)
-					memcpy(retCString, _readBuffer,
+					OFCopyMemory(retCString, _readBuffer,
 					    _readBufferLength);
 				else if (_readBuffer != NULL)
-					memcpy(retCString, _readBuffer,
+					OFCopyMemory(retCString, _readBuffer,
 					    retLength);
 				if (i >= delimiterLength)
-					memcpy(retCString + _readBufferLength,
+					OFCopyMemory(
+					    retCString + _readBufferLength,
 					    buffer, i + 1 - delimiterLength);
 
 				@try {
@@ -1141,9 +1169,10 @@ retry:
 						    _readBufferLength +
 						    bufferLength, 1);
 
-						memcpy(readBuffer, _readBuffer,
+						OFCopyMemory(readBuffer,
+						    _readBuffer,
 						    _readBufferLength);
-						memcpy(readBuffer +
+						OFCopyMemory(readBuffer +
 						    _readBufferLength,
 						    buffer, bufferLength);
 
@@ -1162,7 +1191,7 @@ retry:
 				readBuffer = OFAllocMemory(bufferLength - i - 1,
 				    1);
 				if (readBuffer != NULL)
-					memcpy(readBuffer, buffer + i + 1,
+					OFCopyMemory(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
 				OFFreeMemory(_readBufferMemory);
@@ -1176,11 +1205,20 @@ retry:
 
 		/* Neither the delimiter nor \0 was found */
 		if (bufferLength > 0) {
+			if (SIZE_MAX - _readBufferLength < bufferLength)
+				@throw [OFOutOfRangeException exception];
+
+			if (_maxStringReadLength > 0 &&
+			    _readBufferLength + bufferLength >
+			    _maxStringReadLength)
+				@throw [OFOutOfRangeException exception];
+
 			readBuffer = OFAllocMemory(
 			    _readBufferLength + bufferLength, 1);
 
-			memcpy(readBuffer, _readBuffer, _readBufferLength);
-			memcpy(readBuffer + _readBufferLength,
+			OFCopyMemory(readBuffer, _readBuffer,
+			    _readBufferLength);
+			OFCopyMemory(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
 			OFFreeMemory(_readBufferMemory);
@@ -1251,7 +1289,7 @@ retry:
 
 	OFEnsure(bytesWritten <= _writeBufferLength);
 
-	memmove(_writeBuffer, _writeBuffer + bytesWritten,
+	OFMoveMemory(_writeBuffer, _writeBuffer + bytesWritten,
 	    _writeBufferLength - bytesWritten);
 	_writeBufferLength -= bytesWritten;
 	@try {
@@ -1292,7 +1330,7 @@ retry:
 
 		_writeBuffer = OFResizeMemory(_writeBuffer,
 		    _writeBufferLength + length, 1);
-		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
+		OFCopyMemory(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
 	}
 }
@@ -1580,8 +1618,12 @@ retry:
 	pool = objc_autoreleasePoolPush();
 	length = [string cStringLengthWithEncoding: encoding];
 
-	[self writeBuffer: [string cStringWithEncoding: encoding]
-		   length: length];
+	if (_allowsLossyEncoding)
+		[self writeBuffer: [string lossyCStringWithEncoding: encoding]
+			   length: length];
+	else
+		[self writeBuffer: [string cStringWithEncoding: encoding]
+			   length: length];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1599,8 +1641,14 @@ retry:
 	buffer = OFAllocMemory(stringLength + 1, 1);
 
 	@try {
-		memcpy(buffer, [string cStringWithEncoding: encoding],
-		    stringLength);
+		if (_allowsLossyEncoding)
+			OFCopyMemory(buffer, [string lossyCStringWithEncoding:
+			    encoding], stringLength);
+		else
+			OFCopyMemory(buffer,
+			    [string cStringWithEncoding: encoding],
+			    stringLength);
+
 		buffer[stringLength] = '\n';
 
 		[self writeBuffer: buffer length: stringLength + 1];
@@ -1661,6 +1709,26 @@ retry:
 - (void)setEncoding: (OFStringEncoding)encoding
 {
 	_encoding = encoding;
+}
+
+- (bool)allowsLossyEncoding
+{
+	return _allowsLossyEncoding;
+}
+
+- (void)setAllowsLossyEncoding: (bool)allowsLossyEncoding
+{
+	_allowsLossyEncoding = allowsLossyEncoding;
+}
+
+- (size_t)maxStringReadLength
+{
+	return _maxStringReadLength;
+}
+
+- (void)setMaxStringReadLength: (size_t)maxStringReadLength
+{
+	_maxStringReadLength = maxStringReadLength;
 }
 
 - (bool)canBlock
@@ -1748,8 +1816,7 @@ retry:
 #ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: OFDefaultRunLoopMode];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 #endif
 
@@ -1761,8 +1828,8 @@ retry:
 		@throw [OFOutOfRangeException exception];
 
 	readBuffer = OFAllocMemory(_readBufferLength + length, 1);
-	memcpy(readBuffer, buffer, length);
-	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
+	OFCopyMemory(readBuffer, buffer, length);
+	OFCopyMemory(readBuffer + length, _readBuffer, _readBufferLength);
 
 	OFFreeMemory(_readBufferMemory);
 	_readBuffer = _readBufferMemory = readBuffer;

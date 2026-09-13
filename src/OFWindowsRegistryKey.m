@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -146,11 +146,12 @@ OF_DIRECT_MEMBERS
 	if ([OFSystemInfo isWindowsNT])
 		status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
 		    NULL, options, accessRights, securityAttributes, &subKey,
-		    NULL);
+		    disposition);
 	else
 		status = RegCreateKeyExA(_hKey,
 		    [path cStringWithEncoding: [OFLocale encoding]], 0, NULL,
-		    options, accessRights, securityAttributes, &subKey, NULL);
+		    options, accessRights, securityAttributes, &subKey,
+		    disposition);
 
 	if (status != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException
@@ -260,10 +261,11 @@ OF_DIRECT_MEMBERS
 	void *pool = objc_autoreleasePoolPush();
 	DWORD type;
 	OFData *data = [self dataForValueNamed: name type: &type];
-	OFString *ret;
 
-	if (data == nil)
+	if (data == nil) {
+		objc_autoreleasePoolPop(pool);
 		return nil;
+	}
 
 	if (type != REG_SZ && type != REG_EXPAND_SZ && type != REG_LINK)
 		@throw [OFInvalidEncodingException exception];
@@ -271,6 +273,7 @@ OF_DIRECT_MEMBERS
 	if (data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
+	OFString *ret;
 	if ([OFSystemInfo isWindowsNT]) {
 		const OFChar16 *UTF16String = data.items;
 		size_t length = data.count;
@@ -367,7 +370,7 @@ OF_DIRECT_MEMBERS
 	if (data.count != sizeof(ret) || data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&ret, data.items, sizeof(ret));
+	OFCopyMemory(&ret, data.items, sizeof(ret));
 
 	objc_autoreleasePoolPop(pool);
 
@@ -400,7 +403,7 @@ OF_DIRECT_MEMBERS
 	if (data.count != sizeof(ret) || data.itemSize != 1)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&ret, data.items, sizeof(ret));
+	OFCopyMemory(&ret, data.items, sizeof(ret));
 
 	objc_autoreleasePoolPop(pool);
 

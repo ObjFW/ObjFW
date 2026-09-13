@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +23,7 @@
 #import "OFINISection+Private.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFData.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -174,11 +175,40 @@ parseQuoted(const char **cString, const char **start, size_t *length)
 static void
 unescapeMutableString(OFMutableString *string)
 {
-	[string replaceOccurrencesOfString: @"\\f" withString: @"\f"];
-	[string replaceOccurrencesOfString: @"\\r" withString: @"\r"];
-	[string replaceOccurrencesOfString: @"\\n" withString: @"\n"];
-	[string replaceOccurrencesOfString: @"\\\"" withString: @"\""];
-	[string replaceOccurrencesOfString: @"\\\\" withString: @"\\"];
+	OFMutableData *data = [OFMutableData data];
+	const char *UTF8String = string.UTF8String;
+	size_t UTF8StringLength = string.UTF8StringLength;
+	bool inEscape = false;
+
+	for (size_t i = 0; i < UTF8StringLength; i++) {
+		if (inEscape) {
+			switch (UTF8String[i]) {
+			case 'f':
+				[data addItem: "\f"];
+				break;
+			case 'r':
+				[data addItem: "\r"];
+				break;
+			case 'n':
+				[data addItem: "\n"];
+				break;
+			default:
+				[data addItem: &UTF8String[i]];
+				break;
+			}
+
+			inEscape = false;
+		} else {
+			if (UTF8String[i] == '\\')
+				inEscape = true;
+			else
+				[data addItem: &UTF8String[i]];
+		}
+	}
+	[data addItem: ""];
+
+	[string deleteCharactersInRange: OFMakeRange(0, string.length)];
+	[string appendUTF8String: data.items];
 }
 
 - (void)of_parseLine: (OFString *)line
@@ -199,6 +229,9 @@ unescapeMutableString(OFMutableString *string)
 		    objc_autorelease([[OFINISectionComment alloc] init]);
 		comment->_comment = [line copy];
 		[_lines addObject: comment];
+
+		objc_autoreleasePoolPop(pool);
+
 		return;
 	}
 
@@ -263,6 +296,26 @@ unescapeMutableString(OFMutableString *string)
 	[_lines addObject: pair];
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (OFArray OF_GENERIC(OFString *) *)allKeys
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: _lines.count];
+
+	for (id line in _lines) {
+		OFINISectionPair *pair;
+
+		if (![line isKindOfClass: [OFINISectionPair class]])
+			continue;
+
+		pair = line;
+
+		[ret addObject: pair->_key];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
 }
 
 - (OFString *)stringValueForKey: (OFString *)key
@@ -532,17 +585,18 @@ unescapeMutableString(OFMutableString *string)
 		pair = lines[i];
 
 		if ([pair->_key isEqual: key]) {
-			[_lines removeObjectAtIndex: i];
 
 			if (!replaced) {
-				[_lines insertObjectsFromArray: pairs
-						       atIndex: i];
+				[_lines replaceObjectsInRange: OFMakeRange(i, 1)
+					 withObjectsFromArray: pairs];
 
 				replaced = true;
 				/* Continue after inserted pairs */
 				i += arrayValue.count - 1;
-			} else
+			} else {
+				[_lines removeObjectAtIndex: i];
 				i--;	/* Continue at same position */
+			}
 
 			lines = _lines.objects;
 			count = _lines.count;

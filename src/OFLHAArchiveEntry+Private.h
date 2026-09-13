@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 OF_DIRECT_MEMBERS
 @interface OFLHAArchiveEntry ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
-- (instancetype)of_initWithHeader: (char [_Nonnull 21])header
+- (instancetype)of_initWithHeader: (uint8_t [_Nonnull 21])header
 			   stream: (OFStream *)stream
 			 encoding: (OFStringEncoding)encoding
     OF_METHOD_FAMILY(init);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,10 +21,70 @@
 
 #import "OFSystemInfo.h"
 
-#include "OFSystemInfo+NetworkInterfacesConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFNetworkInterfaceIndex
+# undef OFNetworkInterfaceHardwareAddress
+# undef OFNetworkInterfaceIPv4Addresses
+# undef OFNetworkInterfaceIPv6Addresses
+# undef OFNetworkInterfaceIPXAddresses
+# undef OFNetworkInterfaceAppleTalkAddresses
+#endif
 
-#ifdef OF_WINDOWS
+const OFNetworkInterfaceKey OFNetworkInterfaceIndex =
+    @"OFNetworkInterfaceIndex";
+const OFNetworkInterfaceKey OFNetworkInterfaceHardwareAddress =
+    @"OFNetworkInterfaceHardwareAddress";
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv4Addresses =
+    @"OFNetworkInterfaceIPv4Addresses";
+const OFNetworkInterfaceKey OFNetworkInterfaceIPv6Addresses =
+    @"OFNetworkInterfaceIPv6Addresses";
+const OFNetworkInterfaceKey OFNetworkInterfaceIPXAddresses =
+    @"OFNetworkInterfaceIPXAddresses";
+const OFNetworkInterfaceKey OFNetworkInterfaceAppleTalkAddresses =
+    @"OFNetworkInterfaceAppleTalkAddresses";
+
+#ifdef OF_AMIGAOS
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIndexRef(void)
+{
+	return &OFNetworkInterfaceIndex;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceHardwareAddressRef(void)
+{
+	return &OFNetworkInterfaceHardwareAddress;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPv4AddressesRef(void)
+{
+	return &OFNetworkInterfaceIPv4Addresses;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPv6AddressesRef(void)
+{
+	return &OFNetworkInterfaceIPv6Addresses;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceIPXAddressesRef(void)
+{
+	return &OFNetworkInterfaceIPXAddresses;
+}
+
+const OFNetworkInterfaceKey *
+OFNetworkInterfaceAppleTalkAddressesRef(void)
+{
+	return &OFNetworkInterfaceAppleTalkAddresses;
+}
+#endif
+
+#if defined(OF_WINDOWS)
 # include "platform/Windows/OFSystemInfo+NetworkInterfaces.m"
+#elif defined(OF_AMIGAOS) && !defined(OF_MORPHOS)
+# include "platform/AmigaOS/OFSystemInfo+NetworkInterfaces.m"
 #else
 # include "platform/POSIX/OFSystemInfo+NetworkInterfaces.m"
 #endif

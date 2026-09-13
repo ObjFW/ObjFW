@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -129,53 +129,96 @@ OF_DESTRUCTOR()
 static int
 parseMode(const char *mode)
 {
-	if (strcmp(mode, "r") == 0)
-		return O_RDONLY;
-	if (strcmp(mode, "r+") == 0)
-		return O_RDWR;
-	if (strcmp(mode, "w") == 0)
-		return O_WRONLY | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "wx") == 0)
-		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "w+") == 0)
-		return O_RDWR | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "w+x") == 0)
-		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "a") == 0)
-		return O_WRONLY | O_CREAT | O_APPEND;
-	if (strcmp(mode, "a+") == 0)
-		return O_RDWR | O_CREAT | O_APPEND;
+	int ret = 0;
 
-	return -1;
+	switch (*mode) {
+	case 'r':
+		ret |= O_RDONLY;
+		break;
+	case 'w':
+		ret |= O_WRONLY | O_CREAT | O_TRUNC;
+		break;
+	case 'a':
+		ret |= O_WRONLY | O_CREAT | O_APPEND;
+		break;
+	default:
+		return -1;
+	}
+
+	for (mode++; *mode != '\0'; mode++) {
+		switch (*mode) {
+		case '+':
+			ret &= ~(O_RDONLY | O_WRONLY);
+			ret |= O_RDWR;
+			break;
+		case 'x':
+			ret &= ~O_TRUNC;
+			ret |= O_EXCL;
+			break;
+		default:
+			return -1;
+		}
+	}
+
+	return ret;
 }
 #else
 static int
-parseMode(const char *mode, bool *append)
+parseMode(const char *mode, bool *truncate, bool *failIfExists, bool *append)
 {
+	int ret = 0;
+	*truncate = false;
+	*failIfExists = false;
 	*append = false;
 
-	if (strcmp(mode, "r") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "r+") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "w") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "wx") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "w+") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "w+x") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "a") == 0) {
+	switch (*mode) {
+	case 'r':
+		ret |= MODE_OLDFILE;
+		break;
+	case 'w':
+		ret |= MODE_READWRITE;
+		*truncate = true;
+		break;
+	case 'a':
+		ret |= MODE_READWRITE;
 		*append = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "a+") == 0) {
-		*append = true;
-		return MODE_READWRITE;
+		break;
+	default:
+		return -1;
 	}
 
-	return -1;
+	for (mode++; *mode != '\0'; mode++) {
+		switch (*mode) {
+		case '+':
+			break;
+		case 'x':
+			*failIfExists = true;
+			break;
+		default:
+			return -1;
+		}
+	}
+
+	return ret;
+}
+
+static int
+ioErrToErrNo()
+{
+	switch (IoErr()) {
+	case ERROR_OBJECT_IN_USE:
+	case ERROR_DISK_NOT_VALIDATED:
+		return EBUSY;
+	case ERROR_OBJECT_NOT_FOUND:
+		return ENOENT;
+	case ERROR_DISK_WRITE_PROTECTED:
+		return EROFS;
+	case ERROR_WRITE_PROTECTED:
+	case ERROR_READ_PROTECTED:
+		return EACCES;
+	default:
+		return EIO;
+	}
 }
 #endif
 
@@ -257,47 +300,52 @@ parseMode(const char *mode, bool *append)
 #else
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
-			if ((flags = parseMode(mode.UTF8String,
-			    &handle->append)) == -1)
+			bool truncate, failIfExists;
+			const char *pathCStr = [path cStringWithEncoding:
+			    [OFLocale encoding]];
+
+			if ((flags = parseMode(mode.UTF8String, &truncate,
+			    &failIfExists, &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
 
-			if ((handle->handle = Open([path cStringWithEncoding:
-			    [OFLocale encoding]], flags)) == 0) {
-				int errNo;
+			if (failIfExists) {
+				BPTR lock = Lock(pathCStr, SHARED_LOCK);
 
-				switch (IoErr()) {
-				case ERROR_OBJECT_IN_USE:
-				case ERROR_DISK_NOT_VALIDATED:
-					errNo = EBUSY;
-					break;
-				case ERROR_OBJECT_NOT_FOUND:
-					errNo = ENOENT;
-					break;
-				case ERROR_DISK_WRITE_PROTECTED:
-					errNo = EROFS;
-					break;
-				case ERROR_WRITE_PROTECTED:
-				case ERROR_READ_PROTECTED:
-					errNo = EACCES;
-					break;
-				default:
-					errNo = 0;
-					break;
+				if (lock != 0) {
+					UnLock(lock);
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: EEXIST];
 				}
+			}
 
+			if ((handle->handle = Open(pathCStr, flags)) == 0)
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode
-						errNo: errNo];
-			}
+						errNo: ioErrToErrNo()];
+
+			if (truncate)
+# ifdef OF_AMIGAOS4
+				if (!ChangeFileSize(handle->handle, 0,
+				    OFFSET_BEGINNING))
+# else
+				if (SetFileSize(handle->handle, 0,
+				    OFFSET_BEGINNING) == -1)
+# endif
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: ioErrToErrNo()];
 
 			if (handle->append) {
 # if defined(OF_MORPHOS)
 				if (Seek64(handle->handle, 0,
 				    OFFSET_END) == -1) {
 # elif defined(OF_AMIGAOS4)
-				if (ChangeFilePosition(handle->handle, 0,
-				    OFFSET_END) == -1) {
+				if (!ChangeFilePosition(handle->handle, 0,
+				    OFFSET_END)) {
 # else
 				if (Seek(handle->handle, 0, OFFSET_END) == -1) {
 # endif
@@ -520,12 +568,12 @@ parseMode(const char *mode, bool *append)
 	}
 
 # if defined(OF_MORPHOS)
-	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == 1)
+	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == -1)
 # elif defined(OF_AMIGAOS4)
 	if ((ret = ChangeFilePosition(_handle->handle, offset,
-	    translatedWhence)) == 1)
+	    translatedWhence)) == -1)
 # else
-	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == 1)
+	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == -1)
 # endif
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset

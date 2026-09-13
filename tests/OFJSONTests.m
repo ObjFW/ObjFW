@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,7 +62,7 @@ static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
 
 - (void)testJSONRepresentation
 {
-	OTAssert(_dictionary.JSONRepresentation,
+	OTAssertEqualObjects(_dictionary.JSONRepresentation,
 	    @"{\"f\\u0000oo\":\"b\\na\\r\",\"x\":[0.5,15,null,\"fo\\u0000o\","
 	    @"false]}");
 }
@@ -134,7 +134,7 @@ static OFString *string = @"{\"f\\0o\x6f\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,"
 {
 	OTAssertThrowsSpecific(
 	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
-	    objectByParsingJSON],
-	    OFInvalidJSONException);
+	    objectByParsingJSONWithDepthLimit: 32],
+	    OFOutOfRangeException);
 }
 @end

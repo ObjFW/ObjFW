@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -303,7 +303,15 @@ sizeOfArray(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && OFASCIIIsDigit(**type)) {
-		count = count * 10 + **type - '0';
+		if (SIZE_MAX / 10 < count)
+			@throw [OFOutOfRangeException exception];
+
+		count *= 10;
+
+		if (SIZE_MAX - count < (size_t)(**type - '0'))
+			@throw [OFOutOfRangeException exception];
+
+		count += **type - '0';
 
 		(*type)++;
 		(*length)--;
@@ -619,7 +627,7 @@ OFAlignmentOfTypeEncoding(const char *type)
 			@throw [OFInvalidFormatException exception];
 
 		_types = OFAllocMemory(length + 1, 1);
-		memcpy(_types, types, length);
+		OFCopyMemory(_types, types, length);
 
 		_typesPointers = [[OFMutableData alloc]
 		    initWithItemSize: sizeof(char *)];
@@ -640,8 +648,20 @@ OFAlignmentOfTypeEncoding(const char *type)
 
 				i++;
 				for (; i < length &&
-				    OFASCIIIsDigit(_types[i]); i++)
-					offset = offset * 10 + _types[i] - '0';
+				    OFASCIIIsDigit(_types[i]); i++) {
+					if (SIZE_MAX / 10 < offset)
+						@throw [OFOutOfRangeException
+						    exception];
+
+					offset *= 10;
+
+					if (SIZE_MAX - offset <
+					    (size_t)(_types[i] - '0'))
+						@throw [OFOutOfRangeException
+						    exception];
+
+					offset += _types[i] - '0';
+				}
 
 				[_offsets addItem: &offset];
 

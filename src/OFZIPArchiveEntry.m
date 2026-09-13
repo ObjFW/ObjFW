@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -134,7 +134,7 @@ OFZIPArchiveEntryCompressionMethodName(
 	case OFZIPArchiveEntryCompressionMethodDeflate64:
 		return @"Deflate64";
 	case OFZIPArchiveEntryCompressionMethodBZIP2:
-		return @"BZip2";
+		return @"BZIP2";
 	case OFZIPArchiveEntryCompressionMethodLZMA:
 		return @"LZMA";
 	case OFZIPArchiveEntryCompressionMethodWavPack:
@@ -183,7 +183,8 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
  * and needs this to stop complaining.
  */
 @dynamic POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName;
+@dynamic ownerAccountName, groupOwnerAccountName, targetFileName, deviceMajor;
+@dynamic deviceMinor;
 
 - (instancetype)init
 {
@@ -243,7 +244,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		ZIP64Index = OFZIPArchiveEntryExtraFieldFind(extraField,
 		    OFZIPArchiveEntryExtraFieldTagZIP64, &ZIP64Size);
 
-		if (ZIP64Index != OFNotFound) {
+		if (ZIP64Index != OFNotFound && ZIP64Size > 0) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
 			OFRange range =
@@ -267,6 +268,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 				@throw [OFInvalidFormatException exception];
 
 			[extraField removeItemsInRange: range];
+			_usesZIP64 = true;
 		}
 
 		if (extraField.count > 0) {
@@ -312,8 +314,9 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 		copy->_CRC32 = _CRC32;
 		copy->_compressedSize = _compressedSize;
 		copy->_uncompressedSize = _uncompressedSize;
+		copy->_usesZIP64 = _usesZIP64;
 		copy->_extraField = [_extraField copy];
-		copy->_fileComment = [_extraField copy];
+		copy->_fileComment = [_fileComment copy];
 		copy->_startDiskNumber = _startDiskNumber;
 		copy->_internalAttributes = _internalAttributes;
 		copy->_versionSpecificAttributes = _versionSpecificAttributes;
@@ -329,6 +332,14 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 - (OFString *)fileName
 {
 	return _fileName;
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	if ([_fileName hasSuffix: @"/"])
+		return OFArchiveEntryFileTypeDirectory;
+
+	return OFArchiveEntryFileTypeRegular;
 }
 
 - (OFString *)fileComment
@@ -403,6 +414,11 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 - (uint16_t)generalPurposeBitFlag
 {
 	return _generalPurposeBitFlag;
+}
+
+- (bool)usesZIP64
+{
+	return _usesZIP64;
 }
 
 - (uint16_t)of_lastModifiedFileTime
@@ -482,37 +498,80 @@ OFZIPArchiveEntryExtraFieldFind(OFData *extraField,
 	[stream writeLittleEndianInt16: _lastModifiedFileTime];
 	[stream writeLittleEndianInt16: _lastModifiedFileDate];
 	[stream writeLittleEndianInt32: _CRC32];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
-	[stream writeLittleEndianInt16: (uint16_t)_fileName.UTF8StringLength];
-	[stream writeLittleEndianInt16: (uint16_t)_extraField.count + 32];
+
+	if (_usesZIP64) {
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+	} else {
+		if (_uncompressedSize > UINT32_MAX ||
+		    _compressedSize > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt32: (uint32_t)_compressedSize];
+		[stream writeLittleEndianInt32: (uint32_t)_uncompressedSize];
+	}
+
+	OFStringEncoding encoding = (_generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
+	size_t fileNameLength = [_fileName cStringLengthWithEncoding: encoding];
+	size_t fileCommentLength =
+	    [_fileComment cStringLengthWithEncoding: encoding];
+	size_t extraFieldSize = _extraField.count * _extraField.itemSize;
+
+	if (fileNameLength > UINT16_MAX || fileCommentLength > UINT16_MAX ||
+	    extraFieldSize > UINT16_MAX - (_usesZIP64 ? 32 : 0))
+		@throw [OFOutOfRangeException exception];
+
+	[stream writeLittleEndianInt16: (uint16_t)fileNameLength];
 	[stream writeLittleEndianInt16:
-	    (uint16_t)_fileComment.UTF8StringLength];
-	[stream writeLittleEndianInt16: 0xFFFF];
+	    (uint16_t)extraFieldSize + (_usesZIP64 ? 32 : 0)];
+	[stream writeLittleEndianInt16: (uint16_t)fileCommentLength];
+
+	if (_usesZIP64)
+		[stream writeLittleEndianInt16: 0xFFFF];
+	else {
+		if (_startDiskNumber > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt16: (uint16_t)_startDiskNumber];
+	}
+
 	[stream writeLittleEndianInt16: _internalAttributes];
 	[stream writeLittleEndianInt32: _versionSpecificAttributes];
-	[stream writeLittleEndianInt32: 0xFFFFFFFF];
+
+	if (_usesZIP64)
+		[stream writeLittleEndianInt32: 0xFFFFFFFF];
+	else {
+		if (_localFileHeaderOffset > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[stream writeLittleEndianInt32:
+		    (uint32_t)_localFileHeaderOffset];
+	}
+
 	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
 
-	[stream writeString: _fileName encoding: OFStringEncodingUTF8];
-	size += (uint64_t)_fileName.UTF8StringLength;
+	[stream writeString: _fileName encoding: encoding];
+	size += fileNameLength;
 
-	[stream writeLittleEndianInt16: OFZIPArchiveEntryExtraFieldTagZIP64];
-	[stream writeLittleEndianInt16: 28];
-	[stream writeLittleEndianInt64: _uncompressedSize];
-	[stream writeLittleEndianInt64: _compressedSize];
-	[stream writeLittleEndianInt64: _localFileHeaderOffset];
-	[stream writeLittleEndianInt32: _startDiskNumber];
-	size += (2 * 2) + (3 * 8) + 4;
+	if (_usesZIP64) {
+		[stream writeLittleEndianInt16:
+		    OFZIPArchiveEntryExtraFieldTagZIP64];
+		[stream writeLittleEndianInt16: 28];
+		[stream writeLittleEndianInt64: _uncompressedSize];
+		[stream writeLittleEndianInt64: _compressedSize];
+		[stream writeLittleEndianInt64: _localFileHeaderOffset];
+		[stream writeLittleEndianInt32: _startDiskNumber];
+		size += (2 * 2) + (3 * 8) + 4;
+	}
 
 	if (_extraField != nil)
 		[stream writeData: _extraField];
-	size += (uint64_t)_extraField.count;
+	size += extraFieldSize;
 
 	if (_fileComment != nil)
-		[stream writeString: _fileComment
-			   encoding: OFStringEncodingUTF8];
-	size += (uint64_t)_fileComment.UTF8StringLength;
+		[stream writeString: _fileComment encoding: encoding];
+	size += fileCommentLength;
 
 	objc_autoreleasePoolPop(pool);
 

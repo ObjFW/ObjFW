@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -203,7 +203,7 @@ __OFForward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	_OFMethodNotFound_stret
+	jmp	__OFMethodNotFound_stret
 
 Linit:
 	_CET_ENDBR

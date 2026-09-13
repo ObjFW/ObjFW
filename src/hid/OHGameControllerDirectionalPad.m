@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -28,6 +28,12 @@
 #import "OHGameControllerElement.h"
 #import "OHGameControllerElement+Private.h"
 
+#ifdef OF_MORPHOS
+# include <ppcinline/sensors.h>
+
+extern struct Library *SensorsBase;
+#endif
+
 const OFNotificationName
     OHGameControllerDirectionalPadValueDidChangeNotification =
     @"OHGameControllerDirectionalPadValueDidChangeNotification";
@@ -39,6 +45,9 @@ const OFNotificationName
 @implementation OHGameControllerDirectionalPad
 @synthesize xAxis = _xAxis, yAxis = _yAxis;
 @synthesize up = _up, down = _down, left = _left, right = _right;
+#ifdef OF_MORPHOS
+@synthesize oh_notifier = _notifier;
+#endif
 
 + (instancetype)oh_padWithName: (OFString *)name
 			 xAxis: (OHGameControllerAxis *)xAxis
@@ -46,10 +55,11 @@ const OFNotificationName
 			analog: (bool)analog
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] oh_initWithName: name
-				    xAxis: xAxis
-				    yAxis: yAxis
-				   analog: analog]);
+	    [(OHGameControllerDirectionalPad *)[self alloc]
+	    oh_initWithName: name
+		      xAxis: xAxis
+		      yAxis: yAxis
+		     analog: analog]);
 }
 
 + (instancetype)oh_padWithName: (OFString *)name
@@ -60,12 +70,13 @@ const OFNotificationName
 			analog: (bool)analog
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] oh_initWithName: name
-				       up: up
-				     down: down
-				     left: left
-				    right: right
-				   analog: analog]);
+	    [(OHGameControllerDirectionalPad *)[self alloc]
+	    oh_initWithName: name
+			 up: up
+		       down: down
+		       left: left
+		      right: right
+		     analog: analog]);
 }
 
 - (instancetype)oh_initWithName: (OFString *)name analog: (bool)analog
@@ -182,9 +193,9 @@ const OFNotificationName
 - (void)dealloc
 {
 	void *pool = objc_autoreleasePoolPush();
+
 	OFNotificationCenter *center = [OFNotificationCenter defaultCenter];
 	OFNotificationName name;
-
 	switch (_type) {
 	case OHGameControllerDirectionalPadTypeAxes:
 		name = OHGameControllerAxisValueDidChangeNotification;

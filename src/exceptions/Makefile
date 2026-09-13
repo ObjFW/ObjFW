@@ -2,6 +2,7 @@ include ../../extra.mk
 
 STATIC_PIC_LIB_NOINST = ${EXCEPTIONS_LIB_A}
 STATIC_LIB_NOINST = ${EXCEPTIONS_A}
+STATIC_AMIGA_LIB_NOINST = ${EXCEPTIONS_AMIGALIB_A}
 
 SRCS = OFAllocFailedException.m				\
        OFAlreadyOpenException.m				\
@@ -33,6 +34,7 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
+       OFReplaceItemFailedException.m			\
        OFSeekFailedException.m				\
        OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
@@ -49,6 +51,7 @@ SRCS = OFAllocFailedException.m				\
        ${USE_SRCS_FILES}				\
        ${USE_SRCS_MODULES}				\
        ${USE_SRCS_SOCKETS}				\
+       ${USE_SRCS_SUBPROCESSES}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFChangeCurrentDirectoryFailedException.m	\
@@ -61,6 +64,7 @@ SRCS_SOCKETS = OFAcceptSocketFailedException.m		\
 	       OFConnectIPSocketFailedException.m	\
 	       OFConnectSocketFailedException.m		\
 	       OFDNSQueryFailedException.m		\
+	       OFGeminiRequestFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenOnSocketFailedException.m	\
 	       OFObserveKernelEventsFailedException.m	\
@@ -74,6 +78,7 @@ SRCS_IPX = OFBindIPXSocketFailedException.m	\
 	   OFConnectSPXSocketFailedException.m
 SRCS_UNIX_SOCKETS = OFBindUNIXSocketFailedException.m		\
 		    OFConnectUNIXSocketFailedException.m
+SRCS_SUBPROCESSES = OFCreateSubprocessFailedException.m
 SRCS_THREADS = OFBroadcastConditionFailedException.m	\
 	       OFConditionStillWaitingException.m	\
 	       OFJoinThreadFailedException.m		\

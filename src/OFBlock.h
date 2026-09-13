@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,6 +62,10 @@ extern __declspec(dllexport) void _Block_object_assign(void *, const void *,
     const int);
 extern __declspec(dllexport) void _Block_object_dispose(const void *,
     const int);
+# endif
+# ifdef OF_COMPILING_AMIGA_LIBRARY
+extern void _Block_object_assign(void *, const void *, const int);
+extern void _Block_object_dispose(const void *, const int);
 # endif
 #ifdef __cplusplus
 }

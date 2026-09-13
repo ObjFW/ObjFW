@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -88,7 +88,7 @@ test(id self, SEL _cmd)
 	OTAssertEqual(forwardingsCount, 1);
 }
 
-- (void)forwardingMessageAndAddingInstanceMethod
+- (void)testForwardingMessageAndAddingInstanceMethod
 {
 	ForwardingTestObject *testObject =
 	    objc_autorelease([[ForwardingTestObject alloc] init]);
@@ -136,7 +136,7 @@ test(id self, SEL _cmd)
  * stret forwarding handler instead of the regular one.
  */
 # if !(defined(OF_WINDOWS) && defined(OF_AMD64) && \
-    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
+    !defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)) && \
     !(defined(OF_APPLE_RUNTIME) && defined(OF_AMD64))
 - (void)testForwardingTargetForSelectorFPRet
 {
@@ -158,8 +158,9 @@ test(id self, SEL _cmd)
 
 	target = objc_autorelease([[ForwardingTarget alloc] init]);
 
-	OTAssertEqual(memcmp([testObject forwardingTargetStRetTest].buffer,
-	    "abcdefghijklmnopqrstuvwxyz", 27), 0);
+	OTAssertEqual(OFCompareMemory(
+	    [testObject forwardingTargetStRetTest].buffer,
+	    "abcdefghijklmnopqrstuvwxyz", 27), OFOrderedSame);
 }
 # endif
 
@@ -318,7 +319,7 @@ test(id self, SEL _cmd)
 
 	OTAssertEqual(self, target);
 
-	memcpy(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
+	OFCopyMemory(ret.buffer, "abcdefghijklmnopqrstuvwxyz", 27);
 
 	return ret;
 }

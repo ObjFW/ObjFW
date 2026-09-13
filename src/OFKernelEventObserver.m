@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -146,7 +146,7 @@
 			int ret;
 
 			while (rnd < 1024)
-				rnd = (uint16_t)rand();
+				rnd = OFRandom16();
 
 			_cancelAddr.sin_port = OFToBigEndian16(rnd);
 			ret = bind(_cancelFD[0],
@@ -245,7 +245,7 @@
 
 - (void)observe
 {
-	[self observeForTimeInterval: -1];
+	[self observeForTimeInterval: 64060588800.0];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,6 +36,12 @@ protocol_getName(Protocol *protocol)
 bool
 protocol_isEqual(Protocol *protocol1, Protocol *protocol2)
 {
+	if (protocol1 == protocol2)
+		return true;
+
+	if (protocol1 == NULL || protocol2 == NULL)
+		return false;
+
 	return (strcmp(protocol_getName(protocol1),
 	    protocol_getName(protocol2)) == 0);
 }
@@ -45,6 +51,9 @@ protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
 {
 	if (protocol_isEqual(protocol1, protocol2))
 		return true;
+
+	if (protocol1 == NULL || protocol2 == NULL)
+		return false;
 
 	for (struct objc_protocol_list *protocolList = protocol1->protocolList;
 	    protocolList != NULL; protocolList = protocolList->next)
@@ -61,7 +70,7 @@ class_conformsToProtocol(Class class, Protocol *protocol)
 {
 	struct objc_category **categories;
 
-	if (class == Nil)
+	if (class == Nil || protocol == NULL)
 		return false;
 
 	for (struct objc_protocol_list *protocolList = class->protocols;

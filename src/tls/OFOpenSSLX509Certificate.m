@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,6 +22,8 @@
 #import "OFOpenSSLX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#import "OFOpenSSLX509Name.h"
 #import "OFString.h"
 
 #include <openssl/pkcs12.h>
@@ -29,6 +31,21 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+
+#ifdef OF_COMPILING_AMIGA_LIBRARY
+/*
+ * We need a local __restore_r13 in every ObjFWTLS file that has a __saveds
+ * function (note that ObjC methods are __saveds) because libssl_sharedext
+ * contains a global __restore_r13 that we must not use.
+ */
+__asm__ (
+    ".section .text\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 44(%r12)\n"
+    "	blr\n"
+);
+#endif
 
 static EVP_PKEY *
 privateKeyFromFile(OFIRI *IRI)
@@ -62,6 +79,17 @@ privateKeyFromFile(OFIRI *IRI)
 	objc_autoreleasePoolPop(pool);
 
 	return key;
+}
+
+static OFDate *
+ASN1TimeToDate(const ASN1_TIME *time)
+{
+	struct tm tm;
+
+	if (ASN1_TIME_to_tm(time, &tm) != 1)
+		return nil;
+
+	return [OFDate dateWithStructTm: &tm];
 }
 
 @implementation OFOpenSSLX509Certificate
@@ -240,5 +268,50 @@ privateKeyFromFile(OFIRI *IRI)
 		EVP_PKEY_free(_privateKey);
 
 	[super dealloc];
+}
+
+- (OFX509Name *)issuerName
+{
+	const X509_NAME *name = X509_get_issuer_name(_certificate);
+
+	return objc_autoreleaseReturnValue(
+	    [[OFOpenSSLX509Name alloc] of_initWithName: name
+					   certificate: _certificate]);
+}
+
+- (OFDate *)notBeforeDate
+{
+	return ASN1TimeToDate(X509_get0_notBefore(_certificate));
+}
+
+- (OFDate *)notAfterDate
+{
+	return ASN1TimeToDate(X509_get0_notAfter(_certificate));
+}
+
+- (OFX509Name *)subjectName
+{
+	const X509_NAME *name = X509_get_subject_name(_certificate);
+
+	return objc_autoreleaseReturnValue(
+	    [[OFOpenSSLX509Name alloc] of_initWithName: name
+					   certificate: _certificate]);
+}
+
+- (OFData *)ASN1DERRepresentation
+{
+	int ret;
+	unsigned char *DER = NULL;
+	if ((ret = i2d_X509(_certificate, &DER)) < 0)
+		@throw [OFInvalidFormatException exception];
+
+	OFData *data;
+	@try {
+		data = [OFData dataWithItems: DER count: ret];
+	} @finally {
+		OPENSSL_free(DER);
+	}
+
+	return data;
 }
 @end

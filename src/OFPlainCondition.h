@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -124,8 +124,8 @@ extern int OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
  *
  * @param condition A pointer to the condition to wait on
  * @param mutex The mutex to wait with
- * @param signalMask The Exec signal mask to wait for
  * @param timeout The timeout after which to give up
+ * @param signalMask The Exec signal mask to wait for
  * @return 0 on success, or an error number from `<errno.h>` on error
  */
 extern int OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,

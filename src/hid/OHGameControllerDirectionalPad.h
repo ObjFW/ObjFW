@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,11 +30,15 @@
 #import "OHGameControllerAxis.h"
 #import "OHGameControllerButton.h"
 
+#ifdef OF_MORPHOS
+# include <exec/types.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /**
  * @class OHGameControllerDirectionalPad OHGameControllerDirectionalPad.h
- *	  ObjFWHID/ObjFWID.h
+ *	  ObjFWHID/ObjFWHID.h
  *
  * @brief A directional pad or thumb stick of a game controller.
  */
@@ -47,6 +51,9 @@ OF_SUBCLASSING_RESTRICTED
 		OHGameControllerDirectionalPadTypeAxes = 1,
 		OHGameControllerDirectionalPadTypeButtons = 2
 	} _type;
+#ifdef OF_MORPHOS
+	APTR _notifier;
+#endif
 }
 
 /**

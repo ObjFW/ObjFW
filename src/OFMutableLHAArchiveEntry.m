@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,11 +27,19 @@
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFMutableLHAArchiveEntry
-@dynamic fileName, compressionMethod, compressedSize, uncompressedSize;
-@dynamic modificationDate, headerLevel, CRC16, operatingSystemIdentifier;
-@dynamic fileComment, POSIXPermissions, ownerAccountID, groupOwnerAccountID;
-@dynamic ownerAccountName, groupOwnerAccountName, extensions;
+@dynamic fileName, fileType, compressionMethod, compressedSize;
+@dynamic uncompressedSize, modificationDate, headerLevel, CRC16;
+@dynamic operatingSystemIdentifier, fileComment, POSIXPermissions;
+@dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
+@dynamic groupOwnerAccountName, MSDOSAttributes, amigaComment, extensions;
+/*
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
+ */
+@dynamic targetFileName, deviceMajor, deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -70,6 +78,32 @@
 
 	objc_release(_directoryName);
 	_directoryName = nil;
+}
+
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	switch (fileType) {
+	case OFArchiveEntryFileTypeDirectory:
+		if (![_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			self.fileName =
+			    [self.fileName stringByAppendingString: @"/"];
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	case OFArchiveEntryFileTypeRegular:
+		if ([_fileName hasSuffix: @"/"]) {
+			void *pool = objc_autoreleasePoolPush();
+			OFString *fileName = self.fileName;
+			fileName =
+			    [fileName substringToIndex: fileName.length - 1];
+			self.fileName = fileName;
+			objc_autoreleasePoolPop(pool);
+		}
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
 }
 
 - (void)setCompressionMethod: (OFString *)compressionMethod
@@ -150,6 +184,20 @@
 {
 	OFString *old = _groupOwnerAccountName;
 	_groupOwnerAccountName = [groupOwnerAccountName copy];
+	objc_release(old);
+}
+
+- (void)setMSDOSAttributes: (OFNumber *)MSDOSAttributes
+{
+	OFNumber *old = _MSDOSAttributes;
+	_MSDOSAttributes = objc_retain(MSDOSAttributes);
+	objc_release(old);
+}
+
+- (void)setAmigaComment: (OFString *)amigaComment
+{
+	OFString *old = _amigaComment;
+	_amigaComment = [amigaComment copy];
 	objc_release(old);
 }
 

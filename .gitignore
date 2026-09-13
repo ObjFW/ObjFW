@@ -12,10 +12,8 @@
 *.sl
 *.so
 *.so.*
-*/.deps
 *~
 .deps
-.git
 /aclocal.m4
 /autom4te.cache
 /buildsys.mk
@@ -28,6 +26,8 @@
 /extra.mk
 /generators/library/gen_libraries
 /generators/unicode/gen_tables
+/misc/ObjFWConfig.cmake
+/misc/ObjFWConfigVersion.cmake
 /src/Info.plist
 /src/bridge/Info.plist
 /src/hid/Info.plist
@@ -46,12 +46,6 @@
 /tests/PARAM.SFO
 /tests/big_dictionary_msgpack_gz.m
 /tests/boot.dol
-/tests/gamecontroller/boot.dol
-/tests/gamecontroller/tests
-/tests/gamecontroller/tests.3dsx
-/tests/gamecontroller/tests.arm9
-/tests/gamecontroller/tests.nds
-/tests/gamecontroller/tests.nro
 /tests/iOS.xcodeproj/*.pbxuser
 /tests/iOS.xcodeproj/project.xcworkspace
 /tests/iOS.xcodeproj/xcuserdata
@@ -59,8 +53,11 @@
 /tests/plugin/Info.plist
 /tests/subprocess/subprocess
 /tests/terminal/terminal_tests
+/tests/testfile565_bmp.m
 /tests/testfile_bin.m
+/tests/testfile_bmp.m
 /tests/testfile_ini.m
+/tests/testfile_qoi.m
 /tests/tests
 /tests/tests.3dsx
 /tests/tests.arm9
@@ -71,5 +68,6 @@
 /utils/objfw-new/objfw-new
 /utils/ofarc/ofarc
 /utils/ofdns/ofdns
+/utils/ofgctester/ofgctester
 /utils/ofhash/ofhash
 /utils/ofhttp/ofhttp

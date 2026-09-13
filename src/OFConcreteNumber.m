@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -72,11 +72,11 @@ isFloat(OFNumber *number)
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
-#define CASE(type, method)				\
-	if (strcmp(objCType, @encode(type)) == 0) {	\
-		type value;				\
-		memcpy(&value, bytes, sizeof(type));	\
-		return [self method value];		\
+#define CASE(type, method)					\
+	if (strcmp(objCType, @encode(type)) == 0) {		\
+		type value;					\
+		OFCopyMemory(&value, bytes, sizeof(type));	\
+		return [self method value];			\
 	}
 
 	CASE(bool, initWithBool:)
@@ -162,7 +162,7 @@ isFloat(OFNumber *number)
 	self = [super initWithBytes: &value objCType: @encode(unsigned char)];
 
 	_value.unsigned_ = value;
-	_typeEncoding = *@encode(unsigned long);
+	_typeEncoding = *@encode(unsigned char);
 
 	return self;
 }

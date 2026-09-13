@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -65,14 +65,19 @@
 # undef Class
 #endif
 #ifdef OF_MORPHOS
+# define __NOLIBBASE__
 # include <proto/rexxsyslib.h>
 # include <rexx/errors.h>
 # include <rexx/storage.h>
+# undef __NOLIBBASE__
 #endif
 
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
+#elif defined(OF_AMIGAOS4)
+# define HOSTS_PATH @"DEVS:Internet/hosts"
+# define RESOLV_CONF_PATH @"DEVS:Internet/name_resolution"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
@@ -545,10 +550,13 @@ parseNetStackArray(OFString *string)
 	OFStringEncoding encoding;
 	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
-	LONG hasDNSAPI;
+	long hasDNSAPI = 0;
+	struct TagItem tags[] = {
+		{ SBTM_GETREF(SBTC_HAVE_DNS_API), (unsigned long)&hasDNSAPI },
+		{ TAG_END, 0 }
+	};
 
-	if (SocketBaseTags(SBTM_GETREF(SBTC_HAVE_DNS_API), (ULONG)&hasDNSAPI,
-	    TAG_END) != 0 || !hasDNSAPI)
+	if (SocketBaseTagList(tags) != 0 || !hasDNSAPI)
 		return false;
 
 	nameServers = [OFMutableArray array];
@@ -640,7 +648,7 @@ parseNetStackArray(OFString *string)
 #ifdef OF_WINDOWS
 	OFString *path = nil;
 #endif
-#if (defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)) && defined(OF_HAVE_FILES)
+#if defined(OF_AMIGAOS_M68K) && defined(OF_HAVE_FILES)
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 #endif
 	void *pool;
@@ -651,7 +659,7 @@ parseNetStackArray(OFString *string)
 	 */
 
 	if (_lastConfigReload != nil && _configReloadInterval > 0 &&
-	    _lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
+	    -_lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
 		return;
 
 	pool = objc_autoreleasePoolPush();
@@ -684,7 +692,7 @@ parseNetStackArray(OFString *string)
 	[self obtainWindowsSystemConfig];
 #elif defined(OF_MORPHOS)
 	[self obtainMorphOSSystemConfig];
-#elif defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
+#elif defined(OF_AMIGAOS_M68K)
 # ifdef OF_HAVE_FILES
 	if (![self obtainRoadshowSystemConfig]) {
 		if (assignExists("AmiTCP"))
@@ -743,6 +751,10 @@ parseNetStackArray(OFString *string)
 		else
 			_searchDomains = [[OFArray alloc] init];
 	}
+
+	objc_release(_lastConfigReload);
+	_lastConfigReload = nil;
+	_lastConfigReload = [[OFDate alloc] init];
 
 	objc_autoreleasePoolPop(pool);
 }

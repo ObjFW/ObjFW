@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -52,11 +52,11 @@ typedef off_t OFStreamOffset;
  * @brief From where to seek.
  */
 typedef enum {
-	/** Seek to the end of the stream + offset. */
+	/** Seek to the specified byte. */
 	OFSeekSet,
 	/** Seek to the current location + offset. */
 	OFSeekCurrent,
-	/** Seek to the specified byte. */
+	/** Seek to the end of the stream + offset. */
 	OFSeekEnd
 } OFSeekWhence;
 

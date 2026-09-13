@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -39,7 +39,7 @@ struct {
 	struct class *isa, *superclass;
 	const char *name;
 	long version, info, instanceSize;
-	struct ivar_list *iVars;
+	struct ivar_list *ivars;
 	struct method_list **methodList;
 	struct cache *cache;
 	struct protocol_list *protocols;
@@ -79,7 +79,7 @@ OF_SINGLETON_METHODS
 	    0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_OFConstantStringClassReference, class,
+	OFCopyMemory(&_OFConstantStringClassReference, class,
 	    sizeof(_OFConstantStringClassReference));
 	free(class);
 	objc_registerClassPair((Class)&_OFConstantStringClassReference);

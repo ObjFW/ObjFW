@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -27,7 +27,7 @@
 @end
 
 @implementation OFMutableUTF8StringTests
-- (Class)arrayClass
+- (Class)stringClass
 {
 	return [OFMutableUTF8String class];
 }

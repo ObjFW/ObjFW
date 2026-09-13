@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,14 +41,25 @@
 	ldr	x2, [x2, #64]
 
 .Lmain_\name:
-#ifdef OF_SELUID24
+#ifdef OF_BIG_ENDIAN
+# ifdef OF_SELUID24
+	ldrb	w3, [x1, #5]
+	ldr	x2, [x2, x3, lsl #3]
+# endif
+	ldrb	w3, [x1, #6]
+	ldr	x2, [x2, x3, lsl #3]
+	ldrb	w3, [x1, #7]
+	ldr	x2, [x2, x3, lsl #3]
+#else
+# ifdef OF_SELUID24
 	ldrb	w3, [x1, #2]
 	ldr	x2, [x2, x3, lsl #3]
-#endif
+# endif
 	ldrb	w3, [x1, #1]
 	ldr	x2, [x2, x3, lsl #3]
 	ldrb	w3, [x1]
 	ldr	x2, [x2, x3, lsl #3]
+#endif
 
 	cbz	x2, \notFound
 

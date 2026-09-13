@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,17 +22,37 @@
 #import "OFMbedTLSX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#import "OFMbedTLSX509Name.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"
 
-#include <mbedtls/ctr_drbg.h>
-#include <mbedtls/entropy.h>
+#if MBEDTLS_VERSION_MAJOR == 3
+# include <mbedtls/ctr_drbg.h>
+# include <mbedtls/entropy.h>
 
-#if MBEDTLS_VERSION_MAJOR >= 3
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
 #endif
+
+static OFDate *
+X509TimeToDate(mbedtls_x509_time *time)
+{
+	struct tm tm = {
+		.tm_sec = time->sec,
+		.tm_min = time->min,
+		.tm_hour = time->hour,
+		.tm_mday = time->day,
+		.tm_mon = time->mon - 1,
+		.tm_year = time->year - 1900,
+		.tm_wday = -1,
+		.tm_yday = -1,
+		.tm_isdst = 0
+	};
+
+	return [OFDate dateWithStructTm: &tm];
+}
 
 @implementation OFMbedTLSX509CertificateChain
 - (instancetype)init
@@ -73,19 +93,25 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		OFX509CertificateImplementation = self;
 }
 
-#if MBEDTLS_VERSION_MAJOR >= 3
 + (void)initialize
 {
 	if (self != [OFMbedTLSX509Certificate class])
 		return;
 
+#if MBEDTLS_VERSION_MAJOR >= 4
+	if (psa_crypto_init() != PSA_SUCCESS)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#elif MBEDTLS_VERSION_MAJOR == 3
 	mbedtls_entropy_init(&entropy);
+	mbedtls_ctr_drbg_init(&CTRDRBG);
+
 	if (mbedtls_ctr_drbg_seed(&CTRDRBG, mbedtls_entropy_func, &entropy,
 	    NULL, 0) != 0)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-}
 #endif
+}
 
 + (bool)supportsPEMFiles
 {
@@ -121,7 +147,7 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		/* Terminating zero byte required for PEM. */
 		[data addItem: ""];
 
-#if MBEDTLS_VERSION_MAJOR >= 3
+#if MBEDTLS_VERSION_MAJOR == 3
 		if (mbedtls_pk_parse_key(chain.privateKey,
 		    data.items, data.count * data.itemSize, NULL, 0,
 		    mbedtls_ctr_drbg_random, &CTRDRBG) != 0)
@@ -138,6 +164,8 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 		[ret addObject: objc_autorelease(
 		    [[self alloc] of_initWithCertificate: iter
 						   chain: chain])];
+
+	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -160,5 +188,33 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 	objc_release(_chain);
 
 	[super dealloc];
+}
+
+- (OFX509Name *)issuerName
+{
+	return objc_autoreleaseReturnValue(
+	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->issuer]);
+}
+
+- (OFDate *)notBeforeDate
+{
+	return X509TimeToDate(&_certificate->valid_from);
+}
+
+- (OFDate *)notAfterDate
+{
+	return X509TimeToDate(&_certificate->valid_to);
+}
+
+- (OFX509Name *)subjectName
+{
+	return objc_autoreleaseReturnValue(
+	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->subject]);
+}
+
+- (OFData *)ASN1DERRepresentation
+{
+	return [OFData dataWithItems: _certificate->raw.p
+			       count: _certificate->raw.len];
 }
 @end

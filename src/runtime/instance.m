@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -177,13 +177,16 @@ class_createInstance(Class class, size_t extraBytes)
 
 	instanceSize = class_getInstanceSize(class);
 
+	if (SIZE_MAX - _OBJC_PRE_IVARS_ALIGNED - instanceSize < extraBytes)
+		return nil;
+
 #if defined(OF_WINDOWS)
 	instance = __mingw_aligned_malloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT);
 #elif defined(OF_DJGPP)
 	instance = alignedAlloc(_OBJC_PRE_IVARS_ALIGNED +
 	    instanceSize + extraBytes, OF_BIGGEST_ALIGNMENT, &offset);
-#elif defined(OF_SOLARIS)
+#elif defined(HAVE_POSIX_MEMALIGN)
 	if (posix_memalign((void **)&instance, OF_BIGGEST_ALIGNMENT,
 	    _OBJC_PRE_IVARS_ALIGNED + instanceSize + extraBytes) != 0)
 		instance = NULL;
@@ -204,7 +207,7 @@ class_createInstance(Class class, size_t extraBytes)
 	if OF_UNLIKELY (OFSpinlockNew(
 	    &((struct objc_pre_ivars *)instance)->retainCountSpinlock) != 0) {
 # if defined(OF_WINDOWS)
-		__mingw_alaigned_free(instance);
+		__mingw_aligned_free(instance);
 # elif defined(OF_DJGPP)
 		alignedFree(instance, offset);
 # else
@@ -215,7 +218,7 @@ class_createInstance(Class class, size_t extraBytes)
 #endif
 
 	instance = (id)(void *)((char *)instance + _OBJC_PRE_IVARS_ALIGNED);
-	memset(instance, 0, instanceSize + extraBytes);
+	OFFillMemory(instance, 0, instanceSize + extraBytes);
 
 	if (!objc_constructInstance(class, instance)) {
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
@@ -278,7 +281,7 @@ _objc_rootRetain(id object)
 	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
 		_OBJC_ERROR("Failed to lock spinlock!");
 
-	_OBJC_PRE_IVARS->retainCount++;
+	_OBJC_PRE_IVARS(object)->retainCount++;
 
 	if (OFSpinlockUnlock(
 	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
@@ -286,6 +289,53 @@ _objc_rootRetain(id object)
 #endif
 
 	return object;
+}
+
+/*
+ * Only called by -[retainWeakReference], which is only called by
+ * objc_loadWeakRetained(), which holds a lock for weak references. This same
+ * lock is also held during _objc_zeroWeakReferences(), so our object cannot
+ * just disappear here, as deallocation cannot finish before the weak
+ * references lock is released. This means the retain count can be zero,
+ * because deallocation has started, but the object itself cannot disappear
+ * until we return.
+ */
+bool
+_objc_rootTryRetain(id object)
+{
+	bool ret = true;
+
+#if defined(OF_HAVE_ATOMIC_OPS)
+	OFAcquireMemoryBarrier();
+
+	if (OFAtomicIntIncrease(&_OBJC_PRE_IVARS(object)->retainCount) <= 1) {
+		OFAtomicIntDecrease(&_OBJC_PRE_IVARS(object)->retainCount);
+		ret = false;
+	}
+#elif defined(OF_AMIGAOS)
+	Forbid();
+
+	if (++_OBJC_PRE_IVARS(object)->retainCount <= 1) {
+		_OBJC_PRE_IVARS(object)->retainCount--;
+		ret = false;
+	}
+
+	Permit();
+#else
+	if (OFSpinlockLock(&_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to lock spinlock!");
+
+	if (++_OBJC_PRE_IVARS(object)->retainCount <= 1) {
+		_OBJC_PRE_IVARS(object)->retainCount--;
+		ret = false;
+	}
+
+	if (OFSpinlockUnlock(
+	    &_OBJC_PRE_IVARS(object)->retainCountSpinlock) != 0)
+		_OBJC_ERROR("Failed to unlock spinlock!");
+#endif
+
+	return ret;
 }
 
 unsigned int

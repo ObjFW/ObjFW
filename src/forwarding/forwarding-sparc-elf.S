@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -144,7 +144,7 @@ _OFForward_stret:
 	 restore
 
 0:
-	call	OFMethodNotFound_stret
+	call	_OFMethodNotFound_stret
 	 restore
 .type _OFForward_stret, %function
 .size _OFForward_stret, .-_OFForward_stret

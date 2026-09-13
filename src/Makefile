@@ -1,12 +1,13 @@
 include ../extra.mk
 
-SUBDIRS = ${RUNTIME} exceptions encodings forwarding
+SUBDIRS = ${RUNTIME} exceptions encodings forwarding ${LINKLIB}
 SUBDIRS_AFTER = ${BRIDGE} ${TLS} hid test
 DISTCLEAN = Info.plist objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}
 FRAMEWORK = ${OBJFW_FRAMEWORK}
+AMIGA_LIB = ${OBJFW_AMIGA_LIB}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 LIB_PATCH = ${OBJFW_LIB_PATCH}
@@ -22,8 +23,10 @@ SRCS = OFASN1BitString.m		\
        OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
+       OFCanvas.m			\
        OFCharacterSet.m			\
        OFColor.m			\
+       OFColorSpace.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
@@ -31,6 +34,8 @@ SRCS = OFASN1BitString.m		\
        OFData+CryptographicHashing.m	\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
+       OFDeflate64Stream.m		\
+       OFDeflateStream.m		\
        OFDictionary.m			\
        OFEmbeddedIRIHandler.m		\
        OFEnumerator.m			\
@@ -42,6 +47,9 @@ SRCS = OFASN1BitString.m		\
        OFINISection.m			\
        OFIRI.m				\
        OFIRIHandler.m			\
+       OFImage.m			\
+       OFImageFormatHandler.m		\
+       OFIndexSet.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFInvocation.m			\
@@ -59,6 +67,8 @@ SRCS = OFASN1BitString.m		\
        OFMutableData.m			\
        OFMutableDictionary.m		\
        OFMutableIRI.m			\
+       OFMutableImage.m			\
+       OFMutableIndexSet.m		\
        OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
@@ -140,6 +150,10 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\
 	       OFDatagramSocket.m		\
+	       OFGeminiClient.m			\
+	       OFGeminiRequest.m		\
+	       OFGeminiResponse.m		\
+	       OFGeminiServer.m			\
 	       OFHINFODNSResourceRecord.m	\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
@@ -161,9 +175,11 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFTCPSocket.m			\
 	       OFTLSStream.m			\
 	       OFTXTDNSResourceRecord.m		\
+	       OFTitanRequest.m			\
 	       OFUDPSocket.m			\
 	       OFURIDNSResourceRecord.m		\
 	       OFX509Certificate.m		\
+	       OFX509Name.m			\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_SCTP}			\
@@ -211,6 +227,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 
 SRCS += OFASPrintF.m			\
 	OFArchiveIRIHandler.m		\
+	OFBMPImageFormatHandler.m	\
 	OFBase64.m			\
 	OFBitSetCharacterSet.m		\
 	OFCRC16.m			\
@@ -234,10 +251,12 @@ SRCS += OFASPrintF.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMutableUTF8String.m		\
+	OFQOIImageFormatHandler.m	\
 	OFRangeCharacterSet.m		\
 	OFSandbox.m			\
 	OFStrFTime.m			\
 	OFStrPTime.m			\
+	OFStringData.m			\
 	OFSubarray.m			\
 	OFSubdata.m			\
 	OFUTF8String.m			\
@@ -252,6 +271,7 @@ SRCS_FILES += OFFileIRIHandler.m
 SRCS_SOCKETS += OFAsyncIPSocketConnector.m		\
 		OFDNSResolverSettings.m			\
 		${OF_EPOLL_KERNEL_EVENT_OBSERVER_M}	\
+		OFGeminiIRIHandler.m			\
 		OFHTTPIRIHandler.m			\
 		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
@@ -272,22 +292,39 @@ OBJS_EXTRA = exceptions/exceptions.a	\
 LIB_OBJS_EXTRA = exceptions/exceptions.lib.a	\
 		 encodings/encodings.lib.a	\
 		 forwarding/forwarding.lib.a
+AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
+AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o	\
+		       exceptions/exceptions.amigalib.a	\
+		       encodings/encodings.amigalib.a	\
+		       forwarding/forwarding.amigalib.a
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../buildsys.mk
 
 ${TLS} hid: ${BRIDGE}
 
-CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
+CPPFLAGS += -I. -I.. -Iexceptions -Iruntime		\
+	    -DOBJFW_AMIGA_LIB=\"${OBJFW_AMIGA_LIB}\"	\
+	    -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}	\
+	    -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}	\
+	    -DOBJFW_LIB_PATCH=${OBJFW_LIB_PATCH}	\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
+AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -Fruntime				\
 		  ${RUNTIME_FRAMEWORK_LIBS}		\
 		  ${REEXPORT_RUNTIME_FRAMEWORK}		\
 		  ${LIBS}
+AMIGA_LIB_LIBS := -Lruntime			\
+		  -Lruntime/linklib		\
+		  -lobjfwrt.library.amigalib	\
+		  ${LIBS}			\
+		  ${AMIGA_LIB_LIBS}
 LIBS := -Lruntime -Lruntime/linklib ${RUNTIME_LIBS} ${REEXPORT_RUNTIME} ${LIBS}
 RCFLAGS = --use-temp-file						\
 	  -DOBJFW_LIB_MAJOR=${OBJFW_LIB_MAJOR}				\
 	  -DOBJFW_LIB_MINOR=${OBJFW_LIB_MINOR}				\
-	  -DOBJFW_LIB_VERSION=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\" \
+	  -DOBJFW_LIB_VER=\"${OBJFW_LIB_MAJOR}.${OBJFW_LIB_MINOR}\"	\
 	  -DOBJFW_SHARED_LIB=\"${OBJFW_SHARED_LIB}\"
 
 uninstall-extra:

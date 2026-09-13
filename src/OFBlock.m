@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,7 +21,6 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #import "OFBlock.h"
 #ifdef OF_HAVE_ATOMIC_OPS
@@ -148,7 +147,7 @@ struct class {
 	struct class *isa, *superclass;
 	const char *name;
 	long version, info, instanceSize;
-	struct ivar_list *iVars;
+	struct ivar_list *ivars;
 	struct method_list **methodList;
 	struct cache *cache;
 	struct protocol_list *protocols;
@@ -190,7 +189,7 @@ _Block_copy(const void *block_)
 			    [OFAllocFailedException class]);
 			@throw (OFAllocFailedException *)&allocFailedException;
 		}
-		memcpy(copy, block, block->descriptor->size);
+		OFCopyMemory(copy, block, block->descriptor->size);
 
 		object_setClass((id)copy, (Class)&_NSConcreteMallocBlock);
 		copy->flags++;
@@ -225,7 +224,11 @@ _Block_release(const void *block_)
 		return;
 
 #ifdef OF_HAVE_ATOMIC_OPS
+	OFReleaseMemoryBarrier();
+
 	if ((OFAtomicIntDecrease(&block->flags) & OFBlockRefCountMask) == 0) {
+		OFAcquireMemoryBarrier();
+
 		if (block->flags & OFBlockHasCopyDispose)
 			block->descriptor->disposeHelper(block);
 
@@ -280,18 +283,24 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				    &allocFailedException;
 			}
 
-			memcpy(*dst, src, src->size);
+			OFCopyMemory(*dst, src, src->size);
 			(*dst)->flags =
 			    ((*dst)->flags & ~OFBlockRefCountMask) | 1;
 			(*dst)->forwarding = *dst;
 
-			if (src->flags & OFBlockHasCopyDispose)
-				src->keepByref(*dst, src);
+			if ((*dst)->flags & OFBlockHasCopyDispose)
+				(*dst)->keepByref(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
+			OFReleaseMemoryBarrier();
+
 			if (!OFAtomicPointerCompareAndSwap(
 			    (void **)&src->forwarding, src, *dst)) {
-				src->disposeByref(*dst);
+				OFAcquireMemoryBarrier();
+
+				if ((*dst)->flags & OFBlockHasCopyDispose)
+					(*dst)->disposeByref(*dst);
+
 				free(*dst);
 
 				*dst = src->forwarding;
@@ -303,7 +312,9 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			if (src->forwarding == src)
 				src->forwarding = *dst;
 			else {
-				src->disposeByref(*dst);
+				if ((*dst)->flags & OFBlockHasCopyDispose)
+					(*dst)->disposeByref(*dst);
+
 				free(*dst);
 
 				*dst = src->forwarding;
@@ -346,11 +357,19 @@ _Block_object_dispose(const void *object_, const int flags_)
 	case OFBlockFieldIsByref:;
 		struct Byref *object = (struct Byref *)object_;
 
+#ifdef OF_HAVE_ATOMIC_OPS
+		OFAcquireMemoryBarrier();
+#endif
+
 		object = object->forwarding;
 
 #ifdef OF_HAVE_ATOMIC_OPS
+		OFReleaseMemoryBarrier();
+
 		if ((OFAtomicIntDecrease(&object->flags) &
 		    OFBlockRefCountMask) == 0) {
+			OFAcquireMemoryBarrier();
+
 			if (object->flags & OFBlockHasCopyDispose)
 				object->disposeByref(object);
 
@@ -367,8 +386,8 @@ _Block_object_dispose(const void *object_, const int flags_)
 				object->disposeByref(object);
 
 			free(object);
-		}
-		OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
+		} else
+			OFEnsure(OFSpinlockUnlock(&byrefSpinlocks[hash]) == 0);
 #endif
 		break;
 	}
@@ -422,21 +441,24 @@ _Block_object_dispose(const void *object_, const int flags_)
 	if ((tmp = objc_allocateClassPair(self, "OFStackBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteStackBlock, tmp, sizeof(_NSConcreteStackBlock));
+	OFCopyMemory(&_NSConcreteStackBlock, tmp,
+	    sizeof(_NSConcreteStackBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteStackBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFGlobalBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteGlobalBlock, tmp, sizeof(_NSConcreteGlobalBlock));
+	OFCopyMemory(&_NSConcreteGlobalBlock, tmp,
+	    sizeof(_NSConcreteGlobalBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteGlobalBlock);
 
 	if ((tmp = objc_allocateClassPair(self, "OFMallocBlock", 0)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-	memcpy(&_NSConcreteMallocBlock, tmp, sizeof(_NSConcreteMallocBlock));
+	OFCopyMemory(&_NSConcreteMallocBlock, tmp,
+	    sizeof(_NSConcreteMallocBlock));
 	free(tmp);
 	objc_registerClassPair((Class)&_NSConcreteMallocBlock);
 # endif

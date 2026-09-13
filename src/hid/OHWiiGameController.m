@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,7 +37,9 @@
 #import "OFReadFailedException.h"
 
 #define asm __asm__
+#define id ogc_id
 #include <wiiuse/wpad.h>
+#undef id
 #undef asm
 
 static float
@@ -248,18 +250,18 @@ scale(float value, float min, float max, float center)
 		return @"Wiimote";
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHGamepad>)_profile;
+		return (OFObject <OHGamepad> *)_profile;
 
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	if (_type == WPAD_EXP_CLASSIC)
-		return (id <OHExtendedGamepad>)_profile;
+		return (OFObject <OHExtendedGamepad> *)_profile;
 
 	return nil;
 }

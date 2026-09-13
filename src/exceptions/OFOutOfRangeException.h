@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,5 +31,13 @@ OF_ASSUME_NONNULL_BEGIN
 	OF_RESERVE_IVARS(OFOutOfRangeException, 4)
 }
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void OF_NO_RETURN_FUNC _OFThrowOutOfRangeException(void);
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

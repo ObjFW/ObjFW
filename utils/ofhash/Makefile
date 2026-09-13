@@ -2,8 +2,8 @@ include ../../extra.mk
 
 PROG = ofhash${PROG_SUFFIX}
 SRCS = OFHash.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofhash.1
 
 include ../../buildsys.mk
@@ -22,12 +22,13 @@ CPPFLAGS += -I../../src							\
 	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src			\
+	-L../../src/linklib		\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\
-	-L../../src/bridge		\
+	-L../../src/tls/linklib		\
 	${OFHASH_LIBS}			\
-	-lobjfw				\
+	${OBJFW_LIB}			\
 	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}

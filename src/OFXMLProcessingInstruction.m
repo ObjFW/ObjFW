@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,6 +44,10 @@
 	self = [super of_init];
 
 	@try {
+		if ([target containsString: @"?>"] ||
+		    [text containsString: @"?>"])
+			@throw [OFInvalidArgumentException exception];
+
 		_target = [target copy];
 		_text = [text copy];
 	} @catch (id e) {

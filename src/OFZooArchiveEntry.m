@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,11 +33,11 @@
 
 @implementation OFZooArchiveEntry
 /*
- * The following properties are not implemented, but old Apple GCC requries
- * @dynamic for @optional properties.
+ * The following are optional in OFArchiveEntry, but Apple GCC 4.0.1 is buggy
+ * and needs this to stop complaining.
  */
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
-@dynamic groupOwnerAccountName;
+@dynamic groupOwnerAccountName, targetFileName, deviceMajor, deviceMinor;
 
 - (instancetype)init
 {
@@ -163,7 +163,7 @@
 				[stream readIntoBuffer: attributes
 					   exactLength: 3];
 
-				if (attributes[2] & (1 << 6)) {
+				if ((attributes[2] & 0xC0) == 0x40) {
 					uint16_t mode = (attributes[0] |
 					    (attributes[1] << 8)) & 0777;
 
@@ -233,7 +233,7 @@
 		copy->_POSIXPermissions = objc_retain(_POSIXPermissions);
 		copy->_timeZone = _timeZone;
 	} @catch (id e) {
-		objc_release(self);
+		objc_release(copy);
 		@throw e;
 	}
 
@@ -318,6 +318,12 @@
 		return _fileName;
 
 	return [OFString stringWithFormat: @"%@/%@", _directoryName, _fileName];
+}
+
+- (OFArchiveEntryFileType)fileType
+{
+	/* Zoo supports nothing else. */
+	return OFArchiveEntryFileTypeRegular;
 }
 
 - (uint16_t)operatingSystemIdentifier
@@ -411,6 +417,15 @@
 	strncpy(fileNameBuffer, [_fileName cStringWithEncoding: encoding], 12);
 	[data addItems: fileNameBuffer count: 13];
 
+	/*
+	 * Include \0. Needs to be done here so the written variable length is
+	 * correct.
+	 */
+	if (fileNameLength > 0)
+		fileNameLength++;
+	if (directoryNameLength > 0)
+		directoryNameLength++;
+
 	/* Variable length. */
 	tmp16 = OFToLittleEndian16(fileNameLength + directoryNameLength + 4 +
 	    (_POSIXPermissions != nil ? 3 : 0));
@@ -423,12 +438,6 @@
 	 * include the next header offset.
 	 */
 	[data increaseCountBy: 2];
-
-	/* Include \0 */
-	if (fileNameLength > 0)
-		fileNameLength++;
-	if (directoryNameLength > 0)
-		directoryNameLength++;
 
 	tmp8 = (uint8_t)fileNameLength;
 	[data addItem: &tmp8];
@@ -464,10 +473,10 @@
 
 	tmp32 = OFToLittleEndian32(
 	    (uint32_t)offset + (uint32_t)data.count + (uint32_t)commentLength);
-	memcpy([data mutableItemAtIndex: dataOffsetIndex], &tmp32, 4);
+	OFCopyMemory([data mutableItemAtIndex: dataOffsetIndex], &tmp32, 4);
 
 	tmp32 = OFToLittleEndian32((uint32_t)offset + (uint32_t)data.count);
-	memcpy([data mutableItemAtIndex: commentOffsetIndex], &tmp32, 4);
+	OFCopyMemory([data mutableItemAtIndex: commentOffsetIndex], &tmp32, 4);
 
 	[stream writeData: data];
 	length = data.count;

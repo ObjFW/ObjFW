@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -50,7 +50,7 @@ _object_isTaggedPointer_fast(id object)
 	return pointer & 1;
 }
 
-/* Inlined and unncessary checks dropped for performance. */
+/* Inlined and unnecessary checks dropped for performance. */
 static OF_INLINE Class
 _object_getClass_fast(id object_)
 {
@@ -261,9 +261,12 @@ objc_storeWeak(id *object, id value)
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
 		if (!object_isTaggedPointer(value) &&
 		    (_object_getClass_fast(value)->info &
-		     _OBJC_CLASS_INFO_RUNTIME_RR))
+		    _OBJC_CLASS_INFO_RUNTIME_RR)) {
 			OFAtomicIntOr(&_OBJC_PRE_IVARS(value)->info,
 			    _OBJC_OBJECT_INFO_WEAK_REFERENCES);
+
+			OFReleaseMemoryBarrier();
+		}
 #endif
 
 		ref = _objc_hashtable_get(hashtable, value);
@@ -308,16 +311,16 @@ objc_loadWeakRetained(id *object)
 	if (*object != nil && _objc_hashtable_get(hashtable, *object) != NULL)
 		value = *object;
 
+	if (!class_respondsToSelector(object_getClass(value),
+	    @selector(retainWeakReference)) || ![value retainWeakReference])
+		value = nil;
+
 #ifdef OF_HAVE_THREADS
 	if (OFSpinlockUnlock(&spinlock) != 0)
 		_OBJC_ERROR("Failed to unlock spinlock!");
 #endif
 
-	if (class_respondsToSelector(object_getClass(value),
-	    @selector(retainWeakReference)) && [value retainWeakReference])
-		return value;
-
-	return nil;
+	return value;
 }
 
 id
@@ -380,7 +383,7 @@ _objc_zeroWeakReferences(id value)
 	struct WeakRef *ref;
 
 #if defined(OF_HAVE_ATOMIC_OPS) && defined(OF_OBJFW_RUNTIME)
-	OFReleaseMemoryBarrier();
+	OFAcquireMemoryBarrier();
 
 	if (value != nil && !object_isTaggedPointer(value) &&
 	    (_object_getClass_fast(value)->info &

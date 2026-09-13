@@ -1,0 +1,42 @@
+# Differences to Foundation
+
+While ObjFW is in many ways similar to Foundation, it is also different in many ways. This page lists some of the differences to make it easier to switch for developers who are already familiar with Foundation.
+
+## Exceptions
+
+One of the main differences between Foundation and ObjFW is that ObjFW fully embraces exceptions as a first class citizen. Unfortunately, exceptions where not available when Foundation was designed, so Foundation is not using them. ObjFW however has been designed when exceptions existed, so there is no reason for it to not make full use of of them. As exceptions are used throughout, this means there is nothing comparable to NSError and no parameter needs to be passed to methods that can fail. Instead, on error, they throw an exception, usually a subclass of OFException. However, exceptions are only used for exceptional cases: Trying to get a key from a dictionary that doesn't exist is not an exception (like in Python for example), but instead just returns nil.
+
+## init methods
+
+As a result of ObjFW using exceptions, init methods in ObjFW look different. Neither alloc nor init is allowed to return nil, as on failure, an exception should be thrown instead. This means that the usual init pattern with ObjFW is different.
+
+Without ARC, an init method should look like this:
+
+```objc
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_myIVar = somethingThatCanFail();
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+```
+
+With ARC, -fobjc-arc-exceptions is required, which makes the compiler handle releasing self on an exception automatically. This means that the same init method with ARC should look like this:
+
+```objc
+- (instancetype)init
+{
+	self = [super init];
+
+	_myIVar = somethingThatCanFail();
+
+	return self;
+}
+```

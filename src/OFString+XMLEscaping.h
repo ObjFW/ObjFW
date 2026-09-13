@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,6 +32,9 @@ extern int _OFString_XMLEscaping_reference OF_VISIBILITY_INTERNAL;
 @interface OFString (XMLEscaping)
 /**
  * @brief The string in a form escaped for use in an XML document.
+ *
+ * @throw OFInvalidEncodingException The string contains characters that cannot
+ *				     be represented in XML
  */
 @property (readonly, nonatomic) OFString *stringByXMLEscaping;
 @end

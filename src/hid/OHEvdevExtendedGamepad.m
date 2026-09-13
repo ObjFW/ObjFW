@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,14 +32,12 @@
 - (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
 			    evBits: (unsigned long *)evBits
 			   absBits: (unsigned long *)absBits
-			  vendorID: (uint16_t)vendorID
-			 productID: (uint16_t)productID
+			    VIDPID: (OHVIDPID)VIDPID
 {
 	self = [super oh_initWithKeyBits: keyBits
 				  evBits: evBits
 				 absBits: absBits
-				vendorID: vendorID
-			       productID: productID];
+				  VIDPID: VIDPID];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

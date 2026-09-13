@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,23 +19,27 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #import "OFMutableZooArchiveEntry.h"
 #import "OFZooArchiveEntry+Private.h"
 #import "OFDate.h"
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
+
 @implementation OFMutableZooArchiveEntry
 @dynamic headerType, compressionMethod, modificationDate, CRC16;
 @dynamic uncompressedSize, compressedSize, minVersionNeeded, deleted;
-@dynamic fileComment, fileName, operatingSystemIdentifier, POSIXPermissions;
-@dynamic timeZone;
+@dynamic fileComment, fileName, fileType, operatingSystemIdentifier;
+@dynamic POSIXPermissions, timeZone;
 /*
- * The following properties are not implemented, but old Apple GCC requries
- * @dynamic for @optional properties.
+ * The following are optional in OFMutableArchiveEntry, but Apple GCC 4.0.1 is
+ * buggy and needs this to stop complaining.
  */
 @dynamic ownerAccountID, groupOwnerAccountID, ownerAccountName;
-@dynamic groupOwnerAccountName;
+@dynamic groupOwnerAccountName, targetFileName, deviceMajor, deviceMinor;
 
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -86,21 +90,32 @@
 	void *pool = objc_autoreleasePoolPush();
 
 	if (_timeZone == 0x7F) {
+		unsigned short localYear = date.localYear;
+
+		if (localYear < 1980 || localYear > 2107)
+			@throw [OFInvalidArgumentException exception];
+
 		_lastModifiedFileDate =
-		    (((date.localYear - 1980) & 0xFF) << 9) |
+		    (((localYear - 1980) & 0x7F) << 9) |
 		    ((date.localMonthOfYear & 0x0F) << 5) |
 		    (date.localDayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
 		    ((date.localMinute & 0x3F) << 5) |
-		    ((date.second >> 1) & 0x0F);
+		    ((date.second >> 1) & 0x1F);
 	} else {
+		unsigned short year;
+
 		date = [date dateByAddingTimeInterval:
 		    -(OFTimeInterval)_timeZone * 900];
+		year = date.year;
 
-		_lastModifiedFileDate = (((date.year - 1980) & 0xFF) << 9) |
+		if (year < 1980 || year > 2107)
+			@throw [OFInvalidArgumentException exception];
+
+		_lastModifiedFileDate = (((year - 1980) & 0x7F) << 9) |
 		    ((date.monthOfYear & 0x0F) << 5) | (date.dayOfMonth & 0x1F);
 		_lastModifiedFileTime = ((date.hour & 0x1F) << 11) |
-		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
+		    ((date.minute & 0x3F) << 5) | ((date.second >> 1) & 0x1F);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -163,6 +178,12 @@
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)setFileType: (OFArchiveEntryFileType)fileType
+{
+	if (fileType != OFArchiveEntryFileTypeRegular)
+		@throw [OFInvalidArgumentException exception];
+}
+
 - (void)setOperatingSystemIdentifier: (uint16_t)operatingSystemIdentifier
 {
 	_operatingSystemIdentifier = operatingSystemIdentifier;
@@ -179,8 +200,14 @@
 {
 	if (timeZone == nil)
 		_timeZone = 0x7F;
-	else
+	else {
+		float value = timeZone.floatValue;
+
+		if (!isfinite(value) || value < -12.0f || value > 14.f)
+			@throw [OFInvalidArgumentException exception];
+
 		_timeZone = -timeZone.floatValue * 4;
+	}
 }
 
 - (void)makeImmutable

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -261,8 +261,6 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem next;
 
-	_mutations++;
-
 	for (OFListItem iter = _firstListItem; iter != NULL; iter = next) {
 		objc_release(iter->object);
 		next = iter->next;
@@ -270,6 +268,8 @@ OFListItemObject(OFListItem listItem)
 	}
 
 	_firstListItem = _lastListItem = NULL;
+	_count = 0;
+	_mutations++;
 }
 
 - (id)copy
@@ -352,7 +352,7 @@ OFListItemObject(OFListItem listItem)
 {
 	OFListItem listItem;
 
-	memcpy(&listItem, state->extra, sizeof(listItem));
+	OFCopyMemory(&listItem, state->extra, sizeof(listItem));
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &_mutations;
@@ -370,7 +370,7 @@ OFListItemObject(OFListItem listItem)
 		listItem = listItem->next;
 	}
 
-	memcpy(state->extra, &listItem, sizeof(listItem));
+	OFCopyMemory(state->extra, &listItem, sizeof(listItem));
 
 	return count;
 }

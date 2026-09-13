@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -237,7 +237,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_acceptProlog = true;
 		_lineNumber = 1;
 		_encoding = OFStringEncodingUTF8;
-		_depthLimit = 32;
+		_depthLimit = 128;
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -282,8 +282,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_lastCarriageReturn = (_data[_i] == '\r');
 	}
 
-	/* In stateInTag, there can be only spaces */
-	if (length - _last > 0 && _state != stateInTag)
+	if (length - _last > 0)
 		appendToBuffer(_buffer, _data + _last, _encoding,
 		    length - _last);
 }
@@ -411,7 +410,7 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 	int PIState = 0;
 	OFString *attribute = nil;
 	OFMutableString *value = nil;
-	char piDelimiter = 0;
+	char PIDelimiter = 0;
 	bool hasVersion = false;
 
 	if (!self->_acceptProlog)
@@ -451,13 +450,13 @@ parseXMLProcessingInstruction(OFXMLParser *self, OFString *data)
 			if (cString[i] != '\'' && cString[i] != '"')
 				return false;
 
-			piDelimiter = cString[i];
+			PIDelimiter = cString[i];
 			last = i + 1;
 			PIState = 3;
 
 			break;
 		case 3:
-			if (cString[i] != piDelimiter)
+			if (cString[i] != PIDelimiter)
 				continue;
 
 			value = [OFMutableString
@@ -721,7 +720,8 @@ inTagState(OFXMLParser *self)
 			self->_last = self->_i;
 			self->_state = stateInAttributeName;
 			self->_i--;
-		}
+		} else
+			self->_last = self->_i + 1;
 
 		return;
 	}
@@ -743,12 +743,21 @@ inTagState(OFXMLParser *self)
 	pool = objc_autoreleasePoolPush();
 
 	if ([self->_delegate respondsToSelector:
-	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
+	    @selector(parser:didStartElement:prefix:namespace:attributes:)]) {
+		OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
+
+		[self->_attributes makeImmutable];
+		attributes = objc_autorelease(self->_attributes);
+
+		self->_attributes = nil;
+		self->_attributes = [[OFMutableArray alloc] init];
+
 		[self->_delegate parser: self
 			didStartElement: self->_name
 				 prefix: self->_prefix
 			      namespace: namespace
-			     attributes: self->_attributes];
+			     attributes: attributes];
+	}
 
 	if (self->_data[self->_i] == '/') {
 		if ([self->_delegate respondsToSelector:
@@ -842,6 +851,8 @@ expectAttributeEqualSignState(OFXMLParser *self)
 	if (self->_data[self->_i] != ' '  && self->_data[self->_i] != '\t' &&
 	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
+
+	self->_last = self->_i + 1;
 }
 
 /* Expecting name/value delimiter of an attribute */
@@ -869,6 +880,9 @@ inAttributeValueState(OFXMLParser *self)
 	OFString *attributeValue;
 	size_t length;
 	OFXMLAttribute *attribute;
+
+	if (self->_data[self->_i] == '<')
+		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	if (self->_data[self->_i] != self->_delimiter)
 		return;
@@ -920,12 +934,15 @@ expectTagCloseState(OFXMLParser *self)
 static void
 expectSpaceOrTagCloseState(OFXMLParser *self)
 {
+	self->_last = self->_i + 1;
+
 	if (self->_data[self->_i] == '>') {
-		self->_last = self->_i + 1;
 		self->_state = stateOutsideTag;
-	} else if (self->_data[self->_i] != ' ' &&
-	    self->_data[self->_i] != '\t' && self->_data[self->_i] != '\n' &&
-	    self->_data[self->_i] != '\r')
+		return;
+	}
+
+	if (self->_data[self->_i] != ' ' && self->_data[self->_i] != '\t' &&
+	    self->_data[self->_i] != '\n' && self->_data[self->_i] != '\r')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 }
 

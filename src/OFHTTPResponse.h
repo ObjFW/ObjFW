@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -36,7 +36,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPResponse: OFStream
 {
 	OFHTTPRequestProtocolVersion _protocolVersion;
-	short _statusCode;
+	unsigned short _statusCode;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
 }
 
@@ -61,7 +61,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The status code of the response to the HTTP request.
  */
-@property (nonatomic) short statusCode;
+@property (nonatomic) unsigned short statusCode;
 
 /**
  * @brief The headers of the response to the HTTP request.

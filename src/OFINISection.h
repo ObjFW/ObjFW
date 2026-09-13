@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -41,6 +41,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The name of the INI section
  */
 @property (copy, nonatomic) OFString *name;
+
+/**
+ * @brief All keys in the dictionary.
+ *
+ * @note The same key can be contained multiple times - this means it is an
+ *	 array.
+ */
+@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString *) *allKeys;
 
 - (instancetype)init OF_UNAVAILABLE;
 

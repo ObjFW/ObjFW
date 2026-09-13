@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -124,7 +124,7 @@ static OFDictionary<OFString *, NSString *> *directionalPadsMap;
 		    oh_elementWithName: @"Left Thumbstick Y"
 				analog: true];
 		directionalPad = [OHGameControllerDirectionalPad
-		    oh_padWithName: @"Left Thumnstick"
+		    oh_padWithName: @"Left Thumbstick"
 			     xAxis: xAxis
 			     yAxis: yAxis
 			    analog: true];

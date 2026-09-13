@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,7 +25,9 @@
 #include <string.h>
 
 #import "OFHTTPClient.h"
+#import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
@@ -36,6 +38,7 @@
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFTLSStream.h"
+#import "OFTimer.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -52,7 +55,9 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
+static const OFRunLoopMode HTTPClientRunLoopMode = @"OFHTTPClientRunLoopMode";
 static const unsigned int defaultRedirects = 10;
+static const size_t maxStringReadLength = 10240;
 
 OF_DIRECT_MEMBERS
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate,
@@ -64,15 +69,15 @@ OF_DIRECT_MEMBERS
 	unsigned int _redirects;
 	bool _firstLine;
 	OFString *_version;
-	short _status;
+	unsigned short _statusCode;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
 }
 
 - (instancetype)initWithClient: (OFHTTPClient *)client
 		       request: (OFHTTPRequest *)request
 		     redirects: (unsigned int)redirects;
-- (void)start;
-- (void)closeAndReconnect;
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode;
+- (void)closeAndReconnectWithRunLoopMode: (OFRunLoopMode)runLoopMode;
 @end
 
 OF_DIRECT_MEMBERS
@@ -80,13 +85,15 @@ OF_DIRECT_MEMBERS
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFStream *_stream;
-	bool _chunked;
 	unsigned long long _toWrite;
+	bool _chunked;
 	bool _atEndOfStream;
 }
 
 - (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
-			 stream: (OFStream *)stream;
+			 stream: (OFStream *)stream
+			toWrite: (unsigned long long)toWrite
+			chunked: (bool)chunked;
 @end
 
 OF_DIRECT_MEMBERS
@@ -104,17 +111,35 @@ OF_DIRECT_MEMBERS
 @end
 
 OF_DIRECT_MEMBERS
-@interface OFHTTPClientSyncPerformer: OFObject <OFHTTPClientDelegate>
+@interface OFHTTPClientPerformDelegate: OFObject <OFHTTPClientDelegate>
 {
-	OFHTTPClient *_client;
+@public
+	bool _done;
 	OFObject <OFHTTPClientDelegate> *_delegate;
 	OFHTTPResponse *_response;
+	id _exception;
 }
 
-- (instancetype)initWithClient: (OFHTTPClient *)client;
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (unsigned int)redirects;
+- (instancetype)initWithDelegate: (OFObject <OFHTTPClientDelegate> *)delegate;
 @end
+
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
+
+	return ret;
+}
 
 static OFString *
 constructRequestString(OFHTTPRequest *request)
@@ -126,7 +151,9 @@ constructRequestString(OFHTTPRequest *request)
 	OFString *user = URI.user, *password = URI.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFData *requestBody;
 	bool hasContentLength, chunked;
+	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
@@ -183,7 +210,7 @@ constructRequestString(OFHTTPRequest *request)
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
 		[headers setObject: @"OFHTTPClient (ObjFW's HTTP client class "
-				    @"<https://objfw.nil.im/>)"
+				    @"<https://objfw.nil.im>)"
 			    forKey: @"User-Agent"];
 
 	if (request.protocolVersion.major == 1 &&
@@ -191,9 +218,17 @@ constructRequestString(OFHTTPRequest *request)
 	    [headers objectForKey: @"Connection"] == nil)
 		[headers setObject: @"keep-alive" forKey: @"Connection"];
 
+	requestBody = request.body;
+	if (requestBody != nil) {
+		OFString *contentLength = [OFString stringWithFormat: @"%llu",
+		    requestBody.count * requestBody.itemSize];
+
+		[headers setObject: contentLength forKey: @"Content-Length"];
+		[headers removeObjectForKey: @"Transfer-Encoding"];
+	}
+
 	hasContentLength = ([headers objectForKey: @"Content-Length"] != nil);
-	chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	if ((hasContentLength || chunked) &&
 	    [headers objectForKey: @"Content-Type"] == nil)
@@ -201,12 +236,21 @@ constructRequestString(OFHTTPRequest *request)
 				    @"urlencoded; charset=UTF-8"
 			    forKey: @"Content-Type"];
 
+	newlineCharacterSet = [OFCharacterSet newlineCharacterSet];
+
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
 
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil)
+	    (object = [objectEnumerator nextObject]) != nil) {
+		if ([key rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound ||
+		    [object rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound)
+			@throw [OFInvalidArgumentException exception];
+
 		[requestString appendFormat: @"%@: %@\r\n", key, object];
+	}
 
 	[requestString appendString: @"\r\n"];
 
@@ -239,7 +283,7 @@ normalizeKey(char *str_)
 }
 
 static bool
-defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
+defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 {
 	bool follow;
 
@@ -304,22 +348,25 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 - (void)createResponseWithStreamOrThrow: (OFStream *)stream
 {
 	OFIRI *IRI = _request.IRI;
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 	OFHTTPClientResponse *response;
 	OFString *connectionHeader;
 	bool keepAlive;
 	OFString *location;
 	id exception;
+	OFTimer *timer;
 
 	response = objc_autorelease(
 	    [[OFHTTPClientResponse alloc] initWithStream: stream]);
 	response.protocolVersionString = _version;
-	response.statusCode = _status;
+	response.statusCode = _statusCode;
 	response.headers = _serverHeaders;
 
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
 	if ([_version isEqual: @"1.1"]) {
 		if (connectionHeader != nil)
-			keepAlive = [connectionHeader isEqual: @"close"];
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"close"] != OFOrderedSame);
 		else
 			keepAlive = true;
 	} else {
@@ -340,8 +387,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		_client->_lastResponse = objc_retain(response);
 	}
 
-	if (_redirects > 0 && (_status == 301 || _status == 302 ||
-	    _status == 303 || _status == 307) &&
+	if (_redirects > 0 && (_statusCode == 301 || _statusCode == 302 ||
+	    _statusCode == 303 || _statusCode == 307) &&
 	    (location = [_serverHeaders objectForKey: @"Location"]) != nil) {
 		bool follow = true;
 		OFIRI *newIRI;
@@ -350,17 +397,13 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		newIRI = [OFIRI IRIWithString: location relativeToIRI: IRI];
 		newIRIScheme = newIRI.scheme;
 
-		if ([newIRIScheme caseInsensitiveCompare: @"http"] !=
-		    OFOrderedSame &&
-		    [newIRIScheme caseInsensitiveCompare: @"https"] !=
-		    OFOrderedSame)
+		if (![newIRIScheme isEqual: @"http"] &&
+		    ![newIRIScheme isEqual: @"https"])
 			follow = false;
 
 		if (!_client->_allowsInsecureRedirects &&
-		    [IRI.scheme caseInsensitiveCompare: @"https"] ==
-		    OFOrderedSame &&
-		    [newIRIScheme caseInsensitiveCompare: @"http"] ==
-		    OFOrderedSame)
+		    [IRI.scheme isEqual: @"https"] &&
+		    [newIRIScheme isEqual: @"http"])
 			follow = false;
 
 		if (follow && [_client->_delegate respondsToSelector:
@@ -368,11 +411,12 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		    request:response:)])
 			follow = [_client->_delegate client: _client
 				  shouldFollowRedirectToIRI: newIRI
-						 statusCode: _status
+						 statusCode: _statusCode
 						    request: _request
 						   response: response];
 		else if (follow)
-			follow = defaultShouldFollow(_request.method, _status);
+			follow = defaultShouldFollow(_request.method,
+			    _statusCode);
 
 		if (follow) {
 			OFDictionary OF_GENERIC(OFString *, OFString *)
@@ -382,15 +426,22 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			OFMutableDictionary *newHeaders =
 			    objc_autorelease([headers mutableCopy]);
 
-			if (![newIRI.host isEqual: IRI.host])
+			if (![newIRI.scheme isEqual: IRI.scheme] ||
+			    (newIRI.host != IRI.host &&
+			    ![newIRI.host isEqual: IRI.host]) ||
+			    (newIRI.port != IRI.port &&
+			    ![newIRI.port isEqual: IRI.port])) {
 				[newHeaders removeObjectForKey: @"Host"];
+				[newHeaders
+				    removeObjectForKey: @"Authorization"];
+			}
 
 			/*
 			 * 303 means the request should be converted to a GET
 			 * request before redirection. This also means stripping
 			 * the entity of the request.
 			 */
-			if (_status == 303) {
+			if (_statusCode == 303) {
 				for (OFString *key in headers)
 					if ([key hasPrefix: @"Content-"] ||
 					    [key hasPrefix: @"Transfer-"])
@@ -406,27 +457,32 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			_client->_inProgress = false;
 
 			[_client asyncPerformRequest: newRequest
-					   redirects: _redirects - 1];
+					   redirects: _redirects - 1
+					 runLoopMode: runLoop.currentMode];
 			return;
 		}
 	}
 
 	_client->_inProgress = false;
 
-	if (_status / 100 != 2)
+	if (_statusCode / 100 != 2)
 		exception = [OFHTTPRequestFailedException
 		    exceptionWithRequest: _request
 				response: response];
 	else
 		exception = nil;
 
-	[_client->_delegate performSelector: @selector(client:didPerformRequest:
-						 response:exception:)
-				 withObject: _client
-				 withObject: _request
-				 withObject: response
-				 withObject: exception
-				 afterDelay: 0];
+	timer = [OFTimer timerWithTimeInterval: 0
+					target: _client->_delegate
+				      selector: @selector(client:
+						    didPerformRequest:response:
+						    exception:)
+					object: _client
+					object: _request
+					object: response
+					object: exception
+				       repeats: false];
+	[runLoop addTimer: timer forMode: runLoop.currentMode];
 }
 
 - (void)createResponseWithStream: (OFStream *)stream
@@ -440,15 +496,14 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (bool)handleFirstLine: (OFString *)line
 {
-	int status;
-
 	/*
 	 * It's possible that the write succeeds on a connection that is
 	 * keep-alive, but the connection has already been closed by the remote
 	 * end due to a timeout. In this case, we need to reconnect.
 	 */
 	if (line == nil) {
-		[self closeAndReconnect];
+		[self closeAndReconnectWithRunLoopMode:
+		    [OFRunLoop currentRunLoop].currentMode];
 		return false;
 	}
 
@@ -461,12 +516,15 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	status = [line substringWithRange: OFMakeRange(9, 3)].intValue;
-
-	if (status < 0 || status > 599)
+	@try {
+		_statusCode = [line substringWithRange: OFMakeRange(9, 3)]
+		    .unsignedShortValue;
+	} @catch (OFOutOfRangeException *e) {
 		@throw [OFInvalidServerResponseException exception];
+	}
 
-	_status = (short)status;
+	if (_statusCode > 599)
+		@throw [OFInvalidServerResponseException exception];
 
 	return true;
 }
@@ -481,20 +539,55 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFInvalidServerResponseException exception];
 
 	if (line.length == 0) {
+		OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+		OFString *contentLengthString;
+		OFTimer *timer;
+
 		[_serverHeaders makeImmutable];
+
+		/*
+		 * Validate the headers before we pass them to the delegate. We
+		 * perform the same validation later on when creating the
+		 * response, but we already want to detect and report the
+		 * invalid server response earlier.
+		 */
+		contentLengthString =
+		    [_serverHeaders objectForKey: @"Content-Length"];
+		if (contentLengthString != nil) {
+			bool chunked = [parseTransferEncoding(_serverHeaders)
+			    containsObject: @"chunked"];
+
+			if (chunked)
+				@throw [OFInvalidServerResponseException
+				    exception];
+
+			@try {
+				[contentLengthString unsignedLongLongValue];
+			} @catch (OFInvalidFormatException *e) {
+				@throw [OFInvalidServerResponseException
+				    exception];
+			} @catch (OFOutOfRangeException *e) {
+				@throw [OFInvalidServerResponseException
+				    exception];
+			}
+		}
 
 		if ([_client->_delegate respondsToSelector: @selector(client:
 		    didReceiveHeaders:statusCode:request:)])
 			[_client->_delegate client: _client
 				 didReceiveHeaders: _serverHeaders
-					statusCode: _status
+					statusCode: _statusCode
 					   request: _request];
 
 		stream.delegate = nil;
 
-		[self performSelector: @selector(createResponseWithStream:)
-			   withObject: stream
-			   afterDelay: 0];
+		timer = [OFTimer
+		    timerWithTimeInterval: 0
+				   target: self
+				 selector: @selector(createResponseWithStream:)
+				   object: stream
+				  repeats: false];
+		[runLoop addTimer: timer forMode: runLoop.currentMode];
 
 		return false;
 	}
@@ -505,7 +598,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFInvalidServerResponseException exception];
 
 	keyC = OFAllocMemory(tmp - lineC + 1, 1);
-	memcpy(keyC, lineC, tmp - lineC);
+	OFCopyMemory(keyC, lineC, tmp - lineC);
 	keyC[tmp - lineC] = '\0';
 	normalizeKey(keyC);
 
@@ -569,6 +662,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	   exception: (id)exception
 {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFData *body;
+	OFString *contentLength;
 	bool chunked;
 
 	if (exception != nil) {
@@ -576,7 +671,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		    ([exception errNo] == ECONNRESET ||
 		    [exception errNo] == EPIPE)) {
 			/* In case a keep-alive connection timed out */
-			[self closeAndReconnect];
+			[self closeAndReconnectWithRunLoopMode:
+			    [OFRunLoop currentRunLoop].currentMode];
 			return nil;
 		}
 
@@ -587,24 +683,55 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	_firstLine = true;
 
 	headers = _request.headers;
-	chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	body = _request.body;
+	contentLength = [headers objectForKey: @"Content-Length"];
+	chunked = (body == nil ? false :
+	    [parseTransferEncoding(headers) containsObject: @"chunked"]);
 
-	if (chunked || [headers objectForKey: @"Content-Length"] != nil) {
+	if (body != nil || contentLength != nil || chunked) {
+		unsigned long long toWrite = 0;
 		OFStream *requestBody;
+
+		if (body != nil)
+			toWrite = body.count * body.itemSize;
+		else if (contentLength != nil) {
+			if (chunked)
+				@throw [OFInvalidArgumentException exception];
+
+			toWrite = contentLength.unsignedLongLongValue;
+		} else if (!chunked)
+			@throw [OFInvalidArgumentException exception];
 
 		stream.delegate = nil;
 		requestBody = objc_autorelease([[OFHTTPClientRequestBodyStream
 		    alloc] initWithHandler: self
-				    stream: stream]);
+				    stream: stream
+				   toWrite: toWrite
+				   chunked: chunked]);
 
-		if ([_client->_delegate respondsToSelector:
+		if (_request.body != nil) {
+			OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+			OFRunLoopMode runLoopMode = runLoop.currentMode;
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: requestBody
+					 selector: @selector(asyncWriteData:
+						       runLoopMode:)
+					   object: _request.body
+					   object: runLoopMode
+					  repeats: false];
+			[runLoop addTimer: timer forMode: runLoopMode];
+		} else if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:)])
 			[_client->_delegate client: _client
 				  wantsRequestBody: requestBody
 					   request: _request];
-	} else
-		[stream asyncReadLine];
+	} else {
+		OFRunLoopMode runLoopMode =
+		    [OFRunLoop currentRunLoop].currentMode;
+		[stream asyncReadLineWithEncoding: stream.encoding
+				      runLoopMode: runLoopMode];
+	}
 
 	return nil;
 }
@@ -616,12 +743,18 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	 * HTTPS, we construct the complete request in a buffer string and then
 	 * send it all at once.
 	 *
-	 * We do not use the streams's write buffer in case we need to resend
+	 * We do not use the stream's write buffer in case we need to resend
 	 * the entire request (e.g. in case a keep-alive connection timed out).
 	 */
 
 	@try {
-		[stream asyncWriteString: constructRequestString(_request)];
+		OFRunLoopMode runLoopMode =
+		    [OFRunLoop currentRunLoop].currentMode;
+
+		[stream setMaxStringReadLength: maxStringReadLength];
+		[stream asyncWriteString: constructRequestString(_request)
+				encoding: stream.encoding
+			     runLoopMode: runLoopMode];
 	} @catch (id e) {
 		[self raiseException: e];
 		return;
@@ -633,6 +766,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	      port: (uint16_t)port
 	 exception: (id)exception
 {
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+
 	if (exception != nil) {
 		[self raiseException: exception];
 		return;
@@ -644,17 +779,19 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			didCreateTCPSocket: sock
 				   request: _request];
 
-	if ([_request.IRI.scheme caseInsensitiveCompare: @"https"] ==
-	    OFOrderedSame) {
+	if ([_request.IRI.scheme isEqual: @"https"]) {
 		OFTLSStream *stream;
+		OFString *TLSHost;
+
 		@try {
 			stream = [OFTLSStream streamWithStream: sock];
 		} @catch (OFNotImplementedException *e) {
-			[self raiseException:
-			    [OFUnsupportedProtocolException
+			[self raiseException: [OFUnsupportedProtocolException
 			    exceptionWithIRI: _request.IRI]];
 			return;
 		}
+
+		stream.certificateChain = _request.certificateChain;
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:didCreateTLSStream:request:)])
@@ -663,13 +800,23 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 					   request: _request];
 
 		stream.delegate = self;
-		[stream asyncPerformClientHandshakeWithHost: _request.IRI
-		    .IRIByAddingPercentEncodingForUnicodeCharacters.host];
+
+		TLSHost = _request.IRI
+		    .IRIByAddingPercentEncodingForUnicodeCharacters.host;
+		[stream
+		    asyncPerformClientHandshakeWithHost: TLSHost
+					    runLoopMode: runLoop.currentMode];
 	} else {
+		OFTimer *timer;
+
 		sock.delegate = self;
-		[self performSelector: @selector(handleStream:)
-			   withObject: sock
-			   afterDelay: 0];
+
+		timer = [OFTimer timerWithTimeInterval: 0
+						target: self
+					      selector: @selector(handleStream:)
+						object: sock
+					       repeats: false];
+		[runLoop addTimer: timer forMode: runLoop.currentMode];
 	}
 }
 
@@ -677,28 +824,37 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
   didPerformClientHandshakeWithHost: (OFString *)host
 			  exception: (id)exception
 {
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+	OFTimer *timer;
+
 	if (exception != nil) {
 		[self raiseException: exception];
 		return;
 	}
 
-	[self performSelector: @selector(handleStream:)
-		   withObject: stream
-		   afterDelay: 0];
+	timer = [OFTimer timerWithTimeInterval: 0
+					target: self
+				      selector: @selector(handleStream:)
+					object: stream
+				       repeats: false];
+	[runLoop addTimer: timer forMode: runLoop.currentMode];
 }
 
-- (void)start
+- (void)startWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OFIRI *IRI = _request.IRI;
 	OFStream *stream;
 
 	/* Can we reuse the last socket? */
 	if (_client->_stream != nil && !_client->_stream.atEndOfStream &&
+	    _client->_lastResponse.of_keepAlive &&
 	    [_client->_lastIRI.scheme isEqual: IRI.scheme] &&
 	    [_client->_lastIRI.host isEqual: IRI.host] &&
 	    (_client->_lastIRI.port == IRI.port ||
 	    [_client->_lastIRI.port isEqual: IRI.port]) &&
 	    (_client->_lastWasHEAD || _client->_lastResponse.atEndOfStream)) {
+		OFTimer *timer;
+
 		/*
 		 * Set _stream to nil, so that in case of an error it won't be
 		 * reused. If everything is successful, we set _stream again
@@ -715,14 +871,18 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 		stream.delegate = self;
 
-		[self performSelector: @selector(handleStream:)
-			   withObject: stream
-			   afterDelay: 0];
+		timer = [OFTimer timerWithTimeInterval: 0
+						target: self
+					      selector: @selector(handleStream:)
+						object: stream
+					       repeats: false];
+		[[OFRunLoop currentRunLoop] addTimer: timer
+					     forMode: runLoopMode];
 	} else
-		[self closeAndReconnect];
+		[self closeAndReconnectWithRunLoopMode: runLoopMode];
 }
 
-- (void)closeAndReconnect
+- (void)closeAndReconnectWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	@try {
 		OFIRI *URI =
@@ -736,8 +896,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		sock = [OFTCPSocket socket];
 		sock.allowsMPTCP = true;
 
-		if ([URI.scheme caseInsensitiveCompare: @"https"] ==
-		    OFOrderedSame)
+		if ([URI.scheme isEqual: @"https"])
 			port = 443;
 		else
 			port = 80;
@@ -747,7 +906,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			port = URIPort.unsignedShortValue;
 
 		sock.delegate = self;
-		[sock asyncConnectToHost: URI.host port: port];
+		[sock asyncConnectToHost: URI.host
+				    port: port
+			     runLoopMode: runLoopMode];
 	} @catch (id e) {
 		[self raiseException: e];
 	}
@@ -757,30 +918,16 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 @implementation OFHTTPClientRequestBodyStream
 - (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
 			 stream: (OFStream *)stream
+			toWrite: (unsigned long long)toWrite
+			chunked: (bool)chunked
 {
 	self = [super init];
 
 	@try {
-		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-		OFString *transferEncoding, *contentLengthString;
-
 		_handler = objc_retain(handler);
 		_stream = objc_retain(stream);
-
-		headers = _handler->_request.headers;
-
-		transferEncoding = [headers objectForKey: @"Transfer-Encoding"];
-		_chunked = [transferEncoding isEqual: @"chunked"];
-
-		contentLengthString = [headers objectForKey: @"Content-Length"];
-		if (contentLengthString != nil) {
-			if (_chunked || contentLengthString.length == 0)
-				@throw [OFInvalidArgumentException
-				    exception];
-
-			_toWrite = contentLengthString.unsignedLongLongValue;
-		} else if (!_chunked)
-			@throw [OFInvalidArgumentException exception];
+		_toWrite = toWrite;
+		_chunked = chunked;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -855,7 +1002,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 		@throw [OFTruncatedDataException exception];
 
 	_stream.delegate = _handler;
-	[_stream asyncReadLine];
+	[_stream
+	    asyncReadLineWithEncoding: _stream.encoding
+			  runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 
 	objc_release(_stream);
 	_stream = nil;
@@ -896,12 +1045,11 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 	super.headers = headers;
 
-	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	contentLength = [headers objectForKey: @"Content-Length"];
 	if (contentLength != nil) {
-		if (_chunked || contentLength.length == 0)
+		if (_chunked)
 			@throw [OFInvalidServerResponseException exception];
 
 		_hasContentLength = true;
@@ -1091,38 +1239,22 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 }
 @end
 
-@implementation OFHTTPClientSyncPerformer
-- (instancetype)initWithClient: (OFHTTPClient *)client
+@implementation OFHTTPClientPerformDelegate
+- (instancetype)initWithDelegate: (OFObject <OFHTTPClientDelegate> *)delegate
 {
 	self = [super init];
 
-	@try {
-		_client = objc_retain(client);
-		_delegate = client.delegate;
-
-		_client.delegate = self;
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
+	_delegate = delegate;
 
 	return self;
 }
 
 - (void)dealloc
 {
-	_client.delegate = _delegate;
-	objc_release(_client);
+	objc_release(_response);
+	objc_release(_exception);
 
 	[super dealloc];
-}
-
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (unsigned int)redirects
-{
-	[_client asyncPerformRequest: request redirects: redirects];
-	[[OFRunLoop currentRunLoop] run];
-	return _response;
 }
 
 -      (void)client: (OFHTTPClient *)client
@@ -1130,26 +1262,14 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	   response: (OFHTTPResponse *)response
 	  exception: (id)exception
 {
-	if (exception != nil) {
-		/*
-		 * Restore the delegate - we're giving up, but not reaching the
-		 * release of the autorelease pool that contains us, so
-		 * resetting it via -[dealloc] might be too late.
-		 */
-		_client.delegate = _delegate;
-
-		@throw exception;
-	}
-
-	[[OFRunLoop currentRunLoop] stop];
-
-	objc_release(_response);
-	_response = objc_retain(response);
-
 	[_delegate     client: client
 	    didPerformRequest: request
 		     response: response
-		    exception: nil];
+		    exception: exception];
+
+	_done = true;
+	_response = objc_retain(response);
+	_exception = objc_retain(exception);
 }
 
 -	(void)client: (OFHTTPClient *)client
@@ -1187,7 +1307,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (short)statusCode
+	 statusCode: (unsigned short)statusCode
 	    request: (OFHTTPRequest *)request
 {
 	if ([_delegate respondsToSelector:
@@ -1200,7 +1320,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 -	       (bool)client: (OFHTTPClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)IRI
-		 statusCode: (short)statusCode
+		 statusCode: (unsigned short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response
 {
@@ -1241,12 +1361,32 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 			 redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClientSyncPerformer *syncPerformer = objc_autorelease(
-	    [[OFHTTPClientSyncPerformer alloc] initWithClient: self]);
-	OFHTTPResponse *response = [syncPerformer performRequest: request
-						       redirects: redirects];
+	OFHTTPClientPerformDelegate *performDelegate = objc_autorelease(
+	    [[OFHTTPClientPerformDelegate alloc] initWithDelegate: _delegate]);
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+	OFHTTPResponse *response;
 
-	objc_retain(response);
+	_delegate = performDelegate;
+	@try {
+		[self asyncPerformRequest: request
+				redirects: redirects
+			      runLoopMode: HTTPClientRunLoopMode];
+
+		while (!performDelegate->_done)
+			[runLoop runMode: HTTPClientRunLoopMode
+			      beforeDate: nil];
+
+		/* Cleanup */
+		[runLoop runMode: HTTPClientRunLoopMode
+		      beforeDate: [OFDate date]];
+	} @finally {
+		_delegate = performDelegate->_delegate;
+	}
+
+	if (performDelegate->_exception != nil)
+		@throw performDelegate->_exception;
+
+	response = objc_retain(performDelegate->_response);
 
 	objc_autoreleasePoolPop(pool);
 
@@ -1255,18 +1395,28 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 {
-	[self asyncPerformRequest: request redirects: defaultRedirects];
+	[self asyncPerformRequest: request
+			redirects: defaultRedirects
+		      runLoopMode: OFDefaultRunLoopMode];
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects
 {
+	[self asyncPerformRequest: request
+			redirects: redirects
+		      runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
+		  redirects: (unsigned int)redirects
+		runLoopMode: (OFRunLoopMode)runLoopMode
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFIRI *IRI = request.IRI;
 	OFString *scheme = IRI.scheme;
 
-	if ([scheme caseInsensitiveCompare: @"http"] != OFOrderedSame &&
-	    [scheme caseInsensitiveCompare: @"https"] != OFOrderedSame)
+	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithIRI: IRI];
 
 	if (_inProgress)
@@ -1277,7 +1427,8 @@ defaultShouldFollow(OFHTTPRequestMethod method, short statusCode)
 	[[[[OFHTTPClientRequestHandler alloc]
 	    initWithClient: self
 		   request: request
-		 redirects: redirects] autorelease] start];
+		 redirects: redirects] autorelease]
+	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }

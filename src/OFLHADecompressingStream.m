@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -111,7 +111,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 
 		_slidingWindowMask = (1u << dictionaryBits) - 1;
 		_slidingWindow = OFAllocMemory(_slidingWindowMask + 1, 1);
-		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
+		OFFillMemory(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -127,12 +127,9 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 
 	OFFreeMemory(_slidingWindow);
 
-	if (_codeLenTree != NULL)
-		_OFHuffmanTreeFree(_codeLenTree);
-	if (_litLenTree != NULL)
-		_OFHuffmanTreeFree(_litLenTree);
-	if (_distTree != NULL)
-		_OFHuffmanTreeFree(_distTree);
+	_OFHuffmanTreeFree(_codeLenTree);
+	_OFHuffmanTreeFree(_litLenTree);
+	_OFHuffmanTreeFree(_distTree);
 
 	OFFreeMemory(_codesLengths);
 

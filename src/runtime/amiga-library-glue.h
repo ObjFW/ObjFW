@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,7 +33,7 @@ extern Class _Nullable glue_objc_getClass(const char *_Nonnull name);
 extern Class _Nonnull glue_objc_getRequiredClass(const char *_Nonnull name);
 extern Class _Nullable glue_objc_lookup_class(const char *_Nonnull name);
 extern Class _Nonnull glue_objc_get_class(const char *_Nonnull name);
-extern void glue_objc_exception_throw(id _Nonnull object);
+extern void glue_objc_exception_throw(id _Nullable object);
 extern int glue_objc_sync_enter(id _Nullable object);
 extern int glue_objc_sync_exit(id _Nullable object);
 extern id _Nullable glue_objc_getProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t offset, bool atomic);
@@ -41,7 +41,7 @@ extern void glue_objc_setProperty(id _Nonnull self, SEL _Nonnull _cmd, ptrdiff_t
 extern void glue_objc_getPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_setPropertyStruct(void *_Nonnull dest, const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void glue_objc_enumerationMutation(id _Nonnull object);
-extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t _Nonnull exClass, void *_Nonnull ex, void *_Nonnull ctx);
+extern int glue___gnu_objc_personality_v0(int version, int actions, uint64_t exClass, void *_Nonnull ex, void *_Nonnull ctx);
 extern id _Nullable glue_objc_retain(id _Nullable object);
 extern id _Nullable glue_objc_retainBlock(id _Nullable block);
 extern id _Nullable glue_objc_retainAutorelease(id _Nullable object);
@@ -61,32 +61,32 @@ extern void glue_objc_moveWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnu
 extern SEL _Nonnull glue_sel_registerName(const char *_Nonnull name);
 extern const char *_Nonnull glue_sel_getName(SEL _Nonnull selector);
 extern bool glue_sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
-extern Class _Nonnull glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes);
+extern Class _Nullable glue_objc_allocateClassPair(Class _Nullable superclass, const char *_Nonnull name, size_t extraBytes);
 extern void glue_objc_registerClassPair(Class _Nonnull class_);
 extern unsigned int glue_objc_getClassList(Class _Nonnull *_Nullable buffer, unsigned int count);
 extern Class _Nonnull *_Nonnull glue_objc_copyClassList(unsigned int *_Nullable length);
 extern bool glue_class_isMetaClass(Class _Nullable class_);
-extern const char *_Nullable glue_class_getName(Class _Nullable class_);
+extern const char *_Nonnull glue_class_getName(Class _Nullable class_);
 extern Class _Nullable glue_class_getSuperclass(Class _Nullable class_);
 extern unsigned long glue_class_getInstanceSize(Class _Nullable class_);
 extern bool glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector);
-extern bool glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p);
+extern bool glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nullable p);
 extern IMP _Nullable glue_class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector);
 extern IMP _Nullable glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector);
 #if defined(OF_MORPHOS)
 extern const char *_Nullable glue__class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector);
 #endif
-extern bool glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
-extern IMP _Nullable glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
+extern bool glue_class_addMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
+extern IMP _Nullable glue_class_replaceMethod(Class _Nullable class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding);
 extern Class _Nullable glue_object_getClass(id _Nullable object);
 extern Class _Nullable glue_object_setClass(id _Nullable object, Class _Nonnull class_);
-extern const char *_Nullable glue_object_getClassName(id _Nullable object);
+extern const char *_Nonnull glue_object_getClassName(id _Nullable object);
 extern const char *_Nonnull glue_protocol_getName(Protocol *_Nonnull protocol);
-extern bool glue_protocol_isEqual(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
-extern bool glue_protocol_conformsToProtocol(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2);
+extern bool glue_protocol_isEqual(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2);
+extern bool glue_protocol_conformsToProtocol(Protocol *_Nullable protocol1, Protocol *_Nullable protocol2);
 extern _Nullable objc_uncaught_exception_handler glue_objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable handler);
 extern void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForward);
-extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable hadler);
+extern void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler _Nullable handler);
 #if defined(OF_MORPHOS)
 extern void glue__objc_zeroWeakReferences(id _Nullable value);
 #endif
@@ -121,3 +121,7 @@ extern id _Nullable glue_objc_createTaggedPointer(int class_, uintptr_t value);
 extern void glue_objc_setAssociatedObject(id _Nonnull object, const void *_Nonnull key, id _Nullable value, objc_associationPolicy policy);
 extern id _Nullable glue_objc_getAssociatedObject(id _Nonnull object, const void *_Nonnull key);
 extern void glue_objc_removeAssociatedObjects(id _Nonnull object);
+extern bool glue__objc_rootTryRetain(id _Nonnull object);
+extern size_t glue_objc_libraryTrampolineSize(void);
+extern void glue_objc_createLibraryTrampoline(uint32_t *_Nonnull buffer, IMP _Nonnull function, struct Library *_Nonnull base);
+extern void glue_objc_createLibraryTrampolinesForModule(struct objc_module *_Nonnull module, struct Library *_Nonnull base);

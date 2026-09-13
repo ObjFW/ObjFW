@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,12 +46,12 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
+@interface OFPlaceholderData: OFString
+@end
+
 static struct {
 	Class isa;
 } placeholder;
-
-@interface OFPlaceholderData: OFString
-@end
 
 /* References for static linking */
 void OF_VISIBILITY_INTERNAL
@@ -298,44 +298,54 @@ OF_SINGLETON_METHODS
 
 - (instancetype)initWithContentsOfIRI: (OFIRI *)IRI
 {
-	char *items = NULL, *buffer = NULL;
-	size_t count = 0;
+	char *buffer = NULL;
+	size_t length = 0;
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFStream *stream = [OFIRIHandler openItemAtIRI: IRI mode: @"r"];
-		const size_t bufferSize = 16384;
+		const size_t readLength = 16384;
+		size_t capacity = readLength;
 
-		buffer = OFAllocMemory(1, bufferSize);
+		buffer = OFAllocMemory(capacity, 1);
 
 		while (!stream.atEndOfStream) {
-			size_t length = [stream readIntoBuffer: buffer
-							length: bufferSize];
-
-			if (SIZE_MAX - count < length)
+			if (SIZE_MAX - length < readLength)
 				@throw [OFOutOfRangeException exception];
 
-			items = OFResizeMemory(items, count + length, 1);
-			memcpy(items + count, buffer, length);
-			count += length;
+			if (capacity < length + readLength) {
+				if (capacity > SIZE_MAX / 2)
+					capacity = length + readLength;
+				else
+					capacity *= 2;
+
+				buffer = OFResizeMemory(buffer, capacity, 1);
+			}
+
+			length += [stream readIntoBuffer: buffer + length
+						  length: readLength];
+		}
+
+		@try {
+			buffer = OFResizeMemory(buffer, length, 1);
+		} @catch (OFOutOfRangeException *e) {
+			/* We don't care, we only made it smaller. */
 		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
-		OFFreeMemory(items);
+		OFFreeMemory(buffer);
 		objc_release(self);
 
 		@throw e;
-	} @finally {
-		OFFreeMemory(buffer);
 	}
 
 	@try {
-		self = [self initWithItemsNoCopy: items
-					   count: count
+		self = [self initWithItemsNoCopy: buffer
+					   count: length
 				    freeWhenDone: true];
 	} @catch (id e) {
-		OFFreeMemory(items);
+		OFFreeMemory(buffer);
 		@throw e;
 	}
 
@@ -528,7 +538,8 @@ OF_SINGLETON_METHODS
 
 	if (data.count != count || data.itemSize != itemSize)
 		return false;
-	if (memcmp(data.items, self.items, count * itemSize) != 0)
+	if (OFCompareMemory(data.items, self.items, count * itemSize) !=
+	    OFOrderedSame)
 		return false;
 
 	return true;
@@ -536,21 +547,20 @@ OF_SINGLETON_METHODS
 
 - (OFComparisonResult)compare: (OFData *)data
 {
-	int comparison;
-	size_t count, dataCount, minCount;
-
 	if (![data isKindOfClass: [OFData class]])
 		@throw [OFInvalidArgumentException exception];
 
 	if (data.itemSize != self.itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	count = self.count;
-	dataCount = data.count;
-	minCount = (count > dataCount ? dataCount : count);
+	size_t count = self.count;
+	size_t dataCount = data.count;
+	size_t minCount = (count > dataCount ? dataCount : count);
 
-	if ((comparison = memcmp(self.items, data.items,
-	    minCount * self.itemSize)) == 0) {
+	OFComparisonResult result = OFCompareMemory(self.items, data.items,
+	    minCount * self.itemSize);
+
+	if (result == OFOrderedSame) {
 		if (count > dataCount)
 			return OFOrderedDescending;
 		if (count < dataCount)
@@ -559,10 +569,7 @@ OF_SINGLETON_METHODS
 		return OFOrderedSame;
 	}
 
-	if (comparison > 0)
-		return OFOrderedDescending;
-	else
-		return OFOrderedAscending;
+	return result;
 }
 
 - (unsigned long)hash
@@ -583,8 +590,7 @@ OF_SINGLETON_METHODS
 
 - (OFData *)subdataWithRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > self.count)
+	if (OFEndOfRange(range) > self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableData class]])
@@ -594,7 +600,7 @@ OF_SINGLETON_METHODS
 
 	return [OFData dataWithItems: (const unsigned char *)self.items +
 				      (range.location * self.itemSize)
-			       count: self.count
+			       count: range.length
 			    itemSize: self.itemSize];
 }
 
@@ -646,8 +652,7 @@ OF_SINGLETON_METHODS
 	const char *search;
 	size_t searchLength;
 
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > count)
+	if (OFEndOfRange(range) > count)
 		@throw [OFOutOfRangeException exception];
 
 	if (data == nil || data.itemSize != itemSize)
@@ -662,20 +667,20 @@ OF_SINGLETON_METHODS
 	search = data.items;
 
 	if (options & OFDataSearchBackwards) {
-		for (size_t i = range.length - searchLength;; i--) {
-			if (memcmp(items + i * itemSize, search,
-			    searchLength * itemSize) == 0)
+		for (size_t i = OFEndOfRange(range) - searchLength;; i--) {
+			if (OFCompareMemory(items + i * itemSize, search,
+			    searchLength * itemSize) == OFOrderedSame)
 				return OFMakeRange(i, searchLength);
 
 			/* No match and we're at the last item */
-			if (i == 0)
+			if (i == range.location)
 				break;
 		}
 	} else {
 		for (size_t i = range.location;
-		    i <= range.length - searchLength; i++)
-			if (memcmp(items + i * itemSize, search,
-			    searchLength * itemSize) == 0)
+		    i <= OFEndOfRange(range) - searchLength; i++)
+			if (OFCompareMemory(items + i * itemSize, search,
+			    searchLength * itemSize) == OFOrderedSame)
 				return OFMakeRange(i, searchLength);
 	}
 

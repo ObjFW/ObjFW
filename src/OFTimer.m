@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -335,6 +335,9 @@
 	self = [super init];
 
 	@try {
+		if (interval < 0.0)
+			@throw [OFInvalidArgumentException exception];
+
 		_fireDate = objc_retain(fireDate);
 		_interval = interval;
 		_target = objc_retain(target);
@@ -466,6 +469,9 @@
 	self = [super init];
 
 	@try {
+		if (interval < 0.0)
+			@throw [OFInvalidArgumentException exception];
+
 		_fireDate = objc_retain(fireDate);
 		_interval = interval;
 		_repeats = repeats;
@@ -530,14 +536,15 @@
 
 - (void)of_reschedule
 {
-	long long missedIntervals;
+	long long missedIntervals = 0;
 	OFTimeInterval newFireDate;
 	OFRunLoop *runLoop;
 
 	if (!_repeats || !_valid)
 		return;
 
-	missedIntervals = -_fireDate.timeIntervalSinceNow / _interval;
+	if (_interval != 0.0)
+		missedIntervals = -_fireDate.timeIntervalSinceNow / _interval;
 
 	/* In case the clock was changed backwards */
 	if (missedIntervals < 0)
@@ -584,6 +591,7 @@
 		case 3:
 			((void (*)(id, SEL, id, id, id))method)(_target,
 			    _selector, _object1, _object2, _object3);
+			break;
 		case 4:
 			((void (*)(id, SEL, id, id, id, id))method)(_target,
 			    _selector, _object1, _object2, _object3, _object4);
@@ -593,7 +601,7 @@
 	}
 #endif
 
-	if  (!_repeats)
+	if (!_repeats)
 		[self invalidate];
 
 #ifdef OF_HAVE_THREADS
@@ -646,6 +654,9 @@
 	objc_release(_object3);
 	objc_release(_object4);
 
+#ifdef OF_HAVE_BLOCKS
+	_block = NULL;
+#endif
 	_target = nil;
 	_object1 = nil;
 	_object2 = nil;

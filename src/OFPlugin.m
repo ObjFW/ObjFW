@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +23,11 @@
 
 #import "OFLoadPluginFailedException.h"
 
+#ifdef __clang__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 @implementation OFPlugin
 + (instancetype)pluginWithPath: (OFString *)path
 {
@@ -37,7 +42,7 @@
 - (instancetype)initWithPath: (OFString *)path
 {
 	@try {
-		self = [super init];
+		self = [super initWithPath: path];
 	} @catch (OFLoadModuleFailedException *e) {
 		@throw [OFLoadPluginFailedException exceptionWithPath: e.path
 								error: e.error];
@@ -46,3 +51,7 @@
 	return self;
 }
 @end
+
+#ifdef __clang__
+# pragma GCC diagnostic pop
+#endif

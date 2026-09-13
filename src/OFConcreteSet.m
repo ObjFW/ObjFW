@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -77,10 +77,10 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 {
 	size_t count;
 
-	if (set == nil)
-		return [self init];
-
 	@try {
+		if (set == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = set.count;
 	} @catch (id e) {
 		objc_release(self);
@@ -104,10 +104,10 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 {
 	size_t count;
 
-	if (array == nil)
-		return self;
-
 	@try {
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = array.count;
 	} @catch (id e) {
 		objc_release(self);
@@ -152,8 +152,8 @@ static const OFMapTableFunctions objectFunctions = { NULL };
 		size_t count;
 
 		va_copy(argumentsCopy, arguments);
-
 		for (count = 1; va_arg(argumentsCopy, id) != nil; count++);
+		va_end(argumentsCopy);
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions

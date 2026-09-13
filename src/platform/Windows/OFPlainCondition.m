@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -84,9 +84,12 @@ OFPlainConditionWait(OFPlainCondition *condition, OFPlainMutex *mutex)
 	status = WaitForSingleObject(condition->event, INFINITE);
 	OFAtomicIntDecrease(&condition->count);
 
+	if ((error = OFPlainMutexLock(mutex)) != 0)
+		return error;
+
 	switch (status) {
 	case WAIT_OBJECT_0:
-		return OFPlainMutexLock(mutex);
+		return 0;
 	case WAIT_FAILED:
 		switch (GetLastError()) {
 		case ERROR_INVALID_HANDLE:
@@ -113,9 +116,12 @@ OFPlainConditionTimedWait(OFPlainCondition *condition, OFPlainMutex *mutex,
 	status = WaitForSingleObject(condition->event, timeout * 1000);
 	OFAtomicIntDecrease(&condition->count);
 
+	if ((error = OFPlainMutexLock(mutex)) != 0)
+		return error;
+
 	switch (status) {
 	case WAIT_OBJECT_0:
-		return OFPlainMutexLock(mutex);
+		return 0;
 	case WAIT_TIMEOUT:
 		return ETIMEDOUT;
 	case WAIT_FAILED:

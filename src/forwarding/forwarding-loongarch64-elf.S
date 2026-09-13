@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -189,7 +189,7 @@ _OFForward_stret:
 	ld.d	$ra, $sp, 0
 	addi.d	$sp, $sp, 144
 
-	b	%plt(OFMethodNotFound_stret)
+	b	%plt(_OFMethodNotFound_stret)
 .type _OFForward_stret, @function
 .size _OFForward_stret, .-_OFForward_stret
 

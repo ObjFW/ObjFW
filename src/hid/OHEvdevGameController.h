@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 
 #import "OHGameController.h"
 #import "OHGameControllerProfile.h"
+#import "OHVIDPID.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,15 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
 - (OHGameControllerAxis *)oh_axisForEvdevAxis: (uint16_t)axis;
 @end
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHEvdevGameController: OHGameController
 {
 	OFString *_path;
 	int _fd;
 	bool _discardUntilReport;
 	unsigned long *_evBits, *_keyBits, *_absBits;
-	uint16_t _vendorID, _productID;
+	OHVIDPID _VIDPID;
 	OFString *_name;
-	id <OHGameControllerProfile, OHEvdevMapping> _profile;
+	OFObject <OHGameControllerProfile, OHEvdevMapping> *_profile;
 }
 
 - (instancetype)oh_init OF_UNAVAILABLE;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,10 +24,8 @@
 #import "OFConcreteMutableSet.h"
 #import "OFMapTable.h"
 #import "OFString.h"
-#import "OFXMLAttribute.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidFormatException.h"
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
@@ -44,6 +42,9 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+
+		if (set == nil)
+			@throw [OFInvalidArgumentException exception];
 
 		if ([set isKindOfClass: [OFCountedSet class]]) {
 			OFCountedSet *countedSet = (OFCountedSet *)set;
@@ -75,6 +76,9 @@
 	@try {
 		id const *objects = array.objects;
 		size_t count = array.count;
+
+		if (array == nil)
+			@throw [OFInvalidArgumentException exception];
 
 		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
@@ -142,7 +146,12 @@
 
 - (void)addObject: (id)object
 {
-	size_t count = (size_t)(uintptr_t)[_mapTable objectForKey: object];
+	size_t count;
+
+	if (object == self)
+		@throw [OFInvalidArgumentException exception];
+
+	count = (size_t)(uintptr_t)[_mapTable objectForKey: object];
 
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];

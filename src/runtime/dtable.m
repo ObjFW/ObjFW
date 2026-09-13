@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,6 +24,10 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
+
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
 
 static struct objc_dtable_level2 *emptyLevel2 = NULL;
 #ifdef OF_SELUID24
@@ -142,6 +146,10 @@ _objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 			level2->buckets[l] = (IMP)0;
 #endif
 
+#ifdef OF_HAVE_ATOMIC_OPS
+		OFReleaseMemoryBarrier();
+#endif
+
 		dTable->buckets[i] = level2;
 	}
 
@@ -155,6 +163,10 @@ _objc_dtable_set(struct objc_dtable *dTable, uint32_t idx, IMP implementation)
 
 		for (uint_fast16_t l = 0; l < 256; l++)
 			level3->buckets[l] = (IMP)0;
+
+# ifdef OF_HAVE_ATOMIC_OPS
+		OFReleaseMemoryBarrier();
+# endif
 
 		dTable->buckets[i]->buckets[j] = level3;
 	}

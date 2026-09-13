@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OHNESGamepad OHNESGamepad.h ObjFWHID/ObjFWHID.h
  *
- * @brief A NES gamepad.
+ * @brief An NES gamepad.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OHNESGamepad: OFObject <OHGamepad>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,6 +30,7 @@
 # import "OFFileIRIHandler.h"
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+# import "OFGeminiIRIHandler.h"
 # import "OFHTTPIRIHandler.h"
 #endif
 
@@ -53,6 +54,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	[self registerClass: [OFFileIRIHandler class] forScheme: @"file"];
 #endif
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+	[self registerClass: [OFGeminiIRIHandler class] forScheme: @"gemini"];
 	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"http"];
 	[self registerClass: [OFHTTPIRIHandler class] forScheme: @"https"];
 #endif
@@ -84,7 +86,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 
 + (OFIRIHandler *)handlerForIRI: (OFIRI *)IRI
 {
-	OF_KINDOF(OFIRIHandler *) handler;
+	OFIRIHandler *handler;
 
 	@synchronized (handlers) {
 		handler = [handlers objectForKey: IRI.scheme];
@@ -96,7 +98,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	return handler;
 }
 
-+ (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
++ (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	return [[self handlerForIRI: IRI] openItemAtIRI: IRI mode: mode];
 }
@@ -108,6 +110,17 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	[[self handlerForIRI: IRI] asyncOpenItemAtIRI: IRI
 						 mode: mode
 					     delegate: delegate];
+}
+
++ (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode
+{
+	[[self handlerForIRI: IRI] asyncOpenItemAtIRI: IRI
+						 mode: mode
+					     delegate: delegate
+					  runLoopMode: runLoopMode];
 }
 
 - (instancetype)init
@@ -136,7 +149,7 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 	[super dealloc];
 }
 
-- (OFStream *)openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
+- (OF_KINDOF(OFStream *))openItemAtIRI: (OFIRI *)IRI mode: (OFString *)mode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -144,6 +157,17 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 - (void)asyncOpenItemAtIRI: (OFIRI *)IRI
 		      mode: (OFString *)mode
 		  delegate: (id <OFIRIHandlerDelegate>)delegate
+{
+	[self asyncOpenItemAtIRI: IRI
+			    mode: mode
+			delegate: delegate
+		     runLoopMode: OFDefaultRunLoopMode];
+}
+
+- (void)asyncOpenItemAtIRI: (OFIRI *)IRI
+		      mode: (OFString *)mode
+		  delegate: (id <OFIRIHandlerDelegate>)delegate
+	       runLoopMode: (OFRunLoopMode)runLoopMode
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -200,6 +224,11 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFIRIHandler *) *handlers;
 }
 
 - (bool)moveItemAtIRI: (OFIRI *)source toIRI: (OFIRI *)destination
+{
+	return false;
+}
+
+- (bool)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source
 {
 	return false;
 }

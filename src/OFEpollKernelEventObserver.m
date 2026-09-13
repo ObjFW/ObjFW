@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -46,19 +46,16 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
-		struct epoll_event event;
-
 #ifdef HAVE_EPOLL_CREATE1
 		if ((_epfd = epoll_create1(EPOLL_CLOEXEC)) == -1)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 #else
-		int flags;
-
 		if ((_epfd = epoll_create(1)) == -1)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
+		int flags;
 		if ((flags = fcntl(_epfd, F_GETFD, 0)) != -1)
 			fcntl(_epfd, F_SETFD, flags | FD_CLOEXEC);
 #endif
@@ -67,9 +64,10 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 		    initWithKeyFunctions: mapFunctions
 			 objectFunctions: mapFunctions];
 
-		memset(&event, 0, sizeof(event));
-		event.events = EPOLLIN;
-		event.data.ptr = [OFNull null];
+		struct epoll_event event = {
+			.events = EPOLLIN,
+			.data.ptr = [OFNull null]
+		};
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _cancelFD[0], &event) == -1)
 			@throw [OFInitializationFailedException
@@ -95,15 +93,13 @@ static const OFMapTableFunctions mapFunctions = { NULL };
       fileDescriptor: (int)fd
 	      events: (int)addEvents OF_DIRECT
 {
-	struct epoll_event event;
-	intptr_t events;
-
-	events = (intptr_t)[_FDToEvents
+	intptr_t events = (intptr_t)[_FDToEvents
 	    objectForKey: (void *)((intptr_t)fd + 1)];
 
-	memset(&event, 0, sizeof(event));
-	event.events = (int)events | addEvents;
-	event.data.ptr = object;
+	struct epoll_event event = {
+		.events = (int)events | addEvents,
+		.data.ptr = object
+	};
 
 	if (epoll_ctl(_epfd, (events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
 	    fd, &event) == -1)
@@ -139,11 +135,10 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 		[_FDToEvents removeObjectForKey: (void *)((intptr_t)fd + 1)];
 	} else {
-		struct epoll_event event;
-
-		memset(&event, 0, sizeof(event));
-		event.events = (int)events;
-		event.data.ptr = object;
+		struct epoll_event event = {
+			.events = (int)events,
+			.data.ptr = object
+		};
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
 			@throw [OFObserveKernelEventsFailedException
@@ -193,29 +188,32 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	OFNull *nullObject = [OFNull null];
-	struct epoll_event eventList[eventListSize];
-	int events;
-
 	if ([self processReadBuffers])
 		return;
 
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
+
+	int events;
+	struct epoll_event eventList[eventListSize];
 	while ((events = epoll_wait(_epfd, eventList, eventListSize,
-	    (timeInterval != -1 ? timeInterval * 1000 : -1))) < 0)
+	    (timeInterval != 64060588800.0 ? (int)(timeInterval * 1000.0) :
+	    -1))) < 0)
 		if (errno != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
+	OFNull *nullObject = [OFNull null];
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {
-			void *pool = objc_autoreleasePoolPush();
-
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
 				OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 				continue;
 			}
+
+			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])

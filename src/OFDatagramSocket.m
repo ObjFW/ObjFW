@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,7 +75,7 @@
 			    exceptionWithClass: self.class];
 
 		_socket = OFInvalidSocketHandle;
-#ifdef OF_HAVE_AMIGAOS
+#ifdef OF_AMIGAOS
 		_socketID = -1;
 #endif
 		_canBlock = true;
@@ -124,10 +124,10 @@
 								 errNo: errno];
 
 	_canBlock = canBlock;
-#elif defined(OF_WINDOWS)
-	u_long v = !canBlock;
+#elif defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+	unsigned long v = !canBlock;
 
-	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
+	if (ioctlsocket(_socket, FIONBIO, (void *)&v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
 		    exceptionWithObject: self
 				  errNo: _OFSocketErrNo()];
@@ -456,8 +456,7 @@
 
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self
-					      mode: OFDefaultRunLoopMode];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 
 - (int)fileDescriptorForReading

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -67,6 +67,6 @@
 		return [OFString stringWithFormat: @"Test skipped: %@",
 						   _message];
 	else
-		return nil;
+		return @"Test skipped: OTSkip() called";
 }
 @end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -54,7 +54,7 @@
 
 				_bitSet = OFResizeMemory(_bitSet, newSize,
 				    sizeof(unsigned long));
-				memset(_bitSet + _size, '\0',
+				OFFillMemory(_bitSet + _size, '\0',
 				    (newSize - _size) * sizeof(unsigned long));
 
 				_size = newSize;

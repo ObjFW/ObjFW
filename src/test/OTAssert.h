@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,16 +17,22 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-/*
- * Unfortunately, that's the only way to make all compilers happy with the GNU
- * extensions for variadic macros that are being used here.
- */
+/* Unfortunately this is the only way to make all GCC versions happy. */
 #pragma GCC system_header
+
+#ifdef __clang__
+/*
+ * This is not great, but the only way to make it work across all Clang
+ * versions - with the obvious downside that it ignores warnings about *all*
+ * GNU extensions in any file using this header.
+ */
+# pragma clang diagnostic ignored "-Wgnu"
+#endif
 
 /** @file */
 
 /**
- * @brief Asserts that the specified condition condition holds.
+ * @brief Asserts that the specified condition holds.
  *
  * @param condition The condition to check
  * @param ... An optional format string to print if the assertion failed,
@@ -140,7 +146,7 @@
 /**
  * @brief Asserts that the specified object is `nil`.
  *
- * @param object The object to should be `nil`
+ * @param object The object that should be `nil`
  * @param ... An optional format string to print if the assertion failed,
  *	      followed by optional arguments
  */
@@ -149,7 +155,7 @@
 /**
  * @brief Asserts that the specified object is not `nil`.
  *
- * @param object The object to should not be `nil`
+ * @param object The object that should not be `nil`
  * @param ... An optional format string to print if the assertion failed,
  *	      followed by optional arguments
  */
@@ -163,7 +169,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertThrows(expression, ...)				\
-	{							\
+	do {							\
 		bool OTThrown = false;				\
 		@try {						\
 			expression;				\
@@ -171,7 +177,7 @@
 			OTThrown = true;			\
 		}						\
 		OTAssert(OTThrown, ## __VA_ARGS__);		\
-	}
+	} while (false)
 
 /**
  * @brief Asserts that the specified expression throws a specific exception.
@@ -183,7 +189,7 @@
  *	      followed by optional arguments
  */
 #define OTAssertThrowsSpecific(expression, exception, ...)	\
-	{							\
+	do {							\
 		bool OTThrown = false;				\
 		@try {						\
 			expression;				\
@@ -191,10 +197,10 @@
 			OTThrown = true;			\
 		}						\
 		OTAssert(OTThrown, ## __VA_ARGS__);		\
-	}
+	} while (false)
 
 /**
- * @brief Skips the current test, making it neither fail nor succeeed.
+ * @brief Skips the current test, making it neither fail nor succeed.
  *
  * @param ... An optional format string to print why the test was skipped,
  *	      followed by optional arguments

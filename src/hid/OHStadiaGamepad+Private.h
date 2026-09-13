@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
  */
 
 #import "OHStadiaGamepad.h"
+#import "OHVIDPID.h"
 
 #if defined(OF_LINUX) && defined(OF_HAVE_FILES)
 # import "OHEvdevGameController.h"
@@ -37,7 +38,7 @@ OF_DIRECT_MEMBERS
     <OHGCFMapping>
 #endif
 
-- (instancetype)oh_init OF_METHOD_FAMILY(init);
+- (instancetype)oh_initWithVIDPID: (OHVIDPID)VIDPID OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

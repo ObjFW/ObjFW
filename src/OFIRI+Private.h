@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -32,6 +32,7 @@ extern "C" {
 extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_INTERNAL;
 extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
     OF_VISIBILITY_INTERNAL;
+extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_INTERNAL;
 #ifdef __cplusplus
 }
 #endif

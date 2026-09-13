@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -43,10 +43,12 @@
 
 #ifdef OF_WII
 # define asm __asm__
+# define id ogc_id
 # define nanosleep ogc_nanosleep
 # include <gccore.h>
 # include <ogcsys.h>
 # undef nanosleep
+# undef id
 # undef asm
 #endif
 
@@ -97,11 +99,6 @@
 # import "OFThreadStillRunningException.h"
 #endif
 
-#ifdef OF_MINT
-/* freemint-gcc does not have trunc() */
-# define trunc(x) ((int64_t)(x))
-#endif
-
 #if defined(OF_HAVE_THREADS)
 # import "OFTLSKey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
@@ -113,6 +110,12 @@ static OFTLSKey threadSelfKey;
 static OFThread *mainThread;
 #elif defined(OF_HAVE_SOCKETS)
 static OFDNSResolver *DNSResolver;
+#endif
+
+#if defined(OF_AMIGAOS4)
+extern struct TimeRequest OFTimeRequest;
+#elif defined(OF_AMIGAOS)
+extern struct timerequest OFTimeRequest;
 #endif
 
 @implementation OFThread
@@ -263,33 +266,45 @@ callMain(id object)
 		return;
 
 #if defined(OF_WINDOWS)
-	if (timeInterval * 1000 > UINT_MAX)
+	if (timeInterval * 1000.0 > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	Sleep((unsigned int)(timeInterval * 1000));
+	Sleep((unsigned int)(timeInterval * 1000.0));
 #elif defined(OF_NINTENDO_3DS)
 	if (timeInterval * 1000000000 > INT64_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	svcSleepThread((int64_t)(timeInterval * 1000000000));
+	svcSleepThread((int64_t)(timeInterval * 1000000000.0));
 #elif defined(OF_AMIGAOS)
-	struct timerequest request = *DOSBase->dl_TimeReq;
+# ifdef OF_AMIGAOS4
+	struct TimeRequest request = OFTimeRequest;
+
+	request.Request.io_Message.mn_ReplyPort =
+	    &((struct Process *)FindTask(NULL))->pr_MsgPort;
+	request.Request.io_Command = TR_ADDREQUEST;
+	request.Time.Seconds = (ULONG)floor(timeInterval);
+	request.Time.Microseconds = (ULONG)
+	    ((timeInterval - floor(timeInterval)) * 1000000.0);
+# else
+	struct timerequest request = OFTimeRequest;
 
 	request.tr_node.io_Message.mn_ReplyPort =
 	    &((struct Process *)FindTask(NULL))->pr_MsgPort;
 	request.tr_node.io_Command = TR_ADDREQUEST;
-	request.tr_time.tv_secs = (ULONG)timeInterval;
+	request.tr_time.tv_secs = (ULONG)floor(timeInterval);
 	request.tr_time.tv_micro = (ULONG)
-	    ((timeInterval - (unsigned int)timeInterval) * 1000000);
+	    ((timeInterval - floor(timeInterval)) * 1000000.0);
+# endif
 
 	DoIO((struct IORequest *)&request);
 #elif defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
 
-	rqtp.tv_sec = (time_t)timeInterval;
-	rqtp.tv_nsec = (long)((timeInterval - rqtp.tv_sec) * 1000000000);
+	rqtp.tv_sec = (time_t)floor(timeInterval);
+	rqtp.tv_nsec =
+	    (long)((timeInterval - floor(timeInterval)) * 1000000000.0);
 
-	if (rqtp.tv_sec != trunc(timeInterval))
+	if (rqtp.tv_sec != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
@@ -299,16 +314,16 @@ callMain(id object)
 	if (timeInterval > UINT64_MAX / 60)
 		@throw [OFOutOfRangeException exception];
 
-	counter = timeInterval * 60;
+	counter = (uint64_t)timeInterval * 60.0;
 	while (counter--)
 		swiWaitForVBlank();
 #else
 	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	sleep((unsigned int)timeInterval);
+	sleep((unsigned int)floor(timeInterval));
 	usleep((unsigned int)
-	    ((timeInterval - (unsigned int)timeInterval) * 1000000));
+	    ((timeInterval - floor(timeInterval)) * 1000000.0));
 #endif
 }
 
@@ -507,9 +522,14 @@ callMain(id object)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
+		OFReleaseMemoryBarrier();
+
 		if (!OFAtomicPointerCompareAndSwap(
-		    (void **)&_runLoop, nil, tmp))
+		    (void **)&_runLoop, nil, tmp)) {
+			OFAcquireMemoryBarrier();
+
 			objc_release(tmp);
+		}
 	}
 # else
 	@synchronized (self) {

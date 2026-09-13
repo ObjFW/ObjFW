@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,6 +17,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #import "ObjFWRT.h"
 
 #import "private.h"
@@ -24,9 +26,10 @@
 #define numTaggedPointerBits 4
 #define maxNumTaggedPointerClasses (1 << (numTaggedPointerBits - 1))
 
-Class _objc_taggedPointerClasses[maxNumTaggedPointerClasses];
+Class _objc_taggedPointerClasses[maxNumTaggedPointerClasses]
+    OF_VISIBILITY_INTERNAL;
 static int taggedPointerClassesCount;
-uintptr_t _objc_taggedPointerSecret;
+uintptr_t _objc_taggedPointerSecret OF_VISIBILITY_INTERNAL;
 
 void
 objc_setTaggedPointerSecret(uintptr_t secret)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -34,7 +34,20 @@
 }
 @end
 
+#ifdef OF_AMIGAOS
+# undef OFTLSStreamImplementation
+#endif
+
 Class OFTLSStreamImplementation = Nil;
+
+#ifdef OF_AMIGAOS
+Class *
+OFTLSStreamImplementationRef(void)
+{
+	return &OFTLSStreamImplementation;
+}
+#endif
+
 static const OFRunLoopMode handshakeRunLoopMode =
     @"OFTLSStreamHandshakeRunLoopMode";
 
@@ -142,6 +155,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (void)dealloc
 {
 	objc_release(_underlyingStream);
+	objc_release(_certificateChain);
 
 	[super dealloc];
 }
@@ -167,6 +181,11 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	return _certificateChain;
 }
 
+- (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -179,7 +198,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	return _underlyingStream.atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (int)fileDescriptorForReading

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -92,22 +92,22 @@
 - (void)setArgument: (const void *)buffer atIndex: (size_t)idx
 {
 	OFMutableData *data = [_arguments objectAtIndex: idx];
-	memcpy(data.mutableItems, buffer, data.itemSize);
+	OFCopyMemory(data.mutableItems, buffer, data.itemSize);
 }
 
 - (void)getArgument: (void *)buffer atIndex: (size_t)idx
 {
 	OFData *data = [_arguments objectAtIndex: idx];
-	memcpy(buffer, data.items, data.itemSize);
+	OFCopyMemory(buffer, data.items, data.itemSize);
 }
 
 - (void)setReturnValue: (const void *)buffer
 {
-	memcpy(_returnValue.mutableItems, buffer, _returnValue.itemSize);
+	OFCopyMemory(_returnValue.mutableItems, buffer, _returnValue.itemSize);
 }
 
 - (void)getReturnValue: (void *)buffer
 {
-	memcpy(buffer, _returnValue.items, _returnValue.itemSize);
+	OFCopyMemory(buffer, _returnValue.items, _returnValue.itemSize);
 }
 @end

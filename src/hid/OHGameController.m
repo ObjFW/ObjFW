@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,24 +45,9 @@
 #ifdef OF_HAVE_GCF
 # import "OHGCFGameController.h"
 #endif
-
-const uint16_t OHVendorIDSony = 0x054C;
-const uint16_t OHVendorIDNintendo = 0x057E;
-const uint16_t OHVendorIDMicrosoft = 0x045E;
-const uint16_t OHVendorIDGoogle = 0x18D1;
-const uint16_t OHVendorID8BitDo = 0x2DC8;
-const uint16_t OHProductIDDualShock4 = 0x09CC;
-const uint16_t OHProductIDDualSense = 0x0CE6;
-const uint16_t OHProductIDLeftJoyCon = 0x2006;
-const uint16_t OHProductIDRightJoyCon = 0x2007;
-const uint16_t OHProductIDProController = 0x2009;
-const uint16_t OHProductIDN64Controller = 0x2019;
-const uint16_t OHProductIDSNESController = 0x2017;
-const uint16_t OHProductIDXbox360WirelessReceiver = 0x02A1;
-const uint16_t OHProductIDStadiaController = 0x9400;
-const uint16_t OHProductIDNES30Gamepad = 0x2820;
-const uint16_t OHProductIDUltimate2CWirelessBT = 0x301B;
-const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
+#ifdef OF_MORPHOS
+# import "OHSensorsLibraryGameController.h"
+#endif
 
 @implementation OHGameController
 @dynamic name, profile;
@@ -86,6 +71,8 @@ const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
 		return [OHGCFGameController controllers];
 	else
 		return [OFArray array];
+#elif defined(OF_MORPHOS)
+	return [OHSensorsLibraryGameController controllers];
 #else
 	return [OFArray array];
 #endif
@@ -101,13 +88,28 @@ const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
 	return [super init];
 }
 
+- (OHVIDPID)VIDPID
+{
+	return (OHVIDPID){ 0, 0 };
+}
+
 - (OFNumber *)vendorID
 {
+	OHVIDPID VIDPID = self.VIDPID;
+
+	if (VIDPID.vendorID != 0)
+		return [OFNumber numberWithUnsignedShort: VIDPID.vendorID];
+
 	return nil;
 }
 
 - (OFNumber *)productID
 {
+	OHVIDPID VIDPID = self.VIDPID;
+
+	if (VIDPID.productID != 0)
+		return [OFNumber numberWithUnsignedShort: VIDPID.productID];
+
 	return nil;
 }
 
@@ -116,23 +118,23 @@ const uint16_t OHProductIDUltimate2CWirelessUSB = 0x310A;
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	return nil;
 }
 
-- (id <OHExtendedGamepad>)extendedGamepad
+- (OFObject <OHExtendedGamepad> *)extendedGamepad
 {
 	return nil;
 }
 
 - (OFString *)description
 {
-	if (self.vendorID != nil && self.productID != nil)
+	if (self.VIDPID.vendorID != 0 && self.VIDPID.productID != 0)
 		return [OFString stringWithFormat:
 		    @"<%@: %@ [%04X:%04X]>",
-		    self.class, self.name, self.vendorID.unsignedShortValue,
-		    self.productID.unsignedShortValue];
+		    self.class, self.name, self.VIDPID.vendorID,
+		    self.VIDPID.productID];
 	else
 		return [OFString stringWithFormat: @"<%@: %@>",
 						   self.class, self.name];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,9 +37,9 @@
 #import "copyright.h"
 
 static OFString *const unicodeDataIRI =
-    @"http://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
+    @"https://www.unicode.org/Public/UNIDATA/UnicodeData.txt";
 static OFString *const caseFoldingIRI =
-    @"http://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
+    @"https://www.unicode.org/Public/UNIDATA/CaseFolding.txt";
 
 OF_APPLICATION_DELEGATE(TableGenerator)
 
@@ -103,33 +103,37 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[OFStdOut writeString: @"Parsing UnicodeData.txt…"];
 
 	while ((line = [response readLine]) != nil) {
-		void *pool2;
-		OFArray OF_GENERIC(OFString *) *components;
-		OFUnichar codePoint;
-
 		if (line.length == 0)
 			continue;
 
-		pool2 = objc_autoreleasePoolPush();
+		void *pool2 = objc_autoreleasePoolPush();
 
-		components = [line componentsSeparatedByString: @";"];
+		OFArray OF_GENERIC(OFString *) *components =
+		    [line componentsSeparatedByString: @";"];
 		if (components.count != 15) {
 			OFLog(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
 
-		codePoint = (OFUnichar)[[components objectAtIndex: 0]
+		OFUnichar codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongValueWithBase: 16];
-
 		if (codePoint > 0x10FFFF)
 			@throw [OFOutOfRangeException exception];
 
-		_uppercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 12] unsignedLongValueWithBase: 16];
-		_lowercaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 13] unsignedLongValueWithBase: 16];
-		_titlecaseTable[codePoint] = (OFUnichar)[[components
-		    objectAtIndex: 14] unsignedLongValueWithBase: 16];
+		OFString *component = [components objectAtIndex: 12];
+		if (component.length > 0)
+			_uppercaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
+
+		component = [components objectAtIndex: 13];
+		if (component.length > 0)
+			_lowercaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
+
+		component = [components objectAtIndex: 14];
+		if (component.length > 0)
+			_titlecaseTable[codePoint] = (OFUnichar)
+			    [component unsignedLongValueWithBase: 16];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -161,13 +165,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		components = [line componentsSeparatedByString: @"; "];
 		if (components.count != 4) {
-			OFLog(@"Invalid line: %s\n", line);
+			OFLog(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
 
 		if (![[components objectAtIndex: 1] isEqual: @"S"] &&
-		    ![[components objectAtIndex: 1] isEqual: @"C"])
+		    ![[components objectAtIndex: 1] isEqual: @"C"]) {
+			objc_autoreleasePoolPop(pool2);
 			continue;
+		}
 
 		codePoint = (OFUnichar)[[components objectAtIndex: 0]
 		    unsignedLongValueWithBase: 16];
@@ -299,9 +305,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_titlecaseTable[j] != 0) {
-				isEmpty = !memcmp(_uppercaseTable + i,
+				isEmpty = (OFCompareMemory(_uppercaseTable + i,
 				    _titlecaseTable + i,
-				    256 * sizeof(OFUnichar));
+				    256 * sizeof(OFUnichar)) == OFOrderedSame);
 				_titlecaseTableSize = i >> 8;
 				_titlecaseTableUsed[_titlecaseTableSize] =
 				    (isEmpty ? 2 : 1);
@@ -340,9 +346,9 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 		for (OFUnichar j = i; j < i + 0x100; j++) {
 			if (_caseFoldingTable[j] != 0) {
-				isEmpty = !memcmp(_lowercaseTable + i,
+				isEmpty = (OFCompareMemory(_lowercaseTable + i,
 				    _caseFoldingTable + i,
-				    256 * sizeof(OFUnichar));
+				    256 * sizeof(OFUnichar)) == OFOrderedSame);
 				_caseFoldingTableSize = i >> 8;
 				_caseFoldingTableUsed[_caseFoldingTableSize] =
 				    (isEmpty ? 2 : 1);

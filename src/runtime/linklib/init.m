@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,10 @@
 
 #include "config.h"
 
+#define OBJC_NO_PERSONALITY_DECLARATION
+
 #import "ObjFWRT.h"
+#import "exception.h"
 #import "private.h"
 
 #define USE_INLINE_STDARG
@@ -33,6 +36,7 @@
 
 #include <constructor.h>
 
+extern struct Library *ObjFWRTBase;
 extern int _Unwind_RaiseException(void *);
 extern void _Unwind_DeleteException(void *);
 extern void *_Unwind_GetLanguageSpecificData(void *);
@@ -49,9 +53,7 @@ extern void __deregister_frame(void *);
 
 void *__objc_class_name_Protocol;
 
-#ifndef OBJC_AMIGA_LIB
-struct Library *ObjFWRTBase;
-
+#ifndef OBJC_COMPILING_AMIGA_LIBRARY
 static void
 error(const char *string, ULONG arg)
 {
@@ -100,6 +102,7 @@ ctor(void)
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
+		.vsnprintf = vsnprintf,
 	};
 
 	if (initialized)
@@ -110,7 +113,7 @@ ctor(void)
 		error("Failed to open " OBJFWRT_AMIGA_LIB " version %lu!",
 		    OBJFWRT_LIB_MINOR);
 
-	if (!objc_init(1, &ctx))
+	if (!objc_init(2, &ctx))
 		error("Failed to initialize " OBJFWRT_AMIGA_LIB "!", 0);
 
 	initialized = true;
@@ -135,3 +138,34 @@ DESTRUCTOR_P(ObjFWRT, 125)
 	dtor();
 }
 #endif
+
+_Unwind_Reason_Code __attribute__((__weak__))
+__gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
+    struct objc_exception *ex, void *ctx)
+{
+	/*
+	 * We can't read ObjFWRTBase here, as this function can get called from
+	 * libgcc directly without r13 set properly, which is a problem when
+	 * the linklib is baserel itself. Hence, we store ObjFWRTBase in the
+	 * exception itself.
+	 */
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# define ObjFWRTBase ex->ObjFWRTBase
+#endif
+
+	if (exClass != GNUCOBJC_EXCEPTION_CLASS)
+		return _URC_CONTINUE_UNWIND;
+
+	__asm__ __volatile__ (
+	    "mr         %%r12, %0"
+	    :: "r" (ObjFWRTBase) : "r12"
+	);
+
+	return __extension__ ((int (*)(int, int, uint64_t, void *, void *))
+	    *(void **)(((uintptr_t)ObjFWRTBase) - 142))(version, actions,
+	    exClass, ex, ctx);
+
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# undef ObjFWRTBase
+#endif
+}

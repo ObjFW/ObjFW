@@ -7,8 +7,8 @@ SRCS = GZIPArchive.m	\
        TarArchive.m	\
        ZIPArchive.m	\
        ZooArchive.m
-DATA = localization/de.json		\
-       localization/localizations.json
+DATA = localization/de.json5		\
+       localization/localizations.json5
 MAN = ofarc.1
 
 include ../../buildsys.mk
@@ -27,12 +27,13 @@ CPPFLAGS += -I../../src							\
 	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"
 OBJCFLAGS += ${PIE_CFLAGS}
 LIBS := -L../../src			\
+	-L../../src/linklib		\
 	-L../../src/runtime		\
 	-L../../src/runtime/linklib	\
 	-L../../src/tls			\
-	-L../../src/bridge		\
-	${OFHTTP_LIBS}			\
-	-lobjfw				\
+	-L../../src/tls/linklib		\
+	${OFARC_LIBS}			\
+	${OBJFW_LIB}			\
 	${RUNTIME_LIBS}			\
 	${LIBS}
 LD = ${OBJC}

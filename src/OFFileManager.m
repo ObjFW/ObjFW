@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -54,6 +54,7 @@
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFGetCurrentDirectoryFailedException.h"
+#import "OFGetItemAttributesFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
@@ -61,7 +62,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFGetItemAttributesFailedException.h"
+#import "OFReplaceItemFailedException.h"
 #import "OFUndefinedKeyException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -89,7 +90,209 @@
 # define CurrentDir(lock) SetCurrentDir(lock)
 #endif
 
-#include "OFFileManagerConstants.inc"
+#ifdef OF_AMIGAOS
+# undef OFFileSize
+# undef OFFileType
+# undef OFFilePOSIXPermissions
+# undef OFFileOwnerAccountID
+# undef OFFileGroupOwnerAccountID
+# undef OFFileOwnerAccountName
+# undef OFFileGroupOwnerAccountName
+# undef OFFileLastAccessDate
+# undef OFFileModificationDate
+# undef OFFileStatusChangeDate
+# undef OFFileCreationDate
+# undef OFFileSymbolicLinkDestination
+# undef OFFileExtendedAttributesNames
+# undef OFFileAmigaProtection
+# undef OFFileAmigaComment
+# undef OFFileMSDOSAttributes
+# undef OFFileTypeRegular
+# undef OFFileTypeDirectory
+# undef OFFileTypeSymbolicLink
+# undef OFFileTypeFIFO
+# undef OFFileTypeCharacterSpecial
+# undef OFFileTypeBlockSpecial
+# undef OFFileTypeSocket
+# undef OFFileTypeUnknown
+#endif
+
+const OFFileAttributeKey OFFileSize = @"OFFileSize";
+const OFFileAttributeKey OFFileType = @"OFFileType";
+const OFFileAttributeKey OFFilePOSIXPermissions = @"OFFilePOSIXPermissions";
+const OFFileAttributeKey OFFileOwnerAccountID = @"OFFileOwnerAccountID";
+const OFFileAttributeKey OFFileGroupOwnerAccountID =
+    @"OFFileGroupOwnerAccountID";
+const OFFileAttributeKey OFFileOwnerAccountName = @"OFFileOwnerAccountName";
+const OFFileAttributeKey OFFileGroupOwnerAccountName =
+    @"OFFileGroupOwnerAccountName";
+const OFFileAttributeKey OFFileLastAccessDate = @"OFFileLastAccessDate";
+const OFFileAttributeKey OFFileModificationDate = @"OFFileModificationDate";
+const OFFileAttributeKey OFFileStatusChangeDate = @"OFFileStatusChangeDate";
+const OFFileAttributeKey OFFileCreationDate = @"OFFileCreationDate";
+const OFFileAttributeKey OFFileSymbolicLinkDestination =
+    @"OFFileSymbolicLinkDestination";
+const OFFileAttributeKey OFFileExtendedAttributesNames =
+    @"OFFileExtendedAttributesNames";
+const OFFileAttributeKey OFFileAmigaProtection = @"OFFileAmigaProtection";
+const OFFileAttributeKey OFFileAmigaComment = @"OFFileAmigaComment";
+const OFFileAttributeKey OFFileMSDOSAttributes = @"OFFileMSDOSAttributes";
+
+const OFFileAttributeType OFFileTypeRegular = @"OFFileTypeRegular";
+const OFFileAttributeType OFFileTypeDirectory = @"OFFileTypeDirectory";
+const OFFileAttributeType OFFileTypeSymbolicLink = @"OFFileTypeSymbolicLink";
+const OFFileAttributeType OFFileTypeFIFO = @"OFFileTypeFIFO";
+const OFFileAttributeType OFFileTypeCharacterSpecial =
+    @"OFFileTypeCharacterSpecial";
+const OFFileAttributeType OFFileTypeBlockSpecial = @"OFFileTypeBlockSpecial";
+const OFFileAttributeType OFFileTypeSocket = @"OFFileTypeSocket";
+const OFFileAttributeType OFFileTypeUnknown = @"OFFileTypeUnknown";
+
+#ifdef OF_AMIGAOS
+const OFFileAttributeKey *
+OFFileSizeRef(void)
+{
+	return &OFFileSize;
+}
+
+const OFFileAttributeKey *
+OFFileTypeRef(void)
+{
+	return &OFFileType;
+}
+
+const OFFileAttributeKey *
+OFFilePOSIXPermissionsRef(void)
+{
+	return &OFFilePOSIXPermissions;
+}
+
+const OFFileAttributeKey *
+OFFileOwnerAccountIDRef(void)
+{
+	return &OFFileOwnerAccountID;
+}
+
+const OFFileAttributeKey *
+OFFileGroupOwnerAccountIDRef(void)
+{
+	return &OFFileGroupOwnerAccountID;
+}
+
+const OFFileAttributeKey *
+OFFileOwnerAccountNameRef(void)
+{
+	return &OFFileOwnerAccountName;
+}
+
+const OFFileAttributeKey *
+OFFileGroupOwnerAccountNameRef(void)
+{
+	return &OFFileGroupOwnerAccountName;
+}
+
+const OFFileAttributeKey *
+OFFileLastAccessDateRef(void)
+{
+	return &OFFileLastAccessDate;
+}
+
+const OFFileAttributeKey *
+OFFileModificationDateRef(void)
+{
+	return &OFFileModificationDate;
+}
+
+const OFFileAttributeKey *
+OFFileStatusChangeDateRef(void)
+{
+	return &OFFileStatusChangeDate;
+}
+
+const OFFileAttributeKey *
+OFFileCreationDateRef(void)
+{
+	return &OFFileCreationDate;
+}
+
+const OFFileAttributeKey *
+OFFileSymbolicLinkDestinationRef(void)
+{
+	return &OFFileSymbolicLinkDestination;
+}
+
+const OFFileAttributeKey *
+OFFileExtendedAttributesNamesRef(void)
+{
+	return &OFFileExtendedAttributesNames;
+}
+
+const OFFileAttributeKey *
+OFFileAmigaProtectionRef(void)
+{
+	return &OFFileAmigaProtection;
+}
+
+const OFFileAttributeKey *
+OFFileAmigaCommentRef(void)
+{
+	return &OFFileAmigaComment;
+}
+
+const OFFileAttributeKey *
+OFFileMSDOSAttributesRef(void)
+{
+	return &OFFileMSDOSAttributes;
+}
+
+const OFFileAttributeType *
+OFFileTypeRegularRef(void)
+{
+	return &OFFileTypeRegular;
+}
+
+const OFFileAttributeType *
+OFFileTypeDirectoryRef(void)
+{
+	return &OFFileTypeDirectory;
+}
+
+const OFFileAttributeType *
+OFFileTypeSymbolicLinkRef(void)
+{
+	return &OFFileTypeSymbolicLink;
+}
+
+const OFFileAttributeType *
+OFFileTypeFIFORef(void)
+{
+	return &OFFileTypeFIFO;
+}
+
+const OFFileAttributeType *
+OFFileTypeCharacterSpecialRef(void)
+{
+	return &OFFileTypeCharacterSpecial;
+}
+
+const OFFileAttributeType *
+OFFileTypeBlockSpecialRef(void)
+{
+	return &OFFileTypeBlockSpecial;
+}
+
+const OFFileAttributeType *
+OFFileTypeSocketRef(void)
+{
+	return &OFFileTypeSocket;
+}
+
+const OFFileAttributeType *
+OFFileTypeUnknownRef(void)
+{
+	return &OFFileTypeUnknown;
+}
+#endif
 
 static OFFileManager *defaultManager;
 
@@ -147,6 +350,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if ([OFSystemInfo isWindowsNT]) {
 		wchar_t *buffer = _wgetcwd(NULL, 0);
 
+		if (buffer == NULL)
+			@throw [OFGetCurrentDirectoryFailedException
+			    exceptionWithErrNo: errno];
+
 		@try {
 			ret = [OFString stringWithUTF16String: buffer];
 		} @finally {
@@ -154,6 +361,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		}
 	} else {
 		char *buffer = _getcwd(NULL, 0);
+
+		if (buffer == NULL)
+			@throw [OFGetCurrentDirectoryFailedException
+			    exceptionWithErrNo: errno];
 
 		@try {
 			ret = [OFString stringWithCString: buffer
@@ -625,8 +836,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		@throw [OFUnsupportedProtocolException
 		    exceptionWithIRI: source];
 
-	if ([IRIHandler copyItemAtIRI: source toIRI: destination])
+	if ([IRIHandler copyItemAtIRI: source toIRI: destination]) {
+		objc_autoreleasePoolPop(pool);
 		return;
+	}
 
 	if ([self fileExistsAtIRI: destination])
 		@throw [OFCopyItemFailedException
@@ -812,8 +1025,10 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		    exceptionWithIRI: source];
 
 	@try {
-		if ([IRIHandler moveItemAtIRI: source toIRI: destination])
+		if ([IRIHandler moveItemAtIRI: source toIRI: destination]) {
+			objc_autoreleasePoolPop(pool);
 			return;
+		}
 	} @catch (OFMoveItemFailedException *e) {
 		if (e.errNo != EXDEV)
 			@throw e;
@@ -828,7 +1043,15 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	@try {
 		[self copyItemAtIRI: source toIRI: destination];
 	} @catch (OFCopyItemFailedException *e) {
-		[self removeItemAtIRI: destination];
+		@try {
+			[self removeItemAtIRI: destination];
+		} @catch (OFRemoveItemFailedException *innerException) {
+			if (innerException.errNo != ENOENT)
+				@throw [OFMoveItemFailedException
+				    exceptionWithSourceIRI: source
+					    destinationIRI: destination
+						     errNo: e.errNo];
+		}
 
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceIRI: source
@@ -840,6 +1063,65 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		[self removeItemAtIRI: source];
 	} @catch (OFRemoveItemFailedException *e) {
 		@throw [OFMoveItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: e.errNo];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+#ifdef OF_HAVE_FILES
+- (void)replaceItemAtPath: (OFString *)destination
+	   withItemAtPath: (OFString *)source
+{
+	void *pool = objc_autoreleasePoolPush();
+	[self replaceItemAtIRI: [OFIRI fileIRIWithPath: destination
+					   isDirectory: false]
+		 withItemAtIRI: [OFIRI fileIRIWithPath: source
+					   isDirectory: false]];
+	objc_autoreleasePoolPop(pool);
+}
+#endif
+
+- (void)replaceItemAtIRI: (OFIRI *)destination withItemAtIRI: (OFIRI *)source
+{
+	void *pool;
+	OFIRIHandler *IRIHandler;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	if ((IRIHandler = [OFIRIHandler handlerForIRI: source]) == nil)
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithIRI: source];
+
+	@try {
+		if ([IRIHandler replaceItemAtIRI: destination
+				   withItemAtIRI: source]) {
+			objc_autoreleasePoolPop(pool);
+			return;
+		}
+	} @catch (OFReplaceItemFailedException *e) {
+		if (e.errNo != EXDEV)
+			@throw e;
+	}
+
+	@try {
+		[self removeItemAtIRI: destination];
+	} @catch (OFRemoveItemFailedException *e) {
+		@throw [OFReplaceItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: e.errNo];
+	}
+
+	@try {
+		[self moveItemAtIRI: source toIRI: destination];
+	} @catch (OFMoveItemFailedException *e) {
+		@throw [OFReplaceItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
 				     errNo: e.errNo];
@@ -1174,5 +1456,22 @@ OF_SINGLETON_METHODS
 - (OFArray OF_GENERIC(OFString *) *)fileExtendedAttributesNames
 {
 	return attributeForKeyOrException(self, OFFileExtendedAttributesNames);
+}
+
+- (OFFileAmigaProtectionMask)fileAmigaProtection
+{
+	return [attributeForKeyOrException(self,
+	    OFFileAmigaProtection) intValue];
+}
+
+- (OFString *)fileAmigaComment
+{
+	return attributeForKeyOrException(self, OFFileAmigaComment);
+}
+
+- (OFFileMSDOSAttributesMask)fileMSDOSAttributes
+{
+	return [attributeForKeyOrException(self,
+	    OFFileMSDOSAttributes) intValue];
 }
 @end

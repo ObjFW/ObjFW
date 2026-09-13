@@ -10,11 +10,11 @@ jobs:
           -
           - --disable-amiga-lib
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
-      run: ./configure --host=ppc-morphos ${{ matrix.configure_flags }}
+      run: ./configure --host=ppc-morphos ${{ matrix.configure_flags }} LIBS="-L$(dirname $(which ppc-morphos-gcc))/../ppc-morphos/lib/libnix"
     - name: make
       run: make -j$(nproc)
     - name: make install

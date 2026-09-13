@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -16,6 +16,17 @@
  * version 3.0 along with this program. If not, see
  * <https://www.gnu.org/licenses/>.
  */
+
+#include "objfw-defs.h"
+
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#include <time.h>
 
 #import "OFObject.h"
 #import "OFMessagePackRepresentation.h"
@@ -152,6 +163,22 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)dateWithTimeIntervalSinceNow: (OFTimeInterval)seconds;
 
 /**
+ * @brief Creates a new OFDate from the specified `struct tm`.
+ *
+ * @param structTm The `struct tm`
+ * @return A new, autoreleased OFDate created from the specified `struct tm`
+ */
++ (instancetype)dateWithStructTm: (const struct tm *)structTm;
+
+/**
+ * @brief Creates a new OFDate from the specified `struct tm` in local time.
+ *
+ * @param structTm The `struct tm`, in local time
+ * @return A new, autoreleased OFDate created from the specified `struct tm`
+ */
++ (instancetype)dateWithLocalStructTm: (const struct tm *)structTm;
+
+/**
  * @brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
@@ -226,6 +253,24 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFDate with the specified date and time
  */
 - (instancetype)initWithTimeIntervalSinceNow: (OFTimeInterval)seconds;
+
+/**
+ * @brief Initializes an already allocated OFDate from the specified
+ *	  `struct tm`.
+ *
+ * @param structTm The `struct tm`
+ * @return An initialized OFDate initialized from the specified `struct tm`
+ */
+- (instancetype)initWithStructTm: (const struct tm *)structTm;
+
+/**
+ * @brief Initializes an already allocated OFDate from the specified
+ *	  `struct tm` in local time.
+ *
+ * @param structTm The `struct tm`, in local time
+ * @return An initialized OFDate initialized from the specified `struct tm`
+ */
+- (instancetype)initWithLocalStructTm: (const struct tm *)structTm;
 
 /**
  * @brief Initializes an already allocated OFDate with the specified string in

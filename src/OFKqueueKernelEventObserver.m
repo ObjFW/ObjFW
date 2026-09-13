@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -85,17 +85,16 @@
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForReading;
-	event.filter = EVFILT_READ;
-	event.flags = EV_ADD;
-	/*
-	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
-	 * switched this to `void *` in NetBSD 10.
-	 */
-	event.udata = (__typeof__(event.udata))object;
+	struct kevent event = {
+		.ident = object.fileDescriptorForReading,
+		.filter = EVFILT_READ,
+		.flags = EV_ADD,
+		/*
+		 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for
+		 * udata, but switched this to `void *` in NetBSD 10.
+		 */
+		.udata = (__typeof__(event.udata))object
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -108,17 +107,16 @@
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForWriting;
-	event.filter = EVFILT_WRITE;
-	event.flags = EV_ADD;
-	/*
-	 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for udata, but
-	 * switched this to `void *` in NetBSD 10.
-	 */
-	event.udata = (__typeof__(event.udata))object;
+	struct kevent event = {
+		.ident = object.fileDescriptorForWriting,
+		.filter = EVFILT_WRITE,
+		.flags = EV_ADD,
+		/*
+		 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for
+		 * udata, but switched this to `void *` in NetBSD 10.
+		 */
+		.udata = (__typeof__(event.udata))object
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -131,12 +129,11 @@
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForReading;
-	event.filter = EVFILT_READ;
-	event.flags = EV_DELETE;
+	struct kevent event = {
+		.ident = object.fileDescriptorForReading,
+		.filter = EVFILT_READ,
+		.flags = EV_DELETE
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -149,12 +146,11 @@
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event;
-
-	memset(&event, 0, sizeof(event));
-	event.ident = object.fileDescriptorForWriting;
-	event.filter = EVFILT_WRITE;
-	event.flags = EV_DELETE;
+	struct kevent event = {
+		.ident = object.fileDescriptorForWriting,
+		.filter = EVFILT_WRITE,
+		.flags = EV_DELETE
+	};
 
 	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		if (errno != EINTR)
@@ -167,41 +163,42 @@
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
-	struct timespec timeout;
-	struct kevent eventList[eventListSize];
-	int events;
-
 	if ([self processReadBuffers])
 		return;
 
-	timeout.tv_sec = (time_t)timeInterval;
-	timeout.tv_nsec = (long)((timeInterval - timeout.tv_sec) * 1000000000);
+	if (timeInterval < 0.0)
+		timeInterval = 0.0;
 
+	struct timespec timeout = {
+		.tv_sec = (time_t)floor(timeInterval),
+		.tv_nsec = (long)
+		    ((timeInterval - floor(timeInterval)) * 1000000000.0)
+	};
+
+	int events;
+	struct kevent eventList[eventListSize];
 	while ((events = kevent(_kernelQueue, NULL, 0, eventList, eventListSize,
-	    (timeInterval != -1 ? &timeout : NULL))) < 0)
+	    (timeInterval != 64060588800.0 ? &timeout : NULL))) < 0)
 		if (errno != EINTR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
 
 	for (int i = 0; i < events; i++) {
-		void *pool;
-
 		if (eventList[i].flags & EV_ERROR)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
 					    errNo: (int)eventList[i].data];
 
 		if (eventList[i].ident == (uintptr_t)_cancelFD[0]) {
-			char buffer;
-
 			OFAssert(eventList[i].filter == EVFILT_READ);
+			char buffer;
 			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
 		}
 
-		pool = objc_autoreleasePoolPush();
+		void *pool = objc_autoreleasePoolPush();
 
 		switch (eventList[i].filter) {
 		case EVFILT_READ:

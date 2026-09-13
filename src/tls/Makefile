@@ -1,11 +1,13 @@
 include ../../extra.mk
 
+SUBDIRS = ${LINKLIB}
 DISTCLEAN = Info.plist	\
 	    ObjFWTLS.oc
 
 SHARED_LIB = ${OBJFWTLS_SHARED_LIB}
 STATIC_LIB = ${OBJFWTLS_STATIC_LIB}
 FRAMEWORK = ${OBJFWTLS_FRAMEWORK}
+AMIGA_LIB = ${OBJFWTLS_AMIGA_LIB}
 LIB_MAJOR = ${OBJFWTLS_LIB_MAJOR}
 LIB_MINOR = ${OBJFWTLS_LIB_MINOR}
 LIB_PATCH = ${OBJFWTLS_LIB_PATCH}
@@ -14,19 +16,23 @@ INCLUDES := ObjFWTLS.h
 SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_MBEDTLS}		\
        ${USE_SRCS_OPENSSL}		\
-       ${USE_SRCS_SECURETRANSPORT}
-
+       ${USE_SRCS_WINDOWS}
 SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
-	      OFGnuTLSX509Certificate.m
+	      OFGnuTLSX509Certificate.m			\
+	      OFGnuTLSX509Name.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
-	       OFMbedTLSX509Certificate.m
+	       OFMbedTLSX509Certificate.m		\
+	       OFMbedTLSX509Name.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
-	       OFOpenSSLX509Certificate.m
-SRCS_SECURETRANSPORT = OFSecureTransportKeychain.m			\
-		       OFSecureTransportTLSStream.m			\
-		       OFSecureTransportX509Certificate.m
+	       OFOpenSSLX509Certificate.m		\
+	       OFOpenSSLX509Name.m
+SRCS_WINDOWS = versioninfo.rc
 
 includesubdir = ObjFWTLS
+
+AMIGA_LIB_OBJS_START = amiga-library.amigalib.o
+AMIGA_LIB_OBJS_EXTRA = amiga-library-glue.amigalib.o
+AMIGA_LIB_OBJS_END = amiga-library-end.amigalib.o
 
 include ../../buildsys.mk
 
@@ -51,14 +57,26 @@ uninstall-extra:
 	fi
 	rmdir ${DESTDIR}${libdir}/objfw-config >/dev/null 2>&1 || true
 
-CPPFLAGS += -I.					\
-	    -I..				\
-	    -I../..				\
-	    -I../exceptions			\
-	    -I../runtime			\
-	    -I../bridge				\
-	    -DOBJFWBRIDGE_LOCAL_INCLUDES	\
+# OpenSSL headers shadow functions with variables and make Apple GCC 4.0.1
+# complain.
+OBJCFLAGS_OFOpenSSLTLSStream.m += -Wno-shadow
+OBJCFLAGS_OFOpenSSLX509Certificate.m += -Wno-shadow
+OBJCFLAGS_OFOpenSSLX509Name.m += -Wno-shadow
+
+CPPFLAGS += -I.							\
+	    -I..						\
+	    -I../..						\
+	    -I../exceptions					\
+	    -I../runtime					\
+	    -I../bridge						\
+	    -DOBJFWBRIDGE_LOCAL_INCLUDES			\
+	    -DOBJFWTLS_AMIGA_LIB=\"${OBJFWTLS_AMIGA_LIB}\"	\
+	    -DOBJFWTLS_LIB_MAJOR=${OBJFWTLS_LIB_MAJOR}		\
+	    -DOBJFWTLS_LIB_MINOR=${OBJFWTLS_LIB_MINOR}		\
+	    -DOBJFWTLS_LIB_PATCH=${OBJFWTLS_LIB_PATCH}		\
+	    -DBUILD_DATE=\"$$(date +%d.%m.%y)\"			\
 	    ${TLS_CPPFLAGS}
+AMIGA_LIB_CFLAGS += -DOF_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS := -F..				\
 		  -F../runtime			\
@@ -67,6 +85,14 @@ FRAMEWORK_LIBS := -F..				\
 		  -framework ObjFW		\
 		  ${RUNTIME_FRAMEWORK_LIBS}	\
 		  ${LIBS}
+AMIGA_LIB_LIBS := -L../runtime/linklib		\
+		  -L../linklib 			\
+		  -lssl_sharedext		\
+		  -lcrypto_sharedext		\
+		  -lobjfw.library.amigalib	\
+		  -lobjfwrt.library.amigalib	\
+		  ${LIBS}			\
+		  ${AMIGA_LIB_LIBS}
 LIBS := -L..		\
 	-L../runtime	\
 	-L../bridge	\
@@ -74,3 +100,8 @@ LIBS := -L..		\
 	-lobjfw		\
 	${RUNTIME_LIBS}	\
 	${LIBS}
+RCFLAGS = --use-temp-file						     \
+	  -DOBJFWTLS_LIB_MAJOR=${OBJFWTLS_LIB_MAJOR}			     \
+	  -DOBJFWTLS_LIB_MINOR=${OBJFWTLS_LIB_MINOR}			     \
+	  -DOBJFWTLS_LIB_VER=\"${OBJFWTLS_LIB_MAJOR}.${OBJFWTLS_LIB_MINOR}\" \
+	  -DOBJFWTLS_SHARED_LIB=\"${OBJFWTLS_SHARED_LIB}\"

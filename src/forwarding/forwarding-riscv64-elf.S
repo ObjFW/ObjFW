@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -192,7 +192,7 @@ _OFForward_stret:
 
 	add	sp, sp, 144
 
-	tail	OFMethodNotFound_stret@plt
+	tail	_OFMethodNotFound_stret@plt
 .type _OFForward_stret, @function
 .size _OFForward_stret, .-_OFForward_stret
 

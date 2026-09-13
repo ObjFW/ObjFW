@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,10 +18,15 @@
  */
 
 #import "OFObject.h"
+#import "OFASN1DERRepresentation.h"
+#import "OFX509Name.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFData;
+@class OFDate;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
 /**
@@ -29,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An X.509 certificate, optionally with an associated private key.
  */
-@interface OFX509Certificate: OFObject
+@interface OFX509Certificate: OFObject <OFASN1DERRepresentation>
 {
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
@@ -38,6 +43,26 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) bool supportsPEMFiles;
 @property (class, readonly, nonatomic) bool supportsPKCS12Files;
 #endif
+
+/**
+ * @brief The date starting which the certificate becomes valid.
+ */
+@property (readonly, nonatomic) OFDate *notBeforeDate;
+
+/**
+ * @brief The date after which the certificate is no longer valid.
+ */
+@property (readonly, nonatomic) OFDate *notAfterDate;
+
+/**
+ * @brief The subject name of the certificate.
+ */
+@property (readonly, nonatomic) OFX509Name *subjectName;
+
+/**
+ * @brief The issuer name of the certificate.
+ */
+@property (readonly, nonatomic) OFX509Name *issuerName;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -59,9 +84,6 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
- * @note This is not available on iOS when using Secure Transport! Use
- *	 @ref certificateChainFromPKCS12FileAtIRI:passphrase: instead!
- *
  * @param certificatesIRI The IRI to the PEM file with the certificate chain
  * @param privateKeyIRI An optional IRI to the PEM file with the private key or
  *			`nil`
@@ -79,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the certificate chain from the PKCS #12 file at the specified
  *	  IRI.
  *
- * @note This is not available when using mbedTLS! Use
+ * @note This is not available when using Mbed TLS! Use
  *	 @ref certificateChainFromPEMFileAtIRI:privateKeyIRI: instead!
  *
  * @param IRI The IRI to the PKCS #12 file with the certificate chain
@@ -105,7 +127,12 @@ extern "C" {
  * is useful to either force a specific implementation or to use one that ObjFW
  * does not know about.
  */
+#ifndef OF_AMIGAOS
 extern Class OFX509CertificateImplementation;
+#else
+extern Class _Nonnull *_Nullable OFX509CertificateImplementationRef(void);
+# define OFX509CertificateImplementation (*OFX509CertificateImplementationRef())
+#endif
 #ifdef __cplusplus
 }
 #endif

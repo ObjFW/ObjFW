@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -77,7 +77,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFMapTableFunctions _keyFunctions, _objectFunctions;
 	struct OFMapTableBucket *_Nonnull *_Nullable _buckets;
-	uint32_t _count, _capacity;
+	uint32_t _count, _capacity, _tombstones;
 	unsigned char _rotation;
 	unsigned long _mutations;
 }

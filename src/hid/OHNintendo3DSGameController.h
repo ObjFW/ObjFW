@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OHNintendo3DSExtendedGamepad;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OHNintendo3DSGameController: OHGameController
 {
 	OHNintendo3DSExtendedGamepad *_extendedGamepad;

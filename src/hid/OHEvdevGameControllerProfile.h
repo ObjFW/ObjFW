@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 
 #import "OHEvdevGameController.h"
 #import "OHGameControllerProfile.h"
+#import "OHVIDPID.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -28,16 +29,14 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDictionary OF_GENERIC(OFString *, OF_KINDOF(OHGameControllerButton *))
 	    *_buttons;
 	OFDictionary OF_GENERIC(OFString *, OHGameControllerAxis *) *_axes;
-	uint16_t _vendorID, _productID;
+	OHVIDPID _VIDPID;
 }
 
 - (instancetype)init OF_UNAVAILABLE;
-
 - (instancetype)oh_initWithKeyBits: (unsigned long *)keyBits
 			    evBits: (unsigned long *)evBits
 			   absBits: (unsigned long *)absBits
-			  vendorID: (uint16_t)vendorID
-			 productID: (uint16_t)productID OF_METHOD_FAMILY(init);
+			    VIDPID: (OHVIDPID)VIDPID OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

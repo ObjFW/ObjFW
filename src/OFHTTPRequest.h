@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -23,10 +23,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFData;
+@class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
-@class OFString;
+@class OFX509Certificate;
 
 /** @file */
 
@@ -76,8 +76,10 @@ OF_SUBCLASSING_RESTRICTED
 	OFHTTPRequestMethod _method;
 	OFHTTPRequestProtocolVersion _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
+	OFData *_Nullable _body;
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
+	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
 }
 
 /**
@@ -115,11 +117,31 @@ OF_SUBCLASSING_RESTRICTED
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 
 /**
+ * @brief The body for the HTTP request.
+ *
+ * @ref OFHTTPClient will send the body if it is not `nil` and automatically
+ * include a `Content-Length` header. If it is nil, @ref OFHTTPClient will
+ * provide a stream to the @ref OFHTTPClientDelegate to write the body into if
+ * @ref headers either contains `Content-Length` or if `Transfer-Encoding` is
+ * `chunked`.
+ *
+ * @ref OFHTTPServer will never use this property and will always provide a
+ * stream to read from instead.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFData *body;
+
+/**
  * @brief The remote address from which the request originates.
  *
  * @note The setter creates a copy of the remote address.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
+
+/**
+ * @brief The certificate chain used for the request.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
+    OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
 
 /**
  * @brief Creates a new OFHTTPRequest with the specified IRI.
@@ -157,8 +179,8 @@ extern OFString *_Nullable OFHTTPRequestMethodString(
  *
  * @param string The string for which the request method should be returned
  * @return The request method for the specified string
- * @throw OFInvalidFormatException The specified string is not a valid HTTP
- *				   request method
+ * @throw OFInvalidArgumentException The specified string is not a valid HTTP
+ *				     request method
  */
 extern OFHTTPRequestMethod OFHTTPRequestMethodParseString(OFString *string);
 

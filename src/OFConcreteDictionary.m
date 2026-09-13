@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -88,9 +88,6 @@ static const OFMapTableFunctions objectFunctions = {
 {
 	size_t count;
 
-	if (dictionary == nil)
-		return [self init];
-
 	if ([dictionary isKindOfClass: [OFConcreteDictionary class]] ||
 	    [dictionary isKindOfClass: [OFConcreteMutableDictionary class]]) {
 		self = [super init];
@@ -109,6 +106,9 @@ static const OFMapTableFunctions objectFunctions = {
 	}
 
 	@try {
+		if (dictionary == nil)
+			@throw [OFInvalidArgumentException exception];
+
 		count = dictionary.count;
 	} @catch (id e) {
 		objc_release(self);
@@ -179,18 +179,20 @@ static const OFMapTableFunctions objectFunctions = {
 		id key, object;
 		size_t i, count;
 
-		va_copy(argumentsCopy, arguments);
-
 		if (firstKey == nil)
 			@throw [OFInvalidArgumentException exception];
 
+		va_copy(argumentsCopy, arguments);
 		key = firstKey;
 
-		if ((object = va_arg(arguments, id)) == nil)
+		if ((object = va_arg(arguments, id)) == nil) {
+			va_end(argumentsCopy);
 			@throw [OFInvalidArgumentException exception];
+		}
 
 		count = 1;
 		for (; va_arg(argumentsCopy, id) != nil; count++);
+		va_end(argumentsCopy);
 
 		if (count % 2 != 0)
 			@throw [OFInvalidArgumentException exception];

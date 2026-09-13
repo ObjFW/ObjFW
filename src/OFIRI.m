@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -37,6 +37,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -506,6 +507,64 @@ _OFIRIVerifyIsEscaped(OFString *string, OFCharacterSet *characterSet,
 @end
 
 @implementation OFIRI
+void
+_OFIRIStandardizePath(OFIRI *IRI)
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray OF_GENERIC(OFString *) *array;
+	bool done = false, startsWithEmpty, endsWithEmpty;
+	OFString *path, *oldPath;
+
+	array = objc_autorelease([[IRI->_percentEncodedPath
+	    componentsSeparatedByString: @"/"] mutableCopy]);
+
+	endsWithEmpty = ([array.lastObject length] == 0);
+	startsWithEmpty = ([array.firstObject length] == 0);
+
+	while (!done) {
+		size_t length = array.count;
+
+		done = true;
+
+		for (size_t i = 0; i < length; i++) {
+			OFString *current = [array objectAtIndex: i];
+
+			if ([current isEqual: @"."] || current.length == 0) {
+				[array removeObjectAtIndex: i];
+
+				done = false;
+				break;
+			}
+
+			if ([current isEqual: @".."]) {
+				if (i >= 1)
+					[array removeObjectsInRange:
+					    OFMakeRange(i - 1, 2)];
+				else
+					[array removeObjectAtIndex: i];
+
+				done = false;
+				break;
+			}
+		}
+	}
+
+	if (startsWithEmpty)
+		[array insertObject: @"" atIndex: 0];
+	if (endsWithEmpty)
+		[array addObject: @""];
+
+	path = [array componentsJoinedByString: @"/"];
+	if (startsWithEmpty && path.length == 0)
+		path = @"/";
+
+	oldPath = IRI->_percentEncodedPath;
+	IRI->_percentEncodedPath = [path copy];
+	objc_release(oldPath);
+
+	objc_autoreleasePoolPop(pool);
+}
+
 + (instancetype)IRI
 {
 	return objc_autoreleaseReturnValue([[self alloc] init]);
@@ -672,7 +731,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (fragment - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*fragmentString,
-		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
+		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
 
 		length = fragment - UTF8String;
 	}
@@ -683,7 +742,7 @@ parsePathQueryFragment(const char *UTF8String, size_t length,
 				  length: length - (query - UTF8String) - 1];
 
 		_OFIRIVerifyIsEscaped(*queryString,
-		    [OFCharacterSet IRIFragmentAllowedCharacterSet], true);
+		    [OFCharacterSet IRIQueryAllowedCharacterSet], true);
 
 		length = query - UTF8String;
 	}
@@ -756,29 +815,33 @@ static bool
 isAbsolute(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
+	const char *UTF8String = string.UTF8String;
+	size_t length = string.UTF8StringLength;
 
-	@try {
-		const char *UTF8String = string.UTF8String;
-		size_t length = string.UTF8StringLength;
-
-		if (length < 1)
-			return false;
-
-		if (!OFASCIIIsAlpha(UTF8String[0]))
-			return false;
-
-		for (size_t i = 1; i < length; i++) {
-			if (UTF8String[i] == ':')
-				return true;
-
-			if (!OFASCIIIsAlnum(UTF8String[i]) &&
-			    UTF8String[i] != '+' && UTF8String[i] != '-' &&
-			    UTF8String[i] != '.')
-				return false;
-		}
-	} @finally {
+	if (length < 1) {
 		objc_autoreleasePoolPop(pool);
+		return false;
 	}
+
+	if (!OFASCIIIsAlpha(UTF8String[0])) {
+		objc_autoreleasePoolPop(pool);
+		return false;
+	}
+
+	for (size_t i = 1; i < length; i++) {
+		if (UTF8String[i] == ':') {
+			objc_autoreleasePoolPop(pool);
+			return true;
+		}
+
+		if (!OFASCIIIsAlnum(UTF8String[i]) && UTF8String[i] != '+' &&
+		    UTF8String[i] != '-' && UTF8String[i] != '.') {
+			objc_autoreleasePoolPop(pool);
+			return false;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 
 	return false;
 }
@@ -870,10 +933,12 @@ merge(OFString *base, OFString *path)
 			} else {
 				if ([path hasPrefix: @"/"])
 					_percentEncodedPath = [path copy];
-				else
+				else {
 					_percentEncodedPath = [merge(
 					    IRI->_percentEncodedPath, path)
 					    copy];
+					_OFIRIStandardizePath(self);
+				}
 
 				_percentEncodedQuery = [query copy];
 			}
@@ -1320,6 +1385,12 @@ merge(OFString *base, OFString *path)
 
 	if (![_scheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
+
+# ifndef OF_WINDOWS
+	if (_percentEncodedHost.length != 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+# endif
 
 	if (![_percentEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];

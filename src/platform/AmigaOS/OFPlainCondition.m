@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,8 +31,11 @@
 #endif
 #undef Class
 
-extern struct Device *TimerBase;
-extern struct Unit *MicroHZUnit;
+#ifdef OF_AMIGAOS4
+extern struct TimeRequest OFTimeRequest;
+#else
+extern struct timerequest OFTimeRequest;
+#endif
 
 int
 OFPlainConditionNew(OFPlainCondition *condition)
@@ -101,12 +104,13 @@ OFPlainConditionWaitOrExecSignal(OFPlainCondition *condition,
 	int error = 0;
 	ULONG mask;
 
-	if (waitingTask.sigBit == -1)
+	if (waitingTask.sigBit == 0xFF)
 		return EAGAIN;
 
 	Forbid();
 
 	if ((error = OFPlainMutexUnlock(mutex)) != 0) {
+		Permit();
 		FreeSignal(waitingTask.sigBit);
 		return error;
 	}
@@ -171,8 +175,13 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 				.mn_ReplyPort = &port,
 				.mn_Length = sizeof(request)
 			},
-			.io_Device = TimerBase,
-			.io_Unit = MicroHZUnit,
+#ifdef OF_AMIGAOS4
+			.io_Device = OFTimeRequest.Request.io_Device,
+			.io_Unit = OFTimeRequest.Request.io_Unit,
+#else
+			.io_Device = OFTimeRequest.tr_node.io_Device,
+			.io_Unit = OFTimeRequest.tr_node.io_Unit,
+#endif
 			.io_Command = TR_ADDREQUEST
 		},
 #ifdef OF_AMIGAOS4
@@ -193,7 +202,7 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 
 	NewList(&port.mp_MsgList);
 
-	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
+	if (waitingTask.sigBit == 0xFF || port.mp_SigBit == 0xFF) {
 		error = EAGAIN;
 		goto fail;
 	}
@@ -236,9 +245,9 @@ OFPlainConditionTimedWaitOrExecSignal(OFPlainCondition *condition,
 	Permit();
 
 fail:
-	if (waitingTask.sigBit != -1)
+	if (waitingTask.sigBit != 0xFF)
 		FreeSignal(waitingTask.sigBit);
-	if (port.mp_SigBit != -1)
+	if (port.mp_SigBit != 0xFF)
 		FreeSignal(port.mp_SigBit);
 
 	return error;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,6 +29,10 @@
 # endif
 #endif
 
+#ifdef OF_MORPHOS
+# include <exec/types.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /**
@@ -39,6 +43,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OHGameControllerButton: OHGameControllerElement
 {
 	float _value;
+#ifdef OF_MORPHOS
+	APTR _notifier;
+#endif
 	OF_RESERVE_IVARS(OHGameControllerButton, 4)
 }
 

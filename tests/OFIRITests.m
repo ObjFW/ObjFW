@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -120,6 +120,18 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 	OTAssertEqualObjects(
 	    [[OFIRI IRIWithString: @"foo"
 		    relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar"]]
+	    string],
+	    @"http://foo/foo");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"foo"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar/"]]
+	    string],
+	    @"http://foo/bar/foo");
+
+	OTAssertEqualObjects(
+	    [[OFIRI IRIWithString: @"../foo"
+		    relativeToIRI: [OFIRI IRIWithString: @"http://foo/bar/"]]
 	    string],
 	    @"http://foo/foo");
 
@@ -488,7 +500,7 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 - (void)testSetPercentEncodedUserFailsWithInvalidCharacters
 {
-	OTAssertThrowsSpecific(_mutableIRI.percentEncodedHost = @"/",
+	OTAssertThrowsSpecific(_mutableIRI.percentEncodedUser = @"/",
 	    OFInvalidFormatException);
 }
 
@@ -617,6 +629,6 @@ static OFString *IRI0String = @"ht+tp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	OTAssertEqualObjects([[OFIRI IRIWithString: @"http://foo/bar/../../qux"]
 	    IRIByStandardizingPath],
-	    [OFIRI IRIWithString: @"http://foo/../qux"]);
+	    [OFIRI IRIWithString: @"http://foo/qux"]);
 }
 @end

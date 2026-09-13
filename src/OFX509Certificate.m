@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,12 +20,30 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
+#import "OFData.h"
+#import "OFDictionary.h"
+#import "OFString.h"
 
 #import "OFNotImplementedException.h"
 
+#ifdef OF_AMIGAOS
+# undef OFX509CertificateImplementation
+#endif
+
 Class OFX509CertificateImplementation = Nil;
 
+#ifdef OF_AMIGAOS
+Class *
+OFX509CertificateImplementationRef(void)
+{
+	return &OFX509CertificateImplementation;
+}
+#endif
+
 @implementation OFX509Certificate
+@dynamic issuerName, notBeforeDate, notAfterDate, subjectName;
+@dynamic ASN1DERRepresentation;
+
 + (instancetype)alloc
 {
 	if (self == [OFX509Certificate class]) {
@@ -71,5 +89,27 @@ Class OFX509CertificateImplementation = Nil;
 					     passphrase: passphrase];
 
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFString *)description
+{
+	OFString *ret;
+	@try {
+		ret = [OFString stringWithFormat:
+		    @"<%@:\n"
+		    @"\tIssuer name = %@\n"
+		    @"\tNot before = %@\n"
+		    @"\tNot after = %@\n"
+		    @"\tSubject name = %@\n"
+		    @"\tSHA-256 fingerprint = %@\n"
+		    @">",
+		    self.class, self.issuerName, self.notBeforeDate,
+		    self.notAfterDate, self.subjectName,
+		    self.ASN1DERRepresentation.stringBySHA256Hashing];
+	} @catch (OFNotImplementedException *e) {
+		ret = [OFString stringWithFormat: @"<%@>", self.className];
+	}
+
+	return ret;
 }
 @end

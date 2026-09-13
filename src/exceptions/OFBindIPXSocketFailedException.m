@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -67,7 +67,7 @@
 
 	@try {
 		_network = network;
-		memcpy(_node, node, sizeof(_node));
+		OFCopyMemory(_node, node, sizeof(_node));
 		_port = port;
 		_packetType = packetType;
 	} @catch (id e) {
@@ -80,13 +80,13 @@
 
 - (void)getNode: (unsigned char [IPX_NODE_LEN])node
 {
-	memcpy(node, _node, sizeof(_node));
+	OFCopyMemory(node, _node, sizeof(_node));
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Binding to network %" @PRIx16 " on node "
+	    @"Binding to network %" @PRIx32 " on node "
 	    @"%02X:%02X:%02X:%02X:%02X:%02X with port %" @PRIx16 @" failed for "
 	    @"packet type %" @PRIx8 " in socket of type %@: %@",
 	    _network, _node[0], _node[1], _node[2], _node[3], _node[4],

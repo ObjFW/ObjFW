@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -155,7 +155,7 @@ _OFForward_stret:
 	jmp	*%eax
 
 0:
-	movl	OFMethodNotFound_stret@GOT(%ebx), %eax
+	movl	_OFMethodNotFound_stret@GOT(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx

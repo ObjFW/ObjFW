@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,7 @@
 const char *VER = "$VER: objfw-new "
     OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR) "."
     OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MINOR) " (" BUILD_DATE ") "
-    "\xA9 2008-2025 Jonathan Schleifer";
+    "\xA9 2008-2026 Jonathan Schleifer";
 #endif
 
 @interface ObjFWNew: OFObject <OFApplicationDelegate>

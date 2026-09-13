@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -18,6 +18,7 @@
  */
 
 #import "OFObject.h"
+#import "OFRunLoop.h"
 
 #ifndef OF_HAVE_SOCKETS
 # error No sockets available!
@@ -27,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFHTTPClient;
+@class OFHTTPClientResponse;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFIRI;
@@ -89,6 +91,24 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A callback which is called when an @ref OFHTTPClient wants to send
  *	  the body for a request.
  *
+ * This is only used if the request's @ref OFHTTPRequest#body is `nil`.
+ *
+ * If the body is not `nil,` @ref OFHTTPClient will send the request's
+ * @ref OFHTTPRequest#body and automatically add a `Content-Length` header for
+ * it (any `Content-Length` and `Transfer-Encoding` headers from the request's
+ * @ref OFHTTPRequest#headers are ignored).
+ *
+ * If the body is `nil`, @ref OFHTTPClient uses the same logic as RFC 2616 to
+ * determine whether a body should be sent, meaning either a `Content-Length`
+ * header is present in the request or the request has a `Transfer-Encoding`
+ * header that is `chunked`.
+ *
+ * The client waits for the request body stream to be completed (either by the
+ * specified `Content-Length` bytes being written or for `chunked`
+ * `Transfer-Encoding` by it being closed) without blocking, so the entire
+ * request body does not need to be written from inside the callback. It can be
+ * stored and written to later and it can also be written to asynchronously.
+ *
  * @param client The OFHTTPClient that wants to send the body
  * @param requestBody A stream into which the body of the request should be
  *		      written
@@ -109,7 +129,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-	 statusCode: (short)statusCode
+	 statusCode: (unsigned short)statusCode
 	    request: (OFHTTPRequest *)request;
 
 /**
@@ -138,7 +158,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -	       (bool)client: (OFHTTPClient *)client
   shouldFollowRedirectToIRI: (OFIRI *)IRI
-		 statusCode: (short)statusCode
+		 statusCode: (unsigned short)statusCode
 		    request: (OFHTTPRequest *)request
 		   response: (OFHTTPResponse *)response;
 @end
@@ -159,11 +179,11 @@ OF_SUBCLASSING_RESTRICTED
 	OFStream *_Nullable _stream;
 	OFIRI *_Nullable _lastIRI;
 	bool _lastWasHEAD;
-	OFHTTPResponse *_Nullable _lastResponse;
+	OFHTTPClientResponse *_Nullable _lastResponse;
 }
 
 /**
- * @brief The delegate of the HTTP request.
+ * @brief The delegate of the HTTP client.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     OFObject <OFHTTPClientDelegate> *delegate;
@@ -237,6 +257,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects;
+
+/**
+ * @brief Asynchronously performs the specified HTTP request.
+ *
+ * @param request The request to perform
+ * @param redirects The maximum number of redirects after which no further
+ *		    attempt is done to follow the redirect, but instead the
+ *		    redirect is treated as an OFHTTPResponse
+ * @param runLoopMode The run loop mode in which to perform the request
+ * @throw OFAlreadyOpenException The client is already performing a request
+ */
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
+		  redirects: (unsigned int)redirects
+		runLoopMode: (OFRunLoopMode)runLoopMode;
 
 /**
  * @brief Closes connections that are still open due to keep-alive.

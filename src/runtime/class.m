@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -474,12 +474,12 @@ processLoadQueue(void)
 
 			loadQueue[i] = loadQueue[loadQueueCount];
 
-			loadQueue = realloc(loadQueue,
-			    sizeof(Class) * loadQueueCount);
-
-			if (loadQueue == NULL)
+			if ((loadQueue = realloc(loadQueue,
+			    sizeof(Class) * loadQueueCount)) == NULL)
 				_OBJC_ERROR("Not enough memory for load "
 				    "queue!");
+
+			i--;
 		}
 	}
 }
@@ -524,13 +524,22 @@ _objc_registerAllClasses(struct objc_symtab *symtab)
 Class
 objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 {
-	struct objc_class *class, *metaclass;
-	Class iter, rootclass = Nil;
+	_objc_globalMutex_lock();
 
+	if (_objc_hashtable_get(classes, name) != NULL) {
+		_objc_globalMutex_unlock();
+		return Nil;
+	}
+
+	struct objc_class *class, *metaclass;
 	if ((class = calloc(1, sizeof(*class))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*class))) == NULL)
 		_OBJC_ERROR("Not enough memory to allocate class pair for "
 		    "class %s!", name);
+
+	if ((name = _objc_strdup(name)) == NULL)
+		_OBJC_ERROR("Not enough memory to copy class name for new "
+		    "class pair!");
 
 	class->isa = metaclass;
 	class->superclass = superclass;
@@ -545,15 +554,18 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 
 	class->instanceSize += (long)extraBytes;
 
-	for (iter = superclass; iter != Nil; iter = iter->superclass)
+	Class rootclass = Nil;
+	for (Class iter = superclass; iter != Nil; iter = iter->superclass)
 		rootclass = iter;
 
 	metaclass->isa = (rootclass != Nil ? rootclass->isa : class);
 	metaclass->superclass = (superclass != Nil ? superclass->isa : Nil);
 	metaclass->name = name;
-	metaclass->info = _OBJC_CLASS_INFO_CLASS;
+	metaclass->info = _OBJC_CLASS_INFO_METACLASS;
 	metaclass->instanceSize = (superclass != Nil ?
 	    superclass->isa->instanceSize : 0) + (long)extraBytes;
+
+	_objc_globalMutex_unlock();
 
 	return class;
 }
@@ -663,7 +675,7 @@ objc_getClassList(Class *buffer, unsigned int count)
 		}
 
 		if (classes->data[i] == NULL ||
-		    classes->data[i] == &_objc_deletedBucket)
+		    classes->data[i] == &_objc_hashtable_tombstone)
 			continue;
 
 		if (strcmp(classes->data[i]->key, "Protocol") == 0)
@@ -882,10 +894,12 @@ bool
 class_addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	bool ret;
+	if (class == Nil)
+		return false;
 
 	_objc_globalMutex_lock();
 
+	bool ret;
 	if (getMethod(class, selector) == NULL) {
 		addMethod(class, selector, implementation, typeEncoding);
 		ret = true;
@@ -901,11 +915,13 @@ IMP
 class_replaceMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	struct objc_method *method;
-	IMP oldImplementation;
+	if (class == Nil)
+		return NULL;
 
 	_objc_globalMutex_lock();
 
+	struct objc_method *method;
+	IMP oldImplementation;
 	if ((method = getMethod(class, selector)) != NULL) {
 		oldImplementation = method->implementation;
 		method->implementation = implementation;
@@ -1038,7 +1054,7 @@ _objc_unregisterAllClasses(void)
 
 	for (uint32_t i = 0; i < classes->size; i++) {
 		if (classes->data[i] != NULL &&
-		    classes->data[i] != &_objc_deletedBucket) {
+		    classes->data[i] != &_objc_hashtable_tombstone) {
 			void *class = (Class)classes->data[i]->object;
 
 			if (class == Nil || (uintptr_t)class & 1)

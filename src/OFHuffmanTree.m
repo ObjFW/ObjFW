@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -24,7 +24,7 @@
 
 #import "OFHuffmanTree.h"
 
-#import "OFInvalidFormatException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 
 static OFHuffmanTree
@@ -42,6 +42,9 @@ newTree(void)
 static void
 treeInsert(OFHuffmanTree tree, uint16_t code, uint8_t length, uint16_t value)
 {
+	if (length >= 16)
+		@throw [OFInvalidArgumentException exception];
+
 	while (length > 0) {
 		uint8_t bit;
 
@@ -90,7 +93,11 @@ _OFHuffmanTreeNew(uint8_t lengths[], uint16_t count)
 			}
 		}
 
+		if (maxBit == 0)
+			@throw [OFInvalidArgumentException exception];
+
 		code = 0;
+		lengthCount[0] = 0;
 		for (size_t i = 1; i <= maxBit; i++) {
 			code = (code + lengthCount[i - 1]) << 1;
 			nextCode[i] = code;
@@ -125,6 +132,9 @@ _OFHuffmanTreeNewSingle(uint16_t value)
 void
 _OFHuffmanTreeFree(OFHuffmanTree tree)
 {
+	if (tree == NULL)
+		return;
+
 	for (uint_fast8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leaves[i] != NULL)
 			_OFHuffmanTreeFree(tree->leaves[i]);

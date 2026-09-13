@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -144,7 +144,7 @@ __OFForward_stret:
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_OFMethodNotFound_stret
+	jmp	__OFMethodNotFound_stret
 
 LgetEIP:
 	movl	(%esp), %ebx

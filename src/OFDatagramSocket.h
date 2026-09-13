@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -461,7 +461,8 @@ typedef OFData *_Nullable (^OFDatagramSocketDataSentHandler)(
 - (void)obtainSocketForCurrentThread;
 
 /**
- * @brief Cancels all pending asynchronous requests on the socket.
+ * @brief Cancels all pending asynchronous requests on the socket in all run
+ *	  loop modes.
  */
 - (void)cancelAsyncRequests;
 

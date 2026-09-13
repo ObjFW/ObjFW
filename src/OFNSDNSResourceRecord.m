@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFMXDNSResourceRecord.h"
+#import "OFNSDNSResourceRecord.h"
 
 @implementation OFNSDNSResourceRecord
 @synthesize authoritativeHost = _authoritativeHost;

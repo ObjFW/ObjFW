@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -90,7 +90,7 @@ _OFForward:
 	cmpdi	%r3, 0
 	beq-	0f
 	ld	%r4, 32(%r1)
-	cmpw	%r3, %r4
+	cmpd	%r3, %r4
 	beq-	0f
 
 	std	%r3, 32(%r1)
@@ -205,7 +205,7 @@ _OFForward_stret:
 	cmpdi	%r3, 0
 	beq-	0f
 	ld	%r4, 40(%r1)
-	cmpw	%r3, %r4
+	cmpd	%r3, %r4
 	beq-	0f
 
 	std	%r3, 40(%r1)
@@ -247,7 +247,7 @@ _OFForward_stret:
 	ld	%r4, 40(%r1)
 	ld	%r5, 48(%r1)
 
-	bl	OFMethodNotFound_stret
+	bl	_OFMethodNotFound_stret
 	nop
 
 	addi	%r1, %r1, 160

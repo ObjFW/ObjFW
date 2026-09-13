@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,7 +22,7 @@
 @class OFDate;
 @class OFTimer;
 
-#define BPS_WINDOW_SIZE 10
+#define BPS_WINDOW_SIZE 30
 
 @interface ProgressBar: OFObject
 {

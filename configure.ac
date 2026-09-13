@@ -1,17 +1,20 @@
-AC_INIT(ObjFW, 1.4-dev, js@nil.im, objfw, https://objfw.nil.im/)
+AC_INIT(ObjFW, 1.6-dev, js@nil.im, objfw, https://objfw.nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 objfw_version_major=1
-objfw_version_minor=4
+objfw_version_minor=6
+objfw_version_revision=0
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MAJOR, $objfw_version_major,
 	[The major version of ObjFW])
 AC_DEFINE_UNQUOTED(OBJFW_VERSION_MINOR, $objfw_version_minor,
 	[The minor version of ObjFW])
-dnl This may only be set to 1.4 once 1.4 is released
-AC_SUBST(BUNDLE_VERSION, 1.3.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.3)
+AC_DEFINE_UNQUOTED(OBJFW_VERSION_REVISION, $objfw_version_revision,
+	[The version revision of ObjFW])
+dnl This may only be set to 1.6 once 1.6 is released
+AC_SUBST(BUNDLE_VERSION, 1.5.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.5)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
@@ -59,6 +62,10 @@ m68k-*-amigaos*)
 	;;
 powerpc-*-amigaos*)
 	CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+	LDFLAGS="$LDFLAGS -athread=native"
+	OBJFW_LDFLAGS="$OBJFW_LDFLAGS -athread=native"
+	LIBS="-ldebug $LIBS"
+	OBJFW_LIBS="-ldebug $OBJFW_LIBS"
 
 	enable_files="yes"	# Required for reading ENV:
 	enable_shared="no"
@@ -80,12 +87,15 @@ powerpc-*-amigaos*)
 	supports_amiga_lib="yes"
 
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFW_AMIGA_LIB, objfw.library)
 		AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
+		AC_SUBST(OBJFWHID_AMIGA_LIB, objfwhid.library)
 		t="-mresident32 -ffreestanding -noixemul"
-		AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+		AC_SUBST(AMIGA_LIB_CFLAGS, "$AMIGA_LIB_CFLAGS $t")
 		t="-mresident32 -nostartfiles -nodefaultlibs -noixemul"
-		t="$t -laboxstubs -labox -lmath -ldebug -lc"
-		AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
+		AC_SUBST(AMIGA_LIB_LDFLAGS, "$AMIGA_LIB_LDFLAGS $t")
+		t="-laboxstubs -labox -lgcc -ldebug -lc"
+		AC_SUBST(AMIGA_LIB_LIBS, "$AMIGA_LIB_LIBS $t")
 	])
 
 	AC_SUBST(LIBBASES_M, libbases.m)
@@ -376,16 +386,12 @@ case "$OBJC" in
 	;;
 esac
 
-AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
-	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
-], [
-	AX_CHECK_COMPILER_FLAGS(-std=gnu1x, [
-		OBJCFLAGS="$OBJCFLAGS -std=gnu1x"
-	], [
-		AX_CHECK_COMPILER_FLAGS(-std=gnu99,
-			[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+for std in gnu23 gnu2x gnu17 gnu11 gnu1x gnu99; do
+	AX_CHECK_COMPILER_FLAGS(-std=$std, [
+		OBJCFLAGS="$OBJCFLAGS -std=$std"
+		break
 	])
-])
+done
 
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
@@ -481,6 +487,7 @@ BUILDSYS_STACK_PROTECTOR
 BUILDSYS_RELRO
 OBJCFLAGS="$OBJCFLAGS $STACK_PROTECTOR_CFLAGS"
 LDFLAGS="$LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
+OBJFW_LDFLAGS="$OBJFW_LDFLAGS $STACK_PROTECTOR_LDFLAGS $RELRO_LDFLAGS"
 
 AC_ARG_ENABLE(amiga-lib,
 	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
@@ -496,7 +503,6 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(OBJFW_SHARED_LIB, '${LIB_PREFIX}objfw${LIB_SUFFIX}')
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(FORWARDING_LIB_A, "forwarding.lib.a")
-	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 
 	AC_SUBST(OBJFWHID_SHARED_LIB, '${LIB_PREFIX}objfwhid${LIB_SUFFIX}')
 
@@ -511,12 +517,30 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	], [
 		AC_SUBST(TESTPLUGIN_PLUGIN, 'TestPlugin${PLUGIN_SUFFIX}')
 	])
+
+	AC_SUBST(OBJFW_LIB, "-lobjfw")
+	AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid")
 ], [
-	AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library was built])
-	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
-	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
-	AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
-	AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		AC_SUBST(OBJFW_LIB, "-lobjfw.library")
+		AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid.library")
+		AC_SUBST(LIBOBJFW_DEP, "../src/linklib/libobjfw.library.a")
+		AC_SUBST(LIBOBJFW_DEP_LVL2,
+			"../../src/linklib/libobjfw.library.a")
+		AC_SUBST(LIBOBJFWHID_DEP,
+			"../src/hid/linklib/libobjfwhid.library.a")
+		AC_SUBST(LIBOBJFWHID_DEP_LVL2,
+			"../../src/hid/libobjfwhid.library.a")
+	], [
+		AC_SUBST(OBJFW_LIB, "-lobjfw")
+		AC_SUBST(OBJFW_HID_LIB, "-lobjfwhid")
+		AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
+		AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
+		AC_SUBST(LIBOBJFWHID_DEP, "../src/hid/libobjfwhid.a")
+		AC_SUBST(LIBOBJFWHID_DEP_LVL2, "../../src/hid/libobjfwhid.a")
+
+		AC_DEFINE(OF_NO_SHARED, 1, [Whether no shared library is built])
+	])
 ])
 
 AS_IF([test x"$build_framework" = x"yes"], [
@@ -525,9 +549,14 @@ AS_IF([test x"$build_framework" = x"yes"], [
 	TESTS_LIBS="-F../src/hid -F../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
 ], [
-	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src/hid -L../src/bridge $TESTS_LIBS"
+	TESTS_LIBS="\${OBJFW_LIB} \${RUNTIME_LIBS} $TESTS_LIBS"
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		TESTS_LIBS="-lobjfwhid.library \${HID_LIBS} $TESTS_LIBS"
+	], [
+		TESTS_LIBS="-lobjfwhid \${HID_LIBS} $TESTS_LIBS"
+	])
+	TESTS_LIBS="-L../src/hid -L../src/hid/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src/bridge $TESTS_LIBS"
 	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
 	TESTS_LIBS="-L../src $TESTS_LIBS"
 ])
@@ -535,17 +564,18 @@ AS_IF([test x"$build_framework" = x"yes"], [
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
 	enable_static="yes"
-])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
+
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
+	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
+
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(FORWARDING_A, "forwarding.a")
-
-	AC_SUBST(OBJFWHID_STATIC_LIB, "libobjfwhid.a")
 ])
 
 AS_IF([test x"$enable_amiga_lib" != x"no"], [
-       AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
+	AC_SUBST(EXCEPTIONS_AMIGALIB_A, "exceptions.amigalib.a")
+	AC_SUBST(FORWARDING_AMIGALIB_A, "forwarding.amigalib.a")
+	AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -676,6 +706,10 @@ case "$objc_runtime" in
 	AC_CONFIG_FILES(src/runtime/Info.plist)
 
 	AS_IF([test x"$enable_shared" != x"no"], [
+		AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
+	])
+
+	AS_IF([test x"$enable_shared" != x"no"], [
 		AC_SUBST(OBJFWRT_SHARED_LIB,
 			'${LIB_PREFIX}objfwrt${LIB_SUFFIX}')
 	])
@@ -693,6 +727,7 @@ case "$objc_runtime" in
 	AS_IF([test x"$enable_amiga_lib" != x"no"], [
 		AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
 		tmp="../src/runtime/linklib/libobjfwrt.library.a"
+		AC_SUBST(LOOKUP_ASM_AMIGALIB_A, "lookup-asm.amigalib.a")
 		AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
 		AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
 	], [
@@ -758,8 +793,8 @@ case "$objc_runtime" in
 		AC_MSG_ERROR([libobjc not found!])
 	])
 
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -lobjc"
+	old_LIBS="$LIBS"
+	LIBS="$LIBS -lobjc"
 
 	AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 		dnl If we're using the Apple runtime and it doesn't have
@@ -768,8 +803,8 @@ case "$objc_runtime" in
 		dnl ObjFWRT implementation as that would result in two parallel
 		dnl autorelease pool chains.
 		AC_SUBST(AUTORELEASE_FOUNDATION_M, "autorelease-foundation.m")
-		LIBS="-framework Foundation"
-		FRAMEWORK_LIBS="-framework Foundation"
+		old_LIBS="-framework Foundation $old_LIBS"
+		FRAMEWORK_LIBS="-framework Foundation $FRAMEWORK_LIBS"
 	])
 	AC_CHECK_FUNC(objc_constructInstance, [], [
 		AC_SUBST(RUNTIME_INSTANCE_M, "runtime/instance.m")
@@ -785,7 +820,7 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME_ARC_M, "runtime/arc.m")
 	])
 
-	OBJCFLAGS="$old_OBJCFLAGS"
+	LIBS="$old_LIBS"
 	;;
 esac
 
@@ -896,8 +931,20 @@ AC_EGREP_CPP(egrep_cpp_yes, [
 ], [
 	AC_MSG_RESULT(no)
 	AC_CHECK_SIZEOF(uintptr_t)
-	AC_DEFINE(UINTPTR_MAX,
-		[(SIZEOF_UINTPTR_T * CHAR_BIT)], [Maximum value for uintptr_t])
+	case "$ac_cv_sizeof_uintptr_t" in
+	4)
+		uintptr_max="0xFFFFFFFF"
+		;;
+	8)
+		uintptr_max="0xFFFFFFFFFFFFFFFF"
+		;;
+	*)
+		AC_MSG_ERROR(Could not determine UINTPTR_MAX!)
+		;;
+	esac
+
+	AC_DEFINE_UNQUOTED(UINTPTR_MAX, $uintptr_max,
+		[Maximum value for uintptr_t])
 ])
 
 AC_CHECK_HEADER(inttypes.h,
@@ -909,8 +956,8 @@ AC_CHECK_HEADER(sys/types.h,
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
-AC_CHECK_TYPE(wchar_t)
-AC_CHECK_HEADER(wchar.h)
+AC_CHECK_TYPES(wchar_t)
+AC_CHECK_HEADERS(wchar.h)
 
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
@@ -918,31 +965,52 @@ AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],
 	[AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
-AC_MSG_CHECKING(for floating point endianess)
-fp_endianess="unknown"
+case "$host_os" in
+mingw*)
+	dnl _Float16 is broken in MinGW.
+	;;
+*)
+	AC_MSG_CHECKING(for working _Float16)
+	AC_LINK_IFELSE([
+		AC_LANG_PROGRAM([
+			_Float16 f16;
+			float f32;
+		], [
+			f32 = f16;
+		])
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(OF_HAVE__FLOAT16, 1, [Whether we have _Float16])
+	], [
+		AC_MSG_RESULT(no)
+	])
+esac
+
+AC_MSG_CHECKING(for floating point endianness)
+fp_endianness="unknown"
 AS_IF([test x"$ac_cv_c_bigendian" != x"universal"], [
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
-			double endianess = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
+			double endianness = 2.993700760838795055656993580068609688772747263874402942272934826871811872228512759832626847251963763755836687759498519784550143745834860002945223766052808125982053455555265216112722718870586961456110693379343178124592311441022662940307099598578775368547768968914916965731708568179631324904813506101190853720749196062963892799499230635163056742330563321122389331703618066046034494287335316842529021563862331183541255013987734473643350285400060357711238514186776429325214739886098119655678483017894951556639821088508565036657794343031121375178126860889964700274558728491825977274341798997758923017217660272136611938897932105874133412726223468780517578125e-259;
 		])
 	], [
 		AS_IF([$SED 's/[[^[:print:]]]//g' <conftest.$ac_objext | \
 		    $EGREP BigEnd >/dev/null], [
 			AC_DEFINE(OF_FLOAT_BIG_ENDIAN, 1,
 				[Whether floats are big endian])
-			fp_endianess="big endian"
+			fp_endianness="big endian"
 		], [
 			AS_IF([$SED 's/[[^[:print:]]]//g' \
 			    <conftest.$ac_objext | $EGREP dnEgiB >/dev/null], [
-				fp_endianess="little endian"
+				fp_endianness="little endian"
 			])
 		])
 	])
 ], [
-	fp_endianess="universal"
+	fp_endianness="universal"
 ])
-AC_MSG_RESULT($fp_endianess)
-AS_IF([test x"$fp_endianess" = x"unknown"], [
+AC_MSG_RESULT($fp_endianness)
+AS_IF([test x"$fp_endianness" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
@@ -1070,7 +1138,10 @@ AC_SUBST(ENCODINGS_SRCS)
 AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
 ])
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_amiga_lib" != x"no"], [
+	AC_SUBST(ENCODINGS_AMIGALIB_A, "encodings.amigalib.a")
+])
+AS_IF([test x"$enable_static" = x"yes"], [
 	AC_SUBST(ENCODINGS_A, "encodings.a")
 ])
 
@@ -1100,7 +1171,7 @@ morphos*)
 esac
 
 AC_CHECK_HEADERS(sys/mman.h)
-AC_CHECK_FUNCS(mmap mlock)
+AC_CHECK_FUNCS(posix_memalign mmap mlock)
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
@@ -1268,7 +1339,8 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				AC_LANG_PROGRAM([
 					/*
 					 * It seems __thread is buggy with
-					 * GCC 4.1 */
+					 * GCC 4.1
+					 */
 					#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
 					# error buggy
 					#endif
@@ -1391,7 +1463,9 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
 	AC_SUBST(OBJFW_NEW, "objfw-new")
 	AC_SUBST(OFARC, "ofarc")
+	AC_SUBST(OFARC_LIBS)
 	AC_SUBST(OFHASH, "ofhash")
+	AC_SUBST(OFHASH_LIBS)
 
 	case "$host_os" in
 	msdosdjgpp*)
@@ -1418,8 +1492,11 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_FUNC(symlink, [
 		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 	])
-	AC_CHECK_FUNCS([lstat lutimes utimensat])
-	AC_CHECK_MEMBERS([struct stat.st_birthtime], [], [], [
+	AC_CHECK_FUNCS([lstat lutimes utimensat renameat2])
+	AC_CHECK_MEMBERS([struct stat.st_atim, struct stat.st_mtim,
+	    struct stat.st_ctim, struct stat.st_birthtime,
+	    struct stat.st_atimespec, struct stat.st_mtimespec,
+	    struct stat.st_ctimespec, struct stat.st_birthtimespec], [], [], [
 		#include <sys/stat.h>
 	])
 ])
@@ -1441,7 +1518,7 @@ amigaos* | morphos*)
 esac
 
 AC_CHECK_HEADERS(xlocale.h)
-AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l uselocale])
+AC_CHECK_FUNCS([newlocale uselocale strtod_l strtof_l asprintf_l])
 AS_IF([test x"$gnu_source" != x"yes" -a \( \
     x"$ac_cv_func_strtod_l" = x"yes" -o x"$ac_cv_func_strtof_l" = x"yes" -o \
     x"$ac_cv_func_asprintf_l" = x"yes" \)], [
@@ -1921,7 +1998,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_APPLETALK, 1,
-			    [Whether we have AppleTalk])
+				[Whether we have AppleTalk])
 			AC_SUBST(USE_SRCS_APPLETALK, '${SRCS_APPLETALK}')
 		])
 	])
@@ -1941,18 +2018,20 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		break
 	])
 
-	AS_IF([test x"$with_wii" = x"yes"], [
-		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
-			"OFPollKernelEventObserver.m")
-	], [
+	case "$host_os" in
+	amigaos*)
+		dnl Don't try to use poll on AmigaOS, as we need WaitSelect to
+		dnl handle signals at the same time.
+		;;
+	*)
 		AC_CHECK_HEADERS(poll.h)
 		AC_CHECK_FUNC(poll, [
 			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 			AC_SUBST(OF_POLL_KERNEL_EVENT_OBSERVER_M,
 				"OFPollKernelEventObserver.m")
 		])
-	])
+		;;
+	esac
 
 	case "$host_os" in
 	amigaos* | mingw* | morphos*)
@@ -1974,39 +2053,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_ARG_WITH(tls,
 		AS_HELP_STRING([--with-tls], [
 			enable TLS support using the specified library
-			(yes, openssl, gnutls, securetransport, mbedtls or
-			no)]))
+			(yes, openssl, gnutls, mbedtls or no)]))
 	AS_IF([test x"$with_tls" = x""], [with_tls="yes"])
 	tls_support="no"
-
-	AS_IF([test x"$with_tls" = x"securetransport" \
-	    -o x"$with_tls" = x"yes"], [
-		AC_CHECK_HEADERS(Security/SecureTransport.h, [
-			old_LIBS="$LIBS"
-			LIBS="-framework Security -framework Foundation $LIBS"
-
-			AC_CHECK_FUNC(SSLHandshake, [
-				tls_support="Secure Transport"
-				tmp="-framework Security -framework Foundation"
-				TLS_LIBS="-lobjfwbridge $tmp $TLS_LIBS"
-				tmp="-framework ObjFWBridge $tmp"
-				TLS_FRAMEWORK_LIBS="$tmp $TLS_FRAMEWORK_LIBS"
-
-				AC_SUBST(USE_SRCS_SECURETRANSPORT,
-					'${SRCS_SECURETRANSPORT}')
-
-				AC_CHECK_FUNCS(SSLCreateContext)
-			], [])
-
-			LIBS="$old_LIBS"
-		])
-	])
 
 	AS_IF([test x"$with_tls" = x"openssl" \
 	    -o \( x"$with_tls" = x"yes" -a x"$tls_support" = x"no" \)], [
 		case "$host_os" in
 		morphos*)
-			AC_CHECK_LIB(ssl_shared, openssl3_r13_saved, [
+			AC_CHECK_LIB(ssl_shared, OpenSSL4Base, [
 				ssl="ssl_shared"
 				crypto="crypto_shared"
 			], [
@@ -2087,16 +2142,29 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have an implementation for TLS])
 		AC_CONFIG_FILES([src/tls/ObjFWTLS.oc src/tls/Info.plist])
 
-		OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
-		OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
-		OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			case "$host_os" in
+			morphos*)
+				AC_SUBST(OBJFWTLS_AMIGA_LIB, objfwtls.library)
+				;;
+			esac
+
+			AC_SUBST(OBJFW_TLS_LIB, "-lobjfwtls.library")
+			OFARC_LIBS="-lobjfwtls.library $OFARC_LIBS"
+			OFHASH_LIBS="-lobjfwtls.library $OFHASH_LIBS"
+			OFHTTP_LIBS="-lobjfwtls.library $OFHTTP_LIBS"
+		], [
+			AC_SUBST(OBJFW_TLS_LIB, "-lobjfwtls")
+			OFARC_LIBS="-lobjfwtls $TLS_LIBS $OFARC_LIBS"
+			OFHASH_LIBS="-lobjfwtls $TLS_LIBS $OFHASH_LIBS"
+			OFHTTP_LIBS="-lobjfwtls $TLS_LIBS $OFHTTP_LIBS"
+		])
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFWTLS_SHARED_LIB,
 				'${LIB_PREFIX}objfwtls${LIB_SUFFIX}')
 		])
-		AS_IF([test x"$enable_static" = x"yes" \
-		    -o x"$enable_shared" = x"no"], [
+		AS_IF([test x"$enable_static" = x"yes"], [
 			AC_SUBST(OBJFWTLS_STATIC_LIB, "libobjfwtls.a")
 		])
 		AS_IF([test x"$build_framework" = x"yes"], [
@@ -2290,7 +2358,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(
-	    whether we need -Wno-unused-property-ivar due to Clang bugs)
+		whether we need -Wno-unused-property-ivar due to Clang bugs)
 	AC_COMPILE_IFELSE([
 		AC_LANG_SOURCE([
 			#ifdef __has_attribute
@@ -2407,7 +2475,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 				abort();				\
 									\
 				_Pragma("clang diagnostic push");	\
-			       	_Pragma("clang diagnostic ignored	\
+				_Pragma("clang diagnostic ignored	\
 				    \"-Wunreachable-code\"");		\
 				[super dealloc];			\
 				_Pragma("clang diagnostic pop");
@@ -2551,13 +2619,19 @@ case "$host_os" in
 linux*)
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(USE_SRCS_EVDEV, '${SRCS_EVDEV}')
+		AC_SUBST(OFGCTESTER, ofgctester)
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+		AC_SUBST(OFGCTESTER_LIBS)
 	])
 	;;
 mingw*)
 	AC_SUBST(USE_SRCS_XINPUT, '${SRCS_XINPUT}')
+	AC_SUBST(OFGCTESTER, ofgctester)
+	OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+	AC_SUBST(OFGCTESTER_LIBS)
 	;;
 darwin*)
-	AC_MSG_CHECKING(new enough GameController.framework)
+	AC_MSG_CHECKING(for new enough GameController.framework)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
 			#import <GameController/GameController.h>
@@ -2571,6 +2645,7 @@ darwin*)
 	], [
 		AC_MSG_RESULT(yes)
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
+		AC_SUBST(OFGCTESTER, ofgctester)
 		AC_DEFINE(OF_HAVE_GCF, 1,
 			[Whether we have GameController.framework])
 		tmp="-framework GameController"
@@ -2578,9 +2653,21 @@ darwin*)
 		HID_LIBS="$tmp -lobjfwbridge $HID_LIBS"
 		tmp="$tmp -framework ObjFWBridge"
 		HID_FRAMEWORK_LIBS="$tmp $HID_FRAMEWORK_LIBS"
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+		AC_SUBST(OFGCTESTER_LIBS)
 	], [
 		AC_MSG_RESULT(no)
 	])
+	;;
+morphos*)
+	AC_SUBST(USE_SRCS_SENSORS_LIBRARY, '${SRCS_SENSORS_LIBRARY}')
+	AC_SUBST(OFGCTESTER, ofgctester)
+	AS_IF([test x"$enable_amiga_lib" != x"no"], [
+		OFGCTESTER_LIBS="-lobjfwhid.library $OFGCTESTER_LIBS"
+	], [
+		OFGCTESTER_LIBS="-lobjfwhid $HID_LIBS $OFGCTESTER_LIBS"
+	])
+	AC_SUBST(OFGCTESTER_LIBS)
 	;;
 esac
 
@@ -2631,6 +2718,8 @@ AC_SUBST(TESTS_LIBS)
 AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
+	misc/ObjFWConfig.cmake
+	misc/ObjFWConfigVersion.cmake
 	src/Info.plist
 	src/hid/Info.plist
 	src/hid/ObjFWHID.oc

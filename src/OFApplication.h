@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -230,6 +230,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFString *_programName;
 	OFArray OF_GENERIC(OFString *) *_arguments;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_environment;
+	long _processID;
 	int *_argc;
 	char ***_argv;
 	id <OFApplicationDelegate> _Nullable _delegate;
@@ -253,6 +254,7 @@ OF_SUBCLASSING_RESTRICTED
     OFArray OF_GENERIC(OFString *) *arguments;
 @property (class, readonly, nullable, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
+@property (class, readonly, nonatomic) long processID;
 #endif
 
 /**
@@ -270,6 +272,11 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
+
+/**
+ * @brief The process ID of the application.
+ */
+@property (readonly, nonatomic) long processID;
 
 /**
  * @brief The delegate of the application.
@@ -310,6 +317,13 @@ OF_SUBCLASSING_RESTRICTED
  * @return The environment of the application
  */
 + (nullable OFDictionary OF_GENERIC(OFString *, OFString *) *)environment;
+
+/**
+ * @brief Returns the process ID of the application.
+ *
+ * @return The process ID of the application
+ */
++ (long)processID;
 
 /**
  * @brief Terminates the application with the EXIT_SUCCESS status.

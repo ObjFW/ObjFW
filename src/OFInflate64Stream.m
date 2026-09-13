@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -17,5 +17,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#define OF_INFLATE64_STREAM_M
-#include "OFInflateStream.m"
+#include "config.h"
+
+#import "OFInflate64Stream.h"
+
+@implementation OFInflate64Stream
+@end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -73,9 +73,11 @@ OF_DIRECT_MEMBERS
 	bool _chunked, _headersSent;
 }
 
-- (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
-			server: (OFHTTPServer *)server
-		       request: (OFHTTPRequest *)request;
+- (instancetype)
+    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
+	       server: (OFHTTPServer *)server
+	      request: (OFHTTPRequest *)request;
+- (void)of_sendHeaders;
 @end
 
 OF_DIRECT_MEMBERS
@@ -105,7 +107,7 @@ OF_DIRECT_MEMBERS
 			server: (OFHTTPServer *)server;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
-- (bool)sendErrorAndClose: (short)statusCode;
+- (bool)sendErrorAndClose: (unsigned short)statusCode;
 - (void)createResponse;
 @end
 
@@ -129,6 +131,8 @@ OF_DIRECT_MEMBERS
 - (void)stop;
 @end
 #endif
+
+static const size_t maxStringReadLength = 10240;
 
 static OFString *
 normalizedKey(OFString *key)
@@ -163,10 +167,29 @@ normalizedKey(OFString *key)
 	return ret;
 }
 
+static OFArray OF_GENERIC(OFString *) *
+parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
+{
+	OFString *transferEncoding =
+	    [[headers objectForKey: @"Transfer-Encoding"] lowercaseString];
+	OFArray OF_GENERIC(OFString *) *components =
+	    [transferEncoding componentsSeparatedByString: @","];
+	OFMutableArray OF_GENERIC(OFString *) *ret =
+	    [OFMutableArray arrayWithCapacity: components.count];
+
+	for (OFString *component in components)
+		[ret addObject: component.stringByDeletingEnclosingWhitespaces];
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 @implementation OFHTTPServerResponse
-- (instancetype)initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
-			server: (OFHTTPServer *)server
-		       request: (OFHTTPRequest *)request
+- (instancetype)
+    of_initWithStream: (OFStream <OFReadyForWritingObserving> *)stream
+	       server: (OFHTTPServer *)server
+	      request: (OFHTTPRequest *)request
 {
 	self = [super init];
 
@@ -193,10 +216,11 @@ normalizedKey(OFString *key)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFCharacterSet *newlineCharacterSet;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_stream writeFormat: @"HTTP/%@ %hd %@\r\n",
+	[_stream writeFormat: @"HTTP/%@ %hu %@\r\n",
 			      self.protocolVersionString, _statusCode,
 			      OFHTTPStatusCodeString(_statusCode)];
 
@@ -215,17 +239,26 @@ normalizedKey(OFString *key)
 			[headers setObject: name forKey: @"Server"];
 	}
 
+	newlineCharacterSet = [OFCharacterSet newlineCharacterSet];
+
 	keyEnumerator = [headers keyEnumerator];
 	valueEnumerator = [headers objectEnumerator];
+
 	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (value = [valueEnumerator nextObject]) != nil)
+	    (value = [valueEnumerator nextObject]) != nil) {
+		if ([key rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound ||
+		    [value rangeOfCharacterFromSet:
+		    newlineCharacterSet].location != OFNotFound)
+			@throw [OFInvalidArgumentException exception];
+
 		[_stream writeFormat: @"%@: %@\r\n", key, value];
+	}
 
 	[_stream writeString: @"\r\n"];
 
 	_headersSent = true;
-	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
-	    isEqual: @"chunked"];
+	_chunked = [parseTransferEncoding(headers) containsObject: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -363,8 +396,16 @@ normalizedKey(OFString *key)
    didReadLine: (OFString *)line
      exception: (id)exception
 {
-	if (line == nil || exception != nil)
+	if (line == nil || exception != nil) {
+		if ([_server.delegate respondsToSelector:
+		    @selector(server:didEncounterException:request:response:)])
+			[_server.delegate  server: _server
+			    didEncounterException: exception
+					  request: nil
+					 response: nil];
+
 		return false;
+	}
 
 	@try {
 		switch (_state) {
@@ -375,7 +416,14 @@ normalizedKey(OFString *key)
 		default:
 			return false;
 		}
-	} @catch (OFWriteFailedException *e) {
+	} @catch (id e) {
+		if ([_server.delegate respondsToSelector:
+		    @selector(server:didEncounterException:request:response:)])
+			[_server.delegate  server: _server
+			    didEncounterException: e
+					  request: nil
+					 response: nil];
+
 		return false;
 	}
 
@@ -444,14 +492,14 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if (line.length == 0) {
-		bool chunked = [[_headers objectForKey: @"Transfer-Encoding"]
-		    isEqual: @"chunked"];
+		bool chunked = [parseTransferEncoding(_headers)
+		    containsObject: @"chunked"];
 		OFString *contentLengthString =
 		    [_headers objectForKey: @"Content-Length"];
 		unsigned long long contentLength = 0;
 
 		if (contentLengthString != nil) {
-			if (chunked || contentLengthString.length == 0)
+			if (chunked)
 				return [self sendErrorAndClose: 400];
 
 			@try {
@@ -459,20 +507,26 @@ normalizedKey(OFString *key)
 				    contentLengthString.unsignedLongLongValue;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
 			}
 		}
 
 		if (chunked || contentLengthString != nil) {
 			objc_release(_requestBody);
 			_requestBody = nil;
-			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
-			    initWithStream: _stream
-				   chunked: chunked
-			     contentLength: contentLength];
 
-			[_timer invalidate];
-			objc_release(_timer);
-			_timer = nil;
+			@try {
+				_requestBody =
+				    [[OFHTTPServerRequestBodyStream alloc]
+				    initWithStream: _stream
+					   chunked: chunked
+				     contentLength: contentLength];
+			} @catch (OFInvalidArgumentException *e) {
+				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
+			}
 		}
 
 		_state = stateSendResponse;
@@ -510,7 +564,6 @@ normalizedKey(OFString *key)
 
 				if (_OFIRIIsIPv6Host(IPv6))
 					host = IPv6;
-
 			}
 
 			objc_release(_host);
@@ -529,6 +582,8 @@ normalizedKey(OFString *key)
 				_port = portTmp;
 			} @catch (OFInvalidFormatException *e) {
 				return [self sendErrorAndClose: 400];
+			} @catch (OFOutOfRangeException *e) {
+				return [self sendErrorAndClose: 400];
 			}
 		} else {
 			objc_release(_host);
@@ -540,16 +595,21 @@ normalizedKey(OFString *key)
 	return true;
 }
 
-- (bool)sendErrorAndClose: (short)statusCode
+- (bool)sendErrorAndClose: (unsigned short)statusCode
 {
 	OFString *date = [[OFDate date]
 	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
-	[_stream writeFormat: @"HTTP/1.1 %hd %@\r\n"
+	[_stream writeFormat: @"HTTP/1.1 %hu %@\r\n"
 			      @"Date: %@\r\n"
 			      @"Server: %@\r\n"
 			      @"\r\n",
 			      statusCode, OFHTTPStatusCodeString(statusCode),
 			      date, _server.name];
+
+	[_timer invalidate];
+	objc_release(_timer);
+	_timer = nil;
+
 	return false;
 }
 
@@ -616,9 +676,9 @@ normalizedKey(OFString *key)
 		request.remoteAddress = ((OFTCPSocket *)_stream).remoteAddress;
 
 	response = objc_autorelease(
-	    [[OFHTTPServerResponse alloc] initWithStream: _stream
-						  server: _server
-						 request: request]);
+	    [[OFHTTPServerResponse alloc] of_initWithStream: _stream
+						     server: _server
+						    request: request]);
 
 	[_server.delegate performSelector: @selector(server:didReceiveRequest:
 					       requestBody:response:)
@@ -821,7 +881,7 @@ normalizedKey(OFString *key)
 
 @implementation OFHTTPServer
 @synthesize delegate = _delegate, usesTLS = _usesTLS;
-@synthesize certificateChain = _certificateChain, name = _name;
+@synthesize certificateChain = _certificateChain;
 
 + (instancetype)server
 {
@@ -833,7 +893,7 @@ normalizedKey(OFString *key)
 	self = [super init];
 
 	_name = @"OFHTTPServer (ObjFW's HTTP server class "
-	    @"<https://objfw.nil.im/>)";
+	    @"<https://objfw.nil.im>)";
 #ifdef OF_HAVE_THREADS
 	_numberOfThreads = 1;
 #endif
@@ -899,6 +959,24 @@ normalizedKey(OFString *key)
 	return _numberOfThreads;
 }
 #endif
+
+- (void)setName: (OFString *)name
+{
+	OFString *old;
+
+	if ([name rangeOfCharacterFromSet:
+	    [OFCharacterSet newlineCharacterSet]].location != OFNotFound)
+		@throw [OFInvalidArgumentException exception];
+
+	old = _name;
+	_name = [name copy];
+	objc_release(old);
+}
+
+- (OFString *)name
+{
+	return _name;
+}
 
 - (void)start
 {
@@ -971,6 +1049,7 @@ normalizedKey(OFString *key)
 	stream.delegate = objc_autorelease(
 	    [[OFHTTPServerConnection alloc] initWithStream: stream
 						    server: self]);
+	[stream setMaxStringReadLength: maxStringReadLength];
 	[stream asyncReadLine];
 }
 
@@ -988,7 +1067,7 @@ normalizedKey(OFString *key)
 			    didEncounterException: exception
 					  request: nil
 					 response: nil];
-			return false;
+			return true;
 		}
 
 		if ([_delegate respondsToSelector: deprecatedSelector]) {
@@ -1004,7 +1083,7 @@ normalizedKey(OFString *key)
 			    exception);
 		}
 
-		return false;
+		return true;
 	}
 
 #ifdef OF_HAVE_THREADS
@@ -1048,6 +1127,12 @@ normalizedKey(OFString *key)
 		return;
 	}
 
+	/*
+	 * Since the TLS stream and the underlying socket share the underlying
+	 * file descriptor, we need to make sure the file descriptor gets
+	 * removed for the underlying socket first before being added for the
+	 * TLS stream.
+	 */
 	[self performSelector: @selector(of_handleStream:)
 		   withObject: stream
 		   afterDelay: 0];

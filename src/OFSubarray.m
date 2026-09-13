@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -62,8 +62,7 @@
 
 - (void)getObjects: (id *)buffer inRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _range.length)
+	if (OFEndOfRange(range) > _range.length)
 		@throw [OFOutOfRangeException exception];
 
 	range.location += _range.location;
@@ -103,8 +102,7 @@
 
 - (OFArray *)objectsInRange: (OFRange)range
 {
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _range.length)
+	if (OFEndOfRange(range) > _range.length)
 		@throw [OFOutOfRangeException exception];
 
 	range.location += _range.location;

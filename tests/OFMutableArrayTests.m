@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -75,6 +75,57 @@ static OFString *const cArray[] = {
 	    ([OFArray arrayWithObjects: @"Foo", @"Bar", @"Bar", @"Baz", nil]));
 }
 
+- (void)testInsertObjectsFromArrayAtIndex
+{
+	OFArray *array = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	[_mutableArray insertObjectsFromArray: array atIndex: 1];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"Foo", @"a", @"b", @"Bar", @"Baz",
+	    nil]));
+}
+
+- (void)testInsertObjectsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSet];
+	OFArray *additions;
+
+	[indexes addIndexesInRange: OFMakeRange(1, 3)];
+	[indexes addIndexesInRange: OFMakeRange(5, 2)];
+	[indexes addIndexesInRange: OFMakeRange(11, 2)];
+
+	[_mutableArray addObject: @"Qux"];
+	[_mutableArray addObject: @"Quux"];
+	[_mutableArray addObject: @"Quuux"];
+
+	additions = [OFArray arrayWithObjects:
+	    @"1", @"2", @"3", @"4", @"5", @"6", @"7", nil];
+
+	[_mutableArray insertObjects: additions atIndexes: indexes];
+
+	OTAssertEqualObjects(_mutableArray, ([OFArray arrayWithObjects:
+	    @"Foo", @"1", @"2", @"3", @"Bar", @"4", @"5", @"Baz", @"Qux",
+	    @"Quux", @"Quuux", @"6", @"7", nil]));
+}
+
+- (void)testInsertObjectsAtIndexesThrowsOnOutOfRangeIndex
+{
+	OFIndexSet *indexes;
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(4, 1)];
+	OTAssertThrowsSpecific(
+	    [_mutableArray insertObjects: [OFArray arrayWithObject: @"Qux"]
+			       atIndexes: indexes],
+	    OFOutOfRangeException);
+
+	indexes = [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(3, 2)];
+	OTAssertThrowsSpecific(
+	    [_mutableArray insertObjects: [OFArray arrayWithObject: @"Qux"]
+			       atIndexes: indexes],
+	    OFOutOfRangeException);
+}
+
 - (void)testReplaceObjectWithObject
 {
 	[_mutableArray insertObject: cArray[1] atIndex: 1];
@@ -105,6 +156,71 @@ static OFString *const cArray[] = {
 
 	OTAssertEqualObjects(_mutableArray,
 	    ([OFArray arrayWithObjects: @"Foo", @"Foo", @"Baz", nil]));
+}
+
+- (void)testReplaceObjectsInRangeWithObjectsFromArray
+{
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	[_mutableArray replaceObjectsInRange: OFMakeRange(0, 2)
+			withObjectsFromArray: replacements];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"a", @"b", @"Baz", nil]));
+}
+
+- (void)testReplaceObjectsInRangeWithObjectsFromArrayThrowsOnOutOfRangeRange
+{
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsInRange: OFMakeRange(3, 1)
+	     withObjectsFromArray: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjects
+{
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexes addIndex: 2];
+
+	[_mutableArray replaceObjectsAtIndexes: indexes
+				   withObjects: replacements];
+
+	OTAssertEqualObjects(_mutableArray,
+	    ([OFArray arrayWithObjects: @"a", @"Bar", @"b", nil]));
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnOutOfRangeIndex
+{
+	OFIndexSet *indexes = [OFIndexSet indexSetWithIndex: 3];
+
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsAtIndexes: indexes
+			withObjects: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnTooShortObjectsArray
+{
+	OFIndexSet *indexes =
+	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(0, 2)];
+
+	OTAssertThrowsSpecific([_mutableArray
+	    replaceObjectsAtIndexes: indexes
+			withObjects: [OFArray arrayWithObject: @"a"]],
+	    OFOutOfRangeException);
+}
+
+- (void)testReplaceObjectsAtIndexesWithObjectsThrowsOnTooLongObjectsArray
+{
+	OFIndexSet *indexes =
+	    [OFIndexSet indexSetWithIndexesInRange: OFMakeRange(0, 1)];
+	OFArray *replacements = [OFArray arrayWithObjects: @"a", @"b", nil];
+
+	OTAssertThrowsSpecific(
+	    [_mutableArray replaceObjectsAtIndexes: indexes
+				       withObjects: replacements],
+	    OFOutOfRangeException);
 }
 
 - (void)testRemoveObject
@@ -142,6 +258,23 @@ static OFString *const cArray[] = {
 {
 	OTAssertThrowsSpecific([_mutableArray removeObjectsInRange:
 	    OFMakeRange(0, _mutableArray.count + 1)], OFOutOfRangeException);
+}
+
+- (void)testRemoveObjectsAtIndexes
+{
+	OFMutableIndexSet *indexes = [OFMutableIndexSet indexSetWithIndex: 0];
+	[indexes addIndex: 2];
+
+	[_mutableArray removeObjectsAtIndexes: indexes];
+	OTAssertEqualObjects(_mutableArray, [OFArray arrayWithObject: @"Bar"]);
+}
+
+- (void)testRemoveObjectsAtIndexesFailsWhenOutOfRange
+{
+	OFIndexSet *indexes = [OFIndexSet indexSetWithIndex: 3];
+
+	OTAssertThrowsSpecific([_mutableArray removeObjectsAtIndexes: indexes],
+	    OFOutOfRangeException);
 }
 
 - (void)testReverse

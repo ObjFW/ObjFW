@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -55,8 +55,7 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
     struct XInputCapabilitiesEx *);
 
 @implementation OHXInputGameController
-@synthesize vendorID = _vendorID, productID = _productID;
-@synthesize extendedGamepad = _extendedGamepad;
+@synthesize VIDPID = _VIDPID, extendedGamepad = _extendedGamepad;
 
 + (void)initialize
 {
@@ -140,14 +139,11 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 			if (XInputGetCapabilitiesExFuncPtr(1, _index,
 			    XINPUT_FLAG_GAMEPAD, &capabilities) ==
-			    ERROR_SUCCESS) {
-				_vendorID = [[OFNumber alloc]
-				    initWithUnsignedShort:
-				    capabilities.vendorID];
-				_productID = [[OFNumber alloc]
-				    initWithUnsignedShort:
-				    capabilities.productID];
-			}
+			    ERROR_SUCCESS)
+				_VIDPID = (OHVIDPID){
+				    capabilities.vendorID,
+				    capabilities.productID
+				};
 		}
 
 		_extendedGamepad = [[OHXboxGamepad alloc]
@@ -164,8 +160,6 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 
 - (void)dealloc
 {
-	objc_release(_vendorID);
-	objc_release(_productID);
 	objc_release(_extendedGamepad);
 
 	[super dealloc];
@@ -246,12 +240,12 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 	return nil;
 }
 
-- (id <OHGameControllerProfile>)profile
+- (OFObject <OHGameControllerProfile> *)profile
 {
 	return _extendedGamepad;
 }
 
-- (id <OHGamepad>)gamepad
+- (OFObject <OHGamepad> *)gamepad
 {
 	return _extendedGamepad;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -412,13 +412,15 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		size_t pageSize = [OFSystemInfo pageSize];
 #endif
 
+		if (itemSize == 0)
+			@throw [OFInvalidArgumentException exception];
+
 		if (count > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
 
 		if (allowsSwappableMemory) {
-			_items = OFAllocMemory(count, itemSize);
+			_items = OFAllocZeroedMemory(count, itemSize);
 			_freeWhenDone = true;
-			memset(_items, 0, count * itemSize);
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		} else if (count * itemSize >= pageSize)
 			_items = mapPages(OFRoundUpToPowerOf2(pageSize,
@@ -536,7 +538,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		/* Extra variable needed to work around a bug in GCC 15. */
 		size_t count = _count;
 
-		if (count * _itemSize > pageSize)
+		if (count * _itemSize >= pageSize)
 			unmapPages(_items,
 			    OFRoundUpToPowerOf2(pageSize, count * _itemSize) /
 			    pageSize);
@@ -595,7 +597,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
-	memcpy(copy.mutableItems, _items, _count * _itemSize);
+	OFCopyMemory(copy.mutableItems, _items, _count * _itemSize);
 
 	return copy;
 }
@@ -607,7 +609,7 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 			 itemSize: _itemSize
 	    allowsSwappableMemory: _allowsSwappableMemory];
 
-	memcpy(copy.mutableItems, _items, _count * _itemSize);
+	OFCopyMemory(copy.mutableItems, _items, _count * _itemSize);
 
 	return copy;
 }
@@ -615,7 +617,9 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 - (bool)isEqual: (id)object
 {
 	OFData *otherData;
-	const unsigned char *otherDataItems;
+	const unsigned char *otherItems;
+	size_t otherCount, otherItemSize;
+	size_t minSize;
 	unsigned char diff;
 
 	if (object == self)
@@ -625,17 +629,21 @@ freeMemory(struct Page *page, void *pointer, size_t bytes)
 		return false;
 
 	otherData = object;
-	otherDataItems = otherData.items;
-
-	if (otherData.count != _count || otherData.itemSize != _itemSize)
-		return false;
+	otherItems = otherData.items;
+	otherCount = otherData.count;
+	otherItemSize = otherData.itemSize;
+	minSize = (_count * _itemSize < otherCount * otherItemSize
+	    ? _count * _itemSize : otherCount * otherItemSize);
 
 	diff = 0;
 
-	for (size_t i = 0; i < _count * _itemSize; i++)
-		diff |= otherDataItems[i] ^ _items[i];
+	for (size_t i = 0; i < minSize; i++)
+		diff |= _items[i] ^ otherItems[i];
 
-	return (diff == 0);
+	if (diff != 0 || _itemSize != otherItemSize || _count != otherCount)
+		return false;
+
+	return true;
 }
 
 - (OFString *)description
