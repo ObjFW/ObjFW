@@ -276,7 +276,7 @@ privateKeyFromFile(OFIRI *IRI)
 	}
 }
 
-- (OFData *)ASN1DERRepresentation
+- (OFData *)DERRepresentation
 {
 	gnutls_datum_t DER;
 	if (gnutls_x509_crt_export2(_certificate, GNUTLS_X509_FMT_DER,

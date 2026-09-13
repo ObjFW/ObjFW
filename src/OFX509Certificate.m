@@ -42,7 +42,7 @@ OFX509CertificateImplementationRef(void)
 
 @implementation OFX509Certificate
 @dynamic issuerName, notBeforeDate, notAfterDate, subjectName;
-@dynamic ASN1DERRepresentation;
+@dynamic DERRepresentation;
 
 + (instancetype)alloc
 {
@@ -105,7 +105,7 @@ OFX509CertificateImplementationRef(void)
 		    @">",
 		    self.class, self.issuerName, self.notBeforeDate,
 		    self.notAfterDate, self.subjectName,
-		    self.ASN1DERRepresentation.stringBySHA256Hashing];
+		    self.DERRepresentation.stringBySHA256Hashing];
 	} @catch (OFNotImplementedException *e) {
 		ret = [OFString stringWithFormat: @"<%@>", self.className];
 	}

@@ -298,7 +298,7 @@ ASN1TimeToDate(const ASN1_TIME *time)
 					   certificate: _certificate]);
 }
 
-- (OFData *)ASN1DERRepresentation
+- (OFData *)DERRepresentation
 {
 	int ret;
 	unsigned char *DER = NULL;

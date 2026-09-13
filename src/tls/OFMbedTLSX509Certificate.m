@@ -212,7 +212,7 @@ X509TimeToDate(mbedtls_x509_time *time)
 	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->subject]);
 }
 
-- (OFData *)ASN1DERRepresentation
+- (OFData *)DERRepresentation
 {
 	return [OFData dataWithItems: _certificate->raw.p
 			       count: _certificate->raw.len];
