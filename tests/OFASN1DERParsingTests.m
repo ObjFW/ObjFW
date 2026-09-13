@@ -219,7 +219,7 @@
 - (void)testNull
 {
 	OTAssertEqualObjects([[OFData dataWithItems: "\x05\x00" count: 2]
-	    objectByParsingASN1DER], [OFNull null]);
+	    objectByParsingASN1DER], [OFASN1Null null]);
 }
 
 - (void)testInvalidNullFails
