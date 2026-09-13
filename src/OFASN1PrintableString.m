@@ -27,7 +27,7 @@
 #import "OFInvalidEncodingException.h"
 
 @implementation OFASN1PrintableString
-@synthesize printableStringValue = _printableStringValue;
+@synthesize stringValue = _string;
 
 + (instancetype)stringWithString: (OFString *)string
 {
@@ -67,7 +67,7 @@
 			}
 		}
 
-		_printableStringValue = [string copy];
+		_string = [string copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -117,14 +117,9 @@
 
 - (void)dealloc
 {
-	objc_release(_printableStringValue);
+	objc_release(_string);
 
 	[super dealloc];
-}
-
-- (OFString *)stringValue
-{
-	return self.printableStringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -139,8 +134,7 @@
 
 	printableString = object;
 
-	if (![printableString->_printableStringValue isEqual:
-	    _printableStringValue])
+	if (![printableString->_string isEqual: _string])
 		return false;
 
 	return true;
@@ -148,12 +142,12 @@
 
 - (unsigned long)hash
 {
-	return _printableStringValue.hash;
+	return _string.hash;
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<OFASN1PrintableString: %@>",
-					   _printableStringValue];
+					   _string];
 }
 @end

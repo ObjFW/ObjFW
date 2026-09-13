@@ -26,7 +26,7 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFASN1IA5String
-@synthesize IA5StringValue = _IA5StringValue;
+@synthesize stringValue = _string;
 
 + (instancetype)stringWithString: (OFString *)string
 {
@@ -39,7 +39,7 @@
 	self = [super init];
 
 	@try {
-		_IA5StringValue = [string copy];
+		_string = [string copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -54,7 +54,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *IA5String;
+	OFString *string;
 
 	@try {
 		if (tagClass != OFASN1TagClassUniversal ||
@@ -64,16 +64,15 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		IA5String = [OFString
-		    stringWithCString: DEREncodedContents.items
-			     encoding: OFStringEncodingASCII
-			       length: DEREncodedContents.count];
+		string = [OFString stringWithCString: DEREncodedContents.items
+					    encoding: OFStringEncodingASCII
+					      length: DEREncodedContents.count];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithString: IA5String];
+	self = [self initWithString: string];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -87,14 +86,9 @@
 
 - (void)dealloc
 {
-	objc_release(_IA5StringValue);
+	objc_release(_string);
 
 	[super dealloc];
-}
-
-- (OFString *)stringValue
-{
-	return self.IA5StringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -109,7 +103,7 @@
 
 	IA5String = object;
 
-	if (![IA5String->_IA5StringValue isEqual: _IA5StringValue])
+	if (![IA5String->_string isEqual: _string])
 		return false;
 
 	return true;
@@ -117,12 +111,11 @@
 
 - (unsigned long)hash
 {
-	return _IA5StringValue.hash;
+	return _string.hash;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1IA5String: %@>",
-					   _IA5StringValue];
+	return [OFString stringWithFormat: @"<OFASN1IA5String: %@>", _string];
 }
 @end

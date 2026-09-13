@@ -31,30 +31,29 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1BitString: OFObject <OFASN1DERRepresentation>
 {
-	OFData *_bitStringValue;
-	size_t _bitStringLength;
+	OFData *_data;
+	size_t _bitLength;
 }
 
 /**
  * @brief The BitString value.
  */
-@property (readonly, nonatomic) OFData *bitStringValue;
+@property (readonly, nonatomic) OFData *data;
 
 /**
  * @brief The length of the BitString in bits.
  */
-@property (readonly, nonatomic) size_t bitStringLength;
+@property (readonly, nonatomic) size_t bitLength;
 
 /**
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
- * @param bitString The value of the BitString
- * @param length The length of the BitString in bits
+ * @param data The value of the BitString
+ * @param bitLength The length of the BitString in bits
  * @return A new, autoreleased OFASN1BitString
  */
-+ (instancetype)bitStringWithBitString: (OFData *)bitString
-				length: (size_t)length;
++ (instancetype)bitStringWithData: (OFData *)data bitLength: (size_t)bitLength;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -62,12 +61,12 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
  *
- * @param bitString The value of the BitString
- * @param length The length of the BitString in bits
+ * @param data The value of the BitString
+ * @param bitLength The length of the BitString in bits
  * @return An initialized OFASN1BitString
  */
-- (instancetype)initWithBitString: (OFData *)bitString
-			   length: (size_t)length OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithData: (OFData *)data
+		   bitLength: (size_t)bitLength OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 BitString with the specified

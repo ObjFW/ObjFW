@@ -30,13 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1NumericString: OFObject
 {
-	OFString *_numericStringValue;
+	OFString *_string;
 }
-
-/**
- * @brief The NumericString value.
- */
-@property (readonly, nonatomic) OFString *numericStringValue;
 
 /**
  * @brief The string value.

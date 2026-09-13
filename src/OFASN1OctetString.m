@@ -26,20 +26,19 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFASN1OctetString
-@synthesize octetStringValue = _octetStringValue;
+@synthesize data = _data;
 
-+ (instancetype)octetStringWithOctetString: (OFData *)octetString
++ (instancetype)octetStringWithData: (OFData *)data
 {
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithOctetString: octetString]);
+	return objc_autoreleaseReturnValue([[self alloc] initWithData: data]);
 }
 
-- (instancetype)initWithOctetString: (OFData *)octetString
+- (instancetype)initWithData: (OFData *)data
 {
 	self = [super init];
 
 	@try {
-		_octetStringValue = [octetString copy];
+		_data = [data copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -65,7 +64,7 @@
 		@throw e;
 	}
 
-	return [self initWithOctetString: DEREncodedContents];
+	return [self initWithData: DEREncodedContents];
 }
 
 - (instancetype)init
@@ -75,7 +74,7 @@
 
 - (void)dealloc
 {
-	objc_release(_octetStringValue);
+	objc_release(_data);
 
 	[super dealloc];
 }
@@ -92,7 +91,7 @@
 
 	octetString = object;
 
-	if (![octetString->_octetStringValue isEqual: _octetStringValue])
+	if (![octetString->_data isEqual: _data])
 		return false;
 
 	return true;
@@ -100,12 +99,11 @@
 
 - (unsigned long)hash
 {
-	return _octetStringValue.hash;
+	return _data.hash;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>",
-					   _octetStringValue];
+	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>", _data];
 }
 @end

@@ -30,13 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1UTF8String: OFObject
 {
-	OFString *_UTF8StringValue;
+	OFString *_string;
 }
-
-/**
- * @brief The UTF8String value.
- */
-@property (readonly, nonatomic) OFString *UTF8StringValue;
 
 /**
  * @brief The string value.

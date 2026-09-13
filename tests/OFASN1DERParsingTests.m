@@ -127,14 +127,14 @@
 
 	bitString = [[OFData dataWithItems: "\x03\x01\x00"
 				     count: 3] objectByParsingASN1DER];
-	OTAssertEqualObjects(bitString.bitStringValue, [OFData data]);
-	OTAssertEqual(bitString.bitStringLength, 0);
+	OTAssertEqualObjects(bitString.data, [OFData data]);
+	OTAssertEqual(bitString.bitLength, 0);
 
 	bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
 				     count: 15] objectByParsingASN1DER];
-	OTAssertEqualObjects(bitString.bitStringValue,
+	OTAssertEqualObjects(bitString.data,
 	    [OFData dataWithItems: "Hello World\x80" count: 12]);
-	OTAssertEqual(bitString.bitStringLength, 95);
+	OTAssertEqual(bitString.bitLength, 95);
 
 	bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -142,12 +142,12 @@
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxx"
 				     count: 131] objectByParsingASN1DER];
-	OTAssertEqualObjects(bitString.bitStringValue,
+	OTAssertEqualObjects(bitString.data,
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			    count: 127]);
-	OTAssertEqual(bitString.bitStringLength, 127 * 8);
+	OTAssertEqual(bitString.bitLength, 127 * 8);
 }
 
 - (void)testInvalidBitStringFails
@@ -184,7 +184,7 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x04\x0CHello World!"
-		    count: 14] objectByParsingASN1DER] octetStringValue],
+		    count: 14] objectByParsingASN1DER] data],
 	    [OFData dataWithItems: "Hello World!" count: 12]);
 
 	OTAssertEqualObjects(
@@ -192,8 +192,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			      count: 131] objectByParsingASN1DER]
-	    octetStringValue],
+			      count: 131] objectByParsingASN1DER] data],
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -358,8 +357,7 @@
 {
 	OTAssertEqualObjects(
 	    [[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			      count: 16]
-	    objectByParsingASN1DER] UTF8StringValue],
+			      count: 16] objectByParsingASN1DER] stringValue],
 	    @"Hällo Wörld!");
 
 	OTAssertEqualObjects(
@@ -367,8 +365,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			     count: 131]
-	    objectByParsingASN1DER] UTF8StringValue],
+			     count: 131] objectByParsingASN1DER] stringValue],
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }
@@ -485,14 +482,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x12\x0B" "12345 67890"
-		    count: 13] objectByParsingASN1DER] numericStringValue],
+		    count: 13] objectByParsingASN1DER] stringValue],
 	    @"12345 67890");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x12\x81\x80" "000000000000000000000000000000000000"
 			   "000000000000000000000000000000000000000000000000000"
 			   "00000000000000000000000000000000000000000"
-		    count: 131] objectByParsingASN1DER] numericStringValue],
+		    count: 131] objectByParsingASN1DER] stringValue],
 	    @"00000000000000000000000000000000000000000000000000000000000000000"
 	    @"000000000000000000000000000000000000000000000000000000000000000");
 }
@@ -526,14 +523,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x13\x0CHello World."
-		    count: 14] objectByParsingASN1DER] printableStringValue],
+		    count: 14] objectByParsingASN1DER] stringValue],
 	    @"Hello World.");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x13\x81\x80 '()+,-./:=?abcdefghijklmnopqrstuvwxyzA"
 			   "BCDEFGHIJKLMNOPQRSTUVWXYZ '()+,-./:=?abcdefghijklmn"
 			   "opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		    count: 131] objectByParsingASN1DER] printableStringValue],
+		    count: 131] objectByParsingASN1DER] stringValue],
 	    @" '()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
 	    @"'()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 }
@@ -567,14 +564,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x16\x0CHello World!"
-		    count: 14] objectByParsingASN1DER] IA5StringValue],
+		    count: 14] objectByParsingASN1DER] stringValue],
 	    @"Hello World!");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		    count: 131] objectByParsingASN1DER] IA5StringValue],
+		    count: 131] objectByParsingASN1DER] stringValue],
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }

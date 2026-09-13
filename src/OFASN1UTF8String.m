@@ -26,7 +26,7 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFASN1UTF8String
-@synthesize UTF8StringValue = _UTF8StringValue;
+@synthesize stringValue = _string;
 
 + (instancetype)stringWithString: (OFString *)string
 {
@@ -39,7 +39,7 @@
 	self = [super init];
 
 	@try {
-		_UTF8StringValue = [string copy];
+		_string = [string copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -54,7 +54,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *UTF8String;
+	OFString *string;
 
 	@try {
 		if (tagClass != OFASN1TagClassUniversal ||
@@ -64,7 +64,7 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		UTF8String = [OFString
+		string = [OFString
 		    stringWithUTF8String: DEREncodedContents.items
 				  length: DEREncodedContents.count];
 	} @catch (id e) {
@@ -72,7 +72,7 @@
 		@throw e;
 	}
 
-	self = [self initWithString: UTF8String];
+	self = [self initWithString: string];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -86,14 +86,9 @@
 
 - (void)dealloc
 {
-	[_UTF8StringValue release];
+	objc_release(_string);
 
 	[super dealloc];
-}
-
-- (OFString *)stringValue
-{
-	return self.UTF8StringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -108,7 +103,7 @@
 
 	UTF8String = object;
 
-	if (![UTF8String->_UTF8StringValue isEqual: _UTF8StringValue])
+	if (![UTF8String->_string isEqual: _string])
 		return false;
 
 	return true;
@@ -116,12 +111,11 @@
 
 - (unsigned long)hash
 {
-	return _UTF8StringValue.hash;
+	return _string.hash;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1UTF8String: %@>",
-					   _UTF8StringValue];
+	return [OFString stringWithFormat: @"<OFASN1UTF8String: %@>", _string];
 }
 @end

@@ -28,27 +28,25 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1BitString
-@synthesize bitStringValue = _bitStringValue;
-@synthesize bitStringLength = _bitStringLength;
+@synthesize data = _data, bitLength = _bitLength;
 
-+ (instancetype)bitStringWithBitString: (OFData *)bitString
-				length: (size_t)length
++ (instancetype)bitStringWithData: (OFData *)data bitLength: (size_t)bitLength
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithBitString: bitString length: length]);
+	    [[self alloc] initWithData: data bitLength: bitLength]);
 }
 
-- (instancetype)initWithBitString: (OFData *)bitString length: (size_t)length
+- (instancetype)initWithData: (OFData *)data bitLength: (size_t)bitLength
 {
 	self = [super init];
 
 	@try {
-		if (bitString.count * bitString.itemSize !=
-		    OFRoundUpToPowerOf2(8, length) / 8)
+		if (data.count * data.itemSize !=
+		    OFRoundUpToPowerOf2(8, bitLength) / 8)
 			@throw [OFInvalidFormatException exception];
 
-		_bitStringValue = [bitString copy];
-		_bitStringLength = length;
+		_data = [data copy];
+		_bitLength = bitLength;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -63,8 +61,8 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFData *bitString;
-	size_t length;
+	OFData *data;
+	size_t bitLength;
 
 	@try {
 		unsigned char unusedBits;
@@ -93,18 +91,18 @@
 		if (SIZE_MAX / 8 < count - 1)
 			@throw [OFOutOfRangeException exception];
 
-		length = (count - 1) * 8;
-		bitString = [DEREncodedContents subdataWithRange:
+		bitLength = (count - 1) * 8;
+		data = [DEREncodedContents subdataWithRange:
 		    OFMakeRange(1, count - 1)];
 
 		if (unusedBits != 0)
-			length -= unusedBits;
+			bitLength -= unusedBits;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithBitString: bitString length: length];
+	self = [self initWithData: data bitLength: bitLength];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -118,31 +116,30 @@
 
 - (void)dealloc
 {
-	objc_release(_bitStringValue);
+	objc_release(_data);
 
 	[super dealloc];
 }
 
 - (OFData *)ASN1DERRepresentation
 {
-	size_t bitStringValueCount = _bitStringValue.count;
-	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitStringLength);
-	unsigned char unusedBits = roundedUpLength - _bitStringLength;
+	size_t dataCount = _data.count;
+	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitLength);
+	unsigned char unusedBits = roundedUpLength - _bitLength;
 	unsigned char header[] = {
 		OFASN1TagNumberBitString,
-		bitStringValueCount + 1,
+		dataCount + 1,
 		unusedBits
 	};
 	OFMutableData *data;
 
-	if (bitStringValueCount + 1 > UINT8_MAX ||
-	    bitStringValueCount != roundedUpLength / 8)
+	if (dataCount + 1 > UINT8_MAX || dataCount != roundedUpLength / 8)
 		@throw [OFInvalidFormatException exception];
 
 	data = [OFMutableData
-	    dataWithCapacity: sizeof(header) + bitStringValueCount];
+	    dataWithCapacity: sizeof(header) + dataCount];
 	[data addItems: header count: sizeof(header)];
-	[data addItems: _bitStringValue.items count: bitStringValueCount];
+	[data addItems: _data.items count: dataCount];
 
 	[data makeImmutable];
 
@@ -161,9 +158,9 @@
 
 	bitString = object;
 
-	if (![bitString->_bitStringValue isEqual: _bitStringValue])
+	if (![bitString->_data isEqual: _data])
 		return false;
-	if (bitString->_bitStringLength != _bitStringLength)
+	if (bitString->_bitLength != _bitLength)
 		return false;
 
 	return true;
@@ -171,12 +168,12 @@
 
 - (unsigned long)hash
 {
-	return _bitStringValue.hash + (unsigned long)_bitStringLength;
+	return _data.hash + (unsigned long)_bitLength;
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<OFASN1BitString: %@ (%zu bits)>",
-					   _bitStringValue, _bitStringLength];
+					   _data, _bitLength];
 }
 @end

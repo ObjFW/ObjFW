@@ -32,19 +32,19 @@
 
 	data = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithBitString: data
-			    length: 21] ASN1DERRepresentation],
+	    bitStringWithData: data
+		    bitLength: 21] ASN1DERRepresentation],
 	    [OFData dataWithItems: "\x03\x04\x03\xFF\x00\xF8" count: 6]);
 
 	data = [OFData dataWithItems: "abcdefäöü" count: 12];
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithBitString: data
-			    length: 12 * 8] ASN1DERRepresentation],
+	    bitStringWithData: data
+		    bitLength: 12 * 8] ASN1DERRepresentation],
 	    [OFData dataWithItems: "\x03\x0D\x00" "abcdefäöü" count: 15]);
 
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithBitString: [OFData data]
-			    length: 0] ASN1DERRepresentation],
+	    bitStringWithData: [OFData data]
+		    bitLength: 0] ASN1DERRepresentation],
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]);
 }
 

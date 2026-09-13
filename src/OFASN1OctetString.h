@@ -30,21 +30,21 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1OctetString: OFObject
 {
-	OFData *_octetStringValue;
+	OFData *_data;
 }
 
 /**
  * @brief The OctetString value.
  */
-@property (readonly, nonatomic) OFData *octetStringValue;
+@property (readonly, nonatomic) OFData *data;
 
 /**
  * @brief Creates an OctetString with the specified value.
  *
- * @param octetString The OctetString value
+ * @param data The OctetString value
  * @return A new, autoreleased OFASN1OctetString
  */
-+ (instancetype)octetStringWithOctetString: (OFData *)octetString;
++ (instancetype)octetStringWithData: (OFData *)data;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -52,11 +52,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated OctetString with the specified
  *	  value.
  *
- * @param octetString The OctetString value
+ * @param data The OctetString value
  * @return An initialized OFASN1OctetString
  */
-- (instancetype)initWithOctetString: (OFData *)octetString
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithData: (OFData *)data OF_DESIGNATED_INITIALIZER;
 
 /**
  * @brief Initializes an already allocated ASN.1 OctetString with the specified

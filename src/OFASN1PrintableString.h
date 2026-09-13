@@ -30,13 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1PrintableString: OFObject
 {
-	OFString *_printableStringValue;
+	OFString *_string;
 }
-
-/**
- * @brief The PrintableString value.
- */
-@property (readonly, nonatomic) OFString *printableStringValue;
 
 /**
  * @brief The string value.

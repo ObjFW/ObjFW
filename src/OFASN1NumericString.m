@@ -27,7 +27,7 @@
 #import "OFInvalidEncodingException.h"
 
 @implementation OFASN1NumericString
-@synthesize numericStringValue = _numericStringValue;
+@synthesize stringValue = _string;
 
 + (instancetype)stringWithString: (OFString *)string
 {
@@ -48,7 +48,7 @@
 			if (!OFASCIIIsDigit(cString[i]) && cString[i] != ' ')
 				@throw [OFInvalidEncodingException exception];
 
-		_numericStringValue = [string copy];
+		_string = [string copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -65,7 +65,7 @@
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *numericString;
+	OFString *string;
 
 	@try {
 		if (tagClass != OFASN1TagClassUniversal ||
@@ -75,16 +75,15 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		numericString = [OFString
-		    stringWithCString: DEREncodedContents.items
-			     encoding: OFStringEncodingASCII
-			       length: DEREncodedContents.count];
+		string = [OFString stringWithCString: DEREncodedContents.items
+					    encoding: OFStringEncodingASCII
+					      length: DEREncodedContents.count];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithString: numericString];
+	self = [self initWithString: string];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -98,14 +97,9 @@
 
 - (void)dealloc
 {
-	objc_release(_numericStringValue);
+	objc_release(_string);
 
 	[super dealloc];
-}
-
-- (OFString *)stringValue
-{
-	return self.numericStringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -120,7 +114,7 @@
 
 	numericString = object;
 
-	if (![numericString->_numericStringValue isEqual: _numericStringValue])
+	if (![numericString->_string isEqual: _string])
 		return false;
 
 	return true;
@@ -128,12 +122,12 @@
 
 - (unsigned long)hash
 {
-	return _numericStringValue.hash;
+	return _string.hash;
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<OFASN1NumericString: %@>",
-					   _numericStringValue];
+					   _string];
 }
 @end

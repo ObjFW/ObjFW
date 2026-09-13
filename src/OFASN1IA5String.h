@@ -30,13 +30,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1IA5String: OFObject
 {
-	OFString *_IA5StringValue;
+	OFString *_string;
 }
-
-/**
- * @brief The IA5String value.
- */
-@property (readonly, nonatomic) OFString *IA5StringValue;
 
 /**
  * @brief The string value.
