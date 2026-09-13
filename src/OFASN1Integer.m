@@ -55,7 +55,8 @@ OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 
 + (instancetype)integerWithLongLong: (long long)value
 {
-	return [[[self alloc] initWithLongLong: value] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLongLong: value]);
 }
 
 - (instancetype)initWithLongLong: (long long)value
@@ -85,7 +86,7 @@ OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 		value = OFASN1DERIntegerParse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

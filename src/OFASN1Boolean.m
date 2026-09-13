@@ -31,7 +31,7 @@
 
 + (instancetype)booleanWithBool: (bool)bool_
 {
-	return [[[self alloc] initWithBool: bool_] autorelease];
+	return objc_autoreleaseReturnValue([[self alloc] initWithBool: bool_]);
 }
 
 - (instancetype)initWithBool: (bool)bool_
@@ -64,7 +64,7 @@
 		if (value != 0 && value != 0xFF)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 

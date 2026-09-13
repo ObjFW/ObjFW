@@ -30,7 +30,8 @@
 
 + (instancetype)stringWithString: (OFString *)string
 {
-	return [[[self alloc] initWithString: string] autorelease];
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -40,7 +41,7 @@
 	@try {
 		_UTF8StringValue = [string copy];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
@@ -67,7 +68,7 @@
 		    stringWithUTF8String: DEREncodedContents.items
 				  length: DEREncodedContents.count];
 	} @catch (id e) {
-		[self release];
+		objc_release(self);
 		@throw e;
 	}
 
