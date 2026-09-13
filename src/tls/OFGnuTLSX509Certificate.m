@@ -275,4 +275,18 @@ privateKeyFromFile(OFIRI *IRI)
 		gnutls_free(DN.data);
 	}
 }
+
+- (OFData *)ASN1DERRepresentation
+{
+	gnutls_datum_t DER;
+	if (gnutls_x509_crt_export2(_certificate, GNUTLS_X509_FMT_DER,
+	    &DER) < 0)
+		@throw [OFInvalidFormatException exception];
+
+	@try {
+		return [OFData dataWithItems: DER.data count: DER.size];
+	} @finally {
+		gnutls_free(DER.data);
+	}
+}
 @end

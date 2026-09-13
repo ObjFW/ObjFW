@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
+#import "OFData.h"
 #import "OFDictionary.h"
 #import "OFString.h"
 
@@ -41,6 +42,7 @@ OFX509CertificateImplementationRef(void)
 
 @implementation OFX509Certificate
 @dynamic issuerName, notBeforeDate, notAfterDate, subjectName;
+@dynamic ASN1DERRepresentation;
 
 + (instancetype)alloc
 {
@@ -99,9 +101,11 @@ OFX509CertificateImplementationRef(void)
 		    @"\tNot before = %@\n"
 		    @"\tNot after = %@\n"
 		    @"\tSubject name = %@\n"
+		    @"\tSHA-256 fingerprint = %@\n"
 		    @">",
 		    self.class, self.issuerName, self.notBeforeDate,
-		    self.notAfterDate, self.subjectName];
+		    self.notAfterDate, self.subjectName,
+		    self.ASN1DERRepresentation.stringBySHA256Hashing];
 	} @catch (OFNotImplementedException *e) {
 		ret = [OFString stringWithFormat: @"<%@>", self.className];
 	}

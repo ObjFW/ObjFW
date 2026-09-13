@@ -211,4 +211,10 @@ X509TimeToDate(mbedtls_x509_time *time)
 	return objc_autoreleaseReturnValue(
 	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->subject]);
 }
+
+- (OFData *)ASN1DERRepresentation
+{
+	return [OFData dataWithItems: _certificate->raw.p
+			       count: _certificate->raw.len];
+}
 @end

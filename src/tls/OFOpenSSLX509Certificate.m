@@ -297,4 +297,21 @@ ASN1TimeToDate(const ASN1_TIME *time)
 	    [[OFOpenSSLX509Name alloc] of_initWithName: name
 					   certificate: _certificate]);
 }
+
+- (OFData *)ASN1DERRepresentation
+{
+	int ret;
+	unsigned char *DER = NULL;
+	if ((ret = i2d_X509(_certificate, &DER)) < 0)
+		@throw [OFInvalidFormatException exception];
+
+	OFData *data;
+	@try {
+		data = [OFData dataWithItems: DER count: ret];
+	} @finally {
+		OPENSSL_free(DER);
+	}
+
+	return data;
+}
 @end

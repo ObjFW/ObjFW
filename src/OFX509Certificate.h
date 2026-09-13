@@ -23,6 +23,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFData;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
@@ -43,23 +44,6 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /**
- * @brief Returns whether creating a certificate chain from PEM files is
- *	  supported.
- *
- * @return Whether creating a certificate chain from PEM files is supported
- */
-+ (bool)supportsPEMFiles;
-
-/**
- * @brief Returns whether creating a certificate chain from a PKCS #12 file is
- *	  supported.
- *
- * @return Whether creating a certificate chain from a PKCS #12 file is
- *	   supported
- */
-+ (bool)supportsPKCS12Files;
-
-/**
  * @brief The date starting which the certificate becomes valid.
  */
 @property (readonly, nonatomic) OFDate *notBeforeDate;
@@ -78,6 +62,28 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The issuer name of the certificate.
  */
 @property (readonly, nonatomic) OFX509Name *issuerName;
+
+/**
+ * @brief The ASN.1 DER representation of the certificate.
+ */
+@property (readonly, nonatomic) OFData *ASN1DERRepresentation;
+
+/**
+ * @brief Returns whether creating a certificate chain from PEM files is
+ *	  supported.
+ *
+ * @return Whether creating a certificate chain from PEM files is supported
+ */
++ (bool)supportsPEMFiles;
+
+/**
+ * @brief Returns whether creating a certificate chain from a PKCS #12 file is
+ *	  supported.
+ *
+ * @return Whether creating a certificate chain from a PKCS #12 file is
+ *	   supported
+ */
++ (bool)supportsPKCS12Files;
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
