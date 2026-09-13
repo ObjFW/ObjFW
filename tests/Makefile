@@ -23,8 +23,6 @@ DISTCLEAN = Info.plist
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m			\
-       OFASN1DERParsingTests.m			\
-       OFASN1DERRepresentationTests.m		\
        OFArrayTests.m				\
        ${OF_BLOCK_TESTS_M}			\
        OFCanvasTests.m				\
@@ -39,6 +37,8 @@ SRCS = ForwardingTests.m			\
        OFConcreteMutableSetTests.m		\
        OFConcreteSetTests.m			\
        OFCryptographicHashTests.m		\
+       OFDERRepresentationTests.m		\
+       OFDataDERParsingTests.m			\
        OFDataTests.m				\
        OFDateTests.m				\
        OFDictionaryTests.m			\

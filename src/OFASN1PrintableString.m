@@ -155,7 +155,7 @@
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFASN1DEREncodeLength(cStringLength, length)];
+		 count: _OFDEREncodeLength(cStringLength, length)];
 	[data addItems: [_string insecureCStringWithEncoding:
 			    OFStringEncodingASCII]
 		 count: cStringLength];

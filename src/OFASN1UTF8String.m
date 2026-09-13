@@ -121,7 +121,7 @@
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFASN1DEREncodeLength(UTF8StringLength, length)];
+		 count: _OFDEREncodeLength(UTF8StringLength, length)];
 	[data addItems: [_string insecureCStringWithEncoding:
 			    OFStringEncodingUTF8]
 		 count: UTF8StringLength];

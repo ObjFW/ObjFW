@@ -25,12 +25,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFData_ASN1DERParsing_reference;
+extern int _OFData_DERParsing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFData (ASN1DERParsing)
+@interface OFData (DERParsing)
 /**
  * @brief The data interpreted as ASN.1 in DER representation and parsed as an
  *	  object.
@@ -38,7 +38,7 @@ extern int _OFData_ASN1DERParsing_reference;
  * This is either an OFArray (for a sequence), an OFSet (for a set) or an
  * OFASN1Value.
  */
-@property (readonly, nonatomic) id objectByParsingASN1DER;
+@property (readonly, nonatomic) id objectByParsingDER;
 
 /**
  * @brief Parses the ASN.1 DER representation and returns it as an object.
@@ -50,7 +50,7 @@ extern int _OFData_ASN1DERParsing_reference;
  *		     if not specified, 0 means no limit (insecure!))
  * @return The ASN.1 DER representation as an object
  */
-- (id)objectByParsingASN1DERWithDepthLimit: (size_t)depthLimit;
+- (id)objectByParsingDERWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END

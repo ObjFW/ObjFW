@@ -108,7 +108,7 @@
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFASN1DEREncodeLength(dataCount, length)];
+		 count: _OFDEREncodeLength(dataCount, length)];
 
 	[data addItems: _data.items count: dataCount];
 

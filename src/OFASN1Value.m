@@ -28,7 +28,7 @@
 #import "OFOutOfRangeException.h"
 
 size_t
-_OFASN1DEREncodeLength(size_t length, unsigned char buffer[9])
+_OFDEREncodeLength(size_t length, unsigned char buffer[9])
 {
 	if (length <= 127) {
 		buffer[0] = length;
@@ -100,7 +100,7 @@ _OFASN1DEREncodeLength(size_t length, unsigned char buffer[9])
 }
 
 int64_t
-_OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
+_OFDERDecodeInteger(const unsigned char *buffer, size_t length)
 {
 	if (length == 0)
 		@throw [OFInvalidFormatException exception];
@@ -141,7 +141,7 @@ _OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
 }
 
 size_t
-_OFASN1DEREncodeInteger(int64_t value, unsigned char buffer[8])
+_OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 {
 	uint64_t unsignedValue = value;
 

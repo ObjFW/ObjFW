@@ -22,10 +22,10 @@
 #import "ObjFW.h"
 #import "ObjFWTest.h"
 
-@interface OFASN1DERRepresentationTests: OTTestCase
+@interface OFDERRepresentationTests: OTTestCase
 @end
 
-@implementation OFASN1DERRepresentationTests
+@implementation OFDERRepresentationTests
 - (void)testBoolean
 {
 	OTAssertEqualObjects(

@@ -148,7 +148,7 @@
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFASN1DEREncodeLength(dataCount + 1, length)];
+		 count: _OFDEREncodeLength(dataCount + 1, length)];
 
 	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitLength);
 	unsigned char unusedBits = roundedUpLength - _bitLength;

@@ -58,7 +58,7 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		value = _OFASN1DERDecodeInteger(
+		value = _OFDERDecodeInteger(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		objc_release(self);
@@ -95,7 +95,7 @@
 	[data addItem: &tag];
 
 	unsigned char buffer[8];
-	unsigned char length = _OFASN1DEREncodeInteger(_int64Value, buffer);
+	unsigned char length = _OFDEREncodeInteger(_int64Value, buffer);
 	[data addItem: &length];
 
 	[data addItems: buffer count: length];

@@ -35,8 +35,8 @@ SRCS = OFASN1BitString.m		\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERParsing.m		\
        OFData+CryptographicHashing.m	\
+       OFData+DERParsing.m		\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDeflate64Stream.m		\

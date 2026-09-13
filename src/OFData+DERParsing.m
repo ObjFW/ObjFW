@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFData+ASN1DERParsing.h"
+#import "OFData+DERParsing.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
@@ -45,7 +45,7 @@ enum {
 	tagConstructedMask = 0x20
 };
 
-int _OFData_ASN1DERParsing_reference;
+int _OFData_DERParsing_reference;
 
 static size_t parseObject(OFData *self, id *object, size_t depthLimit);
 
@@ -229,13 +229,13 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	return bytesConsumed;
 }
 
-@implementation OFData (ASN1DERParsing)
-- (id)objectByParsingASN1DER
+@implementation OFData (DERParsing)
+- (id)objectByParsingDER
 {
-	return [self objectByParsingASN1DERWithDepthLimit: 32];
+	return [self objectByParsingDERWithDepthLimit: 32];
 }
 
-- (id)objectByParsingASN1DERWithDepthLimit: (size_t)depthLimit
+- (id)objectByParsingDERWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
 	id object;

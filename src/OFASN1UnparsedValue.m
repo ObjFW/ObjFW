@@ -77,7 +77,7 @@
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFASN1DEREncodeLength(count, length)];
+		 count: _OFDEREncodeLength(count, length)];
 	[data addItems: _DEREncodedContents.items count: count];
 
 	[data makeImmutable];
