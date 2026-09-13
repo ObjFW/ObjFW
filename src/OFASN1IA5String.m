@@ -21,11 +21,43 @@
 
 #import "OFASN1IA5String.h"
 #import "OFASN1Value+Private.h"
+#import "OFCharacterSet.h"
 #import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
+
+OF_DIRECT_MEMBERS
+@interface OFASN1IA5StringCharacterSet: OFCharacterSet
+@end
+
+static OFCharacterSet *ASN1IA5StringCharacterSet;
+
+static void
+initASN1IA5StringCharacterSet(void)
+{
+	ASN1IA5StringCharacterSet = [[OFASN1IA5StringCharacterSet alloc] init];
+}
+
+@implementation OFASN1IA5StringCharacterSet
+OF_SINGLETON_METHODS
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	return (character < 0x80);
+}
+@end
+
+@implementation OFCharacterSet (ASN1IA5StringCharacterSet)
++ (OFCharacterSet *)ASN1IA5StringCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initASN1IA5StringCharacterSet);
+
+	return ASN1IA5StringCharacterSet;
+}
+@end
 
 @implementation OFASN1IA5String
 @synthesize stringValue = _string;

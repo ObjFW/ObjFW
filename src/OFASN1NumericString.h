@@ -18,6 +18,7 @@
  */
 
 #import "OFASN1Value.h"
+#import "OFCharacterSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -55,6 +56,20 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1NumericString
  */
 - (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
+@end
+
+@interface OFCharacterSet (ASN1NumericStringCharacterSet)
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic)
+    OFCharacterSet *ASN1NumericStringCharacterSet;
+#endif
+
+/**
+ * @brief Returns the characters allowed in an OFASN1NumericString.
+ *
+ * @return The characters allowed in an OFASN1NumericString
+ */
++ (OFCharacterSet *)ASN1NumericStringCharacterSet;
 @end
 
 OF_ASSUME_NONNULL_END

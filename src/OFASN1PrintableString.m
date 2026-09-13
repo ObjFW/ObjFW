@@ -28,6 +28,60 @@
 #import "OFInvalidEncodingException.h"
 #import "OFOutOfRangeException.h"
 
+OF_DIRECT_MEMBERS
+@interface OFASN1PrintableStringCharacterSet: OFCharacterSet
+@end
+
+static OFCharacterSet *ASN1PrintableStringCharacterSet;
+
+static void
+initASN1PrintableStringCharacterSet(void)
+{
+	ASN1PrintableStringCharacterSet =
+	    [[OFASN1PrintableStringCharacterSet alloc] init];
+}
+
+@implementation OFASN1PrintableStringCharacterSet
+OF_SINGLETON_METHODS
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if (character >= 0x80)
+		return false;
+
+	if (OFASCIIIsAlnum(character))
+		return true;
+
+	switch (character) {
+	case ' ':
+	case '\'':
+	case '(':
+	case ')':
+	case '+':
+	case ',':
+	case '-':
+	case '.':
+	case '/':
+	case ':':
+	case '=':
+	case '?':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
+@implementation OFCharacterSet (ASN1PrintableStringCharacterSet)
++ (OFCharacterSet *)ASN1PrintableStringCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initASN1PrintableStringCharacterSet);
+
+	return ASN1PrintableStringCharacterSet;
+}
+@end
+
 @implementation OFASN1PrintableString
 @synthesize stringValue = _string;
 
@@ -43,33 +97,11 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *cString =
-		    [string cStringWithEncoding: OFStringEncodingASCII];
-		size_t length =
-		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
 
-		for (size_t i = 0; i < length; i++) {
-			if (OFASCIIIsAlnum(cString[i]))
-				continue;
-
-			switch (cString[i]) {
-			case ' ':
-			case '\'':
-			case '(':
-			case ')':
-			case '+':
-			case ',':
-			case '-':
-			case '.':
-			case '/':
-			case ':':
-			case '=':
-			case '?':
-				continue;
-			default:
-				@throw [OFInvalidEncodingException exception];
-			}
-		}
+		if ([string rangeOfCharacterFromSet: [OFCharacterSet
+		    ASN1PrintableStringCharacterSet].invertedSet].location !=
+		    OFNotFound)
+			@throw [OFInvalidEncodingException exception];
 
 		_string = [string copy];
 

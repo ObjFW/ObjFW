@@ -18,6 +18,7 @@
  */
 
 #import "OFASN1Value.h"
+#import "OFCharacterSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -55,6 +56,20 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1PrintableString
  */
 - (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
+@end
+
+@interface OFCharacterSet (ASN1PrintableStringCharacterSet)
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic)
+    OFCharacterSet *ASN1PrintableStringCharacterSet;
+#endif
+
+/**
+ * @brief Returns the characters allowed in an OFASN1PrintableString.
+ *
+ * @return The characters allowed in an OFASN1PrintableString
+ */
++ (OFCharacterSet *)ASN1PrintableStringCharacterSet;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -28,6 +28,41 @@
 #import "OFInvalidEncodingException.h"
 #import "OFOutOfRangeException.h"
 
+OF_DIRECT_MEMBERS
+@interface OFASN1NumericStringCharacterSet: OFCharacterSet
+@end
+
+static OFCharacterSet *ASN1NumericStringCharacterSet;
+
+static void
+initASN1NumericStringCharacterSet(void)
+{
+	ASN1NumericStringCharacterSet =
+	    [[OFASN1NumericStringCharacterSet alloc] init];
+}
+
+@implementation OFASN1NumericStringCharacterSet
+OF_SINGLETON_METHODS
+
+- (bool)characterIsMember: (OFUnichar)character
+{
+	if (character >= 0x80)
+		return false;
+
+	return (OFASCIIIsDigit(character) || character == ' ');
+}
+@end
+
+@implementation OFCharacterSet (ASN1NumericStringCharacterSet)
++ (OFCharacterSet *)ASN1NumericStringCharacterSet
+{
+	static OFOnceControl onceControl = OFOnceControlInitValue;
+	OFOnce(&onceControl, initASN1NumericStringCharacterSet);
+
+	return ASN1NumericStringCharacterSet;
+}
+@end
+
 @implementation OFASN1NumericString
 @synthesize stringValue = _string;
 
@@ -43,14 +78,11 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *cString =
-		    [string cStringWithEncoding: OFStringEncodingASCII];
-		size_t length =
-		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
 
-		for (size_t i = 0; i < length; i++)
-			if (!OFASCIIIsDigit(cString[i]) && cString[i] != ' ')
-				@throw [OFInvalidEncodingException exception];
+		if ([string rangeOfCharacterFromSet: [OFCharacterSet
+		    ASN1NumericStringCharacterSet].invertedSet].location !=
+		    OFNotFound)
+			@throw [OFInvalidEncodingException exception];
 
 		_string = [string copy];
 
