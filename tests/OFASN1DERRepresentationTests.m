@@ -64,4 +64,11 @@
 	OTAssertEqualObjects([[OFASN1Null null] DERRepresentation],
 	    [OFData dataWithItems: "\x05\x00" count: 2]);
 }
+
+- (void)testUTF8String
+{
+	OTAssertEqualObjects([[OFASN1UTF8String
+	    stringWithString: @"abcdefäöü"] DERRepresentation],
+	    [OFData dataWithItems: "\x0C\x0C" "abcdefäöü" count: 14]);
+}
 @end

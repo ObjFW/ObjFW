@@ -25,6 +25,7 @@
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFASN1UTF8String
 @synthesize stringValue = _string;
@@ -105,6 +106,29 @@
 - (bool)isConstructed
 {
 	return false;
+}
+
+- (OFData *)DERRepresentation
+{
+	size_t UTF8StringLength = _string.UTF8StringLength;
+	if (SIZE_MAX - UTF8StringLength < 2)
+		@throw [OFOutOfRangeException exception];
+
+	OFMutableData *data =
+	    [OFMutableData dataWithCapacity: UTF8StringLength + 2];
+	unsigned char tag = OFASN1TagNumberUTF8String;
+	[data addItem: &tag];
+
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFASN1DEREncodeLength(UTF8StringLength, length)];
+	[data addItems: [_string insecureCStringWithEncoding:
+			    OFStringEncodingUTF8]
+		 count: UTF8StringLength];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)description
