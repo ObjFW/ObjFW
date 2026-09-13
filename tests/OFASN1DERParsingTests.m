@@ -456,7 +456,7 @@
 	OTAssertEqual(set.count, 2);
 
 	OTAssertEqualObjects(set,
-	    ([OFSet setWithObjects: [OFNumber numberWithLongLong: 123],
+	    ([OFSet setWithObjects: [OFASN1Integer integerWithLongLong: 123],
 	    [OFASN1UTF8String stringWithString: @"Test"], nil]));
 }
 
