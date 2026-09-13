@@ -28,8 +28,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-long long
-OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
+long long OF_VISIBILITY_INTERNAL
+_OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 {
 	unsigned long long value = 0;
 
@@ -84,7 +84,7 @@ OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		value = OFASN1DERIntegerParse(
+		value = _OFASN1DERIntegerParse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		objc_release(self);

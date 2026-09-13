@@ -26,8 +26,8 @@
 
 #import "OFInvalidArgumentException.h"
 
-extern long long OFASN1DERIntegerParse(const unsigned char *buffer,
-    size_t length);
+extern long long _OFASN1DERIntegerParse(const unsigned char *buffer,
+    size_t length) OF_VISIBILITY_INTERNAL;
 
 @implementation OFASN1Enumerated
 @synthesize longLongValue = _longLongValue;
@@ -62,7 +62,7 @@ extern long long OFASN1DERIntegerParse(const unsigned char *buffer,
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		value = OFASN1DERIntegerParse(
+		value = _OFASN1DERIntegerParse(
 		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		objc_release(self);
