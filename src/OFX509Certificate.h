@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The ASN.1 DER representation of the certificate.
  */
-@property (readonly, nonatomic) OFData *ASN1DERRepresentation;
+@property (readonly, nonatomic) OFData *DERRepresentation;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
