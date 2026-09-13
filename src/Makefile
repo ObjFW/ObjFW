@@ -17,11 +17,13 @@ SRCS = OFASN1BitString.m		\
        OFASN1Enumerated.m		\
        OFASN1IA5String.m		\
        OFASN1Integer.m			\
+       OFASN1Null.m			\
        OFASN1NumericString.m		\
        OFASN1ObjectIdentifier.m		\
        OFASN1OctetString.m		\
        OFASN1PrintableString.m		\
        OFASN1UTF8String.m		\
+       OFASN1UnparsedValue.m		\
        OFASN1Value.m			\
        OFApplication.m			\
        OFArray.m			\
@@ -212,7 +214,6 @@ INCLUDES_ATOMIC = OFAtomic.h			\
 		  platform/macOS/OFAtomic.h	\
 		  platform/x86/OFAtomic.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFASN1DERRepresentation.h		\
 	    OFArchiveEntry.h			\
 	    OFCollection.h			\
 	    OFCryptographicHash.h		\

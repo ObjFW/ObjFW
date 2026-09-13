@@ -17,7 +17,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -28,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 OctetString.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1OctetString: OFObject
+@interface OFASN1OctetString: OFASN1Value
 {
 	OFData *_data;
 }
@@ -56,21 +55,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1OctetString
  */
 - (instancetype)initWithData: (OFData *)data OF_DESIGNATED_INITIALIZER;
-
-/**
- * @brief Initializes an already allocated ASN.1 OctetString with the specified
- *	  arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 OctetString
- */
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

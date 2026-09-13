@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFASN1Boolean.h"
+#import "OFASN1Null.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
@@ -27,21 +27,10 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-@implementation OFASN1Boolean
-@synthesize boolValue = _boolValue;
-
-+ (instancetype)booleanWithBool: (bool)bool_
+@implementation OFASN1Null
++ (instancetype)null
 {
-	return objc_autoreleaseReturnValue([[self alloc] initWithBool: bool_]);
-}
-
-- (instancetype)initWithBool: (bool)bool_
-{
-	self = [super init];
-
-	_boolValue = bool_;
-
-	return self;
+	return objc_autoreleaseReturnValue([[OFASN1Null alloc] init]);
 }
 
 - (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
@@ -49,32 +38,21 @@
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	unsigned char value;
+	self = [super init];
 
 	@try {
 		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberBoolean || constructed)
+		    tagNumber != OFASN1TagNumberNull || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if (DEREncodedContents.itemSize != 1 ||
-		    DEREncodedContents.count != 1)
-			@throw [OFInvalidFormatException exception];
-
-		value = *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
-
-		if (value != 0 && value != 0xFF)
+		if (DEREncodedContents.count != 0)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	return [self initWithBool: !!value];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
+	return self;
 }
 
 - (OFASN1TagClass)tagClass
@@ -84,7 +62,7 @@
 
 - (OFASN1TagNumber)tagNumber
 {
-	return OFASN1TagNumberBoolean;
+	return OFASN1TagNumberNull;
 }
 
 - (bool)isConstructed
@@ -94,19 +72,12 @@
 
 - (OFData *)DERRepresentation
 {
-	char buffer[] = {
-		OFASN1TagNumberBoolean,
-		1,
-		(_boolValue ? 0xFF : 0x00)
-	};
-
-	return [OFData dataWithItems: buffer count: sizeof(buffer)];
+	const unsigned char bytes[] = { OFASN1TagNumberNull, 0 };
+	return [OFData dataWithItems: bytes count: sizeof(bytes)];
 }
 
 - (OFString *)description
 {
-	return (_boolValue
-	    ? @"<OFASN1Boolean: true>"
-	    : @"<OFASN1Boolean: false>");
+	return [OFString stringWithFormat: @"<%@>", self.class];
 }
 @end

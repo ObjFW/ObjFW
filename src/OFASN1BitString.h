@@ -17,8 +17,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-#import "OFASN1DERRepresentation.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -29,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 BitString.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1BitString: OFObject <OFASN1DERRepresentation>
+@interface OFASN1BitString: OFASN1Value
 {
 	OFData *_data;
 	size_t _bitLength;
@@ -67,21 +65,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithData: (OFData *)data
 		   bitLength: (size_t)bitLength OF_DESIGNATED_INITIALIZER;
-
-/**
- * @brief Initializes an already allocated ASN.1 BitString with the specified
- *	  arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized OFASN1BitString
- */
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

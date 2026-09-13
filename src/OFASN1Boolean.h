@@ -17,8 +17,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
-#import "OFASN1DERRepresentation.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -27,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 Boolean.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Boolean: OFObject <OFASN1DERRepresentation>
+@interface OFASN1Boolean: OFASN1Value
 {
 	bool _boolValue;
 }
@@ -55,21 +53,6 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1Boolean
  */
 - (instancetype)initWithBool: (bool)bool_ OF_DESIGNATED_INITIALIZER;
-
-/**
- * @brief Initializes an already allocated ASN.1 Boolean with the specified
- *	  arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized OFASN1Boolean
- */
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

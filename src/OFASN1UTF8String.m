@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1UTF8String.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
@@ -48,10 +49,10 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string;
@@ -91,27 +92,19 @@
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)object
+- (OFASN1TagClass)tagClass
 {
-	OFASN1UTF8String *UTF8String;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1UTF8String class]])
-		return false;
-
-	UTF8String = object;
-
-	if (![UTF8String->_string isEqual: _string])
-		return false;
-
-	return true;
+	return OFASN1TagClassUniversal;
 }
 
-- (unsigned long)hash
+- (OFASN1TagNumber)tagNumber
 {
-	return _string.hash;
+	return OFASN1TagNumberUTF8String;
+}
+
+- (bool)isConstructed
+{
+	return false;
 }
 
 - (OFString *)description

@@ -17,24 +17,21 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
+#import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFData;
-
 /**
- * @protocol OFASN1DERRepresentation \
- *	     OFASN1DERRepresentation.h ObjFW/OFASN1DERRepresentation.h
+ * @brief A class representing an ASN.1 Null.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OFASN1Null: OFASN1Value
+/**
+ * @brief Creates an ASN.1 Null.
  *
- * @brief A protocol implemented by classes that support encoding to ASN.1 DER
- *	  representation.
+ * @return A new, autoreleased OFASN1Null
  */
-@protocol OFASN1DERRepresentation
-/**
- * @brief The object in ASN.1 DER representation.
- */
-@property (readonly, nonatomic) OFData *ASN1DERRepresentation;
++ (instancetype)null;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -20,113 +20,69 @@
 #include "config.h"
 
 #import "OFASN1Value.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Value
-@synthesize tagClass = _tagClass, tagNumber = _tagNumber;
-@synthesize constructed = _constructed;
-@synthesize DEREncodedContents = _DEREncodedContents;
-
-+ (instancetype)valueWithTagClass: (OFASN1TagClass)tagClass
-			tagNumber: (OFASN1TagNumber)tagNumber
-		      constructed: (bool)constructed
-	       DEREncodedContents: (OFData *)DEREncodedContents
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithTagClass: tagClass
-				 tagNumber: tagNumber
-			       constructed: constructed
-			DEREncodedContents: DEREncodedContents]);
-}
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
-{
-	self = [super init];
-
-	@try {
-		if (DEREncodedContents.itemSize != 1)
-			@throw [OFInvalidFormatException exception];
-
-		_tagClass = tagClass;
-		_tagNumber = tagNumber;
-		_constructed = constructed;
-		_DEREncodedContents = [DEREncodedContents copy];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
+@dynamic tagClass, tagNumber, constructed, DERRepresentation;
 
 - (instancetype)init
 {
-	OF_INVALID_INIT_METHOD
+	if ([self isMemberOfClass: [OFASN1Value class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			objc_release(self);
+			@throw e;
+		}
+	}
+
+	return [super init];
 }
 
-- (void)dealloc
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	objc_release(_DEREncodedContents);
+	if ([self isMemberOfClass: [OFASN1Value class]]) {
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		} @catch (id e) {
+			objc_release(self);
+			@throw e;
+		}
+	}
 
-	[super dealloc];
+	return [super init];
 }
 
 - (bool)isEqual: (id)object
 {
-	OFASN1Value *value;
-
-	if (object == self)
-		return true;
-
 	if (![object isKindOfClass: [OFASN1Value class]])
 		return false;
 
-	value = object;
-
-	if (value->_tagClass != _tagClass)
-		return false;
-	if (value->_tagNumber != _tagNumber)
-		return false;
-	if (value->_constructed != _constructed)
-		return false;
-	if (![value->_DEREncodedContents isEqual: _DEREncodedContents])
-		return false;
-
-	return true;
+	return [[object DERRepresentation] isEqual: self.DERRepresentation];
 }
 
 - (unsigned long)hash
 {
-	unsigned long hash;
-
-	OFHashInit(&hash);
-
-	OFHashAddByte(&hash, _tagClass & 0xFF);
-	OFHashAddByte(&hash, _tagNumber & 0xFF);
-	OFHashAddByte(&hash, _constructed);
-	OFHashAddHash(&hash, _DEREncodedContents.hash);
-
-	OFHashFinalize(&hash);
-
-	return hash;
+	return self.DERRepresentation.hash;
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFASN1Value:\n"
+	    @"<%@:\n"
 	    @"\tTag class = %x\n"
 	    @"\tTag number = %x\n"
 	    @"\tConstructed = %u\n"
-	    @"\tDER-encoded contents = %@\n"
 	    @">",
-	    _tagClass, _tagNumber, _constructed,
-	    _DEREncodedContents.description];
+	    self.class, self.tagClass, self.tagNumber, self.constructed];
 }
 @end

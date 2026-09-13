@@ -18,7 +18,6 @@
  */
 
 #import "OFObject.h"
-#import "OFASN1DERRepresentation.h"
 #import "OFX509Name.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -34,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An X.509 certificate, optionally with an associated private key.
  */
-@interface OFX509Certificate: OFObject <OFASN1DERRepresentation>
+@interface OFX509Certificate: OFObject
 {
 	OF_RESERVE_IVARS(OFX509Certificate, 4)
 }
@@ -63,6 +62,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The issuer name of the certificate.
  */
 @property (readonly, nonatomic) OFX509Name *issuerName;
+
+/**
+ * @brief The ASN.1 DER representation of the certificate.
+ */
+@property (readonly, nonatomic) OFData *ASN1DERRepresentation;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is

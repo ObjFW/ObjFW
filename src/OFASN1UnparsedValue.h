@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
+ * Copyright (c) 2008-2025 Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -22,37 +22,18 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An ASN.1 Integer.
+ * @brief A class representing an unparsed ASN.1 value.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Integer: OFASN1Value
+@interface OFASN1UnparsedValue: OFASN1Value
 {
-	long long _longLongValue;
+	OFASN1TagClass _tagClass;
+	OFASN1TagNumber _tagNumber;
+	bool _constructed;
+	OFData *_DEREncodedContents;
 }
 
-/**
- * @brief The Integer value.
- */
-@property (readonly, nonatomic) long long longLongValue;
-
-/**
- * @brief Creates an ASN.1 Integer with the specified integer value.
- *
- * @param value The `long long` value of the Integer
- * @return A new, autoreleased OFASN1Integer
- */
-+ (instancetype)integerWithLongLong: (long long)value;
-
 - (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated ASN.1 Integer with the specified
- *	  integer value.
- *
- * @param value The `long long` value of the Integer
- * @return An initialized OFASN1Integer
- */
-- (instancetype)initWithLongLong: (long long)value OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

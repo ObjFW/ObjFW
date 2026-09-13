@@ -21,40 +21,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-
-/**
- * @brief An ASN.1 IA5String.
- */
-OF_SUBCLASSING_RESTRICTED
-@interface OFASN1IA5String: OFASN1Value
-{
-	OFString *_string;
-}
-
-/**
- * @brief The string value.
- */
-@property (readonly, nonatomic) OFString *stringValue;
-
-/**
- * @brief Creates an IA5String with the specified string value.
- *
- * @param string The string value of the IA5String
- * @return A new, autoreleased OFASN1IA5String
- */
-+ (instancetype)stringWithString: (OFString *)string;
-
-- (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated IA5String with the specified string
- *	  value.
- *
- * @param string The string value of the IA5String
- * @return An initialized OFASN1IA5String
- */
-- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
+@interface OFASN1Value ()
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
+    OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

@@ -25,14 +25,15 @@
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
+#import "OFASN1Null.h"
 #import "OFASN1NumericString.h"
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
-#import "OFASN1Value.h"
+#import "OFASN1UnparsedValue.h"
+#import "OFASN1Value+Private.h"
 #import "OFArray.h"
-#import "OFNull.h"
 #import "OFSet.h"
 
 #import "OFInvalidArgumentException.h"
@@ -176,14 +177,8 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1OctetString class];
 		break;
 	case OFASN1TagNumberNull:
-		if (tag & tagConstructedMask)
-			@throw [OFInvalidFormatException exception];
-
-		if (contents.count != 0)
-			@throw [OFInvalidFormatException exception];
-
-		*object = [OFNull null];
-		return bytesConsumed;
+		valueClass = [OFASN1Null class];
+		break;
 	case OFASN1TagNumberObjectIdentifier:
 		valueClass = [OFASN1ObjectIdentifier class];
 		break;
@@ -215,15 +210,20 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1IA5String class];
 		break;
 	default:
-		valueClass = [OFASN1Value class];
+		valueClass = [OFASN1UnparsedValue class];
 		break;
 	}
 
-	*object = objc_autorelease(
-	    [[valueClass alloc] initWithTagClass: tag >> 6
-				       tagNumber: tag & 0x1F
-				     constructed: tag & tagConstructedMask
-			      DEREncodedContents: contents]);
+	@try {
+		*object = objc_autorelease([[valueClass alloc]
+		    of_initWithTagClass: tag >> 6
+			      tagNumber: tag & 0x1F
+			    constructed: tag & tagConstructedMask
+		     DEREncodedContents: contents]);
+	} @catch (OFInvalidArgumentException *e) {
+		@throw [OFInvalidFormatException exception];
+	}
+
 	return bytesConsumed;
 }
 

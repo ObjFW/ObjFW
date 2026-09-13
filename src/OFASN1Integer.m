@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1Integer.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
@@ -68,10 +69,10 @@ OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	long long value;
 
@@ -98,27 +99,19 @@ OFASN1DERIntegerParse(const unsigned char *buffer, size_t length)
 	OF_INVALID_INIT_METHOD
 }
 
-- (bool)isEqual: (id)object
+- (OFASN1TagClass)tagClass
 {
-	OFASN1Integer *integer;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1Integer class]])
-		return false;
-
-	integer = object;
-
-	if (integer->_longLongValue != _longLongValue)
-		return false;
-
-	return true;
+	return OFASN1TagClassUniversal;
 }
 
-- (unsigned long)hash
+- (OFASN1TagNumber)tagNumber
 {
-	return (unsigned long)_longLongValue;
+	return OFASN1TagNumberInteger;
+}
+
+- (bool)isConstructed
+{
+	return false;
 }
 
 - (OFString *)description

@@ -76,11 +76,5 @@ static OFNull *null = nil;
 	return [OFData dataWithItems: &type count: 1];
 }
 
-- (OFData *)ASN1DERRepresentation
-{
-	const unsigned char bytes[] = { OFASN1TagNumberNull, 0 };
-	return [OFData dataWithItems: bytes count: sizeof(bytes)];
-}
-
 OF_SINGLETON_METHODS
 @end

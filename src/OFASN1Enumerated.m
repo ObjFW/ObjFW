@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1Enumerated.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
@@ -46,10 +47,10 @@ extern long long OFASN1DERIntegerParse(const unsigned char *buffer,
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	long long value;
 
@@ -76,27 +77,19 @@ extern long long OFASN1DERIntegerParse(const unsigned char *buffer,
 	OF_INVALID_INIT_METHOD
 }
 
-- (bool)isEqual: (id)object
+- (OFASN1TagClass)tagClass
 {
-	OFASN1Enumerated *enumerated;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1Enumerated class]])
-		return false;
-
-	enumerated = object;
-
-	if (enumerated->_longLongValue != _longLongValue)
-		return false;
-
-	return true;
+	return OFASN1TagClassUniversal;
 }
 
-- (unsigned long)hash
+- (OFASN1TagNumber)tagNumber
 {
-	return (unsigned long)_longLongValue;
+	return OFASN1TagNumberEnumerated;
+}
+
+- (bool)isConstructed
+{
+	return false;
 }
 
 - (OFString *)description

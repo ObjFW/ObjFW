@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1BitString.h"
+#import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
@@ -55,27 +56,26 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 	size_t bitLength;
 
 	@try {
-		unsigned char unusedBits;
-		size_t count = DEREncodedContents.count;
-
 		if (tagClass != OFASN1TagClassUniversal ||
 		    tagNumber != OFASN1TagNumberBitString || constructed)
 			@throw [OFInvalidArgumentException exception];
 
+		size_t count = DEREncodedContents.count;
+
 		if (DEREncodedContents.itemSize != 1 || count == 0)
 			@throw [OFInvalidFormatException exception];
 
-		unusedBits =
+		unsigned char unusedBits =
 		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 
 		if (unusedBits > 7)
@@ -121,7 +121,22 @@
 	[super dealloc];
 }
 
-- (OFData *)ASN1DERRepresentation
+- (OFASN1TagClass)tagClass
+{
+	return OFASN1TagClassUniversal;
+}
+
+- (OFASN1TagNumber)tagNumber
+{
+	return OFASN1TagNumberBitString;
+}
+
+- (bool)isConstructed
+{
+	return false;
+}
+
+- (OFData *)DERRepresentation
 {
 	size_t dataCount = _data.count;
 	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitLength);
@@ -144,31 +159,6 @@
 	[data makeImmutable];
 
 	return data;
-}
-
-- (bool)isEqual: (id)object
-{
-	OFASN1BitString *bitString;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1BitString class]])
-		return false;
-
-	bitString = object;
-
-	if (![bitString->_data isEqual: _data])
-		return false;
-	if (bitString->_bitLength != _bitLength)
-		return false;
-
-	return true;
-}
-
-- (unsigned long)hash
-{
-	return _data.hash + (unsigned long)_bitLength;
 }
 
 - (OFString *)description

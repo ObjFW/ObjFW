@@ -17,7 +17,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -29,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 ObjectIdentifier.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1ObjectIdentifier: OFObject
+@interface OFASN1ObjectIdentifier: OFASN1Value
 {
 	OFArray OF_GENERIC(OFNumber *) *_subidentifiers;
 }
@@ -59,21 +58,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithSubidentifiers:
     (OFArray OF_GENERIC(OFNumber *) *)subidentifiers OF_DESIGNATED_INITIALIZER;
-
-/**
- * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
- *	  specified arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized OFASN1ObjectIdentifier
- */
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

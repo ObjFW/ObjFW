@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1ObjectIdentifier.h"
+#import "OFASN1Value+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFNumber.h"
@@ -66,23 +67,23 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 
 	@try {
+		if (tagClass != OFASN1TagClassUniversal ||
+		    tagNumber != OFASN1TagNumberObjectIdentifier || constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		const unsigned char *items = DEREncodedContents.items;
 		size_t count = DEREncodedContents.count;
 		unsigned long long value = 0;
 		uint_fast8_t bits = 0;
-
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberObjectIdentifier || constructed)
-			@throw [OFInvalidArgumentException exception];
 
 		if (DEREncodedContents.itemSize != 1 || count == 0)
 			@throw [OFInvalidArgumentException exception];
@@ -152,27 +153,19 @@
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)object
+- (OFASN1TagClass)tagClass
 {
-	OFASN1ObjectIdentifier *objectIdentifier;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1ObjectIdentifier class]])
-		return false;
-
-	objectIdentifier = object;
-
-	if (![objectIdentifier->_subidentifiers isEqual: _subidentifiers])
-		return false;
-
-	return true;
+	return OFASN1TagClassUniversal;
 }
 
-- (unsigned long)hash
+- (OFASN1TagNumber)tagNumber
 {
-	return _subidentifiers.hash;
+	return OFASN1TagNumberObjectIdentifier;
+}
+
+- (bool)isConstructed
+{
+	return false;
 }
 
 - (OFString *)description

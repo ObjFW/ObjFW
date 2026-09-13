@@ -72,15 +72,11 @@ typedef enum {
 } OFASN1TagNumber;
 
 /**
- * @brief A class representing an ASN.1 value.
+ * @brief A class representing an abstract ASN.1 value.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Value: OFObject
 {
-	OFASN1TagClass _tagClass;
-	OFASN1TagNumber _tagNumber;
-	bool _constructed;
-	OFData *_DEREncodedContents;
+	OF_RESERVE_IVARS(OFASN1Value, 4)
 }
 
 /**
@@ -99,41 +95,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic, getter=isConstructed) bool constructed;
 
 /**
- * @brief The DER-encoded contents octets of the value.
+ * @brief The object in DER representation.
  */
-@property (readonly, nonatomic) OFData *DEREncodedContents;
-
-/**
- * @brief Creates a new ASN.1 value with the specified arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return A new ASN.1 value
- */
-+ (instancetype)valueWithTagClass: (OFASN1TagClass)tagClass
-			tagNumber: (OFASN1TagNumber)tagNumber
-		      constructed: (bool)constructed
-	       DEREncodedContents: (OFData *)DEREncodedContents;
-
-- (instancetype)init OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated ASN.1 value with the specified
- *	  arguments.
- *
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @param constructed Whether the value if of a constructed type
- * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 value
- */
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
-    OF_DESIGNATED_INITIALIZER;
+@property (readonly, nonatomic) OFData *DERRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

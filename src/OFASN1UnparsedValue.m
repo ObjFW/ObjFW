@@ -19,27 +19,32 @@
 
 #include "config.h"
 
-#import "OFASN1OctetString.h"
+#import "OFASN1UnparsedValue.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 
-@implementation OFASN1OctetString
-@synthesize data = _data;
+@implementation OFASN1UnparsedValue
+@synthesize tagClass = _tagClasss, tagNumber = _tagNumber;
+@synthesize constructed = _constructed;
 
-+ (instancetype)octetStringWithData: (OFData *)data
-{
-	return objc_autoreleaseReturnValue([[self alloc] initWithData: data]);
-}
-
-- (instancetype)initWithData: (OFData *)data
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	self = [super init];
 
 	@try {
-		_data = [data copy];
+		if (DEREncodedContents.itemSize != 1)
+			@throw [OFInvalidFormatException exception];
+
+		_tagClass = tagClass;
+		_tagNumber = tagNumber;
+		_constructed = constructed;
+		_DEREncodedContents = [DEREncodedContents copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -48,55 +53,23 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
-{
-	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberOctetString || constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return [self initWithData: DEREncodedContents];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (void)dealloc
 {
-	objc_release(_data);
+	objc_release(_DEREncodedContents);
 
 	[super dealloc];
 }
 
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberOctetString;
-}
-
-- (bool)isConstructed
-{
-	return false;
-}
-
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>", _data];
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tTag class = %x\n"
+	    @"\tTag number = %x\n"
+	    @"\tConstructed = %u\n"
+	    @"\tDER-encoded contents = %@\n"
+	    @">",
+	    self.class, _tagClass, _tagNumber, _constructed,
+	    _DEREncodedContents];
 }
 @end

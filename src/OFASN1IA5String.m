@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFASN1IA5String.h"
+#import "OFASN1Value.h"
 #import "OFData.h"
 #import "OFString.h"
 
@@ -48,10 +49,10 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+			constructed: (bool)constructed
+		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string;
@@ -91,27 +92,19 @@
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)object
+- (OFASN1TagClass)tagClass
 {
-	OFASN1IA5String *IA5String;
-
-	if (object == self)
-		return true;
-
-	if (![object isKindOfClass: [OFASN1IA5String class]])
-		return false;
-
-	IA5String = object;
-
-	if (![IA5String->_string isEqual: _string])
-		return false;
-
-	return true;
+	return OFASN1TagClassUniversal;
 }
 
-- (unsigned long)hash
+- (OFASN1TagNumber)tagNumber
 {
-	return _string.hash;
+	return OFASN1TagNumberIA5String;
+}
+
+- (bool)isConstructed
+{
+	return false;
 }
 
 - (OFString *)description
