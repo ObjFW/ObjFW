@@ -139,21 +139,24 @@
 - (OFData *)DERRepresentation
 {
 	size_t dataCount = _data.count;
+	if (SIZE_MAX - dataCount < 3)
+		@throw [OFOutOfRangeException exception];
+
+	OFMutableData *data = [OFMutableData dataWithCapacity: dataCount + 3];
+	unsigned char tag = OFASN1TagNumberBitString;
+	[data addItem: &tag];
+
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFASN1DEREncodeLength(dataCount + 1, length)];
+
 	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitLength);
 	unsigned char unusedBits = roundedUpLength - _bitLength;
-	unsigned char header[] = {
-		OFASN1TagNumberBitString,
-		dataCount + 1,
-		unusedBits
-	};
-	OFMutableData *data;
 
-	if (dataCount + 1 > UINT8_MAX || dataCount != roundedUpLength / 8)
+	if (dataCount != roundedUpLength / 8)
 		@throw [OFInvalidFormatException exception];
 
-	data = [OFMutableData
-	    dataWithCapacity: sizeof(header) + dataCount];
-	[data addItems: header count: sizeof(header)];
+	[data addItem: &unusedBits];
 	[data addItems: _data.items count: dataCount];
 
 	[data makeImmutable];

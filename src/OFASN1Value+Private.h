@@ -29,4 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
     OF_METHOD_FAMILY(init);
 @end
 
+extern size_t _OFASN1DEREncodeLength(size_t length,
+    unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
+
 OF_ASSUME_NONNULL_END

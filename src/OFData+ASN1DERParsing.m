@@ -145,6 +145,8 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		    (lengthLength >= 2 && items[0] == 0))
 			@throw [OFInvalidFormatException exception];
 
+		/* TODO: Check that the shortest encoding is used */
+
 		contentsLength = 0;
 
 		for (uint_fast8_t i = 0; i < lengthLength; i++)
