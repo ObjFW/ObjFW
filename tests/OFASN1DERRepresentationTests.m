@@ -48,14 +48,14 @@
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]);
 }
 
-- (void)testInteger
+- (void)testBoolean
 {
 	OTAssertEqualObjects(
-	    [[OFNumber numberWithBool: false] ASN1DERRepresentation],
+	    [[OFASN1Boolean booleanWithBool: false] ASN1DERRepresentation],
 	    [OFData dataWithItems: "\x01\x01\x00" count: 3]);
 
 	OTAssertEqualObjects(
-	    [[OFNumber numberWithBool: true] ASN1DERRepresentation],
+	    [[OFASN1Boolean booleanWithBool: true] ASN1DERRepresentation],
 	    [OFData dataWithItems: "\x01\x01\xFF" count: 3]);
 }
 

@@ -171,6 +171,7 @@
 #endif
 
 #import "OFASN1BitString.h"
+#import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
