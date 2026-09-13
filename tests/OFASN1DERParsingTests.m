@@ -65,7 +65,7 @@
 
 - (void)testInteger
 {
-	OTAssertEqual([[[OFData dataWithItems: "\x02\x00" count: 2]
+	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x00" count: 3]
 	    objectByParsingASN1DER] longLongValue], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x01" count: 3]
@@ -80,14 +80,19 @@
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x03\xFF\x00\x00" count: 5]
 	    objectByParsingASN1DER] longLongValue], -65536);
 
-	OTAssertEqual((unsigned long long)[[[OFData
-	    dataWithItems: "\x02\x09\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-		    count: 11] objectByParsingASN1DER] longLongValue],
-	    ULLONG_MAX);
+	OTAssertEqual(
+	    [[[OFData dataWithItems: "\x02\x08\x80\x00\x00\x00\x00\x00\x00\x00"
+			      count: 10] objectByParsingASN1DER] longLongValue],
+	    LLONG_MIN);
 }
 
 - (void)testInvalidIntegerFails
 {
+	OTAssertThrowsSpecific(
+	    [[OFData dataWithItems: "\x02\x00"
+			     count: 2] objectByParsingASN1DER],
+	    OFInvalidFormatException);
+
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x02\x00\x00"
 			     count: 4] objectByParsingASN1DER],
@@ -107,8 +112,8 @@
 - (void)testOutOfRangeIntegerFails
 {
 	OTAssertThrowsSpecific(
-	    [[OFData dataWithItems: "\x02\x09\x01"
-				    "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
+	    [[OFData dataWithItems: "\x02\x09"
+				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 			     count: 11] objectByParsingASN1DER],
 	    OFOutOfRangeException);
 }
@@ -297,7 +302,7 @@
 
 - (void)testEnumerated
 {
-	OTAssertEqual([[[OFData dataWithItems: "\x0A\x00" count: 2]
+	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x00" count: 3]
 	    objectByParsingASN1DER] longLongValue], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x01" count: 3]
@@ -312,14 +317,19 @@
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00" count: 5]
 	    objectByParsingASN1DER] longLongValue], -65536);
 
-	OTAssertEqual((unsigned long long)[[[OFData
-	    dataWithItems: "\x0A\x09\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-		    count: 11] objectByParsingASN1DER] longLongValue],
-	    ULLONG_MAX);
+	OTAssertEqual(
+	    [[[OFData dataWithItems: "\x0A\x08\x80\x00\x00\x00\x00\x00\x00\x00"
+			      count: 10] objectByParsingASN1DER] longLongValue],
+	    LLONG_MIN);
 }
 
 - (void)testInvalidEnumeratedFails
 {
+	OTAssertThrowsSpecific(
+	    [[OFData dataWithItems: "\x0A\x00"
+			     count: 2] objectByParsingASN1DER],
+	    OFInvalidFormatException);
+
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x02\x00\x00"
 			     count: 4] objectByParsingASN1DER],
@@ -339,8 +349,8 @@
 - (void)testOutOfRangeEnumeratedFails
 {
 	OTAssertThrowsSpecific(
-	    [[OFData dataWithItems: "\x0A\x09\x01"
-				    "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
+	    [[OFData dataWithItems: "\x0A\x09"
+				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 			     count: 11] objectByParsingASN1DER],
 	    OFOutOfRangeException);
 }
