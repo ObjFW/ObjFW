@@ -27,7 +27,7 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1UnparsedValue
-@synthesize tagClass = _tagClasss, tagNumber = _tagNumber;
+@synthesize tagClass = _tagClass, tagNumber = _tagNumber;
 @synthesize constructed = _constructed;
 
 - (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
