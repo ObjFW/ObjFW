@@ -27,21 +27,21 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Integer: OFASN1Value
 {
-	long long _longLongValue;
+	int64_t _int64Value;
 }
 
 /**
  * @brief The Integer value.
  */
-@property (readonly, nonatomic) long long longLongValue;
+@property (readonly, nonatomic) int64_t int64Value;
 
 /**
  * @brief Creates an ASN.1 Integer with the specified integer value.
  *
- * @param value The `long long` value of the Integer
+ * @param value The `int64_t` value of the Integer
  * @return A new, autoreleased OFASN1Integer
  */
-+ (instancetype)integerWithLongLong: (long long)value;
++ (instancetype)integerWithInt64: (int64_t)value;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -49,10 +49,10 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Initializes an already allocated ASN.1 Integer with the specified
  *	  integer value.
  *
- * @param value The `long long` value of the Integer
+ * @param value The `int64_t` value of the Integer
  * @return An initialized OFASN1Integer
  */
-- (instancetype)initWithLongLong: (long long)value OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithInt64: (int64_t)value OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

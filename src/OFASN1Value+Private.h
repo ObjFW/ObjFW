@@ -31,5 +31,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 extern size_t _OFASN1DEREncodeLength(size_t length,
     unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
+extern int64_t _OFASN1DERDecodeInteger(const unsigned char *buffer,
+    size_t length) OF_VISIBILITY_INTERNAL;
+extern size_t _OFASN1DEREncodeInteger(int64_t value,
+    unsigned char buffer[_Nonnull 8]) OF_VISIBILITY_INTERNAL;
 
 OF_ASSUME_NONNULL_END

@@ -66,23 +66,23 @@
 - (void)testInteger
 {
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x00" count: 3]
-	    objectByParsingASN1DER] longLongValue], 0);
+	    objectByParsingASN1DER] int64Value], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x01" count: 3]
-	    objectByParsingASN1DER] longLongValue], 1);
+	    objectByParsingASN1DER] int64Value], 1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x02\x01\x04" count: 4]
-	    objectByParsingASN1DER] longLongValue], 260);
+	    objectByParsingASN1DER] int64Value], 260);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\xFF" count: 3]
-	    objectByParsingASN1DER] longLongValue], -1);
+	    objectByParsingASN1DER] int64Value], -1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x03\xFF\x00\x00" count: 5]
-	    objectByParsingASN1DER] longLongValue], -65536);
+	    objectByParsingASN1DER] int64Value], -65536);
 
 	OTAssertEqual(
 	    [[[OFData dataWithItems: "\x02\x08\x80\x00\x00\x00\x00\x00\x00\x00"
-			      count: 10] objectByParsingASN1DER] longLongValue],
+			      count: 10] objectByParsingASN1DER] int64Value],
 	    LLONG_MIN);
 }
 
@@ -303,23 +303,23 @@
 - (void)testEnumerated
 {
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x00" count: 3]
-	    objectByParsingASN1DER] longLongValue], 0);
+	    objectByParsingASN1DER] int64Value], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x01" count: 3]
-	    objectByParsingASN1DER] longLongValue], 1);
+	    objectByParsingASN1DER] int64Value], 1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x02\x01\x04" count: 4]
-	    objectByParsingASN1DER] longLongValue], 260);
+	    objectByParsingASN1DER] int64Value], 260);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\xFF" count: 3]
-	    objectByParsingASN1DER] longLongValue], -1);
+	    objectByParsingASN1DER] int64Value], -1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00" count: 5]
-	    objectByParsingASN1DER] longLongValue], -65536);
+	    objectByParsingASN1DER] int64Value], -65536);
 
 	OTAssertEqual(
 	    [[[OFData dataWithItems: "\x0A\x08\x80\x00\x00\x00\x00\x00\x00\x00"
-			      count: 10] objectByParsingASN1DER] longLongValue],
+			      count: 10] objectByParsingASN1DER] int64Value],
 	    LLONG_MIN);
 }
 
@@ -431,7 +431,7 @@
 				 count: 11] objectByParsingASN1DER];
 	OTAssertTrue([array isKindOfClass: [OFArray class]]);
 	OTAssertEqual(array.count, 2);
-	OTAssertEqual([[array objectAtIndex: 0] longLongValue], 123);
+	OTAssertEqual([[array objectAtIndex: 0] int64Value], 123);
 	OTAssertEqualObjects([array objectAtIndex: 1],
 	    [OFASN1UTF8String stringWithString: @"Test"]);
 }
@@ -448,6 +448,7 @@
 			     count: 7] objectByParsingASN1DER],
 	    OFTruncatedDataException);
 }
+
 - (void)testSet
 {
 	OFSet *set;
@@ -463,7 +464,7 @@
 	OTAssertEqual(set.count, 2);
 
 	OTAssertEqualObjects(set,
-	    ([OFSet setWithObjects: [OFASN1Integer integerWithLongLong: 123],
+	    ([OFSet setWithObjects: [OFASN1Integer integerWithInt64: 123],
 	    [OFASN1UTF8String stringWithString: @"Test"], nil]));
 }
 

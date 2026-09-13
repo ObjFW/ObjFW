@@ -97,6 +97,109 @@ _OFASN1DEREncodeLength(size_t length, unsigned char buffer[9])
 		@throw [OFOutOfRangeException exception];
 }
 
+int64_t
+_OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
+{
+	if (length == 0)
+		@throw [OFInvalidFormatException exception];
+
+	if (length > sizeof(int64_t))
+		@throw [OFOutOfRangeException exception];
+
+	uint64_t unsignedValue = 0;
+	if (buffer[0] & 0x80)
+		unsignedValue = ~0ull;
+
+	for (size_t i = 0; i < length; i++)
+		unsignedValue = (unsignedValue << 8) | *buffer++;
+
+	int64_t value = unsignedValue;
+	size_t expectedLength;
+	if (value >= -128 && value <= 127)
+		expectedLength = 1;
+	else if (value >= -32768 && value <= 32767)
+		expectedLength = 2;
+	else if (value >= -8388608 && value <= 8388607)
+		expectedLength = 3;
+	else if (value >= -2147483648 && value <= 2147483647)
+		expectedLength = 4;
+	else if (value >= -549755813888 && value <= 549755813887)
+		expectedLength = 5;
+	else if (value >= -140737488355328 && value <= 140737488355327)
+		expectedLength = 6;
+	else if (value >= -36028797018963968 && value <= 36028797018963967)
+		expectedLength = 7;
+	else
+		expectedLength = 8;
+
+	if (length != expectedLength)
+		@throw [OFInvalidFormatException exception];
+
+	return value;
+}
+
+size_t
+_OFASN1DEREncodeInteger(int64_t value, unsigned char buffer[8])
+{
+	uint64_t unsignedValue = value;
+
+	buffer[0] = (unsignedValue >> 56) & 0x80;
+
+	if (value >= -128 && value <= 127) {
+		buffer[0] |= unsignedValue;
+		return 1;
+	} else if (value >= -32768 && value <= 32767) {
+		buffer[0] |= unsignedValue >> 8;
+		buffer[1] = unsignedValue;
+		return 2;
+	} else if (value >= -8388608 && value <= 8388607) {
+		buffer[0] |= unsignedValue >> 16;
+		buffer[1] = unsignedValue >> 8;
+		buffer[2] = unsignedValue;
+		return 3;
+	} else if (value >= -2147483648 && value <= 2147483647) {
+		buffer[0] |= unsignedValue >> 24;
+		buffer[1] = unsignedValue >> 16;
+		buffer[2] = unsignedValue >> 8;
+		buffer[3] = unsignedValue;
+		return 4;
+	} else if (value >= -549755813888 && value <= 549755813887) {
+		buffer[0] |= unsignedValue >> 32;
+		buffer[1] = unsignedValue >> 24;
+		buffer[2] = unsignedValue >> 16;
+		buffer[3] = unsignedValue >> 8;
+		buffer[4] = unsignedValue;
+		return 5;
+	} else if (value >= -140737488355328 && value <= 140737488355327) {
+		buffer[0] |= unsignedValue >> 40;
+		buffer[1] = unsignedValue >> 32;
+		buffer[2] = unsignedValue >> 24;
+		buffer[3] = unsignedValue >> 16;
+		buffer[4] = unsignedValue >> 8;
+		buffer[5] = unsignedValue;
+		return 6;
+	} else if (value >= -36028797018963968 && value <= 36028797018963967) {
+		buffer[0] |= unsignedValue >> 48;
+		buffer[1] = unsignedValue >> 40;
+		buffer[2] = unsignedValue >> 32;
+		buffer[3] = unsignedValue >> 24;
+		buffer[4] = unsignedValue >> 16;
+		buffer[5] = unsignedValue >> 8;
+		buffer[6] = unsignedValue;
+		return 7;
+	} else {
+		buffer[0] = unsignedValue >> 56;
+		buffer[1] = unsignedValue >> 48;
+		buffer[2] = unsignedValue >> 40;
+		buffer[3] = unsignedValue >> 32;
+		buffer[4] = unsignedValue >> 24;
+		buffer[5] = unsignedValue >> 16;
+		buffer[6] = unsignedValue >> 8;
+		buffer[7] = unsignedValue;
+		return 8;
+	}
+}
+
 @implementation OFASN1Value
 @dynamic tagClass, tagNumber, constructed, DERRepresentation;
 

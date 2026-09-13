@@ -28,61 +28,19 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-long long OF_VISIBILITY_INTERNAL
-_OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
-{
-	if (length == 0)
-		@throw [OFInvalidFormatException exception];
-
-	if (length > sizeof(long long))
-		@throw [OFOutOfRangeException exception];
-
-	unsigned long long unsignedValue = 0;
-	if (buffer[0] & 0x80)
-		unsignedValue = ~0ull;
-
-	for (size_t i = 0; i < length; i++)
-		unsignedValue = (unsignedValue << 8) | *buffer++;
-
-	long long value = unsignedValue;
-	size_t expectedLength;
-	if (value >= -128 && value <= 127)
-		expectedLength = 1;
-	else if (value >= -32768 && value <= 32767)
-		expectedLength = 2;
-	else if (value >= -8388608 && value <= 8388607)
-		expectedLength = 3;
-	else if (value >= -2147483648 && value <= 2147483647)
-		expectedLength = 4;
-	else if (value >= -549755813888 && value <= 549755813887)
-		expectedLength = 5;
-	else if (value >= -140737488355328 && value <= 140737488355327)
-		expectedLength = 6;
-	else if (value >= -36028797018963968 && value <= 36028797018963967)
-		expectedLength = 7;
-	else
-		expectedLength = 8;
-
-	if (length != expectedLength)
-		@throw [OFInvalidFormatException exception];
-
-	return value;
-}
-
 @implementation OFASN1Integer
-@synthesize longLongValue = _longLongValue;
+@synthesize int64Value = _int64Value;
 
-+ (instancetype)integerWithLongLong: (long long)value
++ (instancetype)integerWithInt64: (int64_t)value
 {
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithLongLong: value]);
+	return objc_autoreleaseReturnValue([[self alloc] initWithInt64: value]);
 }
 
-- (instancetype)initWithLongLong: (long long)value
+- (instancetype)initWithInt64: (int64_t)value
 {
 	self = [super init];
 
-	_longLongValue = value;
+	_int64Value = value;
 
 	return self;
 }
@@ -92,7 +50,7 @@ _OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	long long value;
+	int64_t value;
 
 	@try {
 		/* TODO: Support for big numbers */
@@ -111,7 +69,7 @@ _OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
 		@throw e;
 	}
 
-	return [self initWithLongLong: value];
+	return [self initWithInt64: value];
 }
 
 - (instancetype)init
@@ -134,9 +92,26 @@ _OFASN1DERDecodeInteger(const unsigned char *buffer, size_t length)
 	return false;
 }
 
+- (OFData *)DERRepresentation
+{
+	OFMutableData *data = [OFMutableData dataWithCapacity: 10];
+	unsigned char tag = OFASN1TagNumberInteger;
+	[data addItem: &tag];
+
+	unsigned char buffer[8];
+	unsigned char length = _OFASN1DEREncodeInteger(_int64Value, buffer);
+	[data addItem: &length];
+
+	[data addItems: buffer count: length];
+
+	[data makeImmutable];
+
+	return data;
+}
+
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1Integer: %lld>",
-					   _longLongValue];
+	return [OFString stringWithFormat: @"<OFASN1Integer: %" @PRId64 @">",
+					   _int64Value];
 }
 @end

@@ -26,23 +26,19 @@
 
 #import "OFInvalidArgumentException.h"
 
-extern long long _OFASN1DERDecodeInteger(const unsigned char *buffer,
-    size_t length) OF_VISIBILITY_INTERNAL;
-
 @implementation OFASN1Enumerated
-@synthesize longLongValue = _longLongValue;
+@synthesize int64Value = _int64Value;
 
-+ (instancetype)enumeratedWithLongLong: (long long)value
++ (instancetype)enumeratedWithInt64: (int64_t)value
 {
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithLongLong: value]);
+	return objc_autoreleaseReturnValue([[self alloc] initWithInt64: value]);
 }
 
-- (instancetype)initWithLongLong: (long long)value
+- (instancetype)initWithInt64: (int64_t)value
 {
 	self = [super init];
 
-	_longLongValue = value;
+	_int64Value = value;
 
 	return self;
 }
@@ -52,7 +48,7 @@ extern long long _OFASN1DERDecodeInteger(const unsigned char *buffer,
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	long long value;
+	int64_t value;
 
 	@try {
 		if (tagClass != OFASN1TagClassUniversal ||
@@ -69,7 +65,7 @@ extern long long _OFASN1DERDecodeInteger(const unsigned char *buffer,
 		@throw e;
 	}
 
-	return [self initWithLongLong: value];
+	return [self initWithInt64: value];
 }
 
 - (instancetype)init
@@ -92,9 +88,26 @@ extern long long _OFASN1DERDecodeInteger(const unsigned char *buffer,
 	return false;
 }
 
+- (OFData *)DERRepresentation
+{
+	OFMutableData *data = [OFMutableData dataWithCapacity: 10];
+	unsigned char tag = OFASN1TagNumberEnumerated;
+	[data addItem: &tag];
+
+	unsigned char buffer[8];
+	unsigned char length = _OFASN1DEREncodeInteger(_int64Value, buffer);
+	[data addItem: &length];
+
+	[data addItems: buffer count: length];
+
+	[data makeImmutable];
+
+	return data;
+}
+
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1Enumerated: %lld>",
-					   _longLongValue];
+	return [OFString stringWithFormat: @"<OFASN1Enumerated: %" @PRId64 @">",
+					   _int64Value];
 }
 @end
