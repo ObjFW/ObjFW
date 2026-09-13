@@ -19,17 +19,25 @@
 
 #import "OFX509Name.h"
 
-#include <gnutls/x509.h>
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdocumentation-deprecated-sync"
+#endif
+#include <mbedtls/x509_crt.h>
+#include <mbedtls/pk.h>
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
 OF_SUBCLASSING_RESTRICTED
-@interface OFGnuTLSX509Name: OFX509Name
+@interface OFMbedTLSX509Name: OFX509Name
 {
 	OFString *_description;
 }
 
-- (instancetype)of_initWithDN: (const gnutls_datum_t *)DN;
+- (instancetype)of_initWithDN: (const mbedtls_x509_name *)DN;
 @end
 
 OF_ASSUME_NONNULL_END

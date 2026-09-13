@@ -22,6 +22,8 @@
 #import "OFMbedTLSX509Certificate.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#import "OFMbedTLSX509Name.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"
@@ -33,6 +35,24 @@
 static mbedtls_entropy_context entropy;
 static mbedtls_ctr_drbg_context CTRDRBG;
 #endif
+
+static OFDate *
+X509TimeToDate(mbedtls_x509_time *time)
+{
+	struct tm tm = {
+		.tm_sec = time->sec,
+		.tm_min = time->min,
+		.tm_hour = time->hour,
+		.tm_mday = time->day,
+		.tm_mon = time->mon - 1,
+		.tm_year = time->year - 1900,
+		.tm_wday = -1,
+		.tm_yday = -1,
+		.tm_isdst = 0
+	};
+
+	return [OFDate dateWithStructTm: &tm];
+}
 
 @implementation OFMbedTLSX509CertificateChain
 - (instancetype)init
@@ -168,5 +188,27 @@ static mbedtls_ctr_drbg_context CTRDRBG;
 	objc_release(_chain);
 
 	[super dealloc];
+}
+
+- (OFX509Name *)issuerName
+{
+	return objc_autoreleaseReturnValue(
+	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->issuer]);
+}
+
+- (OFDate *)notBeforeDate
+{
+	return X509TimeToDate(&_certificate->valid_from);
+}
+
+- (OFDate *)notAfterDate
+{
+	return X509TimeToDate(&_certificate->valid_to);
+}
+
+- (OFX509Name *)subjectName
+{
+	return objc_autoreleaseReturnValue(
+	    [[OFMbedTLSX509Name alloc] of_initWithDN: &_certificate->subject]);
 }
 @end

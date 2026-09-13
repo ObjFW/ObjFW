@@ -21,7 +21,8 @@ SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
 	      OFGnuTLSX509Certificate.m			\
 	      OFGnuTLSX509Name.m
 SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
-	       OFMbedTLSX509Certificate.m
+	       OFMbedTLSX509Certificate.m		\
+	       OFMbedTLSX509Name.m
 SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
 	       OFOpenSSLX509Certificate.m		\
 	       OFOpenSSLX509Name.m
