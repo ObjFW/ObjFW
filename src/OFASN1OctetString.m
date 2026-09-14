@@ -60,6 +60,9 @@
 	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
+		if (octets.itemSize != 1)
+			@throw [OFInvalidArgumentException exception];
+
 		_octets = [octets copy];
 	} @catch (id e) {
 		objc_release(self);
