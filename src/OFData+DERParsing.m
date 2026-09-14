@@ -99,8 +99,8 @@ parseSet(OFData *contents, size_t depthLimit)
 		    OFMakeRange(0, valueLength)];
 
 		if (previousValueData != nil &&
-		    [valueData compare: previousValueData] !=
-		    OFOrderedDescending)
+		    [valueData compare: previousValueData] ==
+		    OFOrderedAscending)
 			@throw [OFInvalidFormatException exception];
 
 		count -= valueLength;
