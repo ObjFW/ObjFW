@@ -70,6 +70,9 @@
 	int64_t value;
 
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 

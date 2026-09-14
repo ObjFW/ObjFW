@@ -59,6 +59,9 @@
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.count != 0)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {

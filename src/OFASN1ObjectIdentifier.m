@@ -98,16 +98,19 @@
 
 	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		const unsigned char *items = DEREncodedContents.items;
 		size_t count = DEREncodedContents.count;
-		unsigned long long value = 0;
-		uint_fast8_t bits = 0;
 
 		if (DEREncodedContents.itemSize != 1 || count == 0)
 			@throw [OFInvalidArgumentException exception];
 
 		subidentifiers = [OFMutableArray array];
 
+		unsigned long long value = 0;
+		uint_fast8_t bits = 0;
 		for (size_t i = 0; i < count; i++) {
 			if (bits == 0 && items[i] == 0x80)
 				@throw [OFInvalidFormatException exception];

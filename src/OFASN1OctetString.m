@@ -75,6 +75,9 @@
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {

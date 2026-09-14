@@ -98,7 +98,7 @@
 
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
 {
-	if (![class isSubclassOfClass: [OFASN1Value class]] || _constructed)
+	if (![class isSubclassOfClass: [OFASN1Value class]])
 		@throw [OFInvalidArgumentException exception];
 
 	return objc_autoreleaseReturnValue([[class alloc]

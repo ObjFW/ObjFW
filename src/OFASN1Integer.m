@@ -74,6 +74,9 @@
 	@try {
 		/* TODO: Support for big numbers */
 
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 

@@ -91,6 +91,9 @@
 	OFData *bits;
 	size_t bitsCount;
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		size_t count = DEREncodedContents.count;
 
 		if (DEREncodedContents.itemSize != 1 || count == 0)

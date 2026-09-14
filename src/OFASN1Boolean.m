@@ -71,6 +71,9 @@
 	unsigned char value;
 
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.itemSize != 1 ||
 		    DEREncodedContents.count != 1)
 			@throw [OFInvalidFormatException exception];

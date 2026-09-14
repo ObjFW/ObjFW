@@ -143,6 +143,9 @@ OF_SINGLETON_METHODS
 
 	OFString *printableString;
 	@try {
+		if (constructed)
+			@throw [OFInvalidArgumentException exception];
+
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
