@@ -451,20 +451,21 @@
 
 - (void)testSet
 {
-	OFSet *set;
+	OFASN1Set *set;
 
 	set = [[OFData dataWithItems: "\x31\x00"
 			       count: 2] objectByParsingDER];
-	OTAssertTrue([set isKindOfClass: [OFSet class]]);
-	OTAssertEqual(set.count, 0);
+	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
+	OTAssertEqual(set.components.count, 0);
 
 	set = [[OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
 			       count: 11] objectByParsingDER];
-	OTAssertTrue([set isKindOfClass: [OFSet class]]);
-	OTAssertEqual(set.count, 2);
+	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
+	OTAssertEqual(set.components.count, 2);
 
-	OTAssertEqualObjects(set,
-	    ([OFSet setWithObjects: [OFASN1Integer integerWithInt64: 123],
+	OTAssertEqualObjects(set.components,
+	    ([OFCountedSet setWithObjects:
+	    [OFASN1Integer integerWithInt64: 123],
 	    [OFASN1UTF8String stringWithString: @"Test"], nil]));
 }
 

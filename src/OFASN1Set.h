@@ -21,68 +21,66 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFArray OF_GENERIC(ObjectType);
+@class OFCountedSet OF_GENERIC(ObjectType);
 
 /**
- * @brief An ASN.1 Sequence.
+ * @brief An ASN.1 Set.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Sequence: OFASN1Value
+@interface OFASN1Set: OFASN1Value
 {
-	OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
+	OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
 }
 
 /**
- * @brief The components of the Sequence.
+ * @brief The components of the Set.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *))
-    *components;
+@property (readonly, nonatomic) OFCountedSet OF_GENERIC(OF_KINDOF(
+    OFASN1Value *)) *components;
 
 /**
- * @brief Creates a Sequence with the specified components.
+ * @brief Creates a Set with the specified components.
  *
- * @param components The components of the Sequence
- * @return A new, autoreleased OFASN1Sequence
+ * @param components The components of the Set
+ * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)sequenceWithComponents:
-    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
++ (instancetype)setWithComponents:
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
 
 /**
- * @brief Creates a Sequence with the specified components.
+ * @brief Creates a Set with the specified components.
  *
- * @param components The components of the Sequence
+ * @param components The components of the Set
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1Sequence
+ * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)sequenceWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					    OFASN1Value *)) *)components
-			      tagClass: (OFASN1TagClass)tagClass
-			     tagNumber: (OFASN1TagNumber)tagNumber;
++ (instancetype)setWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
+				       OFASN1Value *)) *)components
+			 tagClass: (OFASN1TagClass)tagClass
+			tagNumber: (OFASN1TagNumber)tagNumber;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
- * @brief Initializes an already allocated Sequence with the specified
- *	  components.
+ * @brief Initializes an already allocated Set with the specified components.
  *
- * @param components The components of the Sequence
- * @return An initialized OFASN1Sequence
+ * @param components The components of the Set
+ * @return An initialized OFASN1Set
  */
 - (instancetype)initWithComponents:
-    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
 
 /**
- * @brief Initializes an already allocated Sequence with the specified
- *	  components.
+ * @brief Initializes an already allocated Set with the specified components.
  *
- * @param components The components of the Sequence
+ * @param components The components of the Set
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1Sequence
+ * @return An initialized OFASN1Set
  */
-- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+- (instancetype)initWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
 					OFASN1Value *)) *)components
 			  tagClass: (OFASN1TagClass)tagClass
 			 tagNumber: (OFASN1TagNumber)tagNumber
