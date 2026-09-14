@@ -19,14 +19,14 @@
 
 #include "config.h"
 
-#import "OFASN1UnparsedValue.h"
+#import "OFUnparsedASN1Value.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
-@implementation OFASN1UnparsedValue
+@implementation OFUnparsedASN1Value
 @synthesize constructed = _constructed;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass

@@ -181,8 +181,8 @@
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
-#import "OFASN1UnparsedValue.h"
 #import "OFASN1Value.h"
+#import "OFUnparsedASN1Value.h"
 
 #import "OFAllocFailedException.h"
 #import "OFAlreadyOpenException.h"

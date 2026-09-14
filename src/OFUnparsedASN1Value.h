@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class representing an unparsed ASN.1 value.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1UnparsedValue: OFASN1Value
+@interface OFUnparsedASN1Value: OFASN1Value
 {
 	bool _constructed;
 	OFData *_DEREncodedContents;

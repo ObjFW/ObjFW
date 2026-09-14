@@ -23,7 +23,6 @@ SRCS = OFASN1BitString.m		\
        OFASN1OctetString.m		\
        OFASN1PrintableString.m		\
        OFASN1UTF8String.m		\
-       OFASN1UnparsedValue.m		\
        OFASN1Value.m			\
        OFApplication.m			\
        OFArray.m			\
@@ -123,6 +122,7 @@ SRCS = OFASN1BitString.m		\
        OFTimer.m			\
        OFTriple.m			\
        OFUUID.m				\
+       OFUnparsedASN1Value.m		\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\

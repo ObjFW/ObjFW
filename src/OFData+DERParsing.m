@@ -31,10 +31,10 @@
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
-#import "OFASN1UnparsedValue.h"
 #import "OFASN1Value+Private.h"
 #import "OFArray.h"
 #import "OFSet.h"
+#import "OFUnparsedASN1Value.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -212,7 +212,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1IA5String class];
 		break;
 	default:
-		valueClass = [OFASN1UnparsedValue class];
+		valueClass = [OFUnparsedASN1Value class];
 		break;
 	}
 
