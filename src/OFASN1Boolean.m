@@ -35,9 +35,28 @@
 	return objc_autoreleaseReturnValue([[self alloc] initWithBool: bool_]);
 }
 
++ (instancetype)booleanWithBool: (bool)bool_
+		       tagClass: (OFASN1TagClass)tagClass
+		      tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithBool: bool_
+		tagClass: tagClass
+	       tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithBool: (bool)bool_
 {
-	self = [super init];
+	return [self initWithBool: bool_
+			 tagClass: OFASN1TagClassUniversal
+			tagNumber: OFASN1TagNumberBoolean];
+}
+
+- (instancetype)initWithBool: (bool)bool_
+		    tagClass: (OFASN1TagClass)tagClass
+		   tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	_boolValue = bool_;
 
@@ -52,10 +71,6 @@
 	unsigned char value;
 
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberBoolean || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.itemSize != 1 ||
 		    DEREncodedContents.count != 1)
 			@throw [OFInvalidFormatException exception];
@@ -69,33 +84,21 @@
 		@throw e;
 	}
 
-	return [self initWithBool: !!value];
+	return [self initWithBool: !!value
+			 tagClass: tagClass
+			tagNumber: tagNumber];
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberBoolean;
-}
-
-- (bool)isConstructed
-{
-	return false;
 }
 
 - (OFData *)DERRepresentation
 {
 	char buffer[] = {
-		OFASN1TagNumberBoolean,
+		_OFDEREncodeTag(_tagClass, _tagNumber, false),
 		1,
 		(_boolValue ? 0xFF : 0x00)
 	};

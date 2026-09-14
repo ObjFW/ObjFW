@@ -27,10 +27,10 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1UnparsedValue
-@synthesize tagClass = _tagClass, tagNumber = _tagNumber;
 @synthesize constructed = _constructed;
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -40,14 +40,12 @@
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super init];
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidFormatException exception];
 
-		_tagClass = tagClass;
-		_tagNumber = tagNumber;
 		_constructed = constructed;
 		_DEREncodedContents = [DEREncodedContents copy];
 	} @catch (id e) {
@@ -70,9 +68,8 @@
 	size_t count = _DEREncodedContents.count;
 	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
 
-	unsigned char tag = (_tagClass << 6) | (_tagNumber & 0x1F);
-	if (_constructed)
-		tag |= 0x20;
+	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber,
+	    _constructed);
 	[data addItem: &tag];
 
 	unsigned char length[9];

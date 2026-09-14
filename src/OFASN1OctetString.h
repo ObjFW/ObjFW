@@ -29,32 +29,59 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1OctetString: OFASN1Value
 {
-	OFData *_data;
+	OFData *_octets;
 }
 
 /**
  * @brief The OctetString value.
  */
-@property (readonly, nonatomic) OFData *dataValue;
+@property (readonly, nonatomic) OFData *octets;
 
 /**
  * @brief Creates an OctetString with the specified value.
  *
- * @param data The OctetString value
+ * @param octets The OctetString value
  * @return A new, autoreleased OFASN1OctetString
  */
-+ (instancetype)octetStringWithData: (OFData *)data;
++ (instancetype)octetStringWithOctets: (OFData *)octets;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates an OctetString with the specified value.
+ *
+ * @param octets The OctetString value
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1OctetString
+ */
++ (instancetype)octetStringWithOctets: (OFData *)octets
+			     tagClass: (OFASN1TagClass)tagClass
+			    tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated OctetString with the specified
  *	  value.
  *
- * @param data The OctetString value
+ * @param octets The OctetString value
  * @return An initialized OFASN1OctetString
  */
-- (instancetype)initWithData: (OFData *)data OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithOctets: (OFData *)octets;
+
+/**
+ * @brief Initializes an already allocated OctetString with the specified
+ *	  value.
+ *
+ * @param octets The OctetString value
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1OctetString
+ */
+- (instancetype)initWithOctets: (OFData *)octets
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

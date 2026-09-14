@@ -40,10 +40,32 @@
 	    initWithSubidentifiers: subidentifiers]);
 }
 
++ (instancetype)
+    objectIdentifierWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)
+					    subidentifiers
+			      tagClass: (OFASN1TagClass)tagClass
+			     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithSubidentifiers: subidentifiers
+			  tagClass: tagClass
+			 tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithSubidentifiers:
     (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 {
-	self = [super init];
+	return [self initWithSubidentifiers: subidentifiers
+				   tagClass: OFASN1TagClassUniversal
+				  tagNumber: OFASN1TagNumberObjectIdentifier];
+}
+
+- (instancetype)
+    initWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
+		  tagClass: (OFASN1TagClass)tagClass
+		 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
 		if (subidentifiers.count < 1)
@@ -73,13 +95,9 @@
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
+
 	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
-
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberObjectIdentifier || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		const unsigned char *items = DEREncodedContents.items;
 		size_t count = DEREncodedContents.count;
 		unsigned long long value = 0;
@@ -134,14 +152,17 @@
 		@throw e;
 	}
 
-	self = [self initWithSubidentifiers: subidentifiers];
+	self = [self initWithSubidentifiers: subidentifiers
+				   tagClass: tagClass
+				  tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -151,21 +172,6 @@
 	objc_release(_subidentifiers);
 
 	[super dealloc];
-}
-
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberObjectIdentifier;
-}
-
-- (bool)isConstructed
-{
-	return false;
 }
 
 - (OFString *)description

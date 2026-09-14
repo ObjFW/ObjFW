@@ -47,7 +47,22 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)objectIdentifierWithSubidentifiers:
     (OFArray OF_GENERIC(OFNumber *) *)subidentifiers;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates an ASN.1 ObjectIdentifier with the specified subidentifiers.
+ *
+ * @param subidentifiers The subidentifiers of the ASN.1 ObjectIdentifier
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1ObjectIdentifier
+ */
++ (instancetype)
+    objectIdentifierWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)
+					    subidentifiers
+			      tagClass: (OFASN1TagClass)tagClass
+			     tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
@@ -57,7 +72,22 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1ObjectIdentifier
  */
 - (instancetype)initWithSubidentifiers:
-    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers OF_DESIGNATED_INITIALIZER;
+    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers;
+
+/**
+ * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ *	  specified subidentifiers.
+ *
+ * @param subidentifiers The subidentifiers of the ASN.1 ObjectIdentifier
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1ObjectIdentifier
+ */
+- (instancetype)
+    initWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
+		  tagClass: (OFASN1TagClass)tagClass
+		 tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

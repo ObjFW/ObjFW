@@ -32,6 +32,34 @@ OF_SUBCLASSING_RESTRICTED
  * @return A new, autoreleased OFASN1Null
  */
 + (instancetype)null;
+
+/**
+ * @brief Creates an ASN.1 Null.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1Null
+ */
++ (instancetype)nullWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Null.
+ *
+ * @return An initialized OFASN1Null
+ */
+- (instancetype)init;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Null.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1Null
+ */
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

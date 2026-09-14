@@ -46,7 +46,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)stringWithString: (OFString *)string;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates a PrintableString with the specified string value.
+ *
+ * @param string The string value of the PrintableString
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1PrintableString
+ */
++ (instancetype)stringWithString: (OFString *)string
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated PrintableString with the specified
@@ -55,7 +68,21 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string value of the PrintableString
  * @return An initialized OFASN1PrintableString
  */
-- (instancetype)initWithString: (OFString *)string OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (OFString *)string;
+
+/**
+ * @brief Initializes an already allocated PrintableString with the specified
+ *	  string value.
+ *
+ * @param string The string value of the PrintableString
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1PrintableString
+ */
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 @interface OFCharacterSet (ASN1PrintableStringCharacterSet)

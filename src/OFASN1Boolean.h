@@ -43,7 +43,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)booleanWithBool: (bool)bool_;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates an ASN.1 Boolean with the specified Boolean value.
+ *
+ * @param bool_ The value of the Boolean
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1Boolean
+ */
++ (instancetype)booleanWithBool: (bool)bool_
+		       tagClass: (OFASN1TagClass)tagClass
+		      tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
@@ -52,7 +65,21 @@ OF_SUBCLASSING_RESTRICTED
  * @param bool_ The value of the Boolean
  * @return An initialized OFASN1Boolean
  */
-- (instancetype)initWithBool: (bool)bool_ OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBool: (bool)bool_;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Boolean with the specified
+ *	  Boolean value.
+ *
+ * @param bool_ The value of the Boolean
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1Boolean
+ */
+- (instancetype)initWithBool: (bool)bool_
+		    tagClass: (OFASN1TagClass)tagClass
+		   tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

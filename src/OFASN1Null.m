@@ -33,18 +33,32 @@
 	return objc_autoreleaseReturnValue([[OFASN1Null alloc] init]);
 }
 
++ (instancetype)nullWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[OFASN1Null alloc]
+	    initWithTagClass: tagClass
+		   tagNumber: tagNumber]);
+}
+
+- (instancetype)init
+{
+	return [self initWithTagClass: OFASN1TagClassUniversal
+			    tagNumber: OFASN1TagNumberNull];
+}
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return [super initWithTagClass: tagClass tagNumber: tagNumber];
+}
+
 - (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
 			  tagNumber: (OFASN1TagNumber)tagNumber
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super init];
-
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberNull || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.count != 0)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
@@ -52,27 +66,15 @@
 		@throw e;
 	}
 
-	return self;
-}
-
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberNull;
-}
-
-- (bool)isConstructed
-{
-	return false;
+	return [self initWithTagClass: tagClass tagNumber: tagNumber];
 }
 
 - (OFData *)DERRepresentation
 {
-	static const unsigned char bytes[] = { OFASN1TagNumberNull, 0 };
+	unsigned char bytes[] = {
+		_OFDEREncodeTag(_tagClass, _tagNumber, false),
+		0
+	};
 	return [OFData dataWithItems: bytes count: sizeof(bytes)];
 }
 

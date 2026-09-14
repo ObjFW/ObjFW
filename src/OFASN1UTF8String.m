@@ -36,9 +36,28 @@
 	    [[self alloc] initWithString: string]);
 }
 
++ (instancetype)stringWithString: (OFString *)string
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string
+				tagClass: tagClass
+			       tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithString: (OFString *)string
 {
-	self = [super init];
+	return [self initWithString: string
+			   tagClass: OFASN1TagClassUniversal
+			  tagNumber: OFASN1TagNumberUTF8String];
+}
+
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
 		_string = [string copy];
@@ -56,13 +75,9 @@
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
+
 	OFString *string;
-
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberUTF8String || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
@@ -74,14 +89,17 @@
 		@throw e;
 	}
 
-	self = [self initWithString: string];
+	self = [self initWithString: string
+			   tagClass: tagClass
+			  tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -93,21 +111,6 @@
 	[super dealloc];
 }
 
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberUTF8String;
-}
-
-- (bool)isConstructed
-{
-	return false;
-}
-
 - (OFData *)DERRepresentation
 {
 	size_t UTF8StringLength = _string.UTF8StringLength;
@@ -116,7 +119,7 @@
 
 	OFMutableData *data =
 	    [OFMutableData dataWithCapacity: UTF8StringLength + 2];
-	unsigned char tag = OFASN1TagNumberUTF8String;
+	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
 	[data addItem: &tag];
 
 	unsigned char length[9];

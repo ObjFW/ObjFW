@@ -29,42 +29,73 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1BitString: OFASN1Value
 {
-	OFData *_data;
-	size_t _bitLength;
+	OFData *_bits;
+	size_t _bitsCount;
 }
 
 /**
  * @brief The BitString value.
  */
-@property (readonly, nonatomic) OFData *dataValue;
+@property (readonly, nonatomic) OFData *bits;
 
 /**
- * @brief The length of the BitString in bits.
+ * @brief The number of bits in the BitString.
  */
-@property (readonly, nonatomic) size_t bitLength;
+@property (readonly, nonatomic) size_t bitsCount;
 
 /**
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
- * @param data The value of the BitString
- * @param bitLength The length of the BitString in bits
+ * @param bits The value of the BitString
+ * @param bitsCount The number of bits in the BitString
  * @return A new, autoreleased OFASN1BitString
  */
-+ (instancetype)bitStringWithData: (OFData *)data bitLength: (size_t)bitLength;
++ (instancetype)bitStringWithBits: (OFData *)bits bitsCount: (size_t)bitsCount;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates an ASN.1 BitString with the specified BitString value and
+ *	  length.
+ *
+ * @param bits The value of the BitString
+ * @param bitsCount The number of bits in the BitString
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1BitString
+ */
++ (instancetype)bitStringWithBits: (OFData *)bits
+			bitsCount: (size_t)bitsCount
+			 tagClass: (OFASN1TagClass)tagClass
+			tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
  *
- * @param data The value of the BitString
- * @param bitLength The length of the BitString in bits
+ * @param bits The value of the BitString
+ * @param bitsCount The number of bits in the BitString
  * @return An initialized OFASN1BitString
  */
-- (instancetype)initWithData: (OFData *)data
-		   bitLength: (size_t)bitLength OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBits: (OFData *)bits bitsCount: (size_t)bitsCount;
+
+/**
+ * @brief Initializes an already allocated ASN.1 BitString with the specified
+ *	  BitString value and length.
+ *
+ * @param bits The value of the BitString
+ * @param bitsCount The number of bits in the BitString
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1BitString
+ */
+- (instancetype)initWithBits: (OFData *)bits
+		   bitsCount: (size_t)bitsCount
+		    tagClass: (OFASN1TagClass)tagClass
+		   tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

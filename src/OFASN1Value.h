@@ -76,6 +76,8 @@ typedef enum {
  */
 @interface OFASN1Value: OFObject
 {
+	OFASN1TagClass _tagClass;
+	OFASN1TagNumber _tagNumber;
 	OF_RESERVE_IVARS(OFASN1Value, 4)
 }
 
@@ -90,14 +92,23 @@ typedef enum {
 @property (readonly, nonatomic) OFASN1TagNumber tagNumber;
 
 /**
- * @brief Whether the value if of a constructed type.
- */
-@property (readonly, nonatomic, getter=isConstructed) bool constructed;
-
-/**
  * @brief The object in DER representation.
  */
 @property (readonly, nonatomic) OFData *DERRepresentation;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/**
+ * @brief Initializes an already allocated ASN.1 value with the specified
+ *	  arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized ASN.1 value
+ */
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -73,9 +73,28 @@ OF_SINGLETON_METHODS
 	    [[self alloc] initWithString: string]);
 }
 
++ (instancetype)stringWithString: (OFString *)string
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithString: string
+		  tagClass: tagClass
+		 tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithString: (OFString *)string
 {
-	self = [super init];
+	return [self initWithString: string
+			   tagClass: OFASN1TagClassUniversal
+			  tagNumber: OFASN1TagNumberNumericString];
+}
+
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -102,13 +121,9 @@ OF_SINGLETON_METHODS
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	void *pool = objc_autoreleasePoolPush();
+
 	OFString *string;
-
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberNumericString || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
@@ -120,14 +135,17 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	self = [self initWithString: string];
+	self = [self initWithString: string
+			   tagClass: tagClass
+			  tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -139,21 +157,6 @@ OF_SINGLETON_METHODS
 	[super dealloc];
 }
 
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberNumericString;
-}
-
-- (bool)isConstructed
-{
-	return false;
-}
-
 - (OFData *)DERRepresentation
 {
 	size_t cStringLength =
@@ -163,7 +166,7 @@ OF_SINGLETON_METHODS
 
 	OFMutableData *data =
 	    [OFMutableData dataWithCapacity: cStringLength + 2];
-	unsigned char tag = OFASN1TagNumberNumericString;
+	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
 	[data addItem: &tag];
 
 	unsigned char length[9];

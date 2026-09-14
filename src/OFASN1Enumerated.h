@@ -43,7 +43,20 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (instancetype)enumeratedWithInt64: (int64_t)value;
 
-- (instancetype)init OF_UNAVAILABLE;
+/**
+ * @brief Creates an ASN.1 Enumerated with the specified integer value.
+ *
+ * @param value The `int64_t` value of the Enumerated
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1Enumerated
+ */
++ (instancetype)enumeratedWithInt64: (int64_t)value
+			   tagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber;
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
@@ -52,7 +65,21 @@ OF_SUBCLASSING_RESTRICTED
  * @param value The `int64_t` value of the Enumerated
  * @return An initialized OFASN1Enumerated
  */
-- (instancetype)initWithInt64: (int64_t)value OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithInt64: (int64_t)value;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Enumerated with the specified
+ *	  integer value.
+ *
+ * @param value The `int64_t` value of the Enumerated
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1Enumerated
+ */
+- (instancetype)initWithInt64: (int64_t)value
+		     tagClass: (OFASN1TagClass)tagClass
+		    tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

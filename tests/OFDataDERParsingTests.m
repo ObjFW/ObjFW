@@ -132,14 +132,14 @@
 
 	bitString = [[OFData dataWithItems: "\x03\x01\x00"
 				     count: 3] objectByParsingDER];
-	OTAssertEqualObjects(bitString.dataValue, [OFData data]);
-	OTAssertEqual(bitString.bitLength, 0);
+	OTAssertEqualObjects(bitString.bits, [OFData data]);
+	OTAssertEqual(bitString.bitsCount, 0);
 
 	bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
 				     count: 15] objectByParsingDER];
-	OTAssertEqualObjects(bitString.dataValue,
+	OTAssertEqualObjects(bitString.bits,
 	    [OFData dataWithItems: "Hello World\x80" count: 12]);
-	OTAssertEqual(bitString.bitLength, 95);
+	OTAssertEqual(bitString.bitsCount, 95);
 
 	bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -147,12 +147,12 @@
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxx"
 				     count: 131] objectByParsingDER];
-	OTAssertEqualObjects(bitString.dataValue,
+	OTAssertEqualObjects(bitString.bits,
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			    count: 127]);
-	OTAssertEqual(bitString.bitLength, 127 * 8);
+	OTAssertEqual(bitString.bitsCount, 127 * 8);
 }
 
 - (void)testInvalidBitStringFails
@@ -189,7 +189,7 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x04\x0CHello World!"
-		    count: 14] objectByParsingDER] dataValue],
+		    count: 14] objectByParsingDER] octets],
 	    [OFData dataWithItems: "Hello World!" count: 12]);
 
 	OTAssertEqualObjects(
@@ -197,7 +197,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			      count: 131] objectByParsingDER] dataValue],
+			      count: 131] objectByParsingDER] octets],
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

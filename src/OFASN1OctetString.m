@@ -28,19 +28,39 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1OctetString
-@synthesize dataValue = _data;
+@synthesize octets = _octets;
 
-+ (instancetype)octetStringWithData: (OFData *)data
++ (instancetype)octetStringWithOctets: (OFData *)octets
 {
-	return objc_autoreleaseReturnValue([[self alloc] initWithData: data]);
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithOctets: octets]);
 }
 
-- (instancetype)initWithData: (OFData *)data
++ (instancetype)octetStringWithOctets: (OFData *)octets
+			     tagClass: (OFASN1TagClass)tagClass
+			    tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super init];
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithOctets: octets
+		  tagClass: tagClass
+		 tagNumber: tagNumber]);
+}
+
+- (instancetype)initWithOctets: (OFData *)octets
+{
+	return [self initWithOctets: octets
+			   tagClass: OFASN1TagClassUniversal
+			  tagNumber: OFASN1TagNumberOctetString];
+}
+
+- (instancetype)initWithOctets: (OFData *)octets
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
-		_data = [data copy];
+		_octets = [octets copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -55,10 +75,6 @@
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberOctetString || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
@@ -66,51 +82,39 @@
 		@throw e;
 	}
 
-	return [self initWithData: DEREncodedContents];
+	return [self initWithOctets: DEREncodedContents
+			   tagClass: tagClass
+			  tagNumber: tagNumber];
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
 {
-	objc_release(_data);
+	objc_release(_octets);
 
 	[super dealloc];
 }
 
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberOctetString;
-}
-
-- (bool)isConstructed
-{
-	return false;
-}
-
 - (OFData *)DERRepresentation
 {
-	size_t dataCount = _data.count;
-	if (SIZE_MAX - dataCount < 2)
+	size_t octetsCount = _octets.count;
+	if (SIZE_MAX - octetsCount < 2)
 		@throw [OFOutOfRangeException exception];
 
-	OFMutableData *data = [OFMutableData dataWithCapacity: dataCount + 2];
-	unsigned char tag = OFASN1TagNumberOctetString;
+	OFMutableData *data = [OFMutableData dataWithCapacity: octetsCount + 2];
+	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
 	[data addItem: &tag];
 
 	unsigned char length[9];
 	[data addItems: length
-		 count: _OFDEREncodeLength(dataCount, length)];
+		 count: _OFDEREncodeLength(octetsCount, length)];
 
-	[data addItems: _data.items count: dataCount];
+	[data addItems: _octets.items count: octetsCount];
 
 	[data makeImmutable];
 
@@ -119,6 +123,6 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>", _data];
+	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>", _octets];
 }
 @end

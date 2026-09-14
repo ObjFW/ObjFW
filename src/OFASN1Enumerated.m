@@ -34,9 +34,28 @@
 	return objc_autoreleaseReturnValue([[self alloc] initWithInt64: value]);
 }
 
++ (instancetype)enumeratedWithInt64: (int64_t)value
+			   tagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithInt64: value
+		 tagClass: tagClass
+		tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithInt64: (int64_t)value
 {
-	self = [super init];
+	return [self initWithInt64: value
+			  tagClass: OFASN1TagClassUniversal
+			 tagNumber: OFASN1TagNumberEnumerated];
+}
+
+- (instancetype)initWithInt64: (int64_t)value
+		     tagClass: (OFASN1TagClass)tagClass
+		    tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	_int64Value = value;
 
@@ -51,10 +70,6 @@
 	int64_t value;
 
 	@try {
-		if (tagClass != OFASN1TagClassUniversal ||
-		    tagNumber != OFASN1TagNumberEnumerated || constructed)
-			@throw [OFInvalidArgumentException exception];
-
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
@@ -65,33 +80,21 @@
 		@throw e;
 	}
 
-	return [self initWithInt64: value];
+	return [self initWithInt64: value
+			  tagClass: tagClass
+			 tagNumber: tagNumber];
 }
 
-- (instancetype)init
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- (OFASN1TagClass)tagClass
-{
-	return OFASN1TagClassUniversal;
-}
-
-- (OFASN1TagNumber)tagNumber
-{
-	return OFASN1TagNumberEnumerated;
-}
-
-- (bool)isConstructed
-{
-	return false;
 }
 
 - (OFData *)DERRepresentation
 {
 	OFMutableData *data = [OFMutableData dataWithCapacity: 10];
-	unsigned char tag = OFASN1TagNumberEnumerated;
+	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
 	[data addItem: &tag];
 
 	unsigned char buffer[8];

@@ -47,42 +47,38 @@
 
 - (void)testBitString
 {
-	OFData *data;
-
-	data = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
+	OFData *bits = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithData: data
-		    bitLength: 21] DERRepresentation],
+	    bitStringWithBits: bits
+		    bitsCount: 21] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x04\x03\xFF\x00\xF8" count: 6]);
 
-	data = [OFData dataWithItems: "abcdefäöü" count: 12];
+	bits = [OFData dataWithItems: "abcdefäöü" count: 12];
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithData: data
-		    bitLength: 12 * 8] DERRepresentation],
+	    bitStringWithBits: bits
+		    bitsCount: 12 * 8] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x0D\x00" "abcdefäöü" count: 15]);
 
 	OTAssertEqualObjects([[OFASN1BitString
-	    bitStringWithData: [OFData data]
-		    bitLength: 0] DERRepresentation],
+	    bitStringWithBits: [OFData data]
+		    bitsCount: 0] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]);
 }
 
 - (void)testOctetString
 {
-	OFData *data;
-
-	data = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
-	OTAssertEqualObjects(
-	    [[OFASN1OctetString octetStringWithData: data] DERRepresentation],
+	OFData *octets = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
+	OTAssertEqualObjects([[OFASN1OctetString
+	    octetStringWithOctets: octets] DERRepresentation],
 	    [OFData dataWithItems: "\x04\x03\xFF\x00\xF8" count: 5]);
 
-	data = [OFData dataWithItems: "abcdefäöü" count: 12];
-	OTAssertEqualObjects(
-	    [[OFASN1OctetString octetStringWithData: data] DERRepresentation],
+	octets = [OFData dataWithItems: "abcdefäöü" count: 12];
+	OTAssertEqualObjects([[OFASN1OctetString
+	    octetStringWithOctets: octets] DERRepresentation],
 	    [OFData dataWithItems: "\x04\x0C" "abcdefäöü" count: 14]);
 
 	OTAssertEqualObjects([[OFASN1OctetString
-	    octetStringWithData: [OFData data]] DERRepresentation],
+	    octetStringWithOctets: [OFData data]] DERRepresentation],
 	    [OFData dataWithItems: "\x04\x00" count: 2]);
 }
 

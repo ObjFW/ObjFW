@@ -27,6 +27,17 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
+unsigned char _OFDEREncodeTag(OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber, bool constructed)
+{
+	unsigned char tag = (tagClass << 6) | tagNumber;
+
+	if (constructed)
+		tag |= 0x20;
+
+	return tag;
+}
+
 size_t
 _OFDEREncodeLength(size_t length, unsigned char buffer[9])
 {
@@ -203,21 +214,29 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 }
 
 @implementation OFASN1Value
-@dynamic tagClass, tagNumber, constructed, DERRepresentation;
+@synthesize tagClass = _tagClass, tagNumber = _tagNumber;
+@dynamic DERRepresentation;
 
 - (instancetype)init
 {
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
 	if ([self isMemberOfClass: [OFASN1Value class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			objc_release(self);
-			@throw e;
-		}
+		objc_release(self);
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
 	}
 
-	return [super init];
+	self = [super init];
+
+	_tagClass = tagClass;
+	_tagNumber = tagNumber;
+
+	return self;
 }
 
 - (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
@@ -226,16 +245,12 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
 	if ([self isMemberOfClass: [OFASN1Value class]]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-			abort();
-		} @catch (id e) {
-			objc_release(self);
-			@throw e;
-		}
+		objc_release(self);
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
 	}
 
-	return [super init];
+	return [self initWithTagClass: tagClass tagNumber: tagNumber];
 }
 
 - (bool)isEqual: (id)object
@@ -257,8 +272,7 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 	    @"<%@:\n"
 	    @"\tTag class = %x\n"
 	    @"\tTag number = %x\n"
-	    @"\tConstructed = %u\n"
 	    @">",
-	    self.class, self.tagClass, self.tagNumber, self.constructed];
+	    self.class, self.tagClass, self.tagNumber];
 }
 @end
