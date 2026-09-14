@@ -30,28 +30,28 @@
 {
 	OTAssertFalse(
 	    [[[OFData dataWithItems: "\x01\x01\x00"
-			      count: 3] objectByParsingDER] boolValue]);
+			      count: 3] valueByParsingDER] boolValue]);
 
 	OTAssertTrue(
 	    [[[OFData dataWithItems: "\x01\x01\xFF"
-			      count: 3] objectByParsingDER] boolValue]);
+			      count: 3] valueByParsingDER] boolValue]);
 }
 
 - (void)testInvalidBooleanFails
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x01\x01\x01"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x01\x02\x00\x00"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x01\x00"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -59,30 +59,30 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x01\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
 - (void)testInteger
 {
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x00" count: 3]
-	    objectByParsingDER] int64Value], 0);
+	    valueByParsingDER] int64Value], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\x01" count: 3]
-	    objectByParsingDER] int64Value], 1);
+	    valueByParsingDER] int64Value], 1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x02\x01\x04" count: 4]
-	    objectByParsingDER] int64Value], 260);
+	    valueByParsingDER] int64Value], 260);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x01\xFF" count: 3]
-	    objectByParsingDER] int64Value], -1);
+	    valueByParsingDER] int64Value], -1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x02\x03\xFF\x00\x00" count: 5]
-	    objectByParsingDER] int64Value], -65536);
+	    valueByParsingDER] int64Value], -65536);
 
 	OTAssertEqual(
 	    [[[OFData dataWithItems: "\x02\x08\x80\x00\x00\x00\x00\x00\x00\x00"
-			      count: 10] objectByParsingDER] int64Value],
+			      count: 10] valueByParsingDER] int64Value],
 	    LLONG_MIN);
 }
 
@@ -90,22 +90,22 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x00"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x02\x00\x00"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x02\x00\x7F"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x02\xFF\x80"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -114,7 +114,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x09"
 				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -122,7 +122,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x02\x02\x00"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -131,12 +131,12 @@
 	OFASN1BitString *bitString;
 
 	bitString = [[OFData dataWithItems: "\x03\x01\x00"
-				     count: 3] objectByParsingDER];
+				     count: 3] valueByParsingDER];
 	OTAssertEqualObjects(bitString.bits, [OFData data]);
 	OTAssertEqual(bitString.bitsCount, 0);
 
 	bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
-				     count: 15] objectByParsingDER];
+				     count: 15] valueByParsingDER];
 	OTAssertEqualObjects(bitString.bits,
 	    [OFData dataWithItems: "Hello World\x80" count: 12]);
 	OTAssertEqual(bitString.bitsCount, 95);
@@ -146,7 +146,7 @@
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxx"
-				     count: 131] objectByParsingDER];
+				     count: 131] valueByParsingDER];
 	OTAssertEqualObjects(bitString.bits,
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -159,12 +159,12 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x03\x00"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x03\x01\x01"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -173,7 +173,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x03\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -181,7 +181,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x03\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -189,7 +189,7 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x04\x0CHello World!"
-		    count: 14] objectByParsingDER] octets],
+		    count: 14] valueByParsingDER] octets],
 	    [OFData dataWithItems: "Hello World!" count: 12]);
 
 	OTAssertEqualObjects(
@@ -197,7 +197,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			      count: 131] objectByParsingDER] octets],
+			      count: 131] valueByParsingDER] octets],
 	    [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -209,7 +209,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x04\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -217,21 +217,21 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x04\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
 - (void)testNull
 {
 	OTAssertEqualObjects([[OFData dataWithItems: "\x05\x00" count: 2]
-	    objectByParsingDER], [OFASN1Null null]);
+	    valueByParsingDER], [OFASN1Null null]);
 }
 
 - (void)testInvalidNullFails
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x05\x01\x00"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -240,26 +240,26 @@
 	OFArray *array;
 
 	array = [[[OFData dataWithItems: "\x06\x01\x27" count: 3]
-	    objectByParsingDER] subidentifiers];
+	    valueByParsingDER] subidentifiers];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 0);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 39);
 
 	array = [[[OFData dataWithItems: "\x06\x01\x4F" count: 3]
-	    objectByParsingDER] subidentifiers];
+	    valueByParsingDER] subidentifiers];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 1);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 39);
 
 	array = [[[OFData dataWithItems: "\x06\x02\x88\x37" count: 4]
-	    objectByParsingDER] subidentifiers];
+	    valueByParsingDER] subidentifiers];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 2);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 999);
 
 	array = [[[OFData
 	    dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x0B"
-		    count: 11] objectByParsingDER] subidentifiers];
+		    count: 11] valueByParsingDER] subidentifiers];
 	OTAssertEqual(array.count, 7);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 1);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 2);
@@ -274,12 +274,12 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x06\x01\x81"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x06\x02\x80\x01"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -288,7 +288,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x06\x0A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 				    "\xFF\x7F"
-			     count: 12] objectByParsingDER],
+			     count: 12] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -296,30 +296,30 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x06\x02\x00"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
 - (void)testEnumerated
 {
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x00" count: 3]
-	    objectByParsingDER] int64Value], 0);
+	    valueByParsingDER] int64Value], 0);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\x01" count: 3]
-	    objectByParsingDER] int64Value], 1);
+	    valueByParsingDER] int64Value], 1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x02\x01\x04" count: 4]
-	    objectByParsingDER] int64Value], 260);
+	    valueByParsingDER] int64Value], 260);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x01\xFF" count: 3]
-	    objectByParsingDER] int64Value], -1);
+	    valueByParsingDER] int64Value], -1);
 
 	OTAssertEqual([[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00" count: 5]
-	    objectByParsingDER] int64Value], -65536);
+	    valueByParsingDER] int64Value], -65536);
 
 	OTAssertEqual(
 	    [[[OFData dataWithItems: "\x0A\x08\x80\x00\x00\x00\x00\x00\x00\x00"
-			      count: 10] objectByParsingDER] int64Value],
+			      count: 10] valueByParsingDER] int64Value],
 	    LLONG_MIN);
 }
 
@@ -327,22 +327,22 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x00"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x02\x00\x00"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x02\x00\x7F"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x02\xFF\x80"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -351,7 +351,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x09"
 				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -359,7 +359,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0A\x02\x00"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -367,7 +367,7 @@
 {
 	OTAssertEqualObjects(
 	    [[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			      count: 16] objectByParsingDER] stringValue],
+			      count: 16] valueByParsingDER] stringValue],
 	    @"Hällo Wörld!");
 
 	OTAssertEqualObjects(
@@ -375,7 +375,7 @@
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				     "xxxxxxxxxxxxxxxxx"
-			     count: 131] objectByParsingDER] stringValue],
+			     count: 131] valueByParsingDER] stringValue],
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }
@@ -385,7 +385,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0C\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -393,12 +393,12 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0C\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0C\x83\x01\x01"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -406,7 +406,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x0C\x81\x7F"
-			     count: 3] objectByParsingDER],
+			     count: 3] valueByParsingDER],
 	    OFInvalidFormatException);
 
 	OTAssertThrowsSpecific(
@@ -414,7 +414,7 @@
 				    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				    "xxxxxxxxxxxxxxxxxx"
-			     count: 132] objectByParsingDER],
+			     count: 132] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -423,12 +423,12 @@
 	OFASN1Sequence *sequence;
 
 	sequence = [[OFData dataWithItems: "\x30\x00"
-				    count: 2] objectByParsingDER];
+				    count: 2] valueByParsingDER];
 	OTAssertTrue([sequence isKindOfClass: [OFASN1Sequence class]]);
 	OTAssertEqual(sequence.components.count, 0);
 
 	sequence = [[OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
-				    count: 11] objectByParsingDER];
+				    count: 11] valueByParsingDER];
 	OTAssertTrue([sequence isKindOfClass: [OFASN1Sequence class]]);
 	OTAssertEqual(sequence.components.count, 2);
 	OTAssertEqual([[sequence.components objectAtIndex: 0] int64Value], 123);
@@ -440,12 +440,12 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x30\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x30\x04\x02\x01\x01\x00\x00"
-			     count: 7] objectByParsingDER],
+			     count: 7] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -454,12 +454,12 @@
 	OFASN1Set *set;
 
 	set = [[OFData dataWithItems: "\x31\x00"
-			       count: 2] objectByParsingDER];
+			       count: 2] valueByParsingDER];
 	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
 	OTAssertEqual(set.components.count, 0);
 
 	set = [[OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
-			       count: 11] objectByParsingDER];
+			       count: 11] valueByParsingDER];
 	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
 	OTAssertEqual(set.components.count, 2);
 
@@ -473,7 +473,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x31\x06\x02\x01\x02\x02\x01\x01"
-			     count: 8] objectByParsingDER],
+			     count: 8] valueByParsingDER],
 	    OFInvalidFormatException);
 }
 
@@ -481,12 +481,12 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x31\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x31\x04\x02\x01\x01\x00\x00"
-			     count: 7] objectByParsingDER],
+			     count: 7] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -494,14 +494,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x12\x0B" "12345 67890"
-		    count: 13] objectByParsingDER] stringValue],
+		    count: 13] valueByParsingDER] stringValue],
 	    @"12345 67890");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x12\x81\x80" "000000000000000000000000000000000000"
 			   "000000000000000000000000000000000000000000000000000"
 			   "00000000000000000000000000000000000000000"
-		    count: 131] objectByParsingDER] stringValue],
+		    count: 131] valueByParsingDER] stringValue],
 	    @"00000000000000000000000000000000000000000000000000000000000000000"
 	    @"000000000000000000000000000000000000000000000000000000000000000");
 }
@@ -510,7 +510,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x12\x02."
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidEncodingException);
 }
 
@@ -519,7 +519,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x12\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -527,7 +527,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x12\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -535,14 +535,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x13\x0CHello World."
-		    count: 14] objectByParsingDER] stringValue],
+		    count: 14] valueByParsingDER] stringValue],
 	    @"Hello World.");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x13\x81\x80 '()+,-./:=?abcdefghijklmnopqrstuvwxyzA"
 			   "BCDEFGHIJKLMNOPQRSTUVWXYZ '()+,-./:=?abcdefghijklmn"
 			   "opqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		    count: 131] objectByParsingDER] stringValue],
+		    count: 131] valueByParsingDER] stringValue],
 	    @" '()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
 	    @"'()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 }
@@ -551,7 +551,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x13\x02;"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidEncodingException);
 }
 
@@ -560,7 +560,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x13\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -568,7 +568,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x13\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 
@@ -576,14 +576,14 @@
 {
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x16\x0CHello World!"
-		    count: 14] objectByParsingDER] stringValue],
+		    count: 14] valueByParsingDER] stringValue],
 	    @"Hello World!");
 
 	OTAssertEqualObjects([[[OFData
 	    dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-		    count: 131] objectByParsingDER] stringValue],
+		    count: 131] valueByParsingDER] stringValue],
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	    @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 }
@@ -592,7 +592,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x16\x02ä"
-			     count: 4] objectByParsingDER],
+			     count: 4] valueByParsingDER],
 	    OFInvalidEncodingException);
 }
 
@@ -601,7 +601,7 @@
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x16\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
-			     count: 11] objectByParsingDER],
+			     count: 11] valueByParsingDER],
 	    OFOutOfRangeException);
 }
 
@@ -609,7 +609,7 @@
 {
 	OTAssertThrowsSpecific(
 	    [[OFData dataWithItems: "\x16\x01"
-			     count: 2] objectByParsingDER],
+			     count: 2] valueByParsingDER],
 	    OFTruncatedDataException);
 }
 @end

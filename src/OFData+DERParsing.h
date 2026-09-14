@@ -33,24 +33,18 @@ extern int _OFData_DERParsing_reference;
 @interface OFData (DERParsing)
 /**
  * @brief The data interpreted as ASN.1 in DER representation and parsed as an
- *	  object.
- *
- * This is either an OFArray (for a sequence), an OFSet (for a set) or an
- * OFASN1Value.
+ *	  ASN.1 value.
  */
-@property (readonly, nonatomic) id objectByParsingDER;
+@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) valueByParsingDER;
 
 /**
- * @brief Parses the ASN.1 DER representation and returns it as an object.
- *
- * This is either an OFArray (for a sequence), an OFSet (for a set) or an
- * OFASN1Value.
+ * @brief Parses the ASN.1 DER representation and returns it as an ASN.1 value.
  *
  * @param depthLimit The maximum depth the parser should accept (defaults to 32
  *		     if not specified, 0 means no limit (insecure!))
- * @return The ASN.1 DER representation as an object
+ * @return The ASN.1 DER representation as an ASN.1 value
  */
-- (id)objectByParsingDERWithDepthLimit: (size_t)depthLimit;
+- (OF_KINDOF(OFASN1Value *))valueByParsingDERWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END

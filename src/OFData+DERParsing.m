@@ -49,7 +49,8 @@ enum {
 
 int _OFData_DERParsing_reference;
 
-static size_t parseObject(OFData *self, id *object, size_t depthLimit);
+static size_t parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value,
+    size_t depthLimit);
 
 static OFASN1Sequence *
 parseSequence(OFData *contents, size_t depthLimit)
@@ -61,16 +62,16 @@ parseSequence(OFData *contents, size_t depthLimit)
 		@throw [OFOutOfRangeException exception];
 
 	while (count > 0) {
-		id object;
-		size_t objectLength;
+		OF_KINDOF(OFASN1Value *) value;
+		size_t valueLength;
 
-		objectLength = parseObject(contents, &object, depthLimit);
+		valueLength = parseValue(contents, &value, depthLimit);
 
-		count -= objectLength;
+		count -= valueLength;
 		contents = [contents subdataWithRange:
-		    OFMakeRange(objectLength, count)];
+		    OFMakeRange(valueLength, count)];
 
-		[components addObject: object];
+		[components addObject: value];
 	}
 
 	[components makeImmutable];
@@ -83,32 +84,32 @@ parseSet(OFData *contents, size_t depthLimit)
 {
 	OFCountedSet *components = [OFCountedSet set];
 	size_t count = contents.count;
-	OFData *previousObjectData = nil;
+	OFData *previousValueData = nil;
 
 	if (depthLimit == 0)
 		@throw [OFOutOfRangeException exception];
 
 	while (count > 0) {
-		id object;
-		size_t objectLength;
-		OFData *objectData;
+		OF_KINDOF(OFASN1Value *) value;
+		size_t valueLength;
+		OFData *valueData;
 
-		objectLength = parseObject(contents, &object, depthLimit);
-		objectData = [contents subdataWithRange:
-		    OFMakeRange(0, objectLength)];
+		valueLength = parseValue(contents, &value, depthLimit);
+		valueData = [contents subdataWithRange:
+		    OFMakeRange(0, valueLength)];
 
-		if (previousObjectData != nil &&
-		    [objectData compare: previousObjectData] !=
+		if (previousValueData != nil &&
+		    [valueData compare: previousValueData] !=
 		    OFOrderedDescending)
 			@throw [OFInvalidFormatException exception];
 
-		count -= objectLength;
+		count -= valueLength;
 		contents = [contents subdataWithRange:
-		    OFMakeRange(objectLength, count)];
+		    OFMakeRange(valueLength, count)];
 
-		[components addObject: object];
+		[components addObject: value];
 
-		previousObjectData = objectData;
+		previousValueData = valueData;
 	}
 
 	[components makeImmutable];
@@ -117,7 +118,7 @@ parseSet(OFData *contents, size_t depthLimit)
 }
 
 static size_t
-parseObject(OFData *self, id *object, size_t depthLimit)
+parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 {
 	const unsigned char *items = self.items;
 	size_t count = self.count;
@@ -196,13 +197,13 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		if (!(tag & tagConstructedMask))
 			@throw [OFInvalidFormatException exception];
 
-		*object = parseSequence(contents, depthLimit - 1);
+		*value = parseSequence(contents, depthLimit - 1);
 		return bytesConsumed;
 	case OFASN1TagNumberSet:
 		if (!(tag & tagConstructedMask))
 			@throw [OFInvalidFormatException exception];
 
-		*object = parseSet(contents, depthLimit - 1);
+		*value = parseSet(contents, depthLimit - 1);
 		return bytesConsumed;
 	case OFASN1TagNumberNumericString:
 		valueClass = [OFASN1NumericString class];
@@ -219,7 +220,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	}
 
 	@try {
-		*object = objc_autorelease([[valueClass alloc]
+		*value = objc_autorelease([[valueClass alloc]
 		    of_initWithTagClass: tag >> 6
 			      tagNumber: tag & 0x1F
 			    constructed: tag & tagConstructedMask
@@ -232,26 +233,26 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 }
 
 @implementation OFData (DERParsing)
-- (id)objectByParsingDER
+- (OF_KINDOF(OFASN1Value *))valueByParsingDER
 {
-	return [self objectByParsingDERWithDepthLimit: 32];
+	return [self valueByParsingDERWithDepthLimit: 32];
 }
 
-- (id)objectByParsingDERWithDepthLimit: (size_t)depthLimit
+- (OF_KINDOF(OFASN1Value *))valueByParsingDERWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
-	id object;
+	OF_KINDOF(OFASN1Value *) value;
 
 	if (self.itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	if (parseObject(self, &object, depthLimit) != self.count)
+	if (parseValue(self, &value, depthLimit) != self.count)
 		@throw [OFInvalidFormatException exception];
 
-	objc_retain(object);
+	objc_retain(value);
 
 	objc_autoreleasePoolPop(pool);
 
-	return objc_autoreleaseReturnValue(object);
+	return objc_autoreleaseReturnValue(value);
 }
 @end
