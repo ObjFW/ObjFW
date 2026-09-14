@@ -100,13 +100,21 @@
 
 - (OFData *)DERRepresentation
 {
-	char buffer[] = {
-		_OFDEREncodeTag(_tagClass, _tagNumber, false),
-		1,
-		(_boolValue ? 0xFF : 0x00)
-	};
+	OFMutableData *data = [OFMutableData dataWithCapacity: 3];
 
-	return [OFData dataWithItems: buffer count: sizeof(buffer)];
+	unsigned char tag[6];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
+
+	static const unsigned char one = 1;
+	[data addItem: &one];
+
+	unsigned char value = (_boolValue ? 0xFF : 0x00);
+	[data addItem: &value];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)description

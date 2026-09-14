@@ -27,15 +27,48 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-unsigned char _OFDEREncodeTag(OFASN1TagClass tagClass,
-    OFASN1TagNumber tagNumber, bool constructed)
+size_t
+_OFDEREncodeTag(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber,
+    bool constructed, unsigned char buffer[6])
 {
-	unsigned char tag = (tagClass << 6) | tagNumber;
+	buffer[0] = tagClass << 6;
 
 	if (constructed)
-		tag |= 0x20;
+		buffer[0] |= 0x20;
 
-	return tag;
+	if (tagNumber < 0x1F) {
+		buffer[0] |= tagNumber;
+		return 1;
+	} else
+		buffer[0] |= 0x1F;
+
+	if (tagNumber <= 0x7F) {
+		buffer[1] = tagNumber;
+		return 2;
+	} else if (tagNumber <= 0x3FFF) {
+		buffer[1] = (tagNumber >> 7) | 0x80;
+		buffer[2] = tagNumber & 0x7F;
+		return 3;
+	} else if (tagNumber <= 0x1FFFFF) {
+		buffer[1] = (tagNumber >> 14) | 0x80;
+		buffer[2] = (tagNumber >> 7) | 0x80;
+		buffer[3] = tagNumber & 0x7F;
+		return 4;
+	} else if (tagNumber <= 0xFFFFFFF) {
+		buffer[1] = (tagNumber >> 21) | 0x80;
+		buffer[2] = (tagNumber >> 14) | 0x80;
+		buffer[3] = (tagNumber >> 7) | 0x80;
+		buffer[4] = tagNumber & 0x7F;
+		return 5;
+	} else if (tagNumber <= 0x7FFFFFFF) {
+		buffer[1] = (tagNumber >> 28) | 0x80;
+		buffer[2] = (tagNumber >> 21) | 0x80;
+		buffer[3] = (tagNumber >> 14) | 0x80;
+		buffer[4] = (tagNumber >> 7) | 0x80;
+		buffer[5] = tagNumber & 0x7F;
+		return 6;
+	} else
+		@throw [OFOutOfRangeException exception];
 }
 
 size_t

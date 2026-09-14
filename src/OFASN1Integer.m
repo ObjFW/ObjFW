@@ -101,8 +101,10 @@
 - (OFData *)DERRepresentation
 {
 	OFMutableData *data = [OFMutableData dataWithCapacity: 10];
-	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
-	[data addItem: &tag];
+
+	unsigned char tag[6];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
 
 	unsigned char buffer[8];
 	unsigned char length = _OFDEREncodeInteger(_int64Value, buffer);

@@ -43,10 +43,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 
-enum {
-	tagConstructedMask = 0x20
-};
-
 int _OFData_DERParsing_reference;
 
 static size_t parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value,
@@ -131,8 +127,31 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 		@throw [OFTruncatedDataException exception];
 
 	tag = *items++;
+	bytesConsumed++;
+	OFASN1TagClass tagClass = tag >> 6;
+	OFASN1TagNumber tagNumber = tag & 0x1F;
+	bool constructed = tag & 0x20;
+
+	if (tagNumber == 0x1F) {
+		tagNumber = 0;
+
+		bool last;
+		do {
+			if (count - bytesConsumed < 1)
+				@throw [OFTruncatedDataException exception];
+
+			if (tagNumber > 0x1FFFFFF)
+				@throw [OFOutOfRangeException exception];
+
+			last = !(*items & 0x80);
+			tagNumber <<= 7;
+			tagNumber |= *items++ & 0x7F;
+			bytesConsumed++;
+		} while (!last);
+	}
+
 	contentsLength = *items++;
-	bytesConsumed += 2;
+	bytesConsumed++;
 
 	if (contentsLength > 127) {
 		uint_fast8_t lengthLength = contentsLength & 0x7F;
@@ -168,62 +187,65 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
-	switch (tag & ~tagConstructedMask) {
-	case OFASN1TagNumberBoolean:
-		valueClass = [OFASN1Boolean class];
-		break;
-	case OFASN1TagNumberInteger:
-		valueClass = [OFASN1Integer class];
-		break;
-	case OFASN1TagNumberBitString:
-		valueClass = [OFASN1BitString class];
-		break;
-	case OFASN1TagNumberOctetString:
-		valueClass = [OFASN1OctetString class];
-		break;
-	case OFASN1TagNumberNull:
-		valueClass = [OFASN1Null class];
-		break;
-	case OFASN1TagNumberObjectIdentifier:
-		valueClass = [OFASN1ObjectIdentifier class];
-		break;
-	case OFASN1TagNumberEnumerated:
-		valueClass = [OFASN1Enumerated class];
-		break;
-	case OFASN1TagNumberUTF8String:
-		valueClass = [OFASN1UTF8String class];
-		break;
-	case OFASN1TagNumberSequence:
-		if (!(tag & tagConstructedMask))
-			@throw [OFInvalidFormatException exception];
+	if (tagClass == OFASN1TagClassUniversal) {
+		switch (tagNumber) {
+		case OFASN1TagNumberBoolean:
+			valueClass = [OFASN1Boolean class];
+			break;
+		case OFASN1TagNumberInteger:
+			valueClass = [OFASN1Integer class];
+			break;
+		case OFASN1TagNumberBitString:
+			valueClass = [OFASN1BitString class];
+			break;
+		case OFASN1TagNumberOctetString:
+			valueClass = [OFASN1OctetString class];
+			break;
+		case OFASN1TagNumberNull:
+			valueClass = [OFASN1Null class];
+			break;
+		case OFASN1TagNumberObjectIdentifier:
+			valueClass = [OFASN1ObjectIdentifier class];
+			break;
+		case OFASN1TagNumberEnumerated:
+			valueClass = [OFASN1Enumerated class];
+			break;
+		case OFASN1TagNumberUTF8String:
+			valueClass = [OFASN1UTF8String class];
+			break;
+		case OFASN1TagNumberSequence:
+			if (!constructed)
+				@throw [OFInvalidFormatException exception];
 
-		*value = parseSequence(contents, depthLimit - 1);
-		return bytesConsumed;
-	case OFASN1TagNumberSet:
-		if (!(tag & tagConstructedMask))
-			@throw [OFInvalidFormatException exception];
+			*value = parseSequence(contents, depthLimit - 1);
+			return bytesConsumed;
+		case OFASN1TagNumberSet:
+			if (!constructed)
+				@throw [OFInvalidFormatException exception];
 
-		*value = parseSet(contents, depthLimit - 1);
-		return bytesConsumed;
-	case OFASN1TagNumberNumericString:
-		valueClass = [OFASN1NumericString class];
-		break;
-	case OFASN1TagNumberPrintableString:
-		valueClass = [OFASN1PrintableString class];
-		break;
-	case OFASN1TagNumberIA5String:
-		valueClass = [OFASN1IA5String class];
-		break;
-	default:
+			*value = parseSet(contents, depthLimit - 1);
+			return bytesConsumed;
+		case OFASN1TagNumberNumericString:
+			valueClass = [OFASN1NumericString class];
+			break;
+		case OFASN1TagNumberPrintableString:
+			valueClass = [OFASN1PrintableString class];
+			break;
+		case OFASN1TagNumberIA5String:
+			valueClass = [OFASN1IA5String class];
+			break;
+		default:
+			valueClass = [OFUnparsedASN1Value class];
+			break;
+		}
+	} else
 		valueClass = [OFUnparsedASN1Value class];
-		break;
-	}
 
 	@try {
 		*value = objc_autorelease([[valueClass alloc]
-		    of_initWithTagClass: tag >> 6
-			      tagNumber: tag & 0x1F
-			    constructed: tag & tagConstructedMask
+		    of_initWithTagClass: tagClass
+			      tagNumber: tagNumber
+			    constructed: constructed
 		     DEREncodedContents: contents]);
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidFormatException exception];

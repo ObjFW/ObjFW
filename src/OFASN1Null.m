@@ -74,11 +74,18 @@
 
 - (OFData *)DERRepresentation
 {
-	unsigned char bytes[] = {
-		_OFDEREncodeTag(_tagClass, _tagNumber, false),
-		0
-	};
-	return [OFData dataWithItems: bytes count: sizeof(bytes)];
+	OFMutableData *data = [OFMutableData dataWithCapacity: 2];
+
+	unsigned char tag[6];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
+
+	static const unsigned char zero = 0;
+	[data addItem: &zero];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)description

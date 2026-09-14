@@ -29,8 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
     OF_METHOD_FAMILY(init);
 @end
 
-extern unsigned char _OFDEREncodeTag(OFASN1TagClass tagClass,
-    OFASN1TagNumber tagNumber, bool constructed) OF_VISIBILITY_INTERNAL;
+extern size_t _OFDEREncodeTag(OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber, bool constructed,
+    unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_INTERNAL;
 extern size_t _OFDEREncodeLength(size_t length,
     unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
 extern int64_t _OFDERDecodeInteger(const unsigned char *buffer, size_t length)

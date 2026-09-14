@@ -166,8 +166,10 @@ OF_SINGLETON_METHODS
 
 	OFMutableData *data =
 	    [OFMutableData dataWithCapacity: cStringLength + 2];
-	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber, false);
-	[data addItem: &tag];
+
+	unsigned char tag[6];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
 
 	unsigned char length[9];
 	[data addItems: length

@@ -67,11 +67,13 @@
 - (OFData *)DERRepresentation
 {
 	size_t count = _DEREncodedContents.count;
+
 	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
 
-	unsigned char tag = _OFDEREncodeTag(_tagClass, _tagNumber,
-	    _constructed);
-	[data addItem: &tag];
+	unsigned char tag[6];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, _constructed,
+			    tag)];
 
 	unsigned char length[9];
 	[data addItems: length
