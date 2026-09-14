@@ -24,6 +24,7 @@
 #import "OFData.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFUnparsedASN1Value
@@ -93,5 +94,17 @@
 	    @">",
 	    self.class, _tagClass, _tagNumber, _constructed,
 	    _DEREncodedContents];
+}
+
+- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
+{
+	if (![class isSubclassOfClass: [OFASN1Value class]] || _constructed)
+		@throw [OFInvalidArgumentException exception];
+
+	return objc_autoreleaseReturnValue([[class alloc]
+	    of_initWithTagClass: _tagClass
+		      tagNumber: _tagNumber
+		    constructed: _constructed
+	     DEREncodedContents: _DEREncodedContents]);
 }
 @end
