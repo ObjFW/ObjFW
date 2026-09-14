@@ -420,19 +420,19 @@
 
 - (void)testSequence
 {
-	OFArray *array;
+	OFASN1Sequence *sequence;
 
-	array = [[OFData dataWithItems: "\x30\x00"
-				 count: 2] objectByParsingDER];
-	OTAssertTrue([array isKindOfClass: [OFArray class]]);
-	OTAssertEqual(array.count, 0);
+	sequence = [[OFData dataWithItems: "\x30\x00"
+				    count: 2] objectByParsingDER];
+	OTAssertTrue([sequence isKindOfClass: [OFASN1Sequence class]]);
+	OTAssertEqual(sequence.components.count, 0);
 
-	array = [[OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
-				 count: 11] objectByParsingDER];
-	OTAssertTrue([array isKindOfClass: [OFArray class]]);
-	OTAssertEqual(array.count, 2);
-	OTAssertEqual([[array objectAtIndex: 0] int64Value], 123);
-	OTAssertEqualObjects([array objectAtIndex: 1],
+	sequence = [[OFData dataWithItems: "\x30\x09\x02\x01\x7B\x0C\x04Test"
+				    count: 11] objectByParsingDER];
+	OTAssertTrue([sequence isKindOfClass: [OFASN1Sequence class]]);
+	OTAssertEqual(sequence.components.count, 2);
+	OTAssertEqual([[sequence.components objectAtIndex: 0] int64Value], 123);
+	OTAssertEqualObjects([sequence.components objectAtIndex: 1],
 	    [OFASN1UTF8String stringWithString: @"Test"]);
 }
 

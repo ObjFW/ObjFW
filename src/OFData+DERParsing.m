@@ -30,6 +30,7 @@
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
+#import "OFASN1Sequence.h"
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value+Private.h"
 #import "OFArray.h"
@@ -49,10 +50,11 @@ int _OFData_DERParsing_reference;
 
 static size_t parseObject(OFData *self, id *object, size_t depthLimit);
 
-static OFArray *
-parseSequence(OFData *contents, size_t depthLimit)
+static OFASN1Sequence *
+parseSequence(OFData *contents, OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber, size_t depthLimit)
 {
-	OFMutableArray *ret = [OFMutableArray array];
+	OFMutableArray *components = [OFMutableArray array];
 	size_t count = contents.count;
 
 	if (depthLimit == 0)
@@ -68,12 +70,14 @@ parseSequence(OFData *contents, size_t depthLimit)
 		contents = [contents subdataWithRange:
 		    OFMakeRange(objectLength, count)];
 
-		[ret addObject: object];
+		[components addObject: object];
 	}
 
-	[ret makeImmutable];
+	[components makeImmutable];
 
-	return ret;
+	return [OFASN1Sequence sequenceWithComponents: components
+					     tagClass: tagClass
+					    tagNumber: tagNumber];
 }
 
 static OFSet *
@@ -165,6 +169,10 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
+	OFASN1TagClass tagClass = tag >> 6;
+	OFASN1TagNumber tagNumber = tag & 0x1F;
+	bool constructed = tag & tagConstructedMask;
+
 	switch (tag & ~tagConstructedMask) {
 	case OFASN1TagNumberBoolean:
 		valueClass = [OFASN1Boolean class];
@@ -191,13 +199,14 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1UTF8String class];
 		break;
 	case OFASN1TagNumberSequence:
-		if (!(tag & tagConstructedMask))
+		if (!constructed)
 			@throw [OFInvalidFormatException exception];
 
-		*object = parseSequence(contents, depthLimit - 1);
+		*object = parseSequence(contents, tagClass, tagNumber,
+		    depthLimit - 1);
 		return bytesConsumed;
 	case OFASN1TagNumberSet:
-		if (!(tag & tagConstructedMask))
+		if (!constructed)
 			@throw [OFInvalidFormatException exception];
 
 		*object = parseSet(contents, depthLimit - 1);
@@ -218,9 +227,9 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 
 	@try {
 		*object = objc_autorelease([[valueClass alloc]
-		    of_initWithTagClass: tag >> 6
-			      tagNumber: tag & 0x1F
-			    constructed: tag & tagConstructedMask
+		    of_initWithTagClass: tagClass
+			      tagNumber: tagNumber
+			    constructed: constructed
 		     DEREncodedContents: contents]);
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidFormatException exception];
