@@ -155,6 +155,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			tagNumber |= *items++ & 0x7F;
 			bytesConsumed++;
 		} while (!last);
+
+		if (tagNumber < 0x1F)
+			@throw [OFInvalidFormatException exception];
 	}
 
 	contentsLength = *items++;
