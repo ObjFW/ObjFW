@@ -147,7 +147,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			if (count - bytesConsumed < 1)
 				@throw [OFTruncatedDataException exception];
 
-			if (tagNumber > 0x1FFFFFF)
+			if (tagNumber > 0xFFFFFF)
 				@throw [OFOutOfRangeException exception];
 
 			last = !(*items & 0x80);
