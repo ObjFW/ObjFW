@@ -189,31 +189,10 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
-	if (constructed) {
-		Class constructedClass;
-		if (tagClass == OFASN1TagClassUniversal) {
-			switch (tagNumber) {
-			case OFASN1TagNumberSequence:
-				constructedClass = [OFASN1Sequence class];
-				break;
-			case OFASN1TagNumberSet:
-				*value = parseSet(contents, depthLimit - 1);
-				return bytesConsumed;
-			default:
-				constructedClass =
-				    [OFConstructedASN1Value class];
-				break;
-			}
-		} else
-			constructedClass = [OFConstructedASN1Value class];
-
-		*value = parseConstructed(contents, constructedClass,
-		    tagClass, tagNumber, depthLimit - 1);
-		return bytesConsumed;
-	}
-
 	Class valueClass;
 	if (tagClass == OFASN1TagClassUniversal) {
+		bool expectConstructed = false;
+
 		switch (tagNumber) {
 		case OFASN1TagNumberBoolean:
 			valueClass = [OFASN1Boolean class];
@@ -239,6 +218,16 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 		case OFASN1TagNumberUTF8String:
 			valueClass = [OFASN1UTF8String class];
 			break;
+		case OFASN1TagNumberSequence:
+			valueClass = [OFASN1Sequence class];
+			expectConstructed = true;
+			break;
+		case OFASN1TagNumberSet:
+			if (!constructed)
+				@throw [OFInvalidFormatException exception];
+
+			*value = parseSet(contents, depthLimit - 1);
+			return bytesConsumed;
 		case OFASN1TagNumberNumericString:
 			valueClass = [OFASN1NumericString class];
 			break;
@@ -252,15 +241,26 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			valueClass = [OFUnparsedASN1Value class];
 			break;
 		}
-	} else
-		valueClass = [OFUnparsedASN1Value class];
+
+		if (expectConstructed != constructed)
+			@throw [OFInvalidFormatException exception];
+	} else {
+		if (constructed)
+			valueClass = [OFConstructedASN1Value class];
+		else
+			valueClass = [OFUnparsedASN1Value class];
+	}
 
 	@try {
-		*value = objc_autorelease([[valueClass alloc]
-		    of_initWithTagClass: tagClass
-			      tagNumber: tagNumber
-			    constructed: constructed
-		     DEREncodedContents: contents]);
+		if (constructed)
+			*value = parseConstructed(contents, valueClass,
+			    tagClass, tagNumber, depthLimit - 1);
+		else
+			*value = objc_autorelease([[valueClass alloc]
+			    of_initWithTagClass: tagClass
+				      tagNumber: tagNumber
+				    constructed: constructed
+			     DEREncodedContents: contents]);
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidFormatException exception];
 	}
