@@ -82,6 +82,7 @@ void *__objc_class_name_OFChecksumMismatchException;
 void *__objc_class_name_OFColor;
 void *__objc_class_name_OFColorSpace;
 void *__objc_class_name_OFConstantString;
+void *__objc_class_name_OFConstructedASN1Value;
 void *__objc_class_name_OFCopyItemFailedException;
 void *__objc_class_name_OFCountedSet;
 void *__objc_class_name_OFCreateDirectoryFailedException;
