@@ -241,7 +241,12 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			valueClass = [OFASN1IA5String class];
 			break;
 		default:
-			valueClass = [OFUnparsedASN1Value class];
+			if (constructed)
+				valueClass = [OFConstructedASN1Value class];
+			else
+				valueClass = [OFUnparsedASN1Value class];
+
+			expectConstructed = constructed;
 			break;
 		}
 
