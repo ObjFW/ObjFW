@@ -139,6 +139,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	if (tagNumber == 0x1F) {
 		tagNumber = 0;
 
+		if ((*items & 0x7F) == 0)
+			@throw [OFInvalidFormatException exception];
+
 		bool last;
 		do {
 			if (count - bytesConsumed < 1)
