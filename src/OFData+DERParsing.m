@@ -35,6 +35,7 @@
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value+Private.h"
 #import "OFArray.h"
+#import "OFConstructedASN1Value.h"
 #import "OFCountedSet.h"
 #import "OFUnparsedASN1Value.h"
 
@@ -48,8 +49,9 @@ int _OFData_DERParsing_reference;
 static size_t parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value,
     size_t depthLimit);
 
-static OFASN1Sequence *
-parseSequence(OFData *contents, size_t depthLimit)
+static OF_KINDOF(OFASN1Value *)
+parseConstructed(OFData *contents, Class class, OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber, size_t depthLimit)
 {
 	OFMutableArray *components = [OFMutableArray array];
 	size_t count = contents.count;
@@ -72,7 +74,10 @@ parseSequence(OFData *contents, size_t depthLimit)
 
 	[components makeImmutable];
 
-	return [OFASN1Sequence sequenceWithComponents: components];
+	return objc_autoreleaseReturnValue(
+	    [[class alloc] initWithComponents: components
+				     tagClass: tagClass
+				    tagNumber: tagNumber]);
 }
 
 static OFASN1Set *
@@ -120,7 +125,6 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	size_t count = self.count;
 	unsigned char tag;
 	size_t contentsLength, bytesConsumed = 0;
-	Class valueClass;
 	OFData *contents;
 
 	if (count < 2)
@@ -187,6 +191,30 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
+	if (constructed) {
+		Class constructedClass;
+		if (tagClass == OFASN1TagClassUniversal) {
+			switch (tagNumber) {
+			case OFASN1TagNumberSequence:
+				constructedClass = [OFASN1Sequence class];
+				break;
+			case OFASN1TagNumberSet:
+				*value = parseSet(contents, depthLimit - 1);
+				return bytesConsumed;
+			default:
+				constructedClass =
+				    [OFConstructedASN1Value class];
+				break;
+			}
+		} else
+			constructedClass = [OFConstructedASN1Value class];
+
+		*value = parseConstructed(contents, constructedClass,
+		    tagClass, tagNumber, depthLimit - 1);
+		return bytesConsumed;
+	}
+
+	Class valueClass;
 	if (tagClass == OFASN1TagClassUniversal) {
 		switch (tagNumber) {
 		case OFASN1TagNumberBoolean:
@@ -213,18 +241,6 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 		case OFASN1TagNumberUTF8String:
 			valueClass = [OFASN1UTF8String class];
 			break;
-		case OFASN1TagNumberSequence:
-			if (!constructed)
-				@throw [OFInvalidFormatException exception];
-
-			*value = parseSequence(contents, depthLimit - 1);
-			return bytesConsumed;
-		case OFASN1TagNumberSet:
-			if (!constructed)
-				@throw [OFInvalidFormatException exception];
-
-			*value = parseSet(contents, depthLimit - 1);
-			return bytesConsumed;
 		case OFASN1TagNumberNumericString:
 			valueClass = [OFASN1NumericString class];
 			break;

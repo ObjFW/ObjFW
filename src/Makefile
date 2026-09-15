@@ -34,6 +34,7 @@ SRCS = OFASN1BitString.m		\
        OFColor.m			\
        OFColorSpace.m			\
        OFConstantString.m		\
+       OFConstructedASN1Value.m		\
        OFCountedSet.m			\
        OFData.m				\
        OFData+CryptographicHashing.m	\

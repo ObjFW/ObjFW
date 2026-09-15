@@ -184,6 +184,7 @@
 #import "OFASN1Set.h"
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
+#import "OFConstructedASN1Value.h"
 #import "OFUnparsedASN1Value.h"
 
 #import "OFAllocFailedException.h"
