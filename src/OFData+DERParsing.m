@@ -171,17 +171,12 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 		    (lengthLength >= 2 && items[0] == 0))
 			@throw [OFInvalidFormatException exception];
 
-		/* TODO: Check that the shortest encoding is used */
-
 		contentsLength = 0;
 
 		for (uint_fast8_t i = 0; i < lengthLength; i++)
 			contentsLength = (contentsLength << 8) | *items++;
 
 		bytesConsumed += lengthLength;
-
-		if (contentsLength <= 127)
-			@throw [OFInvalidFormatException exception];
 	}
 
 	if (count - bytesConsumed < contentsLength)
