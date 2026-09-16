@@ -146,40 +146,15 @@ _OFDEREncodeLength(size_t length, unsigned char buffer[9])
 int64_t
 _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
 {
-	if (length == 0)
-		@throw [OFInvalidFormatException exception];
-
 	if (length > sizeof(int64_t))
 		@throw [OFOutOfRangeException exception];
 
-	uint64_t unsignedValue = 0;
+	uint64_t value = 0;
 	if (buffer[0] & 0x80)
-		unsignedValue = ~0ull;
+		value = ~0ull;
 
 	for (size_t i = 0; i < length; i++)
-		unsignedValue = (unsignedValue << 8) | *buffer++;
-
-	int64_t value = unsignedValue;
-	size_t expectedLength;
-	if (value >= -128 && value <= 127)
-		expectedLength = 1;
-	else if (value >= -32768 && value <= 32767)
-		expectedLength = 2;
-	else if (value >= -8388608 && value <= 8388607)
-		expectedLength = 3;
-	else if (value >= -2147483648 && value <= 2147483647)
-		expectedLength = 4;
-	else if (value >= -549755813888 && value <= 549755813887)
-		expectedLength = 5;
-	else if (value >= -140737488355328 && value <= 140737488355327)
-		expectedLength = 6;
-	else if (value >= -36028797018963968 && value <= 36028797018963967)
-		expectedLength = 7;
-	else
-		expectedLength = 8;
-
-	if (length != expectedLength)
-		@throw [OFInvalidFormatException exception];
+		value = (value << 8) | *buffer++;
 
 	return value;
 }

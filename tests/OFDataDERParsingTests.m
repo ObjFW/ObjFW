@@ -109,15 +109,6 @@
 	    OFInvalidFormatException);
 }
 
-- (void)testOutOfRangeIntegerFails
-{
-	OTAssertThrowsSpecific(
-	    [[OFData dataWithItems: "\x02\x09"
-				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-			     count: 11] valueByParsingDER],
-	    OFOutOfRangeException);
-}
-
 - (void)testTruncatedIntegerFails
 {
 	OTAssertThrowsSpecific(
@@ -344,15 +335,6 @@
 	    [[OFData dataWithItems: "\x0A\x02\xFF\x80"
 			     count: 4] valueByParsingDER],
 	    OFInvalidFormatException);
-}
-
-- (void)testOutOfRangeEnumeratedFails
-{
-	OTAssertThrowsSpecific(
-	    [[OFData dataWithItems: "\x0A\x09"
-				    "\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-			     count: 11] valueByParsingDER],
-	    OFOutOfRangeException);
 }
 
 - (void)testTruncatedEnumeratedFails

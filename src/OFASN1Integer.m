@@ -29,7 +29,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1Integer
-@synthesize int64Value = _int64Value;
+@synthesize rawValue = _rawValue;
 
 + (instancetype)integerWithInt64: (int64_t)value
 {
@@ -46,6 +46,22 @@
 		tagNumber: tagNumber]);
 }
 
++ (instancetype)integerWithRawValue: (OFData *)rawValue
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithRawValue: rawValue]);
+}
+
++ (instancetype)integerWithRawValue: (OFData *)rawValue
+			   tagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithRawValue: rawValue
+		    tagClass: tagClass
+		   tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithInt64: (int64_t)value
 {
 	return [self initWithInt64: value
@@ -57,9 +73,60 @@
 		     tagClass: (OFASN1TagClass)tagClass
 		    tagNumber: (OFASN1TagNumber)tagNumber
 {
+	void *pool = objc_autoreleasePoolPush();
+
+	OFData *rawValue;
+	@try {
+		unsigned char buffer[8];
+		size_t length = _OFDEREncodeInteger(value, buffer);
+		rawValue = [OFData dataWithItems: buffer count: length];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
+- (instancetype)initWithRawValue: (OFData *)rawValue
+{
+	return [self initWithRawValue: rawValue
+			     tagClass: OFASN1TagClassUniversal
+			    tagNumber: OFASN1TagNumberInteger];
+}
+
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
 	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
-	_int64Value = value;
+	@try {
+		if (rawValue.itemSize != 1)
+			@throw [OFInvalidArgumentException exception];
+
+		size_t count = rawValue.count;
+		if (count == 0)
+			@throw [OFInvalidFormatException exception];
+
+		if (count > 1) {
+			const unsigned char *items = rawValue.items;
+			if (items[0] == 0 ||
+			    (items[0] == 0xFF && (items[1] & 0x80)))
+				@throw [OFInvalidFormatException exception];
+		}
+
+		_rawValue = [rawValue copy];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
 
 	return self;
 }
@@ -69,33 +136,25 @@
 			constructed: (bool)constructed
 		 DEREncodedContents: (OFData *)DEREncodedContents
 {
-	int64_t value;
-
-	@try {
-		/* TODO: Support for big numbers */
-
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-
-		value = _OFDERDecodeInteger(
-		    DEREncodedContents.items, DEREncodedContents.count);
-	} @catch (id e) {
+	if (constructed) {
 		objc_release(self);
-		@throw e;
+		@throw [OFInvalidArgumentException exception];
 	}
 
-	return [self initWithInt64: value
-			  tagClass: tagClass
-			 tagNumber: tagNumber];
+	return [self initWithRawValue: DEREncodedContents
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
 }
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (int64_t)int64Value
+{
+	return _OFDERDecodeInteger(_rawValue.items, _rawValue.count);
 }
 
 - (OFData *)DERRepresentation
@@ -106,11 +165,10 @@
 	[data addItems: tag
 		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
 
-	unsigned char buffer[8];
-	unsigned char length = _OFDEREncodeInteger(_int64Value, buffer);
+	unsigned char length = (unsigned char)_rawValue.count;
 	[data addItem: &length];
 
-	[data addItems: buffer count: length];
+	[data addItems: _rawValue.items count: length];
 
 	[data makeImmutable];
 
@@ -119,7 +177,6 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1Integer: %" @PRId64 @">",
-					   _int64Value];
+	return [OFString stringWithFormat: @"<OFASN1Integer: %@>", _rawValue];
 }
 @end
