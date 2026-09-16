@@ -115,9 +115,9 @@
 		if (count == 0)
 			@throw [OFInvalidFormatException exception];
 
-		if (count > 1) {
+		if (count >= 2) {
 			const unsigned char *items = rawValue.items;
-			if (items[0] == 0 ||
+			if ((items[0] == 0 && !(items[1] & 0x80)) ||
 			    (items[0] == 0xFF && (items[1] & 0x80)))
 				@throw [OFInvalidFormatException exception];
 		}
