@@ -83,7 +83,7 @@ parseConstructed(OFData *contents, Class class, OFASN1TagClass tagClass,
 static OFASN1Set *
 parseSet(OFData *contents, size_t depthLimit)
 {
-	OFCountedSet *components = [OFCountedSet set];
+	OFCountedSet *componentSet = [OFCountedSet set];
 	size_t count = contents.count;
 	OFData *previousValueData = nil;
 
@@ -108,14 +108,14 @@ parseSet(OFData *contents, size_t depthLimit)
 		contents = [contents subdataWithRange:
 		    OFMakeRange(valueLength, count)];
 
-		[components addObject: value];
+		[componentSet addObject: value];
 
 		previousValueData = valueData;
 	}
 
-	[components makeImmutable];
+	[componentSet makeImmutable];
 
-	return [OFASN1Set setWithComponents: components];
+	return [OFASN1Set setWithComponentSet: componentSet];
 }
 
 static size_t

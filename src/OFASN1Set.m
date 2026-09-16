@@ -28,43 +28,43 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1Set
-@synthesize components = _components;
+@synthesize componentSet = _componentSet;
 
-+ (instancetype)setWithComponents:
-    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components
++ (instancetype)setWithComponentSet:
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithComponents: components]);
+	    [[self alloc] initWithComponentSet: componentSet]);
 }
 
-+ (instancetype)setWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
-				       OFASN1Value *)) *)components
-			 tagClass: (OFASN1TagClass)tagClass
-			tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)setWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					 OFASN1Value *)) *)componentSet
+			   tagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithComponents: components
-		      tagClass: tagClass
-		     tagNumber: tagNumber]);
+	    initWithComponentSet: componentSet
+			tagClass: tagClass
+		       tagNumber: tagNumber]);
 }
 
-- (instancetype)initWithComponents:
-    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components
+- (instancetype)initWithComponentSet:
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet
 {
-	return [self initWithComponents: components
-			       tagClass: OFASN1TagClassUniversal
-			      tagNumber: OFASN1TagNumberSet];
+	return [self initWithComponentSet: componentSet
+				 tagClass: OFASN1TagClassUniversal
+				tagNumber: OFASN1TagNumberSet];
 }
 
-- (instancetype)initWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components
-			  tagClass: (OFASN1TagClass)tagClass
-			 tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					  OFASN1Value *)) *)componentSet
+			    tagClass: (OFASN1TagClass)tagClass
+			   tagNumber: (OFASN1TagNumber)tagNumber
 {
 	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
-		_components = [components copy];
+		_componentSet = [componentSet copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -81,14 +81,14 @@
 
 - (void)dealloc
 {
-	objc_release(_components);
+	objc_release(_componentSet);
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	OFString *components = [_components.description
+	OFString *componentSet = [_componentSet.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -96,6 +96,6 @@
 	    @"<%@:\n"
 	    @"\t%@\n"
 	    @">",
-	    self.class, components];
+	    self.class, componentSet];
 }
 @end

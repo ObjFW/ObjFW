@@ -29,36 +29,36 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Set: OFASN1Value
 {
-	OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
+	OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_componentSet;
 }
 
 /**
  * @brief The components of the Set.
  */
 @property (readonly, nonatomic) OFCountedSet OF_GENERIC(OF_KINDOF(
-    OFASN1Value *)) *components;
+    OFASN1Value *)) *componentSet;
 
 /**
  * @brief Creates a Set with the specified components.
  *
- * @param components The components of the Set
+ * @param componentSet The components of the Set
  * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)setWithComponents:
-    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
++ (instancetype)setWithComponentSet:
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet;
 
 /**
  * @brief Creates a Set with the specified components.
  *
- * @param components The components of the Set
+ * @param componentSet The components of the Set
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)setWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
-				       OFASN1Value *)) *)components
-			 tagClass: (OFASN1TagClass)tagClass
-			tagNumber: (OFASN1TagNumber)tagNumber;
++ (instancetype)setWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					 OFASN1Value *)) *)componentSet
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
@@ -66,24 +66,24 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Initializes an already allocated Set with the specified components.
  *
- * @param components The components of the Set
+ * @param componentSet The components of the Set
  * @return An initialized OFASN1Set
  */
-- (instancetype)initWithComponents:
-    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
+- (instancetype)initWithComponentSet:
+    (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet;
 
 /**
  * @brief Initializes an already allocated Set with the specified components.
  *
- * @param components The components of the Set
+ * @param componentSet The components of the Set
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1Set
  */
-- (instancetype)initWithComponents: (OFCountedSet OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components
-			  tagClass: (OFASN1TagClass)tagClass
-			 tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					  OFASN1Value *)) *)componentSet
+			    tagClass: (OFASN1TagClass)tagClass
+			   tagNumber: (OFASN1TagNumber)tagNumber
     OF_DESIGNATED_INITIALIZER;
 @end
 

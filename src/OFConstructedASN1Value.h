@@ -68,6 +68,15 @@ OF_SUBCLASSING_RESTRICTED
 			  tagClass: (OFASN1TagClass)tagClass
 			 tagNumber: (OFASN1TagNumber)tagNumber
     OF_DESIGNATED_INITIALIZER;
+
+/**
+ * @brief Returns the constructed ASN.1 value parsed as a value of the specified
+ *	  class.
+ *
+ * @param class_ The class to parse the value as
+ * @return The constructed ASN.1 value parsed as a value of the specified class
+ */
+- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class_;
 @end
 
 OF_ASSUME_NONNULL_END

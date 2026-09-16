@@ -26,6 +26,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 
 @implementation OFUnparsedASN1Value
 @synthesize constructed = _constructed;
@@ -103,10 +104,14 @@
 	if (![class isSubclassOfClass: [OFASN1Value class]])
 		@throw [OFInvalidArgumentException exception];
 
-	return objc_autoreleaseReturnValue([[class alloc]
-	    of_initWithTagClass: _tagClass
-		      tagNumber: _tagNumber
-		    constructed: _constructed
-	     DEREncodedContents: _DEREncodedContents]);
+	@try {
+		return objc_autoreleaseReturnValue([[class alloc]
+		    of_initWithTagClass: _tagClass
+			      tagNumber: _tagNumber
+			    constructed: _constructed
+		     DEREncodedContents: _DEREncodedContents]);
+	} @catch (OFNotImplementedException *e) {
+		@throw [OFInvalidArgumentException exception];
+	}
 }
 @end

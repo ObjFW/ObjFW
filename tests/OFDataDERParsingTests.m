@@ -456,14 +456,14 @@
 	set = [[OFData dataWithItems: "\x31\x00"
 			       count: 2] valueByParsingDER];
 	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
-	OTAssertEqual(set.components.count, 0);
+	OTAssertEqual(set.componentSet.count, 0);
 
 	set = [[OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
 			       count: 11] valueByParsingDER];
 	OTAssertTrue([set isKindOfClass: [OFASN1Set class]]);
-	OTAssertEqual(set.components.count, 2);
+	OTAssertEqual(set.componentSet.count, 2);
 
-	OTAssertEqualObjects(set.components,
+	OTAssertEqualObjects(set.componentSet,
 	    ([OFCountedSet setWithObjects:
 	    [OFASN1Integer integerWithInt64: 123],
 	    [OFASN1UTF8String stringWithString: @"Test"], nil]));

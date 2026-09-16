@@ -20,12 +20,17 @@
 #include "config.h"
 
 #import "OFConstructedASN1Value.h"
+#import "OFASN1Set.h"
 #import "OFASN1Value+Private.h"
 #import "OFArray.h"
+#import "OFCountedSet.h"
+#import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFNotImplementedException.h"
 
 @implementation OFConstructedASN1Value
 @synthesize components = _components;
@@ -82,5 +87,46 @@
 	    @"\t%@\n"
 	    @">",
 	    self.class, components];
+}
+
+- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
+{
+	if (![class isSubclassOfClass: [OFASN1Value class]])
+		@throw [OFInvalidArgumentException exception];
+
+	if ([class isSubclassOfClass: [OFASN1Set class]]) {
+		void *pool = objc_autoreleasePoolPush();
+
+		OFData *previousData = nil;
+		for (OFASN1Value *value in _components) {
+			OFData *data = value.DERRepresentation;
+
+			if (previousData != nil && [data compare:
+			    previousData] == OFOrderedAscending)
+				@throw [OFInvalidFormatException exception];
+
+			previousData = data;
+		}
+
+		OFCountedSet *componentSet =
+		    [OFCountedSet setWithArray: _components];
+		OFASN1Set *set = [[OFASN1Set alloc]
+		    initWithComponentSet: componentSet
+				tagClass: _tagClass
+			       tagNumber: _tagNumber];
+
+		objc_autoreleasePoolPop(pool);
+
+		return objc_autoreleaseReturnValue(set);
+	}
+
+	@try {
+		return objc_autoreleaseReturnValue(
+		    [[class alloc] initWithComponents: _components
+					     tagClass: _tagClass
+					    tagNumber: _tagNumber]);
+	} @catch (OFNotImplementedException *e) {
+		@throw [OFInvalidArgumentException exception];
+	}
 }
 @end
