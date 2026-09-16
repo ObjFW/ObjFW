@@ -152,6 +152,13 @@
 	OF_INVALID_INIT_METHOD
 }
 
+- (void)dealloc
+{
+	objc_release(_rawValue);
+
+	[super dealloc];
+}
+
 - (int64_t)int64Value
 {
 	return _OFDERDecodeInteger(_rawValue.items, _rawValue.count);
