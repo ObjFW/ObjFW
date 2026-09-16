@@ -1,6 +1,6 @@
 dnl
 dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
-dnl               2018, 2020, 2021, 2022, 2023, 2024, 2025
+dnl               2018, 2020, 2021, 2022, 2023, 2024, 2025, 2026
 dnl   Jonathan Schleifer <js@nil.im>
 dnl
 dnl https://git.nil.im/js/buildsys
