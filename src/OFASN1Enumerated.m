@@ -165,10 +165,12 @@
 	[data addItems: tag
 		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
 
-	unsigned char length = (unsigned char)_rawValue.count;
-	[data addItem: &length];
+	size_t count = _rawValue.count;
+	unsigned char length[9];
+	[data addItems: length
+		 count: _OFDEREncodeLength(count, length)];
 
-	[data addItems: _rawValue.items count: length];
+	[data addItems: _rawValue.items count: count];
 
 	[data makeImmutable];
 
