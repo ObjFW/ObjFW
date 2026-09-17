@@ -29,8 +29,6 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFUnparsedASN1Value
-@synthesize constructed = _constructed;
-
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
@@ -48,7 +46,6 @@
 		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidFormatException exception];
 
-		_constructed = constructed;
 		_DEREncodedContents = [DEREncodedContents copy];
 	} @catch (id e) {
 		objc_release(self);
@@ -73,8 +70,7 @@
 
 	unsigned char tag[6];
 	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, _constructed,
-			    tag)];
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
 
 	unsigned char length[9];
 	[data addItems: length
@@ -92,11 +88,9 @@
 	    @"<%@:\n"
 	    @"\tTag class = %x\n"
 	    @"\tTag number = %x\n"
-	    @"\tConstructed = %u\n"
 	    @"\tDER-encoded contents = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber, _constructed,
-	    _DEREncodedContents];
+	    self.class, _tagClass, _tagNumber, _DEREncodedContents];
 }
 
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
@@ -108,7 +102,7 @@
 		return objc_autoreleaseReturnValue([[class alloc]
 		    of_initWithTagClass: _tagClass
 			      tagNumber: _tagNumber
-			    constructed: _constructed
+			    constructed: false
 		     DEREncodedContents: _DEREncodedContents]);
 	} @catch (OFNotImplementedException *e) {
 		@throw [OFInvalidArgumentException exception];

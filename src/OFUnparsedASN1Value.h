@@ -27,14 +27,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFUnparsedASN1Value: OFASN1Value
 {
-	bool _constructed;
 	OFData *_DEREncodedContents;
 }
-
-/**
- * @brief Whether the value if of a constructed type.
- */
-@property (readonly, nonatomic, getter=isConstructed) bool constructed;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
