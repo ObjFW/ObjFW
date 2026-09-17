@@ -81,26 +81,21 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	OFData *bits;
 	size_t bitsCount;
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		size_t count = DEREncodedContents.count;
-
-		if (DEREncodedContents.itemSize != 1 || count == 0)
+		size_t count = rawValue.count;
+		if (rawValue.itemSize != 1 || count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		unsigned char unusedBits =
-		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
+		    *(unsigned char *)[rawValue itemAtIndex: 0];
 
 		if (unusedBits > 7)
 			@throw [OFInvalidFormatException exception];
@@ -115,8 +110,7 @@
 		if (SIZE_MAX / 8 < count - 1)
 			@throw [OFOutOfRangeException exception];
 
-		bits = [DEREncodedContents subdataWithRange:
-		    OFMakeRange(1, count - 1)];
+		bits = [rawValue subdataWithRange: OFMakeRange(1, count - 1)];
 		bitsCount = (count - 1) * 8 - unusedBits;
 	} @catch (id e) {
 		objc_release(self);

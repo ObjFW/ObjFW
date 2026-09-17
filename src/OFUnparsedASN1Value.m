@@ -29,24 +29,25 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFUnparsedASN1Value
+@synthesize rawValue = _rawValue;
+
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
-		if (DEREncodedContents.itemSize != 1)
+		if (rawValue.itemSize != 1)
 			@throw [OFInvalidFormatException exception];
 
-		_DEREncodedContents = [DEREncodedContents copy];
+		_rawValue = [rawValue copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -57,14 +58,14 @@
 
 - (void)dealloc
 {
-	objc_release(_DEREncodedContents);
+	objc_release(_rawValue);
 
 	[super dealloc];
 }
 
 - (OFData *)DERRepresentation
 {
-	size_t count = _DEREncodedContents.count;
+	size_t count = _rawValue.count;
 
 	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
 
@@ -75,7 +76,7 @@
 	unsigned char length[9];
 	[data addItems: length
 		 count: _OFDEREncodeLength(count, length)];
-	[data addItems: _DEREncodedContents.items count: count];
+	[data addItems: _rawValue.items count: count];
 
 	[data makeImmutable];
 
@@ -88,9 +89,9 @@
 	    @"<%@:\n"
 	    @"\tTag class = %x\n"
 	    @"\tTag number = %x\n"
-	    @"\tDER-encoded contents = %@\n"
+	    @"\tRaw value = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber, _DEREncodedContents];
+	    self.class, _tagClass, _tagNumber, _rawValue];
 }
 
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
@@ -99,11 +100,10 @@
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
-		return objc_autoreleaseReturnValue([[class alloc]
-		    of_initWithTagClass: _tagClass
-			      tagNumber: _tagNumber
-			    constructed: false
-		     DEREncodedContents: _DEREncodedContents]);
+		return objc_autoreleaseReturnValue(
+		    [[class alloc] initWithRawValue: _rawValue
+					   tagClass: _tagClass
+					  tagNumber: _tagNumber]);
 	} @catch (OFNotImplementedException *e) {
 		@throw [OFInvalidArgumentException exception];
 	}

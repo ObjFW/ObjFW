@@ -63,22 +63,17 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	unsigned char value;
 
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.itemSize != 1 ||
-		    DEREncodedContents.count != 1)
+		if (rawValue.itemSize != 1 || rawValue.count != 1)
 			@throw [OFInvalidFormatException exception];
 
-		value = *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
+		value = *(unsigned char *)[rawValue itemAtIndex: 0];
 
 		if (value != 0 && value != 0xFF)
 			@throw [OFInvalidFormatException exception];

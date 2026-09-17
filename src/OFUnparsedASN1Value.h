@@ -27,8 +27,27 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFUnparsedASN1Value: OFASN1Value
 {
-	OFData *_DEREncodedContents;
+	OFData *_rawValue;
 }
+
+/**
+ * @brief The raw value.
+ */
+@property (readonly, nonatomic) OFData *rawValue;
+
+/**
+ * @brief Initializes an already allocated unparsed ASN.1 value with the
+ *	  specified raw value.
+ *
+ * @param rawValue The raw value
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1UnparsedValue
+ */
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+    OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;

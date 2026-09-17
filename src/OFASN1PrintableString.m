@@ -134,25 +134,21 @@ OF_SINGLETON_METHODS
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	OFString *printableString;
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.itemSize != 1)
+		if (rawValue.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		printableString = [OFString
-		    stringWithCString: DEREncodedContents.items
+		    stringWithCString: rawValue.items
 			     encoding: OFStringEncodingASCII
-			       length: DEREncodedContents.count];
+			       length: rawValue.count];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

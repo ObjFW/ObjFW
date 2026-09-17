@@ -247,20 +247,6 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
-{
-	if ([self isMemberOfClass: [OFASN1Value class]]) {
-		objc_release(self);
-		[self doesNotRecognizeSelector: _cmd];
-		abort();
-	}
-
-	return [self initWithTagClass: tagClass tagNumber: tagNumber];
-}
-
 - (bool)isEqual: (id)object
 {
 	if (![object isKindOfClass: [OFASN1Value class]])

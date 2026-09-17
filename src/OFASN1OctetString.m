@@ -72,23 +72,19 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.itemSize != 1)
+		if (rawValue.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	return [self initWithOctets: DEREncodedContents
+	return [self initWithOctets: rawValue
 			   tagClass: tagClass
 			  tagNumber: tagNumber];
 }

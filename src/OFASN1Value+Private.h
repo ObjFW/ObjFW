@@ -21,14 +21,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFASN1Value ()
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
-    OF_METHOD_FAMILY(init);
-@end
-
 extern size_t _OFDEREncodeTag(OFASN1TagClass tagClass,
     OFASN1TagNumber tagNumber, bool constructed,
     unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_INTERNAL;

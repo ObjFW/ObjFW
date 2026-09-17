@@ -89,22 +89,18 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
+		const unsigned char *items = rawValue.items;
+		size_t count = rawValue.count;
 
-		const unsigned char *items = DEREncodedContents.items;
-		size_t count = DEREncodedContents.count;
-
-		if (DEREncodedContents.itemSize != 1 || count == 0)
+		if (rawValue.itemSize != 1 || count == 0)
 			@throw [OFInvalidArgumentException exception];
 
 		subidentifiers = [OFMutableArray array];

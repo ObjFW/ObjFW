@@ -69,24 +69,19 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	OFString *string;
 	@try {
-		if (constructed)
+		if (rawValue.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		if (DEREncodedContents.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-
-		string = [OFString
-		    stringWithUTF8String: DEREncodedContents.items
-				  length: DEREncodedContents.count];
+		string = [OFString stringWithUTF8String: rawValue.items
+						 length: rawValue.count];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

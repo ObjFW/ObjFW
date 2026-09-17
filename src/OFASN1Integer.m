@@ -131,21 +131,6 @@
 	return self;
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
-{
-	if (constructed) {
-		objc_release(self);
-		@throw [OFInvalidArgumentException exception];
-	}
-
-	return [self initWithRawValue: DEREncodedContents
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
-}
-
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {

@@ -53,16 +53,12 @@
 	return [super initWithTagClass: tagClass tagNumber: tagNumber];
 }
 
-- (instancetype)of_initWithTagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-			constructed: (bool)constructed
-		 DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithRawValue: (OFData *)rawValue
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	@try {
-		if (constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if (DEREncodedContents.count != 0)
+		if (rawValue.count != 0)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		objc_release(self);

@@ -50,11 +50,11 @@ static size_t parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value,
     size_t depthLimit);
 
 static OF_KINDOF(OFASN1Value *)
-parseConstructed(OFData *contents, Class class, OFASN1TagClass tagClass,
+parseConstructed(OFData *rawValue, Class class, OFASN1TagClass tagClass,
     OFASN1TagNumber tagNumber, size_t depthLimit)
 {
 	OFMutableArray *components = [OFMutableArray array];
-	size_t count = contents.count;
+	size_t count = rawValue.count;
 
 	if (depthLimit == 0)
 		@throw [OFOutOfRangeException exception];
@@ -63,10 +63,10 @@ parseConstructed(OFData *contents, Class class, OFASN1TagClass tagClass,
 		OF_KINDOF(OFASN1Value *) value;
 		size_t valueLength;
 
-		valueLength = parseValue(contents, &value, depthLimit);
+		valueLength = parseValue(rawValue, &value, depthLimit);
 
 		count -= valueLength;
-		contents = [contents subdataWithRange:
+		rawValue = [rawValue subdataWithRange:
 		    OFMakeRange(valueLength, count)];
 
 		[components addObject: value];
@@ -81,10 +81,10 @@ parseConstructed(OFData *contents, Class class, OFASN1TagClass tagClass,
 }
 
 static OFASN1Set *
-parseSet(OFData *contents, size_t depthLimit)
+parseSet(OFData *rawValue, size_t depthLimit)
 {
 	OFCountedSet *componentSet = [OFCountedSet set];
-	size_t count = contents.count;
+	size_t count = rawValue.count;
 	OFData *previousValueData = nil;
 
 	if (depthLimit == 0)
@@ -95,8 +95,8 @@ parseSet(OFData *contents, size_t depthLimit)
 		size_t valueLength;
 		OFData *valueData;
 
-		valueLength = parseValue(contents, &value, depthLimit);
-		valueData = [contents subdataWithRange:
+		valueLength = parseValue(rawValue, &value, depthLimit);
+		valueData = [rawValue subdataWithRange:
 		    OFMakeRange(0, valueLength)];
 
 		if (previousValueData != nil &&
@@ -105,7 +105,7 @@ parseSet(OFData *contents, size_t depthLimit)
 			@throw [OFInvalidFormatException exception];
 
 		count -= valueLength;
-		contents = [contents subdataWithRange:
+		rawValue = [rawValue subdataWithRange:
 		    OFMakeRange(valueLength, count)];
 
 		[componentSet addObject: value];
@@ -125,7 +125,6 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	size_t count = self.count;
 	unsigned char tag;
 	size_t contentsLength, bytesConsumed = 0;
-	OFData *contents;
 
 	if (count < 2)
 		@throw [OFTruncatedDataException exception];
@@ -188,7 +187,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	if (count - bytesConsumed < contentsLength)
 		@throw [OFTruncatedDataException exception];
 
-	contents = [self subdataWithRange:
+	OFData *rawValue = [self subdataWithRange:
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
@@ -229,7 +228,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			if (!constructed)
 				@throw [OFInvalidFormatException exception];
 
-			*value = parseSet(contents, depthLimit - 1);
+			*value = parseSet(rawValue, depthLimit - 1);
 			return bytesConsumed;
 		case OFASN1TagNumberNumericString:
 			valueClass = [OFASN1NumericString class];
@@ -261,14 +260,13 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 
 	@try {
 		if (constructed)
-			*value = parseConstructed(contents, valueClass,
+			*value = parseConstructed(rawValue, valueClass,
 			    tagClass, tagNumber, depthLimit - 1);
 		else
 			*value = objc_autorelease([[valueClass alloc]
-			    of_initWithTagClass: tagClass
-				      tagNumber: tagNumber
-				    constructed: constructed
-			     DEREncodedContents: contents]);
+			    initWithRawValue: rawValue
+				    tagClass: tagClass
+				   tagNumber: tagNumber]);
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidFormatException exception];
 	}
