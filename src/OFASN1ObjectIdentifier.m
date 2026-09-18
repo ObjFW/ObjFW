@@ -111,11 +111,12 @@
 			if (bits == 0 && items[i] == 0x80)
 				@throw [OFInvalidFormatException exception];
 
+			if ((SIZE_MAX >> 7) < value ||
+			    UINT_FAST8_MAX - bits < 7)
+				@throw [OFOutOfRangeException exception];
+
 			value = (value << 7) | (items[i] & 0x7F);
 			bits += 7;
-
-			if (bits > sizeof(unsigned long long) * 8)
-				@throw [OFOutOfRangeException exception];
 
 			if (items[i] & 0x80)
 				continue;
