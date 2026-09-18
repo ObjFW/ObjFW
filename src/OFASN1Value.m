@@ -234,8 +234,13 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	if ([self isMemberOfClass: [OFASN1Value class]]) {
-		objc_release(self);
-		[self doesNotRecognizeSelector: _cmd];
+		@try {
+			[self doesNotRecognizeSelector: _cmd];
+		} @catch (id e) {
+			objc_release(self);
+			@throw e;
+		}
+
 		abort();
 	}
 
