@@ -37,7 +37,7 @@
 #import "OFArray.h"
 #import "OFConstructedASN1Value.h"
 #import "OFCountedSet.h"
-#import "OFUnparsedASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -243,7 +243,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			if (constructed)
 				valueClass = [OFConstructedASN1Value class];
 			else
-				valueClass = [OFUnparsedASN1Value class];
+				valueClass = [OFPrimitiveASN1Value class];
 
 			expectConstructed = constructed;
 			break;
@@ -255,7 +255,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 		if (constructed)
 			valueClass = [OFConstructedASN1Value class];
 		else
-			valueClass = [OFUnparsedASN1Value class];
+			valueClass = [OFPrimitiveASN1Value class];
 	}
 
 	@try {

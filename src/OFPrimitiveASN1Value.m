@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFUnparsedASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
@@ -28,7 +28,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 
-@implementation OFUnparsedASN1Value
+@implementation OFPrimitiveASN1Value
 @synthesize rawValue = _rawValue;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass

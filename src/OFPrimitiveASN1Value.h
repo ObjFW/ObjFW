@@ -22,12 +22,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief A class representing an unparsed ASN.1 value.
+ * @brief A class representing an primitive ASN.1 value.
  */
-OF_SUBCLASSING_RESTRICTED
-@interface OFUnparsedASN1Value: OFASN1Value
+@interface OFPrimitiveASN1Value: OFASN1Value
 {
 	OFData *_rawValue;
+	OF_RESERVE_IVARS(OFPrimitiveASN1Value, 4)
 }
 
 /**
@@ -36,13 +36,13 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFData *rawValue;
 
 /**
- * @brief Initializes an already allocated unparsed ASN.1 value with the
+ * @brief Initializes an already allocated primitive ASN.1 value with the
  *	  specified raw value.
  *
  * @param rawValue The raw value
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1UnparsedValue
+ * @return An initialized OFASN1PrimitiveValue
  */
 - (instancetype)initWithRawValue: (OFData *)rawValue
 			tagClass: (OFASN1TagClass)tagClass
@@ -53,11 +53,11 @@ OF_SUBCLASSING_RESTRICTED
 		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
 
 /**
- * @brief Returns the unparsed ASN.1 value parsed as a value of the specified
+ * @brief Returns the primitive ASN.1 value parsed as a value of the specified
  *	  class.
  *
  * @param class_ The class to parse the value as
- * @return The unparsed ASN.1 value parsed as a value of the specified class
+ * @return The primitive ASN.1 value parsed as a value of the specified class
  */
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class_;
 @end

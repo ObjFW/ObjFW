@@ -94,6 +94,7 @@ SRCS = OFASN1BitString.m		\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
        OFPair.m				\
+       OFPrimitiveASN1Value.m		\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSHA1Hash.m			\
@@ -125,7 +126,6 @@ SRCS = OFASN1BitString.m		\
        OFTimer.m			\
        OFTriple.m			\
        OFUUID.m				\
-       OFUnparsedASN1Value.m		\
        OFValue.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
