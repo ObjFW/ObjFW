@@ -22,11 +22,9 @@
 #import "OFASN1Integer.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
-#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFOutOfRangeException.h"
 
 @implementation OFASN1Integer
 + (instancetype)integerWithInt64: (int64_t)value

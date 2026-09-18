@@ -24,9 +24,6 @@
 #import "OFData.h"
 #import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
-
 @implementation OFASN1TextString
 @dynamic stringValue;
 

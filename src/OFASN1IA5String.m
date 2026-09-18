@@ -25,9 +25,7 @@
 #import "OFString.h"
 #import "OFUTF8String+Private.h"
 
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
-#import "OFOutOfRangeException.h"
 
 @implementation OFASN1IA5String
 - (instancetype)initWithString: (OFString *)string

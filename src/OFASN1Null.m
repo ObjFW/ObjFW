@@ -22,9 +22,7 @@
 #import "OFASN1Null.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
-#import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Null
@@ -86,10 +84,5 @@
 	}
 
 	return self;
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<%@>", self.class];
 }
 @end

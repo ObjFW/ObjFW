@@ -25,9 +25,7 @@
 #import "OFOnce.h"
 #import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
-#import "OFOutOfRangeException.h"
 
 OF_DIRECT_MEMBERS
 @interface OFASN1NumericStringCharacterSet: OFCharacterSet

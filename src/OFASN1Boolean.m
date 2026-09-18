@@ -20,11 +20,8 @@
 #include "config.h"
 
 #import "OFASN1Boolean.h"
-#import "OFASN1Value+Private.h"
 #import "OFData.h"
-#import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Boolean
