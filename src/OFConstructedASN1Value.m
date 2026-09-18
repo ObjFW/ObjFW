@@ -76,6 +76,52 @@
 	[super dealloc];
 }
 
+- (OFData *)DERRepresentation
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	OFMutableArray *componentRepresentations =
+	    [OFMutableArray arrayWithCapacity: _components.count];
+	size_t totalLength = 0;
+	for (OF_KINDOF(OFASN1Value *) component in _components) {
+		OFData *componentRepresentation = [component DERRepresentation];
+		[componentRepresentations addObject: componentRepresentation];
+
+		size_t componentLength = componentRepresentation.count;
+		if (SIZE_MAX - totalLength < componentLength)
+			@throw [OFOutOfRangeException exception];
+
+		totalLength += componentLength;
+	}
+
+	if (SIZE_MAX - totalLength < 2)
+		@throw [OFOutOfRangeException exception];
+
+	OFMutableData *DERRepresentation =
+	    [OFMutableData dataWithCapacity: totalLength + 2];
+
+	unsigned char tag[6];
+	[DERRepresentation addItems: tag
+			      count: _OFDEREncodeTag(_tagClass, _tagNumber,
+					 true, tag)];
+
+	unsigned char length[9];
+	[DERRepresentation addItems: length
+			      count: _OFDEREncodeLength(totalLength, length)];
+
+	for (OFData *componentRepresentation in componentRepresentations)
+		[DERRepresentation addItems: componentRepresentation.items
+				      count: componentRepresentation.count];
+
+	[DERRepresentation makeImmutable];
+
+	objc_retain(DERRepresentation);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(DERRepresentation);
+}
+
 - (OFString *)description
 {
 	OFString *components = [_components.description
