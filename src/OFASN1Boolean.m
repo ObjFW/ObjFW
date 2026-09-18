@@ -28,8 +28,6 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Boolean
-@synthesize boolValue = _boolValue;
-
 + (instancetype)booleanWithBool: (bool)bool_
 {
 	return objc_autoreleaseReturnValue([[self alloc] initWithBool: bool_]);
@@ -56,9 +54,22 @@
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
 
-	_boolValue = bool_;
+	OFData *rawValue;
+	@try {
+		rawValue = [OFData dataWithItems: (bool_ ? "\xFF" : "")
+					   count: 1];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -67,14 +78,16 @@
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	unsigned char value;
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.itemSize != 1 || rawValue.count != 1)
+		if (rawValue.count != 1)
 			@throw [OFInvalidFormatException exception];
 
-		value = *(unsigned char *)[rawValue itemAtIndex: 0];
-
+		unsigned char value =
+		    *(unsigned char *)[rawValue itemAtIndex: 0];
 		if (value != 0 && value != 0xFF)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
@@ -82,40 +95,11 @@
 		@throw e;
 	}
 
-	return [self initWithBool: !!value
-			 tagClass: tagClass
-			tagNumber: tagNumber];
+	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (bool)boolValue
 {
-	OF_INVALID_INIT_METHOD
-}
-
-- (OFData *)DERRepresentation
-{
-	OFMutableData *data = [OFMutableData dataWithCapacity: 3];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	static const unsigned char one = 1;
-	[data addItem: &one];
-
-	unsigned char value = (_boolValue ? 0xFF : 0x00);
-	[data addItem: &value];
-
-	[data makeImmutable];
-
-	return data;
-}
-
-- (OFString *)description
-{
-	return (_boolValue
-	    ? @"<OFASN1Boolean: true>"
-	    : @"<OFASN1Boolean: false>");
+	return *(unsigned char *)[_rawValue itemAtIndex: 0];
 }
 @end

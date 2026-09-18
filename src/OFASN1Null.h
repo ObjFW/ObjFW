@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class representing an ASN.1 Null.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Null: OFASN1Value
+@interface OFASN1Null: OFPrimitiveASN1Value
 /**
  * @brief Creates an ASN.1 Null.
  *
@@ -58,8 +58,7 @@ OF_SUBCLASSING_RESTRICTED
  * @return An initialized OFASN1Null
  */
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+		       tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

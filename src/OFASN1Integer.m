@@ -29,8 +29,6 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1Integer
-@synthesize rawValue = _rawValue;
-
 + (instancetype)integerWithInt64: (int64_t)value
 {
 	return objc_autoreleaseReturnValue([[self alloc] initWithInt64: value]);
@@ -44,22 +42,6 @@
 	    initWithInt64: value
 		 tagClass: tagClass
 		tagNumber: tagNumber]);
-}
-
-+ (instancetype)integerWithRawValue: (OFData *)rawValue
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithRawValue: rawValue]);
-}
-
-+ (instancetype)integerWithRawValue: (OFData *)rawValue
-			   tagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
-{
-	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithRawValue: rawValue
-		    tagClass: tagClass
-		   tagNumber: tagNumber]);
 }
 
 - (instancetype)initWithInt64: (int64_t)value
@@ -105,7 +87,9 @@
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 
 	@try {
 		if (rawValue.itemSize != 1)
@@ -121,8 +105,6 @@
 			    (items[0] == 0xFF && (items[1] & 0x80)))
 				@throw [OFInvalidFormatException exception];
 		}
-
-		_rawValue = [rawValue copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -131,46 +113,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_rawValue);
-
-	[super dealloc];
-}
-
 - (int64_t)int64Value
 {
 	return _OFDERDecodeInteger(_rawValue.items, _rawValue.count);
-}
-
-- (OFData *)DERRepresentation
-{
-	OFMutableData *data = [OFMutableData dataWithCapacity: 10];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	size_t count = _rawValue.count;
-	unsigned char length[9];
-	[data addItems: length
-		 count: _OFDEREncodeLength(count, length)];
-
-	[data addItems: _rawValue.items count: count];
-
-	[data makeImmutable];
-
-	return data;
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<OFASN1Integer: %@>", _rawValue];
 }
 @end

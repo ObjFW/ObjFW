@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,22 +25,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 Integer.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Integer: OFASN1Value
-{
-	OFData *_rawValue;
-}
-
+@interface OFASN1Integer: OFPrimitiveASN1Value
 /**
  * @brief The int64 value of the Integer.
  *
  * @throws OFOutOfRangeException The Integer does not fit into an int64
  */
 @property (readonly, nonatomic) int64_t int64Value;
-
-/**
- * @brief The raw value of the Integer.
- */
-@property (readonly, nonatomic) OFData *rawValue;
 
 /**
  * @brief Creates an ASN.1 Integer with the specified int64.
@@ -63,29 +54,6 @@ OF_SUBCLASSING_RESTRICTED
 		       tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Creates an ASN.1 Integer with the specified raw value.
- *
- * @param rawValue The raw value of the Integer
- * @return A new, autoreleased OFASN1Integer
- */
-+ (instancetype)integerWithRawValue: (OFData *)rawValue;
-
-/**
- * @brief Creates an ASN.1 Integer with the specified raw value.
- *
- * @param rawValue The raw value of the Integer
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1Integer
- */
-+ (instancetype)integerWithRawValue: (OFData *)rawValue
-			   tagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber;
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
-/**
  * @brief Initializes an already allocated ASN.1 Integer with the specified
  *	  int64.
  *
@@ -106,29 +74,6 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithInt64: (int64_t)value
 		     tagClass: (OFASN1TagClass)tagClass
 		    tagNumber: (OFASN1TagNumber)tagNumber;
-
-/**
- * @brief Initializes an already allocated ASN.1 Integer with the specified
- *	  raw value.
- *
- * @param rawValue The raw value of the Integer
- * @return An initialized OFASN1Integer
- */
-- (instancetype)initWithRawValue: (OFData *)rawValue;
-
-/**
- * @brief Initializes an already allocated ASN.1 Integer with the specified
- *	  raw value.
- *
- * @param rawValue The raw value of the Integer
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1Integer
- */
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

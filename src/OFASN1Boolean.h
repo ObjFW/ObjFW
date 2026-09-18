@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,11 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 Boolean.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Boolean: OFASN1Value
-{
-	bool _boolValue;
-}
-
+@interface OFASN1Boolean: OFPrimitiveASN1Value
 /**
  * @brief The value of the Boolean.
  */
@@ -55,9 +51,6 @@ OF_SUBCLASSING_RESTRICTED
 		       tagClass: (OFASN1TagClass)tagClass
 		      tagNumber: (OFASN1TagNumber)tagNumber;
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
 /**
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
  *	  Boolean value.
@@ -78,8 +71,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (instancetype)initWithBool: (bool)bool_
 		    tagClass: (OFASN1TagClass)tagClass
-		   tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+		   tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

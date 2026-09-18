@@ -50,13 +50,33 @@
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	return [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
+
+	OFData *rawValue;
+	@try {
+		rawValue = [OFData data];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
 }
 
 - (instancetype)initWithRawValue: (OFData *)rawValue
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
+
 	@try {
 		if (rawValue.count != 0)
 			@throw [OFInvalidFormatException exception];
@@ -65,23 +85,7 @@
 		@throw e;
 	}
 
-	return [self initWithTagClass: tagClass tagNumber: tagNumber];
-}
-
-- (OFData *)DERRepresentation
-{
-	OFMutableData *data = [OFMutableData dataWithCapacity: 2];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	static const unsigned char zero = 0;
-	[data addItem: &zero];
-
-	[data makeImmutable];
-
-	return data;
+	return self;
 }
 
 - (OFString *)description
