@@ -265,14 +265,14 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 	return equal;
 }
 
-- (OFComparisonResult)compare: (id)object
+- (OFComparisonResult)compare: (OFASN1Value *)value
 {
-	if (![object isKindOfClass: [OFASN1Value class]])
+	if (![value isKindOfClass: [OFASN1Value class]])
 		@throw [OFInvalidArgumentException exception];
 
 	void *pool = objc_autoreleasePoolPush();
 	OFComparisonResult result =
-	    [self.DERRepresentation compare: [object DERRepresentation]];
+	    [self.DERRepresentation compare: value.DERRepresentation];
 	objc_autoreleasePoolPop(pool);
 
 	return result;

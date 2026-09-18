@@ -109,6 +109,14 @@ typedef enum {
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
     OF_DESIGNATED_INITIALIZER;
+
+/**
+ * @brief Compares the ASN.1 value to another ASN.1 value.
+ *
+ * @param value The ASN.1 value to compare to
+ * @return The result of the comparison
+ */
+- (OFComparisonResult)compare: (OFASN1Value *)value;
 @end
 
 OF_ASSUME_NONNULL_END
