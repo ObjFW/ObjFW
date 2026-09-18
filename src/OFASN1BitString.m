@@ -114,7 +114,13 @@
 		 * Can't have any bits of the last byte unused if we have no
 		 * byte.
 		 */
-		if (count == 1 && unusedBits != 0)
+		if (count == 1 && unusedBits > 0)
+			@throw [OFInvalidFormatException exception];
+
+		/* Check that all unused bits are 0 */
+		if (count > 1 && unusedBits > 0 &&
+		    *(unsigned char *)[rawValue itemAtIndex: count - 1] &
+		    ((1 << unusedBits) - 1))
 			@throw [OFInvalidFormatException exception];
 
 		if (SIZE_MAX / 8 < count - 1)
