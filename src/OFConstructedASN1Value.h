@@ -26,10 +26,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A constructed ASN.1 value.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFConstructedASN1Value: OFASN1Value
 {
 	OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
+	OF_RESERVE_IVARS(OFConstructedASN1Value, 4)
 }
 
 /**

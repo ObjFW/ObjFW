@@ -20,32 +20,14 @@
 #include "config.h"
 
 #import "OFASN1Sequence.h"
-#import "OFASN1Value+Private.h"
 #import "OFArray.h"
-#import "OFString.h"
-
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
 
 @implementation OFASN1Sequence
-@synthesize components = _components;
-
-+ (instancetype)sequenceWithComponents:
++ (instancetype)valueWithComponents:
     (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithComponents: components]);
-}
-
-+ (instancetype)sequenceWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					    OFASN1Value *)) *)components
-			      tagClass: (OFASN1TagClass)tagClass
-			     tagNumber: (OFASN1TagNumber)tagNumber
-{
-	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithComponents: components
-		      tagClass: tagClass
-		     tagNumber: tagNumber]);
 }
 
 - (instancetype)initWithComponents:
@@ -54,48 +36,5 @@
 	return [self initWithComponents: components
 			       tagClass: OFASN1TagClassUniversal
 			      tagNumber: OFASN1TagNumberSequence];
-}
-
-- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components
-			  tagClass: (OFASN1TagClass)tagClass
-			 tagNumber: (OFASN1TagNumber)tagNumber
-{
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
-
-	@try {
-		_components = [components copy];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_components);
-
-	[super dealloc];
-}
-
-- (OFString *)description
-{
-	OFString *components = [_components.description
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
-
-	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\t%@\n"
-	    @">",
-	    self.class, components];
 }
 @end

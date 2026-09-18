@@ -17,76 +17,33 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFConstructedASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
-
-@class OFArray OF_GENERIC(ObjectType);
 
 /**
  * @brief An ASN.1 Sequence.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Sequence: OFASN1Value
-{
-	OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
-}
-
+@interface OFASN1Sequence: OFConstructedASN1Value
 /**
- * @brief The components of the Sequence.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *))
-    *components;
-
-/**
- * @brief Creates a Sequence with the specified components.
+ * @brief Creates an ASN.1 Sequence with the specified components.
  *
  * @param components The components of the Sequence
  * @return A new, autoreleased OFASN1Sequence
  */
-+ (instancetype)sequenceWithComponents:
-    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
++ (instancetype)valueWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					 OFASN1Value *)) *)components;
 
 /**
- * @brief Creates a Sequence with the specified components.
- *
- * @param components The components of the Sequence
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1Sequence
- */
-+ (instancetype)sequenceWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					    OFASN1Value *)) *)components
-			      tagClass: (OFASN1TagClass)tagClass
-			     tagNumber: (OFASN1TagNumber)tagNumber;
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated Sequence with the specified
+ * @brief Initializes an already allocated ASN.1 Sequence with the specified
  *	  components.
  *
  * @param components The components of the Sequence
- * @return An initialized OFASN1Sequence
- */
-- (instancetype)initWithComponents:
-    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components;
-
-/**
- * @brief Initializes an already allocated Sequence with the specified
- *	  components.
- *
- * @param components The components of the Sequence
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1Sequence
  */
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components
-			  tagClass: (OFASN1TagClass)tagClass
-			 tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+					OFASN1Value *)) *)components;
 @end
 
 OF_ASSUME_NONNULL_END
