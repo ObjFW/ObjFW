@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,12 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 BitString.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1BitString: OFASN1Value
-{
-	OFData *_bits;
-	size_t _bitsCount;
-}
-
+@interface OFASN1BitString: OFPrimitiveASN1Value
 /**
  * @brief The BitString value.
  */
@@ -68,9 +63,6 @@ OF_SUBCLASSING_RESTRICTED
 			 tagClass: (OFASN1TagClass)tagClass
 			tagNumber: (OFASN1TagNumber)tagNumber;
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
 /**
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
@@ -94,8 +86,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithBits: (OFData *)bits
 		   bitsCount: (size_t)bitsCount
 		    tagClass: (OFASN1TagClass)tagClass
-		   tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+		   tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

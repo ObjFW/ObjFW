@@ -20,16 +20,9 @@
 #include "config.h"
 
 #import "OFASN1OctetString.h"
-#import "OFASN1Value+Private.h"
 #import "OFData.h"
-#import "OFString.h"
-
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
 
 @implementation OFASN1OctetString
-@synthesize octets = _octets;
-
 + (instancetype)octetStringWithOctets: (OFData *)octets
 {
 	return objc_autoreleaseReturnValue(
@@ -57,76 +50,13 @@
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
-
-	@try {
-		if (octets.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-
-		_octets = [octets copy];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
+	return [self initWithRawValue: octets
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFData *)octets
 {
-	@try {
-		if (rawValue.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return [self initWithOctets: rawValue
-			   tagClass: tagClass
-			  tagNumber: tagNumber];
-}
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_octets);
-
-	[super dealloc];
-}
-
-- (OFData *)DERRepresentation
-{
-	size_t octetsCount = _octets.count;
-	if (SIZE_MAX - octetsCount < 2)
-		@throw [OFOutOfRangeException exception];
-
-	OFMutableData *data = [OFMutableData dataWithCapacity: octetsCount + 2];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	unsigned char length[9];
-	[data addItems: length
-		 count: _OFDEREncodeLength(octetsCount, length)];
-
-	[data addItems: _octets.items count: octetsCount];
-
-	[data makeImmutable];
-
-	return data;
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>", _octets];
+	return _rawValue;
 }
 @end

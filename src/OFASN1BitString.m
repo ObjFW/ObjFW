@@ -29,8 +29,6 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1BitString
-@synthesize bits = _bits, bitsCount = _bitsCount;
-
 + (instancetype)bitStringWithBits: (OFData *)bits bitsCount: (size_t)bitsCount
 {
 	return objc_autoreleaseReturnValue(
@@ -62,21 +60,33 @@
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
 
+	OFMutableData *rawValue;
 	@try {
 		if (bits.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		if (bits.count != OFRoundUpToPowerOf2(8, bitsCount) / 8)
+		size_t roundedUpLength = OFRoundUpToPowerOf2(8, bitsCount);
+		unsigned char unusedBits = roundedUpLength - bitsCount;
+
+		size_t bytesCount = bits.count;
+		if (bytesCount != roundedUpLength / 8)
 			@throw [OFInvalidFormatException exception];
 
-		_bits = [bits copy];
-		_bitsCount = bitsCount;
+		rawValue = [OFMutableData dataWithCapacity: bytesCount + 1];
+		[rawValue addItem: &unusedBits];
+		[rawValue addItems: bits.items count: bytesCount];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -85,13 +95,13 @@
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	void *pool = objc_autoreleasePoolPush();
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 
-	OFData *bits;
-	size_t bitsCount;
 	@try {
 		size_t count = rawValue.count;
-		if (rawValue.itemSize != 1 || count == 0)
+		if (count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		unsigned char unusedBits =
@@ -109,70 +119,35 @@
 
 		if (SIZE_MAX / 8 < count - 1)
 			@throw [OFOutOfRangeException exception];
-
-		bits = [rawValue subdataWithRange: OFMakeRange(1, count - 1)];
-		bitsCount = (count - 1) * 8 - unusedBits;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithBits: bits
-			bitsCount: bitsCount
-			 tagClass: tagClass
-			tagNumber: tagNumber];
-
-	objc_autoreleasePoolPop(pool);
-
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFData *)bits
 {
-	OF_INVALID_INIT_METHOD
+	return [_rawValue subdataWithRange:
+	    OFMakeRange(1, _rawValue.count - 1)];
 }
 
-- (void)dealloc
+- (size_t)bitsCount
 {
-	objc_release(_bits);
-
-	[super dealloc];
-}
-
-- (OFData *)DERRepresentation
-{
-	size_t bytesCount = _bits.count;
-	if (SIZE_MAX - bytesCount < 3)
-		@throw [OFOutOfRangeException exception];
-
-	OFMutableData *data = [OFMutableData dataWithCapacity: bytesCount + 3];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	unsigned char length[9];
-	[data addItems: length
-		 count: _OFDEREncodeLength(bytesCount + 1, length)];
-
-	size_t roundedUpLength = OFRoundUpToPowerOf2(8, _bitsCount);
-	unsigned char unusedBits = roundedUpLength - _bitsCount;
-
-	if (bytesCount != roundedUpLength / 8)
-		@throw [OFInvalidFormatException exception];
-
-	[data addItem: &unusedBits];
-	[data addItems: _bits.items count: bytesCount];
-
-	[data makeImmutable];
-
-	return data;
+	unsigned char unusedBits = *(unsigned char *)[_rawValue itemAtIndex: 0];
+	return (_rawValue.count - 1) * 8 - unusedBits;
 }
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFASN1BitString: %@ (%zu bits)>",
-					   _bits, _bitsCount];
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tTag class = %x\n"
+	    @"\tTag number = %x\n"
+	    @"\tBits count = %zu\n"
+	    @"\tBits = %@\n"
+	    @">",
+	    self.class, _tagClass, _tagNumber, self.bitsCount, self.bits];
 }
 @end
