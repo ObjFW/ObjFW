@@ -68,6 +68,7 @@ void *__objc_class_name_OFASN1OctetString;
 void *__objc_class_name_OFASN1PrintableString;
 void *__objc_class_name_OFASN1Sequence;
 void *__objc_class_name_OFASN1Set;
+void *__objc_class_name_OFASN1TextString;
 void *__objc_class_name_OFASN1UTF8String;
 void *__objc_class_name_OFASN1Value;
 void *__objc_class_name_OFActivateSandboxFailedException;
