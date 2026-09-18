@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFConstructedASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -27,11 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 Set.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1Set: OFASN1Value
-{
-	OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_componentSet;
-}
-
+@interface OFASN1Set: OFConstructedASN1Value
 /**
  * @brief The components of the Set.
  */
@@ -44,7 +40,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param componentSet The components of the Set
  * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)setWithComponentSet:
++ (instancetype)valueWithComponentSet:
     (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet;
 
 /**
@@ -55,13 +51,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1Set
  */
-+ (instancetype)setWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
-					 OFASN1Value *)) *)componentSet
-			  tagClass: (OFASN1TagClass)tagClass
-			 tagNumber: (OFASN1TagNumber)tagNumber;
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
++ (instancetype)valueWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					   OFASN1Value *)) *)componentSet
+			     tagClass: (OFASN1TagClass)tagClass
+			    tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
  * @brief Initializes an already allocated Set with the specified components.
@@ -83,8 +76,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
 					  OFASN1Value *)) *)componentSet
 			    tagClass: (OFASN1TagClass)tagClass
-			   tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+			   tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

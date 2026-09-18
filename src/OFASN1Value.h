@@ -74,7 +74,7 @@ typedef enum {
 /**
  * @brief A class representing an abstract ASN.1 value.
  */
-@interface OFASN1Value: OFObject
+@interface OFASN1Value: OFObject <OFComparing>
 {
 	OFASN1TagClass _tagClass;
 	OFASN1TagNumber _tagNumber;

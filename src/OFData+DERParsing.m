@@ -80,44 +80,6 @@ parseConstructed(OFData *rawValue, Class class, OFASN1TagClass tagClass,
 				    tagNumber: tagNumber]);
 }
 
-static OFASN1Set *
-parseSet(OFData *rawValue, size_t depthLimit)
-{
-	OFCountedSet *componentSet = [OFCountedSet set];
-	size_t count = rawValue.count;
-	OFData *previousValueData = nil;
-
-	if (depthLimit == 0)
-		@throw [OFOutOfRangeException exception];
-
-	while (count > 0) {
-		OF_KINDOF(OFASN1Value *) value;
-		size_t valueLength;
-		OFData *valueData;
-
-		valueLength = parseValue(rawValue, &value, depthLimit);
-		valueData = [rawValue subdataWithRange:
-		    OFMakeRange(0, valueLength)];
-
-		if (previousValueData != nil &&
-		    [valueData compare: previousValueData] ==
-		    OFOrderedAscending)
-			@throw [OFInvalidFormatException exception];
-
-		count -= valueLength;
-		rawValue = [rawValue subdataWithRange:
-		    OFMakeRange(valueLength, count)];
-
-		[componentSet addObject: value];
-
-		previousValueData = valueData;
-	}
-
-	[componentSet makeImmutable];
-
-	return [OFASN1Set setWithComponentSet: componentSet];
-}
-
 static size_t
 parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 {
@@ -225,11 +187,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			expectConstructed = true;
 			break;
 		case OFASN1TagNumberSet:
-			if (!constructed)
-				@throw [OFInvalidFormatException exception];
-
-			*value = parseSet(rawValue, depthLimit - 1);
-			return bytesConsumed;
+			valueClass = [OFASN1Set class];
+			expectConstructed = true;
+			break;
 		case OFASN1TagNumberNumericString:
 			valueClass = [OFASN1NumericString class];
 			break;

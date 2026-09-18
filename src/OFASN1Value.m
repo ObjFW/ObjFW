@@ -24,7 +24,7 @@
 #import "OFData.h"
 #import "OFString.h"
 
-#import "OFInvalidFormatException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 size_t
@@ -257,12 +257,34 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 	if (![object isKindOfClass: [OFASN1Value class]])
 		return false;
 
-	return [[object DERRepresentation] isEqual: self.DERRepresentation];
+	void *pool = objc_autoreleasePoolPush();
+	bool equal =
+	    [self.DERRepresentation isEqual: [object DERRepresentation]];
+	objc_autoreleasePoolPop(pool);
+
+	return equal;
+}
+
+- (OFComparisonResult)compare: (id)object
+{
+	if (![object isKindOfClass: [OFASN1Value class]])
+		@throw [OFInvalidArgumentException exception];
+
+	void *pool = objc_autoreleasePoolPush();
+	OFComparisonResult result =
+	    [self.DERRepresentation compare: [object DERRepresentation]];
+	objc_autoreleasePoolPop(pool);
+
+	return result;
 }
 
 - (unsigned long)hash
 {
-	return self.DERRepresentation.hash;
+	void *pool = objc_autoreleasePoolPush();
+	unsigned long hash = self.DERRepresentation.hash;
+	objc_autoreleasePoolPop(pool);
+
+	return hash;
 }
 
 - (OFString *)description

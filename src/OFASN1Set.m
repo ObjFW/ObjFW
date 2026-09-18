@@ -20,27 +20,23 @@
 #include "config.h"
 
 #import "OFASN1Set.h"
-#import "OFASN1Value+Private.h"
+#import "OFArray.h"
 #import "OFCountedSet.h"
-#import "OFString.h"
 
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
+#import "OFInvalidFormatException.h"
 
 @implementation OFASN1Set
-@synthesize componentSet = _componentSet;
-
-+ (instancetype)setWithComponentSet:
++ (instancetype)valueWithComponentSet:
     (OFCountedSet OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)componentSet
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithComponentSet: componentSet]);
 }
 
-+ (instancetype)setWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
-					 OFASN1Value *)) *)componentSet
-			   tagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)valueWithComponentSet: (OFCountedSet OF_GENERIC(OF_KINDOF(
+					   OFASN1Value *)) *)componentSet
+			     tagClass: (OFASN1TagClass)tagClass
+			    tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
 	    initWithComponentSet: componentSet
@@ -61,10 +57,52 @@
 			    tagClass: (OFASN1TagClass)tagClass
 			   tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
+
+	OFMutableArray *components;
+	@try {
+		components = [OFMutableArray
+		    arrayWithCapacity: componentSet.count];
+		for (OF_KINDOF(OFASN1Value *) component in componentSet) {
+			size_t count = [componentSet countForObject: component];
+			for (size_t i = 0; i < count; i++)
+				[components addObject: component];
+		}
+
+		[components sort];
+		[components makeImmutable];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithComponents: components
+			       tagClass: tagClass
+			      tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
+- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					OFASN1Value *)) *)components
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithComponents: components
+				tagClass: tagClass
+			       tagNumber: tagNumber];
 
 	@try {
-		_componentSet = [componentSet copy];
+		OF_KINDOF(OFASN1Value *) previousComponent = nil;
+		for (OF_KINDOF(OFASN1Value *) component in _components) {
+			if (previousComponent != nil && [previousComponent
+			    compare: component] == OFOrderedDescending)
+				@throw [OFInvalidFormatException exception];
+
+			previousComponent = component;
+		}
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -73,29 +111,8 @@
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFCountedSet *)componentSet
 {
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_componentSet);
-
-	[super dealloc];
-}
-
-- (OFString *)description
-{
-	OFString *componentSet = [_componentSet.description
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
-
-	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\t%@\n"
-	    @">",
-	    self.class, componentSet];
+	return [OFCountedSet setWithArray: _components];
 }
 @end
