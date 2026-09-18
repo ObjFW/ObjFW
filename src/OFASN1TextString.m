@@ -19,75 +19,70 @@
 
 #include "config.h"
 
-#import "OFASN1IA5String.h"
+#import "OFASN1TextString.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
-#import "OFUTF8String+Private.h"
 
 #import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
 #import "OFOutOfRangeException.h"
 
-@implementation OFASN1IA5String
+@implementation OFASN1TextString
+@dynamic stringValue;
+
++ (instancetype)stringWithString: (OFString *)string
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
+}
+
++ (instancetype)stringWithString: (OFString *)string
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string
+				tagClass: tagClass
+			       tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithString: (OFString *)string
 {
-	return [self initWithString: string
-			   tagClass: OFASN1TagClassUniversal
-			  tagNumber: OFASN1TagNumberIA5String];
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithString: (OFString *)string
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber
 {
-	void *pool = objc_autoreleasePoolPush();
-
-	OFData *rawValue;
-	@try {
-		const char *cString =
-		    [string insecureCStringWithEncoding: OFStringEncodingASCII];
-		size_t cStringLength =
-		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
-		rawValue = [OFData dataWithItems: cString count: cStringLength];
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithRawValue: (OFData *)rawValue
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
-
-	@try {
-		if (_OFUTF8StringCheck(rawValue.items, rawValue.count, NULL,
-		    NULL) != 0)
-			@throw [OFInvalidEncodingException exception];
-	} @catch (id e) {
+	if ([self isMemberOfClass: [OFASN1TextString class]]) {
 		objc_release(self);
-		@throw e;
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
 	}
 
-	return self;
+	return [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 }
 
-- (OFString *)stringValue
+- (OFString *)description
 {
-	return [OFString stringWithCString: _rawValue.items
-				  encoding: OFStringEncodingASCII
-				    length: _rawValue.count];
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tTag class = %x\n"
+	    @"\tTag number = %x\n"
+	    @"\tString value = %@\n"
+	    @">",
+	    self.class, _tagClass, _tagNumber,
+	    [self.stringValue stringByReplacingOccurrencesOfString: @"\n"
+							withString: @"\n\t"]];
 }
 @end

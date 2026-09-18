@@ -267,6 +267,6 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 	    @"\tTag class = %x\n"
 	    @"\tTag number = %x\n"
 	    @">",
-	    self.class, self.tagClass, self.tagNumber];
+	    self.class, _tagClass, _tagNumber];
 }
 @end

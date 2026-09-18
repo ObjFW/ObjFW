@@ -65,24 +65,6 @@ OF_SINGLETON_METHODS
 @end
 
 @implementation OFASN1NumericString
-@synthesize stringValue = _string;
-
-+ (instancetype)stringWithString: (OFString *)string
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithString: string]);
-}
-
-+ (instancetype)stringWithString: (OFString *)string
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-{
-	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithString: string
-		  tagClass: tagClass
-		 tagNumber: tagNumber]);
-}
-
 - (instancetype)initWithString: (OFString *)string
 {
 	return [self initWithString: string
@@ -94,23 +76,30 @@ OF_SINGLETON_METHODS
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
 
+	OFData *rawValue;
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-
 		if ([string rangeOfCharacterFromSet: [OFCharacterSet
 		    ASN1NumericStringCharacterSet].invertedSet].location !=
 		    OFNotFound)
 			@throw [OFInvalidEncodingException exception];
 
-		_string = [string copy];
-
-		objc_autoreleasePoolPop(pool);
+		const char *cString =
+		    [string insecureCStringWithEncoding: OFStringEncodingASCII];
+		size_t cStringLength =
+		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
+		rawValue = [OFData dataWithItems: cString count: cStringLength];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -119,72 +108,33 @@ OF_SINGLETON_METHODS
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	void *pool = objc_autoreleasePoolPush();
-
-	OFString *string;
 	@try {
-		if (rawValue.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
+		void *pool = objc_autoreleasePoolPush();
 
-		string = [OFString stringWithCString: rawValue.items
-					    encoding: OFStringEncodingASCII
-					      length: rawValue.count];
+		OFString *string = [OFString
+		    stringWithCString: rawValue.items
+			     encoding: OFStringEncodingASCII
+			       length: rawValue.count];
+		if ([string rangeOfCharacterFromSet: [OFCharacterSet
+		    ASN1NumericStringCharacterSet].invertedSet].location !=
+		    OFNotFound)
+			@throw [OFInvalidEncodingException exception];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithString: string
-			   tagClass: tagClass
-			  tagNumber: tagNumber];
-
-	objc_autoreleasePoolPop(pool);
-
-	return self;
+	return [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFString *)stringValue
 {
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_string);
-
-	[super dealloc];
-}
-
-- (OFData *)DERRepresentation
-{
-	size_t cStringLength =
-	    [_string cStringLengthWithEncoding: OFStringEncodingASCII];
-	if (SIZE_MAX - cStringLength < 2)
-		@throw [OFOutOfRangeException exception];
-
-	OFMutableData *data =
-	    [OFMutableData dataWithCapacity: cStringLength + 2];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	unsigned char length[9];
-	[data addItems: length
-		 count: _OFDEREncodeLength(cStringLength, length)];
-	[data addItems: [_string insecureCStringWithEncoding:
-			    OFStringEncodingASCII]
-		 count: cStringLength];
-
-	[data makeImmutable];
-
-	return data;
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<OFASN1NumericString: %@>",
-					   _string];
+	return [OFString stringWithCString: _rawValue.items
+				  encoding: OFStringEncodingASCII
+				    length: _rawValue.count];
 }
 @end

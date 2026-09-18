@@ -23,29 +23,13 @@
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFString.h"
+#import "OFUTF8String+Private.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1UTF8String
-@synthesize stringValue = _string;
-
-+ (instancetype)stringWithString: (OFString *)string
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithString: string]);
-}
-
-+ (instancetype)stringWithString: (OFString *)string
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithString: string
-				tagClass: tagClass
-			       tagNumber: tagNumber]);
-}
-
 - (instancetype)initWithString: (OFString *)string
 {
 	return [self initWithString: string
@@ -57,14 +41,24 @@
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
 
+	OFData *rawValue;
 	@try {
-		_string = [string copy];
+		const char *UTF8String =
+		    [string insecureCStringWithEncoding: OFStringEncodingUTF8];
+		rawValue = [OFData dataWithItems: UTF8String
+					   count: string.UTF8StringLength];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -73,69 +67,25 @@
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	void *pool = objc_autoreleasePoolPush();
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 
-	OFString *string;
 	@try {
-		if (rawValue.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-
-		string = [OFString stringWithUTF8String: rawValue.items
-						 length: rawValue.count];
+		if (_OFUTF8StringCheck(rawValue.items, rawValue.count, NULL,
+		    NULL) < 0)
+			@throw [OFInvalidEncodingException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithString: string
-			   tagClass: tagClass
-			  tagNumber: tagNumber];
-
-	objc_autoreleasePoolPop(pool);
-
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFString *)stringValue
 {
-	OF_INVALID_INIT_METHOD
-}
-
-- (void)dealloc
-{
-	objc_release(_string);
-
-	[super dealloc];
-}
-
-- (OFData *)DERRepresentation
-{
-	size_t UTF8StringLength = _string.UTF8StringLength;
-	if (SIZE_MAX - UTF8StringLength < 2)
-		@throw [OFOutOfRangeException exception];
-
-	OFMutableData *data =
-	    [OFMutableData dataWithCapacity: UTF8StringLength + 2];
-
-	unsigned char tag[6];
-	[data addItems: tag
-		 count: _OFDEREncodeTag(_tagClass, _tagNumber, false, tag)];
-
-	unsigned char length[9];
-	[data addItems: length
-		 count: _OFDEREncodeLength(UTF8StringLength, length)];
-	[data addItems: [_string insecureCStringWithEncoding:
-			    OFStringEncodingUTF8]
-		 count: UTF8StringLength];
-
-	[data makeImmutable];
-
-	return data;
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat: @"<OFASN1UTF8String: %@>", _string];
+	return [OFString stringWithUTF8String: _rawValue.items
+				       length: _rawValue.count];
 }
 @end

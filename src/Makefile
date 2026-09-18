@@ -24,6 +24,7 @@ SRCS = OFASN1BitString.m		\
        OFASN1PrintableString.m		\
        OFASN1Sequence.m			\
        OFASN1Set.m			\
+       OFASN1TextString.m		\
        OFASN1UTF8String.m		\
        OFASN1Value.m			\
        OFApplication.m			\

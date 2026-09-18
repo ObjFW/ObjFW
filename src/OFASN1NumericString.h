@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFASN1TextString.h"
 #import "OFCharacterSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -28,61 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 NumericString.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1NumericString: OFASN1Value
-{
-	OFString *_string;
-}
-
-/**
- * @brief The string value.
- */
-@property (readonly, nonatomic) OFString *stringValue;
-
-/**
- * @brief Creates an NumericString with the specified string value.
- *
- * @param string The string value of the NumericString
- * @return A new, autoreleased OFASN1NumericString
- */
-+ (instancetype)stringWithString: (OFString *)string;
-
-/**
- * @brief Creates an NumericString with the specified string value.
- *
- * @param string The string value of the NumericString
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1NumericString
- */
-+ (instancetype)stringWithString: (OFString *)string
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber;
-
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
-/**
- * @brief Initializes an already allocated NumericString with the specified
- *	  string value.
- *
- * @param string The string value of the NumericString
- * @return An initialized OFASN1NumericString
- */
-- (instancetype)initWithString: (OFString *)string;
-
-/**
- * @brief Initializes an already allocated NumericString with the specified
- *	  string value.
- *
- * @param string The string value of the NumericString
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1NumericString
- */
-- (instancetype)initWithString: (OFString *)string
-		      tagClass: (OFASN1TagClass)tagClass
-		     tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+@interface OFASN1NumericString: OFASN1TextString
 @end
 
 @interface OFCharacterSet (ASN1NumericStringCharacterSet)
