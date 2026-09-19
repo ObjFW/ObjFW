@@ -84,7 +84,7 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 		}
 	}
 
-	return [OFString stringWithFormat: @"%d", tagClass];
+	return [OFString stringWithFormat: @"%d", tagNumber];
 }
 
 size_t
