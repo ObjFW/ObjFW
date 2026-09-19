@@ -1175,6 +1175,8 @@ AC_CHECK_FUNCS(posix_memalign mmap mlock)
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
+AC_ARG_ENABLE(atomics,
+	AS_HELP_STRING([--disable-atomics], [do not support or use atomics]))
 AS_IF([test x"$enable_threads" != x"no"], [
 	AC_MSG_CHECKING(for threads)
 
@@ -1381,68 +1383,74 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	atomic_ops="none"
 
-	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
-	AC_EGREP_CPP(egrep_cpp_yes, [
-		#if defined(__GNUC__) && (defined(__i386__) || \
-			defined(__x86_64__) || defined(__amd64__)) || \
-			((defined(__ppc__) || defined(__PPC__) || \
-			defined(__powerpc__)) && !defined(__APPLE_CC__))
-		egrep_cpp_yes
-		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		atomic_ops="assembly implementation"
-	], [
-		AC_MSG_RESULT(no)
-	])
-
-	AC_MSG_CHECKING(whether __atomic_* works)
-	AC_LINK_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <stdbool.h>
-			#include <stdint.h>
+	AS_IF([test x"$enable_atomics" != x"no"], [
+		AC_MSG_CHECKING(
+			[whether we have an atomic ops assembly implementation])
+		AC_EGREP_CPP(egrep_cpp_yes, [
+			#if defined(__GNUC__) && (defined(__i386__) || \
+				defined(__x86_64__) || defined(__amd64__)) || \
+				((defined(__ppc__) || defined(__PPC__) || \
+				defined(__powerpc__)) && !defined(__APPLE_CC__))
+			egrep_cpp_yes
+			#endif
 		], [
-			int32_t i, j;
-			if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
-				j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
-			while (!__atomic_compare_exchange_n(&i, &j, 1, false,
-			    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
-			__atomic_thread_fence(__ATOMIC_SEQ_CST);
-		])
-	], [
-		AC_MSG_RESULT(yes)
-		test x"$atomic_ops" = x"none" && \
-			atomic_ops="__atomic_* builtins"
-		AC_DEFINE(OF_HAVE_ATOMIC_BUILTINS, 1,
-			[Whether __atomic_* builtins are available])
-	], [
-		AC_MSG_RESULT(no)
-	])
-
-	AC_MSG_CHECKING(whether __sync_* works)
-	AC_LINK_IFELSE([
-		AC_LANG_PROGRAM([
-			#include <stdint.h>
+			AC_MSG_RESULT(yes)
+			atomic_ops="assembly implementation"
 		], [
-			int32_t i, j;
-			if (__sync_add_and_fetch(&i, 1))
-				j = __sync_sub_and_fetch(&i, 1);
-			while (!__sync_bool_compare_and_swap(&i, 0, 1));
+			AC_MSG_RESULT(no)
 		])
-	], [
-		AC_MSG_RESULT(yes)
-		test x"$atomic_ops" = x"none" && \
-			atomic_ops="__sync_* builtins"
-		AC_DEFINE(OF_HAVE_SYNC_BUILTINS, 1,
-			[Whether __sync_* builtins are available])
-	], [
-		AC_MSG_RESULT(no)
-	])
 
-	AC_CHECK_HEADER(libkern/OSAtomic.h, [
-		test x"$atomic_ops" = x"none" && atomic_ops="libkern/OSAtomic.h"
-		AC_DEFINE(OF_HAVE_OSATOMIC, 1,
-			[Whether we have libkern/OSAtomic.h])
+		AC_MSG_CHECKING(whether __atomic_* works)
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <stdbool.h>
+				#include <stdint.h>
+			], [
+				int32_t i, j;
+				if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
+					j = __atomic_sub_fetch(&i, 1,
+					    __ATOMIC_RELAXED);
+				while (!__atomic_compare_exchange_n(&i, &j, 1,
+				    false, __ATOMIC_RELAXED, __ATOMIC_RELAXED));
+				__atomic_thread_fence(__ATOMIC_SEQ_CST);
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			test x"$atomic_ops" = x"none" && \
+				atomic_ops="__atomic_* builtins"
+			AC_DEFINE(OF_HAVE_ATOMIC_BUILTINS, 1,
+				[Whether __atomic_* builtins are available])
+		], [
+			AC_MSG_RESULT(no)
+		])
+
+		AC_MSG_CHECKING(whether __sync_* works)
+		AC_LINK_IFELSE([
+			AC_LANG_PROGRAM([
+				#include <stdint.h>
+			], [
+				int32_t i, j;
+				if (__sync_add_and_fetch(&i, 1))
+					j = __sync_sub_and_fetch(&i, 1);
+				while (!__sync_bool_compare_and_swap(&i, 0, 1));
+			])
+		], [
+			AC_MSG_RESULT(yes)
+			test x"$atomic_ops" = x"none" && \
+				atomic_ops="__sync_* builtins"
+			AC_DEFINE(OF_HAVE_SYNC_BUILTINS, 1,
+				[Whether __sync_* builtins are available])
+		], [
+			AC_MSG_RESULT(no)
+		])
+
+		AC_CHECK_HEADER(libkern/OSAtomic.h, [
+			AS_IF([test x"$atomic_ops" = x"none"], [
+				atomic_ops="libkern/OSAtomic.h"
+			])
+			AC_DEFINE(OF_HAVE_OSATOMIC, 1,
+				[Whether we have libkern/OSAtomic.h])
+		])
 	])
 ], [
 	dnl We can only have one thread - therefore everything is atomic
