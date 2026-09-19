@@ -23,21 +23,35 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFIRI;
+@class OFASN1Value;
 
 /**
  * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
  *
  * @brief An X.509 certificate, optionally with an associated private key.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFX509Certificate: OFObject
 {
-	OF_RESERVE_IVARS(OFX509Certificate, 4)
+	OF_KINDOF(OFASN1Value *) _ASN1Value;
+	OF_KINDOF(OFASN1Value *) _Nullable _privateKeyASN1Value;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) bool supportsPEMFiles;
 @property (class, readonly, nonatomic) bool supportsPKCS12Files;
 #endif
+
+/**
+ * @brief The certificate as an @ref OFASN1Value.
+ */
+@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) ASN1Value;
+
+/**
+ * @brief The private key for the certificate as an @ref OFASN1Value.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OF_KINDOF(OFASN1Value *) privateKeyASN1Value;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -94,6 +108,55 @@ OF_ASSUME_NONNULL_BEGIN
     certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
 			     passphrase: (nullable OFString *)passphrase
     OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
+
+/**
+ * @brief Creates a new @ref OFX509Certificate with the specified ASN.1 value.
+ *
+ * @param ASN1Value The ASN.1 value
+ * @return An new @ref OFX509Certificate
+ * @throw OFInvalidFormatException The specified format is not a properly
+ *				   formatted X.509 certificate
+ */
++ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
+
+/**
+ * @brief Creates a new @ref OFX509Certificate with the specified ASN.1 value.
+ *
+ * @param ASN1Value The ASN.1 value
+ * @param privateKeyASN1Value The private key for the certificate
+ * @return An new @ref OFX509Certificate
+ * @throw OFInvalidFormatException The specified format is not a properly
+ *				   formatted X.509 certificate
+ */
++ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
+		     privateKeyASN1Value: (nullable OF_KINDOF(OFASN1Value *))
+					      privateKeyASN1Value;
+
+/**
+ * @brief Initializes an already allocated @ref OFX509Certificate with the
+ *	  specified ASN.1 value.
+ *
+ * @param ASN1Value The ASN.1 value
+ * @return An initialized @ref OFX509Certificate
+ * @throw OFInvalidFormatException The specified format is not a properly
+ *				   formatted X.509 certificate
+ */
+- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
+
+/**
+ * @brief Initializes an already allocated @ref OFX509Certificate with the
+ *	  specified ASN.1 value.
+ *
+ * @param ASN1Value The ASN.1 value
+ * @param privateKeyASN1Value The private key for the certificate
+ * @return An initialized @ref OFX509Certificate
+ * @throw OFInvalidFormatException The specified format is not a properly
+ *				   formatted X.509 certificate
+ */
+- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
+	      privateKeyASN1Value: (nullable OF_KINDOF(OFASN1Value *))
+				       privateKeyASN1Value
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END
