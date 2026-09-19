@@ -123,4 +123,28 @@ typedef enum {
 - (OFComparisonResult)compare: (OFASN1Value *)value;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief Returns a description for the specified @ref OFASN1TagClass.
+ *
+ * @param tagClass The tag class to return a description for
+ * @return A description for the specified @ref OFASN1TagClass
+ */
+extern OFString *_Nonnull OFASN1TagClassDescription(OFASN1TagClass tagClass);
+
+/**
+ * @brief Returns a description for the specified @ref OFASN1TagNumber.
+ *
+ * @param tagClass The tag class to which the tag number belongs
+ * @param tagNumber The tag number to return a description for
+ * @return A description for the specified @ref OFASN1TagNumber
+ */
+extern OFString *_Nonnull OFASN1TagNumberDescription(OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

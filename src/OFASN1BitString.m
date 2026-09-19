@@ -149,11 +149,13 @@
 {
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
-	    @"\tTag class = %x\n"
-	    @"\tTag number = %x\n"
+	    @"\tTag class = %@\n"
+	    @"\tTag number = %@\n"
 	    @"\tBits count = %zu\n"
 	    @"\tBits = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber, self.bitsCount, self.bits];
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), self.bitsCount,
+	    self.bits];
 }
 @end

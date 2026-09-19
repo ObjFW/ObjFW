@@ -232,16 +232,16 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 
 - (OFString *)description
 {
-	OFString *subidentifiers = [self.subidentifiers.description
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
+	OFString *identifier =
+	    [self.subidentifiers componentsJoinedByString: @"."];
 
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
-	    @"\tTag class = %x\n"
-	    @"\tTag number = %x\n"
-	    @"\tSubidentifiers = %@\n"
+	    @"\tTag class = %@\n"
+	    @"\tTag number = %@\n"
+	    @"\tIdentifier = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber, subidentifiers];
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), identifier];
 }
 @end

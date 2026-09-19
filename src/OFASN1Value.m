@@ -27,6 +27,64 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+OFString *
+OFASN1TagClassDescription(OFASN1TagClass tagClass)
+{
+	switch (tagClass) {
+	case OFASN1TagClassUniversal:
+		return @"Universal";
+	case OFASN1TagClassApplication:
+		return @"Application";
+	case OFASN1TagClassContextSpecific:
+		return @"Context specific";
+	case OFASN1TagClassPrivate:
+		return @"Private";
+	}
+
+	return [OFString stringWithFormat: @"%d", tagClass];
+}
+
+OFString *
+OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
+{
+	if (tagClass == OFASN1TagClassUniversal) {
+		switch (tagNumber) {
+		case OFASN1TagNumberBoolean:
+			return @"Boolean";
+		case OFASN1TagNumberInteger:
+			return @"Integer";
+		case OFASN1TagNumberBitString:
+			return @"Bit string";
+		case OFASN1TagNumberOctetString:
+			return @"Octet string";
+		case OFASN1TagNumberNull:
+			return @"Null";
+		case OFASN1TagNumberObjectIdentifier:
+			return @"Object Identifier";
+		case OFASN1TagNumberEnumerated:
+			return @"Enumerated";
+		case OFASN1TagNumberUTF8String:
+			return @"UTF-8 string";
+		case OFASN1TagNumberSequence:
+			return @"Sequence";
+		case OFASN1TagNumberSet:
+			return @"Set";
+		case OFASN1TagNumberNumericString:
+			return @"NumericString";
+		case OFASN1TagNumberPrintableString:
+			return @"PrintableString";
+		case OFASN1TagNumberIA5String:
+			return @"IA5String";
+		case OFASN1TagNumberUniversalString:
+			return @"UniversalString";
+		case OFASN1TagNumberBMPString:
+			return @"BMPString";
+		}
+	}
+
+	return [OFString stringWithFormat: @"%d", tagClass];
+}
+
 size_t
 _OFDEREncodeTag(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber,
     bool constructed, unsigned char buffer[6])
@@ -291,9 +349,10 @@ _OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
 {
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
-	    @"\tTag class = %x\n"
-	    @"\tTag number = %x\n"
+	    @"\tTag class = %@\n"
+	    @"\tTag number = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber];
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber)];
 }
 @end

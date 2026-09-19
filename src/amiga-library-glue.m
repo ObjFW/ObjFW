@@ -110,6 +110,18 @@ glue__OFThrowOutOfRangeException(void)
 	_OFThrowOutOfRangeException();
 }
 
+OFString *_Nonnull __saveds
+glue_OFASN1TagClassDescription(OFASN1TagClass tagClass)
+{
+	return OFASN1TagClassDescription(tagClass);
+}
+
+OFString *_Nonnull __saveds
+glue_OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
+{
+	return OFASN1TagNumberDescription(tagClass, tagNumber);
+}
+
 int __saveds
 glue_OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate)
 {

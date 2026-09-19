@@ -32,6 +32,8 @@
 (CONST_APTR)glue_OFRandom64,
 (CONST_APTR)glue_OFHashSeedRef,
 (CONST_APTR)glue__OFThrowOutOfRangeException,
+(CONST_APTR)glue_OFASN1TagClassDescription,
+(CONST_APTR)glue_OFASN1TagNumberDescription,
 (CONST_APTR)glue_OFApplicationMain,
 (CONST_APTR)glue__Block_copy,
 (CONST_APTR)glue__Block_release,

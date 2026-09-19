@@ -21,6 +21,7 @@
 
 #import "amiga-library.h"
 #import "OFObject.h"
+#import "OFASN1Value.h"
 #import "OFApplication.h"
 #import "OFBlock.h"
 #import "OFDNSResourceRecord.h"
@@ -62,6 +63,8 @@ extern uint32_t glue_OFRandom32(void);
 extern uint64_t glue_OFRandom64(void);
 extern unsigned long *_Nonnull glue_OFHashSeedRef(void);
 extern void glue__OFThrowOutOfRangeException(void);
+extern OFString *_Nonnull glue_OFASN1TagClassDescription(OFASN1TagClass tagClass);
+extern OFString *_Nonnull glue_OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber);
 extern int glue_OFApplicationMain(int *_Nonnull argc, char *_Nullable *_Nonnull *_Nonnull argv, id <OFApplicationDelegate> delegate);
 extern void *_Nullable glue__Block_copy(const void *_Nullable block);
 extern void glue__Block_release(const void *_Nullable block);

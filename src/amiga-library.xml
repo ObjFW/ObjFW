@@ -42,6 +42,14 @@
   <function name='OFHashSeedRef' return-type='unsigned long *_Nonnull'/>
   <!-- Used by macros in OFObject.h. -->
   <function name='_OFThrowOutOfRangeException' noreturn='1'/>
+  <include>OFASN1Value.h</include>
+  <function name='OFASN1TagClassDescription' return-type='OFString *_Nonnull'>
+    <argument name='tagClass' type='OFASN1TagClass'/>
+  </function>
+  <function name='OFASN1TagNumberDescription' return-type='OFString *_Nonnull'>
+    <argument name='tagClass' type='OFASN1TagClass'/>
+    <argument name='tagNumber' type='OFASN1TagNumber'/>
+  </function>
   <include>OFApplication.h</include>
   <function name='OFApplicationMain' return-type='int'>
     <argument name='argc' type='int *_Nonnull'/>

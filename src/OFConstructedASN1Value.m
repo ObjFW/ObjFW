@@ -130,11 +130,12 @@
 
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
-	    @"\tTag class = %x\n"
-	    @"\tTag number = %x\n"
+	    @"\tTag class = %@\n"
+	    @"\tTag number = %@\n"
 	    @"\tComponents = %@\n"
 	    @">",
-	    self.class, _tagClass, _tagNumber, components];
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), components];
 }
 
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
