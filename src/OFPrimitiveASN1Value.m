@@ -24,6 +24,14 @@
 #import "OFData.h"
 #import "OFString.h"
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -48,6 +56,12 @@
 			@throw [OFInvalidFormatException exception];
 
 		_rawValue = [rawValue copy];
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+		if (OFSpinlockNew(&_spinlock) != 0)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+#endif
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -59,12 +73,36 @@
 - (void)dealloc
 {
 	objc_release(_rawValue);
+	objc_release(_DERRepresentation);
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlockFree(&_spinlock);
+#endif
 
 	[super dealloc];
 }
 
 - (OFData *)DERRepresentation
 {
+#if defined(OF_HAVE_ATOMIC_OPS)
+	if (_DERRepresentation != nil)
+		return _DERRepresentation;
+#elif defined(OF_AMIGAOS)
+	Forbid();
+	OFData *DERRepresentation = _DERRepresentation;
+	Permit();
+
+	if (DERRepresentation != nil)
+		return DERRepresentation;
+#else
+	OFEnsure(OFSpinlockLock(&_spinlock) == 0);
+	OFData *DERRepresentation = _DERRepresentation;
+	OFEnsure(OFSpinlockUnlock(&_spinlock) == 0);
+
+	if (DERRepresentation != nil)
+		return DERRepresentation;
+#endif
+
 	size_t count = _rawValue.count;
 
 	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
@@ -79,6 +117,44 @@
 	[data addItems: _rawValue.items count: count];
 
 	[data makeImmutable];
+
+#if defined(OF_HAVE_ATOMIC_OPS)
+	objc_retain(data);
+
+	if (!OFAtomicPointerCompareAndSwap((void **)&_DERRepresentation,
+	    nil, data))
+		objc_release(data);
+#elif defined(OF_AMIGAOS)
+	objc_retain(data);
+
+	Forbid();
+
+	bool release = false;
+	if (_DERRepresentation == nil)
+		_DERRepresentation = data;
+	else
+		release = true;
+
+	Permit();
+
+	if (release)
+		objc_release(data);
+#else
+	objc_retain(data);
+
+	OFEnsure(OFSpinlockLock(&_spinlock) == 0);
+
+	bool release = false;
+	if (_DERRepresentation == nil)
+		_DERRepresentation = data;
+	else
+		release = true;
+
+	OFEnsure(OFSpinlockUnlock(&_spinlock) == 0);
+
+	if (release)
+		objc_release(data);
+#endif
 
 	return data;
 }

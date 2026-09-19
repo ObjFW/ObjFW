@@ -27,10 +27,18 @@
 #import "OFData.h"
 #import "OFString.h"
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFOutOfRangeException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFConstructedASN1Value
 @synthesize components = _components;
@@ -55,6 +63,12 @@
 
 	@try {
 		_components = [components copy];
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+		if (OFSpinlockNew(&_spinlock) != 0)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: self.class];
+#endif
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -72,12 +86,36 @@
 - (void)dealloc
 {
 	objc_release(_components);
+	objc_release(_DERRepresentation);
+
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlockFree(&_spinlock);
+#endif
 
 	[super dealloc];
 }
 
 - (OFData *)DERRepresentation
 {
+#if defined(OF_HAVE_ATOMIC_OPS)
+	if (_DERRepresentation != nil)
+		return _DERRepresentation;
+#elif defined(OF_AMIGAOS)
+	Forbid();
+	OFData *DERRepresentation = _DERRepresentation;
+	Permit();
+
+	if (DERRepresentation != nil)
+		return DERRepresentation;
+#else
+	OFEnsure(OFSpinlockLock(&_spinlock) == 0);
+	OFData *DERRepresentation = _DERRepresentation;
+	OFEnsure(OFSpinlockUnlock(&_spinlock) == 0);
+
+	if (DERRepresentation != nil)
+		return DERRepresentation;
+#endif
+
 	void *pool = objc_autoreleasePoolPush();
 
 	OFMutableArray *componentRepresentations =
@@ -97,29 +135,65 @@
 	if (SIZE_MAX - totalLength < 2)
 		@throw [OFOutOfRangeException exception];
 
-	OFMutableData *DERRepresentation =
-	    [OFMutableData dataWithCapacity: totalLength + 2];
+	OFMutableData *data = [OFMutableData dataWithCapacity: totalLength + 2];
 
 	unsigned char tag[6];
-	[DERRepresentation addItems: tag
-			      count: _OFDEREncodeTag(_tagClass, _tagNumber,
-					 true, tag)];
+	[data addItems: tag
+		 count: _OFDEREncodeTag(_tagClass, _tagNumber, true, tag)];
 
 	unsigned char length[9];
-	[DERRepresentation addItems: length
-			      count: _OFDEREncodeLength(totalLength, length)];
+	[data addItems: length
+		 count: _OFDEREncodeLength(totalLength, length)];
 
 	for (OFData *componentRepresentation in componentRepresentations)
-		[DERRepresentation addItems: componentRepresentation.items
-				      count: componentRepresentation.count];
+		[data addItems: componentRepresentation.items
+			 count: componentRepresentation.count];
 
-	[DERRepresentation makeImmutable];
+	[data makeImmutable];
 
-	objc_retain(DERRepresentation);
+	objc_retain(data);
 
 	objc_autoreleasePoolPop(pool);
 
-	return objc_autoreleaseReturnValue(DERRepresentation);
+#if defined(OF_HAVE_ATOMIC_OPS)
+	objc_retain(data);
+
+	if (!OFAtomicPointerCompareAndSwap((void **)&_DERRepresentation,
+	    nil, data))
+		objc_release(data);
+#elif defined(OF_AMIGAOS)
+	objc_retain(data);
+
+	Forbid();
+
+	bool release = false;
+	if (_DERRepresentation == nil)
+		_DERRepresentation = data;
+	else
+		release = true;
+
+	Permit();
+
+	if (release)
+		objc_release(data);
+#else
+	objc_retain(data);
+
+	OFEnsure(OFSpinlockLock(&_spinlock) == 0);
+
+	bool release = false;
+	if (_DERRepresentation == nil)
+		_DERRepresentation = data;
+	else
+		release = true;
+
+	OFEnsure(OFSpinlockUnlock(&_spinlock) == 0);
+
+	if (release)
+		objc_release(data);
+#endif
+
+	return objc_autoreleaseReturnValue(data);
 }
 
 - (OFString *)description

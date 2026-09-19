@@ -19,6 +19,10 @@
 
 #import "OFASN1Value.h"
 
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
@@ -29,6 +33,10 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFConstructedASN1Value: OFASN1Value
 {
 	OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *_components;
+	OFData *volatile _Nullable _DERRepresentation;
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlock _spinlock;
+#endif
 	OF_RESERVE_IVARS(OFConstructedASN1Value, 4)
 }
 

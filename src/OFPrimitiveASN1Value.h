@@ -19,6 +19,10 @@
 
 #import "OFASN1Value.h"
 
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /**
@@ -27,6 +31,10 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFPrimitiveASN1Value: OFASN1Value
 {
 	OFData *_rawValue;
+	OFData *volatile _Nullable _DERRepresentation;
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
+	OFSpinlock _spinlock;
+#endif
 	OF_RESERVE_IVARS(OFPrimitiveASN1Value, 4)
 }
 
