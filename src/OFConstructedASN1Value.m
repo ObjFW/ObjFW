@@ -33,6 +33,11 @@
 #ifdef OF_HAVE_THREADS
 # import "OFPlainMutex.h"
 #endif
+#ifdef OF_AMIGAOS
+# define Class IntuitionClass
+# include <proto/exec.h>
+# undef Class
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
