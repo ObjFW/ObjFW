@@ -31,8 +31,6 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1ObjectIdentifier
-@synthesize subidentifiers = _subidentifiers;
-
 + (instancetype)objectIdentifierWithSubidentifiers:
     (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 {
@@ -60,31 +58,92 @@
 				  tagNumber: OFASN1TagNumberObjectIdentifier];
 }
 
+static void
+addBase128ValueToData(OFMutableData *data, unsigned long long value)
+{
+	if (value <= 0x7F) {
+		unsigned char byte = value & 0x7F;
+		[data addItem: &byte];
+		return;
+	}
+
+	size_t startPos = data.count;
+
+	while (value > 0) {
+		unsigned char byte = (value & 0x7F) | 0x80;
+		value >>= 7;
+		[data addItem: &byte];
+	}
+
+	size_t count = data.count - startPos;
+	unsigned char *items = (unsigned char *)data.mutableItems + startPos;
+	for (size_t i = 0, j = count - 1; i < count / 2; i++, j--) {
+		items[i] ^= items[j];
+		items[j] ^= items[i];
+		items[i] ^= items[j];
+	}
+
+	items[count - 1] &= 0x7F;
+}
+
 - (instancetype)
     initWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 		  tagClass: (OFASN1TagClass)tagClass
 		 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
+	void *pool = objc_autoreleasePoolPush();
 
+	OFMutableData *rawValue;
 	@try {
-		if (subidentifiers.count < 1)
+		size_t count = subidentifiers.count;
+		if (count < 2)
 			@throw [OFInvalidFormatException exception];
 
-		switch ([[subidentifiers objectAtIndex: 0] longLongValue]) {
+		unsigned long long value;
+		unsigned long long subidentifier2 =
+		    [[subidentifiers objectAtIndex: 1] unsignedLongLongValue];
+		switch ([[subidentifiers objectAtIndex: 0]
+		    unsignedLongLongValue]) {
 		case 0:
+			if (subidentifier2 > 39)
+				@throw [OFInvalidArgumentException exception];
+
+			value = 0;
+			break;
 		case 1:
+			if (subidentifier2 > 39)
+				@throw [OFInvalidArgumentException exception];
+
+			value = 40;
+			break;
 		case 2:
+			value = 80;
 			break;
 		default:
 			@throw [OFInvalidFormatException exception];
 		}
 
-		_subidentifiers = [subidentifiers copy];
+		rawValue = [OFMutableData data];
+
+		if (ULLONG_MAX - value < subidentifier2)
+			@throw [OFOutOfRangeException exception];
+
+		addBase128ValueToData(rawValue, value + subidentifier2);
+		for (size_t i = 2; i < count; i++)
+			addBase128ValueToData(rawValue, [[subidentifiers
+			    objectAtIndex: i] unsignedLongLongValue]);
+
+		[rawValue makeImmutable];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
+
+	self = [self initWithRawValue: rawValue
+			     tagClass: tagClass
+			    tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
@@ -93,91 +152,96 @@
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	void *pool = objc_autoreleasePoolPush();
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
 
-	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 	@try {
 		const unsigned char *items = rawValue.items;
 		size_t count = rawValue.count;
 
-		if (rawValue.itemSize != 1 || count == 0)
+		if (count == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		subidentifiers = [OFMutableArray array];
-
-		unsigned long long value = 0;
-		uint_fast8_t bits = 0;
+		bool first = true;
 		for (size_t i = 0; i < count; i++) {
-			if (bits == 0 && items[i] == 0x80)
+			if (first && items[i] == 0x80)
 				@throw [OFInvalidFormatException exception];
 
-			if ((SIZE_MAX >> 7) < value ||
-			    UINT_FAST8_MAX - bits < 7)
-				@throw [OFOutOfRangeException exception];
-
-			value = (value << 7) | (items[i] & 0x7F);
-			bits += 7;
-
-			if (items[i] & 0x80)
-				continue;
-
-			if (subidentifiers.count == 0) {
-				if (value < 40)
-					[subidentifiers addObject:
-					    [OFNumber numberWithInt: 0]];
-				else if (value < 80) {
-					[subidentifiers addObject:
-					    [OFNumber numberWithInt: 1]];
-					value -= 40;
-				} else {
-					[subidentifiers addObject:
-					    [OFNumber numberWithInt: 2]];
-					value -= 80;
-				}
-			}
-
-			[subidentifiers addObject:
-			    [OFNumber numberWithUnsignedLongLong: value]];
-
-			value = 0;
-			bits = 0;
+			first = !(items[i] & 0x80);
 		}
 
 		if (items[count - 1] & 0x80)
 			@throw [OFInvalidFormatException exception];
-
-		[subidentifiers makeImmutable];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithSubidentifiers: subidentifiers
-				   tagClass: tagClass
-				  tagNumber: tagNumber];
-
-	objc_autoreleasePoolPop(pool);
-
 	return self;
 }
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 {
-	OF_INVALID_INIT_METHOD
-}
+	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers =
+	    [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	const unsigned char *items = _rawValue.items;
+	size_t count = _rawValue.count;
 
-- (void)dealloc
-{
-	objc_release(_subidentifiers);
+	unsigned long long value = 0;
+	uint_fast8_t bits = 0;
+	for (size_t i = 0; i < count; i++) {
+		if ((ULLONG_MAX >> 7) < value || UINT_FAST8_MAX - bits < 7)
+			@throw [OFOutOfRangeException exception];
 
-	[super dealloc];
+		value = (value << 7) | (items[i] & 0x7F);
+		bits += 7;
+
+		if (items[i] & 0x80)
+			continue;
+
+		if (subidentifiers.count == 0) {
+			if (value < 40)
+				[subidentifiers addObject:
+				    [OFNumber numberWithInt: 0]];
+			else if (value < 80) {
+				[subidentifiers addObject:
+				    [OFNumber numberWithInt: 1]];
+				value -= 40;
+			} else {
+				[subidentifiers addObject:
+				    [OFNumber numberWithInt: 2]];
+				value -= 80;
+			}
+		}
+
+		[subidentifiers addObject:
+		    [OFNumber numberWithUnsignedLongLong: value]];
+
+		value = 0;
+		bits = 0;
+	}
+
+	[subidentifiers makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return subidentifiers;
 }
 
 - (OFString *)description
 {
+	OFString *subidentifiers = [self.subidentifiers.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
 	return [OFString stringWithFormat:
-	    @"<OFASN1ObjectIdentifier: %@>",
-	    [_subidentifiers componentsJoinedByString: @"."]];
+	    @"<%@:\n"
+	    @"\tTag class = %x\n"
+	    @"\tTag number = %x\n"
+	    @"\tSubidentifiers = %@\n"
+	    @">",
+	    self.class, _tagClass, _tagNumber, subidentifiers];
 }
 @end

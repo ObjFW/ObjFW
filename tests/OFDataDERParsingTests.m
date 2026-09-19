@@ -277,9 +277,9 @@
 - (void)testOutOfRangeObjectIdentifier
 {
 	OTAssertThrowsSpecific(
-	    [[OFData dataWithItems: "\x06\x0A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
-				    "\xFF\x7F"
-			     count: 12] valueByParsingDER],
+	    [[[OFData dataWithItems: "\x06\x0A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
+				     "\xFF\x7F"
+			      count: 12] valueByParsingDER] subidentifiers],
 	    OFOutOfRangeException);
 }
 

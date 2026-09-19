@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -28,11 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An ASN.1 ObjectIdentifier.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFASN1ObjectIdentifier: OFASN1Value
-{
-	OFArray OF_GENERIC(OFNumber *) *_subidentifiers;
-}
-
+@interface OFASN1ObjectIdentifier: OFPrimitiveASN1Value
 /**
  * @brief The subidentifiers of the ObjectIdentifier.
  */
@@ -61,9 +57,6 @@ OF_SUBCLASSING_RESTRICTED
 			      tagClass: (OFASN1TagClass)tagClass
 			     tagNumber: (OFASN1TagNumber)tagNumber;
 
-- (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber OF_UNAVAILABLE;
-
 /**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
  *	  specified subidentifiers.
@@ -86,8 +79,7 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)
     initWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 		  tagClass: (OFASN1TagClass)tagClass
-		 tagNumber: (OFASN1TagNumber)tagNumber
-    OF_DESIGNATED_INITIALIZER;
+		 tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END
