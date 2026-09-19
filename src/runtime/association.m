@@ -27,11 +27,14 @@
 # import "OFMapTable.h"
 #endif
 
-#import "pre_ivar.h"
-
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "OFAtomic.h"
 #endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
+#import "pre_ivar.h"
 
 struct Association {
 	id object;
@@ -41,6 +44,7 @@ struct Association {
 #ifdef OF_OBJFW_RUNTIME
 typedef struct objc_hashtable _objc_hashtable;
 
+# ifdef OF_HAVE_ATOMIC_OPS
 /* Inlined and unnecessary checks dropped for performance. */
 static OF_INLINE Class
 _object_getClass_fast(id object_)
@@ -49,6 +53,7 @@ _object_getClass_fast(id object_)
 
 	return object->isa;
 }
+# endif
 #else
 typedef OFMapTable _objc_hashtable;
 static const OFMapTableFunctions defaultFunctions = { NULL };
@@ -91,7 +96,6 @@ _objc_hashtable_free(_objc_hashtable *hashtable)
 
 #ifdef OF_HAVE_THREADS
 # define numSlots 16	/* needs to be a power of 2 */
-# import "OFPlainMutex.h"
 static OFSpinlock spinlocks[numSlots];
 #else
 # define numSlots 1

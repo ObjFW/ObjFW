@@ -27,11 +27,14 @@
 # import "OFMapTable.h"
 #endif
 
-#import "pre_ivar.h"
-
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "OFAtomic.h"
 #endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
+#import "pre_ivar.h"
 
 struct WeakRef {
 	id **locations;
@@ -94,7 +97,6 @@ _objc_hashtable_delete(_objc_hashtable *hashtable, const void *key)
 #endif
 
 #ifdef OF_HAVE_THREADS
-# import "OFPlainMutex.h"
 static OFSpinlock spinlock;
 #endif
 static _objc_hashtable *hashtable;

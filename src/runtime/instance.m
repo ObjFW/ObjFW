@@ -28,19 +28,19 @@
 # import <objc/objc.h>
 #endif
 
+#ifdef OF_HAVE_ATOMIC_OPS
+# import "OFAtomic.h"
+#endif
+#ifdef OF_HAVE_THREADS
+# import "OFPlainMutex.h"
+#endif
+
 #import "pre_ivar.h"
 
 #ifdef OF_APPLE_RUNTIME
 @interface DummyObject
 - (void)dealloc;
 @end
-#endif
-
-#ifdef OF_HAVE_ATOMIC_OPS
-# import "OFAtomic.h"
-#endif
-#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
-# import "OFPlainMutex.h"	/* For OFSpinlock */
 #endif
 
 #ifdef OF_AMIGAOS
