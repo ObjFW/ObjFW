@@ -191,6 +191,12 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_handshakeDone)
 		mbedtls_ssl_close_notify(&_SSL);
 
+	if (_freeOwnChain)
+		mbedtls_x509_crt_free(&_ownChain);
+	if (_freePrivateKey)
+		mbedtls_pk_free(&_privateKey);
+	_freeOwnChain = _freePrivateKey = false;
+
 	mbedtls_ssl_free(&_SSL);
 	_initialized = _handshakeDone = false;
 
@@ -308,24 +314,41 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	}
 
 	if (_certificateChain.count > 0) {
-#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
-		/*
-		 * Mbed TLS does not allow storing the certificates
-		 * independently, so the chain has to be kept. This means we
-		 * can just get the first certificate and get the entire chain
-		 * from it.
-		 */
-		OFMbedTLSX509CertificateChain *chain =
-		    ((OFMbedTLSX509Certificate *)_certificateChain.firstObject)
-		    .of_chain;
+		mbedtls_x509_crt_init(&_ownChain);
+		_freeOwnChain = true;
 
-		if (mbedtls_ssl_conf_own_cert(&_config, chain.certificate,
-		    chain.privateKey) != 0)
+		for (OFX509Certificate *cert in _certificateChain) {
+			OFData *certData = cert.ASN1Value.DERRepresentation;
+			if (mbedtls_x509_crt_parse(&_ownChain, certData.items,
+			    certData.count) != 0)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+		}
+
+		mbedtls_pk_init(&_privateKey);
+		_freePrivateKey = true;
+
+		OFData *privateKeyData = [_certificateChain.firstObject
+		    privateKeyASN1Value].DERRepresentation;
+		if (mbedtls_pk_parse_key(&_privateKey, privateKeyData.items,
+		    privateKeyData.count, NULL, 0
+#if MBEDTLS_VERSION_MAJOR == 3
+		    , mbedtls_ctr_drbg_random, &CTRDRBG
+#endif
+		    ) != 0)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
-#endif
+
+		if (mbedtls_ssl_conf_own_cert(&_config, &_ownChain,
+		    &_privateKey) != 0)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
 	}
 
 	mbedtls_ssl_init(&_SSL);
