@@ -28,9 +28,12 @@
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFTLSHandshakeFailedException.h"
 #import "OFWriteFailedException.h"
+
+#include <gnutls/x509.h>
 
 int _ObjFWTLS_reference;
 
@@ -261,27 +264,90 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	}
 
 	if (_certificateChain.count > 0) {
-#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
-		OFMutableData *certs = [OFMutableData
-		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
-			    capacity: _certificateChain.count];
-		gnutls_x509_privkey_t key =
-		    ((OFGnuTLSX509Certificate *)_certificateChain.firstObject)
-		    .of_privateKey;
+		OFMutableData *certs =
+		    [OFMutableData dataWithItemSize: sizeof(gnutls_x509_crt_t)
+					   capacity: _certificateChain.count];
+		@try {
+			for (OFX509Certificate *cert in _certificateChain) {
+#define IFEC initFailedErrorCode
+				OFData *certData =
+				    cert.ASN1Value.DERRepresentation;
 
-		for (OFGnuTLSX509Certificate *cert in _certificateChain) {
-			gnutls_x509_crt_t gnuTLSCert = cert.of_certificate;
-			[certs addItem: &gnuTLSCert];
+				if (certData.count > UINT_MAX)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				[certs increaseCountBy: 1];
+				gnutls_x509_crt_t *gCert =
+				    certs.mutableLastItem;
+				if (gnutls_x509_crt_init(gCert) != 0) {
+					[certs removeLastItem];
+					@throw [OFTLSHandshakeFailedException
+					    exceptionWithStream: self
+							   host: host
+						      errorCode: IFEC];
+				}
+
+				gnutls_datum_t datum = {
+					.data = (unsigned char *)certData.items,
+					.size = (unsigned int)certData.count
+				};
+				if (gnutls_x509_crt_import(*gCert, &datum,
+				    GNUTLS_X509_FMT_DER) != 0)
+					@throw [OFTLSHandshakeFailedException
+					    exceptionWithStream: self
+							   host: host
+						      errorCode: IFEC];
+#undef IFEC
+			}
+
+			if (certs.count > UINT_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			OFData *privateKeyData = [_certificateChain.firstObject
+			    privateKeyASN1Value].DERRepresentation;
+
+			if (privateKeyData.count > UINT_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			gnutls_x509_privkey_t privateKey;
+			if (gnutls_x509_privkey_init(&privateKey) != 0)
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+
+			gnutls_datum_t datum = {
+				.data = (unsigned char *)privateKeyData.items,
+				.size = (unsigned int)privateKeyData.count
+			};
+			if (gnutls_x509_privkey_import(privateKey, &datum,
+			    GNUTLS_X509_FMT_DER) != 0) {
+				gnutls_x509_privkey_deinit(privateKey);
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+			}
+
+			if (gnutls_certificate_set_x509_key(_credentials,
+			    (gnutls_x509_crt_t *)certs.items,
+			    (unsigned int)certs.count, privateKey) < 0) {
+				gnutls_x509_privkey_deinit(privateKey);
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+			}
+
+			gnutls_x509_privkey_deinit(privateKey);
+		} @finally {
+			gnutls_x509_crt_t *items = certs.mutableItems;
+			size_t count = certs.count;
+
+			for (size_t i = 0; i < count; i++)
+				gnutls_x509_crt_deinit(items[i]);
 		}
-
-		if (gnutls_certificate_set_x509_key(_credentials,
-		    (gnutls_x509_crt_t *)certs.items, (unsigned int)certs.count,
-		    key) < 0)
-			@throw [OFTLSHandshakeFailedException
-			    exceptionWithStream: self
-					   host: host
-				      errorCode: initFailedErrorCode];
-#endif
 	}
 
 	if (gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,
