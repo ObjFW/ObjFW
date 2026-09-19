@@ -17,26 +17,34 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#import "OFData.h"
+#import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
-
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
-@end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
+extern int _OFData_DERParsing_reference;
 #ifdef __cplusplus
 }
 #endif
+
+@interface OFData (DERParsing)
+/**
+ * @brief The data interpreted as ASN.1 in DER representation and parsed as an
+ *	  ASN.1 value.
+ */
+@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) valueByParsingDER;
+
+/**
+ * @brief Parses the ASN.1 DER representation and returns it as an ASN.1 value.
+ *
+ * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ *		     if not specified, 0 means no limit (insecure!))
+ * @return The ASN.1 DER representation as an ASN.1 value
+ */
+- (OF_KINDOF(OFASN1Value *))valueByParsingDERWithDepthLimit: (size_t)depthLimit;
+@end
 
 OF_ASSUME_NONNULL_END

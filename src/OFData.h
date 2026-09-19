@@ -380,4 +380,5 @@ OF_ASSUME_NONNULL_END
 
 #import "OFMutableData.h"
 #import "OFData+CryptographicHashing.h"
+#import "OFData+DERParsing.h"
 #import "OFData+MessagePackParsing.h"

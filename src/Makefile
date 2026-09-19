@@ -12,7 +12,22 @@ LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 LIB_PATCH = ${OBJFW_LIB_PATCH}
 
-SRCS = OFApplication.m			\
+SRCS = OFASN1BitString.m		\
+       OFASN1Boolean.m			\
+       OFASN1Enumerated.m		\
+       OFASN1IA5String.m		\
+       OFASN1Integer.m			\
+       OFASN1Null.m			\
+       OFASN1NumericString.m		\
+       OFASN1ObjectIdentifier.m		\
+       OFASN1OctetString.m		\
+       OFASN1PrintableString.m		\
+       OFASN1Sequence.m			\
+       OFASN1Set.m			\
+       OFASN1TextString.m		\
+       OFASN1UTF8String.m		\
+       OFASN1Value.m			\
+       OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\
        OFCanvas.m			\
@@ -20,9 +35,11 @@ SRCS = OFApplication.m			\
        OFColor.m			\
        OFColorSpace.m			\
        OFConstantString.m		\
+       OFConstructedASN1Value.m		\
        OFCountedSet.m			\
        OFData.m				\
        OFData+CryptographicHashing.m	\
+       OFData+DERParsing.m		\
        OFData+MessagePackParsing.m	\
        OFDate.m				\
        OFDeflate64Stream.m		\
@@ -78,6 +95,7 @@ SRCS = OFApplication.m			\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
        OFPair.m				\
+       OFPrimitiveASN1Value.m		\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSHA1Hash.m			\

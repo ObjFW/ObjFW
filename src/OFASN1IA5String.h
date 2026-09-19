@@ -17,26 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#import "OFASN1TextString.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
+/**
+ * @brief An ASN.1 IA5String.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OFASN1IA5String: OFASN1TextString
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

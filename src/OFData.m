@@ -58,6 +58,7 @@ void OF_VISIBILITY_INTERNAL
 _references_to_categories_of_OFData(void)
 {
 	_OFData_CryptographicHashing_reference = 1;
+	_OFData_DERParsing_reference = 1;
 	_OFData_MessagePackParsing_reference = 1;
 }
 

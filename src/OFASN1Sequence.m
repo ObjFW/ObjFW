@@ -17,26 +17,24 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#include "config.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFASN1Sequence.h"
+#import "OFArray.h"
 
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
-@end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
+@implementation OFASN1Sequence
++ (instancetype)valueWithComponents:
+    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithComponents: components]);
 }
-#endif
 
-OF_ASSUME_NONNULL_END
+- (instancetype)initWithComponents:
+    (OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *)components
+{
+	return [self initWithComponents: components
+			       tagClass: OFASN1TagClassUniversal
+			      tagNumber: OFASN1TagNumberSequence];
+}
+@end

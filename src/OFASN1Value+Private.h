@@ -17,26 +17,18 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
-@end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
+extern size_t _OFDEREncodeTag(OFASN1TagClass tagClass,
+    OFASN1TagNumber tagNumber, bool constructed,
+    unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_INTERNAL;
+extern size_t _OFDEREncodeLength(size_t length,
+    unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
+extern int64_t _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
     OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
-}
-#endif
+extern size_t _OFDEREncodeInteger(int64_t value,
+    unsigned char buffer[_Nonnull 8]) OF_VISIBILITY_INTERNAL;
 
 OF_ASSUME_NONNULL_END

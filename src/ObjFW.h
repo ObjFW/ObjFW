@@ -170,6 +170,23 @@
 # import "OFWindowsRegistryKey.h"
 #endif
 
+#import "OFASN1BitString.h"
+#import "OFASN1Boolean.h"
+#import "OFASN1Enumerated.h"
+#import "OFASN1IA5String.h"
+#import "OFASN1Integer.h"
+#import "OFASN1Null.h"
+#import "OFASN1NumericString.h"
+#import "OFASN1ObjectIdentifier.h"
+#import "OFASN1OctetString.h"
+#import "OFASN1PrintableString.h"
+#import "OFASN1Sequence.h"
+#import "OFASN1Set.h"
+#import "OFASN1UTF8String.h"
+#import "OFASN1Value.h"
+#import "OFConstructedASN1Value.h"
+#import "OFPrimitiveASN1Value.h"
+
 #import "OFAllocFailedException.h"
 #import "OFAlreadyOpenException.h"
 #import "OFException.h"

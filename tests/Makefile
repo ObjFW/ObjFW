@@ -37,6 +37,8 @@ SRCS = ForwardingTests.m			\
        OFConcreteMutableSetTests.m		\
        OFConcreteSetTests.m			\
        OFCryptographicHashTests.m		\
+       OFDERRepresentationTests.m		\
+       OFDataDERParsingTests.m			\
        OFDataTests.m				\
        OFDateTests.m				\
        OFDictionaryTests.m			\

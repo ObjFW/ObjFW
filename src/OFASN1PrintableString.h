@@ -17,26 +17,32 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#import "OFASN1TextString.h"
+#import "OFCharacterSet.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
+@class OFString;
+
+/**
+ * @brief An ASN.1 PrintableString.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OFASN1PrintableString: OFASN1TextString
 @end
 
-#ifdef __cplusplus
-extern "C" {
+@interface OFCharacterSet (ASN1PrintableStringCharacterSet)
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic)
+    OFCharacterSet *ASN1PrintableStringCharacterSet;
 #endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
-}
-#endif
+
+/**
+ * @brief Returns the characters allowed in an OFASN1PrintableString.
+ *
+ * @return The characters allowed in an OFASN1PrintableString
+ */
++ (OFCharacterSet *)ASN1PrintableStringCharacterSet;
+@end
 
 OF_ASSUME_NONNULL_END

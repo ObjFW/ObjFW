@@ -17,26 +17,33 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFUTF8String.h"
+#import "OFConstructedASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_DIRECT_MEMBERS
-@interface OFUTF8String ()
-- (instancetype)of_initWithUTF8String: (const char *)UTF8String
-			       length: (size_t)UTF8StringLength
-			      storage: (char *)storage OF_METHOD_FAMILY(init);
-@end
+/**
+ * @brief An ASN.1 Sequence.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OFASN1Sequence: OFConstructedASN1Value
+/**
+ * @brief Creates an ASN.1 Sequence with the specified components.
+ *
+ * @param components The components of the Sequence
+ * @return A new, autoreleased OFASN1Sequence
+ */
++ (instancetype)valueWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					 OFASN1Value *)) *)components;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
-extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
-#ifdef __cplusplus
-}
-#endif
+/**
+ * @brief Initializes an already allocated ASN.1 Sequence with the specified
+ *	  components.
+ *
+ * @param components The components of the Sequence
+ * @return An initialized OFASN1Sequence
+ */
+- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					OFASN1Value *)) *)components;
+@end
 
 OF_ASSUME_NONNULL_END
