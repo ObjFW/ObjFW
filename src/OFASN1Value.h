@@ -69,6 +69,8 @@ typedef enum {
 	OFASN1TagNumberPrintableString	= 0x13,
 	/** IA5String */
 	OFASN1TagNumberIA5String	= 0x16,
+	/** UniversalString */
+	OFASN1TagNumberUniversalString  = 0x1C,
 	/** BMPString */
 	OFASN1TagNumberBMPString        = 0x1E
 } OFASN1TagNumber;
