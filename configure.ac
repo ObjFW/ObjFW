@@ -2403,6 +2403,35 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
+	AC_MSG_CHECKING(whether we need -Wno-unused-value due to Clang bugs)
+	AC_COMPILE_IFELSE([
+		AC_LANG_SOURCE([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				struct objc_class *_isa;
+			}
+
+			@property (readonly, nonatomic) Foo *foo;
+			@end
+		], [[
+			Foo *f = (Foo *)0;
+			[f foo];
+		]])
+	], [
+		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS -Wno-unused-value"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wcast-align -Werror"
 	AC_MSG_CHECKING(whether -Wcast-align is buggy)
 	AC_COMPILE_IFELSE([
@@ -2643,13 +2672,13 @@ darwin*)
 	AC_COMPILE_IFELSE([
 		AC_LANG_PROGRAM([
 			#import <GameController/GameController.h>
-		], [
+		], [[
 			if (@available(macOS 14.0, iOS 17.0, *)) {
 				GCController *controller =
-				    GCController.controllers[[0]];
+				    GCController.controllers[0];
 				(void)controller.input;
 			}
-		])
+		]])
 	], [
 		AC_MSG_RESULT(yes)
 		AC_SUBST(USE_SRCS_GCF, '${SRCS_GCF}')
