@@ -29,13 +29,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief ASN.1 tag class.
  */
 typedef enum {
-	/** Universal */
+	/** UNIVERSAL */
 	OFASN1TagClassUniversal	      = 0,
-	/** Application */
+	/** APPLICATION */
 	OFASN1TagClassApplication     = 1,
-	/** Context specific */
+	/** Context-specific */
 	OFASN1TagClassContextSpecific = 2,
-	/** Private */
+	/** PRIVATE */
 	OFASN1TagClassPrivate	      = 3
 } OFASN1TagClass;
 
@@ -43,37 +43,37 @@ typedef enum {
  * @brief ASN.1 tag number.
  */
 typedef enum {
-	/** Boolean */
+	/** BOOLEAN */
 	OFASN1TagNumberBoolean		=  1,
-	/** Integer */
+	/** INTEGER */
 	OFASN1TagNumberInteger		=  2,
-	/** Bit string */
+	/** BIT STRING */
 	OFASN1TagNumberBitString	=  3,
-	/** Octet string */
+	/** OCTET STRING */
 	OFASN1TagNumberOctetString	=  4,
-	/** Null */
+	/** NULL */
 	OFASN1TagNumberNull		=  5,
-	/** Object Identifier */
+	/** OBJECT IDENTIFIER */
 	OFASN1TagNumberObjectIdentifier =  6,
 	/** ObjectDescriptor */
 	OFASN1TagNumberObjectDescriptor =  7,
-	/** External */
+	/** EXTERNAL */
 	OFASN1TagNumberExternal         =  8,
-	/** Real */
+	/** REAL */
 	OFASN1TagNumberReal             =  9,
-	/** Enumerated */
+	/** ENUMERATED */
 	OFASN1TagNumberEnumerated       = 10,
-	/** Embedded PDV */
+	/** EMBEDDED PDV */
 	OFASN1TagNumberEmbeddedPDV      = 11,
-	/** UTF-8 String */
+	/** UTF8String */
 	OFASN1TagNumberUTF8String       = 12,
-	/** Relative OID */
+	/** RELATIVE-OID */
 	OFASN1TagNumberRelativeOID      = 13,
-	/** Time */
+	/** TIME */
 	OFASN1TagNumberTime             = 14,
-	/** Sequence */
+	/** SEQUENCE */
 	OFASN1TagNumberSequence         = 16,
-	/** Set */
+	/** SET */
 	OFASN1TagNumberSet              = 17,
 	/** NumericString */
 	OFASN1TagNumberNumericString    = 18,
@@ -97,17 +97,17 @@ typedef enum {
 	OFASN1TagNumberGeneralString    = 27,
 	/** UniversalString */
 	OFASN1TagNumberUniversalString  = 28,
-	/** Character String */
+	/** CHARACTER STRING */
 	OFASN1TagNumberCharacterString  = 29,
 	/** BMPString */
 	OFASN1TagNumberBMPString        = 30,
-	/** Date */
+	/** DATE */
 	OFASN1TagNumberDate             = 31,
-	/** Time-of-Day */
+	/** TIME-OF-DAY */
 	OFASN1TagNumberTimeOfDay        = 32,
-	/** Date-Time */
+	/** DATE-TIME */
 	OFASN1TagNumberDateTime         = 33,
-	/** Duration */
+	/** DURATION */
 	OFASN1TagNumberDuration         = 34
 } OFASN1TagNumber;
 

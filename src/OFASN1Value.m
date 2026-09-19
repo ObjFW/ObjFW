@@ -32,13 +32,13 @@ OFASN1TagClassDescription(OFASN1TagClass tagClass)
 {
 	switch (tagClass) {
 	case OFASN1TagClassUniversal:
-		return @"Universal";
+		return @"UNIVERSAL";
 	case OFASN1TagClassApplication:
-		return @"Application";
+		return @"APPLICATION";
 	case OFASN1TagClassContextSpecific:
-		return @"Context specific";
+		return @"Context-specific";
 	case OFASN1TagClassPrivate:
-		return @"Private";
+		return @"PRIVATE";
 	}
 
 	return [OFString stringWithFormat: @"%d", tagClass];
@@ -50,37 +50,37 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 	if (tagClass == OFASN1TagClassUniversal) {
 		switch (tagNumber) {
 		case OFASN1TagNumberBoolean:
-			return @"Boolean";
+			return @"BOOLEAN";
 		case OFASN1TagNumberInteger:
-			return @"Integer";
+			return @"INTEGER";
 		case OFASN1TagNumberBitString:
-			return @"Bit string";
+			return @"BIT STRING";
 		case OFASN1TagNumberOctetString:
-			return @"Octet string";
+			return @"OCTET STRING";
 		case OFASN1TagNumberNull:
-			return @"Null";
+			return @"NULL";
 		case OFASN1TagNumberObjectIdentifier:
-			return @"Object Identifier";
+			return @"OBJECT IDENTIFIER";
 		case OFASN1TagNumberObjectDescriptor:
-			return @"Object Descriptor";
+			return @"ObjectDescriptor";
 		case OFASN1TagNumberExternal:
-			return @"External";
+			return @"EXTERNAL";
 		case OFASN1TagNumberReal:
-			return @"Real";
+			return @"REAL";
 		case OFASN1TagNumberEnumerated:
-			return @"Enumerated";
+			return @"ENUMERATED";
 		case OFASN1TagNumberEmbeddedPDV:
-			return @"Embedded PDV";
+			return @"EMBEDDED PDV";
 		case OFASN1TagNumberUTF8String:
-			return @"UTF-8 String";
+			return @"UTF8String";
 		case OFASN1TagNumberRelativeOID:
-			return @"Relative OID";
+			return @"RELATIVE-OID";
 		case OFASN1TagNumberTime:
-			return @"Time";
+			return @"TIME";
 		case OFASN1TagNumberSequence:
-			return @"Sequence";
+			return @"SEQUENCE";
 		case OFASN1TagNumberSet:
-			return @"Set";
+			return @"SET";
 		case OFASN1TagNumberNumericString:
 			return @"NumericString";
 		case OFASN1TagNumberPrintableString:
@@ -104,17 +104,17 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 		case OFASN1TagNumberUniversalString:
 			return @"UniversalString";
 		case OFASN1TagNumberCharacterString:
-			return @"Character String";
+			return @"CHARACTER STRING";
 		case OFASN1TagNumberBMPString:
 			return @"BMPString";
 		case OFASN1TagNumberDate:
-			return @"Date";
+			return @"DATE";
 		case OFASN1TagNumberTimeOfDay:
-			return @"Tme-of-Day";
+			return @"TME-OF-DAY";
 		case OFASN1TagNumberDateTime:
-			return @"Date-Time";
+			return @"DATE-TIME";
 		case OFASN1TagNumberDuration:
-			return @"Duration";
+			return @"DURATION";
 		}
 	}
 
