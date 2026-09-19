@@ -19,74 +19,20 @@
 
 #include "config.h"
 
-#import "OFASN1PrintableString.h"
+#import "OFASN1VisibleString.h"
 #import "OFASN1Value+Private.h"
+#import "OFCharacterSet.h"
 #import "OFData.h"
-#import "OFOnce.h"
 #import "OFString.h"
 
 #import "OFInvalidEncodingException.h"
 
-OF_DIRECT_MEMBERS
-@interface OFASN1PrintableStringCharacterSet: OFCharacterSet
-@end
-
-static OFCharacterSet *ASN1PrintableStringCharacterSet;
-
-static void
-initASN1PrintableStringCharacterSet(void)
-{
-	ASN1PrintableStringCharacterSet =
-	    [[OFASN1PrintableStringCharacterSet alloc] init];
-}
-
-@implementation OFASN1PrintableStringCharacterSet
-OF_SINGLETON_METHODS
-
-- (bool)characterIsMember: (OFUnichar)character
-{
-	if (character >= 0x80)
-		return false;
-
-	if (OFASCIIIsAlnum(character))
-		return true;
-
-	switch (character) {
-	case ' ':
-	case '\'':
-	case '(':
-	case ')':
-	case '+':
-	case ',':
-	case '-':
-	case '.':
-	case '/':
-	case ':':
-	case '=':
-	case '?':
-		return true;
-	default:
-		return false;
-	}
-}
-@end
-
-@implementation OFCharacterSet (ASN1PrintableStringCharacterSet)
-+ (OFCharacterSet *)ASN1PrintableStringCharacterSet
-{
-	static OFOnceControl onceControl = OFOnceControlInitValue;
-	OFOnce(&onceControl, initASN1PrintableStringCharacterSet);
-
-	return ASN1PrintableStringCharacterSet;
-}
-@end
-
-@implementation OFASN1PrintableString
+@implementation OFASN1VisibleString
 - (instancetype)initWithString: (OFString *)string
 {
 	return [self initWithString: string
 			   tagClass: OFASN1TagClassUniversal
-			  tagNumber: OFASN1TagNumberPrintableString];
+			  tagNumber: OFASN1TagNumberVisibleString];
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -120,6 +66,10 @@ OF_SINGLETON_METHODS
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
+	self = [super initWithRawValue: rawValue
+			      tagClass: tagClass
+			     tagNumber: tagNumber];
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
@@ -128,8 +78,7 @@ OF_SINGLETON_METHODS
 			     encoding: OFStringEncodingASCII
 			       length: rawValue.count];
 		if ([string rangeOfCharacterFromSet: [OFCharacterSet
-		    ASN1PrintableStringCharacterSet].invertedSet].location !=
-		    OFNotFound)
+		    controlCharacterSet]].location != OFNotFound)
 			@throw [OFInvalidEncodingException exception];
 
 		objc_autoreleasePoolPop(pool);
@@ -138,9 +87,7 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	return [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	return self;
 }
 
 - (OFString *)stringValue

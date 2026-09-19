@@ -75,6 +75,8 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 			return @"PrintableString";
 		case OFASN1TagNumberIA5String:
 			return @"IA5String";
+		case OFASN1TagNumberVisibleString:
+			return @"VisibleString";
 		case OFASN1TagNumberUniversalString:
 			return @"UniversalString";
 		case OFASN1TagNumberBMPString:

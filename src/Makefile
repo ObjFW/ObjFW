@@ -29,6 +29,7 @@ SRCS = OFASN1BMPString.m		\
        OFASN1UTF8String.m		\
        OFASN1UniversalString.m		\
        OFASN1Value.m			\
+       OFASN1VisibleString.m		\
        OFApplication.m			\
        OFArray.m			\
        OFBlock.m			\

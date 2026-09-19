@@ -186,6 +186,7 @@
 #import "OFASN1UTF8String.h"
 #import "OFASN1UniversalString.h"
 #import "OFASN1Value.h"
+#import "OFASN1VisibleString.h"
 #import "OFConstructedASN1Value.h"
 #import "OFPrimitiveASN1Value.h"
 

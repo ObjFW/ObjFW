@@ -78,11 +78,6 @@ OF_SINGLETON_METHODS
 
 	OFData *rawValue;
 	@try {
-		if ([string rangeOfCharacterFromSet: [OFCharacterSet
-		    ASN1NumericStringCharacterSet].invertedSet].location !=
-		    OFNotFound)
-			@throw [OFInvalidEncodingException exception];
-
 		const char *cString =
 		    [string insecureCStringWithEncoding: OFStringEncodingASCII];
 		size_t cStringLength =

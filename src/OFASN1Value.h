@@ -30,13 +30,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum {
 	/** Universal */
-	OFASN1TagClassUniversal	      = 0x0,
+	OFASN1TagClassUniversal	      = 0,
 	/** Application */
-	OFASN1TagClassApplication     = 0x1,
+	OFASN1TagClassApplication     = 1,
 	/** Context specific */
-	OFASN1TagClassContextSpecific = 0x2,
+	OFASN1TagClassContextSpecific = 2,
 	/** Private */
-	OFASN1TagClassPrivate	      = 0x3
+	OFASN1TagClassPrivate	      = 3
 } OFASN1TagClass;
 
 /**
@@ -44,35 +44,37 @@ typedef enum {
  */
 typedef enum {
 	/** Boolean */
-	OFASN1TagNumberBoolean		= 0x01,
+	OFASN1TagNumberBoolean		= 1,
 	/** Integer */
-	OFASN1TagNumberInteger		= 0x02,
+	OFASN1TagNumberInteger		= 2,
 	/** Bit string */
-	OFASN1TagNumberBitString	= 0x03,
+	OFASN1TagNumberBitString	= 3,
 	/** Octet string */
-	OFASN1TagNumberOctetString	= 0x04,
+	OFASN1TagNumberOctetString	= 4,
 	/** Null */
-	OFASN1TagNumberNull		= 0x05,
+	OFASN1TagNumberNull		= 5,
 	/** Object Identifier */
-	OFASN1TagNumberObjectIdentifier	= 0x06,
+	OFASN1TagNumberObjectIdentifier	= 6,
 	/** Enumerated */
-	OFASN1TagNumberEnumerated	= 0x0A,
+	OFASN1TagNumberEnumerated	= 10,
 	/** UTF-8 string */
-	OFASN1TagNumberUTF8String	= 0x0C,
+	OFASN1TagNumberUTF8String	= 12,
 	/** Sequence */
-	OFASN1TagNumberSequence		= 0x10,
+	OFASN1TagNumberSequence		= 16,
 	/** Set */
-	OFASN1TagNumberSet		= 0x11,
+	OFASN1TagNumberSet		= 17,
 	/** NumericString */
-	OFASN1TagNumberNumericString	= 0x12,
+	OFASN1TagNumberNumericString	= 18,
 	/** PrintableString */
-	OFASN1TagNumberPrintableString	= 0x13,
+	OFASN1TagNumberPrintableString	= 19,
 	/** IA5String */
-	OFASN1TagNumberIA5String	= 0x16,
+	OFASN1TagNumberIA5String	= 22,
+	/** VisibleString */
+	OFASN1TagNumberVisibleString    = 26,
 	/** UniversalString */
-	OFASN1TagNumberUniversalString  = 0x1C,
+	OFASN1TagNumberUniversalString  = 28,
 	/** BMPString */
-	OFASN1TagNumberBMPString        = 0x1E
+	OFASN1TagNumberBMPString        = 30
 } OFASN1TagNumber;
 
 /**

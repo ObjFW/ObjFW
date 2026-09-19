@@ -36,6 +36,7 @@
 #import "OFASN1UTF8String.h"
 #import "OFASN1UniversalString.h"
 #import "OFASN1Value+Private.h"
+#import "OFASN1VisibleString.h"
 #import "OFArray.h"
 #import "OFConstructedASN1Value.h"
 #import "OFCountedSet.h"
@@ -200,6 +201,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			break;
 		case OFASN1TagNumberIA5String:
 			valueClass = [OFASN1IA5String class];
+			break;
+		case OFASN1TagNumberVisibleString:
+			valueClass = [OFASN1VisibleString class];
 			break;
 		case OFASN1TagNumberUniversalString:
 			valueClass = [OFASN1UniversalString class];
