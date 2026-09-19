@@ -23,6 +23,7 @@ jobs:
           - --with-tls=gnutls --disable-shared
           - --with-tls=mbedtls
           - --with-tls=mbedtls --disable-shared
+          - --disable-atomics
     steps:
     - name: Install dependencies
       run: |
