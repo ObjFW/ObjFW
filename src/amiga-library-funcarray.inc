@@ -157,7 +157,6 @@
 (CONST_APTR)glue_OFTLSKeyFree,
 (CONST_APTR)glue_OFTLSStreamImplementationRef,
 (CONST_APTR)glue_OFTLSStreamErrorCodeDescription,
-(CONST_APTR)glue_OFX509CertificateImplementationRef,
 (CONST_APTR)glue_OFZIPArchiveEntryVersionToString,
 (CONST_APTR)glue_OFZIPArchiveEntryCompressionMethodName,
 (CONST_APTR)glue_OFZIPArchiveEntryExtraFieldFind,

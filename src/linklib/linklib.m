@@ -48,7 +48,6 @@
 #import "OFSystemInfo+NetworkInterfaces.h"
 #import "OFTLSKey.h"
 #import "OFTLSStream.h"
-#import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
 
@@ -1580,17 +1579,6 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	return __extension__ ((OFString *(*)(OFTLSStreamErrorCode))*(void **)(((uintptr_t)ObjFWBase) - 850))(errorCode);
 }
 
-Class _Nonnull *_Nullable __attribute__((__weak__))
-OFX509CertificateImplementationRef()
-{
-	__asm__ __volatile__ (
-	    "mr		%%r12, %0"
-	    :: "r" (ObjFWBase) : "r12"
-	);
-
-	return __extension__ ((Class _Nonnull *_Nullable (*)())*(void **)(((uintptr_t)ObjFWBase) - 856))();
-}
-
 OFString *_Nonnull __attribute__((__weak__))
 OFZIPArchiveEntryVersionToString(uint16_t version)
 {
@@ -1599,7 +1587,7 @@ OFZIPArchiveEntryVersionToString(uint16_t version)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 862))(version);
+	return __extension__ ((OFString *_Nonnull (*)(uint16_t))*(void **)(((uintptr_t)ObjFWBase) - 856))(version);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1610,7 +1598,7 @@ OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compre
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 868))(compressionMethod);
+	return __extension__ ((OFString *_Nonnull (*)(OFZIPArchiveEntryCompressionMethod))*(void **)(((uintptr_t)ObjFWBase) - 862))(compressionMethod);
 }
 
 size_t __attribute__((__weak__))
@@ -1621,7 +1609,7 @@ OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryEx
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((size_t (*)(OFData *_Nonnull, OFZIPArchiveEntryExtraFieldTag, uint16_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 874))(extraField, tag, size);
+	return __extension__ ((size_t (*)(OFData *_Nonnull, OFZIPArchiveEntryExtraFieldTag, uint16_t *_Nonnull))*(void **)(((uintptr_t)ObjFWBase) - 868))(extraField, tag, size);
 }
 
 OFString *_Nonnull __attribute__((__weak__))
@@ -1632,5 +1620,5 @@ OFStrError(int errNo)
 	    :: "r" (ObjFWBase) : "r12"
 	);
 
-	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 880))(errNo);
+	return __extension__ ((OFString *_Nonnull (*)(int))*(void **)(((uintptr_t)ObjFWBase) - 874))(errNo);
 }

@@ -27,7 +27,6 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
-#import "OFMbedTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -309,6 +308,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	}
 
 	if (_certificateChain.count > 0) {
+#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
 		/*
 		 * Mbed TLS does not allow storing the certificates
 		 * independently, so the chain has to be kept. This means we
@@ -325,6 +325,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
+#endif
 	}
 
 	mbedtls_ssl_init(&_SSL);

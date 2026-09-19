@@ -24,7 +24,6 @@
 #import "OFOpenSSLTLSStream.h"
 #import "OFArray.h"
 #import "OFData.h"
-#import "OFOpenSSLX509Certificate.h"
 
 #include <openssl/err.h>
 
@@ -399,6 +398,7 @@ errToErrorCode(const SSL *SSL_)
 	}
 
 	if (_certificateChain.count > 0) {
+#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
 		OFOpenSSLX509Certificate *certificate =
 		    (OFOpenSSLX509Certificate *)_certificateChain.firstObject;
 		bool first = true;
@@ -423,6 +423,7 @@ errToErrorCode(const SSL *SSL_)
 						   host: host
 					      errorCode: initFailedErrorCode];
 		}
+#endif
 	}
 
 	ERR_clear_error();
@@ -694,6 +695,7 @@ inform_delegate:
 	return nil;
 }
 
+#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
 - (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
 {
 	OFMutableArray *chain = [OFMutableArray array];
@@ -750,4 +752,5 @@ inform_delegate:
 
 	return chain;
 }
+#endif
 @end

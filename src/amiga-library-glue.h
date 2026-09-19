@@ -46,7 +46,6 @@
 #import "OFSystemInfo+NetworkInterfaces.h"
 #import "OFTLSKey.h"
 #import "OFTLSStream.h"
-#import "OFX509Certificate.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFException.h"
 
@@ -188,7 +187,6 @@ extern int glue_OFTLSKeyNew(OFTLSKey _Nonnull *_Nonnull key);
 extern int glue_OFTLSKeyFree(OFTLSKey _Nonnull key);
 extern Class _Nonnull *_Nullable glue_OFTLSStreamImplementationRef(void);
 extern OFString *glue_OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode);
-extern Class _Nonnull *_Nullable glue_OFX509CertificateImplementationRef(void);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryVersionToString(uint16_t version);
 extern OFString *_Nonnull glue_OFZIPArchiveEntryCompressionMethodName(OFZIPArchiveEntryCompressionMethod compressionMethod);
 extern size_t glue_OFZIPArchiveEntryExtraFieldFind(OFData *_Nonnull extraField, OFZIPArchiveEntryExtraFieldTag tag, uint16_t *_Nonnull size);

@@ -17,15 +17,9 @@ SRCS = ${USE_SRCS_GNUTLS}		\
        ${USE_SRCS_MBEDTLS}		\
        ${USE_SRCS_OPENSSL}		\
        ${USE_SRCS_WINDOWS}
-SRCS_GNUTLS = OFGnuTLSTLSStream.m			\
-	      OFGnuTLSX509Certificate.m			\
-	      OFGnuTLSX509Name.m
-SRCS_MBEDTLS = OFMbedTLSTLSStream.m			\
-	       OFMbedTLSX509Certificate.m		\
-	       OFMbedTLSX509Name.m
-SRCS_OPENSSL = OFOpenSSLTLSStream.m			\
-	       OFOpenSSLX509Certificate.m		\
-	       OFOpenSSLX509Name.m
+SRCS_GNUTLS = OFGnuTLSTLSStream.m
+SRCS_MBEDTLS = OFMbedTLSTLSStream.m
+SRCS_OPENSSL = OFOpenSSLTLSStream.m
 SRCS_WINDOWS = versioninfo.rc
 
 includesubdir = ObjFWTLS
@@ -60,8 +54,6 @@ uninstall-extra:
 # OpenSSL headers shadow functions with variables and make Apple GCC 4.0.1
 # complain.
 OBJCFLAGS_OFOpenSSLTLSStream.m += -Wno-shadow
-OBJCFLAGS_OFOpenSSLX509Certificate.m += -Wno-shadow
-OBJCFLAGS_OFOpenSSLX509Name.m += -Wno-shadow
 
 CPPFLAGS += -I.							\
 	    -I..						\

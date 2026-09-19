@@ -20,46 +20,13 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
-#import "OFData.h"
-#import "OFDictionary.h"
-#import "OFString.h"
 
 #import "OFNotImplementedException.h"
 
-#ifdef OF_AMIGAOS
-# undef OFX509CertificateImplementation
-#endif
-
-Class OFX509CertificateImplementation = Nil;
-
-#ifdef OF_AMIGAOS
-Class *
-OFX509CertificateImplementationRef(void)
-{
-	return &OFX509CertificateImplementation;
-}
-#endif
-
 @implementation OFX509Certificate
-@dynamic issuerName, notBeforeDate, notAfterDate, subjectName;
-@dynamic DERRepresentation;
-
-+ (instancetype)alloc
-{
-	if (self == [OFX509Certificate class]) {
-		if (OFX509CertificateImplementation != Nil)
-			return [OFX509CertificateImplementation alloc];
-
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-	}
-
-	return [super alloc];
-}
-
 + (bool)supportsPEMFiles
 {
-	return [OFX509CertificateImplementation supportsPEMFiles];
+	return true;
 }
 
 + (bool)supportsPKCS12Files
@@ -71,11 +38,6 @@ OFX509CertificateImplementationRef(void)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
-	if ([OFX509CertificateImplementation supportsPEMFiles])
-		return [OFX509CertificateImplementation
-		    certificateChainFromPEMFileAtIRI: certificatesIRI
-				       privateKeyIRI: privateKeyIRI];
-
 	OF_UNRECOGNIZED_SELECTOR
 }
 
@@ -84,27 +46,5 @@ OFX509CertificateImplementationRef(void)
 			     passphrase: (OFString *)passphrase
 {
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (OFString *)description
-{
-	OFString *ret;
-	@try {
-		ret = [OFString stringWithFormat:
-		    @"<%@:\n"
-		    @"\tIssuer name = %@\n"
-		    @"\tNot before = %@\n"
-		    @"\tNot after = %@\n"
-		    @"\tSubject name = %@\n"
-		    @"\tSHA-256 fingerprint = %@\n"
-		    @">",
-		    self.class, self.issuerName, self.notBeforeDate,
-		    self.notAfterDate, self.subjectName,
-		    self.DERRepresentation.stringBySHA256Hashing];
-	} @catch (OFNotImplementedException *e) {
-		ret = [OFString stringWithFormat: @"<%@>", self.className];
-	}
-
-	return ret;
 }
 @end

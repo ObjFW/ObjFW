@@ -860,12 +860,6 @@ glue_OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 	return OFTLSStreamErrorCodeDescription(errorCode);
 }
 
-Class _Nonnull *_Nullable __saveds
-glue_OFX509CertificateImplementationRef(void)
-{
-	return OFX509CertificateImplementationRef();
-}
-
 OFString *_Nonnull __saveds
 glue_OFZIPArchiveEntryVersionToString(uint16_t version)
 {

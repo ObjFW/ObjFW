@@ -18,14 +18,10 @@
  */
 
 #import "OFObject.h"
-#import "OFX509Name.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
-@class OFData;
-@class OFDate;
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
 
 /**
@@ -42,31 +38,6 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) bool supportsPEMFiles;
 @property (class, readonly, nonatomic) bool supportsPKCS12Files;
 #endif
-
-/**
- * @brief The date starting which the certificate becomes valid.
- */
-@property (readonly, nonatomic) OFDate *notBeforeDate;
-
-/**
- * @brief The date after which the certificate is no longer valid.
- */
-@property (readonly, nonatomic) OFDate *notAfterDate;
-
-/**
- * @brief The subject name of the certificate.
- */
-@property (readonly, nonatomic) OFX509Name *subjectName;
-
-/**
- * @brief The issuer name of the certificate.
- */
-@property (readonly, nonatomic) OFX509Name *issuerName;
-
-/**
- * @brief The ASN.1 DER representation of the certificate.
- */
-@property (readonly, nonatomic) OFData *DERRepresentation;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -124,25 +95,5 @@ OF_ASSUME_NONNULL_BEGIN
 			     passphrase: (nullable OFString *)passphrase
     OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-/**
- * @brief The implementation for OFX509Certificate to use.
- *
- * This can be set to a class that is always used for OFX509Certificate. This
- * is useful to either force a specific implementation or to use one that ObjFW
- * does not know about.
- */
-#ifndef OF_AMIGAOS
-extern Class OFX509CertificateImplementation;
-#else
-extern Class _Nonnull *_Nullable OFX509CertificateImplementationRef(void);
-# define OFX509CertificateImplementation (*OFX509CertificateImplementationRef())
-#endif
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

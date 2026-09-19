@@ -24,7 +24,6 @@
 #import "OFGnuTLSTLSStream.h"
 #import "OFArray.h"
 #import "OFData.h"
-#import "OFGnuTLSX509Certificate.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -262,6 +261,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 	}
 
 	if (_certificateChain.count > 0) {
+#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
 		OFMutableData *certs = [OFMutableData
 		    dataWithItemSize: sizeof(gnutls_x509_crt_t)
 			    capacity: _certificateChain.count];
@@ -281,6 +281,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
+#endif
 	}
 
 	if (gnutls_credentials_set(_session, GNUTLS_CRD_CERTIFICATE,

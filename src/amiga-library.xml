@@ -449,9 +449,6 @@
   <function name='OFTLSStreamErrorCodeDescription' return-type='OFString *'>
     <argument name='errorCode' type='OFTLSStreamErrorCode'/>
   </function>
-  <include>OFX509Certificate.h</include>
-  <function name='OFX509CertificateImplementationRef'
-            return-type='Class _Nonnull *_Nullable'/>
   <include>OFZIPArchiveEntry.h</include>
   <function name='OFZIPArchiveEntryVersionToString'
             return-type='OFString *_Nonnull'>
