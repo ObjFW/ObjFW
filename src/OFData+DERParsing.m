@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFData+DERParsing.h"
+#import "OFASN1BMPString.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
@@ -198,6 +199,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			break;
 		case OFASN1TagNumberIA5String:
 			valueClass = [OFASN1IA5String class];
+			break;
+		case OFASN1TagNumberBMPString:
+			valueClass = [OFASN1BMPString class];
 			break;
 		default:
 			if (constructed)

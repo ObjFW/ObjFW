@@ -170,6 +170,7 @@
 # import "OFWindowsRegistryKey.h"
 #endif
 
+#import "OFASN1BMPString.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
