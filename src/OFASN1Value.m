@@ -61,10 +61,22 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 			return @"Null";
 		case OFASN1TagNumberObjectIdentifier:
 			return @"Object Identifier";
+		case OFASN1TagNumberObjectDescriptor:
+			return @"Object Descriptor";
+		case OFASN1TagNumberExternal:
+			return @"External";
+		case OFASN1TagNumberReal:
+			return @"Real";
 		case OFASN1TagNumberEnumerated:
 			return @"Enumerated";
+		case OFASN1TagNumberEmbeddedPDV:
+			return @"Embedded PDV";
 		case OFASN1TagNumberUTF8String:
-			return @"UTF-8 string";
+			return @"UTF-8 String";
+		case OFASN1TagNumberRelativeOID:
+			return @"Relative OID";
+		case OFASN1TagNumberTime:
+			return @"Time";
 		case OFASN1TagNumberSequence:
 			return @"Sequence";
 		case OFASN1TagNumberSet:
@@ -73,14 +85,36 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 			return @"NumericString";
 		case OFASN1TagNumberPrintableString:
 			return @"PrintableString";
+		case OFASN1TagNumberTeletexString:
+			return @"TeletexString";
+		case OFASN1TagNumberVideotexString:
+			return @"VideotexString";
 		case OFASN1TagNumberIA5String:
 			return @"IA5String";
+		case OFASN1TagNumberUTCTime:
+			return @"UTCTime";
+		case OFASN1TagNumberGeneralizedTime:
+			return @"GeneralizedTime";
+		case OFASN1TagNumberGraphicString:
+			return @"GraphicString";
 		case OFASN1TagNumberVisibleString:
 			return @"VisibleString";
+		case OFASN1TagNumberGeneralString:
+			return @"GeneralString";
 		case OFASN1TagNumberUniversalString:
 			return @"UniversalString";
+		case OFASN1TagNumberCharacterString:
+			return @"Character String";
 		case OFASN1TagNumberBMPString:
 			return @"BMPString";
+		case OFASN1TagNumberDate:
+			return @"Date";
+		case OFASN1TagNumberTimeOfDay:
+			return @"Tme-of-Day";
+		case OFASN1TagNumberDateTime:
+			return @"Date-Time";
+		case OFASN1TagNumberDuration:
+			return @"Duration";
 		}
 	}
 

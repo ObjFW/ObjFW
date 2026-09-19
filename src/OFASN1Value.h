@@ -44,37 +44,71 @@ typedef enum {
  */
 typedef enum {
 	/** Boolean */
-	OFASN1TagNumberBoolean		= 1,
+	OFASN1TagNumberBoolean		=  1,
 	/** Integer */
-	OFASN1TagNumberInteger		= 2,
+	OFASN1TagNumberInteger		=  2,
 	/** Bit string */
-	OFASN1TagNumberBitString	= 3,
+	OFASN1TagNumberBitString	=  3,
 	/** Octet string */
-	OFASN1TagNumberOctetString	= 4,
+	OFASN1TagNumberOctetString	=  4,
 	/** Null */
-	OFASN1TagNumberNull		= 5,
+	OFASN1TagNumberNull		=  5,
 	/** Object Identifier */
-	OFASN1TagNumberObjectIdentifier	= 6,
+	OFASN1TagNumberObjectIdentifier =  6,
+	/** ObjectDescriptor */
+	OFASN1TagNumberObjectDescriptor =  7,
+	/** External */
+	OFASN1TagNumberExternal         =  8,
+	/** Real */
+	OFASN1TagNumberReal             =  9,
 	/** Enumerated */
-	OFASN1TagNumberEnumerated	= 10,
-	/** UTF-8 string */
-	OFASN1TagNumberUTF8String	= 12,
+	OFASN1TagNumberEnumerated       = 10,
+	/** Embedded PDV */
+	OFASN1TagNumberEmbeddedPDV      = 11,
+	/** UTF-8 String */
+	OFASN1TagNumberUTF8String       = 12,
+	/** Relative OID */
+	OFASN1TagNumberRelativeOID      = 13,
+	/** Time */
+	OFASN1TagNumberTime             = 14,
 	/** Sequence */
-	OFASN1TagNumberSequence		= 16,
+	OFASN1TagNumberSequence         = 16,
 	/** Set */
-	OFASN1TagNumberSet		= 17,
+	OFASN1TagNumberSet              = 17,
 	/** NumericString */
-	OFASN1TagNumberNumericString	= 18,
+	OFASN1TagNumberNumericString    = 18,
 	/** PrintableString */
-	OFASN1TagNumberPrintableString	= 19,
+	OFASN1TagNumberPrintableString  = 19,
+	/** TeletexString */
+	OFASN1TagNumberTeletexString    = 20,
+	/** VideotexString */
+	OFASN1TagNumberVideotexString   = 21,
 	/** IA5String */
-	OFASN1TagNumberIA5String	= 22,
+	OFASN1TagNumberIA5String        = 22,
+	/** UTCTime */
+	OFASN1TagNumberUTCTime          = 23,
+	/** GeneralizedTime */
+	OFASN1TagNumberGeneralizedTime  = 24,
+	/** GraphicString */
+	OFASN1TagNumberGraphicString    = 25,
 	/** VisibleString */
 	OFASN1TagNumberVisibleString    = 26,
+	/** GeneralString */
+	OFASN1TagNumberGeneralString    = 27,
 	/** UniversalString */
 	OFASN1TagNumberUniversalString  = 28,
+	/** Character String */
+	OFASN1TagNumberCharacterString  = 29,
 	/** BMPString */
-	OFASN1TagNumberBMPString        = 30
+	OFASN1TagNumberBMPString        = 30,
+	/** Date */
+	OFASN1TagNumberDate             = 31,
+	/** Time-of-Day */
+	OFASN1TagNumberTimeOfDay        = 32,
+	/** Date-Time */
+	OFASN1TagNumberDateTime         = 33,
+	/** Duration */
+	OFASN1TagNumberDuration         = 34
 } OFASN1TagNumber;
 
 /**
