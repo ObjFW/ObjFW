@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param class_ The class to parse the value as
  * @return The primitive ASN.1 value parsed as a value of the specified class
  */
-- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class_;
+- (OF_KINDOF(OFPrimitiveASN1Value *))parsedAs: (Class)class_;
 @end
 
 OF_ASSUME_NONNULL_END

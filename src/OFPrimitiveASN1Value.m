@@ -171,18 +171,14 @@
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _rawValue];
 }
 
-- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
+- (OF_KINDOF(OFPrimitiveASN1Value *))parsedAs: (Class)class
 {
-	if (![class isSubclassOfClass: [OFASN1Value class]])
+	if (![class isSubclassOfClass: [OFPrimitiveASN1Value class]])
 		@throw [OFInvalidArgumentException exception];
 
-	@try {
-		return objc_autoreleaseReturnValue(
-		    [[class alloc] initWithRawValue: _rawValue
-					   tagClass: _tagClass
-					  tagNumber: _tagNumber]);
-	} @catch (OFNotImplementedException *e) {
-		@throw [OFInvalidArgumentException exception];
-	}
+	return objc_autoreleaseReturnValue(
+	    [[class alloc] initWithRawValue: _rawValue
+				   tagClass: _tagClass
+				  tagNumber: _tagNumber]);
 }
 @end
