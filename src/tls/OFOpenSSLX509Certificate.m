@@ -26,8 +26,6 @@
 #import "OFOpenSSLX509Name.h"
 #import "OFString.h"
 
-#include <openssl/pkcs12.h>
-
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -106,11 +104,6 @@ ASN1TimeToDate(const ASN1_TIME *time)
 	return true;
 }
 
-+ (bool)supportsPKCS12Files
-{
-	return true;
-}
-
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
@@ -172,74 +165,6 @@ ASN1TimeToDate(const ASN1_TIME *time)
 		}
 	} @finally {
 		BIO_free(bio);
-	}
-
-	[chain makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return chain;
-}
-
-+ (OFArray OF_GENERIC(OFX509Certificate *) *)
-    certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
-			     passphrase: (OFString *)passphrase
-{
-	OFMutableArray *chain = [OFMutableArray array];
-	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [OFData dataWithContentsOfIRI: IRI];
-	X509 *cert = NULL;
-	EVP_PKEY *key = NULL;
-	STACK_OF(X509) *ca = NULL;
-	int i = 0;
-	PKCS12 *p12 = NULL;
-	BIO *bio;
-
-	if (data.count * data.itemSize > INT_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	bio = BIO_new_mem_buf(data.items, (int)(data.count * data.itemSize));
-	if (bio == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: data.count * data.itemSize];
-
-	@try {
-		OFX509Certificate *certificate;
-
-		if ((p12 = d2i_PKCS12_bio(bio, NULL)) == NULL)
-			@throw [OFInvalidFormatException exception];
-
-		if (PKCS12_parse(p12, passphrase.UTF8String, &key, &cert,
-		    &ca) != 1)
-			@throw [OFInvalidFormatException exception];
-
-		certificate = objc_autorelease(
-		    [[self alloc] of_initWithCertificate: cert
-					      privateKey: key]);
-		cert = NULL;
-		key = NULL;
-
-		[chain addObject: certificate];
-
-		for (i = 0; i < (ca != NULL ? sk_X509_num(ca) : 0); i++)
-			[chain addObject: objc_autorelease([[self alloc]
-			    of_initWithCertificate: sk_X509_value(ca, i)
-					privateKey: key])];
-	} @finally {
-		BIO_free(bio);
-
-		if (p12 != NULL)
-			PKCS12_free(p12);
-		if (cert != NULL)
-			X509_free(cert);
-		if (key != NULL)
-			EVP_PKEY_free(key);
-		if (ca != NULL) {
-			for (; i < sk_X509_num(ca); i++)
-				X509_free(sk_X509_value(ca, i));
-
-			sk_X509_free(ca);
-		}
 	}
 
 	[chain makeImmutable];

@@ -64,7 +64,7 @@ OFX509CertificateImplementationRef(void)
 
 + (bool)supportsPKCS12Files
 {
-	return [OFX509CertificateImplementation supportsPKCS12Files];
+	return false;
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
@@ -83,11 +83,6 @@ OFX509CertificateImplementationRef(void)
     certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
 			     passphrase: (OFString *)passphrase
 {
-	if ([OFX509CertificateImplementation supportsPKCS12Files])
-		return [OFX509CertificateImplementation
-		    certificateChainFromPKCS12FileAtIRI: IRI
-					     passphrase: passphrase];
-
 	OF_UNRECOGNIZED_SELECTOR
 }
 

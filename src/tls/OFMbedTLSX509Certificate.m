@@ -118,11 +118,6 @@ X509TimeToDate(mbedtls_x509_time *time)
 	return true;
 }
 
-+ (bool)supportsPKCS12Files
-{
-	return false;
-}
-
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI

@@ -80,10 +80,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns whether creating a certificate chain from a PKCS #12 file is
  *	  supported.
  *
+ * @deprecated PKCS #12 is no longer supported, so this always returns `false`.
+ *
  * @return Whether creating a certificate chain from a PKCS #12 file is
  *	   supported
  */
-+ (bool)supportsPKCS12Files;
++ (bool)supportsPKCS12Files
+    OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
@@ -105,8 +108,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the certificate chain from the PKCS #12 file at the specified
  *	  IRI.
  *
- * @note This is not available when using Mbed TLS! Use
- *	 @ref certificateChainFromPEMFileAtIRI:privateKeyIRI: instead!
+ * @deprecated PKCS #12 is no longer supported, so this always throws @ref
+ *	       OFNotImplementedException.
  *
  * @param IRI The IRI to the PKCS #12 file with the certificate chain
  * @param passphrase The passphrase for the PKCS #12 file
@@ -118,7 +121,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
-			     passphrase: (nullable OFString *)passphrase;
+			     passphrase: (nullable OFString *)passphrase
+    OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
 @end
 
 #ifdef __cplusplus
