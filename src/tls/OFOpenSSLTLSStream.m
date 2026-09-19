@@ -398,32 +398,78 @@ errToErrorCode(const SSL *SSL_)
 	}
 
 	if (_certificateChain.count > 0) {
-#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
-		OFOpenSSLX509Certificate *certificate =
-		    (OFOpenSSLX509Certificate *)_certificateChain.firstObject;
-		bool first = true;
+		OFData *certData =
+		    [_certificateChain.firstObject ASN1Value].DERRepresentation;
+		OFData *privateKeyData = [_certificateChain.firstObject
+		    privateKeyASN1Value].DERRepresentation;
 
-		if (SSL_use_certificate(_SSL,
-		    certificate.of_certificate) != 1 ||
-		    SSL_use_PrivateKey(_SSL, certificate.of_privateKey) != 1)
+		if (certData.count > LONG_MAX ||
+		    privateKeyData.count > LONG_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		const unsigned char *buffer = certData.items;
+		X509 *cert;
+		if ((cert = d2i_X509(NULL, &buffer,
+		    (long)certData.count)) == NULL)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host
 				      errorCode: initFailedErrorCode];
 
-		for (OFOpenSSLX509Certificate *iter in _certificateChain) {
+		if (SSL_use_certificate(_SSL, cert) != 1) {
+			X509_free(cert);
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+		}
+
+		buffer = privateKeyData.items;
+		EVP_PKEY *privateKey;
+		if ((privateKey = d2i_AutoPrivateKey(NULL, &buffer,
+		    (long)privateKeyData.count)) == NULL)
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+
+		if (SSL_use_PrivateKey(_SSL, privateKey) != 1) {
+			EVP_PKEY_free(privateKey);
+			@throw [OFTLSHandshakeFailedException
+			    exceptionWithStream: self
+					   host: host
+				      errorCode: initFailedErrorCode];
+		}
+
+		bool first = true;
+		for (OFX509Certificate *iter in _certificateChain) {
 			if (first) {
 				first = false;
 				continue;
 			}
 
-			if (SSL_add1_chain_cert(_SSL, iter.of_certificate) != 1)
+			certData = iter.ASN1Value.DERRepresentation;
+			if (certData.count > LONG_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			buffer = certData.items;
+			if ((cert = d2i_X509(NULL, &buffer,
+			    (long)certData.count)) == NULL)
 				@throw [OFTLSHandshakeFailedException
 				    exceptionWithStream: self
 						   host: host
 					      errorCode: initFailedErrorCode];
+
+			if (SSL_add1_chain_cert(_SSL, cert) != 1) {
+				X509_free(cert);
+				@throw [OFTLSHandshakeFailedException
+				    exceptionWithStream: self
+						   host: host
+					      errorCode: initFailedErrorCode];
+			}
+
+			X509_free(cert);
 		}
-#endif
 	}
 
 	ERR_clear_error();
@@ -695,7 +741,6 @@ inform_delegate:
 	return nil;
 }
 
-#if 0	/* Disabled while migrating to ObjFW-native OFX509Certificate */
 - (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain
 {
 	OFMutableArray *chain = [OFMutableArray array];
@@ -708,17 +753,29 @@ inform_delegate:
 	 */
 	if (_server) {
 		X509 *cert = SSL_get_peer_certificate(_SSL);
-
 		if (cert == NULL) {
 			objc_autoreleasePoolPop(pool);
 			return nil;
 		}
 
 		@try {
-			[chain addObject: objc_autorelease(
-			    [[OFOpenSSLX509Certificate alloc]
-			    of_initWithCertificate: cert
-					privateKey: NULL])];
+			unsigned char *output = NULL;
+			int length = i2d_X509(cert, &output);
+			if (length < 0) {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+
+			@try {
+				OF_KINDOF(OFASN1Value *) value =
+				    [[OFData dataWithItems: output
+						     count: length]
+				    valueByParsingDER];
+				[chain addObject: [OFX509Certificate
+				    certificateWithASN1Value: value]];
+			} @finally {
+				OPENSSL_free(output);
+			}
 		} @catch (id e) {
 			X509_free(cert);
 			@throw e;
@@ -734,17 +791,21 @@ inform_delegate:
 	for (int i = 0; i < sk_X509_num(certs); i++) {
 		X509 *cert = sk_X509_value(certs, i);
 
-		if (X509_up_ref(cert) != 1)
-			@throw [OFOutOfRangeException exception];
+		unsigned char *output = NULL;
+		int length = i2d_X509(cert, &output);
+		if (length < 0) {
+			objc_autoreleasePoolPop(pool);
+			return nil;
+		}
 
 		@try {
-			[chain addObject: objc_autorelease(
-			    [[OFOpenSSLX509Certificate alloc]
-			    of_initWithCertificate: cert
-					privateKey: NULL])];
-		} @catch (id e) {
-			X509_free(cert);
-			@throw e;
+			OF_KINDOF(OFASN1Value *) value =
+			    [[OFData dataWithItems: output count: length]
+			    valueByParsingDER];
+			[chain addObject: [OFX509Certificate
+			    certificateWithASN1Value: value]];
+		} @finally {
+			OPENSSL_free(output);
 		}
 	}
 
@@ -752,5 +813,4 @@ inform_delegate:
 
 	return chain;
 }
-#endif
 @end
