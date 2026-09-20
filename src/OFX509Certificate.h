@@ -37,6 +37,8 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFASN1Sequence *_ASN1Value;
 	OFASN1Sequence *_Nullable _privateKeyASN1Value;
+	int _version;
+	OFASN1Integer *_serialNumber;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES

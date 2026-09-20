@@ -36,6 +36,7 @@
 
 @implementation OFX509Certificate
 @synthesize ASN1Value = _ASN1Value, privateKeyASN1Value = _privateKeyASN1Value;
+@synthesize version = _version, serialNumber = _serialNumber;
 
 + (bool)supportsPEMFiles
 {
@@ -182,6 +183,8 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+
 		if (![ASN1Value isKindOfClass: [OFASN1Sequence class]])
 			@throw [OFInvalidFormatException exception];
 
@@ -191,6 +194,63 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 
 		_ASN1Value = objc_retain(ASN1Value);
 		_privateKeyASN1Value = objc_retain(privateKeyASN1Value);
+
+		if (_ASN1Value.components.count != 3)
+			@throw [OFInvalidFormatException exception];
+
+		OFASN1Sequence *TBSCert =
+		    [_ASN1Value.components objectAtIndex: 0];
+		if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
+			@throw [OFInvalidFormatException exception];
+
+		OFEnumerator *enumerator =
+		    [TBSCert.components objectEnumerator];
+
+		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
+		if ([value tagClass] == OFASN1TagClassContextSpecific &&
+		    [value tagNumber] == 0) {
+			if (![value isKindOfClass:
+			    [OFConstructedASN1Value class]])
+				@throw [OFInvalidFormatException exception];
+
+			OFConstructedASN1Value *constructed = value;
+			if (constructed.components.count != 1)
+				@throw [OFInvalidFormatException exception];
+
+			OFASN1Integer *versionValue =
+			    constructed.components.firstObject;
+			if (![versionValue isKindOfClass:
+			    [OFASN1Integer class]])
+				@throw [OFInvalidFormatException exception];
+
+			long long version;
+			@try {
+				version = versionValue.longLongValue;
+			} @catch (OFOutOfRangeException *e) {
+				@throw [OFInvalidFormatException exception];
+			}
+
+			switch (version) {
+			case 1:
+				_version = 2;
+				break;
+			case 2:
+				_version = 3;
+				break;
+			default:
+				@throw [OFInvalidFormatException exception];
+			}
+
+			value = [enumerator nextObject];
+		} else
+			_version = 1;
+
+		if (![value isKindOfClass: [OFASN1Integer class]])
+			@throw [OFInvalidFormatException exception];
+
+		_serialNumber = objc_retain(value);
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -203,63 +263,9 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 {
 	objc_release(_ASN1Value);
 	objc_release(_privateKeyASN1Value);
+	objc_release(_serialNumber);
 
 	[super dealloc];
-}
-
-- (int)version
-{
-	OFASN1Sequence *TBSCert = [_ASN1Value.components objectAtIndex: 0];
-	if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
-		@throw [OFInvalidFormatException exception];
-
-	for (OFConstructedASN1Value *value in TBSCert.components) {
-		if (value.tagClass != OFASN1TagClassContextSpecific ||
-		    value.tagNumber != 0)
-			continue;
-
-		if (![value isKindOfClass: [OFConstructedASN1Value class]] ||
-		    value.components.count != 1)
-			@throw [OFInvalidFormatException exception];
-
-		OFASN1Integer *version = [value.components objectAtIndex: 0];
-		if (![version isKindOfClass: [OFASN1Integer class]])
-			@throw [OFInvalidFormatException exception];
-
-		switch (version.longLongValue) {
-		case 0:
-			return 1;
-		case 1:
-			return 2;
-		case 2:
-			return 3;
-		default:
-			@throw [OFUnsupportedVersionException
-			    exceptionWithVersion: [OFString stringWithFormat:
-			    @"%lld", version.longLongValue]];
-		}
-	}
-
-	@throw [OFInvalidFormatException exception];
-}
-
-- (OFASN1Integer *)serialNumber
-{
-	OFASN1Sequence *TBSCert = [_ASN1Value.components objectAtIndex: 0];
-	if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
-		@throw [OFInvalidFormatException exception];
-
-	OFASN1Integer *serialNumber;
-	@try {
-		serialNumber = [TBSCert.components objectAtIndex: 1];
-	} @catch (OFOutOfRangeException *e) {
-		@throw [OFInvalidFormatException exception];
-	}
-
-	if (![serialNumber isKindOfClass: [OFASN1Integer class]])
-		@throw [OFInvalidFormatException exception];
-
-	return serialNumber;
 }
 
 - (OFString *)description
@@ -269,6 +275,6 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	    @"\tVersion = %d\n"
 	    @"\tSerial number = %@\n"
 	    @">",
-	    self.version, self.serialNumber.rawValue];
+	    _version, _serialNumber.rawValue];
 }
 @end
