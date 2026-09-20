@@ -227,10 +227,14 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 			@try {
 				version = versionValue.longLongValue;
 			} @catch (OFOutOfRangeException *e) {
-				@throw [OFInvalidFormatException exception];
+				@throw [OFUnsupportedVersionException
+				    exceptionWithVersion:
+				    versionValue.rawValue.description];
 			}
 
 			switch (version) {
+			case 0:
+				@throw [OFInvalidFormatException exception];
 			case 1:
 				_version = 2;
 				break;
@@ -238,7 +242,9 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 				_version = 3;
 				break;
 			default:
-				@throw [OFInvalidFormatException exception];
+				@throw [OFUnsupportedVersionException
+				    exceptionWithVersion:
+				    versionValue.rawValue.description];
 			}
 
 			value = [enumerator nextObject];
