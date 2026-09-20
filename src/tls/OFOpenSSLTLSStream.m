@@ -424,6 +424,8 @@ errToErrorCode(const SSL *SSL_)
 				      errorCode: initFailedErrorCode];
 		}
 
+		X509_free(cert);
+
 		buffer = privateKeyData.items;
 		EVP_PKEY *privateKey;
 		if ((privateKey = d2i_AutoPrivateKey(NULL, &buffer,
@@ -440,6 +442,8 @@ errToErrorCode(const SSL *SSL_)
 					   host: host
 				      errorCode: initFailedErrorCode];
 		}
+
+		EVP_PKEY_free(privateKey);
 
 		bool first = true;
 		for (OFX509Certificate *iter in _certificateChain) {
@@ -776,7 +780,7 @@ inform_delegate:
 			} @finally {
 				OPENSSL_free(output);
 			}
-		} @catch (id e) {
+		} @finally {
 			X509_free(cert);
 			@throw e;
 		}
