@@ -97,6 +97,7 @@ SRCS = OFASN1BMPString.m		\
        OFOnce.m				\
        OFOptionsParser.m		\
        OFPBKDF2.m			\
+       OFPKCS8PrivateKey.m		\
        OFPair.m				\
        OFPrimitiveASN1Value.m		\
        OFRIPEMD160Hash.m		\
@@ -261,6 +262,7 @@ SRCS += OFASPrintF.m			\
 	OFInvertedCharacterSet.m	\
 	OFLHADecompressingStream.m	\
 	OFMutableUTF8String.m		\
+	OFPEMParser.m			\
 	OFQOIImageFormatHandler.m	\
 	OFRangeCharacterSet.m		\
 	OFSandbox.m			\

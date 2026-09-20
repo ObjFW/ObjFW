@@ -27,6 +27,7 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFLocale.h"
+#import "OFPKCS8PrivateKey.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -336,7 +337,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		_freePrivateKey = true;
 
 		OFData *privateKeyData = [[_certificateChain.firstObject
-		    privateKeyASN1Value] DERRepresentation];
+		    associatedPrivateKey] DERRepresentation];
 		if (mbedtls_pk_parse_key(&_privateKey, privateKeyData.items,
 		    privateKeyData.count, NULL, 0
 #if MBEDTLS_VERSION_MAJOR == 3

@@ -17,36 +17,29 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFConstructedASN1Value.h"
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#import "macros.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-/**
- * @brief An ASN.1 Sequence.
- */
-@interface OFASN1Sequence: OFConstructedASN1Value
-{
-	OF_RESERVE_IVARS(OFASN1Sequence, 4)
+@class OFData;
+@class OFStream;
+@class OFString;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void OFParsePEM(OFStream *stream,
+    void (*callback)(OFString *, OFData *, void *ctx), void *ctx)
+    OF_VISIBILITY_INTERNAL;
+#ifdef __cplusplus
 }
-
-/**
- * @brief Creates an ASN.1 Sequence with the specified components.
- *
- * @param components The components of the Sequence
- * @return A new, autoreleased OFASN1Sequence
- */
-+ (instancetype)valueWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					 OFASN1Value *)) *)components;
-
-/**
- * @brief Initializes an already allocated ASN.1 Sequence with the specified
- *	  components.
- *
- * @param components The components of the Sequence
- * @return An initialized OFASN1Sequence
- */
-- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components;
-@end
+#endif
 
 OF_ASSUME_NONNULL_END

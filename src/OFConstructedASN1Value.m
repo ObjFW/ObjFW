@@ -217,7 +217,7 @@
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), components];
 }
 
-- (OF_KINDOF(OFConstructedASN1Value *))parsedAs: (Class)class
+- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
 {
 	if (![class isSubclassOfClass: [OFConstructedASN1Value class]])
 		@throw [OFInvalidArgumentException exception];

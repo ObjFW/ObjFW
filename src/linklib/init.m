@@ -162,6 +162,7 @@ void *__objc_class_name_OFOpenItemFailedException;
 void *__objc_class_name_OFOptionsParser;
 void *__objc_class_name_OFOutOfMemoryException;
 void *__objc_class_name_OFOutOfRangeException;
+void *__objc_class_name_OFPKCS8PrivateKey;
 void *__objc_class_name_OFPair;
 void *__objc_class_name_OFPrimitiveASN1Value;
 void *__objc_class_name_OFRIPEMD160Hash;

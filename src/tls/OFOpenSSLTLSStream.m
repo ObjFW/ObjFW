@@ -24,6 +24,7 @@
 #import "OFOpenSSLTLSStream.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFPKCS8PrivateKey.h"
 
 #include <openssl/err.h>
 
@@ -401,7 +402,7 @@ errToErrorCode(const SSL *SSL_)
 		OFData *certData = [[_certificateChain.firstObject
 		    ASN1Value] DERRepresentation];
 		OFData *privateKeyData = [[_certificateChain.firstObject
-		    privateKeyASN1Value] DERRepresentation];
+		    associatedPrivateKey] DERRepresentation];
 
 		if (certData.count > LONG_MAX ||
 		    privateKeyData.count > LONG_MAX)

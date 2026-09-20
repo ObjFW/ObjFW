@@ -22,10 +22,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
-@class OFIRI;
+@class OFASN1Integer;
 @class OFASN1Sequence;
 @class OFASN1Value;
-@class OFASN1Integer;
+@class OFIRI;
+@class OFPKCS8PrivateKey;
 
 /**
  * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
@@ -36,7 +37,7 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFX509Certificate: OFObject
 {
 	OFASN1Sequence *_ASN1Value;
-	OFASN1Sequence *_Nullable _privateKeyASN1Value;
+	OFPKCS8PrivateKey *_Nullable _associatedPrivateKey;
 	int _version;
 	OFASN1Integer *_serialNumber;
 }
@@ -55,7 +56,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The private key for the certificate as an @ref OFASN1Value.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OF_KINDOF(OFASN1Value *) privateKeyASN1Value;
+    OFPKCS8PrivateKey *associatedPrivateKey;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -137,14 +138,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Creates a new @ref OFX509Certificate with the specified ASN.1 value.
  *
  * @param ASN1Value The ASN.1 value
- * @param privateKeyASN1Value The private key for the certificate
+ * @param associatedPrivateKey The associated private key for the certificate
  * @return An new @ref OFX509Certificate
  * @throw OFInvalidFormatException The specified format is not a properly
  *				   formatted X.509 certificate
  */
 + (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-		     privateKeyASN1Value: (nullable OF_KINDOF(OFASN1Value *))
-					      privateKeyASN1Value;
+		    associatedPrivateKey: (nullable OFPKCS8PrivateKey *)
+					      associatedPrivateKey;
 
 /**
  * @brief Initializes an already allocated @ref OFX509Certificate with the
@@ -162,14 +163,14 @@ OF_SUBCLASSING_RESTRICTED
  *	  specified ASN.1 value.
  *
  * @param ASN1Value The ASN.1 value
- * @param privateKeyASN1Value The private key for the certificate
+ * @param associatedPrivateKey The private key for the certificate
  * @return An initialized @ref OFX509Certificate
  * @throw OFInvalidFormatException The specified format is not a properly
  *				   formatted X.509 certificate
  */
 - (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-	      privateKeyASN1Value: (nullable OF_KINDOF(OFASN1Value *))
-				       privateKeyASN1Value
+	     associatedPrivateKey: (nullable OFPKCS8PrivateKey *)
+				       associatedPrivateKey
     OF_DESIGNATED_INITIALIZER;
 @end
 

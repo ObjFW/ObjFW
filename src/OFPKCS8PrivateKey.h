@@ -17,36 +17,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFConstructedASN1Value.h"
+#import "OFASN1Sequence.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @brief An ASN.1 Sequence.
- */
-@interface OFASN1Sequence: OFConstructedASN1Value
-{
-	OF_RESERVE_IVARS(OFASN1Sequence, 4)
-}
-
-/**
- * @brief Creates an ASN.1 Sequence with the specified components.
+ * @class OFPKCS8PrivateKey OFPKCS8PrivateKey.h ObjFW/ObjFW.h
  *
- * @param components The components of the Sequence
- * @return A new, autoreleased OFASN1Sequence
+ * @brief A PKCS #8 private key.
  */
-+ (instancetype)valueWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					 OFASN1Value *)) *)components;
-
-/**
- * @brief Initializes an already allocated ASN.1 Sequence with the specified
- *	  components.
- *
- * @param components The components of the Sequence
- * @return An initialized OFASN1Sequence
- */
-- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
-					OFASN1Value *)) *)components;
+@interface OFPKCS8PrivateKey: OFASN1Sequence
 @end
 
 OF_ASSUME_NONNULL_END

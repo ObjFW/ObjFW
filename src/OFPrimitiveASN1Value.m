@@ -176,7 +176,7 @@
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _rawValue];
 }
 
-- (OF_KINDOF(OFPrimitiveASN1Value *))parsedAs: (Class)class
+- (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
 {
 	if (![class isSubclassOfClass: [OFPrimitiveASN1Value class]])
 		@throw [OFInvalidArgumentException exception];

@@ -24,6 +24,7 @@
 #import "OFGnuTLSTLSStream.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFPKCS8PrivateKey.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFInitializationFailedException.h"
@@ -305,7 +306,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 				@throw [OFOutOfRangeException exception];
 
 			OFData *privateKeyData = [[_certificateChain.firstObject
-			    privateKeyASN1Value] DERRepresentation];
+			    associatedPrivateKey] DERRepresentation];
 
 			if (privateKeyData.count > UINT_MAX)
 				@throw [OFOutOfRangeException exception];
