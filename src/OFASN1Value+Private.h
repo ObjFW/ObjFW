@@ -26,9 +26,9 @@ extern size_t _OFDEREncodeTag(OFASN1TagClass tagClass,
     unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_INTERNAL;
 extern size_t _OFDEREncodeLength(size_t length,
     unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
-extern int64_t _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
+extern long long _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
     OF_VISIBILITY_INTERNAL;
-extern size_t _OFDEREncodeInteger(int64_t value,
+extern size_t _OFDEREncodeInteger(long long value,
     unsigned char buffer[_Nonnull 8]) OF_VISIBILITY_INTERNAL;
 
 OF_ASSUME_NONNULL_END

@@ -27,31 +27,32 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFASN1Enumerated
-+ (instancetype)enumeratedWithInt64: (int64_t)value
++ (instancetype)enumeratedWithLongLong: (long long)value
 {
-	return objc_autoreleaseReturnValue([[self alloc] initWithInt64: value]);
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithLongLong: value]);
 }
 
-+ (instancetype)enumeratedWithInt64: (int64_t)value
-			   tagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)enumeratedWithLongLong: (long long)value
+			      tagClass: (OFASN1TagClass)tagClass
+			     tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithInt64: value
-		 tagClass: tagClass
-		tagNumber: tagNumber]);
+	    initWithLongLong: value
+		    tagClass: tagClass
+		   tagNumber: tagNumber]);
 }
 
-- (instancetype)initWithInt64: (int64_t)value
+- (instancetype)initWithLongLong: (long long)value
 {
-	return [self initWithInt64: value
-			  tagClass: OFASN1TagClassUniversal
-			 tagNumber: OFASN1TagNumberEnumerated];
+	return [self initWithLongLong: value
+			     tagClass: OFASN1TagClassUniversal
+			    tagNumber: OFASN1TagNumberEnumerated];
 }
 
-- (instancetype)initWithInt64: (int64_t)value
-		     tagClass: (OFASN1TagClass)tagClass
-		    tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithLongLong: (long long)value
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -111,7 +112,7 @@
 	return self;
 }
 
-- (int64_t)int64Value
+- (long long)longLongValue
 {
 	return _OFDERDecodeInteger(_rawValue.items, _rawValue.count);
 }

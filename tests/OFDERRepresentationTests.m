@@ -40,7 +40,7 @@
 - (void)testInteger
 {
 	OTAssertEqualObjects(
-	    [[OFASN1Integer integerWithInt64: INT64_MIN] DERRepresentation],
+	    [[OFASN1Integer integerWithLongLong: INT64_MIN] DERRepresentation],
 	    [OFData dataWithItems: "\x02\x08\x80\x00\x00\x00\x00\x00\x00\x00"
 			    count: 10]);
 }
@@ -91,7 +91,7 @@
 - (void)testEnumerated
 {
 	OTAssertEqualObjects([[OFASN1Enumerated
-	    enumeratedWithInt64: INT64_MIN] DERRepresentation],
+	    enumeratedWithLongLong: INT64_MIN] DERRepresentation],
 	    [OFData dataWithItems: "\x0A\x08\x80\x00\x00\x00\x00\x00\x00\x00"
 			    count: 10]);
 }

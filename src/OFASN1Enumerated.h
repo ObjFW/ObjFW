@@ -27,53 +27,53 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Enumerated: OFPrimitiveASN1Value
 /**
- * @brief The int64 value of the Enumerated`.
+ * @brief The `long long` value of the Enumerated`
  *
- * @throws OFOutOfRangeException The Enumerated does not fit into an int64
+ * @throws OFOutOfRangeException The Enumerated does not fit into a `long long`
  */
-@property (readonly, nonatomic) int64_t int64Value;
+@property (readonly, nonatomic) long long longLongValue;
 
 /**
- * @brief Creates an ASN.1 Enumerated with the specified int64.
+ * @brief Creates an ASN.1 Enumerated with the specified `long long`.
  *
- * @param value The `int64_t` value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @return A new, autoreleased OFASN1Enumerated
  */
-+ (instancetype)enumeratedWithInt64: (int64_t)value;
++ (instancetype)enumeratedWithLongLong: (long long)value;
 
 /**
- * @brief Creates an ASN.1 Enumerated with the specified int64.
+ * @brief Creates an ASN.1 Enumerated with the specified `long long`.
  *
- * @param value The `int64_t` value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1Enumerated
  */
-+ (instancetype)enumeratedWithInt64: (int64_t)value
-			   tagClass: (OFASN1TagClass)tagClass
-			  tagNumber: (OFASN1TagNumber)tagNumber;
++ (instancetype)enumeratedWithLongLong: (long long)value
+			      tagClass: (OFASN1TagClass)tagClass
+			     tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
- *	  int64.
+ *	  `long long`.
  *
- * @param value The `int64_t` value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @return An initialized OFASN1Enumerated
  */
-- (instancetype)initWithInt64: (int64_t)value;
+- (instancetype)initWithLongLong: (long long)value;
 
 /**
  * @brief Initializes an already allocated ASN.1 Enumerated with the specified
- *	  int64 value.
+ *	  `long long` value.
  *
- * @param value The `int64_t` value of the Enumerated
+ * @param value The `long long` value of the Enumerated
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1Enumerated
  */
-- (instancetype)initWithInt64: (int64_t)value
-		     tagClass: (OFASN1TagClass)tagClass
-		    tagNumber: (OFASN1TagNumber)tagNumber;
+- (instancetype)initWithLongLong: (long long)value
+			tagClass: (OFASN1TagClass)tagClass
+		       tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -27,53 +27,53 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Integer: OFPrimitiveASN1Value
 /**
- * @brief The int64 value of the Integer.
+ * @brief The long long value of the Integer.
  *
- * @throws OFOutOfRangeException The Integer does not fit into an int64
+ * @throws OFOutOfRangeException The Integer does not fit into a `long long`
  */
-@property (readonly, nonatomic) int64_t int64Value;
+@property (readonly, nonatomic) long long longLongValue;
 
 /**
- * @brief Creates an ASN.1 Integer with the specified int64.
+ * @brief Creates an ASN.1 Integer with the specified `long long`.
  *
- * @param value The `int64_t` value of the Integer
+ * @param value The `long long` value of the Integer
  * @return A new, autoreleased OFASN1Integer
  */
-+ (instancetype)integerWithInt64: (int64_t)value;
++ (instancetype)integerWithLongLong: (long long)value;
 
 /**
- * @brief Creates an ASN.1 Integer with the specified int64.
+ * @brief Creates an ASN.1 Integer with the specified `long long`.
  *
- * @param value The `int64_t` value of the Integer
+ * @param value The `long long` value of the Integer
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1Integer
  */
-+ (instancetype)integerWithInt64: (int64_t)value
++ (instancetype)integerWithLongLong: (long long)value
+			   tagClass: (OFASN1TagClass)tagClass
+			  tagNumber: (OFASN1TagNumber)tagNumber;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Integer with the specified
+ *	  `long long`.
+ *
+ * @param value The `long long` value of the Integer
+ * @return An initialized OFASN1Integer
+ */
+- (instancetype)initWithLongLong: (long long)value;
+
+/**
+ * @brief Initializes an already allocated ASN.1 Integer with the specified
+ *	  `long long` value.
+ *
+ * @param value The `long long` value of the Integer
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1Integer
+ */
+- (instancetype)initWithLongLong: (long long)value
 			tagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber;
-
-/**
- * @brief Initializes an already allocated ASN.1 Integer with the specified
- *	  int64.
- *
- * @param value The `int64_t` value of the Integer
- * @return An initialized OFASN1Integer
- */
-- (instancetype)initWithInt64: (int64_t)value;
-
-/**
- * @brief Initializes an already allocated ASN.1 Integer with the specified
- *	  int64 value.
- *
- * @param value The `int64_t` value of the Integer
- * @param tagClass The tag class of the value's type
- * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1Integer
- */
-- (instancetype)initWithInt64: (int64_t)value
-		     tagClass: (OFASN1TagClass)tagClass
-		    tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

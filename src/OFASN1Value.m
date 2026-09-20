@@ -237,13 +237,13 @@ _OFDEREncodeLength(size_t length, unsigned char buffer[9])
 		@throw [OFOutOfRangeException exception];
 }
 
-int64_t
+long long
 _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
 {
-	if (length > sizeof(int64_t))
+	if (length > sizeof(long long))
 		@throw [OFOutOfRangeException exception];
 
-	uint64_t value = 0;
+	unsigned long long value = 0;
 	if (buffer[0] & 0x80)
 		value = ~0ull;
 
@@ -254,10 +254,12 @@ _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
 }
 
 size_t
-_OFDEREncodeInteger(int64_t value, unsigned char buffer[8])
+_OFDEREncodeInteger(long long value, unsigned char buffer[8])
 {
-	uint64_t unsignedValue = value;
+	if (value < INT64_MIN || value > INT64_MAX)
+		@throw [OFOutOfRangeException exception];
 
+	uint64_t unsignedValue = (int64_t)value;
 	buffer[0] = (unsignedValue >> 56) & 0x80;
 
 	if (value >= -128 && value <= 127) {
