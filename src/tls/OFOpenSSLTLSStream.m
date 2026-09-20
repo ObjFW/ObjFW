@@ -398,10 +398,10 @@ errToErrorCode(const SSL *SSL_)
 	}
 
 	if (_certificateChain.count > 0) {
-		OFData *certData =
-		    [_certificateChain.firstObject ASN1Value].DERRepresentation;
-		OFData *privateKeyData = [_certificateChain.firstObject
-		    privateKeyASN1Value].DERRepresentation;
+		OFData *certData = [[_certificateChain.firstObject
+		    ASN1Value] DERRepresentation];
+		OFData *privateKeyData = [[_certificateChain.firstObject
+		    privateKeyASN1Value] DERRepresentation];
 
 		if (certData.count > LONG_MAX ||
 		    privateKeyData.count > LONG_MAX)
@@ -448,7 +448,7 @@ errToErrorCode(const SSL *SSL_)
 				continue;
 			}
 
-			certData = iter.ASN1Value.DERRepresentation;
+			certData = [iter.ASN1Value DERRepresentation];
 			if (certData.count > LONG_MAX)
 				@throw [OFOutOfRangeException exception];
 

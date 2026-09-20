@@ -318,7 +318,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		_freeOwnChain = true;
 
 		for (OFX509Certificate *cert in _certificateChain) {
-			OFData *certData = cert.ASN1Value.DERRepresentation;
+			OFData *certData = [cert.ASN1Value DERRepresentation];
 			if (mbedtls_x509_crt_parse(&_ownChain, certData.items,
 			    certData.count) != 0)
 				@throw [OFTLSHandshakeFailedException
@@ -330,8 +330,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		mbedtls_pk_init(&_privateKey);
 		_freePrivateKey = true;
 
-		OFData *privateKeyData = [_certificateChain.firstObject
-		    privateKeyASN1Value].DERRepresentation;
+		OFData *privateKeyData = [[_certificateChain.firstObject
+		    privateKeyASN1Value] DERRepresentation];
 		if (mbedtls_pk_parse_key(&_privateKey, privateKeyData.items,
 		    privateKeyData.count, NULL, 0
 #if MBEDTLS_VERSION_MAJOR == 3

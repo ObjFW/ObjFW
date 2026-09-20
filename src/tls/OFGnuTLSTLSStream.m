@@ -271,7 +271,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			for (OFX509Certificate *cert in _certificateChain) {
 #define IFEC initFailedErrorCode
 				OFData *certData =
-				    cert.ASN1Value.DERRepresentation;
+				    [cert.ASN1Value DERRepresentation];
 
 				if (certData.count > UINT_MAX)
 					@throw [OFOutOfRangeException
@@ -304,8 +304,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			if (certs.count > UINT_MAX)
 				@throw [OFOutOfRangeException exception];
 
-			OFData *privateKeyData = [_certificateChain.firstObject
-			    privateKeyASN1Value].DERRepresentation;
+			OFData *privateKeyData = [[_certificateChain.firstObject
+			    privateKeyASN1Value] DERRepresentation];
 
 			if (privateKeyData.count > UINT_MAX)
 				@throw [OFOutOfRangeException exception];
