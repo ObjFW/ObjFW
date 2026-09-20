@@ -175,6 +175,11 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 	if (_initialized)
 		[self close];
 
+	if (_freeOwnChain)
+		mbedtls_x509_crt_free(&_ownChain);
+	if (_freePrivateKey)
+		mbedtls_pk_free(&_privateKey);
+
 	objc_release(_host);
 
 	mbedtls_ssl_config_free(&_config);
