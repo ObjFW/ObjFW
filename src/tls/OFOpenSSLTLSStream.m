@@ -782,7 +782,6 @@ inform_delegate:
 			}
 		} @finally {
 			X509_free(cert);
-			@throw e;
 		}
 	}
 
