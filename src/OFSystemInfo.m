@@ -828,6 +828,17 @@ cpucfg(uint32_t word)
 	else
 		return [OFString stringWithCString: model
 					  encoding: OFStringEncodingASCII];
+#elif defined(OF_MORPHOS)
+	char buffer[128];
+	ULONG length;
+
+	if ((length = NewGetSystemAttrs(buffer, sizeof(buffer),
+	    SYSTEMINFOTYPE_CPUNAME, TAG_END)) > 0)
+		return [OFString stringWithCString: buffer
+					  encoding: OFStringEncodingISO8859_1
+					    length: length];
+
+	return nil;
 #elif defined(OF_AMIGAOS_M68K)
 	if (SysBase->AttnFlags & AFF_68060)
 		return @"68060";
