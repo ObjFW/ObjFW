@@ -110,7 +110,7 @@ OFASN1TagNumberDescription(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber)
 		case OFASN1TagNumberDate:
 			return @"DATE";
 		case OFASN1TagNumberTimeOfDay:
-			return @"TME-OF-DAY";
+			return @"TIME-OF-DAY";
 		case OFASN1TagNumberDateTime:
 			return @"DATE-TIME";
 		case OFASN1TagNumberDuration:
