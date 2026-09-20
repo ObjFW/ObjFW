@@ -6,8 +6,11 @@ execute_process(
 	]]
 	OUTPUT_VARIABLE ObjFW_CONFIG_EXECUTABLE
 	OUTPUT_STRIP_TRAILING_WHITESPACE
-	COMMAND_ERROR_IS_FATAL ANY
+	RESULT_VARIABLE execute_process_failed
 )
+if(execute_process_failed)
+	message(FATAL_ERROR "Could not determine ObjFW_CONFIG_EXECUTABLE path!")
+endif()
 
 macro(objfw_cygpath_to_win32 inpath outpath)
 	if(WIN32)
@@ -15,8 +18,11 @@ macro(objfw_cygpath_to_win32 inpath outpath)
 			COMMAND cygpath -w "${${inpath}}"
 			OUTPUT_VARIABLE ${outpath}
 			OUTPUT_STRIP_TRAILING_WHITESPACE
-			COMMAND_ERROR_IS_FATAL ANY
+			RESULT_VARIABLE execute_process_failed
 		)
+		if(execute_process_failed)
+			message(FATAL_ERROR "cygpath failed!")
+		endif()
 	endif()
 endmacro()
 
@@ -50,32 +56,46 @@ foreach(package ObjFW ${ObjFW_FIND_COMPONENTS})
 		${package_flags}
 		OUTPUT_VARIABLE compile_options
 		OUTPUT_STRIP_TRAILING_WHITESPACE
-		COMMAND_ERROR_IS_FATAL ANY
+		RESULT_VARIABLE execute_process_failed
 	)
+	if(execute_process_failed)
+		message(FATAL_ERROR "${ObjFW_CONFIG_EXECUTABLE} failed!")
+	endif()
 	if(APPLE)
 		execute_process(
 			COMMAND sh ${ObjFW_CONFIG_EXECUTABLE}
 			--framework-libs --ldflags ${package_flags}
 			OUTPUT_VARIABLE link_options
 			OUTPUT_STRIP_TRAILING_WHITESPACE
-			COMMAND_ERROR_IS_FATAL ANY
+			RESULT_VARIABLE execute_process_failed
 		)
+		if(execute_process_failed)
+			message(FATAL_ERROR
+				"${ObjFW_CONFIG_EXECUTABLE} failed!")
+		endif()
 	else()
 		execute_process(
 			COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --libs --ldflags
 			${package_flags}
 			OUTPUT_VARIABLE link_options
 			OUTPUT_STRIP_TRAILING_WHITESPACE
-			COMMAND_ERROR_IS_FATAL ANY
+			RESULT_VARIABLE execute_process_failed
 		)
+		if(execute_process_failed)
+			message(FATAL_ERROR
+				"${ObjFW_CONFIG_EXECUTABLE} failed!")
+		endif()
 	endif()
 	execute_process(
 		COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --static-libs --ldflags
 		${package_flags}
 		OUTPUT_VARIABLE static_link_options
 		OUTPUT_STRIP_TRAILING_WHITESPACE
-		COMMAND_ERROR_IS_FATAL ANY
+		RESULT_VARIABLE execute_process_failed
 	)
+	if(execute_process_failed)
+		message(FATAL_ERROR "${ObjFW_CONFIG_EXECUTABLE} failed!")
+	endif()
 
 	string(REPLACE " " ";" compile_options "${compile_options}")
 	string(REPLACE " " ";" link_options "${link_options}")
@@ -157,8 +177,11 @@ execute_process(
 	COMMAND sh ${ObjFW_CONFIG_EXECUTABLE} --arc
 	OUTPUT_VARIABLE _objfw_arc_options
 	OUTPUT_STRIP_TRAILING_WHITESPACE
-	COMMAND_ERROR_IS_FATAL ANY
+	RESULT_VARIABLE execute_process_failed
 )
+if(execute_process_failed)
+	message(FATAL_ERROR "${ObjFW_CONFIG_EXECUTABLE} failed!")
+endif()
 string(REPLACE " " ";" _objfw_arc_options "${_objfw_arc_options}")
 foreach(flag ${_objfw_arc_options})
 	target_compile_options(ObjFW::ARC INTERFACE ${flag})
