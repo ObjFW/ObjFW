@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFIRI;
+@class OFPKCS8PrivateKey;
 @class OFX509Certificate;
 
 /** @file */
@@ -80,6 +81,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFSocketAddress _remoteAddress;
 	bool _hasRemoteAddress;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OFPKCS8PrivateKey *_Nullable _privateKey;
 }
 
 /**
@@ -138,10 +140,16 @@ OF_SUBCLASSING_RESTRICTED
 @property OF_NULLABLE_PROPERTY (nonatomic) const OFSocketAddress *remoteAddress;
 
 /**
- * @brief The certificate chain used for the request.
+ * @brief The certificate chain for the request.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The private key for the request.
+ */
+@property OF_NULLABLE_PROPERTY (retain, nonatomic)
+    OFPKCS8PrivateKey *privateKey;
 
 /**
  * @brief Creates a new OFHTTPRequest with the specified IRI.

@@ -37,8 +37,8 @@ OF_SUBCLASSING_RESTRICTED
 	mbedtls_ssl_config _config;
 	mbedtls_ssl_context _SSL;
 	mbedtls_x509_crt _CAChain, _ownChain;
-	mbedtls_pk_context _privateKey;
-	bool _freeOwnChain, _freePrivateKey;
+	mbedtls_pk_context _PKContext;
+	bool _freeOwnChain, _freePKContext;
 	OFString *_host;
 }
 @end

@@ -20,6 +20,37 @@
 #include "config.h"
 
 #import "OFPKCS8PrivateKey.h"
+#import "OFData.h"
+#import "OFIRI.h"
+#import "OFIRIHandler.h"
+#import "OFPEMParser.h"
+
+#import "OFInvalidArgumentException.h"
+
+static void
+parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
+{
+	if (![section isEqual: @"PRIVATE KEY"])
+                @throw [OFInvalidArgumentException exception];
+
+	OFPKCS8PrivateKey **privateKey = ctx;
+	*privateKey =
+	    [data.valueByParsingDER parsedAs: [OFPKCS8PrivateKey class]];
+}
 
 @implementation OFPKCS8PrivateKey
++ (OFPKCS8PrivateKey *)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	OFPKCS8PrivateKey *privateKey;
+	OFParsePEM([OFIRIHandler openItemAtIRI: IRI mode: @"r"],
+	    parsePrivateKeyCallback, &privateKey);
+
+	objc_retain(privateKey);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(privateKey);
+}
 @end

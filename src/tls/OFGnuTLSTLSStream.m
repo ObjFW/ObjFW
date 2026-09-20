@@ -305,9 +305,8 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 			if (certs.count > UINT_MAX)
 				@throw [OFOutOfRangeException exception];
 
-			OFData *privateKeyData = [[_certificateChain.firstObject
-			    associatedPrivateKey] DERRepresentation];
-
+			OFData *privateKeyData =
+			    [self.privateKey DERRepresentation];
 			if (privateKeyData.count > UINT_MAX)
 				@throw [OFOutOfRangeException exception];
 

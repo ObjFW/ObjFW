@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
+#import "OFX509Certificate+Private.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Sequence.h"
 #import "OFArray.h"
@@ -36,9 +37,10 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
+void *_OFX509CertificatePrivateKeyKey = &_OFX509CertificatePrivateKeyKey;
+
 @implementation OFX509Certificate
-@synthesize ASN1Value = _ASN1Value;
-@synthesize associatedPrivateKey = _associatedPrivateKey, version = _version;
+@synthesize ASN1Value = _ASN1Value, version = _version;
 @synthesize serialNumber = _serialNumber;
 
 + (bool)supportsPEMFiles
@@ -52,56 +54,46 @@
 }
 
 static void
-parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
-{
-	if (![section isEqual: @"PRIVATE KEY"])
-		@throw [OFInvalidArgumentException exception];
-
-	OFPKCS8PrivateKey **privateKey = ctx;
-	*privateKey =
-	    [data.valueByParsingDER parsedAs: [OFPKCS8PrivateKey class]];
-}
-
-static void
 parseCertificates(OFString *section, OFData *data, void *ctx)
 {
 	if (![section isEqual: @"CERTIFICATE"])
 		@throw [OFInvalidArgumentException exception];
 
-	OFPair *pair = ctx;
-	OFMutableArray *certificateChain = pair.firstObject;
-	OFPKCS8PrivateKey *associatedPrivateKey;
+	[(OFMutableArray *)ctx addObject: [OFX509Certificate
+	   certificateWithASN1Value: data.valueByParsingDER]];
+}
 
-	if (certificateChain.count == 0)
-		associatedPrivateKey = pair.secondObject;
-	else
-		associatedPrivateKey = nil;
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI
+{
+	OFMutableArray *certificateChain = [OFMutableArray array];
 
-	[certificateChain addObject:
-	    [OFX509Certificate certificateWithASN1Value: data.valueByParsingDER
-				   associatedPrivateKey: associatedPrivateKey]];
+	void *pool = objc_autoreleasePoolPush();
+	OFParsePEM([OFIRIHandler openItemAtIRI: IRI mode: @"r"],
+	    parseCertificates, certificateChain);
+	objc_autoreleasePoolPop(pool);
+
+	return certificateChain;
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
 		       privateKeyIRI: (OFIRI *)privateKeyIRI
 {
-	OFMutableArray *certificateChain = [OFMutableArray array];
-	void *pool = objc_autoreleasePoolPush();
-	OFPKCS8PrivateKey *associatedPrivateKey = nil;
+	OFArray *certificateChain =
+	    [self certificateChainFromPEMFileAtIRI: certificatesIRI];
 
-	if (privateKeyIRI != nil)
-		OFParsePEM([OFIRIHandler openItemAtIRI: privateKeyIRI
-						  mode: @"r"],
-		    parsePrivateKeyCallback, &associatedPrivateKey);
+	if (certificateChain.count > 0) {
+		void *pool = objc_autoreleasePoolPush();
 
-	OFParsePEM([OFIRIHandler openItemAtIRI: certificatesIRI
-					mode: @"r"],
-	    parseCertificates,
-	    [OFPair pairWithFirstObject: certificateChain
-			   secondObject: associatedPrivateKey]);
+		OFPKCS8PrivateKey *privateKey = [OFPKCS8PrivateKey
+		    privateKeyFromPEMFileAtIRI: privateKeyIRI];
+		objc_setAssociatedObject(certificateChain.firstObject,
+		    _OFX509CertificatePrivateKeyKey, privateKey,
+		    OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-	objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return certificateChain;
 }
@@ -119,22 +111,7 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	    [[self alloc] initWithASN1Value: ASN1Value]);
 }
 
-+ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-		    associatedPrivateKey: (OFPKCS8PrivateKey *)
-					      associatedPrivateKey
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithASN1Value: ASN1Value
-		       associatedPrivateKey: associatedPrivateKey]);
-}
-
 - (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-{
-	return [self initWithASN1Value: ASN1Value associatedPrivateKey: nil];
-}
-
-- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-	     associatedPrivateKey: (OFPKCS8PrivateKey *)associatedPrivateKey
 {
 	self = [super init];
 
@@ -145,7 +122,6 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 			@throw [OFInvalidFormatException exception];
 
 		_ASN1Value = objc_retain(ASN1Value);
-		_associatedPrivateKey = objc_retain(associatedPrivateKey);
 
 		if (_ASN1Value.components.count != 3)
 			@throw [OFInvalidFormatException exception];
@@ -220,7 +196,6 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 - (void)dealloc
 {
 	objc_release(_ASN1Value);
-	objc_release(_associatedPrivateKey);
 	objc_release(_serialNumber);
 
 	[super dealloc];

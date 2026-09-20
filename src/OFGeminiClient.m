@@ -189,6 +189,7 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	}
 
 	TLSStream.certificateChain = _request.certificateChain;
+	TLSStream.privateKey = _request.privateKey;
 
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateTLSStream:request:)])

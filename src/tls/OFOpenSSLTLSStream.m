@@ -401,8 +401,7 @@ errToErrorCode(const SSL *SSL_)
 	if (_certificateChain.count > 0) {
 		OFData *certData = [[_certificateChain.firstObject
 		    ASN1Value] DERRepresentation];
-		OFData *privateKeyData = [[_certificateChain.firstObject
-		    associatedPrivateKey] DERRepresentation];
+		OFData *privateKeyData = [self.privateKey DERRepresentation];
 
 		if (certData.count > LONG_MAX ||
 		    privateKeyData.count > LONG_MAX)

@@ -792,6 +792,7 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		}
 
 		stream.certificateChain = _request.certificateChain;
+		stream.privateKey = _request.privateKey;
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:didCreateTLSStream:request:)])

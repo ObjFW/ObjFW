@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 /** @file */
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFPKCS8PrivateKey;
 @class OFTLSStream;
 @class OFX509Certificate;
 
@@ -104,8 +105,9 @@ typedef enum {
 	    *_underlyingStream;
 	bool _verifiesCertificates;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OFPKCS8PrivateKey *_Nullable _privateKey;
 	uintptr_t _atEndOfStream;	/* Change type on ABI bump */
-	OF_RESERVE_IVARS(OFTLSStream, 2)
+	OF_RESERVE_IVARS(OFTLSStream, 1)
 }
 
 /**
@@ -133,6 +135,12 @@ typedef enum {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The private key to use.
+ */
+@property OF_NULLABLE_PROPERTY (retain, nonatomic)
+    OFPKCS8PrivateKey *privateKey;
 
 /**
  * @brief The certificate of the peer.

@@ -26,7 +26,9 @@
 #import "OFData.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
+#import "OFPKCS8PrivateKey.h"
 #import "OFString.h"
+#import "OFX509Certificate.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -97,7 +99,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 @implementation OFHTTPRequest
 @synthesize IRI = _IRI, method = _method, headers = _headers, body = _body;
-@synthesize certificateChain = _certificateChain;
+@synthesize certificateChain = _certificateChain, privateKey = _privateKey;
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
@@ -132,6 +134,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 	objc_release(_headers);
 	objc_release(_body);
 	objc_release(_certificateChain);
+	objc_release(_privateKey);
 
 	[super dealloc];
 }
@@ -163,6 +166,7 @@ OFHTTPRequestMethodParseName(OFString *string)
 		copy->_body = [_body copy];
 		copy.remoteAddress = self.remoteAddress;
 		copy->_certificateChain = [_certificateChain copy];
+		copy->_privateKey = objc_retain(_privateKey);
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -199,6 +203,10 @@ OFHTTPRequestMethodParseName(OFString *string)
 
 	if (request.certificateChain != self.certificateChain &&
 	    ![request.certificateChain isEqual: self.certificateChain])
+		return false;
+
+	if (request.privateKey != self.privateKey &&
+	    ![request.privateKey isEqual: self.privateKey])
 		return false;
 
 	return true;

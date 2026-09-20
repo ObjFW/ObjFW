@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFGeminiRequest;
 @class OFGeminiResponse;
 @class OFGeminiServer;
+@class OFPKCS8PrivateKey;
 @class OFStream;
 @class OFTCPSocket;
 @class OFX509Certificate;
@@ -93,6 +94,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFObject <OFGeminiServerDelegate> *_Nullable _delegate;
 	OFTCPSocket *_Nullable _listeningSocket;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OFPKCS8PrivateKey *_Nullable _privateKey;
 	OFTimeInterval _requestTimeout;
 #ifdef OF_HAVE_THREADS
 	size_t _numberOfThreads, _nextThreadIndex;
@@ -121,6 +123,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The private key to use.
+ */
+@property OF_NULLABLE_PROPERTY (retain, nonatomic)
+    OFPKCS8PrivateKey *privateKey;
 
 /**
  * @brief The delegate for the Gemini server.

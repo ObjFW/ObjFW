@@ -22,6 +22,9 @@
 #import "OFTLSStream.h"
 #import "OFArray.h"
 #import "OFDate.h"
+#import "OFPKCS8PrivateKey.h"
+#import "OFX509Certificate.h"
+#import "OFX509Certificate+Private.h"
 
 #import "OFNotImplementedException.h"
 #import "OFTLSHandshakeFailedException.h"
@@ -156,6 +159,7 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 {
 	objc_release(_underlyingStream);
 	objc_release(_certificateChain);
+	objc_release(_privateKey);
 
 	[super dealloc];
 }
@@ -179,6 +183,27 @@ OFTLSStreamErrorCodeDescription(OFTLSStreamErrorCode errorCode)
 - (OFArray OF_GENERIC(OFX509Certificate *) *)certificateChain
 {
 	return _certificateChain;
+}
+
+- (void)setPrivateKey: (OFPKCS8PrivateKey *)privateKey
+{
+	OFPKCS8PrivateKey *old = _privateKey;
+	_privateKey = objc_retain(privateKey);
+	objc_release(old);
+}
+
+- (OFPKCS8PrivateKey *)privateKey
+{
+	if (_privateKey == nil && _certificateChain != nil) {
+		OFPKCS8PrivateKey *privateKey =
+		    objc_getAssociatedObject(_certificateChain.firstObject,
+		    _OFX509CertificatePrivateKeyKey);
+
+		if (privateKey != nil)
+			return privateKey;
+	}
+
+	return _privateKey;
 }
 
 - (OFArray OF_GENERIC(OFX509Certificate *) *)peerCertificateChain

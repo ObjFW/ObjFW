@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFHTTPServer;
+@class OFPKCS8PrivateKey;
 @class OFStream;
 @class OFTCPSocket;
 @class OFX509Certificate;
@@ -140,6 +141,7 @@ OF_SUBCLASSING_RESTRICTED
 	OFTCPSocket *_Nullable _listeningSocket;
 	bool _usesTLS;
 	OFArray OF_GENERIC(OFX509Certificate *) *_Nullable _certificateChain;
+	OFPKCS8PrivateKey *_Nullable _privateKey;
 #ifdef OF_HAVE_THREADS
 	size_t _numberOfThreads, _nextThreadIndex;
 	OFArray *_threadPool;
@@ -166,7 +168,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief Whether the HTTP server uses TLS.
  *
  * If the server uses TLS, a certificate chain (see @ref certificateChain)
- * needs to be set.
+ * and private key (see @ref privateKey) needs to be set.
  */
 @property (nonatomic) bool usesTLS;
 
@@ -175,6 +177,12 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFX509Certificate *) *certificateChain;
+
+/**
+ * @brief The private key to use.
+ */
+@property OF_NULLABLE_PROPERTY (retain, nonatomic)
+    OFPKCS8PrivateKey *privateKey;
 
 /**
  * @brief The delegate for the HTTP server.

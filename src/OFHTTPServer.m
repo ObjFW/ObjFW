@@ -35,6 +35,7 @@
 #import "OFIRI.h"
 #import "OFIRI+Private.h"
 #import "OFNumber.h"
+#import "OFPKCS8PrivateKey.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 #import "OFString.h"
@@ -881,7 +882,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 
 @implementation OFHTTPServer
 @synthesize delegate = _delegate, usesTLS = _usesTLS;
-@synthesize certificateChain = _certificateChain;
+@synthesize certificateChain = _certificateChain, privateKey = _privateKey;
 
 + (instancetype)server
 {
@@ -908,6 +909,8 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 	objc_release(_host);
 	objc_release(_listeningSocket);
 	objc_release(_name);
+	objc_release(_certificateChain);
+	objc_release(_privateKey);
 
 	[super dealloc];
 }
@@ -1039,6 +1042,7 @@ parseTransferEncoding(OFDictionary OF_GENERIC(OFString *, OFString *) *headers)
 {
 	OFTLSStream *TLSStream = [OFTLSStream streamWithStream: sock];
 	TLSStream.certificateChain = _certificateChain;
+	TLSStream.privateKey = _privateKey;
 	TLSStream.delegate = self;
 	[TLSStream asyncPerformServerHandshake];
 }

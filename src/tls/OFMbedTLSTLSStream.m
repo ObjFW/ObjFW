@@ -178,8 +178,8 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	if (_freeOwnChain)
 		mbedtls_x509_crt_free(&_ownChain);
-	if (_freePrivateKey)
-		mbedtls_pk_free(&_privateKey);
+	if (_freePKContext)
+		mbedtls_pk_free(&_PKContext);
 
 	objc_release(_host);
 
@@ -199,9 +199,9 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 
 	if (_freeOwnChain)
 		mbedtls_x509_crt_free(&_ownChain);
-	if (_freePrivateKey)
-		mbedtls_pk_free(&_privateKey);
-	_freeOwnChain = _freePrivateKey = false;
+	if (_freePKContext)
+		mbedtls_pk_free(&_PKContext);
+	_freeOwnChain = _freePKContext = false;
 
 	mbedtls_ssl_free(&_SSL);
 	_initialized = _handshakeDone = false;
@@ -333,12 +333,11 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 					      errorCode: initFailedErrorCode];
 		}
 
-		mbedtls_pk_init(&_privateKey);
-		_freePrivateKey = true;
+		mbedtls_pk_init(&_PKContext);
+		_freePKContext = true;
 
-		OFData *privateKeyData = [[_certificateChain.firstObject
-		    associatedPrivateKey] DERRepresentation];
-		if (mbedtls_pk_parse_key(&_privateKey, privateKeyData.items,
+		OFData *privateKeyData = [self.privateKey DERRepresentation];
+		if (mbedtls_pk_parse_key(&_PKContext, privateKeyData.items,
 		    privateKeyData.count, NULL, 0
 #if MBEDTLS_VERSION_MAJOR == 3
 		    , mbedtls_ctr_drbg_random, &CTRDRBG
@@ -350,7 +349,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 				      errorCode: initFailedErrorCode];
 
 		if (mbedtls_ssl_conf_own_cert(&_config, &_ownChain,
-		    &_privateKey) != 0)
+		    &_PKContext) != 0)
 			@throw [OFTLSHandshakeFailedException
 			    exceptionWithStream: self
 					   host: host

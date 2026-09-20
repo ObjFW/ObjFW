@@ -31,13 +31,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
  *
- * @brief An X.509 certificate, optionally with an associated private key.
+ * @brief An X.509 certificate.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509Certificate: OFObject
 {
 	OFASN1Sequence *_ASN1Value;
-	OFPKCS8PrivateKey *_Nullable _associatedPrivateKey;
 	int _version;
 	OFASN1Integer *_serialNumber;
 }
@@ -51,12 +50,6 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The certificate as an @ref OFASN1Value.
  */
 @property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) ASN1Value;
-
-/**
- * @brief The private key for the certificate as an @ref OFASN1Value.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFPKCS8PrivateKey *associatedPrivateKey;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -91,6 +84,19 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
  *
+ * @param IRI The IRI to the PEM file with the certificate chain
+ * @return An array of @ref OFX509Certificate
+ * @throw OFOpenItemFailedException Opening the item failed
+ * @throw OFUnsupportedProtocolException The specified IRI is not supported
+ * @throw OFReadFailedException Reading the item failed
+ * @throw OFInvalidFormatException The format of the item is invalid
+ */
++ (OFArray OF_GENERIC(OFX509Certificate *) *)
+    certificateChainFromPEMFileAtIRI: (OFIRI *)IRI;
+
+/**
+ * @brief Returns the certificate chain from the PEM file at the specified IRI.
+ *
  * @param certificatesIRI The IRI to the PEM file with the certificate chain
  * @param privateKeyIRI An optional IRI to the PEM file with the private key or
  *			`nil`
@@ -102,7 +108,9 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
     certificateChainFromPEMFileAtIRI: (OFIRI *)certificatesIRI
-		       privateKeyIRI: (nullable OFIRI *)privateKeyIRI;
+		       privateKeyIRI: (nullable OFIRI *)privateKeyIRI
+    OF_DEPRECATED(ObjFW, 1, 6,
+	"Use -[certificateChainFromPEMFileAtIRI:] and OFPKCS8PrivateKey");
 
 /**
  * @brief Returns the certificate chain from the PKCS #12 file at the specified
@@ -135,19 +143,6 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
 
 /**
- * @brief Creates a new @ref OFX509Certificate with the specified ASN.1 value.
- *
- * @param ASN1Value The ASN.1 value
- * @param associatedPrivateKey The associated private key for the certificate
- * @return An new @ref OFX509Certificate
- * @throw OFInvalidFormatException The specified format is not a properly
- *				   formatted X.509 certificate
- */
-+ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-		    associatedPrivateKey: (nullable OFPKCS8PrivateKey *)
-					      associatedPrivateKey;
-
-/**
  * @brief Initializes an already allocated @ref OFX509Certificate with the
  *	  specified ASN.1 value.
  *
@@ -157,21 +152,6 @@ OF_SUBCLASSING_RESTRICTED
  *				   formatted X.509 certificate
  */
 - (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
-
-/**
- * @brief Initializes an already allocated @ref OFX509Certificate with the
- *	  specified ASN.1 value.
- *
- * @param ASN1Value The ASN.1 value
- * @param associatedPrivateKey The private key for the certificate
- * @return An initialized @ref OFX509Certificate
- * @throw OFInvalidFormatException The specified format is not a properly
- *				   formatted X.509 certificate
- */
-- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-	     associatedPrivateKey: (nullable OFPKCS8PrivateKey *)
-				       associatedPrivateKey
-    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

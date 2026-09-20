@@ -17,26 +17,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFASN1Sequence.h"
+#import "OFX509Certificate.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFIRI;
-
-/**
- * @class OFPKCS8PrivateKey OFPKCS8PrivateKey.h ObjFW/ObjFW.h
- *
- * @brief A PKCS #8 private key.
- */
-@interface OFPKCS8PrivateKey: OFASN1Sequence
-/**
- * @brief Returns the PKCS #8 private key from the PEM file at the specified
- *	  IRI.
- *
- * @param IRI The IRI to the PEM file with the private key
- * @return The PKCS #8 private key from the PEM file at the specified IRI
- */
-+ (OFPKCS8PrivateKey *)privateKeyFromPEMFileAtIRI: (OFIRI *)IRI;
-@end
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern void *_OFX509CertificatePrivateKeyKey OF_VISIBILITY_INTERNAL;
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

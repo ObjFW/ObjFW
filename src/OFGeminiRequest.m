@@ -25,10 +25,13 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFIRI.h"
+#import "OFPKCS8PrivateKey.h"
 #import "OFString.h"
+#import "OFX509Certificate.h"
 
 @implementation OFGeminiRequest
 @synthesize IRI = _IRI, certificateChain = _certificateChain;
+@synthesize privateKey = _privateKey;
 
 + (instancetype)requestWithIRI: (OFIRI *)IRI
 {
@@ -58,6 +61,7 @@
 {
 	objc_release(_IRI);
 	objc_release(_certificateChain);
+	objc_release(_privateKey);
 
 	[super dealloc];
 }
@@ -85,6 +89,7 @@
 	@try {
 		copy.remoteAddress = self.remoteAddress;
 		copy->_certificateChain = [_certificateChain copy];
+		copy->_privateKey = objc_retain(_privateKey);
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -114,6 +119,10 @@
 
 	if (request.certificateChain != self.certificateChain &&
 	    ![request.certificateChain isEqual: self.certificateChain])
+		return false;
+
+	if (request.privateKey != self.privateKey &&
+	    ![request.privateKey isEqual: self.privateKey])
 		return false;
 
 	return true;

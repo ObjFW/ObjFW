@@ -262,7 +262,7 @@ static void *cancelTimerKey = &cancelTimerKey;
 
 @implementation OFGeminiServer
 @synthesize delegate = _delegate, requestTimeout = _requestTimeout;
-@synthesize certificateChain = _certificateChain;
+@synthesize certificateChain = _certificateChain, privateKey = _privateKey;
 
 + (instancetype)server
 {
@@ -403,6 +403,7 @@ static void *cancelTimerKey = &cancelTimerKey;
 
 	TLSStream = [OFTLSStream streamWithStream: sock];
 	TLSStream.certificateChain = _certificateChain;
+	TLSStream.privateKey = _privateKey;
 	TLSStream.delegate = self;
 	[TLSStream asyncPerformServerHandshake];
 
