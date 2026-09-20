@@ -1,8 +1,13 @@
-block(SCOPE_FOR VARIABLES PROPAGATE ObjFW_CONFIG_EXECUTABLE)
-	set(prefix "@prefix@")
-	set(exec_prefix "@exec_prefix@")
-	set(ObjFW_CONFIG_EXECUTABLE "@bindir@/@BIN_PREFIX@objfw-config")
-endblock()
+execute_process(
+	COMMAND sh -c [[
+		prefix="@prefix@"
+		exec_prefix="@exec_prefix@"
+		echo "@bindir@/@BIN_PREFIX@objfw-config"
+	]]
+	OUTPUT_VARIABLE ObjFW_CONFIG_EXECUTABLE
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	COMMAND_ERROR_IS_FATAL ANY
+)
 
 macro(objfw_cygpath_to_win32 inpath outpath)
 	if(WIN32)
