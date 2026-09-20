@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFX509Certificate.h"
+#import "OFASN1Integer.h"
 #import "OFASN1Sequence.h"
 #import "OFArray.h"
 #import "OFData.h"
@@ -30,6 +31,8 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfRangeException.h"
+#import "OFUnsupportedVersionException.h"
 
 @implementation OFX509Certificate
 @synthesize ASN1Value = _ASN1Value, privateKeyASN1Value = _privateKeyASN1Value;
@@ -202,5 +205,70 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	objc_release(_privateKeyASN1Value);
 
 	[super dealloc];
+}
+
+- (int)version
+{
+	OFASN1Sequence *TBSCert = [_ASN1Value.components objectAtIndex: 0];
+	if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
+		@throw [OFInvalidFormatException exception];
+
+	for (OFConstructedASN1Value *value in TBSCert.components) {
+		if (value.tagClass != OFASN1TagClassContextSpecific ||
+		    value.tagNumber != 0)
+			continue;
+
+		if (![value isKindOfClass: [OFConstructedASN1Value class]] ||
+		    value.components.count != 1)
+			@throw [OFInvalidFormatException exception];
+
+		OFASN1Integer *version = [value.components objectAtIndex: 0];
+		if (![version isKindOfClass: [OFASN1Integer class]])
+			@throw [OFInvalidFormatException exception];
+
+		switch (version.longLongValue) {
+		case 0:
+			return 1;
+		case 1:
+			return 2;
+		case 2:
+			return 3;
+		default:
+			@throw [OFUnsupportedVersionException
+			    exceptionWithVersion: [OFString stringWithFormat:
+			    @"%lld", version.longLongValue]];
+		}
+	}
+
+	@throw [OFInvalidFormatException exception];
+}
+
+- (OFASN1Integer *)serialNumber
+{
+	OFASN1Sequence *TBSCert = [_ASN1Value.components objectAtIndex: 0];
+	if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
+		@throw [OFInvalidFormatException exception];
+
+	OFASN1Integer *serialNumber;
+	@try {
+		serialNumber = [TBSCert.components objectAtIndex: 1];
+	} @catch (OFOutOfRangeException *e) {
+		@throw [OFInvalidFormatException exception];
+	}
+
+	if (![serialNumber isKindOfClass: [OFASN1Integer class]])
+		@throw [OFInvalidFormatException exception];
+
+	return serialNumber;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<OFX509Certificate:\n"
+	    @"\tVersion = %d\n"
+	    @"\tSerial number = %@\n"
+	    @">",
+	    self.version, self.serialNumber.rawValue];
 }
 @end

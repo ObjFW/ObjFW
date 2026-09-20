@@ -23,7 +23,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFIRI;
+@class OFASN1Sequence;
 @class OFASN1Value;
+@class OFASN1Integer;
 
 /**
  * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
@@ -33,8 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509Certificate: OFObject
 {
-	OF_KINDOF(OFASN1Value *) _ASN1Value;
-	OF_KINDOF(OFASN1Value *) _Nullable _privateKeyASN1Value;
+	OFASN1Sequence *_ASN1Value;
+	OFASN1Sequence *_Nullable _privateKeyASN1Value;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -72,6 +74,16 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsPKCS12Files
     OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
+
+/**
+ * @brief The version of the certificate.
+ */
+@property (readonly, nonatomic) int version;
+
+/**
+ * @brief The serial number of the certificate.
+ */
+@property (readonly, nonatomic) OFASN1Integer *serialNumber;
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
