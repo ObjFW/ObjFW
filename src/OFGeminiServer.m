@@ -287,6 +287,8 @@ static void *cancelTimerKey = &cancelTimerKey;
 
 	objc_release(_host);
 	objc_release(_listeningSocket);
+	objc_release(_certificateChain);
+	objc_release(_privateKey);
 
 	[super dealloc];
 }
