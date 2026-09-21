@@ -31,31 +31,26 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1ObjectIdentifier
-+ (instancetype)objectIdentifierWithSubidentifiers:
-    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
++ (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
-	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithSubidentifiers: subidentifiers]);
+	return objc_autoreleaseReturnValue([[self alloc] initWithArcs: arcs]);
 }
 
-+ (instancetype)
-    objectIdentifierWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)
-					    subidentifiers
-			      tagClass: (OFASN1TagClass)tagClass
-			     tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+				tagClass: (OFASN1TagClass)tagClass
+			       tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
-	    initWithSubidentifiers: subidentifiers
-			  tagClass: tagClass
-			 tagNumber: tagNumber]);
+	    initWithArcs: arcs
+		tagClass: tagClass
+	       tagNumber: tagNumber]);
 }
 
-- (instancetype)initWithSubidentifiers:
-    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
+- (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
-	return [self initWithSubidentifiers: subidentifiers
-				   tagClass: OFASN1TagClassUniversal
-				  tagNumber: OFASN1TagNumberObjectIdentifier];
+	return [self initWithArcs: arcs
+			 tagClass: OFASN1TagClassUniversal
+			tagNumber: OFASN1TagNumberObjectIdentifier];
 }
 
 static void
@@ -86,32 +81,31 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	items[count - 1] &= 0x7F;
 }
 
-- (instancetype)
-    initWithSubidentifiers: (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
-		  tagClass: (OFASN1TagClass)tagClass
-		 tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+		    tagClass: (OFASN1TagClass)tagClass
+		   tagNumber: (OFASN1TagNumber)tagNumber
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	OFMutableData *rawValue;
 	@try {
-		size_t count = subidentifiers.count;
+		size_t count = arcs.count;
 		if (count < 2)
 			@throw [OFInvalidFormatException exception];
 
 		unsigned long long value;
-		unsigned long long subidentifier2 =
-		    [[subidentifiers objectAtIndex: 1] unsignedLongLongValue];
-		switch ([[subidentifiers objectAtIndex: 0]
+		unsigned long long arc2 =
+		    [[arcs objectAtIndex: 1] unsignedLongLongValue];
+		switch ([[arcs objectAtIndex: 0]
 		    unsignedLongLongValue]) {
 		case 0:
-			if (subidentifier2 > 39)
+			if (arc2 > 39)
 				@throw [OFInvalidArgumentException exception];
 
 			value = 0;
 			break;
 		case 1:
-			if (subidentifier2 > 39)
+			if (arc2 > 39)
 				@throw [OFInvalidArgumentException exception];
 
 			value = 40;
@@ -125,13 +119,13 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 
 		rawValue = [OFMutableData data];
 
-		if (ULLONG_MAX - value < subidentifier2)
+		if (ULLONG_MAX - value < arc2)
 			@throw [OFOutOfRangeException exception];
 
-		addBase128ValueToData(rawValue, value + subidentifier2);
+		addBase128ValueToData(rawValue, value + arc2);
 		for (size_t i = 2; i < count; i++)
-			addBase128ValueToData(rawValue, [[subidentifiers
-			    objectAtIndex: i] unsignedLongLongValue]);
+			addBase128ValueToData(rawValue,
+			    [[arcs objectAtIndex: i] unsignedLongLongValue]);
 
 		[rawValue makeImmutable];
 	} @catch (id e) {
@@ -181,9 +175,9 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	return self;
 }
 
-- (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
+- (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
-	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers =
+	OFMutableArray OF_GENERIC(OFNumber *) *arcs =
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	const unsigned char *items = _rawValue.items;
@@ -201,39 +195,34 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 		if (items[i] & 0x80)
 			continue;
 
-		if (subidentifiers.count == 0) {
+		if (arcs.count == 0) {
 			if (value < 40)
-				[subidentifiers addObject:
-				    [OFNumber numberWithInt: 0]];
+				[arcs addObject: [OFNumber numberWithInt: 0]];
 			else if (value < 80) {
-				[subidentifiers addObject:
-				    [OFNumber numberWithInt: 1]];
+				[arcs addObject: [OFNumber numberWithInt: 1]];
 				value -= 40;
 			} else {
-				[subidentifiers addObject:
-				    [OFNumber numberWithInt: 2]];
+				[arcs addObject: [OFNumber numberWithInt: 2]];
 				value -= 80;
 			}
 		}
 
-		[subidentifiers addObject:
-		    [OFNumber numberWithUnsignedLongLong: value]];
+		[arcs addObject: [OFNumber numberWithUnsignedLongLong: value]];
 
 		value = 0;
 		bits = 0;
 	}
 
-	[subidentifiers makeImmutable];
+	[arcs makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 
-	return subidentifiers;
+	return arcs;
 }
 
 - (OFString *)description
 {
-	OFString *identifier =
-	    [self.subidentifiers componentsJoinedByString: @"."];
+	OFString *identifier = [self.arcs componentsJoinedByString: @"."];
 
 	return [OFString stringWithFormat:
 	    @"<%@:\n"

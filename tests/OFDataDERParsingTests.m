@@ -231,26 +231,26 @@
 	OFArray *array;
 
 	array = [[[OFData dataWithItems: "\x06\x01\x27" count: 3]
-	    valueByParsingDER] subidentifiers];
+	    valueByParsingDER] arcs];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 0);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 39);
 
 	array = [[[OFData dataWithItems: "\x06\x01\x4F" count: 3]
-	    valueByParsingDER] subidentifiers];
+	    valueByParsingDER] arcs];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 1);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 39);
 
 	array = [[[OFData dataWithItems: "\x06\x02\x88\x37" count: 4]
-	    valueByParsingDER] subidentifiers];
+	    valueByParsingDER] arcs];
 	OTAssertEqual(array.count, 2);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 2);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 999);
 
 	array = [[[OFData
 	    dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D\x01\x01\x0B"
-		    count: 11] valueByParsingDER] subidentifiers];
+		    count: 11] valueByParsingDER] arcs];
 	OTAssertEqual(array.count, 7);
 	OTAssertEqual([[array objectAtIndex: 0] unsignedLongLongValue], 1);
 	OTAssertEqual([[array objectAtIndex: 1] unsignedLongLongValue], 2);
@@ -279,7 +279,7 @@
 	OTAssertThrowsSpecific(
 	    [[[OFData dataWithItems: "\x06\x0A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 				     "\xFF\x7F"
-			      count: 12] valueByParsingDER] subidentifiers],
+			      count: 12] valueByParsingDER] arcs],
 	    OFOutOfRangeException);
 }
 
