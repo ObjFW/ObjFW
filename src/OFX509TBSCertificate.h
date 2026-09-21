@@ -21,6 +21,15 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFASN1Integer;
+@class OFArray OF_GENERIC(ObjectType);
+@class OFX509AlgorithmIdentifier;
+@class OFX509Extension;
+@class OFX509Name;
+@class OFX509SubjectPublicKeyInfo;
+@class OFX509UniqueIdentifier;
+@class OFX509Validity;
+
 /**
  * @class OFX509TBSCertificate OFX509TBSCertificate.h ObjFW/ObjFW.h
  *
@@ -28,6 +37,74 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509TBSCertificate: OFASN1Sequence
+{
+	int _version;
+	OFASN1Integer *_serialNumber;
+	OFX509AlgorithmIdentifier *_signature;
+	OFX509Name *_issuer;
+	OFX509Validity *_validity;
+	OFX509Name *_subject;
+	OFX509SubjectPublicKeyInfo *_subjectPublicKeyInfo;
+	OFX509UniqueIdentifier *_Nullable _issuerUniqueID;
+	OFX509UniqueIdentifier *_Nullable _subjectUniqueID;
+	OFArray OF_GENERIC(OFX509Extension *) *_Nullable _extensions;
+}
+
+/**
+ * @brief The version of the certificate.
+ */
+@property (readonly, nonatomic) int version;
+
+/**
+ * @brief The serial number of the certificate.
+ */
+@property (readonly, retain, nonatomic) OFASN1Integer *serialNumber;
+
+/**
+ * @brief The algorithm used by the CA to sign the certificate.
+ */
+@property (readonly, retain, nonatomic) OFX509AlgorithmIdentifier *signature;
+
+/**
+ * @brief The entity that has signed and issued the certificate.
+ */
+@property (readonly, retain, nonatomic) OFX509Name *issuer;
+
+/**
+ * @brief The validity period of the certificate.
+ */
+@property (readonly, retain, nonatomic) OFX509Validity *validity;
+
+/**
+ * @brief The entity associated with the public key stored in the
+ *	  @ref subjectPublicKeyInfo field.
+ */
+@property (readonly, retain, nonatomic) OFX509Name *subject;
+
+/**
+ * @brief The public key and algorithm of the key.
+ */
+@property (readonly, retain, nonatomic)
+    OFX509SubjectPublicKeyInfo *subjectPublicKeyInfo;
+
+/**
+ * @brief The unique identifier for the issuer.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFX509UniqueIdentifier *issuerUniqueID;
+
+/**
+ * @brief The unique identifier for the entity associated with the public key
+ *	  stored in the @ref subjectPublicKeyInfo field.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFX509UniqueIdentifier *subjectUniqueID;
+
+/**
+ * @brief One or more optional certificate extensions.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFArray OF_GENERIC(OFX509Extension *) *extensions;
 @end
 
 OF_ASSUME_NONNULL_END

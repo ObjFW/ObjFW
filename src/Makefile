@@ -132,6 +132,14 @@ SRCS = OFASN1BMPString.m		\
        OFTriple.m			\
        OFUUID.m				\
        OFValue.m			\
+       OFX509AlgorithmIdentifier.m	\
+       OFX509Certificate.m		\
+       OFX509Extension.m		\
+       OFX509Name.m			\
+       OFX509SubjectPublicKeyInfo.m	\
+       OFX509TBSCertificate.m		\
+       OFX509UniqueIdentifier.m		\
+       OFX509Validity.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
        OFXMLCharacters.m		\
@@ -191,9 +199,6 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFTitanRequest.m			\
 	       OFUDPSocket.m			\
 	       OFURIDNSResourceRecord.m		\
-	       OFX509AlgorithmIdentifier.m	\
-	       OFX509Certificate.m		\
-	       OFX509TBSCertificate.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_SCTP}			\
