@@ -31,7 +31,7 @@ static void
 parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
 {
 	if (![section isEqual: @"PRIVATE KEY"])
-                @throw [OFInvalidArgumentException exception];
+                return;
 
 	OFPKCS8PrivateKey **privateKey = ctx;
 	*privateKey =
@@ -43,9 +43,12 @@ parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFPKCS8PrivateKey *privateKey;
+	OFPKCS8PrivateKey *privateKey = nil;
 	OFParsePEM([OFIRIHandler openItemAtIRI: IRI mode: @"r"],
 	    parsePrivateKeyCallback, &privateKey);
+
+	if (privateKey == nil)
+		@throw [OFInvalidArgumentException exception];
 
 	objc_retain(privateKey);
 

@@ -54,7 +54,7 @@ static void
 parseCertificates(OFString *section, OFData *data, void *ctx)
 {
 	if (![section isEqual: @"CERTIFICATE"])
-		@throw [OFInvalidArgumentException exception];
+		return;
 
 	OFASN1Sequence *sequence = data.valueByParsingDER;
 	if (![sequence isKindOfClass: [OFASN1Sequence class]])
