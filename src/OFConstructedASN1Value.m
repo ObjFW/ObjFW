@@ -203,15 +203,14 @@
 
 - (OFString *)description
 {
-	OFString *components = [_components.description
+	OFArray *descriptions = [_components valueForKey: @"description"];
+	OFString *components = [[descriptions componentsJoinedByString: @"\n"]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
-	    @"\tComponents = %@\n"
+	    @"<%@ [%@ %@]:\n"
+	    @"\t%@\n"
 	    @">",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), components];

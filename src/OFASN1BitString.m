@@ -148,9 +148,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
+	    @"<%@ [%@ %@]:\n"
 	    @"\tBits count = %zu\n"
 	    @"\tBits = %@\n"
 	    @">",

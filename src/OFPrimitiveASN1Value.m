@@ -167,11 +167,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
-	    @"\tRaw value = %@\n"
-	    @">",
+	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _rawValue];
 }

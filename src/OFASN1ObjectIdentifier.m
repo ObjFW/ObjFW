@@ -225,11 +225,7 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	OFString *identifier = [self.arcs componentsJoinedByString: @"."];
 
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
-	    @"\tIdentifier = %@\n"
-	    @">",
+	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), identifier];
 }

@@ -78,14 +78,9 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
-	    @"\tString value = %@\n"
-	    @">",
+	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
-	    [self.stringValue stringByReplacingOccurrencesOfString: @"\n"
-							withString: @"\n\t"]];
+	    self.stringValue];
 }
 @end

@@ -78,9 +78,7 @@
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
+	    @"<%@ [%@ %@]:\n"
 	    @"\tAlgorithm = %@\n"
 	    @"\tParameters = %@\n"
 	    @">",

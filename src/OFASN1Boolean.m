@@ -21,6 +21,7 @@
 
 #import "OFASN1Boolean.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -98,5 +99,14 @@
 - (bool)boolValue
 {
 	return *(unsigned char *)[_rawValue itemAtIndex: 0];
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@ [%@ %@]: %@>",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
+	    (self.boolValue ? @"true" : @"false")];
 }
 @end

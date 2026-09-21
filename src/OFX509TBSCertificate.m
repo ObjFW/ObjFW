@@ -219,9 +219,7 @@
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
+	    @"<%@ [%@ %@]:\n"
 	    @"\tVersion = %d\n"
 	    @"\tSerial number = %@\n"
 	    @"\tSignature = %@\n"

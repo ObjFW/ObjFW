@@ -177,9 +177,7 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
-	    @"<%@:\n"
-	    @"\tTag class = %@\n"
-	    @"\tTag number = %@\n"
+	    @"<%@ [%@ %@]:\n"
 	    @"\tTBSCertificate = %@\n"
 	    @"\tSignature algorithm = %@\n"
 	    @"\tSignature value = %@\n"
