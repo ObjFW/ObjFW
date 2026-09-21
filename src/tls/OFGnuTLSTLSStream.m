@@ -271,9 +271,7 @@ writeFunc(gnutls_transport_ptr_t transport, const void *buffer, size_t length)
 		@try {
 			for (OFX509Certificate *cert in _certificateChain) {
 #define IFEC initFailedErrorCode
-				OFData *certData =
-				    [cert.ASN1Value DERRepresentation];
-
+				OFData *certData = cert.DERRepresentation;
 				if (certData.count > UINT_MAX)
 					@throw [OFOutOfRangeException
 					    exception];

@@ -17,14 +17,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFObject.h"
+#import "OFASN1Sequence.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFASN1Integer;
-@class OFASN1Sequence;
-@class OFASN1Value;
 @class OFIRI;
 @class OFPKCS8PrivateKey;
 
@@ -34,22 +32,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An X.509 certificate.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFX509Certificate: OFObject
-{
-	OFASN1Sequence *_ASN1Value;
-	int _version;
-	OFASN1Integer *_serialNumber;
-}
-
+@interface OFX509Certificate: OFASN1Sequence
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) bool supportsPEMFiles;
 @property (class, readonly, nonatomic) bool supportsPKCS12Files;
 #endif
-
-/**
- * @brief The certificate as an @ref OFASN1Value.
- */
-@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) ASN1Value;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is
@@ -70,16 +57,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 + (bool)supportsPKCS12Files
     OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
-
-/**
- * @brief The version of the certificate.
- */
-@property (readonly, nonatomic) int version;
-
-/**
- * @brief The serial number of the certificate.
- */
-@property (readonly, nonatomic) OFASN1Integer *serialNumber;
 
 /**
  * @brief Returns the certificate chain from the PEM file at the specified IRI.
@@ -131,27 +108,6 @@ OF_SUBCLASSING_RESTRICTED
     certificateChainFromPKCS12FileAtIRI: (OFIRI *)IRI
 			     passphrase: (nullable OFString *)passphrase
     OF_DEPRECATED(ObjFW, 1, 6, "PKCS #12 is no longer supported");
-
-/**
- * @brief Creates a new @ref OFX509Certificate with the specified ASN.1 value.
- *
- * @param ASN1Value The ASN.1 value
- * @return An new @ref OFX509Certificate
- * @throw OFInvalidFormatException The specified format is not a properly
- *				   formatted X.509 certificate
- */
-+ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
-
-/**
- * @brief Initializes an already allocated @ref OFX509Certificate with the
- *	  specified ASN.1 value.
- *
- * @param ASN1Value The ASN.1 value
- * @return An initialized @ref OFX509Certificate
- * @throw OFInvalidFormatException The specified format is not a properly
- *				   formatted X.509 certificate
- */
-- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value;
 @end
 
 OF_ASSUME_NONNULL_END

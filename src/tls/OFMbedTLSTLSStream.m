@@ -324,7 +324,7 @@ writeFunc(void *ctx, const unsigned char *buffer, size_t length)
 		_freeOwnChain = true;
 
 		for (OFX509Certificate *cert in _certificateChain) {
-			OFData *certData = [cert.ASN1Value DERRepresentation];
+			OFData *certData = cert.DERRepresentation;
 			if (mbedtls_x509_crt_parse(&_ownChain, certData.items,
 			    certData.count) != 0)
 				@throw [OFTLSHandshakeFailedException

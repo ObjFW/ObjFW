@@ -40,9 +40,6 @@
 void *_OFX509CertificatePrivateKeyKey = &_OFX509CertificatePrivateKeyKey;
 
 @implementation OFX509Certificate
-@synthesize ASN1Value = _ASN1Value, version = _version;
-@synthesize serialNumber = _serialNumber;
-
 + (bool)supportsPEMFiles
 {
 	return true;
@@ -59,8 +56,12 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	if (![section isEqual: @"CERTIFICATE"])
 		@throw [OFInvalidArgumentException exception];
 
-	[(OFMutableArray *)ctx addObject: [OFX509Certificate
-	   certificateWithASN1Value: data.valueByParsingDER]];
+	OFASN1Sequence *sequence = data.valueByParsingDER;
+	if (![sequence isKindOfClass: [OFASN1Sequence class]])
+		@throw [OFInvalidFormatException exception];
+
+	[(OFMutableArray *)ctx addObject:
+	    [sequence parsedAs: [OFX509Certificate class]]];
 }
 
 + (OFArray OF_GENERIC(OFX509Certificate *) *)
@@ -103,111 +104,5 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 			     passphrase: (OFString *)passphrase
 {
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)certificateWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-{
-	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithASN1Value: ASN1Value]);
-}
-
-- (instancetype)initWithASN1Value: (OF_KINDOF(OFASN1Value *))ASN1Value
-{
-	self = [super init];
-
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		if (![ASN1Value isKindOfClass: [OFASN1Sequence class]])
-			@throw [OFInvalidFormatException exception];
-
-		_ASN1Value = objc_retain(ASN1Value);
-
-		if (_ASN1Value.components.count != 3)
-			@throw [OFInvalidFormatException exception];
-
-		OFASN1Sequence *TBSCert =
-		    [_ASN1Value.components objectAtIndex: 0];
-		if (![TBSCert isKindOfClass: [OFASN1Sequence class]])
-			@throw [OFInvalidFormatException exception];
-
-		OFEnumerator *enumerator =
-		    [TBSCert.components objectEnumerator];
-
-		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
-		if ([value tagClass] == OFASN1TagClassContextSpecific &&
-		    [value tagNumber] == 0) {
-			if (![value isKindOfClass:
-			    [OFConstructedASN1Value class]])
-				@throw [OFInvalidFormatException exception];
-
-			OFConstructedASN1Value *constructed = value;
-			if (constructed.components.count != 1)
-				@throw [OFInvalidFormatException exception];
-
-			OFASN1Integer *versionValue =
-			    constructed.components.firstObject;
-			if (![versionValue isKindOfClass:
-			    [OFASN1Integer class]])
-				@throw [OFInvalidFormatException exception];
-
-			long long version;
-			@try {
-				version = versionValue.longLongValue;
-			} @catch (OFOutOfRangeException *e) {
-				@throw [OFUnsupportedVersionException
-				    exceptionWithVersion:
-				    versionValue.rawValue.description];
-			}
-
-			switch (version) {
-			case 0:
-				@throw [OFInvalidFormatException exception];
-			case 1:
-				_version = 2;
-				break;
-			case 2:
-				_version = 3;
-				break;
-			default:
-				@throw [OFUnsupportedVersionException
-				    exceptionWithVersion:
-				    versionValue.rawValue.description];
-			}
-
-			value = [enumerator nextObject];
-		} else
-			_version = 1;
-
-		if (![value isKindOfClass: [OFASN1Integer class]])
-			@throw [OFInvalidFormatException exception];
-
-		_serialNumber = objc_retain(value);
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		objc_release(self);
-		@throw e;
-	}
-
-	return self;
-}
-
-- (void)dealloc
-{
-	objc_release(_ASN1Value);
-	objc_release(_serialNumber);
-
-	[super dealloc];
-}
-
-- (OFString *)description
-{
-	return [OFString stringWithFormat:
-	    @"<OFX509Certificate:\n"
-	    @"\tVersion = %d\n"
-	    @"\tSerial number = %@\n"
-	    @">",
-	    _version, _serialNumber.rawValue];
 }
 @end

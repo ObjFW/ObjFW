@@ -399,8 +399,8 @@ errToErrorCode(const SSL *SSL_)
 	}
 
 	if (_certificateChain.count > 0) {
-		OFData *certData = [[_certificateChain.firstObject
-		    ASN1Value] DERRepresentation];
+		OFData *certData =
+		    [_certificateChain.firstObject DERRepresentation];
 		OFData *privateKeyData = [self.privateKey DERRepresentation];
 
 		if (certData.count > LONG_MAX ||
@@ -452,7 +452,7 @@ errToErrorCode(const SSL *SSL_)
 				continue;
 			}
 
-			certData = [iter.ASN1Value DERRepresentation];
+			certData = iter.DERRepresentation;
 			if (certData.count > LONG_MAX)
 				@throw [OFOutOfRangeException exception];
 
@@ -771,12 +771,17 @@ inform_delegate:
 			}
 
 			@try {
-				OF_KINDOF(OFASN1Value *) value =
-				    [[OFData dataWithItems: output
-						     count: length]
-				    valueByParsingDER];
-				[chain addObject: [OFX509Certificate
-				    certificateWithASN1Value: value]];
+				OFASN1Sequence *sequence = [[OFData
+				    dataWithItems: output
+					    count: length] valueByParsingDER];
+				if (![sequence isKindOfClass:
+				    [OFASN1Sequence class]]) {
+					objc_autoreleasePoolPop(pool);
+					return nil;
+				}
+
+				[chain addObject: [sequence parsedAs:
+				    [OFX509Certificate class]]];
 			} @finally {
 				OPENSSL_free(output);
 			}
@@ -802,11 +807,16 @@ inform_delegate:
 		}
 
 		@try {
-			OF_KINDOF(OFASN1Value *) value =
-			    [[OFData dataWithItems: output count: length]
-			    valueByParsingDER];
-			[chain addObject: [OFX509Certificate
-			    certificateWithASN1Value: value]];
+			OFASN1Sequence *sequence = [[OFData
+			    dataWithItems: output
+				    count: length] valueByParsingDER];
+			if (![sequence isKindOfClass: [OFASN1Sequence class]]) {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+
+			[chain addObject:
+			    [sequence parsedAs: [OFX509Certificate class]]];
 		} @finally {
 			OPENSSL_free(output);
 		}
