@@ -21,7 +21,7 @@
 
 #import "OFX509Certificate.h"
 #import "OFX509Certificate+Private.h"
-#import "OFASN1Integer.h"
+#import "OFASN1BitString.h"
 #import "OFASN1Sequence.h"
 #import "OFArray.h"
 #import "OFData.h"
@@ -30,6 +30,8 @@
 #import "OFPKCS8PrivateKey.h"
 #import "OFPair.h"
 #import "OFStream.h"
+#import "OFX509AlgorithmIdentifier.h"
+#import "OFX509TBSCertificate.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -40,6 +42,10 @@
 void *_OFX509CertificatePrivateKeyKey = &_OFX509CertificatePrivateKeyKey;
 
 @implementation OFX509Certificate
+@synthesize TBSCertificate = _TBSCertificate;
+@synthesize signatureAlgorithm = _signatureAlgorithm;
+@synthesize signatureValue = _signatureValue;
+
 + (bool)supportsPEMFiles
 {
 	return true;
@@ -104,5 +110,82 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 			     passphrase: (OFString *)passphrase
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					OFASN1Value *)) *)components
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithComponents: components
+				tagClass: tagClass
+			       tagNumber: tagNumber];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (components.count != 3)
+			@throw [OFInvalidFormatException exception];
+
+		OFEnumerator *enumerator = [components objectEnumerator];
+
+		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
+		if (![value isKindOfClass: [OFASN1Sequence class]])
+			@throw [OFInvalidFormatException exception];
+		_TBSCertificate = objc_retain(
+		    [value parsedAs: [OFX509TBSCertificate class]]);
+
+		value = [enumerator nextObject];
+		if (![value isKindOfClass: [OFASN1Sequence class]])
+			@throw [OFInvalidFormatException exception];
+		_signatureAlgorithm = objc_retain(
+		    [value parsedAs: [OFX509AlgorithmIdentifier class]]);
+
+		value = [enumerator nextObject];
+		if (![value isKindOfClass: [OFASN1BitString class]])
+			@throw [OFInvalidFormatException exception];
+		_signatureValue = objc_retain(value);
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_TBSCertificate);
+	objc_release(_signatureAlgorithm);
+	objc_release(_signatureValue);
+
+	[super dealloc];
+}
+
+- (OFString *)description
+{
+	OFString *TBSCertificate = [_TBSCertificate.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	OFString *signatureAlgorithm = [_signatureAlgorithm.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	OFString *signatureValue = [_signatureValue.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tTag class = %@\n"
+	    @"\tTag number = %@\n"
+	    @"\tTBSCertificate = %@\n"
+	    @"\tSignature algorithm = %@\n"
+	    @"\tSignature value = %@\n"
+	    @">",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), TBSCertificate,
+	    signatureAlgorithm, signatureValue];
 }
 @end

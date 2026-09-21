@@ -22,9 +22,10 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
-@class OFASN1Integer;
+@class OFASN1BitString;
 @class OFIRI;
-@class OFPKCS8PrivateKey;
+@class OFX509AlgorithmIdentifier;
+@class OFX509TBSCertificate;
 
 /**
  * @class OFX509Certificate OFX509Certificate.h ObjFW/ObjFW.h
@@ -33,10 +34,32 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509Certificate: OFASN1Sequence
+{
+	OFX509TBSCertificate *_TBSCertificate;
+	OFX509AlgorithmIdentifier *_signatureAlgorithm;
+	OFASN1BitString *_signatureValue;
+}
+
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) bool supportsPEMFiles;
 @property (class, readonly, nonatomic) bool supportsPKCS12Files;
 #endif
+
+/**
+ * @brief The TBSCertificate of the certificate.
+ */
+@property (readonly, retain, nonatomic) OFX509TBSCertificate *TBSCertificate;
+
+/**
+ * @brief The signature algorithm used by the CA to sign the certificate.
+ */
+@property (readonly, retain, nonatomic)
+    OFX509AlgorithmIdentifier *signatureAlgorithm;
+
+/**
+ * @brief The CA's signature of the certificate.
+ */
+@property (readonly, retain, nonatomic) OFASN1BitString *signatureValue;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is

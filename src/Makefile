@@ -191,7 +191,9 @@ SRCS_SOCKETS = OFAAAADNSResourceRecord.m	\
 	       OFTitanRequest.m			\
 	       OFUDPSocket.m			\
 	       OFURIDNSResourceRecord.m		\
+	       OFX509AlgorithmIdentifier.m	\
 	       OFX509Certificate.m		\
+	       OFX509TBSCertificate.m		\
 	       ${USE_SRCS_APPLETALK}		\
 	       ${USE_SRCS_IPX}			\
 	       ${USE_SRCS_SCTP}			\
