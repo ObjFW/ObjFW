@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFASN1ObjectIdentifier;
+
 /**
  * @class OFX509AlgorithmIdentifier OFX509AlgorithmIdentifier.h ObjFW/ObjFW.h
  *
@@ -28,6 +30,22 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509AlgorithmIdentifier: OFASN1Sequence
+{
+	OFASN1ObjectIdentifier *_algorithm;
+	OFASN1Value *_Nullable _parameters;
+}
+
+/**
+ * @brief The algorithm of the X.509 AlgorithmIdentifier.
+ */
+@property (readonly, retain, nonatomic) OFASN1ObjectIdentifier *algorithm;
+
+/**
+ * @brief The optional, algorithm-specific parameters of the X.509
+ *	  AlgorithmIdentifier.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OF_KINDOF(OFASN1Value *) parameters;
 @end
 
 OF_ASSUME_NONNULL_END
