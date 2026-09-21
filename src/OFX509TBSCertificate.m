@@ -118,6 +118,9 @@
 		if (value != nil &&
 		    [value tagClass] == OFASN1TagClassContextSpecific &&
 		    [value tagNumber] == 1) {
+			if (_version < 2)
+				@throw [OFInvalidFormatException exception];
+
 			_issuerUniqueID = objc_retain(
 			    [value parsedAs: [OFX509UniqueIdentifier class]]);
 			value = [enumerator nextObject];
@@ -126,6 +129,9 @@
 		if (value != nil &&
 		    [value tagClass] == OFASN1TagClassContextSpecific &&
 		    [value tagNumber] == 2) {
+			if (_version < 2)
+				@throw [OFInvalidFormatException exception];
+
 			_subjectUniqueID = objc_retain(
 			    [value parsedAs: [OFX509UniqueIdentifier class]]);
 			value = [enumerator nextObject];
@@ -134,6 +140,9 @@
 		if (value != nil &&
 		    [value tagClass] == OFASN1TagClassContextSpecific &&
 		    [value tagNumber] == 3) {
+			if (_version < 3)
+				@throw [OFInvalidFormatException exception];
+
 			if (![value isKindOfClass:
 			    [OFConstructedASN1Value class]] ||
 			    [[value components] count] != 1)
