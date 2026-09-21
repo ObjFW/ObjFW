@@ -84,7 +84,7 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 	OFArray *certificateChain =
 	    [self certificateChainFromPEMFileAtIRI: certificatesIRI];
 
-	if (certificateChain.count > 0) {
+	if (privateKeyIRI != nil && certificateChain.count > 0) {
 		void *pool = objc_autoreleasePoolPush();
 
 		OFPKCS8PrivateKey *privateKey = [OFPKCS8PrivateKey
