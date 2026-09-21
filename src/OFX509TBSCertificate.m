@@ -18,6 +18,7 @@
  */
 
 #import "OFX509TBSCertificate.h"
+#import "OFASN1BitString.h"
 #import "OFASN1Integer.h"
 #import "OFArray.h"
 #import "OFData.h"
@@ -26,7 +27,6 @@
 #import "OFX509Extension.h"
 #import "OFX509Name.h"
 #import "OFX509SubjectPublicKeyInfo.h"
-#import "OFX509UniqueIdentifier.h"
 #import "OFX509Validity.h"
 
 #import "OFInvalidFormatException.h"
@@ -122,7 +122,7 @@
 				@throw [OFInvalidFormatException exception];
 
 			_issuerUniqueID = objc_retain(
-			    [value parsedAs: [OFX509UniqueIdentifier class]]);
+			    [value parsedAs: [OFASN1BitString class]]);
 			value = [enumerator nextObject];
 		}
 
@@ -133,7 +133,7 @@
 				@throw [OFInvalidFormatException exception];
 
 			_subjectUniqueID = objc_retain(
-			    [value parsedAs: [OFX509UniqueIdentifier class]]);
+			    [value parsedAs: [OFASN1BitString class]]);
 			value = [enumerator nextObject];
 		}
 

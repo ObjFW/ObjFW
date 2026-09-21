@@ -21,13 +21,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFASN1BitString;
 @class OFASN1Integer;
 @class OFArray OF_GENERIC(ObjectType);
 @class OFX509AlgorithmIdentifier;
 @class OFX509Extension;
 @class OFX509Name;
 @class OFX509SubjectPublicKeyInfo;
-@class OFX509UniqueIdentifier;
 @class OFX509Validity;
 
 /**
@@ -45,8 +45,8 @@ OF_SUBCLASSING_RESTRICTED
 	OFX509Validity *_validity;
 	OFX509Name *_subject;
 	OFX509SubjectPublicKeyInfo *_subjectPublicKeyInfo;
-	OFX509UniqueIdentifier *_Nullable _issuerUniqueID;
-	OFX509UniqueIdentifier *_Nullable _subjectUniqueID;
+	OFASN1BitString *_Nullable _issuerUniqueID;
+	OFASN1BitString *_Nullable _subjectUniqueID;
 	OFArray OF_GENERIC(OFX509Extension *) *_Nullable _extensions;
 }
 
@@ -91,14 +91,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The unique identifier for the issuer.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
-    OFX509UniqueIdentifier *issuerUniqueID;
+    OFASN1BitString *issuerUniqueID;
 
 /**
  * @brief The unique identifier for the entity associated with the public key
  *	  stored in the @ref subjectPublicKeyInfo field.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
-    OFX509UniqueIdentifier *subjectUniqueID;
+    OFASN1BitString *subjectUniqueID;
 
 /**
  * @brief One or more optional certificate extensions.

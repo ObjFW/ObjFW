@@ -212,7 +212,6 @@ void *__objc_class_name_OFX509Extension;
 void *__objc_class_name_OFX509Name;
 void *__objc_class_name_OFX509SubjectPublicKeyInfo;
 void *__objc_class_name_OFX509TBSCertificate;
-void *__objc_class_name_OFX509UniqueIdentifier;
 void *__objc_class_name_OFX509Validity;
 void *__objc_class_name_OFXMLAttribute;
 void *__objc_class_name_OFXMLCDATA;

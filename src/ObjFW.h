@@ -136,7 +136,6 @@
 #import "OFX509Name.h"
 #import "OFX509SubjectPublicKeyInfo.h"
 #import "OFX509TBSCertificate.h"
-#import "OFX509UniqueIdentifier.h"
 #import "OFX509Validity.h"
 
 #ifdef OF_HAVE_SUBPROCESSES
