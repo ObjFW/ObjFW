@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
 @class OFASN1BitString;
 @class OFASN1Integer;
 @class OFArray OF_GENERIC(ObjectType);
@@ -31,6 +33,16 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFX509Validity;
 
 /**
+ * @brief An X.509 CertificateSerialNumber.
+ */
+typedef OFASN1Integer OFX509CertificateSerialNumber;
+
+/**
+ * @brief An X.509 UniqueIdentifier.
+ */
+typedef OFASN1BitString OFX509UniqueIdentifier;
+
+/**
  * @class OFX509TBSCertificate OFX509TBSCertificate.h ObjFW/ObjFW.h
  *
  * @brief An X.509 TBSCertificate.
@@ -39,14 +51,14 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFX509TBSCertificate: OFASN1Sequence
 {
 	int _version;
-	OFASN1Integer *_serialNumber;
+	OFX509CertificateSerialNumber *_serialNumber;
 	OFX509AlgorithmIdentifier *_signature;
 	OFX509Name *_issuer;
 	OFX509Validity *_validity;
 	OFX509Name *_subject;
 	OFX509SubjectPublicKeyInfo *_subjectPublicKeyInfo;
-	OFASN1BitString *_Nullable _issuerUniqueID;
-	OFASN1BitString *_Nullable _subjectUniqueID;
+	OFX509UniqueIdentifier *_Nullable _issuerUniqueID;
+	OFX509UniqueIdentifier *_Nullable _subjectUniqueID;
 	OFArray OF_GENERIC(OFX509Extension *) *_Nullable _extensions;
 }
 
@@ -58,7 +70,8 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The serial number of the certificate.
  */
-@property (readonly, retain, nonatomic) OFASN1Integer *serialNumber;
+@property (readonly, retain, nonatomic)
+    OFX509CertificateSerialNumber *serialNumber;
 
 /**
  * @brief The algorithm used by the CA to sign the certificate.
@@ -91,14 +104,14 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The unique identifier for the issuer.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
-    OFASN1BitString *issuerUniqueID;
+    OFX509UniqueIdentifier *issuerUniqueID;
 
 /**
  * @brief The unique identifier for the entity associated with the public key
  *	  stored in the @ref subjectPublicKeyInfo field.
  */
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
-    OFASN1BitString *subjectUniqueID;
+    OFX509UniqueIdentifier *subjectUniqueID;
 
 /**
  * @brief One or more optional certificate extensions.
