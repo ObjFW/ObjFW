@@ -21,6 +21,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFASN1BitString;
+@class OFX509AlgorithmIdentifier;
+
 /**
  * @class OFX509SubjectPublicKeyInfo OFX509SubjectPublicKeyInfo.h ObjFW/ObjFW.h
  *
@@ -28,6 +31,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509SubjectPublicKeyInfo: OFASN1Sequence
+{
+	OFX509AlgorithmIdentifier *_algorithm;
+	OFASN1BitString *_subjectPublicKey;
+}
+
+/**
+ * @brief The algorithm of the subject public key.
+ */
+@property (readonly, retain, nonatomic) OFX509AlgorithmIdentifier *algorithm;
+
+/**
+ * @brief The subject public key.
+ */
+@property (readonly, retain, nonatomic) OFASN1BitString *subjectPublicKey;
 @end
 
 OF_ASSUME_NONNULL_END
