@@ -80,7 +80,8 @@
 			}
 
 			value = [enumerator nextObject];
-		}
+		} else
+			_version = 1;
 
 		if (![value isKindOfClass: [OFASN1Integer class]])
 			@throw [OFInvalidFormatException exception];
