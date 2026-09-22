@@ -204,7 +204,7 @@
 - (OFString *)description
 {
 	OFArray *descriptions = [_components valueForKey: @"description"];
-	OFString *components = [[descriptions componentsJoinedByString: @"\n"]
+	OFString *components = [[descriptions componentsJoinedByString: @",\n"]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
