@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFASN1ObjectIdentifier;
+
 /**
  * @class OFX509Extension OFX509Extension.h ObjFW/ObjFW.h
  *
@@ -28,6 +30,26 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509Extension: OFASN1Sequence
+{
+	OFASN1ObjectIdentifier *_extensionID;
+	bool _critical;
+	OFData *_extensionValue;
+}
+
+/**
+ * @brief The extnID of the Extension.
+ */
+@property (readonly, retain, nonatomic) OFASN1ObjectIdentifier *extensionID;
+
+/**
+ * @brief Whether the Extension is critical.
+ */
+@property (readonly, nonatomic, getter=isCritical) bool critical;
+
+/**
+ * @brief The extnValue of the Extension.
+ */
+@property (readonly, retain, nonatomic) OFData *extensionValue;
 @end
 
 OF_ASSUME_NONNULL_END

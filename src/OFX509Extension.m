@@ -18,6 +18,80 @@
  */
 
 #import "OFX509Extension.h"
+#import "OFASN1Boolean.h"
+#import "OFASN1ObjectIdentifier.h"
+#import "OFASN1OctetString.h"
+#import "OFArray.h"
+#import "OFString.h"
+
+#import "OFInvalidFormatException.h"
 
 @implementation OFX509Extension: OFASN1Sequence
+@synthesize extensionID = _extensionID, critical = _critical;
+@synthesize extensionValue = _extensionValue;
+
+- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					OFASN1Value *)) *)components
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithComponents: components
+				tagClass: tagClass
+			       tagNumber: tagNumber];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (components.count < 2 || components.count > 3)
+			@throw [OFInvalidFormatException exception];
+
+		OFEnumerator *enumerator = [components objectEnumerator];
+
+		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
+		if (![value isKindOfClass: [OFASN1ObjectIdentifier class]])
+			@throw [OFInvalidFormatException exception];
+		_extensionID = objc_retain(value);
+
+		value = [enumerator nextObject];
+		if ([value isKindOfClass: [OFASN1Boolean class]]) {
+			if (![value boolValue])
+				@throw [OFInvalidFormatException exception];
+
+			_critical = true;
+			value = [enumerator nextObject];
+		}
+
+		if (![value isKindOfClass: [OFASN1OctetString class]])
+			@throw [OFInvalidFormatException exception];
+		_extensionValue = objc_retain([value octets]);
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_extensionID);
+	objc_release(_extensionValue);
+
+	[super dealloc];
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@ [%@ %@]:\n"
+	    @"\tExtension ID = %@\n"
+	    @"\tCritical = %@\n"
+	    @"\tExtension value = %@\n"
+	    @">",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _extensionID,
+	    (_critical ? @"true" : @"false"), _extensionValue];
+}
 @end
