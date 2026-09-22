@@ -54,38 +54,39 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
-		rawValue = [OFData dataWithItems: (bool_ ? "\xFF" : "")
-					   count: 1];
+		DEREncodedContents = [OFData
+		    dataWithItems: (bool_ ? "\xFF" : "")
+			    count: 1];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.count != 1)
+		if (DEREncodedContents.count != 1)
 			@throw [OFInvalidFormatException exception];
 
 		unsigned char value =
-		    *(unsigned char *)[rawValue itemAtIndex: 0];
+		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 		if (value != 0 && value != 0xFF)
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
@@ -98,7 +99,7 @@
 
 - (bool)boolValue
 {
-	return *(unsigned char *)[_rawValue itemAtIndex: 0];
+	return *(unsigned char *)[_DEREncodedContents itemAtIndex: 0];
 }
 
 - (OFString *)description

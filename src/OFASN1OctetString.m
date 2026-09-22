@@ -50,13 +50,13 @@
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber
 {
-	return [self initWithRawValue: octets
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	return [self initWithDEREncodedContents: octets
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 }
 
 - (OFData *)octets
 {
-	return _rawValue;
+	return _DEREncodedContents;
 }
 @end

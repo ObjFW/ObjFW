@@ -41,38 +41,39 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
 		const char *cString =
 		    [string insecureCStringWithEncoding: OFStringEncodingASCII];
 		size_t cStringLength =
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
-		rawValue = [OFData dataWithItems: cString count: cStringLength];
+		DEREncodedContents = [OFData dataWithItems: cString
+						     count: cStringLength];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		if (_OFUTF8StringCheck(rawValue.items, rawValue.count, NULL,
-		    NULL) != 0)
+		if (_OFUTF8StringCheck(DEREncodedContents.items,
+		    DEREncodedContents.count, NULL, NULL) != 0)
 			@throw [OFInvalidEncodingException exception];
 	} @catch (id e) {
 		objc_release(self);
@@ -84,8 +85,8 @@
 
 - (OFString *)stringValue
 {
-	return [OFString stringWithCString: _rawValue.items
+	return [OFString stringWithCString: _DEREncodedContents.items
 				  encoding: OFStringEncodingASCII
-				    length: _rawValue.count];
+				    length: _DEREncodedContents.count];
 }
 @end

@@ -95,38 +95,39 @@ OF_SINGLETON_METHODS
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
 		const char *cString =
 		    [string insecureCStringWithEncoding: OFStringEncodingASCII];
 		size_t cStringLength =
 		    [string cStringLengthWithEncoding: OFStringEncodingASCII];
-		rawValue = [OFData dataWithItems: cString count: cStringLength];
+		DEREncodedContents = [OFData dataWithItems: cString
+						     count: cStringLength];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
 		OFString *string = [OFString
-		    stringWithCString: rawValue.items
+		    stringWithCString: DEREncodedContents.items
 			     encoding: OFStringEncodingASCII
-			       length: rawValue.count];
+			       length: DEREncodedContents.count];
 		if ([string rangeOfCharacterFromSet: [OFCharacterSet
 		    ASN1PrintableStringCharacterSet].invertedSet].location !=
 		    OFNotFound)
@@ -138,15 +139,15 @@ OF_SINGLETON_METHODS
 		@throw e;
 	}
 
-	return [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	return [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 }
 
 - (OFString *)stringValue
 {
-	return [OFString stringWithCString: _rawValue.items
+	return [OFString stringWithCString: _DEREncodedContents.items
 				  encoding: OFStringEncodingASCII
-				    length: _rawValue.count];
+				    length: _DEREncodedContents.count];
 }
 @end

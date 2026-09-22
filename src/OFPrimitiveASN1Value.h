@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFPrimitiveASN1Value: OFASN1Value
 {
-	OFData *_rawValue;
+	OFData *_DEREncodedContents;
 	OFData *volatile _Nullable _DERRepresentation;
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	OFSpinlock _spinlock;
@@ -39,22 +39,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * @brief The raw value.
+ * @brief The DER-encoded contents of the value.
  */
-@property (readonly, nonatomic) OFData *rawValue;
+@property (readonly, nonatomic) OFData *DEREncodedContents;
 
 /**
  * @brief Initializes an already allocated primitive ASN.1 value with the
  *	  specified raw value.
  *
- * @param rawValue The raw value
+ * @param DEREncodedContents The DER-encoded contents of the value
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1PrimitiveValue
  */
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass

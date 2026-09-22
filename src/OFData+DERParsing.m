@@ -53,11 +53,11 @@ static size_t parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value,
     size_t depthLimit);
 
 static OF_KINDOF(OFASN1Value *)
-parseConstructed(OFData *rawValue, Class class, OFASN1TagClass tagClass,
-    OFASN1TagNumber tagNumber, size_t depthLimit)
+parseConstructed(OFData *DEREncodedContents, Class class,
+    OFASN1TagClass tagClass, OFASN1TagNumber tagNumber, size_t depthLimit)
 {
 	OFMutableArray *components = [OFMutableArray array];
-	size_t count = rawValue.count;
+	size_t count = DEREncodedContents.count;
 
 	if (depthLimit == 0)
 		@throw [OFOutOfRangeException exception];
@@ -66,10 +66,11 @@ parseConstructed(OFData *rawValue, Class class, OFASN1TagClass tagClass,
 		OF_KINDOF(OFASN1Value *) value;
 		size_t valueLength;
 
-		valueLength = parseValue(rawValue, &value, depthLimit);
+		valueLength = parseValue(DEREncodedContents, &value,
+		    depthLimit);
 
 		count -= valueLength;
-		rawValue = [rawValue subdataWithRange:
+		DEREncodedContents = [DEREncodedContents subdataWithRange:
 		    OFMakeRange(valueLength, count)];
 
 		[components addObject: value];
@@ -152,7 +153,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 	if (count - bytesConsumed < contentsLength)
 		@throw [OFTruncatedDataException exception];
 
-	OFData *rawValue = [self subdataWithRange:
+	OFData *DEREncodedContents = [self subdataWithRange:
 	    OFMakeRange(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
@@ -232,13 +233,13 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 
 	@try {
 		if (constructed)
-			*value = parseConstructed(rawValue, valueClass,
-			    tagClass, tagNumber, depthLimit - 1);
+			*value = parseConstructed(DEREncodedContents,
+			    valueClass, tagClass, tagNumber, depthLimit - 1);
 		else
 			*value = objc_autorelease([[valueClass alloc]
-			    initWithRawValue: rawValue
-				    tagClass: tagClass
-				   tagNumber: tagNumber]);
+			    initWithDEREncodedContents: DEREncodedContents
+					      tagClass: tagClass
+					     tagNumber: tagNumber]);
 	} @catch (OFInvalidArgumentException *e) {
 		@throw [OFInvalidFormatException exception];
 	}

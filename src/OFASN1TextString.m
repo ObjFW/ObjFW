@@ -55,9 +55,9 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
 	if ([self isMemberOfClass: [OFASN1TextString class]]) {
 		@try {
@@ -70,9 +70,9 @@
 		abort();
 	}
 
-	return [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	return [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 }
 
 - (OFString *)description

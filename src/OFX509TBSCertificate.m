@@ -76,7 +76,7 @@
 			default:
 				@throw [OFUnsupportedVersionException
 				    exceptionWithVersion:
-				    [value rawValue].description];
+				    [value DEREncodedContents].description];
 			}
 
 			value = [enumerator nextObject];

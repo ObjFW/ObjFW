@@ -56,50 +56,51 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
 		unsigned char buffer[8];
 		size_t length = _OFDEREncodeInteger(value, buffer);
-		rawValue = [OFData dataWithItems: buffer count: length];
+		DEREncodedContents = [OFData dataWithItems: buffer
+						     count: length];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
 {
-	return [self initWithRawValue: rawValue
-			     tagClass: OFASN1TagClassUniversal
-			    tagNumber: OFASN1TagNumberInteger];
+	return [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: OFASN1TagClassUniversal
+				      tagNumber: OFASN1TagNumberInteger];
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.itemSize != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		size_t count = rawValue.count;
+		size_t count = DEREncodedContents.count;
 		if (count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		if (count >= 2) {
-			const unsigned char *items = rawValue.items;
+			const unsigned char *items = DEREncodedContents.items;
 			if ((items[0] == 0 && !(items[1] & 0x80)) ||
 			    (items[0] == 0xFF && (items[1] & 0x80)))
 				@throw [OFInvalidFormatException exception];
@@ -114,6 +115,7 @@
 
 - (long long)longLongValue
 {
-	return _OFDERDecodeInteger(_rawValue.items, _rawValue.count);
+	return _OFDERDecodeInteger(_DEREncodedContents.items,
+	    _DEREncodedContents.count);
 }
 @end

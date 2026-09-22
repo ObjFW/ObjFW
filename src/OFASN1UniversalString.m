@@ -40,36 +40,36 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
 		const OFChar32 *UTF32String =
 		    [string UTF32StringWithByteOrder: OFByteOrderBigEndian];
-		rawValue = [OFData dataWithItems: UTF32String
-					   count: string.length * 4];
+		DEREncodedContents = [OFData dataWithItems: UTF32String
+						     count: string.length * 4];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.count % 4 != 0)
+		if (DEREncodedContents.count % 4 != 0)
 			@throw [OFInvalidEncodingException exception];
 	} @catch (id e) {
 		objc_release(self);
@@ -81,15 +81,15 @@
 
 - (OFString *)stringValue
 {
-	const void *items = _rawValue.items;
-	size_t count = _rawValue.count;
+	const void *items = _DEREncodedContents.items;
+	size_t count = _DEREncodedContents.count;
 
 	if ((uintptr_t)items % 4 == 0)
 		return [OFString stringWithUTF32String: items
 						length: count / 4
 					     byteOrder: OFByteOrderBigEndian];
 
-	OFChar32 *copy = OFAllocMemory(_rawValue.count / 4, 4);
+	OFChar32 *copy = OFAllocMemory(_DEREncodedContents.count / 4, 4);
 	OFString *ret;
 	@try {
 		OFCopyMemory(copy, items, count);

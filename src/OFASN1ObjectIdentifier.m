@@ -87,7 +87,7 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFMutableData *rawValue;
+	OFMutableData *DEREncodedContents;
 	@try {
 		size_t count = arcs.count;
 		if (count < 2)
@@ -117,42 +117,42 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 			@throw [OFInvalidFormatException exception];
 		}
 
-		rawValue = [OFMutableData data];
+		DEREncodedContents = [OFMutableData data];
 
 		if (ULLONG_MAX - value < arc2)
 			@throw [OFOutOfRangeException exception];
 
-		addBase128ValueToData(rawValue, value + arc2);
+		addBase128ValueToData(DEREncodedContents, value + arc2);
 		for (size_t i = 2; i < count; i++)
-			addBase128ValueToData(rawValue,
+			addBase128ValueToData(DEREncodedContents,
 			    [[arcs objectAtIndex: i] unsignedLongLongValue]);
 
-		[rawValue makeImmutable];
+		[DEREncodedContents makeImmutable];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		const unsigned char *items = rawValue.items;
-		size_t count = rawValue.count;
+		const unsigned char *items = DEREncodedContents.items;
+		size_t count = DEREncodedContents.count;
 
 		if (count == 0)
 			@throw [OFInvalidArgumentException exception];
@@ -180,8 +180,8 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	OFMutableArray OF_GENERIC(OFNumber *) *arcs =
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	const unsigned char *items = _rawValue.items;
-	size_t count = _rawValue.count;
+	const unsigned char *items = _DEREncodedContents.items;
+	size_t count = _DEREncodedContents.count;
 
 	unsigned long long value = 0;
 	uint_fast8_t bits = 0;

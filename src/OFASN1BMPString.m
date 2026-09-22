@@ -40,36 +40,37 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFData *rawValue;
+	OFData *DEREncodedContents;
 	@try {
 		const OFChar16 *UTF16String =
 		    [string UTF16StringWithByteOrder: OFByteOrderBigEndian];
-		rawValue = [OFData dataWithItems: UTF16String
-					   count: string.UTF16StringLength * 2];
+		DEREncodedContents = [OFData
+		    dataWithItems: UTF16String
+			    count: string.UTF16StringLength * 2];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.count % 2 != 0)
+		if (DEREncodedContents.count % 2 != 0)
 			@throw [OFInvalidEncodingException exception];
 	} @catch (id e) {
 		objc_release(self);
@@ -81,15 +82,15 @@
 
 - (OFString *)stringValue
 {
-	const void *items = _rawValue.items;
-	size_t count = _rawValue.count;
+	const void *items = _DEREncodedContents.items;
+	size_t count = _DEREncodedContents.count;
 
 	if ((uintptr_t)items % 2 == 0)
 		return [OFString stringWithUTF16String: items
 						length: count / 2
 					     byteOrder: OFByteOrderBigEndian];
 
-	OFChar16 *copy = OFAllocMemory(_rawValue.count / 2, 2);
+	OFChar16 *copy = OFAllocMemory(_DEREncodedContents.count / 2, 2);
 	OFString *ret;
 	@try {
 		OFCopyMemory(copy, items, count);

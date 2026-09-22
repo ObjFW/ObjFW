@@ -62,7 +62,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	OFMutableData *rawValue;
+	OFMutableData *DEREncodedContents;
 	@try {
 		if (bits.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
@@ -74,38 +74,39 @@
 		if (bytesCount != roundedUpLength / 8)
 			@throw [OFInvalidFormatException exception];
 
-		rawValue = [OFMutableData dataWithCapacity: bytesCount + 1];
-		[rawValue addItem: &unusedBits];
-		[rawValue addItems: bits.items count: bytesCount];
+		DEREncodedContents = [OFMutableData
+		    dataWithCapacity: bytesCount + 1];
+		[DEREncodedContents addItem: &unusedBits];
+		[DEREncodedContents addItems: bits.items count: bytesCount];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
 	}
 
-	self = [self initWithRawValue: rawValue
-			     tagClass: tagClass
-			    tagNumber: tagNumber];
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
-	self = [super initWithRawValue: rawValue
-			      tagClass: tagClass
-			     tagNumber: tagNumber];
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
 
 	@try {
-		size_t count = rawValue.count;
+		size_t count = DEREncodedContents.count;
 		if (count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		unsigned char unusedBits =
-		    *(unsigned char *)[rawValue itemAtIndex: 0];
+		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 
 		if (unusedBits > 7)
 			@throw [OFInvalidFormatException exception];
@@ -118,8 +119,8 @@
 			@throw [OFInvalidFormatException exception];
 
 		/* Check that all unused bits are 0 */
-		if (count > 1 && unusedBits > 0 &&
-		    *(unsigned char *)[rawValue itemAtIndex: count - 1] &
+		if (count > 1 && unusedBits > 0 && *(unsigned char *)
+		    [DEREncodedContents itemAtIndex: count - 1] &
 		    ((1 << unusedBits) - 1))
 			@throw [OFInvalidFormatException exception];
 
@@ -135,14 +136,15 @@
 
 - (OFData *)bits
 {
-	return [_rawValue subdataWithRange:
-	    OFMakeRange(1, _rawValue.count - 1)];
+	return [_DEREncodedContents subdataWithRange:
+	    OFMakeRange(1, _DEREncodedContents.count - 1)];
 }
 
 - (size_t)bitsCount
 {
-	unsigned char unusedBits = *(unsigned char *)[_rawValue itemAtIndex: 0];
-	return (_rawValue.count - 1) * 8 - unusedBits;
+	unsigned char unusedBits =
+	    *(unsigned char *)[_DEREncodedContents itemAtIndex: 0];
+	return (_DEREncodedContents.count - 1) * 8 - unusedBits;
 }
 
 - (OFString *)description

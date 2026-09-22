@@ -42,7 +42,7 @@
 #import "OFNotImplementedException.h"
 
 @implementation OFPrimitiveASN1Value
-@synthesize rawValue = _rawValue;
+@synthesize DEREncodedContents = _DEREncodedContents;
 
 - (instancetype)initWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
@@ -50,17 +50,17 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithRawValue: (OFData *)rawValue
-			tagClass: (OFASN1TagClass)tagClass
-		       tagNumber: (OFASN1TagNumber)tagNumber
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
 {
 	self = [super initWithTagClass: tagClass tagNumber: tagNumber];
 
 	@try {
-		if (rawValue.itemSize != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidFormatException exception];
 
-		_rawValue = [rawValue copy];
+		_DEREncodedContents = [DEREncodedContents copy];
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 		if (OFSpinlockNew(&_spinlock) != 0)
@@ -77,7 +77,7 @@
 
 - (void)dealloc
 {
-	objc_release(_rawValue);
+	objc_release(_DEREncodedContents);
 	objc_release(_DERRepresentation);
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
@@ -108,7 +108,7 @@
 		return DERRepresentation;
 #endif
 
-	size_t count = _rawValue.count;
+	size_t count = _DEREncodedContents.count;
 
 	OFMutableData *data = [OFMutableData dataWithCapacity: count + 2];
 
@@ -119,7 +119,7 @@
 	unsigned char length[9];
 	[data addItems: length
 		 count: _OFDEREncodeLength(count, length)];
-	[data addItems: _rawValue.items count: count];
+	[data addItems: _DEREncodedContents.items count: count];
 
 	[data makeImmutable];
 
@@ -169,7 +169,8 @@
 	return [OFString stringWithFormat:
 	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
-	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _rawValue];
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
+	    _DEREncodedContents];
 }
 
 - (OF_KINDOF(OFASN1Value *))parsedAs: (Class)class
@@ -178,8 +179,8 @@
 		@throw [OFInvalidArgumentException exception];
 
 	return objc_autoreleaseReturnValue(
-	    [[class alloc] initWithRawValue: _rawValue
-				   tagClass: _tagClass
-				  tagNumber: _tagNumber]);
+	    [[class alloc] initWithDEREncodedContents: _DEREncodedContents
+					     tagClass: _tagClass
+					    tagNumber: _tagNumber]);
 }
 @end
