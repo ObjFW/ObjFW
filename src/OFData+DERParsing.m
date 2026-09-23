@@ -24,6 +24,7 @@
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1Enumerated.h"
+#import "OFASN1GeneralizedTime.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
@@ -206,6 +207,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			break;
 		case OFASN1TagNumberUTCTime:
 			valueClass = [OFASN1UTCTime class];
+			break;
+		case OFASN1TagNumberGeneralizedTime:
+			valueClass = [OFASN1GeneralizedTime class];
 			break;
 		case OFASN1TagNumberVisibleString:
 			valueClass = [OFASN1VisibleString class];

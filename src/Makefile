@@ -16,6 +16,7 @@ SRCS = OFASN1BMPString.m		\
        OFASN1BitString.m		\
        OFASN1Boolean.m			\
        OFASN1Enumerated.m		\
+       OFASN1GeneralizedTime.m		\
        OFASN1IA5String.m		\
        OFASN1Integer.m			\
        OFASN1Null.m			\

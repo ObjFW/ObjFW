@@ -60,6 +60,7 @@ void *__objc_class_name_OFASN1BMPString;
 void *__objc_class_name_OFASN1BitString;
 void *__objc_class_name_OFASN1Boolean;
 void *__objc_class_name_OFASN1Enumerated;
+void *__objc_class_name_OFASN1GeneralizedTime;
 void *__objc_class_name_OFASN1IA5String;
 void *__objc_class_name_OFASN1Integer;
 void *__objc_class_name_OFASN1Null;
