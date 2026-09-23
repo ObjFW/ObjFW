@@ -191,6 +191,7 @@
 #import "OFASN1PrintableString.h"
 #import "OFASN1Sequence.h"
 #import "OFASN1Set.h"
+#import "OFASN1UTCTime.h"
 #import "OFASN1UTF8String.h"
 #import "OFASN1UniversalString.h"
 #import "OFASN1Value.h"

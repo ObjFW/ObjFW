@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The string value.
  */
-@property (readonly, nonatomic) OFString *stringValue;
+@property (readonly, retain, nonatomic) OFString *stringValue;
 
 /**
  * @brief Creates an ASN.1 text string with the specified string value.

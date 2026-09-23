@@ -26,6 +26,7 @@ SRCS = OFASN1BMPString.m		\
        OFASN1Sequence.m			\
        OFASN1Set.m			\
        OFASN1TextString.m		\
+       OFASN1UTCTime.m			\
        OFASN1UTF8String.m		\
        OFASN1UniversalString.m		\
        OFASN1Value.m			\

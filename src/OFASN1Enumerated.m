@@ -92,9 +92,6 @@
 				       tagNumber: tagNumber];
 
 	@try {
-		if (DEREncodedContents.itemSize != 1)
-			@throw [OFInvalidArgumentException exception];
-
 		size_t count = DEREncodedContents.count;
 		if (count == 0)
 			@throw [OFInvalidFormatException exception];
