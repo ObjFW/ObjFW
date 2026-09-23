@@ -18,6 +18,92 @@
  */
 
 #import "OFX509Validity.h"
+#import "OFASN1GeneralizedTime.h"
+#import "OFASN1UTCTime.h"
+#import "OFArray.h"
+#import "OFDate.h"
+#import "OFString.h"
+
+#import "OFInvalidFormatException.h"
+
+static OFDate *
+X509UTCTimeToDate(OFASN1UTCTime *time)
+{
+	struct tm tm = {
+		.tm_year = time.yearOfCentury +
+		    (time.yearOfCentury < 49 ? 100 : 0),
+		.tm_mon = time.month - 1,
+		.tm_mday = time.dayOfMonth,
+		.tm_hour = time.hour,
+		.tm_min = time.minute,
+		.tm_sec = time.second
+	};
+
+	return [OFDate dateWithStructTm: &tm];
+}
 
 @implementation OFX509Validity: OFASN1Sequence
+@synthesize notBefore = _notBefore, notAfter = _notAfter;
+
+- (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
+					OFASN1Value *)) *)components
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithComponents: components
+				tagClass: tagClass
+			       tagNumber: tagNumber];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		if (components.count != 2)
+			@throw [OFInvalidFormatException exception];
+
+		OFEnumerator *enumerator = [components objectEnumerator];
+
+		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
+		if ([value isKindOfClass: [OFASN1UTCTime class]])
+			_notBefore = objc_retain(X509UTCTimeToDate(value));
+		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]])
+			_notBefore = [value dateValue];
+		else
+			@throw [OFInvalidFormatException exception];
+
+		value = [enumerator nextObject];
+		if ([value isKindOfClass: [OFASN1UTCTime class]])
+			_notAfter = objc_retain(X509UTCTimeToDate(value));
+		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]])
+			_notAfter = [value dateValue];
+		else
+			@throw [OFInvalidFormatException exception];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	objc_release(_notBefore);
+	objc_release(_notAfter);
+
+	[super dealloc];
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@ [%@ %@]:\n"
+	    @"\tNot before = %@\n"
+	    @"\tNot after = %@\n"
+	    @">",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _notBefore,
+	    _notAfter];
+}
 @end

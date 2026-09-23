@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFDate;
+
 /**
  * @class OFX509Validity OFX509Validity.h ObjFW/ObjFW.h
  *
@@ -28,6 +30,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFX509Validity: OFASN1Sequence
+{
+	OFDate *_notBefore, *_notAfter;
+}
+
+/**
+ * @brief The notBefore date of the X.509 Validity.
+ */
+@property (readonly, retain, nonatomic) OFDate *notBefore;
+
+/**
+ * @brief The notAfter date of the X.509 Validity.
+ */
+@property (readonly, retain, nonatomic) OFDate *notAfter;
 @end
 
 OF_ASSUME_NONNULL_END
