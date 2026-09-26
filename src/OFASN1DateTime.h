@@ -24,141 +24,135 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDate;
 
 /**
- * @brief An ASN.1 GeneralizedTime.
+ * @brief An ASN.1 DATE-TIME.
  */
 OF_SUBCLASSING_RESTRICTED
 
-@interface OFASN1GeneralizedTime: OFPrimitiveASN1Value
+@interface OFASN1DateTime: OFPrimitiveASN1Value
 {
 	unsigned short _year;
 	unsigned char _month, _dayOfMonth, _hour, _minute, _second;
-	unsigned short _millisecond;
 }
 
 /**
- * @brief The string value of the GeneralizedTime.
+ * @brief The string value of the DATE-TIME.
  */
 @property (readonly, retain, nonatomic) OFString *stringValue;
 
 /**
- * @brief The date value of the GeneralizedTime.
+ * @brief The date value of the DATE-TIME.
  */
 @property (readonly, retain, nonatomic) OFDate *dateValue;
 
 /**
- * @brief The year of the GeneralizedTime.
+ * @brief The year of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned short year;
 
 /**
- * @brief The month of the GeneralizedTime.
+ * @brief The month of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned char month;
 
 /**
- * @brief The day of the month of the GeneralizedTime.
+ * @brief The day of the month of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned char dayOfMonth;
 
 /**
- * @brief The hour of the GeneralizedTime.
+ * @brief The hour of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned char hour;
 
 /**
- * @brief The minute of the GeneralizedTime.
+ * @brief The minute of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned char minute;
 
 /**
- * @brief The second of the GeneralizedTime.
+ * @brief The second of the DATE-TIME.
  */
 @property (readonly, nonatomic) unsigned char second;
 
 /**
- * @brief The millisecond of the GeneralizedTime.
- */
-@property (readonly, nonatomic) unsigned short millisecond;
-
-/**
- * @brief Creates an ASN.1 GeneralizedTime with the specified string value.
+ * @brief Creates an ASN.1 DATE-TIME with the specified string value.
  *
- * @param string The string value of the GeneralizedTime
- * @return A new, autoreleased OFASN1GeneralizedTime
+ * @param string The string value of the DATE-TIME
+ * @return A new, autoreleased OFASN1DateTime
  */
 + (instancetype)timeWithString: (OFString *)string;
 
 /**
- * @brief Creates an ASN.1 GeneralizedTime with the specified string value.
+ * @brief Creates an ASN.1 DATE-TIME with the specified string value.
  *
- * @param string The string value of the GeneralizedTime
+ * @param string The string value of the DATE-TIME
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1GeneralizedTime
+ * @return A new, autoreleased OFASN1DateTime
  */
 + (instancetype)timeWithString: (OFString *)string
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Creates an ASN.1 GeneralizedTime with the specified date value.
+ * @brief Creates an ASN.1 DATE-TIME with the specified date value.
  *
- * @param date The date value of the GeneralizedTime
- * @return A new, autoreleased OFASN1GeneralizedTime
+ * @param date The date value of the DATE-TIME
+ * @return A new, autoreleased OFASN1DateTime
  */
 + (instancetype)timeWithDate: (OFDate *)date;
 
 /**
- * @brief Creates an ASN.1 GeneralizedTime with the specified date value.
+ * @brief Creates an ASN.1 DATE-TIME with the specified date value.
  *
- * @param date The date value of the GeneralizedTime
+ * @param date The date value of the DATE-TIME
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return A new, autoreleased OFASN1GeneralizedTime
+ * @return A new, autoreleased OFASN1DateTime
  */
 + (instancetype)timeWithDate: (OFDate *)date
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Initializes an already allocated ASN.1 GeneralizedTime with the
- *	  specified string value.
+ * @brief Initializes an already allocated ASN.1 DATE-TIME with the specified
+ *	  string value.
  *
- * @param string The string value of the GeneralizedTime
- * @return An initialized OFASN1GeneralizedTime
+ * @param string The string value of the DATE-TIME
+ * @return An initialized OFASN1DateTime
  */
 - (instancetype)initWithString: (OFString *)string;
 
 /**
- * @brief Initializes an already allocated ASN.1 GeneralizedTime with the
- *	  specified string value.
+ * @brief Initializes an already allocated ASN.1 DATE-TIME with the specified
+ *	  string value.
  *
- * @param string The string value of the GeneralizedTime
+ * @param string The string value of the DATE-TIME
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1GeneralizedTime
+ * @return An initialized OFASN1DateTime
  */
 - (instancetype)initWithString: (OFString *)string
 		      tagClass: (OFASN1TagClass)tagClass
 		     tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Initializes an already allocated ASN.1 GeneralizedTime with the
- *	  specified date value.
+ * @brief Initializes an already allocated ASN.1 DATE-TIME with the specified
+ *	  date value.
  *
- * @param date The date value of the GeneralizedTime
- * @return An initialized OFASN1GeneralizedTime
+ * @param date The date value of the DATE-TIME
+ * @return An initialized OFASN1DateTime
  */
 - (instancetype)initWithDate: (OFDate *)date;
 
 /**
- * @brief Initializes an already allocated ASN.1 GeneralizedTime with the
- *	  specified date value.
+ * @brief Initializes an already allocated ASN.1 DATE-TIME with the specified
+ *	  date value.
  *
- * @param date The date value of the GeneralizedTime
+ * @param date The date value of the DATE-TIME
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
- * @return An initialized OFASN1GeneralizedTime
+ * @return An initialized OFASN1DateTime
  */
 - (instancetype)initWithDate: (OFDate *)date
 		    tagClass: (OFASN1TagClass)tagClass

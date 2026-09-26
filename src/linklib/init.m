@@ -59,6 +59,7 @@ extern void __deregister_frame(void *);
 void *__objc_class_name_OFASN1BMPString;
 void *__objc_class_name_OFASN1BitString;
 void *__objc_class_name_OFASN1Boolean;
+void *__objc_class_name_OFASN1DateTime;
 void *__objc_class_name_OFASN1Enumerated;
 void *__objc_class_name_OFASN1GeneralizedTime;
 void *__objc_class_name_OFASN1IA5String;

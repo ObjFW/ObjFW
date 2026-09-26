@@ -181,6 +181,7 @@
 #import "OFASN1BMPString.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
+#import "OFASN1DateTime.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1GeneralizedTime.h"
 #import "OFASN1IA5String.h"

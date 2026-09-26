@@ -15,6 +15,7 @@ LIB_PATCH = ${OBJFW_LIB_PATCH}
 SRCS = OFASN1BMPString.m		\
        OFASN1BitString.m		\
        OFASN1Boolean.m			\
+       OFASN1DateTime.m			\
        OFASN1Enumerated.m		\
        OFASN1GeneralizedTime.m		\
        OFASN1IA5String.m		\

@@ -23,6 +23,7 @@
 #import "OFASN1BMPString.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
+#import "OFASN1DateTime.h"
 #import "OFASN1Enumerated.h"
 #import "OFASN1GeneralizedTime.h"
 #import "OFASN1IA5String.h"
@@ -219,6 +220,9 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 			break;
 		case OFASN1TagNumberBMPString:
 			valueClass = [OFASN1BMPString class];
+			break;
+		case OFASN1TagNumberDateTime:
+			valueClass = [OFASN1DateTime class];
 			break;
 		default:
 			if (constructed)

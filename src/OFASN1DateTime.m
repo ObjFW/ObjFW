@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#import "OFASN1GeneralizedTime.h"
+#import "OFASN1DateTime.h"
 #import "OFASN1Value+Private.h"
 #import "OFData.h"
 #import "OFDate.h"
@@ -27,10 +27,9 @@
 
 #import "OFInvalidFormatException.h"
 
-@implementation OFASN1GeneralizedTime
+@implementation OFASN1DateTime
 @synthesize year = _year, month = _month, dayOfMonth = _dayOfMonth;
 @synthesize hour = _hour, minute = _minute, second = _second;
-@synthesize millisecond = _millisecond;
 
 + (instancetype)timeWithString: (OFString *)string
 {
@@ -67,7 +66,7 @@
 {
 	return [self initWithString: string
 			   tagClass: OFASN1TagClassUniversal
-			  tagNumber: OFASN1TagNumberGeneralizedTime];
+			  tagNumber: OFASN1TagNumberDateTime];
 }
 
 - (instancetype)initWithString: (OFString *)string
@@ -102,7 +101,7 @@
 {
 	return [self initWithDate: date
 			 tagClass: OFASN1TagClassUniversal
-			tagNumber: OFASN1TagNumberGeneralizedTime];
+			tagNumber: OFASN1TagNumberDateTime];
 }
 
 - (instancetype)initWithDate: (OFDate *)date
@@ -113,13 +112,10 @@
 
 	OFString *string;
 	@try {
-		string = [date dateStringWithFormat: @"%Y%m%d%H%M%S"];
+		if (date.microsecond > 0)
+			@throw [OFInvalidFormatException exception];
 
-		if (date.microsecond / 1000 > 0)
-			string = [string stringByAppendingFormat:
-			    @".%06u", date.microsecond / 1000];
-
-		string = [string stringByAppendingString: @"Z"];
+		string = [date dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -136,10 +132,9 @@
 
 - (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
 {
-	return [self
-	    initWithDEREncodedContents: DEREncodedContents
-			      tagClass: OFASN1TagClassUniversal
-			     tagNumber: OFASN1TagNumberGeneralizedTime];
+	return [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: OFASN1TagClassUniversal
+				      tagNumber: OFASN1TagNumberDateTime];
 }
 
 - (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
@@ -152,37 +147,31 @@
 
 	@try {
 		size_t count = DEREncodedContents.count;
-		if (count != 15 && count != 19)
+		if (count != 19)
 			@throw [OFInvalidFormatException exception];
 
 		const unsigned char *items = DEREncodedContents.items;
 
-		for (size_t i = 0; i < 14; i++)
-			if (!OFASCIIIsDigit(items[i]))
-				@throw [OFInvalidFormatException exception];
-
-		if (count == 19) {
-			if (items[14] != '.')
-				@throw [OFInvalidFormatException exception];
-
-			for (size_t i = 15; i < 18; i++)
-				if (!OFASCIIIsDigit(items[i]))
-					@throw [OFInvalidFormatException
-					    exception];
-
-			if (items[18] != 'Z')
-				@throw [OFInvalidFormatException exception];
-		} else if (items[14] != 'Z')
+		if (!OFASCIIIsDigit(items[0]) || !OFASCIIIsDigit(items[1]) ||
+		    !OFASCIIIsDigit(items[2]) || !OFASCIIIsDigit(items[3]))
 			@throw [OFInvalidFormatException exception];
 
 		_year = (items[0] - '0') * 1000 + (items[1] - '0') * 100 +
 		    (items[2] - '0') * 10 + items[3] - '0';
 
-		_month = (items[4] - '0') * 10 + items[5] - '0';
+		if (items[4] != '-' || !OFASCIIIsDigit(items[5]) ||
+		    !OFASCIIIsDigit(items[6]))
+			@throw [OFInvalidFormatException exception];
+
+		_month = (items[5] - '0') * 10 + items[6] - '0';
 		if (_month == 0 || _month > 12)
 			@throw [OFInvalidFormatException exception];
 
-		_dayOfMonth = (items[6] - '0') * 10 + items[7] - '0';
+		if (items[7] != '-' || !OFASCIIIsDigit(items[8]) ||
+		    !OFASCIIIsDigit(items[9]))
+			@throw [OFInvalidFormatException exception];
+
+		_dayOfMonth = (items[8] - '0') * 10 + items[9] - '0';
 		if (_dayOfMonth == 0)
 			@throw [OFInvalidFormatException exception];
 
@@ -218,25 +207,29 @@
 			break;
 		}
 
-		_hour = (items[8] - '0') * 10 + items[9] - '0';
+		if (items[10] != 'T' || !OFASCIIIsDigit(items[11]) ||
+		    !OFASCIIIsDigit(items[12]))
+			@throw [OFInvalidFormatException exception];
+
+		_hour = (items[11] - '0') * 10 + items[12] - '0';
 		if (_hour > 23)
 			@throw [OFInvalidFormatException exception];
 
-		_minute = (items[10] - '0') * 10 + items[11] - '0';
+		if (items[13] != ':' || !OFASCIIIsDigit(items[14]) ||
+		    !OFASCIIIsDigit(items[15]))
+			@throw [OFInvalidFormatException exception];
+
+		_minute = (items[14] - '0') * 10 + items[15] - '0';
 		if (_minute > 59)
 			@throw [OFInvalidFormatException exception];
 
-		_second = (items[12] - '0') * 10 + items[13] - '0';
-		if (_second > 59)
+		if (items[16] != ':' || !OFASCIIIsDigit(items[17]) ||
+		    !OFASCIIIsDigit(items[18]))
 			@throw [OFInvalidFormatException exception];
 
-		if (count == 19) {
-			_millisecond = (items[15] - '0') * 100 +
-			    (items[16] - '0') * 10 + (items[17]);
-
-			if (_millisecond == 0)
-				@throw [OFInvalidFormatException exception];
-		}
+		_second = (items[17] - '0') * 10 + items[18] - '0';
+		if (_second > 59)
+			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -254,7 +247,6 @@
 
 - (OFDate *)dateValue
 {
-	void *pool = objc_autoreleasePoolPush();
 	struct tm tm = {
 		.tm_year = _year - 1900,
 		.tm_mon = _month - 1,
@@ -263,24 +255,16 @@
 		.tm_min = _minute,
 		.tm_sec = _second
 	};
-	OFDate *date = [OFDate dateWithStructTm: &tm];
 
-	if (_millisecond > 0)
-		date = [date dateByAddingTimeInterval: _millisecond / 1000.0];
-
-	objc_retain(date);
-
-	objc_autoreleasePoolPop(pool);
-
-	return objc_autoreleaseReturnValue(date);
+	return [OFDate dateWithStructTm: &tm];
 }
 
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02u.%03uZ>",
+	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02uZ>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
-	    _year, _month, _dayOfMonth, _hour, _minute, _second, _millisecond];
+	    _year, _month, _dayOfMonth, _hour, _minute, _second];
 }
 @end
