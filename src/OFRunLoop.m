@@ -1688,11 +1688,21 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				OFAssert(queue.count > 0);
 
 				/*
-				 * Retain and autorelease the queue so that the
-				 * objects inside it only get deallocated once
-				 * we're out of the lock.
+				 * Retain and autorelease the queue items so
+				 * they only get deallocated once we're out of
+				 * the lock. Not doing so could cause a
+				 * deadlock, as -[cancelAsyncRequests] might be
+				 * called in -[dealloc].
 				 */
-				objc_retainAutorelease(queue);
+				for (id item in queue)
+					objc_retainAutorelease(item);
+
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
 
 				[state->_kernelEventObserver
 				    removeObjectForWriting: object];
@@ -1705,11 +1715,21 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				OFAssert(queue.count > 0);
 
 				/*
-				 * Retain and autorelease the queue so that the
-				 * objects inside it only get deallocated once
-				 * we're out of the lock.
+				 * Retain and autorelease the queue items so
+				 * they only get deallocated once we're out of
+				 * the lock. Not doing so could cause a
+				 * deadlock, as -[cancelAsyncRequests] might be
+				 * called in -[dealloc].
 				 */
-				objc_retainAutorelease(queue);
+				for (id item in queue)
+					objc_retainAutorelease(item);
+
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
 
 				[state->_kernelEventObserver
 				    removeObjectForReading: object];
