@@ -26,9 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFASN1BitString;
 @class OFASN1Integer;
 @class OFArray OF_GENERIC(ObjectType);
+@class OFX500Name;
 @class OFX509AlgorithmIdentifier;
 @class OFX509Extension;
-@class OFX509Name;
 @class OFX509SubjectPublicKeyInfo;
 @class OFX509Validity;
 
@@ -53,9 +53,9 @@ OF_SUBCLASSING_RESTRICTED
 	int _version;
 	OFX509CertificateSerialNumber *_serialNumber;
 	OFX509AlgorithmIdentifier *_signature;
-	OFX509Name *_issuer;
+	OFX500Name *_issuer;
 	OFX509Validity *_validity;
-	OFX509Name *_subject;
+	OFX500Name *_subject;
 	OFX509SubjectPublicKeyInfo *_subjectPublicKeyInfo;
 	OFX509UniqueIdentifier *_Nullable _issuerUniqueID;
 	OFX509UniqueIdentifier *_Nullable _subjectUniqueID;
@@ -81,7 +81,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The entity that has signed and issued the certificate.
  */
-@property (readonly, retain, nonatomic) OFX509Name *issuer;
+@property (readonly, retain, nonatomic) OFX500Name *issuer;
 
 /**
  * @brief The validity period of the certificate.
@@ -92,7 +92,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The entity associated with the public key stored in the
  *	  @ref subjectPublicKeyInfo field.
  */
-@property (readonly, retain, nonatomic) OFX509Name *subject;
+@property (readonly, retain, nonatomic) OFX500Name *subject;
 
 /**
  * @brief The public key and algorithm of the key.

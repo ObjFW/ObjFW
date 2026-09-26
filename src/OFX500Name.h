@@ -22,12 +22,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /**
- * @class OFX509Name OFX509Name.h ObjFW/ObjFW.h
+ * @class OFX500Name OFX500Name.h ObjFW/ObjFW.h
  *
- * @brief An X.509 Name.
+ * @brief An X.500 Name.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFX509Name: OFASN1Sequence
+@interface OFX500Name: OFASN1Sequence
 @end
 
 OF_ASSUME_NONNULL_END

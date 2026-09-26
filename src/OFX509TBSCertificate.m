@@ -23,9 +23,9 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFString.h"
+#import "OFX500Name.h"
 #import "OFX509AlgorithmIdentifier.h"
 #import "OFX509Extension.h"
-#import "OFX509Name.h"
 #import "OFX509SubjectPublicKeyInfo.h"
 #import "OFX509Validity.h"
 
@@ -96,7 +96,7 @@
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
 			@throw [OFInvalidFormatException exception];
-		_issuer = objc_retain([value parsedAs: [OFX509Name class]]);
+		_issuer = objc_retain([value parsedAs: [OFX500Name class]]);
 
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
@@ -107,7 +107,7 @@
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
 			@throw [OFInvalidFormatException exception];
-		_subject = objc_retain([value parsedAs: [OFX509Name class]]);
+		_subject = objc_retain([value parsedAs: [OFX500Name class]]);
 
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])

@@ -17,7 +17,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFX509Name.h"
+#import "OFX500Name.h"
 
-@implementation OFX509Name: OFASN1Sequence
+@implementation OFX500Name: OFASN1Sequence
 @end
