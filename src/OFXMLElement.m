@@ -233,8 +233,11 @@
 			namespace: element->_namespace];
 
 	@try {
+		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
+		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
+		objc_release(_children);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
@@ -282,8 +285,11 @@
 			namespace: element->_namespace];
 
 	@try {
+		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
+		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
+		objc_release(_children);
 		_children = objc_retain(element->_children);
 
 		objc_autoreleasePoolPop(pool);
