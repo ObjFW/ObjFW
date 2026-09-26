@@ -658,8 +658,8 @@ parseNetStackArray(OFString *string)
 	 *	 (mtime) and only reset those.
 	 */
 
-	if (_lastConfigReload != nil && _configReloadInterval > 0 &&
-	    -_lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
+	if (_lastConfigReload != nil && (_configReloadInterval == 0.0 ||
+	    -_lastConfigReload.timeIntervalSinceNow < _configReloadInterval))
 		return;
 
 	pool = objc_autoreleasePoolPush();
