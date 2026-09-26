@@ -65,17 +65,23 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
 		if ([value isKindOfClass: [OFASN1UTCTime class]])
 			_notBefore = objc_retain(X509UTCTimeToDate(value));
-		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]])
+		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]]) {
+			if ([value millisecond] > 0)
+				@throw [OFInvalidFormatException exception];
+
 			_notBefore = [value dateValue];
-		else
+		} else
 			@throw [OFInvalidFormatException exception];
 
 		value = [enumerator nextObject];
 		if ([value isKindOfClass: [OFASN1UTCTime class]])
 			_notAfter = objc_retain(X509UTCTimeToDate(value));
-		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]])
+		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]]) {
+			if ([value millisecond] > 0)
+				@throw [OFInvalidFormatException exception];
+
 			_notAfter = [value dateValue];
-		else
+		} else
 			@throw [OFInvalidFormatException exception];
 
 		objc_autoreleasePoolPop(pool);
