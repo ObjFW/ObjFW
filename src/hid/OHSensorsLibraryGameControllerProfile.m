@@ -125,9 +125,14 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFMutableDictionary *buttons = [OFMutableDictionary dictionary];
+
+		OFMutableDictionary *buttons =
+		    [[OFMutableDictionary alloc] init];
 		OFMutableDictionary *directionalPads =
-		    [OFMutableDictionary dictionary];
+		    [[OFMutableDictionary alloc] init];
+		_buttons = buttons;
+		_directionalPads = directionalPads;
+
 		OFStringEncoding encoding = [OFLocale encoding];
 
 		if ((_port = CreateMsgPort()) == NULL)
@@ -166,9 +171,6 @@ addDirectionalPad(OFMutableDictionary *directionalPads, OFString *name,
 		}
 		[buttons makeImmutable];
 		[directionalPads makeImmutable];
-
-		_buttons = [buttons copy];
-		_directionalPads = [directionalPads copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
