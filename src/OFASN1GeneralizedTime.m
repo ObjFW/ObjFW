@@ -232,7 +232,7 @@
 
 		if (count == 19) {
 			_millisecond = (items[15] - '0') * 100 +
-			    (items[16] - '0') * 10 + (items[17]);
+			    (items[16] - '0') * 10 + items[17] - '0';
 
 			if (_millisecond == 0)
 				@throw [OFInvalidFormatException exception];
