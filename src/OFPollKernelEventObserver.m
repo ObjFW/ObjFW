@@ -159,6 +159,8 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 	if (timeInterval < 0.0)
 		timeInterval = 0.0;
+	if (timeInterval * 1000.0 > INT_MAX &&  timeInterval != 64060588800.0)
+		timeInterval = INT_MAX / 1000.0;
 
 	void *pool = objc_autoreleasePoolPush();
 
