@@ -21,6 +21,8 @@
 
 #import "OFSubdata.h"
 
+#import "OFOutOfRangeException.h"
+
 @implementation OFSubdata
 - (instancetype)initWithData: (OFData *)data range: (OFRange)range
 {
@@ -59,5 +61,20 @@
 {
 	return (const unsigned char *)_data.items +
 	    (_range.location * _data.itemSize);
+}
+
+- (OFData *)subdataWithRange: (OFRange)range
+{
+	if (OFEndOfRange(range) > _range.length)
+		@throw [OFOutOfRangeException exception];
+
+	if (SIZE_MAX - range.location < _range.location)
+		@throw [OFOutOfRangeException exception];
+
+	range.location += _range.location;
+
+	return objc_autoreleaseReturnValue(
+	    [[OFSubdata alloc] initWithData: _data
+				      range: range]);
 }
 @end
