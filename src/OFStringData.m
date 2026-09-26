@@ -56,6 +56,6 @@
 
 - (const void *)items
 {
-	return _string.UTF8String;
+	return [_string insecureCStringWithEncoding: OFStringEncodingUTF8];
 }
 @end
