@@ -31,7 +31,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 {
 	struct tm tm = {
 		.tm_year = time.yearOfCentury +
-		    (time.yearOfCentury < 49 ? 100 : 0),
+		    (time.yearOfCentury < 50 ? 100 : 0),
 		.tm_mon = time.month - 1,
 		.tm_mday = time.dayOfMonth,
 		.tm_hour = time.hour,
