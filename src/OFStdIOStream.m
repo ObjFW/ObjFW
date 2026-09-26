@@ -833,6 +833,7 @@ colorTo256Color(uint8_t red, uint8_t green, uint8_t blue)
 					       blueInt)];
 	} else
 		/* Refuse to set color */
+		return;
 #endif
 
 	objc_release(_foregroundColor);
