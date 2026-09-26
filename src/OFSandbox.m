@@ -464,7 +464,8 @@
 		return false;
 	if (sandbox->_returnsErrors != _returnsErrors)
 		return false;
-	if (sandbox->_unveiledPaths != _unveiledPaths)
+	if (sandbox->_unveiledPaths != _unveiledPaths &&
+	    ![sandbox->_unveiledPaths isEqual: _unveiledPaths])
 		return false;
 
 	return true;
