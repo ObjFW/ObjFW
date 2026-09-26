@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFX500AttributeTypeAndValue;
+
 /**
  * @class OFX500RelativeDistinguishedName OFX500RelativeDistinguishedName.h
  *	  ObjFW/ObjFW.h
@@ -34,7 +36,7 @@ OF_SUBCLASSING_RESTRICTED
  *	  RelativeDistinguishedName.
  */
 @property (readonly, retain, nonatomic) OFArray OF_GENERIC(
-    OFX500RelativeDistinguishedName *) *attributeTypesAndValues;
+    OFX500AttributeTypeAndValue *) *attributeTypesAndValues;
 @end
 
 OF_ASSUME_NONNULL_END
