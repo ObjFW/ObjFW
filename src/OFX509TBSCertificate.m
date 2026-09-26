@@ -208,13 +208,13 @@
 	OFString *signature = [_signature.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	OFString *issuer = [_issuer.description
+	OFString *issuer = [[_issuer description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 	OFString *validity = [_validity.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	OFString *subject = [_subject.description
+	OFString *subject = [[_subject description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 	OFString *subjectPublicKeyInfo = [_subjectPublicKeyInfo.description
