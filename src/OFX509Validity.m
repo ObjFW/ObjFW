@@ -42,7 +42,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 	return [OFDate dateWithStructTm: &tm];
 }
 
-@implementation OFX509Validity: OFASN1Sequence
+@implementation OFX509Validity
 @synthesize notBefore = _notBefore, notAfter = _notAfter;
 
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(

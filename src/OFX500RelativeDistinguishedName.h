@@ -17,7 +17,24 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFX500Name.h"
+#import "OFASN1Set.h"
 
-@implementation OFX500Name: OFASN1Sequence
+OF_ASSUME_NONNULL_BEGIN
+
+/**
+ * @class OFX500RelativeDistinguishedName OFX500RelativeDistinguishedName.h
+ *	  ObjFW/ObjFW.h
+ *
+ * @brief An X.500 RelativeDistinguishedName.
+ */
+OF_SUBCLASSING_RESTRICTED
+@interface OFX500RelativeDistinguishedName: OFASN1Set
+/**
+ * @brief The SET OF AttributeTypeAndValue of the X.500
+ *	  RelativeDistinguishedName.
+ */
+@property (readonly, retain, nonatomic) OFArray OF_GENERIC(
+    OFX500RelativeDistinguishedName *) *attributeTypesAndValues;
 @end
+
+OF_ASSUME_NONNULL_END

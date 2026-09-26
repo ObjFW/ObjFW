@@ -21,13 +21,42 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/** @file */
+
+@class OFASN1ObjectIdentifier;
+
 /**
- * @class OFX500Name OFX500Name.h ObjFW/ObjFW.h
+ * @brief An X.500 AttributeType.
+ */
+typedef OFASN1ObjectIdentifier OFX500AttributeType;
+
+/**
+ * @brief An X.500 AttributeValue.
+ */
+typedef OF_KINDOF(OFASN1Value *) OFX500AttributeValue;
+
+/**
+ * @class OFX500AttributeTypeAndValue OFX500AttributeTypeAndValue.h
+ *	  ObjFW/ObjFW.h
  *
- * @brief An X.500 Name.
+ * @brief An X.500 AttributeTypeAndValue.
  */
 OF_SUBCLASSING_RESTRICTED
-@interface OFX500Name: OFASN1Sequence
+@interface OFX500AttributeTypeAndValue: OFASN1Sequence
+{
+	OFX500AttributeType *_attributeType;
+	OFX500AttributeValue _attributeValue;
+}
+
+/**
+ * @brief The AttributeType of the AttributeTypeAndValue.
+ */
+@property (readonly, retain, nonatomic) OFX500AttributeType *attributeType;
+
+/**
+ * @brief The AttributeValue of the AttributeTypeAndValue.
+ */
+@property (readonly, retain, nonatomic) OFX500AttributeValue attributeValue;
 @end
 
 OF_ASSUME_NONNULL_END

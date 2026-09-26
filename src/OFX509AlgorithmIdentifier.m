@@ -24,7 +24,7 @@
 
 #import "OFInvalidFormatException.h"
 
-@implementation OFX509AlgorithmIdentifier: OFASN1Sequence
+@implementation OFX509AlgorithmIdentifier
 @synthesize algorithm = _algorithm, parameters = _parameters;
 
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(

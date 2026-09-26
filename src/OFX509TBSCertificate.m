@@ -23,7 +23,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFString.h"
-#import "OFX500Name.h"
+#import "OFX500DistinguishedName.h"
 #import "OFX509AlgorithmIdentifier.h"
 #import "OFX509Extension.h"
 #import "OFX509SubjectPublicKeyInfo.h"
@@ -32,7 +32,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFUnsupportedVersionException.h"
 
-@implementation OFX509TBSCertificate: OFASN1Sequence
+@implementation OFX509TBSCertificate
 @synthesize version = _version, serialNumber = _serialNumber;
 @synthesize signature = _signature, issuer = _issuer, validity = _validity;
 @synthesize subject = _subject, subjectPublicKeyInfo = _subjectPublicKeyInfo;
@@ -96,7 +96,8 @@
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
 			@throw [OFInvalidFormatException exception];
-		_issuer = objc_retain([value parsedAs: [OFX500Name class]]);
+		_issuer = objc_retain(
+		    [value parsedAs: [OFX500DistinguishedName class]]);
 
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
@@ -107,7 +108,8 @@
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])
 			@throw [OFInvalidFormatException exception];
-		_subject = objc_retain([value parsedAs: [OFX500Name class]]);
+		_subject = objc_retain(
+		    [value parsedAs: [OFX500DistinguishedName class]]);
 
 		value = [enumerator nextObject];
 		if (![value isKindOfClass: [OFASN1Sequence class]])

@@ -43,8 +43,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The components of the constructed ASN.1 value.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *))
-    *components;
+@property (readonly, retain, nonatomic)
+    OFArray OF_GENERIC(OF_KINDOF(OFASN1Value *)) *components;
 
 /**
  * @brief Creates a constructed ASN.1 value with the specified components.

@@ -26,8 +26,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 Set.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Set: OFConstructedASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1Set, 4)
+}
+
 /**
  * @brief The components of the Set.
  */

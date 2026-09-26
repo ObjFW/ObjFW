@@ -130,7 +130,9 @@
 #endif
 
 #import "OFPKCS8PrivateKey.h"
-#import "OFX500Name.h"
+#import "OFX500AttributeTypeAndValue.h"
+#import "OFX500DistinguishedName.h"
+#import "OFX500RelativeDistinguishedName.h"
 #import "OFX509AlgorithmIdentifier.h"
 #import "OFX509Certificate.h"
 #import "OFX509Extension.h"

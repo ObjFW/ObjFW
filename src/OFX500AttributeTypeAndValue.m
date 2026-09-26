@@ -17,16 +17,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#import "OFX509SubjectPublicKeyInfo.h"
-#import "OFASN1BitString.h"
-#import "OFX509AlgorithmIdentifier.h"
+#import "OFX500AttributeTypeAndValue.h"
+#import "OFASN1ObjectIdentifier.h"
 #import "OFArray.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
-@implementation OFX509SubjectPublicKeyInfo
-@synthesize algorithm = _algorithm, subjectPublicKey = _subjectPublicKey;
+@implementation OFX500AttributeTypeAndValue
+@synthesize attributeType = _attributeType, attributeValue = _attributeValue;
 
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
 					OFASN1Value *)) *)components
@@ -46,15 +45,12 @@
 		OFEnumerator *enumerator = [components objectEnumerator];
 
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
-		if (![value isKindOfClass: [OFASN1Sequence class]])
+		if (![value isKindOfClass: [OFASN1ObjectIdentifier class]])
 			@throw [OFInvalidFormatException exception];
-		_algorithm = objc_retain(
-		    [value parsedAs: [OFX509AlgorithmIdentifier class]]);
+		_attributeType = objc_retain(value);
 
 		value = [enumerator nextObject];
-		if (![value isKindOfClass: [OFASN1BitString class]])
-			@throw [OFInvalidFormatException exception];
-		_subjectPublicKey = objc_retain(value);
+		_attributeValue = objc_retain(value);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -67,28 +63,25 @@
 
 - (void)dealloc
 {
-	objc_release(_algorithm);
-	objc_release(_subjectPublicKey);
+	objc_release(_attributeType);
+	objc_release(_attributeValue);
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	OFString *algorithm = [_algorithm.description
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
-	OFString *subjectPublicKey = [_subjectPublicKey.description
+	OFString *attributeValue = [[_attributeValue description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
 	    @"<%@ [%@ %@]:\n"
-	    @"\tAlgorithm = %@\n"
-	    @"\tSubject public key = %@\n"
+	    @"\tType = %@\n"
+	    @"\tValue = %@\n"
 	    @">",
 	    self.class, OFASN1TagClassDescription(_tagClass),
-	    OFASN1TagNumberDescription(_tagClass, _tagNumber), algorithm,
-	    subjectPublicKey];
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _attributeType,
+	    attributeValue];
 }
 @end

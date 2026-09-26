@@ -26,7 +26,7 @@
 
 #import "OFInvalidFormatException.h"
 
-@implementation OFX509Extension: OFASN1Sequence
+@implementation OFX509Extension
 @synthesize extensionID = _extensionID, critical = _critical;
 @synthesize extensionValue = _extensionValue;
 

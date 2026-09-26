@@ -26,7 +26,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFASN1BitString;
 @class OFASN1Integer;
 @class OFArray OF_GENERIC(ObjectType);
-@class OFX500Name;
 @class OFX509AlgorithmIdentifier;
 @class OFX509Extension;
 @class OFX509SubjectPublicKeyInfo;
@@ -53,9 +52,9 @@ OF_SUBCLASSING_RESTRICTED
 	int _version;
 	OFX509CertificateSerialNumber *_serialNumber;
 	OFX509AlgorithmIdentifier *_signature;
-	OFX500Name *_issuer;
+	OF_KINDOF(OFASN1Value *) _issuer;
 	OFX509Validity *_validity;
-	OFX500Name *_subject;
+	OF_KINDOF(OFASN1Value *) _subject;
 	OFX509SubjectPublicKeyInfo *_subjectPublicKeyInfo;
 	OFX509UniqueIdentifier *_Nullable _issuerUniqueID;
 	OFX509UniqueIdentifier *_Nullable _subjectUniqueID;
@@ -80,8 +79,12 @@ OF_SUBCLASSING_RESTRICTED
 
 /**
  * @brief The entity that has signed and issued the certificate.
+ *
+ * This is an X.500 Name, which is a CHOICE with only one option. This means
+ * that currently, this is always an object of class
+ * @ref OFX500DistinguishedName.
  */
-@property (readonly, retain, nonatomic) OFX500Name *issuer;
+@property (readonly, retain, nonatomic) OF_KINDOF(OFASN1Value *) issuer;
 
 /**
  * @brief The validity period of the certificate.
@@ -91,8 +94,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The entity associated with the public key stored in the
  *	  @ref subjectPublicKeyInfo field.
+ *
+ * This is an X.500 Name, which is a CHOICE with only one option. This means
+ * that currently, this is always an object of class
+ * @ref OFX500DistinguishedName.
  */
-@property (readonly, retain, nonatomic) OFX500Name *subject;
+@property (readonly, retain, nonatomic) OF_KINDOF(OFASN1Value *) subject;
 
 /**
  * @brief The public key and algorithm of the key.
