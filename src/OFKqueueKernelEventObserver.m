@@ -184,6 +184,15 @@
 			    exceptionWithObserver: self
 					    errNo: errno];
 
+	void *pool = objc_autoreleasePoolPush();
+
+	/*
+	 * Retain all objects, as a handler might remove an object from the
+	 * event observer while we're still iterating.
+	 */
+	for (int i = 0; i < events; i++)
+		objc_retainAutorelease((id)eventList[i].udata);
+
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].flags & EV_ERROR)
 			@throw [OFObserveKernelEventsFailedException
@@ -198,7 +207,7 @@
 			continue;
 		}
 
-		void *pool = objc_autoreleasePoolPush();
+		void *pool2 = objc_autoreleasePoolPush();
 
 		switch (eventList[i].filter) {
 		case EVFILT_READ:
@@ -217,7 +226,9 @@
 			OFAssert(0);
 		}
 
-		objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool2);
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

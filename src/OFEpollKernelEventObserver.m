@@ -206,6 +206,15 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 			    exceptionWithObserver: self
 					    errNo: errno];
 
+	void *pool = objc_autoreleasePoolPush();
+
+	/*
+	 * Retain all objects, as a handler might remove an object from the
+	 * event observer while we're still iterating.
+	 */
+	for (int i = 0; i < events; i++)
+		objc_retainAutorelease(eventList[i].data.ptr);
+
 	OFNull *nullObject = [OFNull null];
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & EPOLLIN) {
@@ -215,26 +224,28 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 				continue;
 			}
 
-			void *pool = objc_autoreleasePoolPush();
+			void *pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
 				    eventList[i].data.ptr];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		if (eventList[i].events & EPOLLOUT) {
-			void *pool = objc_autoreleasePoolPush();
+			void *pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
 				    eventList[i].data.ptr];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end
