@@ -202,7 +202,7 @@ version(void)
 				    stringWithFormat: @"%C",
 				    optionsParser.lastOption];
 				[OFStdErr writeLine: OF_LOCALIZED(
-				    @"Unknown_option",
+				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optStr)];
