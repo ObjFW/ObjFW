@@ -42,7 +42,7 @@ const char *VER = "$VER: ofdns " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 @interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
 {
 	size_t _inFlight;
-	int _errors;
+	int _exitStatus;
 }
 @end
 
@@ -51,7 +51,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
+	[stream writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[chst] domain1 [domain2 ...]",
 	    @"prog", [OFApplication programName])];
 
@@ -104,11 +104,11 @@ version(void)
 		[OFStdErr writeLine: OF_LOCALIZED(@"failed_to_resolve",
 		    @"Failed to resolve: %[exception]",
 		    @"exception", exception)];
-		_errors++;
+		_exitStatus = 1;
 	}
 
 	if (_inFlight == 0)
-		[OFApplication terminateWithStatus: _errors];
+		[OFApplication terminateWithStatus: _exitStatus];
 }
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification

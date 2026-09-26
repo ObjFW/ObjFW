@@ -135,7 +135,7 @@ OF_APPLICATION_DELEGATE(OFHTTP)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[OFStdErr writeLine: OF_LOCALIZED(@"usage",
+	[stream writeLine: OF_LOCALIZED(@"usage",
 	    @"Usage: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
 	    @"prog", [OFApplication programName])];
 
