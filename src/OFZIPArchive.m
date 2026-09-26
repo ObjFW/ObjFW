@@ -538,23 +538,15 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
 {
-	int64_t offsetAdd = 0;
-	void *pool;
-	OFMutableZIPArchiveEntry *entry;
-	OFString *fileName;
-	bool seekable;
-	OFStreamOffset CRC32Offset = 0, sizeOffset = 0;
-	OFData *extraField;
-	uint16_t fileNameLength, extraFieldLength;
-
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_mode != modeWrite && _mode != modeAppend)
 		@throw [OFInvalidArgumentException exception];
 
-	pool = objc_autoreleasePoolPush();
-	entry = objc_autorelease([entry_ mutableCopy]);
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableZIPArchiveEntry *entry =
+	    objc_autorelease([entry_ mutableCopy]);
 
 	if ([_pathToEntryMap objectForKey: entry.fileName] != nil)
 		@throw [OFOpenItemFailedException
@@ -573,15 +565,18 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	}
 	_lastReturnedStream = nil;
 
-	fileName = entry.fileName;
-	fileNameLength = fileName.UTF8StringLength;
-	extraField = entry.extraField;
-	extraFieldLength = extraField.count;
+	OFStringEncoding encoding = (entry.generalPurposeBitFlag & (1u << 11)
+	    ? OFStringEncodingUTF8 : OFStringEncodingCodepage437);
+	OFString *fileName = entry.fileName;
+	size_t fileNameLength = [fileName cStringLengthWithEncoding: encoding];
 
-	if (UINT16_MAX - extraFieldLength < 20)
+	OFData *extraField = entry.extraField;
+	size_t extraFieldLength = extraField.count;
+
+	if (fileNameLength > UINT16_MAX || extraFieldLength > UINT16_MAX - 20)
 		@throw [OFOutOfRangeException exception];
 
-	seekable = [_stream isKindOfClass: [OFSeekableStream class]];
+	bool seekable = [_stream isKindOfClass: [OFSeekableStream class]];
 
 	entry.versionMadeBy = (entry.versionMadeBy & 0xFF00) | 45;
 	entry.minVersionNeeded = (entry.minVersionNeeded & 0xFF00) | 45;
@@ -601,11 +596,13 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_stream writeLittleEndianInt16: entry.of_lastModifiedFileDate];
 
 	/* Written later or data descriptor used instead */
+	OFStreamOffset CRC32Offset = 0;
 	if (seekable)
 		CRC32Offset = [_stream seekToOffset: 0 whence: OFSeekCurrent];
 
 	[_stream writeLittleEndianInt32: 0];
 
+	OFStreamOffset sizeOffset = 0;
 	if (entry.usesZIP64) {
 		[_stream writeLittleEndianInt32: 0xFFFFFFFF];
 		[_stream writeLittleEndianInt32: 0xFFFFFFFF];
@@ -622,9 +619,9 @@ seekOrThrowInvalidFormat(OFZIPArchive *archive, const uint32_t *diskNumber,
 	[_stream writeLittleEndianInt16: fileNameLength];
 	[_stream writeLittleEndianInt16:
 	    extraFieldLength + (entry.usesZIP64 ? 20 : 0)];
-	offsetAdd += 4 + (5 * 2) + (3 * 4) + (2 * 2);
+	int64_t offsetAdd = 4 + (5 * 2) + (3 * 4) + (2 * 2);
 
-	[_stream writeString: fileName encoding: OFStringEncodingUTF8];
+	[_stream writeString: fileName encoding: encoding];
 	offsetAdd += fileNameLength;
 
 	if (entry.usesZIP64) {
