@@ -136,8 +136,7 @@
 		      stringValue: stringValue];
 }
 
-- (instancetype)initWithName: (OFString *)name
-		   namespace: (OFString *)namespace
+- (instancetype)initWithName: (OFString *)name namespace: (OFString *)namespace
 {
 	self = [super of_init];
 
@@ -183,8 +182,16 @@
 			namespace: element->_namespace];
 
 	@try {
+		objc_release(_namespaces);
+		_namespaces = nil;
 		_namespaces = [element->_namespaces mutableCopy];
+
+		objc_release(_attributes);
+		_attributes = nil;
 		_attributes = [element->_attributes mutableCopy];
+
+		objc_release(_children);
+		_children = nil;
 		_children = [element->_children mutableCopy];
 	} @catch (id e) {
 		objc_release(self);
@@ -196,22 +203,16 @@
 
 - (instancetype)initWithXMLString: (OFString *)string
 {
-	void *pool;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	@try {
-		OFXMLParser *parser;
-		OFXMLElementBuilder *builder;
-		OFXMLElementElementBuilderDelegate *delegate;
-
 		if (string == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		pool = objc_autoreleasePoolPush();
-
-		parser = [OFXMLParser parser];
-		builder = [OFXMLElementBuilder builder];
-		delegate = objc_autorelease(
+		OFXMLParser *parser = [OFXMLParser parser];
+		OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
+		OFXMLElementElementBuilderDelegate *delegate = objc_autorelease(
 		    [[OFXMLElementElementBuilderDelegate alloc] init]);
 
 		parser.delegate = builder;
@@ -233,10 +234,17 @@
 			namespace: element->_namespace];
 
 	@try {
+		/*
+		 * No need for -[mutableCopy] here, as we own `element` and
+		 * never pass it to anyone.
+		 */
+
 		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
+
 		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
+
 		objc_release(_children);
 		_children = objc_retain(element->_children);
 
@@ -251,19 +259,13 @@
 
 - (instancetype)initWithStream: (OFStream *)stream
 {
-	void *pool;
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
 	@try {
-		OFXMLParser *parser;
-		OFXMLElementBuilder *builder;
-		OFXMLElementElementBuilderDelegate *delegate;
-
-		pool = objc_autoreleasePoolPush();
-
-		parser = [OFXMLParser parser];
-		builder = [OFXMLElementBuilder builder];
-		delegate = objc_autorelease(
+		OFXMLParser *parser = [OFXMLParser parser];
+		OFXMLElementBuilder *builder = [OFXMLElementBuilder builder];
+		OFXMLElementElementBuilderDelegate *delegate = objc_autorelease(
 		    [[OFXMLElementElementBuilderDelegate alloc] init]);
 
 		parser.delegate = builder;
@@ -285,10 +287,17 @@
 			namespace: element->_namespace];
 
 	@try {
+		/*
+		 * No need for -[mutableCopy] here, as we own `element` and
+		 * never pass it to anyone.
+		 */
+
 		objc_release(_namespaces);
 		_namespaces = objc_retain(element->_namespaces);
+
 		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
+
 		objc_release(_children);
 		_children = objc_retain(element->_children);
 
