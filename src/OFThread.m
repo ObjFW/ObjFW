@@ -314,7 +314,7 @@ callMain(id object)
 	if (timeInterval > UINT64_MAX / 60)
 		@throw [OFOutOfRangeException exception];
 
-	counter = (uint64_t)timeInterval * 60.0;
+	counter = round(timeInterval * 60.0);
 	while (counter--)
 		swiWaitForVBlank();
 #else
