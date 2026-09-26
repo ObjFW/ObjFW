@@ -151,6 +151,9 @@
 		    initWithKeysAndObjects:
 		    @"http://www.w3.org/XML/1998/namespace", @"xml",
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
+
+		_attributes = [[OFMutableArray alloc] init];
+		_children = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -323,9 +326,6 @@
 
 - (OFArray *)attributes
 {
-	if (_attributes == nil)
-		return [OFArray array];
-
 	return objc_autoreleaseReturnValue([_attributes copy]);
 }
 
@@ -338,9 +338,6 @@
 
 - (OFArray *)children
 {
-	if (_children == nil)
-		return [OFArray array];
-
 	return objc_autoreleaseReturnValue([_children copy]);
 }
 
@@ -496,7 +493,7 @@
 		}
 
 		/* Children */
-		if (_children != nil) {
+		if (_children.count > 0) {
 			OFMutableData *tmp = [OFMutableData data];
 			bool indent;
 
@@ -618,9 +615,6 @@
 	if (![attribute isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	if (_attributes == nil)
-		_attributes = [[OFMutableArray alloc] init];
-
 	if ([self attributeForName: attribute->_name
 			 namespace: attribute->_namespace] == nil)
 		[_attributes addObject: attribute];
@@ -730,9 +724,6 @@
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	if (_children == nil)
-		_children = [[OFMutableArray alloc] init];
-
 	[_children addObject: child];
 }
 
@@ -740,9 +731,6 @@
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
-
-	if (_children == nil)
-		_children = [[OFMutableArray alloc] init];
 
 	[_children insertObject: child atIndex: idx];
 }
@@ -752,9 +740,6 @@
 	for (OFXMLNode *node in children)
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
-
-	if (_children == nil)
-		_children = [[OFMutableArray alloc] init];
 
 	[_children insertObjectsFromArray: children atIndex: idx];
 }
