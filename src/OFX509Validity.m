@@ -69,7 +69,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 			if ([value millisecond] > 0)
 				@throw [OFInvalidFormatException exception];
 
-			_notBefore = [value dateValue];
+			_notBefore = objc_retain([value dateValue]);
 		} else
 			@throw [OFInvalidFormatException exception];
 
@@ -80,7 +80,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 			if ([value millisecond] > 0)
 				@throw [OFInvalidFormatException exception];
 
-			_notAfter = [value dateValue];
+			_notAfter = objc_retain([value dateValue]);
 		} else
 			@throw [OFInvalidFormatException exception];
 
