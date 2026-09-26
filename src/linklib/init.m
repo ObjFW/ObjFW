@@ -172,6 +172,7 @@ void *__objc_class_name_OFRIPEMD160Hash;
 void *__objc_class_name_OFReadFailedException;
 void *__objc_class_name_OFReadOrWriteFailedException;
 void *__objc_class_name_OFRemoveItemFailedException;
+void *__objc_class_name_OFReplaceItemFailedException;
 void *__objc_class_name_OFRunLoop;
 void *__objc_class_name_OFSHA1Hash;
 void *__objc_class_name_OFSHA224Hash;
