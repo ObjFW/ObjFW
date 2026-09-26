@@ -148,11 +148,15 @@ OHReleaseSensorsList(struct OHSensorsList *list)
 
 		APTR sensor = NULL;
 		while ((sensor = NextSensor(sensor, list->sensors, NULL)) !=
-		    NULL)
-			[controllers addObject: objc_autorelease(
-			    [[OHSensorsLibraryGameController alloc]
-			    oh_initWithSensor: (APTR)sensor
-				  sensorsList: list])];
+		    NULL) {
+			@try {
+				[controllers addObject: objc_autorelease(
+				    [[OHSensorsLibraryGameController alloc]
+				    oh_initWithSensor: (APTR)sensor
+					  sensorsList: list])];
+			} @catch (OFInitializationFailedException *e) {
+			}
+		}
 	} @finally {
 		OHReleaseSensorsList(list);
 	}
