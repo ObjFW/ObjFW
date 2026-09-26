@@ -381,6 +381,9 @@
 		copy->_allowsBPF = _allowsBPF;
 		copy->_allowsUnveil = _allowsUnveil;
 		copy->_returnsErrors = _returnsErrors;
+
+		objc_release(copy->_unveiledPaths);
+		copy->_unveiledPaths = nil;
 		copy->_unveiledPaths = [_unveiledPaths mutableCopy];
 	} @catch (id e) {
 		objc_release(copy);
