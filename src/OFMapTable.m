@@ -643,16 +643,16 @@ setObject(OFMapTable *self, void *key, void *object, uint32_t hash)
 	unsigned long mutations = _mutations;
 
 	for (size_t i = 0; i < _capacity; i++) {
-		if (_mutations != mutations)
-			@throw [OFEnumerationMutationException
-			    exceptionWithObject: self];
-
 		if (_buckets[i] != NULL && _buckets[i] != &tombstone) {
-			void *new;
+			void *new =
+			    block(_buckets[i]->key, _buckets[i]->object);
 
-			new = block(_buckets[i]->key, _buckets[i]->object);
 			if (new == NULL)
 				@throw [OFInvalidArgumentException exception];
+
+			if (_mutations != mutations)
+				@throw [OFEnumerationMutationException
+				    exceptionWithObject: self];
 
 			if (new != _buckets[i]->object) {
 				void *old = _buckets[i]->object;

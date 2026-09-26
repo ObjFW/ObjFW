@@ -469,13 +469,11 @@
 	unsigned long mutations = _mutations;
 
 	for (size_t i = 0; i < count; i++) {
-		id new;
+		id new = block(objects[i], i);
 
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
-
-		new = block(objects[i], i);
 
 		if (new == nil || new == self)
 			@throw [OFInvalidArgumentException exception];
