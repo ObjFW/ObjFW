@@ -1688,11 +1688,11 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				OFAssert(queue.count > 0);
 
 				/*
-				 * Clear the queue now, in case this has been
-				 * called from a handler, as otherwise, we'd do
-				 * the cleanups below twice.
+				 * Retain and autorelease the queue so that the
+				 * objects inside it only get deallocated once
+				 * we're out of the lock.
 				 */
-				[queue removeAllObjects];
+				objc_retainAutorelease(queue);
 
 				[state->_kernelEventObserver
 				    removeObjectForWriting: object];
@@ -1705,11 +1705,11 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 				OFAssert(queue.count > 0);
 
 				/*
-				 * Clear the queue now, in case this has been
-				 * called from a handler, as otherwise, we'd do
-				 * the cleanups below twice.
+				 * Retain and autorelease the queue so that the
+				 * objects inside it only get deallocated once
+				 * we're out of the lock.
 				 */
-				[queue removeAllObjects];
+				objc_retainAutorelease(queue);
 
 				[state->_kernelEventObserver
 				    removeObjectForReading: object];
