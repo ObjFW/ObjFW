@@ -34,6 +34,9 @@
 
 	OFMutableArray *ATAVs;
 	@try {
+		if (components.count == 0)
+			@throw [OFInvalidFormatException exception];
+
 		ATAVs = [OFMutableArray arrayWithCapacity: components.count];
 
 		for (OF_KINDOF(OFASN1Value *) component in components) {
