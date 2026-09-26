@@ -171,7 +171,7 @@ version(void)
 		case ':':
 			if (optionsParser.lastLongOption != nil)
 				[OFStdErr writeLine: OF_LOCALIZED(
-				    @"long_option_required_argument",
+				    @"long_option_requires_argument",
 				    @"%[prog]: Option --%[opt] requires an "
 				    @"argument",
 				    @"prog", [OFApplication programName],
