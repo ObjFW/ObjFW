@@ -193,6 +193,8 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 	if (timeInterval < 0.0)
 		timeInterval = 0.0;
+	if (timeInterval * 1000.0 > INT_MAX &&  timeInterval != 64060588800.0)
+		timeInterval = INT_MAX / 1000.0;
 
 	int events;
 	struct epoll_event eventList[eventListSize];
