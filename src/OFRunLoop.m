@@ -334,42 +334,31 @@ static OFRunLoop *mainRunLoop = nil;
 	 * Retain the queue so that it doesn't disappear from us because the
 	 * handler called -[cancelAsyncRequests].
 	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoopReadQueueItem *)) *queue =
-	    objc_retain([_readQueues objectForKey: object]);
-
+	OFList *queue = objc_retainAutorelease(
+	    [_readQueues objectForKey: object]);
 	OFAssert(queue != nil);
 
-	@try {
-		if (![queue.firstObject handleObject: object]) {
-			OFListItem listItem = queue.firstListItem;
+	/*
+	 * We also need to retain the queue item so that it doesn't disappear
+	 * from us because the handler called -[cancelAsyncRequests].
+	 */
+	id queueItem = objc_retainAutorelease(queue.firstObject);
 
-			/*
-			 * The handler might have called -[cancelAsyncRequests]
-			 * so that our queue is now empty, in which case we
-			 * should do nothing.
-			 */
-			if (listItem != NULL) {
-				/*
-				 * Make sure we keep the target until after we
-				 * are done removing the object. The reason for
-				 * this is that the target might call
-				 * -[cancelAsyncRequests] in its dealloc.
-				 */
-				objc_retainAutorelease(
-				    OFListItemObject(listItem));
+	if (![queueItem handleObject: object]) {
+		OFListItem listItem = queue.firstListItem;
+		/*
+		 * The handler might have called -[cancelAsyncRequests] so that
+		 * our queue is now empty, in which case we should do nothing.
+		 */
+		if (listItem == NULL)
+			return;
 
-				[queue removeListItem: listItem];
+		[queue removeListItem: listItem];
 
-				if (queue.count == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
+		if (queue.count == 0) {
+			[_kernelEventObserver removeObjectForReading: object];
+			[_readQueues removeObjectForKey: object];
 		}
-	} @finally {
-		objc_release(queue);
 	}
 }
 
@@ -379,41 +368,32 @@ static OFRunLoop *mainRunLoop = nil;
 	 * Retain the queue so that it doesn't disappear from us because the
 	 * handler called -[cancelAsyncRequests].
 	 */
-	OFList *queue = objc_retain([_writeQueues objectForKey: object]);
-
+	OFList *queue = objc_retainAutorelease(
+	    [_writeQueues objectForKey: object]);
 	OFAssert(queue != nil);
 
-	@try {
-		if (![queue.firstObject handleObject: object]) {
-			OFListItem listItem = queue.firstListItem;
+	/*
+	 * We also need to retain the queue item so that it doesn't disappear
+	 * from us because the handler called -[cancelAsyncRequests].
+	 */
+	id queueItem = objc_retainAutorelease(queue.firstObject);
 
-			/*
-			 * The handler might have called -[cancelAsyncRequests]
-			 * so that our queue is now empty, in which case we
-			 * should do nothing.
-			 */
-			if (listItem != NULL) {
-				/*
-				 * Make sure we keep the target until after we
-				 * are done removing the object. The reason for
-				 * this is that the target might call
-				 * -[cancelAsyncRequests] in its dealloc.
-				 */
-				objc_retainAutorelease(
-				    OFListItemObject(listItem));
+	if (![queueItem handleObject: object]) {
+		OFListItem listItem = queue.firstListItem;
+		/*
+		 * The handler might have called -[cancelAsyncRequests]
+		 * so that our queue is now empty, in which case we
+		 * should do nothing.
+		 */
+		if (listItem == NULL)
+			return;
 
-				[queue removeListItem: listItem];
+		[queue removeListItem: listItem];
 
-				if (queue.count == 0) {
-					[_kernelEventObserver
-					    removeObjectForWriting: object];
-					[_writeQueues
-					    removeObjectForKey: object];
-				}
-			}
+		if (queue.count == 0) {
+			[_kernelEventObserver removeObjectForWriting: object];
+			[_writeQueues removeObjectForKey: object];
 		}
-	} @finally {
-		objc_release(queue);
 	}
 }
 #endif
