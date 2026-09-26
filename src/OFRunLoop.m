@@ -336,7 +336,8 @@ static OFRunLoop *mainRunLoop = nil;
 	 */
 	OFList *queue = objc_retainAutorelease(
 	    [_readQueues objectForKey: object]);
-	OFAssert(queue != nil);
+	if (queue == nil)
+		return;
 
 	/*
 	 * We also need to retain the queue item so that it doesn't disappear
@@ -370,7 +371,8 @@ static OFRunLoop *mainRunLoop = nil;
 	 */
 	OFList *queue = objc_retainAutorelease(
 	    [_writeQueues objectForKey: object]);
-	OFAssert(queue != nil);
+	if (queue == nil)
+		return;
 
 	/*
 	 * We also need to retain the queue item so that it doesn't disappear
