@@ -28,7 +28,6 @@
 @implementation OFXMLNodeTests
 - (void)testElementWithName
 {
-	OFLog(@"%@", [[OFXMLElement elementWithName: @"foo"] XMLString]);
 	OTAssertEqualObjects(
 	    [[OFXMLElement elementWithName: @"foo"] XMLString],
 	    @"<foo/>");
