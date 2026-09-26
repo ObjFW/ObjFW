@@ -44,7 +44,7 @@ parseArrayElement(OFXMLElement *element)
 	for (OFXMLElement *child in element.children) {
 		if ([child isKindOfClass: [OFXMLElement class]])
 			  [ret addObject: parseElement((OFXMLElement *)child)];
-		else if (child.XMLString.stringByDeletingEnclosingWhitespaces
+		else if (child.stringValue.stringByDeletingEnclosingWhitespaces
 		    .length > 0)
 			@throw [OFInvalidFormatException exception];
 	}
@@ -64,7 +64,7 @@ parseDictElement(OFXMLElement *element)
 
 	for (OFXMLNode *child in element.children)
 		if (![child isKindOfClass: [OFXMLElement class]] &&
-		    child.XMLString.stringByDeletingEnclosingWhitespaces
+		    child.stringValue.stringByDeletingEnclosingWhitespaces
 		    .length > 0)
 			@throw [OFInvalidFormatException exception];
 
@@ -214,8 +214,8 @@ parseElement(OFXMLElement *element)
 				@throw [OFInvalidFormatException exception];
 
 			ret = parseElement((OFXMLElement *)child);
-		} else if (child.XMLString.stringByDeletingEnclosingWhitespaces
-		    .length > 0)
+		} else if (child.stringValue
+		    .stringByDeletingEnclosingWhitespaces.length > 0)
 			@throw [OFInvalidFormatException exception];
 	}
 	if (ret == nil)
