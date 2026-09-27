@@ -23,6 +23,7 @@
 #import "OFASN1Value+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDictionary.h"
 #import "OFNumber.h"
 #import "OFString.h"
 
@@ -30,7 +31,70 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
+static OFMutableDictionary OF_GENERIC(OFString *, OFString *) *names;
+
 @implementation OFASN1ObjectIdentifier
++ (void)initialize
+{
+	if (self != [OFASN1ObjectIdentifier class])
+		return;
+
+	names = [[OFMutableDictionary alloc] initWithKeysAndObjects:
+	    @"0", @"itu-t",
+	    @"1", @"iso",
+	    @"1.2", @"member-body",
+	    @"1.2.840", @"us",
+	    @"1.2.820.10045", @"ansi-x962",
+	    @"1.2.820.10045.4", @"signatures",
+	    @"1.2.820.10045.4.3", @"ecdsa-with-SHA2",
+	    @"1.2.840.10045.4.3.1", @"ecdsa-with-SHA224",
+	    @"1.2.840.10045.4.3.2", @"ecdsa-with-SHA256",
+	    @"1.2.840.10045.4.3.3", @"ecdsa-with-SHA384",
+	    @"1.2.840.10045.4.3.4", @"ecdsa-with-SHA512",
+	    @"1.2.840.113549", @"rsadsi",
+	    @"1.2.840.113549.1", @"pkcs",
+	    @"1.2.840.113549.1.1", @"pkcs-1",
+	    @"1.2.840.113549.1.1.1", @"rsaEncryption",
+	    @"1.2.840.113549.1.1.11", @"sha256WithRSAEncryption",
+	    @"1.2.840.113549.1.1.12", @"sha384WithRSAEncryption",
+	    @"1.2.840.113549.1.1.13", @"sha512WithRSAEncryption",
+	    @"1.2.840.113549.1.1.14", @"sha224WithRSAEncryption",
+	    @"1.3", @"identified-organization",
+	    @"1.3.6", @"dod",
+	    @"1.3.6.1", @"internet",
+	    @"1.3.6.1.4", @"private",
+	    @"1.3.6.1.4.1", @"enterprise",
+	    @"1.3.6.1.4.1.66927", @"jonathan-schleifer",
+	    @"1.3.6.1.4.1.66927.1", @"objfw",
+	    @"1.3.101", @"thawte",
+	    @"1.3.101.112", @"id-Ed25519",
+	    @"1.3.101.113", @"id-Ed448",
+	    @"2", @"joint-iso-itu-t",
+	    @"2.5", @"ds",
+	    @"2.5.4", @"attributeType",
+	    @"2.5.4.3", @"commonName",
+	    @"2.5.29", @"certificateExtension",
+	    @"2.5.29.14", @"subjectKeyIdentifier",
+	    @"2.5.29.17", @"subjectAltName",
+	    @"2.5.29.18", @"issuerAltName",
+	    @"2.5.29.35", @"authorityKeyIdentifier",
+	    nil];
+}
+
++ (void)registerName: (OFString *)name forStringValue: (OFString *)stringValue
+{
+	@synchronized (names) {
+		[names setObject: name forKey: stringValue];
+	}
+}
+
++ (OFString *)nameForStringValue: (OFString *)stringValue
+{
+	@synchronized (names) {
+		return [names objectForKey: stringValue];
+	}
+}
+
 + (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
 	return objc_autoreleaseReturnValue([[self alloc] initWithArcs: arcs]);
@@ -282,11 +346,36 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 
 - (OFString *)description
 {
-	OFString *identifier = [self.arcs componentsJoinedByString: @"."];
+	void *pool = objc_autoreleasePoolPush();
+	OFArray OF_GENERIC(OFNumber *) *arcs = self.arcs;
 
-	return [OFString stringWithFormat:
+	OFMutableString *identifier = [OFMutableString string];
+	OFMutableString *namedIdentifier = [OFMutableString string];
+	for (OFNumber *arc in arcs) {
+		if (identifier.length > 0)
+			[identifier appendString: @"."];
+		if (namedIdentifier.length > 0)
+			[namedIdentifier appendString: @"."];
+
+		OFString *stringValue = arc.stringValue;
+		[identifier appendString: stringValue];
+
+		OFString *name =
+		    [OFASN1ObjectIdentifier nameForStringValue: identifier];
+		if (name != nil)
+			[namedIdentifier appendFormat: @"%@(%@)",
+						       name, stringValue];
+		else
+			[namedIdentifier appendString: stringValue];
+	}
+
+	OFString *ret = [[OFString alloc] initWithFormat:
 	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
-	    OFASN1TagNumberDescription(_tagClass, _tagNumber), identifier];
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), namedIdentifier];
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
 }
 @end

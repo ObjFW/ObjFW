@@ -25,32 +25,51 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 
 /**
- * @brief An ASN.1 ObjectIdentifier.
+ * @brief An ASN.1 OBJECT IDENTIFIER.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFASN1ObjectIdentifier: OFPrimitiveASN1Value
 /**
- * @brief The arcs of the ObjectIdentifier.
+ * @brief The arcs of the OBJECT IDENTIFIER.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFNumber *) *arcs;
 
 /**
- * @brief The string value of the ObjectIdentifier.
+ * @brief The string value of the OBJECT IDENTIFIER.
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
 /**
- * @brief Creates an ASN.1 ObjectIdentifier with the specified arcs.
+ * @brief Registers the specified name for identifiers with the specified
+ *	  OBJECT IDENTIFIER string value.
  *
- * @param arcs The arcs of the ASN.1 ObjectIdentifier
+ * @param name The name to register for identifiers with the specified OBJECT
+ *	       IDENTIFIER string value
+ * @param stringValue The string value for which to register the name
+ */
++ (void)registerName: (OFString *)name forStringValue: (OFString *)stringValue;
+
+/**
+ * @brief Returns the name for identifiers with the specified OBJECT IDENTIFIER
+ *	  string value.
+ *
+ * @return The name for identifiers with the specified OBJECT IDENTIFIER string
+ *	   value.
+ */
++ (nullable OFString *)nameForStringValue: (OFString *)stringValue;
+
+/**
+ * @brief Creates an ASN.1 OBJECT IDENTIFIER with the specified arcs.
+ *
+ * @param arcs The arcs of the ASN.1 OBJECT IDENTIFIER
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
 + (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs;
 
 /**
- * @brief Creates an ASN.1 ObjectIdentifier with the specified arcs.
+ * @brief Creates an ASN.1 OBJECT IDENTIFIER with the specified arcs.
  *
- * @param arcs The arcs of the ASN.1 ObjectIdentifier
+ * @param arcs The arcs of the ASN.1 OBJECT IDENTIFIER
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1ObjectIdentifier
@@ -60,17 +79,17 @@ OF_SUBCLASSING_RESTRICTED
 			 tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
+ * @brief Creates an ASN.1 OBJECT IDENTIFIER with the specified string.
  *
- * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param string The string value of the ASN.1 OBJECT IDENTIFIER
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
 + (instancetype)identifierWithString: (OFString *)string;
 
 /**
- * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
+ * @brief Creates an ASN.1 OBJECT IDENTIFIER with the specified string.
  *
- * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param string The string value of the ASN.1 OBJECT IDENTIFIER
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1ObjectIdentifier
@@ -80,19 +99,19 @@ OF_SUBCLASSING_RESTRICTED
 			   tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ * @brief Initializes an already allocated ASN.1 OBJECT IDENTIFIER with the
  *	  specified arcs.
  *
- * @param arcs The arcs of the ASN.1 ObjectIdentifier
+ * @param arcs The arcs of the ASN.1 OBJECT IDENTIFIER
  * @return An initialized OFASN1ObjectIdentifier
  */
 - (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs;
 
 /**
- * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ * @brief Initializes an already allocated ASN.1 OBJECT IDENTIFIER with the
  *	  specified arcs.
  *
- * @param arcs The arcs of the ASN.1 ObjectIdentifier
+ * @param arcs The arcs of the ASN.1 OBJECT IDENTIFIER
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1ObjectIdentifier
@@ -102,19 +121,19 @@ OF_SUBCLASSING_RESTRICTED
 		   tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
- * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ * @brief Initializes an already allocated ASN.1 OBJECT IDENTIFIER with the
  *	  specified string.
  *
- * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param string The string value of the ASN.1 OBJECT IDENTIFIER
  * @return An initialized OFASN1ObjectIdentifier
  */
 - (instancetype)initWithString: (OFString *)string;
 
 /**
- * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ * @brief Initializes an already allocated ASN.1 OBJECT IDENTIFIER with the
  *	  specified string.
  *
- * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param string The string value of the ASN.1 OBJECT IDENTIFIER
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1ObjectIdentifier
