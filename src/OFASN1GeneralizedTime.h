@@ -38,12 +38,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The string value of the GeneralizedTime.
  */
-@property (readonly, retain, nonatomic) OFString *stringValue;
+@property (readonly, nonatomic) OFString *stringValue;
 
 /**
  * @brief The date value of the GeneralizedTime.
  */
-@property (readonly, retain, nonatomic) OFDate *dateValue;
+@property (readonly, nonatomic) OFDate *dateValue;
 
 /**
  * @brief The year of the GeneralizedTime.

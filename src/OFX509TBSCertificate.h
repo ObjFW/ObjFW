@@ -69,13 +69,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The serial number of the certificate.
  */
-@property (readonly, retain, nonatomic)
-    OFX509CertificateSerialNumber *serialNumber;
+@property (readonly, nonatomic) OFX509CertificateSerialNumber *serialNumber;
 
 /**
  * @brief The algorithm used by the CA to sign the certificate.
  */
-@property (readonly, retain, nonatomic) OFX509AlgorithmIdentifier *signature;
+@property (readonly, nonatomic) OFX509AlgorithmIdentifier *signature;
 
 /**
  * @brief The entity that has signed and issued the certificate.
@@ -84,12 +83,12 @@ OF_SUBCLASSING_RESTRICTED
  * that currently, this is always an object of class
  * @ref OFX500DistinguishedName.
  */
-@property (readonly, retain, nonatomic) OF_KINDOF(OFASN1Value *) issuer;
+@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) issuer;
 
 /**
  * @brief The validity period of the certificate.
  */
-@property (readonly, retain, nonatomic) OFX509Validity *validity;
+@property (readonly, nonatomic) OFX509Validity *validity;
 
 /**
  * @brief The entity associated with the public key stored in the
@@ -99,31 +98,31 @@ OF_SUBCLASSING_RESTRICTED
  * that currently, this is always an object of class
  * @ref OFX500DistinguishedName.
  */
-@property (readonly, retain, nonatomic) OF_KINDOF(OFASN1Value *) subject;
+@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) subject;
 
 /**
  * @brief The public key and algorithm of the key.
  */
-@property (readonly, retain, nonatomic)
+@property (readonly, nonatomic)
     OFX509SubjectPublicKeyInfo *subjectPublicKeyInfo;
 
 /**
  * @brief The unique identifier for the issuer.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFX509UniqueIdentifier *issuerUniqueID;
 
 /**
  * @brief The unique identifier for the entity associated with the public key
  *	  stored in the @ref subjectPublicKeyInfo field.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFX509UniqueIdentifier *subjectUniqueID;
 
 /**
  * @brief One or more optional certificate extensions.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFArray OF_GENERIC(OFX509Extension *) *extensions;
 @end
 

@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * The color's red, green and blue values should be interpreted according to
  * the color space.
  */
-@property (readonly, retain, nonatomic) OFColorSpace *colorSpace;
+@property (readonly, nonatomic) OFColorSpace *colorSpace;
 
 /**
  * @brief Creates a new color in the sRGB color space with the specified red,

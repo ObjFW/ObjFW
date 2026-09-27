@@ -39,12 +39,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The algorithm of the subject public key.
  */
-@property (readonly, retain, nonatomic) OFX509AlgorithmIdentifier *algorithm;
+@property (readonly, nonatomic) OFX509AlgorithmIdentifier *algorithm;
 
 /**
  * @brief The subject public key.
  */
-@property (readonly, retain, nonatomic) OFASN1BitString *subjectPublicKey;
+@property (readonly, nonatomic) OFASN1BitString *subjectPublicKey;
 @end
 
 OF_ASSUME_NONNULL_END

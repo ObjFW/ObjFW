@@ -37,12 +37,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The notBefore date of the X.509 Validity.
  */
-@property (readonly, retain, nonatomic) OFDate *notBefore;
+@property (readonly, nonatomic) OFDate *notBefore;
 
 /**
  * @brief The notAfter date of the X.509 Validity.
  */
-@property (readonly, retain, nonatomic) OFDate *notAfter;
+@property (readonly, nonatomic) OFDate *notAfter;
 @end
 
 OF_ASSUME_NONNULL_END

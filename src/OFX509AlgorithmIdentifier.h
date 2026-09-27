@@ -38,13 +38,13 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The algorithm of the X.509 AlgorithmIdentifier.
  */
-@property (readonly, retain, nonatomic) OFASN1ObjectIdentifier *algorithm;
+@property (readonly, nonatomic) OFASN1ObjectIdentifier *algorithm;
 
 /**
  * @brief The optional, algorithm-specific parameters of the X.509
  *	  AlgorithmIdentifier.
  */
-@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OF_KINDOF(OFASN1Value *) parameters;
 @end
 

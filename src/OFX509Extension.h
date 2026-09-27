@@ -39,7 +39,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The extnID of the Extension.
  */
-@property (readonly, retain, nonatomic) OFASN1ObjectIdentifier *extensionID;
+@property (readonly, nonatomic) OFASN1ObjectIdentifier *extensionID;
 
 /**
  * @brief Whether the Extension is critical.
@@ -49,7 +49,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The extnValue of the Extension.
  */
-@property (readonly, retain, nonatomic) OFData *extensionValue;
+@property (readonly, nonatomic) OFData *extensionValue;
 @end
 
 OF_ASSUME_NONNULL_END

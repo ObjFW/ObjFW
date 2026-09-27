@@ -48,18 +48,17 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The TBSCertificate of the certificate.
  */
-@property (readonly, retain, nonatomic) OFX509TBSCertificate *TBSCertificate;
+@property (readonly, nonatomic) OFX509TBSCertificate *TBSCertificate;
 
 /**
  * @brief The signature algorithm used by the CA to sign the certificate.
  */
-@property (readonly, retain, nonatomic)
-    OFX509AlgorithmIdentifier *signatureAlgorithm;
+@property (readonly, nonatomic) OFX509AlgorithmIdentifier *signatureAlgorithm;
 
 /**
  * @brief The CA's signature of the certificate.
  */
-@property (readonly, retain, nonatomic) OFASN1BitString *signatureValue;
+@property (readonly, nonatomic) OFASN1BitString *signatureValue;
 
 /**
  * @brief Returns whether creating a certificate chain from PEM files is

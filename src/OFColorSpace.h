@@ -56,20 +56,15 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
-@property (class, readonly, retain, nonatomic) OFColorSpace *sRGBColorSpace;
-@property (class, readonly, retain, nonatomic)
-    OFColorSpace *linearSRGBColorSpace;
-@property (class, readonly, retain, nonatomic) OFColorSpace *BT709ColorSpace;
-@property (class, readonly, retain, nonatomic)
-    OFColorSpace *displayP3ColorSpace;
-@property (class, readonly, retain, nonatomic)
-    OFColorSpace *linearDisplayP3ColorSpace;
-@property (class, readonly, retain, nonatomic) OFColorSpace *BT2020ColorSpace;
-@property (class, readonly, retain, nonatomic)
-    OFColorSpace *linearBT2020ColorSpace;
-@property (class, readonly, retain, nonatomic) OFColorSpace *adobeRGBColorSpace;
-@property (class, readonly, retain, nonatomic)
-    OFColorSpace *linearAdobeRGBColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *sRGBColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *linearSRGBColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *BT709ColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *displayP3ColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *linearDisplayP3ColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *BT2020ColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *linearBT2020ColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *adobeRGBColorSpace;
+@property (class, readonly, nonatomic) OFColorSpace *linearAdobeRGBColorSpace;
 #endif
 
 /**
@@ -89,12 +84,12 @@ typedef void (*OFColorSpaceTransferFunction)(OFVector4D *vectors,
 /**
  * @brief A matrix to map a linear RGB value to a CIE XYZ value.
  */
-@property (readonly, retain, nonatomic) OFMatrix4x4 *RGBToXYZMatrix;
+@property (readonly, nonatomic) OFMatrix4x4 *RGBToXYZMatrix;
 
 /**
  * @brief A matrix to map a CIE XYZ value to a linear RGB value.
  */
-@property (readonly, retain, nonatomic) OFMatrix4x4 *XYZToRGBMatrix;
+@property (readonly, nonatomic) OFMatrix4x4 *XYZToRGBMatrix;
 
 /**
  * @brief Whether the color space is linear.

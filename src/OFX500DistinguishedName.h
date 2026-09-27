@@ -34,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
  * @brief The SEQUENCE OF RelativeDistinguishedName of the X.500
  *	  DistinguishedName.
  */
-@property (readonly, retain, nonatomic) OFArray OF_GENERIC(
+@property (readonly, nonatomic) OFArray OF_GENERIC(
     OFX500RelativeDistinguishedName *) *relativeDistinguishedNames;
 @end
 

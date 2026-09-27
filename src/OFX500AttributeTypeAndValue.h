@@ -51,12 +51,12 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The AttributeType of the AttributeTypeAndValue.
  */
-@property (readonly, retain, nonatomic) OFX500AttributeType *attributeType;
+@property (readonly, nonatomic) OFX500AttributeType *attributeType;
 
 /**
  * @brief The AttributeValue of the AttributeTypeAndValue.
  */
-@property (readonly, retain, nonatomic) OFX500AttributeValue attributeValue;
+@property (readonly, nonatomic) OFX500AttributeValue attributeValue;
 @end
 
 OF_ASSUME_NONNULL_END

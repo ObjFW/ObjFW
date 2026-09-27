@@ -35,7 +35,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The string value of the UTCTime.
  */
-@property (readonly, retain, nonatomic) OFString *stringValue;
+@property (readonly, nonatomic) OFString *stringValue;
 
 /**
  * @brief The two-digit year of the UTCTime.
