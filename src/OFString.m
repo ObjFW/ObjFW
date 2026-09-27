@@ -2047,7 +2047,7 @@ OF_SINGLETON_METHODS
 				break;
 			case '\n':
 				if (options & OFJSONRepresentationOptionJSON5)
-					append = @"\\\n";
+					append = @"\\n\\\n";
 				else
 					append = @"\\n";
 				break;
