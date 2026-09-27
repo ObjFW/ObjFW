@@ -27,6 +27,64 @@
 @implementation OFX509AlgorithmIdentifier
 @synthesize algorithm = _algorithm, parameters = _parameters;
 
++ (OFASN1ObjectIdentifier *)SHA256WithRSAEncryptionOID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.113549.1.1.11"];
+}
+
++ (OFASN1ObjectIdentifier *)SHA384WithRSAEncryptionOID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.113549.1.1.12"];
+}
+
++ (OFASN1ObjectIdentifier *)SHA512WithRSAEncryptionOID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.113549.1.1.13"];
+}
+
++ (OFASN1ObjectIdentifier *)SHA224WithRSAEncryptionOID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.113549.1.1.14"];
+}
+
++ (OFASN1ObjectIdentifier *)ECDSAWithSHA224OID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.10045.4.3.1"];
+}
+
++ (OFASN1ObjectIdentifier *)ECDSAWithSHA256OID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.10045.4.3.2"];
+}
+
++ (OFASN1ObjectIdentifier *)ECDSAWithSHA384OID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.10045.4.3.3"];
+}
+
++ (OFASN1ObjectIdentifier *)ECDSAWithSHA512OID
+{
+	return [OFASN1ObjectIdentifier
+	    identifierWithString: @"1.2.840.10045.4.3.4"];
+}
+
++ (OFASN1ObjectIdentifier *)Ed25519OID
+{
+	return [OFASN1ObjectIdentifier identifierWithString: @"1.3.101.112"];
+}
+
++ (OFASN1ObjectIdentifier *)Ed448OID
+{
+	return [OFASN1ObjectIdentifier identifierWithString: @"1.3.101.113"];
+}
+
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
 					OFASN1Value *)) *)components
 			  tagClass: (OFASN1TagClass)tagClass
@@ -70,14 +128,44 @@
 
 - (OFString *)description
 {
-	OFString *algorithm = [_algorithm.description
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
+	void *pool = objc_autoreleasePoolPush();
 	OFString *parameters = [_parameters.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
-	return [OFString stringWithFormat:
+	OFString *algorithm;
+	if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier SHA256WithRSAEncryptionOID]])
+		algorithm = @"sha256WithRSAEncryption";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier SHA384WithRSAEncryptionOID]])
+		algorithm = @"sha384WithRSAEncryption";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier SHA512WithRSAEncryptionOID]])
+		algorithm = @"sha512WithRSAEncryption";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier SHA224WithRSAEncryptionOID]])
+		algorithm = @"sha224WithRSAEncryption";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier ECDSAWithSHA224OID]])
+		algorithm = @"ecdsa-with-SHA224";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier ECDSAWithSHA256OID]])
+		algorithm = @"ecdsa-with-SHA256";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier ECDSAWithSHA384OID]])
+		algorithm = @"ecdsa-with-SHA384";
+	else if ([_algorithm isEqual:
+	    [OFX509AlgorithmIdentifier ECDSAWithSHA512OID]])
+		algorithm = @"ecdsa-with-SHA512";
+	else if ([_algorithm isEqual: [OFX509AlgorithmIdentifier Ed25519OID]])
+		algorithm = @"id-Ed25519";
+	else if ([_algorithm isEqual: [OFX509AlgorithmIdentifier Ed448OID]])
+		algorithm = @"id-Ed448";
+	else
+		algorithm = _algorithm.stringValue;
+
+	OFString *ret = [[OFString alloc] initWithFormat:
 	    @"<%@ [%@ %@]:\n"
 	    @"\tAlgorithm = %@\n"
 	    @"\tParameters = %@\n"
@@ -85,5 +173,9 @@
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), algorithm,
 	    parameters];
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
 }
 @end
