@@ -102,6 +102,7 @@ ctor(void)
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame = __register_frame,
 		.__deregister_frame = __deregister_frame,
+		.posix_memalign = posix_memalign,
 		.vsnprintf = vsnprintf,
 	};
 
