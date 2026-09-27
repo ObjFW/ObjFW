@@ -31,14 +31,14 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1ObjectIdentifier
-+ (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
 	return objc_autoreleaseReturnValue([[self alloc] initWithArcs: arcs]);
 }
 
-+ (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
-				tagClass: (OFASN1TagClass)tagClass
-			       tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
 	    initWithArcs: arcs
@@ -46,15 +46,15 @@
 	       tagNumber: tagNumber]);
 }
 
-+ (instancetype)objectIdentifierWithString: (OFString *)string
++ (instancetype)identifierWithString: (OFString *)string
 {
 	return objc_autoreleaseReturnValue(
 	    [[self alloc] initWithString: string]);
 }
 
-+ (instancetype)objectIdentifierWithString: (OFString *)string
-				  tagClass: (OFASN1TagClass)tagClass
-				 tagNumber: (OFASN1TagNumber)tagNumber
++ (instancetype)identifierWithString: (OFString *)string
+			    tagClass: (OFASN1TagClass)tagClass
+			   tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
 	    initWithString: string

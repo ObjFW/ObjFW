@@ -45,8 +45,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param arcs The arcs of the ASN.1 ObjectIdentifier
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
-+ (instancetype)objectIdentifierWithArcs:
-    (OFArray OF_GENERIC(OFNumber *) *)arcs;
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs;
 
 /**
  * @brief Creates an ASN.1 ObjectIdentifier with the specified arcs.
@@ -56,9 +55,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
-+ (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
-				tagClass: (OFASN1TagClass)tagClass
-			       tagNumber: (OFASN1TagNumber)tagNumber;
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
  * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
@@ -66,7 +65,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param string The string value of the ASN.1 ObjectIdentifier
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
-+ (instancetype)objectIdentifierWithString: (OFString *)string;
++ (instancetype)identifierWithString: (OFString *)string;
 
 /**
  * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
@@ -76,9 +75,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1ObjectIdentifier
  */
-+ (instancetype)objectIdentifierWithString: (OFString *)string
-				  tagClass: (OFASN1TagClass)tagClass
-				 tagNumber: (OFASN1TagNumber)tagNumber;
++ (instancetype)identifierWithString: (OFString *)string
+			    tagClass: (OFASN1TagClass)tagClass
+			   tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
