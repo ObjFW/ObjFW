@@ -66,7 +66,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 		if ([value isKindOfClass: [OFASN1UTCTime class]])
 			_notBefore = objc_retain(X509UTCTimeToDate(value));
 		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]]) {
-			if ([value millisecond] > 0)
+			if ([value nanosecond] > 0)
 				@throw [OFInvalidFormatException exception];
 
 			_notBefore = objc_retain([value dateValue]);
@@ -77,7 +77,7 @@ X509UTCTimeToDate(OFASN1UTCTime *time)
 		if ([value isKindOfClass: [OFASN1UTCTime class]])
 			_notAfter = objc_retain(X509UTCTimeToDate(value));
 		else if ([value isKindOfClass: [OFASN1GeneralizedTime class]]) {
-			if ([value millisecond] > 0)
+			if ([value nanosecond] > 0)
 				@throw [OFInvalidFormatException exception];
 
 			_notAfter = objc_retain([value dateValue]);

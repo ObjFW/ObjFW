@@ -32,7 +32,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	unsigned short _year;
 	unsigned char _month, _dayOfMonth, _hour, _minute, _second;
-	unsigned short _millisecond;
+	unsigned long long _nanosecond;
 }
 
 /**
@@ -76,9 +76,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) unsigned char second;
 
 /**
- * @brief The millisecond of the GeneralizedTime.
+ * @brief The nanosecond of the GeneralizedTime.
  */
-@property (readonly, nonatomic) unsigned short millisecond;
+@property (readonly, nonatomic) unsigned long long nanosecond;
 
 /**
  * @brief Creates an ASN.1 GeneralizedTime with the specified string value.

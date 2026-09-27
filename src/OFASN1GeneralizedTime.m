@@ -30,7 +30,7 @@
 @implementation OFASN1GeneralizedTime
 @synthesize year = _year, month = _month, dayOfMonth = _dayOfMonth;
 @synthesize hour = _hour, minute = _minute, second = _second;
-@synthesize millisecond = _millisecond;
+@synthesize nanosecond = _nanosecond;
 
 + (instancetype)timeWithString: (OFString *)string
 {
@@ -115,9 +115,14 @@
 	@try {
 		string = [date dateStringWithFormat: @"%Y%m%d%H%M%S"];
 
-		if (date.microsecond / 1000 > 0)
+		if (date.microsecond > 0) {
 			string = [string stringByAppendingFormat:
-			    @".%03u", date.microsecond / 1000];
+			    @".%06llu", date.microsecond];
+
+			while ([string hasSuffix: @"0"])
+				string = [string
+				    substringToIndex: string.length - 1];
+		}
 
 		string = [string stringByAppendingString: @"Z"];
 	} @catch (id e) {
@@ -152,7 +157,7 @@
 
 	@try {
 		size_t count = DEREncodedContents.count;
-		if (count != 15 && count != 19)
+		if (count < 15 || count > 25)
 			@throw [OFInvalidFormatException exception];
 
 		const unsigned char *items = DEREncodedContents.items;
@@ -161,19 +166,21 @@
 			if (!OFASCIIIsDigit(items[i]))
 				@throw [OFInvalidFormatException exception];
 
-		if (count == 19) {
-			if (items[14] != '.')
+		if (count > 16) {
+			if (items[14] != '.' || items[count - 1] != 'Z')
 				@throw [OFInvalidFormatException exception];
 
-			for (size_t i = 15; i < 18; i++)
+			for (size_t i = 15; i < count - 1; i++)
 				if (!OFASCIIIsDigit(items[i]))
 					@throw [OFInvalidFormatException
 					    exception];
 
-			if (items[18] != 'Z')
+			if (items[count - 2] == '0')
 				@throw [OFInvalidFormatException exception];
-		} else if (items[14] != 'Z')
-			@throw [OFInvalidFormatException exception];
+		} else {
+			if (items[14] != 'Z')
+				@throw [OFInvalidFormatException exception];
+		}
 
 		_year = (items[0] - '0') * 1000 + (items[1] - '0') * 100 +
 		    (items[2] - '0') * 10 + items[3] - '0';
@@ -230,12 +237,25 @@
 		if (_second > 59)
 			@throw [OFInvalidFormatException exception];
 
-		if (count == 19) {
-			_millisecond = (items[15] - '0') * 100 +
-			    (items[16] - '0') * 10 + items[17] - '0';
+		if (count > 16) {
+			_nanosecond = (items[15] - '0') * 100000000ull;
 
-			if (_millisecond == 0)
-				@throw [OFInvalidFormatException exception];
+			if (count > 17)
+				_nanosecond += (items[16] - '0') * 10000000ull;
+			if (count > 18)
+				_nanosecond += (items[17] - '0') * 1000000ull;
+			if (count > 19)
+				_nanosecond += (items[18] - '0') * 100000ull;
+			if (count > 20)
+				_nanosecond += (items[19] - '0') * 10000ull;
+			if (count > 21)
+				_nanosecond += (items[20] - '0') * 1000ull;
+			if (count > 22)
+				_nanosecond += (items[21] - '0') * 100ull;
+			if (count > 23)
+				_nanosecond += (items[22] - '0') * 10ull;
+			if (count > 24)
+				_nanosecond += items[23] - '0';
 		}
 	} @catch (id e) {
 		objc_release(self);
@@ -265,8 +285,9 @@
 	};
 	OFDate *date = [OFDate dateWithStructTm: &tm];
 
-	if (_millisecond > 0)
-		date = [date dateByAddingTimeInterval: _millisecond / 1000.0];
+	if (_minute > 0)
+		date = [date
+		    dateByAddingTimeInterval: _nanosecond / 1000000000.0];
 
 	objc_retain(date);
 
@@ -278,9 +299,9 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02u.%03uZ>",
+	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02u.%09uZ>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
-	    _year, _month, _dayOfMonth, _hour, _minute, _second, _millisecond];
+	    _year, _month, _dayOfMonth, _hour, _minute, _second, _nanosecond];
 }
 @end
