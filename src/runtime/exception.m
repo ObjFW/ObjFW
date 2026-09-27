@@ -722,10 +722,10 @@ objc_exception_throw(id object)
 	register struct Library *r12 __asm__("r12");
 	struct Library *ObjFWRTBase = r12;
 #endif
-	struct objc_exception *e = calloc(1, sizeof(*e));
+	struct objc_exception *ex = calloc(1, sizeof(*ex));
 	bool emergency = false;
 
-	if (e == NULL) {
+	if (ex == NULL) {
 #ifdef OF_HAVE_THREADS
 		if (OFSpinlockLock(&emergencyExceptionsSpinlock) != 0)
 			_OBJC_ERROR("Failed to lock spinlock!");
@@ -733,8 +733,8 @@ objc_exception_throw(id object)
 
 		for (uint_fast8_t i = 0; i < numEmergencyExceptions; i++) {
 			if (emergencyExceptions[i].exception.class == 0) {
-				e = &emergencyExceptions[i];
-				e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
+				ex = &emergencyExceptions[i];
+				ex->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 				emergency = true;
 
 				break;
@@ -747,18 +747,18 @@ objc_exception_throw(id object)
 #endif
 	}
 
-	if (e == NULL)
+	if (ex == NULL)
 		_OBJC_ERROR("Not enough memory to allocate exception!");
 
-	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
-	e->exception.cleanup = (emergency
+	ex->exception.class = GNUCOBJC_EXCEPTION_CLASS;
+	ex->exception.cleanup = (emergency
 	    ? emergencyExceptionCleanup : cleanup);
-	e->object = object;
+	ex->object = object;
 #ifdef OBJC_COMPILING_AMIGA_LIBRARY
-	e->ObjFWRTBase = ObjFWRTBase;
+	ex->ObjFWRTBase = ObjFWRTBase;
 #endif
 
-	_Unwind_RaiseException(&e->exception);
+	_Unwind_RaiseException(&ex->exception);
 
 	if (uncaughtExceptionHandler != NULL) {
 		@try {
