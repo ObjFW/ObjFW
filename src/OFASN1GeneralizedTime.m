@@ -285,7 +285,7 @@
 	};
 	OFDate *date = [OFDate dateWithStructTm: &tm];
 
-	if (_minute > 0)
+	if (_nanosecond > 0)
 		date = [date
 		    dateByAddingTimeInterval: _nanosecond / 1000000000.0];
 
