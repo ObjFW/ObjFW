@@ -117,7 +117,7 @@
 
 		if (date.microsecond / 1000 > 0)
 			string = [string stringByAppendingFormat:
-			    @".%06u", date.microsecond / 1000];
+			    @".%03u", date.microsecond / 1000];
 
 		string = [string stringByAppendingString: @"Z"];
 	} @catch (id e) {
