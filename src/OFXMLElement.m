@@ -326,6 +326,10 @@
 
 - (void)setAttributes: (OFArray *)attributes
 {
+	for (id attribute in attributes)
+		if (![attribute isKindOfClass: [OFXMLAttribute class]])
+			@throw [OFInvalidArgumentException exception];
+
 	OFArray *old = _attributes;
 	_attributes = [attributes mutableCopy];
 	objc_release(old);
@@ -341,6 +345,11 @@
 
 - (void)setChildren: (OFArray *)children
 {
+	for (id child in children)
+		if (![child isKindOfClass: [OFXMLNode class]] ||
+		    [child isKindOfClass: [OFXMLAttribute class]])
+			@throw [OFInvalidArgumentException exception];
+
 	OFArray *old = _children;
 	_children = [children mutableCopy];
 	objc_release(old);
@@ -734,7 +743,8 @@
 
 - (void)addChild: (OFXMLNode *)child
 {
-	if ([child isKindOfClass: [OFXMLAttribute class]])
+	if (![child isKindOfClass: [OFXMLNode class]] ||
+	    [child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
 	[_children addObject: child];
@@ -742,7 +752,8 @@
 
 - (void)insertChild: (OFXMLNode *)child atIndex: (size_t)idx
 {
-	if ([child isKindOfClass: [OFXMLAttribute class]])
+	if (![child isKindOfClass: [OFXMLNode class]] ||
+	    [child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
 	[_children insertObject: child atIndex: idx];
@@ -750,8 +761,9 @@
 
 - (void)insertChildren: (OFArray *)children atIndex: (size_t)idx
 {
-	for (OFXMLNode *node in children)
-		if ([node isKindOfClass: [OFXMLAttribute class]])
+	for (id child in children)
+		if (![child isKindOfClass: [OFXMLNode class]] ||
+		    [child isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
 	[_children insertObjectsFromArray: children atIndex: idx];
@@ -759,7 +771,8 @@
 
 - (void)removeChild: (OFXMLNode *)child
 {
-	if ([child isKindOfClass: [OFXMLAttribute class]])
+	if (![child isKindOfClass: [OFXMLNode class]] ||
+	    [child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
 	[_children removeObject: child];
@@ -772,8 +785,12 @@
 
 - (void)replaceChild: (OFXMLNode *)child withNode: (OFXMLNode *)node
 {
-	if ([node isKindOfClass: [OFXMLAttribute class]] ||
+	if (![child isKindOfClass: [OFXMLNode class]] ||
 	    [child isKindOfClass: [OFXMLAttribute class]])
+		@throw [OFInvalidArgumentException exception];
+
+	if (![node isKindOfClass: [OFXMLNode class]] ||
+	    [node isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
 	[_children replaceObject: child withObject: node];
@@ -781,7 +798,8 @@
 
 - (void)replaceChildAtIndex: (size_t)idx withNode: (OFXMLNode *)node
 {
-	if ([node isKindOfClass: [OFXMLAttribute class]])
+	if (![node isKindOfClass: [OFXMLNode class]] ||
+	    [node isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
 	[_children replaceObjectAtIndex: idx withObject: node];
