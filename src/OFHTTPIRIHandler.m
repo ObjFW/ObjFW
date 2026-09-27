@@ -82,10 +82,15 @@ OF_DIRECT_MEMBERS
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request = [OFHTTPRequest requestWithIRI: _IRI];
 
-	[_client asyncPerformRequest: request
-			   redirects: 10
-			 runLoopMode: runLoopMode];
 	objc_retain(self);
+	@try {
+		[_client asyncPerformRequest: request
+				   redirects: 10
+				 runLoopMode: runLoopMode];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
