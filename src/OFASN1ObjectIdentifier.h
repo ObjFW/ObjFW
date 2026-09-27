@@ -35,6 +35,11 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFNumber *) *arcs;
 
 /**
+ * @brief The string value of the ObjectIdentifier.
+ */
+@property (readonly, nonatomic) OFString *stringValue;
+
+/**
  * @brief Creates an ASN.1 ObjectIdentifier with the specified arcs.
  *
  * @param arcs The arcs of the ASN.1 ObjectIdentifier
@@ -54,6 +59,26 @@ OF_SUBCLASSING_RESTRICTED
 + (instancetype)objectIdentifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 				tagClass: (OFASN1TagClass)tagClass
 			       tagNumber: (OFASN1TagNumber)tagNumber;
+
+/**
+ * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
+ *
+ * @param string The string value of the ASN.1 ObjectIdentifier
+ * @return A new, autoreleased OFASN1ObjectIdentifier
+ */
++ (instancetype)objectIdentifierWithString: (OFString *)string;
+
+/**
+ * @brief Creates an ASN.1 ObjectIdentifier with the specified string.
+ *
+ * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return A new, autoreleased OFASN1ObjectIdentifier
+ */
++ (instancetype)objectIdentifierWithString: (OFString *)string
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber;
 
 /**
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
@@ -76,6 +101,28 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber;
+
+/**
+ * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ *	  specified string.
+ *
+ * @param string The string value of the ASN.1 ObjectIdentifier
+ * @return An initialized OFASN1ObjectIdentifier
+ */
+- (instancetype)initWithString: (OFString *)string;
+
+/**
+ * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ *	  specified string.
+ *
+ * @param string The string value of the ASN.1 ObjectIdentifier
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @return An initialized OFASN1ObjectIdentifier
+ */
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber;
 @end
 
 OF_ASSUME_NONNULL_END

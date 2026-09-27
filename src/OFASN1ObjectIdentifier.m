@@ -46,6 +46,22 @@
 	       tagNumber: tagNumber]);
 }
 
++ (instancetype)objectIdentifierWithString: (OFString *)string
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
+}
+
++ (instancetype)objectIdentifierWithString: (OFString *)string
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithString: string
+		  tagClass: tagClass
+		 tagNumber: tagNumber]);
+}
+
 - (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
 {
 	return [self initWithArcs: arcs
@@ -142,6 +158,37 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	return self;
 }
 
+- (instancetype)initWithString: (OFString *)string
+{
+	return [self initWithString: string
+			   tagClass: OFASN1TagClassUniversal
+			  tagNumber: OFASN1TagNumberObjectIdentifier];
+}
+
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	OFArray OF_GENERIC(OFNumber *) *arcs;
+	@try {
+		arcs = [[string componentsSeparatedByString: @"."]
+		    valueForKey: @"unsignedLongLongValue"];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithArcs: arcs
+			 tagClass: tagClass
+			tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
 - (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
 				  tagClass: (OFASN1TagClass)tagClass
 				 tagNumber: (OFASN1TagNumber)tagNumber
@@ -218,6 +265,19 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 	objc_autoreleasePoolPop(pool);
 
 	return arcs;
+}
+
+- (OFString *)stringValue
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue = [[self.arcs valueForKey: @"stringValue"]
+	    componentsJoinedByString: @"."];
+
+	objc_retain(stringValue);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(stringValue);
 }
 
 - (OFString *)description
