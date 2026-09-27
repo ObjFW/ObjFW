@@ -760,8 +760,14 @@ objc_exception_throw(id object)
 
 	_Unwind_RaiseException(&e->exception);
 
-	if (uncaughtExceptionHandler != NULL)
-		uncaughtExceptionHandler(object);
+	if (uncaughtExceptionHandler != NULL) {
+		@try {
+			uncaughtExceptionHandler(object);
+		} @catch (id e) {
+			_OBJC_ERROR("Uncaught exception handler threw "
+			    "exception!");
+		}
+	}
 
 	_OBJC_ERROR("_Unwind_RaiseException() returned!");
 }
