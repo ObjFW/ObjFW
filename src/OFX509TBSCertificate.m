@@ -155,6 +155,9 @@
 			if (![value isKindOfClass: [OFASN1Sequence class]])
 				@throw [OFInvalidFormatException exception];
 
+			if ([value count] < 1)
+				@throw [OFInvalidFormatException exception];
+
 			OFMutableArray *extensions = [OFMutableArray
 			    arrayWithCapacity: [[value components] count]];
 			for (OF_KINDOF(OFASN1Value *) iter in
