@@ -112,9 +112,6 @@
 
 	OFString *string;
 	@try {
-		if (date.microsecond > 0)
-			@throw [OFInvalidFormatException exception];
-
 		string = [date dateStringWithFormat: @"%Y-%m-%dT%H:%M:%S"];
 	} @catch (id e) {
 		objc_release(self);
