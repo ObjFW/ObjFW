@@ -62,13 +62,13 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An array with the attributes of the element.
  */
-@property OF_NULL_RESETTABLE_PROPERTY (readonly, nonatomic)
+@property OF_NULL_RESETTABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /**
  * @brief An array of @ref OFXMLNode with all children of the element.
  */
-@property OF_NULL_RESETTABLE_PROPERTY (nonatomic, copy)
+@property OF_NULL_RESETTABLE_PROPERTY (copy, nonatomic)
     OFArray OF_GENERIC(OFXMLNode *) *children;
 
 /**

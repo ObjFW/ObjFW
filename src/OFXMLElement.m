@@ -324,6 +324,16 @@
 	[super dealloc];
 }
 
+- (void)setAttributes: (OFArray *)attributes
+{
+	OFArray *old = _attributes;
+	_attributes = [attributes mutableCopy];
+	objc_release(old);
+
+	if (_attributes == nil)
+		_attributes = [[OFMutableArray alloc] init];
+}
+
 - (OFArray *)attributes
 {
 	return objc_autoreleaseReturnValue([_attributes copy]);
@@ -334,6 +344,9 @@
 	OFArray *old = _children;
 	_children = [children mutableCopy];
 	objc_release(old);
+
+	if (_children == nil)
+		_children = [[OFMutableArray alloc] init];
 }
 
 - (OFArray *)children
