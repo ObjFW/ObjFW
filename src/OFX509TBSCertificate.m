@@ -155,7 +155,7 @@
 			if (![value isKindOfClass: [OFASN1Sequence class]])
 				@throw [OFInvalidFormatException exception];
 
-			if ([value count] < 1)
+			if ([[value components] count] < 1)
 				@throw [OFInvalidFormatException exception];
 
 			OFMutableArray *extensions = [OFMutableArray
