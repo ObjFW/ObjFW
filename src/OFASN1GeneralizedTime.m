@@ -157,7 +157,7 @@
 
 	@try {
 		size_t count = DEREncodedContents.count;
-		if (count < 15 || count > 25)
+		if (count < 15 || count == 16 || count > 25)
 			@throw [OFInvalidFormatException exception];
 
 		const unsigned char *items = DEREncodedContents.items;
@@ -299,7 +299,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02u.%09uZ>",
+	    @"<%@ [%@ %@]: %04u-%02u-%02uT%02u:%02u:%02u.%09lluZ>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber),
 	    _year, _month, _dayOfMonth, _hour, _minute, _second, _nanosecond];
