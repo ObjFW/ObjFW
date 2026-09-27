@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableString;
+@class OFPair OF_GENERIC(FirstType, SecondType);
 @class OFStream;
 @class OFString;
 @class OFXMLAttribute;
@@ -37,11 +38,12 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLElement: OFXMLNode
 {
 	OFString *_name, *_Nullable _namespace;
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
-	    _namespaces;
-	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
-	OFMutableArray OF_GENERIC(OFXMLNode *) *_Nullable _children;
-	OF_RESERVE_IVARS(OFXMLElement, 4)
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_namespaces;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_attributes;
+	OFMutableArray OF_GENERIC(OFXMLNode *) *_children;
+	OFMutableDictionary OF_GENERIC(OFPair OF_GENERIC(OFString *,
+	    OFString *) *, OFXMLAttribute *) *_attributeMap;
+	OF_RESERVE_IVARS(OFXMLElement, 3)
 }
 
 /**

@@ -28,6 +28,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
+#import "OFPair.h"
 #import "OFStream.h"
 #import "OFString.h"
 #import "OFXMLAttribute.h"
@@ -153,6 +154,7 @@
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
 
 		_attributes = [[OFMutableArray alloc] init];
+		_attributeMap = [[OFMutableDictionary alloc] init];
 		_children = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		objc_release(self);
@@ -192,6 +194,10 @@
 		objc_release(_attributes);
 		_attributes = nil;
 		_attributes = [element->_attributes mutableCopy];
+
+		objc_release(_attributeMap);
+		_attributeMap = nil;
+		_attributeMap = [element->_attributeMap mutableCopy];
 
 		objc_release(_children);
 		_children = nil;
@@ -248,6 +254,9 @@
 		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
 
+		objc_release(_attributeMap);
+		_attributeMap = objc_retain(element->_attributeMap);
+
 		objc_release(_children);
 		_children = objc_retain(element->_children);
 
@@ -301,6 +310,9 @@
 		objc_release(_attributes);
 		_attributes = objc_retain(element->_attributes);
 
+		objc_release(_attributeMap);
+		_attributeMap = objc_retain(element->_attributeMap);
+
 		objc_release(_children);
 		_children = objc_retain(element->_children);
 
@@ -319,6 +331,7 @@
 	objc_release(_namespace);
 	objc_release(_namespaces);
 	objc_release(_attributes);
+	objc_release(_attributeMap);
 	objc_release(_children);
 
 	[super dealloc];
@@ -326,9 +339,34 @@
 
 - (void)setAttributes: (OFArray *)attributes
 {
-	for (id attribute in attributes)
-		if (![attribute isKindOfClass: [OFXMLAttribute class]])
-			@throw [OFInvalidArgumentException exception];
+	OFMutableDictionary *newAttributeMap =
+	    [[OFMutableDictionary alloc] init];
+	@try {
+		for (OFXMLAttribute *attribute in attributes) {
+			if (![attribute isKindOfClass: [OFXMLAttribute class]])
+				@throw [OFInvalidArgumentException exception];
+
+			OFPair *key = [[OFPair alloc]
+			    initWithFirstObject: attribute.namespace
+				   secondObject: attribute.name];
+			@try {
+				if ([newAttributeMap objectForKey: key] != nil)
+					@throw [OFInvalidArgumentException
+					    exception];
+
+				[newAttributeMap setObject: attribute
+						    forKey: key];
+			} @finally {
+				objc_release(key);
+			}
+		}
+
+		objc_release(_attributeMap);
+		_attributeMap = newAttributeMap;
+	} @catch (id e) {
+		objc_release(newAttributeMap);
+		@throw e;
+	}
 
 	OFArray *old = _attributes;
 	_attributes = [attributes mutableCopy];
@@ -637,9 +675,16 @@
 	if (![attribute isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	if ([self attributeForName: attribute->_name
-			 namespace: attribute->_namespace] == nil)
-		[_attributes addObject: attribute];
+	OFPair *key = [[OFPair alloc] initWithFirstObject: attribute.namespace
+					     secondObject: attribute.name];
+	@try {
+		if ([_attributeMap objectForKey: key] == nil) {
+			[_attributes addObject: attribute];
+			[_attributeMap setObject: attribute forKey: key];
+		}
+	} @finally {
+		objc_release(key);
+	}
 }
 
 - (void)addAttributeWithName: (OFString *)name
@@ -665,26 +710,23 @@
 
 - (OFXMLAttribute *)attributeForName: (OFString *)attributeName
 {
-	for (OFXMLAttribute *attribute in _attributes)
-		if (attribute->_namespace == nil &&
-		    [attribute->_name isEqual: attributeName])
-			return attribute;
-
-	return nil;
+	return [self attributeForName: attributeName namespace: nil];
 }
 
 - (OFXMLAttribute *)attributeForName: (OFString *)attributeName
 			   namespace: (OFString *)attributeNS
 {
-	if (attributeNS == nil)
-		return [self attributeForName: attributeName];
+	OFXMLAttribute *attribute;
 
-	for (OFXMLAttribute *attribute in _attributes)
-		if ([attribute->_namespace isEqual: attributeNS] &&
-		    [attribute->_name isEqual: attributeName])
-			return attribute;
+	OFPair *key = [[OFPair alloc] initWithFirstObject: attributeNS
+					     secondObject: attributeName];
+	@try {
+		attribute = [_attributeMap objectForKey: key];
+	} @finally {
+		objc_release(key);
+	}
 
-	return nil;
+	return attribute;
 }
 
 - (void)removeAttributeForName: (OFString *)attributeName
@@ -695,7 +737,15 @@
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i]->_namespace == nil &&
 		    [objects[i]->_name isEqual: attributeName]) {
-			[_attributes removeObjectAtIndex: i];
+			OFPair *key = [[OFPair alloc]
+			    initWithFirstObject: objects[i].namespace
+				   secondObject: objects[i].name];
+			@try {
+				[_attributes removeObjectAtIndex: i];
+				[_attributeMap removeObjectForKey: key];
+			} @finally {
+				objc_release(key);
+			}
 
 			return;
 		}
@@ -719,8 +769,17 @@
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i]->_namespace isEqual: attributeNS] &&
 		    [objects[i]->_name isEqual: attributeName]) {
-			[_attributes removeObjectAtIndex: i];
-				return;
+			OFPair *key = [[OFPair alloc]
+			    initWithFirstObject: objects[i].namespace
+				   secondObject: objects[i].name];
+			@try {
+				[_attributes removeObjectAtIndex: i];
+				[_attributeMap removeObjectForKey: key];
+			} @finally {
+				objc_release(key);
+			}
+
+			return;
 		}
 	}
 }
