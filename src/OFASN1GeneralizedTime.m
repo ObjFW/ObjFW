@@ -117,7 +117,7 @@
 
 		if (date.microsecond > 0) {
 			string = [string stringByAppendingFormat:
-			    @".%06llu", date.microsecond];
+			    @".%06lu", date.microsecond];
 
 			while ([string hasSuffix: @"0"])
 				string = [string
