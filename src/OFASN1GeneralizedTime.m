@@ -177,10 +177,8 @@
 
 			if (items[count - 2] == '0')
 				@throw [OFInvalidFormatException exception];
-		} else {
-			if (items[14] != 'Z')
-				@throw [OFInvalidFormatException exception];
-		}
+		} else if (items[14] != 'Z')
+			@throw [OFInvalidFormatException exception];
 
 		_year = (items[0] - '0') * 1000 + (items[1] - '0') * 100 +
 		    (items[2] - '0') * 10 + items[3] - '0';
