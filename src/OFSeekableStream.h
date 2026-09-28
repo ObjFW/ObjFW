@@ -38,13 +38,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_WINDOWS)
 typedef __int64 OFStreamOffset;
-#elif defined(OF_ANDROID)
-typedef long long OFStreamOffset;
-#elif defined(OF_MORPHOS)
-typedef long long OFStreamOffset;
 #elif defined(OF_HAVE_OFF64_T)
-typedef off64_t OFStreamOffset;
+typedef long long OFStreamOffset;
 #else
+/* Change to always `long long` on ABI bump */
 typedef off_t OFStreamOffset;
 #endif
 
