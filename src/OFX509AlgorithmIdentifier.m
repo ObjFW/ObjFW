@@ -125,4 +125,23 @@
 
 	[super dealloc];
 }
+
+- (OFString *)description
+{
+	OFString *algorithm = [_algorithm.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+	OFString *parameters = [_parameters.description
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
+	return [OFString stringWithFormat:
+	    @"<%@ [%@ %@]:\n"
+	    @"\tAlgorithm = %@\n"
+	    @"\tParameters = %@\n"
+	    @">",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), algorithm,
+	    parameters];
+}
 @end
