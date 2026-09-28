@@ -68,7 +68,6 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFString *) *names;
 	    @"1.3.6.1", @"internet",
 	    @"1.3.6.1.4", @"private",
 	    @"1.3.6.1.4.1", @"enterprise",
-	    @"1.3.6.1.4.1.66927", @"jonathan-schleifer",
 	    @"1.3.6.1.4.1.66927.1", @"objfw",
 	    @"1.3.101", @"thawte",
 	    @"1.3.101.112", @"id-Ed25519",
