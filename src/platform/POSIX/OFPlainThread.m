@@ -38,7 +38,7 @@ static int minPrio = 0, maxPrio = 0, normalPrio = 0;
 struct ThreadContext {
 	void (*function)(id object);
 	id object;
-	const char *name;
+	char *name;
 };
 
 /*
@@ -85,8 +85,10 @@ functionWrapper(void *data)
 {
 	struct ThreadContext *ctx = data;
 
-	if (ctx->name != NULL)
+	if (ctx->name != NULL) {
 		OFSetThreadName(ctx->name);
+		free(ctx->name);
+	}
 
 	pthread_cleanup_push(free, data);
 
@@ -178,13 +180,20 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 
 		ctx->function = function;
 		ctx->object = object;
-		ctx->name = name;
 
-		error = pthread_create(thread,
+		if (name != NULL) {
+			size_t length = strlen(name) + 1;
+			if ((ctx->name = malloc(length)) != NULL)
+				OFCopyMemory(ctx->name, name, length);
+		} else
+			ctx->name = NULL;
+
+		if ((error = pthread_create(thread,
 		    (POSIXAttrAvailable ? &POSIXAttr : NULL), functionWrapper,
-		    ctx);
-		if (error != 0)
+		    ctx)) != 0) {
+			free(ctx->name);
 			free(ctx);
+		}
 	} @finally {
 		if (POSIXAttrAvailable)
 			pthread_attr_destroy(&POSIXAttr);
