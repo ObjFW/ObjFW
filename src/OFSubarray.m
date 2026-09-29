@@ -70,36 +70,6 @@
 	[_array getObjects: buffer inRange: range];
 }
 
-- (size_t)indexOfObject: (id)object
-{
-	size_t idx = [_array indexOfObject: object];
-
-	if (idx < _range.location)
-		return OFNotFound;
-
-	idx -= _range.location;
-
-	if (idx >= _range.length)
-		return OFNotFound;
-
-	return idx;
-}
-
-- (size_t)indexOfObjectIdenticalTo: (id)object
-{
-	size_t idx = [_array indexOfObjectIdenticalTo: object];
-
-	if (idx < _range.location)
-		return OFNotFound;
-
-	idx -= _range.location;
-
-	if (idx >= _range.length)
-		return OFNotFound;
-
-	return idx;
-}
-
 - (OFArray *)objectsInRange: (OFRange)range
 {
 	if (OFEndOfRange(range) > _range.length)
