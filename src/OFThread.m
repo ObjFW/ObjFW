@@ -124,7 +124,6 @@ static void
 callMain(id object)
 {
 	OFThread *thread = (OFThread *)object;
-	OFString *name;
 
 	if (OFTLSKeySet(threadSelfKey, thread) != 0)
 		@throw [OFInitializationFailedException
@@ -133,13 +132,6 @@ callMain(id object)
 #ifndef OF_OBJFW_RUNTIME
 	thread->_pool = objc_autoreleasePoolPush();
 #endif
-
-	name = thread.name;
-	if (name != nil)
-		OFSetThreadName(
-		    [name cStringWithEncoding: [OFLocale encoding]]);
-	else
-		OFSetThreadName(object_getClassName(thread));
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)
@@ -421,6 +413,8 @@ callMain(id object)
 		if (OFPlainThreadAttributesInit(&_attr) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
+
+		_name = [self.className copy];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -600,6 +594,7 @@ callMain(id object)
 # ifdef OF_HAVE_BLOCKS
 	objc_release(_block);
 # endif
+	objc_release(_name);
 
 	[super dealloc];
 }
