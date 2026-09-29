@@ -31,6 +31,7 @@
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
+#include <exec/system.h>
 #include <proto/exec.h>
 #undef Class
 
@@ -59,6 +60,7 @@ struct ObjFWRTBase {
 const ULONG __abox__ = 1;
 struct ExecBase *SysBase;
 static struct objc_linklib_context linklibCtx;
+int libnix_altivec = 0, libnix_use_altivec = 0;
 
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (
@@ -316,6 +318,11 @@ objc_init(unsigned int version, struct objc_linklib_context *ctx)
 		void (*ctor)(void) = (void (*)(void))*--iter;
 		ctor();
 	}
+
+	uint32_t supportsAltiVec;
+	if (NewGetSystemAttrs(&supportsAltiVec, sizeof(supportsAltiVec),
+	    SYSTEMINFOTYPE_PPC_ALTIVEC, TAG_END) > 0)
+		libnix_altivec = libnix_use_altivec = supportsAltiVec;
 
 	base->initialized = true;
 
