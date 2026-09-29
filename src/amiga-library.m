@@ -557,13 +557,13 @@ localeconv(void)
 	return linklibCtx.localeconv();
 }
 
-int
+int __attribute__((__returns_twice__))
 setjmp(jmp_buf env)
 {
 	return linklibCtx.setjmp(env);
 }
 
-void
+void __attribute__((__noreturn__))
 longjmp(jmp_buf env, int val)
 {
 	linklibCtx.longjmp(env, val);
