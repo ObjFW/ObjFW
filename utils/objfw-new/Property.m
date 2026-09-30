@@ -81,7 +81,7 @@ OF_DIRECT_MEMBERS
 					    mutableCopy]);
 
 					UTF8String += i + 1;
-					length += i + 1;
+					length -= i + 1;
 
 					while (*UTF8String == ' ' ||
 					    *UTF8String == '\t') {
