@@ -113,7 +113,9 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFString *) *names;
 + (void)registerName: (OFString *)name forStringValue: (OFString *)stringValue
 {
 	@synchronized (names) {
-		[names setObject: name forKey: stringValue];
+		if ([names objectForKey: stringValue] == nil)
+			[names setObject: objc_autorelease([name copy])
+				  forKey: stringValue];
 	}
 }
 
