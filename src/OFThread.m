@@ -474,13 +474,16 @@ callMain(id object)
 		objc_release(_returnValue);
 	}
 
-	objc_retain(self);
+	const char *name = [_name cStringWithEncoding: [OFLocale encoding]];
 
+	objc_retain(self);
 	_running = OFThreadStateRunning;
 
-	if ((error = OFPlainThreadNew(&_thread, [_name cStringWithEncoding:
-	    [OFLocale encoding]], callMain, self, &_attr)) != 0) {
+	if ((error = OFPlainThreadNew(&_thread, name, callMain, self,
+	    &_attr)) != 0) {
+		_running = OFThreadStateNotRunning;
 		objc_release(self);
+
 		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
