@@ -463,7 +463,9 @@ callMain(id object)
 
 - (void)start
 {
-	int error;
+	void *pool = objc_autoreleasePoolPush();
+	enum _OFThreadState oldRunning = _running;
+	id oldReturnValue = _returnValue;
 
 	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
@@ -471,7 +473,8 @@ callMain(id object)
 
 	if (_running == OFThreadStateWaitingForJoin) {
 		OFPlainThreadDetach(_thread);
-		objc_release(_returnValue);
+		objc_autorelease(_returnValue);
+		_returnValue = nil;
 	}
 
 	const char *name = [_name cStringWithEncoding: [OFLocale encoding]];
@@ -479,15 +482,19 @@ callMain(id object)
 	objc_retain(self);
 	_running = OFThreadStateRunning;
 
+	int error;
 	if ((error = OFPlainThreadNew(&_thread, name, callMain, self,
 	    &_attr)) != 0) {
-		_running = OFThreadStateNotRunning;
+		_running = oldRunning;
+		_returnValue = objc_retain(oldReturnValue);
 		objc_release(self);
 
 		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (id)join
