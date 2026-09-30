@@ -467,13 +467,13 @@ callMain(id object)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
+	const char *name = [_name cStringWithEncoding: [OFLocale encoding]];
+
 	if (_running == OFThreadStateWaitingForJoin) {
 		OFPlainThreadDetach(_thread);
 		objc_release(_returnValue);
 		_returnValue = nil;
 	}
-
-	const char *name = [_name cStringWithEncoding: [OFLocale encoding]];
 
 	objc_retain(self);
 	_running = OFThreadStateRunning;
