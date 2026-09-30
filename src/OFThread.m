@@ -463,17 +463,13 @@ callMain(id object)
 
 - (void)start
 {
-	void *pool = objc_autoreleasePoolPush();
-	enum _OFThreadState oldRunning = _running;
-	id oldReturnValue = _returnValue;
-
 	if (_running == OFThreadStateRunning)
 		@throw [OFThreadStillRunningException
 		    exceptionWithThread: self];
 
 	if (_running == OFThreadStateWaitingForJoin) {
 		OFPlainThreadDetach(_thread);
-		objc_autorelease(_returnValue);
+		objc_release(_returnValue);
 		_returnValue = nil;
 	}
 
@@ -485,16 +481,13 @@ callMain(id object)
 	int error;
 	if ((error = OFPlainThreadNew(&_thread, name, callMain, self,
 	    &_attr)) != 0) {
-		_running = oldRunning;
-		_returnValue = objc_retain(oldReturnValue);
+		_running = OFThreadStateNotRunning;
 		objc_release(self);
 
 		@throw [OFStartThreadFailedException
 		    exceptionWithThread: self
 				  errNo: error];
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (id)join
