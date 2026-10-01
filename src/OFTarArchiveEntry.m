@@ -81,9 +81,15 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length,
 	if (buffer[0] == 0x80) {
 		for (size_t i = 1; i < length; i++)
 			value = (value << 8) | buffer[i];
-	} else
-		value = [stringFromBuffer(buffer, length,
-		    OFStringEncodingASCII) unsignedLongLongValueWithBase: 8];
+	} else {
+		OFString *string = stringFromBuffer(buffer, length,
+		    OFStringEncodingASCII);
+
+		if (string.length == 0)
+			return 0;
+
+		value = [string unsignedLongLongValueWithBase: 8];
+	}
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
