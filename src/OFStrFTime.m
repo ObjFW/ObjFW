@@ -115,12 +115,12 @@ _OFStrFTime(char *buffer, size_t bufferLen, const char *format, struct tm *tm,
 				appendFormat = "\t";
 				break;
 			case 'Y':
-				appendFormat = "%4u";
+				appendFormat = "%4d";
 				value = tm->tm_year + 1900;
 				break;
 			case 'y':
-				appendFormat = "%02u";
-				value = tm->tm_year % 100;
+				appendFormat = "%02d";
+				value = (tm->tm_year + 1900) % 100;
 				break;
 			case 'z':
 				if (tz == 0)
