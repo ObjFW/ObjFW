@@ -59,6 +59,8 @@ make docs
 ## License
 
 ObjFW is released under the GNU Lesser General Public License version 3.0.
+=> LICENSE.gmi         GNU General Public License version 3.0
+=> LICENSE-LGPLv3.gmi  GNU Lesser General Public License version 3.0
 
 If this license does not work for you, contact me and we can find a solution.
 
