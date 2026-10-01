@@ -54,8 +54,8 @@
 {
 	if (_lock != nil)
 		return [OFString stringWithFormat:
-		    @"A lock of type %@ could not be unlocked: %s",
-		    [_lock class], strerror(_errNo)];
+		    @"A lock of type %@ could not be unlocked: %@",
+		    [_lock class], OFStrError(_errNo)];
 	else
 		return @"A lock could not be unlocked!";
 }

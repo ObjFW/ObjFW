@@ -66,7 +66,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Broadcasting a condition of type %@ failed: %s",
-	    _condition.class, strerror(_errNo)];
+	    @"Broadcasting a condition of type %@ failed: %@",
+	    _condition.class, OFStrError(_errNo)];
 }
 @end

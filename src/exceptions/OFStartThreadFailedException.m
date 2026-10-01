@@ -65,7 +65,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Starting a thread of type %@ failed: %s",
-	    _thread.class, strerror(_errNo)];
+	    @"Starting a thread of type %@ failed: %@",
+	    _thread.class, OFStrError(_errNo)];
 }
 @end
