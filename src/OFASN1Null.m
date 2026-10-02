@@ -29,13 +29,13 @@
 @implementation OFASN1Null
 + (instancetype)null
 {
-	return objc_autoreleaseReturnValue([[OFASN1Null alloc] init]);
+	return objc_autoreleaseReturnValue([(id)[OFASN1Null alloc] init]);
 }
 
 + (instancetype)nullWithTagClass: (OFASN1TagClass)tagClass
 		       tagNumber: (OFASN1TagNumber)tagNumber
 {
-	return objc_autoreleaseReturnValue([[OFASN1Null alloc]
+	return objc_autoreleaseReturnValue([(id)[OFASN1Null alloc]
 	    initWithTagClass: tagClass
 		   tagNumber: tagNumber]);
 }

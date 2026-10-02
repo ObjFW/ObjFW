@@ -130,31 +130,31 @@ _OFDEREncodeTag(OFASN1TagClass tagClass, OFASN1TagNumber tagNumber,
 	if (constructed)
 		buffer[0] |= 0x20;
 
-	if (tagNumber < 0x1F) {
+	if ((int)tagNumber < 0x1F) {
 		buffer[0] |= tagNumber;
 		return 1;
 	} else
 		buffer[0] |= 0x1F;
 
-	if (tagNumber <= 0x7F) {
+	if ((int)tagNumber <= 0x7F) {
 		buffer[1] = tagNumber;
 		return 2;
-	} else if (tagNumber <= 0x3FFF) {
+	} else if ((int)tagNumber <= 0x3FFF) {
 		buffer[1] = (tagNumber >> 7) | 0x80;
 		buffer[2] = tagNumber & 0x7F;
 		return 3;
-	} else if (tagNumber <= 0x1FFFFF) {
+	} else if ((int)tagNumber <= 0x1FFFFF) {
 		buffer[1] = (tagNumber >> 14) | 0x80;
 		buffer[2] = (tagNumber >> 7) | 0x80;
 		buffer[3] = tagNumber & 0x7F;
 		return 4;
-	} else if (tagNumber <= 0xFFFFFFF) {
+	} else if ((int)tagNumber <= 0xFFFFFFF) {
 		buffer[1] = (tagNumber >> 21) | 0x80;
 		buffer[2] = (tagNumber >> 14) | 0x80;
 		buffer[3] = (tagNumber >> 7) | 0x80;
 		buffer[4] = tagNumber & 0x7F;
 		return 5;
-	} else if (tagNumber <= 0x7FFFFFFF) {
+	} else if ((int)tagNumber <= 0x7FFFFFFF) {
 		buffer[1] = (tagNumber >> 28) | 0x80;
 		buffer[2] = (tagNumber >> 21) | 0x80;
 		buffer[3] = (tagNumber >> 14) | 0x80;
