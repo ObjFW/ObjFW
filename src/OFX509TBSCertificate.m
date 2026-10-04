@@ -85,6 +85,9 @@
 
 		if (![value isKindOfClass: [OFASN1Integer class]])
 			@throw [OFInvalidFormatException exception];
+		if (*(unsigned char *)[[value DEREncodedContents]
+		    itemAtIndex: 0] & 0x80)
+			@throw [OFInvalidFormatException exception];
 		_serialNumber = objc_retain(value);
 
 		value = [enumerator nextObject];
