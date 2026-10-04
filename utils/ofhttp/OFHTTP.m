@@ -85,7 +85,7 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectFileNameRequest;
 	bool _detectedFileName, _quiet, _verbose, _insecure, _ignoreStatus;
-	bool _useUnicode;
+	bool _forceIPv4, _forceIPv6, _useUnicode;
 	OFStream *_body;
 	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
@@ -143,6 +143,10 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n    "
+		    @"-4                   "
+		    @"  Force IPv4\n    "
+		    @"-6                   "
+		    @"  Force IPv6\n    "
 		    @"-b  --body=          "
 		    @"  Specify the file to send as body\n    "
 		    @"                     "
@@ -472,6 +476,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 {
 	OFString *outputPath;
 	const OFOptionsParserOption options[] = {
+		{ '4', nil, 0, &_forceIPv4, NULL },
+		{ '6', nil, 0, &_forceIPv6, NULL },
 		{ 'b', @"body",	1, NULL, NULL },
 		{ 'c', @"continue", 0, &_continue, NULL },
 		{ 'f', @"force", 0, &_force, NULL },
@@ -619,6 +625,19 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"exclusive!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
+	}
+
+	if (_forceIPv4 && _forceIPv6) {
+		[OFStdErr writeLine: OF_LOCALIZED(@"ipv4_xor_ipv6",
+		    @"%[prog]: -4 and -6 are mutually exclusive!",
+		    @"prog", [OFApplication programName])];
+		[OFApplication terminateWithStatus: 1];
+	} else if (_forceIPv4) {
+		_HTTPClient.allowsIPv6 = false;
+		_geminiClient.allowsIPv6 = false;
+	} else if (_forceIPv6) {
+		_HTTPClient.allowsIPv4 = false;
+		_geminiClient.allowsIPv4 = false;
 	}
 
 	if (_outputPath != nil && _detectFileName) {

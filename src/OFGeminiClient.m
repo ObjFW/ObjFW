@@ -141,7 +141,9 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 		_client->_streamToCancel = nil;
 
 		sock = [OFTCPSocket socket];
-		sock.allowsMPTCP = true;
+		sock.allowsIPv4 = _client.allowsIPv4;
+		sock.allowsIPv6 = _client.allowsIPv6;
+		sock.allowsMPTCP = _client.allowsMPTCP;
 
 		IRIPort = IRI.port;
 		if (IRIPort != nil)
@@ -531,7 +533,8 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 @end
 
 @implementation OFGeminiClient
-@synthesize delegate = _delegate;
+@synthesize delegate = _delegate, allowsIPv4 = _allowsIPv4;
+@synthesize allowsIPv6 = _allowsIPv6, allowsMPTCP = _allowsMPTCP;
 
 + (void)initialize
 {
@@ -543,6 +546,19 @@ defaultShouldFollow(OFIRI *fromIRI, OFIRI *toIRI)
 	    initWithCharactersInString: @" \t"];
 	nonWhitespaceCS = objc_retain(whitespaceCS.invertedSet);
 	objc_autoreleasePoolPop(pool);
+}
+
+- (instancetype)init
+{
+	self = [super init];
+
+	_allowsIPv4 = true;
+#ifdef OF_HAVE_IPV6
+	_allowsIPv6 = true;
+#endif
+	_allowsMPTCP = true;
+
+	return self;
 }
 
 + (instancetype)client

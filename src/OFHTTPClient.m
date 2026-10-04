@@ -895,7 +895,9 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 		[_client close];
 
 		sock = [OFTCPSocket socket];
-		sock.allowsMPTCP = true;
+		sock.allowsIPv4 = _client.allowsIPv4;
+		sock.allowsIPv6 = _client.allowsIPv6;
+		sock.allowsMPTCP = _client.allowsMPTCP;
 
 		if ([URI.scheme isEqual: @"https"])
 			port = 443;
@@ -1338,12 +1340,26 @@ defaultShouldFollow(OFHTTPRequestMethod method, unsigned short statusCode)
 @end
 
 @implementation OFHTTPClient
-@synthesize delegate = _delegate;
+@synthesize delegate = _delegate, allowsIPv4 = _allowsIPv4;
+@synthesize allowsIPv6 = _allowsIPv6, allowsMPTCP = _allowsMPTCP;
 @synthesize allowsInsecureRedirects = _allowsInsecureRedirects;
 
 + (instancetype)client
 {
 	return objc_autoreleaseReturnValue([[self alloc] init]);
+}
+
+- (instancetype)init
+{
+	self = [super init];
+
+	_allowsIPv4 = true;
+#ifdef OF_HAVE_IPV6
+	_allowsIPv6 = true;
+#endif
+	_allowsMPTCP = true;
+
+	return self;
 }
 
 - (void)dealloc

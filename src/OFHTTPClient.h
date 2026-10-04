@@ -175,12 +175,34 @@ OF_SUBCLASSING_RESTRICTED
 @public
 #endif
 	OFObject <OFHTTPClientDelegate> *_Nullable _delegate;
-	bool _allowsInsecureRedirects, _inProgress;
+	bool _allowsIPv4, _allowsIPv6, _allowsMPTCP, _allowsInsecureRedirects;
+	bool _inProgress;
 	OFStream *_Nullable _stream;
 	OFIRI *_Nullable _lastIRI;
 	bool _lastWasHEAD;
 	OFHTTPClientResponse *_Nullable _lastResponse;
 }
+
+/**
+ * @brief Whether the client allows IPv4.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsIPv4;
+
+/**
+ * @brief Whether the client allows IPv6.
+ *
+ * Defaults to true if supported.
+ */
+@property (nonatomic) bool allowsIPv6;
+
+/**
+ * @brief Whether the client allows MPTCP.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsMPTCP;
 
 /**
  * @brief The delegate of the HTTP client.

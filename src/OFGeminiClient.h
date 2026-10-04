@@ -117,9 +117,30 @@ OF_SUBCLASSING_RESTRICTED
 @public
 #endif
 	OFObject <OFGeminiClientDelegate> *_Nullable _delegate;
-	bool _inProgress;
+	bool _allowsIPv4, _allowsIPv6, _allowsMPTCP, _inProgress;
 	OFStream *_streamToCancel;
 }
+
+/**
+ * @brief Whether the client allows IPv4.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsIPv4;
+
+/**
+ * @brief Whether the client allows IPv6.
+ *
+ * Defaults to true if supported.
+ */
+@property (nonatomic) bool allowsIPv6;
+
+/**
+ * @brief Whether the client allows MPTCP.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsMPTCP;
 
 /**
  * @brief The delegate of the Gemini client.

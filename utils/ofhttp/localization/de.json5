@@ -11,6 +11,8 @@
     usage: "Benutzung: %[prog] -[cehHmoOPqv] iri1 [iri2 ...]",
     full_usage: [
         "Optionen:\n",
+        "    -4                     IPv4 erzwingen\n",
+        "    -6                     IPv6 erzwingen\n",
         "    -b  --body=            Angegebene Datei als Body übergeben\n",
         "                           (- für Standard-Eingabe)\n",
         "    -c  --continue         Download von existierender Datei ",
@@ -42,6 +44,7 @@
         "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
         "aus!"
     ],
+    ipv4_xor_ipv6: "%[prog]: -4 und -6 schließen sich gegenseitig aus!",
     output_xor_detect_filename: [
         "%[prog]: -o / --output und -O / --detect-filename schließen sich ",
         "gegenseitig aus!"
@@ -65,10 +68,10 @@
     no_tls_support: [
         "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
         "  Um via HTTPS oder Gemini runterzuladen müssen Sie entweder ObjFW ",
-	"mit\n",
-	"  TLS-Unterstützung kompilieren oder eine Bibliothek mittels ",
-	"„preload” laden,\n",
-	"  welche TLS-Support zu ObjFW hinzufügt!"
+        "mit\n",
+        "  TLS-Unterstützung kompilieren oder eine Bibliothek mittels ",
+        "„preload” laden,\n",
+        "  welche TLS-Support zu ObjFW hinzufügt!"
     ],
     download_failed_tls_handshake_failed: [
         "%[prog]: Fehler beim Download von <%[iri]>!\n",
