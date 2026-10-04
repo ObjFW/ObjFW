@@ -1253,10 +1253,9 @@ merge(OFString *base, OFString *path)
 	}
 
 	ret = [fileName substringFromIndex: pos + 1];
-	ret = objc_retain(ret.stringByRemovingPercentEncoding);
 
+	objc_retain(ret);
 	objc_autoreleasePoolPop(pool);
-
 	return objc_autoreleaseReturnValue(ret);
 }
 
