@@ -57,8 +57,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The host part of the IRI.
  *
- * @throw OFInvalidEncodingException The host is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The host is not properly percent-encoded
+ * @throw OFInvalidEncodingException The host is not valid UTF-8 after
  *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *host;
@@ -77,8 +77,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The user part of the IRI.
  *
- * @throw OFInvalidEncodingException The user is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The user is not properly percent-encoded
+ * @throw OFInvalidEncodingException The user is not valid UTF-8 after
  *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *user;
@@ -92,9 +92,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The password part of the IRI.
  *
- * @throw OFInvalidEncodingException The password is not properly
- *				     percent-encoded or is not valid UTF-8
- *				     after percent-decoding
+ * @throw OFInvalidFormatException The password is not properly percent-encoded
+ * @throw OFInvalidEncodingException The password is not valid UTF-8 after
+ *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *password;
 
@@ -107,8 +107,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The path part of the IRI.
  *
- * @throw OFInvalidEncodingException The path is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The path is not properly percent-encoded
+ * @throw OFInvalidEncodingException The path is not valid UTF-8 after
  *				     percent-decoding
  */
 @property (readonly, copy, nonatomic) OFString *path;
@@ -123,8 +123,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * The first component must always be `/` to designate the root.
  *
- * @throw OFInvalidEncodingException The path is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The path is not properly percent-encoded
+ * @throw OFInvalidEncodingException The path is not valid UTF-8 after
  *				     percent-decoding
  */
 @property (readonly, copy, nonatomic)
@@ -135,8 +135,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * Returns the empty string if the path is the root.
  *
- * @throw OFInvalidEncodingException The path is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The path is not properly percent-encoded
+ * @throw OFInvalidEncodingException The path is not valid UTF-8 after
  *				     percent-decoding
  */
 @property (readonly, copy, nonatomic) OFString *lastPathComponent;
@@ -144,8 +144,8 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The path extension of the IRI.
  *
- * @throw OFInvalidEncodingException The path is not properly percent-encoded
- *				     or is not valid UTF-8 after
+ * @throw OFInvalidFormatException The path is not properly percent-encoded
+ * @throw OFInvalidEncodingException The path is not valid UTF-8 after
  *				     percent-decoding
  */
 @property (readonly, copy, nonatomic) OFString *pathExtension;
@@ -153,9 +153,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The query part of the IRI.
  *
- * @throw OFInvalidEncodingException The query part is not properly
- *				     percent-encoded or is not valid UTF-8
- *				     after percent-decoding
+ * @throw OFInvalidFormatException The query is not properly percent-encoded
+ * @throw OFInvalidEncodingException The query is not valid UTF-8 after
+ *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
 
@@ -176,10 +176,9 @@ OF_ASSUME_NONNULL_BEGIN
  *         [OFPair pairWithFirstObject: @"key2" secondObject: @"value2"],
  *     ]
  *
- * @throw OFInvalidEncodingException The query part is not properly
- *				     percent-encoded or is not valid UTF-8
- *				     after percent-decoding
- * @throw OFInvalidFormatException The query part is not in the correct format
+ * @throw OFInvalidFormatException The query is not properly percent-encoded
+ * @throw OFInvalidEncodingException The query is not valid UTF-8 after
+ *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFArray OF_GENERIC(OFPair OF_GENERIC(OFString *, OFString *) *) *queryItems;
@@ -187,9 +186,9 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The fragment part of the IRI.
  *
- * @throw OFInvalidEncodingException The fragment part is not properly
- *				     percent-encoded or is not valid UTF-8
- *				     after percent-decoding
+ * @throw OFInvalidFormatException The fragment is not properly percent-encoded
+ * @throw OFInvalidEncodingException The fragment is not valid UTF-8 after
+ *				     percent-decoding
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
 
