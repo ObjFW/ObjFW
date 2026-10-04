@@ -118,6 +118,9 @@ static const OFRunLoopMode connectRunLoopMode =
 - (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
+#ifdef IPV6_V6ONLY
+	const int one = 1;
+#endif
 	const struct sctp_event_subscribe events = {
 		.sctp_data_io_event = 1
 	};
@@ -159,6 +162,20 @@ static const OFRunLoopMode connectRunLoopMode =
 
 		return false;
 	}
+
+#ifdef IPV6_V6ONLY
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
+			*errNo = _OFSocketErrNo();
+
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
+
+			return false;
+		}
+	}
+#endif
 
 	return true;
 }
@@ -367,6 +384,24 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
+
+#ifdef IPV6_V6ONLY
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
+			int errNo = _OFSocketErrNo();
+
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
+
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: errNo];
+		}
+	}
+#endif
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,
 	    address.length) != 0) {

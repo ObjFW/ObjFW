@@ -178,6 +178,9 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 - (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
+#ifdef IPV6_V6ONLY
+	static int one = 1;
+#endif
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
@@ -239,6 +242,20 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
+#ifdef IPV6_V6ONLY
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
+			*errNo = _OFSocketErrNo();
+
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
+
+			return false;
+		}
+	}
+#endif
+
 	return true;
 }
 
@@ -273,6 +290,9 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
 		    NULL, NULL) != 0) {
+#ifdef IPV6_V6ONLY
+			static int one = 1;
+#endif
 			int oldErrNo = _OFSocketErrNo(), newSock, flags;
 
 			if (oldErrNo != EPERM) {
@@ -292,6 +312,19 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 			if ((flags = fcntl(newSock, F_GETFD, 0)) != -1)
 				fcntl(newSock, F_SETFD, flags | FD_CLOEXEC);
 # endif
+
+#ifdef IPV6_V6ONLY
+			if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) ==
+			    flagAllowsIPv6) {
+				if (setsockopt(_socket, IPPROTO_IPV6,
+				    IPV6_V6ONLY, (char *)&one,
+				    (socklen_t)sizeof(one)) != 0) {
+					*errNo = _OFSocketErrNo();
+					closesocket(newSock);
+					return false;
+				}
+			}
+#endif
 
 			if (connect(newSock,
 			    (struct sockaddr *)&address->sockaddr,
@@ -559,6 +592,24 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
+
+#ifdef IPV6_V6ONLY
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
+			int errNo = _OFSocketErrNo();
+
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
+
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: errNo];
+		}
+	}
+#endif
 
 #if defined(OF_HPUX) || defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (port != 0) {

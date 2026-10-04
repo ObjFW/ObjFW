@@ -64,6 +64,9 @@ enum {
 
 - (void)of_bindToAddress: (OFSocketAddress *)address extraType: (int)extraType
 {
+#ifdef IPV6_V6ONLY
+	const int one = 1;
+#endif
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
 #endif
@@ -84,9 +87,27 @@ enum {
 	_canBlock = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-	/* {} needed to avoid warning with Clang 10 if next #if is false. */
+	/* {} needed to avoid warning with Clang 10 if next 2 #if is false. */
 	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1) {
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+	}
+#endif
+
+#ifdef IPV6_V6ONLY
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
+			int errNo = _OFSocketErrNo();
+
+			closesocket(_socket);
+			_socket = OFInvalidSocketHandle;
+
+			@throw [OFBindIPSocketFailedException
+			    exceptionWithHost: OFSocketAddressString(address)
+					 port: OFSocketAddressIPPort(address)
+				       socket: self
+					errNo: errNo];
+		}
 	}
 #endif
 
