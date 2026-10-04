@@ -49,6 +49,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFSetOptionFailedException.h"
@@ -60,9 +61,11 @@
 #endif
 
 enum {
-	flagAllowsMPTCP = 1,
-	flagMapIPv4 = 2,
-	flagUseConnectX = 4
+	flagAllowsIPv4  = 0x01,
+	flagAllowsIPv6  = 0x02,
+	flagAllowsMPTCP = 0x04,
+	flagMapIPv4     = 0x08,
+	flagUseConnectX = 0x10
 };
 
 static const OFRunLoopMode connectRunLoopMode =
@@ -151,6 +154,10 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	self = [super init];
 
 	@try {
+		_flags = flagAllowsIPv4;
+#ifdef OF_HAVE_IPV6
+		_flags |= flagAllowsIPv6;
+#endif
 		_SOCKS5Host = [defaultSOCKS5Host copy];
 		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
@@ -178,8 +185,17 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
+	if (address->family == OFSocketAddressFamilyIPv4) {
+		if (!(_flags & flagAllowsIPv4))
+			@throw [OFInvalidArgumentException exception];
+	} else if (address->family == OFSocketAddressFamilyIPv6) {
+		if (!(_flags & flagAllowsIPv6))
+			@throw [OFInvalidArgumentException exception];
+	} else
+		@throw [OFInvalidArgumentException exception];
+
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
-	if (_flags & flagAllowsMPTCP) {
+	if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv6)) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
 		 * IPv6 can both be used for a single connection.
@@ -192,6 +208,10 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 			_flags |= flagMapIPv4;
 		else
 			_flags &= ~flagMapIPv4;
+	} else if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv4)) {
+		_socket = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
+		_flags &= ~flagMapIPv4;
 	}
 #elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
 	if (_flags & flagAllowsMPTCP) {
@@ -348,6 +368,16 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate;
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	if (_SOCKS5Host != nil) {
 		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -367,6 +397,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		  initWithSocket: self
 			    host: host
 			    port: port
+		   addressFamily: addressFamily
 			delegate: delegate
 			 handler: NULL
 	    ]) startWithRunLoopMode: runLoopMode];
@@ -424,6 +455,16 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = nil;
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	if (_SOCKS5Host != nil) {
 		delegate = objc_autorelease([[OFTCPSocketSOCKS5Connector alloc]
 		    initWithSocket: self
@@ -439,6 +480,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		  initWithSocket: self
 			    host: host
 			    port: port
+		   addressFamily: addressFamily
 			delegate: delegate
 			 handler: (delegate == nil ? handler : NULL)])
 	    startWithRunLoopMode: runLoopMode];
@@ -464,15 +506,25 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OFSocketAddressFamilyAny];
+		      addressFamily: addressFamily];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
 
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
-	if (_flags & flagAllowsMPTCP) {
+	if ((_flags & flagAllowsMPTCP) & (_flags & flagAllowsIPv6)) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
 		 * IPv6 can both be used for a single connection.
@@ -483,7 +535,9 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		if (_socket != OFInvalidSocketHandle &&
 		    address.family == OFSocketAddressFamilyIPv4)
 			address = mapIPv4(&address);
-	}
+	} else if ((_flags & flagAllowsMPTCP) & (_flags & flagAllowsIPv4))
+		_socket = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC,
+		    IPPROTO_MPTCP);
 #endif
 
 	if (_socket == OFInvalidSocketHandle)
@@ -597,14 +651,16 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	return address;
 }
 
-#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
 - (instancetype)accept
 {
 	OFTCPSocket *sock = [super accept];
+	sock.allowsIPv4 = self.allowsIPv4;
+	sock.allowsIPv6 = self.allowsIPv6;
+#if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
 	sock.allowsMPTCP = self.allowsMPTCP;
+#endif
 	return sock;
 }
-#endif
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 - (void)setSendsKeepAlives: (bool)sendsKeepAlives
@@ -659,6 +715,32 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	return !v;
 }
 #endif
+
+- (void)setAllowsIPv4: (bool)allowsIPv4
+{
+	if (allowsIPv4)
+		_flags |= flagAllowsIPv4;
+	else
+		_flags &= ~flagAllowsIPv4;
+}
+
+- (bool)allowsIPv4
+{
+	return (_flags & flagAllowsIPv4);
+}
+
+- (void)setAllowsIPv6: (bool)allowsIPv6
+{
+	if (allowsIPv6)
+		_flags |= flagAllowsIPv6;
+	else
+		_flags &= ~flagAllowsIPv6;
+}
+
+- (bool)allowsIPv6
+{
+	return (_flags & flagAllowsIPv6);
+}
 
 - (void)setAllowsMPTCP: (bool)allowsMPTCP
 {

@@ -178,7 +178,8 @@ typedef OFData *_Nullable (^OFSCTPSocketDataSentHandler)(OFSCTPSocket *socket,
  */
 @interface OFSCTPSocket: OFSequencedPacketSocket
 {
-	OF_RESERVE_IVARS(OFSCTPSocket, 4)
+	uintptr_t _flags;	/* Change to a smaller type on ABI bump */
+	OF_RESERVE_IVARS(OFSCTPSocket, 3)
 }
 
 /**
@@ -189,6 +190,20 @@ typedef OFData *_Nullable (^OFSCTPSocketDataSentHandler)(OFSCTPSocket *socket,
  * @throw OFSetOptionFailedException The option could not be set
  */
 @property (nonatomic) bool canDelaySendingMessages;
+
+/**
+ * @brief Whether the socket allows IPv4.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsIPv4;
+
+/**
+ * @brief Whether the socket allows IPv6.
+ *
+ * Defaults to true if supported.
+ */
+@property (nonatomic) bool allowsIPv6;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.

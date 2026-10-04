@@ -124,6 +124,20 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
 #endif
 
 /**
+ * @brief Whether the socket allows IPv4.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsIPv4;
+
+/**
+ * @brief Whether the socket allows IPv6.
+ *
+ * Defaults to true if supported.
+ */
+@property (nonatomic) bool allowsIPv6;
+
+/**
  * @brief Whether the socket allows MPTCP.
  *
  * If you want to use MPTCP, set this to true before connecting or binding.

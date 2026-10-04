@@ -37,6 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 	id _socket;
 	OFString *_host;
 	uint16_t _port;
+	OFSocketAddressFamily _addressFamily;
 	id _Nullable _delegate;
 	id _Nullable _handler;
 	id _Nullable _exception;
@@ -47,6 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSocket: (id)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
+		 addressFamily: (OFSocketAddressFamily)addressFamily
 		      delegate: (nullable id)delegate
 		       handler: (nullable id)handler;
 - (void)didConnect;

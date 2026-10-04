@@ -48,6 +48,7 @@
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
 #import "OFGetOptionFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -57,6 +58,11 @@
 #ifdef OF_SOLARIS
 # define SCTP_UNORDERED MSG_UNORDERED
 #endif
+
+enum {
+	flagAllowsIPv4  = 0x01,
+	flagAllowsIPv6  = 0x02
+};
 
 const OFSCTPMessageInfoKey OFSCTPStreamID = @"OFSCTPStreamID";
 const OFSCTPMessageInfoKey OFSCTPPPID = @"OFSCTPPPID";
@@ -97,6 +103,18 @@ static const OFRunLoopMode connectRunLoopMode =
 @implementation OFSCTPSocket
 @dynamic delegate;
 
+- (instancetype)init
+{
+	self = [super init];
+
+	_flags = flagAllowsIPv4;
+#ifdef OF_HAVE_IPV6
+	_flags |= flagAllowsIPv6;
+#endif
+
+	return self;
+}
+
 - (bool)of_createSocketForAddress: (const OFSocketAddress *)address
 			    errNo: (int *)errNo
 {
@@ -109,6 +127,15 @@ static const OFRunLoopMode connectRunLoopMode =
 
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
+
+	if (address->family == OFSocketAddressFamilyIPv4) {
+		if (!(_flags & flagAllowsIPv4))
+			@throw [OFInvalidArgumentException exception];
+	} else if (address->family == OFSocketAddressFamilyIPv6) {
+		if (!(_flags & flagAllowsIPv6))
+			@throw [OFInvalidArgumentException exception];
+	} else
+		@throw [OFInvalidArgumentException exception];
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
@@ -157,6 +184,32 @@ static const OFRunLoopMode connectRunLoopMode =
 	_socket = OFInvalidSocketHandle;
 }
 
+- (void)setAllowsIPv4: (bool)allowsIPv4
+{
+	if (allowsIPv4)
+		_flags |= flagAllowsIPv4;
+	else
+		_flags &= ~flagAllowsIPv4;
+}
+
+- (bool)allowsIPv4
+{
+	return (_flags & flagAllowsIPv4);
+}
+
+- (void)setAllowsIPv6: (bool)allowsIPv6
+{
+	if (allowsIPv6)
+		_flags |= flagAllowsIPv6;
+	else
+		_flags &= ~flagAllowsIPv6;
+}
+
+- (bool)allowsIPv6
+{
+	return (_flags & flagAllowsIPv6);
+}
+
 - (void)connectToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -202,10 +255,21 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 	    initWithSocket: self
 		      host: host
 		      port: port
+	     addressFamily: addressFamily
 		  delegate: _delegate
 		   handler: NULL]) startWithRunLoopMode: runLoopMode];
 
@@ -233,10 +297,21 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	[objc_autorelease([[OFAsyncIPSocketConnector alloc]
 	    initWithSocket: self
 		      host: host
 		      port: port
+	     addressFamily: addressFamily
 		  delegate: nil
 		   handler: handler]) startWithRunLoopMode: runLoopMode];
 
@@ -257,9 +332,19 @@ static const OFRunLoopMode connectRunLoopMode =
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OFSocketAddressFamilyAny];
+		      addressFamily: addressFamily];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);
@@ -349,6 +434,9 @@ static const OFRunLoopMode connectRunLoopMode =
 		@throw [OFAcceptSocketFailedException
 		    exceptionWithSocket: self
 				  errNo: _OFSocketErrNo()];
+
+	accepted.allowsIPv4 = self.allowsIPv4;
+	accepted.allowsIPv6 = self.allowsIPv6;
 
 	return accepted;
 }

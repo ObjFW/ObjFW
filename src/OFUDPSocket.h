@@ -56,8 +56,23 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_WII
 	uint16_t _port;
 #endif
-	OF_RESERVE_IVARS(OFUDPSocket, 4)
+	uintptr_t _flags;	/* Change to a smaller type on ABI bump */
+	OF_RESERVE_IVARS(OFUDPSocket, 3)
 }
+
+/**
+ * @brief Whether the socket allows IPv4.
+ *
+ * Defaults to true.
+ */
+@property (nonatomic) bool allowsIPv4;
+
+/**
+ * @brief Whether the socket allows IPv6.
+ *
+ * Defaults to true if supported.
+ */
+@property (nonatomic) bool allowsIPv6;
 
 /**
  * @brief The delegate for asynchronous operations on the socket.

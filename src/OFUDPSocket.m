@@ -40,12 +40,29 @@
 
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPSocketFailedException.h"
+#import "OFInvalidArgumentException.h"
+
+enum {
+	flagAllowsIPv4  = 0x01,
+	flagAllowsIPv6  = 0x02
+};
 
 @implementation OFUDPSocket
 @dynamic delegate;
 
-- (void)of_bindToAddress: (OFSocketAddress *)address
-	       extraType: (int)extraType
+- (instancetype)init
+{
+	self = [super init];
+
+	_flags = flagAllowsIPv4;
+#ifdef OF_HAVE_IPV6
+	_flags |= flagAllowsIPv6;
+#endif
+
+	return self;
+}
+
+- (void)of_bindToAddress: (OFSocketAddress *)address extraType: (int)extraType
 {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
@@ -165,6 +182,32 @@
 #endif
 }
 
+- (void)setAllowsIPv4: (bool)allowsIPv4
+{
+	if (allowsIPv4)
+		_flags |= flagAllowsIPv4;
+	else
+		_flags &= ~flagAllowsIPv4;
+}
+
+- (bool)allowsIPv4
+{
+	return (_flags & flagAllowsIPv4);
+}
+
+- (void)setAllowsIPv6: (bool)allowsIPv6
+{
+	if (allowsIPv6)
+		_flags |= flagAllowsIPv6;
+	else
+		_flags &= ~flagAllowsIPv6;
+}
+
+- (bool)allowsIPv6
+{
+	return (_flags & flagAllowsIPv6);
+}
+
 - (OFSocketAddress)bindToHost: (OFString *)host port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -174,9 +217,19 @@
 	if (_socket != OFInvalidSocketHandle)
 		@throw [OFAlreadyOpenException exceptionWithObject: self];
 
+	OFSocketAddressFamily addressFamily;
+	if ((_flags & flagAllowsIPv4) && (_flags & flagAllowsIPv6))
+		addressFamily = OFSocketAddressFamilyAny;
+	else if (_flags & flagAllowsIPv4)
+		addressFamily = OFSocketAddressFamilyIPv4;
+	else if (_flags & flagAllowsIPv6)
+		addressFamily = OFSocketAddressFamilyIPv6;
+	else
+		@throw [OFInvalidArgumentException exception];
+
 	socketAddresses = [[OFThread DNSResolver]
 	    resolveAddressesForHost: host
-		      addressFamily: OFSocketAddressFamilyAny];
+		      addressFamily: addressFamily];
 
 	address = *(OFSocketAddress *)[socketAddresses itemAtIndex: 0];
 	OFSocketAddressSetIPPort(&address, port);

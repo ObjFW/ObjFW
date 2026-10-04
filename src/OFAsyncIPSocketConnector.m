@@ -37,6 +37,7 @@
 - (instancetype)initWithSocket: (id)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
+		 addressFamily: (OFSocketAddressFamily)addressFamily
 		      delegate: (id)delegate
 		       handler: (id)handler
 {
@@ -46,6 +47,7 @@
 		_socket = objc_retain(sock);
 		_host = [host copy];
 		_port = port;
+		_addressFamily = addressFamily;
 		_delegate = objc_retain(delegate);
 		_handler = [handler copy];
 	} @catch (id e) {
@@ -277,7 +279,7 @@
 
 	[[OFThread DNSResolver]
 	    asyncResolveAddressesForHost: _host
-			   addressFamily: OFSocketAddressFamilyAny
+			   addressFamily: _addressFamily
 			     runLoopMode: runLoopMode
 				delegate: self];
 }
