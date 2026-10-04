@@ -524,7 +524,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	OFSocketAddressSetIPPort(&address, port);
 
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
-	if ((_flags & flagAllowsMPTCP) & (_flags & flagAllowsIPv6)) {
+	if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv6)) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
 		 * IPv6 can both be used for a single connection.
@@ -535,7 +535,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		if (_socket != OFInvalidSocketHandle &&
 		    address.family == OFSocketAddressFamilyIPv4)
 			address = mapIPv4(&address);
-	} else if ((_flags & flagAllowsMPTCP) & (_flags & flagAllowsIPv4))
+	} else if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv4))
 		_socket = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_MPTCP);
 #endif
