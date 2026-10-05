@@ -244,17 +244,9 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 #ifdef IPV6_V6ONLY
 	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6 | flagUseConnectX)) ==
-	    flagAllowsIPv6) {
-		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
-		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
-			*errNo = _OFSocketErrNo();
-
-			closesocket(_socket);
-			_socket = OFInvalidSocketHandle;
-
-			return false;
-		}
-	}
+	    flagAllowsIPv6)
+		setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&one,
+		    (socklen_t)sizeof(one));
 #endif
 
 	return true;
@@ -580,20 +572,10 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 	    (char *)&one, (socklen_t)sizeof(one));
 
 #ifdef IPV6_V6ONLY
+	/* {} needed to avoid warning with Clang 10 if next #if is false. */
 	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
-		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
-		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
-			int errNo = _OFSocketErrNo();
-
-			closesocket(_socket);
-			_socket = OFInvalidSocketHandle;
-
-			@throw [OFBindIPSocketFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self
-					errNo: errNo];
-		}
+		setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
+		    (char *)&one, (socklen_t)sizeof(one));
 	}
 #endif
 

@@ -164,17 +164,9 @@ static const OFRunLoopMode connectRunLoopMode =
 	}
 
 #ifdef IPV6_V6ONLY
-	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
-		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
-		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
-			*errNo = _OFSocketErrNo();
-
-			closesocket(_socket);
-			_socket = OFInvalidSocketHandle;
-
-			return false;
-		}
-	}
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6)
+		setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&one,
+		    (socklen_t)sizeof(one));
 #endif
 
 	return true;
@@ -386,21 +378,9 @@ static const OFRunLoopMode connectRunLoopMode =
 	    (char *)&one, (socklen_t)sizeof(one));
 
 #ifdef IPV6_V6ONLY
-	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
-		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
-		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
-			int errNo = _OFSocketErrNo();
-
-			closesocket(_socket);
-			_socket = OFInvalidSocketHandle;
-
-			@throw [OFBindIPSocketFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self
-					errNo: errNo];
-		}
-	}
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6)
+		setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&one,
+		    (socklen_t)sizeof(one));
 #endif
 
 	if (bind(_socket, (struct sockaddr *)&address.sockaddr,

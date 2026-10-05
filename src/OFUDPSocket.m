@@ -94,20 +94,10 @@ enum {
 #endif
 
 #ifdef IPV6_V6ONLY
+	/* {} needed to avoid warning with Clang 10 if next #if is false. */
 	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
-		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
-		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
-			int errNo = _OFSocketErrNo();
-
-			closesocket(_socket);
-			_socket = OFInvalidSocketHandle;
-
-			@throw [OFBindIPSocketFailedException
-			    exceptionWithHost: OFSocketAddressString(address)
-					 port: OFSocketAddressIPPort(address)
-				       socket: self
-					errNo: errNo];
-		}
+		setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&one,
+		    (socklen_t)sizeof(one));
 	}
 #endif
 
