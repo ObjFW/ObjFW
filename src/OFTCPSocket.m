@@ -243,7 +243,8 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 #endif
 
 #ifdef IPV6_V6ONLY
-	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6) {
+	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6 | flagUseConnectX)) ==
+	    flagAllowsIPv6) {
 		if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY,
 		    (char *)&one, (socklen_t)sizeof(one)) != 0) {
 			*errNo = _OFSocketErrNo();
@@ -290,9 +291,6 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 		if (connectx(_socket, &endpoints, SAE_ASSOCID_ANY, 0, NULL, 0,
 		    NULL, NULL) != 0) {
-#ifdef IPV6_V6ONLY
-			static int one = 1;
-#endif
 			int oldErrNo = _OFSocketErrNo(), newSock, flags;
 
 			if (oldErrNo != EPERM) {
@@ -313,18 +311,6 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 				fcntl(newSock, F_SETFD, flags | FD_CLOEXEC);
 # endif
 
-#ifdef IPV6_V6ONLY
-			if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) ==
-			    flagAllowsIPv6) {
-				if (setsockopt(_socket, IPPROTO_IPV6,
-				    IPV6_V6ONLY, (char *)&one,
-				    (socklen_t)sizeof(one)) != 0) {
-					*errNo = _OFSocketErrNo();
-					closesocket(newSock);
-					return false;
-				}
-			}
-#endif
 
 			if (connect(newSock,
 			    (struct sockaddr *)&address->sockaddr,
