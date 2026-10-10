@@ -98,7 +98,7 @@
 	    &len) != 0)
 		return _OFSocketErrNo();
 
-	return errNo;
+	return _OFSocketNormalizeErrNo(errNo);
 }
 #endif
 

@@ -232,10 +232,10 @@ _OFSocketDeinit(void)
 #endif
 
 int
-_OFSocketErrNo(void)
+_OFSocketNormalizeErrNo(int errNo)
 {
-#if defined(OF_WINDOWS)
-	switch (WSAGetLastError()) {
+#ifdef OF_WINDOWS
+	switch (errNo) {
 	case WSAEACCES:
 		return EACCES;
 	case WSAEADDRINUSE:
@@ -325,10 +325,20 @@ _OFSocketErrNo(void)
 	}
 
 	return 0;
-#elif defined(OF_AMIGAOS)
-	return Errno();
 #else
-	return errno;
+	return errNo;
+#endif
+}
+
+int
+_OFSocketErrNo(void)
+{
+#if defined(OF_WINDOWS)
+	return _OFSocketNormalizeErrNo(WSAGetLastError());
+#elif defined(OF_AMIGAOS)
+	return _OFSocketNormalizeErrNo(Errno());
+#else
+	return _OFSocketNormalizeErrNo(errno);
 #endif
 }
 

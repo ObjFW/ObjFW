@@ -107,6 +107,7 @@ extern bool _OFSocketInit(void) OF_VISIBILITY_INTERNAL;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
 extern void _OFSocketDeinit(void) OF_VISIBILITY_INTERNAL;
 #endif
+extern int _OFSocketNormalizeErrNo(int errNo) OF_VISIBILITY_INTERNAL;
 extern int _OFSocketErrNo(void) OF_VISIBILITY_INTERNAL;
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
