@@ -27,6 +27,10 @@
 #include <errno.h>
 #include <string.h>
 
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
 #import "OFStreamSocket.h"
 #import "OFStreamSocket+Private.h"
 #import "OFRunLoop.h"

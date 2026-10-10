@@ -19,11 +19,11 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
-
-#include <errno.h>
 
 #import "OFUNIXDatagramSocket.h"
 #import "OFSocket.h"

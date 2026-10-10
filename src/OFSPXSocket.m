@@ -21,6 +21,10 @@
 
 #include <errno.h>
 
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
 #import "OFSPXSocket.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
