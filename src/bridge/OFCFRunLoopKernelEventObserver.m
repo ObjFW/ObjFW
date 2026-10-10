@@ -116,10 +116,20 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 	    [observer->_delegate respondsToSelector:
 	    @selector(objectIsReadyForReading:)])
 		[observer->_delegate objectIsReadyForReading: object];
-	if ((type & kCFSocketWriteCallBack) &&
-	    [observer->_delegate respondsToSelector:
-	    @selector(objectIsReadyForWriting:)])
-		[observer->_delegate objectIsReadyForWriting: object];
+
+	if (type & kCFSocketWriteCallBack) {
+		if ([observer->_connectObjects containsObject: object]) {
+			if ([observer->_delegate respondsToSelector:
+			    @selector(objectIsReadyForConnecting:)])
+				[observer->_delegate
+				    objectIsReadyForConnecting: object];
+		} else {
+			if ([observer->_delegate respondsToSelector:
+			    @selector(objectIsReadyForWriting:)])
+				[observer->_delegate
+				    objectIsReadyForWriting: object];
+		}
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -293,9 +303,21 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	if (![object isKindOfClass: [OFDatagramSocket class]])
+	if (![object isKindOfClass: [OFDatagramSocket class]] &&
+	    ![_connectObjects containsObject: (id)object])
 		[self of_updateObject: object
 		       fileDescriptor: [object fileDescriptorForWriting]
+			     addTypes: kCFSocketWriteCallBack
+			  removeTypes: 0];
+
+	[super addObjectForWriting: object];
+}
+
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		[self of_updateObject: object
+		       fileDescriptor: [object fileDescriptorForConnecting]
 			     addTypes: kCFSocketWriteCallBack
 			  removeTypes: 0];
 
@@ -314,9 +336,21 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 
 - (void)removeObjectForWriting: (id< OFReadyForWritingObserving>)object
 {
-	if (![object isKindOfClass: [OFDatagramSocket class]])
+	if (![object isKindOfClass: [OFDatagramSocket class]] &&
+	    ![_connectObjects containsObject: (id)object])
 		[self of_updateObject: object
 		       fileDescriptor: [object fileDescriptorForWriting]
+			     addTypes: 0
+			  removeTypes: kCFSocketWriteCallBack];
+
+	[super removeObjectForWriting: object];
+}
+
+- (void)removeObjectForConnecting: (id< OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		[self of_updateObject: object
+		       fileDescriptor: [object fileDescriptorForConnecting]
 			     addTypes: 0
 			  removeTypes: kCFSocketWriteCallBack];
 
