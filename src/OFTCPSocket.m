@@ -584,8 +584,10 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
+#ifndef OF_WINDOWS
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
+#endif
 
 #ifdef IPV6_V6ONLY
 	/* {} needed to avoid warning with Clang 10 if next #if is false. */

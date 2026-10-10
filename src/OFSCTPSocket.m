@@ -389,8 +389,10 @@ static const OFRunLoopMode connectRunLoopMode =
 		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
+#ifndef OF_WINDOWS
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&one, (socklen_t)sizeof(one));
+#endif
 
 #ifdef IPV6_V6ONLY
 	if ((_flags & (flagAllowsIPv4 | flagAllowsIPv6)) == flagAllowsIPv6)
