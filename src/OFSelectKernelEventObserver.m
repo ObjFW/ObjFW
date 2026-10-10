@@ -33,7 +33,7 @@
 #include <sys/time.h>
 
 #import "OFSelectKernelEventObserver.h"
-#import "OFArray.h"
+#import "OFSet.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
@@ -136,14 +136,33 @@
 	[super addObjectForWriting: object];
 }
 
-#ifdef OF_WINDOWS
-- (void)of_addObjectForConnecting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
 {
-	[self addObjectForWriting: object];
+	int fd = object.fileDescriptorForConnecting;
 
-	FD_SET((OFSocketHandle)object.fileDescriptorForWriting, &_exceptFDs);
-}
+	if (fd < 0)
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
+
+	if (fd > INT_MAX - 1)
+		@throw [OFOutOfRangeException exception];
+
+#ifndef OF_WINDOWS
+	if (fd >= (int)FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
 #endif
+
+	if (fd > _maxFD)
+		_maxFD = fd;
+
+	FD_SET((OFSocketHandle)fd, &_writeFDs);
+#ifdef OF_WINDOWS
+	FD_SET((OFSocketHandle)fd, &_exceptFDs);
+#endif
+
+	[super addObjectForConnecting: object];
+}
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
@@ -183,19 +202,37 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((OFSocketHandle)fd, &_writeFDs);
+	if (![_connectObjects containsObject: (id)object])
+		FD_CLR((OFSocketHandle)fd, &_writeFDs);
 
 	[super removeObjectForWriting: object];
 }
 
-#ifdef OF_WINDOWS
-- (void)of_removeObjectForConnecting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object
 {
-	[self removeObjectForWriting: object];
+	/* TODO: Adjust _maxFD */
 
-	FD_CLR((OFSocketHandle)object.fileDescriptorForWriting, &_exceptFDs);
-}
+	int fd = object.fileDescriptorForConnecting;
+
+	if (fd < 0)
+		@throw [OFObserveKernelEventsFailedException
+		    exceptionWithObserver: self
+				    errNo: EBADF];
+
+
+#ifndef OF_WINDOWS
+	if (fd >= (int)FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
 #endif
+
+	if (![_writeObjects containsObject: (id)object])
+		FD_CLR((OFSocketHandle)fd, &_writeFDs);
+#ifdef OF_WINDOWS
+	FD_CLR((OFSocketHandle)fd, &_exceptFDs);
+#endif
+
+	[super removeObjectForConnecting: object];
+}
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
@@ -312,17 +349,31 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 
-#ifdef OF_WINDOWS
-		if (FD_ISSET((OFSocketHandle)fd, &exceptFDs) &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForWriting:)])
-			[_delegate objectIsReadyForWriting: object];
-		else
-#endif
 		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
 			[_delegate objectIsReadyForWriting: object];
+
+		objc_autoreleasePoolPop(pool2);
+	}
+
+	for (id <OFReadyForConnectingObserving> object in
+	    objc_autorelease([_connectObjects copy])) {
+		void *pool2 = objc_autoreleasePoolPush();
+		int fd = object.fileDescriptorForConnecting;
+
+#ifdef OF_WINDOWS
+		if ((FD_ISSET((OFSocketHandle)fd, &writeFDs) ||
+		    FD_ISSET((OFSocketHandle)fd, &exceptFDs)) &&
+		    [_delegate respondsToSelector:
+		    @selector(objectIsReadyForConnecting:)])
+			[_delegate objectIsReadyForConnecting: object];
+#else
+		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
+		    [_delegate respondsToSelector:
+		    @selector(objectIsReadyForConnecting:)])
+			[_delegate objectIsReadyForConnecting: object];
+#endif
 
 		objc_autoreleasePoolPop(pool2);
 	}

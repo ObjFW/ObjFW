@@ -193,6 +193,21 @@ static const OFRunLoopMode connectRunLoopMode =
 	_socket = OFInvalidSocketHandle;
 }
 
+- (int)fileDescriptorForConnecting
+{
+#ifndef OF_WINDOWS
+	return _socket;
+#else
+	if (_socket == OFInvalidSocketHandle)
+		return -1;
+
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
+}
+
 - (void)setAllowsIPv4: (bool)allowsIPv4
 {
 	if (allowsIPv4)

@@ -52,6 +52,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
@@ -334,6 +335,21 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 {
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
+}
+
+- (int)fileDescriptorForConnecting
+{
+#ifndef OF_WINDOWS
+	return _socket;
+#else
+	if (_socket == OFInvalidSocketHandle)
+		return -1;
+
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (void)connectToHost: (OFString *)host port: (uint16_t)port

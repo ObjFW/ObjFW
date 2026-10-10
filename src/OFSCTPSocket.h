@@ -176,7 +176,7 @@ typedef OFData *_Nullable (^OFSCTPSocketDataSentHandler)(OFSCTPSocket *socket,
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
  */
-@interface OFSCTPSocket: OFSequencedPacketSocket
+@interface OFSCTPSocket: OFSequencedPacketSocket <OFReadyForConnectingObserving>
 {
 	uintptr_t _flags;	/* Change to a smaller type on ABI bump */
 	OF_RESERVE_IVARS(OFSCTPSocket, 3)

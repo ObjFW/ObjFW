@@ -29,9 +29,9 @@
 #include <sys/epoll.h>
 
 #import "OFEpollKernelEventObserver.h"
-#import "OFArray.h"
 #import "OFMapTable.h"
 #import "OFNull.h"
+#import "OFSet.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveKernelEventsFailedException.h"
@@ -161,11 +161,22 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self of_addObject: object
-	    fileDescriptor: object.fileDescriptorForWriting
-		    events: EPOLLOUT];
+	if (![_connectObjects containsObject: (id)object])
+		[self of_addObject: object
+		    fileDescriptor: object.fileDescriptorForWriting
+			    events: EPOLLOUT];
 
 	[super addObjectForWriting: object];
+}
+
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		[self of_addObject: object
+		    fileDescriptor: object.fileDescriptorForConnecting
+			    events: EPOLLOUT];
+
+	[super addObjectForConnecting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -179,11 +190,22 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self of_removeObject: object
-	       fileDescriptor: object.fileDescriptorForWriting
-		       events: EPOLLOUT];
+	if (![_connectObjects containsObject: (id)object])
+		[self of_removeObject: object
+		       fileDescriptor: object.fileDescriptorForWriting
+			       events: EPOLLOUT];
 
 	[super removeObjectForWriting: object];
+}
+
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		[self of_removeObject: object
+		       fileDescriptor: object.fileDescriptorForConnecting
+			       events: EPOLLOUT];
+
+	[super removeObjectForConnecting: object];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
@@ -236,11 +258,19 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 		if (eventList[i].events & EPOLLOUT) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = eventList[i].data.ptr;
 
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForWriting:)])
-				[_delegate objectIsReadyForWriting:
-				    eventList[i].data.ptr];
+			if ([_connectObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForConnecting:)])
+					[_delegate
+					    objectIsReadyForConnecting: object];
+			} else {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForWriting: object];
+			}
 
 			objc_autoreleasePoolPop(pool2);
 		}

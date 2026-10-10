@@ -29,6 +29,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFNull.h"
+#import "OFSet.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 
@@ -133,9 +134,20 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	addObject(self, object, object.fileDescriptorForWriting, POLLOUT);
+	if (![_connectObjects containsObject: (id)object])
+		addObject(self, object, object.fileDescriptorForWriting,
+		    POLLOUT);
 
 	[super addObjectForWriting: object];
+}
+
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		addObject(self, object, object.fileDescriptorForConnecting,
+		    POLLOUT);
+
+	[super addObjectForConnecting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -147,9 +159,20 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	removeObject(self, object, object.fileDescriptorForWriting, POLLOUT);
+	if (![_connectObjects containsObject: (id)object])
+		removeObject(self, object, object.fileDescriptorForWriting,
+		    POLLOUT);
 
 	[super removeObjectForWriting: object];
+}
+
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object])
+		removeObject(self, object, object.fileDescriptorForConnecting,
+		    POLLOUT);
+
+	[super removeObjectForConnecting: object];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
@@ -214,11 +237,19 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 
 		if (FDs[i].revents & (POLLOUT | POLLHUP)) {
 			void *pool2 = objc_autoreleasePoolPush();
+			id object = [objects objectAtIndex: i];
 
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForWriting:)])
-				[_delegate objectIsReadyForWriting:
-				    [objects objectAtIndex: i]];
+			if ([_connectObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForConnecting: object];
+			} else {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForWriting: object];
+			}
 
 			objc_autoreleasePoolPop(pool2);
 		}

@@ -82,7 +82,7 @@ typedef void (^OFTCPSocketConnectedHandler)(OFTCPSocket *socket,
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.
  */
-@interface OFTCPSocket: OFStreamSocket
+@interface OFTCPSocket: OFStreamSocket <OFReadyForConnectingObserving>
 {
 	OFString *_Nullable _SOCKS5Host;
 	uint16_t _SOCKS5Port;

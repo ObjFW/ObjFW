@@ -22,8 +22,6 @@
 #include <errno.h>
 
 #import "OFKernelEventObserver.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
 #ifdef HAVE_EPOLL
@@ -38,6 +36,7 @@
 #ifdef HAVE_SELECT
 # import "OFSelectKernelEventObserver.h"
 #endif
+#import "OFSet.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
 #import "OFStream.h"
@@ -109,8 +108,9 @@
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		_readObjects = [[OFMutableArray alloc] init];
-		_writeObjects = [[OFMutableArray alloc] init];
+		_readObjects = [[OFMutableSet alloc] init];
+		_writeObjects = [[OFMutableSet alloc] init];
+		_connectObjects = [[OFMutableSet alloc] init];
 
 #if defined(OF_HAVE_PIPE) && !defined(OF_AMIGAOS)
 		if (pipe(_cancelFD))
@@ -185,6 +185,7 @@
 
 	objc_release(_readObjects);
 	objc_release(_writeObjects);
+	objc_release(_connectObjects);
 
 	[super dealloc];
 }
@@ -199,24 +200,24 @@
 	[_writeObjects addObject: object];
 }
 
-- (void)of_addObjectForConnecting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
 {
-	[self addObjectForWriting: object];
+	[_connectObjects addObject: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	[_readObjects removeObjectIdenticalTo: object];
+	[_readObjects removeObject: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[_writeObjects removeObjectIdenticalTo: object];
+	[_writeObjects removeObject: object];
 }
 
-- (void)of_removeObjectForConnecting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object
 {
-	[self removeObjectForWriting: object];
+	[_connectObjects removeObject: object];
 }
 
 - (bool)processReadBuffers

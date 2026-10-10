@@ -28,7 +28,6 @@
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
-# import "OFKernelEventObserver+Private.h"
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFSequencedPacketSocket+Private.h"
@@ -76,7 +75,7 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 #ifdef OF_HAVE_SOCKETS
 	OFKernelEventObserver *_kernelEventObserver;
-	OFMutableDictionary *_readQueues, *_writeQueues;
+	OFMutableDictionary *_readQueues, *_writeQueues, *_connectQueues;
 #endif
 #ifdef OF_HAVE_THREADS
 	OFCondition *_condition;
@@ -274,6 +273,7 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_SOCKETS
 		_readQueues = [[OFMutableDictionary alloc] init];
 		_writeQueues = [[OFMutableDictionary alloc] init];
+		_connectQueues = [[OFMutableDictionary alloc] init];
 
 		if ([OFKernelEventObserver handlesForeignEvents]) {
 			_kernelEventObserver = [[OFKernelEventObserver alloc]
@@ -312,6 +312,7 @@ static OFRunLoop *mainRunLoop = nil;
 	objc_release(_kernelEventObserver);
 	objc_release(_readQueues);
 	objc_release(_writeQueues);
+	objc_release(_connectQueues);
 #endif
 #ifdef OF_HAVE_THREADS
 	objc_release(_condition);
@@ -396,6 +397,43 @@ static OFRunLoop *mainRunLoop = nil;
 		if (queue.count == 0) {
 			[_kernelEventObserver removeObjectForWriting: object];
 			[_writeQueues removeObjectForKey: object];
+		}
+	}
+}
+
+- (void)objectIsReadyForConnecting: (id)object
+{
+	/*
+	 * Retain the queue so that it doesn't disappear from us because the
+	 * handler called -[cancelAsyncRequests].
+	 */
+	OFList *queue = objc_retainAutorelease(
+	    [_connectQueues objectForKey: object]);
+	if (queue == nil)
+		return;
+
+	/*
+	 * We also need to retain the queue item so that it doesn't disappear
+	 * from us because the handler called -[cancelAsyncRequests].
+	 */
+	id queueItem = objc_retainAutorelease(queue.firstObject);
+
+	if (![queueItem handleObject: object]) {
+		OFListItem listItem = queue.firstListItem;
+		/*
+		 * The handler might have called -[cancelAsyncRequests]
+		 * so that our queue is now empty, in which case we
+		 * should do nothing.
+		 */
+		if (listItem == NULL)
+			return;
+
+		[queue removeListItem: listItem];
+
+		if (queue.count == 0) {
+			[_kernelEventObserver
+			    removeObjectForConnecting: object];
+			[_connectQueues removeObjectForKey: object];
 		}
 	}
 }
@@ -1291,116 +1329,116 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 }
 
 #ifdef OF_HAVE_SOCKETS
-# define NEW_READ(type, object, mode)					  \
-	void *pool = objc_autoreleasePoolPush();			  \
-	OFRunLoop *runLoop = [self currentRunLoop];			  \
-	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
-	OFList *queue = [state->_readQueues objectForKey: object];	  \
-									  \
-	if (queue == nil) {						  \
-		queue = [OFList list];					  \
-		[state->_readQueues setObject: queue forKey: object];	  \
-	}								  \
-									  \
-	if (queue.count == 0) {						  \
-		@try {							  \
-			[state->_kernelEventObserver			  \
-			    addObjectForReading: object];		  \
-		} @catch (id e) {					  \
-			[state->_readQueues removeObjectForKey: object];  \
-			@throw e;					  \
-		}							  \
-	}								  \
-									  \
-	type *queueItem = objc_autorelease([[type alloc] init]);	  \
-									  \
+# define NEW_READ(type, object, mode)					    \
+	void *pool = objc_autoreleasePoolPush();			    \
+	OFRunLoop *runLoop = [self currentRunLoop];			    \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);    \
+	OFList *queue = [state->_readQueues objectForKey: object];	    \
+									    \
+	if (queue == nil) {						    \
+		queue = [OFList list];					    \
+		[state->_readQueues setObject: queue forKey: object];	    \
+	}								    \
+									    \
+	if (queue.count == 0) {						    \
+		@try {							    \
+			[state->_kernelEventObserver			    \
+			    addObjectForReading: object];		    \
+		} @catch (id e) {					    \
+			[state->_readQueues removeObjectForKey: object];    \
+			@throw e;					    \
+		}							    \
+	}								    \
+									    \
+	type *queueItem = objc_autorelease([[type alloc] init]);	    \
+									    \
 	@try {
-# define NEW_WRITE(type, object, mode)					  \
-	void *pool = objc_autoreleasePoolPush();			  \
-	OFRunLoop *runLoop = [self currentRunLoop];			  \
-	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
-	OFList *queue = [state->_writeQueues objectForKey: object];	  \
-									  \
-	if (queue == nil) {						  \
-		queue = [OFList list];					  \
-		[state->_writeQueues setObject: queue forKey: object];	  \
-	}								  \
-									  \
-	if (queue.count == 0) {						  \
-		@try {							  \
-			[state->_kernelEventObserver			  \
-			    addObjectForWriting: object];		  \
-		} @catch (id e) {					  \
-			[state->_writeQueues removeObjectForKey: object]; \
-			@throw e;					  \
-		}							  \
-	}								  \
-									  \
-	type *queueItem = objc_autorelease([[type alloc] init]);	  \
-									  \
+# define NEW_WRITE(type, object, mode)					    \
+	void *pool = objc_autoreleasePoolPush();			    \
+	OFRunLoop *runLoop = [self currentRunLoop];			    \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);    \
+	OFList *queue = [state->_writeQueues objectForKey: object];	    \
+									    \
+	if (queue == nil) {						    \
+		queue = [OFList list];					    \
+		[state->_writeQueues setObject: queue forKey: object];	    \
+	}								    \
+									    \
+	if (queue.count == 0) {						    \
+		@try {							    \
+			[state->_kernelEventObserver			    \
+			    addObjectForWriting: object];		    \
+		} @catch (id e) {					    \
+			[state->_writeQueues removeObjectForKey: object];   \
+			@throw e;					    \
+		}							    \
+	}								    \
+									    \
+	type *queueItem = objc_autorelease([[type alloc] init]);	    \
+									    \
 	@try {
-# define NEW_CONNECT(type, object, mode)				  \
-	void *pool = objc_autoreleasePoolPush();			  \
-	OFRunLoop *runLoop = [self currentRunLoop];			  \
-	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
-	OFList *queue = [state->_writeQueues objectForKey: object];	  \
-									  \
-	if (queue == nil) {						  \
-		queue = [OFList list];					  \
-		[state->_writeQueues setObject: queue forKey: object];	  \
-	}								  \
-									  \
-	if (queue.count == 0) {						  \
-		@try {							  \
-			[state->_kernelEventObserver			  \
-			    of_addObjectForConnecting: object];		  \
-		} @catch (id e) {					  \
-			[state->_writeQueues removeObjectForKey: object]; \
-			@throw e;					  \
-		}							  \
-	}								  \
-									  \
-	type *queueItem = objc_autorelease([[type alloc] init]);	  \
-									  \
+# define NEW_CONNECT(type, object, mode)				    \
+	void *pool = objc_autoreleasePoolPush();			    \
+	OFRunLoop *runLoop = [self currentRunLoop];			    \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);    \
+	OFList *queue = [state->_connectQueues objectForKey: object];	    \
+									    \
+	if (queue == nil) {						    \
+		queue = [OFList list];					    \
+		[state->_connectQueues setObject: queue forKey: object];    \
+	}								    \
+									    \
+	if (queue.count == 0) {						    \
+		@try {							    \
+			[state->_kernelEventObserver			    \
+			    addObjectForConnecting: object];		    \
+		} @catch (id e) {					    \
+			[state->_connectQueues removeObjectForKey: object]; \
+			@throw e;					    \
+		}							    \
+	}								    \
+									    \
+	type *queueItem = objc_autorelease([[type alloc] init]);	    \
+									    \
 	@try {
-#define QUEUE_READ(object)						  \
-		[queue appendObject: queueItem];			  \
-	} @catch (id e) {						  \
-		if (queue.count == 0) {					  \
-			[state->_kernelEventObserver			  \
-			    removeObjectForReading: object];		  \
-			[state->_readQueues removeObjectForKey: object];  \
-		}							  \
-									  \
-		@throw e;						  \
-	}								  \
-									  \
+#define QUEUE_READ(object)						    \
+		[queue appendObject: queueItem];			    \
+	} @catch (id e) {						    \
+		if (queue.count == 0) {					    \
+			[state->_kernelEventObserver			    \
+			    removeObjectForReading: object];		    \
+			[state->_readQueues removeObjectForKey: object];    \
+		}							    \
+									    \
+		@throw e;						    \
+	}								    \
+									    \
 	objc_autoreleasePoolPop(pool);
-#define QUEUE_WRITE(object)						  \
-		[queue appendObject: queueItem];			  \
-	} @catch (id e) {						  \
-		if (queue.count == 0) {					  \
-			[state->_kernelEventObserver			  \
-			    removeObjectForWriting: object];		  \
-			[state->_writeQueues removeObjectForKey: object]; \
-		}							  \
-									  \
-		@throw e;						  \
-	}								  \
-									  \
+#define QUEUE_WRITE(object)						    \
+		[queue appendObject: queueItem];			    \
+	} @catch (id e) {						    \
+		if (queue.count == 0) {					    \
+			[state->_kernelEventObserver			    \
+			    removeObjectForWriting: object];		    \
+			[state->_writeQueues removeObjectForKey: object];   \
+		}							    \
+									    \
+		@throw e;						    \
+	}								    \
+									    \
 	objc_autoreleasePoolPop(pool);
-#define QUEUE_CONNECT(object)						  \
-		[queue appendObject: queueItem];			  \
-	} @catch (id e) {						  \
-		if (queue.count == 0) {					  \
-			[state->_kernelEventObserver			  \
-			    of_removeObjectForConnecting: object];	  \
-			[state->_writeQueues removeObjectForKey: object]; \
-		}							  \
-									  \
-		@throw e;						  \
-	}								  \
-									  \
+#define QUEUE_CONNECT(object)						    \
+		[queue appendObject: queueItem];			    \
+	} @catch (id e) {						    \
+		if (queue.count == 0) {					    \
+			[state->_kernelEventObserver			    \
+			    removeObjectForConnecting: object];		    \
+			[state->_connectQueues removeObjectForKey: object]; \
+		}							    \
+									    \
+		@throw e;						    \
+	}								    \
+									    \
 	objc_autoreleasePoolPop(pool);
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)

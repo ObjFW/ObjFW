@@ -30,7 +30,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableSet OF_GENERIC(ObjectType);
 @class OFDate;
 @class OFMutableData;
 
@@ -64,6 +64,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which did become ready for writing
  */
 - (void)objectIsReadyForWriting: (id)object;
+
+/**
+ * @brief This callback is called when an object did get ready for connecting.
+ *
+ * @param object The object which did become ready for connecting
+ */
+- (void)objectIsReadyForConnecting: (id)object;
 
 #if defined(OF_AMIGAOS) || defined(DOXYGEN)
 /**
@@ -103,6 +110,20 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int fileDescriptorForWriting;
 @end
 
+/**
+ * @protocol OFReadyForConnectingObserving OFKernelEventObserver.h ObjFW/ObjFW.h
+ *
+ * @brief This protocol is implemented by classes which can be observed for
+ *	  readiness for connecting by OFKernelEventObserver.
+ */
+@protocol OFReadyForConnectingObserving <OFObject>
+/**
+ * @brief The file descriptor for connecting that should be checked by the
+ *	  OFKernelEventObserver.
+ */
+@property (readonly, nonatomic) int fileDescriptorForConnecting;
+@end
+
 #ifdef OF_HAVE_SOCKETS
 /**
  * @class OFKernelEventObserver OFKernelEventObserver.h ObjFW/ObjFW.h
@@ -114,10 +135,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFKernelEventObserver: OFObject
 {
-	OFMutableArray OF_GENERIC(id <OFReadyForReadingObserving>)
-	    *_readObjects;
-	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
-	    *_writeObjects;
+	OFMutableSet OF_GENERIC(id <OFReadyForReadingObserving>) *_readObjects;
+	OFMutableSet OF_GENERIC(id <OFReadyForWritingObserving>) *_writeObjects;
+	OFMutableSet OF_GENERIC(id <OFReadyForConnectingObserving>)
+	    *_connectObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
 # if defined(OF_AMIGAOS)
 	struct Task *_waitingTask;
@@ -131,7 +152,7 @@ OF_ASSUME_NONNULL_BEGIN
 # ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
 # endif
-	OF_RESERVE_IVARS(OFKernelEventObserver, 4)
+	OF_RESERVE_IVARS(OFKernelEventObserver, 3)
 }
 
 /**
@@ -221,6 +242,18 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
 /**
+ * @brief Adds an object to observe for connecting.
+ *
+ * If there is an @ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent blocking even though the newly added object is ready.
+ *
+ * @param object The object to observe for connecting
+ * @throw OFObserveKernelEventsFailedException Adding the object for observing
+ *					       failed
+ */
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object;
+
+/**
  * @brief Removes an object to observe for reading.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
@@ -243,6 +276,18 @@ OF_ASSUME_NONNULL_BEGIN
  *					       failed
  */
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
+
+/**
+ * @brief Removes an object to observe for connecting.
+ *
+ * If there is an @ref observe call blocking, it will be canceled. The reason
+ * for this is to prevent the removed object from still being observed.
+ *
+ * @param object The object to remove from observing for connecting
+ * @throw OFObserveKernelEventsFailedException Removing the object for observing
+ *					       failed
+ */
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object;
 
 /**
  * @brief Observes all objects and blocks until an event happens on an object.

@@ -31,6 +31,7 @@
 #import "OFBindIPXSocketFailedException.h"
 #import "OFConnectSPXSocketFailedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 
 #ifndef NSPROTO_SPX
 # define NSPROTO_SPX 0
@@ -228,6 +229,21 @@ inform_delegate:
 {
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
+}
+
+- (int)fileDescriptorForConnecting
+{
+#ifndef OF_WINDOWS
+	return _socket;
+#else
+	if (_socket == OFInvalidSocketHandle)
+		return -1;
+
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (void)connectToNetwork: (uint32_t)network

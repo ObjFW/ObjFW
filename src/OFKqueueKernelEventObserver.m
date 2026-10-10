@@ -31,7 +31,7 @@
 #include <sys/time.h>
 
 #import "OFKqueueKernelEventObserver.h"
-#import "OFArray.h"
+#import "OFSet.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveKernelEventsFailedException.h"
@@ -107,24 +107,52 @@
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event = {
-		.ident = object.fileDescriptorForWriting,
-		.filter = EVFILT_WRITE,
-		.flags = EV_ADD,
-		/*
-		 * Ugly hack required for NetBSD: NetBSD used `intptr_t` for
-		 * udata, but switched this to `void *` in NetBSD 10.
-		 */
-		.udata = (__typeof__(event.udata))object
-	};
+	if (![_connectObjects containsObject: (id)object]) {
+		struct kevent event = {
+			.ident = object.fileDescriptorForWriting,
+			.filter = EVFILT_WRITE,
+			.flags = EV_ADD,
+			/*
+			 * Ugly hack required for NetBSD: NetBSD used `intptr_t`
+			 * for udata, but switched this to `void *` in NetBSD
+			 * 10.
+			 */
+			.udata = (__typeof__(event.udata))object
+		};
 
-	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		if (errno != EINTR)
-			@throw [OFObserveKernelEventsFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
+	}
 
 	[super addObjectForWriting: object];
+}
+
+- (void)addObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object]) {
+		struct kevent event = {
+			.ident = object.fileDescriptorForConnecting,
+			.filter = EVFILT_WRITE,
+			.flags = EV_ADD,
+			/*
+			 * Ugly hack required for NetBSD: NetBSD used `intptr_t`
+			 * for udata, but switched this to `void *` in NetBSD
+			 * 10.
+			 */
+			.udata = (__typeof__(event.udata))object
+		};
+
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
+	}
+
+	[super addObjectForConnecting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -146,19 +174,40 @@
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	struct kevent event = {
-		.ident = object.fileDescriptorForWriting,
-		.filter = EVFILT_WRITE,
-		.flags = EV_DELETE
-	};
+	if (![_connectObjects containsObject: (id)object]) {
+		struct kevent event = {
+			.ident = object.fileDescriptorForWriting,
+			.filter = EVFILT_WRITE,
+			.flags = EV_DELETE
+		};
 
-	while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-		if (errno != EINTR)
-			@throw [OFObserveKernelEventsFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
+	}
 
 	[super removeObjectForWriting: object];
+}
+
+- (void)removeObjectForConnecting: (id <OFReadyForConnectingObserving>)object
+{
+	if (![_writeObjects containsObject: (id)object]) {
+		struct kevent event = {
+			.ident = object.fileDescriptorForConnecting,
+			.filter = EVFILT_WRITE,
+			.flags = EV_DELETE
+		};
+
+		while (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			if (errno != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
+	}
+
+	[super removeObjectForConnecting: object];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
@@ -209,18 +258,25 @@
 
 		void *pool2 = objc_autoreleasePoolPush();
 
+		id object = (id)eventList[i].udata;
 		switch (eventList[i].filter) {
 		case EVFILT_READ:
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading:
-				    (id)eventList[i].udata];
+				[_delegate objectIsReadyForReading: object];
 			break;
 		case EVFILT_WRITE:
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForWriting:)])
-				[_delegate objectIsReadyForWriting:
-				    (id)eventList[i].udata];
+			if ([_connectObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForConnecting:)])
+					[_delegate objectIsReadyForConnecting:
+					    object];
+			} else {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate objectIsReadyForWriting:
+					    object];
+			}
 			break;
 		default:
 			OFAssert(0);
