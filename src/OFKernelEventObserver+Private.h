@@ -17,28 +17,13 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "objfw-defs.h"
-
-#ifndef __STDC_LIMIT_MACROS
-# define __STDC_LIMIT_MACROS
-#endif
-#ifndef __STDC_CONSTANT_MACROS
-# define __STDC_CONSTANT_MACROS
-#endif
-
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif
-
 #import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFSelectKernelEventObserver: OFKernelEventObserver
-{
-	fd_set _readFDs, _writeFDs, _exceptFDs;
-	int _maxFD;
-}
+@interface OFKernelEventObserver ()
+- (void)of_addObjectForConnecting: (id <OFReadyForWritingObserving>)object;
+- (void)of_removeObjectForConnecting: (id <OFReadyForWritingObserving>)object;
 @end
 
 OF_ASSUME_NONNULL_END

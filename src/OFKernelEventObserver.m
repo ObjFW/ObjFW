@@ -22,6 +22,7 @@
 #include <errno.h>
 
 #import "OFKernelEventObserver.h"
+#import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
@@ -198,6 +199,11 @@
 	[_writeObjects addObject: object];
 }
 
+- (void)of_addObjectForConnecting: (id <OFReadyForWritingObserving>)object
+{
+	[self addObjectForWriting: object];
+}
+
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[_readObjects removeObjectIdenticalTo: object];
@@ -206,6 +212,11 @@
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[_writeObjects removeObjectIdenticalTo: object];
+}
+
+- (void)of_removeObjectForConnecting: (id <OFReadyForWritingObserving>)object
+{
+	[self removeObjectForWriting: object];
 }
 
 - (bool)processReadBuffers

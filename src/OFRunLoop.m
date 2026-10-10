@@ -28,6 +28,7 @@
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
+# import "OFKernelEventObserver+Private.h"
 # import "OFDatagramSocket.h"
 # import "OFSequencedPacketSocket.h"
 # import "OFSequencedPacketSocket+Private.h"
@@ -1338,6 +1339,30 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	type *queueItem = objc_autorelease([[type alloc] init]);	  \
 									  \
 	@try {
+# define NEW_CONNECT(type, object, mode)				  \
+	void *pool = objc_autoreleasePoolPush();			  \
+	OFRunLoop *runLoop = [self currentRunLoop];			  \
+	OFRunLoopState *state = stateForMode(runLoop, mode, true, true);  \
+	OFList *queue = [state->_writeQueues objectForKey: object];	  \
+									  \
+	if (queue == nil) {						  \
+		queue = [OFList list];					  \
+		[state->_writeQueues setObject: queue forKey: object];	  \
+	}								  \
+									  \
+	if (queue.count == 0) {						  \
+		@try {							  \
+			[state->_kernelEventObserver			  \
+			    of_addObjectForConnecting: object];		  \
+		} @catch (id e) {					  \
+			[state->_writeQueues removeObjectForKey: object]; \
+			@throw e;					  \
+		}							  \
+	}								  \
+									  \
+	type *queueItem = objc_autorelease([[type alloc] init]);	  \
+									  \
+	@try {
 #define QUEUE_READ(object)						  \
 		[queue appendObject: queueItem];			  \
 	} @catch (id e) {						  \
@@ -1357,6 +1382,19 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		if (queue.count == 0) {					  \
 			[state->_kernelEventObserver			  \
 			    removeObjectForWriting: object];		  \
+			[state->_writeQueues removeObjectForKey: object]; \
+		}							  \
+									  \
+		@throw e;						  \
+	}								  \
+									  \
+	objc_autoreleasePoolPop(pool);
+#define QUEUE_CONNECT(object)						  \
+		[queue appendObject: queueItem];			  \
+	} @catch (id e) {						  \
+		if (queue.count == 0) {					  \
+			[state->_kernelEventObserver			  \
+			    of_removeObjectForConnecting: object];	  \
 			[state->_writeQueues removeObjectForKey: object]; \
 		}							  \
 									  \
@@ -1496,11 +1534,11 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 			       mode: (OFRunLoopMode)mode
 			   delegate: (id <OFRunLoopConnectDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoopConnectQueueItem, sock, mode)
+	NEW_CONNECT(OFRunLoopConnectQueueItem, sock, mode)
 
 	queueItem->_delegate = objc_retain(delegate);
 
-	QUEUE_WRITE(sock)
+	QUEUE_CONNECT(sock)
 }
 # endif
 
@@ -1648,8 +1686,10 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 # endif
 # undef NEW_READ
 # undef NEW_WRITE
+# undef NEW_CONNECT
 # undef QUEUE_READ
 # undef QUEUE_WRITE
+# undef QUEUE_CONNECT
 
 + (void)of_cancelAsyncRequestsForObject: (id)object
 {

@@ -60,6 +60,7 @@
 	@try {
 		FD_ZERO(&_readFDs);
 		FD_ZERO(&_writeFDs);
+		FD_ZERO(&_exceptFDs);
 
 #ifdef OF_AMIGAOS
 		_maxFD = -1;
@@ -135,6 +136,15 @@
 	[super addObjectForWriting: object];
 }
 
+#ifdef OF_WINDOWS
+- (void)of_addObjectForConnecting: (id <OFReadyForWritingObserving>)object
+{
+	[self addObjectForWriting: object];
+
+	FD_SET((OFSocketHandle)object.fileDescriptorForWriting, &_exceptFDs);
+}
+#endif
+
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
@@ -178,6 +188,15 @@
 	[super removeObjectForWriting: object];
 }
 
+#ifdef OF_WINDOWS
+- (void)of_removeObjectForConnecting: (id <OFReadyForWritingObserving>)object
+{
+	[self removeObjectForWriting: object];
+
+	FD_CLR((OFSocketHandle)object.fileDescriptorForWriting, &_exceptFDs);
+}
+#endif
+
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
 {
 	if ([self processReadBuffers])
@@ -188,12 +207,15 @@
 
 	fd_set readFDs;
 	fd_set writeFDs;
+	fd_set exceptFDs;
 #ifdef FD_COPY
 	FD_COPY(&_readFDs, &readFDs);
 	FD_COPY(&_writeFDs, &writeFDs);
+	FD_COPY(&_exceptFDs, &exceptFDs);
 #else
 	readFDs = _readFDs;
 	writeFDs = _writeFDs;
+	exceptFDs = _exceptFDs;
 #endif
 
 	/*
@@ -226,7 +248,7 @@
 	_waitingTask = FindTask(NULL);
 	_cancelSignal = cancelSignal;
 
-	int events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	int events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
 	    (void *)(timeInterval != 64060588800.0 ? &timeout : NULL),
 	    &execSignalMask);
 
@@ -249,7 +271,7 @@
 		[_delegate execSignalWasReceived: execSignalMask];
 #else
 	int events;
-	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
 	    (timeInterval != 64060588800.0 ? &timeout : NULL))) < 0) {
 		int errNo = _OFSocketErrNo();
 
@@ -290,6 +312,13 @@
 		void *pool2 = objc_autoreleasePoolPush();
 		int fd = object.fileDescriptorForWriting;
 
+#ifdef OF_WINDOWS
+		if (FD_ISSET((OFSocketHandle)fd, &exceptFDs) &&
+		    [_delegate respondsToSelector:
+		    @selector(objectIsReadyForWriting:)])
+			[_delegate objectIsReadyForWriting: object];
+		else
+#endif
 		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
