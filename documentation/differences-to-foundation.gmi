@@ -4,7 +4,7 @@ While ObjFW is in many ways similar to Foundation, it is also different in many 
 
 ## Exceptions
 
-One of the main differences between Foundation and ObjFW is that ObjFW fully embraces exceptions as a first class citizen. Unfortunately, exceptions where not available when Foundation was designed, so Foundation is not using them. ObjFW however has been designed when exceptions existed, so there is no reason for it to not make full use of of them. As exceptions are used throughout, this means there is nothing comparable to NSError and no parameter needs to be passed to methods that can fail. Instead, on error, they throw an exception, usually a subclass of OFException. However, exceptions are only used for exceptional cases: Trying to get a key from a dictionary that doesn't exist is not an exception (like in Python for example), but instead just returns nil.
+One of the main differences between Foundation and ObjFW is that ObjFW fully embraces exceptions as a first class citizen. Unfortunately, exceptions where not available when Foundation was designed, so Foundation is not using them. ObjFW however has been designed when exceptions existed, so there is no reason for it to not make full use of of them. As exceptions are used throughout, this means there is nothing comparable to NSError and no parameter needs to be passed to methods that can fail. Instead, on error, they throw an exception, usually a subclass of OFException. However, exceptions are only used for exceptional cases: Trying to get a key from a dictionary that doesn‘t exist is not an exception (like in Python for example), but instead just returns nil.
 
 ## init methods
 

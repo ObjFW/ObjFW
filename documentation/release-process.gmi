@@ -1,10 +1,10 @@
 # Release process
 
 * Update changes.gmi and cherry-pick the change into main
-* MAKE SURE THE LIBRARY VERSION HAS BEEN INCREASED FOR ALL LIBRARIES THAT HAD CHANGES / BUG FIXES! DON'T FORGET TO INCREASE THE MINOR FOR EVERY LIBRARY THAT HAD NEW FEATURES ADDED AND THE PATCH LEVEL FOR EVERY LIBRARY THAT HAD BUG FIXES!
+* MAKE SURE THE LIBRARY VERSION HAS BEEN INCREASED FOR ALL LIBRARIES THAT HAD CHANGES / BUG FIXES! DON‘T FORGET TO INCREASE THE MINOR FOR EVERY LIBRARY THAT HAD NEW FEATURES ADDED AND THE PATCH LEVEL FOR EVERY LIBRARY THAT HAD BUG FIXES!
 * Change the version in AC_INIT and the BUNDLE_VERSION in configure.ac and commit. This commit should have the ${version}-release tag!
 * Push the commits but not the tag
-* Run “git checkout ${version}-release” and run “git clean -fxd”, then “./autogen.sh && ./configure”. Don't forget this, or the version might be wrong!
+* Run “git checkout ${version}-release” and run “git clean -fxd”, then “./autogen.sh && ./configure”. Don‘t forget this, or the version might be wrong!
 * Generate and sign tarballs using “make release”
 * Extract objfw-${version}.tar.gz and objfw-docs-${version}.tar.gz as well as objfw-${previousVersion}.tar.gz and objfw-docs-${previousVersion}.tar.gz. Then diff the current against the previous version and check nothing unexpected is in there.
 * If everything looks okay, push the tag

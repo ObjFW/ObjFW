@@ -15,7 +15,7 @@ ObjFW is intentionally incompatible with Foundation. This has two reasons:
 
 => documentation/differences-to-foundation.gmi  Read more about the differences to Foundation
 
-ObjFW also comes with its own lightweight and extremely fast Objective-C runtime, which in real world use cases was found to be significantly faster than both GNU's and Apple's runtime.
+ObjFW also comes with its own lightweight and extremely fast Objective-C runtime, which in real world use cases was found to be significantly faster than both GNU’s and Apple’s runtime.
 
 ## Installation
 
@@ -82,7 +82,7 @@ If you have any questions about ObjFW or would like to talk to other ObjFW users
 => https://objfw.nil.im/slack            Slack room, bridged to the Matrix room above
 => ircs://irc.libera.chat/#objfw         IRC channel #objfw on irc.libera.chat
 
-Please don't hesitate to join any or all of those!
+Please don’t hesitate to join any or all of those!
 
 ## Donating
 
@@ -90,5 +90,5 @@ Please don't hesitate to join any or all of those!
 
 ## Thanks
 
-=> https://github.com/neuschaefer  Jonathan Neuschäfer for reviewing the *entirety* (all 84k LoC at the time) of ObjFW's codebase in 2017!
+=> https://github.com/neuschaefer  Jonathan Neuschäfer for reviewing the *entirety* (all 84k LoC at the time) of ObjFW’s codebase in 2017!
 => https://github.com/mahiuchun    Hill Ma for donating an M1 Mac Mini to the project in 2022!
