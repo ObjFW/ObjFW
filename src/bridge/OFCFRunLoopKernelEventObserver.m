@@ -321,7 +321,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 			     addTypes: kCFSocketWriteCallBack
 			  removeTypes: 0];
 
-	[super addObjectForWriting: object];
+	[super addObjectForConnecting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -354,7 +354,7 @@ callback(CFSocketRef sock, CFSocketCallBackType type, CFDataRef address,
 			     addTypes: 0
 			  removeTypes: kCFSocketWriteCallBack];
 
-	[super removeObjectForWriting: object];
+	[super removeObjectForConnecting: object];
 }
 
 - (void)observeForTimeInterval: (OFTimeInterval)timeInterval
