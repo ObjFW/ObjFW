@@ -1886,13 +1886,12 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 	@try {
 #endif
 		[state->_timersQueue insertObject: timer];
+		[timer of_setInRunLoop: self mode: mode];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[state->_timersQueueMutex unlock];
 	}
 #endif
-
-	[timer of_setInRunLoop: self mode: mode];
 
 #ifdef OF_HAVE_SOCKETS
 	[state->_kernelEventObserver cancel];
