@@ -1743,6 +1743,33 @@ stateForMode(OFRunLoop *self, OFRunLoopMode mode, bool create,
 		for (OFRunLoopState *state in enumerator) {
 			OFList *queue;
 
+			if ((queue = [state->_connectQueues
+			    objectForKey: object]) != nil) {
+				OFAssert(queue.count > 0);
+
+				/*
+				 * Retain and autorelease the queue items so
+				 * they only get deallocated once we're out of
+				 * the lock. Not doing so could cause a
+				 * deadlock, as -[cancelAsyncRequests] might be
+				 * called in -[dealloc].
+				 */
+				for (id item in queue)
+					objc_retainAutorelease(item);
+
+				/*
+				 * Clear the queue now, in case this has been
+				 * called from a handler, as otherwise, we'd do
+				 * the cleanups below twice.
+				 */
+				[queue removeAllObjects];
+
+				[state->_kernelEventObserver
+				    removeObjectForConnecting: object];
+				[state->_connectQueues
+				    removeObjectForKey: object];
+			}
+
 			if ((queue = [state->_writeQueues
 			    objectForKey: object]) != nil) {
 				OFAssert(queue.count > 0);
