@@ -21,6 +21,8 @@
 
 #include <errno.h>
 
+#include "unistd_wrapper.h"
+
 #import "OFMbedTLSTLSStream.h"
 #import "OFApplication.h"
 #import "OFArray.h"
