@@ -77,12 +77,16 @@ enum {
 
 	if ((_socket = socket(
 	    ((struct sockaddr *)&address->sockaddr)->sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == OFInvalidSocketHandle)
+	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) ==
+	    OFInvalidSocketHandle) {
+		int errNo = _OFSocketErrNo();
+
 		@throw [OFBindIPSocketFailedException
 		    exceptionWithHost: OFSocketAddressString(address)
 				 port: OFSocketAddressIPPort(address)
 			       socket: self
-				errNo: _OFSocketErrNo()];
+				errNo: errNo];
+	}
 
 	_canBlock = true;
 

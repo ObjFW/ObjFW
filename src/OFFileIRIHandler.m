@@ -2587,16 +2587,21 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	cName = [name cStringWithEncoding: encoding];
 	fd = attropen(cPath, cName, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 
-	if (fd == -1)
+	if (fd == -1) {
+		int errNo = errno;
+
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: [OFDictionary dictionary]
 		     failedAttribute: @""
-			       errNo: errno];
+			       errNo: errNo];
+	}
 
 	@try {
-		if (write(fd, data.items, size) != (ssize_t)size)
+		if (write(fd, data.items, size) != (ssize_t)size) {
+			int errNo = errno;
+
 			/*
 			 * TODO: Add an attribute (prefix?) for extended
 			 *	 attributes?
@@ -2605,7 +2610,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    exceptionWithIRI: IRI
 				  attributes: [OFDictionary dictionary]
 			     failedAttribute: @""
-				       errNo: errno];
+				       errNo: errNo];
+		}
 	} @finally {
 		close(fd);
 	}
@@ -2691,16 +2697,21 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	const char *cName = [name cStringWithEncoding: encoding];
 	int fd;
 
-	if ((fd = attropen(cPath, ".", O_RDONLY)) < 0)
+	if ((fd = attropen(cPath, ".", O_RDONLY)) < 0) {
+		int errNo = errno;
+
 		/* TODO: Add an attribute (prefix?) for extended attributes? */
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: [OFDictionary dictionary]
 		     failedAttribute: @""
-			       errNo: errno];
+			       errNo: errNo];
+	}
 
 	@try {
-		if (unlinkat(fd, cName, 0) != 0)
+		if (unlinkat(fd, cName, 0) != 0) {
+			int errNo = errno;
+
 			/*
 			 * TODO: Add an attribute (prefix?) for extended
 			 *	 attributes?
@@ -2709,7 +2720,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    exceptionWithIRI: IRI
 				  attributes: [OFDictionary dictionary]
 			     failedAttribute: @""
-				       errNo: errno];
+				       errNo: errNo];
+		}
 	} @finally {
 		close(fd);
 	}
