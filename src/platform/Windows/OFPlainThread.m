@@ -34,10 +34,12 @@ struct ThreadContext {
 };
 
 static OFTLSKey currentThreadKey;
+static OFTLSKey foreignThreadKey;
 
 OF_CONSTRUCTOR()
 {
 	OFEnsure(OFTLSKeyNew(&currentThreadKey) == 0);
+	OFEnsure(OFTLSKeyNew(&foreignThreadKey) == 0);
 }
 
 static WINAPI void
@@ -125,11 +127,12 @@ OFCurrentPlainThread(void)
 
 	if (currentThread == NULL) {
 		if (!DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
-		    GetCurrentProcess(), &currentThread, 0, false,
+		    GetCurrentProcess(), &currentThread, 0, FALSE,
 		    DUPLICATE_SAME_ACCESS))
 			return INVALID_HANDLE_VALUE;
 
 		OFTLSKeySet(currentThreadKey, currentThread);
+		OFTLSKeySet(foreignThreadKey, (void *)1);
 	}
 
 	return currentThread;
@@ -171,4 +174,15 @@ OFPlainThreadDetach(OFPlainThread thread)
 void
 OFSetThreadName(const char *name)
 {
+}
+
+void OF_VISIBILITY_HIDDEN
+_OFPlainThreadExitHandler(void)
+{
+	if (OFTLSKeyGet(foreignThreadKey) == (void *)1) {
+		OFPlainThread currentThread = OFTLSKeyGet(currentThreadKey);
+
+		if (currentThread != NULL)
+			CloseHandle(currentThread);
+	}
 }

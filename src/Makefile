@@ -306,7 +306,8 @@ SRCS_TAGGED_POINTERS = OFTaggedPointerColor.m		\
 		       OFTaggedPointerDate.m		\
 		       OFTaggedPointerNumber.m		\
 		       OFTaggedPointerString.m
-SRCS_WINDOWS += platform/Windows/OFWin32ConsoleStdIOStream.m	\
+SRCS_WINDOWS += DllMain.m					\
+		platform/Windows/OFWin32ConsoleStdIOStream.m	\
 		versioninfo.rc
 
 OBJS_EXTRA = exceptions/exceptions.a	\
