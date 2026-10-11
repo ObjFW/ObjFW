@@ -189,9 +189,7 @@
 	    (sender != NULL ? &sender->length : NULL))) < 0) {
 		int errNo = _OFSocketErrNo();
 
-		if (errNo == EMSGSIZE)
-			ret = length;
-		else if (errNo != EINTR)
+		if (errNo != EINTR)
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: length
@@ -203,11 +201,17 @@
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
 	    (sender != NULL ? (struct sockaddr *)&sender->sockaddr : NULL),
-	    (sender != NULL ? &sender->length : NULL))) < 0)
-		@throw [OFReadFailedException
-		    exceptionWithObject: self
-			requestedLength: length
-				  errNo: _OFSocketErrNo()];
+	    (sender != NULL ? &sender->length : NULL))) < 0) {
+		int errNo = _OFSocketErrNo();
+
+		if (errNo == EMSGSIZE)
+			ret = length;
+		else
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+					  errNo: _OFSocketErrNo()];
+	}
 #endif
 
 	if (sender != NULL) {
