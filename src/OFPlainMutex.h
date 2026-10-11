@@ -106,7 +106,7 @@ extern int OFPlainMutexTryLock(OFPlainMutex *mutex);
 extern int OFPlainMutexUnlock(OFPlainMutex *mutex);
 
 /**
- * @brief Destroys the specified mutex
+ * @brief Destroys the specified mutex.
  *
  * @param mutex A pointer to the mutex to destruct
  * @return 0 on success, or an error number from `<errno.h>` on error
