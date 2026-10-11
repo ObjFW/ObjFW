@@ -95,19 +95,7 @@ OFPlainThreadIsCurrent(OFPlainThread thread)
 {
 	return pthread_equal(thread, pthread_self());
 }
-#elif defined(OF_WINDOWS)
-static OF_INLINE OFPlainThread
-OFCurrentPlainThread(void)
-{
-	return GetCurrentThread();
-}
-
-static OF_INLINE bool
-OFPlainThreadIsCurrent(OFPlainThread thread)
-{
-	return (thread == GetCurrentThread());
-}
-#elif defined(OF_AMIGAOS)
+#elif defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 extern OFPlainThread OFCurrentPlainThread(void);
 extern bool OFPlainThreadIsCurrent(OFPlainThread);
 #endif

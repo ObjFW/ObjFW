@@ -23,6 +23,7 @@
 
 #import "OFPlainThread.h"
 #import "OFConstantString.h"
+#import "OFTLSKey.h"
 
 #include <windows.h>
 
@@ -31,11 +32,26 @@ struct ThreadContext {
 	id object;
 };
 
+static OFTLSKey currentThreadKey;
+
+OF_CONSTRUCTOR()
+{
+	OFEnsure(OFTLSKeyNew(&currentThreadKey) == 0);
+}
+
 static WINAPI void
 functionWrapper(struct ThreadContext *context)
 {
+	HANDLE currentThread;
+	OFEnsure(DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
+	    GetCurrentProcess(), &currentThread, 0, false,
+	    DUPLICATE_SAME_ACCESS));
+
+	OFTLSKeySet(currentThreadKey, currentThread);
+
 	context->function(context->object);
 
+	CloseHandle(currentThread);
 	free(context);
 }
 
@@ -101,6 +117,18 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 		OFEnsure(SetThreadPriority(*thread, priority));
 
 	return 0;
+}
+
+OFPlainThread
+OFCurrentPlainThread(void)
+{
+	return OFTLSKeyGet(currentThreadKey);
+}
+
+bool
+OFPlainThreadIsCurrent(OFPlainThread thread)
+{
+	return (GetThreadId(thread) == GetCurrentThreadId());
 }
 
 int
