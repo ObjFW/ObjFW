@@ -199,6 +199,8 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		@throw [OFInvalidArgumentException exception];
 
 #if defined(OF_LINUX) && defined(IPPROTO_MPTCP)
+	_flags &= ~flagMapIPv4;
+
 	if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv6)) {
 		/*
 		 * For MPTCP sockets, we always use AF_INET6, so that IPv4 and
@@ -214,6 +216,8 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		_socket = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_MPTCP);
 #elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
+	_flags &= ~flagUseConnectX;
+
 	if (_flags & flagAllowsMPTCP) {
 		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_TCP);
@@ -791,7 +795,6 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 #ifdef OF_WII
 	_port = 0;
 #endif
-	_flags &= ~(flagMapIPv4 | flagUseConnectX);
 
 	[super close];
 }
