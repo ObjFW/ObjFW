@@ -27,6 +27,12 @@
  * GNU extensions in any file using this header.
  */
 # pragma clang diagnostic ignored "-Wgnu"
+/*
+ * Some older versions of Clang fully expand the macro first and then turn it
+ * into a string, resulting in really long strings and potentially a warning
+ * about exceeding the maximum ISO C99 length of 4095.
+ */
+# pragma clang diagnostic ignored "-Woverlength-strings"
 #endif
 
 /** @file */
