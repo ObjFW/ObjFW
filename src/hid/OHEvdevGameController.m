@@ -417,10 +417,12 @@ scale(float value, float min, float max, bool inverted)
 
 		switch (event.type) {
 		case EV_SYN:
+#ifdef SYN_DROPPED
 			if (event.code == SYN_DROPPED) {
 				_discardUntilReport = true;
 				continue;
 			}
+#endif
 			break;
 		case EV_KEY:
 			button = [_profile oh_buttonForEvdevButton: event.code];
