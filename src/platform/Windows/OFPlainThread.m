@@ -30,6 +30,7 @@
 struct ThreadContext {
 	void (*function)(id);
 	id object;
+	HANDLE handle;
 };
 
 static OFTLSKey currentThreadKey;
@@ -42,16 +43,10 @@ OF_CONSTRUCTOR()
 static WINAPI void
 functionWrapper(struct ThreadContext *context)
 {
-	HANDLE currentThread;
-	OFEnsure(DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
-	    GetCurrentProcess(), &currentThread, 0, false,
-	    DUPLICATE_SAME_ACCESS));
-
-	OFTLSKeySet(currentThreadKey, currentThread);
+	OFTLSKeySet(currentThreadKey, context->handle);
 
 	context->function(context->object);
 
-	CloseHandle(currentThread);
 	free(context);
 }
 
@@ -93,7 +88,8 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	context->object = object;
 
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
-	    (LPTHREAD_START_ROUTINE)functionWrapper, context, 0, &threadID);
+	    (LPTHREAD_START_ROUTINE)functionWrapper, context, CREATE_SUSPENDED,
+	    &threadID);
 
 	if (*thread == NULL) {
 		int error;
@@ -116,19 +112,33 @@ OFPlainThreadNew(OFPlainThread *thread, const char *name, void (*function)(id),
 	if (attr != NULL && attr->priority != 0)
 		OFEnsure(SetThreadPriority(*thread, priority));
 
+	context->handle = *thread;
+	ResumeThread(*thread);
+
 	return 0;
 }
 
 OFPlainThread
 OFCurrentPlainThread(void)
 {
-	return OFTLSKeyGet(currentThreadKey);
+	OFPlainThread currentThread = OFTLSKeyGet(currentThreadKey);
+
+	if (currentThread == NULL) {
+		if (!DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
+		    GetCurrentProcess(), &currentThread, 0, false,
+		    DUPLICATE_SAME_ACCESS))
+			return INVALID_HANDLE_VALUE;
+
+		OFTLSKeySet(currentThreadKey, currentThread);
+	}
+
+	return currentThread;
 }
 
 bool
 OFPlainThreadIsCurrent(OFPlainThread thread)
 {
-	return (GetThreadId(thread) == GetCurrentThreadId());
+	return (thread == OFCurrentPlainThread());
 }
 
 int
