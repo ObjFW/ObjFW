@@ -32,9 +32,9 @@ OF_DIRECT_MEMBERS
 extern "C" {
 #endif
 extern int _OFUTF8StringCheck(const char *, size_t, size_t *_Nullable,
-    bool *_Nullable) OF_VISIBILITY_INTERNAL;
+    bool *_Nullable) OF_VISIBILITY_HIDDEN;
 extern size_t _OFUTF8StringIndexToPosition(const char *, size_t, size_t)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

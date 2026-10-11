@@ -60,11 +60,11 @@ _OFHuffmanTreeWalk(id _Nullable stream,
 extern "C" {
 #endif
 extern OFHuffmanTree _Nonnull _OFHuffmanTreeNew(uint8_t lengths[_Nonnull],
-    uint16_t count) OF_VISIBILITY_INTERNAL;
+    uint16_t count) OF_VISIBILITY_HIDDEN;
 extern OFHuffmanTree _Nonnull _OFHuffmanTreeNewSingle(uint16_t value)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 extern void _OFHuffmanTreeFree(OFHuffmanTree _Nonnull tree)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

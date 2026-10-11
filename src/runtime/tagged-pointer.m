@@ -27,9 +27,9 @@
 #define maxNumTaggedPointerClasses (1 << (numTaggedPointerBits - 1))
 
 Class _objc_taggedPointerClasses[maxNumTaggedPointerClasses]
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 static int taggedPointerClassesCount;
-uintptr_t _objc_taggedPointerSecret OF_VISIBILITY_INTERNAL;
+uintptr_t _objc_taggedPointerSecret OF_VISIBILITY_HIDDEN;
 
 void
 objc_setTaggedPointerSecret(uintptr_t secret)

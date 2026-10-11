@@ -58,7 +58,7 @@ static const OFRunLoopMode handshakeRunLoopMode =
  * References to exceptions. This is needed because they are only used by
  * subclasses that are in a different library.
  */
-void OF_VISIBILITY_INTERNAL
+void OF_VISIBILITY_HIDDEN
 _references_to_exceptions_of_OFTLSStream(void)
 {
 	_OFTLSHandshakeFailedException_reference = 1;

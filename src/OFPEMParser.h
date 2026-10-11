@@ -37,7 +37,7 @@ extern "C" {
 #endif
 extern void OFParsePEM(OFStream *stream,
     void (*callback)(OFString *, OFData *, void *ctx), void *ctx)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

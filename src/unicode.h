@@ -29,16 +29,16 @@ extern "C" {
 #endif
 extern const OFUnichar *const _Nonnull
     _OFUnicodeUppercaseTable[_OFUnicodeUppercaseTableSize]
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
     _OFUnicodeLowercaseTable[_OFUnicodeLowercaseTableSize]
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
     _OFUnicodeTitlecaseTable[_OFUnicodeTitlecaseTableSize]
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 extern const OFUnichar *const _Nonnull
     _OFUnicodeCaseFoldingTable[_OFUnicodeCaseFoldingTableSize]
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

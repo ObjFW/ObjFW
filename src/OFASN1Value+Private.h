@@ -23,12 +23,12 @@ OF_ASSUME_NONNULL_BEGIN
 
 extern size_t _OFDEREncodeTag(OFASN1TagClass tagClass,
     OFASN1TagNumber tagNumber, bool constructed,
-    unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_INTERNAL;
+    unsigned char buffer[_Nonnull 6]) OF_VISIBILITY_HIDDEN;
 extern size_t _OFDEREncodeLength(size_t length,
-    unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_INTERNAL;
+    unsigned char buffer[_Nonnull 9]) OF_VISIBILITY_HIDDEN;
 extern long long _OFDERDecodeInteger(const unsigned char *buffer, size_t length)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 extern size_t _OFDEREncodeInteger(long long value,
-    unsigned char buffer[_Nonnull 8]) OF_VISIBILITY_INTERNAL;
+    unsigned char buffer[_Nonnull 8]) OF_VISIBILITY_HIDDEN;
 
 OF_ASSUME_NONNULL_END

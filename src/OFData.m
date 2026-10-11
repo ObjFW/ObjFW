@@ -54,7 +54,7 @@ static struct {
 } placeholder;
 
 /* References for static linking */
-void OF_VISIBILITY_INTERNAL
+void OF_VISIBILITY_HIDDEN
 _references_to_categories_of_OFData(void)
 {
 	_OFData_CryptographicHashing_reference = 1;

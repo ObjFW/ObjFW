@@ -103,21 +103,21 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool _OFSocketInit(void) OF_VISIBILITY_INTERNAL;
+extern bool _OFSocketInit(void) OF_VISIBILITY_HIDDEN;
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
-extern void _OFSocketDeinit(void) OF_VISIBILITY_INTERNAL;
+extern void _OFSocketDeinit(void) OF_VISIBILITY_HIDDEN;
 #endif
-extern int _OFSocketNormalizeErrNo(int errNo) OF_VISIBILITY_INTERNAL;
-extern int _OFSocketErrNo(void) OF_VISIBILITY_INTERNAL;
+extern int _OFSocketNormalizeErrNo(int errNo) OF_VISIBILITY_HIDDEN;
+extern int _OFSocketErrNo(void) OF_VISIBILITY_HIDDEN;
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 extern int _OFGetSockName(OFSocketHandle sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen) OF_VISIBILITY_INTERNAL;
+    socklen_t *restrict addrLen) OF_VISIBILITY_HIDDEN;
 #endif
 
 #if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
-extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_INTERNAL;
+extern OFTLSKey _OFSocketBaseKey OF_VISIBILITY_HIDDEN;
 # ifdef OF_AMIGAOS4
-extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_INTERNAL;
+extern OFTLSKey _OFSocketInterfaceKey OF_VISIBILITY_HIDDEN;
 # endif
 #endif
 #ifdef __cplusplus

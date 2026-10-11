@@ -35,7 +35,7 @@ extern "C" {
 #endif
 extern int _OFVASPrintF(
     char *_Nullable *_Nonnull, const char *_Nonnull, va_list)
-    OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif

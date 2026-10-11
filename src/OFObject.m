@@ -485,7 +485,7 @@ OFMethodNotFound(id object, SEL selector)
 	OF_UNREACHABLE
 }
 
-void OF_NO_RETURN_FUNC OF_VISIBILITY_INTERNAL
+void OF_NO_RETURN_FUNC OF_VISIBILITY_HIDDEN
 _OFMethodNotFound_stret(void *stret, id object, SEL selector)
 {
 	OFMethodNotFound(object, selector);
@@ -528,7 +528,7 @@ _NSPrintForDebugger(id object)
 }
 
 /* References for static linking */
-void OF_VISIBILITY_INTERNAL
+void OF_VISIBILITY_HIDDEN
 _references_to_categories_of_OFObject(void)
 {
 	_OFObject_KeyValueCoding_reference = 1;

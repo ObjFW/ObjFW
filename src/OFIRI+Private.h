@@ -29,10 +29,10 @@ OF_DIRECT_MEMBERS
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_INTERNAL;
+extern bool _OFIRIIsIPv6Host(OFString *host) OF_VISIBILITY_HIDDEN;
 extern void _OFIRIVerifyIsEscaped(OFString *, OFCharacterSet *, bool)
-    OF_VISIBILITY_INTERNAL;
-extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_INTERNAL;
+    OF_VISIBILITY_HIDDEN;
+extern void _OFIRIStandardizePath(OFIRI *IRI) OF_VISIBILITY_HIDDEN;
 #ifdef __cplusplus
 }
 #endif
