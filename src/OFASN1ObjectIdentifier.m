@@ -121,9 +121,12 @@ static OFMutableDictionary OF_GENERIC(OFString *, OFString *) *names;
 
 + (OFString *)nameForStringValue: (OFString *)stringValue
 {
+	OFString *name;
 	@synchronized (names) {
-		return [names objectForKey: stringValue];
+		name = [names objectForKey: stringValue];
 	}
+
+	return name;
 }
 
 + (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs

@@ -27,16 +27,16 @@
 #import "OFInvalidFormatException.h"
 
 static OFDate *
-X509UTCTimeToDate(OFASN1UTCTime *time)
+X509UTCTimeToDate(OFASN1UTCTime *time_)
 {
 	struct tm tm = {
-		.tm_year = time.yearOfCentury +
-		    (time.yearOfCentury < 50 ? 100 : 0),
-		.tm_mon = time.month - 1,
-		.tm_mday = time.dayOfMonth,
-		.tm_hour = time.hour,
-		.tm_min = time.minute,
-		.tm_sec = time.second
+		.tm_year = time_.yearOfCentury +
+		    (time_.yearOfCentury < 50 ? 100 : 0),
+		.tm_mon = time_.month - 1,
+		.tm_mday = time_.dayOfMonth,
+		.tm_hour = time_.hour,
+		.tm_min = time_.minute,
+		.tm_sec = time_.second
 	};
 
 	return [OFDate dateWithStructTm: &tm];
