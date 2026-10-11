@@ -210,13 +210,9 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 		if (_socket != OFInvalidSocketHandle &&
 		    address->family == OFSocketAddressFamilyIPv4)
 			_flags |= flagMapIPv4;
-		else
-			_flags &= ~flagMapIPv4;
-	} else if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv4)) {
+	} else if ((_flags & flagAllowsMPTCP) && (_flags & flagAllowsIPv4))
 		_socket = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC,
 		    IPPROTO_MPTCP);
-		_flags &= ~flagMapIPv4;
-	}
 #elif (defined(OF_MACOS) || defined(OF_IOS)) && defined(SAE_ASSOCID_ANY)
 	if (_flags & flagAllowsMPTCP) {
 		_socket = socket(AF_MULTIPATH, SOCK_STREAM | SOCK_CLOEXEC,
@@ -224,8 +220,6 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 
 		if (_socket != OFInvalidSocketHandle)
 			_flags |= flagUseConnectX;
-		else
-			_flags &= ~flagUseConnectX;
 	}
 #endif
 
@@ -797,6 +791,7 @@ mapIPv4(const OFSocketAddress *IPv4Address)
 #ifdef OF_WII
 	_port = 0;
 #endif
+	_flags &= ~(flagMapIPv4 | flagUseConnectX);
 
 	[super close];
 }
