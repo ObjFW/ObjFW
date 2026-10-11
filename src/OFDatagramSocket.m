@@ -189,7 +189,9 @@
 	    (sender != NULL ? &sender->length : NULL))) < 0) {
 		int errNo = _OFSocketErrNo();
 
-		if (errNo != EINTR)
+		if (errNo == EMSGSIZE)
+			ret = length;
+		else if (errNo != EINTR)
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: length
