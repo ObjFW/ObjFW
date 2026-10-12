@@ -240,6 +240,7 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 	OFNull *nullObject = [OFNull null];
 	for (int i = 0; i < events; i++) {
 		if (eventList[i].events & (EPOLLERR | EPOLLHUP)) {
+			void *pool2 = objc_autoreleasePoolPush();
 			id object = eventList[i].data.ptr;
 
 			if ([_readObjects containsObject: object] &&
@@ -259,6 +260,8 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 					[_delegate
 					    objectIsReadyForWriting: object];
 			}
+
+			objc_autoreleasePoolPop(pool2);
 
 			continue;
 		}

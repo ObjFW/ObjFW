@@ -211,6 +211,32 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 	}
 
 	for (size_t i = 0; i < nFDs; i++) {
+		if (FDs[i].revents & (POLLERR | POLLHUP)) {
+			void *pool2 = objc_autoreleasePoolPush();
+			id object = [objects objectAtIndex: i];
+
+			if ([_readObjects containsObject: object] &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading: object];
+
+			if ([_connectObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForConnecting: object];
+			} else {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForWriting: object];
+			}
+
+			objc_autoreleasePoolPop(pool2);
+
+			continue;
+		}
+
 		if (FDs[i].revents & POLLIN) {
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
@@ -235,7 +261,7 @@ removeObject(OFPollKernelEventObserver *self, id object, int fd, short events)
 			objc_autoreleasePoolPop(pool2);
 		}
 
-		if (FDs[i].revents & (POLLOUT | POLLHUP)) {
+		if (FDs[i].revents & POLLOUT) {
 			void *pool2 = objc_autoreleasePoolPush();
 			id object = [objects objectAtIndex: i];
 
