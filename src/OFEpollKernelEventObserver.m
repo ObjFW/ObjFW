@@ -239,6 +239,30 @@ static const OFMapTableFunctions mapFunctions = { NULL };
 
 	OFNull *nullObject = [OFNull null];
 	for (int i = 0; i < events; i++) {
+		if (eventList[i].events & (EPOLLERR | EPOLLHUP)) {
+			id object = eventList[i].data.ptr;
+
+			if ([_readObjects containsObject: object] &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading:
+				    eventList[i].data.ptr];
+
+			if ([_connectObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForConnecting:)])
+					[_delegate
+					    objectIsReadyForConnecting: object];
+			} else if ([_writeObjects containsObject: object]) {
+				if ([_delegate respondsToSelector:
+				    @selector(objectIsReadyForWriting:)])
+					[_delegate
+					    objectIsReadyForWriting: object];
+			}
+
+			continue;
+		}
+
 		if (eventList[i].events & EPOLLIN) {
 			if (eventList[i].data.ptr == nullObject) {
 				char buffer;
