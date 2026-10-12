@@ -262,7 +262,7 @@ parseValue(OFData *self, OF_KINDOF(OFASN1Value *) *value, size_t depthLimit)
 @implementation OFData (DERParsing)
 - (OF_KINDOF(OFASN1Value *))valueByParsingDER
 {
-	return [self valueByParsingDERWithDepthLimit: 32];
+	return [self valueByParsingDERWithDepthLimit: 128];
 }
 
 - (OF_KINDOF(OFASN1Value *))valueByParsingDERWithDepthLimit: (size_t)depthLimit

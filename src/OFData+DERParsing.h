@@ -40,7 +40,7 @@ extern int _OFData_DERParsing_reference;
 /**
  * @brief Parses the ASN.1 DER representation and returns it as an ASN.1 value.
  *
- * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ * @param depthLimit The maximum depth the parser should accept (defaults to 128
  *		     if not specified, 0 means no limit (insecure!))
  * @return The ASN.1 DER representation as an ASN.1 value
  */
