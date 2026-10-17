@@ -403,10 +403,10 @@ addBase128ValueToData(OFMutableData *data, unsigned long long value)
 			[namedIdentifier appendString: stringValue];
 	}
 
-	OFString *ret = [OFString stringWithFormat: @"<%@ [%@ %@]: %@>",
+	OFString *ret = [[OFString alloc] initWithFormat:
+	    @"<%@ [%@ %@]: %@>",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), namedIdentifier];
-	objc_retain(ret);
 
 	objc_autoreleasePoolPop(pool);
 

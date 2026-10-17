@@ -22,7 +22,6 @@
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFArray.h"
-#import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
@@ -64,8 +63,7 @@
 
 		if (![value isKindOfClass: [OFASN1OctetString class]])
 			@throw [OFInvalidFormatException exception];
-		_extensionValue =
-		    objc_retain([[value octets] valueByParsingDER]);
+		_extensionValue = objc_retain([value octets]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -86,12 +84,7 @@
 
 - (OFString *)description
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *extensionValue = [[_extensionValue description]
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
-
-	OFString *ret = [OFString stringWithFormat:
+	return [OFString stringWithFormat:
 	    @"<%@ [%@ %@]:\n"
 	    @"\tExtension ID = %@\n"
 	    @"\tCritical = %@\n"
@@ -99,11 +92,6 @@
 	    @">",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _extensionID,
-	    (_critical ? @"true" : @"false"), extensionValue];
-	objc_retain(ret);
-
-	objc_autoreleasePoolPop(pool);
-
-	return objc_autoreleaseReturnValue(ret);
+	    (_critical ? @"true" : @"false"), _extensionValue];
 }
 @end

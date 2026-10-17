@@ -33,7 +33,7 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFASN1ObjectIdentifier *_extensionID;
 	bool _critical;
-	OF_KINDOF(OFASN1Value *) _extensionValue;
+	OFData *_extensionValue;
 }
 
 /**
@@ -47,9 +47,9 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic, getter=isCritical) bool critical;
 
 /**
- * @brief The extnValue of the Extension with DER already parsed.
+ * @brief The extnValue of the Extension.
  */
-@property (readonly, nonatomic) OF_KINDOF(OFASN1Value *) extensionValue;
+@property (readonly, nonatomic) OFData *extensionValue;
 @end
 
 OF_ASSUME_NONNULL_END
