@@ -69,6 +69,7 @@ void *__objc_class_name_OFASN1NumericString;
 void *__objc_class_name_OFASN1ObjectIdentifier;
 void *__objc_class_name_OFASN1OctetString;
 void *__objc_class_name_OFASN1PrintableString;
+void *__objc_class_name_OFASN1RelativeOID;
 void *__objc_class_name_OFASN1Sequence;
 void *__objc_class_name_OFASN1Set;
 void *__objc_class_name_OFASN1TextString;

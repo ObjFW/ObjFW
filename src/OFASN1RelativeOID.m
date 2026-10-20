@@ -1,0 +1,262 @@
+/*
+ * Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>
+ *
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3.0 only,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * version 3.0 for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3.0 along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
+ */
+
+#include "config.h"
+
+#import "OFASN1RelativeOID.h"
+#import "OFASN1Value+Private.h"
+#import "OFArray.h"
+#import "OFData.h"
+#import "OFDictionary.h"
+#import "OFNumber.h"
+#import "OFString.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
+
+@implementation OFASN1RelativeOID
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+{
+	return objc_autoreleaseReturnValue([[self alloc] initWithArcs: arcs]);
+}
+
++ (instancetype)identifierWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+			  tagClass: (OFASN1TagClass)tagClass
+			 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithArcs: arcs
+		tagClass: tagClass
+	       tagNumber: tagNumber]);
+}
+
++ (instancetype)identifierWithString: (OFString *)string
+{
+	return objc_autoreleaseReturnValue(
+	    [[self alloc] initWithString: string]);
+}
+
++ (instancetype)identifierWithString: (OFString *)string
+			    tagClass: (OFASN1TagClass)tagClass
+			   tagNumber: (OFASN1TagNumber)tagNumber
+{
+	return objc_autoreleaseReturnValue([[self alloc]
+	    initWithString: string
+		  tagClass: tagClass
+		 tagNumber: tagNumber]);
+}
+
+- (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+{
+	return [self initWithArcs: arcs
+			 tagClass: OFASN1TagClassUniversal
+			tagNumber: OFASN1TagNumberRelativeOID];
+}
+
+static void
+addBase128ValueToData(OFMutableData *data, unsigned long long value)
+{
+	if (value <= 0x7F) {
+		unsigned char byte = value & 0x7F;
+		[data addItem: &byte];
+		return;
+	}
+
+	size_t startPos = data.count;
+
+	while (value > 0) {
+		unsigned char byte = (value & 0x7F) | 0x80;
+		value >>= 7;
+		[data addItem: &byte];
+	}
+
+	size_t count = data.count - startPos;
+	unsigned char *items = (unsigned char *)data.mutableItems + startPos;
+	for (size_t i = 0, j = count - 1; i < count / 2; i++, j--) {
+		items[i] ^= items[j];
+		items[j] ^= items[i];
+		items[i] ^= items[j];
+	}
+
+	items[count - 1] &= 0x7F;
+}
+
+- (instancetype)initWithArcs: (OFArray OF_GENERIC(OFNumber *) *)arcs
+		    tagClass: (OFASN1TagClass)tagClass
+		   tagNumber: (OFASN1TagNumber)tagNumber
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	OFMutableData *DEREncodedContents;
+	@try {
+		DEREncodedContents = [OFMutableData data];
+
+		for (OFNumber *arc in arcs)
+			addBase128ValueToData(DEREncodedContents,
+			    arc.unsignedLongLongValue);
+
+		[DEREncodedContents makeImmutable];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithDEREncodedContents: DEREncodedContents
+				       tagClass: tagClass
+				      tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
+- (instancetype)initWithString: (OFString *)string
+{
+	return [self initWithString: string
+			   tagClass: OFASN1TagClassUniversal
+			  tagNumber: OFASN1TagNumberRelativeOID];
+}
+
+- (instancetype)initWithString: (OFString *)string
+		      tagClass: (OFASN1TagClass)tagClass
+		     tagNumber: (OFASN1TagNumber)tagNumber
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	OFArray OF_GENERIC(OFNumber *) *arcs;
+	@try {
+		arcs = [[string componentsSeparatedByString: @"."]
+		    valueForKey: @"unsignedLongLongValue"];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	self = [self initWithArcs: arcs
+			 tagClass: tagClass
+			tagNumber: tagNumber];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
+- (instancetype)initWithDEREncodedContents: (OFData *)DEREncodedContents
+				  tagClass: (OFASN1TagClass)tagClass
+				 tagNumber: (OFASN1TagNumber)tagNumber
+{
+	self = [super initWithDEREncodedContents: DEREncodedContents
+					tagClass: tagClass
+				       tagNumber: tagNumber];
+
+	@try {
+		const unsigned char *items = DEREncodedContents.items;
+		size_t count = DEREncodedContents.count;
+
+		if (count == 0)
+			@throw [OFInvalidArgumentException exception];
+
+		bool first = true;
+		for (size_t i = 0; i < count; i++) {
+			if (first && items[i] == 0x80)
+				@throw [OFInvalidFormatException exception];
+
+			first = !(items[i] & 0x80);
+		}
+
+		if (items[count - 1] & 0x80)
+			@throw [OFInvalidFormatException exception];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (OFArray OF_GENERIC(OFNumber *) *)arcs
+{
+	OFMutableArray OF_GENERIC(OFNumber *) *arcs =
+	    [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	const unsigned char *items = _DEREncodedContents.items;
+	size_t count = _DEREncodedContents.count;
+
+	unsigned long long value = 0;
+	uint_fast8_t bits = 0;
+	for (size_t i = 0; i < count; i++) {
+		if ((ULLONG_MAX >> 7) < value || UINT_FAST8_MAX - bits < 7)
+			@throw [OFOutOfRangeException exception];
+
+		value = (value << 7) | (items[i] & 0x7F);
+		bits += 7;
+
+		if (items[i] & 0x80)
+			continue;
+
+		[arcs addObject: [OFNumber numberWithUnsignedLongLong: value]];
+
+		value = 0;
+		bits = 0;
+	}
+
+	[arcs makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return arcs;
+}
+
+- (OFString *)stringValue
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue = [[self.arcs valueForKey: @"stringValue"]
+	    componentsJoinedByString: @"."];
+
+	objc_retain(stringValue);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(stringValue);
+}
+
+- (OFString *)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray OF_GENERIC(OFNumber *) *arcs = self.arcs;
+
+	OFMutableString *identifier = [OFMutableString string];
+	for (OFNumber *arc in arcs) {
+		if (identifier.length > 0)
+			[identifier appendString: @"."];
+
+		[identifier appendString: arc.stringValue];
+	}
+
+	OFString *ret = [OFString stringWithFormat: @"<%@ [%@ %@]: %@>",
+	    self.class, OFASN1TagClassDescription(_tagClass),
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), identifier];
+	objc_retain(ret);
+
+	objc_autoreleasePoolPop(pool);
+
+	return objc_autoreleaseReturnValue(ret);
+}
+@end

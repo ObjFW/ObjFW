@@ -25,6 +25,7 @@ SRCS = OFASN1BMPString.m			\
        OFASN1ObjectIdentifier.m			\
        OFASN1OctetString.m			\
        OFASN1PrintableString.m			\
+       OFASN1RelativeOID.m			\
        OFASN1Sequence.m				\
        OFASN1Set.m				\
        OFASN1TextString.m			\
