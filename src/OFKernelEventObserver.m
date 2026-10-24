@@ -69,7 +69,7 @@
 + (instancetype)alloc
 {
 	if (self == [OFKernelEventObserver class])
-#if defined(HAVE_KQUEUE)
+#if defined(HAVE_KQUEUE) && (!defined(OF_MACOS) || !defined(OF_HAVE_APPLETALK))
 		return [OFKqueueKernelEventObserver alloc];
 #elif defined(HAVE_EPOLL)
 		return [OFEpollKernelEventObserver alloc];
