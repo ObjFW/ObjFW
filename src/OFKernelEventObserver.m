@@ -73,7 +73,7 @@
 		return [OFKqueueKernelEventObserver alloc];
 #elif defined(HAVE_EPOLL)
 		return [OFEpollKernelEventObserver alloc];
-#elif defined(HAVE_POLL)
+#elif defined(HAVE_POLL) && (!defined(OF_MACOS) || !defined(OF_HAVE_APPLETALK))
 		return [OFPollKernelEventObserver alloc];
 #elif defined(HAVE_SELECT)
 		return [OFSelectKernelEventObserver alloc];
