@@ -254,10 +254,8 @@ copyFDSet(fd_set *set, int maxFD)
 		    exceptionWithObserver: self
 				    errNo: EBADF];
 
-#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
-	if (fd >= (int)FD_SETSIZE)
+	if (fd > _maxFD)
 		@throw [OFOutOfRangeException exception];
-#endif
 
 	FD_CLR((OFSocketHandle)fd, _readFDs);
 
@@ -276,10 +274,8 @@ copyFDSet(fd_set *set, int maxFD)
 				    errNo: EBADF];
 
 
-#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
-	if (fd >= (int)FD_SETSIZE)
+	if (fd > _maxFD)
 		@throw [OFOutOfRangeException exception];
-#endif
 
 	if (![_connectObjects containsObject: (id)object])
 		FD_CLR((OFSocketHandle)fd, _writeFDs);
@@ -299,10 +295,8 @@ copyFDSet(fd_set *set, int maxFD)
 				    errNo: EBADF];
 
 
-#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
-	if (fd >= (int)FD_SETSIZE)
+	if (fd > _maxFD)
 		@throw [OFOutOfRangeException exception];
-#endif
 
 	if (![_writeObjects containsObject: (id)object])
 		FD_CLR((OFSocketHandle)fd, _writeFDs);
