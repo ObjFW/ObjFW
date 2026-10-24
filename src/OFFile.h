@@ -35,6 +35,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFFile OFFile.h ObjFW/ObjFW.h
  *
  * @brief A class which provides methods to read and write files.
+ *
+ * @note Regular files do not support asynchonous operations! These only work
+ *	 on files that are pipes or devices.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFFile: OFSeekableStream
