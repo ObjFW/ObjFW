@@ -33,7 +33,7 @@
 # import "OFPlainMutex.h"
 #endif
 
-#ifdef __SEH__
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 
