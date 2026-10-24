@@ -21,6 +21,10 @@
 
 #include "platform.h"
 
+#if defined(OF_MACOS) || defined(OF_IOS)
+# define _DARWIN_UNLIMITED_SELECT
+#endif
+
 #ifdef OF_WINDOWS
 /* Win32 has a ridiculous default of 64, even though it supports much more. */
 # define FD_SETSIZE 1024
@@ -52,15 +56,75 @@
 # pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
+static void
+growFDSets(fd_set **readFDs, fd_set **writeFDs, fd_set **exceptFDs,
+    int maxFD, int newFD)
+{
+#if defined(OF_MACOS) || defined(OF_IOS)
+	size_t oldSize = OFRoundUpToPowerOf2(sizeof(fd_mask),
+	    (maxFD + 1) / NFDBITS + ((maxFD + 1) % NFDBITS > 0 ? 1 : 0));
+	size_t newSize = OFRoundUpToPowerOf2(sizeof(fd_mask),
+	    (newFD + 1) / NFDBITS + ((newFD + 1) % NFDBITS > 0 ? 1 : 0));
+
+	if (newSize == oldSize)
+		return;
+
+	*readFDs = OFResizeMemory(*readFDs, newSize, sizeof(fd_mask));
+	*writeFDs = OFResizeMemory(*writeFDs, newSize, sizeof(fd_mask));
+	*exceptFDs = OFResizeMemory(*exceptFDs, newSize, sizeof(fd_mask));
+
+	for (int i = maxFD + 1; i <= newFD; i++) {
+		FD_CLR(i, *readFDs);
+		FD_CLR(i, *writeFDs);
+		FD_CLR(i, *exceptFDs);
+	}
+#endif
+}
+
+static fd_set *
+copyFDSet(fd_set *set, int maxFD)
+{
+#if defined(OF_MACOS) || defined(OF_IOS)
+	size_t size = OFRoundUpToPowerOf2(sizeof(fd_mask),
+	    (maxFD + 1) / NFDBITS + ((maxFD + 1) % NFDBITS > 0 ? 1 : 0));
+
+	fd_set *copy = OFAllocMemory(size, sizeof(fd_mask));
+	OFCopyMemory(copy, set, size * sizeof(fd_mask));
+#else
+	fd_set *copy = OFAllocMemory(1, sizeof(fd_set));
+# ifdef FD_COPY
+	FD_COPY(set, copy);
+# else
+	*copy = *set;
+# endif
+#endif
+
+	return copy;
+}
+
 @implementation OFSelectKernelEventObserver
 - (instancetype)initWithRunLoopMode: (OFRunLoopMode)runLoopMode
 {
 	self = [super initWithRunLoopMode: runLoopMode];
 
 	@try {
-		FD_ZERO(&_readFDs);
-		FD_ZERO(&_writeFDs);
-		FD_ZERO(&_exceptFDs);
+#if defined(OF_MACOS) || defined(OF_IOS)
+		size_t size = OFRoundUpToPowerOf2(sizeof(fd_mask),
+		    (_cancelFD[0] + 1) / NFDBITS +
+		    ((_cancelFD[0] + 1) % NFDBITS > 0 ? 1 : 0));
+
+		_readFDs = OFAllocZeroedMemory(size, sizeof(fd_mask));
+		_writeFDs = OFAllocZeroedMemory(size, sizeof(fd_mask));
+		_exceptFDs = OFAllocZeroedMemory(size, sizeof(fd_mask));
+#else
+		_readFDs = OFAllocMemory(1, sizeof(*_readFDs));
+		_writeFDs = OFAllocMemory(1, sizeof(*_writeFDs));
+		_exceptFDs = OFAllocMemory(1, sizeof(*_exceptFDs));
+
+		FD_ZERO(_readFDs);
+		FD_ZERO(_writeFDs);
+		FD_ZERO(_exceptFDs);
+#endif
 
 #ifdef OF_AMIGAOS
 		_maxFD = -1;
@@ -71,7 +135,7 @@
 			    exceptionWithClass: self.class];
 # endif
 
-		FD_SET(_cancelFD[0], &_readFDs);
+		FD_SET(_cancelFD[0], _readFDs);
 
 		if (_cancelFD[0] > INT_MAX)
 			@throw [OFOutOfRangeException exception];
@@ -84,6 +148,15 @@
 	}
 
 	return self;
+}
+
+- (void)dealloc
+{
+	OFFreeMemory(_readFDs);
+	OFFreeMemory(_writeFDs);
+	OFFreeMemory(_exceptFDs);
+
+	[super dealloc];
 }
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -103,10 +176,12 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (fd > _maxFD)
+	if (fd > _maxFD) {
+		growFDSets(&_readFDs, &_writeFDs, &_exceptFDs, _maxFD, fd);
 		_maxFD = fd;
+	}
 
-	FD_SET((OFSocketHandle)fd, &_readFDs);
+	FD_SET((OFSocketHandle)fd, _readFDs);
 
 	[super addObjectForReading: object];
 }
@@ -128,10 +203,12 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (fd > _maxFD)
+	if (fd > _maxFD) {
+		growFDSets(&_readFDs, &_writeFDs, &_exceptFDs, _maxFD, fd);
 		_maxFD = fd;
+	}
 
-	FD_SET((OFSocketHandle)fd, &_writeFDs);
+	FD_SET((OFSocketHandle)fd, _writeFDs);
 
 	[super addObjectForWriting: object];
 }
@@ -153,12 +230,14 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (fd > _maxFD)
+	if (fd > _maxFD) {
+		growFDSets(&_readFDs, &_writeFDs, &_exceptFDs, _maxFD, fd);
 		_maxFD = fd;
+	}
 
-	FD_SET((OFSocketHandle)fd, &_writeFDs);
+	FD_SET((OFSocketHandle)fd, _writeFDs);
 #ifdef OF_WINDOWS
-	FD_SET((OFSocketHandle)fd, &_exceptFDs);
+	FD_SET((OFSocketHandle)fd, _exceptFDs);
 #endif
 
 	[super addObjectForConnecting: object];
@@ -180,7 +259,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR((OFSocketHandle)fd, &_readFDs);
+	FD_CLR((OFSocketHandle)fd, _readFDs);
 
 	[super removeObjectForReading: object];
 }
@@ -203,7 +282,7 @@
 #endif
 
 	if (![_connectObjects containsObject: (id)object])
-		FD_CLR((OFSocketHandle)fd, &_writeFDs);
+		FD_CLR((OFSocketHandle)fd, _writeFDs);
 
 	[super removeObjectForWriting: object];
 }
@@ -226,9 +305,9 @@
 #endif
 
 	if (![_writeObjects containsObject: (id)object])
-		FD_CLR((OFSocketHandle)fd, &_writeFDs);
+		FD_CLR((OFSocketHandle)fd, _writeFDs);
 #ifdef OF_WINDOWS
-	FD_CLR((OFSocketHandle)fd, &_exceptFDs);
+	FD_CLR((OFSocketHandle)fd, _exceptFDs);
 #endif
 
 	[super removeObjectForConnecting: object];
@@ -242,142 +321,142 @@
 	if (timeInterval < 0.0)
 		timeInterval = 0.0;
 
-	fd_set readFDs;
-	fd_set writeFDs;
-	fd_set exceptFDs;
-#ifdef FD_COPY
-	FD_COPY(&_readFDs, &readFDs);
-	FD_COPY(&_writeFDs, &writeFDs);
-	FD_COPY(&_exceptFDs, &exceptFDs);
-#else
-	readFDs = _readFDs;
-	writeFDs = _writeFDs;
-	exceptFDs = _exceptFDs;
-#endif
+	fd_set *readFDs = NULL, *writeFDs = NULL, *exceptFDs = NULL;
+	@try {
+		readFDs = copyFDSet(_readFDs, _maxFD);
+		writeFDs = copyFDSet(_writeFDs, _maxFD);
+		exceptFDs = copyFDSet(_exceptFDs, _maxFD);
 
-	/*
-	 * We cast to int before assigning to tv_usec in order to avoid a
-	 * warning with Apple GCC on PowerPC. POSIX defines this as suseconds_t,
-	 * however, this is not available on Win32. As an int should always
-	 * satisfy the required range, we just cast to int.
-	 */
-	struct timeval timeout = {
+		/*
+		 * We cast to int before assigning to tv_usec in order to avoid
+		 * a warning with Apple GCC on PowerPC. POSIX defines this as
+		 * suseconds_t, however, this is not available on Win32. As an
+		 * int should always satisfy the required range, we just cast
+		 * to int.
+		 */
+		struct timeval timeout = {
 #ifndef OF_WINDOWS
-		.tv_sec = (time_t)floor(timeInterval),
+			.tv_sec = (time_t)floor(timeInterval),
 #else
-		.tv_sec = (long)floor(timeInterval),
+			.tv_sec = (long)floor(timeInterval),
 #endif
-		.tv_usec = (int)
-		    ((timeInterval - floor(timeInterval)) * 1000000.0)
-	};
+			.tv_usec = (int)
+			    ((timeInterval - floor(timeInterval)) * 1000000.0)
+		};
 
 #ifdef OF_AMIGAOS
-	BYTE cancelSignal;
-	if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
-		@throw [OFObserveKernelEventsFailedException
-		    exceptionWithObserver: self
-				    errNo: EAGAIN];
-
-	ULONG execSignalMask = _execSignalMask | (1ul << cancelSignal);
-
-	Forbid();
-
-	_waitingTask = FindTask(NULL);
-	_cancelSignal = cancelSignal;
-
-	int events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
-	    (void *)(timeInterval != 64060588800.0 ? &timeout : NULL),
-	    &execSignalMask);
-
-	execSignalMask &= ~(1ul << cancelSignal);
-
-	_waitingTask = NULL;
-	FreeSignal(_cancelSignal);
-
-	Permit();
-
-	if (events < 0) {
-		int errNo = _OFSocketErrNo();
-
-		if (errNo != EINTR)
+		BYTE cancelSignal;
+		if ((cancelSignal = AllocSignal(-1)) == (BYTE)-1)
 			@throw [OFObserveKernelEventsFailedException
 			    exceptionWithObserver: self
-					    errNo: errNo];
-	} else if (execSignalMask != 0 &&
-	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
-		[_delegate execSignalWasReceived: execSignalMask];
+					    errNo: EAGAIN];
+
+		ULONG execSignalMask = _execSignalMask | (1ul << cancelSignal);
+
+		Forbid();
+
+		_waitingTask = FindTask(NULL);
+		_cancelSignal = cancelSignal;
+
+		int events = WaitSelect(_maxFD + 1, readFDs, writeFDs,
+		    exceptFDs, (void *)(timeInterval != 64060588800.0 ?
+		    &timeout : NULL), &execSignalMask);
+
+		execSignalMask &= ~(1ul << cancelSignal);
+
+		_waitingTask = NULL;
+		FreeSignal(_cancelSignal);
+
+		Permit();
+
+		if (events < 0) {
+			int errNo = _OFSocketErrNo();
+
+			if (errNo != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errNo];
+		} else if (execSignalMask != 0 && [_delegate respondsToSelector:
+		    @selector(execSignalWasReceived:)])
+			[_delegate execSignalWasReceived: execSignalMask];
 #else
-	int events;
-	while ((events = select(_maxFD + 1, &readFDs, &writeFDs, &exceptFDs,
-	    (timeInterval != 64060588800.0 ? &timeout : NULL))) < 0) {
-		int errNo = _OFSocketErrNo();
+		int events;
+		while ((events = select(_maxFD + 1, readFDs, writeFDs,
+		    exceptFDs, (timeInterval != 64060588800.0 ?
+		    &timeout : NULL))) < 0) {
+			int errNo = _OFSocketErrNo();
 
-		if (errNo != EINTR)
-			@throw [OFObserveKernelEventsFailedException
-			    exceptionWithObserver: self
-					    errNo: errNo];
-	}
+			if (errNo != EINTR)
+				@throw [OFObserveKernelEventsFailedException
+				    exceptionWithObserver: self
+						    errNo: errNo];
+		}
 
-	if (FD_ISSET(_cancelFD[0], &readFDs)) {
-		char buffer;
+		if (FD_ISSET(_cancelFD[0], readFDs)) {
+			char buffer;
 # ifdef OF_HAVE_PIPE
-		OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
+			OFEnsure(read(_cancelFD[0], &buffer, 1) == 1);
 # else
-		OFEnsure(recvfrom(_cancelFD[0], (void *)&buffer, 1, 0, NULL,
-		    NULL) == 1);
+			OFEnsure(recvfrom(_cancelFD[0], (void *)&buffer, 1, 0,
+			    NULL, NULL) == 1);
 # endif
-	}
+		}
 #endif
 
-	void *pool = objc_autoreleasePoolPush();
+		void *pool = objc_autoreleasePoolPush();
 
-	for (id <OFReadyForReadingObserving> object in
-	    objc_autorelease([_readObjects copy])) {
-		void *pool2 = objc_autoreleasePoolPush();
-		int fd = object.fileDescriptorForReading;
+		for (id <OFReadyForReadingObserving> object in
+		    objc_autorelease([_readObjects copy])) {
+			void *pool2 = objc_autoreleasePoolPush();
+			int fd = object.fileDescriptorForReading;
 
-		if (FD_ISSET((OFSocketHandle)fd, &readFDs) &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForReading:)])
-			[_delegate objectIsReadyForReading: object];
+			if (FD_ISSET((OFSocketHandle)fd, readFDs) &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading: object];
 
-		objc_autoreleasePoolPop(pool2);
-	}
+			objc_autoreleasePoolPop(pool2);
+		}
 
-	for (id <OFReadyForWritingObserving> object in
-	    objc_autorelease([_writeObjects copy])) {
-		void *pool2 = objc_autoreleasePoolPush();
-		int fd = object.fileDescriptorForWriting;
+		for (id <OFReadyForWritingObserving> object in
+		    objc_autorelease([_writeObjects copy])) {
+			void *pool2 = objc_autoreleasePoolPush();
+			int fd = object.fileDescriptorForWriting;
 
-		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForWriting:)])
-			[_delegate objectIsReadyForWriting: object];
+			if (FD_ISSET((OFSocketHandle)fd, writeFDs) &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForWriting:)])
+				[_delegate objectIsReadyForWriting: object];
 
-		objc_autoreleasePoolPop(pool2);
-	}
+			objc_autoreleasePoolPop(pool2);
+		}
 
-	for (id <OFReadyForConnectingObserving> object in
-	    objc_autorelease([_connectObjects copy])) {
-		void *pool2 = objc_autoreleasePoolPush();
-		int fd = object.fileDescriptorForConnecting;
+		for (id <OFReadyForConnectingObserving> object in
+		    objc_autorelease([_connectObjects copy])) {
+			void *pool2 = objc_autoreleasePoolPush();
+			int fd = object.fileDescriptorForConnecting;
 
 #ifdef OF_WINDOWS
-		if ((FD_ISSET((OFSocketHandle)fd, &writeFDs) ||
-		    FD_ISSET((OFSocketHandle)fd, &exceptFDs)) &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForConnecting:)])
-			[_delegate objectIsReadyForConnecting: object];
+			if ((FD_ISSET((OFSocketHandle)fd, writeFDs) ||
+			    FD_ISSET((OFSocketHandle)fd, exceptFDs)) &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForConnecting:)])
+				[_delegate objectIsReadyForConnecting: object];
 #else
-		if (FD_ISSET((OFSocketHandle)fd, &writeFDs) &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForConnecting:)])
-			[_delegate objectIsReadyForConnecting: object];
+			if (FD_ISSET((OFSocketHandle)fd, writeFDs) &&
+			    [_delegate respondsToSelector:
+			    @selector(objectIsReadyForConnecting:)])
+				[_delegate objectIsReadyForConnecting: object];
 #endif
 
-		objc_autoreleasePoolPop(pool2);
-	}
+			objc_autoreleasePoolPop(pool2);
+		}
 
-	objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool);
+	} @finally {
+		OFFreeMemory(readFDs);
+		OFFreeMemory(writeFDs);
+		OFFreeMemory(exceptFDs);
+	}
 }
 @end

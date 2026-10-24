@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFSelectKernelEventObserver: OFKernelEventObserver
 {
-	fd_set _readFDs, _writeFDs, _exceptFDs;
+	fd_set *_readFDs, *_writeFDs, *_exceptFDs;
 	int _maxFD;
 }
 @end
