@@ -66,12 +66,12 @@ growFDSets(fd_set **readFDs, fd_set **writeFDs, fd_set **exceptFDs,
 	size_t newSize = OFRoundUpToPowerOf2(sizeof(fd_mask),
 	    (newFD + 1) / NFDBITS + ((newFD + 1) % NFDBITS > 0 ? 1 : 0));
 
-	if (newSize == oldSize)
-		return;
-
-	*readFDs = OFResizeMemory(*readFDs, newSize, sizeof(fd_mask));
-	*writeFDs = OFResizeMemory(*writeFDs, newSize, sizeof(fd_mask));
-	*exceptFDs = OFResizeMemory(*exceptFDs, newSize, sizeof(fd_mask));
+	if (newSize != oldSize) {
+		*readFDs = OFResizeMemory(*readFDs, newSize, sizeof(fd_mask));
+		*writeFDs = OFResizeMemory(*writeFDs, newSize, sizeof(fd_mask));
+		*exceptFDs = OFResizeMemory(*exceptFDs,
+		    newSize, sizeof(fd_mask));
+	}
 
 	for (int i = maxFD + 1; i <= newFD; i++) {
 		FD_CLR(i, *readFDs);
