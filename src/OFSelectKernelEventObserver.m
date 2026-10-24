@@ -171,7 +171,7 @@ copyFDSet(fd_set *set, int maxFD)
 	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -198,7 +198,7 @@ copyFDSet(fd_set *set, int maxFD)
 	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -225,7 +225,7 @@ copyFDSet(fd_set *set, int maxFD)
 	if (fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -254,7 +254,7 @@ copyFDSet(fd_set *set, int maxFD)
 		    exceptionWithObserver: self
 				    errNo: EBADF];
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -276,7 +276,7 @@ copyFDSet(fd_set *set, int maxFD)
 				    errNo: EBADF];
 
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -299,7 +299,7 @@ copyFDSet(fd_set *set, int maxFD)
 				    errNo: EBADF];
 
 
-#ifndef OF_WINDOWS
+#if !defined(OF_MACOS) && !defined(OF_IOS) && !defined(OF_WINDOWS)
 	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
