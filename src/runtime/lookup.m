@@ -41,7 +41,31 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 	bool isClass =
 	    object_getClass(object)->info & _OBJC_CLASS_INFO_METACLASS;
 
-	if (!(object_getClass(object)->info & _OBJC_CLASS_INFO_INITIALIZED)) {
+	if (object_getClass(object)->info & _OBJC_CLASS_INFO_INITIALIZING) {
+		IMP imp;
+
+		_objc_globalMutex_lock();
+
+		/*
+		 * Initialization might have finished while we were waiting for
+		 * the lock.
+		 */
+		if (object_getClass(object)->info &
+		    _OBJC_CLASS_INFO_INITIALIZED) {
+			_objc_globalMutex_unlock();
+
+			return lookup(object, selector);
+		}
+
+		imp = _objc_dtable_get(object_getClass(object)->initDTable,
+		    (uint32_t)selector->UID);
+
+		_objc_globalMutex_unlock();
+
+		if (imp != (IMP)0)
+			return imp;
+	} else if (!(object_getClass(object)->info &
+	    _OBJC_CLASS_INFO_INITIALIZED)) {
 		Class class = (isClass
 		    ? (Class)object : object_getClass(object));
 
@@ -128,7 +152,7 @@ class_respondsToSelector(Class class, SEL selector)
 	if (class == Nil)
 		return false;
 
-	return (_objc_dtable_get(class->dTable,
+	return (_objc_dtable_get(class->initDTable,
 	    (uint32_t)selector->UID) != (IMP)0);
 }
 

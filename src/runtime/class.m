@@ -47,8 +47,8 @@ registerClass(Class class)
 	if (emptyDTable == NULL)
 		emptyDTable = _objc_dtable_new();
 
-	class->dTable = emptyDTable;
-	class->isa->dTable = emptyDTable;
+	class->dTable = class->initDTable = emptyDTable;
+	class->isa->dTable = class->isa->initDTable = emptyDTable;
 
 	if (strcmp(class->name, "Protocol") != 0)
 		classesCount++;
@@ -203,12 +203,13 @@ _objc_updateDTable(Class class)
 	if (!(class->info & _OBJC_CLASS_INFO_DTABLE))
 		return;
 
-	if (class->dTable == emptyDTable)
-		class->dTable = _objc_dtable_new();
+	if (class->initDTable == emptyDTable)
+		class->initDTable = _objc_dtable_new();
 
 	if (class->superclass != Nil) {
 		superclassInfo = class->superclass->info;
-		_objc_dtable_copy(class->dTable, class->superclass->dTable);
+		_objc_dtable_copy(class->initDTable,
+		    class->superclass->initDTable);
 	}
 
 	for (struct objc_method_list *methodList = class->methodList;
@@ -216,7 +217,8 @@ _objc_updateDTable(Class class)
 		for (unsigned int i = 0; i < methodList->count; i++) {
 			SEL selector = (SEL)&methodList->methods[i].selector;
 
-			_objc_dtable_set(class->dTable, (uint32_t)selector->UID,
+			_objc_dtable_set(class->initDTable,
+			    (uint32_t)selector->UID,
 			    methodList->methods[i].implementation);
 
 			if (sel_isEqual(selector, retainSel) ||
@@ -244,7 +246,7 @@ _objc_updateDTable(Class class)
 					SEL selector = (SEL)
 					    &methodList->methods[j].selector;
 
-					_objc_dtable_set(class->dTable,
+					_objc_dtable_set(class->initDTable,
 					    (uint32_t)selector->UID,
 					    methodList->methods[j]
 					    .implementation);
@@ -270,6 +272,9 @@ _objc_updateDTable(Class class)
 		class->info |= _OBJC_CLASS_INFO_RUNTIME_RR;
 	else
 		class->info &= ~_OBJC_CLASS_INFO_RUNTIME_RR;
+
+	if (!(class->info & _OBJC_CLASS_INFO_INITIALIZING))
+		class->dTable = class->initDTable;
 
 	if (class->subclassList != NULL)
 		for (Class *iter = class->subclassList; *iter != NULL; iter++)
@@ -387,7 +392,8 @@ initializeClass(Class class)
 	if (initializeSel == NULL)
 		initializeSel = sel_registerName("initialize");
 
-	if (class->info & _OBJC_CLASS_INFO_INITIALIZED)
+	if (class->info &
+	    (_OBJC_CLASS_INFO_INITIALIZING | _OBJC_CLASS_INFO_INITIALIZED))
 		return;
 
 	if (class->superclass)
@@ -400,30 +406,33 @@ initializeClass(Class class)
 	if (class->info & _OBJC_CLASS_INFO_INITIALIZED)
 		return;
 
-	class->info |= _OBJC_CLASS_INFO_DTABLE;
-	class->isa->info |= _OBJC_CLASS_INFO_DTABLE;
+	class->info |=
+	    (_OBJC_CLASS_INFO_INITIALIZING | _OBJC_CLASS_INFO_DTABLE);
+	class->isa->info |=
+	    (_OBJC_CLASS_INFO_INITIALIZING | _OBJC_CLASS_INFO_DTABLE);
 
 	_objc_updateDTable(class);
 	_objc_updateDTable(class->isa);
 
-	/*
-	 * Set it first to prevent calling it recursively due to message sends
-	 * in the initialize method
-	 */
-	class->info |= _OBJC_CLASS_INFO_INITIALIZED;
-	class->isa->info |= _OBJC_CLASS_INFO_INITIALIZED;
-
-	/*
-	 * +[initialize] might get called from some +[load], before the
-	 * constructors of this compilation module have been called, at which
-	 * point the selector would not be properly initialized.
-	 */
 	if (class_respondsToSelector(object_getClass(class), initializeSel)) {
 		void (*initialize)(id, SEL) = (void (*)(id, SEL))
 		    objc_msg_lookup(class, initializeSel);
 
 		initialize(class, initializeSel);
 	}
+
+	class->info |= _OBJC_CLASS_INFO_INITIALIZED;
+	class->isa->info |= _OBJC_CLASS_INFO_INITIALIZED;
+
+	/*
+	 * As soon as we publish the dTable, other threads consider the class
+	 * initialized, so this has to be last.
+	 */
+	class->dTable = class->initDTable;
+	class->isa->dTable = class->isa->initDTable;
+
+	class->info &= ~_OBJC_CLASS_INFO_INITIALIZING;
+	class->isa->info &= ~_OBJC_CLASS_INFO_INITIALIZING;
 }
 
 void
@@ -1008,10 +1017,10 @@ unregisterClass(Class class)
 		class->subclassList = NULL;
 	}
 
-	if (class->dTable != NULL && class->dTable != emptyDTable)
-		_objc_dtable_free(class->dTable);
+	if (class->initDTable != emptyDTable)
+		_objc_dtable_free(class->initDTable);
 
-	class->dTable = NULL;
+	class->dTable = class->initDTable = NULL;
 
 	if ((class->info & _OBJC_CLASS_INFO_SETUP) && class->superclass != Nil)
 		class->superclass = (Class)class->superclass->name;

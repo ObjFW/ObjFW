@@ -46,21 +46,22 @@ struct objc_class {
 	Class _Nullable *_Nullable subclassList;
 	void *_Nullable siblingClass;
 	struct objc_protocol_list *_Nullable protocols;
-	void *_Nullable GCObjectType;
+	struct objc_dtable *_Nullable initDTable;
 	unsigned long ABIVersion;
 	int32_t *_Nonnull *_Nullable ivarOffsets;
 	struct objc_property_list *_Nullable propertyList;
 };
 
 enum _objc_class_info {
-	_OBJC_CLASS_INFO_CLASS       = 0x0001,
-	_OBJC_CLASS_INFO_METACLASS   = 0x0002,
-	_OBJC_CLASS_INFO_NEW_ABI     = 0x0010,
-	_OBJC_CLASS_INFO_SETUP       = 0x0100,
-	_OBJC_CLASS_INFO_LOADED      = 0x0200,
-	_OBJC_CLASS_INFO_DTABLE      = 0x0400,
-	_OBJC_CLASS_INFO_INITIALIZED = 0x0800,
-	_OBJC_CLASS_INFO_RUNTIME_RR  = 0x1000
+	_OBJC_CLASS_INFO_CLASS        = 0x0001,
+	_OBJC_CLASS_INFO_METACLASS    = 0x0002,
+	_OBJC_CLASS_INFO_NEW_ABI      = 0x0010,
+	_OBJC_CLASS_INFO_SETUP        = 0x0100,
+	_OBJC_CLASS_INFO_LOADED       = 0x0200,
+	_OBJC_CLASS_INFO_DTABLE       = 0x0400,
+	_OBJC_CLASS_INFO_INITIALIZING = 0x0800,
+	_OBJC_CLASS_INFO_INITIALIZED  = 0x1000,
+	_OBJC_CLASS_INFO_RUNTIME_RR   = 0x2000
 };
 
 struct objc_object {
