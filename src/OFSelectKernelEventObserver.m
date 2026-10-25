@@ -401,6 +401,13 @@ copyFDSet(fd_set *set, int maxFD)
 
 		for (id <OFReadyForReadingObserving> object in
 		    objc_autorelease([_readObjects copy])) {
+			/*
+			 * Might have been removed by a handler while it is
+			 * still in our copy.
+			 */
+			if (![_readObjects containsObject: object])
+				continue;
+
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForReading;
 
@@ -416,6 +423,13 @@ copyFDSet(fd_set *set, int maxFD)
 
 		for (id <OFReadyForWritingObserving> object in
 		    objc_autorelease([_writeObjects copy])) {
+			/*
+			 * Might have been removed by a handler while it is
+			 * still in our copy.
+			 */
+			if (![_writeObjects containsObject: object])
+				continue;
+
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForWriting;
 
@@ -431,6 +445,13 @@ copyFDSet(fd_set *set, int maxFD)
 
 		for (id <OFReadyForConnectingObserving> object in
 		    objc_autorelease([_connectObjects copy])) {
+			/*
+			 * Might have been removed by a handler while it is
+			 * still in our copy.
+			 */
+			if (![_connectObjects containsObject: object])
+				continue;
+
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForConnecting;
 
