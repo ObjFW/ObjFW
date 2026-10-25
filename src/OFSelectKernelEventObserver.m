@@ -404,6 +404,8 @@ copyFDSet(fd_set *set, int maxFD)
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForReading;
 
+			OFEnsure(fd >= 0 && fd <= _maxFD);
+
 			if (FD_ISSET((OFSocketHandle)fd, readFDs) &&
 			    [_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
@@ -417,6 +419,8 @@ copyFDSet(fd_set *set, int maxFD)
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForWriting;
 
+			OFEnsure(fd >= 0 && fd <= _maxFD);
+
 			if (FD_ISSET((OFSocketHandle)fd, writeFDs) &&
 			    [_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
@@ -429,6 +433,8 @@ copyFDSet(fd_set *set, int maxFD)
 		    objc_autorelease([_connectObjects copy])) {
 			void *pool2 = objc_autoreleasePoolPush();
 			int fd = object.fileDescriptorForConnecting;
+
+			OFEnsure(fd >= 0 && fd <= _maxFD);
 
 #ifdef OF_WINDOWS
 			if ((FD_ISSET((OFSocketHandle)fd, writeFDs) ||
