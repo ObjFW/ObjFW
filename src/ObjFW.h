@@ -116,17 +116,12 @@
 # ifdef OF_HAVE_APPLETALK
 #  import "OFDDPSocket.h"
 # endif
-# import "OFGeminiClient.h"
-# import "OFGeminiRequest.h"
-# import "OFGeminiResponse.h"
-# import "OFGeminiServer.h"
 # import "OFHTTPClient.h"
 # import "OFHTTPCookie.h"
 # import "OFHTTPCookieManager.h"
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"
 # import "OFHTTPServer.h"
-# import "OFTitanRequest.h"
 #endif
 
 #import "OFPKCS8PrivateKey.h"
@@ -264,7 +259,6 @@
 # import "OFConnectIPSocketFailedException.h"
 # import "OFConnectSocketFailedException.h"
 # import "OFDNSQueryFailedException.h"
-# import "OFGeminiRequestFailedException.h"
 # import "OFHTTPRequestFailedException.h"
 # import "OFListenOnSocketFailedException.h"
 # import "OFObserveKernelEventsFailedException.h"

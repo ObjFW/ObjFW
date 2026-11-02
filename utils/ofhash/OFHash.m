@@ -90,8 +90,7 @@ static void
 version(void)
 {
 	[OFStdOut writeFormat:
-	    @"ofhash %@ (ObjFW %@) "
-	    @"<https://objfw.nil.im> <gemini://objfw.nil.im>\n"
+	    @"ofhash %@ (ObjFW %@) <https://objfw.nil.im>\n"
 	    @"Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>\n"
 	    @"Licensed under the LGPL 3.0 "
 	    @"<https://www.gnu.org/licenses/lgpl-3.0.html>\n",

@@ -27,9 +27,6 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFGeminiClient.h"
-#import "OFGeminiRequest.h"
-#import "OFGeminiResponse.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
@@ -48,7 +45,6 @@
 #endif
 
 #import "OFConnectSocketFailedException.h"
-#import "OFGeminiRequestFailedException.h"
 #import "OFGetItemAttributesFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -77,7 +73,7 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 #define BUFFER_SIZE (16 * KIBIBYTE)
 
 @interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
-    OFGeminiClientDelegate, OFStreamDelegate>
+    OFStreamDelegate>
 {
 	OFArray OF_GENERIC(OFString *) *_IRIs;
 	size_t _IRIIndex;
@@ -90,7 +86,6 @@ const char *VER = "$VER: ofhttp " OF_PREPROCESSOR_STRINGIFY(OBJFW_VERSION_MAJOR)
 	OFHTTPRequestMethod _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
-	OFGeminiClient *_geminiClient;
 	char _buffer[BUFFER_SIZE];
 	OFStream *_output;
 	unsigned long long _received, _length, _resumedFrom;
@@ -186,8 +181,7 @@ static void
 version(void)
 {
 	[OFStdOut writeFormat:
-	    @"ofhttp %@ (ObjFW %@) "
-	    @"<https://objfw.nil.im> <gemini://objfw.nil.im>\n"
+	    @"ofhttp %@ (ObjFW %@) <https://objfw.nil.im>\n"
 	    @"Copyright (c) 2008-2026 Jonathan Schleifer <js@nil.im>\n"
 	    @"Licensed under the LGPL 3.0 "
 	    @"<https://www.gnu.org/licenses/lgpl-3.0.html>\n",
@@ -362,8 +356,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		_HTTPClient.delegate = self;
-		_geminiClient = [[OFGeminiClient alloc] init];
-		_geminiClient.delegate = self;
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;
@@ -632,13 +624,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"%[prog]: -4 and -6 are mutually exclusive!",
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
-	} else if (_forceIPv4) {
+	} else if (_forceIPv4)
 		_HTTPClient.allowsIPv6 = false;
-		_geminiClient.allowsIPv6 = false;
-	} else if (_forceIPv6) {
+	else if (_forceIPv6)
 		_HTTPClient.allowsIPv4 = false;
-		_geminiClient.allowsIPv4 = false;
-	}
 
 	if (_outputPath != nil && _detectFileName) {
 		[OFStdErr writeLine: OF_LOCALIZED(
@@ -784,40 +773,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    request.method != OFHTTPRequestMethodGet &&
 	    request.method != OFHTTPRequestMethodHead)
 		return false;
-
-	return true;
-}
-
--	       (bool)client: (OFGeminiClient *)client
-  shouldFollowRedirectToIRI: (OFIRI *)toIRI
-		    request: (OFGeminiRequest *)request
-		 statusCode: (unsigned char)statusCode
-{
-	OFString *toScheme = toIRI.scheme;
-
-	if (![toScheme isEqual: @"gemini"] && ![toScheme isEqual: @"https"])
-		return false;
-
-	if (!_quiet) {
-		if (_useUnicode)
-			[OFStdErr writeFormat: @" ➜ "];
-		else
-			[OFStdErr writeFormat: @" -> "];
-
-		OFStdErr.foregroundColor = [OFColor teal];
-		[OFStdErr writeFormat: @"%hhu\n", statusCode];
-		OFStdErr.foregroundColor = nil;
-
-		if (_useUnicode)
-			[OFStdErr writeFormat: @"☇ "];
-		else
-			[OFStdErr writeFormat: @"< "];
-
-		OFStdErr.underlined = true;
-		[OFStdErr writeString:
-		    toIRI.string.stringByReplacingControlCharacters];
-		OFStdErr.underlined = false;
-	}
 
 	return true;
 }
@@ -1062,8 +1017,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 		[OFStdErr writeLine: OF_LOCALIZED(@"no_tls_support",
 		    @"%[prog]: No TLS support in ObjFW!\n"
-		    @"  In order to download via HTTPS or Gemini, you "
-		    @"need to either build ObjFW with\n"
+		    @"  In order to download via HTTPS, you need to either "
+		    @"build ObjFW with\n"
 		    @"  TLS support or preload a library adding TLS "
 		    @"support to ObjFW!",
 		    @"prog", [OFApplication programName])];
@@ -1134,26 +1089,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"prog", [OFApplication programName],
 		    @"iri", IRI.string,
 		    @"code", codeString)];
-	} else if ([*exception isKindOfClass:
-	    [OFGeminiRequestFailedException class]]) {
-		OFGeminiResponse *response =
-		    ((OFGeminiRequestFailedException *)*exception).response;
-
-		if (_ignoreStatus) {
-			*exception = nil;
-			return true;
-		}
-
-		unsigned short statusCode = response.statusCode;
-		OFString *codeString = [OFString stringWithFormat: @"%hu %@",
-		    statusCode,
-		    response.metadata.stringByReplacingControlCharacters];
-		[OFStdErr writeLine: OF_LOCALIZED(@"download_failed",
-		    @"%[prog]: Failed to download <%[iri]>!\n"
-		    @"  Status code: %[code]",
-		    @"prog", [OFApplication programName],
-		    @"iri", IRI.string,
-		    @"code", codeString)];
 	} else
 		return false;
 
@@ -1165,69 +1100,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	   response: (id)response
 	  exception: (id)exception
 {
-	if ([client isKindOfClass: [OFGeminiClient class]] && !_quiet &&
-	    response != nil) {
-		OFGeminiResponse *gemResponse = response;
-		OFString *metadata =
-		    gemResponse.metadata.stringByReplacingControlCharacters;
-
-		if (_useUnicode)
-			[OFStdErr writeFormat: @" ➜ "];
-		else
-			[OFStdErr writeFormat: @" -> "];
-
-		switch (gemResponse.statusCode / 10) {
-		case 2:
-			OFStdErr.foregroundColor = [OFColor green];
-			[OFStdErr writeFormat: @"%hhu\n",
-					       gemResponse.statusCode];
-			break;
-		case 3:
-			OFStdErr.foregroundColor = [OFColor teal];
-			[OFStdErr writeFormat: @"%hhu\n",
-					       gemResponse.statusCode];
-			break;
-		default:
-			OFStdErr.foregroundColor = [OFColor maroon];
-			[OFStdErr writeFormat: @"%hhu %@\n",
-					       gemResponse.statusCode,
-					       metadata];
-			break;
-		}
-		OFStdErr.foregroundColor = nil;
-
-		[OFStdErr writeString: @"  "];
-
-		if (_currentFileName != nil) {
-			OFStdErr.bold = true;
-			[OFStdErr writeString:
-			    OF_LOCALIZED(@"info_name", @"Name: ")];
-			OFStdErr.bold = false;
-			[OFStdErr writeLine: _currentFileName
-			    .stringByReplacingControlCharacters];
-		}
-
-		if (gemResponse.statusCode / 10 == 2) {
-			if (metadata.length == 0)
-				metadata =
-				    OF_LOCALIZED(@"type_unknown", @"unknown");
-
-			[OFStdErr writeString: @"  "];
-			OFStdErr.bold = true;
-			[OFStdErr writeString:
-			    OF_LOCALIZED(@"info_type", @"Type: ")];
-			OFStdErr.bold = false;
-			[OFStdErr writeLine: metadata];
-			[OFStdErr writeString: @"  "];
-			OFStdErr.bold = true;
-			[OFStdErr writeString:
-			    OF_LOCALIZED(@"info_size", @"Size: ")];
-			OFStdErr.bold = false;
-			[OFStdErr writeLine:
-			    OF_LOCALIZED(@"size_unknown", @"unknown")];
-		}
-	}
-
 	if (exception != nil) {
 		if (![self handleExceptionAfterRequest: &exception
 						   IRI: [request IRI]])
@@ -1362,7 +1234,7 @@ next:
 {
 	OFString *IRIString = nil;
 	OFIRI *IRI;
-	bool isHTTP, isGemini;
+	bool isHTTP;
 	OFMutableDictionary *clientHeaders = nil;
 
 	_received = _length = _resumedFrom = 0;
@@ -1389,9 +1261,8 @@ next:
 
 	isHTTP = ([IRI.scheme isEqual: @"http"] ||
 	    [IRI.scheme isEqual: @"https"]);
-	isGemini = [IRI.scheme isEqual: @"gemini"];
 
-	if (!isHTTP && !isGemini) {
+	if (!isHTTP) {
 		[OFStdErr writeLine: OF_LOCALIZED(@"invalid_scheme",
 		    @"%[prog]: Invalid scheme: <%[iri]>!",
 		    @"prog", [OFApplication programName],
@@ -1485,12 +1356,6 @@ next:
 
 		_detectFileNameRequest = false;
 		[_HTTPClient asyncPerformRequest: request];
-		return;
-	} else if (isGemini) {
-		OFGeminiRequest *request =
-		    [OFGeminiRequest requestWithIRI: IRI];
-
-		[_geminiClient asyncPerformRequest: request];
 		return;
 	} else
 		OFEnsure(0);

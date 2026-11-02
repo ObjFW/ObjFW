@@ -67,8 +67,7 @@
     ],
     no_tls_support: [
         "%[prog]: Keine TLS-Unterstützung in ObjFW!\n",
-        "  Um via HTTPS oder Gemini runterzuladen müssen Sie entweder ObjFW ",
-        "mit\n",
+        "  Um via HTTPS runterzuladen müssen Sie entweder ObjFW mit\n",
         "  TLS-Unterstützung kompilieren oder eine Bibliothek mittels ",
         "„preload” laden,\n",
         "  welche TLS-Support zu ObjFW hinzufügt!"
