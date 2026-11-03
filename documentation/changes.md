@@ -1013,7 +1013,7 @@ Changes from ObjFW 0.7.1:
   `OFZIPArchiveEntry` ✨
 * New utils: ofzip, ofhash, ofhttp ✨
 * Support for `-[forwardingTargetForSelector:]` on a lot of platforms (see
-  [platforms.md](documentation/platforms.md) ✨
+  [platforms.md](documentation/platforms.md)) ✨
 * `OFHTTPRequest`: Split into `OFHTTPRequest` and `OFHTTPClient`
 * Rename `OFHTTPRequestReply` to `OFHTTPResponse`
 * `OFDictionary` now uses `OFMapTable` internally

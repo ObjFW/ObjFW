@@ -68,7 +68,7 @@ Fedora MinGW
 ------------
 
 * Make sure to be on the `rawhide` branch and run `git pull`
-* Increase the `version` in`mingw-objfw.spec` and `git add` it
+* Increase the `version` in `mingw-objfw.spec` and `git add` it
 * Download the tarball and signature via `spectool -g mingw-objfw.spec`
 * `fedpkg upload` both `objfw-${version}.tar.gz` and
   `objfw-${version}.tar.gz.sig`
