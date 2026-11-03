@@ -80,7 +80,7 @@ Changes from ObjFW 1.5.4:
 * Fixes wrong count after `-[OFList removeAllObjects]`
 * Fixes `objc_setAssociatedObject()` / `objc_removeAssociatedObjects()`
   releasing the object within the spinlock, which could potentially deadlock
-* Fixes `OFBlock` calling a dispose handler that doesn‘t exist
+* Fixes `OFBlock` calling a dispose handler that doesn’t exist
 * Fixes `-[OFConcreteMutableArray removeAllObjects]` not increasing the
   mutations
 * Fixes Deflate64 with sequence lengths > 65535
@@ -146,7 +146,7 @@ Changes from ObjFW 1.5.2:
 * Improves handling of truncated archives in `OFLHAArchiveEntry`
 * `OFThread` no longer inherits the priority on AmigaOS
 * Uses better source for randomness now to find a free port on platforms that
-  can‘t bind to port 0
+  can’t bind to port 0
 * ofarc now strips drives from the paths it stores inside the archive
 * Fixes ofarc failing to create ZIP archives with specific paths on AmigaOS
 * Fixes ofarc incorrectly storing Amiga Protection in ZIP archives
@@ -163,7 +163,7 @@ Changes from ObjFW 1.5.1:
 * `ObjFWConfig.cmake` now also adds the flags for `OBJCXX`
 * `OFFile` no longer uses `O_EXLOCK` for `x` modes
 * Fixes the `OF_AMD64` define on Windows
-* ofhttp now removes the terminal‘s progress indicator on abort
+* ofhttp now removes the terminal’s progress indicator on abort
 
 
 ObjFW 1.5.1
@@ -204,7 +204,7 @@ Changes from ObjFW 1.4.4:
   variable name starts with an `@` ✨
 * `OFStdOut` and `OFStdErr` now allow writing with a lossy encoding if they
   have an underlying terminal ✨
-* `OFStdOut` and `OFStdErr` now support setting the terminal‘s progress
+* `OFStdOut` and `OFStdErr` now support setting the terminal’s progress
   indicator ✨
 * Revives support for AmigaOS 4 that had bitrotten over the years
 * `OFFileIRIHandler` now supports nanosecond precision on operating systems
@@ -259,7 +259,7 @@ Changes from ObjFW 1.4.4:
 * ofhash now removes all escape codes from output to `stderr` (except those used
   for its own formatting)
 * ofhttp now uses color, bold and underlined for improved formatting and sets
-  the terminal‘s progress indicator ✨
+  the terminal’s progress indicator ✨
 * ofhttp no longer follows 301/302/307 redirects as a result of a non-`GET` and
   non-`HEAD` request
 * ofhttp now removes all escape codes from output to `stderr` (except those used
@@ -316,7 +316,7 @@ Changes from ObjFW 1.4.1:
 * Fixes `+[alloc]` being able to return `nil`
 * Fixes `-[canBlock]` being inherited for sockets returned by
   `-[OFStreamSocket accept]` being OS-dependent
-* Fixes MPTCP being used on old macOS versions that don‘t support it
+* Fixes MPTCP being used on old macOS versions that don’t support it
 * Fixes parsing of ZIP64 local headers in `OFZIPArchive` when only some values
   in the regular local header are set to -1
 * Fixes handling of 0 byte ZIP64 extra field in `OFZIPArchiveEntry`
@@ -360,7 +360,7 @@ Changes from ObjFW 1.3.2:
 * Adds new methods using `OFIndexSet` to `OFArray`, `OFMutableArray` and
   `OFMutableData` ✨
 * `OFStream` now supports setting a default encoding for the stream that will
-  be used for all string operations that don‘t specify an encoding ✨
+  be used for all string operations that don’t specify an encoding ✨
 * Adds support for asynchronously opening an item to `OFIRIHandler` ✨
 * Adds support for building the runtime as a `.library` on MorphOS ✨
 * Adds support for abstract UNIX sockets on Linux ✨
@@ -405,7 +405,7 @@ Changes from ObjFW 1.3:
 
 * Fixes OpenSSL TLS streams being reported as ready for reading when they are
   not
-* Fixes using async I/O on `OFHTTPServer`‘s request body or response
+* Fixes using async I/O on `OFHTTPServer`’s request body or response
 * Fixes configure on Solaris / Illumos
 * Improves configure check for `GameController.framework`
 * Removes unnecessary promotion to double in `OFColor`
@@ -502,7 +502,7 @@ Changes from ObjFW 1.2.1:
 * Fixes imports in `ObjFWTLS.h`
 * `OFINIFile` now properly quotes `;` and `#`
 * Ensures ofarc and ofhash link ObjFWTLS
-* Makes `OFEmbeddedIRIHandler` public, as it‘s required for `objfw-embed`
+* Makes `OFEmbeddedIRIHandler` public, as it’s required for `objfw-embed`
 * Fixes compiling on Haiku r1beta5
 * Adds compatibility with latest devkitARM
 
@@ -600,7 +600,7 @@ ObjFW 1.1.5
 Changes from ObjFW 1.1.4:
 
 * Fixes MIPS32
-* Properly hides private symbols in the runtime so they can‘t be used
+* Properly hides private symbols in the runtime so they can’t be used
   accidentally anymore
 
 
@@ -613,7 +613,7 @@ Changes from ObjFW 1.1.3:
 
 * Fixes ofarc failing to extract from `stdin` on macOS
 * Fixes the workaround for missing `blx` on ARM
-* Avoids Clang‘s integrated assembler on MIPS64 for `.S` files (as it cannot
+* Avoids Clang’s integrated assembler on MIPS64 for `.S` files (as it cannot
   calculate the offset between two labels)
 * Fixes X32 being mistaken for AMD64
 
@@ -626,7 +626,7 @@ ObjFW 1.1.3
 Changes from ObjFW 1.1.2:
 
 * Fixes `+[OFSystemInfo networkInterfaces]` on NetBSD
-* Properly hides private symbols so they can‘t be used accidentally anymore
+* Properly hides private symbols so they can’t be used accidentally anymore
 * Adds missing documentation for various functions and macros
 * Uses RtlGenRandom to get proper randomness on Windows now
 * No longer uses `_wutime64`, which is buggy in some MinGW distributions
@@ -757,7 +757,7 @@ ObjFW 1.0.10
 Changes from ObjFW 1.0.9:
 
 * Fixes `objc_getClassList()` not releasing the global runtime mutex
-* Improves `OFLHAArchive`‘s compatibility with non-standard archives
+* Improves `OFLHAArchive`’s compatibility with non-standard archives
 * Adds `endbr32` / `endbr64` / `bti` instructions for compatibility with
   Control Flow Integrity ✨
 
@@ -815,7 +815,7 @@ ObjFW 1.0.6
 Changes from ObjFW 1.0.5:
 
 * Fixes compatibility with autoconf 2.72
-* Fixes `OFDNSResolver`‘s handling of types, classes and lengths > 255
+* Fixes `OFDNSResolver`’s handling of types, classes and lengths > 255
 
 
 ObjFW 1.0.5
@@ -931,7 +931,7 @@ Changes from ObjFW 0.90:
 * `OFTarArchiveEntry`: Fix prefix handling for ustar
 * `OFZIPArchive`: Fix uncompressed + data descriptor
 * `OFArray`: Fix MessagePack encoding
-* `of_asprintf`: Don‘t require set up `OFLocalization`
+* `of_asprintf`: Don’t require set up `OFLocalization`
 * `OFGZIPStream`: Add missing documentation
 * Fix a linker warning on OpenBSD/SPARC64
 * Remove the OFFile `b` modes from MorphOS (they were already removed for all
@@ -992,9 +992,9 @@ Changes from ObjFW 0.8:
 * `OFProcess`: Send `SIGTERM` on close instead of `SIGKILL`
 * `OFZIPArchive`: Throw invalid format exception on failed seeks
 * Make sure `of_hash_seed` is never initialized to 0
-* Special cases for the Wii‘s weird network stack (fixes the tests)
+* Special cases for the Wii’s weird network stack (fixes the tests)
 * Better length checks for write / send calls
-* Don‘t use `-pedantic` on platforms where it‘s broken by the system headers
+* Don’t use `-pedantic` on platforms where it’s broken by the system headers
 * Documentation fixes
 
 
@@ -1022,7 +1022,7 @@ Changes from ObjFW 0.7.1:
 * Reworked exceptions API that explicitly passes `errno` around
 * `OFHTTPClient`: Keep-alive and Basic Authorization support ✨
 * Support for (and use of) ObjC generics, nullability and kindof ✨
-* Fast path for resolving classes when using GCC (Clang doesn‘t need the fast
+* Fast path for resolving classes when using GCC (Clang doesn’t need the fast
   path, as it directly references classes) ✨
 * `OFStreamObserver`: Refactored and renamed to `OFKernelEventObserver` (as it
   is no longer limited to streams)
@@ -1092,7 +1092,7 @@ all would be too much. The major changes from ObjFW 0.6 are:
 * Lots of API changes to make APIs more future-proof
 * Support for the new Objective-C literals ✨
 * `OFHTTPRequest` now implements HTTP/1.1
-* `OFObject`‘s memory handling has been improved, leading to better performance
+* `OFObject`’s memory handling has been improved, leading to better performance
 * Strings are allocated faster now
 * Support for JSON5 ✨
 * All private methods use the prefix `OF_` now instead of `_`, making it
@@ -1155,7 +1155,7 @@ ObjFW 0.5.2
 Changes from ObjFW 0.5.1:
 
 * Fix double-retain in `OFList`
-* Don‘t ignore the timeout in `OFStreamObserver` when using `select()`
+* Don’t ignore the timeout in `OFStreamObserver` when using `select()`
 * Do `-[OFURL copy]` in a try block to prevent a leak when an exception occurs
 * Fix too big buffer in `-[OFMutableString _applyTable:withSize:]`
 * Call `madvise()` on the correct length variable so it covers the whole string
@@ -1305,7 +1305,7 @@ Changes from ObjFW 0.2:
 * Fix for `OFNumber`s not doing calculations
 * Improved `-[hash]` for `OFNumber`s with floats and doubles
 * Tests for `OFNumber` ✨
-* Small optimization for `OFArray`‘s `-[componentsJoinedByString:]`
+* Small optimization for `OFArray`’s `-[componentsJoinedByString:]`
 * Documentation improvements
 * Updated copyright
 
@@ -1339,7 +1339,7 @@ Changes from ObjFW 0.1.2:
   times
 * The interfaces of `OFSocket` and `OFStream` were cleaned up and some methods
   were moved to `OFTCPSocket`, as they make sense only there
-* File methods unavailable on Windows don‘t throw an exception at runtime
+* File methods unavailable on Windows don’t throw an exception at runtime
   anymore, but instead are not even in the interface on Windows. This way, it
   is a compile time error instead of a runtime error
 
@@ -1351,7 +1351,7 @@ ObjFW 0.1.2
 
 Changes from ObjFW 0.1.1:
 
-* Fix a bug in `OFMutableArray`‘s `-[removeObject:]` and
+* Fix a bug in `OFMutableArray`’s `-[removeObject:]` and
   `-[removeObjectIdenticalTo:]` that could lead to not removing all occurrences
   of the object from the array and to out of bounds reads
 * Change the URL in the framework plist to the homepage

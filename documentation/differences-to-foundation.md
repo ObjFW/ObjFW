@@ -17,7 +17,7 @@ for it to not make full use of of them. As exceptions are used throughout, this
 means there is nothing comparable to `NSError` and no parameter needs to be
 passed to methods that can fail. Instead, on error, they throw an exception,
 usually a subclass of `OFException`. However, exceptions are only used for
-exceptional cases: Trying to get a key from a dictionary that doesn‘t exist is
+exceptional cases: Trying to get a key from a dictionary that doesn’t exist is
 not an exception (like in Python for example), but instead just returns `nil`.
 
 

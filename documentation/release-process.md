@@ -3,14 +3,14 @@ Release process
 
 * Update `changes.md` and cherry-pick the change into main
 * **Make sure the library version has been increased for all libraries that had
-  changes / bug fixes! Don‘t forget to increase the minor for every library
+  changes / bug fixes! Don’t forget to increase the minor for every library
   that had new features added and the patch level for every library that had
   bug fixes!**
 * Change the version in `AC_INIT` and the `BUNDLE_VERSION` in `configure.ac`
   and commit. This commit should have the `${version}-release` tag!
 * Push the commits but not the tag
 * Run `git checkout ${version}-release` and run `git clean -fxd`, then
-  `./autogen.sh && ./configure`. Don‘t forget this, or the version might be
+  `./autogen.sh && ./configure`. Don’t forget this, or the version might be
   wrong!
 * Generate and sign tarballs using `make release`
 * Extract `objfw-${version}.tar.gz` and `objfw-docs-${version}.tar.gz` as well
