@@ -645,7 +645,7 @@ parseNetStackArray(OFString *string)
 
 - (void)reload
 {
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && defined(OF_HAVE_FILES)
 	OFString *path = nil;
 #endif
 #if defined(OF_AMIGAOS_M68K) && defined(OF_HAVE_FILES)
