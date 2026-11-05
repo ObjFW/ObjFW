@@ -172,9 +172,12 @@ callLoad(Class class)
 	if (class->superclass != Nil)
 		callLoad(class->superclass);
 
-	callSelector(class, loadSel);
+	if (class->info & _OBJC_CLASS_INFO_LOADED)
+		return;
 
 	class->info |= _OBJC_CLASS_INFO_LOADED;
+
+	callSelector(class, loadSel);
 }
 
 void
