@@ -86,7 +86,7 @@ callLoad(Class class, struct objc_category *category)
 }
 
 void
-_objc_processCategoriesLoadQueue(void)
+_objc_processCategoryLoadQueue(void)
 {
 	for (size_t i = 0; i < loadQueueCount; i++) {
 		Class class = objc_lookUpClass(loadQueue[i]->className);
@@ -155,24 +155,17 @@ registerCategory(struct objc_category *category)
 	if (hasLoad(category)) {
 		/*
 		 * objc_classnameToClass does not set up the class, but
-		 * objc_lookUpClass tries to set it up and only returns it if
-		 * it could be set up.
+		 * objc_lookUpClass tries to set it up.
 		 */
-		class = objc_lookUpClass(category->className);
+		objc_lookUpClass(category->className);
 
-		if (class != Nil && class->info & _OBJC_CLASS_INFO_LOADED)
-			callLoad(class, category);
-		else {
-			loadQueue = realloc(loadQueue,
-			    sizeof(struct objc_category *) *
-			    (loadQueueCount + 1));
+		loadQueue = realloc(loadQueue, sizeof(struct objc_category *) *
+		    (loadQueueCount + 1));
 
-			if (loadQueue == NULL)
-				_OBJC_ERROR("Not enough memory for load "
-				    "queue!");
+		if (loadQueue == NULL)
+			_OBJC_ERROR("Not enough memory for load queue!");
 
-			loadQueue[loadQueueCount++] = category;
-		}
+		loadQueue[loadQueueCount++] = category;
 	}
 }
 

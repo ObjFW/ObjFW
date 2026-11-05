@@ -465,8 +465,8 @@ _objc_initializeClass(Class class)
 	_objc_globalMutex_unlock();
 }
 
-static void
-processLoadQueue(void)
+void
+_objc_processClassLoadQueue(void)
 {
 	for (size_t i = 0; i < loadQueueCount; i++) {
 		setUpClass(loadQueue[i]);
@@ -510,24 +510,18 @@ _objc_registerAllClasses(struct objc_symtab *symtab)
 		if (hasLoad(class)) {
 			setUpClass(class);
 
-			if (class->info & _OBJC_CLASS_INFO_SETUP)
-				callLoad(class);
-			else {
-				loadQueue = realloc(loadQueue,
-				    sizeof(Class) * (loadQueueCount + 1));
+			loadQueue = realloc(loadQueue,
+			    sizeof(Class) * (loadQueueCount + 1));
 
-				if (loadQueue == NULL)
-					_OBJC_ERROR("Not enough memory for "
-					    "load queue!");
+			if (loadQueue == NULL)
+				_OBJC_ERROR("Not enough memory for load "
+				    "queue!");
 
-				loadQueue[loadQueueCount++] = class;
-			}
+			loadQueue[loadQueueCount++] = class;
 		} else
 			class->info |= _OBJC_CLASS_INFO_LOADED;
 	}
 
-	processLoadQueue();
-	_objc_processCategoriesLoadQueue();
 }
 
 Class
@@ -599,8 +593,8 @@ objc_registerClassPair(Class class)
 	else
 		class->info |= _OBJC_CLASS_INFO_LOADED;
 
-	processLoadQueue();
-	_objc_processCategoriesLoadQueue();
+	_objc_processClassLoadQueue();
+	_objc_processCategoryLoadQueue();
 
 	_objc_globalMutex_unlock();
 }

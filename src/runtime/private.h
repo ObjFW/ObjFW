@@ -259,11 +259,12 @@ extern const char *_Nullable _class_getMethodTypeEncoding(Class _Nullable class,
 # endif
 #endif
 
+extern void _objc_processClassLoadQueue(void) OF_VISIBILITY_HIDDEN;
 extern void _objc_registerAllCategories(struct objc_symtab *_Nonnull)
     OF_VISIBILITY_HIDDEN;
 extern struct objc_category *_Nullable *_Nullable
     _objc_categoriesForClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
-extern void _objc_processCategoriesLoadQueue(void) OF_VISIBILITY_HIDDEN;
+extern void _objc_processCategoryLoadQueue(void) OF_VISIBILITY_HIDDEN;
 extern void _objc_unregisterAllCategories(void) OF_VISIBILITY_HIDDEN;
 extern void _objc_initializeClass(Class _Nonnull) OF_VISIBILITY_HIDDEN;
 extern void _objc_updateDTable(Class _Nonnull) OF_VISIBILITY_HIDDEN;

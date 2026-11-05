@@ -32,6 +32,9 @@ __objc_exec_class(struct objc_module *module)
 	_objc_registerAllCategories(module->symtab);
 	_objc_initStaticInstances(module->symtab);
 
+	_objc_processClassLoadQueue();
+	_objc_processCategoryLoadQueue();
+
 	_objc_globalMutex_unlock();
 }
 
