@@ -92,23 +92,25 @@ _objc_processCategoryLoadQueue(void)
 		Class class = objc_lookUpClass(loadQueue[i]->className);
 
 		if (class != Nil && class->info & _OBJC_CLASS_INFO_LOADED) {
-			callLoad(class, loadQueue[i]);
+			struct objc_category *category = loadQueue[i];
 
-			if (--loadQueueCount == 0) {
+			if (--loadQueueCount > 0) {
+				loadQueue[i] = loadQueue[loadQueueCount];
+
+				if ((loadQueue = realloc(loadQueue, sizeof(
+				    struct objc_category *) *
+				    loadQueueCount)) == NULL)
+					_OBJC_ERROR("Not enough memory for "
+					    "load queue!");
+
+				i--;
+			} else {
 				free(loadQueue);
 				loadQueue = NULL;
 				loadQueueCount = 0;
-				break;
 			}
 
-			loadQueue[i] = loadQueue[loadQueueCount];
-
-			if ((loadQueue = realloc(loadQueue, sizeof(
-			    struct objc_category *) * loadQueueCount)) == NULL)
-				_OBJC_ERROR("Not enough memory for load "
-				    "queue!");
-
-			i--;
+			callLoad(class, category);
 		}
 	}
 }
