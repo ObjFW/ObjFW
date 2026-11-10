@@ -91,7 +91,10 @@
 #import "OFSetItemAttributesFailedException.h"
 
 #ifdef OF_WINDOWS
+# define COMPILE_NEWAPIS_STUBS
+# define WANT_GETFILEATTRIBUTESEX_WRAPPER
 # include <windows.h>
+# include <newapis.h>
 # include <direct.h>
 # include <ntdef.h>
 # include <wchar.h>
@@ -196,9 +199,23 @@ OF_DESTRUCTOR()
 #endif
 
 #ifdef OF_WINDOWS
-static WINAPI BOOLEAN (*createSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
-static WINAPI BOOLEAN (*createHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
+static HMODULE msvcrt;
+static WINAPI BOOLEAN (*CreateSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
+static WINAPI BOOLEAN (*CreateHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
+static WINAPI BOOLEAN (*GetFileAttributesExWFuncPtr)(LPCWSTR,
+    GET_FILEEX_INFO_LEVELS, LPVOID);
+static int (*_wchmodFuncPtr)(const wchar_t *, int);
+static int (*_wmkdirFuncPtr)(const wchar_t *);
+static int (*_wrenameFuncPtr)(const wchar_t *, const wchar_t *);
+static int (*_wrmdirFuncPtr)(const wchar_t *);
+static int (*_wunlinkFuncPtr)(const wchar_t *);
+
+OF_DESTRUCTOR()
+{
+	if (msvcrt != NULL)
+		FreeLibrary(msvcrt);
+}
 #endif
 
 #ifdef OF_FREEBSD
@@ -290,11 +307,11 @@ statWrapper(OFString *path, Stat *buffer)
 	WIN32_FILE_ATTRIBUTE_DATA data;
 	bool success;
 
-	if ([OFSystemInfo isWindowsNT])
-		success = GetFileAttributesExW(path.UTF16String,
+	if (GetFileAttributesExWFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+		success = GetFileAttributesExWFuncPtr(path.UTF16String,
 		    GetFileExInfoStandard, &data);
 	else
-		success = GetFileAttributesExA(
+		success = GetFileAttributesEx(
 		    [path cStringWithEncoding: [OFLocale encoding]],
 		    GetFileExInfoStandard, &data);
 
@@ -663,7 +680,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	HANDLE handle;
 	OFString *destination;
 
-	if (createSymbolicLinkWFuncPtr == NULL)
+	if (CreateSymbolicLinkWFuncPtr == NULL)
 		return;
 
 	if ((handle = CreateFileW(path.UTF16String, 0, (FILE_SHARE_READ |
@@ -956,10 +973,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 @implementation OFFileIRIHandler
 + (void)initialize
 {
-#ifdef OF_WINDOWS
-	HMODULE module;
-#endif
-
 	if (self != [OFFileIRIHandler class])
 		return;
 
@@ -971,14 +984,31 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = GetModuleHandleA("kernel32.dll")) != NULL) {
-		createSymbolicLinkWFuncPtr =
+	HMODULE kernel32;
+	if ((kernel32 = GetModuleHandleA("kernel32.dll")) != NULL) {
+		CreateSymbolicLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
-		    GetProcAddress(module, "CreateSymbolicLinkW");
-		createHardLinkWFuncPtr =
+		    GetProcAddress(kernel32, "CreateSymbolicLinkW");
+		CreateHardLinkWFuncPtr =
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR,
 		    LPSECURITY_ATTRIBUTES))
-		    GetProcAddress(module, "CreateHardLinkW");
+		    GetProcAddress(kernel32, "CreateHardLinkW");
+		GetFileAttributesExWFuncPtr =
+		    (WINAPI BOOLEAN (*)(LPCWSTR, GET_FILEEX_INFO_LEVELS,
+		    LPVOID))GetProcAddress(kernel32, "GetFileAttributesExW");
+	}
+
+	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
+		_wchmodFuncPtr = (int (*)(const wchar_t *, int))
+		    GetProcAddress(msvcrt, "_wchmod");
+		_wmkdirFuncPtr = (int (*)(const wchar_t *))
+		    GetProcAddress(msvcrt, "_wmkdir");
+		_wrenameFuncPtr = (int (*)(const wchar_t *, const wchar_t *))
+		    GetProcAddress(msvcrt, "_wrename");
+		_wrmdirFuncPtr = (int (*)(const wchar_t *))
+		    GetProcAddress(msvcrt, "_wrmdir");
+		_wunlinkFuncPtr = (int (*)(const wchar_t *))
+		    GetProcAddress(msvcrt, "_wunlink");
 	}
 #endif
 
@@ -1359,8 +1389,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	int status;
 
 # ifdef OF_WINDOWS
-	if ([OFSystemInfo isWindowsNT])
-		status = _wchmod(path.UTF16String, mode);
+	if (_wchmodFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+		status = _wchmodFuncPtr(path.UTF16String, mode);
 	else
 # endif
 		status = chmod(
@@ -1773,8 +1803,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #if defined(OF_WINDOWS)
 	int status;
 
-	if ([OFSystemInfo isWindowsNT])
-		status = _wmkdir(path.UTF16String);
+	if (_wmkdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+		status = _wmkdirFuncPtr(path.UTF16String);
 	else
 		status = _mkdir(
 		    [path cStringWithEncoding: [OFLocale encoding]]);
@@ -2081,8 +2111,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		int status;
 
 # ifdef OF_WINDOWS
-		if ([OFSystemInfo isWindowsNT])
-			status = _wrmdir(path.UTF16String);
+		if (_wrmdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+			status = _wrmdirFuncPtr(path.UTF16String);
 		else
 # endif
 			status = rmdir(
@@ -2096,8 +2126,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		int status;
 
 # ifdef OF_WINDOWS
-		if ([OFSystemInfo isWindowsNT])
-			status = _wunlink(path.UTF16String);
+		if (_wunlinkFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+			status = _wunlinkFuncPtr(path.UTF16String);
 		else
 # endif
 			status = unlink(
@@ -2146,11 +2176,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    destinationIRI: destination
 				     errNo: errno];
 # else
-	if (createHardLinkWFuncPtr == NULL)
+	if (CreateHardLinkWFuncPtr == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	if (!createHardLinkWFuncPtr(destinationPath.UTF16String,
+	if (!CreateHardLinkWFuncPtr(destinationPath.UTF16String,
 	    sourcePath.UTF16String, NULL))
 		@throw [OFLinkItemFailedException
 		    exceptionWithSourceIRI: source
@@ -2187,11 +2217,11 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			      target: target
 			       errNo: errno];
 # else
-	if (createSymbolicLinkWFuncPtr == NULL)
+	if (CreateSymbolicLinkWFuncPtr == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	if (!createSymbolicLinkWFuncPtr(path.UTF16String, target.UTF16String,
+	if (!CreateSymbolicLinkWFuncPtr(path.UTF16String, target.UTF16String,
 	    0))
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithIRI: IRI
@@ -2250,8 +2280,9 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	int status;
 
 # ifdef OF_WINDOWS
-	if ([OFSystemInfo isWindowsNT])
-		status = _wrename(source.fileSystemRepresentation.UTF16String,
+	if (_wrenameFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+		status = _wrenameFuncPtr(
+		    source.fileSystemRepresentation.UTF16String,
 		    destination.fileSystemRepresentation.UTF16String);
 	else {
 # endif

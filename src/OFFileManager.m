@@ -296,6 +296,18 @@ OFFileTypeUnknownRef(void)
 
 static OFFileManager *defaultManager;
 
+#ifdef OF_WINDOWS
+static HMODULE msvcrt;
+static int (*_wchdirFuncPtr)(const wchar_t *);
+static wchar_t *(*_wgetcwdFuncPtr)(wchar_t *, int);
+
+OF_DESTRUCTOR()
+{
+	if (msvcrt != NULL)
+		FreeLibrary(msvcrt);
+}
+#endif
+
 #ifdef OF_AMIGAOS
 static bool dirChanged = false;
 static BPTR originalDirLock = 0;
@@ -333,6 +345,15 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	[OFFile class];
 #endif
 
+#ifdef OF_WINDOWS
+	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
+		_wchdirFuncPtr = (int (*)(const wchar_t *))
+		    GetProcAddress(msvcrt, "_wchdir");
+		_wgetcwdFuncPtr = (wchar_t *(*)(wchar_t *, int))
+		    GetProcAddress(msvcrt, "_wgetcwd");
+	}
+#endif
+
 	defaultManager = [[OFDefaultFileManager alloc] init];
 }
 
@@ -347,8 +368,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 # if defined(OF_WINDOWS)
 	OFString *ret;
 
-	if ([OFSystemInfo isWindowsNT]) {
-		wchar_t *buffer = _wgetcwd(NULL, 0);
+	if (_wgetcwdFuncPtr != NULL && [OFSystemInfo isWindowsNT]) {
+		wchar_t *buffer = _wgetcwdFuncPtr(NULL, 0);
 
 		if (buffer == NULL)
 			@throw [OFGetCurrentDirectoryFailedException
@@ -784,8 +805,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	int status;
 
 #  ifdef OF_WINDOWS
-	if ([OFSystemInfo isWindowsNT])
-		status = _wchdir(path.UTF16String);
+	if (_wchdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+		status = _wchdirFuncPtr(path.UTF16String);
 	else
 #  endif
 		status = chdir(

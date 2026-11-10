@@ -88,6 +88,17 @@
 # define O_EXLOCK 0
 #endif
 
+#ifdef OF_WINDOWS
+static HMODULE msvcrt;
+static int (*_wopenFuncPtr)(const wchar_t *, int, int);
+
+OF_DESTRUCTOR()
+{
+	if (msvcrt != NULL)
+		FreeLibrary(msvcrt);
+}
+#endif
+
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
@@ -228,6 +239,12 @@ ioErrToErrNo()
 	if (self != [OFFile class])
 		return;
 
+#ifdef OF_WINDOWS
+	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL)
+		_wopenFuncPtr = (int (*)(const wchar_t *, int, int))
+		    GetProcAddress(msvcrt, "_wopen");
+#endif
+
 #ifdef OF_WII
 	if (!fatInitDefault())
 		@throw [OFInitializationFailedException
@@ -277,8 +294,8 @@ ioErrToErrNo()
 		flags |= O_BINARY | O_CLOEXEC;
 
 # ifdef OF_WINDOWS
-		if ([OFSystemInfo isWindowsNT])
-			handle = _wopen(path.UTF16String, flags,
+		if (_wopenFuncPtr != NULL && [OFSystemInfo isWindowsNT])
+			handle = _wopenFuncPtr(path.UTF16String, flags,
 			    _S_IREAD | _S_IWRITE);
 		else
 # endif

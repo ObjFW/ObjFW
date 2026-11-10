@@ -48,6 +48,17 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#ifdef OF_WINDOWS
+static HMODULE msvcrt;
+static __time64_t (*_mktime64FuncPtr)(struct tm *);
+
+OF_DESTRUCTOR()
+{
+	if (msvcrt != NULL)
+		FreeLibrary(msvcrt);
+}
+#endif
+
 #ifdef OF_MORPHOS
 # include <devices/timer.h>
 # include <ppcinline/timer.h>
@@ -124,10 +135,6 @@ OF_DESTRUCTOR()
 {
 	objc_release(mutex);
 }
-#endif
-
-#ifdef OF_WINDOWS
-static __time64_t (*_mktime64FuncPtr)(struct tm *);
 #endif
 
 #ifdef HAVE_GMTIME_R
@@ -320,10 +327,6 @@ OF_SINGLETON_METHODS
 @implementation OFDate
 + (void)initialize
 {
-#ifdef OF_WINDOWS
-	HMODULE module;
-#endif
-
 	if (self != [OFDate class])
 		return;
 
@@ -335,9 +338,9 @@ OF_SINGLETON_METHODS
 #endif
 
 #ifdef OF_WINDOWS
-	if ((module = GetModuleHandle("msvcrt.dll")) != NULL)
+	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL)
 		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
-		    GetProcAddress(module, "_mktime64");
+		    GetProcAddress(msvcrt, "_mktime64");
 #endif
 }
 
