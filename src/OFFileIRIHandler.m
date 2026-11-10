@@ -199,12 +199,13 @@ OF_DESTRUCTOR()
 #endif
 
 #ifdef OF_WINDOWS
-static HMODULE msvcrt;
 static WINAPI BOOLEAN (*CreateSymbolicLinkWFuncPtr)(LPCWSTR, LPCWSTR, DWORD);
 static WINAPI BOOLEAN (*CreateHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
 static WINAPI BOOLEAN (*GetFileAttributesExWFuncPtr)(LPCWSTR,
     GET_FILEEX_INFO_LEVELS, LPVOID);
+# ifndef _UCRT
+static HMODULE msvcrt;
 static int (*_wchmodFuncPtr)(const wchar_t *, int);
 static int (*_wmkdirFuncPtr)(const wchar_t *);
 static int (*_wrenameFuncPtr)(const wchar_t *, const wchar_t *);
@@ -216,6 +217,13 @@ OF_DESTRUCTOR()
 	if (msvcrt != NULL)
 		FreeLibrary(msvcrt);
 }
+# else
+static int (*_wchmodFuncPtr)(const wchar_t *, int) = &_wchmod;
+static int (*_wmkdirFuncPtr)(const wchar_t *) = &_wmkdir;
+static int (*_wrenameFuncPtr)(const wchar_t *, const wchar_t *) = &_wrename;
+static int (*_wrmdirFuncPtr)(const wchar_t *) = &_wrmdir;
+static int (*_wunlinkFuncPtr)(const wchar_t *) = &_wunlink;
+# endif
 #endif
 
 #ifdef OF_FREEBSD
@@ -998,6 +1006,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    LPVOID))GetProcAddress(kernel32, "GetFileAttributesExW");
 	}
 
+# ifndef _UCRT
 	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
 		_wchmodFuncPtr = (int (*)(const wchar_t *, int))
 		    GetProcAddress(msvcrt, "_wchmod");
@@ -1010,6 +1019,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		_wunlinkFuncPtr = (int (*)(const wchar_t *))
 		    GetProcAddress(msvcrt, "_wunlink");
 	}
+# endif
 #endif
 
 	/*

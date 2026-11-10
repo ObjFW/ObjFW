@@ -137,15 +137,23 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 	app = [[OFApplication alloc] of_init];
 
 #ifdef OF_WINDOWS
+# ifndef _UCRT
 	HMODULE msvcrt = LoadLibrary("msvcrt.dll");
 	@try {
+# endif
 		void (*__wgetmainargsFuncPtr)(int *, wchar_t ***, wchar_t ***,
 		    int, int *) = NULL;
 
+# ifndef _UCRT
 		if (msvcrt != NULL)
 			__wgetmainargsFuncPtr = (void (*)(int *, wchar_t ***,
 			    wchar_t ***, int, int *))
 			    GetProcAddress(msvcrt, "__wgetmainargs");
+# else
+		extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***,
+		    int, int *);
+		__wgetmainargsFuncPtr = &__wgetmainargs;
+# endif
 
 		if (__wgetmainargsFuncPtr != NULL &&
 		    [OFSystemInfo isWindowsNT]) {
@@ -162,10 +170,12 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 			   andWideArgumentValues: wargv];
 		} else
 			[app of_setArgumentCount: argc andArgumentValues: argv];
+# ifndef _UCRT
 	} @finally {
 		if (msvcrt != NULL)
 			FreeLibrary(msvcrt);
 	}
+# endif
 #else
 	[app of_setArgumentCount: argc andArgumentValues: argv];
 #endif

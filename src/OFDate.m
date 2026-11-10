@@ -49,6 +49,7 @@
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_WINDOWS
+# ifndef _UCRT
 static HMODULE msvcrt;
 static __time64_t (*_mktime64FuncPtr)(struct tm *);
 
@@ -57,6 +58,9 @@ OF_DESTRUCTOR()
 	if (msvcrt != NULL)
 		FreeLibrary(msvcrt);
 }
+# else
+static __time64_t (*_mktime64FuncPtr)(struct tm *) = &_mktime64;
+# endif
 #endif
 
 #ifdef OF_MORPHOS
@@ -337,7 +341,7 @@ OF_SINGLETON_METHODS
 	mutex = [[OFMutex alloc] init];
 #endif
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && !defined(_UCRT)
 	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL)
 		_mktime64FuncPtr = (__time64_t (*)(struct tm *))
 		    GetProcAddress(msvcrt, "_mktime64");

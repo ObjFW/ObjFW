@@ -297,6 +297,7 @@ OFFileTypeUnknownRef(void)
 static OFFileManager *defaultManager;
 
 #ifdef OF_WINDOWS
+# ifndef _UCRT
 static HMODULE msvcrt;
 static int (*_wchdirFuncPtr)(const wchar_t *);
 static wchar_t *(*_wgetcwdFuncPtr)(wchar_t *, int);
@@ -306,6 +307,10 @@ OF_DESTRUCTOR()
 	if (msvcrt != NULL)
 		FreeLibrary(msvcrt);
 }
+# else
+static int (*_wchdirFuncPtr)(const wchar_t *) = &_wchdir;
+static wchar_t *(*_wgetcwdFuncPtr)(wchar_t *, int) = &_wgetcwd;
+# endif
 #endif
 
 #ifdef OF_AMIGAOS
@@ -345,7 +350,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	[OFFile class];
 #endif
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && !defined(_UCRT)
 	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
 		_wchdirFuncPtr = (int (*)(const wchar_t *))
 		    GetProcAddress(msvcrt, "_wchdir");

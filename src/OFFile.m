@@ -89,14 +89,18 @@
 #endif
 
 #ifdef OF_WINDOWS
+# ifndef _UCRT
 static HMODULE msvcrt;
-static int (*_wopenFuncPtr)(const wchar_t *, int, int);
+static int (*_wopenFuncPtr)(const wchar_t *, int, ...);
 
 OF_DESTRUCTOR()
 {
 	if (msvcrt != NULL)
 		FreeLibrary(msvcrt);
 }
+# else
+static int (*_wopenFuncPtr)(const wchar_t *, int, ...) = &_wopen;
+# endif
 #endif
 
 #ifndef OF_AMIGAOS
@@ -239,9 +243,9 @@ ioErrToErrNo()
 	if (self != [OFFile class])
 		return;
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) && !defined(_UCRT)
 	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL)
-		_wopenFuncPtr = (int (*)(const wchar_t *, int, int))
+		_wopenFuncPtr = (int (*)(const wchar_t *, int, ...))
 		    GetProcAddress(msvcrt, "_wopen");
 #endif
 
