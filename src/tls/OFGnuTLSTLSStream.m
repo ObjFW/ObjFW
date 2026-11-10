@@ -36,6 +36,11 @@
 
 #include <gnutls/x509.h>
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+const PIMAGE_TLS_CALLBACK __dyn_tls_init_callback __attribute__((__common__));
+#endif
+
 int _ObjFWTLS_reference;
 
 #ifndef GNUTLS_SAFE_PADDING_CHECK

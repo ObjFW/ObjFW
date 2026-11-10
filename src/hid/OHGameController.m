@@ -49,6 +49,11 @@
 # import "OHSensorsLibraryGameController.h"
 #endif
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+const PIMAGE_TLS_CALLBACK __dyn_tls_init_callback __attribute__((__common__));
+#endif
+
 @implementation OHGameController
 @dynamic name, profile;
 

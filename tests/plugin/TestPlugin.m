@@ -21,6 +21,11 @@
 
 #import "TestPlugin.h"
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+const PIMAGE_TLS_CALLBACK __dyn_tls_init_callback __attribute__((__common__));
+#endif
+
 @implementation TestPlugin
 - (int)test: (int)num
 {
