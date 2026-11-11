@@ -1602,8 +1602,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		OBJFW_LIBS="-lnetwork $OBJFW_LIBS"
 		;;
 	mingw*)
-		LIBS="-lws2_32 -liphlpapi $LIBS"
-		OBJFW_LIBS="-lws2_32 -liphlpapi $OBJFW_LIBS"
+		LIBS="-lws2_32 $LIBS"
+		OBJFW_LIBS="-lws2_32 $OBJFW_LIBS"
 		;;
 	*)
 		AC_CHECK_LIB(socket, socket, [

@@ -34,18 +34,27 @@
 #include <iphlpapi.h>
 #undef interface
 
+static HMODULE iphlpapi;
 static WINAPI ULONG (*GetAdaptersAddressesFuncPtr)(ULONG, ULONG, PVOID,
     PIP_ADAPTER_ADDRESSES, PULONG);
+static WINAPI ULONG (*GetAdaptersInfoFuncPtr)(PIP_ADAPTER_INFO, PULONG);
+
+OF_DESTRUCTOR()
+{
+	if (iphlpapi != NULL)
+		FreeLibrary(iphlpapi);
+}
 
 static void
 init(void)
 {
-	HMODULE module;
-
-	if ((module = GetModuleHandle("iphlpapi.dll")) != NULL)
+	if ((iphlpapi = LoadLibraryA("iphlpapi.dll")) != NULL) {
 		GetAdaptersAddressesFuncPtr = (WINAPI ULONG (*)(ULONG, ULONG,
 		    PVOID, PIP_ADAPTER_ADDRESSES, PULONG))
-		    GetProcAddress(module, "GetAdaptersAddresses");
+		    GetProcAddress(iphlpapi, "GetAdaptersAddresses");
+		GetAdaptersInfoFuncPtr = (WINAPI ULONG (*)(PIP_ADAPTER_INFO,
+		    PULONG))GetProcAddress(iphlpapi, "GetAdaptersInfo");
+	}
 }
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFNetworkInterface) *
@@ -171,7 +180,8 @@ networkInterfacesFromGetAdaptersInfo(void)
 		return nil;
 
 	@try {
-		ULONG error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+		ULONG error = GetAdaptersInfoFuncPtr(adapterInfo,
+		    &adapterInfoSize);
 
 		if (error == ERROR_BUFFER_OVERFLOW) {
 			PIP_ADAPTER_INFO newAdapterInfo =
@@ -181,7 +191,8 @@ networkInterfacesFromGetAdaptersInfo(void)
 				return nil;
 
 			adapterInfo = newAdapterInfo;
-			error = GetAdaptersInfo(adapterInfo, &adapterInfoSize);
+			error = GetAdaptersInfoFuncPtr(adapterInfo,
+			    &adapterInfoSize);
 		}
 
 		if (error != ERROR_SUCCESS)
@@ -250,8 +261,12 @@ networkInterfacesFromGetAdaptersInfo(void)
 
 	if (GetAdaptersAddressesFuncPtr != NULL)
 		ret = networkInterfacesFromGetAdaptersAddresses();
-	else
+	else if (GetAdaptersInfoFuncPtr != NULL)
 		ret = networkInterfacesFromGetAdaptersInfo();
+	else {
+		objc_autoreleasePoolPop(pool);
+		return [OFDictionary dictionary];
+	}
 
 	enumerator = [ret objectEnumerator];
 	while ((interface = [enumerator nextObject]) != nil)

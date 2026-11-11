@@ -87,6 +87,17 @@
 # define HOST_NAME_MAX 255
 #endif
 
+#ifdef OF_WINDOWS
+static HMODULE iphlpapi;
+static WINAPI DWORD (*GetNetworkParamsFuncPtr)(PFIXED_INFO, PULONG);
+
+OF_DESTRUCTOR()
+{
+	if (iphlpapi != NULL)
+		FreeLibrary(iphlpapi);
+}
+#endif
+
 #ifndef OF_WII
 static OFString *
 domainFromHostname(OFString *hostname)
@@ -219,6 +230,19 @@ parseNetStackArray(OFString *string)
 #endif
 
 @implementation OFDNSResolverSettings
+#ifdef OF_WINDOWS
++ (void)initialize
+{
+	if (self != [OFDNSResolverSettings class])
+		return;
+
+	if ((iphlpapi = LoadLibraryA("iphlpapi.dll")) != NULL)
+		GetNetworkParamsFuncPtr =
+		    (WINAPI DWORD (*)(PFIXED_INFO, PULONG))
+		    GetProcAddress(iphlpapi, "GetNetworkParams");
+}
+#endif
+
 - (void)dealloc
 {
 	objc_release(_staticHosts);
@@ -464,7 +488,8 @@ parseNetStackArray(OFString *string)
 	ULONG length = sizeof(fixedInfo);
 	PIP_ADDR_STRING iter;
 
-	if (GetNetworkParams(fixedInfo, &length) != ERROR_SUCCESS)
+	if (GetNetworkParamsFuncPtr == NULL ||
+	    GetNetworkParamsFuncPtr(fixedInfo, &length) != ERROR_SUCCESS)
 		return;
 
 	nameServers = [OFMutableArray array];
