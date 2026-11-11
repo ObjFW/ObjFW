@@ -236,10 +236,11 @@ Wii U
 Windows
 -------
 
-* OS Versions: 98 SE, NT 4.0, XP, 7, 8, 8.1, 10, 11, Wine
+* OS Versions: 95, 98 SE, NT 4.0, XP, 7, 8, 8.1, 10, 11, Wine
 * Architectures: AArch64, AMD64, x86
-* Compilers: GCC 5.3.0 & 6.2.0 from MSYS2 (AMD64 & x86), Clang 3.9.0 from MSYS2
-  (x86), Clang 10.0 from MSYS2 (AMD64 & x86), Clang 14.0.4 from MSYS2 (AArch64)
+* Compilers: GCC 5.3.0 & 6.2.0 from MSYS2 (AMD64 & x86), GCC 14.2.0 with crtdll
+  from pkgsrc (x86), Clang 3.9.0 from MSYS2 (x86), Clang 10.0 from MSYS2
+  (AMD64 & x86), Clang 14.0.4 from MSYS2 (AArch64)
 * Runtimes: ObjFW
 
 
