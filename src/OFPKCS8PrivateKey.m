@@ -30,10 +30,15 @@
 static void
 parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
 {
-	if (![section isEqual: @"PRIVATE KEY"])
+	if (![section isEqual: @"PRIVATE KEY"] &&
+	    ![section isEqual: @"EC PRIVATE KEY"])
                 return;
 
 	OFPKCS8PrivateKey **privateKey = ctx;
+
+	if (*privateKey != nil)
+		@throw [OFInvalidArgumentException exception];
+
 	*privateKey =
 	    [data.valueByParsingDER parsedAs: [OFPKCS8PrivateKey class]];
 }
