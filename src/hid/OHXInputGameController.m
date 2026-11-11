@@ -72,12 +72,12 @@ static WINAPI DWORD (*XInputGetCapabilitiesExFuncPtr)(DWORD, DWORD, DWORD,
 		    DWORD, struct XInputCapabilitiesEx *))
 		    GetProcAddress(module, (LPCSTR)108);
 		XInputVersion = 14;
-	} else if ((module = LoadLibrary("xinput1_3.dll")) != NULL) {
+	} else if ((module = LoadLibraryA("xinput1_3.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, (LPCSTR)100);
 		XInputVersion = 13;
-	} else if ((module = LoadLibrary("xinput9_1_0.dll")) != NULL) {
+	} else if ((module = LoadLibraryA("xinput9_1_0.dll")) != NULL) {
 		XInputGetStateFuncPtr =
 		    (WINAPI DWORD (*)(DWORD, XINPUT_STATE *))
 		    GetProcAddress(module, "XInputGetState");

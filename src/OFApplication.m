@@ -138,7 +138,7 @@ OFApplicationMain(int *argc, char **argv[], id <OFApplicationDelegate> delegate)
 
 #ifdef OF_WINDOWS
 # ifndef _UCRT
-	HMODULE msvcrt = LoadLibrary("msvcrt.dll");
+	HMODULE msvcrt = LoadLibraryA("msvcrt.dll");
 	@try {
 # endif
 		void (*__wgetmainargsFuncPtr)(int *, wchar_t ***, wchar_t ***,
