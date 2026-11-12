@@ -185,12 +185,34 @@ errorToErrNo()
 	switch (GetLastError()) {
 	case ERROR_INVALID_HANDLE:
 		return EBADF;
-	case ERROR_NOACCESS:
+	case ERROR_FILE_NOT_FOUND:
+	case ERROR_PATH_NOT_FOUND:
+	case ERROR_INVALID_DRIVE:
+		return ENOENT;
+	case ERROR_FILE_EXISTS:
+	case ERROR_ALREADY_EXISTS:
+		return EEXIST;
+	case ERROR_ACCESS_DENIED:
 		return EACCES;
+	case ERROR_INVALID_NAME:
+		return EILSEQ;
+	case ERROR_FILENAME_EXCED_RANGE:
+		return ENAMETOOLONG;
+	case ERROR_TOO_MANY_OPEN_FILES:
+		return ENFILE;
+	case ERROR_NOT_ENOUGH_MEMORY:
+		return ENOMEM;
+	case ERROR_WRITE_PROTECT:
+		return EROFS;
+	case ERROR_DISK_FULL:
+		return ENOSPC;
 	case ERROR_INVALID_PARAMETER:
 	case ERROR_SEEK:
 	case ERROR_NEGATIVE_SEEK:
 		return EINVAL;
+	case ERROR_NOACCESS:
+	case ERROR_INVALID_ADDRESS:
+		return EFAULT;
 	default:
 		return EIO;
 	}
@@ -357,6 +379,12 @@ parseMode(const char *mode)
 				    cStringWithEncoding: [OFLocale encoding]],
 				    access, FILE_SHARE_READ | FILE_SHARE_WRITE,
 				    NULL, create, FILE_ATTRIBUTE_NORMAL, NULL);
+
+			if (handle->handle == INVALID_HANDLE_VALUE)
+				@throw [OFOpenItemFailedException
+				    exceptionWithPath: path
+						 mode: mode
+						errNo: errorToErrNo()];
 
 			if (handle->append) {
 				if (SetFilePointer(handle->handle, 0, NULL,
