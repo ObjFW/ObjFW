@@ -387,7 +387,8 @@ parseMode(const char *mode)
 						errNo: errorToErrNo()];
 
 			if (handle->append) {
-				if (SetFilePointer(handle->handle, 0, NULL,
+				LONG high = 0;
+				if (SetFilePointer(handle->handle, 0, &high,
 				    FILE_END) == INVALID_SET_FILE_POINTER &&
 				    GetLastError() != NO_ERROR) {
 					CloseHandle(handle->handle);
@@ -587,7 +588,8 @@ parseMode(const char *mode)
 		@throw [OFOutOfRangeException exception];
 
 	if (_handle->append) {
-		if (SetFilePointer(_handle->handle, 0, NULL, FILE_END) ==
+		LONG high = 0;
+		if (SetFilePointer(_handle->handle, 0, &high, FILE_END) ==
 		    INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
