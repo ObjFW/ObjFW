@@ -88,24 +88,19 @@
 # define O_EXLOCK 0
 #endif
 
-#ifdef OF_WINDOWS
-# ifndef _UCRT
-static HMODULE msvcrt;
-static int (*_wopenFuncPtr)(const wchar_t *, int, ...);
+#if defined(OF_WINDOWS)
+struct _OFFileHandle {
+	HANDLE handle;
+	bool append;
+};
 
-OF_DESTRUCTOR()
+static void
+closeHandle(OFFileHandle handle)
 {
-	if (msvcrt != NULL)
-		FreeLibrary(msvcrt);
+	CloseHandle(handle->handle);
+	OFFreeMemory(handle);
 }
-# else
-static int (*_wopenFuncPtr)(const wchar_t *, int, ...) = &_wopen;
-# endif
-#endif
-
-#ifndef OF_AMIGAOS
-# define closeHandle(h) close(h)
-#else
+#elif defined(OF_AMIGAOS)
 static struct _OFFileHandle {
 	struct _OFFileHandle *previous, *next;
 	BPTR handle;
@@ -138,46 +133,69 @@ OF_DESTRUCTOR()
 	    iter = iter->next)
 		Close(iter->handle);
 }
+#else
+# define closeHandle(h) close(h)
 #endif
 
-#ifndef OF_AMIGAOS
-static int
-parseMode(const char *mode)
+#if defined(OF_WINDOWS)
+static bool
+parseMode(const char *mode, DWORD *access, DWORD *create, bool *append)
 {
-	int ret = 0;
+	*access = 0;
+	*create = 0;
+	*append = false;
 
 	switch (*mode) {
 	case 'r':
-		ret |= O_RDONLY;
+		*access = GENERIC_READ;
+		*create = OPEN_EXISTING;
 		break;
 	case 'w':
-		ret |= O_WRONLY | O_CREAT | O_TRUNC;
+		*access = GENERIC_WRITE;
+		*create = CREATE_ALWAYS;
 		break;
 	case 'a':
-		ret |= O_WRONLY | O_CREAT | O_APPEND;
+		*access = GENERIC_WRITE;
+		*create = OPEN_ALWAYS;
+		*append = true;
 		break;
 	default:
-		return -1;
+		return false;
 	}
 
 	for (mode++; *mode != '\0'; mode++) {
 		switch (*mode) {
 		case '+':
-			ret &= ~(O_RDONLY | O_WRONLY);
-			ret |= O_RDWR;
+			*access = GENERIC_READ | GENERIC_WRITE;
 			break;
 		case 'x':
-			ret &= ~O_TRUNC;
-			ret |= O_EXCL;
+			*create = CREATE_NEW;
 			break;
 		default:
-			return -1;
+			return false;
 		}
 	}
 
-	return ret;
+	return true;
 }
-#else
+
+static int
+errorToErrNo()
+{
+	switch (GetLastError()) {
+	case ERROR_INVALID_HANDLE:
+		return EBADF;
+	case ERROR_NOACCESS:
+		return EACCES;
+	case ERROR_INVALID_PARAMETER:
+	case ERROR_SEEK:
+	case ERROR_NEGATIVE_SEEK:
+		return EINVAL;
+	default:
+		return EIO;
+	}
+}
+#elif defined(OF_AMIGAOS)
 static int
 parseMode(const char *mode, bool *truncate, bool *failIfExists, bool *append)
 {
@@ -235,6 +253,43 @@ ioErrToErrNo()
 		return EIO;
 	}
 }
+#else
+static int
+parseMode(const char *mode)
+{
+	int ret = 0;
+
+	switch (*mode) {
+	case 'r':
+		ret |= O_RDONLY;
+		break;
+	case 'w':
+		ret |= O_WRONLY | O_CREAT | O_TRUNC;
+		break;
+	case 'a':
+		ret |= O_WRONLY | O_CREAT | O_APPEND;
+		break;
+	default:
+		return -1;
+	}
+
+	for (mode++; *mode != '\0'; mode++) {
+		switch (*mode) {
+		case '+':
+			ret &= ~(O_RDONLY | O_WRONLY);
+			ret |= O_RDWR;
+			break;
+		case 'x':
+			ret &= ~O_TRUNC;
+			ret |= O_EXCL;
+			break;
+		default:
+			return -1;
+		}
+	}
+
+	return ret;
+}
 #endif
 
 @implementation OFFile
@@ -242,12 +297,6 @@ ioErrToErrNo()
 {
 	if (self != [OFFile class])
 		return;
-
-#if defined(OF_WINDOWS) && !defined(_UCRT)
-	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL)
-		_wopenFuncPtr = (int (*)(const wchar_t *, int, ...))
-		    GetProcAddress(msvcrt, "_wopen");
-#endif
 
 #ifdef OF_WII
 	if (!fatInitDefault())
@@ -289,42 +338,50 @@ ioErrToErrNo()
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		int flags;
 
-#ifndef OF_AMIGAOS
-		if ((flags = parseMode(mode.UTF8String)) == -1)
-			@throw [OFInvalidArgumentException exception];
+#if defined(OF_WINDOWS)
+		handle = OFAllocMemory(1, sizeof(*handle));
+		@try {
+			DWORD access, create;
 
-		flags |= O_BINARY | O_CLOEXEC;
+			if (!parseMode(mode.UTF8String, &access, &create,
+			    &handle->append))
+				@throw [OFInvalidArgumentException exception];
 
-# ifdef OF_WINDOWS
-		if (_wopenFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-			handle = _wopenFuncPtr(path.UTF16String, flags,
-			    _S_IREAD | _S_IWRITE);
-		else
-# endif
-# ifdef HAVE_OPEN64
-			handle = open64(
-			    [path cStringWithEncoding: [OFLocale encoding]],
-			    flags, 0666);
-# else
-			handle = open(
-			    [path cStringWithEncoding: [OFLocale encoding]],
-			    flags, 0666);
-# endif
+			if ([OFSystemInfo isWindowsNT])
+				handle->handle = CreateFileW(path.UTF16String,
+				    access, FILE_SHARE_READ | FILE_SHARE_WRITE,
+				    NULL, create, FILE_ATTRIBUTE_NORMAL, NULL);
+			else
+				handle->handle = CreateFileA([path
+				    cStringWithEncoding: [OFLocale encoding]],
+				    access, FILE_SHARE_READ | FILE_SHARE_WRITE,
+				    NULL, create, FILE_ATTRIBUTE_NORMAL, NULL);
 
-		if (handle == -1)
-			@throw [OFOpenItemFailedException
-			    exceptionWithPath: path
-					 mode: mode
-					errNo: errno];
-#else
+			if (handle->append) {
+				if (SetFilePointer(handle->handle, 0, NULL,
+				    FILE_END) == INVALID_SET_FILE_POINTER &&
+				    GetLastError() != NO_ERROR) {
+					CloseHandle(handle->handle);
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: errorToErrNo()];
+				}
+			}
+		} @catch (id e) {
+			OFFreeMemory(handle);
+			@throw e;
+		}
+
+#elif defined(OF_AMIGAOS)
 		handle = OFAllocMemory(1, sizeof(*handle));
 		@try {
 			bool truncate, failIfExists;
 			const char *pathCStr = [path cStringWithEncoding:
 			    [OFLocale encoding]];
 
+			int flags;
 			if ((flags = parseMode(mode.UTF8String, &truncate,
 			    &failIfExists, &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
@@ -374,7 +431,7 @@ ioErrToErrNo()
 					@throw [OFOpenItemFailedException
 					    exceptionWithPath: path
 							 mode: mode
-							errNo: EIO];
+							errNo: ioErrToErrNo()];
 				}
 			}
 
@@ -393,6 +450,26 @@ ioErrToErrNo()
 			OFFreeMemory(handle);
 			@throw e;
 		}
+#else
+		int flags;
+		if ((flags = parseMode(mode.UTF8String)) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		flags |= O_BINARY | O_CLOEXEC;
+
+# ifdef HAVE_OPEN64
+		handle = open64([path cStringWithEncoding: [OFLocale encoding]],
+		    flags, 0666);
+# else
+		handle = open([path cStringWithEncoding: [OFLocale encoding]],
+		    flags, 0666);
+# endif
+
+		if (handle == -1)
+			@throw [OFOpenItemFailedException
+			    exceptionWithPath: path
+					 mode: mode
+					errNo: errno];
 #endif
 
 		objc_autoreleasePoolPop(pool);
@@ -436,28 +513,30 @@ ioErrToErrNo()
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
 {
-	ssize_t ret;
-
 	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
-	if (length > UINT_MAX)
+	if (length > MAXDWORD || length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = read(_handle, buffer, (unsigned int)length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: errno];
+	DWORD ret;
+	if (!ReadFile(_handle->handle, buffer, (DWORD)length, &ret, NULL))
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: errorToErrNo()];
 #elif defined(OF_AMIGAOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
+	ssize_t ret;
 	if ((ret = Read(_handle->handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: EIO];
 #else
+	ssize_t ret;
 	if ((ret = read(_handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
@@ -476,19 +555,30 @@ ioErrToErrNo()
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
-	int bytesWritten;
-
-	if (length > INT_MAX)
+	if (length > MAXDWORD)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = write(_handle, buffer, (int)length)) < 0)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: errno];
-#elif defined(OF_AMIGAOS)
-	LONG bytesWritten;
+	if (_handle->append) {
+		if (SetFilePointer(_handle->handle, 0, NULL, FILE_END) ==
+		    INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: 0
+					  errNo: errorToErrNo()];
+	}
 
+	DWORD bytesWritten;
+	if (!WriteFile(_handle->handle, buffer, (DWORD)length, &bytesWritten,
+	    NULL)) {
+		if (bytesWritten == 0)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: 0
+					  errNo: errorToErrNo()];
+	}
+#elif defined(OF_AMIGAOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -504,9 +594,10 @@ ioErrToErrNo()
 			    exceptionWithObject: self
 				requestedLength: length
 				   bytesWritten: 0
-					  errNo: EIO];
+					  errNo: ioErrToErrNo()];
 	}
 
+	LONG bytesWritten;
 	if ((bytesWritten = Write(_handle->handle, (void *)buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
@@ -536,18 +627,17 @@ ioErrToErrNo()
 	if (_handle == OFInvalidFileHandle)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-#ifndef OF_AMIGAOS
-	int translatedWhence;
-
+#if defined(OF_WINDOWS)
+	DWORD translatedWhence;
 	switch (whence) {
 	case OFSeekSet:
-		translatedWhence = SEEK_SET;
+		translatedWhence = FILE_BEGIN;
 		break;
 	case OFSeekCurrent:
-		translatedWhence = SEEK_CUR;
+		translatedWhence = FILE_CURRENT;
 		break;
 	case OFSeekEnd:
-		translatedWhence = SEEK_END;
+		translatedWhence = FILE_END;
 		break;
 	default:
 		@throw [OFSeekFailedException exceptionWithStream: self
@@ -555,22 +645,29 @@ ioErrToErrNo()
 							   whence: whence
 							    errNo: EINVAL];
 	}
-# if defined(OF_WINDOWS)
-	ret = _lseeki64(_handle, offset, translatedWhence);
-# elif defined(HAVE_LSEEK64)
-	ret = lseek64(_handle, offset, translatedWhence);
-# else
-	ret = lseek(_handle, offset, translatedWhence);
-# endif
 
-	if (ret == -1)
-		@throw [OFSeekFailedException exceptionWithStream: self
-							   offset: offset
-							   whence: whence
-							    errNo: errno];
-#else
+	union {
+		OFStreamOffset offset;
+		struct {
+			LONG low, high;
+		} pair;
+	} u;
+	OFZeroMemory(&u, sizeof(u));
+	u.offset = offset;
+
+	u.pair.low = SetFilePointer(_handle->handle, u.pair.low, &u.pair.high,
+	    translatedWhence);
+	if (u.pair.low == (LONG)INVALID_SET_FILE_POINTER &&
+	    GetLastError() != NO_ERROR)
+		@throw [OFSeekFailedException
+		    exceptionWithStream: self
+				 offset: offset
+				 whence: whence
+				  errNo: errorToErrNo()];
+
+	ret = u.offset;
+#elif defined(OF_AMIGAOS)
 	LONG translatedWhence;
-
 	switch (whence) {
 	case OFSeekSet:
 		translatedWhence = OFFSET_BEGINNING;
@@ -600,6 +697,36 @@ ioErrToErrNo()
 							   offset: offset
 							   whence: whence
 							    errNo: EINVAL];
+#else
+	int translatedWhence;
+	switch (whence) {
+	case OFSeekSet:
+		translatedWhence = SEEK_SET;
+		break;
+	case OFSeekCurrent:
+		translatedWhence = SEEK_CUR;
+		break;
+	case OFSeekEnd:
+		translatedWhence = SEEK_END;
+		break;
+	default:
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence
+							    errNo: EINVAL];
+	}
+
+# if defined(HAVE_LSEEK64)
+	ret = lseek64(_handle, offset, translatedWhence);
+# else
+	ret = lseek(_handle, offset, translatedWhence);
+# endif
+
+	if (ret == -1)
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence
+							    errNo: errno];
 #endif
 
 	_atEndOfStream = false;

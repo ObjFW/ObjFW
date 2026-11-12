@@ -20,13 +20,13 @@
 #import "OFSeekableStream.h"
 #import "OFKernelEventObserver.h"
 
-#ifndef OF_AMIGAOS
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
+typedef struct _OFFileHandle *_Nullable OFFileHandle;
+static const OFFileHandle OFInvalidFileHandle = NULL;
+#else
 # define OF_FILE_HANDLE_IS_FD
 typedef int OFFileHandle;
 static const OFFileHandle OFInvalidFileHandle = -1;
-#else
-typedef struct _OFFileHandle *_Nullable OFFileHandle;
-static const OFFileHandle OFInvalidFileHandle = NULL;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
