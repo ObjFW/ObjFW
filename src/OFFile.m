@@ -188,24 +188,38 @@ errorToErrNo()
 	case ERROR_FILE_NOT_FOUND:
 	case ERROR_PATH_NOT_FOUND:
 	case ERROR_INVALID_DRIVE:
+	case ERROR_BAD_NET_NAME:
+	case ERROR_BAD_PATHNAME:
+	case ERROR_BAD_NETPATH:
 		return ENOENT;
 	case ERROR_FILE_EXISTS:
 	case ERROR_ALREADY_EXISTS:
 		return EEXIST;
 	case ERROR_ACCESS_DENIED:
+	case ERROR_NETWORK_ACCESS_DENIED:
 		return EACCES;
 	case ERROR_INVALID_NAME:
 		return EILSEQ;
 	case ERROR_FILENAME_EXCED_RANGE:
 		return ENAMETOOLONG;
 	case ERROR_TOO_MANY_OPEN_FILES:
+	case ERROR_NOT_ENOUGH_QUOTA:
 		return ENFILE;
 	case ERROR_NOT_ENOUGH_MEMORY:
+	case ERROR_OUTOFMEMORY:
 		return ENOMEM;
 	case ERROR_WRITE_PROTECT:
 		return EROFS;
 	case ERROR_DISK_FULL:
 		return ENOSPC;
+	case ERROR_DISK_QUOTA_EXCEEDED:
+		return EDQUOT;
+	case ERROR_BROKEN_PIPE:
+		return EPIPE;
+	case ERROR_BUSY:
+	case ERROR_SHARING_VIOLATION:
+	case ERROR_LOCK_VIOLATION:
+		return EBUSY;
 	case ERROR_INVALID_PARAMETER:
 	case ERROR_SEEK:
 	case ERROR_NEGATIVE_SEEK:
@@ -561,9 +575,10 @@ parseMode(const char *mode)
 
 	ssize_t ret;
 	if ((ret = Read(_handle->handle, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: EIO];
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: ioErrToErrNo()];
 #else
 	ssize_t ret;
 	if ((ret = read(_handle, buffer, length)) < 0)
@@ -629,10 +644,11 @@ parseMode(const char *mode)
 
 	LONG bytesWritten;
 	if ((bytesWritten = Write(_handle->handle, (void *)buffer, length)) < 0)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: 0
-							     errNo: EIO];
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+			   bytesWritten: 0
+				  errNo: ioErrToErrNo()];
 #else
 	ssize_t bytesWritten;
 
