@@ -40,6 +40,7 @@
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
+# import "OFFile+Private.h"
 #endif
 #import "OFFileManager.h"
 #import "OFIRI.h"
@@ -296,23 +297,6 @@ OFFileTypeUnknownRef(void)
 
 static OFFileManager *defaultManager;
 
-#ifdef OF_WINDOWS
-# ifndef _UCRT
-static HMODULE msvcrt;
-static int (*_wchdirFuncPtr)(const wchar_t *);
-static wchar_t *(*_wgetcwdFuncPtr)(wchar_t *, int);
-
-OF_DESTRUCTOR()
-{
-	if (msvcrt != NULL)
-		FreeLibrary(msvcrt);
-}
-# else
-static int (*_wchdirFuncPtr)(const wchar_t *) = &_wchdir;
-static wchar_t *(*_wgetcwdFuncPtr)(wchar_t *, int) = &_wgetcwd;
-# endif
-#endif
-
 #ifdef OF_AMIGAOS
 static bool dirChanged = false;
 static BPTR originalDirLock = 0;
@@ -350,15 +334,6 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	[OFFile class];
 #endif
 
-#if defined(OF_WINDOWS) && !defined(_UCRT)
-	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
-		_wchdirFuncPtr = (int (*)(const wchar_t *))
-		    GetProcAddress(msvcrt, "_wchdir");
-		_wgetcwdFuncPtr = (wchar_t *(*)(wchar_t *, int))
-		    GetProcAddress(msvcrt, "_wgetcwd");
-	}
-#endif
-
 	defaultManager = [[OFDefaultFileManager alloc] init];
 }
 
@@ -373,30 +348,68 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 # if defined(OF_WINDOWS)
 	OFString *ret;
 
-	if (_wgetcwdFuncPtr != NULL && [OFSystemInfo isWindowsNT]) {
-		wchar_t *buffer = _wgetcwdFuncPtr(NULL, 0);
+	@synchronized ([OFFileManager class]) {
+		if ([OFSystemInfo isWindowsNT]) {
+			DWORD length, bufferLength;
+			wchar_t *buffer = NULL;
 
-		if (buffer == NULL)
-			@throw [OFGetCurrentDirectoryFailedException
-			    exceptionWithErrNo: errno];
+			do {
+				OFFreeMemory(buffer);
 
-		@try {
-			ret = [OFString stringWithUTF16String: buffer];
-		} @finally {
-			free(buffer);
-		}
-	} else {
-		char *buffer = _getcwd(NULL, 0);
+				bufferLength = GetCurrentDirectoryW(0, NULL);
+				if (bufferLength > MAXDWORD - 1)
+					@throw [OFOutOfRangeException
+					    exception];
 
-		if (buffer == NULL)
-			@throw [OFGetCurrentDirectoryFailedException
-			    exceptionWithErrNo: errno];
+				buffer = OFAllocMemory(
+				    bufferLength + 1, sizeof(wchar_t));
+				length = GetCurrentDirectoryW(
+				    bufferLength + 1, buffer);
+			} while (length > bufferLength);
 
-		@try {
-			ret = [OFString stringWithCString: buffer
-						 encoding: [OFLocale encoding]];
-		} @finally {
-			free(buffer);
+			if (length == 0) {
+				OFFreeMemory(buffer);
+				@throw [OFGetCurrentDirectoryFailedException
+				    exceptionWithErrNo: _OFFileErrorToErrNo()];
+			}
+
+			@try {
+				ret = [OFString stringWithUTF16String: buffer
+							       length: length];
+			} @finally {
+				OFFreeMemory(buffer);
+			}
+		} else {
+			DWORD length, bufferLength;
+			char *buffer = NULL;
+
+			do {
+				OFFreeMemory(buffer);
+
+				bufferLength = GetCurrentDirectoryA(0, NULL);
+				if (bufferLength > MAXDWORD - 1)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				buffer = OFAllocMemory(bufferLength + 1, 1);
+				length = GetCurrentDirectoryA(
+				    bufferLength + 1, buffer);
+			} while (length > bufferLength);
+
+			if (length == 0) {
+				OFFreeMemory(buffer);
+				@throw [OFGetCurrentDirectoryFailedException
+				    exceptionWithErrNo: _OFFileErrorToErrNo()];
+			}
+
+			@try {
+				ret = [OFString
+				    stringWithCString: buffer
+					     encoding: [OFLocale encoding]
+					       length: length];
+			} @finally {
+				OFFreeMemory(buffer);
+			}
 		}
 	}
 
@@ -773,7 +786,22 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-# ifdef OF_AMIGAOS
+# if defined(OF_WINDOWS)
+	BOOL success;
+
+	@synchronized ([OFFileManager class]) {
+		if ([OFSystemInfo isWindowsNT])
+			success = SetCurrentDirectoryW(path.UTF16String);
+		else
+			success = SetCurrentDirectoryA(
+			    [path cStringWithEncoding: [OFLocale encoding]]);
+	}
+
+	if (!success)
+		@throw [OFChangeCurrentDirectoryFailedException
+		    exceptionWithPath: path
+				errNo: _OFFileErrorToErrNo()];
+# elif defined(OF_AMIGAOS)
 	BPTR lock, oldLock;
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
@@ -807,17 +835,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 
 	dirChanged = true;
 # else
-	int status;
-
-#  ifdef OF_WINDOWS
-	if (_wchdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-		status = _wchdirFuncPtr(path.UTF16String);
-	else
-#  endif
-		status = chdir(
-		    [path cStringWithEncoding: [OFLocale encoding]]);
-
-	if (status != 0)
+	if (chdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
 		@throw [OFChangeCurrentDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errno];

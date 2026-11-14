@@ -35,6 +35,7 @@
 #endif
 
 #import "OFFile.h"
+#import "OFFile+Private.h"
 #import "OFLocale.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
@@ -179,8 +180,8 @@ parseMode(const char *mode, DWORD *access, DWORD *create, bool *append)
 	return true;
 }
 
-static int
-errorToErrNo()
+int
+_OFFileErrorToErrNo(void)
 {
 	switch (GetLastError()) {
 	case ERROR_INVALID_HANDLE:
@@ -398,18 +399,21 @@ parseMode(const char *mode)
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode
-						errNo: errorToErrNo()];
+						errNo: _OFFileErrorToErrNo()];
 
 			if (handle->append) {
 				LONG high = 0;
 				if (SetFilePointer(handle->handle, 0, &high,
 				    FILE_END) == INVALID_SET_FILE_POINTER &&
 				    GetLastError() != NO_ERROR) {
+					int errNo = _OFFileErrorToErrNo();
+
 					CloseHandle(handle->handle);
+
 					@throw [OFOpenItemFailedException
 					    exceptionWithPath: path
 							 mode: mode
-							errNo: errorToErrNo()];
+							errNo: errNo];
 				}
 			}
 		} @catch (id e) {
@@ -568,7 +572,7 @@ parseMode(const char *mode)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
-				  errNo: errorToErrNo()];
+				  errNo: _OFFileErrorToErrNo()];
 #elif defined(OF_AMIGAOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -610,7 +614,7 @@ parseMode(const char *mode)
 			    exceptionWithObject: self
 				requestedLength: length
 				   bytesWritten: 0
-					  errNo: errorToErrNo()];
+					  errNo: _OFFileErrorToErrNo()];
 	}
 
 	DWORD bytesWritten;
@@ -621,7 +625,7 @@ parseMode(const char *mode)
 			    exceptionWithObject: self
 				requestedLength: length
 				   bytesWritten: 0
-					  errNo: errorToErrNo()];
+					  errNo: _OFFileErrorToErrNo()];
 	}
 #elif defined(OF_AMIGAOS)
 	if (length > LONG_MAX)
@@ -709,7 +713,7 @@ parseMode(const char *mode)
 		    exceptionWithStream: self
 				 offset: offset
 				 whence: whence
-				  errNo: errorToErrNo()];
+				  errNo: _OFFileErrorToErrNo()];
 
 	ret = u.offset;
 #elif defined(OF_AMIGAOS)
