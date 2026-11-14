@@ -368,9 +368,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			} while (length > bufferLength);
 
 			if (length == 0) {
+				int errNo = _OFFileErrorToErrNo();
+
 				OFFreeMemory(buffer);
+
 				@throw [OFGetCurrentDirectoryFailedException
-				    exceptionWithErrNo: _OFFileErrorToErrNo()];
+				    exceptionWithErrNo: errNo];
 			}
 
 			@try {
@@ -397,9 +400,12 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			} while (length > bufferLength);
 
 			if (length == 0) {
+				int errNo = _OFFileErrorToErrNo();
+
 				OFFreeMemory(buffer);
+
 				@throw [OFGetCurrentDirectoryFailedException
-				    exceptionWithErrNo: _OFFileErrorToErrNo()];
+				    exceptionWithErrNo: errNo];
 			}
 
 			@try {
