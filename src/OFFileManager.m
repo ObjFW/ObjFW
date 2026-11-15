@@ -801,12 +801,28 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		else
 			success = SetCurrentDirectoryA(
 			    [path cStringWithEncoding: [OFLocale encoding]]);
-	}
 
-	if (!success)
-		@throw [OFChangeCurrentDirectoryFailedException
-		    exceptionWithPath: path
-				errNo: _OFFileErrorToErrNo()];
+		if (!success)
+			@throw [OFChangeCurrentDirectoryFailedException
+			    exceptionWithPath: path
+					errNo: _OFFileErrorToErrNo()];
+
+		OFString *fullPath = self.currentDirectoryPath;
+		if ([fullPath characterAtIndex: 1] == ':') {
+			OFString *key = [OFString stringWithFormat: @"=%C:",
+			    [fullPath characterAtIndex: 0]];
+
+			if ([OFSystemInfo isWindowsNT])
+				SetEnvironmentVariableW(key.UTF16String,
+				    fullPath.UTF16String);
+			else {
+				OFStringEncoding encoding = [OFLocale encoding];
+				SetEnvironmentVariableA(
+				    [key cStringWithEncoding: encoding],
+				    [fullPath cStringWithEncoding: encoding]);
+			}
+		}
+	}
 # elif defined(OF_AMIGAOS)
 	BPTR lock, oldLock;
 
