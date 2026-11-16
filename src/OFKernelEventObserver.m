@@ -118,17 +118,29 @@
 			    exceptionWithClass: self.class];
 #elif !defined(OF_AMIGAOS)
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
+		_cancelAddr.sa_family = AF_INET;
+
+# ifdef OF_HAVE_IPX
+		if (_cancelFD[0] == OFInvalidSocketHandle &&
+		    _OFSocketErrNo() == EAFNOSUPPORT) {
+			_cancelFD[0] = _cancelFD[1] =
+			    socket(AF_IPX, SOCK_DGRAM, 0);
+			_cancelAddr.sa_family = AF_IPX;
+		}
+# endif
 
 		if (_cancelFD[0] == OFInvalidSocketHandle)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		_cancelAddr.sin_family = AF_INET;
-		_cancelAddr.sin_port = 0;
-		_cancelAddr.sin_addr.s_addr = inet_addr((void *)"127.0.0.1");
+		if (_cancelAddr.sa_family == AF_INET) {
+			((struct sockaddr_in *)&_cancelAddr)->sin_port = 0;
+			((struct sockaddr_in *)&_cancelAddr)->sin_addr.s_addr =
+			    inet_addr((void *)"127.0.0.1");
 # ifdef OF_WII
-		_cancelAddr.sin_len = 8;
+			((struct sockaddr_in *)&_cancelAddr)->sin_len = 8;
 # endif
+		}
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 		if (bind(_cancelFD[0], (struct sockaddr *)&_cancelAddr,
