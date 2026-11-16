@@ -30,12 +30,14 @@
 #import "OFRunLoop+Private.h"
 #import "OFSocket.h"
 #import "OFSocket+Private.h"
+#import "OFSystemInfo.h"
 
 #import "OFAlreadyOpenException.h"
 #import "OFBindIPXSocketFailedException.h"
 #import "OFConnectSPXSocketFailedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 
 #ifndef NSPROTO_SPX
 # define NSPROTO_SPX 0
@@ -234,6 +236,30 @@ inform_delegate:
 	closesocket(_socket);
 	_socket = OFInvalidSocketHandle;
 }
+
+#ifdef OF_WINDOWS
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer length: (size_t)length
+{
+	size_t ret;
+	@try {
+		ret = [super lowlevelReadIntoBuffer: buffer length: length];
+	} @catch (OFReadFailedException *e) {
+		if (![OFSystemInfo isWindowsNT] && e.errNo == ECONNRESET) {
+			/*
+			 * Windows 9x reports a cleanly closed SPX connection
+			 * as a read error with ECONNRESET instead of a
+			 * zero-length read.
+			 */
+			_atEndOfStream = true;
+			return 0;
+		}
+
+		@throw e;
+	}
+
+	return ret;
+}
+#endif
 
 - (int)fileDescriptorForConnecting
 {
