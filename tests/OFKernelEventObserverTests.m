@@ -38,7 +38,7 @@
 @interface OFKernelEventObserverTests: OTTestCase
     <OFKernelEventObserverDelegate>
 {
-	OFTCPSocket *_server, *_client, *_accepted;
+	OFStreamSocket *_server, *_client, *_accepted;
 	OFKernelEventObserver *_observer;
 	size_t _events;
 }
@@ -53,13 +53,49 @@ static const size_t numExpectedEvents = 3;
 
 	[super setUp];
 
-	_server = [[OFTCPSocket alloc] init];
-	address = [_server bindToHost: @"127.0.0.1" port: 0];
+#ifdef OF_HAVE_IPX
+	@try {
+#endif
+		OFTCPSocket *server = [OFTCPSocket socket];
+		address = [server bindToHost: @"127.0.0.1" port: 0];
+
+		_server = objc_retain(server);
+#ifdef OF_HAVE_IPX
+	} @catch (OFBindIPSocketFailedException *e) {
+		if (e.errNo != EAFNOSUPPORT)
+			@throw e;
+
+		OFSPXStreamSocket *server = [OFSPXStreamSocket socket];
+		static const unsigned char zeroNode[IPX_NODE_LEN] = { 0 };
+		address = [server bindToNetwork: 0 node: zeroNode port: 0];
+
+		_server = objc_retain(server);
+	}
+#endif
+
 	[_server listen];
 
-	_client = [[OFTCPSocket alloc] init];
-	[_client connectToHost: @"127.0.0.1"
-			  port: OFSocketAddressIPPort(&address)];
+	if ([_server isKindOfClass: [OFTCPSocket class]]) {
+		OFTCPSocket *client = [OFTCPSocket socket];
+		[client connectToHost: @"127.0.0.1"
+				 port: OFSocketAddressIPPort(&address)];
+
+		_client = objc_retain(client);
+#ifdef OF_HAVE_IPX
+	} else if ([_server isKindOfClass: [OFSPXStreamSocket class]]) {
+		OFSPXStreamSocket *client = [OFSPXStreamSocket socket];
+
+		unsigned char node[IPX_NODE_LEN];
+		OFSocketAddressGetIPXNode(&address, node);
+		[client connectToNetwork: OFSocketAddressIPXNetwork(&address)
+				    node: node
+				    port: OFSocketAddressIPXPort(&address)];
+
+		_client = objc_retain(client);
+#endif
+	}
+
+
 	[_client writeBuffer: "0" length: 1];
 }
 
