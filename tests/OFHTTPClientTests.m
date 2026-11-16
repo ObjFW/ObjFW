@@ -35,10 +35,12 @@
 {
 	OFCondition *_condition;
 	uint16_t _port;
+	OFConstantString *_skip;
 }
 
 @property (readonly, nonatomic) OFCondition *condition;
 @property (readonly) uint16_t port;
+@property (readonly, nonatomic) OFConstantString *skip;
 @end
 
 @implementation OFHTTPClientTests
@@ -87,6 +89,9 @@
 	[server.condition wait];
 	[server.condition unlock];
 
+	if (server.skip != nil)
+		OTSkip(server.skip);
+
 	IRI = [OFIRI IRIWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server.port]];
@@ -117,7 +122,7 @@
 @end
 
 @implementation HTTPClientTestsServer
-@synthesize condition = _condition, port = _port;
+@synthesize condition = _condition, port = _port, skip = _skip;
 
 - (instancetype)init
 {
@@ -136,6 +141,7 @@
 - (void)dealloc
 {
 	objc_release(_condition);
+	objc_release(_skip);
 
 	[super dealloc];
 }
@@ -152,7 +158,21 @@
 
 	listener = [OFTCPSocket socket];
 	listener.allowsMPTCP = true;
-	address = [listener bindToHost: @"127.0.0.1" port: 0];
+
+	@try {
+		address = [listener bindToHost: @"127.0.0.1" port: 0];
+	} @catch (OFBindIPSocketFailedException *e) {
+		if (e.errNo != EAFNOSUPPORT)
+			@throw e;
+
+		_skip = @"TCP/IP unsupported";
+
+		[_condition signal];
+		[_condition unlock];
+
+		return nil;
+	}
+
 	_port = OFSocketAddressIPPort(&address);
 	[listener listen];
 

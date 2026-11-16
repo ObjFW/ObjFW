@@ -36,7 +36,15 @@
 
 	sock = [OFUDPSocket socket];
 
-	addr1 = [sock bindToHost: @"127.0.0.1" port: 0];
+	@try {
+		addr1 = [sock bindToHost: @"127.0.0.1" port: 0];
+	} @catch (OFBindIPSocketFailedException *e) {
+		if (e.errNo == EAFNOSUPPORT)
+			OTSkip(@"TCP/IP unsupported");
+
+		@throw e;
+	}
+
 	OTAssertEqualObjects(OFSocketAddressString(&addr1), @"127.0.0.1");
 
 	[sock sendBuffer: "Hello" length: 6 receiver: &addr1];

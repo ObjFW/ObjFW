@@ -37,7 +37,15 @@
 	server = [OFTCPSocket socket];
 	client = [OFTCPSocket socket];
 
-	address = [server bindToHost: @"127.0.0.1" port: 0];
+	@try {
+		address = [server bindToHost: @"127.0.0.1" port: 0];
+	} @catch (OFBindIPSocketFailedException *e) {
+		if (e.errNo == EAFNOSUPPORT)
+			OTSkip(@"TCP/IP unsupported");
+
+		@throw e;
+	}
+
 	[server listen];
 
 	[client connectToHost: @"127.0.0.1"
