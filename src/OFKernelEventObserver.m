@@ -99,11 +99,6 @@
 	self = [super init];
 
 	@try {
-#if !defined(OF_HAVE_PIPE) && !defined(OF_WII) && !defined(OF_AMIGAOS) && \
-    !defined(OF_NINTENDO_3DS)
-		socklen_t cancelAddrLen;
-#endif
-
 		if (!_OFSocketInit())
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
@@ -118,39 +113,33 @@
 			    exceptionWithClass: self.class];
 #elif !defined(OF_AMIGAOS)
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
-		_cancelAddr.sa_family = AF_INET;
 
 # ifdef OF_HAVE_IPX
 		if (_cancelFD[0] == OFInvalidSocketHandle &&
 		    _OFSocketErrNo() == EAFNOSUPPORT) {
 			_cancelFD[0] = _cancelFD[1] =
 			    socket(AF_IPX, SOCK_DGRAM, 0);
-			_cancelAddr.sa_family = AF_IPX;
-		}
+
+			static const unsigned char zeroNode[IPX_NODE_LEN] =
+			    { 0 };
+			_cancelAddr = OFSocketAddressMakeIPX(0, zeroNode, 0);
+		} else
 # endif
+			_cancelAddr = OFSocketAddressParseIPv4(@"127.0.0.1", 0);
 
 		if (_cancelFD[0] == OFInvalidSocketHandle)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		if (_cancelAddr.sa_family == AF_INET) {
-			((struct sockaddr_in *)&_cancelAddr)->sin_port = 0;
-			((struct sockaddr_in *)&_cancelAddr)->sin_addr.s_addr =
-			    inet_addr((void *)"127.0.0.1");
-# ifdef OF_WII
-			((struct sockaddr_in *)&_cancelAddr)->sin_len = 8;
-# endif
-		}
-
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-		if (bind(_cancelFD[0], (struct sockaddr *)&_cancelAddr,
-		    sizeof(_cancelAddr)) != 0)
+		if (bind(_cancelFD[0], (struct sockaddr *)&_cancelAddr.sockaddr,
+		    _cancelAddr.length) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 
-		cancelAddrLen = sizeof(_cancelAddr);
 		if (_OFGetSockName(_cancelFD[0],
-		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
+		    (struct sockaddr *)&_cancelAddr.sockaddr,
+		    &_cancelAddr.length) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
 # else
@@ -161,10 +150,10 @@
 			while (rnd < 1024)
 				rnd = OFRandom16();
 
-			_cancelAddr.sin_port = OFToBigEndian16(rnd);
+			OFSocketAddressSetIPPort(&_cancelAddr, rnd);
 			ret = bind(_cancelFD[0],
-			    (struct sockaddr *)&_cancelAddr,
-			    sizeof(_cancelAddr));
+			    (struct sockaddr *)&_cancelAddr.sockaddr,
+			    _cancelAddr.length);
 
 			if (ret == 0)
 				break;
@@ -296,13 +285,9 @@
 #elif defined(OF_HAVE_PIPE)
 	while (write(_cancelFD[1], "", 1) < 1)
 		OFEnsure(errno == EINTR);
-#elif defined(OF_WII)
-	while (sendto(_cancelFD[1], "", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, 8) < 1)
-		OFEnsure(_OFSocketErrNo() == EINTR);
 #else
 	while (sendto(_cancelFD[1], (void *)"", 1, 0,
-	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) < 1)
+	    (struct sockaddr *)&_cancelAddr.sockaddr, _cancelAddr.length) < 1)
 		OFEnsure(_OFSocketErrNo() == EINTR);
 #endif
 }

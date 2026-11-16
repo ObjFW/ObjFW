@@ -147,7 +147,7 @@ OF_ASSUME_NONNULL_BEGIN
 	int _cancelFD[2];
 # else
 	OFSocketHandle _cancelFD[2];
-	struct sockaddr _cancelAddr;
+	OFSocketAddress _cancelAddr;
 # endif
 # ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
