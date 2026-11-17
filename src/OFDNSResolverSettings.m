@@ -475,44 +475,172 @@ parseNetStackArray(OFString *string)
 #endif
 
 #ifdef OF_WINDOWS
+- (void)parseVDHCPResponse: (const unsigned char *)buffer length: (size_t)length
+{
+	if (length < 4)
+		return;
+
+	OFMutableArray *nameServers = [OFMutableArray array];
+
+	DWORD numEntries;
+	OFCopyMemory(&numEntries, buffer, 4);
+
+	for (DWORD i = 0; i < numEntries; i++) {
+		if (length < 4 + ((i + 1) * 44))
+			return;
+
+		if (_nameServers == nil) {
+			DWORD DNSLength, DNSOffset;
+			OFCopyMemory(&DNSLength, buffer + 4 + i * 44 + 28, 4);
+			OFCopyMemory(&DNSOffset, buffer + 4 + i * 44 + 32, 4);
+
+			if (MAXDWORD - DNSOffset < DNSLength ||
+			    DNSOffset + DNSLength > length)
+				continue;
+
+			if (DNSLength % 4 != 0)
+				continue;
+
+			for (DWORD j = 0; j < DNSLength; j += 4)
+				[nameServers addObject: [OFString
+				    stringWithFormat: @"%u.%u.%u.%u",
+				    buffer[DNSOffset + j],
+				    buffer[DNSOffset + j + 1],
+				    buffer[DNSOffset + j + 2],
+				    buffer[DNSOffset + j + 3]]];
+		}
+
+		if (_localDomain == nil) {
+			DWORD domainLength, domainOffset;
+			OFCopyMemory(&domainLength,
+			    buffer + 4 + i * 44 + 36, 4);
+			OFCopyMemory(&domainOffset,
+			    buffer + 4 + i * 44 + 40, 4);
+
+			if (MAXDWORD - domainOffset < domainLength ||
+			    domainOffset + domainLength > length)
+				continue;
+
+			if (domainLength > 0)
+				_localDomain = [[OFString alloc]
+				    initWithCString: (const char *)buffer +
+						     domainOffset
+					   encoding: [OFLocale encoding]
+					     length: domainLength];
+		}
+	}
+
+	if (_nameServers == nil && nameServers.count > 0) {
+		[nameServers makeImmutable];
+		_nameServers = [nameServers copy];
+	}
+}
+
 - (void)obtainWindowsSystemConfig
 {
-	OFStringEncoding encoding = [OFLocale encoding];
-	OFMutableArray *nameServers;
 	/*
 	 * We need more space than FIXED_INFO in case we have more than one
 	 * name server, but we also want it to be properly aligned, meaning we
 	 * can't just get a buffer of bytes. Thus, we just get space for 8.
 	 */
 	FIXED_INFO fixedInfo[8];
-	ULONG length = sizeof(fixedInfo);
-	PIP_ADDR_STRING iter;
+	ULONG fiLength = sizeof(fixedInfo);
+	if (GetNetworkParamsFuncPtr != NULL &&
+	    GetNetworkParamsFuncPtr(fixedInfo, &fiLength) == ERROR_SUCCESS) {
+		OFStringEncoding encoding = [OFLocale encoding];
+		OFMutableArray *nameServers = [OFMutableArray array];
 
-	if (GetNetworkParamsFuncPtr == NULL ||
-	    GetNetworkParamsFuncPtr(fixedInfo, &length) != ERROR_SUCCESS)
+		PIP_ADDR_STRING iter;
+		for (iter = &fixedInfo->DnsServerList; iter != NULL;
+		    iter = iter->Next) {
+			OFString *nameServer =
+			    [OFString stringWithCString: iter->IpAddress.String
+					       encoding: encoding];
+
+			if (nameServer.length > 0)
+				[nameServers addObject: nameServer];
+		}
+
+		if (nameServers.count > 0) {
+			[nameServers makeImmutable];
+			_nameServers = [nameServers copy];
+		}
+
+		if (fixedInfo->DomainName[0] != '\0')
+			_localDomain = [[OFString alloc]
+			    initWithCString: fixedInfo->DomainName
+				   encoding: encoding];
+
+		return;
+	}
+
+	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
+	    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\VxD\\MSTCP"
+		accessRights: KEY_QUERY_VALUE
+		     options: 0];
+	OFCharacterSet *separatorsCS =
+	    [OFCharacterSet characterSetWithCharactersInString: @", \t"];
+
+	OFString *nameServers = [key stringForValueNamed: @"NameServer"];
+	if (nameServers.length > 0) {
+		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+		_nameServers = [[nameServers
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: options] copy];
+	}
+
+	OFString *localDomain = [key stringForValueNamed: @"Domain"];
+	if (localDomain.length > 0)
+		_localDomain = [localDomain copy];
+
+	OFString *searchDomains = [key stringForValueNamed: @"SearchList"];
+	if (searchDomains.length > 0) {
+		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+		_searchDomains = [[searchDomains
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: options] copy];
+	}
+
+	if (_nameServers != nil && _localDomain != nil)
+		/* We already have everything we can get from VDHCP. */
 		return;
 
-	nameServers = [OFMutableArray array];
+	HANDLE vdhcp = CreateFileA("\\\\.\\VDHCP", GENERIC_READ | GENERIC_WRITE,
+	    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+	    FILE_FLAG_DELETE_ON_CLOSE, NULL);
+	if (vdhcp == INVALID_HANDLE_VALUE)
+		vdhcp = CreateFileA("\\\\.\\VDHCP.VxD", GENERIC_READ |
+		    GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+		    OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+	if (vdhcp != INVALID_HANDLE_VALUE) {
+		void *buffer = NULL;
+		@try {
+			DWORD length = 0, bytesReturned;
+			if (DeviceIoControl(vdhcp, 1, &length, sizeof(length),
+			    &length, sizeof(length), &bytesReturned, NULL))
+				return;
 
-	for (iter = &fixedInfo->DnsServerList; iter != NULL;
-	    iter = iter->Next) {
-		OFString *nameServer =
-		    [OFString stringWithCString: iter->IpAddress.String
-				       encoding: encoding];
+			if (GetLastError() != ERROR_BUFFER_OVERFLOW ||
+			    length == 0)
+				/*
+				 * It is supposed to fail with
+				 * ERROR_BUFFER_OVERFLOW and give us the
+				 * length.
+				 */
+				return;
 
-		if (nameServer.length > 0)
-			[nameServers addObject: nameServer];
+			buffer = OFAllocMemory(length, 1);
+
+			if (!DeviceIoControl(vdhcp, 1, buffer, length, buffer,
+			    length, &bytesReturned, NULL))
+				return;
+
+			[self parseVDHCPResponse: buffer length: length];
+		} @finally {
+			CloseHandle(vdhcp);
+			OFFreeMemory(buffer);
+		}
 	}
-
-	if (nameServers.count > 0) {
-		[nameServers makeImmutable];
-		_nameServers = [nameServers copy];
-	}
-
-	if (fixedInfo->DomainName[0] != '\0')
-		_localDomain = [[OFString alloc]
-		    initWithCString: fixedInfo->DomainName
-			   encoding: encoding];
 }
 #endif
 
