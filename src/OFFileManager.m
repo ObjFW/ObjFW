@@ -793,9 +793,8 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		@throw [OFInvalidArgumentException exception];
 
 # if defined(OF_WINDOWS)
-	BOOL success;
-
 	@synchronized ([OFFileManager class]) {
+		bool success;
 		if ([OFSystemInfo isWindowsNT])
 			success = SetCurrentDirectoryW(path.UTF16String);
 		else

@@ -65,6 +65,7 @@
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFFile.h"
+#import "OFFile+Private.h"
 #import "OFFileManager.h"
 #import "OFIRI.h"
 #import "OFLocale.h"
@@ -204,26 +205,6 @@ static WINAPI BOOLEAN (*CreateHardLinkWFuncPtr)(LPCWSTR, LPCWSTR,
     LPSECURITY_ATTRIBUTES);
 static WINAPI BOOLEAN (*GetFileAttributesExWFuncPtr)(LPCWSTR,
     GET_FILEEX_INFO_LEVELS, LPVOID);
-# ifndef _UCRT
-static HMODULE msvcrt;
-static int (*_wchmodFuncPtr)(const wchar_t *, int);
-static int (*_wmkdirFuncPtr)(const wchar_t *);
-static int (*_wrenameFuncPtr)(const wchar_t *, const wchar_t *);
-static int (*_wrmdirFuncPtr)(const wchar_t *);
-static int (*_wunlinkFuncPtr)(const wchar_t *);
-
-OF_DESTRUCTOR()
-{
-	if (msvcrt != NULL)
-		FreeLibrary(msvcrt);
-}
-# else
-static int (*_wchmodFuncPtr)(const wchar_t *, int) = &_wchmod;
-static int (*_wmkdirFuncPtr)(const wchar_t *) = &_wmkdir;
-static int (*_wrenameFuncPtr)(const wchar_t *, const wchar_t *) = &_wrename;
-static int (*_wrmdirFuncPtr)(const wchar_t *) = &_wrmdir;
-static int (*_wunlinkFuncPtr)(const wchar_t *) = &_wunlink;
-# endif
 #endif
 
 #ifdef OF_FREEBSD
@@ -250,27 +231,6 @@ timeIntervalToFiletime(OFTimeInterval timeInterval)
 	};
 
 	return filetime;
-}
-
-static int
-lastError(void)
-{
-	switch (GetLastError()) {
-	case ERROR_FILE_NOT_FOUND:
-	case ERROR_PATH_NOT_FOUND:
-	case ERROR_NO_MORE_FILES:
-		return ENOENT;
-	case ERROR_ACCESS_DENIED:
-		return EACCES;
-	case ERROR_PRIVILEGE_NOT_HELD:
-		return EPERM;
-	case ERROR_DIRECTORY:
-		return ENOTDIR;
-	case ERROR_NOT_READY:
-		return EBUSY;
-	default:
-		return EIO;
-	}
 }
 #endif
 
@@ -324,7 +284,7 @@ statWrapper(OFString *path, Stat *buffer)
 		    GetFileExInfoStandard, &data);
 
 	if (!success)
-		return lastError();
+		return _OFFileErrorToErrNo();
 
 	buffer->st_size = (uint64_t)data.nFileSizeHigh << 32 |
 	    data.nFileSizeLow;
@@ -341,7 +301,7 @@ statWrapper(OFString *path, Stat *buffer)
 
 		if ((findHandle = FindFirstFileW(path.UTF16String,
 		    &findData)) == INVALID_HANDLE_VALUE)
-			return lastError();
+			return _OFFileErrorToErrNo();
 
 		@try {
 			if (!(findData.dwFileAttributes &
@@ -696,7 +656,7 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
 		@throw [OFGetItemAttributesFailedException
 		    exceptionWithIRI: IRI
-			       errNo: lastError()];
+			       errNo: _OFFileErrorToErrNo()];
 
 	@try {
 		union {
@@ -711,12 +671,12 @@ setSymbolicLinkDestinationAttribute(OFMutableFileAttributes attributes,
 		    NULL))
 			@throw [OFGetItemAttributesFailedException
 			    exceptionWithIRI: IRI
-				       errNo: lastError()];
+				       errNo: _OFFileErrorToErrNo()];
 
 		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
 			@throw [OFGetItemAttributesFailedException
 			    exceptionWithIRI: IRI
-				       errNo: lastError()];
+				       errNo: _OFFileErrorToErrNo()];
 
 #  define slrb buffer.data.SymbolicLinkReparseBuffer
 		tmp = slrb.PathBuffer +
@@ -1005,21 +965,6 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    (WINAPI BOOLEAN (*)(LPCWSTR, GET_FILEEX_INFO_LEVELS,
 		    LPVOID))GetProcAddress(kernel32, "GetFileAttributesExW");
 	}
-
-# ifndef _UCRT
-	if ((msvcrt = LoadLibraryA("msvcrt.dll")) != NULL) {
-		_wchmodFuncPtr = (int (*)(const wchar_t *, int))
-		    GetProcAddress(msvcrt, "_wchmod");
-		_wmkdirFuncPtr = (int (*)(const wchar_t *))
-		    GetProcAddress(msvcrt, "_wmkdir");
-		_wrenameFuncPtr = (int (*)(const wchar_t *, const wchar_t *))
-		    GetProcAddress(msvcrt, "_wrename");
-		_wrmdirFuncPtr = (int (*)(const wchar_t *))
-		    GetProcAddress(msvcrt, "_wrmdir");
-		_wunlinkFuncPtr = (int (*)(const wchar_t *))
-		    GetProcAddress(msvcrt, "_wunlink");
-	}
-# endif
 #endif
 
 	/*
@@ -1168,10 +1113,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		    exceptionWithIRI: IRI
 			  attributes: attributes
 		     failedAttribute: attributeKey
-			       errNo: lastError()];
+			       errNo: _OFFileErrorToErrNo()];
 
 	if (!SetFileTime(handle, NULL, &accessTime, &modificationTime)) {
-		int errNo = lastError();
+		int errNo = _OFFileErrorToErrNo();
 
 		CloseHandle(handle);
 
@@ -1314,7 +1259,56 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		   ofItemAtIRI: (OFIRI *)IRI
 		    attributes: (OFFileAttributes)attributes OF_DIRECT
 {
-#if defined(OF_AMIGAOS)
+#if defined(OF_WINDOWS)
+	bool readonly = !(permissions.unsignedLongValue & 0200);
+
+	if ([OFSystemInfo isWindowsNT]) {
+		const wchar_t *path = IRI.fileSystemRepresentation.UTF16String;
+
+		DWORD fileAttributes = GetFileAttributesW(path);
+		if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: OFFilePOSIXPermissions
+				       errNo: _OFFileErrorToErrNo()];
+
+		if (readonly)
+			fileAttributes |= FILE_ATTRIBUTE_READONLY;
+		else
+			fileAttributes &= ~FILE_ATTRIBUTE_READONLY;
+
+		if (!SetFileAttributesW(path, fileAttributes))
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: OFFilePOSIXPermissions
+				       errNo: _OFFileErrorToErrNo()];
+	} else {
+		const char *path = [IRI.fileSystemRepresentation
+		    cStringWithEncoding: [OFLocale encoding]];
+
+		DWORD fileAttributes = GetFileAttributesA(path);
+		if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: OFFilePOSIXPermissions
+				       errNo: _OFFileErrorToErrNo()];
+
+		if (readonly)
+			fileAttributes |= FILE_ATTRIBUTE_READONLY;
+		else
+			fileAttributes &= ~FILE_ATTRIBUTE_READONLY;
+
+		if (!SetFileAttributesA(path, fileAttributes))
+			@throw [OFSetItemAttributesFailedException
+			    exceptionWithIRI: IRI
+				  attributes: attributes
+			     failedAttribute: OFFilePOSIXPermissions
+				       errNo: _OFFileErrorToErrNo()];
+	}
+#elif defined(OF_AMIGAOS)
 	const char *path;
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
 	BPTR lock;
@@ -1396,17 +1390,8 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 #elif defined(OF_FILE_MANAGER_SUPPORTS_PERMISSIONS)
 	mode_t mode = (mode_t)permissions.unsignedLongValue;
 	OFString *path = IRI.fileSystemRepresentation;
-	int status;
 
-# ifdef OF_WINDOWS
-	if (_wchmodFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-		status = _wchmodFuncPtr(path.UTF16String, mode);
-	else
-# endif
-		status = chmod(
-		    [path cStringWithEncoding: [OFLocale encoding]], mode);
-
-	if (status != 0)
+	if (chmod([path cStringWithEncoding: [OFLocale encoding]], mode) != 0)
 		@throw [OFSetItemAttributesFailedException
 		    exceptionWithIRI: IRI
 			  attributes: attributes
@@ -1811,18 +1796,18 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 	path = IRI.fileSystemRepresentation;
 
 #if defined(OF_WINDOWS)
-	int status;
+	bool success;
 
-	if (_wmkdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-		status = _wmkdirFuncPtr(path.UTF16String);
+	if ([OFSystemInfo isWindowsNT])
+		success = CreateDirectoryW(path.UTF16String, NULL);
 	else
-		status = _mkdir(
-		    [path cStringWithEncoding: [OFLocale encoding]]);
+		success = CreateDirectoryA(
+		    [path cStringWithEncoding: [OFLocale encoding]], NULL);
 
-	if (status != 0)
+	if (!success)
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithIRI: IRI
-			       errNo: errno];
+			       errNo: _OFFileErrorToErrNo()];
 #elif defined(OF_AMIGAOS)
 	BPTR lock;
 
@@ -1870,7 +1855,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			@throw [OFOpenItemFailedException
 			    exceptionWithIRI: IRI
 					mode: nil
-				       errNo: lastError()];
+				       errNo: _OFFileErrorToErrNo()];
 
 		@try {
 			do {
@@ -1894,7 +1879,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: 0
-						  errNo: lastError()];
+						  errNo: _OFFileErrorToErrNo()];
 		} @finally {
 			FindClose(handle);
 		}
@@ -1908,7 +1893,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			@throw [OFOpenItemFailedException
 			    exceptionWithIRI: IRI
 					mode: nil
-				       errNo: lastError()];
+				       errNo: _OFFileErrorToErrNo()];
 
 		@try {
 			do {
@@ -1933,7 +1918,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
 					requestedLength: 0
-						  errNo: lastError()];
+						  errNo: _OFFileErrorToErrNo()];
 		} @finally {
 			FindClose(handle);
 		}
@@ -2118,35 +2103,44 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		}
 
 #ifndef OF_AMIGAOS
-		int status;
-
 # ifdef OF_WINDOWS
-		if (_wrmdirFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-			status = _wrmdirFuncPtr(path.UTF16String);
+		bool success;
+		if ([OFSystemInfo isWindowsNT])
+			success = RemoveDirectoryW(path.UTF16String);
 		else
-# endif
-			status = rmdir(
+			success = RemoveDirectoryA(
 			    [path cStringWithEncoding: [OFLocale encoding]]);
 
-		if (status != 0)
+		if (!success)
+			@throw [OFRemoveItemFailedException
+				exceptionWithIRI: IRI
+					   errNo: _OFFileErrorToErrNo()];
+# else
+		if (rmdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
 			@throw [OFRemoveItemFailedException
 				exceptionWithIRI: IRI
 					   errNo: errno];
-	} else {
-		int status;
-
-# ifdef OF_WINDOWS
-		if (_wunlinkFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-			status = _wunlinkFuncPtr(path.UTF16String);
-		else
 # endif
-			status = unlink(
+	} else {
+# ifdef OF_WINDOWS
+		bool success;
+		if ([OFSystemInfo isWindowsNT])
+			success = DeleteFileW(path.UTF16String);
+		else
+			success = DeleteFileA(
 			    [path cStringWithEncoding: [OFLocale encoding]]);
 
-		if (status != 0)
+		if (!success)
+			@throw [OFRemoveItemFailedException
+			    exceptionWithIRI: IRI
+				       errNo: _OFFileErrorToErrNo()];
+# else
+		if (unlink([path cStringWithEncoding:
+		    [OFLocale encoding]]) != 0)
 			@throw [OFRemoveItemFailedException
 			    exceptionWithIRI: IRI
 				       errNo: errno];
+# endif
 #endif
 	}
 
@@ -2195,7 +2189,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		@throw [OFLinkItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
-				     errNo: lastError()];
+				     errNo: _OFFileErrorToErrNo()];
 # endif
 
 	objc_autoreleasePoolPop(pool);
@@ -2236,7 +2230,7 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithIRI: IRI
 			      target: target
-			       errNo: lastError()];
+			       errNo: _OFFileErrorToErrNo()];
 # endif
 
 	objc_autoreleasePoolPop(pool);
@@ -2277,7 +2271,25 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    destinationIRI: destination
 				     errNo: EEXIST];
 
-#ifdef OF_AMIGAOS
+#if defined(OF_WINDOWS)
+	OFString *sourcePath = source.fileSystemRepresentation;
+	OFString *destinationPath = destination.fileSystemRepresentation;
+
+	bool success;
+	if ([OFSystemInfo isWindowsNT])
+		success = MoveFileW(
+		    sourcePath.UTF16String, destinationPath.UTF16String);
+	else
+		success = MoveFileA(
+		    [sourcePath cStringWithEncoding: encoding],
+		    [destinationPath cStringWithEncoding: encoding]);
+
+	if (!success)
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceIRI: source
+			    destinationIRI: destination
+				     errNo: _OFFileErrorToErrNo()];
+#elif defined(OF_AMIGAOS)
 	if (!Rename([source.fileSystemRepresentation
 	    cStringWithEncoding: encoding],
 	    [destination.fileSystemRepresentation
@@ -2287,25 +2299,10 @@ setExtendedAttributes(OFMutableFileAttributes attributes, OFIRI *IRI)
 			    destinationIRI: destination
 				     errNo: lastError()];
 #else
-	int status;
-
-# ifdef OF_WINDOWS
-	if (_wrenameFuncPtr != NULL && [OFSystemInfo isWindowsNT])
-		status = _wrenameFuncPtr(
-		    source.fileSystemRepresentation.UTF16String,
-		    destination.fileSystemRepresentation.UTF16String);
-	else {
-# endif
-
-		status = rename([source.fileSystemRepresentation
-		    cStringWithEncoding: encoding],
-		    [destination.fileSystemRepresentation
-		    cStringWithEncoding: encoding]);
-# ifdef OF_WINDOWS
-	}
-# endif
-
-	if (status != 0)
+	if (rename([source.fileSystemRepresentation
+	    cStringWithEncoding: encoding],
+	    [destination.fileSystemRepresentation
+	    cStringWithEncoding: encoding]) != 0)
 		@throw [OFMoveItemFailedException
 		    exceptionWithSourceIRI: source
 			    destinationIRI: destination
