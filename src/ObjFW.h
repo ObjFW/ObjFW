@@ -293,6 +293,7 @@
 # import "OFCreateWindowsRegistryKeyFailedException.h"
 # import "OFDeleteWindowsRegistryKeyFailedException.h"
 # import "OFDeleteWindowsRegistryValueFailedException.h"
+# import "OFEnumerateWindowsRegistryKeyFailedException.h"
 # import "OFGetWindowsRegistryValueFailedException.h"
 # import "OFOpenWindowsRegistryKeyFailedException.h"
 # import "OFSetWindowsRegistryValueFailedException.h"

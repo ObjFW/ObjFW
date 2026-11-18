@@ -88,6 +88,7 @@ SRCS_THREADS = OFBroadcastConditionFailedException.m	\
 SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryKeyFailedException.m	\
 	       OFDeleteWindowsRegistryValueFailedException.m	\
+	       OFEnumerateWindowsRegistryKeyFailedException.m	\
 	       OFGetWindowsRegistryValueFailedException.m	\
 	       OFOpenWindowsRegistryKeyFailedException.m	\
 	       OFSetWindowsRegistryValueFailedException.m

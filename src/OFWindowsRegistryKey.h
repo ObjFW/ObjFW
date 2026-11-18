@@ -37,6 +37,29 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
+ * @brief The names of the subkeys of the key.
+ *
+ * The key needs to be opened with `KEY_ENUMERATE_SUB_KEYS` included in
+ * `accessRights`.
+ *
+ * @throw OFEnumerateWindowsRegistryKeyFailedException Enumerating the subkey
+ *						       names failed
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *subkeyNames;
+
+/**
+ * @brief The names of the values stored in the key.
+ *
+ * The key needs to be opened with `KEY_QUERY_VALUE` included in `accessRights`.
+ *
+ * The name returned for the default value is the empty string.
+ *
+ * @throw OFEnumerateWindowsRegistryKeyFailedException Enumerating the value
+ *						       names failed
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *valueNames;
+
+/**
  * @brief Returns the OFWindowsRegistryKey for the HKEY_CLASSES_ROOT key.
  *
  * @return The OFWindowsRegistryKey for the HKEY_CLASSES_ROOT key

@@ -20,6 +20,7 @@
 #include "config.h"
 
 #import "OFWindowsRegistryKey.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFLocale.h"
 #import "OFSystemInfo.h"
@@ -29,6 +30,7 @@
 #import "OFCreateWindowsRegistryKeyFailedException.h"
 #import "OFDeleteWindowsRegistryKeyFailedException.h"
 #import "OFDeleteWindowsRegistryValueFailedException.h"
+#import "OFEnumerateWindowsRegistryKeyFailedException.h"
 #import "OFGetWindowsRegistryValueFailedException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -169,17 +171,211 @@ OF_DIRECT_MEMBERS
 						    close: true]);
 }
 
+- (OFArray OF_GENERIC(OFString *) *)subkeyNames
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	bool isNT = [OFSystemInfo isWindowsNT];
+
+	DWORD maxSubkeyLen;
+	LSTATUS status;
+retry:
+	if (isNT)
+		status = RegQueryInfoKeyW(_hKey, NULL, NULL, NULL, NULL,
+		    &maxSubkeyLen, NULL, NULL, NULL, NULL, NULL, NULL);
+	else
+		status = RegQueryInfoKeyA(_hKey, NULL, NULL, NULL, NULL,
+		    &maxSubkeyLen, NULL, NULL, NULL, NULL, NULL, NULL);
+
+	if (status != ERROR_SUCCESS)
+		@throw [OFEnumerateWindowsRegistryKeyFailedException
+		    exceptionWithRegistryKey: self
+				      status: status];
+
+	if (MAXDWORD - maxSubkeyLen < 1)
+		@throw [OFOutOfRangeException exception];
+
+	if (isNT) {
+		wchar_t *buffer =
+		    OFAllocMemory(maxSubkeyLen + 1, sizeof(wchar_t));
+		@try {
+			for (DWORD i = 0;; i++) {
+				DWORD length = maxSubkeyLen + 1;
+				status = RegEnumKeyExW(_hKey, i, buffer,
+				    &length, NULL, NULL, NULL, NULL);
+
+				if (status == ERROR_NO_MORE_ITEMS)
+					break;
+
+				if (status == ERROR_MORE_DATA) {
+					[ret removeAllObjects];
+					goto retry;
+				}
+
+				if (status != ERROR_SUCCESS)
+#define EWRKFE OFEnumerateWindowsRegistryKeyFailedException
+					@throw [EWRKFE
+					    exceptionWithRegistryKey: self
+							      status: status];
+#undef EWRKFE
+
+				[ret addObject:
+				    [OFString stringWithUTF16String: buffer
+							     length: length]];
+			}
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	} else {
+		OFStringEncoding encoding = [OFLocale encoding];
+
+		char *buffer = OFAllocMemory(maxSubkeyLen + 1, 1);
+		@try {
+			for (DWORD i = 0;; i++) {
+				DWORD length = maxSubkeyLen + 1;
+				status = RegEnumKeyExA(_hKey, i, buffer,
+				    &length, NULL, NULL, NULL, NULL);
+
+				if (status == ERROR_NO_MORE_ITEMS)
+					break;
+
+				if (status == ERROR_MORE_DATA) {
+					[ret removeAllObjects];
+					goto retry;
+				}
+
+				if (status != ERROR_SUCCESS)
+#define EWRKFE OFEnumerateWindowsRegistryKeyFailedException
+					@throw [EWRKFE
+					    exceptionWithRegistryKey: self
+							      status: status];
+#undef EWRKFE
+
+				[ret addObject:
+				    [OFString stringWithCString: buffer
+						       encoding: encoding
+							 length: length]];
+			}
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (OFArray OF_GENERIC(OFString *) *)valueNames
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	bool isNT = [OFSystemInfo isWindowsNT];
+
+	DWORD maxValueNameLen;
+	LSTATUS status;
+retry:
+	if (isNT)
+		status = RegQueryInfoKeyW(_hKey, NULL, NULL, NULL, NULL, NULL,
+		    NULL, NULL, &maxValueNameLen, NULL, NULL, NULL);
+	else
+		status = RegQueryInfoKeyA(_hKey, NULL, NULL, NULL, NULL, NULL,
+		    NULL, NULL, &maxValueNameLen, NULL, NULL, NULL);
+
+	if (status != ERROR_SUCCESS)
+		@throw [OFEnumerateWindowsRegistryKeyFailedException
+		    exceptionWithRegistryKey: self
+				      status: status];
+
+	if (MAXDWORD - maxValueNameLen < 1)
+		@throw [OFOutOfRangeException exception];
+
+	if (isNT) {
+		wchar_t *buffer =
+		    OFAllocMemory(maxValueNameLen + 1, sizeof(wchar_t));
+		@try {
+			for (DWORD i = 0;; i++) {
+				DWORD length = maxValueNameLen + 1;
+				status = RegEnumValueW(_hKey, i, buffer,
+				    &length, NULL, NULL, NULL, NULL);
+
+				if (status == ERROR_NO_MORE_ITEMS)
+					break;
+
+				if (status == ERROR_MORE_DATA) {
+					[ret removeAllObjects];
+					goto retry;
+				}
+
+				if (status != ERROR_SUCCESS)
+#define EWRKFE OFEnumerateWindowsRegistryKeyFailedException
+					@throw [EWRKFE
+					    exceptionWithRegistryKey: self
+							      status: status];
+#undef EWRKFE
+
+				[ret addObject:
+				    [OFString stringWithUTF16String: buffer
+							     length: length]];
+			}
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	} else {
+		OFStringEncoding encoding = [OFLocale encoding];
+
+		char *buffer = OFAllocMemory(maxValueNameLen + 1, 1);
+		@try {
+			for (DWORD i = 0;; i++) {
+				DWORD length = maxValueNameLen + 1;
+				status = RegEnumValueA(_hKey, i, buffer,
+				    &length, NULL, NULL, NULL, NULL);
+
+				if (status == ERROR_NO_MORE_ITEMS)
+					break;
+
+				if (status == ERROR_MORE_DATA) {
+					[ret removeAllObjects];
+					goto retry;
+				}
+
+				if (status != ERROR_SUCCESS)
+#define EWRKFE OFEnumerateWindowsRegistryKeyFailedException
+					@throw [EWRKFE
+					    exceptionWithRegistryKey: self
+							      status: status];
+#undef EWRKFE
+
+				[ret addObject:
+				    [OFString stringWithCString: buffer
+						       encoding: encoding
+							 length: length]];
+			}
+		} @finally {
+			OFFreeMemory(buffer);
+		}
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 - (OFData *)dataForValueNamed: (OFString *)name type: (DWORD *)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	BYTE stackBuffer[256], *buffer = stackBuffer;
 	DWORD length = sizeof(stackBuffer);
 	OFMutableData *ret = nil;
-	bool winNT = [OFSystemInfo isWindowsNT];
+	bool isNT = [OFSystemInfo isWindowsNT];
 	LSTATUS status;
 
 	for (;;) {
-		if (winNT)
+		if (isNT)
 			status = RegQueryValueExW(_hKey, name.UTF16String,
 			    NULL, type, buffer, &length);
 		else
