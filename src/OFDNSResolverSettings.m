@@ -566,14 +566,29 @@ parseNetStackArray(OFString *string)
 		return;
 	}
 
-	OFWindowsRegistryKey *key = [[OFWindowsRegistryKey localMachineKey]
-	    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\VxD\\MSTCP"
-		accessRights: KEY_QUERY_VALUE
-		     options: 0];
 	OFCharacterSet *separatorsCS =
 	    [OFCharacterSet characterSetWithCharactersInString: @", \t"];
+	OFWindowsRegistryKey *key;
+
+	@try {
+		key = [[OFWindowsRegistryKey localMachineKey]
+		    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				      @"Tcpip\\Parameters"
+			accessRights: KEY_QUERY_VALUE
+			     options: 0];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		key = nil;
+	}
 
 	OFString *nameServers = [key stringForValueNamed: @"NameServer"];
+	if (nameServers.length > 0) {
+		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+		[_nameServers addObjectsFromArray: [nameServers
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: options]];
+	}
+
+	nameServers = [key stringForValueNamed: @"DhcpNameServer"];
 	if (nameServers.length > 0) {
 		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
 		[_nameServers addObjectsFromArray: [nameServers
@@ -585,7 +600,45 @@ parseNetStackArray(OFString *string)
 	if (localDomain.length > 0)
 		_localDomain = [localDomain copy];
 
+	if (_localDomain.length == 0) {
+		localDomain = [key stringForValueNamed: @"DhcpDomain"];
+		if (localDomain.length > 0)
+			_localDomain = [localDomain copy];
+	}
+
 	OFString *searchDomains = [key stringForValueNamed: @"SearchList"];
+	if (searchDomains.length > 0) {
+		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+		[_searchDomains addObjectsFromArray: [searchDomains
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: options]];
+	}
+
+	@try {
+		key = [[OFWindowsRegistryKey localMachineKey]
+		    openSubkeyAtPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				      @"VxD\\MSTCP"
+			accessRights: KEY_QUERY_VALUE
+			     options: 0];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		key = nil;
+	}
+
+	nameServers = [key stringForValueNamed: @"NameServer"];
+	if (nameServers.length > 0) {
+		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+		[_nameServers addObjectsFromArray: [nameServers
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: options]];
+	}
+
+	if (_localDomain.length == 0) {
+		localDomain = [key stringForValueNamed: @"Domain"];
+		if (localDomain.length > 0)
+			_localDomain = [localDomain copy];
+	}
+
+	searchDomains = [key stringForValueNamed: @"SearchList"];
 	if (searchDomains.length > 0) {
 		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
 		[_searchDomains addObjectsFromArray: [searchDomains
