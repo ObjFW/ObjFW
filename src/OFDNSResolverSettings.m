@@ -568,6 +568,8 @@ parseNetStackArray(OFString *string)
 
 	OFCharacterSet *separatorsCS =
 	    [OFCharacterSet characterSetWithCharactersInString: @", \t"];
+	static const OFStringSeparationOptions skipEmpty =
+	    OFStringSkipEmptyComponents;
 	OFWindowsRegistryKey *key;
 
 	@try {
@@ -581,20 +583,16 @@ parseNetStackArray(OFString *string)
 	}
 
 	OFString *nameServers = [key stringForValueNamed: @"NameServer"];
-	if (nameServers.length > 0) {
-		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+	if (nameServers.length > 0)
 		[_nameServers addObjectsFromArray: [nameServers
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options]];
-	}
+						 options: skipEmpty]];
 
 	nameServers = [key stringForValueNamed: @"DhcpNameServer"];
-	if (nameServers.length > 0) {
-		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+	if (nameServers.length > 0)
 		[_nameServers addObjectsFromArray: [nameServers
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options]];
-	}
+						 options: skipEmpty]];
 
 	OFString *localDomain = [key stringForValueNamed: @"Domain"];
 	if (localDomain.length > 0)
@@ -607,12 +605,24 @@ parseNetStackArray(OFString *string)
 	}
 
 	OFString *searchDomains = [key stringForValueNamed: @"SearchList"];
-	if (searchDomains.length > 0) {
-		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+	if (searchDomains.length > 0)
 		[_searchDomains addObjectsFromArray: [searchDomains
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options]];
+						 options: skipEmpty]];
+
+	@try {
+		key = [key openSubkeyAtPath: @"Transient"
+			       accessRights: KEY_QUERY_VALUE
+				    options: 0];
+	} @catch (OFOpenWindowsRegistryKeyFailedException *e) {
+		key = nil;
 	}
+
+	nameServers = [key stringForValueNamed: @"NameServer"];
+	if (nameServers.length > 0)
+		[_nameServers addObjectsFromArray: [nameServers
+		    componentsSeparatedByCharactersInSet: separatorsCS
+						 options: skipEmpty]];
 
 	@try {
 		key = [[OFWindowsRegistryKey localMachineKey]
@@ -625,12 +635,10 @@ parseNetStackArray(OFString *string)
 	}
 
 	nameServers = [key stringForValueNamed: @"NameServer"];
-	if (nameServers.length > 0) {
-		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+	if (nameServers.length > 0)
 		[_nameServers addObjectsFromArray: [nameServers
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options]];
-	}
+						 options: skipEmpty]];
 
 	if (_localDomain.length == 0) {
 		localDomain = [key stringForValueNamed: @"Domain"];
@@ -639,12 +647,10 @@ parseNetStackArray(OFString *string)
 	}
 
 	searchDomains = [key stringForValueNamed: @"SearchList"];
-	if (searchDomains.length > 0) {
-		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
+	if (searchDomains.length > 0)
 		[_searchDomains addObjectsFromArray: [searchDomains
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options]];
-	}
+						 options: skipEmpty]];
 
 	HANDLE vdhcp = CreateFileA("\\\\.\\VDHCP", GENERIC_READ | GENERIC_WRITE,
 	    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
