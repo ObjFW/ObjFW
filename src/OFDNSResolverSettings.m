@@ -466,9 +466,10 @@ parseNetStackArray(OFString *string)
 			objc_release(_localDomain);
 			_localDomain = @"";
 			_localDomain = [arguments.firstObject copy];
-		} else if ([option isEqual: @"search"])
+		} else if ([option isEqual: @"search"]) {
+			[_searchDomains removeAllObjects];
 			[_searchDomains addObjectsFromArray: arguments];
-		else if ([option isEqual: @"options"])
+		} else if ([option isEqual: @"options"])
 			for (OFString *argument in arguments)
 				[self parseResolvConfOption: argument];
 
